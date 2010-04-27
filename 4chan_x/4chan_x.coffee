@@ -452,7 +452,13 @@ quickReply: (e) ->
 
     textarea: $('textarea', qr)
     #goddamit moot
+    #xx
     textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n'
+    selection: window.getSelection()
+    selid: x('ancestor::td', selection.anchorNode)?.id
+    if selid == x('ancestor::td', this).id
+        if selText: selection.toString()
+            textarea.value += ">$selText\n"
     textarea.focus()
 
 

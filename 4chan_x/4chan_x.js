@@ -462,7 +462,7 @@ cursor: pointer; \
     }
   };
   quickReply = function quickReply(e) {
-    var a, clone, div, input, qr, textarea, xpath;
+    var _c, a, clone, div, input, qr, selText, selection, selid, textarea, xpath;
     e.preventDefault();
     if (!(qr = $('#qr'))) {
       qr = tag('div');
@@ -503,7 +503,11 @@ cursor: pointer; \
     }
     textarea = $('textarea', qr);
     //goddamit moot
+    //xx
     textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n';
+    selection = window.getSelection();
+    selid = (_c = x('ancestor::td', selection.anchorNode)) == undefined ? undefined : _c.id;
+    selid === x('ancestor::td', this).id ? (selText = selection.toString()) ? textarea.value += (">" + selText + "\n") : null : null;
     return textarea.focus();
   };
   watch = function watch() {
