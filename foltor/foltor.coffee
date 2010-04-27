@@ -158,14 +158,19 @@ filterAll: ->
         if value
             regex[input.name]: new RegExp(value, 'i')
 
+    hideCount: 0
     tables: $$('form[name="delform"] table')
     tables.pop()
     tables.pop()
     for table in tables
         if filterSingle(table, regex)
             table.className: 'hide'
+            hideCount++
         else
             table.className: ''
+
+    images: $$('img[md5]')
+    filter.firstChild.textContent: "Images: ${images.length} Replies: ${tables.length} / $hideCount"
 
 
 keydown: (e) ->
@@ -195,7 +200,6 @@ filter.className: GM_getValue('className', 'reply')
 position(filter)
 
 bar: tag('div')
-bar.textContent: '4chon foltor'
 bar.className: 'move top'
 bar.addEventListener('mousedown', mousedown, true)
 filter.appendChild(bar)

@@ -178,7 +178,7 @@ display: none; \
     }}
   };
   filterAll = function filterAll() {
-    var _a, _b, _c, _d, _e, _f, _g, input, inputs, regex, table, tables, value;
+    var _a, _b, _c, _d, _e, _f, hideCount, images, input, inputs, regex, table, tables, value;
     regex = {};
     inputs = $$('input', filter);
     _b = inputs;
@@ -188,15 +188,23 @@ display: none; \
       GM_setValue(input.name, value);
       value ? (regex[input.name] = new RegExp(value, 'i')) : null;
     }
+    hideCount = 0;
     tables = $$('form[name="delform"] table');
     tables.pop();
     tables.pop();
-    _d = []; _f = tables;
-    for (_e = 0, _g = _f.length; _e < _g; _e++) {
-      table = _f[_e];
-      _d.push(filterSingle(table, regex) ? (table.className = 'hide') : (table.className = ''));
+    _e = tables;
+    for (_d = 0, _f = _e.length; _d < _f; _d++) {
+      table = _e[_d];
+      if (filterSingle(table, regex)) {
+        table.className = 'hide';
+        hideCount++;
+      } else {
+        table.className = '';
+      }
     }
-    return _d;
+    images = $$('img[md5]');
+    filter.firstChild.textContent = ("Images: " + (images.length) + " Replies: " + (tables.length) + " / " + hideCount);
+    return filter.firstChild.textContent;
   };
   keydown = function keydown(e) {
     if (e.keyCode === 13) {
@@ -225,7 +233,6 @@ display: none; \
   filter.className = GM_getValue('className', 'reply');
   position(filter);
   bar = tag('div');
-  bar.textContent = '4chon foltor';
   bar.className = 'move top';
   bar.addEventListener('mousedown', mousedown, true);
   filter.appendChild(bar);
