@@ -1,3 +1,16 @@
+x: (path, root) ->
+    root ||= document.body
+    document.
+        evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
+        singleNodeValue
+$: (selector, root) ->
+    root ||= document.body
+    root.querySelector(selector)
+$$: (selector, root) ->
+    root ||= document.body
+    result: root.querySelectorAll(selector)
+    #magic that turns the results object into an array:
+    node for node in result
 tag: (el) ->
     document.createElement(el)
 text: (s) ->
@@ -84,7 +97,52 @@ GM_addStyle('
     .pointer {
         cursor: pointer;
     }
+    .hide {
+        display: none;
+    }
 ')
+
+
+filterSingle: (table, regex) ->
+    for family of regex
+        switch family
+            when 'Name'
+                s: $('span.commentpostername', table).textContent
+            when 'Tripcode'
+                s: $('span.postertrip', table)?.textContent || ''
+            when 'Email'
+                s: $('a.linkmail', table)?.href.slice(7) || ''
+            when 'Subject'
+                s: $('span.filetitle', table)?.textContent || ''
+            when 'Comment'
+                s: $('blockquote', table).textContent
+            when 'File'
+                s: $('span.filesize', table)?.textContent || ''
+        if regex[family].test(s)
+            return true
+
+
+filterAll: ->
+    regex: {}
+    inputs: $$('input', filter)
+    for input in inputs
+        if value: input.value
+            regex[input.name]: new RegExp(value, 'i')
+
+    tables: $$('form[name="delform"] table')
+    tables.pop()
+    tables.pop()
+    for table in tables
+        if filterSingle(table, regex)
+            table.className: 'hide'
+        else
+            table.className: ''
+
+
+keydown: (e) ->
+    if e.keyCode is 13 #enter
+        filterAll()
+
 
 filter: tag('div')
 filter.id: 'filter'
@@ -109,7 +167,10 @@ for field in fields
     div: tag('div')
     label: tag('label')
     label.appendChild(text(field))
-    label.appendChild(tag('input'))
+    input: tag('input')
+    input.name: field
+    input.addEventListener('keydown', keydown, true)
+    label.appendChild(input)
     div.appendChild(label)
     filter.appendChild(div)
 

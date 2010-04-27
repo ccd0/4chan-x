@@ -1,5 +1,26 @@
 (function(){
-  var _a, _b, _c, apply, bar, div, field, fields, filter, label, mousedown, mousemove, mouseup, move, position, reset, tag, text;
+  var $, $$, _a, _b, _c, apply, bar, div, field, fields, filter, filterAll, filterSingle, input, keydown, label, mousedown, mousemove, mouseup, move, position, reset, tag, text, x;
+  var __hasProp = Object.prototype.hasOwnProperty;
+  x = function x(path, root) {
+    root = root || document.body;
+    return document.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
+  };
+  $ = function $(selector, root) {
+    root = root || document.body;
+    return root.querySelector(selector);
+  };
+  $$ = function $$(selector, root) {
+    var _a, _b, _c, _d, node, result;
+    root = root || document.body;
+    result = root.querySelectorAll(selector);
+    //magic that turns the results object into an array:
+    _a = []; _c = result;
+    for (_b = 0, _d = _c.length; _b < _d; _b++) {
+      node = _c[_b];
+      _a.push(node);
+    }
+    return _a;
+  };
   tag = function tag(el) {
     return document.createElement(el);
   };
@@ -99,7 +120,57 @@ cursor: move; \
 .pointer { \
 cursor: pointer; \
 } \
+.hide { \
+display: none; \
+} \
 ');
+  filterSingle = function filterSingle(table, regex) {
+    var _a, _b, _c, _d, _e, family, s;
+    _a = regex;
+    for (family in _a) { if (__hasProp.call(_a, family)) {
+      if (family === 'Name') {
+        s = $('span.commentpostername', table).textContent;
+      } else if (family === 'Tripcode') {
+        s = ((_b = $('span.postertrip', table)) == undefined ? undefined : _b.textContent) || '';
+      } else if (family === 'Email') {
+        s = (_c = $('a.linkmail', table)) == undefined ? undefined : _c.href.slice(7) || '';
+      } else if (family === 'Subject') {
+        s = ((_d = $('span.filetitle', table)) == undefined ? undefined : _d.textContent) || '';
+      } else if (family === 'Comment') {
+        s = $('blockquote', table).textContent;
+      } else if (family === 'File') {
+        s = ((_e = $('span.filesize', table)) == undefined ? undefined : _e.textContent) || '';
+      }
+      if (regex[family].test(s)) {
+        return true;
+      }
+    }}
+  };
+  filterAll = function filterAll() {
+    var _a, _b, _c, _d, _e, _f, _g, input, inputs, regex, table, tables, value;
+    regex = {};
+    inputs = $$('input', filter);
+    _b = inputs;
+    for (_a = 0, _c = _b.length; _a < _c; _a++) {
+      input = _b[_a];
+      (value = input.value) ? (regex[input.name] = new RegExp(value, 'i')) : null;
+    }
+    tables = $$('form[name="delform"] table');
+    tables.pop();
+    tables.pop();
+    _d = []; _f = tables;
+    for (_e = 0, _g = _f.length; _e < _g; _e++) {
+      table = _f[_e];
+      _d.push(filterSingle(table, regex) ? (table.className = 'hide') : (table.className = ''));
+    }
+    return _d;
+  };
+  keydown = function keydown(e) {
+    if (e.keyCode === 13) {
+      //enter
+      return filterAll();
+    }
+  };
   filter = tag('div');
   filter.id = 'filter';
   filter.className = 'reply';
@@ -116,7 +187,10 @@ cursor: pointer; \
     div = tag('div');
     label = tag('label');
     label.appendChild(text(field));
-    label.appendChild(tag('input'));
+    input = tag('input');
+    input.name = field;
+    input.addEventListener('keydown', keydown, true);
+    label.appendChild(input);
     div.appendChild(label);
     filter.appendChild(div);
   }
