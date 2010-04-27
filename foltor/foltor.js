@@ -184,7 +184,9 @@ display: none; \
     _b = inputs;
     for (_a = 0, _c = _b.length; _a < _c; _a++) {
       input = _b[_a];
-      (value = input.value) ? (regex[input.name] = new RegExp(value, 'i')) : null;
+      value = input.value;
+      GM_setValue(input.name, value);
+      value ? (regex[input.name] = new RegExp(value, 'i')) : null;
     }
     tables = $$('form[name="delform"] table');
     tables.pop();
@@ -235,6 +237,7 @@ display: none; \
     label = tag('label');
     label.appendChild(text(field));
     input = tag('input');
+    input.value = GM_getValue(field, '');
     input.name = field;
     input.addEventListener('keydown', keydown, true);
     label.appendChild(input);
@@ -262,4 +265,5 @@ display: none; \
   div.appendChild(autoHide);
   filter.appendChild(div);
   document.body.appendChild(filter);
+  filterAll();
 })();

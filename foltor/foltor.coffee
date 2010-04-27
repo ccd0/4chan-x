@@ -153,7 +153,9 @@ filterAll: ->
     regex: {}
     inputs: $$('input', filter)
     for input in inputs
-        if value: input.value
+        value: input.value
+        GM_setValue(input.name, value)
+        if value
             regex[input.name]: new RegExp(value, 'i')
 
     tables: $$('form[name="delform"] table')
@@ -211,6 +213,7 @@ for field in fields
     label: tag('label')
     label.appendChild(text(field))
     input: tag('input')
+    input.value: GM_getValue(field, '')
     input.name: field
     input.addEventListener('keydown', keydown, true)
     label.appendChild(input)
@@ -238,3 +241,4 @@ div.appendChild(text(' '))
 div.appendChild(autoHide)
 filter.appendChild(div)
 document.body.appendChild(filter)
+filterAll()
