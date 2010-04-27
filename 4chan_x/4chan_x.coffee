@@ -618,9 +618,12 @@ stopPropagation: (e) ->
 
 
 replyNav: ->
-    direction: if @textContent is '▲' then 'preceding' else 'following'
-    op: x("$direction::span[starts-with(@id, 'nothread')][1]", this).id
-    window.location: "#$op"
+    if REPLY
+        window.location: if @textContent is '▲' then '#navtop' else '#navbot'
+    else
+        direction: if @textContent is '▲' then 'preceding' else 'following'
+        op: x("$direction::span[starts-with(@id, 'nothread')][1]", this).id
+        window.location: "#$op"
 
 
 if getValue('Reply Hiding')
@@ -706,6 +709,26 @@ if getValue('Anonymize')
                 remove(trip)
     )
 
+if getValue('Reply Navigation')
+    callbacks.push((root) ->
+        arr: $$('span[id^=norep]', root)
+        for el in arr
+            span: tag('span')
+            up: tag('a')
+            up.textContent: '▲'
+            up.className: 'pointer'
+            up.addEventListener('click', replyNav, true)
+            down: tag('a')
+            down.textContent: '▼'
+            down.className: 'pointer'
+            down.addEventListener('click', replyNav, true)
+            span.appendChild(document.createTextNode(' '))
+            span.appendChild(up)
+            span.appendChild(document.createTextNode(' '))
+            span.appendChild(down)
+            inAfter(el, span)
+    )
+
 
 if not REPLY
     if getValue('Thread Hiding')
@@ -754,26 +777,6 @@ if not REPLY
             inBefore(el, span)
         if location.hash is '#1'
             window.location: window.location
-
-    if getValue('Reply Navigation')
-        callbacks.push((root) ->
-            arr: $$('span[id^=norep]', root)
-            for el in arr
-                span: tag('span')
-                up: tag('a')
-                up.textContent: '▲'
-                up.className: 'pointer'
-                up.addEventListener('click', replyNav, true)
-                down: tag('a')
-                down.textContent: '▼'
-                down.className: 'pointer'
-                down.addEventListener('click', replyNav, true)
-                span.appendChild(document.createTextNode(' '))
-                span.appendChild(up)
-                span.appendChild(document.createTextNode(' '))
-                span.appendChild(down)
-                inAfter(el, span)
-        )
 
     if getValue('Thread Expansion')
         omitted: $$('span.omittedposts')

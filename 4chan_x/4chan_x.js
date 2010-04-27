@@ -710,10 +710,15 @@ cursor: pointer; \
   };
   replyNav = function replyNav() {
     var direction, op;
-    direction = this.textContent === '▲' ? 'preceding' : 'following';
-    op = x(("" + direction + "::span[starts-with(@id, 'nothread')][1]"), this).id;
-    window.location = ("#" + op);
-    return window.location;
+    if (REPLY) {
+      window.location = this.textContent === '▲' ? '#navtop' : '#navbot';
+      return window.location;
+    } else {
+      direction = this.textContent === '▲' ? 'preceding' : 'following';
+      op = x(("" + direction + "::span[starts-with(@id, 'nothread')][1]"), this).id;
+      window.location = ("#" + op);
+      return window.location;
+    }
   };
   getValue('Reply Hiding') ? callbacks.push(function(root) {
     var _c, _d, _e, _f, _g, _h, _i, _j, a, next, obj, td, tds;
@@ -822,6 +827,31 @@ cursor: pointer; \
     }
     return _l;
   }) : null;
+  getValue('Reply Navigation') ? callbacks.push(function(root) {
+    var _i, _j, _k, _l, arr, down, el, span, up;
+    arr = $$('span[id^=norep]', root);
+    _i = []; _k = arr;
+    for (_j = 0, _l = _k.length; _j < _l; _j++) {
+      el = _k[_j];
+      _i.push((function() {
+        span = tag('span');
+        up = tag('a');
+        up.textContent = '▲';
+        up.className = 'pointer';
+        up.addEventListener('click', replyNav, true);
+        down = tag('a');
+        down.textContent = '▼';
+        down.className = 'pointer';
+        down.addEventListener('click', replyNav, true);
+        span.appendChild(document.createTextNode(' '));
+        span.appendChild(up);
+        span.appendChild(document.createTextNode(' '));
+        span.appendChild(down);
+        return inAfter(el, span);
+      })());
+    }
+    return _i;
+  }) : null;
   if (!REPLY) {
     if (getValue('Thread Hiding')) {
       delform = $('form[name=delform]');
@@ -871,31 +901,6 @@ cursor: pointer; \
       }
       location.hash === '#1' ? (window.location = window.location) : null;
     }
-    getValue('Reply Navigation') ? callbacks.push(function(root) {
-      var _l, _m, _n, _o;
-      arr = $$('span[id^=norep]', root);
-      _l = []; _n = arr;
-      for (_m = 0, _o = _n.length; _m < _o; _m++) {
-        el = _n[_m];
-        _l.push((function() {
-          span = tag('span');
-          up = tag('a');
-          up.textContent = '▲';
-          up.className = 'pointer';
-          up.addEventListener('click', replyNav, true);
-          down = tag('a');
-          down.textContent = '▼';
-          down.className = 'pointer';
-          down.addEventListener('click', replyNav, true);
-          span.appendChild(document.createTextNode(' '));
-          span.appendChild(up);
-          span.appendChild(document.createTextNode(' '));
-          span.appendChild(down);
-          return inAfter(el, span);
-        })());
-      }
-      return _l;
-    }) : null;
     if (getValue('Thread Expansion')) {
       omitted = $$('span.omittedposts');
       _m = omitted;
