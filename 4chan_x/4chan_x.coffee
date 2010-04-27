@@ -1,4 +1,4 @@
-#todo: replace el.style.x with el.classname, remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
+#todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
 #todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
 #todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
 
@@ -294,9 +294,16 @@ hideThread: (div) ->
         GM_setValue('hiddenThreads', JSON.stringify(hiddenThreads))
     hide(div)
     if getValue('Show Stubs')
-        show(div.previousSibling)
-    else
-        hide(div.nextSibling)
+        a: tag('a')
+        n: parseInt($('span.omittedposts', div)?.textContent) || 0
+        n += $$('table', div).length
+        text: if n is 1 then "1 reply" else "$n replies"
+        name: $('span.postername', div).textContent
+        trip: $('span.postertrip', div)?.textContent || ''
+        a.textContent: "[ + ] $name$trip ($text)"
+        a.className: 'pointer'
+        a.addEventListener('click', showThread, true)
+        inBefore(div, a)
 
 
 threadF: (current) ->
@@ -313,17 +320,6 @@ threadF: (current) ->
         current: div.nextSibling
     div.appendChild(current)
     current: div.nextSibling
-
-    a: tag('a')
-    n: parseInt($('span.omittedposts', div)?.textContent) || 0
-    n += $$('table', div).length
-    text: if n is 1 then "1 reply" else "$n replies"
-    name: $('span.postername', div).textContent
-    a.textContent: "[ + ] $name ($text)"
-    a.className: 'pointer'
-    a.addEventListener('click', showThread, true)
-    hide(a)
-    inBefore(div, a)
 
     id: $('input', div).name
     div.id: id
@@ -357,11 +353,12 @@ hideReply: (reply) ->
         GM_setValue('hiddenReplies', JSON.stringify(hiddenReplies))
 
     name: $('span.commentpostername', reply).textContent
+    trip: $('span.postertrip', reply)?.textContent || ''
     table: x('ancestor::table', reply)
     hide(table)
     if getValue('Show Stubs')
         a: tag('a')
-        a.textContent: "[ + ] $name"
+        a.textContent: "[ + ] $name $trip"
         a.className: 'pointer'
         a.addEventListener('click', showReply, true)
         div: tag('div')
@@ -783,9 +780,10 @@ if not REPLY
         for span in omitted
             a: tag('a')
             a.className: 'pointer'
-            a.textContent: '+ ' + span.textContent
+            a.textContent: '+ '
             a.addEventListener('click', expandThread, true)
-            replace(span, a)
+            inBefore(span, a)
+            a.appendChild(span)
 
     if getValue('Comment Expansion')
         as: $$('span.abbr a')

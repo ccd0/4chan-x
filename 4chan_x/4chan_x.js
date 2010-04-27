@@ -1,7 +1,7 @@
 (function(){
   var $, $$, BOARD, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, close, config, cutoff, day, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, minimize, mousedown, mousemove, mouseup, move, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __hasProp = Object.prototype.hasOwnProperty;
-  //todo: replace el.style.x with el.classname, remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
+  //todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
   //todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
   //todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
   config = {
@@ -324,7 +324,7 @@ cursor: pointer; \
     return GM_setValue('hiddenThreads', JSON.stringify(hiddenThreads));
   };
   hideThread = function hideThread(div) {
-    var p;
+    var _c, _d, a, n, name, p, text, trip;
     if ((p = this.parentNode)) {
       div = p;
       hiddenThreads.push({
@@ -335,13 +335,20 @@ cursor: pointer; \
     }
     hide(div);
     if (getValue('Show Stubs')) {
-      return show(div.previousSibling);
-    } else {
-      return hide(div.nextSibling);
+      a = tag('a');
+      n = parseInt((_c = $('span.omittedposts', div)) == undefined ? undefined : _c.textContent) || 0;
+      n += $$('table', div).length;
+      text = n === 1 ? "1 reply" : ("" + n + " replies");
+      name = $('span.postername', div).textContent;
+      trip = ((_d = $('span.postertrip', div)) == undefined ? undefined : _d.textContent) || '';
+      a.textContent = ("[ + ] " + name + trip + " (" + text + ")");
+      a.className = 'pointer';
+      a.addEventListener('click', showThread, true);
+      return inBefore(div, a);
     }
   };
   threadF = function threadF(current) {
-    var _c, _d, _e, _f, a, div, hidden, n, name, text;
+    var _c, _d, _e, a, div, hidden;
     div = tag('div');
     a = tag('a');
     a.textContent = '[ - ]';
@@ -356,22 +363,12 @@ cursor: pointer; \
     }
     div.appendChild(current);
     current = div.nextSibling;
-    a = tag('a');
-    n = parseInt((_c = $('span.omittedposts', div)) == undefined ? undefined : _c.textContent) || 0;
-    n += $$('table', div).length;
-    text = n === 1 ? "1 reply" : ("" + n + " replies");
-    name = $('span.postername', div).textContent;
-    a.textContent = ("[ + ] " + name + " (" + text + ")");
-    a.className = 'pointer';
-    a.addEventListener('click', showThread, true);
-    hide(a);
-    inBefore(div, a);
     id = $('input', div).name;
     div.id = id;
     //check if we should hide the thread
-    _e = hiddenThreads;
-    for (_d = 0, _f = _e.length; _d < _f; _d++) {
-      hidden = _e[_d];
+    _d = hiddenThreads;
+    for (_c = 0, _e = _d.length; _c < _e; _c++) {
+      hidden = _d[_c];
       id === hidden.id ? hideThread(div) : null;
     }
     current = current.nextSibling.nextSibling;
@@ -390,7 +387,7 @@ cursor: pointer; \
     return GM_setValue('hiddenReplies', JSON.stringify(hiddenReplies));
   };
   hideReply = function hideReply(reply) {
-    var a, div, name, p, table;
+    var _c, a, div, name, p, table, trip;
     if ((p = this.parentNode)) {
       reply = p.nextSibling;
       hiddenReplies.push({
@@ -400,11 +397,12 @@ cursor: pointer; \
       GM_setValue('hiddenReplies', JSON.stringify(hiddenReplies));
     }
     name = $('span.commentpostername', reply).textContent;
+    trip = ((_c = $('span.postertrip', reply)) == undefined ? undefined : _c.textContent) || '';
     table = x('ancestor::table', reply);
     hide(table);
     if (getValue('Show Stubs')) {
       a = tag('a');
-      a.textContent = ("[ + ] " + name);
+      a.textContent = ("[ + ] " + name + " " + trip);
       a.className = 'pointer';
       a.addEventListener('click', showReply, true);
       div = tag('div');
@@ -905,9 +903,10 @@ cursor: pointer; \
         span = _m[_l];
         a = tag('a');
         a.className = 'pointer';
-        a.textContent = '+ ' + span.textContent;
+        a.textContent = '+ ';
         a.addEventListener('click', expandThread, true);
-        replace(span, a);
+        inBefore(span, a);
+        a.appendChild(span);
       }
     }
     if (getValue('Comment Expansion')) {
