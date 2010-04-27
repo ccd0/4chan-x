@@ -1,5 +1,5 @@
 (function(){
-  var $, $$, _a, _b, _c, apply, bar, div, field, fields, filter, filterAll, filterSingle, input, keydown, label, mousedown, mousemove, mouseup, move, position, reset, resetF, tag, text, x;
+  var $, $$, _a, _b, _c, apply, autoHide, autoHideF, bar, div, field, fields, filter, filterAll, filterSingle, input, keydown, label, mousedown, mousemove, mouseup, move, position, reset, resetF, tag, text, x;
   var __hasProp = Object.prototype.hasOwnProperty;
   x = function x(path, root) {
     root = root || document.body;
@@ -91,19 +91,21 @@
 #filter { \
 position: fixed; \
 text-align: right; \
-} \
-#filter:hover { \
 border: 1px solid; \
 } \
-#filter:not(:hover) { \
-background: rgba(0,0,0,0) \
+#filter.autohide:not(:hover){ \
+background: rgba(0,0,0,0); \
+border: none; \
 } \
-#filter:not(:hover) > div { \
+#filter.autohide:not(:hover) > div { \
 display: none; \
 } \
-#filter:not(:hover) > div.top { \
+#filter.autohide:not(:hover) > div.top { \
 display: block; \
 padding: 0; \
+} \
+#filter.autohide a:last-child { \
+font-weight: bold; \
 } \
 #filter > div { \
 padding: 0 5px 0 5px; \
@@ -183,9 +185,18 @@ display: none; \
     }
     return _a;
   };
+  autoHideF = function autoHideF() {
+    if (filter.className === 'reply') {
+      filter.className = 'reply autohide';
+      return filter.className;
+    } else {
+      filter.className = 'reply';
+      return filter.className;
+    }
+  };
   filter = tag('div');
   filter.id = 'filter';
-  filter.className = 'reply';
+  autoHideF();
   position(filter);
   bar = tag('div');
   bar.textContent = '4chon foltor';
@@ -214,11 +225,17 @@ display: none; \
   reset.textContent = 'reset';
   reset.className = 'pointer';
   reset.addEventListener('click', resetF, true);
+  autoHide = tag('a');
+  autoHide.textContent = 'autohide';
+  autoHide.className = 'pointer';
+  autoHide.addEventListener('click', autoHideF, true);
   div = tag('div');
   div.className = 'bottom';
   div.appendChild(apply);
   div.appendChild(text(' '));
   div.appendChild(reset);
+  div.appendChild(text(' '));
+  div.appendChild(autoHide);
   filter.appendChild(div);
   document.body.appendChild(filter);
 })();

@@ -68,19 +68,21 @@ GM_addStyle('
     #filter {
         position: fixed;
         text-align: right;
-    }
-    #filter:hover {
         border: 1px solid;
     }
-    #filter:not(:hover) {
-        background: rgba(0,0,0,0)
+    #filter.autohide:not(:hover){
+        background: rgba(0,0,0,0);
+        border: none;
     }
-    #filter:not(:hover) > div {
+    #filter.autohide:not(:hover) > div {
         display: none;
     }
-    #filter:not(:hover) > div.top {
+    #filter.autohide:not(:hover) > div.top {
         display: block;
         padding: 0;
+    }
+    #filter.autohide a:last-child {
+        font-weight: bold;
     }
     #filter > div {
         padding: 0 5px 0 5px;
@@ -152,9 +154,16 @@ resetF: ->
         table.className: ''
 
 
+autoHideF: ->
+    if filter.className is 'reply'
+        filter.className: 'reply autohide'
+    else
+        filter.className: 'reply'
+
+
 filter: tag('div')
 filter.id: 'filter'
-filter.className: 'reply'
+autoHideF()
 position(filter)
 
 bar: tag('div')
@@ -190,10 +199,16 @@ reset: tag('a')
 reset.textContent: 'reset'
 reset.className: 'pointer'
 reset.addEventListener('click', resetF, true)
+autoHide: tag('a')
+autoHide.textContent: 'autohide'
+autoHide.className: 'pointer'
+autoHide.addEventListener('click', autoHideF, true)
 div: tag('div')
 div.className: 'bottom'
 div.appendChild(apply)
 div.appendChild(text(' '))
 div.appendChild(reset)
+div.appendChild(text(' '))
+div.appendChild(autoHide)
 filter.appendChild(div)
 document.body.appendChild(filter)
