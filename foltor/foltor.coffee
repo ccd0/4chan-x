@@ -144,6 +144,14 @@ keydown: (e) ->
         filterAll()
 
 
+resetF: ->
+    tables: $$('form[name="delform"] table')
+    tables.pop()
+    tables.pop()
+    for table in tables
+        table.className: ''
+
+
 filter: tag('div')
 filter.id: 'filter'
 filter.className: 'reply'
@@ -177,9 +185,11 @@ for field in fields
 apply: tag('a')
 apply.textContent: 'apply'
 apply.className: 'pointer'
+apply.addEventListener('click', filterAll, true)
 reset: tag('a')
 reset.textContent: 'reset'
 reset.className: 'pointer'
+reset.addEventListener('click', resetF, true)
 div: tag('div')
 div.className: 'bottom'
 div.appendChild(apply)

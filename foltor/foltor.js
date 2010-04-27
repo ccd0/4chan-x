@@ -1,5 +1,5 @@
 (function(){
-  var $, $$, _a, _b, _c, apply, bar, div, field, fields, filter, filterAll, filterSingle, input, keydown, label, mousedown, mousemove, mouseup, move, position, reset, tag, text, x;
+  var $, $$, _a, _b, _c, apply, bar, div, field, fields, filter, filterAll, filterSingle, input, keydown, label, mousedown, mousemove, mouseup, move, position, reset, resetF, tag, text, x;
   var __hasProp = Object.prototype.hasOwnProperty;
   x = function x(path, root) {
     root = root || document.body;
@@ -171,6 +171,18 @@ display: none; \
       return filterAll();
     }
   };
+  resetF = function resetF() {
+    var _a, _b, _c, _d, table, tables;
+    tables = $$('form[name="delform"] table');
+    tables.pop();
+    tables.pop();
+    _a = []; _c = tables;
+    for (_b = 0, _d = _c.length; _b < _d; _b++) {
+      table = _c[_b];
+      _a.push((table.className = ''));
+    }
+    return _a;
+  };
   filter = tag('div');
   filter.id = 'filter';
   filter.className = 'reply';
@@ -197,9 +209,11 @@ display: none; \
   apply = tag('a');
   apply.textContent = 'apply';
   apply.className = 'pointer';
+  apply.addEventListener('click', filterAll, true);
   reset = tag('a');
   reset.textContent = 'reset';
   reset.className = 'pointer';
+  reset.addEventListener('click', resetF, true);
   div = tag('div');
   div.className = 'bottom';
   div.appendChild(apply);
