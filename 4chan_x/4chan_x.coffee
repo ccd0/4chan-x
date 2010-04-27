@@ -299,7 +299,7 @@ hideThread: (div) ->
         n += $$('table', div).length
         text: if n is 1 then "1 reply" else "$n replies"
         name: $('span.postername', div).textContent
-        trip: $('span.postertrip', div)?.textContent || ''
+        trip: $('span.postername + span.postertrip', div)?.textContent || ''
         a.textContent: "[ + ] $name$trip ($text)"
         a.className: 'pointer'
         a.addEventListener('click', showThread, true)

@@ -340,7 +340,7 @@ cursor: pointer; \
       n += $$('table', div).length;
       text = n === 1 ? "1 reply" : ("" + n + " replies");
       name = $('span.postername', div).textContent;
-      trip = ((_d = $('span.postertrip', div)) == undefined ? undefined : _d.textContent) || '';
+      trip = ((_d = $('span.postername + span.postertrip', div)) == undefined ? undefined : _d.textContent) || '';
       a.textContent = ("[ + ] " + name + trip + " (" + text + ")");
       a.className = 'pointer';
       a.addEventListener('click', showThread, true);
