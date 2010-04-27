@@ -87,6 +87,35 @@
     window.removeEventListener('mousemove', mousemove, true);
     return window.removeEventListener('mouseup', mouseup, true);
   };
+  //x-browser
+  if (typeof GM_deleteValue === 'undefined') {
+    this.GM_setValue = function GM_setValue(name, value) {
+      value = (typeof value)[0] + value;
+      return localStorage.setItem(name, value);
+    };
+    this.GM_getValue = function GM_getValue(name, defaultValue) {
+      var type, value;
+      if (!(value = localStorage.getItem(name))) {
+        return defaultValue;
+      }
+      type = value[0];
+      value = value.substring(1);
+      if (type === 'b') {
+        return value === 'true';
+      } else if (type === 'n') {
+        return Number(value);
+      } else {
+        return value;
+      }
+    };
+    this.GM_addStyle = function GM_addStyle(css) {
+      var style;
+      style = tag('style');
+      style.type = 'text/css';
+      style.textContent = css;
+      return $('head', document).appendChild(style);
+    };
+  }
   GM_addStyle(' \
 #filter { \
 position: fixed; \
@@ -186,17 +215,12 @@ display: none; \
     return _a;
   };
   autoHideF = function autoHideF() {
-    if (filter.className === 'reply') {
-      filter.className = 'reply autohide';
-      return filter.className;
-    } else {
-      filter.className = 'reply';
-      return filter.className;
-    }
+    filter.className === 'reply' ? (filter.className = 'reply autohide') : (filter.className = 'reply');
+    return GM_setValue('className', filter.className);
   };
   filter = tag('div');
   filter.id = 'filter';
-  autoHideF();
+  filter.className = GM_getValue('className', 'reply');
   position(filter);
   bar = tag('div');
   bar.textContent = '4chon foltor';

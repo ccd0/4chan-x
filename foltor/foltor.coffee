@@ -63,6 +63,31 @@ mouseup: ->
     window.removeEventListener('mousemove', mousemove, true)
     window.removeEventListener('mouseup', mouseup, true)
 
+#x-browser
+if typeof GM_deleteValue == 'undefined'
+    this.GM_setValue: (name, value) ->
+        value: (typeof value)[0] + value
+        localStorage.setItem(name, value)
+
+    this.GM_getValue: (name, defaultValue) ->
+        if not value: localStorage.getItem(name)
+            return defaultValue
+        type: value[0]
+        value: value.substring(1)
+        switch type
+            when 'b'
+                return value == 'true'
+            when 'n'
+                return Number(value)
+            else
+                return value
+
+    this.GM_addStyle: (css) ->
+        style: tag('style')
+        style.type: 'text/css'
+        style.textContent: css
+        $('head', document).appendChild(style)
+
 
 GM_addStyle('
     #filter {
@@ -159,11 +184,12 @@ autoHideF: ->
         filter.className: 'reply autohide'
     else
         filter.className: 'reply'
+    GM_setValue('className', filter.className)
 
 
 filter: tag('div')
 filter.id: 'filter'
-autoHideF()
+filter.className: GM_getValue('className', 'reply')
 position(filter)
 
 bar: tag('div')
