@@ -462,7 +462,7 @@ cursor: pointer; \
     }
   };
   quickReply = function quickReply(e) {
-    var _c, a, clone, div, input, qr, selText, selection, selid, textarea, xpath;
+    var _c, a, clone, div, input, qr, selText, selection, textarea, xpath;
     e.preventDefault();
     if (!(qr = $('#qr'))) {
       qr = tag('div');
@@ -506,8 +506,8 @@ cursor: pointer; \
     //xx
     textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n';
     selection = window.getSelection();
-    selid = (_c = x('ancestor::td', selection.anchorNode)) == undefined ? undefined : _c.id;
-    selid === x('ancestor::td', this).id ? (selText = selection.toString()) ? textarea.value += (">" + selText + "\n") : null : null;
+    id = (_c = x('preceding::span[@id][1]', selection.anchorNode)) == undefined ? undefined : _c.id;
+    id === this.parentNode.id ? (selText = selection.toString()) ? textarea.value += (">" + selText + "\n") : null : null;
     return textarea.focus();
   };
   watch = function watch() {

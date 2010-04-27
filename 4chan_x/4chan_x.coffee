@@ -455,8 +455,8 @@ quickReply: (e) ->
     #xx
     textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n'
     selection: window.getSelection()
-    selid: x('ancestor::td', selection.anchorNode)?.id
-    if selid == x('ancestor::td', this).id
+    id: x('preceding::span[@id][1]', selection.anchorNode)?.id
+    if id is this.parentNode.id
         if selText: selection.toString()
             textarea.value += ">$selText\n"
     textarea.focus()
