@@ -154,6 +154,8 @@ filterSingle: (table, filter) ->
 
 
 filterAll: ->
+    #save current filters
+    #this should be in its own function to play nice with change()
     filter: {}
     inputs: $$('input', box)
     for input in inputs
@@ -162,11 +164,12 @@ filterAll: ->
     filters[select.value]: filter
     GM_setValue('filters', JSON.stringify(filters))
 
-    #so ugly
-    compiled: filters
-    for filter of compiled
-        for field of compiled[filter]
-            compiled[filter][field]: new RegExp(compiled[filter][field], 'i')
+    #better way of doing this?
+    compiled: {}
+    for filter of filters
+        compiled[filter]: {}
+        for field of filters[filter]
+            compiled[filter][field]: new RegExp(filters[filter][field], 'i')
 
     tables: reset()
     for table in tables
@@ -268,6 +271,13 @@ options: ->
         document.body.appendChild(opt)
 
 
+change: ->
+    filter: filters[@value]
+    inputs: $$('input', box)
+    for input in inputs
+        input.value: filter[input.name] || ''
+
+
 box: tag('div')
 box.id: 'box'
 box.className: GM_getValue('className', 'reply')
@@ -279,6 +289,7 @@ bar.addEventListener('mousedown', mousedown, true)
 box.appendChild(bar)
 
 select: tag('select')
+select.addEventListener('change', change, true)
 filters: JSON.parse(GM_getValue('filters', '{ "hide": {} }'))
 for filter of filters
     option: tag('option')
@@ -286,9 +297,6 @@ for filter of filters
     select.appendChild(option)
 box.appendChild(select)
 
-
-#currently displayed filter
-filter: filters[select.value]
 fields: [
     'Name',
     'Tripcode',
@@ -302,12 +310,13 @@ for field in fields
     label: tag('label')
     label.textContent: field
     input: tag('input')
-    input.value: filter[field] || ''
     input.name: field
     input.addEventListener('keydown', keydown, true)
     label.appendChild(input)
     div.appendChild(label)
     box.appendChild(div)
+
+change.call(select)
 
 div: tag('div')
 div.className: 'bottom'

@@ -1,5 +1,5 @@
 (function(){
-  var $, $$, _a, _b, _c, _d, _e, _f, _g, a, addClass, autoHide, bar, box, cancel, div, f, field, fields, filter, filterAll, filterSingle, filters, inBefore, input, keydown, label, mousedown, mousemove, mouseup, move, name, option, options, position, remove, reset, save, select, tag, text, x;
+  var $, $$, _a, _b, _c, _d, _e, _f, _g, a, addClass, autoHide, bar, box, cancel, change, div, f, field, fields, filter, filterAll, filterSingle, filters, inBefore, input, keydown, label, mousedown, mousemove, mouseup, move, name, option, options, position, remove, reset, save, select, tag, text, x;
   var __hasProp = Object.prototype.hasOwnProperty;
   x = function x(path, root) {
     root = root || document.body;
@@ -185,6 +185,8 @@ display: none; \
   };
   filterAll = function filterAll() {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, compiled, field, filter, imagesCount, input, inputs, table, tables, value;
+    //save current filters
+    //this should be in its own function to play nice with change()
     filter = {};
     inputs = $$('input', box);
     _b = inputs;
@@ -194,13 +196,14 @@ display: none; \
     }
     filters[select.value] = filter;
     GM_setValue('filters', JSON.stringify(filters));
-    //so ugly
-    compiled = filters;
-    _d = compiled;
+    //better way of doing this?
+    compiled = {};
+    _d = filters;
     for (filter in _d) { if (__hasProp.call(_d, filter)) {
-      _e = compiled[filter];
+      compiled[filter] = {};
+      _e = filters[filter];
       for (field in _e) { if (__hasProp.call(_e, field)) {
-        compiled[filter][field] = new RegExp(compiled[filter][field], 'i');
+        compiled[filter][field] = new RegExp(filters[filter][field], 'i');
       }}
     }}
     tables = reset();
@@ -307,6 +310,17 @@ display: none; \
       return document.body.appendChild(opt);
     }
   };
+  change = function change() {
+    var _a, _b, _c, _d, filter, input, inputs;
+    filter = filters[this.value];
+    inputs = $$('input', box);
+    _a = []; _c = inputs;
+    for (_b = 0, _d = _c.length; _b < _d; _b++) {
+      input = _c[_b];
+      _a.push((input.value = filter[input.name] || ''));
+    }
+    return _a;
+  };
   box = tag('div');
   box.id = 'box';
   box.className = GM_getValue('className', 'reply');
@@ -316,6 +330,7 @@ display: none; \
   bar.addEventListener('mousedown', mousedown, true);
   box.appendChild(bar);
   select = tag('select');
+  select.addEventListener('change', change, true);
   filters = JSON.parse(GM_getValue('filters', '{ "hide": {} }'));
   _a = filters;
   for (filter in _a) { if (__hasProp.call(_a, filter)) {
@@ -324,8 +339,6 @@ display: none; \
     select.appendChild(option);
   }}
   box.appendChild(select);
-  //currently displayed filter
-  filter = filters[select.value];
   fields = ['Name', 'Tripcode', 'Email', 'Subject', 'Comment', 'File'];
   _c = fields;
   for (_b = 0, _d = _c.length; _b < _d; _b++) {
@@ -334,13 +347,13 @@ display: none; \
     label = tag('label');
     label.textContent = field;
     input = tag('input');
-    input.value = filter[field] || '';
     input.name = field;
     input.addEventListener('keydown', keydown, true);
     label.appendChild(input);
     div.appendChild(label);
     box.appendChild(div);
   }
+  change.call(select);
   div = tag('div');
   div.className = 'bottom';
   _f = ['apply', 'reset', 'options', 'autohide'];
