@@ -1,5 +1,5 @@
 (function(){
-  var $, $$, _a, _b, _c, _d, _e, _f, _g, a, addClass, autoHide, bar, box, cancel, div, f, field, fields, filter, filterAll, filterSingle, filters, inBefore, input, keydown, label, loadFilters, mousedown, mousemove, mouseup, move, name, option, options, position, remove, reset, save, saveFilters, select, tag, text, x;
+  var $, $$, _a, _b, _c, _d, _e, _f, _g, a, addClass, autoHide, bar, box, cancel, del, div, f, field, fields, filter, filterAll, filterSingle, filters, inBefore, input, keydown, label, loadFilters, mousedown, mousemove, mouseup, move, name, option, optionKeydown, options, position, remove, reset, save, saveFilters, select, tag, text, x;
   var __hasProp = Object.prototype.hasOwnProperty;
   x = function x(path, root) {
     root = root || document.body;
@@ -123,6 +123,9 @@
     };
   }
   GM_addStyle(' \
+#box_options input { \
+width: 100px; \
+} \
 #box, #box_options { \
 position: fixed; \
 text-align: right; \
@@ -150,7 +153,7 @@ padding: 0 5px 5px 5px; \
 .move { \
 cursor: move; \
 } \
-.pointer, #box a, #box_options a { \
+#box a, #box_options a { \
 cursor: pointer; \
 } \
 .hide { \
@@ -228,13 +231,19 @@ display: none; \
     return GM_setValue('className', box.className);
   };
   save = function save() {
-    var _a, _b, _c, div, input, inputs, value;
+    var _a, _b, _c, div, input, inputs, option, value;
     div = this.parentNode.parentNode;
     inputs = $$('input:enabled', div);
     _b = inputs;
     for (_a = 0, _c = _b.length; _a < _c; _a++) {
       input = _b[_a];
-      (value = input.value) ? (filters[value] = {}) : null;
+      if ((value = input.value)) {
+        filters[value] = {};
+        option = tag('option');
+        option.textContent = value;
+        option.selected = true;
+        select.appendChild(option);
+      }
     }
     GM_setValue('filters', JSON.stringify(filters));
     return remove(div);
@@ -244,13 +253,33 @@ display: none; \
     div = this.parentNode.parentNode;
     return remove(div);
   };
+  optionKeydown = function optionKeydown(e) {
+    if (e.keyCode === 13) {
+      //enter
+      return save.call(this.parentNode);
+    }
+  };
   addClass = function addClass() {
     var div, input;
     div = tag('div');
     input = tag('input');
+    input.addEventListener('keydown', optionKeydown, true);
     div.appendChild(input);
     inBefore(this, div);
     return input.focus();
+  };
+  del = function del() {
+    var _a, _b, _c, _d, option, value;
+    value = this.nextElementSibling.value;
+    delete filters[value];
+    saveFilters();
+    remove(this.parentNode);
+    _a = []; _c = select.options;
+    for (_b = 0, _d = _c.length; _b < _d; _b++) {
+      option = _c[_b];
+      _a.push(option.value === value ? remove(option) : null);
+    }
+    return _a;
   };
   options = function options() {
     var _a, a, bar, div, filter, filters, input, opt;
@@ -270,6 +299,11 @@ display: none; \
       _a = filters;
       for (filter in _a) { if (__hasProp.call(_a, filter)) {
         div = tag('div');
+        a = tag('a');
+        a.textContent = 'delete';
+        a.addEventListener('click', del, true);
+        div.appendChild(a);
+        div.appendChild(text(' '));
         input = tag('input');
         input.value = filter;
         input.disabled = true;

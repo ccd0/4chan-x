@@ -94,6 +94,9 @@ if typeof GM_deleteValue == 'undefined'
 
 
 GM_addStyle('
+    #box_options input {
+        width: 100px;
+    }
     #box, #box_options {
         position: fixed;
         text-align: right;
@@ -121,7 +124,7 @@ GM_addStyle('
     .move {
         cursor: move;
     }
-    .pointer, #box a, #box_options a {
+    #box a, #box_options a {
         cursor: pointer;
     }
     .hide {
@@ -197,6 +200,10 @@ save: ->
     for input in inputs
         if value: input.value
             filters[value]: {}
+            option: tag('option')
+            option.textContent: value
+            option.selected: true
+            select.appendChild(option)
     GM_setValue('filters', JSON.stringify(filters))
     remove(div)
 
@@ -206,12 +213,28 @@ cancel: ->
     remove(div)
 
 
+optionKeydown: (e) ->
+    if e.keyCode is 13 #enter
+        save.call(this.parentNode)
+
+
 addClass: ->
     div: tag('div')
     input: tag('input')
+    input.addEventListener('keydown', optionKeydown, true)
     div.appendChild(input)
     inBefore(this, div)
     input.focus()
+
+
+del: ->
+    value: @nextElementSibling.value
+    delete filters[value]
+    saveFilters()
+    remove @parentNode
+    for option in select.options
+        if option.value is value
+            remove option
 
 
 options: ->
@@ -231,6 +254,11 @@ options: ->
         filters: JSON.parse(GM_getValue('filters', '{ "hide": {} }'))
         for filter of filters
             div: tag('div')
+            a: tag('a')
+            a.textContent: 'delete'
+            a.addEventListener('click', del, true)
+            div.appendChild(a)
+            div.appendChild(text(' '))
             input: tag('input')
             input.value: filter
             input.disabled: true
