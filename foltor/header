@@ -2,6 +2,9 @@
 // @name           foltor
 // @namespace      aeosynth
 // @description    4chon foltor
+// @version        alpha
+// @copyright      2010 James Campos
+// @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // ==/UserScript==
 

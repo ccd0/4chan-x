@@ -202,8 +202,9 @@ save: ->
             filters[value]: {}
             option: tag('option')
             option.textContent: value
-            option.selected: true
             select.appendChild(option)
+    option?.selected: true
+    loadFilters()
     GM_setValue('filters', JSON.stringify(filters))
     remove(div)
 
@@ -230,11 +231,12 @@ addClass: ->
 del: ->
     value: @nextElementSibling.value
     delete filters[value]
-    saveFilters()
+    GM_setValue('filters', JSON.stringify(filters))
     remove @parentNode
     for option in select.options
         if option.value is value
             remove option
+    loadFilters()
 
 
 options: ->
@@ -288,7 +290,7 @@ options: ->
 
 
 loadFilters: ->
-    filter: filters[@value]
+    filter: filters[select.value]
     inputs: $$('input', box)
     for input in inputs
         input.value: filter[input.name] || ''
@@ -343,7 +345,7 @@ for field in fields
     div.appendChild(label)
     box.appendChild(div)
 
-loadFilters.call(select)
+loadFilters()
 
 div: tag('div')
 div.className: 'bottom'

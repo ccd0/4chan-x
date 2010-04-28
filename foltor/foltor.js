@@ -241,10 +241,11 @@ display: none; \
         filters[value] = {};
         option = tag('option');
         option.textContent = value;
-        option.selected = true;
         select.appendChild(option);
       }
     }
+    option == undefined ? undefined : option.selected = true;
+    loadFilters();
     GM_setValue('filters', JSON.stringify(filters));
     return remove(div);
   };
@@ -269,17 +270,17 @@ display: none; \
     return input.focus();
   };
   del = function del() {
-    var _a, _b, _c, _d, option, value;
+    var _a, _b, _c, option, value;
     value = this.nextElementSibling.value;
     delete filters[value];
-    saveFilters();
+    GM_setValue('filters', JSON.stringify(filters));
     remove(this.parentNode);
-    _a = []; _c = select.options;
-    for (_b = 0, _d = _c.length; _b < _d; _b++) {
-      option = _c[_b];
-      _a.push(option.value === value ? remove(option) : null);
+    _b = select.options;
+    for (_a = 0, _c = _b.length; _a < _c; _a++) {
+      option = _b[_a];
+      option.value === value ? remove(option) : null;
     }
-    return _a;
+    return loadFilters();
   };
   options = function options() {
     var _a, a, bar, div, filter, filters, input, opt;
@@ -332,7 +333,7 @@ display: none; \
   };
   loadFilters = function loadFilters() {
     var _a, _b, _c, _d, filter, input, inputs;
-    filter = filters[this.value];
+    filter = filters[select.value];
     inputs = $$('input', box);
     _a = []; _c = inputs;
     for (_b = 0, _d = _c.length; _b < _d; _b++) {
@@ -386,7 +387,7 @@ display: none; \
     div.appendChild(label);
     box.appendChild(div);
   }
-  loadFilters.call(select);
+  loadFilters();
   div = tag('div');
   div.className = 'bottom';
   _f = ['apply', 'reset', 'options', 'autohide'];
