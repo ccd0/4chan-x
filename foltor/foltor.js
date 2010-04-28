@@ -1,5 +1,5 @@
 (function(){
-  var $, $$, _a, _b, _c, apply, autoHide, autoHideF, bar, div, field, fields, filter, filterAll, filterSingle, input, keydown, label, mousedown, mousemove, mouseup, move, position, reset, resetF, tag, text, x;
+  var $, $$, _a, _b, _c, _d, _e, _f, _g, a, addClass, autoHide, bar, box, cancel, div, f, field, fields, filter, filterAll, filterSingle, filters, inBefore, input, keydown, label, mousedown, mousemove, mouseup, move, name, option, options, position, remove, reset, save, select, tag, text, x;
   var __hasProp = Object.prototype.hasOwnProperty;
   x = function x(path, root) {
     root = root || document.body;
@@ -21,11 +21,17 @@
     }
     return _a;
   };
+  inBefore = function inBefore(root, el) {
+    return root.parentNode.insertBefore(el, root);
+  };
   tag = function tag(el) {
     return document.createElement(el);
   };
   text = function text(s) {
     return document.createTextNode(s);
+  };
+  remove = function remove(root) {
+    return root.parentNode.removeChild(root);
   };
   position = function position(el) {
     var id, left, top;
@@ -117,94 +123,98 @@
     };
   }
   GM_addStyle(' \
-#filter { \
+#box, #box_options { \
 position: fixed; \
 text-align: right; \
 border: 1px solid; \
 } \
-#filter.autohide:not(:hover){ \
+#box.autohide:not(:hover){ \
 background: rgba(0,0,0,0); \
 border: none; \
 } \
-#filter.autohide:not(:hover) > div { \
+#box.autohide:not(:hover) > div { \
 display: none; \
 } \
-#filter.autohide:not(:hover) > div.top { \
+#box.autohide:not(:hover) > div.top { \
 display: block; \
 padding: 0; \
 } \
-#filter.autohide a:last-child { \
+#box.autohide a:last-child { \
 font-weight: bold; \
 } \
-#filter > div { \
+#box > div { \
 padding: 0 5px 0 5px; \
 } \
-#filter > .top { \
+#box > .top { \
 padding: 5px 5px 0 5px; \
 } \
-#filter > .bottom { \
+#box > .bottom { \
 padding: 0 5px 5px 5px; \
 } \
 .move { \
 cursor: move; \
 } \
-.pointer { \
+.pointer, #box a, #box_options a { \
 cursor: pointer; \
 } \
 .hide { \
 display: none; \
 } \
 ');
-  filterSingle = function filterSingle(table, regex) {
-    var _a, _b, _c, _d, _e, family, s;
-    _a = regex;
-    for (family in _a) { if (__hasProp.call(_a, family)) {
-      if (family === 'Name') {
+  filterSingle = function filterSingle(table, filter) {
+    var _a, _b, _c, _d, _e, field, s;
+    _a = filter;
+    for (field in _a) { if (__hasProp.call(_a, field)) {
+      if (field === 'Name') {
         s = $('span.commentpostername', table).textContent;
-      } else if (family === 'Tripcode') {
+      } else if (field === 'Tripcode') {
         s = ((_b = $('span.postertrip', table)) == undefined ? undefined : _b.textContent) || '';
-      } else if (family === 'Email') {
+      } else if (field === 'Email') {
         s = (_c = $('a.linkmail', table)) == undefined ? undefined : _c.href.slice(7) || '';
-      } else if (family === 'Subject') {
+      } else if (field === 'Subject') {
         s = ((_d = $('span.filetitle', table)) == undefined ? undefined : _d.textContent) || '';
-      } else if (family === 'Comment') {
+      } else if (field === 'Comment') {
         s = $('blockquote', table).textContent;
-      } else if (family === 'File') {
+      } else if (field === 'File') {
         s = ((_e = $('span.filesize', table)) == undefined ? undefined : _e.textContent) || '';
       }
-      if (regex[family].test(s)) {
+      if (filter[field].test(s)) {
         return true;
       }
     }}
   };
   filterAll = function filterAll() {
-    var _a, _b, _c, _d, _e, _f, hideCount, images, input, inputs, regex, table, tables, value;
-    regex = {};
-    inputs = $$('input', filter);
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, compiled, field, filter, imagesCount, input, inputs, table, tables, value;
+    filter = {};
+    inputs = $$('input', box);
     _b = inputs;
     for (_a = 0, _c = _b.length; _a < _c; _a++) {
       input = _b[_a];
-      value = input.value;
-      GM_setValue(input.name, value);
-      value ? (regex[input.name] = new RegExp(value, 'i')) : null;
+      (value = input.value) ? (filter[input.name] = value) : null;
     }
-    hideCount = 0;
-    tables = $$('form[name="delform"] table');
-    tables.pop();
-    tables.pop();
-    _e = tables;
-    for (_d = 0, _f = _e.length; _d < _f; _d++) {
-      table = _e[_d];
-      if (filterSingle(table, regex)) {
-        table.className = 'hide';
-        hideCount++;
-      } else {
-        table.className = '';
-      }
+    filters[select.value] = filter;
+    GM_setValue('filters', JSON.stringify(filters));
+    //so ugly
+    compiled = filters;
+    _d = compiled;
+    for (filter in _d) { if (__hasProp.call(_d, filter)) {
+      _e = compiled[filter];
+      for (field in _e) { if (__hasProp.call(_e, field)) {
+        compiled[filter][field] = new RegExp(compiled[filter][field], 'i');
+      }}
+    }}
+    tables = reset();
+    _g = tables;
+    for (_f = 0, _h = _g.length; _f < _h; _f++) {
+      table = _g[_f];
+      _i = compiled;
+      for (filter in _i) { if (__hasProp.call(_i, filter)) {
+        filterSingle(table, compiled[filter]) ? (table.className = filter) : null;
+      }}
     }
-    images = $$('img[md5]');
-    filter.firstChild.textContent = ("Images: " + (images.length) + " Replies: " + (tables.length) + " / " + hideCount);
-    return filter.firstChild.textContent;
+    imagesCount = $$('img[md5]').length;
+    box.firstChild.textContent = ("Images: " + imagesCount + " Replies: " + (tables.length));
+    return box.firstChild.textContent;
   };
   keydown = function keydown(e) {
     if (e.keyCode === 13) {
@@ -212,65 +222,146 @@ display: none; \
       return filterAll();
     }
   };
-  resetF = function resetF() {
-    var _a, _b, _c, _d, table, tables;
+  reset = function reset() {
+    var _a, _b, _c, table, tables;
     tables = $$('form[name="delform"] table');
     tables.pop();
     tables.pop();
-    _a = []; _c = tables;
-    for (_b = 0, _d = _c.length; _b < _d; _b++) {
-      table = _c[_b];
-      _a.push((table.className = ''));
+    _b = tables;
+    for (_a = 0, _c = _b.length; _a < _c; _a++) {
+      table = _b[_a];
+      table.className = '';
     }
-    return _a;
+    return tables;
   };
-  autoHideF = function autoHideF() {
-    filter.className === 'reply' ? (filter.className = 'reply autohide') : (filter.className = 'reply');
-    return GM_setValue('className', filter.className);
+  autoHide = function autoHide() {
+    box.className === 'reply' ? (box.className = 'reply autohide') : (box.className = 'reply');
+    return GM_setValue('className', box.className);
   };
-  filter = tag('div');
-  filter.id = 'filter';
-  filter.className = GM_getValue('className', 'reply');
-  position(filter);
+  save = function save() {
+    var _a, _b, _c, div, input, inputs, value;
+    div = this.parentNode.parentNode;
+    inputs = $$('input:enabled', div);
+    _b = inputs;
+    for (_a = 0, _c = _b.length; _a < _c; _a++) {
+      input = _b[_a];
+      (value = input.value) ? (filters[value] = {}) : null;
+    }
+    GM_setValue('filters', JSON.stringify(filters));
+    return remove(div);
+  };
+  cancel = function cancel() {
+    var div;
+    div = this.parentNode.parentNode;
+    return remove(div);
+  };
+  addClass = function addClass() {
+    var div, input;
+    div = tag('div');
+    input = tag('input');
+    div.appendChild(input);
+    inBefore(this, div);
+    return input.focus();
+  };
+  options = function options() {
+    var _a, a, bar, div, filter, filters, input, opt;
+    if ((opt = $('#box_options'))) {
+      return remove(opt);
+    } else {
+      opt = tag('div');
+      opt.id = 'box_options';
+      opt.className = 'reply';
+      position(opt);
+      bar = tag('div');
+      bar.textContent = 'Options';
+      bar.className = 'move';
+      bar.addEventListener('mousedown', mousedown, true);
+      opt.appendChild(bar);
+      filters = JSON.parse(GM_getValue('filters', '{ "hide": {} }'));
+      _a = filters;
+      for (filter in _a) { if (__hasProp.call(_a, filter)) {
+        div = tag('div');
+        input = tag('input');
+        input.value = filter;
+        input.disabled = true;
+        div.appendChild(input);
+        opt.appendChild(div);
+      }}
+      div = tag('div');
+      a = tag('a');
+      a.textContent = 'Add Class';
+      a.addEventListener('click', addClass, true);
+      div.appendChild(a);
+      opt.appendChild(div);
+      div = tag('div');
+      a = tag('a');
+      a.textContent = 'save';
+      a.addEventListener('click', save, true);
+      div.appendChild(a);
+      div.appendChild(text(' '));
+      a = tag('a');
+      a.textContent = 'cancel';
+      a.addEventListener('click', cancel, true);
+      div.appendChild(a);
+      opt.appendChild(div);
+      return document.body.appendChild(opt);
+    }
+  };
+  box = tag('div');
+  box.id = 'box';
+  box.className = GM_getValue('className', 'reply');
+  position(box);
   bar = tag('div');
   bar.className = 'move top';
   bar.addEventListener('mousedown', mousedown, true);
-  filter.appendChild(bar);
+  box.appendChild(bar);
+  select = tag('select');
+  filters = JSON.parse(GM_getValue('filters', '{ "hide": {} }'));
+  _a = filters;
+  for (filter in _a) { if (__hasProp.call(_a, filter)) {
+    option = tag('option');
+    option.textContent = filter;
+    select.appendChild(option);
+  }}
+  box.appendChild(select);
+  //currently displayed filter
+  filter = filters[select.value];
   fields = ['Name', 'Tripcode', 'Email', 'Subject', 'Comment', 'File'];
-  _b = fields;
-  for (_a = 0, _c = _b.length; _a < _c; _a++) {
-    field = _b[_a];
+  _c = fields;
+  for (_b = 0, _d = _c.length; _b < _d; _b++) {
+    field = _c[_b];
     div = tag('div');
     label = tag('label');
-    label.appendChild(text(field));
+    label.textContent = field;
     input = tag('input');
-    input.value = GM_getValue(field, '');
+    input.value = filter[field] || '';
     input.name = field;
     input.addEventListener('keydown', keydown, true);
     label.appendChild(input);
     div.appendChild(label);
-    filter.appendChild(div);
+    box.appendChild(div);
   }
-  apply = tag('a');
-  apply.textContent = 'apply';
-  apply.className = 'pointer';
-  apply.addEventListener('click', filterAll, true);
-  reset = tag('a');
-  reset.textContent = 'reset';
-  reset.className = 'pointer';
-  reset.addEventListener('click', resetF, true);
-  autoHide = tag('a');
-  autoHide.textContent = 'autohide';
-  autoHide.className = 'pointer';
-  autoHide.addEventListener('click', autoHideF, true);
   div = tag('div');
   div.className = 'bottom';
-  div.appendChild(apply);
-  div.appendChild(text(' '));
-  div.appendChild(reset);
-  div.appendChild(text(' '));
-  div.appendChild(autoHide);
-  filter.appendChild(div);
-  document.body.appendChild(filter);
+  _f = ['apply', 'reset', 'options', 'autohide'];
+  for (_e = 0, _g = _f.length; _e < _g; _e++) {
+    name = _f[_e];
+    a = tag('a');
+    a.textContent = name;
+    if (name === 'apply') {
+      f = filterAll;
+    } else if (name === 'reset') {
+      f = reset;
+    } else if (name === 'options') {
+      f = options;
+    } else if (name === 'autohide') {
+      f = autoHide;
+    }
+    a.addEventListener('click', f, true);
+    div.appendChild(a);
+    div.appendChild(text(' '));
+  }
+  box.appendChild(div);
+  document.body.appendChild(box);
   filterAll();
 })();

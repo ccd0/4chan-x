@@ -11,10 +11,14 @@ $$: (selector, root) ->
     result: root.querySelectorAll(selector)
     #magic that turns the results object into an array:
     node for node in result
+inBefore: (root, el) ->
+    root.parentNode.insertBefore(el, root)
 tag: (el) ->
     document.createElement(el)
 text: (s) ->
     document.createTextNode(s)
+remove: (root) ->
+    root.parentNode.removeChild(root)
 position: (el) ->
     id: el.id
     if left: GM_getValue("${id}Left", '0px')
@@ -90,38 +94,38 @@ if typeof GM_deleteValue == 'undefined'
 
 
 GM_addStyle('
-    #filter {
+    #box, #box_options {
         position: fixed;
         text-align: right;
         border: 1px solid;
     }
-    #filter.autohide:not(:hover){
+    #box.autohide:not(:hover){
         background: rgba(0,0,0,0);
         border: none;
     }
-    #filter.autohide:not(:hover) > div {
+    #box.autohide:not(:hover) > div {
         display: none;
     }
-    #filter.autohide:not(:hover) > div.top {
+    #box.autohide:not(:hover) > div.top {
         display: block;
         padding: 0;
     }
-    #filter.autohide a:last-child {
+    #box.autohide a:last-child {
         font-weight: bold;
     }
-    #filter > div {
+    #box > div {
         padding: 0 5px 0 5px;
     }
-    #filter > .top {
+    #box > .top {
         padding: 5px 5px 0 5px;
     }
-    #filter > .bottom {
+    #box > .bottom {
     padding: 0 5px 5px 5px;
     }
     .move {
         cursor: move;
     }
-    .pointer {
+    .pointer, #box a, #box_options a {
         cursor: pointer;
     }
     .hide {
@@ -130,9 +134,9 @@ GM_addStyle('
 ')
 
 
-filterSingle: (table, regex) ->
-    for family of regex
-        switch family
+filterSingle: (table, filter) ->
+    for field of filter
+        switch field
             when 'Name'
                 s: $('span.commentpostername', table).textContent
             when 'Tripcode'
@@ -145,32 +149,33 @@ filterSingle: (table, regex) ->
                 s: $('blockquote', table).textContent
             when 'File'
                 s: $('span.filesize', table)?.textContent || ''
-        if regex[family].test(s)
+        if filter[field].test(s)
             return true
 
 
 filterAll: ->
-    regex: {}
-    inputs: $$('input', filter)
+    filter: {}
+    inputs: $$('input', box)
     for input in inputs
-        value: input.value
-        GM_setValue(input.name, value)
-        if value
-            regex[input.name]: new RegExp(value, 'i')
+        if value: input.value
+            filter[input.name]: value
+    filters[select.value]: filter
+    GM_setValue('filters', JSON.stringify(filters))
 
-    hideCount: 0
-    tables: $$('form[name="delform"] table')
-    tables.pop()
-    tables.pop()
+    #so ugly
+    compiled: filters
+    for filter of compiled
+        for field of compiled[filter]
+            compiled[filter][field]: new RegExp(compiled[filter][field], 'i')
+
+    tables: reset()
     for table in tables
-        if filterSingle(table, regex)
-            table.className: 'hide'
-            hideCount++
-        else
-            table.className: ''
+        for filter of compiled
+            if filterSingle(table, compiled[filter])
+                table.className: filter
 
-    images: $$('img[md5]')
-    filter.firstChild.textContent: "Images: ${images.length} Replies: ${tables.length} / $hideCount"
+    imagesCount: $$('img[md5]').length
+    box.firstChild.textContent: "Images: $imagesCount Replies: ${tables.length}"
 
 
 keydown: (e) ->
@@ -178,32 +183,112 @@ keydown: (e) ->
         filterAll()
 
 
-resetF: ->
+reset: ->
     tables: $$('form[name="delform"] table')
     tables.pop()
     tables.pop()
     for table in tables
         table.className: ''
+    return tables
 
 
-autoHideF: ->
-    if filter.className is 'reply'
-        filter.className: 'reply autohide'
+autoHide: ->
+    if box.className is 'reply'
+        box.className: 'reply autohide'
     else
-        filter.className: 'reply'
-    GM_setValue('className', filter.className)
+        box.className: 'reply'
+    GM_setValue('className', box.className)
 
 
-filter: tag('div')
-filter.id: 'filter'
-filter.className: GM_getValue('className', 'reply')
-position(filter)
+save: ->
+    div: this.parentNode.parentNode
+    inputs: $$('input:enabled', div)
+    for input in inputs
+        if value: input.value
+            filters[value]: {}
+    GM_setValue('filters', JSON.stringify(filters))
+    remove(div)
+
+
+cancel: ->
+    div: this.parentNode.parentNode
+    remove(div)
+
+
+addClass: ->
+    div: tag('div')
+    input: tag('input')
+    div.appendChild(input)
+    inBefore(this, div)
+    input.focus()
+
+
+options: ->
+    if opt: $('#box_options')
+        remove(opt)
+    else
+        opt: tag('div')
+        opt.id: 'box_options'
+        opt.className: 'reply'
+        position(opt)
+        bar: tag('div')
+        bar.textContent: 'Options'
+        bar.className: 'move'
+        bar.addEventListener('mousedown', mousedown, true)
+        opt.appendChild(bar)
+
+        filters: JSON.parse(GM_getValue('filters', '{ "hide": {} }'))
+        for filter of filters
+            div: tag('div')
+            input: tag('input')
+            input.value: filter
+            input.disabled: true
+            div.appendChild(input)
+            opt.appendChild(div)
+
+        div: tag('div')
+        a: tag('a')
+        a.textContent: 'Add Class'
+        a.addEventListener('click', addClass, true)
+        div.appendChild(a)
+        opt.appendChild(div)
+
+        div: tag('div')
+        a: tag('a')
+        a.textContent: 'save'
+        a.addEventListener('click', save, true)
+        div.appendChild(a)
+        div.appendChild(text(' '))
+        a: tag('a')
+        a.textContent: 'cancel'
+        a.addEventListener('click', cancel, true)
+        div.appendChild(a)
+        opt.appendChild(div)
+
+        document.body.appendChild(opt)
+
+
+box: tag('div')
+box.id: 'box'
+box.className: GM_getValue('className', 'reply')
+position(box)
 
 bar: tag('div')
 bar.className: 'move top'
 bar.addEventListener('mousedown', mousedown, true)
-filter.appendChild(bar)
+box.appendChild(bar)
 
+select: tag('select')
+filters: JSON.parse(GM_getValue('filters', '{ "hide": {} }'))
+for filter of filters
+    option: tag('option')
+    option.textContent: filter
+    select.appendChild(option)
+box.appendChild(select)
+
+
+#currently displayed filter
+filter: filters[select.value]
 fields: [
     'Name',
     'Tripcode',
@@ -215,34 +300,28 @@ fields: [
 for field in fields
     div: tag('div')
     label: tag('label')
-    label.appendChild(text(field))
+    label.textContent: field
     input: tag('input')
-    input.value: GM_getValue(field, '')
+    input.value: filter[field] || ''
     input.name: field
     input.addEventListener('keydown', keydown, true)
     label.appendChild(input)
     div.appendChild(label)
-    filter.appendChild(div)
+    box.appendChild(div)
 
-apply: tag('a')
-apply.textContent: 'apply'
-apply.className: 'pointer'
-apply.addEventListener('click', filterAll, true)
-reset: tag('a')
-reset.textContent: 'reset'
-reset.className: 'pointer'
-reset.addEventListener('click', resetF, true)
-autoHide: tag('a')
-autoHide.textContent: 'autohide'
-autoHide.className: 'pointer'
-autoHide.addEventListener('click', autoHideF, true)
 div: tag('div')
 div.className: 'bottom'
-div.appendChild(apply)
-div.appendChild(text(' '))
-div.appendChild(reset)
-div.appendChild(text(' '))
-div.appendChild(autoHide)
-filter.appendChild(div)
-document.body.appendChild(filter)
+for name in ['apply', 'reset', 'options', 'autohide']
+    a: tag('a')
+    a.textContent: name
+    switch name
+        when 'apply'    then f: filterAll
+        when 'reset'    then f: reset
+        when 'options'  then f: options
+        when 'autohide' then f: autoHide
+    a.addEventListener('click', f, true)
+    div.appendChild(a)
+    div.appendChild(text(' '))
+box.appendChild(div)
+document.body.appendChild(box)
 filterAll()
