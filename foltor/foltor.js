@@ -1,5 +1,5 @@
 (function(){
-  var $, $$, _a, _b, _c, _d, _e, _f, _g, a, addClass, autoHide, bar, box, cancel, change, div, f, field, fields, filter, filterAll, filterSingle, filters, inBefore, input, keydown, label, mousedown, mousemove, mouseup, move, name, option, options, position, remove, reset, save, select, tag, text, x;
+  var $, $$, _a, _b, _c, _d, _e, _f, _g, a, addClass, autoHide, bar, box, cancel, div, f, field, fields, filter, filterAll, filterSingle, filters, inBefore, input, keydown, label, loadFilters, mousedown, mousemove, mouseup, move, name, option, options, position, remove, reset, save, saveFilters, select, tag, text, x;
   var __hasProp = Object.prototype.hasOwnProperty;
   x = function x(path, root) {
     root = root || document.body;
@@ -184,34 +184,24 @@ display: none; \
     }}
   };
   filterAll = function filterAll() {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, compiled, field, filter, imagesCount, input, inputs, table, tables, value;
-    //save current filters
-    //this should be in its own function to play nice with change()
-    filter = {};
-    inputs = $$('input', box);
-    _b = inputs;
-    for (_a = 0, _c = _b.length; _a < _c; _a++) {
-      input = _b[_a];
-      (value = input.value) ? (filter[input.name] = value) : null;
-    }
-    filters[select.value] = filter;
-    GM_setValue('filters', JSON.stringify(filters));
+    var _a, _b, _c, _d, _e, _f, compiled, field, filter, imagesCount, table, tables;
+    saveFilters();
     //better way of doing this?
     compiled = {};
-    _d = filters;
-    for (filter in _d) { if (__hasProp.call(_d, filter)) {
+    _a = filters;
+    for (filter in _a) { if (__hasProp.call(_a, filter)) {
       compiled[filter] = {};
-      _e = filters[filter];
-      for (field in _e) { if (__hasProp.call(_e, field)) {
+      _b = filters[filter];
+      for (field in _b) { if (__hasProp.call(_b, field)) {
         compiled[filter][field] = new RegExp(filters[filter][field], 'i');
       }}
     }}
     tables = reset();
-    _g = tables;
-    for (_f = 0, _h = _g.length; _f < _h; _f++) {
-      table = _g[_f];
-      _i = compiled;
-      for (filter in _i) { if (__hasProp.call(_i, filter)) {
+    _d = tables;
+    for (_c = 0, _e = _d.length; _c < _e; _c++) {
+      table = _d[_c];
+      _f = compiled;
+      for (filter in _f) { if (__hasProp.call(_f, filter)) {
         filterSingle(table, compiled[filter]) ? (table.className = filter) : null;
       }}
     }
@@ -310,7 +300,7 @@ display: none; \
       return document.body.appendChild(opt);
     }
   };
-  change = function change() {
+  loadFilters = function loadFilters() {
     var _a, _b, _c, _d, filter, input, inputs;
     filter = filters[this.value];
     inputs = $$('input', box);
@@ -321,6 +311,18 @@ display: none; \
     }
     return _a;
   };
+  saveFilters = function saveFilters() {
+    var _a, _b, _c, filter, input, inputs, value;
+    filter = {};
+    inputs = $$('input', box);
+    _b = inputs;
+    for (_a = 0, _c = _b.length; _a < _c; _a++) {
+      input = _b[_a];
+      (value = input.value) ? (filter[input.name] = value) : null;
+    }
+    filters[select.value] = filter;
+    return GM_setValue('filters', JSON.stringify(filters));
+  };
   box = tag('div');
   box.id = 'box';
   box.className = GM_getValue('className', 'reply');
@@ -330,7 +332,8 @@ display: none; \
   bar.addEventListener('mousedown', mousedown, true);
   box.appendChild(bar);
   select = tag('select');
-  select.addEventListener('change', change, true);
+  select.addEventListener('mousedown', saveFilters, true);
+  select.addEventListener('mouseup', loadFilters, true);
   filters = JSON.parse(GM_getValue('filters', '{ "hide": {} }'));
   _a = filters;
   for (filter in _a) { if (__hasProp.call(_a, filter)) {
@@ -353,7 +356,7 @@ display: none; \
     div.appendChild(label);
     box.appendChild(div);
   }
-  change.call(select);
+  loadFilters.call(select);
   div = tag('div');
   div.className = 'bottom';
   _f = ['apply', 'reset', 'options', 'autohide'];

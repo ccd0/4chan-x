@@ -154,15 +154,7 @@ filterSingle: (table, filter) ->
 
 
 filterAll: ->
-    #save current filters
-    #this should be in its own function to play nice with change()
-    filter: {}
-    inputs: $$('input', box)
-    for input in inputs
-        if value: input.value
-            filter[input.name]: value
-    filters[select.value]: filter
-    GM_setValue('filters', JSON.stringify(filters))
+    saveFilters()
 
     #better way of doing this?
     compiled: {}
@@ -271,11 +263,21 @@ options: ->
         document.body.appendChild(opt)
 
 
-change: ->
+loadFilters: ->
     filter: filters[@value]
     inputs: $$('input', box)
     for input in inputs
         input.value: filter[input.name] || ''
+
+
+saveFilters: ->
+    filter: {}
+    inputs: $$('input', box)
+    for input in inputs
+        if value: input.value
+            filter[input.name]: value
+    filters[select.value]: filter
+    GM_setValue('filters', JSON.stringify(filters))
 
 
 box: tag('div')
@@ -289,7 +291,8 @@ bar.addEventListener('mousedown', mousedown, true)
 box.appendChild(bar)
 
 select: tag('select')
-select.addEventListener('change', change, true)
+select.addEventListener('mousedown', saveFilters, true)
+select.addEventListener('mouseup', loadFilters, true)
 filters: JSON.parse(GM_getValue('filters', '{ "hide": {} }'))
 for filter of filters
     option: tag('option')
@@ -316,7 +319,7 @@ for field in fields
     div.appendChild(label)
     box.appendChild(div)
 
-change.call(select)
+loadFilters.call(select)
 
 div: tag('div')
 div.className: 'bottom'
