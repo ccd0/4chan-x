@@ -166,7 +166,7 @@ filterAll: ->
     for table in tables
         for filter of compiled
             if filterSingle(table, compiled[filter])
-                table.className: filter
+                table.className+= ' ' + filter
 
     imagesCount: $$('img[md5]').length
     box.firstChild.textContent: "Images: $imagesCount Replies: ${tables.length}"

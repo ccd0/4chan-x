@@ -201,7 +201,7 @@ display: none; \
       table = _d[_c];
       _f = compiled;
       for (filter in _f) { if (__hasProp.call(_f, filter)) {
-        filterSingle(table, compiled[filter]) ? (table.className = filter) : null;
+        filterSingle(table, compiled[filter]) ? table.className += ' ' + filter : null;
       }}
     }
     imagesCount = $$('img[md5]').length;
