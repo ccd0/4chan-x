@@ -99,16 +99,12 @@ GM_addStyle('
         text-align: right;
         border: 1px solid;
     }
-    #box.autohide:not(:hover){
+    #box.autohide:not(:hover) {
         background: rgba(0,0,0,0);
         border: none;
     }
-    #box.autohide:not(:hover) > div {
+    #box.autohide:not(:hover):not(:active) > *:not(.top) {
         display: none;
-    }
-    #box.autohide:not(:hover) > div.top {
-        display: block;
-        padding: 0;
     }
     #box.autohide a:last-child {
         font-weight: bold;
