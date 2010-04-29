@@ -133,8 +133,8 @@ if not favicon: $('link[rel="shortcut icon"]', head)#/f/
 favNormal: favicon.href
 favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
 
-hiddenThreads: JSON.parse(GM_getValue('hiddenThreads', '[]'))
-hiddenReplies: JSON.parse(GM_getValue('hiddenReplies', '[]'))
+hiddenThreads: JSON.parse(GM_getValue("hiddenThreads/$BOARD/", '[]'))
+hiddenReplies: JSON.parse(GM_getValue("hiddenReplies/$BOARD/", '[]'))
 
 lastChecked: GM_getValue('lastChecked', 0)
 now: getTime()
@@ -151,8 +151,8 @@ if lastChecked < now - day
             break
         hiddenReplies.shift()
 
-    GM_setValue('hiddenThreads', JSON.stringify(hiddenThreads))
-    GM_setValue('hiddenReplies', JSON.stringify(hiddenReplies))
+    GM_setValue("hiddenThreads/$BOARD/", JSON.stringify(hiddenThreads))
+    GM_setValue("hiddenReplies/$BOARD/", JSON.stringify(hiddenReplies))
     GM_setValue('lastChecked', now)
 
 GM_addStyle('
@@ -281,7 +281,7 @@ showThread: ->
     hide(this)
     id: div.id
     slice(hiddenThreads, id)
-    GM_setValue('hiddenThreads', JSON.stringify(hiddenThreads))
+    GM_setValue("hiddenThreads/$BOARD/", JSON.stringify(hiddenThreads))
 
 
 hideThread: (div) ->
@@ -291,7 +291,7 @@ hideThread: (div) ->
             id: div.id
             timestamp: getTime()
         })
-        GM_setValue('hiddenThreads', JSON.stringify(hiddenThreads))
+        GM_setValue("hiddenThreads/$BOARD/", JSON.stringify(hiddenThreads))
     hide(div)
     if getValue('Show Stubs')
         a: tag('a')
@@ -300,7 +300,6 @@ hideThread: (div) ->
             n: Number(span.textContent.match(/\d+/)[0])
         else
             n: 0
-        console.log(n)
         n += $$('table', div).length
         text: if n is 1 then "1 reply" else "$n replies"
         name: $('span.postername', div).textContent
@@ -345,7 +344,7 @@ showReply: ->
     remove(div)
     id: $('td.reply, td.replyhl', table).id
     slice(hiddenReplies, id)
-    GM_setValue('hiddenReplies', JSON.stringify(hiddenReplies))
+    GM_setValue("hiddenReplies/$BOARD/", JSON.stringify(hiddenReplies))
 
 
 hideReply: (reply) ->
@@ -355,7 +354,7 @@ hideReply: (reply) ->
             id: reply.id
             timestamp: getTime()
         })
-        GM_setValue('hiddenReplies', JSON.stringify(hiddenReplies))
+        GM_setValue("hiddenReplies/$BOARD/", JSON.stringify(hiddenReplies))
 
     name: $('span.commentpostername', reply).textContent
     trip: $('span.postertrip', reply)?.textContent || ''

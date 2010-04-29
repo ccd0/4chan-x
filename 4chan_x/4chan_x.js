@@ -168,8 +168,8 @@
   }
   favNormal = favicon.href;
   favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==';
-  hiddenThreads = JSON.parse(GM_getValue('hiddenThreads', '[]'));
-  hiddenReplies = JSON.parse(GM_getValue('hiddenReplies', '[]'));
+  hiddenThreads = JSON.parse(GM_getValue(("hiddenThreads/" + BOARD + "/"), '[]'));
+  hiddenReplies = JSON.parse(GM_getValue(("hiddenReplies/" + BOARD + "/"), '[]'));
   lastChecked = GM_getValue('lastChecked', 0);
   now = getTime();
   day = 24 * 60 * 60;
@@ -187,8 +187,8 @@
       }
       hiddenReplies.shift();
     }
-    GM_setValue('hiddenThreads', JSON.stringify(hiddenThreads));
-    GM_setValue('hiddenReplies', JSON.stringify(hiddenReplies));
+    GM_setValue(("hiddenThreads/" + BOARD + "/"), JSON.stringify(hiddenThreads));
+    GM_setValue(("hiddenReplies/" + BOARD + "/"), JSON.stringify(hiddenReplies));
     GM_setValue('lastChecked', now);
   }
   GM_addStyle(' \
@@ -321,7 +321,7 @@ cursor: pointer; \
     hide(this);
     id = div.id;
     slice(hiddenThreads, id);
-    return GM_setValue('hiddenThreads', JSON.stringify(hiddenThreads));
+    return GM_setValue(("hiddenThreads/" + BOARD + "/"), JSON.stringify(hiddenThreads));
   };
   hideThread = function hideThread(div) {
     var _c, a, n, name, p, span, text, trip;
@@ -331,14 +331,13 @@ cursor: pointer; \
         id: div.id,
         timestamp: getTime()
       });
-      GM_setValue('hiddenThreads', JSON.stringify(hiddenThreads));
+      GM_setValue(("hiddenThreads/" + BOARD + "/"), JSON.stringify(hiddenThreads));
     }
     hide(div);
     if (getValue('Show Stubs')) {
       a = tag('a');
       //n: parseInt($('span.omittedposts', div)?.textContent) || 0
       (span = $('.omittedposts', div)) ? (n = Number(span.textContent.match(/\d+/)[0])) : (n = 0);
-      console.log(n);
       n += $$('table', div).length;
       text = n === 1 ? "1 reply" : ("" + n + " replies");
       name = $('span.postername', div).textContent;
@@ -386,7 +385,7 @@ cursor: pointer; \
     remove(div);
     id = $('td.reply, td.replyhl', table).id;
     slice(hiddenReplies, id);
-    return GM_setValue('hiddenReplies', JSON.stringify(hiddenReplies));
+    return GM_setValue(("hiddenReplies/" + BOARD + "/"), JSON.stringify(hiddenReplies));
   };
   hideReply = function hideReply(reply) {
     var _c, a, div, name, p, table, trip;
@@ -396,7 +395,7 @@ cursor: pointer; \
         id: reply.id,
         timestamp: getTime()
       });
-      GM_setValue('hiddenReplies', JSON.stringify(hiddenReplies));
+      GM_setValue(("hiddenReplies/" + BOARD + "/"), JSON.stringify(hiddenReplies));
     }
     name = $('span.commentpostername', reply).textContent;
     trip = ((_c = $('span.postertrip', reply)) == undefined ? undefined : _c.textContent) || '';
