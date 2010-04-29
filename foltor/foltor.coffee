@@ -154,8 +154,9 @@ filterThread: (thread, filter) ->
                 s: $('blockquote', thread).textContent
             when 'File'
                 s: x('./span[@class="filesize"]', thread)?.textContent || ''
-        if filter[field].test(s)
-            return true
+        for regex in filter[field]
+            if regex.test(s)
+                return true
 
 
 filterReply: (table, filter) ->
@@ -175,19 +176,27 @@ filterReply: (table, filter) ->
                 s: $('blockquote', table).textContent
             when 'File'
                 s: $('span.filesize', table)?.textContent || ''
-        if filter[field].test(s)
-            return true
+        for regex in filter[field]
+            if regex.test(s)
+                return true
 
 
 filterAll: ->
     saveFilters()
 
-    #better way of doing this?
+    #better way of doing this? if we just say `compiled: filters`,
+    #changing a prop in one will change a prop in the other.
     compiled: {}
     for filter of filters
         compiled[filter]: {}
         for field of filters[filter]
-            compiled[filter][field]: new RegExp(filters[filter][field], 'i')
+            s: filters[filter][field]
+            split: s.split(';')
+            trimmed: el.trimLeft() for el in split
+            filtered: trimmed.filter((el)-> el.length)
+            if filtered.length
+                regexes: new RegExp(el, 'i') for el in filtered
+                compiled[filter][field]: regexes
 
     [replies, threads]: reset()
     num: if threads.length then replies.length + threads.length else $$('blockquote', form).length

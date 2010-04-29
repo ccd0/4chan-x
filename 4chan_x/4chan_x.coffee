@@ -295,7 +295,6 @@ hideThread: (div) ->
     hide(div)
     if getValue('Show Stubs')
         a: tag('a')
-        #n: parseInt($('span.omittedposts', div)?.textContent) || 0
         if span: $('.omittedposts', div)
             n: Number(span.textContent.match(/\d+/)[0])
         else

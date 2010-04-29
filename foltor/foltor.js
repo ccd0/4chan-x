@@ -167,7 +167,7 @@ display: none; \
   // we could try threading the op, but that might affect other scripts.
   // also, I really want to try out *gasp* eval().
   filterThread = function filterThread(thread, filter) {
-    var _a, _b, _c, _d, _e, field, s;
+    var _a, _b, _c, _d, _e, _f, _g, _h, field, regex, s;
     _a = filter;
     for (field in _a) { if (__hasProp.call(_a, field)) {
       if (field === 'Name') {
@@ -183,13 +183,17 @@ display: none; \
       } else if (field === 'File') {
         s = ((_e = x('./span[@class="filesize"]', thread)) == undefined ? undefined : _e.textContent) || '';
       }
-      if (filter[field].test(s)) {
-        return true;
+      _g = filter[field];
+      for (_f = 0, _h = _g.length; _f < _h; _f++) {
+        regex = _g[_f];
+        if (regex.test(s)) {
+          return true;
+        }
       }
     }}
   };
   filterReply = function filterReply(table, filter) {
-    var _a, _b, _c, _d, _e, field, s;
+    var _a, _b, _c, _d, _e, _f, _g, _h, field, regex, s;
     _a = filter;
     for (field in _a) { if (__hasProp.call(_a, field)) {
       if (field === 'Name') {
@@ -207,42 +211,77 @@ display: none; \
       } else if (field === 'File') {
         s = ((_e = $('span.filesize', table)) == undefined ? undefined : _e.textContent) || '';
       }
-      if (filter[field].test(s)) {
-        return true;
+      _g = filter[field];
+      for (_f = 0, _h = _g.length; _f < _h; _f++) {
+        regex = _g[_f];
+        if (regex.test(s)) {
+          return true;
+        }
       }
     }}
   };
   filterAll = function filterAll() {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, compiled, field, filter, imagesCount, num, replies, reply, thread, threads;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, compiled, filter, imagesCount, num, replies, reply, thread, threads;
     saveFilters();
-    //better way of doing this?
+    //better way of doing this? if we just say `compiled: filters`,
+    //changing a prop in one will change a prop in the other.
     compiled = {};
     _a = filters;
     for (filter in _a) { if (__hasProp.call(_a, filter)) {
-      compiled[filter] = {};
-      _b = filters[filter];
-      for (field in _b) { if (__hasProp.call(_b, field)) {
-        compiled[filter][field] = new RegExp(filters[filter][field], 'i');
-      }}
+      (function() {
+        var _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, el, field, filtered, regexes, s, split, trimmed;
+        compiled[filter] = {};
+        _b = []; _c = filters[filter];
+        for (field in _c) { if (__hasProp.call(_c, field)) {
+          _b.push((function() {
+            s = filters[filter][field];
+            split = s.split(';');
+            trimmed = (function() {
+              _d = []; _f = split;
+              for (_e = 0, _g = _f.length; _e < _g; _e++) {
+                el = _f[_e];
+                _d.push(el.trimLeft());
+              }
+              return _d;
+            })();
+            filtered = trimmed.filter(function(el) {
+              return el.length;
+            });
+            if (filtered.length) {
+              regexes = (function() {
+                _h = []; _j = filtered;
+                for (_i = 0, _k = _j.length; _i < _k; _i++) {
+                  el = _j[_i];
+                  _h.push(new RegExp(el, 'i'));
+                }
+                return _h;
+              })();
+              compiled[filter][field] = regexes;
+              return compiled[filter][field];
+            }
+          })());
+        }}
+        return _b;
+      })();
     }}
-    _c = reset();
-    replies = _c[0];
-    threads = _c[1];
+    _b = reset();
+    replies = _b[0];
+    threads = _b[1];
     num = threads.length ? replies.length + threads.length : $$('blockquote', form).length;
     //these loops look combinable
-    _e = replies;
-    for (_d = 0, _f = _e.length; _d < _f; _d++) {
-      reply = _e[_d];
-      _g = compiled;
-      for (filter in _g) { if (__hasProp.call(_g, filter)) {
+    _d = replies;
+    for (_c = 0, _e = _d.length; _c < _e; _c++) {
+      reply = _d[_c];
+      _f = compiled;
+      for (filter in _f) { if (__hasProp.call(_f, filter)) {
         filterReply(reply, compiled[filter]) ? reply.className += ' ' + filter : null;
       }}
     }
-    _i = threads;
-    for (_h = 0, _j = _i.length; _h < _j; _h++) {
-      thread = _i[_h];
-      _k = compiled;
-      for (filter in _k) { if (__hasProp.call(_k, filter)) {
+    _h = threads;
+    for (_g = 0, _i = _h.length; _g < _i; _g++) {
+      thread = _h[_g];
+      _j = compiled;
+      for (filter in _j) { if (__hasProp.call(_j, filter)) {
         filterThread(thread, compiled[filter]) ? thread.className += ' ' + filter : null;
       }}
     }

@@ -336,7 +336,6 @@ cursor: pointer; \
     hide(div);
     if (getValue('Show Stubs')) {
       a = tag('a');
-      //n: parseInt($('span.omittedposts', div)?.textContent) || 0
       (span = $('.omittedposts', div)) ? (n = Number(span.textContent.match(/\d+/)[0])) : (n = 0);
       n += $$('table', div).length;
       text = n === 1 ? "1 reply" : ("" + n + " replies");
