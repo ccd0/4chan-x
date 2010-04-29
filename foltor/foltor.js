@@ -183,7 +183,7 @@ display: none; \
       } else if (field === 'File') {
         s = ((_e = x('./span[@class="filesize"]', thread)) == undefined ? undefined : _e.textContent) || '';
       }
-      _g = filter[field];
+      _g = filter[field].all.concat(filter[field].op);
       for (_f = 0, _h = _g.length; _f < _h; _f++) {
         regex = _g[_f];
         if (regex.test(s)) {
@@ -211,7 +211,7 @@ display: none; \
       } else if (field === 'File') {
         s = ((_e = $('span.filesize', table)) == undefined ? undefined : _e.textContent) || '';
       }
-      _g = filter[field];
+      _g = filter[field].all.concat(filter[field].reply);
       for (_f = 0, _h = _g.length; _f < _h; _f++) {
         regex = _g[_f];
         if (regex.test(s)) {
@@ -229,7 +229,7 @@ display: none; \
     _a = filters;
     for (filter in _a) { if (__hasProp.call(_a, filter)) {
       (function() {
-        var _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, el, field, filtered, regexes, s, split, trimmed;
+        var _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, el, field, filtered, key, match, nop, obj, regex, s, split, trimmed;
         compiled[filter] = {};
         _b = []; _c = filters[filter];
         for (field in _c) { if (__hasProp.call(_c, field)) {
@@ -248,15 +248,31 @@ display: none; \
               return el.length;
             });
             if (filtered.length) {
-              regexes = (function() {
-                _h = []; _j = filtered;
-                for (_i = 0, _k = _j.length; _i < _k; _i++) {
-                  el = _j[_i];
-                  _h.push(new RegExp(el, 'i'));
+              obj = {
+                all: [],
+                op: [],
+                reply: []
+              };
+              _i = filtered;
+              for (_h = 0, _j = _i.length; _h < _j; _h++) {
+                el = _i[_h];
+                if (/\ -\w+$/.test(el)) {
+                  _k = el.match(/(.+) -(\w+)$/);
+                  nop = _k[0];
+                  el = _k[1];
+                  match = _k[2];
+                  if (match === 'o') {
+                    key = 'op';
+                  } else if (match === 'O') {
+                    key = 'reply';
+                  }
+                } else {
+                  key = 'all';
                 }
-                return _h;
-              })();
-              compiled[filter][field] = regexes;
+                regex = new RegExp(el, 'i');
+                obj[key].push(regex);
+              }
+              compiled[filter][field] = obj;
               return compiled[filter][field];
             }
           })());
@@ -267,7 +283,7 @@ display: none; \
     _b = reset();
     replies = _b[0];
     threads = _b[1];
-    num = threads.length ? replies.length + threads.length : $$('blockquote', form).length;
+    num = threads.length ? replies.length + threads.length : $$('blockquote').length;
     //these loops look combinable
     _d = replies;
     for (_c = 0, _e = _d.length; _c < _e; _c++) {

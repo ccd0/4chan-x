@@ -154,7 +154,7 @@ filterThread: (thread, filter) ->
                 s: $('blockquote', thread).textContent
             when 'File'
                 s: x('./span[@class="filesize"]', thread)?.textContent || ''
-        for regex in filter[field]
+        for regex in filter[field].all.concat(filter[field].op)
             if regex.test(s)
                 return true
 
@@ -176,7 +176,7 @@ filterReply: (table, filter) ->
                 s: $('blockquote', table).textContent
             when 'File'
                 s: $('span.filesize', table)?.textContent || ''
-        for regex in filter[field]
+        for regex in filter[field].all.concat(filter[field].reply)
             if regex.test(s)
                 return true
 
@@ -195,11 +195,25 @@ filterAll: ->
             trimmed: el.trimLeft() for el in split
             filtered: trimmed.filter((el)-> el.length)
             if filtered.length
-                regexes: new RegExp(el, 'i') for el in filtered
-                compiled[filter][field]: regexes
+                obj: {
+                    all: []
+                    op: []
+                    reply: []
+                }
+                for el in filtered
+                    if /\ -\w+$/.test(el)
+                        [nop, el, match]: el.match(/(.+) -(\w+)$/)
+                        switch match
+                            when 'o' then key: 'op'
+                            when 'O' then key: 'reply'
+                    else
+                        key: 'all'
+                    regex: new RegExp(el, 'i')
+                    obj[key].push(regex)
+                compiled[filter][field]: obj
 
     [replies, threads]: reset()
-    num: if threads.length then replies.length + threads.length else $$('blockquote', form).length
+    num: if threads.length then replies.length + threads.length else $$('blockquote').length
 
     #these loops look combinable
     for reply in replies
