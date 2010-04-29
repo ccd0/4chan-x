@@ -173,7 +173,7 @@ display: none; \
       if (field === 'Name') {
         s = $('span.postername', thread).textContent;
       } else if (field === 'Tripcode') {
-        s = ((_b = x('./span[@class="postertrip]', thread)) == undefined ? undefined : _b.textContent) || '';
+        s = ((_b = x('./span[@class="postertrip"]', thread)) == undefined ? undefined : _b.textContent) || '';
       } else if (field === 'Email') {
         s = ((_c = x('./a[@class="linkmail"]', thread)) == undefined ? undefined : _c.href.slice(7)) || '';
       } else if (field === 'Subject') {

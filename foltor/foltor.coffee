@@ -145,7 +145,7 @@ filterThread: (thread, filter) ->
             when 'Name'
                 s: $('span.postername', thread).textContent
             when 'Tripcode'
-                s: x('./span[@class="postertrip]', thread)?.textContent || ''
+                s: x('./span[@class="postertrip"]', thread)?.textContent || ''
             when 'Email'
                 s: (x('./a[@class="linkmail"]', thread)?.href.slice(7)) || ''
             when 'Subject'
