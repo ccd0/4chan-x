@@ -1,5 +1,5 @@
 (function(){
-  var $, $$, _a, _b, _c, _d, _e, _f, _g, a, addClass, autoHide, bar, box, cancel, del, div, f, field, fields, filter, filterAll, filterSingle, filters, inBefore, input, keydown, label, loadFilters, mousedown, mousemove, mouseup, move, name, option, optionKeydown, options, position, remove, reset, save, saveFilters, select, tag, text, x;
+  var $, $$, _a, _b, _c, _d, _e, _f, _g, a, addClass, autoHide, bar, box, cancel, del, div, f, field, fields, filter, filterAll, filterReply, filterThread, filters, inBefore, input, keydown, label, loadFilters, mousedown, mousemove, mouseup, move, name, option, optionKeydown, options, position, remove, reset, save, saveFilters, select, tag, text, x;
   var __hasProp = Object.prototype.hasOwnProperty;
   x = function x(path, root) {
     root = root || document.body;
@@ -159,8 +159,36 @@ cursor: pointer; \
 .hide { \
 display: none; \
 } \
+div.hide + hr { \
+display: none; \
+} \
 ');
-  filterSingle = function filterSingle(table, filter) {
+  //duplicated code. sigh.
+  // we could try threading the op, but that might affect other scripts.
+  // also, I really want to try out *gasp* eval().
+  filterThread = function filterThread(thread, filter) {
+    var _a, _b, _c, _d, _e, field, s;
+    _a = filter;
+    for (field in _a) { if (__hasProp.call(_a, field)) {
+      if (field === 'Name') {
+        s = $('span.postername', thread).textContent;
+      } else if (field === 'Tripcode') {
+        s = ((_b = x('./span[@class="postertrip]', thread)) == undefined ? undefined : _b.textContent) || '';
+      } else if (field === 'Email') {
+        s = ((_c = x('./a[@class="linkmail"]', thread)) == undefined ? undefined : _c.href.slice(7)) || '';
+      } else if (field === 'Subject') {
+        s = ((_d = x('./span[@class="filetitle"]', thread)) == undefined ? undefined : _d.textContent) || '';
+      } else if (field === 'Comment') {
+        s = $('blockquote', thread).textContent;
+      } else if (field === 'File') {
+        s = ((_e = x('./span[@class="filesize"]', thread)) == undefined ? undefined : _e.textContent) || '';
+      }
+      if (filter[field].test(s)) {
+        return true;
+      }
+    }}
+  };
+  filterReply = function filterReply(table, filter) {
     var _a, _b, _c, _d, _e, field, s;
     _a = filter;
     for (field in _a) { if (__hasProp.call(_a, field)) {
@@ -169,7 +197,9 @@ display: none; \
       } else if (field === 'Tripcode') {
         s = ((_b = $('span.postertrip', table)) == undefined ? undefined : _b.textContent) || '';
       } else if (field === 'Email') {
-        s = (_c = $('a.linkmail', table)) == undefined ? undefined : _c.href.slice(7) || '';
+        //http://github.com/jashkenas/coffee-script/issues#issue/342
+        //s: $('a.linkmail', table)?.href.slice(7) || ''
+        s = ((_c = $('a.linkmail', table)) == undefined ? undefined : _c.href.slice(7)) || '';
       } else if (field === 'Subject') {
         s = ((_d = $('span.filetitle', table)) == undefined ? undefined : _d.textContent) || '';
       } else if (field === 'Comment') {
@@ -183,7 +213,7 @@ display: none; \
     }}
   };
   filterAll = function filterAll() {
-    var _a, _b, _c, _d, _e, _f, compiled, field, filter, imagesCount, table, tables;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, compiled, field, filter, imagesCount, num, replies, reply, thread, threads;
     saveFilters();
     //better way of doing this?
     compiled = {};
@@ -195,17 +225,29 @@ display: none; \
         compiled[filter][field] = new RegExp(filters[filter][field], 'i');
       }}
     }}
-    tables = reset();
-    _d = tables;
-    for (_c = 0, _e = _d.length; _c < _e; _c++) {
-      table = _d[_c];
-      _f = compiled;
-      for (filter in _f) { if (__hasProp.call(_f, filter)) {
-        filterSingle(table, compiled[filter]) ? table.className += ' ' + filter : null;
+    _c = reset();
+    replies = _c[0];
+    threads = _c[1];
+    num = threads.length ? replies.length + threads.length : $$('blockquote', form).length;
+    //these loops look combinable
+    _e = replies;
+    for (_d = 0, _f = _e.length; _d < _f; _d++) {
+      reply = _e[_d];
+      _g = compiled;
+      for (filter in _g) { if (__hasProp.call(_g, filter)) {
+        filterReply(reply, compiled[filter]) ? reply.className += ' ' + filter : null;
+      }}
+    }
+    _i = threads;
+    for (_h = 0, _j = _i.length; _h < _j; _h++) {
+      thread = _i[_h];
+      _k = compiled;
+      for (filter in _k) { if (__hasProp.call(_k, filter)) {
+        filterThread(thread, compiled[filter]) ? thread.className += ' ' + filter : null;
       }}
     }
     imagesCount = $$('img[md5]').length;
-    box.firstChild.textContent = ("Images: " + imagesCount + " Replies: " + (tables.length));
+    box.firstChild.textContent = ("Images: " + imagesCount + " Posts: " + num);
     return box.firstChild.textContent;
   };
   keydown = function keydown(e) {
@@ -215,8 +257,9 @@ display: none; \
     }
   };
   reset = function reset() {
-    var _a, _b, _c, table, tables;
-    tables = $$('form[name="delform"] table');
+    var _a, _b, _c, _d, _e, _f, form, table, tables, thread, threads;
+    form = $('form[name="delform"]');
+    tables = $$('table', form);
     tables.pop();
     tables.pop();
     _b = tables;
@@ -224,7 +267,14 @@ display: none; \
       table = _b[_a];
       table.className = '';
     }
-    return tables;
+    threads = $$('div', form);
+    threads.pop();
+    _e = threads;
+    for (_d = 0, _f = _e.length; _d < _f; _d++) {
+      thread = _e[_d];
+      thread.className = '';
+    }
+    return [tables, threads];
   };
   autoHide = function autoHide() {
     box.className === 'reply' ? (box.className = 'reply autohide') : (box.className = 'reply');

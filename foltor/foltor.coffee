@@ -130,10 +130,35 @@ GM_addStyle('
     .hide {
         display: none;
     }
+    div.hide + hr {
+        display: none;
+    }
 ')
 
 
-filterSingle: (table, filter) ->
+#duplicated code. sigh.
+# we could try threading the op, but that might affect other scripts.
+# also, I really want to try out *gasp* eval().
+filterThread: (thread, filter) ->
+    for field of filter
+        switch field
+            when 'Name'
+                s: $('span.postername', thread).textContent
+            when 'Tripcode'
+                s: x('./span[@class="postertrip]', thread)?.textContent || ''
+            when 'Email'
+                s: (x('./a[@class="linkmail"]', thread)?.href.slice(7)) || ''
+            when 'Subject'
+                s: x('./span[@class="filetitle"]', thread)?.textContent || ''
+            when 'Comment'
+                s: $('blockquote', thread).textContent
+            when 'File'
+                s: x('./span[@class="filesize"]', thread)?.textContent || ''
+        if filter[field].test(s)
+            return true
+
+
+filterReply: (table, filter) ->
     for field of filter
         switch field
             when 'Name'
@@ -141,7 +166,9 @@ filterSingle: (table, filter) ->
             when 'Tripcode'
                 s: $('span.postertrip', table)?.textContent || ''
             when 'Email'
-                s: $('a.linkmail', table)?.href.slice(7) || ''
+                #http://github.com/jashkenas/coffee-script/issues#issue/342
+                #s: $('a.linkmail', table)?.href.slice(7) || ''
+                s: ($('a.linkmail', table)?.href.slice(7)) || ''
             when 'Subject'
                 s: $('span.filetitle', table)?.textContent || ''
             when 'Comment'
@@ -162,14 +189,21 @@ filterAll: ->
         for field of filters[filter]
             compiled[filter][field]: new RegExp(filters[filter][field], 'i')
 
-    tables: reset()
-    for table in tables
+    [replies, threads]: reset()
+    num: if threads.length then replies.length + threads.length else $$('blockquote', form).length
+
+    #these loops look combinable
+    for reply in replies
         for filter of compiled
-            if filterSingle(table, compiled[filter])
-                table.className+= ' ' + filter
+            if filterReply(reply, compiled[filter])
+                reply.className+= ' ' + filter
+    for thread in threads
+        for filter of compiled
+            if filterThread(thread, compiled[filter])
+                thread.className+= ' ' + filter
 
     imagesCount: $$('img[md5]').length
-    box.firstChild.textContent: "Images: $imagesCount Replies: ${tables.length}"
+    box.firstChild.textContent: "Images: $imagesCount Posts: $num"
 
 
 keydown: (e) ->
@@ -178,12 +212,19 @@ keydown: (e) ->
 
 
 reset: ->
-    tables: $$('form[name="delform"] table')
+    form: $('form[name="delform"]')
+    tables: $$('table', form)
     tables.pop()
     tables.pop()
     for table in tables
         table.className: ''
-    return tables
+
+    threads: $$('div', form)
+    threads.pop()
+    for thread in threads
+        thread.className: ''
+
+    return [tables, threads]
 
 
 autoHide: ->
