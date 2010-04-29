@@ -131,7 +131,7 @@ if not favicon: $('link[rel="shortcut icon"]', head)#/f/
     favicon.href: 'http://static.4chan.org/image/favicon.ico'
     head.appendChild(favicon)
 favNormal: favicon.href
-favEmpty: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAANAgMAAADksrfsAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1QwBAyo7L002DQAAAAlQTFRF////AAAA29vbjEBkBAAAAAF0Uk5TAEDm2GYAAAABYktHRACIBR1IAAAAN0lEQVQIHQXBwQmAUAwFsAjqXfAf7DRvGsFO05FNLEd0atR09PRYWQHAlptzPmo6ajqeeWPP5QdyaAtBXmCrgAAAAABJRU5ErkJggg=='
+favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
 
 hiddenThreads: JSON.parse(GM_getValue('hiddenThreads', '[]'))
 hiddenReplies: JSON.parse(GM_getValue('hiddenReplies', '[]'))
@@ -295,7 +295,12 @@ hideThread: (div) ->
     hide(div)
     if getValue('Show Stubs')
         a: tag('a')
-        n: parseInt($('span.omittedposts', div)?.textContent) || 0
+        #n: parseInt($('span.omittedposts', div)?.textContent) || 0
+        if span: $('.omittedposts', div)
+            n: Number(span.textContent.match(/\d+/)[0])
+        else
+            n: 0
+        console.log(n)
         n += $$('table', div).length
         text: if n is 1 then "1 reply" else "$n replies"
         name: $('span.postername', div).textContent
@@ -788,11 +793,10 @@ if not REPLY
         omitted: $$('span.omittedposts')
         for span in omitted
             a: tag('a')
-            a.className: 'pointer'
-            a.textContent: '+ '
+            a.className: 'pointer omittedposts'
+            a.textContent: "+ ${span.textContent}"
             a.addEventListener('click', expandThread, true)
-            inBefore(span, a)
-            a.appendChild(span)
+            replace(span, a)
 
     if getValue('Comment Expansion')
         as: $$('span.abbr a')

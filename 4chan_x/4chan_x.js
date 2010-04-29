@@ -167,7 +167,7 @@
     head.appendChild(favicon);
   }
   favNormal = favicon.href;
-  favEmpty = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAANAgMAAADksrfsAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1QwBAyo7L002DQAAAAlQTFRF////AAAA29vbjEBkBAAAAAF0Uk5TAEDm2GYAAAABYktHRACIBR1IAAAAN0lEQVQIHQXBwQmAUAwFsAjqXfAf7DRvGsFO05FNLEd0atR09PRYWQHAlptzPmo6ajqeeWPP5QdyaAtBXmCrgAAAAABJRU5ErkJggg==';
+  favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==';
   hiddenThreads = JSON.parse(GM_getValue('hiddenThreads', '[]'));
   hiddenReplies = JSON.parse(GM_getValue('hiddenReplies', '[]'));
   lastChecked = GM_getValue('lastChecked', 0);
@@ -324,7 +324,7 @@ cursor: pointer; \
     return GM_setValue('hiddenThreads', JSON.stringify(hiddenThreads));
   };
   hideThread = function hideThread(div) {
-    var _c, _d, a, n, name, p, text, trip;
+    var _c, a, n, name, p, span, text, trip;
     if ((p = this.parentNode)) {
       div = p;
       hiddenThreads.push({
@@ -336,11 +336,13 @@ cursor: pointer; \
     hide(div);
     if (getValue('Show Stubs')) {
       a = tag('a');
-      n = parseInt((_c = $('span.omittedposts', div)) == undefined ? undefined : _c.textContent) || 0;
+      //n: parseInt($('span.omittedposts', div)?.textContent) || 0
+      (span = $('.omittedposts', div)) ? (n = Number(span.textContent.match(/\d+/)[0])) : (n = 0);
+      console.log(n);
       n += $$('table', div).length;
       text = n === 1 ? "1 reply" : ("" + n + " replies");
       name = $('span.postername', div).textContent;
-      trip = ((_d = $('span.postername + span.postertrip', div)) == undefined ? undefined : _d.textContent) || '';
+      trip = ((_c = $('span.postername + span.postertrip', div)) == undefined ? undefined : _c.textContent) || '';
       a.textContent = ("[ + ] " + name + trip + " (" + text + ")");
       a.className = 'pointer';
       a.addEventListener('click', showThread, true);
@@ -911,11 +913,10 @@ cursor: pointer; \
       for (_l = 0, _n = _m.length; _l < _n; _l++) {
         span = _m[_l];
         a = tag('a');
-        a.className = 'pointer';
-        a.textContent = '+ ';
+        a.className = 'pointer omittedposts';
+        a.textContent = ("+ " + (span.textContent));
         a.addEventListener('click', expandThread, true);
-        inBefore(span, a);
-        a.appendChild(span);
+        replace(span, a);
       }
     }
     if (getValue('Comment Expansion')) {
