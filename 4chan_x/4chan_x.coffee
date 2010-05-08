@@ -35,8 +35,7 @@ inBefore: (root, el) ->
     root.parentNode.insertBefore(el, root)
 inAfter: (root, el) ->
     root.parentNode.insertBefore(el, root.nextSibling)
-tag: (el) ->
-    document.createElement(el)
+tag: document.createElement
 hide: (el) ->
     el.style.display = 'none'
 show: (el) ->
@@ -234,8 +233,8 @@ options: ->
 mousedown: (e) ->
     div: this.parentNode
     move.div: div
-    move.divX: div.offsetLeft
-    move.divY: div.offsetTop
+    move.divX: parseInt(div.style.left)
+    move.divY: parseInt(div.style.top)
     move.clientX: e.clientX
     move.clientY: e.clientY
     move.bodyX: document.body.clientWidth

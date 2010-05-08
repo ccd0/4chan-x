@@ -24,12 +24,8 @@
   inBefore = function inBefore(root, el) {
     return root.parentNode.insertBefore(el, root);
   };
-  tag = function tag(el) {
-    return document.createElement(el);
-  };
-  text = function text(s) {
-    return document.createTextNode(s);
-  };
+  tag = document.createElement;
+  text = document.createTextNode;
   remove = function remove(root) {
     return root.parentNode.removeChild(root);
   };
@@ -50,8 +46,8 @@
     var div;
     div = this.parentNode;
     move.div = div;
-    move.divX = div.offsetLeft;
-    move.divY = div.offsetTop;
+    move.divX = parseInt(div.style.left);
+    move.divY = parseInt(div.style.top);
     move.clientX = e.clientX;
     move.clientY = e.clientY;
     move.bodyX = document.body.clientWidth;

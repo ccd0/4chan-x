@@ -47,9 +47,7 @@
   inAfter = function inAfter(root, el) {
     return root.parentNode.insertBefore(el, root.nextSibling);
   };
-  tag = function tag(el) {
-    return document.createElement(el);
-  };
+  tag = document.createElement;
   hide = function hide(el) {
     el.style.display = 'none';
     return el.style.display;
@@ -272,8 +270,8 @@ cursor: pointer; \
     var div;
     div = this.parentNode;
     move.div = div;
-    move.divX = div.offsetLeft;
-    move.divY = div.offsetTop;
+    move.divX = parseInt(div.style.left);
+    move.divY = parseInt(div.style.top);
     move.clientX = e.clientX;
     move.clientY = e.clientY;
     move.bodyX = document.body.clientWidth;

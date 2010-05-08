@@ -13,10 +13,8 @@ $$: (selector, root) ->
     node for node in result
 inBefore: (root, el) ->
     root.parentNode.insertBefore(el, root)
-tag: (el) ->
-    document.createElement(el)
-text: (s) ->
-    document.createTextNode(s)
+tag: document.createElement
+text: document.createTextNode
 remove: (root) ->
     root.parentNode.removeChild(root)
 position: (el) ->
@@ -34,8 +32,8 @@ move: {}
 mousedown: (e) ->
     div: this.parentNode
     move.div: div
-    move.divX: div.offsetLeft
-    move.divY: div.offsetTop
+    move.divX: parseInt(div.style.left)
+    move.divY: parseInt(div.style.top)
     move.clientX: e.clientX
     move.clientY: e.clientY
     move.bodyX: document.body.clientWidth
