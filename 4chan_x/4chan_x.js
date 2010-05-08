@@ -47,7 +47,9 @@
   inAfter = function inAfter(root, el) {
     return root.parentNode.insertBefore(el, root.nextSibling);
   };
-  tag = document.createElement;
+  tag = function tag(el) {
+    return document.createElement(el);
+  };
   hide = function hide(el) {
     el.style.display = 'none';
     return el.style.display;

@@ -24,8 +24,12 @@
   inBefore = function inBefore(root, el) {
     return root.parentNode.insertBefore(el, root);
   };
-  tag = document.createElement;
-  text = document.createTextNode;
+  tag = function tag(el) {
+    return document.createElement(el);
+  };
+  text = function text(s) {
+    return document.createTextNode(s);
+  };
   remove = function remove(root) {
     return root.parentNode.removeChild(root);
   };

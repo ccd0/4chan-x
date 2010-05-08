@@ -35,7 +35,8 @@ inBefore: (root, el) ->
     root.parentNode.insertBefore(el, root)
 inAfter: (root, el) ->
     root.parentNode.insertBefore(el, root.nextSibling)
-tag: document.createElement
+tag: (el) ->
+    document.createElement(el)
 hide: (el) ->
     el.style.display = 'none'
 show: (el) ->

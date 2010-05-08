@@ -13,8 +13,10 @@ $$: (selector, root) ->
     node for node in result
 inBefore: (root, el) ->
     root.parentNode.insertBefore(el, root)
-tag: document.createElement
-text: document.createTextNode
+tag: (el) ->
+    document.createElement(el)
+text: (s) ->
+    document.createTextNode(s)
 remove: (root) ->
     root.parentNode.removeChild(root)
 position: (el) ->
