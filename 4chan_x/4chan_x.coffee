@@ -604,7 +604,7 @@ expandComment: (e) ->
 
 
 report: ->
-    input: x('preceding-sibling::input', this)
+    input: x('preceding-sibling::input[1]', this)
     input.click()
     $('input[value="Report"]').click()
     input.click()
@@ -660,7 +660,7 @@ if getValue('Quick Reply')
     document.body.appendChild(iframe)
 
     callbacks.push((root) ->
-        quotes: $$('a.quotejs:not(:first-child)')
+        quotes: $$('a.quotejs:not(:first-child)', root)
         for quote in quotes
             quote.addEventListener('click', quickReply, true)
     )

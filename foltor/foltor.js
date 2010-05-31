@@ -1,15 +1,15 @@
 (function(){
-  var $, $$, _a, _b, _c, _d, _e, _f, _g, a, addClass, autoHide, bar, box, cancel, del, div, f, field, fields, filter, filterAll, filterReply, filterThread, filters, inBefore, input, keydown, label, loadFilters, mousedown, mousemove, mouseup, move, name, option, optionKeydown, options, position, remove, reset, save, saveFilters, select, tag, text, x;
+  var $, $$, _a, _b, _c, _d, _e, _f, _g, _h, a, addClass, autoHide, bar, board, box, cancel, defaultValue, del, div, f, field, fields, filterAll, filterReply, filterThread, filters, inBefore, input, keydown, klass, label, loadFilters, mousedown, mousemove, mouseup, move, name, option, optionKeydown, options, position, remove, reset, sBoard, sKlass, save, saveFilters, tag, text, x;
   var __hasProp = Object.prototype.hasOwnProperty;
-  x = function x(path, root) {
+  x = function(path, root) {
     root = root || document.body;
     return document.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
-  $ = function $(selector, root) {
+  $ = function(selector, root) {
     root = root || document.body;
     return root.querySelector(selector);
   };
-  $$ = function $$(selector, root) {
+  $$ = function(selector, root) {
     var _a, _b, _c, _d, node, result;
     root = root || document.body;
     result = root.querySelectorAll(selector);
@@ -21,19 +21,19 @@
     }
     return _a;
   };
-  inBefore = function inBefore(root, el) {
+  inBefore = function(root, el) {
     return root.parentNode.insertBefore(el, root);
   };
-  tag = function tag(el) {
+  tag = function(el) {
     return document.createElement(el);
   };
-  text = function text(s) {
+  text = function(s) {
     return document.createTextNode(s);
   };
-  remove = function remove(root) {
+  remove = function(root) {
     return root.parentNode.removeChild(root);
   };
-  position = function position(el) {
+  position = function(el) {
     var id, left, top;
     id = el.id;
     (left = GM_getValue(("" + (id) + "Left"), '0px')) ? (el.style.left = left) : (el.style.right = '0px');
@@ -46,7 +46,7 @@
     }
   };
   move = {};
-  mousedown = function mousedown(e) {
+  mousedown = function(e) {
     var div;
     div = this.parentNode;
     move.div = div;
@@ -59,7 +59,7 @@
     window.addEventListener('mousemove', mousemove, true);
     return window.addEventListener('mouseup', mouseup, true);
   };
-  mousemove = function mousemove(e) {
+  mousemove = function(e) {
     var div, left, realX, realY, top;
     div = move.div;
     realX = move.divX + (e.clientX - move.clientX);
@@ -85,7 +85,7 @@
       return div.style.bottom;
     }
   };
-  mouseup = function mouseup() {
+  mouseup = function() {
     var id;
     id = move.div.id;
     GM_setValue(("" + (id) + "Left"), move.div.style.left);
@@ -95,11 +95,11 @@
   };
   //x-browser
   if (typeof GM_deleteValue === 'undefined') {
-    this.GM_setValue = function GM_setValue(name, value) {
+    this.GM_setValue = function(name, value) {
       value = (typeof value)[0] + value;
       return localStorage.setItem(name, value);
     };
-    this.GM_getValue = function GM_getValue(name, defaultValue) {
+    this.GM_getValue = function(name, defaultValue) {
       var type, value;
       if (!(value = localStorage.getItem(name))) {
         return defaultValue;
@@ -114,7 +114,7 @@
         return value;
       }
     };
-    this.GM_addStyle = function GM_addStyle(css) {
+    this.GM_addStyle = function(css) {
       var style;
       style = tag('style');
       style.type = 'text/css';
@@ -166,24 +166,24 @@ display: none; \
   //duplicated code. sigh.
   // we could try threading the op, but that might affect other scripts.
   // also, I really want to try out *gasp* eval().
-  filterThread = function filterThread(thread, filter) {
+  filterThread = function(thread, fields) {
     var _a, _b, _c, _d, _e, _f, _g, _h, field, regex, s;
-    _a = filter;
+    _a = fields;
     for (field in _a) { if (__hasProp.call(_a, field)) {
       if (field === 'Name') {
         s = $('span.postername', thread).textContent;
       } else if (field === 'Tripcode') {
-        s = ((_b = x('./span[@class="postertrip"]', thread)) == undefined ? undefined : _b.textContent) || '';
+        s = (typeof (_b = (x('./span[@class="postertrip"]', thread))) === "undefined" || _b == undefined ? undefined : _b.textContent) || '';
       } else if (field === 'Email') {
-        s = ((_c = x('./a[@class="linkmail"]', thread)) == undefined ? undefined : _c.href.slice(7)) || '';
+        s = (typeof (_c = (x('./a[@class="linkmail"]', thread))) === "undefined" || _c == undefined ? undefined : _c.href.slice(7)) || '';
       } else if (field === 'Subject') {
-        s = ((_d = x('./span[@class="filetitle"]', thread)) == undefined ? undefined : _d.textContent) || '';
+        s = (typeof (_d = (x('./span[@class="filetitle"]', thread))) === "undefined" || _d == undefined ? undefined : _d.textContent) || '';
       } else if (field === 'Comment') {
         s = $('blockquote', thread).textContent;
       } else if (field === 'File') {
-        s = ((_e = x('./span[@class="filesize"]', thread)) == undefined ? undefined : _e.textContent) || '';
+        s = (typeof (_e = (x('./span[@class="filesize"]', thread))) === "undefined" || _e == undefined ? undefined : _e.textContent) || '';
       }
-      _g = filter[field].all.concat(filter[field].op);
+      _g = fields[field].op;
       for (_f = 0, _h = _g.length; _f < _h; _f++) {
         regex = _g[_f];
         if (regex.test(s)) {
@@ -192,26 +192,24 @@ display: none; \
       }
     }}
   };
-  filterReply = function filterReply(table, filter) {
+  filterReply = function(table, fields) {
     var _a, _b, _c, _d, _e, _f, _g, _h, field, regex, s;
-    _a = filter;
+    _a = fields;
     for (field in _a) { if (__hasProp.call(_a, field)) {
       if (field === 'Name') {
         s = $('span.commentpostername', table).textContent;
       } else if (field === 'Tripcode') {
-        s = ((_b = $('span.postertrip', table)) == undefined ? undefined : _b.textContent) || '';
+        s = (typeof (_b = ($('span.postertrip', table))) === "undefined" || _b == undefined ? undefined : _b.textContent) || '';
       } else if (field === 'Email') {
-        //http://github.com/jashkenas/coffee-script/issues#issue/342
-        //s: $('a.linkmail', table)?.href.slice(7) || ''
-        s = ((_c = $('a.linkmail', table)) == undefined ? undefined : _c.href.slice(7)) || '';
+        s = (typeof (_c = ($('a.linkmail', table))) === "undefined" || _c == undefined ? undefined : _c.href.slice(7)) || '';
       } else if (field === 'Subject') {
-        s = ((_d = $('span.filetitle', table)) == undefined ? undefined : _d.textContent) || '';
+        s = (typeof (_d = ($('span.filetitle', table))) === "undefined" || _d == undefined ? undefined : _d.textContent) || '';
       } else if (field === 'Comment') {
         s = $('blockquote', table).textContent;
       } else if (field === 'File') {
-        s = ((_e = $('span.filesize', table)) == undefined ? undefined : _e.textContent) || '';
+        s = (typeof (_e = ($('span.filesize', table))) === "undefined" || _e == undefined ? undefined : _e.textContent) || '';
       }
-      _g = filter[field].all.concat(filter[field].reply);
+      _g = fields[field].reply;
       for (_f = 0, _h = _g.length; _f < _h; _f++) {
         regex = _g[_f];
         if (regex.test(s)) {
@@ -220,98 +218,98 @@ display: none; \
       }
     }}
   };
-  filterAll = function filterAll() {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, compiled, filter, imagesCount, num, replies, reply, thread, threads;
+  filterAll = function() {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, boards, compiled, el, field, filtered, imageCount, key, klass, match, nop, num, obj, regex, replies, reply, s, split, thread, threads, trimmed;
     saveFilters();
-    //better way of doing this? if we just say `compiled: filters`,
-    //changing a prop in one will change a prop in the other.
     compiled = {};
     _a = filters;
-    for (filter in _a) { if (__hasProp.call(_a, filter)) {
-      (function() {
-        var _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, el, field, filtered, key, match, nop, obj, regex, s, split, trimmed;
-        compiled[filter] = {};
-        _b = []; _c = filters[filter];
-        for (field in _c) { if (__hasProp.call(_c, field)) {
-          _b.push((function() {
-            s = filters[filter][field];
-            split = s.split(';');
-            trimmed = (function() {
-              _d = []; _f = split;
-              for (_e = 0, _g = _f.length; _e < _g; _e++) {
-                el = _f[_e];
-                _d.push(el.trimLeft());
+    for (klass in _a) { if (__hasProp.call(_a, klass)) {
+      compiled[klass] = {};
+      boards = filters[klass];
+      //for ['global', BOARD] of boards
+      _b = boards['global'];
+      for (field in _b) { if (__hasProp.call(_b, field)) {
+        s = boards['global'][field];
+        split = s.split(';');
+        trimmed = (function() {
+          _c = []; _e = split;
+          for (_d = 0, _f = _e.length; _d < _f; _d++) {
+            el = _e[_d];
+            _c.push(el.trimLeft());
+          }
+          return _c;
+        })();
+        filtered = (function() {
+          _g = []; _i = trimmed;
+          for (_h = 0, _j = _i.length; _h < _j; _h++) {
+            el = _i[_h];
+            el.length ? _g.push(el) : null;
+          }
+          return _g;
+        })();
+        if (filtered.length) {
+          obj = {
+            op: [],
+            reply: []
+          };
+          _l = filtered;
+          for (_k = 0, _m = _l.length; _k < _m; _k++) {
+            el = _l[_k];
+            if (/\ -\w+$/.test(el)) {
+              _n = el.match(/(.+) -(\w+)$/);
+              nop = _n[0];
+              el = _n[1];
+              match = _n[2];
+              if (match === 'o') {
+                key = 'op';
+              } else if (match === 'O') {
+                key = 'reply';
               }
-              return _d;
-            })();
-            filtered = trimmed.filter(function(el) {
-              return el.length;
-            });
-            if (filtered.length) {
-              obj = {
-                all: [],
-                op: [],
-                reply: []
-              };
-              _i = filtered;
-              for (_h = 0, _j = _i.length; _h < _j; _h++) {
-                el = _i[_h];
-                if (/\ -\w+$/.test(el)) {
-                  _k = el.match(/(.+) -(\w+)$/);
-                  nop = _k[0];
-                  el = _k[1];
-                  match = _k[2];
-                  if (match === 'o') {
-                    key = 'op';
-                  } else if (match === 'O') {
-                    key = 'reply';
-                  }
-                } else {
-                  key = 'all';
-                }
-                regex = new RegExp(el, 'i');
-                obj[key].push(regex);
-              }
-              compiled[filter][field] = obj;
-              return compiled[filter][field];
             }
-          })());
-        }}
-        return _b;
-      })();
+            regex = new RegExp(el, 'i');
+            if (key) {
+              obj[key].push(regex);
+            } else {
+              obj['op'].push(regex);
+              obj['reply'].push(regex);
+            }
+          }
+          compiled[klass][field] = obj;
+        }
+      }}
     }}
-    _b = reset();
-    replies = _b[0];
-    threads = _b[1];
+    _o = reset();
+    replies = _o[0];
+    threads = _o[1];
     num = threads.length ? replies.length + threads.length : $$('blockquote').length;
     //these loops look combinable
-    _d = replies;
-    for (_c = 0, _e = _d.length; _c < _e; _c++) {
-      reply = _d[_c];
-      _f = compiled;
-      for (filter in _f) { if (__hasProp.call(_f, filter)) {
-        filterReply(reply, compiled[filter]) ? reply.className += ' ' + filter : null;
+    _q = replies;
+    for (_p = 0, _r = _q.length; _p < _r; _p++) {
+      reply = _q[_p];
+      _s = compiled;
+      for (klass in _s) { if (__hasProp.call(_s, klass)) {
+        filterReply(reply, compiled[klass]) ? reply.className += ' ' + klass : null;
       }}
     }
-    _h = threads;
-    for (_g = 0, _i = _h.length; _g < _i; _g++) {
-      thread = _h[_g];
-      _j = compiled;
-      for (filter in _j) { if (__hasProp.call(_j, filter)) {
-        filterThread(thread, compiled[filter]) ? thread.className += ' ' + filter : null;
+    _u = threads;
+    for (_t = 0, _v = _u.length; _t < _v; _t++) {
+      thread = _u[_t];
+      _w = compiled;
+      for (klass in _w) { if (__hasProp.call(_w, klass)) {
+        filterThread(thread, compiled[klass]) ? thread.className += ' ' + klass : null;
       }}
     }
-    imagesCount = $$('img[md5]').length;
-    box.firstChild.textContent = ("Images: " + imagesCount + " Posts: " + num);
+    imageCount = $$('img[md5]').length;
+    box.firstChild.textContent = ("Images: " + imageCount + " Posts: " + num);
     return box.firstChild.textContent;
   };
-  keydown = function keydown(e) {
+  keydown = function(e) {
     if (e.keyCode === 13) {
       //enter
       return filterAll();
     }
   };
-  reset = function reset() {
+  reset = function() {
     var _a, _b, _c, _d, _e, _f, form, table, tables, thread, threads;
     form = $('form[name="delform"]');
     tables = $$('table', form);
@@ -331,11 +329,11 @@ display: none; \
     }
     return [tables, threads];
   };
-  autoHide = function autoHide() {
+  autoHide = function() {
     box.className === 'reply' ? (box.className = 'reply autohide') : (box.className = 'reply');
     return GM_setValue('className', box.className);
   };
-  save = function save() {
+  save = function() {
     var _a, _b, _c, div, input, inputs, option, value;
     div = this.parentNode.parentNode;
     inputs = $$('input:enabled', div);
@@ -346,26 +344,26 @@ display: none; \
         filters[value] = {};
         option = tag('option');
         option.textContent = value;
-        select.appendChild(option);
+        sKlass.appendChild(option);
       }
     }
-    option == undefined ? undefined : option.selected = true;
+    typeof option === "undefined" || option == undefined ? undefined : option.selected = true;
     loadFilters();
     GM_setValue('filters', JSON.stringify(filters));
     return remove(div);
   };
-  cancel = function cancel() {
+  cancel = function() {
     var div;
     div = this.parentNode.parentNode;
     return remove(div);
   };
-  optionKeydown = function optionKeydown(e) {
+  optionKeydown = function(e) {
     if (e.keyCode === 13) {
       //enter
       return save.call(this.parentNode);
     }
   };
-  addClass = function addClass() {
+  addClass = function() {
     var div, input;
     div = tag('div');
     input = tag('input');
@@ -374,20 +372,20 @@ display: none; \
     inBefore(this, div);
     return input.focus();
   };
-  del = function del() {
+  del = function() {
     var _a, _b, _c, option, value;
     value = this.nextElementSibling.value;
     delete filters[value];
     GM_setValue('filters', JSON.stringify(filters));
     remove(this.parentNode);
-    _b = select.options;
+    _b = sKlass.options;
     for (_a = 0, _c = _b.length; _a < _c; _a++) {
       option = _b[_a];
       option.value === value ? remove(option) : null;
     }
     return loadFilters();
   };
-  options = function options() {
+  options = function() {
     var _a, a, bar, div, filter, filters, input, opt;
     if ((opt = $('#box_options'))) {
       return remove(opt);
@@ -436,9 +434,9 @@ display: none; \
       return document.body.appendChild(opt);
     }
   };
-  loadFilters = function loadFilters() {
+  loadFilters = function() {
     var _a, _b, _c, _d, filter, input, inputs;
-    filter = filters[select.value];
+    filter = filters[sKlass.value][sBoard.value];
     inputs = $$('input', box);
     _a = []; _c = inputs;
     for (_b = 0, _d = _c.length; _b < _d; _b++) {
@@ -447,7 +445,7 @@ display: none; \
     }
     return _a;
   };
-  saveFilters = function saveFilters() {
+  saveFilters = function() {
     var _a, _b, _c, filter, input, inputs, value;
     filter = {};
     inputs = $$('input', box);
@@ -456,7 +454,7 @@ display: none; \
       input = _b[_a];
       (value = input.value) ? (filter[input.name] = value) : null;
     }
-    filters[select.value] = filter;
+    filters[sKlass.value][sBoard.value] = filter;
     return GM_setValue('filters', JSON.stringify(filters));
   };
   box = tag('div');
@@ -467,21 +465,34 @@ display: none; \
   bar.className = 'move top';
   bar.addEventListener('mousedown', mousedown, true);
   box.appendChild(bar);
-  select = tag('select');
-  select.addEventListener('mousedown', saveFilters, true);
-  select.addEventListener('mouseup', loadFilters, true);
-  filters = JSON.parse(GM_getValue('filters', '{ "hide": {} }'));
+  sKlass = tag('select');
+  sKlass.addEventListener('mousedown', saveFilters, true);
+  sKlass.addEventListener('mouseup', loadFilters, true);
+  defaultValue = JSON.stringify({
+    'hide': {
+      'global': []
+    }
+  });
+  filters = JSON.parse(GM_getValue('filters', defaultValue));
   _a = filters;
-  for (filter in _a) { if (__hasProp.call(_a, filter)) {
+  for (klass in _a) { if (__hasProp.call(_a, klass)) {
     option = tag('option');
-    option.textContent = filter;
-    select.appendChild(option);
+    option.textContent = klass;
+    sKlass.appendChild(option);
   }}
-  box.appendChild(select);
+  box.appendChild(sKlass);
+  sBoard = tag('select');
+  _b = filters[klass];
+  for (board in _b) { if (__hasProp.call(_b, board)) {
+    option = tag('option');
+    option.textContent = board;
+    sBoard.appendChild(option);
+  }}
+  box.appendChild(sBoard);
   fields = ['Name', 'Tripcode', 'Email', 'Subject', 'Comment', 'File'];
-  _c = fields;
-  for (_b = 0, _d = _c.length; _b < _d; _b++) {
-    field = _c[_b];
+  _d = fields;
+  for (_c = 0, _e = _d.length; _c < _e; _c++) {
+    field = _d[_c];
     div = tag('div');
     label = tag('label');
     label.textContent = field;
@@ -495,9 +506,9 @@ display: none; \
   loadFilters();
   div = tag('div');
   div.className = 'bottom';
-  _f = ['apply', 'reset', 'options', 'autohide'];
-  for (_e = 0, _g = _f.length; _e < _g; _e++) {
-    name = _f[_e];
+  _g = ['apply', 'reset', 'options', 'autohide'];
+  for (_f = 0, _h = _g.length; _f < _h; _f++) {
+    name = _g[_f];
     a = tag('a');
     a.textContent = name;
     if (name === 'apply') {

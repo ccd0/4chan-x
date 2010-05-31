@@ -139,8 +139,8 @@ GM_addStyle('
 #duplicated code. sigh.
 # we could try threading the op, but that might affect other scripts.
 # also, I really want to try out *gasp* eval().
-filterThread: (thread, filter) ->
-    for field of filter
+filterThread: (thread, fields) ->
+    for field of fields
         switch field
             when 'Name'
                 s: $('span.postername', thread).textContent
@@ -154,29 +154,27 @@ filterThread: (thread, filter) ->
                 s: $('blockquote', thread).textContent
             when 'File'
                 s: x('./span[@class="filesize"]', thread)?.textContent || ''
-        for regex in filter[field].all.concat(filter[field].op)
+        for regex in fields[field].op
             if regex.test(s)
                 return true
 
 
-filterReply: (table, filter) ->
-    for field of filter
+filterReply: (table, fields) ->
+    for field of fields
         switch field
             when 'Name'
                 s: $('span.commentpostername', table).textContent
             when 'Tripcode'
                 s: $('span.postertrip', table)?.textContent || ''
             when 'Email'
-                #http://github.com/jashkenas/coffee-script/issues#issue/342
-                #s: $('a.linkmail', table)?.href.slice(7) || ''
-                s: ($('a.linkmail', table)?.href.slice(7)) || ''
+                s: $('a.linkmail', table)?.href.slice(7) || ''
             when 'Subject'
                 s: $('span.filetitle', table)?.textContent || ''
             when 'Comment'
                 s: $('blockquote', table).textContent
             when 'File'
                 s: $('span.filesize', table)?.textContent || ''
-        for regex in filter[field].all.concat(filter[field].reply)
+        for regex in fields[field].reply
             if regex.test(s)
                 return true
 
@@ -184,19 +182,18 @@ filterReply: (table, filter) ->
 filterAll: ->
     saveFilters()
 
-    #better way of doing this? if we just say `compiled: filters`,
-    #changing a prop in one will change a prop in the other.
     compiled: {}
-    for filter of filters
-        compiled[filter]: {}
-        for field of filters[filter]
-            s: filters[filter][field]
+    for klass of filters
+        compiled[klass]: {}
+        boards: filters[klass]
+        #for ['global', BOARD] of boards
+        for field of boards['global']
+            s: boards['global'][field]
             split: s.split(';')
             trimmed: el.trimLeft() for el in split
-            filtered: trimmed.filter((el)-> el.length)
+            filtered: el for el in trimmed when el.length
             if filtered.length
                 obj: {
-                    all: []
                     op: []
                     reply: []
                 }
@@ -206,27 +203,29 @@ filterAll: ->
                         switch match
                             when 'o' then key: 'op'
                             when 'O' then key: 'reply'
-                    else
-                        key: 'all'
                     regex: new RegExp(el, 'i')
-                    obj[key].push(regex)
-                compiled[filter][field]: obj
+                    if key
+                        obj[key].push(regex)
+                    else
+                        obj['op'].push(regex)
+                        obj['reply'].push(regex)
+                compiled[klass][field]: obj
 
     [replies, threads]: reset()
     num: if threads.length then replies.length + threads.length else $$('blockquote').length
 
     #these loops look combinable
     for reply in replies
-        for filter of compiled
-            if filterReply(reply, compiled[filter])
-                reply.className+= ' ' + filter
+        for klass of compiled
+            if filterReply(reply, compiled[klass])
+                reply.className+= ' ' + klass
     for thread in threads
-        for filter of compiled
-            if filterThread(thread, compiled[filter])
-                thread.className+= ' ' + filter
+        for klass of compiled
+            if filterThread(thread, compiled[klass])
+                thread.className+= ' ' + klass
 
-    imagesCount: $$('img[md5]').length
-    box.firstChild.textContent: "Images: $imagesCount Posts: $num"
+    imageCount: $$('img[md5]').length
+    box.firstChild.textContent: "Images: $imageCount Posts: $num"
 
 
 keydown: (e) ->
@@ -266,7 +265,7 @@ save: ->
             filters[value]: {}
             option: tag('option')
             option.textContent: value
-            select.appendChild(option)
+            sKlass.appendChild(option)
     option?.selected: true
     loadFilters()
     GM_setValue('filters', JSON.stringify(filters))
@@ -297,7 +296,7 @@ del: ->
     delete filters[value]
     GM_setValue('filters', JSON.stringify(filters))
     remove @parentNode
-    for option in select.options
+    for option in sKlass.options
         if option.value is value
             remove option
     loadFilters()
@@ -354,7 +353,7 @@ options: ->
 
 
 loadFilters: ->
-    filter: filters[select.value]
+    filter: filters[sKlass.value][sBoard.value]
     inputs: $$('input', box)
     for input in inputs
         input.value: filter[input.name] || ''
@@ -366,7 +365,7 @@ saveFilters: ->
     for input in inputs
         if value: input.value
             filter[input.name]: value
-    filters[select.value]: filter
+    filters[sKlass.value][sBoard.value]: filter
     GM_setValue('filters', JSON.stringify(filters))
 
 
@@ -380,15 +379,27 @@ bar.className: 'move top'
 bar.addEventListener('mousedown', mousedown, true)
 box.appendChild(bar)
 
-select: tag('select')
-select.addEventListener('mousedown', saveFilters, true)
-select.addEventListener('mouseup', loadFilters, true)
-filters: JSON.parse(GM_getValue('filters', '{ "hide": {} }'))
-for filter of filters
+sKlass: tag('select')
+sKlass.addEventListener('mousedown', saveFilters, true)
+sKlass.addEventListener('mouseup', loadFilters, true)
+defaultValue: JSON.stringify({
+    'hide': {
+        'global': []
+    }
+})
+filters: JSON.parse(GM_getValue('filters', defaultValue))
+for klass of filters
     option: tag('option')
-    option.textContent: filter
-    select.appendChild(option)
-box.appendChild(select)
+    option.textContent: klass
+    sKlass.appendChild(option)
+box.appendChild(sKlass)
+
+sBoard: tag('select')
+for board of filters[klass]
+    option: tag('option')
+    option.textContent: board
+    sBoard.appendChild(option)
+box.appendChild(sBoard)
 
 fields: [
     'Name',

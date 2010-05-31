@@ -18,18 +18,18 @@
     'Auto Watch': true,
     'Anonymize': false
   };
-  getValue = function getValue(name) {
+  getValue = function(name) {
     return GM_getValue(name, config[name]);
   };
-  x = function x(path, root) {
+  x = function(path, root) {
     root = root || document.body;
     return document.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
-  $ = function $(selector, root) {
+  $ = function(selector, root) {
     root = root || document.body;
     return root.querySelector(selector);
   };
-  $$ = function $$(selector, root) {
+  $$ = function(selector, root) {
     var _a, _b, _c, _d, node, result;
     root = root || document.body;
     result = root.querySelectorAll(selector);
@@ -41,33 +41,33 @@
     }
     return _a;
   };
-  inBefore = function inBefore(root, el) {
+  inBefore = function(root, el) {
     return root.parentNode.insertBefore(el, root);
   };
-  inAfter = function inAfter(root, el) {
+  inAfter = function(root, el) {
     return root.parentNode.insertBefore(el, root.nextSibling);
   };
-  tag = function tag(el) {
+  tag = function(el) {
     return document.createElement(el);
   };
-  hide = function hide(el) {
+  hide = function(el) {
     el.style.display = 'none';
     return el.style.display;
   };
-  show = function show(el) {
+  show = function(el) {
     el.style.display = '';
     return el.style.display;
   };
-  remove = function remove(el) {
+  remove = function(el) {
     return el.parentNode.removeChild(el);
   };
-  replace = function replace(root, el) {
+  replace = function(root, el) {
     return root.parentNode.replaceChild(el, root);
   };
-  getTime = function getTime() {
+  getTime = function() {
     return Math.floor(new Date().getTime() / 1000);
   };
-  slice = function slice(arr, id) {
+  slice = function(arr, id) {
     var i, l;
     // the while loop is the only low-level loop left in coffeescript.
     // we need to use it to see the index.
@@ -81,7 +81,7 @@
       i++;
     }
   };
-  position = function position(el) {
+  position = function(el) {
     var id, left, top;
     id = el.id;
     (left = GM_getValue(("" + (id) + "Left"), '0px')) ? (el.style.left = left) : (el.style.right = '0px');
@@ -94,11 +94,11 @@
     }
   };
   if (typeof GM_deleteValue === 'undefined') {
-    this.GM_setValue = function GM_setValue(name, value) {
+    this.GM_setValue = function(name, value) {
       value = (typeof value)[0] + value;
       return localStorage.setItem(name, value);
     };
-    this.GM_getValue = function GM_getValue(name, defaultValue) {
+    this.GM_getValue = function(name, defaultValue) {
       var type, value;
       if (!(value = localStorage.getItem(name))) {
         return defaultValue;
@@ -113,7 +113,7 @@
         return value;
       }
     };
-    this.GM_addStyle = function GM_addStyle(css) {
+    this.GM_addStyle = function(css) {
       var style;
       style = tag('style');
       style.type = 'text/css';
@@ -245,7 +245,7 @@ cursor: move; \
 cursor: pointer; \
 } \
 ');
-  options = function options() {
+  options = function() {
     var _c, checked, div, option;
     if ((div = $('#options'))) {
       return remove(div);
@@ -268,7 +268,7 @@ cursor: pointer; \
       return document.body.appendChild(div);
     }
   };
-  mousedown = function mousedown(e) {
+  mousedown = function(e) {
     var div;
     div = this.parentNode;
     move.div = div;
@@ -281,7 +281,7 @@ cursor: pointer; \
     window.addEventListener('mousemove', mousemove, true);
     return window.addEventListener('mouseup', mouseup, true);
   };
-  mousemove = function mousemove(e) {
+  mousemove = function(e) {
     var div, left, realX, realY, top;
     div = move.div;
     realX = move.divX + (e.clientX - move.clientX);
@@ -307,14 +307,14 @@ cursor: pointer; \
       return div.style.bottom;
     }
   };
-  mouseup = function mouseup() {
+  mouseup = function() {
     id = move.div.id;
     GM_setValue(("" + (id) + "Left"), move.div.style.left);
     GM_setValue(("" + (id) + "Top"), move.div.style.top);
     window.removeEventListener('mousemove', mousemove, true);
     return window.removeEventListener('mouseup', mouseup, true);
   };
-  showThread = function showThread() {
+  showThread = function() {
     var div;
     div = this.nextSibling;
     show(div);
@@ -323,7 +323,7 @@ cursor: pointer; \
     slice(hiddenThreads, id);
     return GM_setValue(("hiddenThreads/" + BOARD + "/"), JSON.stringify(hiddenThreads));
   };
-  hideThread = function hideThread(div) {
+  hideThread = function(div) {
     var _c, a, n, name, p, span, text, trip;
     if ((p = this.parentNode)) {
       div = p;
@@ -340,14 +340,14 @@ cursor: pointer; \
       n += $$('table', div).length;
       text = n === 1 ? "1 reply" : ("" + n + " replies");
       name = $('span.postername', div).textContent;
-      trip = ((_c = $('span.postername + span.postertrip', div)) == undefined ? undefined : _c.textContent) || '';
+      trip = (typeof (_c = ($('span.postername + span.postertrip', div))) === "undefined" || _c == undefined ? undefined : _c.textContent) || '';
       a.textContent = ("[ + ] " + name + trip + " (" + text + ")");
       a.className = 'pointer';
       a.addEventListener('click', showThread, true);
       return inBefore(div, a);
     }
   };
-  threadF = function threadF(current) {
+  threadF = function(current) {
     var _c, _d, _e, a, div, hidden;
     div = tag('div');
     a = tag('a');
@@ -376,7 +376,7 @@ cursor: pointer; \
       return threadF(current);
     }
   };
-  showReply = function showReply() {
+  showReply = function() {
     var div, table;
     div = this.parentNode;
     table = div.nextSibling;
@@ -386,7 +386,7 @@ cursor: pointer; \
     slice(hiddenReplies, id);
     return GM_setValue(("hiddenReplies/" + BOARD + "/"), JSON.stringify(hiddenReplies));
   };
-  hideReply = function hideReply(reply) {
+  hideReply = function(reply) {
     var _c, a, div, name, p, table, trip;
     if ((p = this.parentNode)) {
       reply = p.nextSibling;
@@ -397,7 +397,7 @@ cursor: pointer; \
       GM_setValue(("hiddenReplies/" + BOARD + "/"), JSON.stringify(hiddenReplies));
     }
     name = $('span.commentpostername', reply).textContent;
-    trip = ((_c = $('span.postertrip', reply)) == undefined ? undefined : _c.textContent) || '';
+    trip = (typeof (_c = ($('span.postertrip', reply))) === "undefined" || _c == undefined ? undefined : _c.textContent) || '';
     table = x('ancestor::table', reply);
     hide(table);
     if (getValue('Show Stubs')) {
@@ -410,7 +410,7 @@ cursor: pointer; \
       return inBefore(table, div);
     }
   };
-  optionsSave = function optionsSave() {
+  optionsSave = function() {
     var _c, _d, _e, div, input, inputs;
     div = this.parentNode.parentNode;
     inputs = $$('input', div);
@@ -421,12 +421,12 @@ cursor: pointer; \
     }
     return remove(div);
   };
-  close = function close() {
+  close = function() {
     var div;
     div = this.parentNode.parentNode;
     return remove(div);
   };
-  iframeLoad = function iframeLoad() {
+  iframeLoad = function() {
     var error, qr, span;
     if ((iframeLoop = !iframeLoop)) {
       return null;
@@ -443,14 +443,14 @@ cursor: pointer; \
       return remove(qr);
     }
   };
-  submit = function submit() {
+  submit = function() {
     var span;
     this.style.visibility = 'collapse';
     if ((span = this.nextSibling)) {
       return remove(span);
     }
   };
-  minimize = function minimize() {
+  minimize = function() {
     var form;
     form = this.parentNode.nextSibling;
     if (form.style.visibility) {
@@ -461,7 +461,7 @@ cursor: pointer; \
       return form.style.visibility;
     }
   };
-  quickReply = function quickReply(e) {
+  quickReply = function(e) {
     var _c, a, clone, div, input, qr, selText, selection, textarea, xpath;
     e.preventDefault();
     if (!(qr = $('#qr'))) {
@@ -506,11 +506,11 @@ cursor: pointer; \
     //xx
     textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n';
     selection = window.getSelection();
-    id = (_c = x('preceding::span[@id][1]', selection.anchorNode)) == undefined ? undefined : _c.id;
+    id = typeof (_c = (x('preceding::span[@id][1]', selection.anchorNode))) === "undefined" || _c == undefined ? undefined : _c.id;
     id === this.parentNode.id ? (selText = selection.toString()) ? textarea.value += (">" + selText + "\n") : null : null;
     return textarea.focus();
   };
-  watch = function watch() {
+  watch = function() {
     var text;
     id = this.nextSibling.name;
     if (this.src[0] === 'd') {
@@ -529,7 +529,7 @@ cursor: pointer; \
     GM_setValue('watched', JSON.stringify(watched));
     return watcherUpdate();
   };
-  watchX = function watchX() {
+  watchX = function() {
     var _c, img, input;
     _c = this.nextElementSibling.getAttribute('href').split('/');
     nop = _c[0];
@@ -545,7 +545,7 @@ cursor: pointer; \
       return img.src;
     }
   };
-  watcherUpdate = function watcherUpdate() {
+  watcherUpdate = function() {
     var _c, _d, _e, _f, a, div, old;
     div = tag('div');
     _c = watched;
@@ -569,7 +569,7 @@ cursor: pointer; \
     old = $('#watcher div:last-child');
     return replace(old, div);
   };
-  parseResponse = function parseResponse(responseText) {
+  parseResponse = function(responseText) {
     var body, opbq, replies;
     body = tag('body');
     body.innerHTML = responseText;
@@ -577,7 +577,7 @@ cursor: pointer; \
     opbq = $('blockquote', body);
     return [replies, opbq];
   };
-  onloadThread = function onloadThread(responseText, span) {
+  onloadThread = function(responseText, span) {
     var _c, _d, _e, _f, _g, _h, _i, _j, _k, div, next, opbq, replies, reply;
     _c = parseResponse(responseText);
     replies = _c[0];
@@ -607,7 +607,7 @@ cursor: pointer; \
       return _h;
     }
   };
-  expandThread = function expandThread() {
+  expandThread = function() {
     var _c, _d, _e, num, prev, span, table, xhr;
     id = x('preceding-sibling::input[1]', this).name;
     span = this;
@@ -635,7 +635,7 @@ cursor: pointer; \
     }
     //create new request
     r = new XMLHttpRequest();
-    r.onload = function onload() {
+    r.onload = function() {
       return onloadThread(this.responseText, span);
     };
     r.open('GET', ("res/" + id), true);
@@ -645,7 +645,7 @@ cursor: pointer; \
       id: id
     });
   };
-  onloadComment = function onloadComment(responseText, a, href) {
+  onloadComment = function(responseText, a, href) {
     var _c, _d, _e, _f, _g, bq, op, opbq, replies, reply;
     _c = href.match(/(\d+)#(\d+)/);
     nop = _c[0];
@@ -669,13 +669,13 @@ cursor: pointer; \
     bq.innerHTML = html;
     return bq.innerHTML;
   };
-  expandComment = function expandComment(e) {
+  expandComment = function(e) {
     var a, href;
     e.preventDefault();
     a = this;
     href = a.getAttribute('href');
     r = new XMLHttpRequest();
-    r.onload = function onload() {
+    r.onload = function() {
       return onloadComment(this.responseText, a, href);
     };
     r.open('GET', href, true);
@@ -685,14 +685,14 @@ cursor: pointer; \
       id: href.match(/\d+/)[0]
     });
   };
-  report = function report() {
+  report = function() {
     var input;
-    input = x('preceding-sibling::input', this);
+    input = x('preceding-sibling::input[1]', this);
     input.click();
     $('input[value="Report"]').click();
     return input.click();
   };
-  nodeInserted = function nodeInserted(e) {
+  nodeInserted = function(e) {
     var _c, _d, _e, _f, callback, target;
     target = e.target;
     if (target.nodeName === 'TABLE') {
@@ -704,15 +704,15 @@ cursor: pointer; \
       return _c;
     }
   };
-  autoWatch = function autoWatch() {
+  autoWatch = function() {
     var autoText;
     autoText = $('textarea', this).value.slice(0, 25);
     return GM_setValue('autoText', ("/" + BOARD + "/ - " + autoText));
   };
-  stopPropagation = function stopPropagation(e) {
+  stopPropagation = function(e) {
     return e.stopPropagation();
   };
-  replyNav = function replyNav() {
+  replyNav = function() {
     var direction, op;
     if (REPLY) {
       window.location = this.textContent === '▲' ? '#navtop' : '#navbot';
