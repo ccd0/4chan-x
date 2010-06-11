@@ -944,5 +944,4 @@ cursor: pointer; \
     callback();
   }
   document.body.addEventListener('DOMNodeInserted', nodeInserted, true);
-  alert('wat');
 })();
