@@ -4,6 +4,8 @@
   //todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
   //todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
   //todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
+  //todo: hotkeys? navlink at top?
+  //thread watching doesn't work in opera?
   config = {
     'Thread Hiding': true,
     'Reply Hiding': true,
@@ -269,15 +271,18 @@ cursor: pointer; \
     }
   };
   mousedown = function(e) {
-    var div;
+    var div, l, t;
     div = this.parentNode;
     move.div = div;
-    move.divX = parseInt(div.style.left);
-    move.divY = parseInt(div.style.top);
     move.clientX = e.clientX;
     move.clientY = e.clientY;
     move.bodyX = document.body.clientWidth;
     move.bodyY = document.body.clientHeight;
+    // check if the string exists. parseInt('0px') is falsey.
+    l = div.style.left;
+    move.divX = l ? parseInt(l) : move.bodyX - div.offsetWidth;
+    t = div.style.top;
+    move.divY = t ? parseInt(t) : move.bodyY - div.offsetHeight;
     window.addEventListener('mousemove', mousemove, true);
     return window.addEventListener('mouseup', mouseup, true);
   };
@@ -756,7 +761,7 @@ cursor: pointer; \
     document.body.appendChild(iframe);
     callbacks.push(function(root) {
       var _c, _d, _e, _f, quote, quotes;
-      quotes = $$('a.quotejs:not(:first-child)');
+      quotes = $$('a.quotejs:not(:first-child)', root);
       _c = []; _e = quotes;
       for (_d = 0, _f = _e.length; _d < _f; _d++) {
         quote = _e[_d];
@@ -939,4 +944,5 @@ cursor: pointer; \
     callback();
   }
   document.body.addEventListener('DOMNodeInserted', nodeInserted, true);
+  alert('wat');
 })();

@@ -1,6 +1,8 @@
 #todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
 #todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
 #todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
+#todo: hotkeys? navlink at top?
+#thread watching doesn't work in opera?
 
 config: {
     'Thread Hiding':        true,
@@ -234,12 +236,16 @@ options: ->
 mousedown: (e) ->
     div: this.parentNode
     move.div: div
-    move.divX: parseInt(div.style.left)
-    move.divY: parseInt(div.style.top)
     move.clientX: e.clientX
     move.clientY: e.clientY
     move.bodyX: document.body.clientWidth
     move.bodyY: document.body.clientHeight
+
+    # check if the string exists. parseInt('0px') is falsey.
+    l = div.style.left
+    move.divX: if l then parseInt(l) else move.bodyX - div.offsetWidth
+    t = div.style.top
+    move.divY: if t then parseInt(t) else move.bodyY - div.offsetHeight
     window.addEventListener('mousemove', mousemove, true)
     window.addEventListener('mouseup', mouseup, true)
 
