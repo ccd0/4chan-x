@@ -213,10 +213,21 @@ GM_addStyle('
 ')
 
 
+clearHidden: ->
+    #'hidden' might be misleading; it's the number of IDs we're *looking* for,
+    # not the number of posts actually hidden on the page.
+    GM_deleteValue("hiddenReplies/$BOARD/")
+    GM_deleteValue("hiddenThreads/$BOARD/")
+    @value: "hidden: 0"
+    hiddenReplies: []
+    hiddenThreads: []
+
+
 options: ->
     if div: $('#options')
         remove(div)
     else
+        hiddenNum: hiddenReplies.length + hiddenThreads.length
         div: tag('div')
         div.id: 'options'
         div.className: 'reply'
@@ -225,9 +236,11 @@ options: ->
         for option of config
             checked: if getValue(option) then "checked" else ""
             html += "<label>$option<input $checked name=\"$option\" type=\"checkbox\"></label><br>"
+        html += "<input type=\"button\" value=\"hidden: $hiddenNum\"><br>"
         html += '<a name="save">save</a> <a name="cancel">cancel</a></div>'
         div.innerHTML: html
         $('div', div).addEventListener('mousedown', mousedown, true)
+        $('input[type="button"]', div).addEventListener('click', clearHidden, true)
         $('a[name="save"]', div).addEventListener('click', optionsSave, true)
         $('a[name="cancel"]', div).addEventListener('click', close, true)
         document.body.appendChild(div)

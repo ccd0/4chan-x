@@ -1,5 +1,5 @@
 (function(){
-  var $, $$, BOARD, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, close, config, cutoff, day, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, minimize, mousedown, mousemove, mouseup, move, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, BOARD, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, day, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, minimize, mousedown, mousemove, mouseup, move, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __hasProp = Object.prototype.hasOwnProperty;
   //todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
   //todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
@@ -247,11 +247,22 @@ cursor: move; \
 cursor: pointer; \
 } \
 ');
+  clearHidden = function() {
+    //'hidden' might be misleading; it's the number of IDs we're *looking* for,
+    // not the number of posts actually hidden on the page.
+    GM_deleteValue(("hiddenReplies/" + BOARD + "/"));
+    GM_deleteValue(("hiddenThreads/" + BOARD + "/"));
+    this.value = "hidden: 0";
+    hiddenReplies = [];
+    hiddenThreads = [];
+    return hiddenThreads;
+  };
   options = function() {
-    var _c, checked, div, option;
+    var _c, checked, div, hiddenNum, option;
     if ((div = $('#options'))) {
       return remove(div);
     } else {
+      hiddenNum = hiddenReplies.length + hiddenThreads.length;
       div = tag('div');
       div.id = 'options';
       div.className = 'reply';
@@ -262,9 +273,11 @@ cursor: pointer; \
         checked = getValue(option) ? "checked" : "";
         html += ("<label>" + option + "<input " + checked + " name=\"" + option + "\" type=\"checkbox\"></label><br>");
       }}
+      html += ("<input type=\"button\" value=\"hidden: " + hiddenNum + "\"><br>");
       html += '<a name="save">save</a> <a name="cancel">cancel</a></div>';
       div.innerHTML = html;
       $('div', div).addEventListener('mousedown', mousedown, true);
+      $('input[type="button"]', div).addEventListener('click', clearHidden, true);
       $('a[name="save"]', div).addEventListener('click', optionsSave, true);
       $('a[name="cancel"]', div).addEventListener('click', close, true);
       return document.body.appendChild(div);
