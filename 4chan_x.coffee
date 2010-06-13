@@ -654,6 +654,15 @@ replyNav: ->
         window.location: "#$op"
 
 
+#error out if there's no #navtopr.
+text: $('#navtopr a').nextSibling
+a: tag('a')
+a.textContent: 'X'
+a.className: 'pointer'
+a.addEventListener('click', options, true)
+inBefore(text, document.createTextNode(' / '))
+inBefore(text, a)
+
 if getValue('Reply Hiding')
     callbacks.push((root) ->
         tds: $$('td.doubledash', root)
@@ -819,14 +828,6 @@ if not REPLY
         as: $$('span.abbr a')
         for a in as
             a.addEventListener('click', expandComment, true)
-
-a: tag('a')
-a.textContent: 'X'
-a.className: 'pointer'
-a.addEventListener('click', options, true)
-text: $('#navtopr a').nextSibling
-inBefore(text, document.createTextNode(' / '))
-inBefore(text, a)
 
 for callback in callbacks
     callback()

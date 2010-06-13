@@ -742,8 +742,16 @@ cursor: pointer; \
       return window.location;
     }
   };
+  //error out if there's no #navtopr.
+  text = $('#navtopr a').nextSibling;
+  a = tag('a');
+  a.textContent = 'X';
+  a.className = 'pointer';
+  a.addEventListener('click', options, true);
+  inBefore(text, document.createTextNode(' / '));
+  inBefore(text, a);
   getValue('Reply Hiding') ? callbacks.push(function(root) {
-    var _c, _d, _e, _f, _g, _h, _i, _j, a, next, obj, td, tds;
+    var _c, _d, _e, _f, _g, _h, _i, _j, next, obj, td, tds;
     tds = $$('td.doubledash', root);
     _c = []; _e = tds;
     for (_d = 0, _f = _e.length; _d < _f; _d++) {
@@ -784,7 +792,7 @@ cursor: pointer; \
     });
   }
   getValue('Quick Report') ? callbacks.push(function(root) {
-    var _c, _d, _e, _f, a, arr, el;
+    var _c, _d, _e, _f, arr, el;
     arr = $$('span[id^=no]', root);
     _c = []; _e = arr;
     for (_d = 0, _f = _e.length; _d < _f; _d++) {
@@ -944,13 +952,6 @@ cursor: pointer; \
       }
     }
   }
-  a = tag('a');
-  a.textContent = 'X';
-  a.className = 'pointer';
-  a.addEventListener('click', options, true);
-  text = $('#navtopr a').nextSibling;
-  inBefore(text, document.createTextNode(' / '));
-  inBefore(text, a);
   _s = callbacks;
   for (_r = 0, _t = _s.length; _r < _t; _r++) {
     callback = _s[_r];
