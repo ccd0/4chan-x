@@ -37,18 +37,18 @@
 
 /* HACKING */
 
-4chan x is written in CoffeeScript[1], and hosted on github[2].
+// 4chan x is written in CoffeeScript[1], and hosted on github[2].
 
-[1]: http://jashkenas.github.com/coffee-script/
-[2]: http://github.com/aeosynth/4chan-x
+// [1]: http://jashkenas.github.com/coffee-script/
+// [2]: http://github.com/aeosynth/4chan-x
 
 
 /* CONTRIBUTORS */
 
-Ongpot - sfw favicon
-thisisanon - nsfw + 404 favicons
-Anonymous - empty favicon
-All the people who've taken the time to write bug reports.
+// Ongpot - sfw favicon
+// thisisanon - nsfw + 404 favicons
+// Anonymous - empty favicon
+// All the people who've taken the time to write bug reports.
 
-Thank you.
+// Thank you.
 
