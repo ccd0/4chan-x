@@ -1,5 +1,5 @@
 (function(){
-  var $, $$, BOARD, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, day, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, minimize, mousedown, mousemove, mouseup, move, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, BOARD, DAY, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, minimize, mousedown, mousemove, mouseup, move, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __hasProp = Object.prototype.hasOwnProperty;
   //todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
   //todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
@@ -174,9 +174,9 @@
   hiddenReplies = JSON.parse(GM_getValue(("hiddenReplies/" + BOARD + "/"), '[]'));
   lastChecked = GM_getValue('lastChecked', 0);
   now = getTime();
-  day = 24 * 60 * 60;
-  if (lastChecked < now - day) {
-    cutoff = now - 7 * day;
+  DAY = 24 * 60 * 60;
+  if (lastChecked < now - 1 * DAY) {
+    cutoff = now - 7 * DAY;
     while (hiddenThreads.length) {
       if (hiddenThreads[0].timestamp > cutoff) {
         break;
@@ -381,7 +381,7 @@ cursor: pointer; \
     }
     div.appendChild(current);
     current = div.nextSibling;
-    id = $('input', div).name;
+    id = $('input[value="delete"]', div).name;
     div.id = id;
     //check if we should hide the thread
     _d = hiddenThreads;
@@ -885,6 +885,7 @@ cursor: pointer; \
   if (!REPLY) {
     if (getValue('Thread Hiding')) {
       delform = $('form[name=delform]');
+      //don't confuse other scripts
       document.addEventListener('DOMNodeInserted', stopPropagation, true);
       threadF(delform.firstChild);
       document.removeEventListener('DOMNodeInserted', stopPropagation, true);

@@ -140,9 +140,9 @@ hiddenReplies: JSON.parse(GM_getValue("hiddenReplies/$BOARD/", '[]'))
 
 lastChecked: GM_getValue('lastChecked', 0)
 now: getTime()
-day: 24 * 60 * 60
-if lastChecked < now - day
-    cutoff: now - 7*day
+DAY: 24 * 60 * 60
+if lastChecked < now - 1*DAY
+    cutoff: now - 7*DAY
     while hiddenThreads.length
         if hiddenThreads[0].timestamp > cutoff
             break
@@ -343,7 +343,7 @@ threadF: (current) ->
     div.appendChild(current)
     current: div.nextSibling
 
-    id: $('input', div).name
+    id: $('input[value="delete"]', div).name
     div.id: id
     #check if we should hide the thread
     for hidden in hiddenThreads
@@ -770,6 +770,7 @@ if getValue('Reply Navigation')
 if not REPLY
     if getValue('Thread Hiding')
         delform = $('form[name=delform]')
+        #don't confuse other scripts
         document.addEventListener('DOMNodeInserted', stopPropagation, true)
         threadF(delform.firstChild)
         document.removeEventListener('DOMNodeInserted', stopPropagation, true)
