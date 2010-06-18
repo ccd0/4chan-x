@@ -9,6 +9,9 @@
 // @include        http://sys.4chan.org/*
 // ==/UserScript==
 
+
+/* LICENSE */
+
 // Copyright (c) 2009, 2010 James Campos
 
 // Permission is hereby granted, free of charge, to any person
@@ -30,4 +33,22 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
+
+
+/* HACKING */
+
+4chan x is written in CoffeeScript[1], and hosted on github[2].
+
+[1]: http://jashkenas.github.com/coffee-script/
+[2]: http://github.com/aeosynth/4chan-x
+
+
+/* CONTRIBUTORS */
+
+Ongpot - sfw favicon
+thisisanon - nsfw + 404 favicons
+Anonymous - empty favicon
+All the people who've taken the time to write bug reports.
+
+Thank you.
 
