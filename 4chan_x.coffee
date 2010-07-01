@@ -49,9 +49,16 @@ replace: (root, el) ->
     root.parentNode.replaceChild(el, root)
 getTime: ->
     Math.floor(new Date().getTime() / 1000)
+make: (tag, obj) ->
+    el: document.createElement(tag)
+    if obj
+        for key of obj
+            el[key]: obj[key]
+    return el
 slice: (arr, id) ->
     # the while loop is the only low-level loop left in coffeescript.
     # we need to use it to see the index.
+    # would it be better to just use objects and the `delete` keyword?
     i: 0
     l: arr.length
     while (i < l)
@@ -71,6 +78,7 @@ position: (el) ->
         el.style.bottom: '0px'
 
 
+# x-browser
 if typeof GM_deleteValue == 'undefined'
     this.GM_setValue: (name, value) ->
         value: (typeof value)[0] + value
@@ -121,7 +129,6 @@ else
     PAGENUM: parseInt(magic) || 0
 xhrs: []
 r: null
-head: $('head', document)
 iframeLoop: false
 move: { }
 callbacks: []
@@ -224,6 +231,7 @@ clearHidden: ->
 
 
 options: ->
+    #redo this
     if div: $('#options')
         remove(div)
     else
@@ -445,19 +453,21 @@ quickReply: (e) ->
         div.addEventListener('mousedown', mousedown, true)
         qr.appendChild(div)
 
-        a: tag('a')
-        a.textContent: '_'
-        a.className: 'pointer'
-        a.title: 'minimize'
-        a.addEventListener('click', minimize, true)
-        div.appendChild(a)
+        minimizeB: make('a', {
+            textContent: '_'
+            className: 'pointer'
+            title: 'minimize'
+        })
+        minimizeB.addEventListener('click', minimize, true)
+        div.appendChild(minimizeB)
         div.appendChild(document.createTextNode(' '))
-        a: tag('a')
-        a.textContent: 'X'
-        a.className: 'pointer'
-        a.title: 'close'
-        a.addEventListener('click', close, true)
-        div.appendChild(a)
+        closeB: make('a', {
+            textContent: 'X'
+            className: 'pointer'
+            title: 'close'
+        })
+        closeB.addEventListener('click', close, true)
+        div.appendChild(closeB)
 
         clone: $('form[name="post"]').cloneNode(true)
         clone.addEventListener('submit', submit, true)
@@ -504,14 +514,14 @@ watch: ->
 
 
 watchX: ->
-    [nop, board, nop, id]:
-        this.nextElementSibling.getAttribute('href').split('/')
+    [board, nop, id]:
+        this.nextElementSibling.getAttribute('href').substring(1).split('/')
     watched[board]: slice(watched[board], id)
     GM_setValue('watched', JSON.stringify(watched))
     watcherUpdate()
     if input: $("input[name=\"$id\"]")
-        img: input.previousSibling
-        img.src: favEmpty
+        favicon: input.previousSibling
+        favicon.src: favEmpty
 
 
 watcherUpdate: ->
@@ -524,18 +534,19 @@ watcherUpdate: ->
             a.addEventListener('click', watchX, true)
             div.appendChild(a)
             div.appendChild(document.createTextNode(' '))
-            a: tag('a')
-            a.textContent: thread.text
-            a.href: "/$board/res/${thread.id}"
-            div.appendChild(a)
+            link: tag('a')
+            link.textContent: thread.text
+            link.href: "/$board/res/${thread.id}"
+            div.appendChild(link)
             div.appendChild(tag('br'))
     old: $('#watcher div:last-child')
     replace(old, div)
 
 
 parseResponse: (responseText) ->
-    body: tag('body')
-    body.innerHTML: responseText
+    body: make('body', {
+        innerHTML: responseText
+    })
     replies: $$('td.reply', body)
     opbq: $('blockquote', body)
     return [replies, opbq]

@@ -1,5 +1,5 @@
 (function(){
-  var $, $$, BOARD, DAY, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, minimize, mousedown, mousemove, mouseup, move, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, BOARD, DAY, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, make, minimize, mousedown, mousemove, mouseup, move, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __hasProp = Object.prototype.hasOwnProperty;
   //todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
   //todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
@@ -69,10 +69,22 @@
   getTime = function() {
     return Math.floor(new Date().getTime() / 1000);
   };
+  make = function(tag, obj) {
+    var _a, el, key;
+    el = document.createElement(tag);
+    if (obj) {
+      _a = obj;
+      for (key in _a) { if (__hasProp.call(_a, key)) {
+        el[key] = obj[key];
+      }}
+    }
+    return el;
+  };
   slice = function(arr, id) {
     var i, l;
     // the while loop is the only low-level loop left in coffeescript.
     // we need to use it to see the index.
+    // would it be better to just use objects and the `delete` keyword?
     i = 0;
     l = arr.length;
     while ((i < l)) {
@@ -95,6 +107,7 @@
       return el.style.bottom;
     }
   };
+  // x-browser
   if (typeof GM_deleteValue === 'undefined') {
     this.GM_setValue = function(name, value) {
       value = (typeof value)[0] + value;
@@ -155,7 +168,6 @@
   magic === 'res' ? (REPLY = magic) : (PAGENUM = parseInt(magic) || 0);
   xhrs = [];
   r = null;
-  head = $('head', document);
   iframeLoop = false;
   move = {};
   callbacks = [];
@@ -259,6 +271,7 @@ cursor: pointer; \
   };
   options = function() {
     var _c, checked, div, hiddenNum, option;
+    //redo this
     if ((div = $('#options'))) {
       return remove(div);
     } else {
@@ -480,7 +493,7 @@ cursor: pointer; \
     }
   };
   quickReply = function(e) {
-    var _c, a, clone, div, input, qr, selText, selection, textarea, xpath;
+    var _c, clone, closeB, div, input, minimizeB, qr, selText, selection, textarea, xpath;
     e.preventDefault();
     if (!(qr = $('#qr'))) {
       qr = tag('div');
@@ -492,19 +505,21 @@ cursor: pointer; \
       div.className = 'move';
       div.addEventListener('mousedown', mousedown, true);
       qr.appendChild(div);
-      a = tag('a');
-      a.textContent = '_';
-      a.className = 'pointer';
-      a.title = 'minimize';
-      a.addEventListener('click', minimize, true);
-      div.appendChild(a);
+      minimizeB = make('a', {
+        textContent: '_',
+        className: 'pointer',
+        title: 'minimize'
+      });
+      minimizeB.addEventListener('click', minimize, true);
+      div.appendChild(minimizeB);
       div.appendChild(document.createTextNode(' '));
-      a = tag('a');
-      a.textContent = 'X';
-      a.className = 'pointer';
-      a.title = 'close';
-      a.addEventListener('click', close, true);
-      div.appendChild(a);
+      closeB = make('a', {
+        textContent: 'X',
+        className: 'pointer',
+        title: 'close'
+      });
+      closeB.addEventListener('click', close, true);
+      div.appendChild(closeB);
       clone = $('form[name="post"]').cloneNode(true);
       clone.addEventListener('submit', submit, true);
       clone.target = 'iframe';
@@ -548,23 +563,22 @@ cursor: pointer; \
     return watcherUpdate();
   };
   watchX = function() {
-    var _c, img, input;
-    _c = this.nextElementSibling.getAttribute('href').split('/');
-    nop = _c[0];
-    board = _c[1];
-    nop = _c[2];
-    id = _c[3];
+    var _c, input;
+    _c = this.nextElementSibling.getAttribute('href').substring(1).split('/');
+    board = _c[0];
+    nop = _c[1];
+    id = _c[2];
     watched[board] = slice(watched[board], id);
     GM_setValue('watched', JSON.stringify(watched));
     watcherUpdate();
     if ((input = $(("input[name=\"" + id + "\"]")))) {
-      img = input.previousSibling;
-      img.src = favEmpty;
-      return img.src;
+      favicon = input.previousSibling;
+      favicon.src = favEmpty;
+      return favicon.src;
     }
   };
   watcherUpdate = function() {
-    var _c, _d, _e, _f, a, div, old;
+    var _c, _d, _e, _f, a, div, link, old;
     div = tag('div');
     _c = watched;
     for (board in _c) { if (__hasProp.call(_c, board)) {
@@ -577,10 +591,10 @@ cursor: pointer; \
         a.addEventListener('click', watchX, true);
         div.appendChild(a);
         div.appendChild(document.createTextNode(' '));
-        a = tag('a');
-        a.textContent = thread.text;
-        a.href = ("/" + board + "/res/" + (thread.id));
-        div.appendChild(a);
+        link = tag('a');
+        link.textContent = thread.text;
+        link.href = ("/" + board + "/res/" + (thread.id));
+        div.appendChild(link);
         div.appendChild(tag('br'));
       }
     }}
@@ -589,8 +603,9 @@ cursor: pointer; \
   };
   parseResponse = function(responseText) {
     var body, opbq, replies;
-    body = tag('body');
-    body.innerHTML = responseText;
+    body = make('body', {
+      innerHTML: responseText
+    });
     replies = $$('td.reply', body);
     opbq = $('blockquote', body);
     return [replies, opbq];
