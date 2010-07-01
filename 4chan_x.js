@@ -493,7 +493,7 @@ cursor: pointer; \
     }
   };
   quickReply = function(e) {
-    var _c, clone, closeB, div, input, minimizeB, qr, selText, selection, textarea, xpath;
+    var _c, bf, clone, closeB, div, input, minimizeB, qr, selText, selection, textarea, xpath;
     e.preventDefault();
     if (!(qr = $('#qr'))) {
       qr = tag('div');
@@ -521,6 +521,8 @@ cursor: pointer; \
       closeB.addEventListener('click', close, true);
       div.appendChild(closeB);
       clone = $('form[name="post"]').cloneNode(true);
+      //remove buzzfeed
+      (bf = $('.bf', clone)) ? remove(bf) : null;
       clone.addEventListener('submit', submit, true);
       clone.target = 'iframe';
       if (!REPLY) {
@@ -541,7 +543,8 @@ cursor: pointer; \
     selection = window.getSelection();
     id = typeof (_c = (x('preceding::span[@id][1]', selection.anchorNode))) === "undefined" || _c == undefined ? undefined : _c.id;
     id === this.parentNode.id ? (selText = selection.toString()) ? textarea.value += (">" + selText + "\n") : null : null;
-    return textarea.focus();
+    textarea.focus();
+    return null;
   };
   watch = function() {
     var text;

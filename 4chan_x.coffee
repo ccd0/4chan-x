@@ -470,6 +470,9 @@ quickReply: (e) ->
         div.appendChild(closeB)
 
         clone: $('form[name="post"]').cloneNode(true)
+        #remove buzzfeed
+        if bf: $('.bf', clone)
+            remove(bf)
         clone.addEventListener('submit', submit, true)
         clone.target: 'iframe'
         if not REPLY
@@ -492,6 +495,7 @@ quickReply: (e) ->
         if selText: selection.toString()
             textarea.value += ">$selText\n"
     textarea.focus()
+    return
 
 
 watch: ->
