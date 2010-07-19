@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features; replaces the extension / fychan.
-// @version        1.1.2
+// @version        1.1.3
 // @copyright      2009, 2010 James Campos
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -48,6 +48,7 @@
 // Ongpot - sfw favicon
 // thisisanon - nsfw + 404 favicons
 // Anonymous - empty favicon
+// Seiba - chrome quick reply focusing
 // All the people who've taken the time to write bug reports.
 
 // Thank you.
