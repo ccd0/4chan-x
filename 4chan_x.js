@@ -504,11 +504,11 @@ cursor: pointer; \
       document.body.appendChild(qr);
     }
     textarea = $('textarea', qr);
+    textarea.focus();
     textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n';
     selection = window.getSelection();
     id = typeof (_c = (x('preceding::span[@id][1]', selection.anchorNode))) === "undefined" || _c == undefined ? undefined : _c.id;
     id === this.parentNode.id ? (selText = selection.toString()) ? textarea.value += (">" + selText + "\n") : null : null;
-    textarea.focus();
     return null;
   };
   watch = function() {

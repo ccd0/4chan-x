@@ -488,6 +488,7 @@ quickReply: (e) ->
         document.body.appendChild(qr)
 
     textarea: $('textarea', qr)
+    textarea.focus()
     #we can't just use @textContent b/c of the xxxs. goddamit moot.
     textarea.value += '>>' + @parentNode.id.match(/\d+$/)[0] + '\n'
     selection: window.getSelection()
@@ -495,7 +496,6 @@ quickReply: (e) ->
     if id is this.parentNode.id
         if selText: selection.toString()
             textarea.value += ">$selText\n"
-    textarea.focus()
     return
 
 
