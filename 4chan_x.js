@@ -492,11 +492,12 @@ cursor: pointer; \
       clone.addEventListener('submit', submit, true);
       clone.target = 'iframe';
       if (!REPLY) {
-        input = tag('input');
-        input.type = 'hidden';
-        input.name = 'resto';
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
-        input.value = x(xpath, this).name;
+        input = make('input', {
+          value: x(xpath, this).name,
+          type: 'hidden',
+          name: 'resto'
+        });
         clone.appendChild(input);
       }
       qr.appendChild(clone);
