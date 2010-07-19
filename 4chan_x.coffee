@@ -338,6 +338,7 @@ hideThread: (div) ->
 
 threadF: (current) ->
     div: tag('div')
+    div.className: 'thread'
     a: tag('a')
     a.textContent: '[ - ]'
     a.className: 'pointer'
@@ -442,6 +443,7 @@ minimize: ->
 quickReply: (e) ->
     e.preventDefault()
     if !qr: $('#qr')
+        #make quick reply dialog
         qr: tag('div')
         qr.id: 'qr'
         qr.className: 'reply'
@@ -471,24 +473,23 @@ quickReply: (e) ->
 
         clone: $('form[name="post"]').cloneNode(true)
         #remove buzzfeed
-        if bf: $('.bf', clone)
-            remove(bf)
+        if bf: $('.bf', clone) then remove(bf)
         clone.addEventListener('submit', submit, true)
         clone.target: 'iframe'
         if not REPLY
-            input: tag('input')
-            input.type: 'hidden'
-            input.name: 'resto'
             xpath: 'preceding::span[@class="postername"][1]/preceding::input[1]'
-            input.value: x(xpath, this).name
+            input: make 'input', {
+                value: x(xpath, this).name
+                type: 'hidden'
+                name: 'resto'
+            }
             clone.appendChild(input)
         qr.appendChild(clone)
         document.body.appendChild(qr)
 
     textarea: $('textarea', qr)
-    #goddamit moot
-    #xx
-    textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n'
+    #we can't just use @textContent b/c of the xxxs. goddamit moot.
+    textarea.value += '>>' + @parentNode.id.match(/\d+$/)[0] + '\n'
     selection: window.getSelection()
     id: x('preceding::span[@id][1]', selection.anchorNode)?.id
     if id is this.parentNode.id

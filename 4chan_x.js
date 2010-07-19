@@ -1,11 +1,6 @@
 (function(){
   var $, $$, BOARD, DAY, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, make, minimize, mousedown, mousemove, mouseup, move, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __hasProp = Object.prototype.hasOwnProperty;
-  //todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
-  //todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
-  //todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
-  //todo: hotkeys? navlink at top?
-  //thread watching doesn't work in opera?
   config = {
     'Thread Hiding': true,
     'Reply Hiding': true,
@@ -35,7 +30,6 @@
     var _a, _b, _c, _d, node, result;
     root = root || document.body;
     result = root.querySelectorAll(selector);
-    //magic that turns the results object into an array:
     _a = []; _c = result;
     for (_b = 0, _d = _c.length; _b < _d; _b++) {
       node = _c[_b];
@@ -81,33 +75,25 @@
     return el;
   };
   slice = function(arr, id) {
-    var i, l;
-    // the while loop is the only low-level loop left in coffeescript.
-    // we need to use it to see the index.
-    // would it be better to just use objects and the `delete` keyword?
+    var _a, i, l;
     i = 0;
     l = arr.length;
-    while ((i < l)) {
+    _a = [];
+    while (i < l) {
       if (id === arr[i].id) {
         arr.splice(i, 1);
         return arr;
       }
       i++;
     }
+    return _a;
   };
   position = function(el) {
     var id, left, top;
     id = el.id;
     (left = GM_getValue(("" + (id) + "Left"), '0px')) ? (el.style.left = left) : (el.style.right = '0px');
-    if ((top = GM_getValue(("" + (id) + "Top"), '0px'))) {
-      el.style.top = top;
-      return el.style.top;
-    } else {
-      el.style.bottom = '0px';
-      return el.style.bottom;
-    }
+    return (top = GM_getValue(("" + (id) + "Top"), '0px')) ? (el.style.top = top) : (el.style.bottom = '0px');
   };
-  // x-browser
   if (typeof GM_deleteValue === 'undefined') {
     this.GM_setValue = function(name, value) {
       value = (typeof value)[0] + value;
@@ -171,10 +157,8 @@
   iframeLoop = false;
   move = {};
   callbacks = [];
-  //godammit moot
   head = $('head', document);
   if (!(favicon = $('link[rel="shortcut icon"]', head))) {
-    ///f/
     favicon = tag('link');
     favicon.rel = 'shortcut icon';
     favicon.href = 'http://static.4chan.org/image/favicon.ico';
@@ -260,10 +244,8 @@ cursor: pointer; \
 } \
 ');
   clearHidden = function() {
-    //'hidden' might be misleading; it's the number of IDs we're *looking* for,
-    // not the number of posts actually hidden on the page.
-    GM_deleteValue(("hiddenReplies/" + BOARD + "/"));
-    GM_deleteValue(("hiddenThreads/" + BOARD + "/"));
+    GM_deleteValue("hiddenReplies/" + BOARD + "/");
+    GM_deleteValue("hiddenThreads/" + BOARD + "/");
     this.value = "hidden: 0";
     hiddenReplies = [];
     hiddenThreads = [];
@@ -271,7 +253,6 @@ cursor: pointer; \
   };
   options = function() {
     var _c, checked, div, hiddenNum, option;
-    //redo this
     if ((div = $('#options'))) {
       return remove(div);
     } else {
@@ -304,7 +285,6 @@ cursor: pointer; \
     move.clientY = e.clientY;
     move.bodyX = document.body.clientWidth;
     move.bodyY = document.body.clientHeight;
-    // check if the string exists. parseInt('0px') is falsey.
     l = div.style.left;
     move.divX = l ? parseInt(l) : move.bodyX - div.offsetWidth;
     t = div.style.top;
@@ -316,7 +296,6 @@ cursor: pointer; \
     var div, left, realX, realY, top;
     div = move.div;
     realX = move.divX + (e.clientX - move.clientX);
-    // x + dx
     left = realX < 20 ? 0 : realX;
     if (move.bodyX - div.offsetWidth - realX < 20) {
       div.style.left = '';
@@ -326,7 +305,6 @@ cursor: pointer; \
       div.style.right = '';
     }
     realY = move.divY + (e.clientY - move.clientY);
-    // y + dy
     top = realY < 20 ? 0 : realY;
     if (move.bodyY - div.offsetHeight - realY < 20) {
       div.style.top = '';
@@ -356,7 +334,7 @@ cursor: pointer; \
   };
   hideThread = function(div) {
     var _c, a, n, name, p, span, text, trip;
-    if ((p = this.parentNode)) {
+    if (p = this.parentNode) {
       div = p;
       hiddenThreads.push({
         id: div.id,
@@ -381,14 +359,14 @@ cursor: pointer; \
   threadF = function(current) {
     var _c, _d, _e, a, div, hidden;
     div = tag('div');
+    div.className = 'thread';
     a = tag('a');
     a.textContent = '[ - ]';
     a.className = 'pointer';
     a.addEventListener('click', hideThread, true);
     div.appendChild(a);
     inBefore(current, div);
-    while ((!current.clear)) {
-      //<br clear>
+    while (!current.clear) {
       div.appendChild(current);
       current = div.nextSibling;
     }
@@ -396,16 +374,13 @@ cursor: pointer; \
     current = div.nextSibling;
     id = $('input[value="delete"]', div).name;
     div.id = id;
-    //check if we should hide the thread
     _d = hiddenThreads;
     for (_c = 0, _e = _d.length; _c < _e; _c++) {
       hidden = _d[_c];
       id === hidden.id ? hideThread(div) : null;
     }
     current = current.nextSibling.nextSibling;
-    if (current.nodeName !== 'CENTER') {
-      return threadF(current);
-    }
+    return current.nodeName !== 'CENTER' ? threadF(current) : null;
   };
   showReply = function() {
     var div, table;
@@ -419,7 +394,7 @@ cursor: pointer; \
   };
   hideReply = function(reply) {
     var _c, a, div, name, p, table, trip;
-    if ((p = this.parentNode)) {
+    if (p = this.parentNode) {
       reply = p.nextSibling;
       hiddenReplies.push({
         id: reply.id,
@@ -459,7 +434,7 @@ cursor: pointer; \
   };
   iframeLoad = function() {
     var error, qr, span;
-    if ((iframeLoop = !iframeLoop)) {
+    if (iframeLoop = !iframeLoop) {
       return null;
     }
     $('iframe').src = 'about:blank';
@@ -477,20 +452,12 @@ cursor: pointer; \
   submit = function() {
     var span;
     this.style.visibility = 'collapse';
-    if ((span = this.nextSibling)) {
-      return remove(span);
-    }
+    return (span = this.nextSibling) ? remove(span) : null;
   };
   minimize = function() {
     var form;
     form = this.parentNode.nextSibling;
-    if (form.style.visibility) {
-      form.style.visibility = '';
-      return form.style.visibility;
-    } else {
-      form.style.visibility = 'collapse';
-      return form.style.visibility;
-    }
+    return form.style.visibility ? (form.style.visibility = '') : (form.style.visibility = 'collapse');
   };
   quickReply = function(e) {
     var _c, bf, clone, closeB, div, input, minimizeB, qr, selText, selection, textarea, xpath;
@@ -521,7 +488,6 @@ cursor: pointer; \
       closeB.addEventListener('click', close, true);
       div.appendChild(closeB);
       clone = $('form[name="post"]').cloneNode(true);
-      //remove buzzfeed
       (bf = $('.bf', clone)) ? remove(bf) : null;
       clone.addEventListener('submit', submit, true);
       clone.target = 'iframe';
@@ -537,8 +503,6 @@ cursor: pointer; \
       document.body.appendChild(qr);
     }
     textarea = $('textarea', qr);
-    //goddamit moot
-    //xx
     textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n';
     selection = window.getSelection();
     id = typeof (_c = (x('preceding::span[@id][1]', selection.anchorNode))) === "undefined" || _c == undefined ? undefined : _c.id;
@@ -550,7 +514,6 @@ cursor: pointer; \
     var text;
     id = this.nextSibling.name;
     if (this.src[0] === 'd') {
-      //data:png
       this.src = favNormal;
       text = ("/" + BOARD + "/ - ") + x('following-sibling::blockquote', this).textContent.slice(0, 25);
       watched[BOARD] = watched[BOARD] || [];
@@ -574,7 +537,7 @@ cursor: pointer; \
     watched[board] = slice(watched[board], id);
     GM_setValue('watched', JSON.stringify(watched));
     watcherUpdate();
-    if ((input = $(("input[name=\"" + id + "\"]")))) {
+    if ((input = $("input[name=\"" + id + "\"]"))) {
       favicon = input.previousSibling;
       favicon.src = favEmpty;
       return favicon.src;
@@ -619,10 +582,8 @@ cursor: pointer; \
     replies = _c[0];
     opbq = _c[1];
     span.textContent = span.textContent.replace('X Loading...', '- ');
-    //make sure all comments are fully expanded
     span.previousSibling.innerHTML = opbq.innerHTML;
     while ((next = span.nextSibling) && !next.clear) {
-      //<br clear>
       remove(next);
     }
     if (next) {
@@ -633,7 +594,6 @@ cursor: pointer; \
       }
       return _d;
     } else {
-      //threading
       div = span.parentNode;
       _h = []; _j = replies;
       for (_i = 0, _k = _j.length; _i < _k; _i++) {
@@ -647,9 +607,7 @@ cursor: pointer; \
     var _c, _d, _e, num, prev, span, table, xhr;
     id = x('preceding-sibling::input[1]', this).name;
     span = this;
-    //close expanded thread
     if (span.textContent[0] === '-') {
-      //goddamit moot
       num = board === 'b' ? 3 : 5;
       table = x(("following::br[@clear][1]/preceding::table[" + num + "]"), span);
       while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
@@ -659,17 +617,14 @@ cursor: pointer; \
       return null;
     }
     span.textContent = span.textContent.replace('+', 'X Loading...');
-    //load cache
     _d = xhrs;
     for (_c = 0, _e = _d.length; _c < _e; _c++) {
       xhr = _d[_c];
       if (xhr.id === id) {
-        //why can't we just xhr.r.onload()?
         onloadThread(xhr.r.responseText, span);
         return null;
       }
     }
-    //create new request
     r = new XMLHttpRequest();
     r.onload = function() {
       return onloadThread(this.responseText, span);
@@ -693,8 +648,6 @@ cursor: pointer; \
     if (id === op) {
       html = opbq.innerHTML;
     } else {
-      //css selectors don't like ids starting with numbers,
-      // getElementById only works for root document.
       _f = replies;
       for (_e = 0, _g = _f.length; _e < _g; _e++) {
         reply = _f[_e];
@@ -760,7 +713,6 @@ cursor: pointer; \
       return window.location;
     }
   };
-  //error out if there's no #navtopr.
   text = $('#navtopr a').nextSibling;
   a = tag('a');
   a.textContent = 'X';
@@ -827,7 +779,6 @@ cursor: pointer; \
     return _c;
   }) : null;
   if (getValue('Thread Watcher')) {
-    //create watcher
     watcher = tag('div');
     watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>';
     watcher.className = 'reply';
@@ -836,9 +787,7 @@ cursor: pointer; \
     $('div', watcher).addEventListener('mousedown', mousedown, true);
     document.body.appendChild(watcher);
     watcherUpdate();
-    //add buttons
     threads = watched[BOARD] || [];
-    //normal, threading
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');
     _d = inputs;
     for (_c = 0, _e = _d.length; _c < _e; _c++) {
@@ -903,7 +852,6 @@ cursor: pointer; \
   if (!REPLY) {
     if (getValue('Thread Hiding')) {
       delform = $('form[name=delform]');
-      //don't confuse other scripts
       document.addEventListener('DOMNodeInserted', stopPropagation, true);
       threadF(delform.firstChild);
       document.removeEventListener('DOMNodeInserted', stopPropagation, true);
@@ -914,7 +862,6 @@ cursor: pointer; \
       i = 0;
       l = arr.length;
       l1 = l + 1;
-      //should this be a while loop?
       _j = arr;
       for (_i = 0, _k = _j.length; _i < _k; _i++) {
         el = _j[_i];
