@@ -37,7 +37,7 @@
 
 /* HACKING */
 
-// 4chan x is written in CoffeeScript[1], and hosted on github[2].
+// 4chan x is written in CoffeeScript[1], and developed on github[2].
 
 // [1]: http://jashkenas.github.com/coffee-script/
 // [2]: http://github.com/aeosynth/4chan-x
