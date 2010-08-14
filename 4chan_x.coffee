@@ -473,6 +473,9 @@ quickReply = (e) ->
         clone = $('form[name="post"]').cloneNode(true)
         #remove buzzfeed
         if bf = $('.bf', clone) then remove(bf)
+        #remove recaptcha scripts
+        for script in $$ 'script', clone
+            remove script
         clone.addEventListener('submit', submit, true)
         clone.target = 'iframe'
         if not REPLY

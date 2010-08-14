@@ -473,7 +473,7 @@ cursor: pointer; \
     return form.style.visibility ? (form.style.visibility = '') : (form.style.visibility = 'collapse');
   };
   quickReply = function(e) {
-    var _c, bf, clone, closeB, div, input, minimizeB, qr, selText, selection, textarea, xpath;
+    var _c, _d, _e, _f, bf, clone, closeB, div, input, minimizeB, qr, script, selText, selection, textarea, xpath;
     e.preventDefault();
     if (!(qr = $('#qr'))) {
       qr = tag('div');
@@ -504,6 +504,11 @@ cursor: pointer; \
       if ((bf = $('.bf', clone))) {
         remove(bf);
       };
+      _d = $$('script', clone);
+      for (_c = 0, _e = _d.length; _c < _e; _c++) {
+        script = _d[_c];
+        remove(script);
+      }
       clone.addEventListener('submit', submit, true);
       clone.target = 'iframe';
       if (!REPLY) {
@@ -522,7 +527,7 @@ cursor: pointer; \
     textarea.focus();
     textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n';
     selection = window.getSelection();
-    id = typeof (_c = (x('preceding::span[@id][1]', selection.anchorNode))) === "undefined" || _c == undefined ? undefined : _c.id;
+    id = typeof (_f = (x('preceding::span[@id][1]', selection.anchorNode))) === "undefined" || _f == undefined ? undefined : _f.id;
     if (id === this.parentNode.id) {
       if ((selText = selection.toString())) {
         textarea.value += (">" + (selText) + "\n");
