@@ -91,12 +91,12 @@
   position = function(el) {
     var id, left, top;
     id = el.id;
-    if ((left = GM_getValue("${id}Left", '0px'))) {
+    if ((left = GM_getValue(("" + (id) + "Left"), '0px'))) {
       el.style.left = left;
     } else {
       el.style.right = '0px';
     };
-    return (top = GM_getValue("${id}Top", '0px')) ? (el.style.top = top) : (el.style.bottom = '0px');
+    return (top = GM_getValue(("" + (id) + "Top"), '0px')) ? (el.style.top = top) : (el.style.bottom = '0px');
   };
   if (typeof GM_deleteValue === 'undefined') {
     this.GM_setValue = function(name, value) {
@@ -174,8 +174,8 @@
   }
   favNormal = favicon.href;
   favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==';
-  hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/$BOARD/", '[]'));
-  hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/$BOARD/", '[]'));
+  hiddenThreads = JSON.parse(GM_getValue(("hiddenThreads/" + (BOARD) + "/"), '[]'));
+  hiddenReplies = JSON.parse(GM_getValue(("hiddenReplies/" + (BOARD) + "/"), '[]'));
   lastChecked = GM_getValue('lastChecked', 0);
   now = getTime();
   DAY = 24 * 60 * 60;
@@ -193,8 +193,8 @@
       }
       hiddenReplies.shift();
     }
-    GM_setValue("hiddenThreads/$BOARD/", JSON.stringify(hiddenThreads));
-    GM_setValue("hiddenReplies/$BOARD/", JSON.stringify(hiddenReplies));
+    GM_setValue(("hiddenThreads/" + (BOARD) + "/"), JSON.stringify(hiddenThreads));
+    GM_setValue(("hiddenReplies/" + (BOARD) + "/"), JSON.stringify(hiddenReplies));
     GM_setValue('lastChecked', now);
   }
   GM_addStyle(' \
@@ -227,7 +227,7 @@ text-align: right; \
 #qr > form > div {/* ad */ \
 display: none; \
 } \
-#qr tr:last-child { \
+#qr td.rules { \
 display: none; \
 } \
 #options { \
@@ -252,8 +252,8 @@ cursor: pointer; \
 } \
 ');
   clearHidden = function() {
-    GM_deleteValue("hiddenReplies/$BOARD/");
-    GM_deleteValue("hiddenThreads/$BOARD/");
+    GM_deleteValue(("hiddenReplies/" + (BOARD) + "/"));
+    GM_deleteValue(("hiddenThreads/" + (BOARD) + "/"));
     this.value = "hidden: 0";
     hiddenReplies = [];
     return (hiddenThreads = []);
@@ -274,9 +274,9 @@ cursor: pointer; \
         if (!__hasProp.call(_d, option)) continue;
         _c = _d[option];
         checked = getValue(option) ? "checked" : "";
-        html += "<label>$option<input $checked name=\"$option\" type=\"checkbox\"></label><br>";
+        html += ("<label>" + (option) + "<input " + (checked) + " name=\"" + (option) + "\" type=\"checkbox\"></label><br>");
       }
-      html += "<input type=\"button\" value=\"hidden: $hiddenNum\"><br>";
+      html += ("<input type=\"button\" value=\"hidden: " + (hiddenNum) + "\"><br>");
       html += '<a name="save">save</a> <a name="cancel">cancel</a></div>';
       div.innerHTML = html;
       $('div', div).addEventListener('mousedown', mousedown, true);
@@ -325,8 +325,8 @@ cursor: pointer; \
   };
   mouseup = function() {
     id = move.div.id;
-    GM_setValue("${id}Left", move.div.style.left);
-    GM_setValue("${id}Top", move.div.style.top);
+    GM_setValue(("" + (id) + "Left"), move.div.style.left);
+    GM_setValue(("" + (id) + "Top"), move.div.style.top);
     window.removeEventListener('mousemove', mousemove, true);
     return window.removeEventListener('mouseup', mouseup, true);
   };
@@ -337,7 +337,7 @@ cursor: pointer; \
     hide(this);
     id = div.id;
     slice(hiddenThreads, id);
-    return GM_setValue("hiddenThreads/$BOARD/", JSON.stringify(hiddenThreads));
+    return GM_setValue(("hiddenThreads/" + (BOARD) + "/"), JSON.stringify(hiddenThreads));
   };
   hideThread = function(div) {
     var _c, a, n, name, p, span, text, trip;
@@ -347,7 +347,7 @@ cursor: pointer; \
         id: div.id,
         timestamp: getTime()
       });
-      GM_setValue("hiddenThreads/$BOARD/", JSON.stringify(hiddenThreads));
+      GM_setValue(("hiddenThreads/" + (BOARD) + "/"), JSON.stringify(hiddenThreads));
     }
     hide(div);
     if (getValue('Show Stubs')) {
@@ -358,10 +358,10 @@ cursor: pointer; \
         n = 0;
       };
       n += $$('table', div).length;
-      text = n === 1 ? "1 reply" : "$n replies";
+      text = n === 1 ? "1 reply" : ("" + (n) + " replies");
       name = $('span.postername', div).textContent;
       trip = (typeof (_c = ($('span.postername + span.postertrip', div))) === "undefined" || _c == undefined ? undefined : _c.textContent) || '';
-      a.textContent = "[ + ] $name$trip ($text)";
+      a.textContent = ("[ + ] " + (name) + (trip) + " (" + (text) + ")");
       a.className = 'pointer';
       a.addEventListener('click', showThread, true);
       return inBefore(div, a);
@@ -403,7 +403,7 @@ cursor: pointer; \
     remove(div);
     id = $('td.reply, td.replyhl', table).id;
     slice(hiddenReplies, id);
-    return GM_setValue("hiddenReplies/$BOARD/", JSON.stringify(hiddenReplies));
+    return GM_setValue(("hiddenReplies/" + (BOARD) + "/"), JSON.stringify(hiddenReplies));
   };
   hideReply = function(reply) {
     var _c, a, div, name, p, table, trip;
@@ -413,7 +413,7 @@ cursor: pointer; \
         id: reply.id,
         timestamp: getTime()
       });
-      GM_setValue("hiddenReplies/$BOARD/", JSON.stringify(hiddenReplies));
+      GM_setValue(("hiddenReplies/" + (BOARD) + "/"), JSON.stringify(hiddenReplies));
     }
     name = $('span.commentpostername', reply).textContent;
     trip = (typeof (_c = ($('span.postertrip', reply))) === "undefined" || _c == undefined ? undefined : _c.textContent) || '';
@@ -421,7 +421,7 @@ cursor: pointer; \
     hide(table);
     if (getValue('Show Stubs')) {
       a = tag('a');
-      a.textContent = "[ + ] $name $trip";
+      a.textContent = ("[ + ] " + (name) + " " + (trip));
       a.className = 'pointer';
       a.addEventListener('click', showReply, true);
       div = tag('div');
@@ -525,7 +525,7 @@ cursor: pointer; \
     id = typeof (_c = (x('preceding::span[@id][1]', selection.anchorNode))) === "undefined" || _c == undefined ? undefined : _c.id;
     if (id === this.parentNode.id) {
       if ((selText = selection.toString())) {
-        textarea.value += ">$selText\n";
+        textarea.value += (">" + (selText) + "\n");
       };
     };
     return null;
@@ -535,7 +535,7 @@ cursor: pointer; \
     id = this.nextSibling.name;
     if (this.src[0] === 'd') {
       this.src = favNormal;
-      text = "/$BOARD/ - " + x('following-sibling::blockquote', this).textContent.slice(0, 25);
+      text = ("/" + (BOARD) + "/ - ") + x('following-sibling::blockquote', this).textContent.slice(0, 25);
       watched[BOARD] = watched[BOARD] || [];
       watched[BOARD].push({
         id: id,
@@ -557,7 +557,7 @@ cursor: pointer; \
     watched[board] = slice(watched[board], id);
     GM_setValue('watched', JSON.stringify(watched));
     watcherUpdate();
-    if ((input = $("input[name=\"$id\"]"))) {
+    if ((input = $(("input[name=\"" + (id) + "\"]")))) {
       favicon = input.previousSibling;
       return (favicon.src = favEmpty);
     }
@@ -580,7 +580,7 @@ cursor: pointer; \
         div.appendChild(document.createTextNode(' '));
         link = tag('a');
         link.textContent = thread.text;
-        link.href = "/$board/res/${thread.id}";
+        link.href = ("/" + (board) + "/res/" + (thread.id));
         div.appendChild(link);
         div.appendChild(tag('br'));
       }
@@ -630,7 +630,7 @@ cursor: pointer; \
     span = this;
     if (span.textContent[0] === '-') {
       num = board === 'b' ? 3 : 5;
-      table = x("following::br[@clear][1]/preceding::table[$num]", span);
+      table = x(("following::br[@clear][1]/preceding::table[" + (num) + "]"), span);
       while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
         remove(prev);
       }
@@ -650,7 +650,7 @@ cursor: pointer; \
     r.onload = function() {
       return onloadThread(this.responseText, span);
     };
-    r.open('GET', "res/$id", true);
+    r.open('GET', ("res/" + (id)), true);
     r.send();
     return xhrs.push({
       r: r,
@@ -704,7 +704,7 @@ cursor: pointer; \
     return input.click();
   };
   nodeInserted = function(e) {
-    var _c, _d, _e, _f, callback, target;
+    var _c, _d, _e, _f, callback, qr, target;
     target = e.target;
     if (target.nodeName === 'TABLE') {
       _c = []; _e = callbacks;
@@ -713,12 +713,15 @@ cursor: pointer; \
         _c.push(callback(target));
       }
       return _c;
+    } else if (target.id === 'recaptcha_challenge_field' && (qr = $('#qr'))) {
+      $('#recaptcha_image img', qr).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+      return ($('#recaptcha_challenge_field', qr).value = target.value);
     }
   };
   autoWatch = function() {
     var autoText;
     autoText = $('textarea', this).value.slice(0, 25);
-    return GM_setValue('autoText', "/$BOARD/ - $autoText");
+    return GM_setValue('autoText', ("/" + (BOARD) + "/ - " + (autoText)));
   };
   stopPropagation = function(e) {
     return e.stopPropagation();
@@ -729,8 +732,8 @@ cursor: pointer; \
       return (window.location = this.textContent === '▲' ? '#navtop' : '#navbot');
     } else {
       direction = this.textContent === '▲' ? 'preceding' : 'following';
-      op = x("$direction::span[starts-with(@id, 'nothread')][1]", this).id;
-      return (window.location = "#$op");
+      op = x(("" + (direction) + "::span[starts-with(@id, 'nothread')][1]"), this).id;
+      return (window.location = ("#" + (op)));
     }
   };
   text = $('#navtopr a').nextSibling;
@@ -899,10 +902,10 @@ cursor: pointer; \
         up.className = 'pointer';
         if (i !== 0) {
           up.textContent = '▲';
-          up.href = "#$i";
+          up.href = ("#" + (i));
         } else if (PAGENUM !== 0) {
           up.textContent = '◀';
-          up.href = "${PAGENUM - 1}";
+          up.href = ("" + (PAGENUM - 1));
         } else {
           up.textContent = '▲';
           up.href = "#navtop";
@@ -918,10 +921,10 @@ cursor: pointer; \
         span.appendChild(down);
         if (i1 === l1) {
           down.textContent = '▶';
-          down.href = "${PAGENUM + 1}#1";
+          down.href = ("" + (PAGENUM + 1) + "#1");
         } else {
           down.textContent = '▼';
-          down.href = "#$i1";
+          down.href = ("#" + (i1));
         }
         inBefore(el, span);
       }
@@ -936,7 +939,7 @@ cursor: pointer; \
         span = _m[_l];
         a = tag('a');
         a.className = 'pointer omittedposts';
-        a.textContent = "+ ${span.textContent}";
+        a.textContent = ("+ " + (span.textContent));
         a.addEventListener('click', expandThread, true);
         replace(span, a);
       }

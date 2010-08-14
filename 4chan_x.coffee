@@ -193,7 +193,7 @@ GM_addStyle('
     #qr > form > div {/* ad */
         display: none;
     }
-    #qr tr:last-child {
+    #qr td.rules {
         display: none;
     }
     #options {
@@ -649,6 +649,9 @@ nodeInserted = (e) ->
     if target.nodeName is 'TABLE'
         for callback in callbacks
             callback(target)
+    else if target.id is 'recaptcha_challenge_field' and qr = $ '#qr'
+        $('#recaptcha_image img', qr).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+        $('#recaptcha_challenge_field', qr).value = target.value
 
 
 autoWatch = ->
