@@ -425,10 +425,21 @@ iframeLoad = ->
         remove(qr)
 
 
-submit = ->
-    this.style.visibility = 'collapse'
-    if span = this.nextSibling
+submit = (e) ->
+    if span = @nextSibling
         remove(span)
+    recaptcha = $('#recaptcha_response_field', this)
+    if not recaptcha.value
+        e.preventDefault()
+        span = make 'span', {
+            className: 'error'
+            textContent: 'You forgot to type in the verification.'
+        }
+        @parentNode.appendChild span
+        alert 'You forgot to type in the verification.'
+        recaptcha.focus()
+    else
+        @style.visibility = 'collapse'
 
 
 minimize = ->

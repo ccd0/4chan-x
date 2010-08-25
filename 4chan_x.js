@@ -462,10 +462,24 @@
       return remove(qr);
     }
   };
-  submit = function() {
-    var span;
-    this.style.visibility = 'collapse';
-    return (span = this.nextSibling) ? remove(span) : null;
+  submit = function(e) {
+    var recaptcha, span;
+    if (span = this.nextSibling) {
+      remove(span);
+    }
+    recaptcha = $('#recaptcha_response_field', this);
+    if (!recaptcha.value) {
+      e.preventDefault();
+      span = make('span', {
+        className: 'error',
+        textContent: 'You forgot to type in the verification.'
+      });
+      this.parentNode.appendChild(span);
+      alert('You forgot to type in the verification.');
+      return recaptcha.focus();
+    } else {
+      return (this.style.visibility = 'collapse');
+    }
   };
   minimize = function() {
     var form;
