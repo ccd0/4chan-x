@@ -48,12 +48,10 @@ replace = (root, el) ->
     root.parentNode.replaceChild(el, root)
 getTime = ->
     Math.floor(new Date().getTime() / 1000)
-make = (tag, obj) ->
-    el = document.createElement(tag)
-    if obj
-        for key of obj
-            el[key] = obj[key]
-    return el
+n = (tag, props) -> #new
+    el = document.createElement tag
+    if props then (el[key] = val) for key, val of props
+    el
 slice = (arr, id) ->
     # the while loop is the only low-level loop left in coffeescript.
     # we need to use it to see the index.
@@ -431,7 +429,7 @@ submit = (e) ->
     recaptcha = $('#recaptcha_response_field', this)
     if not recaptcha.value
         e.preventDefault()
-        span = make 'span', {
+        span = n 'span', {
             className: 'error'
             textContent: 'You forgot to type in the verification.'
         }
@@ -465,19 +463,19 @@ quickReply = (e) ->
         div.addEventListener('mousedown', mousedown, true)
         qr.appendChild(div)
 
-        minimizeB = make('a', {
+        minimizeB = n 'a', {
             textContent: '_'
             className: 'pointer'
             title: 'minimize'
-        })
+        }
         minimizeB.addEventListener('click', minimize, true)
         div.appendChild(minimizeB)
         div.appendChild(document.createTextNode(' '))
-        closeB = make('a', {
+        closeB = n 'a', {
             textContent: 'X'
             className: 'pointer'
             title: 'close'
-        })
+        }
         closeB.addEventListener('click', close, true)
         div.appendChild(closeB)
 
@@ -491,7 +489,7 @@ quickReply = (e) ->
         clone.target = 'iframe'
         if not REPLY
             xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
-            input = make 'input', {
+            input = n 'input', {
                 value: x(xpath, this).name
                 type: 'hidden'
                 name: 'resto'
@@ -561,9 +559,9 @@ watcherUpdate = ->
 
 
 parseResponse = (responseText) ->
-    body = make('body', {
+    body = n 'body', {
         innerHTML: responseText
-    })
+    }
     replies = $$('td.reply', body)
     opbq = $('blockquote', body)
     return [replies, opbq]

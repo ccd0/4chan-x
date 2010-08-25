@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, BOARD, DAY, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, make, minimize, mousedown, mousemove, mouseup, move, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, BOARD, DAY, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, minimize, mousedown, mousemove, mouseup, move, n, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -61,15 +61,15 @@
   getTime = function() {
     return Math.floor(new Date().getTime() / 1000);
   };
-  make = function(tag, obj) {
-    var _a, _b, el, key;
+  n = function(tag, props) {
+    var _a, el, key, val;
     el = document.createElement(tag);
-    if (obj) {
-      _b = obj;
-      for (key in _b) {
-        if (!__hasProp.call(_b, key)) continue;
-        _a = _b[key];
-        el[key] = obj[key];
+    if (props) {
+      _a = props;
+      for (key in _a) {
+        if (!__hasProp.call(_a, key)) continue;
+        val = _a[key];
+        (el[key] = val);
       }
     }
     return el;
@@ -340,7 +340,7 @@
     return GM_setValue("hiddenThreads/" + (BOARD) + "/", JSON.stringify(hiddenThreads));
   };
   hideThread = function(div) {
-    var _c, a, n, name, p, span, text, trip;
+    var _c, a, name, p, span, text, trip;
     if (p = this.parentNode) {
       div = p;
       hiddenThreads.push({
@@ -470,7 +470,7 @@
     recaptcha = $('#recaptcha_response_field', this);
     if (!recaptcha.value) {
       e.preventDefault();
-      span = make('span', {
+      span = n('span', {
         className: 'error',
         textContent: 'You forgot to type in the verification.'
       });
@@ -499,7 +499,7 @@
       div.className = 'move';
       div.addEventListener('mousedown', mousedown, true);
       qr.appendChild(div);
-      minimizeB = make('a', {
+      minimizeB = n('a', {
         textContent: '_',
         className: 'pointer',
         title: 'minimize'
@@ -507,7 +507,7 @@
       minimizeB.addEventListener('click', minimize, true);
       div.appendChild(minimizeB);
       div.appendChild(document.createTextNode(' '));
-      closeB = make('a', {
+      closeB = n('a', {
         textContent: 'X',
         className: 'pointer',
         title: 'close'
@@ -527,7 +527,7 @@
       clone.target = 'iframe';
       if (!REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
-        input = make('input', {
+        input = n('input', {
           value: x(xpath, this).name,
           type: 'hidden',
           name: 'resto'
@@ -605,7 +605,7 @@
   };
   parseResponse = function(responseText) {
     var body, opbq, replies;
-    body = make('body', {
+    body = n('body', {
       innerHTML: responseText
     });
     replies = $$('td.reply', body);
