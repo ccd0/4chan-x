@@ -489,17 +489,16 @@ quickReply = (e) ->
         qr.appendChild(clone)
         document.body.appendChild(qr)
 
+    selection = window.getSelection()
+    id = x('preceding::span[@id][1]', selection.anchorNode)?.id
+    text = selection.toString()
+
     textarea = $('textarea', qr)
     textarea.focus()
     #we can't just use @textContent b/c of the xxxs. goddamit moot.
     textarea.value += '>>' + @parentNode.id.match(/\d+$/)[0] + '\n'
-    selection = window.getSelection()
-    id = x('preceding::span[@id][1]', selection.anchorNode)?.id
-    if id is this.parentNode.id
-        if selText = selection.toString()
-            textarea.value += ">#{selText}\n"
-    return
-
+    if text and id is this.parentNode.id
+        textarea.value += ">#{text}\n"
 
 watch = ->
     id = this.nextSibling.name

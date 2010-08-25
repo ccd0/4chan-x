@@ -19,16 +19,16 @@
     return GM_getValue(name, config[name]);
   };
   x = function(path, root) {
-    root = root || document.body;
+    root || (root = document.body);
     return document.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
   $ = function(selector, root) {
-    root = root || document.body;
+    root || (root = document.body);
     return root.querySelector(selector);
   };
   $$ = function(selector, root) {
     var _a, _b, _c, _d, node, result;
-    root = root || document.body;
+    root || (root = document.body);
     result = root.querySelectorAll(selector);
     _a = []; _c = result;
     for (_b = 0, _d = _c.length; _b < _d; _b++) {
@@ -91,12 +91,12 @@
   position = function(el) {
     var id, left, top;
     id = el.id;
-    if ((left = GM_getValue(("" + (id) + "Left"), '0px'))) {
+    if (left = GM_getValue("" + (id) + "Left", '0px')) {
       el.style.left = left;
     } else {
       el.style.right = '0px';
-    };
-    return (top = GM_getValue(("" + (id) + "Top"), '0px')) ? (el.style.top = top) : (el.style.bottom = '0px');
+    }
+    return (top = GM_getValue("" + (id) + "Top", '0px')) ? (el.style.top = top) : (el.style.bottom = '0px');
   };
   if (typeof GM_deleteValue === 'undefined') {
     this.GM_setValue = function(name, value) {
@@ -128,7 +128,7 @@
   }
   watched = JSON.parse(GM_getValue('watched', '{}'));
   if (location.hostname.split('.')[0] === 'sys') {
-    if ((b = $('table font b'))) {
+    if (b = $('table font b')) {
       GM_setValue('error', b.firstChild.textContent);
     } else {
       GM_setValue('error', '');
@@ -140,7 +140,7 @@
         id = _a[2];
         if (thread === '0') {
           board = $('meta', document).content.match(/4chan.org\/(\w+)\//)[1];
-          watched[board] = watched[board] || [];
+          watched[board] || (watched[board] = []);
           watched[board].push({
             id: id,
             text: GM_getValue('autoText')
@@ -159,7 +159,7 @@
     REPLY = magic;
   } else {
     PAGENUM = parseInt(magic) || 0;
-  };
+  }
   xhrs = [];
   r = null;
   iframeLoop = false;
@@ -174,8 +174,8 @@
   }
   favNormal = favicon.href;
   favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==';
-  hiddenThreads = JSON.parse(GM_getValue(("hiddenThreads/" + (BOARD) + "/"), '[]'));
-  hiddenReplies = JSON.parse(GM_getValue(("hiddenReplies/" + (BOARD) + "/"), '[]'));
+  hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/" + (BOARD) + "/", '[]'));
+  hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/" + (BOARD) + "/", '[]'));
   lastChecked = GM_getValue('lastChecked', 0);
   now = getTime();
   DAY = 24 * 60 * 60;
@@ -193,74 +193,74 @@
       }
       hiddenReplies.shift();
     }
-    GM_setValue(("hiddenThreads/" + (BOARD) + "/"), JSON.stringify(hiddenThreads));
-    GM_setValue(("hiddenReplies/" + (BOARD) + "/"), JSON.stringify(hiddenReplies));
+    GM_setValue("hiddenThreads/" + (BOARD) + "/", JSON.stringify(hiddenThreads));
+    GM_setValue("hiddenReplies/" + (BOARD) + "/", JSON.stringify(hiddenReplies));
     GM_setValue('lastChecked', now);
   }
-  GM_addStyle(' \
-#watcher { \
-position: absolute; \
-border: 1px solid; \
-} \
-#watcher div.move { \
-text-decoration: underline; \
-padding: 5px 5px 0 5px; \
-} \
-#watcher div:last-child { \
-padding: 0 5px 5px 5px; \
-} \
-span.error { \
-color: red; \
-} \
-#qr span.error { \
-position: absolute; \
-bottom: 0; \
-left: 0; \
-} \
-#qr { \
-position: fixed; \
-border: 1px solid; \
-} \
-#qr > div { \
-text-align: right; \
-} \
-#qr > form > div {/* ad */ \
-display: none; \
-} \
-#qr td.rules { \
-display: none; \
-} \
-#options { \
-position: fixed; \
-border: 1px solid; \
-padding: 5px; \
-text-align: right; \
-} \
-span.navlinks { \
-position: absolute; \
-right: 5px; \
-} \
-span.navlinks > a { \
-font-size: 16px; \
-text-decoration: none; \
-} \
-.move { \
-cursor: move; \
-} \
-.pointer, #options label, #options a { \
-cursor: pointer; \
-} \
+  GM_addStyle('\
+    #watcher {\
+        position: absolute;\
+        border: 1px solid;\
+    }\
+    #watcher div.move {\
+        text-decoration: underline;\
+        padding: 5px 5px 0 5px;\
+    }\
+    #watcher div:last-child {\
+        padding: 0 5px 5px 5px;\
+    }\
+    span.error {\
+        color: red;\
+    }\
+    #qr span.error {\
+        position: absolute;\
+        bottom: 0;\
+        left: 0;\
+    }\
+    #qr {\
+        position: fixed;\
+        border: 1px solid;\
+    }\
+    #qr > div {\
+        text-align: right;\
+    }\
+    #qr > form > div {/* ad */\
+        display: none;\
+    }\
+    #qr td.rules {\
+        display: none;\
+    }\
+    #options {\
+        position: fixed;\
+        border: 1px solid;\
+        padding: 5px;\
+        text-align: right;\
+    }\
+    span.navlinks {\
+        position: absolute;\
+        right: 5px;\
+    }\
+    span.navlinks > a {\
+        font-size: 16px;\
+        text-decoration: none;\
+    }\
+    .move {\
+        cursor: move;\
+    }\
+    .pointer, #options label, #options a {\
+        cursor: pointer;\
+    }\
 ');
   clearHidden = function() {
-    GM_deleteValue(("hiddenReplies/" + (BOARD) + "/"));
-    GM_deleteValue(("hiddenThreads/" + (BOARD) + "/"));
+    GM_deleteValue("hiddenReplies/" + (BOARD) + "/");
+    GM_deleteValue("hiddenThreads/" + (BOARD) + "/");
     this.value = "hidden: 0";
     hiddenReplies = [];
     return (hiddenThreads = []);
   };
   options = function() {
     var _c, _d, checked, div, hiddenNum, option;
-    if ((div = $('#options'))) {
+    if (div = $('#options')) {
       return remove(div);
     } else {
       hiddenNum = hiddenReplies.length + hiddenThreads.length;
@@ -325,8 +325,8 @@ cursor: pointer; \
   };
   mouseup = function() {
     id = move.div.id;
-    GM_setValue(("" + (id) + "Left"), move.div.style.left);
-    GM_setValue(("" + (id) + "Top"), move.div.style.top);
+    GM_setValue("" + (id) + "Left", move.div.style.left);
+    GM_setValue("" + (id) + "Top", move.div.style.top);
     window.removeEventListener('mousemove', mousemove, true);
     return window.removeEventListener('mouseup', mouseup, true);
   };
@@ -337,30 +337,30 @@ cursor: pointer; \
     hide(this);
     id = div.id;
     slice(hiddenThreads, id);
-    return GM_setValue(("hiddenThreads/" + (BOARD) + "/"), JSON.stringify(hiddenThreads));
+    return GM_setValue("hiddenThreads/" + (BOARD) + "/", JSON.stringify(hiddenThreads));
   };
   hideThread = function(div) {
     var _c, a, n, name, p, span, text, trip;
-    if ((p = this.parentNode)) {
+    if (p = this.parentNode) {
       div = p;
       hiddenThreads.push({
         id: div.id,
         timestamp: getTime()
       });
-      GM_setValue(("hiddenThreads/" + (BOARD) + "/"), JSON.stringify(hiddenThreads));
+      GM_setValue("hiddenThreads/" + (BOARD) + "/", JSON.stringify(hiddenThreads));
     }
     hide(div);
     if (getValue('Show Stubs')) {
       a = tag('a');
-      if ((span = $('.omittedposts', div))) {
+      if (span = $('.omittedposts', div)) {
         n = Number(span.textContent.match(/\d+/)[0]);
       } else {
         n = 0;
-      };
+      }
       n += $$('table', div).length;
       text = n === 1 ? "1 reply" : ("" + (n) + " replies");
       name = $('span.postername', div).textContent;
-      trip = (typeof (_c = ($('span.postername + span.postertrip', div))) === "undefined" || _c == undefined ? undefined : _c.textContent) || '';
+      trip = ((typeof (_c = ($('span.postername + span.postertrip', div))) === "undefined" || _c === null) ? undefined : _c.textContent) || '';
       a.textContent = ("[ + ] " + (name) + (trip) + " (" + (text) + ")");
       a.className = 'pointer';
       a.addEventListener('click', showThread, true);
@@ -390,7 +390,7 @@ cursor: pointer; \
       hidden = _d[_c];
       if (id === hidden.id) {
         hideThread(div);
-      };
+      }
     }
     current = current.nextSibling.nextSibling;
     return current.nodeName !== 'CENTER' ? threadF(current) : null;
@@ -403,20 +403,20 @@ cursor: pointer; \
     remove(div);
     id = $('td.reply, td.replyhl', table).id;
     slice(hiddenReplies, id);
-    return GM_setValue(("hiddenReplies/" + (BOARD) + "/"), JSON.stringify(hiddenReplies));
+    return GM_setValue("hiddenReplies/" + (BOARD) + "/", JSON.stringify(hiddenReplies));
   };
   hideReply = function(reply) {
     var _c, a, div, name, p, table, trip;
-    if ((p = this.parentNode)) {
+    if (p = this.parentNode) {
       reply = p.nextSibling;
       hiddenReplies.push({
         id: reply.id,
         timestamp: getTime()
       });
-      GM_setValue(("hiddenReplies/" + (BOARD) + "/"), JSON.stringify(hiddenReplies));
+      GM_setValue("hiddenReplies/" + (BOARD) + "/", JSON.stringify(hiddenReplies));
     }
     name = $('span.commentpostername', reply).textContent;
-    trip = (typeof (_c = ($('span.postertrip', reply))) === "undefined" || _c == undefined ? undefined : _c.textContent) || '';
+    trip = ((typeof (_c = ($('span.postertrip', reply))) === "undefined" || _c === null) ? undefined : _c.textContent) || '';
     table = x('ancestor::table', reply);
     hide(table);
     if (getValue('Show Stubs')) {
@@ -447,12 +447,12 @@ cursor: pointer; \
   };
   iframeLoad = function() {
     var error, qr, span;
-    if ((iframeLoop = !iframeLoop)) {
+    if (iframeLoop = !iframeLoop) {
       return null;
     }
     $('iframe').src = 'about:blank';
     qr = $('#qr');
-    if ((error = GM_getValue('error'))) {
+    if (error = GM_getValue('error')) {
       $('form', qr).style.visibility = '';
       span = tag('span');
       span.textContent = error;
@@ -473,7 +473,7 @@ cursor: pointer; \
     return form.style.visibility ? (form.style.visibility = '') : (form.style.visibility = 'collapse');
   };
   quickReply = function(e) {
-    var _c, _d, _e, _f, bf, clone, closeB, div, input, minimizeB, qr, script, selText, selection, textarea, xpath;
+    var _c, _d, _e, _f, bf, clone, closeB, div, input, minimizeB, qr, script, selection, text, textarea, xpath;
     e.preventDefault();
     if (!(qr = $('#qr'))) {
       qr = tag('div');
@@ -501,9 +501,9 @@ cursor: pointer; \
       closeB.addEventListener('click', close, true);
       div.appendChild(closeB);
       clone = $('form[name="post"]').cloneNode(true);
-      if ((bf = $('.bf', clone))) {
+      if (bf = $('.bf', clone)) {
         remove(bf);
-      };
+      }
       _d = $$('script', clone);
       for (_c = 0, _e = _d.length; _c < _e; _c++) {
         script = _d[_c];
@@ -523,17 +523,13 @@ cursor: pointer; \
       qr.appendChild(clone);
       document.body.appendChild(qr);
     }
+    selection = window.getSelection();
+    id = (typeof (_f = (x('preceding::span[@id][1]', selection.anchorNode))) === "undefined" || _f === null) ? undefined : _f.id;
+    text = selection.toString();
     textarea = $('textarea', qr);
     textarea.focus();
     textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n';
-    selection = window.getSelection();
-    id = typeof (_f = (x('preceding::span[@id][1]', selection.anchorNode))) === "undefined" || _f == undefined ? undefined : _f.id;
-    if (id === this.parentNode.id) {
-      if ((selText = selection.toString())) {
-        textarea.value += (">" + (selText) + "\n");
-      };
-    };
-    return null;
+    return text && id === this.parentNode.id ? textarea.value += (">" + (text) + "\n") : null;
   };
   watch = function() {
     var text;
@@ -541,7 +537,7 @@ cursor: pointer; \
     if (this.src[0] === 'd') {
       this.src = favNormal;
       text = ("/" + (BOARD) + "/ - ") + x('following-sibling::blockquote', this).textContent.slice(0, 25);
-      watched[BOARD] = watched[BOARD] || [];
+      watched[BOARD] || (watched[BOARD] = []);
       watched[BOARD].push({
         id: id,
         text: text
@@ -562,7 +558,7 @@ cursor: pointer; \
     watched[board] = slice(watched[board], id);
     GM_setValue('watched', JSON.stringify(watched));
     watcherUpdate();
-    if ((input = $(("input[name=\"" + (id) + "\"]")))) {
+    if (input = $("input[name=\"" + (id) + "\"]")) {
       favicon = input.previousSibling;
       return (favicon.src = favEmpty);
     }
@@ -635,7 +631,7 @@ cursor: pointer; \
     span = this;
     if (span.textContent[0] === '-') {
       num = board === 'b' ? 3 : 5;
-      table = x(("following::br[@clear][1]/preceding::table[" + (num) + "]"), span);
+      table = x("following::br[@clear][1]/preceding::table[" + (num) + "]", span);
       while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
         remove(prev);
       }
@@ -655,7 +651,7 @@ cursor: pointer; \
     r.onload = function() {
       return onloadThread(this.responseText, span);
     };
-    r.open('GET', ("res/" + (id)), true);
+    r.open('GET', "res/" + (id), true);
     r.send();
     return xhrs.push({
       r: r,
@@ -679,7 +675,7 @@ cursor: pointer; \
         reply = _f[_e];
         if (reply.id === id) {
           html = $('blockquote', reply).innerHTML;
-        };
+        }
       }
     }
     bq = x('ancestor::blockquote', a);
@@ -726,7 +722,7 @@ cursor: pointer; \
   autoWatch = function() {
     var autoText;
     autoText = $('textarea', this).value.slice(0, 25);
-    return GM_setValue('autoText', ("/" + (BOARD) + "/ - " + (autoText)));
+    return GM_setValue('autoText', "/" + (BOARD) + "/ - " + (autoText));
   };
   stopPropagation = function(e) {
     return e.stopPropagation();
@@ -737,7 +733,7 @@ cursor: pointer; \
       return (window.location = this.textContent === '▲' ? '#navtop' : '#navbot');
     } else {
       direction = this.textContent === '▲' ? 'preceding' : 'following';
-      op = x(("" + (direction) + "::span[starts-with(@id, 'nothread')][1]"), this).id;
+      op = x("" + (direction) + "::span[starts-with(@id, 'nothread')][1]", this).id;
       return (window.location = ("#" + (op)));
     }
   };
@@ -773,7 +769,7 @@ cursor: pointer; \
       }
       return _c;
     });
-  };
+  }
   if (getValue('Quick Reply')) {
     iframe = tag('iframe');
     hide(iframe);
@@ -809,7 +805,7 @@ cursor: pointer; \
       }
       return _c;
     });
-  };
+  }
   if (getValue('Thread Watcher')) {
     watcher = tag('div');
     watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>';
@@ -834,7 +830,7 @@ cursor: pointer; \
           break;
         }
       }
-      img.src = img.src || favEmpty;
+      img.src || (img.src = favEmpty);
       img.className = 'pointer';
       img.addEventListener('click', watch, true);
       inBefore(input, img);
@@ -857,7 +853,7 @@ cursor: pointer; \
       }
       return _l;
     });
-  };
+  }
   if (getValue('Reply Navigation')) {
     callbacks.push(function(root) {
       var _i, _j, _k, _l, arr, down, el, span, up;
@@ -884,7 +880,7 @@ cursor: pointer; \
       }
       return _i;
     });
-  };
+  }
   if (!REPLY) {
     if (getValue('Thread Hiding')) {
       delform = $('form[name=delform]');
@@ -894,7 +890,7 @@ cursor: pointer; \
     }
     if (getValue('Auto Watch')) {
       $('form[name="post"]').addEventListener('submit', autoWatch, true);
-    };
+    }
     if (getValue('Thread Navigation')) {
       arr = $$('div > span.filesize, form > span.filesize');
       i = 0;
@@ -935,7 +931,7 @@ cursor: pointer; \
       }
       if (location.hash === '#1') {
         window.location = window.location;
-      };
+      }
     }
     if (getValue('Thread Expansion')) {
       omitted = $$('span.omittedposts');
