@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, BOARD, DAY, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, minimize, mousedown, mousemove, mouseup, move, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, BOARD, DAY, PAGENUM, REPLY, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, minimize, mousedown, mousemove, mouseup, move, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -488,7 +488,7 @@
     return form.style.visibility ? (form.style.visibility = '') : (form.style.visibility = 'collapse');
   };
   quickReply = function(e) {
-    var _c, _d, _e, _f, bf, clone, closeB, div, form, input, minimizeB, qr, script, selection, text, textarea, xpath;
+    var _c, _d, _e, _f, clone, closeB, div, form, input, minimizeB, qr, script, selection, text, textarea, xpath;
     e.preventDefault();
     if (!(qr = $('#qr'))) {
       qr = tag('div');
@@ -518,9 +518,6 @@
       form = $('form[name=post]');
       clone = form.cloneNode(true);
       $('input[name=recaptcha_response_field]', form).id = '';
-      if (bf = $('.bf', clone)) {
-        remove(bf);
-      }
       _d = $$('script', clone);
       for (_c = 0, _e = _d.length; _c < _e; _c++) {
         script = _d[_c];
@@ -764,14 +761,19 @@
   a.addEventListener('click', options, true);
   inBefore(text, document.createTextNode(' / '));
   inBefore(text, a);
+  _d = $$('#recaptcha_table a');
+  for (_c = 0, _e = _d.length; _c < _e; _c++) {
+    el = _d[_c];
+    el.tabIndex = 1;
+  }
   if (getValue('Reply Hiding')) {
     callbacks.push(function(root) {
-      var _c, _d, _e, _f, _g, _h, _i, _j, next, obj, td, tds;
+      var _f, _g, _h, _i, _j, _k, _l, _m, next, obj, td, tds;
       tds = $$('td.doubledash', root);
-      _c = []; _e = tds;
-      for (_d = 0, _f = _e.length; _d < _f; _d++) {
-        td = _e[_d];
-        _c.push((function() {
+      _f = []; _h = tds;
+      for (_g = 0, _i = _h.length; _g < _i; _g++) {
+        td = _h[_g];
+        _f.push((function() {
           a = tag('a');
           a.textContent = '[ - ]';
           a.className = 'pointer';
@@ -779,15 +781,15 @@
           replace(td.firstChild, a);
           next = td.nextSibling;
           id = next.id;
-          _g = []; _i = hiddenReplies;
-          for (_h = 0, _j = _i.length; _h < _j; _h++) {
-            obj = _i[_h];
-            _g.push(obj.id === id ? hideReply(next) : null);
+          _j = []; _l = hiddenReplies;
+          for (_k = 0, _m = _l.length; _k < _m; _k++) {
+            obj = _l[_k];
+            _j.push(obj.id === id ? hideReply(next) : null);
           }
-          return _g;
+          return _j;
         })());
       }
-      return _c;
+      return _f;
     });
   }
   if (getValue('Quick Reply')) {
@@ -797,24 +799,24 @@
     iframe.addEventListener('load', iframeLoad, true);
     document.body.appendChild(iframe);
     callbacks.push(function(root) {
-      var _c, _d, _e, _f, quote, quotes;
+      var _f, _g, _h, _i, quote, quotes;
       quotes = $$('a.quotejs:not(:first-child)', root);
-      _c = []; _e = quotes;
-      for (_d = 0, _f = _e.length; _d < _f; _d++) {
-        quote = _e[_d];
-        _c.push(quote.addEventListener('click', quickReply, true));
+      _f = []; _h = quotes;
+      for (_g = 0, _i = _h.length; _g < _i; _g++) {
+        quote = _h[_g];
+        _f.push(quote.addEventListener('click', quickReply, true));
       }
-      return _c;
+      return _f;
     });
   }
   if (getValue('Quick Report')) {
     callbacks.push(function(root) {
-      var _c, _d, _e, _f, arr, el;
+      var _f, _g, _h, _i, arr;
       arr = $$('span[id^=no]', root);
-      _c = []; _e = arr;
-      for (_d = 0, _f = _e.length; _d < _f; _d++) {
-        el = _e[_d];
-        _c.push((function() {
+      _f = []; _h = arr;
+      for (_g = 0, _i = _h.length; _g < _i; _g++) {
+        el = _h[_g];
+        _f.push((function() {
           a = tag('a');
           a.textContent = '[ ! ]';
           a.className = 'pointer';
@@ -823,7 +825,7 @@
           return inAfter(el, document.createTextNode(' '));
         })());
       }
-      return _c;
+      return _f;
     });
   }
   if (getValue('Thread Watcher')) {
@@ -837,14 +839,14 @@
     watcherUpdate();
     threads = watched[BOARD] || [];
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');
-    _d = inputs;
-    for (_c = 0, _e = _d.length; _c < _e; _c++) {
-      input = _d[_c];
+    _g = inputs;
+    for (_f = 0, _h = _g.length; _f < _h; _f++) {
+      input = _g[_f];
       img = tag('img');
       id = input.name;
-      _g = threads;
-      for (_f = 0, _h = _g.length; _f < _h; _f++) {
-        thread = _g[_f];
+      _j = threads;
+      for (_i = 0, _k = _j.length; _i < _k; _i++) {
+        thread = _j[_i];
         if (id === thread.id) {
           img.src = favNormal;
           break;
@@ -858,30 +860,30 @@
   }
   if (getValue('Anonymize')) {
     callbacks.push(function(root) {
-      var _i, _j, _k, _l, _m, _n, _o, name, names, trip, trips;
+      var _l, _m, _n, _o, _p, _q, _r, name, names, trip, trips;
       names = $$('span.postername, span.commentpostername', root);
-      _j = names;
-      for (_i = 0, _k = _j.length; _i < _k; _i++) {
-        name = _j[_i];
+      _m = names;
+      for (_l = 0, _n = _m.length; _l < _n; _l++) {
+        name = _m[_l];
         name.innerHTML = 'Anonymous';
       }
       trips = $$('span.postertrip', root);
-      _l = []; _n = trips;
-      for (_m = 0, _o = _n.length; _m < _o; _m++) {
-        trip = _n[_m];
-        _l.push(trip.parentNode.nodeName === 'A' ? remove(trip.parentNode) : remove(trip));
+      _o = []; _q = trips;
+      for (_p = 0, _r = _q.length; _p < _r; _p++) {
+        trip = _q[_p];
+        _o.push(trip.parentNode.nodeName === 'A' ? remove(trip.parentNode) : remove(trip));
       }
-      return _l;
+      return _o;
     });
   }
   if (getValue('Reply Navigation')) {
     callbacks.push(function(root) {
-      var _i, _j, _k, _l, arr, down, el, span, up;
+      var _l, _m, _n, _o, arr, down, span, up;
       arr = $$('span[id^=norep]', root);
-      _i = []; _k = arr;
-      for (_j = 0, _l = _k.length; _j < _l; _j++) {
-        el = _k[_j];
-        _i.push((function() {
+      _l = []; _n = arr;
+      for (_m = 0, _o = _n.length; _m < _o; _m++) {
+        el = _n[_m];
+        _l.push((function() {
           span = tag('span');
           up = tag('a');
           up.textContent = '▲';
@@ -898,7 +900,7 @@
           return inAfter(el, span);
         })());
       }
-      return _i;
+      return _l;
     });
   }
   if (!REPLY) {
@@ -916,9 +918,9 @@
       i = 0;
       l = arr.length;
       l1 = l + 1;
-      _j = arr;
-      for (_i = 0, _k = _j.length; _i < _k; _i++) {
-        el = _j[_i];
+      _m = arr;
+      for (_l = 0, _n = _m.length; _l < _n; _l++) {
+        el = _m[_l];
         up = tag('a');
         up.className = 'pointer';
         if (i !== 0) {
@@ -955,9 +957,9 @@
     }
     if (getValue('Thread Expansion')) {
       omitted = $$('span.omittedposts');
-      _m = omitted;
-      for (_l = 0, _n = _m.length; _l < _n; _l++) {
-        span = _m[_l];
+      _p = omitted;
+      for (_o = 0, _q = _p.length; _o < _q; _o++) {
+        span = _p[_o];
         a = tag('a');
         a.className = 'pointer omittedposts';
         a.textContent = ("+ " + (span.textContent));
@@ -967,16 +969,16 @@
     }
     if (getValue('Comment Expansion')) {
       as = $$('span.abbr a');
-      _p = as;
-      for (_o = 0, _q = _p.length; _o < _q; _o++) {
-        a = _p[_o];
+      _s = as;
+      for (_r = 0, _t = _s.length; _r < _t; _r++) {
+        a = _s[_r];
         a.addEventListener('click', expandComment, true);
       }
     }
   }
-  _s = callbacks;
-  for (_r = 0, _t = _s.length; _r < _t; _r++) {
-    callback = _s[_r];
+  _v = callbacks;
+  for (_u = 0, _w = _v.length; _u < _w; _u++) {
+    callback = _v[_u];
     callback();
   }
   document.body.addEventListener('DOMNodeInserted', nodeInserted, true);

@@ -485,8 +485,6 @@ quickReply = (e) ->
         #hack - nuke the original recaptcha's id so it doesn't grab focus
         # when reloading
         $('input[name=recaptcha_response_field]', form).id = ''
-        #remove buzzfeed
-        if bf = $('.bf', clone) then remove(bf)
         #remove recaptcha scripts
         for script in $$ 'script', clone
             remove script
@@ -698,6 +696,10 @@ a.className = 'pointer'
 a.addEventListener('click', options, true)
 inBefore(text, document.createTextNode(' / '))
 inBefore(text, a)
+
+#hack to tab from comment straight to recaptcha
+for el in $$ '#recaptcha_table a'
+    el.tabIndex = 1
 
 if getValue('Reply Hiding')
     callbacks.push((root) ->
