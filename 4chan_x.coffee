@@ -421,6 +421,7 @@ iframeLoad = ->
         qr.appendChild(span)
     else
         remove(qr)
+        window.location = 'javascript:Recaptcha.reload()'
 
 
 submit = (e) ->
@@ -479,7 +480,11 @@ quickReply = (e) ->
         closeB.addEventListener('click', close, true)
         div.appendChild(closeB)
 
-        clone = $('form[name="post"]').cloneNode(true)
+        form = $ 'form[name=post]'
+        clone = form.cloneNode(true)
+        #hack - nuke the original recaptcha's id so it doesn't grab focus
+        # when reloading
+        $('input[name=recaptcha_response_field]', form).id = ''
         #remove buzzfeed
         if bf = $('.bf', clone) then remove(bf)
         #remove recaptcha scripts

@@ -459,7 +459,8 @@
       span.className = 'error';
       return qr.appendChild(span);
     } else {
-      return remove(qr);
+      remove(qr);
+      return (window.location = 'javascript:Recaptcha.reload()');
     }
   };
   submit = function(e) {
@@ -487,7 +488,7 @@
     return form.style.visibility ? (form.style.visibility = '') : (form.style.visibility = 'collapse');
   };
   quickReply = function(e) {
-    var _c, _d, _e, _f, bf, clone, closeB, div, input, minimizeB, qr, script, selection, text, textarea, xpath;
+    var _c, _d, _e, _f, bf, clone, closeB, div, form, input, minimizeB, qr, script, selection, text, textarea, xpath;
     e.preventDefault();
     if (!(qr = $('#qr'))) {
       qr = tag('div');
@@ -514,7 +515,9 @@
       });
       closeB.addEventListener('click', close, true);
       div.appendChild(closeB);
-      clone = $('form[name="post"]').cloneNode(true);
+      form = $('form[name=post]');
+      clone = form.cloneNode(true);
+      $('input[name=recaptcha_response_field]', form).id = '';
       if (bf = $('.bf', clone)) {
         remove(bf);
       }
