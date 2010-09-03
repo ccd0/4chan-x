@@ -688,8 +688,10 @@ replyNav = ->
         window.location = "##{op}"
 
 
-#error out if there's no #navtopr.
-text = $('#navtopr a').nextSibling
+#graceful exit
+unless navtopr = $ '#navtopr a'
+    return
+text = navtopr.nextSibling
 a = tag('a')
 a.textContent = 'X'
 a.className = 'pointer'
