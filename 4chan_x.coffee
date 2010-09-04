@@ -419,7 +419,7 @@ iframeLoad = ->
         span.textContent = error
         span.className = 'error'
         qr.appendChild(span)
-        if error = 'You seem to have mistyped the verification'
+        if error is 'You seem to have mistyped the verification'
             window.location = 'javascript:Recaptcha.reload()'
     else
         remove(qr)
