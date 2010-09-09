@@ -458,7 +458,7 @@
       span.textContent = error;
       span.className = 'error';
       qr.appendChild(span);
-      return error === 'You seem to have mistyped the verification' ? (window.location = 'javascript:Recaptcha.reload()') : null;
+      return error === 'You seem to have mistyped the verification.' ? (window.location = 'javascript:Recaptcha.reload()') : null;
     } else {
       remove(qr);
       return (window.location = 'javascript:Recaptcha.reload()');
