@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, mousedown, mousemove, mouseup, move, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, mousedown, mousemove, mouseup, move, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -11,11 +11,12 @@
     'Thread Expansion': true,
     'Comment Expansion': true,
     'Quick Reply': true,
+    'Persistent QR': false,
     'Quick Report': true,
     'Auto Watch': true,
     'Anonymize': false
   };
-  getValue = function(name) {
+  getConfig = function(name) {
     return GM_getValue(name, config[name]);
   };
   x = function(path, root) {
@@ -277,7 +278,7 @@
       for (option in _ref2) {
         if (!__hasProp.call(_ref2, option)) continue;
         _i = _ref2[option];
-        checked = getValue(option) ? "checked" : "";
+        checked = getConfig(option) ? "checked" : "";
         html += ("<label>" + (option) + "<input " + (checked) + " name=\"" + (option) + "\" type=\"checkbox\"></label><br>");
       }
       html += ("<input type=\"button\" value=\"hidden: " + (hiddenNum) + "\"><br>");
@@ -354,7 +355,7 @@
       GM_setValue("hiddenThreads/" + (BOARD) + "/", JSON.stringify(hiddenThreads));
     }
     hide(div);
-    if (getValue('Show Stubs')) {
+    if (getConfig('Show Stubs')) {
       a = tag('a');
       if (span = $('.omittedposts', div)) {
         n = Number(span.textContent.match(/\d+/)[0]);
@@ -423,7 +424,7 @@
     trip = ((typeof (_ref3 = ((_ref2 = $('span.postertrip', reply)))) === "undefined" || _ref3 === null) ? undefined : _ref3.textContent) || '';
     table = x('ancestor::table', reply);
     hide(table);
-    if (getValue('Show Stubs')) {
+    if (getConfig('Show Stubs')) {
       a = tag('a');
       a.textContent = ("[ + ] " + (name) + " " + (trip));
       a.className = 'pointer';
@@ -455,17 +456,17 @@
       return null;
     }
     $('iframe').src = 'about:blank';
+    window.location = 'javascript:Recaptcha.reload()';
     qr = $('#qr');
     if (error = GM_getValue('error')) {
       $('form', qr).style.visibility = '';
-      span = tag('span');
-      span.textContent = error;
-      span.className = 'error';
-      qr.appendChild(span);
-      return error === 'You seem to have mistyped the verification.' ? (window.location = 'javascript:Recaptcha.reload()') : null;
+      span = n('span', {
+        textContent: error,
+        className: 'error'
+      });
+      return qr.appendChild(span);
     } else {
-      remove(qr);
-      return (window.location = 'javascript:Recaptcha.reload()');
+      return !(getConfig('Persistent QR') && REPLY) ? remove(qr) : null;
     }
   };
   submit = function(e) {
@@ -500,7 +501,6 @@
   };
   quickReply = function(e) {
     var _i, _len, _ref2, _ref3, autohideB, clone, closeB, div, form, input, qr, script, selection, text, textarea, xpath;
-    e.preventDefault();
     if (!(qr = $('#qr'))) {
       qr = tag('div');
       qr.id = 'qr';
@@ -528,7 +528,6 @@
       div.appendChild(closeB);
       form = $('form[name=post]');
       clone = form.cloneNode(true);
-      $('input[name=recaptcha_response_field]', form).id = '';
       _ref2 = $$('script', clone);
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         script = _ref2[_i];
@@ -548,13 +547,16 @@
       qr.appendChild(clone);
       document.body.appendChild(qr);
     }
-    selection = window.getSelection();
-    id = (typeof (_ref3 = ((_ref2 = x('preceding::span[@id][1]', selection.anchorNode)))) === "undefined" || _ref3 === null) ? undefined : _ref3.id;
-    text = selection.toString();
-    textarea = $('textarea', qr);
-    textarea.focus();
-    textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n';
-    return text && id === this.parentNode.id ? textarea.value += (">" + (text) + "\n") : null;
+    if (e) {
+      e.preventDefault();
+      selection = window.getSelection();
+      id = (typeof (_ref3 = ((_ref2 = x('preceding::span[@id][1]', selection.anchorNode)))) === "undefined" || _ref3 === null) ? undefined : _ref3.id;
+      text = selection.toString();
+      textarea = $('textarea', qr);
+      textarea.focus();
+      textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n';
+      return text && id === this.parentNode.id ? textarea.value += (">" + (text) + "\n") : null;
+    }
   };
   watch = function() {
     var text;
@@ -777,7 +779,7 @@
     el = _ref[_i];
     el.tabIndex = 1;
   }
-  if (getValue('Reply Hiding')) {
+  if (getConfig('Reply Hiding')) {
     callbacks.push(function(root) {
       var _j, _k, _len2, _len3, _ref2, _ref3, _result, _result2, next, obj, td, tds;
       tds = $$('td.doubledash', root);
@@ -803,10 +805,11 @@
       return _result;
     });
   }
-  if (getValue('Quick Reply')) {
-    iframe = tag('iframe');
+  if (getConfig('Quick Reply')) {
+    iframe = n('iframe', {
+      name: 'iframe'
+    });
     hide(iframe);
-    iframe.name = 'iframe';
     iframe.addEventListener('load', iframeLoad, true);
     document.body.appendChild(iframe);
     callbacks.push(function(root) {
@@ -819,8 +822,9 @@
       }
       return _result;
     });
+    $('form[name=post] input[name=recaptcha_response_field]').id = '';
   }
-  if (getValue('Quick Report')) {
+  if (getConfig('Quick Report')) {
     callbacks.push(function(root) {
       var _j, _len2, _ref2, _result, arr, el;
       arr = $$('span[id^=no]', root);
@@ -828,9 +832,10 @@
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         el = _ref2[_j];
         _result.push((function() {
-          a = tag('a');
-          a.textContent = '[ ! ]';
-          a.className = 'pointer';
+          a = n('a', {
+            textContent: '[ ! ]',
+            className: 'pointer'
+          });
           a.addEventListener('click', report, true);
           inAfter(el, a);
           return inAfter(el, document.createTextNode(' '));
@@ -839,7 +844,7 @@
       return _result;
     });
   }
-  if (getValue('Thread Watcher')) {
+  if (getConfig('Thread Watcher')) {
     watcher = tag('div');
     watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>';
     watcher.className = 'reply';
@@ -869,7 +874,7 @@
       inBefore(input, img);
     }
   }
-  if (getValue('Anonymize')) {
+  if (getConfig('Anonymize')) {
     callbacks.push(function(root) {
       var _k, _len3, _ref3, _result, name, names, trip, trips;
       names = $$('span.postername, span.commentpostername', root);
@@ -887,7 +892,7 @@
       return _result;
     });
   }
-  if (getValue('Reply Navigation')) {
+  if (getConfig('Reply Navigation')) {
     callbacks.push(function(root) {
       var _k, _len3, _ref3, _result, arr, down, el, span, up;
       arr = $$('span[id^=norep]', root);
@@ -914,17 +919,22 @@
       return _result;
     });
   }
-  if (!REPLY) {
-    if (getValue('Thread Hiding')) {
+  if (REPLY) {
+    if (getConfig('Quick Reply') && getConfig('Persistent QR')) {
+      quickReply();
+      $('#qr input[title=autohide]').click();
+    }
+  } else {
+    if (getConfig('Thread Hiding')) {
       delform = $('form[name=delform]');
       document.addEventListener('DOMNodeInserted', stopPropagation, true);
       threadF(delform.firstChild);
       document.removeEventListener('DOMNodeInserted', stopPropagation, true);
     }
-    if (getValue('Auto Watch')) {
+    if (getConfig('Auto Watch')) {
       $('form[name="post"]').addEventListener('submit', autoWatch, true);
     }
-    if (getValue('Thread Navigation')) {
+    if (getConfig('Thread Navigation')) {
       arr = $$('div > span.filesize, form > span.filesize');
       i = 0;
       l = arr.length;
@@ -966,7 +976,7 @@
         window.location = window.location;
       }
     }
-    if (getValue('Thread Expansion')) {
+    if (getConfig('Thread Expansion')) {
       omitted = $$('span.omittedposts');
       _ref = omitted;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -978,7 +988,7 @@
         replace(span, a);
       }
     }
-    if (getValue('Comment Expansion')) {
+    if (getConfig('Comment Expansion')) {
       as = $$('span.abbr a');
       _ref = as;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

@@ -14,10 +14,11 @@ config =
     'Thread Expansion':     true
     'Comment Expansion':    true
     'Quick Reply':          true
+    'Persistent QR':        false
     'Quick Report':         true
     'Auto Watch':           true
     'Anonymize':            false
-getValue = (name) ->
+getConfig = (name) ->
     GM_getValue(name, config[name])
 x = (path, root) ->
     root or= document.body
@@ -242,7 +243,7 @@ options = ->
         position(div)
         html = '<div class="move">4chan X</div><div>'
         for option of config
-            checked = if getValue(option) then "checked" else ""
+            checked = if getConfig(option) then "checked" else ""
             html += "<label>#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
         html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
         html += '<a name="save">save</a> <a name="cancel">cancel</a></div>'
@@ -320,7 +321,7 @@ hideThread = (div) ->
         })
         GM_setValue("hiddenThreads/#{BOARD}/", JSON.stringify(hiddenThreads))
     hide(div)
-    if getValue('Show Stubs')
+    if getConfig('Show Stubs')
         a = tag('a')
         if span = $('.omittedposts', div)
             n = Number(span.textContent.match(/\d+/)[0])
@@ -387,7 +388,7 @@ hideReply = (reply) ->
     trip = $('span.postertrip', reply)?.textContent || ''
     table = x('ancestor::table', reply)
     hide(table)
-    if getValue('Show Stubs')
+    if getConfig('Show Stubs')
         a = tag('a')
         a.textContent = "[ + ] #{name} #{trip}"
         a.className = 'pointer'
@@ -415,18 +416,18 @@ iframeLoad = ->
         return
     $('iframe').src = 'about:blank'
 
+    window.location = 'javascript:Recaptcha.reload()'
+
     qr = $('#qr')
     if error = GM_getValue('error')
         $('form', qr).style.visibility = ''
-        span = tag('span')
-        span.textContent = error
-        span.className = 'error'
+        span = n 'span', {
+            textContent: error
+            className: 'error'
+        }
         qr.appendChild(span)
-        if error is 'You seem to have mistyped the verification.'
-            window.location = 'javascript:Recaptcha.reload()'
-    else
-        remove(qr)
-        window.location = 'javascript:Recaptcha.reload()'
+    else unless getConfig('Persistent QR') and REPLY
+        remove qr
 
 
 submit = (e) ->
@@ -457,7 +458,6 @@ autohide = ->
 
 
 quickReply = (e) ->
-    e.preventDefault()
     if !qr = $('#qr')
         #make quick reply dialog
         qr = tag('div')
@@ -489,9 +489,6 @@ quickReply = (e) ->
 
         form = $ 'form[name=post]'
         clone = form.cloneNode(true)
-        #hack - nuke the original recaptcha's id so it doesn't grab focus
-        # when reloading
-        $('input[name=recaptcha_response_field]', form).id = ''
         #remove recaptcha scripts
         for script in $$ 'script', clone
             remove script
@@ -508,16 +505,19 @@ quickReply = (e) ->
         qr.appendChild(clone)
         document.body.appendChild(qr)
 
-    selection = window.getSelection()
-    id = x('preceding::span[@id][1]', selection.anchorNode)?.id
-    text = selection.toString()
+    if e
+        e.preventDefault()
 
-    textarea = $('textarea', qr)
-    textarea.focus()
-    #we can't just use @textContent b/c of the xxxs. goddamit moot.
-    textarea.value += '>>' + @parentNode.id.match(/\d+$/)[0] + '\n'
-    if text and id is this.parentNode.id
-        textarea.value += ">#{text}\n"
+        selection = window.getSelection()
+        id = x('preceding::span[@id][1]', selection.anchorNode)?.id
+        text = selection.toString()
+
+        textarea = $('textarea', qr)
+        textarea.focus()
+        #we can't just use @textContent b/c of the xxxs. goddamit moot.
+        textarea.value += '>>' + @parentNode.id.match(/\d+$/)[0] + '\n'
+        if text and id is this.parentNode.id
+            textarea.value += ">#{text}\n"
 
 watch = ->
     id = this.nextSibling.name
@@ -708,7 +708,7 @@ inBefore(text, a)
 for el in $$ '#recaptcha_table a'
     el.tabIndex = 1
 
-if getValue('Reply Hiding')
+if getConfig('Reply Hiding')
     callbacks.push((root) ->
         tds = $$('td.doubledash', root)
         for td in tds
@@ -725,10 +725,11 @@ if getValue('Reply Hiding')
                     hideReply(next)
     )
 
-if getValue('Quick Reply')
-    iframe = tag('iframe')
+if getConfig('Quick Reply')
+    iframe = n 'iframe', {
+        name: 'iframe'
+    }
     hide(iframe)
-    iframe.name = 'iframe'
     iframe.addEventListener('load', iframeLoad, true)
     document.body.appendChild(iframe)
 
@@ -738,20 +739,25 @@ if getValue('Quick Reply')
             quote.addEventListener('click', quickReply, true)
     )
 
+    #hack - nuke the original recaptcha's id so it doesn't grab focus
+    # when reloading
+    $('form[name=post] input[name=recaptcha_response_field]').id = ''
 
-if getValue('Quick Report')
+
+if getConfig('Quick Report')
     callbacks.push((root) ->
         arr = $$('span[id^=no]', root)
         for el in arr
-            a = tag('a')
-            a.textContent = '[ ! ]'
-            a.className = 'pointer'
+            a = n 'a', {
+                textContent: '[ ! ]'
+                className: 'pointer'
+            }
             a.addEventListener('click', report, true)
             inAfter(el, a)
             inAfter(el, document.createTextNode(' '))
     )
 
-if getValue('Thread Watcher')
+if getConfig('Thread Watcher')
     #create watcher
     watcher = tag('div')
     watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>'
@@ -778,7 +784,7 @@ if getValue('Thread Watcher')
         img.addEventListener('click', watch, true)
         inBefore(input, img)
 
-if getValue('Anonymize')
+if getConfig('Anonymize')
     callbacks.push((root) ->
         names = $$('span.postername, span.commentpostername', root)
         for name in names
@@ -791,7 +797,7 @@ if getValue('Anonymize')
                 remove(trip)
     )
 
-if getValue('Reply Navigation')
+if getConfig('Reply Navigation')
     callbacks.push((root) ->
         arr = $$('span[id^=norep]', root)
         for el in arr
@@ -811,19 +817,23 @@ if getValue('Reply Navigation')
             inAfter(el, span)
     )
 
+if REPLY
+    if getConfig('Quick Reply') and getConfig('Persistent QR')
+        quickReply()
+        $('#qr input[title=autohide]').click()
 
-if not REPLY
-    if getValue('Thread Hiding')
+else # not reply
+    if getConfig('Thread Hiding')
         delform = $('form[name=delform]')
         #don't confuse other scripts
         document.addEventListener('DOMNodeInserted', stopPropagation, true)
         threadF(delform.firstChild)
         document.removeEventListener('DOMNodeInserted', stopPropagation, true)
 
-    if getValue('Auto Watch')
+    if getConfig('Auto Watch')
         $('form[name="post"]').addEventListener('submit', autoWatch, true)
 
-    if getValue('Thread Navigation')
+    if getConfig('Thread Navigation')
         arr = $$('div > span.filesize, form > span.filesize')
         i = 0
         l = arr.length
@@ -861,7 +871,7 @@ if not REPLY
         if location.hash is '#1'
             window.location = window.location
 
-    if getValue('Thread Expansion')
+    if getConfig('Thread Expansion')
         omitted = $$('span.omittedposts')
         for span in omitted
             a = tag('a')
@@ -870,7 +880,7 @@ if not REPLY
             a.addEventListener('click', expandThread, true)
             replace(span, a)
 
-    if getValue('Comment Expansion')
+    if getConfig('Comment Expansion')
         as = $$('span.abbr a')
         for a in as
             a.addEventListener('click', expandComment, true)
