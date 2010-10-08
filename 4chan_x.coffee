@@ -176,6 +176,9 @@ GM_addStyle('
     span.error {
         color: red;
     }
+    #qr.auto:not(:hover) form {
+        visibility: collapse;
+    }
     #qr span.error {
         position: absolute;
         bottom: 0;
@@ -443,12 +446,14 @@ submit = (e) ->
         @style.visibility = 'collapse'
 
 
-minimize = ->
-    form = this.parentNode.nextSibling
-    if form.style.visibility
-        form.style.visibility = ''
+autohide = ->
+    qr = $ '#qr'
+    klass = qr.className
+    if klass.indexOf('auto') is -1
+        klass += ' auto'
     else
-        form.style.visibility = 'collapse'
+        klass = klass.replace(' auto', '')
+    qr.className = klass
 
 
 quickReply = (e) ->
@@ -466,13 +471,13 @@ quickReply = (e) ->
         div.addEventListener('mousedown', mousedown, true)
         qr.appendChild(div)
 
-        minimizeB = n 'a', {
-            textContent: '_'
+        autohideB = n 'input', {
+            type: 'checkbox'
             className: 'pointer'
-            title: 'minimize'
+            title: 'autohide'
         }
-        minimizeB.addEventListener('click', minimize, true)
-        div.appendChild(minimizeB)
+        autohideB.addEventListener('click', autohide, true)
+        div.appendChild(autohideB)
         div.appendChild(document.createTextNode(' '))
         closeB = n 'a', {
             textContent: 'X'

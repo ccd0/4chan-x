@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, arr, as, autoWatch, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, minimize, mousedown, mousemove, mouseup, move, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getTime, getValue, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, mousedown, mousemove, mouseup, move, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -212,6 +212,9 @@
     }\
     span.error {\
         color: red;\
+    }\
+    #qr.auto:not(:hover) form {\
+        visibility: collapse;\
     }\
     #qr span.error {\
         position: absolute;\
@@ -484,13 +487,19 @@
       return (this.style.visibility = 'collapse');
     }
   };
-  minimize = function() {
-    var form;
-    form = this.parentNode.nextSibling;
-    return form.style.visibility ? (form.style.visibility = '') : (form.style.visibility = 'collapse');
+  autohide = function() {
+    var klass, qr;
+    qr = $('#qr');
+    klass = qr.className;
+    if (klass.indexOf('auto') === -1) {
+      klass += ' auto';
+    } else {
+      klass = klass.replace(' auto', '');
+    }
+    return (qr.className = klass);
   };
   quickReply = function(e) {
-    var _i, _len, _ref2, _ref3, clone, closeB, div, form, input, minimizeB, qr, script, selection, text, textarea, xpath;
+    var _i, _len, _ref2, _ref3, autohideB, clone, closeB, div, form, input, qr, script, selection, text, textarea, xpath;
     e.preventDefault();
     if (!(qr = $('#qr'))) {
       qr = tag('div');
@@ -502,13 +511,13 @@
       div.className = 'move';
       div.addEventListener('mousedown', mousedown, true);
       qr.appendChild(div);
-      minimizeB = n('a', {
-        textContent: '_',
+      autohideB = n('input', {
+        type: 'checkbox',
         className: 'pointer',
-        title: 'minimize'
+        title: 'autohide'
       });
-      minimizeB.addEventListener('click', minimize, true);
-      div.appendChild(minimizeB);
+      autohideB.addEventListener('click', autohide, true);
+      div.appendChild(autohideB);
       div.appendChild(document.createTextNode(' '));
       closeB = n('a', {
         textContent: 'X',
