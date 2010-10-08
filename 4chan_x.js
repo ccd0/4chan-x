@@ -470,7 +470,7 @@
     }
   };
   submit = function(e) {
-    var recaptcha, span;
+    var _ref2, _ref3, recaptcha, span;
     if (span = this.nextSibling) {
       remove(span);
     }
@@ -485,7 +485,7 @@
       alert('You forgot to type in the verification.');
       return recaptcha.focus();
     } else {
-      return (this.style.visibility = 'collapse');
+      return (typeof (_ref3 = ((_ref2 = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
     }
   };
   autohide = function() {
@@ -545,7 +545,7 @@
         clone.appendChild(input);
       }
       qr.appendChild(clone);
-      document.body.appendChild(qr);
+      inBefore(document.body.firstChild, qr);
     }
     if (e) {
       e.preventDefault();
@@ -822,7 +822,6 @@
       }
       return _result;
     });
-    $('form[name=post] input[name=recaptcha_response_field]').id = '';
   }
   if (getConfig('Quick Report')) {
     callbacks.push(function(root) {

@@ -444,7 +444,7 @@ submit = (e) ->
         alert 'You forgot to type in the verification.'
         recaptcha.focus()
     else
-        @style.visibility = 'collapse'
+        $('#qr input[title=autohide]:not(:checked)')?.click()
 
 
 autohide = ->
@@ -503,7 +503,10 @@ quickReply = (e) ->
             }
             clone.appendChild(input)
         qr.appendChild(clone)
-        document.body.appendChild(qr)
+        inBefore(document.body.firstChild, qr)
+        #XXX - put qr first in body, so `Recaptcha.reload()`,
+        # when using document.getElementById, sees and focuses this
+        # instead of the original.
 
     if e
         e.preventDefault()
@@ -738,10 +741,6 @@ if getConfig('Quick Reply')
         for quote in quotes
             quote.addEventListener('click', quickReply, true)
     )
-
-    #hack - nuke the original recaptcha's id so it doesn't grab focus
-    # when reloading
-    $('form[name=post] input[name=recaptcha_response_field]').id = ''
 
 
 if getConfig('Quick Report')
