@@ -1,0 +1,71 @@
+1.3
+- auto reload captcha on success
+
+1.2
+- alert on no captcha
+
+1.1
+- re-add button to clear hidden posts.
+
+1.0
+- Complete rewrite (well, like 98%).
+- Split off updater - 4chan x Updater
+
+0.26
+- Fix /b/ quick reply
+- Add initial 'Auto Watch' implementation
+
+0.25
+- fix Opera 10.50 thread updater bug
+- require Opera 10.50
+- remove 'Quick Post' (just use noko)
+- remove / automate 'manual clear'
+- make thread stubs clickable
+
+0.24 - Worksafe threads show the correct favicon. Thanks for the art, Ongpot!
+
+0.23 - Show post count for hidden threads
+
+0.22 - thread navigating now can navigate to previous pages, fixed opera issue
+
+0.21 - chrome compatibility
+
+0.20 - added selection quoting, quick post, unread reply count in title.
+
+0.19 - added quick reply error notifications
+
+0.17 - added 'Update Favicon' option. Thanks thisisanon!
+
+0.16 - added new reply notifications. scroll to end of thread to remove them.
+
+0.15 - added thread updater button
+
+0.14 - moved reply hiding to 4chan filter
+
+0.13 - added thread watcher close button, thread watcher toggle button
+
+0.12 - added Show Hidden (NOTE: not fully compatible w/ 4chan filter yet); thread updater works through connection problems
+
+0.11 - made hidden replies persistent, added Clear Hidden.
+
+0.10 - report button added
+
+0.9 - forced anon added
+
+0.8 - all watched threads visible all the time
+
+0.7 - added reply nav buttons
+
+0.6 - added thread updating
+
+0.4.1/0.5 - added options, quick reply shading
+
+0.4 - added quick reply
+
+0.3 - added thread watching
+
+0.2 - added post expanding
+
+0.1 - added post hiding
+
+0.0 - thread hiding, expanding, navigating
