@@ -1,3 +1,8 @@
+1.4.1
+- unhide qr when reply link clicked
+- clear textarea on successful qr
+- reload captcha AFTER removing qr
+
 1.4
 - add 'Persistent QR'
 - QR autohiding
