@@ -460,7 +460,7 @@ autohide = ->
 
 
 quickReply = (e) ->
-    if !qr = $('#qr')
+    unless qr = $('#qr')
         #make quick reply dialog
         qr = tag('div')
         qr.id = 'qr'
@@ -512,6 +512,8 @@ quickReply = (e) ->
 
     if e
         e.preventDefault()
+
+        $('input[title=autohide]:checked', qr)?.click()
 
         selection = window.getSelection()
         id = x('preceding::span[@id][1]', selection.anchorNode)?.id

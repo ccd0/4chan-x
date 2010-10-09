@@ -551,6 +551,7 @@
     }
     if (e) {
       e.preventDefault();
+      (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
       selection = window.getSelection();
       id = (typeof (_ref3 = ((_ref2 = x('preceding::span[@id][1]', selection.anchorNode)))) === "undefined" || _ref3 === null) ? undefined : _ref3.id;
       text = selection.toString();
