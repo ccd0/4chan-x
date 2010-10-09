@@ -456,7 +456,6 @@
       return null;
     }
     $('iframe').src = 'about:blank';
-    window.location = 'javascript:Recaptcha.reload()';
     qr = $('#qr');
     if (error = GM_getValue('error')) {
       $('form', qr).style.visibility = '';
@@ -464,10 +463,13 @@
         textContent: error,
         className: 'error'
       });
-      return qr.appendChild(span);
+      qr.appendChild(span);
     } else {
-      return !(getConfig('Persistent QR') && REPLY) ? remove(qr) : null;
+      if (!(getConfig('Persistent QR') && REPLY)) {
+        remove(qr);
+      }
     }
+    return (window.location = 'javascript:Recaptcha.reload()');
   };
   submit = function(e) {
     var _ref2, _ref3, recaptcha, span;

@@ -416,8 +416,6 @@ iframeLoad = ->
         return
     $('iframe').src = 'about:blank'
 
-    window.location = 'javascript:Recaptcha.reload()'
-
     qr = $('#qr')
     if error = GM_getValue('error')
         $('form', qr).style.visibility = ''
@@ -428,6 +426,8 @@ iframeLoad = ->
         qr.appendChild(span)
     else unless getConfig('Persistent QR') and REPLY
         remove qr
+
+    window.location = 'javascript:Recaptcha.reload()'
 
 
 submit = (e) ->
