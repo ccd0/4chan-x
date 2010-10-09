@@ -464,10 +464,10 @@
         className: 'error'
       });
       qr.appendChild(span);
+    } else if (REPLY && getConfig('Persistent QR')) {
+      $('textarea', qr).value = '';
     } else {
-      if (!(getConfig('Persistent QR') && REPLY)) {
-        remove(qr);
-      }
+      remove(qr);
     }
     return (window.location = 'javascript:Recaptcha.reload()');
   };

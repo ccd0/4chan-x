@@ -424,7 +424,9 @@ iframeLoad = ->
             className: 'error'
         }
         qr.appendChild(span)
-    else unless getConfig('Persistent QR') and REPLY
+    else if REPLY and getConfig('Persistent QR')
+        $('textarea', qr).value = ''
+    else
         remove qr
 
     window.location = 'javascript:Recaptcha.reload()'
