@@ -547,7 +547,7 @@
         clone.appendChild(input);
       }
       qr.appendChild(clone);
-      inBefore(document.body.firstChild, qr);
+      document.body.appendChild(qr);
     }
     if (e) {
       e.preventDefault();
@@ -825,6 +825,9 @@
       }
       return _result;
     });
+    console.log('wat');
+    console.log($('#recaptcha_response_field'));
+    $('#recaptcha_response_field').id = '';
   }
   if (getConfig('Quick Report')) {
     callbacks.push(function(root) {

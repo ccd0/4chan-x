@@ -505,10 +505,7 @@ quickReply = (e) ->
             }
             clone.appendChild(input)
         qr.appendChild(clone)
-        inBefore(document.body.firstChild, qr)
-        #XXX - put qr first in body, so `Recaptcha.reload()`,
-        # when using document.getElementById, sees and focuses this
-        # instead of the original.
+        document.body.appendChild(qr)
 
     if e
         e.preventDefault()
@@ -745,6 +742,12 @@ if getConfig('Quick Reply')
         for quote in quotes
             quote.addEventListener('click', quickReply, true)
     )
+
+    #hack - nuke id so it doesn't grab focus when reloading
+    console.log 'wat'
+    console.log $('#recaptcha_response_field')
+    $('#recaptcha_response_field').id = ''
+    #$('form[name=post] input[name=recaptcha_response_field]').id = ''
 
 
 if getConfig('Quick Report')
