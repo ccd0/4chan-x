@@ -1,3 +1,6 @@
+1.4.2
+- fix for firefox 4.0b6
+
 1.4.1
 - unhide qr when reply link clicked
 - clear textarea on successful qr
