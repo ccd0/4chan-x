@@ -499,9 +499,9 @@ quickReply = (e) ->
         if not REPLY
             xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
             input = n 'input', {
-                value: x(xpath, this).name
                 type: 'hidden'
                 name: 'resto'
+                value: x(xpath, this).name
             }
             clone.appendChild(input)
         qr.appendChild(clone)
@@ -744,10 +744,7 @@ if getConfig('Quick Reply')
     )
 
     #hack - nuke id so it doesn't grab focus when reloading
-    console.log 'wat'
-    console.log $('#recaptcha_response_field')
     $('#recaptcha_response_field').id = ''
-    #$('form[name=post] input[name=recaptcha_response_field]').id = ''
 
 
 if getConfig('Quick Report')

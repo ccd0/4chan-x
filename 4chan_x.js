@@ -540,9 +540,9 @@
       if (!REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
         input = n('input', {
-          value: x(xpath, this).name,
           type: 'hidden',
-          name: 'resto'
+          name: 'resto',
+          value: x(xpath, this).name
         });
         clone.appendChild(input);
       }
@@ -825,8 +825,6 @@
       }
       return _result;
     });
-    console.log('wat');
-    console.log($('#recaptcha_response_field'));
     $('#recaptcha_response_field').id = '';
   }
   if (getConfig('Quick Report')) {
