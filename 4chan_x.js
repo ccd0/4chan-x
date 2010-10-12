@@ -466,6 +466,7 @@
       qr.appendChild(span);
     } else if (REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
+      $('input[name=recaptcha_response_field]', qr).value = '';
     } else {
       remove(qr);
     }
@@ -476,8 +477,10 @@
     if (span = this.nextSibling) {
       remove(span);
     }
-    recaptcha = $('#recaptcha_response_field', this);
-    if (!recaptcha.value) {
+    recaptcha = $('input[name=recaptcha_response_field]', this);
+    if (recaptcha.value) {
+      return (typeof (_ref3 = ((_ref2 = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
+    } else {
       e.preventDefault();
       span = n('span', {
         className: 'error',
@@ -486,8 +489,6 @@
       this.parentNode.appendChild(span);
       alert('You forgot to type in the verification.');
       return recaptcha.focus();
-    } else {
-      return (typeof (_ref3 = ((_ref2 = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
     }
   };
   autohide = function() {

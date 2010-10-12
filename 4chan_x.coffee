@@ -426,6 +426,7 @@ iframeLoad = ->
         qr.appendChild(span)
     else if REPLY and getConfig('Persistent QR')
         $('textarea', qr).value = ''
+        $('input[name=recaptcha_response_field]', qr).value = ''
     else
         remove qr
 
@@ -435,8 +436,10 @@ iframeLoad = ->
 submit = (e) ->
     if span = @nextSibling
         remove(span)
-    recaptcha = $('#recaptcha_response_field', this)
-    if not recaptcha.value
+    recaptcha = $('input[name=recaptcha_response_field]', this)
+    if recaptcha.value
+        $('#qr input[title=autohide]:not(:checked)')?.click()
+    else
         e.preventDefault()
         span = n 'span', {
             className: 'error'
@@ -445,8 +448,6 @@ submit = (e) ->
         @parentNode.appendChild span
         alert 'You forgot to type in the verification.'
         recaptcha.focus()
-    else
-        $('#qr input[title=autohide]:not(:checked)')?.click()
 
 
 autohide = ->
