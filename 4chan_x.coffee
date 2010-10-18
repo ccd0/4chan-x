@@ -18,13 +18,10 @@ config =
     'Quick Report':         true
     'Auto Watch':           true
     'Anonymize':            false
-getConfig = (name) ->
-    GM_getValue(name, config[name])
-x = (path, root) ->
-    root or= document.body
-    document.
-        evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
-        singleNodeValue
+
+#TODO - put 'hidden' configs here
+
+#utility funks
 $ = (selector, root) ->
     root or= document.body
     root.querySelector(selector)
@@ -33,26 +30,36 @@ $$ = (selector, root) ->
     result = root.querySelectorAll(selector)
     #magic that turns the results object into an array:
     node for node in result
-inBefore = (root, el) ->
-    root.parentNode.insertBefore(el, root)
-inAfter = (root, el) ->
-    root.parentNode.insertBefore(el, root.nextSibling)
-tag = (el) ->
-    document.createElement(el)
-hide = (el) ->
-    el.style.display = 'none'
-show = (el) ->
-    el.style.display = ''
-remove = (el) ->
-    el.parentNode.removeChild(el)
-replace = (root, el) ->
-    root.parentNode.replaceChild(el, root)
+getConfig = (name) ->
+    GM_getValue(name, config[name])
 getTime = ->
     Math.floor(new Date().getTime() / 1000)
+hide = (el) ->
+    el.style.display = 'none'
+inAfter = (root, el) ->
+    root.parentNode.insertBefore(el, root.nextSibling)
+inBefore = (root, el) ->
+    root.parentNode.insertBefore(el, root)
 n = (tag, props) -> #new
     el = document.createElement tag
     if props then (el[key] = val) for key, val of props
     el
+position = (el) ->
+    id = el.id
+    if left = GM_getValue("#{id}Left", '0px')
+        el.style.left = left
+    else
+        el.style.right = '0px'
+    if top = GM_getValue("#{id}Top", '0px')
+        el.style.top = top
+    else
+        el.style.bottom = '0px'
+remove = (el) ->
+    el.parentNode.removeChild(el)
+replace = (root, el) ->
+    root.parentNode.replaceChild(el, root)
+show = (el) ->
+    el.style.display = ''
 slice = (arr, id) ->
     # the while loop is the only low-level loop left in coffeescript.
     # we need to use it to see the index.
@@ -64,24 +71,19 @@ slice = (arr, id) ->
             arr.splice(i, 1)
             return arr
         i++
-position = (el) ->
-    id = el.id
-    if left = GM_getValue("#{id}Left", '0px')
-        el.style.left = left
-    else
-        el.style.right = '0px'
-    if top = GM_getValue("#{id}Top", '0px')
-        el.style.top = top
-    else
-        el.style.bottom = '0px'
-
+tag = (el) ->
+    document.createElement(el)
+x = (path, root) ->
+    root or= document.body
+    document.
+        evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
+        singleNodeValue
 
 # x-browser
 if typeof GM_deleteValue == 'undefined'
     this.GM_setValue = (name, value) ->
         value = (typeof value)[0] + value
         localStorage.setItem(name, value)
-
     this.GM_getValue = (name, defaultValue) ->
         if not value = localStorage.getItem(name)
             return defaultValue
@@ -94,13 +96,13 @@ if typeof GM_deleteValue == 'undefined'
                 return Number(value)
             else
                 return value
-
     this.GM_addStyle = (css) ->
         style = tag('style')
         style.type = 'text/css'
         style.textContent = css
         $('head', document).appendChild(style)
 
+#let's get this party started.
 watched = JSON.parse(GM_getValue('watched', '{}'))
 if location.hostname.split('.')[0] is 'sys'
     if b = $('table font b')
