@@ -107,7 +107,7 @@ if location.hostname.split('.')[0] is 'sys'
         GM_setValue('error', b.firstChild.textContent)
     else
         GM_setValue('error', '')
-        if GM_getValue('Auto Watch')
+        if getConfig('Auto Watch')
             html = $('b').innerHTML
             [nop, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
             if thread is '0'
