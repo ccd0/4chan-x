@@ -1,6 +1,6 @@
 (function() {
-  var $, $$, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, mousedown, mousemove, mouseup, move, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
-  var __hasProp = Object.prototype.hasOwnProperty;
+  var $, $$, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, mousedown, mousemove, mouseup, move, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
     'Reply Hiding': true,
@@ -15,13 +15,6 @@
     'Quick Report': true,
     'Auto Watch': true,
     'Anonymize': false
-  };
-  getConfig = function(name) {
-    return GM_getValue(name, config[name]);
-  };
-  x = function(path, root) {
-    root || (root = document.body);
-    return document.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
   $ = function(selector, root) {
     root || (root = document.body);
@@ -38,29 +31,30 @@
     }
     return _result;
   };
-  inBefore = function(root, el) {
-    return root.parentNode.insertBefore(el, root);
+  addTo = function(parent) {
+    var _i, _len, _ref, _result, child, children;
+    children = __slice.call(arguments, 1);
+    _result = []; _ref = children;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      child = _ref[_i];
+      _result.push(parent.appendChild(child));
+    }
+    return _result;
   };
-  inAfter = function(root, el) {
-    return root.parentNode.insertBefore(el, root.nextSibling);
+  getConfig = function(name) {
+    return GM_getValue(name, config[name]);
   };
-  tag = function(el) {
-    return document.createElement(el);
+  getTime = function() {
+    return Math.floor(new Date().getTime() / 1000);
   };
   hide = function(el) {
     return (el.style.display = 'none');
   };
-  show = function(el) {
-    return (el.style.display = '');
+  inAfter = function(root, el) {
+    return root.parentNode.insertBefore(el, root.nextSibling);
   };
-  remove = function(el) {
-    return el.parentNode.removeChild(el);
-  };
-  replace = function(root, el) {
-    return root.parentNode.replaceChild(el, root);
-  };
-  getTime = function() {
-    return Math.floor(new Date().getTime() / 1000);
+  inBefore = function(root, el) {
+    return root.parentNode.insertBefore(el, root);
   };
   n = function(tag, props) {
     var _ref, el, key, val;
@@ -74,6 +68,25 @@
       }
     }
     return el;
+  };
+  position = function(el) {
+    var id, left, top;
+    id = el.id;
+    if (left = GM_getValue("" + (id) + "Left", '0px')) {
+      el.style.left = left;
+    } else {
+      el.style.right = '0px';
+    }
+    return (top = GM_getValue("" + (id) + "Top", '0px')) ? (el.style.top = top) : (el.style.bottom = '0px');
+  };
+  remove = function(el) {
+    return el.parentNode.removeChild(el);
+  };
+  replace = function(root, el) {
+    return root.parentNode.replaceChild(el, root);
+  };
+  show = function(el) {
+    return (el.style.display = '');
   };
   slice = function(arr, id) {
     var _result, i, l;
@@ -89,15 +102,15 @@
     }
     return _result;
   };
-  position = function(el) {
-    var id, left, top;
-    id = el.id;
-    if (left = GM_getValue("" + (id) + "Left", '0px')) {
-      el.style.left = left;
-    } else {
-      el.style.right = '0px';
-    }
-    return (top = GM_getValue("" + (id) + "Top", '0px')) ? (el.style.top = top) : (el.style.bottom = '0px');
+  tag = function(el) {
+    return document.createElement(el);
+  };
+  tn = function(s) {
+    return document.createTextNode(s);
+  };
+  x = function(path, root) {
+    root || (root = document.body);
+    return document.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
   if (typeof GM_deleteValue === 'undefined') {
     this.GM_setValue = function(name, value) {
@@ -134,7 +147,7 @@
       GM_setValue('error', b.firstChild.textContent);
     } else {
       GM_setValue('error', '');
-      if (GM_getValue('Auto Watch')) {
+      if (getConfig('Auto Watch')) {
         html = $('b').innerHTML;
         _ref = html.match(/<!-- thread:(\d+),no:(\d+) -->/);
         nop = _ref[0];
@@ -904,19 +917,18 @@
       for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
         el = _ref3[_k];
         _result.push((function() {
-          span = tag('span');
-          up = tag('a');
-          up.textContent = '▲';
-          up.className = 'pointer';
+          span = n('span');
+          up = n('a', {
+            textContent: '▲',
+            className: 'pointer'
+          });
           up.addEventListener('click', replyNav, true);
-          down = tag('a');
-          down.textContent = '▼';
-          down.className = 'pointer';
+          down = n('a', {
+            textContent: '▼',
+            className: 'pointer'
+          });
           down.addEventListener('click', replyNav, true);
-          span.appendChild(document.createTextNode(' '));
-          span.appendChild(up);
-          span.appendChild(document.createTextNode(' '));
-          span.appendChild(down);
+          addTo(span, tn(' '), up, tn(' '), down);
           return inAfter(el, span);
         })());
       }

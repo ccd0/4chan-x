@@ -30,6 +30,9 @@ $$ = (selector, root) ->
     result = root.querySelectorAll(selector)
     #magic that turns the results object into an array:
     node for node in result
+addTo = (parent, children...) ->
+    for child in children
+      parent.appendChild child
 getConfig = (name) ->
     GM_getValue(name, config[name])
 getTime = ->
@@ -73,6 +76,8 @@ slice = (arr, id) ->
         i++
 tag = (el) ->
     document.createElement(el)
+tn = (s) ->
+    document.createTextNode s
 x = (path, root) ->
     root or= document.body
     document.
@@ -807,19 +812,18 @@ if getConfig('Reply Navigation')
     callbacks.push((root) ->
         arr = $$('span[id^=norep]', root)
         for el in arr
-            span = tag('span')
-            up = tag('a')
-            up.textContent = '▲'
-            up.className = 'pointer'
+            span = n 'span'
+            up = n 'a', {
+                textContent: '▲'
+                className: 'pointer'
+            }
             up.addEventListener('click', replyNav, true)
-            down = tag('a')
-            down.textContent = '▼'
-            down.className = 'pointer'
+            down = n 'a', {
+                textContent: '▼'
+                className: 'pointer'
+            }
             down.addEventListener('click', replyNav, true)
-            span.appendChild(document.createTextNode(' '))
-            span.appendChild(up)
-            span.appendChild(document.createTextNode(' '))
-            span.appendChild(down)
+            addTo span, tn(' '), up, tn(' '), down
             inAfter(el, span)
     )
 
