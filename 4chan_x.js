@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -523,7 +523,7 @@
     } else {
       remove(qr);
     }
-    return (window.location = 'javascript:Recaptcha.reload()');
+    return recaptchaReload();
   };
   submit = function(e) {
     var _ref2, _ref3, recaptcha, span;
@@ -585,6 +585,7 @@
         script = _ref2[_i];
         remove(script);
       }
+      $('input[name=recaptcha_response_field]', clone).addEventListener('keydown', recaptchaListener, true);
       clone.addEventListener('submit', submit, true);
       clone.target = 'iframe';
       if (!REPLY) {
@@ -816,6 +817,12 @@
       return (window.location = ("#" + (op)));
     }
   };
+  recaptchaReload = function() {
+    return (window.location = 'javascript:Recaptcha.reload()');
+  };
+  recaptchaListener = function(e) {
+    return e.keyCode === 8 && this.value === '' ? recaptchaReload() : null;
+  };
   if (!(navtopr = $('#navtopr a'))) {
     return null;
   }
@@ -832,6 +839,8 @@
     el = _ref[_i];
     el.tabIndex = 1;
   }
+  recaptcha = $('#recaptcha_response_field');
+  recaptcha.addEventListener('keydown', recaptchaListener, true);
   if (getConfig('Reply Hiding')) {
     callbacks.push(function(root) {
       var _j, _k, _len2, _len3, _ref2, _ref3, _result, _result2, next, obj, td, tds;
@@ -876,7 +885,7 @@
       }
       return _result;
     });
-    $('#recaptcha_response_field').id = '';
+    recaptcha.id = '';
   }
   if (getConfig('Quick Report')) {
     callbacks.push(function(root) {

@@ -458,7 +458,7 @@ iframeLoad = ->
     else
         remove qr
 
-    window.location = 'javascript:Recaptcha.reload()'
+    recaptchaReload()
 
 
 submit = (e) ->
@@ -519,6 +519,8 @@ quickReply = (e) ->
         #remove recaptcha scripts
         for script in $$ 'script', clone
             remove script
+        $('input[name=recaptcha_response_field]', clone).
+            addEventListener('keydown', recaptchaListener, true)
         clone.addEventListener('submit', submit, true)
         clone.target = 'iframe'
         if not REPLY
@@ -721,6 +723,12 @@ replyNav = ->
         op = x("#{direction}::span[starts-with(@id, 'nothread')][1]", this).id
         window.location = "##{op}"
 
+recaptchaReload = ->
+    window.location = 'javascript:Recaptcha.reload()'
+
+recaptchaListener = (e) ->
+    if e.keyCode is 8 and this.value is ''
+        recaptchaReload()
 
 #graceful exit
 unless navtopr = $ '#navtopr a'
@@ -734,9 +742,15 @@ a = n 'a', {
 inBefore text, tn(' / ')
 inBefore text, a
 
+#various minor tweaks. TODO - `Minor Tweaks` option
+
 #hack to tab from comment straight to recaptcha
 for el in $$ '#recaptcha_table a'
     el.tabIndex = 1
+recaptcha = $ '#recaptcha_response_field'
+recaptcha.addEventListener('keydown', recaptchaListener, true)
+
+#major features
 
 if getConfig('Reply Hiding')
     callbacks.push((root) ->
@@ -771,7 +785,7 @@ if getConfig('Quick Reply')
     )
 
     #hack - nuke id so it doesn't grab focus when reloading
-    $('#recaptcha_response_field').id = ''
+    recaptcha.id = ''
 
 
 if getConfig('Quick Report')
