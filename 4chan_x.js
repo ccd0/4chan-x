@@ -281,7 +281,7 @@
       rel: 'shortcut icon',
       href: 'http://static.4chan.org/image/favicon.ico'
     });
-    head.appendChild(favicon);
+    addTo(head, favicon);
   }
   favNormal = favicon.href;
   favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==';
@@ -398,7 +398,7 @@
       $('input[type="button"]', div).addEventListener('click', clearHidden, true);
       $('a[name="save"]', div).addEventListener('click', optionsSave, true);
       $('a[name="cancel"]', div).addEventListener('click', close, true);
-      return document.body.appendChild(div);
+      return addTo(document.body, div);
     }
   };
   showThread = function() {
@@ -449,13 +449,13 @@
       className: 'pointer',
       listener: ['click', hideThread]
     });
-    div.appendChild(a);
+    addTo(div, a);
     inBefore(current, div);
     while ((!current.clear)) {
-      div.appendChild(current);
+      addTo(div, current);
       current = div.nextSibling;
     }
-    div.appendChild(current);
+    addTo(div, current);
     current = div.nextSibling;
     id = $('input[value="delete"]', div).name;
     div.id = id;
@@ -500,7 +500,7 @@
         listener: ['click', showReply]
       });
       div = n('div');
-      div.appendChild(a);
+      addTo(div, a);
       return inBefore(table, div);
     }
   };
@@ -533,7 +533,7 @@
         textContent: error,
         className: 'error'
       });
-      qr.appendChild(span);
+      addTo(qr, span);
     } else if (REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';
@@ -556,7 +556,7 @@
         className: 'error',
         textContent: 'You forgot to type in the verification.'
       });
-      this.parentNode.appendChild(span);
+      addTo(this.parentNode, span);
       alert('You forgot to type in the verification.');
       return recaptcha.focus();
     }
@@ -585,7 +585,7 @@
         className: 'move',
         listener: ['mousedown', AEOS.move]
       });
-      qr.appendChild(div);
+      addTo(qr, div);
       autohideB = n('input', {
         type: 'checkbox',
         className: 'pointer',
@@ -615,10 +615,10 @@
           name: 'resto',
           value: x(xpath, this).name
         });
-        clone.appendChild(input);
+        addTo(clone, input);
       }
-      qr.appendChild(clone);
-      document.body.appendChild(qr);
+      addTo(qr, clone);
+      addTo(document.body, qr);
     }
     if (e) {
       e.preventDefault();
@@ -720,7 +720,7 @@
       _result = []; _ref2 = replies;
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         reply = _ref2[_i];
-        _result.push(div.appendChild(x('ancestor::table', reply)));
+        _result.push(addTo(div, x('ancestor::table', reply)));
       }
       return _result;
     }
@@ -886,7 +886,7 @@
       listener: ['load', iframeLoad]
     });
     hide(iframe);
-    document.body.appendChild(iframe);
+    addTo(document.body, iframe);
     callbacks.push(function(root) {
       var _j, _len2, _ref2, _result, quote, quotes;
       quotes = $$('a.quotejs:not(:first-child)', root);
@@ -927,7 +927,7 @@
     });
     position(watcher);
     $('div', watcher).addEventListener('mousedown', AEOS.move, true);
-    document.body.appendChild(watcher);
+    addTo(document.body, watcher);
     watcherUpdate();
     threads = watched[BOARD] || [];
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');

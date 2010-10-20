@@ -226,7 +226,7 @@ if not favicon = $('link[rel="shortcut icon"]', head)#/f/
         rel: 'shortcut icon'
         href: 'http://static.4chan.org/image/favicon.ico'
     }
-    head.appendChild(favicon)
+    addTo head, favicon
 favNormal = favicon.href
 favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
 
@@ -343,7 +343,7 @@ options = ->
         $('input[type="button"]', div).addEventListener('click', clearHidden, true)
         $('a[name="save"]', div).addEventListener('click', optionsSave, true)
         $('a[name="cancel"]', div).addEventListener('click', close, true)
-        document.body.appendChild(div)
+        addTo document.body, div
 
 
 showThread = ->
@@ -390,13 +390,13 @@ threadF = (current) ->
         className: 'pointer'
         listener: ['click', hideThread]
     }
-    div.appendChild(a)
+    addTo div, a
 
     inBefore(current, div)
     while (!current.clear)#<br clear>
-        div.appendChild(current)
+        addTo div, current
         current = div.nextSibling
-    div.appendChild(current)
+    addTo div, current
     current = div.nextSibling
 
     id = $('input[value="delete"]', div).name
@@ -441,7 +441,7 @@ hideReply = (reply) ->
             listener: ['click', showReply]
         }
         div = n 'div'
-        div.appendChild(a)
+        addTo div, a
         inBefore(table, div)
 
 
@@ -470,7 +470,7 @@ iframeLoad = ->
             textContent: error
             className: 'error'
         }
-        qr.appendChild(span)
+        addTo qr, span
     else if REPLY and getConfig('Persistent QR')
         $('textarea', qr).value = ''
         $('input[name=recaptcha_response_field]', qr).value = ''
@@ -492,7 +492,7 @@ submit = (e) ->
             className: 'error'
             textContent: 'You forgot to type in the verification.'
         }
-        @parentNode.appendChild span
+        addTo @parentNode, span
         alert 'You forgot to type in the verification.'
         recaptcha.focus()
 
@@ -521,7 +521,7 @@ quickReply = (e) ->
             className: 'move'
             listener: ['mousedown', AEOS.move]
         }
-        qr.appendChild(div)
+        addTo qr, div
 
         autohideB = n 'input', {
             type: 'checkbox'
@@ -551,9 +551,9 @@ quickReply = (e) ->
                 name: 'resto'
                 value: x(xpath, this).name
             }
-            clone.appendChild(input)
-        qr.appendChild(clone)
-        document.body.appendChild(qr)
+            addTo clone, input
+        addTo qr, clone
+        addTo document.body, qr
 
     if e
         e.preventDefault()
@@ -642,7 +642,7 @@ onloadThread = (responseText, span) ->
     else#threading
         div = span.parentNode
         for reply in replies
-            div.appendChild(x('ancestor::table', reply))
+            addTo div, x('ancestor::table', reply)
 
 
 expandThread = ->
@@ -784,7 +784,7 @@ if getConfig('Quick Reply')
         listener: ['load', iframeLoad]
     }
     hide(iframe)
-    document.body.appendChild(iframe)
+    addTo document.body, iframe
 
     callbacks.push((root) ->
         quotes = $$('a.quotejs:not(:first-child)', root)
@@ -818,7 +818,7 @@ if getConfig('Thread Watcher')
     }
     position(watcher)
     $('div', watcher).addEventListener('mousedown', AEOS.move, true)
-    document.body.appendChild(watcher)
+    addTo document.body, watcher
     watcherUpdate()
 
     #add buttons
