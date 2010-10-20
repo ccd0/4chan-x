@@ -20,6 +20,7 @@ config =
     'Anonymize':            false
     '404 Redirect':         true
     'Post in Title':        true
+    'Sauce':                true
 
 #TODO - expose 'hidden' configs
 
@@ -768,6 +769,23 @@ recaptcha = $ '#recaptcha_response_field'
 recaptcha.addEventListener('keydown', recaptchaListener, true)
 
 #major features
+
+sauces =
+  exif:     'http://regex.info/exif.cgi?url='
+  iqdb:     'http://iqdb.org/?url='
+  saucenao: 'http://saucenao.com/search.php?db=999&url='
+  tineye:   'http://tineye.com/search?url='
+
+if getConfig 'Sauce'
+    spans = $$ 'span.filesize'
+    for span in spans
+        suffix = $('a', span).href
+        for sauce of sauces
+            link = n 'a', {
+                textContent: sauce
+                href: sauces[sauce] + suffix
+            }
+            addTo span, tn(' '), link
 
 if getConfig('Reply Hiding')
     callbacks.push((root) ->

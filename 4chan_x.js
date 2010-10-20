@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, link, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, sauce, sauces, show, showReply, showThread, slice, span, spans, src, stopPropagation, submit, suffix, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -16,7 +16,8 @@
     'Auto Watch': true,
     'Anonymize': false,
     '404 Redirect': true,
-    'Post in Title': true
+    'Post in Title': true,
+    'Sauce': true
   };
   AEOS = {
     init: function() {
@@ -868,13 +869,37 @@
   }
   recaptcha = $('#recaptcha_response_field');
   recaptcha.addEventListener('keydown', recaptchaListener, true);
+  sauces = {
+    exif: 'http://regex.info/exif.cgi?url=',
+    iqdb: 'http://iqdb.org/?url=',
+    saucenao: 'http://saucenao.com/search.php?db=999&url=',
+    tineye: 'http://tineye.com/search?url='
+  };
+  if (getConfig('Sauce')) {
+    spans = $$('span.filesize');
+    _ref = spans;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      span = _ref[_i];
+      suffix = $('a', span).href;
+      _ref2 = sauces;
+      for (sauce in _ref2) {
+        if (!__hasProp.call(_ref2, sauce)) continue;
+        _j = _ref2[sauce];
+        link = n('a', {
+          textContent: sauce,
+          href: sauces[sauce] + suffix
+        });
+        addTo(span, tn(' '), link);
+      }
+    }
+  }
   if (getConfig('Reply Hiding')) {
     callbacks.push(function(root) {
-      var _j, _k, _len2, _len3, _ref2, _ref3, _result, _result2, next, obj, td, tds;
+      var _k, _l, _len2, _len3, _ref3, _ref4, _result, _result2, next, obj, td, tds;
       tds = $$('td.doubledash', root);
-      _result = []; _ref2 = tds;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        td = _ref2[_j];
+      _result = []; _ref3 = tds;
+      for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+        td = _ref3[_k];
         _result.push((function() {
           a = n('a', {
             textContent: '[ - ]',
@@ -884,9 +909,9 @@
           replace(td.firstChild, a);
           next = td.nextSibling;
           id = next.id;
-          _result2 = []; _ref3 = hiddenReplies;
-          for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-            obj = _ref3[_k];
+          _result2 = []; _ref4 = hiddenReplies;
+          for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
+            obj = _ref4[_l];
             _result2.push(obj.id === id ? hideReply(next) : null);
           }
           return _result2;
@@ -903,11 +928,11 @@
     hide(iframe);
     addTo(d.body, iframe);
     callbacks.push(function(root) {
-      var _j, _len2, _ref2, _result, quote, quotes;
+      var _k, _len2, _ref3, _result, quote, quotes;
       quotes = $$('a.quotejs:not(:first-child)', root);
-      _result = []; _ref2 = quotes;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        quote = _ref2[_j];
+      _result = []; _ref3 = quotes;
+      for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+        quote = _ref3[_k];
         _result.push(quote.addEventListener('click', quickReply, true));
       }
       return _result;
@@ -916,11 +941,11 @@
   }
   if (getConfig('Quick Report')) {
     callbacks.push(function(root) {
-      var _j, _len2, _ref2, _result, arr, el;
+      var _k, _len2, _ref3, _result, arr, el;
       arr = $$('span[id^=no]', root);
-      _result = []; _ref2 = arr;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        el = _ref2[_j];
+      _result = []; _ref3 = arr;
+      for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+        el = _ref3[_k];
         _result.push((function() {
           a = n('a', {
             textContent: '[ ! ]',
@@ -983,7 +1008,7 @@
   }
   if (getConfig('Reply Navigation')) {
     callbacks.push(function(root) {
-      var _k, _len3, _ref3, _result, arr, down, el, span, up;
+      var _k, _len3, _ref3, _result, arr, down, el, up;
       arr = $$('span[id^=norep]', root);
       _result = []; _ref3 = arr;
       for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
