@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -198,16 +198,6 @@
     }
     return el;
   };
-  position = function(el) {
-    var id, left, top;
-    id = el.id;
-    if (left = GM_getValue("" + (id) + "Left", '0px')) {
-      el.style.left = left;
-    } else {
-      el.style.right = '0px';
-    }
-    return (top = GM_getValue("" + (id) + "Top", '0px')) ? (el.style.top = top) : (el.style.bottom = '0px');
-  };
   remove = function(el) {
     return el.parentNode.removeChild(el);
   };
@@ -378,12 +368,8 @@
     if (div = $('#options')) {
       return remove(div);
     } else {
+      div = AEOS.makeDialog('options', 'center');
       hiddenNum = hiddenReplies.length + hiddenThreads.length;
-      div = n('div', {
-        id: 'options',
-        className: 'reply'
-      });
-      position(div);
       html = '<div class="move">4chan X</div><div>';
       _ref2 = config;
       for (option in _ref2) {
@@ -395,7 +381,7 @@
       html += ("<input type=\"button\" value=\"hidden: " + (hiddenNum) + "\"><br>");
       html += '<a name="save">save</a> <a name="cancel">cancel</a></div>';
       div.innerHTML = html;
-      $('div', div).addEventListener('mousedown', AEOS.move, true);
+      $('div.move', div).addEventListener('mousedown', AEOS.move, true);
       $('input[type="button"]', div).addEventListener('click', clearHidden, true);
       $('a[name="save"]', div).addEventListener('click', optionsSave, true);
       $('a[name="cancel"]', div).addEventListener('click', close, true);
@@ -576,11 +562,7 @@
   quickReply = function(e) {
     var _i, _len, _ref2, _ref3, autohideB, clone, closeB, div, form, input, qr, script, selection, text, textarea, xpath;
     if (!(qr = $('#qr'))) {
-      qr = n('div', {
-        id: 'qr',
-        className: 'reply'
-      });
-      position(qr);
+      qr = AEOS.makeDialog('qr', 'topleft');
       div = n('div', {
         innerHTML: 'Quick Reply ',
         className: 'move',
@@ -921,12 +903,8 @@
     });
   }
   if (getConfig('Thread Watcher')) {
-    watcher = n('div', {
-      innerHTML: '<div class="move">Thread Watcher</div><div></div>',
-      className: 'reply',
-      id: 'watcher'
-    });
-    position(watcher);
+    watcher = AEOS.makeDialog('watcher', 'topleft');
+    watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>';
     $('div', watcher).addEventListener('mousedown', AEOS.move, true);
     addTo(d.body, watcher);
     watcherUpdate();

@@ -2,7 +2,7 @@
 #todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
 #todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
 #
-#TODO tampermonkey, use makeDialog
+#TODO tampermonkey
 
 config =
     'Thread Hiding':        true
@@ -156,16 +156,6 @@ n = (tag, props) -> #new
             el.addEventListener event, funk, true
         (el[key] = val) for key, val of props
     el
-position = (el) ->
-    id = el.id
-    if left = GM_getValue("#{id}Left", '0px')
-        el.style.left = left
-    else
-        el.style.right = '0px'
-    if top = GM_getValue("#{id}Top", '0px')
-        el.style.top = top
-    else
-        el.style.bottom = '0px'
 remove = (el) ->
     el.parentNode.removeChild(el)
 replace = (root, el) ->
@@ -327,12 +317,8 @@ options = ->
     if div = $('#options')
         remove(div)
     else
+        div = AEOS.makeDialog 'options', 'center'
         hiddenNum = hiddenReplies.length + hiddenThreads.length
-        div = n 'div', {
-            id: 'options'
-            className: 'reply'
-        }
-        position(div)
         html = '<div class="move">4chan X</div><div>'
         for option of config
             checked = if getConfig(option) then "checked" else ""
@@ -340,7 +326,7 @@ options = ->
         html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
         html += '<a name="save">save</a> <a name="cancel">cancel</a></div>'
         div.innerHTML = html
-        $('div', div).addEventListener('mousedown', AEOS.move, true)
+        $('div.move', div).addEventListener('mousedown', AEOS.move, true)
         $('input[type="button"]', div).addEventListener('click', clearHidden, true)
         $('a[name="save"]', div).addEventListener('click', optionsSave, true)
         $('a[name="cancel"]', div).addEventListener('click', close, true)
@@ -511,11 +497,7 @@ autohide = ->
 quickReply = (e) ->
     unless qr = $('#qr')
         #make quick reply dialog
-        qr = n 'div', {
-            id: 'qr'
-            className: 'reply'
-        }
-        position(qr)
+        qr = AEOS.makeDialog 'qr', 'topleft'
 
         div = n 'div', {
             innerHTML: 'Quick Reply '
@@ -812,12 +794,8 @@ if getConfig('Quick Report')
 
 if getConfig('Thread Watcher')
     #create watcher
-    watcher = n 'div', {
-        innerHTML: '<div class="move">Thread Watcher</div><div></div>'
-        className: 'reply'
-        id: 'watcher'
-    }
-    position(watcher)
+    watcher = AEOS.makeDialog 'watcher', 'topleft'
+    watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>'
     $('div', watcher).addEventListener('mousedown', AEOS.move, true)
     addTo d.body, watcher
     watcherUpdate()
