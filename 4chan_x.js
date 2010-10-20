@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -137,13 +137,14 @@
       return GM_setValue("" + (id) + "Top", div.style.top);
     }
   };
+  d = document;
   $ = function(selector, root) {
-    root || (root = document.body);
+    root || (root = d.body);
     return root.querySelector(selector);
   };
   $$ = function(selector, root) {
     var _i, _len, _ref, _result, node, result;
-    root || (root = document.body);
+    root || (root = d.body);
     result = root.querySelectorAll(selector);
     _result = []; _ref = result;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -179,7 +180,7 @@
   };
   n = function(tag, props) {
     var _ref, el, event, funk, key, l, val;
-    el = document.createElement(tag);
+    el = d.createElement(tag);
     if (props) {
       if (l = props.listener) {
         delete props.listener;
@@ -231,11 +232,11 @@
     return _result;
   };
   tn = function(s) {
-    return document.createTextNode(s);
+    return d.createTextNode(s);
   };
   x = function(path, root) {
-    root || (root = document.body);
-    return document.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
+    root || (root = d.body);
+    return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
   watched = JSON.parse(GM_getValue('watched', '{}'));
   if (location.hostname.split('.')[0] === 'sys') {
@@ -250,7 +251,7 @@
         thread = _ref[1];
         id = _ref[2];
         if (thread === '0') {
-          board = $('meta', document).content.match(/4chan.org\/(\w+)\//)[1];
+          board = $('meta', d).content.match(/4chan.org\/(\w+)\//)[1];
           watched[board] || (watched[board] = []);
           watched[board].push({
             id: id,
@@ -275,7 +276,7 @@
   r = null;
   iframeLoop = false;
   callbacks = [];
-  head = $('head', document);
+  head = $('head', d);
   if (!(favicon = $('link[rel="shortcut icon"]', head))) {
     favicon = n('link', {
       rel: 'shortcut icon',
@@ -398,7 +399,7 @@
       $('input[type="button"]', div).addEventListener('click', clearHidden, true);
       $('a[name="save"]', div).addEventListener('click', optionsSave, true);
       $('a[name="cancel"]', div).addEventListener('click', close, true);
-      return addTo(document.body, div);
+      return addTo(d.body, div);
     }
   };
   showThread = function() {
@@ -618,7 +619,7 @@
         addTo(clone, input);
       }
       addTo(qr, clone);
-      addTo(document.body, qr);
+      addTo(d.body, qr);
     }
     if (e) {
       e.preventDefault();
@@ -886,7 +887,7 @@
       listener: ['load', iframeLoad]
     });
     hide(iframe);
-    addTo(document.body, iframe);
+    addTo(d.body, iframe);
     callbacks.push(function(root) {
       var _j, _len2, _ref2, _result, quote, quotes;
       quotes = $$('a.quotejs:not(:first-child)', root);
@@ -927,7 +928,7 @@
     });
     position(watcher);
     $('div', watcher).addEventListener('mousedown', AEOS.move, true);
-    addTo(document.body, watcher);
+    addTo(d.body, watcher);
     watcherUpdate();
     threads = watched[BOARD] || [];
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');
@@ -1004,9 +1005,9 @@
   } else {
     if (getConfig('Thread Hiding')) {
       delform = $('form[name=delform]');
-      document.addEventListener('DOMNodeInserted', stopPropagation, true);
+      d.addEventListener('DOMNodeInserted', stopPropagation, true);
       threadF(delform.firstChild);
-      document.removeEventListener('DOMNodeInserted', stopPropagation, true);
+      d.removeEventListener('DOMNodeInserted', stopPropagation, true);
     }
     if (getConfig('Auto Watch')) {
       $('form[name="post"]').addEventListener('submit', autoWatch, true);
@@ -1083,5 +1084,5 @@
     callback = _ref[_i];
     callback();
   }
-  document.body.addEventListener('DOMNodeInserted', nodeInserted, true);
+  d.body.addEventListener('DOMNodeInserted', nodeInserted, true);
 }).call(this);

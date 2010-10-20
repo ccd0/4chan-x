@@ -124,12 +124,13 @@ AEOS =
         GM_setValue "#{id}Left", div.style.left
         GM_setValue "#{id}Top",  div.style.top
 
+d = document
 #utility funks
 $ = (selector, root) ->
-    root or= document.body
+    root or= d.body
     root.querySelector(selector)
 $$ = (selector, root) ->
-    root or= document.body
+    root or= d.body
     result = root.querySelectorAll(selector)
     #magic that turns the results object into an array:
     node for node in result
@@ -147,7 +148,7 @@ inAfter = (root, el) ->
 inBefore = (root, el) ->
     root.parentNode.insertBefore(el, root)
 n = (tag, props) -> #new
-    el = document.createElement tag
+    el = d.createElement tag
     if props
         if l = props.listener
             delete props.listener
@@ -183,10 +184,10 @@ slice = (arr, id) ->
             return arr
         i++
 tn = (s) ->
-    document.createTextNode s
+    d.createTextNode s
 x = (path, root) ->
-    root or= document.body
-    document.
+    root or= d.body
+    d.
         evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
         singleNodeValue
 
@@ -201,7 +202,7 @@ if location.hostname.split('.')[0] is 'sys'
             html = $('b').innerHTML
             [nop, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
             if thread is '0'
-                board = $('meta', document).content.match(/4chan.org\/(\w+)\//)[1]
+                board = $('meta', d).content.match(/4chan.org\/(\w+)\//)[1]
                 watched[board] or= []
                 watched[board].push({
                     id: id,
@@ -220,7 +221,7 @@ r = null
 iframeLoop = false
 callbacks = []
 #godammit moot
-head = $('head', document)
+head = $('head', d)
 if not favicon = $('link[rel="shortcut icon"]', head)#/f/
     favicon = n 'link', {
         rel: 'shortcut icon'
@@ -343,7 +344,7 @@ options = ->
         $('input[type="button"]', div).addEventListener('click', clearHidden, true)
         $('a[name="save"]', div).addEventListener('click', optionsSave, true)
         $('a[name="cancel"]', div).addEventListener('click', close, true)
-        addTo document.body, div
+        addTo d.body, div
 
 
 showThread = ->
@@ -553,7 +554,7 @@ quickReply = (e) ->
             }
             addTo clone, input
         addTo qr, clone
-        addTo document.body, qr
+        addTo d.body, qr
 
     if e
         e.preventDefault()
@@ -784,7 +785,7 @@ if getConfig('Quick Reply')
         listener: ['load', iframeLoad]
     }
     hide(iframe)
-    addTo document.body, iframe
+    addTo d.body, iframe
 
     callbacks.push((root) ->
         quotes = $$('a.quotejs:not(:first-child)', root)
@@ -818,7 +819,7 @@ if getConfig('Thread Watcher')
     }
     position(watcher)
     $('div', watcher).addEventListener('mousedown', AEOS.move, true)
-    addTo document.body, watcher
+    addTo d.body, watcher
     watcherUpdate()
 
     #add buttons
@@ -880,9 +881,9 @@ else # not reply
     if getConfig('Thread Hiding')
         delform = $('form[name=delform]')
         #don't confuse other scripts
-        document.addEventListener('DOMNodeInserted', stopPropagation, true)
+        d.addEventListener('DOMNodeInserted', stopPropagation, true)
         threadF(delform.firstChild)
-        document.removeEventListener('DOMNodeInserted', stopPropagation, true)
+        d.removeEventListener('DOMNodeInserted', stopPropagation, true)
 
     if getConfig('Auto Watch')
         $('form[name="post"]').addEventListener('submit', autoWatch, true)
@@ -947,4 +948,4 @@ else # not reply
 
 for callback in callbacks
     callback()
-document.body.addEventListener('DOMNodeInserted', nodeInserted, true)
+d.body.addEventListener('DOMNodeInserted', nodeInserted, true)
