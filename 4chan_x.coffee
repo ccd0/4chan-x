@@ -17,7 +17,7 @@ config =
     'Auto Watch':           true
     'Anonymize':            false
 
-#TODO - add 'hidden' configs
+#TODO - expose 'hidden' configs
 
 AEOS =
     init: ->
@@ -214,7 +214,7 @@ iframeLoop = false
 callbacks = []
 #godammit moot
 head = $('head', d)
-if not favicon = $('link[rel="shortcut icon"]', head)#/f/
+unless favicon = $('link[rel="shortcut icon"]', head)#/f/
     favicon = n 'link', {
         rel: 'shortcut icon'
         href: 'http://static.4chan.org/image/favicon.ico'
@@ -493,12 +493,12 @@ quickReply = (e) ->
         #make quick reply dialog
         qr = AEOS.makeDialog 'qr', 'topleft'
 
-        div = n 'div', {
+        titlebar = n 'div', {
             innerHTML: 'Quick Reply '
             className: 'move'
             listener: ['mousedown', AEOS.move]
         }
-        addTo qr, div
+        addTo qr, titlebar
 
         autohideB = n 'input', {
             type: 'checkbox'
@@ -512,7 +512,7 @@ quickReply = (e) ->
             title: 'close'
             listener: ['click', close]
         }
-        addTo div, autohideB, tn(' '), closeB
+        addTo titlebar, autohideB, tn(' '), closeB
 
         form = $ 'form[name=post]'
         clone = form.cloneNode(true)
@@ -522,6 +522,7 @@ quickReply = (e) ->
         clone.addEventListener('submit', submit, true)
         clone.target = 'iframe'
         if not REPLY
+            #figure out which thread we're replying to
             xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
             input = n 'input', {
                 type: 'hidden'

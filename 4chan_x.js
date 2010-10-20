@@ -556,15 +556,15 @@
     return (qr.className = klass);
   };
   quickReply = function(e) {
-    var _i, _len, _ref2, _ref3, autohideB, clone, closeB, div, form, input, qr, script, selection, text, textarea, xpath;
+    var _i, _len, _ref2, _ref3, autohideB, clone, closeB, form, input, qr, script, selection, text, textarea, titlebar, xpath;
     if (!(qr = $('#qr'))) {
       qr = AEOS.makeDialog('qr', 'topleft');
-      div = n('div', {
+      titlebar = n('div', {
         innerHTML: 'Quick Reply ',
         className: 'move',
         listener: ['mousedown', AEOS.move]
       });
-      addTo(qr, div);
+      addTo(qr, titlebar);
       autohideB = n('input', {
         type: 'checkbox',
         className: 'pointer',
@@ -577,7 +577,7 @@
         title: 'close',
         listener: ['click', close]
       });
-      addTo(div, autohideB, tn(' '), closeB);
+      addTo(titlebar, autohideB, tn(' '), closeB);
       form = $('form[name=post]');
       clone = form.cloneNode(true);
       _ref2 = $$('script', clone);
