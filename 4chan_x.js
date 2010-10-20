@@ -19,11 +19,11 @@
   AEOS = {
     init: function() {
       if (typeof GM_deleteValue === 'undefined') {
-        this.GM_setValue = function(name, value) {
+        window.GM_setValue = function(name, value) {
           value = (typeof value)[0] + value;
           return localStorage.setItem(name, value);
         };
-        this.GM_getValue = function(name, defaultValue) {
+        window.GM_getValue = function(name, defaultValue) {
           var type, value;
           if (!(value = localStorage.getItem(name))) {
             return defaultValue;
@@ -39,12 +39,12 @@
               return value;
           }
         };
-        this.GM_addStyle = function(css) {
+        window.GM_addStyle = function(css) {
           var style;
           style = document.createElement('style');
           style.type = 'text/css';
           style.textContent = css;
-          return $('head', document).appendChild(style);
+          return document.getElementsByTagName('head')[0].appendChild(style);
         };
       }
       return GM_addStyle('\
@@ -137,6 +137,7 @@
       return GM_setValue("" + (id) + "Top", div.style.top);
     }
   };
+  AEOS.init();
   d = document;
   $ = function(selector, root) {
     root || (root = d.body);

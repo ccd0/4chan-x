@@ -23,10 +23,10 @@ AEOS =
     init: ->
         #x-browser
         if typeof GM_deleteValue == 'undefined'
-            this.GM_setValue = (name, value) ->
+            window.GM_setValue = (name, value) ->
                 value = (typeof value)[0] + value
                 localStorage.setItem name, value
-            this.GM_getValue = (name, defaultValue) ->
+            window.GM_getValue = (name, defaultValue) ->
                 if not value = localStorage.getItem name
                     return defaultValue
                 type = value[0]
@@ -38,11 +38,11 @@ AEOS =
                         return Number value
                     else
                         return value
-            this.GM_addStyle = (css) ->
+            window.GM_addStyle = (css) ->
                 style = document.createElement 'style'
                 style.type = 'text/css'
                 style.textContent = css
-                $('head', document).appendChild(style)
+                document.getElementsByTagName('head')[0].appendChild style
 
         #dialog styling
         GM_addStyle '
@@ -122,6 +122,7 @@ AEOS =
         GM_setValue "#{id}Left", div.style.left
         GM_setValue "#{id}Top",  div.style.top
 
+AEOS.init()
 d = document
 #utility funks
 $ = (selector, root) ->
