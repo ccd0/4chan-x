@@ -16,6 +16,7 @@ config =
     'Quick Report':         true
     'Auto Watch':           true
     'Anonymize':            false
+    '404 Redirect':         true
 
 #TODO - expose 'hidden' configs
 
@@ -203,9 +204,11 @@ if location.hostname.split('.')[0] is 'sys'
                 GM_setValue('watched', JSON.stringify(watched))
     return
 
-[nop, BOARD, magic] = location.pathname.split('/')
+pathname = location.pathname.substring(1).split('/')
+[BOARD, magic] = pathname
 if magic is 'res'
     REPLY = magic
+    THREAD_ID = pathname[2]
 else
     PAGENUM = parseInt(magic) || 0
 xhrs = []
@@ -730,19 +733,30 @@ recaptchaListener = (e) ->
     if e.keyCode is 8 and this.value is ''
         recaptchaReload()
 
-#graceful exit
-unless navtopr = $ '#navtopr a'
-    return
-text = navtopr.nextSibling
-a = n 'a', {
-    textContent: 'X'
-    className: 'pointer'
-    listener: ['click', options]
-}
-inBefore text, tn(' / ')
-inBefore text, a
+redirect = ->
+    switch BOARD
+        when 'a', 'g', 'lit', 'sci', 'tv'
+            url = "http://green-oval.net/cgi-board.pl/#{BOARD}/thread/#{THREAD_ID}#p"
+        when 'cgl', 'jp', 'm', 'tg'
+            url = "http://archive.easymodo.net/cgi-board.pl/#{BOARD}/thread/#{THREAD_ID}#p"
+        else
+            url = "http://boards.4chan.org/#{BOARD}"
+    location.href = url
 
-#various minor tweaks. TODO - `Minor Tweaks` option
+#main part 2...
+if navtopr = $ '#navtopr a'
+    text = navtopr.nextSibling
+    a = n 'a', {
+        textContent: 'X'
+        className: 'pointer'
+        listener: ['click', options]
+    }
+    inBefore text, tn(' / ')
+    inBefore text, a
+else if getConfig('404 Redirect') and d.title is '4chan - 404'
+    redirect()
+else
+    return
 
 #hack to tab from comment straight to recaptcha
 for el in $$ '#recaptcha_table a'

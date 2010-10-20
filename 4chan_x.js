@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -14,7 +14,8 @@
     'Persistent QR': false,
     'Quick Report': true,
     'Auto Watch': true,
-    'Anonymize': false
+    'Anonymize': false,
+    '404 Redirect': true
   };
   AEOS = {
     init: function() {
@@ -257,12 +258,13 @@
     }
     return null;
   }
-  _ref = location.pathname.split('/');
-  nop = _ref[0];
-  BOARD = _ref[1];
-  magic = _ref[2];
+  pathname = location.pathname.substring(1).split('/');
+  _ref = pathname;
+  BOARD = _ref[0];
+  magic = _ref[1];
   if (magic === 'res') {
     REPLY = magic;
+    THREAD_ID = pathname[2];
   } else {
     PAGENUM = parseInt(magic) || 0;
   }
@@ -823,17 +825,41 @@
   recaptchaListener = function(e) {
     return e.keyCode === 8 && this.value === '' ? recaptchaReload() : null;
   };
-  if (!(navtopr = $('#navtopr a'))) {
+  redirect = function() {
+    var url;
+    switch (BOARD) {
+      case 'a':
+      case 'g':
+      case 'lit':
+      case 'sci':
+      case 'tv':
+        url = ("http://green-oval.net/cgi-board.pl/" + (BOARD) + "/thread/" + (THREAD_ID) + "#p");
+        break;
+      case 'cgl':
+      case 'jp':
+      case 'm':
+      case 'tg':
+        url = ("http://archive.easymodo.net/cgi-board.pl/" + (BOARD) + "/thread/" + (THREAD_ID) + "#p");
+        break;
+      default:
+        url = ("http://boards.4chan.org/" + (BOARD));
+    }
+    return (location.href = url);
+  };
+  if (navtopr = $('#navtopr a')) {
+    text = navtopr.nextSibling;
+    a = n('a', {
+      textContent: 'X',
+      className: 'pointer',
+      listener: ['click', options]
+    });
+    inBefore(text, tn(' / '));
+    inBefore(text, a);
+  } else if (getConfig('404 Redirect') && d.title === '4chan - 404') {
+    redirect();
+  } else {
     return null;
   }
-  text = navtopr.nextSibling;
-  a = n('a', {
-    textContent: 'X',
-    className: 'pointer',
-    listener: ['click', options]
-  });
-  inBefore(text, tn(' / '));
-  inBefore(text, a);
   _ref = $$('#recaptcha_table a');
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     el = _ref[_i];
