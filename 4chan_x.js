@@ -504,19 +504,19 @@
     return remove(div);
   };
   iframeLoad = function() {
-    var error, qr, span;
+    var _ref2, _ref3, error, qr, span;
     if (iframeLoop = !iframeLoop) {
       return null;
     }
     $('iframe').src = 'about:blank';
     qr = $('#qr');
     if (error = GM_getValue('error')) {
-      $('form', qr).style.visibility = '';
       span = n('span', {
         textContent: error,
         className: 'error'
       });
       addTo(qr, span);
+      (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:not(:checked)', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
     } else if (REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';

@@ -446,12 +446,12 @@ iframeLoad = ->
 
     qr = $('#qr')
     if error = GM_getValue('error')
-        $('form', qr).style.visibility = ''
         span = n 'span', {
             textContent: error
             className: 'error'
         }
         addTo qr, span
+        $('input[title=autohide]:not(:checked)', qr)?.click()
     else if REPLY and getConfig('Persistent QR')
         $('textarea', qr).value = ''
         $('input[name=recaptcha_response_field]', qr).value = ''
