@@ -366,18 +366,18 @@ hideThread = (div) ->
     hide(div)
     if getConfig('Show Stubs')
         if span = $('.omittedposts', div)
-            n = Number(span.textContent.match(/\d+/)[0])
+            num = Number(span.textContent.match(/\d+/)[0])
         else
-            n = 0
-        n += $$('table', div).length
-        text = if n is 1 then "1 reply" else "#{n} replies"
+            num = 0
+        num += $$('table', div).length
+        text = if num is 1 then "1 reply" else "#{num} replies"
         name = $('span.postername', div).textContent
         trip = $('span.postername + span.postertrip', div)?.textContent || ''
         a = n 'a', {
             textContent: "[ + ] #{name}#{trip} (#{text})"
             className: 'pointer'
+            listener: ['click', showThread]
         }
-        a.addEventListener('click', showThread, true)
         inBefore(div, a)
 
 
@@ -388,8 +388,8 @@ threadF = (current) ->
     a = n 'a', {
         textContent: '[ - ]'
         className: 'pointer'
+        listener: ['click', hideThread]
     }
-    a.addEventListener('click', hideThread, true)
     div.appendChild(a)
 
     inBefore(current, div)
@@ -438,8 +438,8 @@ hideReply = (reply) ->
         a = n 'a', {
             textContent: "[ + ] #{name} #{trip}"
             className: 'pointer'
+            listener: ['click', showReply]
         }
-        a.addEventListener('click', showReply, true)
         div = n 'div'
         div.appendChild(a)
         inBefore(table, div)
@@ -519,24 +519,24 @@ quickReply = (e) ->
         div = n 'div', {
             innerHTML: 'Quick Reply '
             className: 'move'
+            listener: ['mousedown', AEOS.move]
         }
-        div.addEventListener('mousedown', AEOS.move, true)
         qr.appendChild(div)
 
         autohideB = n 'input', {
             type: 'checkbox'
             className: 'pointer'
             title: 'autohide'
+            listener: ['click', autohide]
         }
-        autohideB.addEventListener('click', autohide, true)
         div.appendChild(autohideB)
         div.appendChild(document.createTextNode(' '))
         closeB = n 'a', {
             textContent: 'X'
             className: 'pointer'
             title: 'close'
+            listener: ['click', close]
         }
-        closeB.addEventListener('click', close, true)
         div.appendChild(closeB)
 
         form = $ 'form[name=post]'
@@ -610,8 +610,8 @@ watcherUpdate = ->
             a = n 'a', {
                 textContent: 'X'
                 className: 'pointer'
+                listener: ['click', watchX]
             }
-            a.addEventListener('click', watchX, true)
             div.appendChild(a)
             div.appendChild(document.createTextNode(' '))
             link = n 'a', {
@@ -756,8 +756,8 @@ text = navtopr.nextSibling
 a = n 'a', {
     textContent: 'X'
     className: 'pointer'
+    listener: ['click', options]
 }
-a.addEventListener('click', options, true)
 inBefore(text, document.createTextNode(' / '))
 inBefore(text, a)
 
@@ -772,8 +772,8 @@ if getConfig('Reply Hiding')
             a = n 'a', {
                 textContent: '[ - ]'
                 className: 'pointer'
+                listener: ['click', hideReply]
             }
-            a.addEventListener('click', hideReply, true)
             replace(td.firstChild, a)
 
             next = td.nextSibling
@@ -786,9 +786,9 @@ if getConfig('Reply Hiding')
 if getConfig('Quick Reply')
     iframe = n 'iframe', {
         name: 'iframe'
+        listener: ['load', iframeLoad]
     }
     hide(iframe)
-    iframe.addEventListener('load', iframeLoad, true)
     document.body.appendChild(iframe)
 
     callbacks.push((root) ->
@@ -808,8 +808,8 @@ if getConfig('Quick Report')
             a = n 'a', {
                 textContent: '[ ! ]'
                 className: 'pointer'
+                listener: ['click', report]
             }
-            a.addEventListener('click', report, true)
             inAfter(el, a)
             inAfter(el, document.createTextNode(' '))
     )
@@ -840,8 +840,8 @@ if getConfig('Thread Watcher')
         img = n 'img', {
             src: src
             className: 'pointer'
+            listener: ['click', watch]
         }
-        img.addEventListener('click', watch, true)
         inBefore(input, img)
 
 if getConfig('Anonymize')
@@ -865,13 +865,13 @@ if getConfig('Reply Navigation')
             up = n 'a', {
                 textContent: '▲'
                 className: 'pointer'
+                listener: ['click', replyNav]
             }
-            up.addEventListener('click', replyNav, true)
             down = n 'a', {
                 textContent: '▼'
                 className: 'pointer'
+                listener: ['click', replyNav]
             }
-            down.addEventListener('click', replyNav, true)
             addTo span, tn(' '), up, tn(' '), down
             inAfter(el, span)
     )
@@ -941,8 +941,8 @@ else # not reply
             a = n 'a', {
                 className: 'pointer omittedposts'
                 textContent: "+ #{span.textContent}"
+                listener: ['click', expandThread]
             }
-            a.addEventListener('click', expandThread, true)
             replace(span, a)
 
     if getConfig('Comment Expansion')

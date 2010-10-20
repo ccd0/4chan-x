@@ -411,7 +411,7 @@
     return GM_setValue("hiddenThreads/" + (BOARD) + "/", JSON.stringify(hiddenThreads));
   };
   hideThread = function(div) {
-    var _ref2, _ref3, a, name, p, span, text, trip;
+    var _ref2, _ref3, a, name, num, p, span, text, trip;
     if (p = this.parentNode) {
       div = p;
       hiddenThreads.push({
@@ -423,19 +423,19 @@
     hide(div);
     if (getConfig('Show Stubs')) {
       if (span = $('.omittedposts', div)) {
-        n = Number(span.textContent.match(/\d+/)[0]);
+        num = Number(span.textContent.match(/\d+/)[0]);
       } else {
-        n = 0;
+        num = 0;
       }
-      n += $$('table', div).length;
-      text = n === 1 ? "1 reply" : ("" + (n) + " replies");
+      num += $$('table', div).length;
+      text = num === 1 ? "1 reply" : ("" + (num) + " replies");
       name = $('span.postername', div).textContent;
       trip = ((typeof (_ref3 = ((_ref2 = $('span.postername + span.postertrip', div)))) === "undefined" || _ref3 === null) ? undefined : _ref3.textContent) || '';
       a = n('a', {
         textContent: ("[ + ] " + (name) + (trip) + " (" + (text) + ")"),
-        className: 'pointer'
+        className: 'pointer',
+        listener: ['click', showThread]
       });
-      a.addEventListener('click', showThread, true);
       return inBefore(div, a);
     }
   };
@@ -446,9 +446,9 @@
     });
     a = n('a', {
       textContent: '[ - ]',
-      className: 'pointer'
+      className: 'pointer',
+      listener: ['click', hideThread]
     });
-    a.addEventListener('click', hideThread, true);
     div.appendChild(a);
     inBefore(current, div);
     while ((!current.clear)) {
@@ -496,9 +496,9 @@
     if (getConfig('Show Stubs')) {
       a = n('a', {
         textContent: ("[ + ] " + (name) + " " + (trip)),
-        className: 'pointer'
+        className: 'pointer',
+        listener: ['click', showReply]
       });
-      a.addEventListener('click', showReply, true);
       div = n('div');
       div.appendChild(a);
       return inBefore(table, div);
@@ -582,24 +582,24 @@
       position(qr);
       div = n('div', {
         innerHTML: 'Quick Reply ',
-        className: 'move'
+        className: 'move',
+        listener: ['mousedown', AEOS.move]
       });
-      div.addEventListener('mousedown', AEOS.move, true);
       qr.appendChild(div);
       autohideB = n('input', {
         type: 'checkbox',
         className: 'pointer',
-        title: 'autohide'
+        title: 'autohide',
+        listener: ['click', autohide]
       });
-      autohideB.addEventListener('click', autohide, true);
       div.appendChild(autohideB);
       div.appendChild(document.createTextNode(' '));
       closeB = n('a', {
         textContent: 'X',
         className: 'pointer',
-        title: 'close'
+        title: 'close',
+        listener: ['click', close]
       });
-      closeB.addEventListener('click', close, true);
       div.appendChild(closeB);
       form = $('form[name=post]');
       clone = form.cloneNode(true);
@@ -678,9 +678,9 @@
         thread = _ref3[_j];
         a = n('a', {
           textContent: 'X',
-          className: 'pointer'
+          className: 'pointer',
+          listener: ['click', watchX]
         });
-        a.addEventListener('click', watchX, true);
         div.appendChild(a);
         div.appendChild(document.createTextNode(' '));
         link = n('a', {
@@ -848,9 +848,9 @@
   text = navtopr.nextSibling;
   a = n('a', {
     textContent: 'X',
-    className: 'pointer'
+    className: 'pointer',
+    listener: ['click', options]
   });
-  a.addEventListener('click', options, true);
   inBefore(text, document.createTextNode(' / '));
   inBefore(text, a);
   _ref = $$('#recaptcha_table a');
@@ -868,9 +868,9 @@
         _result.push((function() {
           a = n('a', {
             textContent: '[ - ]',
-            className: 'pointer'
+            className: 'pointer',
+            listener: ['click', hideReply]
           });
-          a.addEventListener('click', hideReply, true);
           replace(td.firstChild, a);
           next = td.nextSibling;
           id = next.id;
@@ -887,10 +887,10 @@
   }
   if (getConfig('Quick Reply')) {
     iframe = n('iframe', {
-      name: 'iframe'
+      name: 'iframe',
+      listener: ['load', iframeLoad]
     });
     hide(iframe);
-    iframe.addEventListener('load', iframeLoad, true);
     document.body.appendChild(iframe);
     callbacks.push(function(root) {
       var _j, _len2, _ref2, _result, quote, quotes;
@@ -914,9 +914,9 @@
         _result.push((function() {
           a = n('a', {
             textContent: '[ ! ]',
-            className: 'pointer'
+            className: 'pointer',
+            listener: ['click', report]
           });
-          a.addEventListener('click', report, true);
           inAfter(el, a);
           return inAfter(el, document.createTextNode(' '));
         })());
@@ -951,9 +951,9 @@
       src || (src = favEmpty);
       img = n('img', {
         src: src,
-        className: 'pointer'
+        className: 'pointer',
+        listener: ['click', watch]
       });
-      img.addEventListener('click', watch, true);
       inBefore(input, img);
     }
   }
@@ -986,14 +986,14 @@
           span = n('span');
           up = n('a', {
             textContent: '▲',
-            className: 'pointer'
+            className: 'pointer',
+            listener: ['click', replyNav]
           });
-          up.addEventListener('click', replyNav, true);
           down = n('a', {
             textContent: '▼',
-            className: 'pointer'
+            className: 'pointer',
+            listener: ['click', replyNav]
           });
-          down.addEventListener('click', replyNav, true);
           addTo(span, tn(' '), up, tn(' '), down);
           return inAfter(el, span);
         })());
@@ -1068,9 +1068,9 @@
         span = _ref[_i];
         a = n('a', {
           className: 'pointer omittedposts',
-          textContent: ("+ " + (span.textContent))
+          textContent: ("+ " + (span.textContent)),
+          listener: ['click', expandThread]
         });
-        a.addEventListener('click', expandThread, true);
         replace(span, a);
       }
     }
