@@ -1,8 +1,6 @@
 #todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
 #todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
 #todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
-#
-#TODO tampermonkey
 
 config =
     'Thread Hiding':        true
