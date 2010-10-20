@@ -19,7 +19,110 @@ config =
     'Auto Watch':           true
     'Anonymize':            false
 
-#TODO - put 'hidden' configs here
+#TODO - add 'hidden' configs
+
+AEOS =
+    init: ->
+        #x-browser
+        if typeof GM_deleteValue == 'undefined'
+            this.GM_setValue = (name, value) ->
+                value = (typeof value)[0] + value
+                localStorage.setItem name, value
+            this.GM_getValue = (name, defaultValue) ->
+                if not value = localStorage.getItem name
+                    return defaultValue
+                type = value[0]
+                value = value.substring(1)
+                switch type
+                    when 'b'
+                        return value == 'true'
+                    when 'n'
+                        return Number value
+                    else
+                        return value
+            this.GM_addStyle = (css) ->
+                style = tag('style')
+                style.type = 'text/css'
+                style.textContent = css
+                $('head', document).appendChild(style)
+
+        #dialog styling
+        GM_addStyle '
+            div.dialog {
+                border: 1px solid;
+                text-align: right;
+            }
+            div.dialog > div.move {
+                cursor: move;
+            }
+        '
+
+    #dialog creation
+    makeDialog: (id, position) ->
+        dialog = document.createElement 'div'
+        dialog.id = id
+        dialog.className = 'reply dialog'
+
+        switch position
+            when 'topleft'
+                left = '0px'
+                top = '0px'
+            when 'topright'
+                left = null
+                top = '0px'
+            when 'bottomleft'
+                left = '0px'
+                top = null
+            when 'bottomright'
+                left = null
+                top = null
+
+        left = GM_getValue "#{id}Left", left
+        top  = GM_getValue "#{id}Top", top
+        if left then dialog.style.left = left else dialog.style.right = '0px'
+        if top then dialog.style.top = top else dialog.style.bottom = '0px'
+
+        dialog
+
+    #movement
+    move: (e) ->
+        div = @parentNode
+        AEOS.div = div
+        #distance from pointer to div edge is constant; calculate it here.
+        AEOS.dx = e.clientX - div.offsetLeft
+        AEOS.dy = e.clientY - div.offsetTop
+        #factor out div from document dimensions
+        AEOS.width  = document.body.clientWidth  - div.offsetWidth
+        AEOS.height = document.body.clientHeight - div.offsetHeight
+
+        document.addEventListener 'mousemove', AEOS.moveMove, true
+        document.addEventListener 'mouseup',   AEOS.moveEnd, true
+
+    moveMove: (e) ->
+        div = AEOS.div
+
+        left = e.clientX - AEOS.dx
+        if left < 20 then left = '0px'
+        else if AEOS.width - left < 20 then left = ''
+        right = if left then '' else '0px'
+        div.style.left  = left
+        div.style.right = right
+
+        top = e.clientY - AEOS.dy
+        if top < 20 then top = '0px'
+        else if AEOS.height - top < 20 then top = ''
+        bottom = if top then '' else '0px'
+        div.style.top    = top
+        div.style.bottom = bottom
+
+    moveEnd: ->
+        document.removeEventListener 'mousemove', AEOS.moveMove, true
+        document.removeEventListener 'mouseup',   AEOS.moveEnd, true
+
+        div = AEOS.div
+        id = div.id
+        GM_setValue "#{id}Left", div.style.left
+        GM_setValue "#{id}Top",  div.style.top
 
 #utility funks
 $ = (selector, root) ->
@@ -45,7 +148,12 @@ inBefore = (root, el) ->
     root.parentNode.insertBefore(el, root)
 n = (tag, props) -> #new
     el = document.createElement tag
-    if props then (el[key] = val) for key, val of props
+    if props
+        if l = props.listener
+            delete props.listener
+            [event, funk] = l
+            el.addEventListener event, funk, true
+        (el[key] = val) for key, val of props
     el
 position = (el) ->
     id = el.id
@@ -84,29 +192,6 @@ x = (path, root) ->
         evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
         singleNodeValue
 
-# x-browser
-if typeof GM_deleteValue == 'undefined'
-    this.GM_setValue = (name, value) ->
-        value = (typeof value)[0] + value
-        localStorage.setItem(name, value)
-    this.GM_getValue = (name, defaultValue) ->
-        if not value = localStorage.getItem(name)
-            return defaultValue
-        type = value[0]
-        value = value.substring(1)
-        switch type
-            when 'b'
-                return value == 'true'
-            when 'n'
-                return Number(value)
-            else
-                return value
-    this.GM_addStyle = (css) ->
-        style = tag('style')
-        style.type = 'text/css'
-        style.textContent = css
-        $('head', document).appendChild(style)
-
 #let's get this party started.
 watched = JSON.parse(GM_getValue('watched', '{}'))
 if location.hostname.split('.')[0] is 'sys'
@@ -135,7 +220,6 @@ else
 xhrs = []
 r = null
 iframeLoop = false
-move = { }
 callbacks = []
 #godammit moot
 head = $('head', document)
@@ -255,59 +339,11 @@ options = ->
         html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
         html += '<a name="save">save</a> <a name="cancel">cancel</a></div>'
         div.innerHTML = html
-        $('div', div).addEventListener('mousedown', mousedown, true)
+        $('div', div).addEventListener('mousedown', AEOS.move, true)
         $('input[type="button"]', div).addEventListener('click', clearHidden, true)
         $('a[name="save"]', div).addEventListener('click', optionsSave, true)
         $('a[name="cancel"]', div).addEventListener('click', close, true)
         document.body.appendChild(div)
-
-
-mousedown = (e) ->
-    div = this.parentNode
-    move.div = div
-    move.clientX = e.clientX
-    move.clientY = e.clientY
-    move.bodyX = document.body.clientWidth
-    move.bodyY = document.body.clientHeight
-
-    # check if the string exists. parseInt('0px') is falsey.
-    l = div.style.left
-    move.divX = if l then parseInt(l) else move.bodyX - div.offsetWidth
-    t = div.style.top
-    move.divY = if t then parseInt(t) else move.bodyY - div.offsetHeight
-    window.addEventListener('mousemove', mousemove, true)
-    window.addEventListener('mouseup', mouseup, true)
-
-
-mousemove = (e) ->
-    div = move.div
-    realX = move.divX + (e.clientX - move.clientX)# x + dx
-    left = if realX < 20 then 0 else realX
-
-    if move.bodyX - div.offsetWidth - realX < 20
-        div.style.left = ''
-        div.style.right = '0px'
-    else
-        div.style.left = left + 'px'
-        div.style.right = ''
-
-    realY = move.divY + (e.clientY - move.clientY)# y + dy
-    top = if realY < 20 then 0 else realY
-
-    if move.bodyY - div.offsetHeight - realY < 20
-        div.style.top = ''
-        div.style.bottom = '0px'
-    else
-        div.style.top = top + 'px'
-        div.style.bottom = ''
-
-
-mouseup = ->
-    id = move.div.id
-    GM_setValue("#{id}Left", move.div.style.left)
-    GM_setValue("#{id}Top", move.div.style.top)
-    window.removeEventListener('mousemove', mousemove, true)
-    window.removeEventListener('mouseup', mouseup, true)
 
 
 showThread = ->
@@ -478,7 +514,7 @@ quickReply = (e) ->
         div = tag('div')
         div.innerHTML = 'Quick Reply '
         div.className = 'move'
-        div.addEventListener('mousedown', mousedown, true)
+        div.addEventListener('mousedown', AEOS.move, true)
         qr.appendChild(div)
 
         autohideB = n 'input', {
@@ -775,7 +811,7 @@ if getConfig('Thread Watcher')
     watcher.className = 'reply'
     watcher.id = 'watcher'
     position(watcher)
-    $('div', watcher).addEventListener('mousedown', mousedown, true)
+    $('div', watcher).addEventListener('mousedown', AEOS.move, true)
     document.body.appendChild(watcher)
     watcherUpdate()
 

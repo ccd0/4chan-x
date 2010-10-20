@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, mousedown, mousemove, mouseup, move, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -15,6 +15,127 @@
     'Quick Report': true,
     'Auto Watch': true,
     'Anonymize': false
+  };
+  AEOS = {
+    init: function() {
+      if (typeof GM_deleteValue === 'undefined') {
+        this.GM_setValue = function(name, value) {
+          value = (typeof value)[0] + value;
+          return localStorage.setItem(name, value);
+        };
+        this.GM_getValue = function(name, defaultValue) {
+          var type, value;
+          if (!(value = localStorage.getItem(name))) {
+            return defaultValue;
+          }
+          type = value[0];
+          value = value.substring(1);
+          switch (type) {
+            case 'b':
+              return value === 'true';
+            case 'n':
+              return Number(value);
+            default:
+              return value;
+          }
+        };
+        this.GM_addStyle = function(css) {
+          var style;
+          style = tag('style');
+          style.type = 'text/css';
+          style.textContent = css;
+          return $('head', document).appendChild(style);
+        };
+      }
+      return GM_addStyle('\
+            div.dialog {\
+                border: 1px solid;\
+                text-align: right;\
+            }\
+            div.dialog > div.move {\
+                cursor: move;\
+            }\
+        ');
+    },
+    makeDialog: function(id, position) {
+      var dialog, left, top;
+      dialog = document.createElement('div');
+      dialog.id = id;
+      dialog.className = 'reply dialog';
+      switch (position) {
+        case 'topleft':
+          left = '0px';
+          top = '0px';
+          break;
+        case 'topright':
+          left = null;
+          top = '0px';
+          break;
+        case 'bottomleft':
+          left = '0px';
+          top = null;
+          break;
+        case 'bottomright':
+          left = null;
+          top = null;
+          break;
+      }
+      left = GM_getValue("" + (id) + "Left", left);
+      top = GM_getValue("" + (id) + "Top", top);
+      if (left) {
+        dialog.style.left = left;
+      } else {
+        dialog.style.right = '0px';
+      }
+      if (top) {
+        dialog.style.top = top;
+      } else {
+        dialog.style.bottom = '0px';
+      }
+      return dialog;
+    },
+    move: function(e) {
+      var div;
+      div = this.parentNode;
+      AEOS.div = div;
+      AEOS.dx = e.clientX - div.offsetLeft;
+      AEOS.dy = e.clientY - div.offsetTop;
+      AEOS.width = document.body.clientWidth - div.offsetWidth;
+      AEOS.height = document.body.clientHeight - div.offsetHeight;
+      document.addEventListener('mousemove', AEOS.moveMove, true);
+      return document.addEventListener('mouseup', AEOS.moveEnd, true);
+    },
+    moveMove: function(e) {
+      var bottom, div, left, right, top;
+      div = AEOS.div;
+      left = e.clientX - AEOS.dx;
+      if (left < 20) {
+        left = '0px';
+      } else if (AEOS.width - left < 20) {
+        left = '';
+      }
+      right = left ? '' : '0px';
+      div.style.left = left;
+      div.style.right = right;
+      top = e.clientY - AEOS.dy;
+      if (top < 20) {
+        top = '0px';
+      } else if (AEOS.height - top < 20) {
+        top = '';
+      }
+      bottom = top ? '' : '0px';
+      div.style.top = top;
+      return (div.style.bottom = bottom);
+    },
+    moveEnd: function() {
+      var div, id;
+      document.removeEventListener('mousemove', AEOS.moveMove, true);
+      document.removeEventListener('mouseup', AEOS.moveEnd, true);
+      div = AEOS.div;
+      id = div.id;
+      GM_setValue("" + (id) + "Left", div.style.left);
+      return GM_setValue("" + (id) + "Top", div.style.top);
+    }
   };
   $ = function(selector, root) {
     root || (root = document.body);
@@ -57,9 +178,16 @@
     return root.parentNode.insertBefore(el, root);
   };
   n = function(tag, props) {
-    var _ref, el, key, val;
+    var _ref, el, event, funk, key, l, val;
     el = document.createElement(tag);
     if (props) {
+      if (l = props.listener) {
+        delete props.listener;
+        _ref = l;
+        event = _ref[0];
+        funk = _ref[1];
+        el.addEventListener(event, funk, true);
+      }
       _ref = props;
       for (key in _ref) {
         if (!__hasProp.call(_ref, key)) continue;
@@ -112,35 +240,6 @@
     root || (root = document.body);
     return document.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
-  if (typeof GM_deleteValue === 'undefined') {
-    this.GM_setValue = function(name, value) {
-      value = (typeof value)[0] + value;
-      return localStorage.setItem(name, value);
-    };
-    this.GM_getValue = function(name, defaultValue) {
-      var type, value;
-      if (!(value = localStorage.getItem(name))) {
-        return defaultValue;
-      }
-      type = value[0];
-      value = value.substring(1);
-      switch (type) {
-        case 'b':
-          return value === 'true';
-        case 'n':
-          return Number(value);
-        default:
-          return value;
-      }
-    };
-    this.GM_addStyle = function(css) {
-      var style;
-      style = tag('style');
-      style.type = 'text/css';
-      style.textContent = css;
-      return $('head', document).appendChild(style);
-    };
-  }
   watched = JSON.parse(GM_getValue('watched', '{}'));
   if (location.hostname.split('.')[0] === 'sys') {
     if (b = $('table font b')) {
@@ -178,7 +277,6 @@
   xhrs = [];
   r = null;
   iframeLoop = false;
-  move = {};
   callbacks = [];
   head = $('head', document);
   if (!(favicon = $('link[rel="shortcut icon"]', head))) {
@@ -297,56 +395,12 @@
       html += ("<input type=\"button\" value=\"hidden: " + (hiddenNum) + "\"><br>");
       html += '<a name="save">save</a> <a name="cancel">cancel</a></div>';
       div.innerHTML = html;
-      $('div', div).addEventListener('mousedown', mousedown, true);
+      $('div', div).addEventListener('mousedown', AEOS.move, true);
       $('input[type="button"]', div).addEventListener('click', clearHidden, true);
       $('a[name="save"]', div).addEventListener('click', optionsSave, true);
       $('a[name="cancel"]', div).addEventListener('click', close, true);
       return document.body.appendChild(div);
     }
-  };
-  mousedown = function(e) {
-    var div, l, t;
-    div = this.parentNode;
-    move.div = div;
-    move.clientX = e.clientX;
-    move.clientY = e.clientY;
-    move.bodyX = document.body.clientWidth;
-    move.bodyY = document.body.clientHeight;
-    l = div.style.left;
-    move.divX = l ? parseInt(l) : move.bodyX - div.offsetWidth;
-    t = div.style.top;
-    move.divY = t ? parseInt(t) : move.bodyY - div.offsetHeight;
-    window.addEventListener('mousemove', mousemove, true);
-    return window.addEventListener('mouseup', mouseup, true);
-  };
-  mousemove = function(e) {
-    var div, left, realX, realY, top;
-    div = move.div;
-    realX = move.divX + (e.clientX - move.clientX);
-    left = realX < 20 ? 0 : realX;
-    if (move.bodyX - div.offsetWidth - realX < 20) {
-      div.style.left = '';
-      div.style.right = '0px';
-    } else {
-      div.style.left = left + 'px';
-      div.style.right = '';
-    }
-    realY = move.divY + (e.clientY - move.clientY);
-    top = realY < 20 ? 0 : realY;
-    if (move.bodyY - div.offsetHeight - realY < 20) {
-      div.style.top = '';
-      return (div.style.bottom = '0px');
-    } else {
-      div.style.top = top + 'px';
-      return (div.style.bottom = '');
-    }
-  };
-  mouseup = function() {
-    id = move.div.id;
-    GM_setValue("" + (id) + "Left", move.div.style.left);
-    GM_setValue("" + (id) + "Top", move.div.style.top);
-    window.removeEventListener('mousemove', mousemove, true);
-    return window.removeEventListener('mouseup', mouseup, true);
   };
   showThread = function() {
     var div;
@@ -525,7 +579,7 @@
       div = tag('div');
       div.innerHTML = 'Quick Reply ';
       div.className = 'move';
-      div.addEventListener('mousedown', mousedown, true);
+      div.addEventListener('mousedown', AEOS.move, true);
       qr.appendChild(div);
       autohideB = n('input', {
         type: 'checkbox',
@@ -867,7 +921,7 @@
     watcher.className = 'reply';
     watcher.id = 'watcher';
     position(watcher);
-    $('div', watcher).addEventListener('mousedown', mousedown, true);
+    $('div', watcher).addEventListener('mousedown', AEOS.move, true);
     document.body.appendChild(watcher);
     watcherUpdate();
     threads = watched[BOARD] || [];
