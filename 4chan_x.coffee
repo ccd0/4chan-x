@@ -41,7 +41,7 @@ AEOS =
                     else
                         return value
             this.GM_addStyle = (css) ->
-                style = tag('style')
+                style = document.createElement 'style'
                 style.type = 'text/css'
                 style.textContent = css
                 $('head', document).appendChild(style)
@@ -182,8 +182,6 @@ slice = (arr, id) ->
             arr.splice(i, 1)
             return arr
         i++
-tag = (el) ->
-    document.createElement(el)
 tn = (s) ->
     document.createTextNode s
 x = (path, root) ->
@@ -224,9 +222,10 @@ callbacks = []
 #godammit moot
 head = $('head', document)
 if not favicon = $('link[rel="shortcut icon"]', head)#/f/
-    favicon = tag('link')
-    favicon.rel = 'shortcut icon'
-    favicon.href = 'http://static.4chan.org/image/favicon.ico'
+    favicon = n 'link', {
+        rel: 'shortcut icon'
+        href: 'http://static.4chan.org/image/favicon.ico'
+    }
     head.appendChild(favicon)
 favNormal = favicon.href
 favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
@@ -328,9 +327,10 @@ options = ->
         remove(div)
     else
         hiddenNum = hiddenReplies.length + hiddenThreads.length
-        div = tag('div')
-        div.id = 'options'
-        div.className = 'reply'
+        div = n 'div', {
+            id: 'options'
+            className: 'reply'
+        }
         position(div)
         html = '<div class="move">4chan X</div><div>'
         for option of config
@@ -365,7 +365,6 @@ hideThread = (div) ->
         GM_setValue("hiddenThreads/#{BOARD}/", JSON.stringify(hiddenThreads))
     hide(div)
     if getConfig('Show Stubs')
-        a = tag('a')
         if span = $('.omittedposts', div)
             n = Number(span.textContent.match(/\d+/)[0])
         else
@@ -374,18 +373,22 @@ hideThread = (div) ->
         text = if n is 1 then "1 reply" else "#{n} replies"
         name = $('span.postername', div).textContent
         trip = $('span.postername + span.postertrip', div)?.textContent || ''
-        a.textContent = "[ + ] #{name}#{trip} (#{text})"
-        a.className = 'pointer'
+        a = n 'a', {
+            textContent: "[ + ] #{name}#{trip} (#{text})"
+            className: 'pointer'
+        }
         a.addEventListener('click', showThread, true)
         inBefore(div, a)
 
 
 threadF = (current) ->
-    div = tag('div')
-    div.className = 'thread'
-    a = tag('a')
-    a.textContent = '[ - ]'
-    a.className = 'pointer'
+    div = n 'div', {
+        className: 'thread'
+    }
+    a = n 'a', {
+        textContent: '[ - ]'
+        className: 'pointer'
+    }
     a.addEventListener('click', hideThread, true)
     div.appendChild(a)
 
@@ -432,11 +435,12 @@ hideReply = (reply) ->
     table = x('ancestor::table', reply)
     hide(table)
     if getConfig('Show Stubs')
-        a = tag('a')
-        a.textContent = "[ + ] #{name} #{trip}"
-        a.className = 'pointer'
+        a = n 'a', {
+            textContent: "[ + ] #{name} #{trip}"
+            className: 'pointer'
+        }
         a.addEventListener('click', showReply, true)
-        div = tag('div')
+        div = n 'div'
         div.appendChild(a)
         inBefore(table, div)
 
@@ -506,14 +510,16 @@ autohide = ->
 quickReply = (e) ->
     unless qr = $('#qr')
         #make quick reply dialog
-        qr = tag('div')
-        qr.id = 'qr'
-        qr.className = 'reply'
+        qr = n 'div', {
+            id: 'qr'
+            className: 'reply'
+        }
         position(qr)
 
-        div = tag('div')
-        div.innerHTML = 'Quick Reply '
-        div.className = 'move'
+        div = n 'div', {
+            innerHTML: 'Quick Reply '
+            className: 'move'
+        }
         div.addEventListener('mousedown', AEOS.move, true)
         qr.appendChild(div)
 
@@ -598,20 +604,22 @@ watchX = ->
 
 
 watcherUpdate = ->
-    div = tag('div')
+    div = n 'div'
     for board of watched
         for thread in watched[board]
-            a = tag('a')
-            a.textContent = 'X'
-            a.className = 'pointer'
+            a = n 'a', {
+                textContent: 'X'
+                className: 'pointer'
+            }
             a.addEventListener('click', watchX, true)
             div.appendChild(a)
             div.appendChild(document.createTextNode(' '))
-            link = tag('a')
-            link.textContent = thread.text
-            link.href = "/#{board}/res/#{thread.id}"
+            link = n 'a', {
+                textContent: thread.text
+                href: "/#{board}/res/#{thread.id}"
+            }
             div.appendChild(link)
-            div.appendChild(tag('br'))
+            div.appendChild(n 'br')
     old = $('#watcher div:last-child')
     replace(old, div)
 
@@ -745,9 +753,10 @@ replyNav = ->
 unless navtopr = $ '#navtopr a'
     return
 text = navtopr.nextSibling
-a = tag('a')
-a.textContent = 'X'
-a.className = 'pointer'
+a = n 'a', {
+    textContent: 'X'
+    className: 'pointer'
+}
 a.addEventListener('click', options, true)
 inBefore(text, document.createTextNode(' / '))
 inBefore(text, a)
@@ -760,9 +769,10 @@ if getConfig('Reply Hiding')
     callbacks.push((root) ->
         tds = $$('td.doubledash', root)
         for td in tds
-            a = tag('a')
-            a.textContent = '[ - ]'
-            a.className = 'pointer'
+            a = n 'a', {
+                textContent: '[ - ]'
+                className: 'pointer'
+            }
             a.addEventListener('click', hideReply, true)
             replace(td.firstChild, a)
 
@@ -806,10 +816,11 @@ if getConfig('Quick Report')
 
 if getConfig('Thread Watcher')
     #create watcher
-    watcher = tag('div')
-    watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>'
-    watcher.className = 'reply'
-    watcher.id = 'watcher'
+    watcher = n 'div', {
+        innerHTML: '<div class="move">Thread Watcher</div><div></div>'
+        className: 'reply'
+        id: 'watcher'
+    }
     position(watcher)
     $('div', watcher).addEventListener('mousedown', AEOS.move, true)
     document.body.appendChild(watcher)
@@ -820,14 +831,16 @@ if getConfig('Thread Watcher')
     #normal, threading
     inputs = $$('form > input[value="delete"], div > input[value="delete"]')
     for input in inputs
-        img = tag('img')
         id = input.name
         for thread in threads
             if id == thread.id
-                img.src = favNormal
+                src = favNormal
                 break
-        img.src or= favEmpty
-        img.className = 'pointer'
+        src or= favEmpty
+        img = n 'img', {
+            src: src
+            className: 'pointer'
+        }
         img.addEventListener('click', watch, true)
         inBefore(input, img)
 
@@ -886,43 +899,49 @@ else # not reply
         l1 = l + 1
         #should this be a while loop?
         for el in arr
-            up = tag('a')
-            up.className = 'pointer'
             if i isnt 0
-                up.textContent = '▲'
-                up.href = "##{i}"
+                textContent = '▲'
+                href = "##{i}"
             else if PAGENUM isnt 0
-                up.textContent = '◀'
-                up.href = "#{PAGENUM - 1}"
+                textContent = '◀'
+                href = "#{PAGENUM - 1}"
             else
-                up.textContent = '▲'
-                up.href = "#navtop"
+                textContent = '▲'
+                href = "#navtop"
 
-            span = tag('span')
-            span.className = 'navlinks'
-            span.id = ++i
+            up = n 'a', {
+                className: 'pointer'
+                textContent: textContent
+                href: href
+            }
+
+            span = n 'span', {
+                className: 'navlinks'
+                id: ++i
+            }
             i1 = i + 1
-            down = tag('a')
-            down.className = 'pointer'
-            span.appendChild(up)
-            span.appendChild(document.createTextNode(' '))
-            span.appendChild(down)
+            down = n 'a', {
+                className: 'pointer'
+            }
             if i1 == l1
                 down.textContent = '▶'
                 down.href = "#{PAGENUM + 1}#1"
             else
                 down.textContent = '▼'
                 down.href = "##{i1}"
-            inBefore(el, span)
+
+            addTo span, up, tn(' '), down
+            inBefore el, span
         if location.hash is '#1'
             window.location = window.location
 
     if getConfig('Thread Expansion')
         omitted = $$('span.omittedposts')
         for span in omitted
-            a = tag('a')
-            a.className = 'pointer omittedposts'
-            a.textContent = "+ #{span.textContent}"
+            a = n 'a', {
+                className: 'pointer omittedposts'
+                textContent: "+ #{span.textContent}"
+            }
             a.addEventListener('click', expandThread, true)
             replace(span, a)
 

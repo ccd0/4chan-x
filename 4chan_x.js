@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, tag, text, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, position, quickReply, r, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -41,7 +41,7 @@
         };
         this.GM_addStyle = function(css) {
           var style;
-          style = tag('style');
+          style = document.createElement('style');
           style.type = 'text/css';
           style.textContent = css;
           return $('head', document).appendChild(style);
@@ -230,9 +230,6 @@
     }
     return _result;
   };
-  tag = function(el) {
-    return document.createElement(el);
-  };
   tn = function(s) {
     return document.createTextNode(s);
   };
@@ -280,9 +277,10 @@
   callbacks = [];
   head = $('head', document);
   if (!(favicon = $('link[rel="shortcut icon"]', head))) {
-    favicon = tag('link');
-    favicon.rel = 'shortcut icon';
-    favicon.href = 'http://static.4chan.org/image/favicon.ico';
+    favicon = n('link', {
+      rel: 'shortcut icon',
+      href: 'http://static.4chan.org/image/favicon.ico'
+    });
     head.appendChild(favicon);
   }
   favNormal = favicon.href;
@@ -380,9 +378,10 @@
       return remove(div);
     } else {
       hiddenNum = hiddenReplies.length + hiddenThreads.length;
-      div = tag('div');
-      div.id = 'options';
-      div.className = 'reply';
+      div = n('div', {
+        id: 'options',
+        className: 'reply'
+      });
       position(div);
       html = '<div class="move">4chan X</div><div>';
       _ref2 = config;
@@ -423,7 +422,6 @@
     }
     hide(div);
     if (getConfig('Show Stubs')) {
-      a = tag('a');
       if (span = $('.omittedposts', div)) {
         n = Number(span.textContent.match(/\d+/)[0]);
       } else {
@@ -433,19 +431,23 @@
       text = n === 1 ? "1 reply" : ("" + (n) + " replies");
       name = $('span.postername', div).textContent;
       trip = ((typeof (_ref3 = ((_ref2 = $('span.postername + span.postertrip', div)))) === "undefined" || _ref3 === null) ? undefined : _ref3.textContent) || '';
-      a.textContent = ("[ + ] " + (name) + (trip) + " (" + (text) + ")");
-      a.className = 'pointer';
+      a = n('a', {
+        textContent: ("[ + ] " + (name) + (trip) + " (" + (text) + ")"),
+        className: 'pointer'
+      });
       a.addEventListener('click', showThread, true);
       return inBefore(div, a);
     }
   };
   threadF = function(current) {
     var _i, _len, _ref2, a, div, hidden;
-    div = tag('div');
-    div.className = 'thread';
-    a = tag('a');
-    a.textContent = '[ - ]';
-    a.className = 'pointer';
+    div = n('div', {
+      className: 'thread'
+    });
+    a = n('a', {
+      textContent: '[ - ]',
+      className: 'pointer'
+    });
     a.addEventListener('click', hideThread, true);
     div.appendChild(a);
     inBefore(current, div);
@@ -492,11 +494,12 @@
     table = x('ancestor::table', reply);
     hide(table);
     if (getConfig('Show Stubs')) {
-      a = tag('a');
-      a.textContent = ("[ + ] " + (name) + " " + (trip));
-      a.className = 'pointer';
+      a = n('a', {
+        textContent: ("[ + ] " + (name) + " " + (trip)),
+        className: 'pointer'
+      });
       a.addEventListener('click', showReply, true);
-      div = tag('div');
+      div = n('div');
       div.appendChild(a);
       return inBefore(table, div);
     }
@@ -572,13 +575,15 @@
   quickReply = function(e) {
     var _i, _len, _ref2, _ref3, autohideB, clone, closeB, div, form, input, qr, script, selection, text, textarea, xpath;
     if (!(qr = $('#qr'))) {
-      qr = tag('div');
-      qr.id = 'qr';
-      qr.className = 'reply';
+      qr = n('div', {
+        id: 'qr',
+        className: 'reply'
+      });
       position(qr);
-      div = tag('div');
-      div.innerHTML = 'Quick Reply ';
-      div.className = 'move';
+      div = n('div', {
+        innerHTML: 'Quick Reply ',
+        className: 'move'
+      });
       div.addEventListener('mousedown', AEOS.move, true);
       qr.appendChild(div);
       autohideB = n('input', {
@@ -663,7 +668,7 @@
   };
   watcherUpdate = function() {
     var _i, _j, _len, _ref2, _ref3, a, board, div, link, old, thread;
-    div = tag('div');
+    div = n('div');
     _ref2 = watched;
     for (board in _ref2) {
       if (!__hasProp.call(_ref2, board)) continue;
@@ -671,17 +676,19 @@
       _ref3 = watched[board];
       for (_j = 0, _len = _ref3.length; _j < _len; _j++) {
         thread = _ref3[_j];
-        a = tag('a');
-        a.textContent = 'X';
-        a.className = 'pointer';
+        a = n('a', {
+          textContent: 'X',
+          className: 'pointer'
+        });
         a.addEventListener('click', watchX, true);
         div.appendChild(a);
         div.appendChild(document.createTextNode(' '));
-        link = tag('a');
-        link.textContent = thread.text;
-        link.href = ("/" + (board) + "/res/" + (thread.id));
+        link = n('a', {
+          textContent: thread.text,
+          href: ("/" + (board) + "/res/" + (thread.id))
+        });
         div.appendChild(link);
-        div.appendChild(tag('br'));
+        div.appendChild(n('br'));
       }
     }
     old = $('#watcher div:last-child');
@@ -839,9 +846,10 @@
     return null;
   }
   text = navtopr.nextSibling;
-  a = tag('a');
-  a.textContent = 'X';
-  a.className = 'pointer';
+  a = n('a', {
+    textContent: 'X',
+    className: 'pointer'
+  });
   a.addEventListener('click', options, true);
   inBefore(text, document.createTextNode(' / '));
   inBefore(text, a);
@@ -858,9 +866,10 @@
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         td = _ref2[_j];
         _result.push((function() {
-          a = tag('a');
-          a.textContent = '[ - ]';
-          a.className = 'pointer';
+          a = n('a', {
+            textContent: '[ - ]',
+            className: 'pointer'
+          });
           a.addEventListener('click', hideReply, true);
           replace(td.firstChild, a);
           next = td.nextSibling;
@@ -916,10 +925,11 @@
     });
   }
   if (getConfig('Thread Watcher')) {
-    watcher = tag('div');
-    watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>';
-    watcher.className = 'reply';
-    watcher.id = 'watcher';
+    watcher = n('div', {
+      innerHTML: '<div class="move">Thread Watcher</div><div></div>',
+      className: 'reply',
+      id: 'watcher'
+    });
     position(watcher);
     $('div', watcher).addEventListener('mousedown', AEOS.move, true);
     document.body.appendChild(watcher);
@@ -929,18 +939,20 @@
     _ref = inputs;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
-      img = tag('img');
       id = input.name;
       _ref2 = threads;
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         thread = _ref2[_j];
         if (id === thread.id) {
-          img.src = favNormal;
+          src = favNormal;
           break;
         }
       }
-      img.src || (img.src = favEmpty);
-      img.className = 'pointer';
+      src || (src = favEmpty);
+      img = n('img', {
+        src: src,
+        className: 'pointer'
+      });
       img.addEventListener('click', watch, true);
       inBefore(input, img);
     }
@@ -1012,27 +1024,29 @@
       _ref = arr;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];
-        up = tag('a');
-        up.className = 'pointer';
         if (i !== 0) {
-          up.textContent = '▲';
-          up.href = ("#" + (i));
+          textContent = '▲';
+          href = ("#" + (i));
         } else if (PAGENUM !== 0) {
-          up.textContent = '◀';
-          up.href = ("" + (PAGENUM - 1));
+          textContent = '◀';
+          href = ("" + (PAGENUM - 1));
         } else {
-          up.textContent = '▲';
-          up.href = "#navtop";
+          textContent = '▲';
+          href = "#navtop";
         }
-        span = tag('span');
-        span.className = 'navlinks';
-        span.id = ++i;
+        up = n('a', {
+          className: 'pointer',
+          textContent: textContent,
+          href: href
+        });
+        span = n('span', {
+          className: 'navlinks',
+          id: ++i
+        });
         i1 = i + 1;
-        down = tag('a');
-        down.className = 'pointer';
-        span.appendChild(up);
-        span.appendChild(document.createTextNode(' '));
-        span.appendChild(down);
+        down = n('a', {
+          className: 'pointer'
+        });
         if (i1 === l1) {
           down.textContent = '▶';
           down.href = ("" + (PAGENUM + 1) + "#1");
@@ -1040,6 +1054,7 @@
           down.textContent = '▼';
           down.href = ("#" + (i1));
         }
+        addTo(span, up, tn(' '), down);
         inBefore(el, span);
       }
       if (location.hash === '#1') {
@@ -1051,9 +1066,10 @@
       _ref = omitted;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         span = _ref[_i];
-        a = tag('a');
-        a.className = 'pointer omittedposts';
-        a.textContent = ("+ " + (span.textContent));
+        a = n('a', {
+          className: 'pointer omittedposts',
+          textContent: ("+ " + (span.textContent))
+        });
         a.addEventListener('click', expandThread, true);
         replace(span, a);
       }
