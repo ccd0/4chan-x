@@ -22,15 +22,15 @@ config =
 AEOS =
     init: ->
         #x-browser
-        if typeof GM_deleteValue == 'undefined'
+        if typeof GM_deleteValue is 'undefined'
             window.GM_setValue = (name, value) ->
                 value = (typeof value)[0] + value
                 localStorage.setItem name, value
             window.GM_getValue = (name, defaultValue) ->
-                if not value = localStorage.getItem name
+                unless value = localStorage.getItem name
                     return defaultValue
                 type = value[0]
-                value = value.substring(1)
+                value = value.substring 1
                 switch type
                     when 'b'
                         return value == 'true'
@@ -52,7 +52,8 @@ AEOS =
             div.dialog > div.move {
                 cursor: move;
             }
-            div.dialog label, div.dialog a {
+            div.dialog label,
+            div.dialog a {
                 cursor: pointer;
             }
         '
@@ -60,8 +61,8 @@ AEOS =
     #dialog creation
     makeDialog: (id, position) ->
         dialog = document.createElement 'div'
-        dialog.id = id
         dialog.className = 'reply dialog'
+        dialog.id = id
 
         switch position
             when 'topleft'

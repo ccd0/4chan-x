@@ -54,7 +54,8 @@
             div.dialog > div.move {\
                 cursor: move;\
             }\
-            div.dialog label, div.dialog a {\
+            div.dialog label,\
+            div.dialog a {\
                 cursor: pointer;\
             }\
         ');
@@ -62,8 +63,8 @@
     makeDialog: function(id, position) {
       var dialog, left, top;
       dialog = document.createElement('div');
-      dialog.id = id;
       dialog.className = 'reply dialog';
+      dialog.id = id;
       switch (position) {
         case 'topleft':
           left = '0px';
