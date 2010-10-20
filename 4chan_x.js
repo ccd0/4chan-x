@@ -15,7 +15,8 @@
     'Quick Report': true,
     'Auto Watch': true,
     'Anonymize': false,
-    '404 Redirect': true
+    '404 Redirect': true,
+    'Post in Title': true
   };
   AEOS = {
     init: function() {
@@ -1010,6 +1011,14 @@
     if (getConfig('Quick Reply') && getConfig('Persistent QR')) {
       quickReply();
       $('#qr input[title=autohide]').click();
+    }
+    if (getConfig('Post in Title')) {
+      if (!(text = $('span.filetitle').textContent)) {
+        text = $('blockquote').textContent;
+      }
+      if (text) {
+        d.title = ("/" + (BOARD) + "/ - " + (text));
+      }
     }
   } else {
     if (getConfig('Thread Hiding')) {

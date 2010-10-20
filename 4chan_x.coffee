@@ -1,6 +1,8 @@
 #todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
 #todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
 #todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
+#
+#TODO - 4chan time, 4chan sauce
 
 config =
     'Thread Hiding':        true
@@ -17,6 +19,7 @@ config =
     'Auto Watch':           true
     'Anonymize':            false
     '404 Redirect':         true
+    'Post in Title':        true
 
 #TODO - expose 'hidden' configs
 
@@ -877,8 +880,13 @@ if REPLY
     if getConfig('Quick Reply') and getConfig('Persistent QR')
         quickReply()
         $('#qr input[title=autohide]').click()
+    if getConfig 'Post in Title'
+        unless text = $('span.filetitle').textContent
+            text = $('blockquote').textContent
+        if text
+            d.title = "/#{BOARD}/ - #{text}"
 
-else # not reply
+else
     if getConfig('Thread Hiding')
         delform = $('form[name=delform]')
         #don't confuse other scripts
