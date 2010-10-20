@@ -592,15 +592,13 @@
         title: 'autohide',
         listener: ['click', autohide]
       });
-      div.appendChild(autohideB);
-      div.appendChild(document.createTextNode(' '));
       closeB = n('a', {
         textContent: 'X',
         className: 'pointer',
         title: 'close',
         listener: ['click', close]
       });
-      div.appendChild(closeB);
+      addTo(div, autohideB, tn(' '), closeB);
       form = $('form[name=post]');
       clone = form.cloneNode(true);
       _ref2 = $$('script', clone);
@@ -681,14 +679,11 @@
           className: 'pointer',
           listener: ['click', watchX]
         });
-        div.appendChild(a);
-        div.appendChild(document.createTextNode(' '));
         link = n('a', {
           textContent: thread.text,
           href: ("/" + (board) + "/res/" + (thread.id))
         });
-        div.appendChild(link);
-        div.appendChild(n('br'));
+        addTo(div, a, tn(' '), link, n('br'));
       }
     }
     old = $('#watcher div:last-child');
@@ -851,7 +846,7 @@
     className: 'pointer',
     listener: ['click', options]
   });
-  inBefore(text, document.createTextNode(' / '));
+  inBefore(text, tn(' / '));
   inBefore(text, a);
   _ref = $$('#recaptcha_table a');
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -918,7 +913,7 @@
             listener: ['click', report]
           });
           inAfter(el, a);
-          return inAfter(el, document.createTextNode(' '));
+          return inAfter(el, tn(' '));
         })());
       }
       return _result;

@@ -529,15 +529,13 @@ quickReply = (e) ->
             title: 'autohide'
             listener: ['click', autohide]
         }
-        div.appendChild(autohideB)
-        div.appendChild(document.createTextNode(' '))
         closeB = n 'a', {
             textContent: 'X'
             className: 'pointer'
             title: 'close'
             listener: ['click', close]
         }
-        div.appendChild(closeB)
+        addTo div, autohideB, tn(' '), closeB
 
         form = $ 'form[name=post]'
         clone = form.cloneNode(true)
@@ -612,14 +610,11 @@ watcherUpdate = ->
                 className: 'pointer'
                 listener: ['click', watchX]
             }
-            div.appendChild(a)
-            div.appendChild(document.createTextNode(' '))
             link = n 'a', {
                 textContent: thread.text
                 href: "/#{board}/res/#{thread.id}"
             }
-            div.appendChild(link)
-            div.appendChild(n 'br')
+            addTo div, a, tn(' '), link, n('br')
     old = $('#watcher div:last-child')
     replace(old, div)
 
@@ -758,7 +753,7 @@ a = n 'a', {
     className: 'pointer'
     listener: ['click', options]
 }
-inBefore(text, document.createTextNode(' / '))
+inBefore(text, tn(' / '))
 inBefore(text, a)
 
 #hack to tab from comment straight to recaptcha
@@ -811,7 +806,7 @@ if getConfig('Quick Report')
                 listener: ['click', report]
             }
             inAfter(el, a)
-            inAfter(el, document.createTextNode(' '))
+            inAfter(el, tn(' '))
     )
 
 if getConfig('Thread Watcher')
