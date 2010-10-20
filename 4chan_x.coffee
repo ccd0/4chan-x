@@ -48,10 +48,12 @@ AEOS =
         GM_addStyle '
             div.dialog {
                 border: 1px solid;
-                text-align: right;
             }
             div.dialog > div.move {
                 cursor: move;
+            }
+            div.dialog label, div.dialog a {
+                cursor: pointer;
             }
         '
 
@@ -245,13 +247,12 @@ if lastChecked < now - 1*DAY
 GM_addStyle('
     #watcher {
         position: absolute;
-        border: 1px solid;
     }
-    #watcher div.move {
+    #watcher > div.move {
         text-decoration: underline;
         padding: 5px 5px 0 5px;
     }
-    #watcher div:last-child {
+    #watcher > div:last-child {
         padding: 0 5px 5px 5px;
     }
     span.error {
@@ -267,20 +268,16 @@ GM_addStyle('
     }
     #qr {
         position: fixed;
-        border: 1px solid;
     }
     #qr > div {
         text-align: right;
     }
-    #qr > form > div {/* ad */
-        display: none;
-    }
+    #qr > form > div, /* ad */
     #qr td.rules {
         display: none;
     }
     #options {
         position: fixed;
-        border: 1px solid;
         padding: 5px;
         text-align: right;
     }
@@ -292,10 +289,7 @@ GM_addStyle('
         font-size: 16px;
         text-decoration: none;
     }
-    .move {
-        cursor: move;
-    }
-    .pointer, #options label, #options a {
+    .pointer {
         cursor: pointer;
     }
 ')
