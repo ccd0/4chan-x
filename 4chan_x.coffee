@@ -1,8 +1,8 @@
 #todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
 #todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
 #todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
-#todo: hotkeys? navlink at top?
-#thread watching doesn't work in opera?
+#
+#TODO tampermonkey, use makeDialog
 
 config =
     'Thread Hiding':        true
@@ -144,9 +144,9 @@ getTime = ->
 hide = (el) ->
     el.style.display = 'none'
 inAfter = (root, el) ->
-    root.parentNode.insertBefore(el, root.nextSibling)
+    root.parentNode.insertBefore el, root.nextSibling
 inBefore = (root, el) ->
-    root.parentNode.insertBefore(el, root)
+    root.parentNode.insertBefore el, root
 n = (tag, props) -> #new
     el = d.createElement tag
     if props
@@ -379,7 +379,7 @@ hideThread = (div) ->
             className: 'pointer'
             listener: ['click', showThread]
         }
-        inBefore(div, a)
+        inBefore div, a
 
 
 threadF = (current) ->
@@ -393,7 +393,7 @@ threadF = (current) ->
     }
     addTo div, a
 
-    inBefore(current, div)
+    inBefore current, div
     while (!current.clear)#<br clear>
         addTo div, current
         current = div.nextSibling
@@ -443,7 +443,7 @@ hideReply = (reply) ->
         }
         div = n 'div'
         addTo div, a
-        inBefore(table, div)
+        inBefore table, div
 
 
 optionsSave = ->
@@ -639,7 +639,7 @@ onloadThread = (responseText, span) ->
         remove(next)
     if next
         for reply in replies
-            inBefore(next, x('ancestor::table', reply))
+            inBefore next, x('ancestor::table', reply)
     else#threading
         div = span.parentNode
         for reply in replies
@@ -754,8 +754,8 @@ a = n 'a', {
     className: 'pointer'
     listener: ['click', options]
 }
-inBefore(text, tn(' / '))
-inBefore(text, a)
+inBefore text, tn(' / ')
+inBefore text, a
 
 #hack to tab from comment straight to recaptcha
 for el in $$ '#recaptcha_table a'
@@ -806,8 +806,8 @@ if getConfig('Quick Report')
                 className: 'pointer'
                 listener: ['click', report]
             }
-            inAfter(el, a)
-            inAfter(el, tn(' '))
+            inAfter el, a
+            inAfter el, tn(' ')
     )
 
 if getConfig('Thread Watcher')
@@ -838,7 +838,7 @@ if getConfig('Thread Watcher')
             className: 'pointer'
             listener: ['click', watch]
         }
-        inBefore(input, img)
+        inBefore input, img
 
 if getConfig('Anonymize')
     callbacks.push((root) ->
@@ -869,7 +869,7 @@ if getConfig('Reply Navigation')
                 listener: ['click', replyNav]
             }
             addTo span, tn(' '), up, tn(' '), down
-            inAfter(el, span)
+            inAfter el, span
     )
 
 if REPLY
