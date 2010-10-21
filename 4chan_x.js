@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _i, _j, _len, _len2, _ref, _ref2, _result, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, defaultSaucePrefix, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, link, magic, n, names, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, prefix, prefixes, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, spans, src, stopPropagation, submit, suffix, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _i, _j, _len, _len2, _ref, _ref2, _result, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, link, magic, n, names, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, prefix, prefixes, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, spans, src, stopPropagation, submit, suffix, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -364,6 +364,11 @@
     hiddenReplies = [];
     return (hiddenThreads = []);
   };
+  editSauce = function() {
+    var ta;
+    ta = $('#options textarea');
+    return ta.style.display ? show(ta) : hide(ta);
+  };
   options = function() {
     var _i, _ref2, checked, div, hiddenNum, option;
     if (div = $('#options')) {
@@ -379,11 +384,13 @@
         checked = getConfig(option) ? "checked" : "";
         html += ("<label>" + (option) + "<input " + (checked) + " name=\"" + (option) + "\" type=\"checkbox\"></label><br>");
       }
-      html += "<div><textarea cols=50 rows=4></textarea></div>";
+      html += "<div><a class=sauce>Edit Sauce</a></div>";
+      html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>";
       html += ("<input type=\"button\" value=\"hidden: " + (hiddenNum) + "\"><br>");
       div.innerHTML = html;
       $('div.move', div).addEventListener('mousedown', AEOS.move, true);
       $('a.pointer', div).addEventListener('click', optionsClose, true);
+      $('a.sauce', div).addEventListener('click', editSauce, true);
       $('textarea', div).value = GM_getValue('saucePrefix', defaultSaucePrefix);
       $('input[type="button"]', div).addEventListener('click', clearHidden, true);
       return addTo(d.body, div);

@@ -318,6 +318,10 @@ clearHidden = ->
     hiddenThreads = []
 
 
+editSauce = ->
+    ta = $ '#options textarea'
+    if ta.style.display then show ta else hide ta
+
 options = ->
     #redo this
     if div = $('#options')
@@ -329,11 +333,13 @@ options = ->
         for option of config
             checked = if getConfig option then "checked" else ""
             html += "<label>#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
-        html += "<div><textarea cols=50 rows=4></textarea></div>"
+        html += "<div><a class=sauce>Edit Sauce</a></div>"
+        html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>"
         html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
         div.innerHTML = html
         $('div.move', div).addEventListener 'mousedown', AEOS.move, true
         $('a.pointer', div).addEventListener 'click', optionsClose, true
+        $('a.sauce', div).addEventListener 'click', editSauce, true
         $('textarea', div).value = GM_getValue 'saucePrefix', defaultSaucePrefix
         $('input[type="button"]', div).addEventListener 'click', clearHidden, true
         addTo d.body, div
