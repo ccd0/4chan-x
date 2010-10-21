@@ -781,7 +781,7 @@ if getConfig 'Sauce'
             addTo span, tn(' '), link
 
 if getConfig('Reply Hiding')
-    callbacks.push((root) ->
+    callbacks.push (root) ->
         tds = $$('td.doubledash', root)
         for td in tds
             a = n 'a',
@@ -795,7 +795,6 @@ if getConfig('Reply Hiding')
             for obj in hiddenReplies
                 if obj.id is id
                     hideReply(next)
-    )
 
 if getConfig('Quick Reply')
     iframe = n 'iframe',
@@ -804,18 +803,17 @@ if getConfig('Quick Reply')
     hide(iframe)
     addTo d.body, iframe
 
-    callbacks.push((root) ->
+    callbacks.push (root) ->
         quotes = $$('a.quotejs:not(:first-child)', root)
         for quote in quotes
             quote.addEventListener('click', quickReply, true)
-    )
 
     #hack - nuke id so it doesn't grab focus when reloading
     recaptcha.id = ''
 
 
 if getConfig('Quick Report')
-    callbacks.push((root) ->
+    callbacks.push (root) ->
         arr = $$('span[id^=no]', root)
         for el in arr
             a = n 'a',
@@ -824,7 +822,6 @@ if getConfig('Quick Report')
                 listener: ['click', report]
             inAfter el, a
             inAfter el, tn(' ')
-    )
 
 if getConfig('Thread Watcher')
     #create watcher
@@ -852,7 +849,7 @@ if getConfig('Thread Watcher')
         inBefore input, img
 
 if getConfig('Anonymize')
-    callbacks.push((root) ->
+    callbacks.push (root) ->
         names = $$('span.postername, span.commentpostername', root)
         for name in names
             name.innerHTML = 'Anonymous'
@@ -862,10 +859,9 @@ if getConfig('Anonymize')
                 remove(trip.parentNode)
             else
                 remove(trip)
-    )
 
 if getConfig('Reply Navigation')
-    callbacks.push((root) ->
+    callbacks.push (root) ->
         arr = $$('span[id^=norep]', root)
         for el in arr
             span = n 'span'
@@ -879,7 +875,6 @@ if getConfig('Reply Navigation')
                 listener: ['click', replyNav]
             addTo span, tn(' '), up, tn(' '), down
             inAfter el, span
-    )
 
 if REPLY
     if getConfig('Quick Reply') and getConfig('Persistent QR')
