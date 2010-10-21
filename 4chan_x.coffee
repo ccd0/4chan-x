@@ -2,7 +2,7 @@
 #todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
 #todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
 #
-#TODO - 4chan time, 4chan sauce
+#TODO - 4chan time
 
 config =
     'Thread Hiding':        true
