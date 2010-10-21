@@ -250,6 +250,13 @@ if lastChecked < now - 1*DAY
     GM_setValue("hiddenReplies/#{BOARD}/", JSON.stringify(hiddenReplies))
     GM_setValue('lastChecked', now)
 
+defaultSaucePrefix = [
+    'http://regex.info/exif.cgi?url='
+    'http://iqdb.org/?url='
+    'http://saucenao.com/search.php?db=999&url='
+    'http://tineye.com/search?url='
+].join '\n'
+
 GM_addStyle('
     #watcher {
         position: absolute;
@@ -322,11 +329,13 @@ options = ->
         for option of config
             checked = if getConfig option then "checked" else ""
             html += "<label>#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
+        html += "<div><textarea cols=50 rows=4></textarea></div>"
         html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
         div.innerHTML = html
-        $('div.move', div).addEventListener('mousedown', AEOS.move, true)
+        $('div.move', div).addEventListener 'mousedown', AEOS.move, true
         $('a.pointer', div).addEventListener 'click', optionsClose, true
-        $('input[type="button"]', div).addEventListener('click', clearHidden, true)
+        $('textarea', div).value = GM_getValue 'saucePrefix', defaultSaucePrefix
+        $('input[type="button"]', div).addEventListener 'click', clearHidden, true
         addTo d.body, div
 
 
@@ -430,12 +439,13 @@ optionsClose = ->
     inputs = $$('input', div)
     for input in inputs
         GM_setValue(input.name, input.checked)
-    remove(div)
+    GM_setValue 'saucePrefix', $('textarea', div).value
+    remove div
 
 
 close = ->
     div = this.parentNode.parentNode
-    remove(div)
+    remove div
 
 
 iframeLoad = ->
@@ -752,20 +762,16 @@ recaptcha.addEventListener('keydown', recaptchaListener, true)
 
 #major features
 
-sauces =
-  exif:     'http://regex.info/exif.cgi?url='
-  iqdb:     'http://iqdb.org/?url='
-  saucenao: 'http://saucenao.com/search.php?db=999&url='
-  tineye:   'http://tineye.com/search?url='
-
 if getConfig 'Sauce'
     spans = $$ 'span.filesize'
+    prefixes = GM_getValue('saucePrefix', defaultSaucePrefix).split '\n'
+    names = prefix.match(/(\w+)\./)[1] for prefix in prefixes
     for span in spans
         suffix = $('a', span).href
-        for sauce of sauces
+        for prefix in prefixes
             link = n 'a',
-                textContent: sauce
-                href: sauces[sauce] + suffix
+                textContent: names[_j]
+                href: prefix + suffix
             addTo span, tn(' '), link
 
 if getConfig('Reply Hiding')
