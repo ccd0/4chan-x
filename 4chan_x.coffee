@@ -769,16 +769,19 @@ recaptcha.addEventListener('keydown', recaptchaListener, true)
 #major features
 
 if getConfig 'Sauce'
-    spans = $$ 'span.filesize'
-    prefixes = GM_getValue('saucePrefix', defaultSaucePrefix).split '\n'
-    names = prefix.match(/(\w+)\./)[1] for prefix in prefixes
-    for span in spans
-        suffix = $('a', span).href
-        for prefix in prefixes
-            link = n 'a',
-                textContent: names[_j]
-                href: prefix + suffix
-            addTo span, tn(' '), link
+    callbacks.push (root) ->
+        spans = $$ 'span.filesize', root
+        prefixes = GM_getValue('saucePrefix', defaultSaucePrefix).split '\n'
+        names = prefix.match(/(\w+)\./)[1] for prefix in prefixes
+        for span in spans
+            suffix = $('a', span).href
+            i = 0; l = names.length
+            while i < l
+                link = n 'a',
+                    textContent: names[i]
+                    href: prefixes[i] + suffix
+                addTo span, tn(' '), link
+                i++
 
 if getConfig('Reply Hiding')
     callbacks.push (root) ->

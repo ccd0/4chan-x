@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _i, _j, _len, _len2, _ref, _ref2, _result, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, link, magic, n, names, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, prefix, prefixes, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, spans, src, stopPropagation, submit, suffix, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -879,39 +879,50 @@
   recaptcha = $('#recaptcha_response_field');
   recaptcha.addEventListener('keydown', recaptchaListener, true);
   if (getConfig('Sauce')) {
-    spans = $$('span.filesize');
-    prefixes = GM_getValue('saucePrefix', defaultSaucePrefix).split('\n');
-    names = (function() {
-      _result = []; _ref = prefixes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        prefix = _ref[_i];
-        _result.push(prefix.match(/(\w+)\./)[1]);
+    callbacks.push(function(root) {
+      var _j, _len2, _ref2, _result, _result2, i, l, link, names, prefix, prefixes, span, spans, suffix;
+      spans = $$('span.filesize', root);
+      prefixes = GM_getValue('saucePrefix', defaultSaucePrefix).split('\n');
+      names = (function() {
+        _result = []; _ref2 = prefixes;
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          prefix = _ref2[_j];
+          _result.push(prefix.match(/(\w+)\./)[1]);
+        }
+        return _result;
+      })();
+      _result = []; _ref2 = spans;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        span = _ref2[_j];
+        _result.push((function() {
+          suffix = $('a', span).href;
+          i = 0;
+          l = names.length;
+          _result2 = [];
+          while (i < l) {
+            _result2.push((function() {
+              link = n('a', {
+                textContent: names[i],
+                href: prefixes[i] + suffix
+              });
+              addTo(span, tn(' '), link);
+              return i++;
+            })());
+          }
+          return _result2;
+        })());
       }
       return _result;
-    })();
-    _ref = spans;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      span = _ref[_i];
-      suffix = $('a', span).href;
-      _ref2 = prefixes;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        prefix = _ref2[_j];
-        link = n('a', {
-          textContent: names[_j],
-          href: prefix + suffix
-        });
-        addTo(span, tn(' '), link);
-      }
-    }
+    });
   }
   if (getConfig('Reply Hiding')) {
     callbacks.push(function(root) {
-      var _k, _l, _len3, _len4, _ref3, _ref4, _result2, _result3, next, obj, td, tds;
+      var _j, _k, _len2, _len3, _ref2, _ref3, _result, _result2, next, obj, td, tds;
       tds = $$('td.doubledash', root);
-      _result2 = []; _ref3 = tds;
-      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-        td = _ref3[_k];
-        _result2.push((function() {
+      _result = []; _ref2 = tds;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        td = _ref2[_j];
+        _result.push((function() {
           a = n('a', {
             textContent: '[ - ]',
             className: 'pointer',
@@ -920,15 +931,15 @@
           replace(td.firstChild, a);
           next = td.nextSibling;
           id = next.id;
-          _result3 = []; _ref4 = hiddenReplies;
-          for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
-            obj = _ref4[_l];
-            _result3.push(obj.id === id ? hideReply(next) : null);
+          _result2 = []; _ref3 = hiddenReplies;
+          for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
+            obj = _ref3[_k];
+            _result2.push(obj.id === id ? hideReply(next) : null);
           }
-          return _result3;
+          return _result2;
         })());
       }
-      return _result2;
+      return _result;
     });
   }
   if (getConfig('Quick Reply')) {
@@ -939,25 +950,25 @@
     hide(iframe);
     addTo(d.body, iframe);
     callbacks.push(function(root) {
-      var _k, _len3, _ref3, _result2, quote, quotes;
+      var _j, _len2, _ref2, _result, quote, quotes;
       quotes = $$('a.quotejs:not(:first-child)', root);
-      _result2 = []; _ref3 = quotes;
-      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-        quote = _ref3[_k];
-        _result2.push(quote.addEventListener('click', quickReply, true));
+      _result = []; _ref2 = quotes;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        quote = _ref2[_j];
+        _result.push(quote.addEventListener('click', quickReply, true));
       }
-      return _result2;
+      return _result;
     });
     recaptcha.id = '';
   }
   if (getConfig('Quick Report')) {
     callbacks.push(function(root) {
-      var _k, _len3, _ref3, _result2, arr, el;
+      var _j, _len2, _ref2, _result, arr, el;
       arr = $$('span[id^=no]', root);
-      _result2 = []; _ref3 = arr;
-      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-        el = _ref3[_k];
-        _result2.push((function() {
+      _result = []; _ref2 = arr;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        el = _ref2[_j];
+        _result.push((function() {
           a = n('a', {
             textContent: '[ ! ]',
             className: 'pointer',
@@ -967,7 +978,7 @@
           return inAfter(el, tn(' '));
         })());
       }
-      return _result2;
+      return _result;
     });
   }
   if (getConfig('Thread Watcher')) {
@@ -1001,7 +1012,7 @@
   }
   if (getConfig('Anonymize')) {
     callbacks.push(function(root) {
-      var _k, _len3, _ref3, _result2, name, trip, trips;
+      var _k, _len3, _ref3, _result, name, names, trip, trips;
       names = $$('span.postername, span.commentpostername', root);
       _ref3 = names;
       for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
@@ -1009,22 +1020,22 @@
         name.innerHTML = 'Anonymous';
       }
       trips = $$('span.postertrip', root);
-      _result2 = []; _ref3 = trips;
+      _result = []; _ref3 = trips;
       for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
         trip = _ref3[_k];
-        _result2.push(trip.parentNode.nodeName === 'A' ? remove(trip.parentNode) : remove(trip));
+        _result.push(trip.parentNode.nodeName === 'A' ? remove(trip.parentNode) : remove(trip));
       }
-      return _result2;
+      return _result;
     });
   }
   if (getConfig('Reply Navigation')) {
     callbacks.push(function(root) {
-      var _k, _len3, _ref3, _result2, arr, down, el, up;
+      var _k, _len3, _ref3, _result, arr, down, el, span, up;
       arr = $$('span[id^=norep]', root);
-      _result2 = []; _ref3 = arr;
+      _result = []; _ref3 = arr;
       for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
         el = _ref3[_k];
-        _result2.push((function() {
+        _result.push((function() {
           span = n('span');
           up = n('a', {
             textContent: '▲',
@@ -1040,7 +1051,7 @@
           return inAfter(el, span);
         })());
       }
-      return _result2;
+      return _result;
     });
   }
   if (REPLY) {
