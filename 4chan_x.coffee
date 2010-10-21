@@ -222,10 +222,9 @@ callbacks = []
 #godammit moot
 head = $('head', d)
 unless favicon = $('link[rel="shortcut icon"]', head)#/f/
-    favicon = n 'link', {
+    favicon = n 'link',
         rel: 'shortcut icon'
         href: 'http://static.4chan.org/image/favicon.ico'
-    }
     addTo head, favicon
 favNormal = favicon.href
 favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
@@ -361,23 +360,20 @@ hideThread = (div) ->
         text = if num is 1 then "1 reply" else "#{num} replies"
         name = $('span.postername', div).textContent
         trip = $('span.postername + span.postertrip', div)?.textContent || ''
-        a = n 'a', {
+        a = n 'a',
             textContent: "[ + ] #{name}#{trip} (#{text})"
             className: 'pointer'
             listener: ['click', showThread]
-        }
         inBefore div, a
 
 
 threadF = (current) ->
-    div = n 'div', {
+    div = n 'div',
         className: 'thread'
-    }
-    a = n 'a', {
+    a = n 'a',
         textContent: '[ - ]'
         className: 'pointer'
         listener: ['click', hideThread]
-    }
     addTo div, a
 
     inBefore current, div
@@ -423,11 +419,10 @@ hideReply = (reply) ->
     table = x('ancestor::table', reply)
     hide(table)
     if getConfig('Show Stubs')
-        a = n 'a', {
+        a = n 'a',
             textContent: "[ + ] #{name} #{trip}"
             className: 'pointer'
             listener: ['click', showReply]
-        }
         div = n 'div'
         addTo div, a
         inBefore table, div
@@ -453,10 +448,9 @@ iframeLoad = ->
 
     qr = $('#qr')
     if error = GM_getValue('error')
-        span = n 'span', {
+        span = n 'span',
             textContent: error
             className: 'error'
-        }
         addTo qr, span
         $('input[title=autohide]:not(:checked)', qr)?.click()
     else if REPLY and getConfig('Persistent QR')
@@ -476,10 +470,9 @@ submit = (e) ->
         $('#qr input[title=autohide]:not(:checked)')?.click()
     else
         e.preventDefault()
-        span = n 'span', {
+        span = n 'span',
             className: 'error'
             textContent: 'You forgot to type in the verification.'
-        }
         addTo @parentNode, span
         alert 'You forgot to type in the verification.'
         recaptcha.focus()
@@ -500,25 +493,22 @@ quickReply = (e) ->
         #make quick reply dialog
         qr = AEOS.makeDialog 'qr', 'topleft'
 
-        titlebar = n 'div', {
+        titlebar = n 'div',
             innerHTML: 'Quick Reply '
             className: 'move'
             listener: ['mousedown', AEOS.move]
-        }
         addTo qr, titlebar
 
-        autohideB = n 'input', {
+        autohideB = n 'input',
             type: 'checkbox'
             className: 'pointer'
             title: 'autohide'
             listener: ['click', autohide]
-        }
-        closeB = n 'a', {
+        closeB = n 'a',
             textContent: 'X'
             className: 'pointer'
             title: 'close'
             listener: ['click', close]
-        }
         addTo titlebar, autohideB, tn(' '), closeB
 
         form = $ 'form[name=post]'
@@ -533,11 +523,10 @@ quickReply = (e) ->
         if not REPLY
             #figure out which thread we're replying to
             xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
-            input = n 'input', {
+            input = n 'input',
                 type: 'hidden'
                 name: 'resto'
                 value: x(xpath, this).name
-            }
             addTo clone, input
         addTo qr, clone
         addTo d.body, qr
@@ -592,24 +581,21 @@ watcherUpdate = ->
     div = n 'div'
     for board of watched
         for thread in watched[board]
-            a = n 'a', {
+            a = n 'a',
                 textContent: 'X'
                 className: 'pointer'
                 listener: ['click', watchX]
-            }
-            link = n 'a', {
+            link = n 'a',
                 textContent: thread.text
                 href: "/#{board}/res/#{thread.id}"
-            }
             addTo div, a, tn(' '), link, n('br')
     old = $('#watcher div:last-child')
     replace(old, div)
 
 
 parseResponse = (responseText) ->
-    body = n 'body', {
+    body = n 'body',
         innerHTML: responseText
-    }
     replies = $$('td.reply', body)
     opbq = $('blockquote', body)
     return [replies, opbq]
@@ -750,11 +736,10 @@ redirect = ->
 #main part 2...
 if navtopr = $ '#navtopr a'
     text = navtopr.nextSibling
-    a = n 'a', {
+    a = n 'a',
         textContent: 'X'
         className: 'pointer'
         listener: ['click', options]
-    }
     inBefore text, tn(' / ')
     inBefore text, a
 else if getConfig('404 Redirect') and d.title is '4chan - 404'
@@ -781,21 +766,19 @@ if getConfig 'Sauce'
     for span in spans
         suffix = $('a', span).href
         for sauce of sauces
-            link = n 'a', {
+            link = n 'a',
                 textContent: sauce
                 href: sauces[sauce] + suffix
-            }
             addTo span, tn(' '), link
 
 if getConfig('Reply Hiding')
     callbacks.push((root) ->
         tds = $$('td.doubledash', root)
         for td in tds
-            a = n 'a', {
+            a = n 'a',
                 textContent: '[ - ]'
                 className: 'pointer'
                 listener: ['click', hideReply]
-            }
             replace(td.firstChild, a)
 
             next = td.nextSibling
@@ -806,10 +789,9 @@ if getConfig('Reply Hiding')
     )
 
 if getConfig('Quick Reply')
-    iframe = n 'iframe', {
+    iframe = n 'iframe',
         name: 'iframe'
         listener: ['load', iframeLoad]
-    }
     hide(iframe)
     addTo d.body, iframe
 
@@ -827,11 +809,10 @@ if getConfig('Quick Report')
     callbacks.push((root) ->
         arr = $$('span[id^=no]', root)
         for el in arr
-            a = n 'a', {
+            a = n 'a',
                 textContent: '[ ! ]'
                 className: 'pointer'
                 listener: ['click', report]
-            }
             inAfter el, a
             inAfter el, tn(' ')
     )
@@ -855,11 +836,10 @@ if getConfig('Thread Watcher')
                 src = favNormal
                 break
         src or= favEmpty
-        img = n 'img', {
+        img = n 'img',
             src: src
             className: 'pointer'
             listener: ['click', watch]
-        }
         inBefore input, img
 
 if getConfig('Anonymize')
@@ -880,16 +860,14 @@ if getConfig('Reply Navigation')
         arr = $$('span[id^=norep]', root)
         for el in arr
             span = n 'span'
-            up = n 'a', {
+            up = n 'a',
                 textContent: '▲'
                 className: 'pointer'
                 listener: ['click', replyNav]
-            }
-            down = n 'a', {
+            down = n 'a',
                 textContent: '▼'
                 className: 'pointer'
                 listener: ['click', replyNav]
-            }
             addTo span, tn(' '), up, tn(' '), down
             inAfter el, span
     )
@@ -932,20 +910,17 @@ else
                 textContent = '▲'
                 href = "#navtop"
 
-            up = n 'a', {
+            up = n 'a',
                 className: 'pointer'
                 textContent: textContent
                 href: href
-            }
 
-            span = n 'span', {
+            span = n 'span',
                 className: 'navlinks'
                 id: ++i
-            }
             i1 = i + 1
-            down = n 'a', {
+            down = n 'a',
                 className: 'pointer'
-            }
             if i1 == l1
                 down.textContent = '▶'
                 down.href = "#{PAGENUM + 1}#1"
@@ -961,11 +936,10 @@ else
     if getConfig('Thread Expansion')
         omitted = $$('span.omittedposts')
         for span in omitted
-            a = n 'a', {
+            a = n 'a',
                 className: 'pointer omittedposts'
                 textContent: "+ #{span.textContent}"
                 listener: ['click', expandThread]
-            }
             replace(span, a)
 
     if getConfig('Comment Expansion')
