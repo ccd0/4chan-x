@@ -194,7 +194,7 @@ if location.hostname.split('.')[0] is 'sys'
         GM_setValue('error', b.firstChild.textContent)
     else
         GM_setValue('error', '')
-        if getConfig('Auto Watch')
+        if getConfig 'Auto Watch'
             html = $('b').innerHTML
             [nop, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
             if thread is '0'
@@ -430,7 +430,7 @@ hideReply = (reply) ->
     trip = $('span.postertrip', reply)?.textContent || ''
     table = x('ancestor::table', reply)
     hide(table)
-    if getConfig('Show Stubs')
+    if getConfig 'Show Stubs'
         a = n 'a',
             textContent: "[ + ] #{name} #{trip}"
             className: 'pointer'
@@ -466,7 +466,7 @@ iframeLoad = ->
             className: 'error'
         addTo qr, span
         $('input[title=autohide]:not(:checked)', qr)?.click()
-    else if REPLY and getConfig('Persistent QR')
+    else if REPLY and getConfig 'Persistent QR'
         $('textarea', qr).value = ''
         $('input[name=recaptcha_response_field]', qr).value = ''
     else
@@ -783,7 +783,7 @@ if getConfig 'Sauce'
                 addTo span, tn(' '), link
                 i++
 
-if getConfig('Reply Hiding')
+if getConfig 'Reply Hiding'
     callbacks.push (root) ->
         tds = $$('td.doubledash', root)
         for td in tds
@@ -799,7 +799,7 @@ if getConfig('Reply Hiding')
                 if obj.id is id
                     hideReply(next)
 
-if getConfig('Quick Reply')
+if getConfig 'Quick Reply'
     iframe = n 'iframe',
         name: 'iframe'
         listener: ['load', iframeLoad]
@@ -815,7 +815,7 @@ if getConfig('Quick Reply')
     recaptcha.id = ''
 
 
-if getConfig('Quick Report')
+if getConfig 'Quick Report'
     callbacks.push (root) ->
         arr = $$('span[id^=no]', root)
         for el in arr
@@ -826,7 +826,7 @@ if getConfig('Quick Report')
             inAfter el, a
             inAfter el, tn(' ')
 
-if getConfig('Thread Watcher')
+if getConfig 'Thread Watcher'
     #create watcher
     watcher = AEOS.makeDialog 'watcher', 'topleft'
     watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>'
@@ -851,7 +851,7 @@ if getConfig('Thread Watcher')
             listener: ['click', watch]
         inBefore input, img
 
-if getConfig('Anonymize')
+if getConfig 'Anonymize'
     callbacks.push (root) ->
         names = $$('span.postername, span.commentpostername', root)
         for name in names
@@ -863,7 +863,7 @@ if getConfig('Anonymize')
             else
                 remove(trip)
 
-if getConfig('Reply Navigation')
+if getConfig 'Reply Navigation'
     callbacks.push (root) ->
         arr = $$('span[id^=norep]', root)
         for el in arr
@@ -880,7 +880,7 @@ if getConfig('Reply Navigation')
             inAfter el, span
 
 if REPLY
-    if getConfig('Quick Reply') and getConfig('Persistent QR')
+    if getConfig('Quick Reply') and getConfig 'Persistent QR'
         quickReply()
         $('#qr input[title=autohide]').click()
     if getConfig 'Post in Title'
@@ -890,17 +890,17 @@ if REPLY
             d.title = "/#{BOARD}/ - #{text}"
 
 else
-    if getConfig('Thread Hiding')
+    if getConfig 'Thread Hiding'
         delform = $('form[name=delform]')
         #don't confuse other scripts
         d.addEventListener('DOMNodeInserted', stopPropagation, true)
         threadF(delform.firstChild)
         d.removeEventListener('DOMNodeInserted', stopPropagation, true)
 
-    if getConfig('Auto Watch')
+    if getConfig 'Auto Watch'
         $('form[name="post"]').addEventListener('submit', autoWatch, true)
 
-    if getConfig('Thread Navigation')
+    if getConfig 'Thread Navigation'
         arr = $$('div > span.filesize, form > span.filesize')
         i = 0
         l = arr.length
@@ -940,7 +940,7 @@ else
         if location.hash is '#1'
             window.location = window.location
 
-    if getConfig('Thread Expansion')
+    if getConfig 'Thread Expansion'
         omitted = $$('span.omittedposts')
         for span in omitted
             a = n 'a',
@@ -949,11 +949,10 @@ else
                 listener: ['click', expandThread]
             replace(span, a)
 
-    if getConfig('Comment Expansion')
+    if getConfig 'Comment Expansion'
         as = $$('span.abbr a')
         for a in as
             a.addEventListener('click', expandComment, true)
 
-for callback in callbacks
-    callback()
+callback() for callback in callbacks
 d.body.addEventListener('DOMNodeInserted', nodeInserted, true)
