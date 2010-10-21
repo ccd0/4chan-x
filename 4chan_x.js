@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, link, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsSave, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, sauce, sauces, show, showReply, showThread, slice, span, spans, src, stopPropagation, submit, suffix, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, delform, down, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, link, magic, n, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, sauce, sauces, show, showReply, showThread, slice, span, spans, src, stopPropagation, submit, suffix, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -370,7 +370,7 @@
     } else {
       div = AEOS.makeDialog('options', 'center');
       hiddenNum = hiddenReplies.length + hiddenThreads.length;
-      html = '<div class="move">4chan X</div><div>';
+      html = '<div class="move">Options <a class=pointer>X</a></div><div>';
       _ref2 = config;
       for (option in _ref2) {
         if (!__hasProp.call(_ref2, option)) continue;
@@ -379,12 +379,10 @@
         html += ("<label>" + (option) + "<input " + (checked) + " name=\"" + (option) + "\" type=\"checkbox\"></label><br>");
       }
       html += ("<input type=\"button\" value=\"hidden: " + (hiddenNum) + "\"><br>");
-      html += '<a name="save">save</a> <a name="cancel">cancel</a></div>';
       div.innerHTML = html;
       $('div.move', div).addEventListener('mousedown', AEOS.move, true);
+      $('a.pointer', div).addEventListener('click', optionsClose, true);
       $('input[type="button"]', div).addEventListener('click', clearHidden, true);
-      $('a[name="save"]', div).addEventListener('click', optionsSave, true);
-      $('a[name="cancel"]', div).addEventListener('click', close, true);
       return addTo(d.body, div);
     }
   };
@@ -491,7 +489,7 @@
       return inBefore(table, div);
     }
   };
-  optionsSave = function() {
+  optionsClose = function() {
     var _i, _len, _ref2, div, input, inputs;
     div = this.parentNode.parentNode;
     inputs = $$('input', div);

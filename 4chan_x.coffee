@@ -184,8 +184,7 @@ tn = (s) ->
     d.createTextNode s
 x = (path, root) ->
     root or= d.body
-    d.
-        evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
+    d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
         singleNodeValue
 
 #let's get this party started.
@@ -315,44 +314,42 @@ clearHidden = ->
 options = ->
     #redo this
     if div = $('#options')
-        remove(div)
+        remove div
     else
         div = AEOS.makeDialog 'options', 'center'
         hiddenNum = hiddenReplies.length + hiddenThreads.length
-        html = '<div class="move">4chan X</div><div>'
+        html = '<div class="move">Options <a class=pointer>X</a></div><div>'
         for option of config
-            checked = if getConfig(option) then "checked" else ""
+            checked = if getConfig option then "checked" else ""
             html += "<label>#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
         html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
-        html += '<a name="save">save</a> <a name="cancel">cancel</a></div>'
         div.innerHTML = html
         $('div.move', div).addEventListener('mousedown', AEOS.move, true)
+        $('a.pointer', div).addEventListener 'click', optionsClose, true
         $('input[type="button"]', div).addEventListener('click', clearHidden, true)
-        $('a[name="save"]', div).addEventListener('click', optionsSave, true)
-        $('a[name="cancel"]', div).addEventListener('click', close, true)
         addTo d.body, div
 
 
 showThread = ->
-    div = this.nextSibling
-    show(div)
-    hide(this)
+    div = @nextSibling
+    show div
+    hide this
     id = div.id
-    slice(hiddenThreads, id)
+    slice hiddenThreads, id
     GM_setValue("hiddenThreads/#{BOARD}/", JSON.stringify(hiddenThreads))
 
 
 hideThread = (div) ->
-    if p = this.parentNode
+    if p = @parentNode
         div = p
-        hiddenThreads.push({
+        hiddenThreads.push {
             id: div.id
             timestamp: getTime()
-        })
+        }
         GM_setValue("hiddenThreads/#{BOARD}/", JSON.stringify(hiddenThreads))
-    hide(div)
-    if getConfig('Show Stubs')
-        if span = $('.omittedposts', div)
+    hide div
+    if getConfig 'Show Stubs'
+        if span = $ '.omittedposts', div
             num = Number(span.textContent.match(/\d+/)[0])
         else
             num = 0
@@ -428,7 +425,7 @@ hideReply = (reply) ->
         inBefore table, div
 
 
-optionsSave = ->
+optionsClose = ->
     div = this.parentNode.parentNode
     inputs = $$('input', div)
     for input in inputs
