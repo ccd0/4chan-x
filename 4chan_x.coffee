@@ -748,7 +748,15 @@ redirect = ->
 
 #main part 2...
 if navtopr = $ '#navtopr a'
-    text = navtopr.nextSibling
+    text = navtopr.nextSibling #css doesn't see text nodes
+    a = n 'a',
+        textContent: 'X'
+        className: 'pointer'
+        listener: ['click', options]
+    inBefore text, tn(' / ')
+    inBefore text, a
+    navbotr = $ '#navbotr a'
+    text = navbotr.nextSibling
     a = n 'a',
         textContent: 'X'
         className: 'pointer'
