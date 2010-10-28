@@ -3,6 +3,7 @@
 #todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
 #
 #TODO - 4chan time
+#addClass, removeClass; remove hide / show; makeDialog el, 'center'
 
 config =
     'Thread Hiding':        true
@@ -13,11 +14,11 @@ config =
     'Thread Watcher':       true
     'Thread Expansion':     true
     'Comment Expansion':    true
+    'Quick Report':         true
     'Quick Reply':          true
     'Persistent QR':        false
-    'Quick Report':         true
-    'Auto Watch':           true
     'Anonymize':            false
+    'Auto Watch':           true
     '404 Redirect':         true
     'Post in Title':        true
     'Sauce':                true
@@ -196,7 +197,7 @@ if location.hostname.split('.')[0] is 'sys'
         GM_setValue('error', '')
         if getConfig 'Auto Watch'
             html = $('b').innerHTML
-            [nop, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
+            [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
             if thread is '0'
                 board = $('meta', d).content.match(/4chan.org\/(\w+)\//)[1]
                 watched[board] or= []
@@ -323,8 +324,7 @@ editSauce = ->
     if ta.style.display then show ta else hide ta
 
 options = ->
-    #redo this
-    if div = $('#options')
+    if div = $ '#options'
         remove div
     else
         div = AEOS.makeDialog 'options', 'center'
@@ -580,7 +580,7 @@ watch = ->
 
 
 watchX = ->
-    [board, nop, id] =
+    [board, _, id] =
         this.nextElementSibling.getAttribute('href').substring(1).split('/')
     watched[board] = slice(watched[board], id)
     GM_setValue('watched', JSON.stringify(watched))
@@ -666,7 +666,7 @@ expandThread = ->
 
 
 onloadComment = (responseText, a, href) ->
-    [nop, op, id] = href.match(/(\d+)#(\d+)/)
+    [_, op, id] = href.match(/(\d+)#(\d+)/)
     [replies, opbq] = parseResponse(responseText)
     if id is op
         html = opbq.innerHTML
