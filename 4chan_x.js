@@ -531,7 +531,7 @@
     }
   };
   iframeLoad = function() {
-    var _ref2, _ref3, error, qr, span, submit;
+    var _ref2, _ref3, auto, error, qr, span, submit;
     if (iframeLoop = !iframeLoop) {
       return null;
     }
@@ -551,6 +551,10 @@
       submit.value = 30;
       submit.disabled = true;
       window.setTimeout(cooldown, 1000);
+      auto = submit.previousSibling.lastChild;
+      if (auto.checked) {
+        (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
+      }
     } else {
       remove(qr);
     }

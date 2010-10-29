@@ -486,6 +486,10 @@ iframeLoad = ->
         submit.value = 30
         submit.disabled = true
         window.setTimeout cooldown, 1000
+        auto = submit.previousSibling.lastChild
+        if auto.checked
+            #unhide the qr so you know it's ready for the next item
+            $('input[title=autohide]:checked', qr)?.click()
     else
         remove qr
 
