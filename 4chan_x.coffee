@@ -459,6 +459,10 @@ cooldown = ->
     if seconds == 0
         submit.disabled = false
         submit.value = 'Submit'
+        auto = submit.previousSibling.lastChild
+        if auto.checked
+            $('#qr form').submit()
+            #submit.click() doesn't work
     else
         submit.value = seconds - 1
         window.setTimeout cooldown, 1000
@@ -474,7 +478,7 @@ iframeLoad = ->
             textContent: error
             className: 'error'
         addTo qr, span
-        $('input[title=autohide]:not(:checked)', qr)?.click()
+        $('input[title=autohide]:checked', qr)?.click()
     else if REPLY and getConfig 'Persistent QR'
         $('textarea', qr).value = ''
         $('input[name=recaptcha_response_field]', qr).value = ''
@@ -554,6 +558,14 @@ quickReply = (e) ->
                 name: 'resto'
                 value: x(xpath, this).name
             addTo clone, input
+        else if getConfig 'Persistent QR'
+            submit = $ 'input[type=submit]', clone
+            auto = n 'label',
+                textContent: 'Auto'
+            autoBox = n 'input',
+                type: 'checkbox'
+            addTo auto, autoBox
+            inBefore submit, auto
         addTo qr, clone
         addTo d.body, qr
 

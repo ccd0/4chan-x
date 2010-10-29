@@ -517,12 +517,14 @@
     return remove(div);
   };
   cooldown = function() {
-    var seconds, submit;
+    var auto, seconds, submit;
     submit = $('#qr input[type=submit]');
     seconds = parseInt(submit.value);
     if (seconds === 0) {
       submit.disabled = false;
-      return (submit.value = 'Submit');
+      submit.value = 'Submit';
+      auto = submit.previousSibling.lastChild;
+      return auto.checked ? $('#qr form').submit() : null;
     } else {
       submit.value = seconds - 1;
       return window.setTimeout(cooldown, 1000);
@@ -541,7 +543,7 @@
         className: 'error'
       });
       addTo(qr, span);
-      (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:not(:checked)', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
+      (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
     } else if (REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';
@@ -585,7 +587,7 @@
     return (qr.className = klass);
   };
   quickReply = function(e) {
-    var _i, _len, _ref2, _ref3, autohideB, clone, closeB, form, input, qr, script, selection, text, textarea, titlebar, xpath;
+    var _i, _len, _ref2, _ref3, auto, autoBox, autohideB, clone, closeB, form, input, qr, script, selection, text, textarea, titlebar, xpath;
     if (!(qr = $('#qr'))) {
       qr = AEOS.makeDialog('qr', 'topleft');
       titlebar = n('div', {
@@ -625,6 +627,16 @@
           value: x(xpath, this).name
         });
         addTo(clone, input);
+      } else if (getConfig('Persistent QR')) {
+        submit = $('input[type=submit]', clone);
+        auto = n('label', {
+          textContent: 'Auto'
+        });
+        autoBox = n('input', {
+          type: 'checkbox'
+        });
+        addTo(auto, autoBox);
+        inBefore(submit, auto);
       }
       addTo(qr, clone);
       addTo(d.body, qr);
