@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navbotr, navtopr, nodeInserted, nop, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': true,
@@ -10,11 +10,11 @@
     'Thread Watcher': true,
     'Thread Expansion': true,
     'Comment Expansion': true,
+    'Quick Report': true,
     'Quick Reply': true,
     'Persistent QR': false,
-    'Quick Report': true,
-    'Auto Watch': true,
     'Anonymize': false,
+    'Auto Watch': true,
     '404 Redirect': true,
     'Post in Title': true,
     'Sauce': true
@@ -244,7 +244,7 @@
       if (getConfig('Auto Watch')) {
         html = $('b').innerHTML;
         _ref = html.match(/<!-- thread:(\d+),no:(\d+) -->/);
-        nop = _ref[0];
+        _ = _ref[0];
         thread = _ref[1];
         id = _ref[2];
         if (thread === '0') {
@@ -516,8 +516,20 @@
     div = this.parentNode.parentNode;
     return remove(div);
   };
+  cooldown = function() {
+    var seconds, submit;
+    submit = $('#qr input[type=submit]');
+    seconds = parseInt(submit.value);
+    if (seconds === 0) {
+      submit.disabled = false;
+      return (submit.value = 'Submit');
+    } else {
+      submit.value = seconds - 1;
+      return window.setTimeout(cooldown, 1000);
+    }
+  };
   iframeLoad = function() {
-    var _ref2, _ref3, error, qr, span;
+    var _ref2, _ref3, error, qr, span, submit;
     if (iframeLoop = !iframeLoop) {
       return null;
     }
@@ -533,6 +545,10 @@
     } else if (REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';
+      submit = $('input[type=submit]', qr);
+      submit.value = 30;
+      submit.disabled = true;
+      window.setTimeout(cooldown, 1000);
     } else {
       remove(qr);
     }
@@ -647,7 +663,7 @@
     var _ref2, input;
     _ref2 = this.nextElementSibling.getAttribute('href').substring(1).split('/');
     board = _ref2[0];
-    nop = _ref2[1];
+    _ = _ref2[1];
     id = _ref2[2];
     watched[board] = slice(watched[board], id);
     GM_setValue('watched', JSON.stringify(watched));
@@ -754,7 +770,7 @@
   onloadComment = function(responseText, a, href) {
     var _i, _len, _ref2, bq, op, opbq, replies, reply;
     _ref2 = href.match(/(\d+)#(\d+)/);
-    nop = _ref2[0];
+    _ = _ref2[0];
     op = _ref2[1];
     id = _ref2[2];
     _ref2 = parseResponse(responseText);

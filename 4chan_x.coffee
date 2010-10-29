@@ -453,6 +453,15 @@ close = ->
     div = this.parentNode.parentNode
     remove div
 
+cooldown = ->
+    submit = $ '#qr input[type=submit]'
+    seconds = parseInt submit.value
+    if seconds == 0
+        submit.disabled = false
+        submit.value = 'Submit'
+    else
+        submit.value = seconds - 1
+        window.setTimeout cooldown, 1000
 
 iframeLoad = ->
     if iframeLoop = !iframeLoop
@@ -469,6 +478,10 @@ iframeLoad = ->
     else if REPLY and getConfig 'Persistent QR'
         $('textarea', qr).value = ''
         $('input[name=recaptcha_response_field]', qr).value = ''
+        submit = $('input[type=submit]', qr)
+        submit.value = 30
+        submit.disabled = true
+        window.setTimeout cooldown, 1000
     else
         remove qr
 
