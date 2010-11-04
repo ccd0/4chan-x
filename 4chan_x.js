@@ -2,22 +2,22 @@
   var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
-    'Thread Hiding': true,
-    'Reply Hiding': true,
-    'Show Stubs': true,
-    'Thread Navigation': true,
-    'Reply Navigation': true,
-    'Thread Watcher': true,
-    'Thread Expansion': true,
-    'Comment Expansion': true,
-    'Quick Report': true,
-    'Quick Reply': true,
-    'Persistent QR': false,
-    'Anonymize': false,
-    'Auto Watch': true,
-    '404 Redirect': true,
-    'Post in Title': true,
-    'Sauce': true
+    'Thread Hiding': [true, 'Hide entire threads'],
+    'Reply Hiding': [true, 'Hide single replies'],
+    'Show Stubs': [true, 'Of hidden threads / replies'],
+    'Thread Navigation': [true, 'Navigate to previous / next thread'],
+    'Reply Navigation': [true, 'Navigate to the beginning / end of a thread'],
+    'Thread Watcher': [true, 'Bookmark threads'],
+    'Thread Expansion': [true, 'View all replies'],
+    'Comment Expansion': [true, 'Expand too long comments'],
+    'Quick Report': [true, 'Add quick report buttons'],
+    'Quick Reply': [true, 'Reply without leaving the page'],
+    'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
+    'Anonymize': [false, 'Make everybody anonymous'],
+    'Auto Watch': [true, 'Automatically watch threads that you start (Firefox only)'],
+    '404 Redirect': [true, 'Redirect dead threads'],
+    'Post in Title': [true, 'Show the op\'s post in the tab title'],
+    'Sauce': [true, 'Add sauce to images']
   };
   AEOS = {
     init: function() {
@@ -171,7 +171,7 @@
     return _result;
   };
   getConfig = function(name) {
-    return GM_getValue(name, config[name]);
+    return GM_getValue(name, config[name][0]);
   };
   getTime = function() {
     return Math.floor(new Date().getTime() / 1000);
@@ -382,7 +382,7 @@
         if (!__hasProp.call(_ref2, option)) continue;
         _i = _ref2[option];
         checked = getConfig(option) ? "checked" : "";
-        html += ("<label>" + (option) + "<input " + (checked) + " name=\"" + (option) + "\" type=\"checkbox\"></label><br>");
+        html += ("<label title=\"" + (option[1]) + "\">" + (option) + "<input " + (checked) + " name=\"" + (option) + "\" type=\"checkbox\"></label><br>");
       }
       html += "<div><a class=sauce>Edit Sauce</a></div>";
       html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>";

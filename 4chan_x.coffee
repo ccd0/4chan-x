@@ -6,22 +6,22 @@
 #addClass, removeClass; remove hide / show; makeDialog el, 'center'
 
 config =
-    'Thread Hiding':        true
-    'Reply Hiding':         true
-    'Show Stubs':           true
-    'Thread Navigation':    true
-    'Reply Navigation':     true
-    'Thread Watcher':       true
-    'Thread Expansion':     true
-    'Comment Expansion':    true
-    'Quick Report':         true
-    'Quick Reply':          true
-    'Persistent QR':        false
-    'Anonymize':            false
-    'Auto Watch':           true
-    '404 Redirect':         true
-    'Post in Title':        true
-    'Sauce':                true
+    'Thread Hiding':       [true, 'Hide entire threads']
+    'Reply Hiding':        [true, 'Hide single replies']
+    'Show Stubs':          [true, 'Of hidden threads / replies']
+    'Thread Navigation':   [true, 'Navigate to previous / next thread']
+    'Reply Navigation':    [true, 'Navigate to the beginning / end of a thread']
+    'Thread Watcher':      [true, 'Bookmark threads']
+    'Thread Expansion':    [true, 'View all replies']
+    'Comment Expansion':   [true, 'Expand too long comments']
+    'Quick Report':        [true, 'Add quick report buttons']
+    'Quick Reply':         [true, 'Reply without leaving the page']
+    'Persistent QR':       [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+    'Anonymize':           [false, 'Make everybody anonymous']
+    'Auto Watch':          [true, 'Automatically watch threads that you start (Firefox only)']
+    '404 Redirect':        [true, 'Redirect dead threads']
+    'Post in Title':       [true, 'Show the op\'s post in the tab title']
+    'Sauce':               [true, 'Add sauce to images']
 
 #TODO - expose 'hidden' configs
 
@@ -146,7 +146,7 @@ addTo = (parent, children...) ->
     for child in children
       parent.appendChild child
 getConfig = (name) ->
-    GM_getValue(name, config[name])
+    GM_getValue(name, config[name][0])
 getTime = ->
     Math.floor(new Date().getTime() / 1000)
 hide = (el) ->
@@ -332,7 +332,7 @@ options = ->
         html = '<div class="move">Options <a class=pointer>X</a></div><div>'
         for option of config
             checked = if getConfig option then "checked" else ""
-            html += "<label>#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
+            html += "<label title=\"#{option[1]}\">#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
         html += "<div><a class=sauce>Edit Sauce</a></div>"
         html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>"
         html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
