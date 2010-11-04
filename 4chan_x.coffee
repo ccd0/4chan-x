@@ -330,9 +330,10 @@ options = ->
         div = AEOS.makeDialog 'options', 'center'
         hiddenNum = hiddenReplies.length + hiddenThreads.length
         html = '<div class="move">Options <a class=pointer>X</a></div><div>'
-        for option of config
+        for option, value of config
+            description  = value[1]
             checked = if getConfig option then "checked" else ""
-            html += "<label title=\"#{option[1]}\">#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
+            html += "<label title=\"#{description}\">#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
         html += "<div><a class=sauce>Edit Sauce</a></div>"
         html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>"
         html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"

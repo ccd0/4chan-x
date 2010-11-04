@@ -370,7 +370,7 @@
     return ta.style.display ? show(ta) : hide(ta);
   };
   options = function() {
-    var _i, _ref2, checked, div, hiddenNum, option;
+    var _ref2, checked, description, div, hiddenNum, option, value;
     if (div = $('#options')) {
       return remove(div);
     } else {
@@ -380,9 +380,10 @@
       _ref2 = config;
       for (option in _ref2) {
         if (!__hasProp.call(_ref2, option)) continue;
-        _i = _ref2[option];
+        value = _ref2[option];
+        description = value[1];
         checked = getConfig(option) ? "checked" : "";
-        html += ("<label title=\"" + (option[1]) + "\">" + (option) + "<input " + (checked) + " name=\"" + (option) + "\" type=\"checkbox\"></label><br>");
+        html += ("<label title=\"" + (description) + "\">" + (option) + "<input " + (checked) + " name=\"" + (option) + "\" type=\"checkbox\"></label><br>");
       }
       html += "<div><a class=sauce>Edit Sauce</a></div>";
       html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>";
