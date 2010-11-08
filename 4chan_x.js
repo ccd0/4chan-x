@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _len, _ref, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, checkWatched, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _len, _ref, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, inAfter, inBefore, inputs, l, l1, lastChecked, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -890,17 +890,6 @@
     }
     return (location.href = url);
   };
-  checkWatched = function(id) {
-    var _i, _len, _ref2, thread;
-    _ref2 = threads;
-    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-      thread = _ref2[_i];
-      if (id === thread.id) {
-        return favNormal;
-      }
-    }
-    return favEmpty;
-  };
   if (navtopr = $('#navtopr a')) {
     text = navtopr.nextSibling;
     a = n('a', {
@@ -1044,15 +1033,28 @@
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');
     _ref = inputs;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      input = _ref[_i];
-      id = input.name;
-      src = checkWatched(id);
-      img = n('img', {
-        src: checkWatched(id),
-        className: 'pointer',
-        listener: ['click', watch]
-      });
-      inBefore(input, img);
+      (function() {
+        var img, src;
+        var input = _ref[_i];
+        id = input.name;
+        src = (function() {
+          var _j, _len2, _ref2, thread;
+          _ref2 = threads;
+          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+            thread = _ref2[_j];
+            if (id === thread.id) {
+              return favNormal;
+            }
+          }
+          return favEmpty;
+        })();
+        img = n('img', {
+          src: src,
+          className: 'pointer',
+          listener: ['click', watch]
+        });
+        return inBefore(input, img);
+      })();
     }
   }
   if (getConfig('Anonymize')) {

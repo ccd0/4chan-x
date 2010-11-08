@@ -777,12 +777,6 @@ redirect = ->
             url = "http://boards.4chan.org/#{BOARD}"
     location.href = url
 
-checkWatched = (id) ->
-    for thread in threads
-        if id is thread.id
-            return favNormal
-    favEmpty
-
 #main part 2...
 if navtopr = $ '#navtopr a'
     text = navtopr.nextSibling #css doesn't see text nodes
@@ -885,9 +879,14 @@ if getConfig 'Thread Watcher'
     inputs = $$('form > input[value="delete"], div > input[value="delete"]')
     for input in inputs
         id = input.name
-        src = checkWatched id
+        src = (->
+            for thread in threads
+                if id is thread.id
+                    return favNormal
+            favEmpty
+        )()
         img = n 'img',
-            src: checkWatched id
+            src: src
             className: 'pointer'
             listener: ['click', watch]
         inBefore input, img
