@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _j, _len, _len2, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _len, _ref, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, checkWatched, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, img, inAfter, inBefore, input, inputs, l, l1, lastChecked, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, src, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -21,7 +21,7 @@
   };
   AEOS = {
     init: function() {
-      if (typeof GM_deleteValue === 'undefined') {
+      if (!(typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null)) {
         window.GM_setValue = function(name, value) {
           value = (typeof value)[0] + value;
           return localStorage.setItem(name, value);
@@ -890,6 +890,17 @@
     }
     return (location.href = url);
   };
+  checkWatched = function(id) {
+    var _i, _len, _ref2, thread;
+    _ref2 = threads;
+    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+      thread = _ref2[_i];
+      if (id === thread.id) {
+        return favNormal;
+      }
+    }
+    return favEmpty;
+  };
   if (navtopr = $('#navtopr a')) {
     text = navtopr.nextSibling;
     a = n('a', {
@@ -1035,17 +1046,9 @@
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
       id = input.name;
-      _ref2 = threads;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        thread = _ref2[_j];
-        if (id === thread.id) {
-          src = favNormal;
-          break;
-        }
-      }
-      src || (src = favEmpty);
+      src = checkWatched(id);
       img = n('img', {
-        src: src,
+        src: checkWatched(id),
         className: 'pointer',
         listener: ['click', watch]
       });
@@ -1054,17 +1057,17 @@
   }
   if (getConfig('Anonymize')) {
     callbacks.push(function(root) {
-      var _k, _len3, _ref3, _result, name, names, trip, trips;
+      var _j, _len2, _ref2, _result, name, names, trip, trips;
       names = $$('span.postername, span.commentpostername', root);
-      _ref3 = names;
-      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-        name = _ref3[_k];
+      _ref2 = names;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        name = _ref2[_j];
         name.innerHTML = 'Anonymous';
       }
       trips = $$('span.postertrip', root);
-      _result = []; _ref3 = trips;
-      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-        trip = _ref3[_k];
+      _result = []; _ref2 = trips;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        trip = _ref2[_j];
         _result.push(trip.parentNode.nodeName === 'A' ? remove(trip.parentNode) : remove(trip));
       }
       return _result;
@@ -1072,11 +1075,11 @@
   }
   if (getConfig('Reply Navigation')) {
     callbacks.push(function(root) {
-      var _k, _len3, _ref3, _result, arr, down, el, span, up;
+      var _j, _len2, _ref2, _result, arr, down, el, span, up;
       arr = $$('span[id^=norep]', root);
-      _result = []; _ref3 = arr;
-      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-        el = _ref3[_k];
+      _result = []; _ref2 = arr;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        el = _ref2[_j];
         _result.push((function() {
           span = n('span');
           up = n('a', {

@@ -28,7 +28,7 @@ config =
 AEOS =
     init: ->
         #x-browser
-        if typeof GM_deleteValue is 'undefined'
+        unless GM_deleteValue?
             window.GM_setValue = (name, value) ->
                 value = (typeof value)[0] + value
                 localStorage.setItem name, value
@@ -610,8 +610,8 @@ watch = ->
 
 
 watchX = ->
-    [board, _, id] =
-        this.nextElementSibling.getAttribute('href').substring(1).split('/')
+    [board, _, id] = @nextElementSibling.
+        getAttribute('href').substring(1).split('/')
     watched[board] = slice(watched[board], id)
     GM_setValue('watched', JSON.stringify(watched))
     watcherUpdate()
@@ -743,6 +743,7 @@ nodeInserted = (e) ->
 
 
 autoWatch = ->
+    #TODO look for subject
     autoText = $('textarea', this).value.slice(0, 25)
     GM_setValue('autoText', "/#{BOARD}/ - #{autoText}")
 
@@ -775,6 +776,12 @@ redirect = ->
         else
             url = "http://boards.4chan.org/#{BOARD}"
     location.href = url
+
+checkWatched = (id) ->
+    for thread in threads
+        if id is thread.id
+            return favNormal
+    favEmpty
 
 #main part 2...
 if navtopr = $ '#navtopr a'
@@ -878,13 +885,9 @@ if getConfig 'Thread Watcher'
     inputs = $$('form > input[value="delete"], div > input[value="delete"]')
     for input in inputs
         id = input.name
-        for thread in threads
-            if id == thread.id
-                src = favNormal
-                break
-        src or= favEmpty
+        src = checkWatched id
         img = n 'img',
-            src: src
+            src: checkWatched id
             className: 'pointer'
             listener: ['click', watch]
         inBefore input, img
