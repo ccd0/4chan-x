@@ -155,14 +155,16 @@ inAfter = (root, el) ->
     root.parentNode.insertBefore el, root.nextSibling
 inBefore = (root, el) ->
     root.parentNode.insertBefore el, root
+m = (el, props) -> #mod
+    if l = props.listener
+        delete props.listener
+        [event, funk] = l
+        el.addEventListener event, funk, true
+    (el[key] = val) for key, val of props
+    el
 n = (tag, props) -> #new
     el = d.createElement tag
-    if props
-        if l = props.listener
-            delete props.listener
-            [event, funk] = l
-            el.addEventListener event, funk, true
-        (el[key] = val) for key, val of props
+    if props then m el, props
     el
 remove = (el) ->
     el.parentNode.removeChild(el)

@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _len, _ref, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, inAfter, inBefore, inputs, l, l1, lastChecked, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _len, _ref, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, inAfter, inBefore, inputs, l, l1, lastChecked, m, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -185,23 +185,28 @@
   inBefore = function(root, el) {
     return root.parentNode.insertBefore(el, root);
   };
+  m = function(el, props) {
+    var _ref, event, funk, key, l, val;
+    if (l = props.listener) {
+      delete props.listener;
+      _ref = l;
+      event = _ref[0];
+      funk = _ref[1];
+      el.addEventListener(event, funk, true);
+    }
+    _ref = props;
+    for (key in _ref) {
+      if (!__hasProp.call(_ref, key)) continue;
+      val = _ref[key];
+      (el[key] = val);
+    }
+    return el;
+  };
   n = function(tag, props) {
-    var _ref, el, event, funk, key, l, val;
+    var el;
     el = d.createElement(tag);
     if (props) {
-      if (l = props.listener) {
-        delete props.listener;
-        _ref = l;
-        event = _ref[0];
-        funk = _ref[1];
-        el.addEventListener(event, funk, true);
-      }
-      _ref = props;
-      for (key in _ref) {
-        if (!__hasProp.call(_ref, key)) continue;
-        val = _ref[key];
-        (el[key] = val);
-      }
+      m(el, props);
     }
     return el;
   };
