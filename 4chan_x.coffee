@@ -604,13 +604,15 @@ watchX = ->
         favicon = input.previousSibling
         favicon.src = favEmpty
 
-#let's get this party started.
+#main
 watched = JSON.parse(GM_getValue('watched', '{}'))
 if location.hostname.split('.')[0] is 'sys'
-    if b = $('table font b')
-        GM_setValue('error', b.firstChild.textContent)
+    if recaptcha = $ '#recaptcha_response_field'
+        m recaptcha, listener: ['keydown', recaptchaListener]
+    else if b = $ 'table font b'
+        GM_setValue 'error', b.firstChild.textContent
     else
-        GM_setValue('error', '')
+        GM_setValue 'error', ''
         if getConfig 'Auto Watch'
             html = $('b').innerHTML
             [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
@@ -619,9 +621,9 @@ if location.hostname.split('.')[0] is 'sys'
                 watched[board] or= []
                 watched[board].push {
                     id: id,
-                    text: GM_getValue('autoText')
+                    text: GM_getValue 'autoText'
                 }
-                GM_setValue('watched', JSON.stringify(watched))
+                GM_setValue 'watched', JSON.stringify watched
     return
 
 pathname = location.pathname.substring(1).split('/')
@@ -724,7 +726,6 @@ GM_addStyle('
     }
 ')
 
-#main part 2...
 AEOS.init()
 if navtopr = $ '#navtopr a'
     text = navtopr.nextSibling #css doesn't see text nodes

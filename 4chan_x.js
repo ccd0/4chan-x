@@ -777,7 +777,11 @@
   };
   watched = JSON.parse(GM_getValue('watched', '{}'));
   if (location.hostname.split('.')[0] === 'sys') {
-    if (b = $('table font b')) {
+    if (recaptcha = $('#recaptcha_response_field')) {
+      m(recaptcha, {
+        listener: ['keydown', recaptchaListener]
+      });
+    } else if (b = $('table font b')) {
       GM_setValue('error', b.firstChild.textContent);
     } else {
       GM_setValue('error', '');
