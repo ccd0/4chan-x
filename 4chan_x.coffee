@@ -122,17 +122,17 @@ AEOS =
 d = document
 $ = (selector, root) ->
     root or= d.body
-    root.querySelector(selector)
+    root.querySelector selector
 $$ = (selector, root) ->
     root or= d.body
-    result = root.querySelectorAll(selector)
+    result = root.querySelectorAll selector
     #magic that turns the results object into an array:
     node for node in result
 addTo = (parent, children...) ->
     for child in children
       parent.appendChild child
 getConfig = (name) ->
-    GM_getValue(name, config[name][0])
+    GM_getValue name, config[name][0]
 getTime = ->
     Math.floor(new Date().getTime() / 1000)
 hide = (el) ->
@@ -153,9 +153,9 @@ n = (tag, props) -> #new
     if props then m el, props
     el
 remove = (el) ->
-    el.parentNode.removeChild(el)
+    el.parentNode.removeChild el
 replace = (root, el) ->
-    root.parentNode.replaceChild(el, root)
+    root.parentNode.replaceChild el, root
 show = (el) ->
     el.style.display = ''
 slice = (arr, id) ->
@@ -166,7 +166,7 @@ slice = (arr, id) ->
     l = arr.length
     while (i < l)
         if id == arr[i].id
-            arr.splice(i, 1)
+            arr.splice i, 1
             return arr
         i++
 tn = (s) ->
@@ -231,10 +231,10 @@ expandComment = (e) ->
         onloadComment(this.responseText, a, href)
     r.open('GET', href, true)
     r.send()
-    xhrs.push({
+    xhrs.push {
         r: r,
         id: href.match(/\d+/)[0]
-    })
+    }
 
 expandThread = ->
     id = x('preceding-sibling::input[1]', this).name
@@ -243,41 +243,56 @@ expandThread = ->
     if span.textContent[0] is '-'
         #goddamit moot
         num = if board is 'b' then 3 else 5
-        table = x("following::br[@clear][1]/preceding::table[#{num}]", span)
+        table = x "following::br[@clear][1]/preceding::table[#{num}]", span
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
-            remove(prev)
-        span.textContent = span.textContent.replace('-', '+')
+            remove prev
+        span.textContent = span.textContent.replace '-', '+'
         return
-    span.textContent = span.textContent.replace('+', 'X Loading...')
+    span.textContent = span.textContent.replace '+', 'X Loading...'
     #load cache
     for xhr in xhrs
         if xhr.id == id
             #why can't we just xhr.r.onload()?
-            onloadThread(xhr.r.responseText, span)
+            onloadThread xhr.r.responseText, span
             return
     #create new request
     r = new XMLHttpRequest()
     r.onload = ->
-        onloadThread(this.responseText, span)
-    r.open('GET', "res/#{id}", true)
+        onloadThread this.responseText, span
+    r.open 'GET', "res/#{id}", true
     r.send()
-    xhrs.push({
+    xhrs.push {
         r: r,
         id: id
-    })
+    }
+
+formSubmit = (e) ->
+    if span = @nextSibling
+        remove(span)
+    recaptcha = $('input[name=recaptcha_response_field]', this)
+    if recaptcha.value
+        $('#qr input[title=autohide]:not(:checked)')?.click()
+    else
+        e.preventDefault()
+        span = n 'span',
+            className: 'error'
+            textContent: 'You forgot to type in the verification.'
+        addTo @parentNode, span
+        alert 'You forgot to type in the verification.'
+        recaptcha.focus()
 
 hideReply = (reply) ->
     if p = this.parentNode
         reply = p.nextSibling
-        hiddenReplies.push({
+        hiddenReplies.push {
             id: reply.id
             timestamp: getTime()
-        })
+        }
         GM_setValue("hiddenReplies/#{BOARD}/", JSON.stringify(hiddenReplies))
     name = $('span.commentpostername', reply).textContent
-    trip = $('span.postertrip', reply)?.textContent || ''
-    table = x('ancestor::table', reply)
-    hide(table)
+    trip = $('span.postertrip', reply)?.textContent or ''
+    table = x 'ancestor::table', reply
+    hide table
     if getConfig 'Show Stubs'
         a = n 'a',
             textContent: "[ + ] #{name} #{trip}"
@@ -315,8 +330,8 @@ iframeLoad = ->
     if iframeLoop = !iframeLoop
         return
     $('iframe').src = 'about:blank'
-    qr = $('#qr')
-    if error = GM_getValue('error')
+    qr = $ '#qr'
+    if error = GM_getValue 'error'
         span = n 'span',
             textContent: error
             className: 'error'
@@ -325,7 +340,7 @@ iframeLoad = ->
     else if REPLY and getConfig 'Persistent QR'
         $('textarea', qr).value = ''
         $('input[name=recaptcha_response_field]', qr).value = ''
-        submit = $('input[type=submit]', qr)
+        submit = $ 'input[type=submit]', qr
         submit.value = 30
         submit.disabled = true
         window.setTimeout cooldown, 1000
@@ -341,14 +356,14 @@ nodeInserted = (e) ->
     target = e.target
     if target.nodeName is 'TABLE'
         for callback in callbacks
-            callback(target)
+            callback target
     else if target.id is 'recaptcha_challenge_field' and qr = $ '#qr'
         $('#recaptcha_image img', qr).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
         $('#recaptcha_challenge_field', qr).value = target.value
 
 onloadComment = (responseText, a, href) ->
-    [_, op, id] = href.match(/(\d+)#(\d+)/)
-    [replies, opbq] = parseResponse(responseText)
+    [_, op, id] = href.match /(\d+)#(\d+)/
+    [replies, opbq] = parseResponse responseText
     if id is op
         html = opbq.innerHTML
     else
@@ -357,23 +372,23 @@ onloadComment = (responseText, a, href) ->
         for reply in replies
             if reply.id == id
                 html = $('blockquote', reply).innerHTML
-    bq = x('ancestor::blockquote', a)
+    bq = x 'ancestor::blockquote', a
     bq.innerHTML = html
 
 onloadThread = (responseText, span) ->
-    [replies, opbq] = parseResponse(responseText)
-    span.textContent = span.textContent.replace('X Loading...', '- ')
+    [replies, opbq] = parseResponse responseText
+    span.textContent = span.textContent.replace 'X Loading...', '- '
     #make sure all comments are fully expanded
     span.previousSibling.innerHTML = opbq.innerHTML
     while (next = span.nextSibling) and not next.clear#<br clear>
-        remove(next)
+        remove next
     if next
         for reply in replies
             inBefore next, x('ancestor::table', reply)
     else#threading
         div = span.parentNode
         for reply in replies
-            addTo div, x('ancestor::table', reply)
+            addTo div, x 'ancestor::table', reply
 
 options = ->
     if div = $ '#options'
@@ -398,8 +413,8 @@ options = ->
         addTo d.body, div
 
 optionsClose = ->
-    div = this.parentNode.parentNode
-    inputs = $$('input', div)
+    div = @parentNode.parentNode
+    inputs = $$ 'input', div
     for input in inputs
         GM_setValue(input.name, input.checked)
     GM_setValue 'saucePrefix', $('textarea', div).value
@@ -408,12 +423,12 @@ optionsClose = ->
 parseResponse = (responseText) ->
     body = n 'body',
         innerHTML: responseText
-    replies = $$('td.reply', body)
-    opbq = $('blockquote', body)
+    replies = $$ 'td.reply', body
+    opbq = $ 'blockquote', body
     return [replies, opbq]
 
 quickReply = (e) ->
-    unless qr = $('#qr')
+    unless qr = $ '#qr'
         #make quick reply dialog
         qr = AEOS.makeDialog 'qr', 'topleft'
         titlebar = n 'div',
@@ -433,13 +448,13 @@ quickReply = (e) ->
             listener: ['click', close]
         addTo titlebar, autohideB, tn(' '), closeB
         form = $ 'form[name=post]'
-        clone = form.cloneNode(true)
+        clone = form.cloneNode true
         #remove recaptcha scripts
         for script in $$ 'script', clone
             remove script
-        $('input[name=recaptcha_response_field]', clone).
-            addEventListener('keydown', recaptchaListener, true)
-        clone.addEventListener('submit', submit, true)
+        m $('input[name=recaptcha_response_field]', clone),
+            listener: ['keydown', recaptchaListener]
+        clone.addEventListener 'submit', formSubmit, true
         clone.target = 'iframe'
         if not REPLY
             #figure out which thread we're replying to
@@ -520,21 +535,6 @@ showThread = ->
     slice hiddenThreads, id
     GM_setValue("hiddenThreads/#{BOARD}/", JSON.stringify(hiddenThreads))
 
-submit = (e) ->
-    if span = @nextSibling
-        remove(span)
-    recaptcha = $('input[name=recaptcha_response_field]', this)
-    if recaptcha.value
-        $('#qr input[title=autohide]:not(:checked)')?.click()
-    else
-        e.preventDefault()
-        span = n 'span',
-            className: 'error'
-            textContent: 'You forgot to type in the verification.'
-        addTo @parentNode, span
-        alert 'You forgot to type in the verification.'
-        recaptcha.focus()
-
 stopPropagation = (e) ->
     e.stopPropagation()
 
@@ -569,10 +569,10 @@ watch = ->
         text = "/#{BOARD}/ - " +
             x('following-sibling::blockquote', this).textContent.slice(0,25)
         watched[BOARD] or= []
-        watched[BOARD].push({
+        watched[BOARD].push {
             id: id,
             text: text
-        })
+        }
     else
         this.src = favEmpty
         watched[BOARD] = slice(watched[BOARD], id)
@@ -617,10 +617,10 @@ if location.hostname.split('.')[0] is 'sys'
             if thread is '0'
                 board = $('meta', d).content.match(/4chan.org\/(\w+)\//)[1]
                 watched[board] or= []
-                watched[board].push({
+                watched[board].push {
                     id: id,
                     text: GM_getValue('autoText')
-                })
+                }
                 GM_setValue('watched', JSON.stringify(watched))
     return
 
@@ -723,7 +723,6 @@ GM_addStyle('
         cursor: pointer;
     }
 ')
-
 
 #main part 2...
 AEOS.init()

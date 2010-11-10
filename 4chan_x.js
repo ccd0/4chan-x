@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _len, _ref, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, inAfter, inBefore, inputs, l, l1, lastChecked, m, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, submit, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _len, _ref, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, formSubmit, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, inAfter, inBefore, inputs, l, l1, lastChecked, m, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -336,6 +336,25 @@
       id: id
     });
   };
+  formSubmit = function(e) {
+    var _ref, _ref2, recaptcha, span;
+    if (span = this.nextSibling) {
+      remove(span);
+    }
+    recaptcha = $('input[name=recaptcha_response_field]', this);
+    if (recaptcha.value) {
+      return (typeof (_ref2 = ((_ref = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
+    } else {
+      e.preventDefault();
+      span = n('span', {
+        className: 'error',
+        textContent: 'You forgot to type in the verification.'
+      });
+      addTo(this.parentNode, span);
+      alert('You forgot to type in the verification.');
+      return recaptcha.focus();
+    }
+  };
   hideReply = function(reply) {
     var _ref, _ref2, a, div, name, p, table, trip;
     if (p = this.parentNode) {
@@ -564,8 +583,10 @@
         script = _ref[_i];
         remove(script);
       }
-      $('input[name=recaptcha_response_field]', clone).addEventListener('keydown', recaptchaListener, true);
-      clone.addEventListener('submit', submit, true);
+      m($('input[name=recaptcha_response_field]', clone), {
+        listener: ['keydown', recaptchaListener]
+      });
+      clone.addEventListener('submit', formSubmit, true);
       clone.target = 'iframe';
       if (!REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
@@ -663,25 +684,6 @@
     id = div.id;
     slice(hiddenThreads, id);
     return GM_setValue("hiddenThreads/" + (BOARD) + "/", JSON.stringify(hiddenThreads));
-  };
-  submit = function(e) {
-    var _ref, _ref2, recaptcha, span;
-    if (span = this.nextSibling) {
-      remove(span);
-    }
-    recaptcha = $('input[name=recaptcha_response_field]', this);
-    if (recaptcha.value) {
-      return (typeof (_ref2 = ((_ref = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
-    } else {
-      e.preventDefault();
-      span = n('span', {
-        className: 'error',
-        textContent: 'You forgot to type in the verification.'
-      });
-      addTo(this.parentNode, span);
-      alert('You forgot to type in the verification.');
-      return recaptcha.focus();
-    }
   };
   stopPropagation = function(e) {
     return e.stopPropagation();
