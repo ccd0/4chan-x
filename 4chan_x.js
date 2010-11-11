@@ -239,6 +239,7 @@
     root || (root = d.body);
     return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
+  AEOS.init();
   iframeLoop = false;
   xhrs = [];
   r = null;
@@ -900,7 +901,6 @@
         cursor: pointer;\
     }\
 ');
-  AEOS.init();
   if (navtopr = $('#navtopr a')) {
     text = navtopr.nextSibling;
     a = n('a', {

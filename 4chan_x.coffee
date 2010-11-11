@@ -177,6 +177,7 @@ x = (path, root) ->
         singleNodeValue
 
 #globals
+AEOS.init() #GM wrappers
 iframeLoop = false
 xhrs = []
 r = null
@@ -726,7 +727,6 @@ GM_addStyle '
     }
 '
 
-AEOS.init()
 if navtopr = $ '#navtopr a'
     text = navtopr.nextSibling #css doesn't see text nodes
     a = n 'a',
