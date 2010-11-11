@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _len, _ref, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, defaultSaucePrefix, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, formSubmit, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, inAfter, inBefore, inputs, l, l1, lastChecked, m, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _len, _ref, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, formSubmit, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, inAfter, inBefore, inputs, l, l1, lastChecked, m, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, sauceVarieties, show, showReply, showThread, slice, span, stopPropagation, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -239,6 +239,34 @@
     root || (root = d.body);
     return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
+  iframeLoop = false;
+  xhrs = [];
+  r = null;
+  callbacks = [];
+  hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/" + (BOARD) + "/", '[]'));
+  hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/" + (BOARD) + "/", '[]'));
+  head = $('head', d);
+  if (!(favicon = $('link[rel="shortcut icon"]', head))) {
+    favicon = n('link', {
+      rel: 'shortcut icon',
+      href: 'http://static.4chan.org/image/favicon.ico'
+    });
+    addTo(head, favicon);
+  }
+  favNormal = favicon.href;
+  favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==';
+  sauceVarieties = ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n');
+  pathname = location.pathname.substring(1).split('/');
+  _ref = pathname;
+  BOARD = _ref[0];
+  magic = _ref[1];
+  if (magic === 'res') {
+    REPLY = magic;
+    THREAD_ID = pathname[2];
+  } else {
+    PAGENUM = parseInt(magic) || 0;
+  }
+  watched = JSON.parse(GM_getValue('watched', '{}'));
   autohide = function() {
     var klass, qr;
     qr = $('#qr');
@@ -261,7 +289,6 @@
     return remove(div);
   };
   clearHidden = function() {
-    var hiddenReplies, hiddenThreads;
     GM_deleteValue("hiddenReplies/" + (BOARD) + "/");
     GM_deleteValue("hiddenThreads/" + (BOARD) + "/");
     this.value = "hidden: 0";
@@ -288,7 +315,7 @@
     return ta.style.display ? show(ta) : hide(ta);
   };
   expandComment = function(e) {
-    var a, href, r;
+    var a, href;
     e.preventDefault();
     a = this;
     href = a.getAttribute('href');
@@ -304,7 +331,7 @@
     });
   };
   expandThread = function() {
-    var _i, _len, _ref, id, num, prev, r, span, table, xhr;
+    var _i, _len, _ref2, id, num, prev, span, table, xhr;
     id = x('preceding-sibling::input[1]', this).name;
     span = this;
     if (span.textContent[0] === '-') {
@@ -317,9 +344,9 @@
       return null;
     }
     span.textContent = span.textContent.replace('+', 'X Loading...');
-    _ref = xhrs;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      xhr = _ref[_i];
+    _ref2 = xhrs;
+    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+      xhr = _ref2[_i];
       if (xhr.id === id) {
         onloadThread(xhr.r.responseText, span);
         return null;
@@ -337,13 +364,13 @@
     });
   };
   formSubmit = function(e) {
-    var _ref, _ref2, recaptcha, span;
+    var _ref2, _ref3, recaptcha, span;
     if (span = this.nextSibling) {
       remove(span);
     }
     recaptcha = $('input[name=recaptcha_response_field]', this);
     if (recaptcha.value) {
-      return (typeof (_ref2 = ((_ref = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
+      return (typeof (_ref3 = ((_ref2 = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
     } else {
       e.preventDefault();
       span = n('span', {
@@ -356,7 +383,7 @@
     }
   };
   hideReply = function(reply) {
-    var _ref, _ref2, a, div, name, p, table, trip;
+    var _ref2, _ref3, a, div, name, p, table, trip;
     if (p = this.parentNode) {
       reply = p.nextSibling;
       hiddenReplies.push({
@@ -366,7 +393,7 @@
       GM_setValue("hiddenReplies/" + (BOARD) + "/", JSON.stringify(hiddenReplies));
     }
     name = $('span.commentpostername', reply).textContent;
-    trip = ((typeof (_ref2 = ((_ref = $('span.postertrip', reply)))) === "undefined" || _ref2 === null) ? undefined : _ref2.textContent) || '';
+    trip = ((typeof (_ref3 = ((_ref2 = $('span.postertrip', reply)))) === "undefined" || _ref3 === null) ? undefined : _ref3.textContent) || '';
     table = x('ancestor::table', reply);
     hide(table);
     if (getConfig('Show Stubs')) {
@@ -381,7 +408,7 @@
     }
   };
   hideThread = function(div) {
-    var _ref, _ref2, a, name, num, p, span, text, trip;
+    var _ref2, _ref3, a, name, num, p, span, text, trip;
     if (p = this.parentNode) {
       div = p;
       hiddenThreads.push({
@@ -400,7 +427,7 @@
       num += $$('table', div).length;
       text = num === 1 ? "1 reply" : ("" + (num) + " replies");
       name = $('span.postername', div).textContent;
-      trip = ((typeof (_ref2 = ((_ref = $('span.postername + span.postertrip', div)))) === "undefined" || _ref2 === null) ? undefined : _ref2.textContent) || '';
+      trip = ((typeof (_ref3 = ((_ref2 = $('span.postername + span.postertrip', div)))) === "undefined" || _ref3 === null) ? undefined : _ref3.textContent) || '';
       a = n('a', {
         textContent: ("[ + ] " + (name) + (trip) + " (" + (text) + ")"),
         className: 'pointer',
@@ -410,7 +437,7 @@
     }
   };
   iframeLoad = function() {
-    var _ref, _ref2, auto, error, iframeLoop, qr, span, submit;
+    var _ref2, _ref3, auto, error, qr, span, submit;
     if (iframeLoop = !iframeLoop) {
       return null;
     }
@@ -422,7 +449,7 @@
         className: 'error'
       });
       addTo(qr, span);
-      (typeof (_ref2 = ((_ref = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
+      (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
     } else if (REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';
@@ -432,7 +459,7 @@
       window.setTimeout(cooldown, 1000);
       auto = submit.previousSibling.lastChild;
       if (auto.checked) {
-        (typeof (_ref2 = ((_ref = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
+        (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
       }
     } else {
       remove(qr);
@@ -440,12 +467,12 @@
     return recaptchaReload();
   };
   nodeInserted = function(e) {
-    var _i, _len, _ref, _result, callback, qr, target;
+    var _i, _len, _ref2, _result, callback, qr, target;
     target = e.target;
     if (target.nodeName === 'TABLE') {
-      _result = []; _ref = callbacks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        callback = _ref[_i];
+      _result = []; _ref2 = callbacks;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        callback = _ref2[_i];
         _result.push(callback(target));
       }
       return _result;
@@ -455,20 +482,20 @@
     }
   };
   onloadComment = function(responseText, a, href) {
-    var _, _i, _len, _ref, bq, html, id, op, opbq, replies, reply;
-    _ref = href.match(/(\d+)#(\d+)/);
-    _ = _ref[0];
-    op = _ref[1];
-    id = _ref[2];
-    _ref = parseResponse(responseText);
-    replies = _ref[0];
-    opbq = _ref[1];
+    var _, _i, _len, _ref2, bq, html, id, op, opbq, replies, reply;
+    _ref2 = href.match(/(\d+)#(\d+)/);
+    _ = _ref2[0];
+    op = _ref2[1];
+    id = _ref2[2];
+    _ref2 = parseResponse(responseText);
+    replies = _ref2[0];
+    opbq = _ref2[1];
     if (id === op) {
       html = opbq.innerHTML;
     } else {
-      _ref = replies;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        reply = _ref[_i];
+      _ref2 = replies;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        reply = _ref2[_i];
         if (reply.id === id) {
           html = $('blockquote', reply).innerHTML;
         }
@@ -478,67 +505,67 @@
     return (bq.innerHTML = html);
   };
   onloadThread = function(responseText, span) {
-    var _i, _len, _ref, _result, div, next, opbq, replies, reply;
-    _ref = parseResponse(responseText);
-    replies = _ref[0];
-    opbq = _ref[1];
+    var _i, _len, _ref2, _result, div, next, opbq, replies, reply;
+    _ref2 = parseResponse(responseText);
+    replies = _ref2[0];
+    opbq = _ref2[1];
     span.textContent = span.textContent.replace('X Loading...', '- ');
     span.previousSibling.innerHTML = opbq.innerHTML;
     while ((next = span.nextSibling) && !next.clear) {
       remove(next);
     }
     if (next) {
-      _result = []; _ref = replies;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        reply = _ref[_i];
+      _result = []; _ref2 = replies;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        reply = _ref2[_i];
         _result.push(inBefore(next, x('ancestor::table', reply)));
       }
       return _result;
     } else {
       div = span.parentNode;
-      _result = []; _ref = replies;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        reply = _ref[_i];
+      _result = []; _ref2 = replies;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        reply = _ref2[_i];
         _result.push(addTo(div, x('ancestor::table', reply)));
       }
       return _result;
     }
   };
   options = function() {
-    var _ref, checked, description, div, hiddenNum, html, option, value;
+    var _ref2, checked, description, div, hiddenNum, html, option, value;
     if (div = $('#options')) {
       return remove(div);
     } else {
       div = AEOS.makeDialog('options', 'center');
       hiddenNum = hiddenReplies.length + hiddenThreads.length;
       html = '<div class="move">Options <a class=pointer>X</a></div><div>';
-      _ref = config;
-      for (option in _ref) {
-        if (!__hasProp.call(_ref, option)) continue;
-        value = _ref[option];
+      _ref2 = config;
+      for (option in _ref2) {
+        if (!__hasProp.call(_ref2, option)) continue;
+        value = _ref2[option];
         description = value[1];
         checked = getConfig(option) ? "checked" : "";
         html += ("<label title=\"" + (description) + "\">" + (option) + "<input " + (checked) + " name=\"" + (option) + "\" type=\"checkbox\"></label><br>");
       }
-      html += "<div><a class=sauce>Edit Sauce</a></div>";
+      html += "<div><a class=sauce>Sauce Varieties</a></div>";
       html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>";
       html += ("<input type=\"button\" value=\"hidden: " + (hiddenNum) + "\"><br>");
       div.innerHTML = html;
       $('div.move', div).addEventListener('mousedown', AEOS.move, true);
       $('a.pointer', div).addEventListener('click', optionsClose, true);
       $('a.sauce', div).addEventListener('click', editSauce, true);
-      $('textarea', div).value = GM_getValue('saucePrefix', defaultSaucePrefix);
+      $('textarea', div).value = GM_getValue('saucePrefix', sauceVarieties);
       $('input[type="button"]', div).addEventListener('click', clearHidden, true);
       return addTo(d.body, div);
     }
   };
   optionsClose = function() {
-    var _i, _len, _ref, div, input, inputs;
+    var _i, _len, _ref2, div, input, inputs;
     div = this.parentNode.parentNode;
     inputs = $$('input', div);
-    _ref = inputs;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      input = _ref[_i];
+    _ref2 = inputs;
+    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+      input = _ref2[_i];
       GM_setValue(input.name, input.checked);
     }
     GM_setValue('saucePrefix', $('textarea', div).value);
@@ -554,7 +581,7 @@
     return [replies, opbq];
   };
   quickReply = function(e) {
-    var _i, _len, _ref, _ref2, auto, autoBox, autohideB, clone, closeB, form, id, input, qr, script, selection, submit, text, textarea, titlebar, xpath;
+    var _i, _len, _ref2, _ref3, auto, autoBox, autohideB, clone, closeB, form, id, input, qr, script, selection, submit, text, textarea, titlebar, xpath;
     if (!(qr = $('#qr'))) {
       qr = AEOS.makeDialog('qr', 'topleft');
       titlebar = n('div', {
@@ -578,9 +605,9 @@
       addTo(titlebar, autohideB, tn(' '), closeB);
       form = $('form[name=post]');
       clone = form.cloneNode(true);
-      _ref = $$('script', clone);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        script = _ref[_i];
+      _ref2 = $$('script', clone);
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        script = _ref2[_i];
         remove(script);
       }
       m($('input[name=recaptcha_response_field]', clone), {
@@ -612,9 +639,9 @@
     }
     if (e) {
       e.preventDefault();
-      (typeof (_ref2 = ((_ref = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
+      (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
       selection = window.getSelection();
-      id = (typeof (_ref2 = ((_ref = x('preceding::span[@id][1]', selection.anchorNode)))) === "undefined" || _ref2 === null) ? undefined : _ref2.id;
+      id = (typeof (_ref3 = ((_ref2 = x('preceding::span[@id][1]', selection.anchorNode)))) === "undefined" || _ref3 === null) ? undefined : _ref3.id;
       text = selection.toString();
       textarea = $('textarea', qr);
       textarea.focus();
@@ -689,7 +716,7 @@
     return e.stopPropagation();
   };
   threadF = function(current) {
-    var _i, _len, _ref, a, div, hidden, id;
+    var _i, _len, _ref2, a, div, hidden, id;
     div = n('div', {
       className: 'thread'
     });
@@ -708,9 +735,9 @@
     current = div.nextSibling;
     id = $('input[value="delete"]', div).name;
     div.id = id;
-    _ref = hiddenThreads;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      hidden = _ref[_i];
+    _ref2 = hiddenThreads;
+    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+      hidden = _ref2[_i];
       if (id === hidden.id) {
         hideThread(div);
       }
@@ -737,15 +764,15 @@
     return watcherUpdate();
   };
   watcherUpdate = function() {
-    var _i, _j, _len, _ref, _ref2, a, board, div, link, old, thread;
+    var _i, _j, _len, _ref2, _ref3, a, board, div, link, old, thread;
     div = n('div');
-    _ref = watched;
-    for (board in _ref) {
-      if (!__hasProp.call(_ref, board)) continue;
-      _i = _ref[board];
-      _ref2 = watched[board];
-      for (_j = 0, _len = _ref2.length; _j < _len; _j++) {
-        thread = _ref2[_j];
+    _ref2 = watched;
+    for (board in _ref2) {
+      if (!__hasProp.call(_ref2, board)) continue;
+      _i = _ref2[board];
+      _ref3 = watched[board];
+      for (_j = 0, _len = _ref3.length; _j < _len; _j++) {
+        thread = _ref3[_j];
         a = n('a', {
           textContent: 'X',
           className: 'pointer',
@@ -762,11 +789,11 @@
     return replace(old, div);
   };
   watchX = function() {
-    var _, _ref, board, favicon, id, input;
-    _ref = this.nextElementSibling.getAttribute('href').substring(1).split('/');
-    board = _ref[0];
-    _ = _ref[1];
-    id = _ref[2];
+    var _, _ref2, board, id, input;
+    _ref2 = this.nextElementSibling.getAttribute('href').substring(1).split('/');
+    board = _ref2[0];
+    _ = _ref2[1];
+    id = _ref2[2];
     watched[board] = slice(watched[board], id);
     GM_setValue('watched', JSON.stringify(watched));
     watcherUpdate();
@@ -775,7 +802,6 @@
       return (favicon.src = favEmpty);
     }
   };
-  watched = JSON.parse(GM_getValue('watched', '{}'));
   if (location.hostname.split('.')[0] === 'sys') {
     if (recaptcha = $('#recaptcha_response_field')) {
       m(recaptcha, {
@@ -804,32 +830,6 @@
     }
     return null;
   }
-  pathname = location.pathname.substring(1).split('/');
-  _ref = pathname;
-  BOARD = _ref[0];
-  magic = _ref[1];
-  if (magic === 'res') {
-    REPLY = magic;
-    THREAD_ID = pathname[2];
-  } else {
-    PAGENUM = parseInt(magic) || 0;
-  }
-  xhrs = [];
-  r = null;
-  iframeLoop = false;
-  callbacks = [];
-  head = $('head', d);
-  if (!(favicon = $('link[rel="shortcut icon"]', head))) {
-    favicon = n('link', {
-      rel: 'shortcut icon',
-      href: 'http://static.4chan.org/image/favicon.ico'
-    });
-    addTo(head, favicon);
-  }
-  favNormal = favicon.href;
-  favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==';
-  hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/" + (BOARD) + "/", '[]'));
-  hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/" + (BOARD) + "/", '[]'));
   lastChecked = GM_getValue('lastChecked', 0);
   now = getTime();
   DAY = 24 * 60 * 60;
@@ -851,7 +851,6 @@
     GM_setValue("hiddenReplies/" + (BOARD) + "/", JSON.stringify(hiddenReplies));
     GM_setValue('lastChecked', now);
   }
-  defaultSaucePrefix = ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n');
   GM_addStyle('\
     #watcher {\
         position: absolute;\
@@ -936,7 +935,7 @@
     callbacks.push(function(root) {
       var _j, _len2, _ref2, _result, _result2, i, l, link, names, prefix, prefixes, span, spans, suffix;
       spans = $$('span.filesize', root);
-      prefixes = GM_getValue('saucePrefix', defaultSaucePrefix).split('\n');
+      prefixes = GM_getValue('saucePrefix', sauceVarieties).split('\n');
       names = (function() {
         _result = []; _ref2 = prefixes;
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {

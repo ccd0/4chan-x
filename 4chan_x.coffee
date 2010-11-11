@@ -176,6 +176,38 @@ x = (path, root) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
         singleNodeValue
 
+#globals
+iframeLoop = false
+xhrs = []
+r = null
+callbacks = []
+hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/#{BOARD}/", '[]'))
+hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/#{BOARD}/", '[]'))
+
+#godammit moot
+head = $('head', d)
+unless favicon = $('link[rel="shortcut icon"]', head)#/f/
+    favicon = n 'link',
+        rel: 'shortcut icon'
+        href: 'http://static.4chan.org/image/favicon.ico'
+    addTo head, favicon
+favNormal = favicon.href
+favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
+sauceVarieties = [
+    'http://regex.info/exif.cgi?url='
+    'http://iqdb.org/?url='
+    'http://saucenao.com/search.php?db=999&url='
+    'http://tineye.com/search?url='
+].join '\n'
+pathname = location.pathname.substring(1).split('/')
+[BOARD, magic] = pathname
+if magic is 'res'
+    REPLY = magic
+    THREAD_ID = pathname[2]
+else
+    PAGENUM = parseInt(magic) || 0
+watched = JSON.parse(GM_getValue('watched', '{}'))
+
 #funks
 autohide = ->
     qr = $ '#qr'
@@ -401,14 +433,14 @@ options = ->
             description  = value[1]
             checked = if getConfig option then "checked" else ""
             html += "<label title=\"#{description}\">#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
-        html += "<div><a class=sauce>Edit Sauce</a></div>"
+        html += "<div><a class=sauce>Sauce Varieties</a></div>"
         html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>"
         html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
         div.innerHTML = html
         $('div.move', div).addEventListener 'mousedown', AEOS.move, true
         $('a.pointer', div).addEventListener 'click', optionsClose, true
         $('a.sauce', div).addEventListener 'click', editSauce, true
-        $('textarea', div).value = GM_getValue 'saucePrefix', defaultSaucePrefix
+        $('textarea', div).value = GM_getValue 'saucePrefix', sauceVarieties
         $('input[type="button"]', div).addEventListener 'click', clearHidden, true
         addTo d.body, div
 
@@ -605,7 +637,6 @@ watchX = ->
         favicon.src = favEmpty
 
 #main
-watched = JSON.parse(GM_getValue('watched', '{}'))
 if location.hostname.split('.')[0] is 'sys'
     if recaptcha = $ '#recaptcha_response_field'
         m recaptcha, listener: ['keydown', recaptchaListener]
@@ -626,30 +657,6 @@ if location.hostname.split('.')[0] is 'sys'
                 GM_setValue 'watched', JSON.stringify watched
     return
 
-pathname = location.pathname.substring(1).split('/')
-[BOARD, magic] = pathname
-if magic is 'res'
-    REPLY = magic
-    THREAD_ID = pathname[2]
-else
-    PAGENUM = parseInt(magic) || 0
-xhrs = []
-r = null
-iframeLoop = false
-callbacks = []
-#godammit moot
-head = $('head', d)
-unless favicon = $('link[rel="shortcut icon"]', head)#/f/
-    favicon = n 'link',
-        rel: 'shortcut icon'
-        href: 'http://static.4chan.org/image/favicon.ico'
-    addTo head, favicon
-favNormal = favicon.href
-favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
-
-hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/#{BOARD}/", '[]'))
-hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/#{BOARD}/", '[]'))
-
 lastChecked = GM_getValue('lastChecked', 0)
 now = getTime()
 DAY = 24 * 60 * 60
@@ -669,14 +676,7 @@ if lastChecked < now - 1*DAY
     GM_setValue("hiddenReplies/#{BOARD}/", JSON.stringify(hiddenReplies))
     GM_setValue('lastChecked', now)
 
-defaultSaucePrefix = [
-    'http://regex.info/exif.cgi?url='
-    'http://iqdb.org/?url='
-    'http://saucenao.com/search.php?db=999&url='
-    'http://tineye.com/search?url='
-].join '\n'
-
-GM_addStyle('
+GM_addStyle '
     #watcher {
         position: absolute;
     }
@@ -724,7 +724,7 @@ GM_addStyle('
     .pointer {
         cursor: pointer;
     }
-')
+'
 
 AEOS.init()
 if navtopr = $ '#navtopr a'
@@ -755,11 +755,10 @@ recaptcha = $ '#recaptcha_response_field'
 recaptcha.addEventListener('keydown', recaptchaListener, true)
 
 #major features
-
 if getConfig 'Sauce'
     callbacks.push (root) ->
         spans = $$ 'span.filesize', root
-        prefixes = GM_getValue('saucePrefix', defaultSaucePrefix).split '\n'
+        prefixes = GM_getValue('saucePrefix', sauceVarieties).split '\n'
         names = prefix.match(/(\w+)\./)[1] for prefix in prefixes
         for span in spans
             suffix = $('a', span).href
