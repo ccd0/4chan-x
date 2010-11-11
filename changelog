@@ -1,3 +1,6 @@
+1.8.3
+- try to fix remaining bugs by making global variables explicitly global
+
 1.8.2
 - fix chromium
 
