@@ -120,6 +120,8 @@ AEOS =
         GM_setValue "#{id}Top",  div.style.top
 
 d = document
+g = {} #globals
+
 $ = (selector, root) ->
     root or= d.body
     root.querySelector selector
@@ -176,39 +178,6 @@ x = (path, root) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
         singleNodeValue
 
-#globals
-AEOS.init() #GM wrappers
-iframeLoop = false
-xhrs = []
-r = null
-callbacks = []
-hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/#{BOARD}/", '[]'))
-hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/#{BOARD}/", '[]'))
-
-#godammit moot
-head = $('head', d)
-unless favicon = $('link[rel="shortcut icon"]', head)#/f/
-    favicon = n 'link',
-        rel: 'shortcut icon'
-        href: 'http://static.4chan.org/image/favicon.ico'
-    addTo head, favicon
-favNormal = favicon.href
-favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
-sauceVarieties = [
-    'http://regex.info/exif.cgi?url='
-    'http://iqdb.org/?url='
-    'http://saucenao.com/search.php?db=999&url='
-    'http://tineye.com/search?url='
-].join '\n'
-pathname = location.pathname.substring(1).split('/')
-[BOARD, magic] = pathname
-if magic is 'res'
-    REPLY = magic
-    THREAD_ID = pathname[2]
-else
-    PAGENUM = parseInt(magic) || 0
-watched = JSON.parse(GM_getValue('watched', '{}'))
-
 #funks
 autohide = ->
     qr = $ '#qr'
@@ -222,7 +191,7 @@ autohide = ->
 autoWatch = ->
     #TODO look for subject
     autoText = $('textarea', this).value.slice(0, 25)
-    GM_setValue('autoText', "/#{BOARD}/ - #{autoText}")
+    GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
 
 close = ->
     div = this.parentNode.parentNode
@@ -231,11 +200,11 @@ close = ->
 clearHidden = ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
     # not the number of posts actually hidden on the page.
-    GM_deleteValue("hiddenReplies/#{BOARD}/")
-    GM_deleteValue("hiddenThreads/#{BOARD}/")
+    GM_deleteValue("hiddenReplies/#{g.BOARD}/")
+    GM_deleteValue("hiddenThreads/#{g.BOARD}/")
     @value = "hidden: 0"
-    hiddenReplies = []
-    hiddenThreads = []
+    g.hiddenReplies = []
+    g.hiddenThreads = []
 
 cooldown = ->
     submit = $ '#qr input[type=submit]'
@@ -264,7 +233,7 @@ expandComment = (e) ->
         onloadComment(this.responseText, a, href)
     r.open('GET', href, true)
     r.send()
-    xhrs.push {
+    g.xhrs.push {
         r: r,
         id: href.match(/\d+/)[0]
     }
@@ -283,7 +252,7 @@ expandThread = ->
         return
     span.textContent = span.textContent.replace '+', 'X Loading...'
     #load cache
-    for xhr in xhrs
+    for xhr in g.xhrs
         if xhr.id == id
             #why can't we just xhr.r.onload()?
             onloadThread xhr.r.responseText, span
@@ -294,7 +263,7 @@ expandThread = ->
         onloadThread this.responseText, span
     r.open 'GET', "res/#{id}", true
     r.send()
-    xhrs.push {
+    g.xhrs.push {
         r: r,
         id: id
     }
@@ -317,11 +286,11 @@ formSubmit = (e) ->
 hideReply = (reply) ->
     if p = this.parentNode
         reply = p.nextSibling
-        hiddenReplies.push {
+        g.hiddenReplies.push {
             id: reply.id
             timestamp: getTime()
         }
-        GM_setValue("hiddenReplies/#{BOARD}/", JSON.stringify(hiddenReplies))
+        GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
     name = $('span.commentpostername', reply).textContent
     trip = $('span.postertrip', reply)?.textContent or ''
     table = x 'ancestor::table', reply
@@ -338,11 +307,11 @@ hideReply = (reply) ->
 hideThread = (div) ->
     if p = @parentNode
         div = p
-        hiddenThreads.push {
+        g.hiddenThreads.push {
             id: div.id
             timestamp: getTime()
         }
-        GM_setValue("hiddenThreads/#{BOARD}/", JSON.stringify(hiddenThreads))
+        GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
     hide div
     if getConfig 'Show Stubs'
         if span = $ '.omittedposts', div
@@ -360,7 +329,7 @@ hideThread = (div) ->
         inBefore div, a
 
 iframeLoad = ->
-    if iframeLoop = !iframeLoop
+    if g.iframe = !g.iframe
         return
     $('iframe').src = 'about:blank'
     qr = $ '#qr'
@@ -370,7 +339,7 @@ iframeLoad = ->
             className: 'error'
         addTo qr, span
         $('input[title=autohide]:checked', qr)?.click()
-    else if REPLY and getConfig 'Persistent QR'
+    else if g.REPLY and getConfig 'Persistent QR'
         $('textarea', qr).value = ''
         $('input[name=recaptcha_response_field]', qr).value = ''
         submit = $ 'input[type=submit]', qr
@@ -388,7 +357,7 @@ iframeLoad = ->
 nodeInserted = (e) ->
     target = e.target
     if target.nodeName is 'TABLE'
-        for callback in callbacks
+        for callback in g.callbacks
             callback target
     else if target.id is 'recaptcha_challenge_field' and qr = $ '#qr'
         $('#recaptcha_image img', qr).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
@@ -428,20 +397,20 @@ options = ->
         remove div
     else
         div = AEOS.makeDialog 'options', 'center'
-        hiddenNum = hiddenReplies.length + hiddenThreads.length
+        hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length
         html = '<div class="move">Options <a class=pointer>X</a></div><div>'
         for option, value of config
             description  = value[1]
             checked = if getConfig option then "checked" else ""
             html += "<label title=\"#{description}\">#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
-        html += "<div><a class=sauce>Sauce Varieties</a></div>"
+        html += "<div><a class=sauce>Flavors</a></div>"
         html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>"
         html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
         div.innerHTML = html
         $('div.move', div).addEventListener 'mousedown', AEOS.move, true
         $('a.pointer', div).addEventListener 'click', optionsClose, true
         $('a.sauce', div).addEventListener 'click', editSauce, true
-        $('textarea', div).value = GM_getValue 'saucePrefix', sauceVarieties
+        $('textarea', div).value = GM_getValue 'flavors', g.flavors
         $('input[type="button"]', div).addEventListener 'click', clearHidden, true
         addTo d.body, div
 
@@ -450,7 +419,7 @@ optionsClose = ->
     inputs = $$ 'input', div
     for input in inputs
         GM_setValue(input.name, input.checked)
-    GM_setValue 'saucePrefix', $('textarea', div).value
+    GM_setValue 'flavors', $('textarea', div).value
     remove div
 
 parseResponse = (responseText) ->
@@ -489,7 +458,7 @@ quickReply = (e) ->
             listener: ['keydown', recaptchaListener]
         clone.addEventListener 'submit', formSubmit, true
         clone.target = 'iframe'
-        if not REPLY
+        if not g.REPLY
             #figure out which thread we're replying to
             xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
             input = n 'input',
@@ -528,17 +497,17 @@ recaptchaReload = ->
     window.location = 'javascript:Recaptcha.reload()'
 
 redirect = ->
-    switch BOARD
+    switch g.BOARD
         when 'a', 'g', 'lit', 'sci', 'tv'
-            url = "http://green-oval.net/cgi-board.pl/#{BOARD}/thread/#{THREAD_ID}#p"
+            url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}#p"
         when 'cgl', 'jp', 'm', 'tg'
-            url = "http://archive.easymodo.net/cgi-board.pl/#{BOARD}/thread/#{THREAD_ID}#p"
+            url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}#p"
         else
-            url = "http://boards.4chan.org/#{BOARD}"
+            url = "http://boards.4chan.org/#{g.BOARD}"
     location.href = url
 
 replyNav = ->
-    if REPLY
+    if g.REPLY
         window.location = if @textContent is '▲' then '#navtop' else '#navbot'
     else
         direction = if @textContent is '▲' then 'preceding' else 'following'
@@ -557,16 +526,16 @@ showReply = ->
     show(table)
     remove(div)
     id = $('td.reply, td.replyhl', table).id
-    slice(hiddenReplies, id)
-    GM_setValue("hiddenReplies/#{BOARD}/", JSON.stringify(hiddenReplies))
+    slice(g.hiddenReplies, id)
+    GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
 
 showThread = ->
     div = @nextSibling
     show div
     hide this
     id = div.id
-    slice hiddenThreads, id
-    GM_setValue("hiddenThreads/#{BOARD}/", JSON.stringify(hiddenThreads))
+    slice g.hiddenThreads, id
+    GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
 
 stopPropagation = (e) ->
     e.stopPropagation()
@@ -588,7 +557,7 @@ threadF = (current) ->
     id = $('input[value="delete"]', div).name
     div.id = id
     #check if we should hide the thread
-    for hidden in hiddenThreads
+    for hidden in g.hiddenThreads
         if id == hidden.id
             hideThread(div)
     current = current.nextSibling.nextSibling
@@ -598,24 +567,24 @@ threadF = (current) ->
 watch = ->
     id = this.nextSibling.name
     if this.src[0] is 'd'#data:png
-        this.src = favNormal
-        text = "/#{BOARD}/ - " +
+        this.src = g.favNormal
+        text = "/#{g.BOARD}/ - " +
             x('following-sibling::blockquote', this).textContent.slice(0,25)
-        watched[BOARD] or= []
-        watched[BOARD].push {
+        g.watched[g.BOARD] or= []
+        g.watched[g.BOARD].push {
             id: id,
             text: text
         }
     else
-        this.src = favEmpty
-        watched[BOARD] = slice(watched[BOARD], id)
-    GM_setValue('watched', JSON.stringify(watched))
+        this.src = g.favEmpty
+        g.watched[g.BOARD] = slice(g.watched[g.BOARD], id)
+    GM_setValue('watched', JSON.stringify(g.watched))
     watcherUpdate()
 
 watcherUpdate = ->
     div = n 'div'
-    for board of watched
-        for thread in watched[board]
+    for board of g.watched
+        for thread in g.watched[board]
             a = n 'a',
                 textContent: 'X'
                 className: 'pointer'
@@ -630,14 +599,40 @@ watcherUpdate = ->
 watchX = ->
     [board, _, id] = @nextElementSibling.
         getAttribute('href').substring(1).split('/')
-    watched[board] = slice(watched[board], id)
-    GM_setValue('watched', JSON.stringify(watched))
+    g.watched[board] = slice(g.watched[board], id)
+    GM_setValue('watched', JSON.stringify(g.watched))
     watcherUpdate()
     if input = $("input[name=\"#{id}\"]")
         favicon = input.previousSibling
-        favicon.src = favEmpty
+        favicon.src = g.favEmpty
 
 #main
+AEOS.init()
+g.iframe = false
+g.xhrs = []
+g.callbacks = []
+
+#godammit moot
+#/f/ doesn't have a favicon
+g.favNormal = $('link[rel="shortcut icon"]', $('head', d))?.href or 'http://static.4chan.org/image/favicon.ico'
+g.favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
+g.flavors = [
+    'http://regex.info/exif.cgi?url='
+    'http://iqdb.org/?url='
+    'http://saucenao.com/search.php?db=999&url='
+    'http://tineye.com/search?url='
+].join '\n'
+pathname = location.pathname.substring(1).split('/')
+[g.BOARD, temp] = pathname
+if temp is 'res'
+    g.REPLY = temp
+    g.THREAD_ID = pathname[2]
+else
+    g.PAGENUM = parseInt(temp) || 0
+g.watched       = JSON.parse(GM_getValue('watched', '{}'))
+g.hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/#{g.BOARD}/", '[]'))
+g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/#{g.BOARD}/", '[]'))
+
 if location.hostname.split('.')[0] is 'sys'
     if recaptcha = $ '#recaptcha_response_field'
         m recaptcha, listener: ['keydown', recaptchaListener]
@@ -650,12 +645,12 @@ if location.hostname.split('.')[0] is 'sys'
             [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
             if thread is '0'
                 board = $('meta', d).content.match(/4chan.org\/(\w+)\//)[1]
-                watched[board] or= []
-                watched[board].push {
+                g.watched[board] or= []
+                g.watched[board].push {
                     id: id,
                     text: GM_getValue 'autoText'
                 }
-                GM_setValue 'watched', JSON.stringify watched
+                GM_setValue 'watched', JSON.stringify g.watched
     return
 
 lastChecked = GM_getValue('lastChecked', 0)
@@ -663,18 +658,18 @@ now = getTime()
 DAY = 24 * 60 * 60
 if lastChecked < now - 1*DAY
     cutoff = now - 7*DAY
-    while hiddenThreads.length
-        if hiddenThreads[0].timestamp > cutoff
+    while g.hiddenThreads.length
+        if g.hiddenThreads[0].timestamp > cutoff
             break
-        hiddenThreads.shift()
+        g.hiddenThreads.shift()
 
-    while hiddenReplies.length
-        if hiddenReplies[0].timestamp > cutoff
+    while g.hiddenReplies.length
+        if g.hiddenReplies[0].timestamp > cutoff
             break
-        hiddenReplies.shift()
+        g.hiddenReplies.shift()
 
-    GM_setValue("hiddenThreads/#{BOARD}/", JSON.stringify(hiddenThreads))
-    GM_setValue("hiddenReplies/#{BOARD}/", JSON.stringify(hiddenReplies))
+    GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
+    GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
     GM_setValue('lastChecked', now)
 
 GM_addStyle '
@@ -756,9 +751,9 @@ recaptcha.addEventListener('keydown', recaptchaListener, true)
 
 #major features
 if getConfig 'Sauce'
-    callbacks.push (root) ->
+    g.callbacks.push (root) ->
         spans = $$ 'span.filesize', root
-        prefixes = GM_getValue('saucePrefix', sauceVarieties).split '\n'
+        prefixes = GM_getValue('flavors', g.flavors).split '\n'
         names = prefix.match(/(\w+)\./)[1] for prefix in prefixes
         for span in spans
             suffix = $('a', span).href
@@ -771,7 +766,7 @@ if getConfig 'Sauce'
                 i++
 
 if getConfig 'Reply Hiding'
-    callbacks.push (root) ->
+    g.callbacks.push (root) ->
         tds = $$('td.doubledash', root)
         for td in tds
             a = n 'a',
@@ -782,7 +777,7 @@ if getConfig 'Reply Hiding'
 
             next = td.nextSibling
             id = next.id
-            for obj in hiddenReplies
+            for obj in g.hiddenReplies
                 if obj.id is id
                     hideReply(next)
 
@@ -793,7 +788,7 @@ if getConfig 'Quick Reply'
     hide(iframe)
     addTo d.body, iframe
 
-    callbacks.push (root) ->
+    g.callbacks.push (root) ->
         quotes = $$('a.quotejs:not(:first-child)', root)
         for quote in quotes
             quote.addEventListener('click', quickReply, true)
@@ -803,7 +798,7 @@ if getConfig 'Quick Reply'
 
 
 if getConfig 'Quick Report'
-    callbacks.push (root) ->
+    g.callbacks.push (root) ->
         arr = $$('span[id^=no]', root)
         for el in arr
             a = n 'a',
@@ -822,7 +817,7 @@ if getConfig 'Thread Watcher'
     watcherUpdate()
 
     #add buttons
-    threads = watched[BOARD] || []
+    threads = g.watched[g.BOARD] || []
     #normal, threading
     inputs = $$('form > input[value="delete"], div > input[value="delete"]')
     for input in inputs
@@ -830,8 +825,8 @@ if getConfig 'Thread Watcher'
         src = (->
             for thread in threads
                 if id is thread.id
-                    return favNormal
-            favEmpty
+                    return g.favNormal
+            g.favEmpty
         )()
         img = n 'img',
             src: src
@@ -840,7 +835,7 @@ if getConfig 'Thread Watcher'
         inBefore input, img
 
 if getConfig 'Anonymize'
-    callbacks.push (root) ->
+    g.callbacks.push (root) ->
         names = $$('span.postername, span.commentpostername', root)
         for name in names
             name.innerHTML = 'Anonymous'
@@ -852,7 +847,7 @@ if getConfig 'Anonymize'
                 remove(trip)
 
 if getConfig 'Reply Navigation'
-    callbacks.push (root) ->
+    g.callbacks.push (root) ->
         arr = $$('span[id^=norep]', root)
         for el in arr
             span = n 'span'
@@ -867,7 +862,7 @@ if getConfig 'Reply Navigation'
             addTo span, tn(' '), up, tn(' '), down
             inAfter el, span
 
-if REPLY
+if g.REPLY
     if getConfig('Quick Reply') and getConfig 'Persistent QR'
         quickReply()
         $('#qr input[title=autohide]').click()
@@ -875,7 +870,7 @@ if REPLY
         unless text = $('span.filetitle').textContent
             text = $('blockquote').textContent
         if text
-            d.title = "/#{BOARD}/ - #{text}"
+            d.title = "/#{g.BOARD}/ - #{text}"
 
 else
     if getConfig 'Thread Hiding'
@@ -898,9 +893,9 @@ else
             if i isnt 0
                 textContent = '▲'
                 href = "##{i}"
-            else if PAGENUM isnt 0
+            else if g.PAGENUM isnt 0
                 textContent = '◀'
-                href = "#{PAGENUM - 1}"
+                href = "#{g.PAGENUM - 1}"
             else
                 textContent = '▲'
                 href = "#navtop"
@@ -918,7 +913,7 @@ else
                 className: 'pointer'
             if i1 == l1
                 down.textContent = '▶'
-                down.href = "#{PAGENUM + 1}#1"
+                down.href = "#{g.PAGENUM + 1}#1"
             else
                 down.textContent = '▼'
                 down.href = "##{i1}"
@@ -942,5 +937,5 @@ else
         for a in as
             a.addEventListener('click', expandComment, true)
 
-callback() for callback in callbacks
+callback() for callback in g.callbacks
 d.body.addEventListener('DOMNodeInserted', nodeInserted, true)

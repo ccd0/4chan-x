@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, BOARD, DAY, PAGENUM, REPLY, THREAD_ID, _, _i, _len, _ref, a, addTo, arr, as, autoWatch, autohide, b, board, callback, callbacks, clearHidden, close, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, favEmpty, favNormal, favicon, formSubmit, getConfig, getTime, head, hiddenReplies, hiddenThreads, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, iframeLoop, inAfter, inBefore, inputs, l, l1, lastChecked, m, magic, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, r, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, sauceVarieties, show, showReply, showThread, slice, span, stopPropagation, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watched, watcher, watcherUpdate, x, xhrs;
+  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, close, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, inAfter, inBefore, inputs, l, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -144,6 +144,7 @@
     }
   };
   d = document;
+  g = {};
   $ = function(selector, root) {
     root || (root = d.body);
     return root.querySelector(selector);
@@ -239,35 +240,6 @@
     root || (root = d.body);
     return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
-  AEOS.init();
-  iframeLoop = false;
-  xhrs = [];
-  r = null;
-  callbacks = [];
-  hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/" + (BOARD) + "/", '[]'));
-  hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/" + (BOARD) + "/", '[]'));
-  head = $('head', d);
-  if (!(favicon = $('link[rel="shortcut icon"]', head))) {
-    favicon = n('link', {
-      rel: 'shortcut icon',
-      href: 'http://static.4chan.org/image/favicon.ico'
-    });
-    addTo(head, favicon);
-  }
-  favNormal = favicon.href;
-  favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==';
-  sauceVarieties = ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n');
-  pathname = location.pathname.substring(1).split('/');
-  _ref = pathname;
-  BOARD = _ref[0];
-  magic = _ref[1];
-  if (magic === 'res') {
-    REPLY = magic;
-    THREAD_ID = pathname[2];
-  } else {
-    PAGENUM = parseInt(magic) || 0;
-  }
-  watched = JSON.parse(GM_getValue('watched', '{}'));
   autohide = function() {
     var klass, qr;
     qr = $('#qr');
@@ -282,7 +254,7 @@
   autoWatch = function() {
     var autoText;
     autoText = $('textarea', this).value.slice(0, 25);
-    return GM_setValue('autoText', "/" + (BOARD) + "/ - " + (autoText));
+    return GM_setValue('autoText', "/" + (g.BOARD) + "/ - " + (autoText));
   };
   close = function() {
     var div;
@@ -290,11 +262,11 @@
     return remove(div);
   };
   clearHidden = function() {
-    GM_deleteValue("hiddenReplies/" + (BOARD) + "/");
-    GM_deleteValue("hiddenThreads/" + (BOARD) + "/");
+    GM_deleteValue("hiddenReplies/" + (g.BOARD) + "/");
+    GM_deleteValue("hiddenThreads/" + (g.BOARD) + "/");
     this.value = "hidden: 0";
-    hiddenReplies = [];
-    return (hiddenThreads = []);
+    g.hiddenReplies = [];
+    return (g.hiddenThreads = []);
   };
   cooldown = function() {
     var auto, seconds, submit;
@@ -316,7 +288,7 @@
     return ta.style.display ? show(ta) : hide(ta);
   };
   expandComment = function(e) {
-    var a, href;
+    var a, href, r;
     e.preventDefault();
     a = this;
     href = a.getAttribute('href');
@@ -326,13 +298,13 @@
     };
     r.open('GET', href, true);
     r.send();
-    return xhrs.push({
+    return g.xhrs.push({
       r: r,
       id: href.match(/\d+/)[0]
     });
   };
   expandThread = function() {
-    var _i, _len, _ref2, id, num, prev, span, table, xhr;
+    var _i, _len, _ref, id, num, prev, r, span, table, xhr;
     id = x('preceding-sibling::input[1]', this).name;
     span = this;
     if (span.textContent[0] === '-') {
@@ -345,9 +317,9 @@
       return null;
     }
     span.textContent = span.textContent.replace('+', 'X Loading...');
-    _ref2 = xhrs;
-    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-      xhr = _ref2[_i];
+    _ref = g.xhrs;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      xhr = _ref[_i];
       if (xhr.id === id) {
         onloadThread(xhr.r.responseText, span);
         return null;
@@ -359,19 +331,19 @@
     };
     r.open('GET', "res/" + (id), true);
     r.send();
-    return xhrs.push({
+    return g.xhrs.push({
       r: r,
       id: id
     });
   };
   formSubmit = function(e) {
-    var _ref2, _ref3, recaptcha, span;
+    var _ref, _ref2, recaptcha, span;
     if (span = this.nextSibling) {
       remove(span);
     }
     recaptcha = $('input[name=recaptcha_response_field]', this);
     if (recaptcha.value) {
-      return (typeof (_ref3 = ((_ref2 = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
+      return (typeof (_ref2 = ((_ref = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
     } else {
       e.preventDefault();
       span = n('span', {
@@ -384,17 +356,17 @@
     }
   };
   hideReply = function(reply) {
-    var _ref2, _ref3, a, div, name, p, table, trip;
+    var _ref, _ref2, a, div, name, p, table, trip;
     if (p = this.parentNode) {
       reply = p.nextSibling;
-      hiddenReplies.push({
+      g.hiddenReplies.push({
         id: reply.id,
         timestamp: getTime()
       });
-      GM_setValue("hiddenReplies/" + (BOARD) + "/", JSON.stringify(hiddenReplies));
+      GM_setValue("hiddenReplies/" + (g.BOARD) + "/", JSON.stringify(g.hiddenReplies));
     }
     name = $('span.commentpostername', reply).textContent;
-    trip = ((typeof (_ref3 = ((_ref2 = $('span.postertrip', reply)))) === "undefined" || _ref3 === null) ? undefined : _ref3.textContent) || '';
+    trip = ((typeof (_ref2 = ((_ref = $('span.postertrip', reply)))) === "undefined" || _ref2 === null) ? undefined : _ref2.textContent) || '';
     table = x('ancestor::table', reply);
     hide(table);
     if (getConfig('Show Stubs')) {
@@ -409,14 +381,14 @@
     }
   };
   hideThread = function(div) {
-    var _ref2, _ref3, a, name, num, p, span, text, trip;
+    var _ref, _ref2, a, name, num, p, span, text, trip;
     if (p = this.parentNode) {
       div = p;
-      hiddenThreads.push({
+      g.hiddenThreads.push({
         id: div.id,
         timestamp: getTime()
       });
-      GM_setValue("hiddenThreads/" + (BOARD) + "/", JSON.stringify(hiddenThreads));
+      GM_setValue("hiddenThreads/" + (g.BOARD) + "/", JSON.stringify(g.hiddenThreads));
     }
     hide(div);
     if (getConfig('Show Stubs')) {
@@ -428,7 +400,7 @@
       num += $$('table', div).length;
       text = num === 1 ? "1 reply" : ("" + (num) + " replies");
       name = $('span.postername', div).textContent;
-      trip = ((typeof (_ref3 = ((_ref2 = $('span.postername + span.postertrip', div)))) === "undefined" || _ref3 === null) ? undefined : _ref3.textContent) || '';
+      trip = ((typeof (_ref2 = ((_ref = $('span.postername + span.postertrip', div)))) === "undefined" || _ref2 === null) ? undefined : _ref2.textContent) || '';
       a = n('a', {
         textContent: ("[ + ] " + (name) + (trip) + " (" + (text) + ")"),
         className: 'pointer',
@@ -438,8 +410,8 @@
     }
   };
   iframeLoad = function() {
-    var _ref2, _ref3, auto, error, qr, span, submit;
-    if (iframeLoop = !iframeLoop) {
+    var _ref, _ref2, auto, error, qr, span, submit;
+    if (g.iframe = !g.iframe) {
       return null;
     }
     $('iframe').src = 'about:blank';
@@ -450,8 +422,8 @@
         className: 'error'
       });
       addTo(qr, span);
-      (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
-    } else if (REPLY && getConfig('Persistent QR')) {
+      (typeof (_ref2 = ((_ref = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
+    } else if (g.REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';
       submit = $('input[type=submit]', qr);
@@ -460,7 +432,7 @@
       window.setTimeout(cooldown, 1000);
       auto = submit.previousSibling.lastChild;
       if (auto.checked) {
-        (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
+        (typeof (_ref2 = ((_ref = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
       }
     } else {
       remove(qr);
@@ -468,12 +440,12 @@
     return recaptchaReload();
   };
   nodeInserted = function(e) {
-    var _i, _len, _ref2, _result, callback, qr, target;
+    var _i, _len, _ref, _result, callback, qr, target;
     target = e.target;
     if (target.nodeName === 'TABLE') {
-      _result = []; _ref2 = callbacks;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        callback = _ref2[_i];
+      _result = []; _ref = g.callbacks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
         _result.push(callback(target));
       }
       return _result;
@@ -483,20 +455,20 @@
     }
   };
   onloadComment = function(responseText, a, href) {
-    var _, _i, _len, _ref2, bq, html, id, op, opbq, replies, reply;
-    _ref2 = href.match(/(\d+)#(\d+)/);
-    _ = _ref2[0];
-    op = _ref2[1];
-    id = _ref2[2];
-    _ref2 = parseResponse(responseText);
-    replies = _ref2[0];
-    opbq = _ref2[1];
+    var _, _i, _len, _ref, bq, html, id, op, opbq, replies, reply;
+    _ref = href.match(/(\d+)#(\d+)/);
+    _ = _ref[0];
+    op = _ref[1];
+    id = _ref[2];
+    _ref = parseResponse(responseText);
+    replies = _ref[0];
+    opbq = _ref[1];
     if (id === op) {
       html = opbq.innerHTML;
     } else {
-      _ref2 = replies;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        reply = _ref2[_i];
+      _ref = replies;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        reply = _ref[_i];
         if (reply.id === id) {
           html = $('blockquote', reply).innerHTML;
         }
@@ -506,70 +478,70 @@
     return (bq.innerHTML = html);
   };
   onloadThread = function(responseText, span) {
-    var _i, _len, _ref2, _result, div, next, opbq, replies, reply;
-    _ref2 = parseResponse(responseText);
-    replies = _ref2[0];
-    opbq = _ref2[1];
+    var _i, _len, _ref, _result, div, next, opbq, replies, reply;
+    _ref = parseResponse(responseText);
+    replies = _ref[0];
+    opbq = _ref[1];
     span.textContent = span.textContent.replace('X Loading...', '- ');
     span.previousSibling.innerHTML = opbq.innerHTML;
     while ((next = span.nextSibling) && !next.clear) {
       remove(next);
     }
     if (next) {
-      _result = []; _ref2 = replies;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        reply = _ref2[_i];
+      _result = []; _ref = replies;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        reply = _ref[_i];
         _result.push(inBefore(next, x('ancestor::table', reply)));
       }
       return _result;
     } else {
       div = span.parentNode;
-      _result = []; _ref2 = replies;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        reply = _ref2[_i];
+      _result = []; _ref = replies;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        reply = _ref[_i];
         _result.push(addTo(div, x('ancestor::table', reply)));
       }
       return _result;
     }
   };
   options = function() {
-    var _ref2, checked, description, div, hiddenNum, html, option, value;
+    var _ref, checked, description, div, hiddenNum, html, option, value;
     if (div = $('#options')) {
       return remove(div);
     } else {
       div = AEOS.makeDialog('options', 'center');
-      hiddenNum = hiddenReplies.length + hiddenThreads.length;
+      hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length;
       html = '<div class="move">Options <a class=pointer>X</a></div><div>';
-      _ref2 = config;
-      for (option in _ref2) {
-        if (!__hasProp.call(_ref2, option)) continue;
-        value = _ref2[option];
+      _ref = config;
+      for (option in _ref) {
+        if (!__hasProp.call(_ref, option)) continue;
+        value = _ref[option];
         description = value[1];
         checked = getConfig(option) ? "checked" : "";
         html += ("<label title=\"" + (description) + "\">" + (option) + "<input " + (checked) + " name=\"" + (option) + "\" type=\"checkbox\"></label><br>");
       }
-      html += "<div><a class=sauce>Sauce Varieties</a></div>";
+      html += "<div><a class=sauce>Flavors</a></div>";
       html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>";
       html += ("<input type=\"button\" value=\"hidden: " + (hiddenNum) + "\"><br>");
       div.innerHTML = html;
       $('div.move', div).addEventListener('mousedown', AEOS.move, true);
       $('a.pointer', div).addEventListener('click', optionsClose, true);
       $('a.sauce', div).addEventListener('click', editSauce, true);
-      $('textarea', div).value = GM_getValue('saucePrefix', sauceVarieties);
+      $('textarea', div).value = GM_getValue('flavors', g.flavors);
       $('input[type="button"]', div).addEventListener('click', clearHidden, true);
       return addTo(d.body, div);
     }
   };
   optionsClose = function() {
-    var _i, _len, _ref2, div, input, inputs;
+    var _i, _len, _ref, div, input, inputs;
     div = this.parentNode.parentNode;
     inputs = $$('input', div);
-    _ref2 = inputs;
-    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-      input = _ref2[_i];
+    _ref = inputs;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      input = _ref[_i];
       GM_setValue(input.name, input.checked);
     }
-    GM_setValue('saucePrefix', $('textarea', div).value);
+    GM_setValue('flavors', $('textarea', div).value);
     return remove(div);
   };
   parseResponse = function(responseText) {
@@ -582,7 +554,7 @@
     return [replies, opbq];
   };
   quickReply = function(e) {
-    var _i, _len, _ref2, _ref3, auto, autoBox, autohideB, clone, closeB, form, id, input, qr, script, selection, submit, text, textarea, titlebar, xpath;
+    var _i, _len, _ref, _ref2, auto, autoBox, autohideB, clone, closeB, form, id, input, qr, script, selection, submit, text, textarea, titlebar, xpath;
     if (!(qr = $('#qr'))) {
       qr = AEOS.makeDialog('qr', 'topleft');
       titlebar = n('div', {
@@ -606,9 +578,9 @@
       addTo(titlebar, autohideB, tn(' '), closeB);
       form = $('form[name=post]');
       clone = form.cloneNode(true);
-      _ref2 = $$('script', clone);
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        script = _ref2[_i];
+      _ref = $$('script', clone);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        script = _ref[_i];
         remove(script);
       }
       m($('input[name=recaptcha_response_field]', clone), {
@@ -616,7 +588,7 @@
       });
       clone.addEventListener('submit', formSubmit, true);
       clone.target = 'iframe';
-      if (!REPLY) {
+      if (!g.REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
         input = n('input', {
           type: 'hidden',
@@ -640,9 +612,9 @@
     }
     if (e) {
       e.preventDefault();
-      (typeof (_ref3 = ((_ref2 = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref3 === null) ? undefined : _ref3.click();
+      (typeof (_ref2 = ((_ref = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
       selection = window.getSelection();
-      id = (typeof (_ref3 = ((_ref2 = x('preceding::span[@id][1]', selection.anchorNode)))) === "undefined" || _ref3 === null) ? undefined : _ref3.id;
+      id = (typeof (_ref2 = ((_ref = x('preceding::span[@id][1]', selection.anchorNode)))) === "undefined" || _ref2 === null) ? undefined : _ref2.id;
       text = selection.toString();
       textarea = $('textarea', qr);
       textarea.focus();
@@ -658,28 +630,28 @@
   };
   redirect = function() {
     var url;
-    switch (BOARD) {
+    switch (g.BOARD) {
       case 'a':
       case 'g':
       case 'lit':
       case 'sci':
       case 'tv':
-        url = ("http://green-oval.net/cgi-board.pl/" + (BOARD) + "/thread/" + (THREAD_ID) + "#p");
+        url = ("http://green-oval.net/cgi-board.pl/" + (g.BOARD) + "/thread/" + (g.THREAD_ID) + "#p");
         break;
       case 'cgl':
       case 'jp':
       case 'm':
       case 'tg':
-        url = ("http://archive.easymodo.net/cgi-board.pl/" + (BOARD) + "/thread/" + (THREAD_ID) + "#p");
+        url = ("http://archive.easymodo.net/cgi-board.pl/" + (g.BOARD) + "/thread/" + (g.THREAD_ID) + "#p");
         break;
       default:
-        url = ("http://boards.4chan.org/" + (BOARD));
+        url = ("http://boards.4chan.org/" + (g.BOARD));
     }
     return (location.href = url);
   };
   replyNav = function() {
     var direction, op;
-    if (REPLY) {
+    if (g.REPLY) {
       return (window.location = this.textContent === '▲' ? '#navtop' : '#navbot');
     } else {
       direction = this.textContent === '▲' ? 'preceding' : 'following';
@@ -701,8 +673,8 @@
     show(table);
     remove(div);
     id = $('td.reply, td.replyhl', table).id;
-    slice(hiddenReplies, id);
-    return GM_setValue("hiddenReplies/" + (BOARD) + "/", JSON.stringify(hiddenReplies));
+    slice(g.hiddenReplies, id);
+    return GM_setValue("hiddenReplies/" + (g.BOARD) + "/", JSON.stringify(g.hiddenReplies));
   };
   showThread = function() {
     var div, id;
@@ -710,14 +682,14 @@
     show(div);
     hide(this);
     id = div.id;
-    slice(hiddenThreads, id);
-    return GM_setValue("hiddenThreads/" + (BOARD) + "/", JSON.stringify(hiddenThreads));
+    slice(g.hiddenThreads, id);
+    return GM_setValue("hiddenThreads/" + (g.BOARD) + "/", JSON.stringify(g.hiddenThreads));
   };
   stopPropagation = function(e) {
     return e.stopPropagation();
   };
   threadF = function(current) {
-    var _i, _len, _ref2, a, div, hidden, id;
+    var _i, _len, _ref, a, div, hidden, id;
     div = n('div', {
       className: 'thread'
     });
@@ -736,9 +708,9 @@
     current = div.nextSibling;
     id = $('input[value="delete"]', div).name;
     div.id = id;
-    _ref2 = hiddenThreads;
-    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-      hidden = _ref2[_i];
+    _ref = g.hiddenThreads;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      hidden = _ref[_i];
       if (id === hidden.id) {
         hideThread(div);
       }
@@ -750,30 +722,30 @@
     var id, text;
     id = this.nextSibling.name;
     if (this.src[0] === 'd') {
-      this.src = favNormal;
-      text = ("/" + (BOARD) + "/ - ") + x('following-sibling::blockquote', this).textContent.slice(0, 25);
-      watched[BOARD] || (watched[BOARD] = []);
-      watched[BOARD].push({
+      this.src = g.favNormal;
+      text = ("/" + (g.BOARD) + "/ - ") + x('following-sibling::blockquote', this).textContent.slice(0, 25);
+      g.watched[g.BOARD] || (g.watched[g.BOARD] = []);
+      g.watched[g.BOARD].push({
         id: id,
         text: text
       });
     } else {
-      this.src = favEmpty;
-      watched[BOARD] = slice(watched[BOARD], id);
+      this.src = g.favEmpty;
+      g.watched[g.BOARD] = slice(g.watched[g.BOARD], id);
     }
-    GM_setValue('watched', JSON.stringify(watched));
+    GM_setValue('watched', JSON.stringify(g.watched));
     return watcherUpdate();
   };
   watcherUpdate = function() {
-    var _i, _j, _len, _ref2, _ref3, a, board, div, link, old, thread;
+    var _i, _j, _len, _ref, _ref2, a, board, div, link, old, thread;
     div = n('div');
-    _ref2 = watched;
-    for (board in _ref2) {
-      if (!__hasProp.call(_ref2, board)) continue;
-      _i = _ref2[board];
-      _ref3 = watched[board];
-      for (_j = 0, _len = _ref3.length; _j < _len; _j++) {
-        thread = _ref3[_j];
+    _ref = g.watched;
+    for (board in _ref) {
+      if (!__hasProp.call(_ref, board)) continue;
+      _i = _ref[board];
+      _ref2 = g.watched[board];
+      for (_j = 0, _len = _ref2.length; _j < _len; _j++) {
+        thread = _ref2[_j];
         a = n('a', {
           textContent: 'X',
           className: 'pointer',
@@ -790,19 +762,39 @@
     return replace(old, div);
   };
   watchX = function() {
-    var _, _ref2, board, id, input;
-    _ref2 = this.nextElementSibling.getAttribute('href').substring(1).split('/');
-    board = _ref2[0];
-    _ = _ref2[1];
-    id = _ref2[2];
-    watched[board] = slice(watched[board], id);
-    GM_setValue('watched', JSON.stringify(watched));
+    var _, _ref, board, favicon, id, input;
+    _ref = this.nextElementSibling.getAttribute('href').substring(1).split('/');
+    board = _ref[0];
+    _ = _ref[1];
+    id = _ref[2];
+    g.watched[board] = slice(g.watched[board], id);
+    GM_setValue('watched', JSON.stringify(g.watched));
     watcherUpdate();
     if (input = $("input[name=\"" + (id) + "\"]")) {
       favicon = input.previousSibling;
-      return (favicon.src = favEmpty);
+      return (favicon.src = g.favEmpty);
     }
   };
+  AEOS.init();
+  g.iframe = false;
+  g.xhrs = [];
+  g.callbacks = [];
+  g.favNormal = ((typeof (_ref2 = ((_ref = $('link[rel="shortcut icon"]', $('head', d))))) === "undefined" || _ref2 === null) ? undefined : _ref2.href) || 'http://static.4chan.org/image/favicon.ico';
+  g.favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==';
+  g.flavors = ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n');
+  pathname = location.pathname.substring(1).split('/');
+  _ref = pathname;
+  g.BOARD = _ref[0];
+  temp = _ref[1];
+  if (temp === 'res') {
+    g.REPLY = temp;
+    g.THREAD_ID = pathname[2];
+  } else {
+    g.PAGENUM = parseInt(temp) || 0;
+  }
+  g.watched = JSON.parse(GM_getValue('watched', '{}'));
+  g.hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/" + (g.BOARD) + "/", '[]'));
+  g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/" + (g.BOARD) + "/", '[]'));
   if (location.hostname.split('.')[0] === 'sys') {
     if (recaptcha = $('#recaptcha_response_field')) {
       m(recaptcha, {
@@ -820,12 +812,12 @@
         id = _ref[2];
         if (thread === '0') {
           board = $('meta', d).content.match(/4chan.org\/(\w+)\//)[1];
-          watched[board] || (watched[board] = []);
-          watched[board].push({
+          g.watched[board] || (g.watched[board] = []);
+          g.watched[board].push({
             id: id,
             text: GM_getValue('autoText')
           });
-          GM_setValue('watched', JSON.stringify(watched));
+          GM_setValue('watched', JSON.stringify(g.watched));
         }
       }
     }
@@ -836,20 +828,20 @@
   DAY = 24 * 60 * 60;
   if (lastChecked < now - 1 * DAY) {
     cutoff = now - 7 * DAY;
-    while (hiddenThreads.length) {
-      if (hiddenThreads[0].timestamp > cutoff) {
+    while (g.hiddenThreads.length) {
+      if (g.hiddenThreads[0].timestamp > cutoff) {
         break;
       }
-      hiddenThreads.shift();
+      g.hiddenThreads.shift();
     }
-    while (hiddenReplies.length) {
-      if (hiddenReplies[0].timestamp > cutoff) {
+    while (g.hiddenReplies.length) {
+      if (g.hiddenReplies[0].timestamp > cutoff) {
         break;
       }
-      hiddenReplies.shift();
+      g.hiddenReplies.shift();
     }
-    GM_setValue("hiddenThreads/" + (BOARD) + "/", JSON.stringify(hiddenThreads));
-    GM_setValue("hiddenReplies/" + (BOARD) + "/", JSON.stringify(hiddenReplies));
+    GM_setValue("hiddenThreads/" + (g.BOARD) + "/", JSON.stringify(g.hiddenThreads));
+    GM_setValue("hiddenReplies/" + (g.BOARD) + "/", JSON.stringify(g.hiddenReplies));
     GM_setValue('lastChecked', now);
   }
   GM_addStyle('\
@@ -932,21 +924,21 @@
   recaptcha = $('#recaptcha_response_field');
   recaptcha.addEventListener('keydown', recaptchaListener, true);
   if (getConfig('Sauce')) {
-    callbacks.push(function(root) {
-      var _j, _len2, _ref2, _result, _result2, i, l, link, names, prefix, prefixes, span, spans, suffix;
+    g.callbacks.push(function(root) {
+      var _j, _len2, _ref3, _result, _result2, i, l, link, names, prefix, prefixes, span, spans, suffix;
       spans = $$('span.filesize', root);
-      prefixes = GM_getValue('saucePrefix', sauceVarieties).split('\n');
+      prefixes = GM_getValue('flavors', g.flavors).split('\n');
       names = (function() {
-        _result = []; _ref2 = prefixes;
-        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-          prefix = _ref2[_j];
+        _result = []; _ref3 = prefixes;
+        for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+          prefix = _ref3[_j];
           _result.push(prefix.match(/(\w+)\./)[1]);
         }
         return _result;
       })();
-      _result = []; _ref2 = spans;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        span = _ref2[_j];
+      _result = []; _ref3 = spans;
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        span = _ref3[_j];
         _result.push((function() {
           suffix = $('a', span).href;
           i = 0;
@@ -969,12 +961,12 @@
     });
   }
   if (getConfig('Reply Hiding')) {
-    callbacks.push(function(root) {
-      var _j, _k, _len2, _len3, _ref2, _ref3, _result, _result2, next, obj, td, tds;
+    g.callbacks.push(function(root) {
+      var _j, _k, _len2, _len3, _ref3, _ref4, _result, _result2, next, obj, td, tds;
       tds = $$('td.doubledash', root);
-      _result = []; _ref2 = tds;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        td = _ref2[_j];
+      _result = []; _ref3 = tds;
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        td = _ref3[_j];
         _result.push((function() {
           a = n('a', {
             textContent: '[ - ]',
@@ -984,9 +976,9 @@
           replace(td.firstChild, a);
           next = td.nextSibling;
           id = next.id;
-          _result2 = []; _ref3 = hiddenReplies;
-          for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-            obj = _ref3[_k];
+          _result2 = []; _ref4 = g.hiddenReplies;
+          for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
+            obj = _ref4[_k];
             _result2.push(obj.id === id ? hideReply(next) : null);
           }
           return _result2;
@@ -1002,12 +994,12 @@
     });
     hide(iframe);
     addTo(d.body, iframe);
-    callbacks.push(function(root) {
-      var _j, _len2, _ref2, _result, quote, quotes;
+    g.callbacks.push(function(root) {
+      var _j, _len2, _ref3, _result, quote, quotes;
       quotes = $$('a.quotejs:not(:first-child)', root);
-      _result = []; _ref2 = quotes;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        quote = _ref2[_j];
+      _result = []; _ref3 = quotes;
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        quote = _ref3[_j];
         _result.push(quote.addEventListener('click', quickReply, true));
       }
       return _result;
@@ -1015,12 +1007,12 @@
     recaptcha.id = '';
   }
   if (getConfig('Quick Report')) {
-    callbacks.push(function(root) {
-      var _j, _len2, _ref2, _result, arr, el;
+    g.callbacks.push(function(root) {
+      var _j, _len2, _ref3, _result, arr, el;
       arr = $$('span[id^=no]', root);
-      _result = []; _ref2 = arr;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        el = _ref2[_j];
+      _result = []; _ref3 = arr;
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        el = _ref3[_j];
         _result.push((function() {
           a = n('a', {
             textContent: '[ ! ]',
@@ -1040,7 +1032,7 @@
     $('div', watcher).addEventListener('mousedown', AEOS.move, true);
     addTo(d.body, watcher);
     watcherUpdate();
-    threads = watched[BOARD] || [];
+    threads = g.watched[g.BOARD] || [];
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');
     _ref = inputs;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1049,15 +1041,15 @@
         var input = _ref[_i];
         id = input.name;
         src = (function() {
-          var _j, _len2, _ref2, thread;
-          _ref2 = threads;
-          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-            thread = _ref2[_j];
+          var _j, _len2, _ref3, thread;
+          _ref3 = threads;
+          for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+            thread = _ref3[_j];
             if (id === thread.id) {
-              return favNormal;
+              return g.favNormal;
             }
           }
-          return favEmpty;
+          return g.favEmpty;
         })();
         img = n('img', {
           src: src,
@@ -1069,30 +1061,30 @@
     }
   }
   if (getConfig('Anonymize')) {
-    callbacks.push(function(root) {
-      var _j, _len2, _ref2, _result, name, names, trip, trips;
+    g.callbacks.push(function(root) {
+      var _j, _len2, _ref3, _result, name, names, trip, trips;
       names = $$('span.postername, span.commentpostername', root);
-      _ref2 = names;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        name = _ref2[_j];
+      _ref3 = names;
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        name = _ref3[_j];
         name.innerHTML = 'Anonymous';
       }
       trips = $$('span.postertrip', root);
-      _result = []; _ref2 = trips;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        trip = _ref2[_j];
+      _result = []; _ref3 = trips;
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        trip = _ref3[_j];
         _result.push(trip.parentNode.nodeName === 'A' ? remove(trip.parentNode) : remove(trip));
       }
       return _result;
     });
   }
   if (getConfig('Reply Navigation')) {
-    callbacks.push(function(root) {
-      var _j, _len2, _ref2, _result, arr, down, el, span, up;
+    g.callbacks.push(function(root) {
+      var _j, _len2, _ref3, _result, arr, down, el, span, up;
       arr = $$('span[id^=norep]', root);
-      _result = []; _ref2 = arr;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        el = _ref2[_j];
+      _result = []; _ref3 = arr;
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        el = _ref3[_j];
         _result.push((function() {
           span = n('span');
           up = n('a', {
@@ -1112,7 +1104,7 @@
       return _result;
     });
   }
-  if (REPLY) {
+  if (g.REPLY) {
     if (getConfig('Quick Reply') && getConfig('Persistent QR')) {
       quickReply();
       $('#qr input[title=autohide]').click();
@@ -1122,7 +1114,7 @@
         text = $('blockquote').textContent;
       }
       if (text) {
-        d.title = ("/" + (BOARD) + "/ - " + (text));
+        d.title = ("/" + (g.BOARD) + "/ - " + (text));
       }
     }
   } else {
@@ -1146,9 +1138,9 @@
         if (i !== 0) {
           textContent = '▲';
           href = ("#" + (i));
-        } else if (PAGENUM !== 0) {
+        } else if (g.PAGENUM !== 0) {
           textContent = '◀';
-          href = ("" + (PAGENUM - 1));
+          href = ("" + (g.PAGENUM - 1));
         } else {
           textContent = '▲';
           href = "#navtop";
@@ -1168,7 +1160,7 @@
         });
         if (i1 === l1) {
           down.textContent = '▶';
-          down.href = ("" + (PAGENUM + 1) + "#1");
+          down.href = ("" + (g.PAGENUM + 1) + "#1");
         } else {
           down.textContent = '▼';
           down.href = ("#" + (i1));
@@ -1202,7 +1194,7 @@
       }
     }
   }
-  _ref = callbacks;
+  _ref = g.callbacks;
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     callback = _ref[_i];
     callback();
