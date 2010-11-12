@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, close, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, inAfter, inBefore, inputs, keyboardNav, l, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
+  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, inAfter, inBefore, inputs, keyboardNav, l, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -257,10 +257,11 @@
     autoText = $('textarea', this).value.slice(0, 25);
     return GM_setValue('autoText', "/" + (g.BOARD) + "/ - " + (autoText));
   };
-  close = function() {
+  closeQR = function() {
     var div;
     div = this.parentNode.parentNode;
-    return remove(div);
+    remove(div);
+    return !g.REPLY && getConfig('Keyboard Navigation') ? d.addEventListener('keydown', keyboardNav, true) : null;
   };
   clearHidden = function() {
     GM_deleteValue("hiddenReplies/" + (g.BOARD) + "/");
@@ -437,6 +438,9 @@
       }
     } else {
       remove(qr);
+      if (!g.REPLY && getConfig('Keyboard Navigation')) {
+        d.addEventListener('keydown', keyboardNav, true);
+      }
     }
     return recaptchaReload();
   };
@@ -616,6 +620,7 @@
   quickReply = function(e) {
     var _i, _len, _ref, _ref2, auto, autoBox, autohideB, clone, closeB, form, id, input, qr, script, selection, submit, text, textarea, titlebar, xpath;
     if (!(qr = $('#qr'))) {
+      d.removeEventListener('keydown', keyboardNav, true);
       qr = AEOS.makeDialog('qr', 'topleft');
       titlebar = n('div', {
         innerHTML: 'Quick Reply ',
@@ -633,7 +638,7 @@
         textContent: 'X',
         className: 'pointer',
         title: 'close',
-        listener: ['click', close]
+        listener: ['click', closeQR]
       });
       addTo(titlebar, autohideB, tn(' '), closeB);
       form = $('form[name=post]');

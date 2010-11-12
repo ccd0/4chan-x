@@ -194,9 +194,11 @@ autoWatch = ->
     autoText = $('textarea', this).value.slice(0, 25)
     GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
 
-close = ->
+closeQR = ->
     div = this.parentNode.parentNode
     remove div
+    if not g.REPLY and getConfig 'Keyboard Navigation'
+        d.addEventListener 'keydown', keyboardNav, true
 
 clearHidden = ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -353,6 +355,8 @@ iframeLoad = ->
             $('input[title=autohide]:checked', qr)?.click()
     else
         remove qr
+        if not g.REPLY and getConfig 'Keyboard Navigation'
+            d.addEventListener 'keydown', keyboardNav, true
     recaptchaReload()
 
 keyboardNav = (e) ->
@@ -472,6 +476,7 @@ parseResponse = (responseText) ->
 
 quickReply = (e) ->
     unless qr = $ '#qr'
+        d.removeEventListener 'keydown', keyboardNav, true
         #make quick reply dialog
         qr = AEOS.makeDialog 'qr', 'topleft'
         titlebar = n 'div',
@@ -488,7 +493,7 @@ quickReply = (e) ->
             textContent: 'X'
             className: 'pointer'
             title: 'close'
-            listener: ['click', close]
+            listener: ['click', closeQR]
         addTo titlebar, autohideB, tn(' '), closeB
         form = $ 'form[name=post]'
         clone = form.cloneNode true
