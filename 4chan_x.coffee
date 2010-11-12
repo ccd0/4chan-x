@@ -11,7 +11,7 @@ config =
     'Reply Hiding':        [true, 'Hide single replies']
     'Show Stubs':          [true, 'Of hidden threads / replies']
     'Thread Navigation':   [true, 'Navigate to previous / next thread']
-    'Keyboard Navigation': [true, 'Navigate threads w/ your keyboard']
+    'Keyboard Navigation': [false, 'Navigate threads w/ your keyboard']
     'Reply Navigation':    [true, 'Navigate to the beginning / end of a thread']
     'Thread Watcher':      [true, 'Bookmark threads']
     'Thread Expansion':    [true, 'View all replies']
