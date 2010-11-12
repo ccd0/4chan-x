@@ -646,8 +646,10 @@
       m($('input[name=recaptcha_response_field]', clone), {
         listener: ['keydown', recaptchaListener]
       });
-      clone.addEventListener('submit', formSubmit, true);
-      clone.target = 'iframe';
+      m(clone, {
+        listener: ['submit', formSubmit],
+        target: 'iframe'
+      });
       if (!g.REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
         input = n('input', {

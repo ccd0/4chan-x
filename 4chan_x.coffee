@@ -497,8 +497,9 @@ quickReply = (e) ->
             remove script
         m $('input[name=recaptcha_response_field]', clone),
             listener: ['keydown', recaptchaListener]
-        clone.addEventListener 'submit', formSubmit, true
-        clone.target = 'iframe'
+        m clone,
+            listener: ['submit', formSubmit]
+            target: 'iframe'
         if not g.REPLY
             #figure out which thread we're replying to
             xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
