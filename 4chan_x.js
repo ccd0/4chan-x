@@ -460,7 +460,7 @@
         location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
       } else {
         if (e.shiftKey) {
-          location.hash = 'navbot';
+          location.hash = 10;
         } else {
           location.hash = 'navtop';
         }
