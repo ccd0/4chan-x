@@ -121,7 +121,7 @@ AEOS =
         GM_setValue "#{id}Top",  div.style.top
 
 d = document
-g = {} #globals
+g = null #globals
 
 $ = (selector, root) ->
     root or= d.body
@@ -357,24 +357,43 @@ iframeLoad = ->
 
 keyboardNav = (e) ->
     hash = Number(location.hash?.substring(1)) or 0
-    switch e.keyCode
-        when 71 #g
+    kc = e.keyCode
+    count = g.count
+    if 48 <= kc <= 57 # 0 - 9
+        temp = kc - 48
+        if temp is 0 and count is 0 # special - immediately go to page 0
+            location.pathname = "/#{g.BOARD}/#1"
+        else
+            g.count = (count * 10) + temp
+        return
+    if kc is 71 #g
+        if count
+            temp = if count > 15 then 15 else count
+            location.pathname = "/#{g.BOARD}/#{temp}#1"
+        else
             if e.shiftKey
                 location.hash = 'navbot'
             else
                 location.hash = 'navtop'
+    count or= 1
+    switch kc
         when 72 #h
-            if g.PAGENUM > 0
-                location.pathname = "/#{g.BOARD}/#{g.PAGENUM - 1}#1"
+            temp = g.PAGENUM - count
+            if temp < 0 then temp = 0
+            location.pathname = "/#{g.BOARD}/#{temp}#1"
         when 74 #j
-            if hash < 10
-                location.hash = hash + 1
+            temp = hash + count
+            if temp > 10 then temp = 10
+            location.hash = temp
         when 75 #k
-            if hash > 0
-                location.hash = hash - 1 or 'navtop'
+            temp = hash - count
+            if temp <= 0 then temp = 'navtop'
+            location.hash = temp
         when 76 #l
-            if g.PAGENUM < 15
-                location.pathname = "/#{g.BOARD}/#{g.PAGENUM + 1}#1"
+            temp = g.PAGENUM + count
+            if temp > 15 then temp = 15
+            location.pathname = "/#{g.BOARD}/#{temp}#1"
+    g.count = 0
 
 nodeInserted = (e) ->
     target = e.target
@@ -630,20 +649,20 @@ watchX = ->
 
 #main
 AEOS.init()
-g.iframe = false
-g.xhrs = []
-g.callbacks = []
-
-#godammit moot
-#/f/ doesn't have a favicon
-g.favNormal = $('link[rel="shortcut icon"]', $('head', d))?.href or 'http://static.4chan.org/image/favicon.ico'
-g.favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
-g.flavors = [
-    'http://regex.info/exif.cgi?url='
-    'http://iqdb.org/?url='
-    'http://saucenao.com/search.php?db=999&url='
-    'http://tineye.com/search?url='
-].join '\n'
+g =
+    callbacks: []
+    count: 0
+    iframe: false
+    xhrs: []
+    watched:       JSON.parse(GM_getValue('watched', '{}'))
+    favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
+    favNormal: $('link[rel="shortcut icon"]', $('head', d))?.href or 'http://static.4chan.org/image/favicon.ico'
+    flavors: [
+        'http://regex.info/exif.cgi?url='
+        'http://iqdb.org/?url='
+        'http://saucenao.com/search.php?db=999&url='
+        'http://tineye.com/search?url='
+    ].join '\n'
 pathname = location.pathname.substring(1).split('/')
 [g.BOARD, temp] = pathname
 if temp is 'res'
@@ -651,7 +670,6 @@ if temp is 'res'
     g.THREAD_ID = pathname[2]
 else
     g.PAGENUM = parseInt(temp) || 0
-g.watched       = JSON.parse(GM_getValue('watched', '{}'))
 g.hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/#{g.BOARD}/", '[]'))
 g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/#{g.BOARD}/", '[]'))
 

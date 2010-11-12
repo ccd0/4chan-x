@@ -145,7 +145,7 @@
     }
   };
   d = document;
-  g = {};
+  g = null;
   $ = function(selector, root) {
     root || (root = d.body);
     return root.querySelector(selector);
@@ -441,20 +441,63 @@
     return recaptchaReload();
   };
   keyboardNav = function(e) {
-    var hash;
+    var count, hash, kc, temp;
     hash = Number(location.hash == null ? undefined : location.hash.substring(1)) || 0;
-    switch (e.keyCode) {
-      case 71:
-        return e.shiftKey ? (location.hash = 'navbot') : (location.hash = 'navtop');
-      case 72:
-        return g.PAGENUM > 0 ? (location.pathname = ("/" + (g.BOARD) + "/" + (g.PAGENUM - 1) + "#1")) : null;
-      case 74:
-        return hash < 10 ? (location.hash = hash + 1) : null;
-      case 75:
-        return hash > 0 ? (location.hash = hash - 1 || 'navtop') : null;
-      case 76:
-        return g.PAGENUM < 15 ? (location.pathname = ("/" + (g.BOARD) + "/" + (g.PAGENUM + 1) + "#1")) : null;
+    kc = e.keyCode;
+    count = g.count;
+    if ((48 <= kc) && (kc <= 57)) {
+      temp = kc - 48;
+      if (temp === 0 && count === 0) {
+        location.pathname = ("/" + (g.BOARD) + "/#1");
+      } else {
+        g.count = (count * 10) + temp;
+      }
+      return null;
     }
+    if (kc === 71) {
+      if (count) {
+        temp = count > 15 ? 15 : count;
+        location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
+      } else {
+        if (e.shiftKey) {
+          location.hash = 'navbot';
+        } else {
+          location.hash = 'navtop';
+        }
+      }
+    }
+    count || (count = 1);
+    switch (kc) {
+      case 72:
+        temp = g.PAGENUM - count;
+        if (temp < 0) {
+          temp = 0;
+        }
+        location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
+        break;
+      case 74:
+        temp = hash + count;
+        if (temp > 10) {
+          temp = 10;
+        }
+        location.hash = temp;
+        break;
+      case 75:
+        temp = hash - count;
+        if (temp <= 0) {
+          temp = 'navtop';
+        }
+        location.hash = temp;
+        break;
+      case 76:
+        temp = g.PAGENUM + count;
+        if (temp > 15) {
+          temp = 15;
+        }
+        location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
+        break;
+    }
+    return (g.count = 0);
   };
   nodeInserted = function(e) {
     var _i, _len, _ref, _result, callback, qr, target;
@@ -793,12 +836,16 @@
     }
   };
   AEOS.init();
-  g.iframe = false;
-  g.xhrs = [];
-  g.callbacks = [];
-  g.favNormal = ((typeof (_ref2 = ((_ref = $('link[rel="shortcut icon"]', $('head', d))))) === "undefined" || _ref2 === null) ? undefined : _ref2.href) || 'http://static.4chan.org/image/favicon.ico';
-  g.favEmpty = 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==';
-  g.flavors = ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n');
+  g = {
+    callbacks: [],
+    count: 0,
+    iframe: false,
+    xhrs: [],
+    watched: JSON.parse(GM_getValue('watched', '{}')),
+    favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
+    favNormal: ((typeof (_ref2 = ((_ref = $('link[rel="shortcut icon"]', $('head', d))))) === "undefined" || _ref2 === null) ? undefined : _ref2.href) || 'http://static.4chan.org/image/favicon.ico',
+    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n')
+  };
   pathname = location.pathname.substring(1).split('/');
   _ref = pathname;
   g.BOARD = _ref[0];
@@ -809,7 +856,6 @@
   } else {
     g.PAGENUM = parseInt(temp) || 0;
   }
-  g.watched = JSON.parse(GM_getValue('watched', '{}'));
   g.hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/" + (g.BOARD) + "/", '[]'));
   g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/" + (g.BOARD) + "/", '[]'));
   if (location.hostname.split('.')[0] === 'sys') {
