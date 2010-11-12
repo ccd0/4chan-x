@@ -1,3 +1,8 @@
+1.9.1
+- add `count` for keynav
+- disable keynav when quick replying
+- make keynav disabled by default
+
 1.9.0
 - add keyboard navigation
 
