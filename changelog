@@ -1,3 +1,6 @@
+1.9.0
+- add keyboard navigation
+
 1.8.3
 - try to fix remaining bugs by making global variables explicitly global
 
