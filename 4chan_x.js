@@ -1,11 +1,12 @@
 (function() {
-  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, close, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, inAfter, inBefore, inputs, l, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
+  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, close, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, inAfter, inBefore, inputs, keyboardNav, l, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
     'Reply Hiding': [true, 'Hide single replies'],
     'Show Stubs': [true, 'Of hidden threads / replies'],
     'Thread Navigation': [true, 'Navigate to previous / next thread'],
+    'Keyboard Navigation': [true, 'Navigate threads w/ your keyboard'],
     'Reply Navigation': [true, 'Navigate to the beginning / end of a thread'],
     'Thread Watcher': [true, 'Bookmark threads'],
     'Thread Expansion': [true, 'View all replies'],
@@ -438,6 +439,22 @@
       remove(qr);
     }
     return recaptchaReload();
+  };
+  keyboardNav = function(e) {
+    var hash;
+    hash = Number(location.hash == null ? undefined : location.hash.substring(1)) || 0;
+    switch (e.keyCode) {
+      case 71:
+        return e.shiftKey ? (location.hash = 'navbot') : (location.hash = 'navtop');
+      case 72:
+        return g.PAGENUM > 0 ? (location.pathname = ("/" + (g.BOARD) + "/" + (g.PAGENUM - 1) + "#1")) : null;
+      case 74:
+        return hash < 10 ? (location.hash = hash + 1) : null;
+      case 75:
+        return hash > 0 ? (location.hash = hash - 1 || 'navtop') : null;
+      case 76:
+        return g.PAGENUM < 15 ? (location.pathname = ("/" + (g.BOARD) + "/" + (g.PAGENUM + 1) + "#1")) : null;
+    }
   };
   nodeInserted = function(e) {
     var _i, _len, _ref, _result, callback, qr, target;
@@ -1118,6 +1135,9 @@
       }
     }
   } else {
+    if (getConfig('Keyboard Navigation')) {
+      d.addEventListener('keydown', keyboardNav, true);
+    }
     if (getConfig('Thread Hiding')) {
       delform = $('form[name=delform]');
       d.addEventListener('DOMNodeInserted', stopPropagation, true);

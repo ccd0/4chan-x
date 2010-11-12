@@ -11,6 +11,7 @@ config =
     'Reply Hiding':        [true, 'Hide single replies']
     'Show Stubs':          [true, 'Of hidden threads / replies']
     'Thread Navigation':   [true, 'Navigate to previous / next thread']
+    'Keyboard Navigation': [true, 'Navigate threads w/ your keyboard']
     'Reply Navigation':    [true, 'Navigate to the beginning / end of a thread']
     'Thread Watcher':      [true, 'Bookmark threads']
     'Thread Expansion':    [true, 'View all replies']
@@ -353,6 +354,27 @@ iframeLoad = ->
     else
         remove qr
     recaptchaReload()
+
+keyboardNav = (e) ->
+    hash = Number(location.hash?.substring(1)) or 0
+    switch e.keyCode
+        when 71 #g
+            if e.shiftKey
+                location.hash = 'navbot'
+            else
+                location.hash = 'navtop'
+        when 72 #h
+            if g.PAGENUM > 0
+                location.pathname = "/#{g.BOARD}/#{g.PAGENUM - 1}#1"
+        when 74 #j
+            if hash < 10
+                location.hash = hash + 1
+        when 75 #k
+            if hash > 0
+                location.hash = hash - 1 or 'navtop'
+        when 76 #l
+            if g.PAGENUM < 15
+                location.pathname = "/#{g.BOARD}/#{g.PAGENUM + 1}#1"
 
 nodeInserted = (e) ->
     target = e.target
@@ -872,7 +894,10 @@ if g.REPLY
         if text
             d.title = "/#{g.BOARD}/ - #{text}"
 
-else
+else #not reply
+    if getConfig 'Keyboard Navigation'
+        d.addEventListener 'keydown', keyboardNav, true
+
     if getConfig 'Thread Hiding'
         delform = $('form[name=delform]')
         #don't confuse other scripts
