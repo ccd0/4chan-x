@@ -445,13 +445,18 @@
     return recaptchaReload();
   };
   keyboardNav = function(e) {
-    var _i, _len, char, count, hash, temp;
+    var _i, _len, char, count, hash, position, temp;
     char = String.fromCharCode(e.keyCode);
     if (!((function(){ for (var _i=0, _len='1234567890GHJKL'.length; _i<_len; _i++) { if ('1234567890GHJKL'[_i] === char) return true; } return false; }).call(this))) {
       return null;
     }
     e.preventDefault();
-    hash = Number(location.hash == null ? undefined : location.hash.substring(1)) || 0;
+    hash = location.hash;
+    if (!hash || hash === '#navtop') {
+      position = 0;
+    } else {
+      position = Number(hash.substring(2)) || 0;
+    }
     count = g.count;
     if ((function(){ for (var _i=0, _len='1234567890'.length; _i<_len; _i++) { if ('1234567890'[_i] === char) return true; } return false; }).call(this)) {
       temp = Number(char);
@@ -484,16 +489,18 @@
         location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
         break;
       case "J":
-        temp = hash + count;
+        temp = position + count;
         if (temp > 10) {
           temp = 10;
         }
-        location.hash = temp;
+        location.hash = 'p' + temp;
         break;
       case "K":
-        temp = hash - count;
+        temp = position - count;
         if (temp <= 0) {
           temp = 'navtop';
+        } else {
+          temp = 'p' + temp;
         }
         location.hash = temp;
         break;
@@ -1212,14 +1219,14 @@
         el = _ref[_i];
         span = n('span', {
           className: 'navlinks',
-          id: _i
+          id: 'p' + _i
         });
         if (_i) {
           textContent = '▲';
-          href = ("#" + (_i - 1));
+          href = ("#p" + (_i - 1));
         } else if (g.PAGENUM) {
           textContent = '◀';
-          href = g.PAGENUM - 1;
+          href = ("" + (g.PAGENUM - 1) + "#p0");
         } else {
           textContent = '▲';
           href = "#navtop";
@@ -1231,10 +1238,10 @@
         });
         if (_i < l1) {
           textContent = '▼';
-          href = ("#" + (_i + 1));
+          href = ("#p" + (_i + 1));
         } else {
           textContent = '▶';
-          href = ("" + (g.PAGENUM + 1) + "#0");
+          href = ("" + (g.PAGENUM + 1) + "#p0");
         }
         down = n('a', {
           className: 'pointer',
@@ -1244,7 +1251,7 @@
         addTo(span, up, tn(' '), down);
         inBefore(el, span);
       }
-      if (location.hash === '#0') {
+      if (location.hash === '#p0') {
         window.location = window.location;
       }
     }

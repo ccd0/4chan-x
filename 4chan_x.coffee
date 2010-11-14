@@ -364,7 +364,11 @@ keyboardNav = (e) ->
     unless char in '1234567890GHJKL'
         return
     e.preventDefault()
-    hash = Number(location.hash?.substring(1)) or 0
+    hash = location.hash
+    if not hash or hash == '#navtop'
+        position = 0
+    else
+        position = Number(hash.substring 2) or 0
     count = g.count
     if char in '1234567890'
         temp = Number char
@@ -389,12 +393,12 @@ keyboardNav = (e) ->
             if temp < 0 then temp = 0
             location.pathname = "/#{g.BOARD}/#{temp}#1"
         when "J"
-            temp = hash + count
+            temp = position + count
             if temp > 10 then temp = 10
-            location.hash = temp
+            location.hash = 'p' + temp
         when "K"
-            temp = hash - count
-            if temp <= 0 then temp = 'navtop'
+            temp = position - count
+            if temp <= 0 then temp = 'navtop' else temp = 'p' + temp
             location.hash = temp
         when "L"
             temp = g.PAGENUM + count
@@ -941,13 +945,13 @@ else #not reply
         for el in arr
             span = n 'span',
                 className: 'navlinks'
-                id: _i
+                id: 'p' + _i
             if _i
                 textContent = '▲'
-                href = "##{_i - 1}"
+                href = "#p#{_i - 1}"
             else if g.PAGENUM
                 textContent = '◀'
-                href = g.PAGENUM - 1
+                href = "#{g.PAGENUM - 1}#p0"
             else
                 textContent = '▲'
                 href = "#navtop"
@@ -957,17 +961,17 @@ else #not reply
                 href: href
             if _i < l1
                 textContent = '▼'
-                href = "##{_i + 1}"
+                href = "#p#{_i + 1}"
             else
                 textContent = '▶'
-                href = "#{g.PAGENUM + 1}#0"
+                href = "#{g.PAGENUM + 1}#p0"
             down = n 'a',
                 className: 'pointer'
                 textContent: textContent
                 href: href
             addTo span, up, tn(' '), down
             inBefore el, span
-        if location.hash is '#0'
+        if location.hash is '#p0'
             window.location = window.location
 
     if getConfig 'Thread Expansion'
