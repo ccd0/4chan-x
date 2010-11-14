@@ -1,3 +1,8 @@
+1.10.1
+- fix kb thread nav
+- hack to focus qr
+- absolute positioning for `g` keybind
+
 1.10.0
 - keyboard actions:
     - m to _mark (watch) threads
