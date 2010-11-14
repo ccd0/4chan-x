@@ -22,6 +22,7 @@
   };
   AEOS = {
     init: function() {
+      var form;
       if (!(typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null)) {
         window.GM_setValue = function(name, value) {
           value = (typeof value)[0] + value;
@@ -50,6 +51,15 @@
           style.textContent = css;
           return document.getElementsByTagName('head')[0].appendChild(style);
         };
+        window.GM_openInTab = function(url) {
+          var form;
+          form = document.getElementById('GM_form');
+          form.action = link;
+          return form.submit();
+        };
+        form = document.createElement('form');
+        form.id = 'GM_form';
+        document.body.appendChild(form);
       }
       return GM_addStyle('\
             div.dialog {\
@@ -445,9 +455,9 @@
     return recaptchaReload();
   };
   keyboardNav = function(e) {
-    var _i, _len, char, count, hash, position, qrLink, temp;
+    var _i, _len, char, count, hash, href, position, qrLink, temp;
     char = String.fromCharCode(e.keyCode);
-    if (!((function(){ for (var _i=0, _len='1234567890GHJKLO'.length; _i<_len; _i++) { if ('1234567890GHJKLO'[_i] === char) return true; } return false; }).call(this))) {
+    if (!((function(){ for (var _i=0, _len='1234567890GHJKLOT'.length; _i<_len; _i++) { if ('1234567890GHJKLOT'[_i] === char) return true; } return false; }).call(this))) {
       return null;
     }
     e.preventDefault();
@@ -514,6 +524,10 @@
       case "O":
         qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
         quickReply.call(qrLink);
+        break;
+      case "T":
+        href = $("" + (hash) + " ~ span[id] a:last-of-type").href;
+        GM_openInTab(href);
         break;
     }
     return (g.count = 0);

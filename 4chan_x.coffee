@@ -50,6 +50,14 @@ AEOS =
                 style.type = 'text/css'
                 style.textContent = css
                 document.getElementsByTagName('head')[0].appendChild style
+            window.GM_openInTab = (url) ->
+                form = document.getElementById 'GM_form'
+                form.action = link
+                form.submit()
+            form = document.createElement 'form'
+            form.id = 'GM_form'
+            document.body.appendChild form
+
         #dialog styling
         GM_addStyle '
             div.dialog {
@@ -361,7 +369,7 @@ iframeLoad = ->
 
 keyboardNav = (e) ->
     char = String.fromCharCode e.keyCode
-    unless char in '1234567890GHJKLO'
+    unless char in '1234567890GHJKLOT'
         return
     e.preventDefault()
     hash = location.hash
@@ -407,6 +415,9 @@ keyboardNav = (e) ->
         when "O"
             qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
             quickReply.call qrLink
+        when "T"
+            href = $("#{hash} ~ span[id] a:last-of-type").href
+            GM_openInTab href
     g.count = 0
 
 nodeInserted = (e) ->
