@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, inputs, keyAct, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
+  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keyAct, keyActAdd, keyActRem, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -271,8 +271,7 @@
   closeQR = function() {
     var div;
     div = this.parentNode.parentNode;
-    remove(div);
-    return !g.REPLY && getConfig('Keyboard Actions') ? d.addEventListener('keydown', keyAct, true) : null;
+    return remove(div);
   };
   clearHidden = function() {
     GM_deleteValue("hiddenReplies/" + (g.BOARD) + "/");
@@ -449,9 +448,6 @@
       }
     } else {
       remove(qr);
-      if (!g.REPLY && getConfig('Keyboard Actions')) {
-        d.addEventListener('keydown', keyAct, true);
-      }
     }
     return recaptchaReload();
   };
@@ -537,6 +533,12 @@
         break;
     }
     return (g.count = 0);
+  };
+  keyActAdd = function() {
+    return d.addEventListener('keydown', keyAct, true);
+  };
+  keyActRem = function() {
+    return d.removeEventListener('keydown', keyAct, true);
   };
   nodeInserted = function(e) {
     var _i, _len, _ref, _result, callback, qr, target;
@@ -653,9 +655,8 @@
     return [replies, opbq];
   };
   quickReply = function(e) {
-    var _i, _len, _ref, _ref2, auto, autoBox, autohideB, clone, closeB, form, id, input, qr, script, selection, submit, text, textarea, titlebar, xpath;
+    var _i, _len, _ref, _ref2, auto, autoBox, autohideB, clone, closeB, form, id, input, inputs, qr, script, selection, submit, text, textarea, titlebar, xpath;
     if (!(qr = $('#qr'))) {
-      d.removeEventListener('keydown', keyAct, true);
       qr = AEOS.makeDialog('qr', 'topleft');
       titlebar = n('div', {
         innerHTML: 'Quick Reply ',
@@ -698,6 +699,15 @@
           value: x(xpath, this).name
         });
         addTo(clone, input);
+        if (getConfig('Keyboard Actions')) {
+          inputs = $$('input[type=text], textarea', clone);
+          _ref = inputs;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            input = _ref[_i];
+            input.addEventListener('focus', keyActRem, true);
+            input.addEventListener('blur', keyActAdd, true);
+          }
+        }
       } else if (getConfig('Persistent QR')) {
         submit = $('input[type=submit]', clone);
         auto = n('label', {
@@ -1224,7 +1234,15 @@
     }
   } else {
     if (getConfig('Keyboard Actions')) {
-      d.addEventListener('keydown', keyAct, true);
+      form = $('div.postarea > form');
+      inputs = $$('input[type=text], textarea', form);
+      _ref = inputs;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
+        input.addEventListener('focus', keyActRem, true);
+        input.addEventListener('blur', keyActAdd, true);
+      }
+      keyActAdd();
     }
     if (getConfig('Thread Hiding')) {
       delform = $('form[name=delform]');

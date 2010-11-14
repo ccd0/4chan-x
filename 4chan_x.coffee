@@ -206,8 +206,6 @@ autoWatch = ->
 closeQR = ->
     div = this.parentNode.parentNode
     remove div
-    if not g.REPLY and getConfig 'Keyboard Actions'
-        d.addEventListener 'keydown', keyAct, true
 
 clearHidden = ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -364,9 +362,8 @@ iframeLoad = ->
             $('input[title=autohide]:checked', qr)?.click()
     else
         remove qr
-        if not g.REPLY and getConfig 'Keyboard Actions'
-            d.addEventListener 'keydown', keyAct, true
     recaptchaReload()
+
 
 keyAct = (e) ->
     kc = e.keyCode
@@ -426,6 +423,12 @@ keyAct = (e) ->
             href = $("#{hash} ~ span[id] a:last-of-type").href
             GM_openInTab href
     g.count = 0
+
+keyActAdd = ->
+    d.addEventListener 'keydown', keyAct, true
+
+keyActRem = ->
+    d.removeEventListener 'keydown', keyAct, true
 
 nodeInserted = (e) ->
     target = e.target
@@ -504,7 +507,6 @@ parseResponse = (responseText) ->
 
 quickReply = (e) ->
     unless qr = $ '#qr'
-        d.removeEventListener 'keydown', keyAct, true
         #make quick reply dialog
         qr = AEOS.makeDialog 'qr', 'topleft'
         titlebar = n 'div',
@@ -541,6 +543,11 @@ quickReply = (e) ->
                 name: 'resto'
                 value: x(xpath, this).name
             addTo clone, input
+            if getConfig 'Keyboard Actions'
+                inputs = $$ 'input[type=text], textarea', clone
+                for input in inputs
+                    input.addEventListener 'focus', keyActRem, true
+                    input.addEventListener 'blur',  keyActAdd, true
         else if getConfig 'Persistent QR'
             submit = $ 'input[type=submit]', clone
             auto = n 'label',
@@ -948,7 +955,12 @@ if g.REPLY
 
 else #not reply
     if getConfig 'Keyboard Actions'
-        d.addEventListener 'keydown', keyAct, true
+        form = $ 'div.postarea > form'
+        inputs = $$ 'input[type=text], textarea', form
+        for input in inputs
+            input.addEventListener 'focus', keyActRem, true
+            input.addEventListener 'blur',  keyActAdd, true
+        keyActAdd()
 
     if getConfig 'Thread Hiding'
         delform = $('form[name=delform]')
