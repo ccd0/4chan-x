@@ -456,12 +456,13 @@
     return recaptchaReload();
   };
   keyboardNav = function(e) {
-    var _i, _len, char, count, hash, href, img, position, qrLink, temp;
-    char = String.fromCharCode(e.keyCode);
-    if (!((function(){ for (var _i=0, _len='1234567890GHJKLMOT'.length; _i<_len; _i++) { if ('1234567890GHJKLMOT'[_i] === char) return true; } return false; }).call(this))) {
+    var _i, _len, char, count, hash, href, img, kc, position, qrLink, temp;
+    kc = e.keyCode;
+    if (!((48 <= kc) && (kc <= 90))) {
       return null;
     }
     e.preventDefault();
+    char = String.fromCharCode(kc);
     hash = location.hash;
     if (!hash || hash === '#navtop') {
       position = 0;

@@ -369,10 +369,13 @@ iframeLoad = ->
     recaptchaReload()
 
 keyboardNav = (e) ->
-    char = String.fromCharCode e.keyCode
-    unless char in '1234567890GHJKLMOT'
+    kc = e.keyCode
+    #https://developer.mozilla.org/en/DOM/Event/UIEvent/KeyEvent
+    # [0-9;=A-Z]
+    unless 48 <= kc <= 90
         return
     e.preventDefault()
+    char = String.fromCharCode kc
     hash = location.hash
     if not hash or hash == '#navtop'
         position = 0
