@@ -422,6 +422,8 @@ keyAct = (e) ->
         when "O"
             qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
             quickReply.call qrLink
+            ta = $ '#qr textarea'
+            ta.focus()
         when "T"
             href = $("#{hash} ~ span[id] a:last-of-type").href
             GM_openInTab href

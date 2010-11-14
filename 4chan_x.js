@@ -452,7 +452,7 @@
     return recaptchaReload();
   };
   keyAct = function(e) {
-    var _i, _len, char, count, hash, href, img, kc, position, qrLink, temp;
+    var _i, _len, char, count, hash, href, img, kc, position, qrLink, ta, temp;
     kc = e.keyCode;
     if (!((48 <= kc) && (kc <= 90))) {
       return null;
@@ -531,6 +531,8 @@
       case "O":
         qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
         quickReply.call(qrLink);
+        ta = $('#qr textarea');
+        ta.focus();
         break;
       case "T":
         href = $("" + (hash) + " ~ span[id] a:last-of-type").href;
