@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, i, i1, id, iframe, iframeLoad, inAfter, inBefore, inputs, keyboardNav, l, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
+  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, inputs, keyboardNav, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -1206,18 +1206,20 @@
     }
     if (getConfig('Thread Navigation')) {
       arr = $$('div > span.filesize, form > span.filesize');
-      i = 0;
-      l = arr.length;
-      l1 = l + 1;
+      l1 = arr.length - 1;
       _ref = arr;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];
-        if (i !== 0) {
+        span = n('span', {
+          className: 'navlinks',
+          id: _i
+        });
+        if (_i) {
           textContent = '▲';
-          href = ("#" + (i));
-        } else if (g.PAGENUM !== 0) {
+          href = ("#" + (_i - 1));
+        } else if (g.PAGENUM) {
           textContent = '◀';
-          href = ("" + (g.PAGENUM - 1));
+          href = g.PAGENUM - 1;
         } else {
           textContent = '▲';
           href = "#navtop";
@@ -1227,25 +1229,22 @@
           textContent: textContent,
           href: href
         });
-        span = n('span', {
-          className: 'navlinks',
-          id: ++i
-        });
-        i1 = i + 1;
-        down = n('a', {
-          className: 'pointer'
-        });
-        if (i1 === l1) {
-          down.textContent = '▶';
-          down.href = ("" + (g.PAGENUM + 1) + "#1");
+        if (_i < l1) {
+          textContent = '▼';
+          href = ("#" + (_i + 1));
         } else {
-          down.textContent = '▼';
-          down.href = ("#" + (i1));
+          textContent = '▶';
+          href = ("" + (g.PAGENUM + 1) + "#0");
         }
+        down = n('a', {
+          className: 'pointer',
+          textContent: textContent,
+          href: href
+        });
         addTo(span, up, tn(' '), down);
         inBefore(el, span);
       }
-      if (location.hash === '#1') {
+      if (location.hash === '#0') {
         window.location = window.location;
       }
     }

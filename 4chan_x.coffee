@@ -936,43 +936,38 @@ else #not reply
         $('form[name="post"]').addEventListener('submit', autoWatch, true)
 
     if getConfig 'Thread Navigation'
-        arr = $$('div > span.filesize, form > span.filesize')
-        i = 0
-        l = arr.length
-        l1 = l + 1
-        #should this be a while loop?
+        arr = $$ 'div > span.filesize, form > span.filesize'
+        l1 = arr.length - 1
         for el in arr
-            if i isnt 0
+            span = n 'span',
+                className: 'navlinks'
+                id: _i
+            if _i
                 textContent = '▲'
-                href = "##{i}"
-            else if g.PAGENUM isnt 0
+                href = "##{_i - 1}"
+            else if g.PAGENUM
                 textContent = '◀'
-                href = "#{g.PAGENUM - 1}"
+                href = g.PAGENUM - 1
             else
                 textContent = '▲'
                 href = "#navtop"
-
             up = n 'a',
                 className: 'pointer'
                 textContent: textContent
                 href: href
-
-            span = n 'span',
-                className: 'navlinks'
-                id: ++i
-            i1 = i + 1
+            if _i < l1
+                textContent = '▼'
+                href = "##{_i + 1}"
+            else
+                textContent = '▶'
+                href = "#{g.PAGENUM + 1}#0"
             down = n 'a',
                 className: 'pointer'
-            if i1 == l1
-                down.textContent = '▶'
-                down.href = "#{g.PAGENUM + 1}#1"
-            else
-                down.textContent = '▼'
-                down.href = "##{i1}"
-
+                textContent: textContent
+                href: href
             addTo span, up, tn(' '), down
             inBefore el, span
-        if location.hash is '#1'
+        if location.hash is '#0'
             window.location = window.location
 
     if getConfig 'Thread Expansion'
