@@ -406,7 +406,7 @@ keyAct = (e) ->
             location.pathname = "/#{g.BOARD}/#{temp}#1"
         when "J"
             temp = position + count
-            if temp > 10 then temp = 10
+            if temp > 9 then temp = 9
             location.hash = 'p' + temp
         when "K"
             temp = position - count

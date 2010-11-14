@@ -503,8 +503,8 @@
         break;
       case "J":
         temp = position + count;
-        if (temp > 10) {
-          temp = 10;
+        if (temp > 9) {
+          temp = 9;
         }
         location.hash = 'p' + temp;
         break;
