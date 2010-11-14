@@ -395,7 +395,8 @@ keyAct = (e) ->
             if e.shiftKey
                 location.hash = 10
             else
-                location.hash = 'navtop'
+                window.scrollTo 0, 0
+                location.hash = ''
     count or= 1
     switch char
         when "H"
