@@ -370,7 +370,7 @@ iframeLoad = ->
 
 keyboardNav = (e) ->
     char = String.fromCharCode e.keyCode
-    unless char in '1234567890GHJKLOT'
+    unless char in '1234567890GHJKLMOT'
         return
     e.preventDefault()
     hash = location.hash
@@ -413,6 +413,9 @@ keyboardNav = (e) ->
             temp = g.PAGENUM + count
             if temp > 15 then temp = 15
             location.pathname = "/#{g.BOARD}/#{temp}#1"
+        when "M"
+             img = $("#{hash} ~ img")
+             watch.call img
         when "O"
             qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
             quickReply.call qrLink

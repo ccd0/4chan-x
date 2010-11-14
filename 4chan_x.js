@@ -456,9 +456,9 @@
     return recaptchaReload();
   };
   keyboardNav = function(e) {
-    var _i, _len, char, count, hash, href, position, qrLink, temp;
+    var _i, _len, char, count, hash, href, img, position, qrLink, temp;
     char = String.fromCharCode(e.keyCode);
-    if (!((function(){ for (var _i=0, _len='1234567890GHJKLOT'.length; _i<_len; _i++) { if ('1234567890GHJKLOT'[_i] === char) return true; } return false; }).call(this))) {
+    if (!((function(){ for (var _i=0, _len='1234567890GHJKLMOT'.length; _i<_len; _i++) { if ('1234567890GHJKLMOT'[_i] === char) return true; } return false; }).call(this))) {
       return null;
     }
     e.preventDefault();
@@ -521,6 +521,10 @@
           temp = 15;
         }
         location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
+        break;
+      case "M":
+        img = $("" + (hash) + " ~ img");
+        watch.call(img);
         break;
       case "O":
         qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
