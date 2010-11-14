@@ -1,3 +1,11 @@
+1.10.0
+- keyboard actions:
+    - m to _mark (watch) threads
+    - t to open threads in _tabs
+    - o to _open quick reply
+- better mode switching
+- turn on keyboard actions
+
 1.9.1
 - add `count` for keynav
 - disable keynav when quick replying
