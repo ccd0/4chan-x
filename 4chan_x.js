@@ -1,12 +1,12 @@
 (function() {
-  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, inputs, keyboardNav, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
+  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, inputs, keyAct, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
     'Reply Hiding': [true, 'Hide single replies'],
     'Show Stubs': [true, 'Of hidden threads / replies'],
     'Thread Navigation': [true, 'Navigate to previous / next thread'],
-    'Keyboard Navigation': [false, 'Navigate threads w/ your keyboard'],
+    'Keyboard Actions': [false, 'Perform actions with your keyboard'],
     'Reply Navigation': [true, 'Navigate to the beginning / end of a thread'],
     'Thread Watcher': [true, 'Bookmark threads'],
     'Thread Expansion': [true, 'View all replies'],
@@ -272,7 +272,7 @@
     var div;
     div = this.parentNode.parentNode;
     remove(div);
-    return !g.REPLY && getConfig('Keyboard Navigation') ? d.addEventListener('keydown', keyboardNav, true) : null;
+    return !g.REPLY && getConfig('Keyboard Actions') ? d.addEventListener('keydown', keyAct, true) : null;
   };
   clearHidden = function() {
     GM_deleteValue("hiddenReplies/" + (g.BOARD) + "/");
@@ -449,13 +449,13 @@
       }
     } else {
       remove(qr);
-      if (!g.REPLY && getConfig('Keyboard Navigation')) {
-        d.addEventListener('keydown', keyboardNav, true);
+      if (!g.REPLY && getConfig('Keyboard Actions')) {
+        d.addEventListener('keydown', keyAct, true);
       }
     }
     return recaptchaReload();
   };
-  keyboardNav = function(e) {
+  keyAct = function(e) {
     var _i, _len, char, count, hash, href, img, kc, position, qrLink, temp;
     kc = e.keyCode;
     if (!((48 <= kc) && (kc <= 90))) {
@@ -655,7 +655,7 @@
   quickReply = function(e) {
     var _i, _len, _ref, _ref2, auto, autoBox, autohideB, clone, closeB, form, id, input, qr, script, selection, submit, text, textarea, titlebar, xpath;
     if (!(qr = $('#qr'))) {
-      d.removeEventListener('keydown', keyboardNav, true);
+      d.removeEventListener('keydown', keyAct, true);
       qr = AEOS.makeDialog('qr', 'topleft');
       titlebar = n('div', {
         innerHTML: 'Quick Reply ',
@@ -1223,8 +1223,8 @@
       }
     }
   } else {
-    if (getConfig('Keyboard Navigation')) {
-      d.addEventListener('keydown', keyboardNav, true);
+    if (getConfig('Keyboard Actions')) {
+      d.addEventListener('keydown', keyAct, true);
     }
     if (getConfig('Thread Hiding')) {
       delform = $('form[name=delform]');

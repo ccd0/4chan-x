@@ -11,7 +11,7 @@ config =
     'Reply Hiding':        [true, 'Hide single replies']
     'Show Stubs':          [true, 'Of hidden threads / replies']
     'Thread Navigation':   [true, 'Navigate to previous / next thread']
-    'Keyboard Navigation': [false, 'Navigate threads w/ your keyboard']
+    'Keyboard Actions':    [false, 'Perform actions with your keyboard']
     'Reply Navigation':    [true, 'Navigate to the beginning / end of a thread']
     'Thread Watcher':      [true, 'Bookmark threads']
     'Thread Expansion':    [true, 'View all replies']
@@ -206,8 +206,8 @@ autoWatch = ->
 closeQR = ->
     div = this.parentNode.parentNode
     remove div
-    if not g.REPLY and getConfig 'Keyboard Navigation'
-        d.addEventListener 'keydown', keyboardNav, true
+    if not g.REPLY and getConfig 'Keyboard Actions'
+        d.addEventListener 'keydown', keyAct, true
 
 clearHidden = ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -364,11 +364,11 @@ iframeLoad = ->
             $('input[title=autohide]:checked', qr)?.click()
     else
         remove qr
-        if not g.REPLY and getConfig 'Keyboard Navigation'
-            d.addEventListener 'keydown', keyboardNav, true
+        if not g.REPLY and getConfig 'Keyboard Actions'
+            d.addEventListener 'keydown', keyAct, true
     recaptchaReload()
 
-keyboardNav = (e) ->
+keyAct = (e) ->
     kc = e.keyCode
     #https://developer.mozilla.org/en/DOM/Event/UIEvent/KeyEvent
     # [0-9;=A-Z]
@@ -504,7 +504,7 @@ parseResponse = (responseText) ->
 
 quickReply = (e) ->
     unless qr = $ '#qr'
-        d.removeEventListener 'keydown', keyboardNav, true
+        d.removeEventListener 'keydown', keyAct, true
         #make quick reply dialog
         qr = AEOS.makeDialog 'qr', 'topleft'
         titlebar = n 'div',
@@ -947,8 +947,8 @@ if g.REPLY
             d.title = "/#{g.BOARD}/ - #{text}"
 
 else #not reply
-    if getConfig 'Keyboard Navigation'
-        d.addEventListener 'keydown', keyboardNav, true
+    if getConfig 'Keyboard Actions'
+        d.addEventListener 'keydown', keyAct, true
 
     if getConfig 'Thread Hiding'
         delform = $('form[name=delform]')
