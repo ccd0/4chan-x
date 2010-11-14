@@ -361,7 +361,7 @@ iframeLoad = ->
 
 keyboardNav = (e) ->
     char = String.fromCharCode e.keyCode
-    unless char in '1234567890GHJKL'
+    unless char in '1234567890GHJKLO'
         return
     e.preventDefault()
     hash = location.hash
@@ -404,6 +404,9 @@ keyboardNav = (e) ->
             temp = g.PAGENUM + count
             if temp > 15 then temp = 15
             location.pathname = "/#{g.BOARD}/#{temp}#1"
+        when "O"
+            qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
+            quickReply.call qrLink
     g.count = 0
 
 nodeInserted = (e) ->

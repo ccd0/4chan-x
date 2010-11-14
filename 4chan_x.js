@@ -445,9 +445,9 @@
     return recaptchaReload();
   };
   keyboardNav = function(e) {
-    var _i, _len, char, count, hash, position, temp;
+    var _i, _len, char, count, hash, position, qrLink, temp;
     char = String.fromCharCode(e.keyCode);
-    if (!((function(){ for (var _i=0, _len='1234567890GHJKL'.length; _i<_len; _i++) { if ('1234567890GHJKL'[_i] === char) return true; } return false; }).call(this))) {
+    if (!((function(){ for (var _i=0, _len='1234567890GHJKLO'.length; _i<_len; _i++) { if ('1234567890GHJKLO'[_i] === char) return true; } return false; }).call(this))) {
       return null;
     }
     e.preventDefault();
@@ -510,6 +510,10 @@
           temp = 15;
         }
         location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
+        break;
+      case "O":
+        qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
+        quickReply.call(qrLink);
         break;
     }
     return (g.count = 0);
