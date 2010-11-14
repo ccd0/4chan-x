@@ -445,9 +445,8 @@
     return recaptchaReload();
   };
   keyboardNav = function(e) {
-    var _i, _len, char, count, hash, kc, temp;
-    kc = e.keyCode;
-    char = String.fromCharCode(kc);
+    var _i, _len, char, count, hash, temp;
+    char = String.fromCharCode(e.keyCode);
     if (!((function(){ for (var _i=0, _len='1234567890GHJKL'.length; _i<_len; _i++) { if ('1234567890GHJKL'[_i] === char) return true; } return false; }).call(this))) {
       return null;
     }

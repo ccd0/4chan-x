@@ -360,8 +360,7 @@ iframeLoad = ->
     recaptchaReload()
 
 keyboardNav = (e) ->
-    kc = e.keyCode
-    char = String.fromCharCode kc
+    char = String.fromCharCode e.keyCode
     unless char in '1234567890GHJKL'
         return
     e.preventDefault()
