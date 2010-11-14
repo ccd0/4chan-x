@@ -371,6 +371,7 @@ keyAct = (e) ->
     # [0-9;=A-Z]
     unless 48 <= kc <= 90
         return
+    if e.ctrlKey or e.altKey then return
     e.preventDefault()
     char = String.fromCharCode kc
     hash = location.hash

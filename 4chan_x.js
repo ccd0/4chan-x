@@ -457,6 +457,9 @@
     if (!((48 <= kc) && (kc <= 90))) {
       return null;
     }
+    if (e.ctrlKey || e.altKey) {
+      return null;
+    }
     e.preventDefault();
     char = String.fromCharCode(kc);
     hash = location.hash;
