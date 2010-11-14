@@ -56,6 +56,7 @@ AEOS =
                 form.submit()
             form = document.createElement 'form'
             form.id = 'GM_form'
+            form.target = '_blank'
             document.body.appendChild form
 
         #dialog styling

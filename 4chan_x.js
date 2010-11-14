@@ -59,6 +59,7 @@
         };
         form = document.createElement('form');
         form.id = 'GM_form';
+        form.target = '_blank';
         document.body.appendChild(form);
       }
       return GM_addStyle('\
