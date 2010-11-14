@@ -445,12 +445,17 @@
     return recaptchaReload();
   };
   keyboardNav = function(e) {
-    var count, hash, kc, temp;
-    hash = Number(location.hash == null ? undefined : location.hash.substring(1)) || 0;
+    var _i, _len, char, count, hash, kc, temp;
     kc = e.keyCode;
+    char = String.fromCharCode(kc);
+    if (!((function(){ for (var _i=0, _len='1234567890GHJKL'.length; _i<_len; _i++) { if ('1234567890GHJKL'[_i] === char) return true; } return false; }).call(this))) {
+      return null;
+    }
+    e.preventDefault();
+    hash = Number(location.hash == null ? undefined : location.hash.substring(1)) || 0;
     count = g.count;
-    if ((48 <= kc) && (kc <= 57)) {
-      temp = kc - 48;
+    if ((function(){ for (var _i=0, _len='1234567890'.length; _i<_len; _i++) { if ('1234567890'[_i] === char) return true; } return false; }).call(this)) {
+      temp = Number(char);
       if (temp === 0 && count === 0) {
         location.pathname = ("/" + (g.BOARD) + "/#1");
       } else {
@@ -458,7 +463,7 @@
       }
       return null;
     }
-    if (kc === 71) {
+    if (char === "G") {
       if (count) {
         temp = count > 15 ? 15 : count;
         location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
@@ -471,29 +476,29 @@
       }
     }
     count || (count = 1);
-    switch (kc) {
-      case 72:
+    switch (char) {
+      case "H":
         temp = g.PAGENUM - count;
         if (temp < 0) {
           temp = 0;
         }
         location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
         break;
-      case 74:
+      case "J":
         temp = hash + count;
         if (temp > 10) {
           temp = 10;
         }
         location.hash = temp;
         break;
-      case 75:
+      case "K":
         temp = hash - count;
         if (temp <= 0) {
           temp = 'navtop';
         }
         location.hash = temp;
         break;
-      case 76:
+      case "L":
         temp = g.PAGENUM + count;
         if (temp > 15) {
           temp = 15;

@@ -360,17 +360,21 @@ iframeLoad = ->
     recaptchaReload()
 
 keyboardNav = (e) ->
-    hash = Number(location.hash?.substring(1)) or 0
     kc = e.keyCode
+    char = String.fromCharCode kc
+    unless char in '1234567890GHJKL'
+        return
+    e.preventDefault()
+    hash = Number(location.hash?.substring(1)) or 0
     count = g.count
-    if 48 <= kc <= 57 # 0 - 9
-        temp = kc - 48
+    if char in '1234567890'
+        temp = Number char
         if temp is 0 and count is 0 # special - immediately go to page 0
             location.pathname = "/#{g.BOARD}/#1"
         else
             g.count = (count * 10) + temp
         return
-    if kc is 71 #g
+    if char is "G"
         if count
             temp = if count > 15 then 15 else count
             location.pathname = "/#{g.BOARD}/#{temp}#1"
@@ -380,20 +384,20 @@ keyboardNav = (e) ->
             else
                 location.hash = 'navtop'
     count or= 1
-    switch kc
-        when 72 #h
+    switch char
+        when "H"
             temp = g.PAGENUM - count
             if temp < 0 then temp = 0
             location.pathname = "/#{g.BOARD}/#{temp}#1"
-        when 74 #j
+        when "J"
             temp = hash + count
             if temp > 10 then temp = 10
             location.hash = temp
-        when 75 #k
+        when "K"
             temp = hash - count
             if temp <= 0 then temp = 'navtop'
             location.hash = temp
-        when 76 #l
+        when "L"
             temp = g.PAGENUM + count
             if temp > 15 then temp = 15
             location.pathname = "/#{g.BOARD}/#{temp}#1"
