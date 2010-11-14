@@ -52,7 +52,7 @@ AEOS =
                 document.getElementsByTagName('head')[0].appendChild style
             window.GM_openInTab = (url) ->
                 form = document.getElementById 'GM_form'
-                form.action = link
+                form.action = url
                 form.submit()
             form = document.createElement 'form'
             form.id = 'GM_form'

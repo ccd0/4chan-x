@@ -54,7 +54,7 @@
         window.GM_openInTab = function(url) {
           var form;
           form = document.getElementById('GM_form');
-          form.action = link;
+          form.action = url;
           return form.submit();
         };
         form = document.createElement('form');
