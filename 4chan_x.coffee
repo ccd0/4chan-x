@@ -376,9 +376,10 @@ keyAct = (e) ->
     char = String.fromCharCode kc
     hash = location.hash
     if not hash or hash == '#navtop'
-        position = 0
+        position = -1
     else
-        position = Number(hash.substring 2) or 0
+        temp = Number(hash.substring 2)
+        position = if temp is NaN then -1 else temp
     count = g.count
     if char in '1234567890'
         temp = Number char
@@ -409,7 +410,7 @@ keyAct = (e) ->
             location.hash = 'p' + temp
         when "K"
             temp = position - count
-            if temp <= 0 then temp = 'navtop' else temp = 'p' + temp
+            if temp < 0 then temp = 'navtop' else temp = 'p' + temp
             location.hash = temp
         when "L"
             temp = g.PAGENUM + count

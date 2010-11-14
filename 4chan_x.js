@@ -464,9 +464,10 @@
     char = String.fromCharCode(kc);
     hash = location.hash;
     if (!hash || hash === '#navtop') {
-      position = 0;
+      position = -1;
     } else {
-      position = Number(hash.substring(2)) || 0;
+      temp = Number(hash.substring(2));
+      position = temp === NaN ? -1 : temp;
     }
     count = g.count;
     if ((function(){ for (var _i=0, _len='1234567890'.length; _i<_len; _i++) { if ('1234567890'[_i] === char) return true; } return false; }).call(this)) {
@@ -509,7 +510,7 @@
         break;
       case "K":
         temp = position - count;
-        if (temp <= 0) {
+        if (temp < 0) {
           temp = 'navtop';
         } else {
           temp = 'p' + temp;
