@@ -22,7 +22,6 @@
   };
   AEOS = {
     init: function() {
-      var form;
       if (!(typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null)) {
         window.GM_setValue = function(name, value) {
           value = (typeof value)[0] + value;
@@ -52,15 +51,8 @@
           return document.getElementsByTagName('head')[0].appendChild(style);
         };
         window.GM_openInTab = function(url) {
-          var form;
-          form = document.getElementById('GM_form');
-          form.action = url;
-          return form.submit();
+          return window.open(url, "_blank");
         };
-        form = document.createElement('form');
-        form.id = 'GM_form';
-        form.target = '_blank';
-        document.body.appendChild(form);
       }
       return GM_addStyle('\
             div.dialog {\

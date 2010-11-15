@@ -51,13 +51,7 @@ AEOS =
                 style.textContent = css
                 document.getElementsByTagName('head')[0].appendChild style
             window.GM_openInTab = (url) ->
-                form = document.getElementById 'GM_form'
-                form.action = url
-                form.submit()
-            form = document.createElement 'form'
-            form.id = 'GM_form'
-            form.target = '_blank'
-            document.body.appendChild form
+                window.open url, "_blank"
 
         #dialog styling
         GM_addStyle '
