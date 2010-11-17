@@ -263,7 +263,8 @@
   closeQR = function() {
     var div;
     div = this.parentNode.parentNode;
-    return remove(div);
+    remove(div);
+    return keyActAdd();
   };
   clearHidden = function() {
     GM_deleteValue("hiddenReplies/" + (g.BOARD) + "/");
@@ -347,7 +348,8 @@
     }
     recaptcha = $('input[name=recaptcha_response_field]', this);
     if (recaptcha.value) {
-      return (typeof (_ref2 = ((_ref = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
+      (typeof (_ref2 = ((_ref = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
+      return keyActAdd();
     } else {
       e.preventDefault();
       span = n('span', {
@@ -427,6 +429,7 @@
       });
       addTo(qr, span);
       (typeof (_ref2 = ((_ref = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
+      keyActRem();
     } else if (g.REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';
@@ -534,7 +537,7 @@
     return (g.count = 0);
   };
   keyActAdd = function() {
-    return d.addEventListener('keydown', keyAct, true);
+    return !g.REPLY && getConfig('Keyboard Actions') ? d.addEventListener('keydown', keyAct, true) : null;
   };
   keyActRem = function() {
     return d.removeEventListener('keydown', keyAct, true);

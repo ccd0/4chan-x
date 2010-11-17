@@ -200,6 +200,7 @@ autoWatch = ->
 closeQR = ->
     div = this.parentNode.parentNode
     remove div
+    keyActAdd()
 
 clearHidden = ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -274,10 +275,11 @@ expandThread = ->
 
 formSubmit = (e) ->
     if span = @nextSibling
-        remove(span)
+        remove span
     recaptcha = $('input[name=recaptcha_response_field]', this)
     if recaptcha.value
         $('#qr input[title=autohide]:not(:checked)')?.click()
+        keyActAdd()
     else
         e.preventDefault()
         span = n 'span',
@@ -343,6 +345,7 @@ iframeLoad = ->
             className: 'error'
         addTo qr, span
         $('input[title=autohide]:checked', qr)?.click()
+        keyActRem()
     else if g.REPLY and getConfig 'Persistent QR'
         $('textarea', qr).value = ''
         $('input[name=recaptcha_response_field]', qr).value = ''
@@ -424,7 +427,8 @@ keyAct = (e) ->
     g.count = 0
 
 keyActAdd = ->
-    d.addEventListener 'keydown', keyAct, true
+    if not g.REPLY and getConfig 'Keyboard Actions'
+        d.addEventListener 'keydown', keyAct, true
 
 keyActRem = ->
     d.removeEventListener 'keydown', keyAct, true
