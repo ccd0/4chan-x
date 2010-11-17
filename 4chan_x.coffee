@@ -387,39 +387,46 @@ keypress = (e) ->
             location.pathname = "/#{g.BOARD}/#{temp}#1"
         else
             if e.shiftKey
-                location.hash = 10
+                window.scrollTo 0, 99999
             else
                 window.scrollTo 0, 0
                 location.hash = ''
     count or= 1
-    switch char
-        when "H"
-            temp = g.PAGENUM - count
-            if temp < 0 then temp = 0
-            location.pathname = "/#{g.BOARD}/#{temp}#1"
-        when "I"
-            qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
-            quickReply.call qrLink
-            ta = $ '#qr textarea'
-            ta.focus()
-        when "J"
-            temp = position + count
-            if temp > 9 then temp = 9
-            location.hash = 'p' + temp
-        when "K"
-            temp = position - count
-            if temp < 0 then temp = 'navtop' else temp = 'p' + temp
-            location.hash = temp
-        when "L"
-            temp = g.PAGENUM + count
-            if temp > 15 then temp = 15
-            location.pathname = "/#{g.BOARD}/#{temp}#0"
-        when "M"
-             img = $("#{hash} ~ img")
-             watch.call img
-        when "O"
-            href = $("#{hash} ~ span[id] a:last-of-type").href
-            GM_openInTab href
+    if g.REPLY
+        switch char
+            when "J"
+                window.scrollBy 0,  20 * count
+            when "K"
+                window.scrollBy 0, -20 * count
+    else
+        switch char
+            when "H"
+                temp = g.PAGENUM - count
+                if temp < 0 then temp = 0
+                location.pathname = "/#{g.BOARD}/#{temp}#1"
+            when "I"
+                qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
+                quickReply.call qrLink
+                ta = $ '#qr textarea'
+                ta.focus()
+            when "J"
+                temp = position + count
+                if temp > 9 then temp = 9
+                location.hash = 'p' + temp
+            when "K"
+                temp = position - count
+                if temp < 0 then temp = 'navtop' else temp = 'p' + temp
+                location.hash = temp
+            when "L"
+                temp = g.PAGENUM + count
+                if temp > 15 then temp = 15
+                location.pathname = "/#{g.BOARD}/#{temp}#0"
+            when "M"
+                 img = $("#{hash} ~ img")
+                 watch.call img
+            when "O"
+                href = $("#{hash} ~ span[id] a:last-of-type").href
+                GM_openInTab href
     g.count = 0
 
 keydown = (e) ->
@@ -434,7 +441,7 @@ keydown = (e) ->
         g.keyCode = kc
 
 keyActAdd = ->
-    if not g.REPLY and getConfig 'Keyboard Actions'
+    if getConfig 'Keyboard Actions'
         d.addEventListener 'keydown', keydown, true
         d.addEventListener 'keypress', keypress, true
 
@@ -955,6 +962,14 @@ if getConfig 'Reply Navigation'
             addTo span, tn(' '), up, tn(' '), down
             inAfter el, span
 
+if getConfig 'Keyboard Actions'
+    form = $ 'div.postarea > form'
+    inputs = $$ 'input[type=text], textarea', form
+    for input in inputs
+        input.addEventListener 'focus', keyActRem, true
+        input.addEventListener 'blur',  keyActAdd, true
+    keyActAdd()
+
 if g.REPLY
     if getConfig('Quick Reply') and getConfig 'Persistent QR'
         quickReply()
@@ -966,14 +981,6 @@ if g.REPLY
             d.title = "/#{g.BOARD}/ - #{text}"
 
 else #not reply
-    if getConfig 'Keyboard Actions'
-        form = $ 'div.postarea > form'
-        inputs = $$ 'input[type=text], textarea', form
-        for input in inputs
-            input.addEventListener 'focus', keyActRem, true
-            input.addEventListener 'blur',  keyActAdd, true
-        keyActAdd()
-
     if getConfig 'Thread Hiding'
         delform = $('form[name=delform]')
         #don't confuse other scripts

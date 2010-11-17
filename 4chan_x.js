@@ -477,7 +477,7 @@
         location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
       } else {
         if (e.shiftKey) {
-          location.hash = 10;
+          window.scrollTo(0, 99999);
         } else {
           window.scrollTo(0, 0);
           location.hash = '';
@@ -485,51 +485,62 @@
       }
     }
     count || (count = 1);
-    switch (char) {
-      case "H":
-        temp = g.PAGENUM - count;
-        if (temp < 0) {
-          temp = 0;
-        }
-        location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
-        break;
-      case "I":
-        qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
-        quickReply.call(qrLink);
-        ta = $('#qr textarea');
-        ta.focus();
-        break;
-      case "J":
-        temp = position + count;
-        if (temp > 9) {
-          temp = 9;
-        }
-        location.hash = 'p' + temp;
-        break;
-      case "K":
-        temp = position - count;
-        if (temp < 0) {
-          temp = 'navtop';
-        } else {
-          temp = 'p' + temp;
-        }
-        location.hash = temp;
-        break;
-      case "L":
-        temp = g.PAGENUM + count;
-        if (temp > 15) {
-          temp = 15;
-        }
-        location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#0");
-        break;
-      case "M":
-        img = $("" + (hash) + " ~ img");
-        watch.call(img);
-        break;
-      case "O":
-        href = $("" + (hash) + " ~ span[id] a:last-of-type").href;
-        GM_openInTab(href);
-        break;
+    if (g.REPLY) {
+      switch (char) {
+        case "J":
+          window.scrollBy(0, 20 * count);
+          break;
+        case "K":
+          window.scrollBy(0, -20 * count);
+          break;
+      }
+    } else {
+      switch (char) {
+        case "H":
+          temp = g.PAGENUM - count;
+          if (temp < 0) {
+            temp = 0;
+          }
+          location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
+          break;
+        case "I":
+          qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
+          quickReply.call(qrLink);
+          ta = $('#qr textarea');
+          ta.focus();
+          break;
+        case "J":
+          temp = position + count;
+          if (temp > 9) {
+            temp = 9;
+          }
+          location.hash = 'p' + temp;
+          break;
+        case "K":
+          temp = position - count;
+          if (temp < 0) {
+            temp = 'navtop';
+          } else {
+            temp = 'p' + temp;
+          }
+          location.hash = temp;
+          break;
+        case "L":
+          temp = g.PAGENUM + count;
+          if (temp > 15) {
+            temp = 15;
+          }
+          location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#0");
+          break;
+        case "M":
+          img = $("" + (hash) + " ~ img");
+          watch.call(img);
+          break;
+        case "O":
+          href = $("" + (hash) + " ~ span[id] a:last-of-type").href;
+          GM_openInTab(href);
+          break;
+      }
     }
     return (g.count = 0);
   };
@@ -545,7 +556,7 @@
     }
   };
   keyActAdd = function() {
-    if (!g.REPLY && getConfig('Keyboard Actions')) {
+    if (getConfig('Keyboard Actions')) {
       d.addEventListener('keydown', keydown, true);
       return d.addEventListener('keypress', keypress, true);
     }
@@ -1233,6 +1244,17 @@
       return _result;
     });
   }
+  if (getConfig('Keyboard Actions')) {
+    form = $('div.postarea > form');
+    inputs = $$('input[type=text], textarea', form);
+    _ref = inputs;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      input = _ref[_i];
+      input.addEventListener('focus', keyActRem, true);
+      input.addEventListener('blur', keyActAdd, true);
+    }
+    keyActAdd();
+  }
   if (g.REPLY) {
     if (getConfig('Quick Reply') && getConfig('Persistent QR')) {
       quickReply();
@@ -1247,17 +1269,6 @@
       }
     }
   } else {
-    if (getConfig('Keyboard Actions')) {
-      form = $('div.postarea > form');
-      inputs = $$('input[type=text], textarea', form);
-      _ref = inputs;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        input = _ref[_i];
-        input.addEventListener('focus', keyActRem, true);
-        input.addEventListener('blur', keyActAdd, true);
-      }
-      keyActAdd();
-    }
     if (getConfig('Thread Hiding')) {
       delform = $('form[name=delform]');
       d.addEventListener('DOMNodeInserted', stopPropagation, true);
