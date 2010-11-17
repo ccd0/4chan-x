@@ -362,13 +362,9 @@ iframeLoad = ->
     recaptchaReload()
 
 
-keyAct = (e) ->
-    kc = e.keyCode
-    #https://developer.mozilla.org/en/DOM/Event/UIEvent/KeyEvent
-    # [0-9;=A-Z]
-    unless 48 <= kc <= 90
-        return
-    if e.ctrlKey or e.altKey then return
+keypress = (e) ->
+    kc = g.keyCode
+    if kc is -1 then return
     e.preventDefault()
     char = String.fromCharCode kc
     hash = location.hash
@@ -426,12 +422,25 @@ keyAct = (e) ->
             GM_openInTab href
     g.count = 0
 
+keydown = (e) ->
+    kc = e.keyCode
+    #https://developer.mozilla.org/en/DOM/Event/UIEvent/KeyEvent
+    # [0-9;=A-Z]
+    unless 48 <= kc <= 90
+        g.keyCode = -1
+    else if e.ctrlKey or e.altKey
+        g.keyCode = -1
+    else
+        g.keyCode = kc
+
 keyActAdd = ->
     if not g.REPLY and getConfig 'Keyboard Actions'
-        d.addEventListener 'keydown', keyAct, true
+        d.addEventListener 'keydown', keydown, true
+        d.addEventListener 'keypress', keypress, true
 
 keyActRem = ->
-    d.removeEventListener 'keydown', keyAct, true
+    d.removeEventListener 'keydown', keydown, true
+    d.removeEventListener 'keypress', keypress, true
 
 nodeInserted = (e) ->
     target = e.target

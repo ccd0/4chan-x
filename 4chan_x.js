@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keyAct, keyActAdd, keyActRem, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
+  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keyActAdd, keyActRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -446,13 +446,10 @@
     }
     return recaptchaReload();
   };
-  keyAct = function(e) {
+  keypress = function(e) {
     var _i, _len, char, count, hash, href, img, kc, position, qrLink, ta, temp;
-    kc = e.keyCode;
-    if (!((48 <= kc) && (kc <= 90))) {
-      return null;
-    }
-    if (e.ctrlKey || e.altKey) {
+    kc = g.keyCode;
+    if (kc === -1) {
       return null;
     }
     e.preventDefault();
@@ -536,11 +533,26 @@
     }
     return (g.count = 0);
   };
+  keydown = function(e) {
+    var kc;
+    kc = e.keyCode;
+    if (!((48 <= kc) && (kc <= 90))) {
+      return (g.keyCode = -1);
+    } else if (e.ctrlKey || e.altKey) {
+      return (g.keyCode = -1);
+    } else {
+      return (g.keyCode = kc);
+    }
+  };
   keyActAdd = function() {
-    return !g.REPLY && getConfig('Keyboard Actions') ? d.addEventListener('keydown', keyAct, true) : null;
+    if (!g.REPLY && getConfig('Keyboard Actions')) {
+      d.addEventListener('keydown', keydown, true);
+      return d.addEventListener('keypress', keypress, true);
+    }
   };
   keyActRem = function() {
-    return d.removeEventListener('keydown', keyAct, true);
+    d.removeEventListener('keydown', keydown, true);
+    return d.removeEventListener('keypress', keypress, true);
   };
   nodeInserted = function(e) {
     var _i, _len, _ref, _result, callback, qr, target;
