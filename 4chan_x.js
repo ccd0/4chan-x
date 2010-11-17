@@ -468,7 +468,7 @@
     if ((function(){ for (var _i=0, _len='1234567890'.length; _i<_len; _i++) { if ('1234567890'[_i] === char) return true; } return false; }).call(this)) {
       temp = Number(char);
       if (temp === 0 && count === 0) {
-        location.pathname = ("/" + (g.BOARD) + "/#1");
+        location.pathname = ("/" + (g.BOARD));
       } else {
         g.count = (count * 10) + temp;
       }
@@ -523,7 +523,7 @@
         if (temp > 15) {
           temp = 15;
         }
-        location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
+        location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#0");
         break;
       case "M":
         img = $("" + (hash) + " ~ img");

@@ -381,7 +381,7 @@ keyAct = (e) ->
     if char in '1234567890'
         temp = Number char
         if temp is 0 and count is 0 # special - immediately go to page 0
-            location.pathname = "/#{g.BOARD}/#1"
+            location.pathname = "/#{g.BOARD}"
         else
             g.count = (count * 10) + temp
         return
@@ -417,7 +417,7 @@ keyAct = (e) ->
         when "L"
             temp = g.PAGENUM + count
             if temp > 15 then temp = 15
-            location.pathname = "/#{g.BOARD}/#{temp}#1"
+            location.pathname = "/#{g.BOARD}/#{temp}#0"
         when "M"
              img = $("#{hash} ~ img")
              watch.call img
