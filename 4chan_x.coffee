@@ -398,6 +398,11 @@ keyAct = (e) ->
             temp = g.PAGENUM - count
             if temp < 0 then temp = 0
             location.pathname = "/#{g.BOARD}/#{temp}#1"
+        when "I"
+            qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
+            quickReply.call qrLink
+            ta = $ '#qr textarea'
+            ta.focus()
         when "J"
             temp = position + count
             if temp > 9 then temp = 9
@@ -414,11 +419,6 @@ keyAct = (e) ->
              img = $("#{hash} ~ img")
              watch.call img
         when "O"
-            qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
-            quickReply.call qrLink
-            ta = $ '#qr textarea'
-            ta.focus()
-        when "T"
             href = $("#{hash} ~ span[id] a:last-of-type").href
             GM_openInTab href
     g.count = 0

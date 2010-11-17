@@ -493,6 +493,12 @@
         }
         location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
         break;
+      case "I":
+        qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
+        quickReply.call(qrLink);
+        ta = $('#qr textarea');
+        ta.focus();
+        break;
       case "J":
         temp = position + count;
         if (temp > 9) {
@@ -521,12 +527,6 @@
         watch.call(img);
         break;
       case "O":
-        qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
-        quickReply.call(qrLink);
-        ta = $('#qr textarea');
-        ta.focus();
-        break;
-      case "T":
         href = $("" + (hash) + " ~ span[id] a:last-of-type").href;
         GM_openInTab(href);
         break;
