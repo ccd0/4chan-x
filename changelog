@@ -1,3 +1,10 @@
+1.11.0
+- reply keybinds
+- repeatable keybinds
+- change keybinds:
+    - o = open thread in new tab
+    - i = enter insert mode and open quick reply
+
 1.10.1
 - fix kb thread nav
 - hack to focus qr
