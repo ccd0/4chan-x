@@ -349,7 +349,7 @@
       thread = _ref[_i];
       bottom = thread.getBoundingClientRect().bottom;
       if (bottom > 0) {
-        return thread;
+        return [thread, _i];
       }
     }
     return _result;
@@ -523,7 +523,8 @@
           return quickReply.call(qrLink);
         case "J":
           if (e.shiftKey) {
-            thread = getThread();
+            _ref = getThread();
+            thread = _ref[0];
             replies = $$('td[id]', thread);
             _ref = replies;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -541,7 +542,8 @@
           break;
         case "K":
           if (e.shiftKey) {
-            thread = getThread();
+            _ref = getThread();
+            thread = _ref[0];
             replies = $$('td[id]', thread);
             _ref = replies;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -822,18 +824,11 @@
     return input.click();
   };
   scroll = function(count) {
-    var _i, _len, _ref, bottom, hash, idx, temp, thread, threads, top;
-    threads = $$('div.thread');
-    _ref = threads;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      thread = _ref[_i];
-      bottom = thread.getBoundingClientRect().bottom;
-      if (bottom > 0) {
-        top = thread.getBoundingClientRect().top;
-        idx = _i;
-        break;
-      }
-    }
+    var _ref, hash, idx, temp, thread, top;
+    _ref = getThread();
+    thread = _ref[0];
+    idx = _ref[1];
+    top = thread.getBoundingClientRect().top;
     if (idx === 0 && top > 1) {
       idx = -1;
     }

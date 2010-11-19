@@ -278,7 +278,7 @@ getThread = ->
     for thread in threads
         bottom = thread.getBoundingClientRect().bottom
         if bottom > 0 #we have not scrolled past
-            return thread
+            return [thread, _i]
 
 formSubmit = (e) ->
     if span = @nextSibling
@@ -420,7 +420,7 @@ keypress = (e) ->
                 quickReply.call qrLink
             when "J"
                 if e.shiftKey
-                    thread = getThread()
+                    [thread] = getThread()
                     replies = $$ 'td[id]', thread
                     for reply in replies
                         if reply.className is 'replyhl'
@@ -432,7 +432,7 @@ keypress = (e) ->
                     scroll count
             when "K"
                 if e.shiftKey
-                    thread = getThread()
+                    [thread] = getThread()
                     replies = $$ 'td[id]', thread
                     for reply in replies
                         if reply.className is 'replyhl'
@@ -637,13 +637,8 @@ report = ->
     input.click()
 
 scroll = (count) ->
-    threads = $$ 'div.thread'
-    for thread in threads
-        bottom = thread.getBoundingClientRect().bottom
-        if bottom > 0 #we have not scrolled past
-            top = thread.getBoundingClientRect().top
-            idx = _i
-            break
+    [thread, idx] = getThread()
+    top = thread.getBoundingClientRect().top
     if idx is 0 and top > 1
         #we haven't scrolled to the first thread
         idx = -1
