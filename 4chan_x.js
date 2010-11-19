@@ -519,7 +519,11 @@
           }
           return (location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1"));
         case "I":
-          qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
+          _ref = getThread();
+          thread = _ref[0];
+          if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)', thread))) {
+            qrLink = $("span#nothread" + (thread.id) + " a:not(:first-child)", thread);
+          }
           return quickReply.call(qrLink);
         case "J":
           if (e.shiftKey) {

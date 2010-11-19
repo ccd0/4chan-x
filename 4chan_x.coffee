@@ -416,7 +416,10 @@ keypress = (e) ->
                 if temp < 0 then temp = 0
                 location.pathname = "/#{g.BOARD}/#{temp}#1"
             when "I"
-                qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
+                #TODO scroll when replying to op
+                [thread] = getThread()
+                unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
+                    qrLink = $ "span#nothread#{thread.id} a:not(:first-child)", thread
                 quickReply.call qrLink
             when "J"
                 if e.shiftKey
