@@ -376,11 +376,6 @@ keypress = (e) ->
     e.preventDefault()
     char = String.fromCharCode kc
     hash = location.hash
-    if not hash or hash == '#navtop'
-        position = -1
-    else
-        temp = Number(hash.substring 2)
-        position = if temp is NaN then -1 else temp
     count = g.count
     if char in '1234567890'
         temp = Number char
@@ -416,13 +411,9 @@ keypress = (e) ->
                 qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
                 quickReply.call qrLink
             when "J"
-                temp = position + count
-                if temp > 9 then temp = 9
-                location.hash = 'p' + temp
+                scroll count
             when "K"
-                temp = position - count
-                if temp < 0 then temp = 'navtop' else temp = 'p' + temp
-                location.hash = temp
+                scroll count * -1
             when "L"
                 temp = g.PAGENUM + count
                 if temp > 15 then temp = 15
@@ -617,6 +608,30 @@ report = ->
     input.click()
     $('input[value="Report"]').click()
     input.click()
+
+scroll = (count) ->
+    threads = $$ 'div.thread'
+    for thread in threads
+        bottom = thread.getBoundingClientRect().bottom
+        if bottom > 0 #we have not scrolled past
+            top = thread.getBoundingClientRect().top
+            idx = _i
+            break
+    if idx is 0 and top > 1
+        #we haven't scrolled to the first thread
+        idx = -1
+    if count < 0 and top < -1
+        #we've started scrolling past this thread,
+        # but now want to read from the beginning
+        count++
+    temp = idx + count
+    if temp < 0
+        hash = ''
+    else if temp > 9
+        hash = 'p9'
+    else
+        hash = "p#{temp}"
+    location.hash = hash
 
 showReply = ->
     div = this.parentNode

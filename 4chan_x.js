@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
+  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -457,7 +457,7 @@
     return d.removeEventListener('keypress', keypress, true);
   };
   keypress = function(e) {
-    var _i, _len, char, count, hash, href, img, kc, position, qrLink, temp;
+    var _i, _len, char, count, hash, href, img, kc, qrLink, temp;
     kc = g.keyCode;
     if (kc === -1) {
       return null;
@@ -465,12 +465,6 @@
     e.preventDefault();
     char = String.fromCharCode(kc);
     hash = location.hash;
-    if (!hash || hash === '#navtop') {
-      position = -1;
-    } else {
-      temp = Number(hash.substring(2));
-      position = temp === NaN ? -1 : temp;
-    }
     count = g.count;
     if ((function(){ for (var _i=0, _len='1234567890'.length; _i<_len; _i++) { if ('1234567890'[_i] === char) return true; } return false; }).call(this)) {
       temp = Number(char);
@@ -518,20 +512,10 @@
           quickReply.call(qrLink);
           break;
         case "J":
-          temp = position + count;
-          if (temp > 9) {
-            temp = 9;
-          }
-          location.hash = 'p' + temp;
+          scroll(count);
           break;
         case "K":
-          temp = position - count;
-          if (temp < 0) {
-            temp = 'navtop';
-          } else {
-            temp = 'p' + temp;
-          }
-          location.hash = temp;
+          scroll(count * -1);
           break;
         case "L":
           temp = g.PAGENUM + count;
@@ -800,6 +784,35 @@
     input.click();
     $('input[value="Report"]').click();
     return input.click();
+  };
+  scroll = function(count) {
+    var _i, _len, _ref, bottom, hash, idx, temp, thread, threads, top;
+    threads = $$('div.thread');
+    _ref = threads;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      thread = _ref[_i];
+      bottom = thread.getBoundingClientRect().bottom;
+      if (bottom > 0) {
+        top = thread.getBoundingClientRect().top;
+        idx = _i;
+        break;
+      }
+    }
+    if (idx === 0 && top > 1) {
+      idx = -1;
+    }
+    if (count < 0 && top < -1) {
+      count++;
+    }
+    temp = idx + count;
+    if (temp < 0) {
+      hash = '';
+    } else if (temp > 9) {
+      hash = 'p9';
+    } else {
+      hash = ("p" + (temp));
+    }
+    return (location.hash = hash);
   };
   showReply = function() {
     var div, id, table;
