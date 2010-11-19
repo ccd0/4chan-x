@@ -1,3 +1,7 @@
+1.11.1
+- fix reply mode switching (bringing up quick reply now correctly disables
+keybinds)
+
 1.11.0
 - reply keybinds
 - repeatable keybinds
