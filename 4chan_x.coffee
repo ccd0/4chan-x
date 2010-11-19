@@ -200,7 +200,7 @@ autoWatch = ->
 closeQR = ->
     div = this.parentNode.parentNode
     remove div
-    keyActAdd()
+    keybindAdd()
 
 clearHidden = ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -279,7 +279,7 @@ formSubmit = (e) ->
     recaptcha = $('input[name=recaptcha_response_field]', this)
     if recaptcha.value
         $('#qr input[title=autohide]:not(:checked)')?.click()
-        keyActAdd()
+        keybindAdd()
     else
         e.preventDefault()
         span = n 'span',
@@ -345,7 +345,7 @@ iframeLoad = ->
             className: 'error'
         addTo qr, span
         $('input[title=autohide]:checked', qr)?.click()
-        keyActRem()
+        keybindRem()
     else if g.REPLY and getConfig 'Persistent QR'
         $('textarea', qr).value = ''
         $('input[name=recaptcha_response_field]', qr).value = ''
@@ -361,6 +361,14 @@ iframeLoad = ->
         remove qr
     recaptchaReload()
 
+keybindAdd = ->
+    if getConfig 'Keybinds'
+        d.addEventListener 'keydown', keydown, true
+        d.addEventListener 'keypress', keypress, true
+
+keybindRem = ->
+    d.removeEventListener 'keydown', keydown, true
+    d.removeEventListener 'keypress', keypress, true
 
 keypress = (e) ->
     kc = g.keyCode
@@ -437,15 +445,6 @@ keydown = (e) ->
         g.keyCode = -1
     else
         g.keyCode = kc
-
-keyActAdd = ->
-    if getConfig 'Keybinds'
-        d.addEventListener 'keydown', keydown, true
-        d.addEventListener 'keypress', keypress, true
-
-keyActRem = ->
-    d.removeEventListener 'keydown', keydown, true
-    d.removeEventListener 'keypress', keypress, true
 
 nodeInserted = (e) ->
     target = e.target
@@ -555,8 +554,8 @@ quickReply = (e) ->
         if getConfig 'Keybinds'
             inputs = $$ 'input[type=text], textarea', clone
             for input in inputs
-                input.addEventListener 'focus', keyActRem, true
-                input.addEventListener 'blur',  keyActAdd, true
+                input.addEventListener 'focus', keybindRem, true
+                input.addEventListener 'blur',  keybindAdd, true
         if not g.REPLY
             #figure out which thread we're replying to
             xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
@@ -965,9 +964,9 @@ if getConfig 'Keybinds'
     form = $ 'div.postarea > form'
     inputs = $$ 'input[type=text], textarea', form
     for input in inputs
-        input.addEventListener 'focus', keyActRem, true
-        input.addEventListener 'blur',  keyActAdd, true
-    keyActAdd()
+        input.addEventListener 'focus', keybindRem, true
+        input.addEventListener 'blur',  keybindAdd, true
+    keybindAdd()
 
 if g.REPLY
     if getConfig('Quick Reply') and getConfig 'Persistent QR'

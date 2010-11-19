@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keyActAdd, keyActRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
+  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -264,7 +264,7 @@
     var div;
     div = this.parentNode.parentNode;
     remove(div);
-    return keyActAdd();
+    return keybindAdd();
   };
   clearHidden = function() {
     GM_deleteValue("hiddenReplies/" + (g.BOARD) + "/");
@@ -349,7 +349,7 @@
     recaptcha = $('input[name=recaptcha_response_field]', this);
     if (recaptcha.value) {
       (typeof (_ref2 = ((_ref = $('#qr input[title=autohide]:not(:checked)')))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
-      return keyActAdd();
+      return keybindAdd();
     } else {
       e.preventDefault();
       span = n('span', {
@@ -429,7 +429,7 @@
       });
       addTo(qr, span);
       (typeof (_ref2 = ((_ref = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
-      keyActRem();
+      keybindRem();
     } else if (g.REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';
@@ -445,6 +445,16 @@
       remove(qr);
     }
     return recaptchaReload();
+  };
+  keybindAdd = function() {
+    if (getConfig('Keybinds')) {
+      d.addEventListener('keydown', keydown, true);
+      return d.addEventListener('keypress', keypress, true);
+    }
+  };
+  keybindRem = function() {
+    d.removeEventListener('keydown', keydown, true);
+    return d.removeEventListener('keypress', keypress, true);
   };
   keypress = function(e) {
     var _i, _len, char, count, hash, href, img, kc, position, qrLink, temp;
@@ -552,16 +562,6 @@
     } else {
       return (g.keyCode = kc);
     }
-  };
-  keyActAdd = function() {
-    if (getConfig('Keybinds')) {
-      d.addEventListener('keydown', keydown, true);
-      return d.addEventListener('keypress', keypress, true);
-    }
-  };
-  keyActRem = function() {
-    d.removeEventListener('keydown', keydown, true);
-    return d.removeEventListener('keypress', keypress, true);
   };
   nodeInserted = function(e) {
     var _i, _len, _ref, _result, callback, qr, target;
@@ -719,8 +719,8 @@
         _ref = inputs;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           input = _ref[_i];
-          input.addEventListener('focus', keyActRem, true);
-          input.addEventListener('blur', keyActAdd, true);
+          input.addEventListener('focus', keybindRem, true);
+          input.addEventListener('blur', keybindAdd, true);
         }
       }
       if (!g.REPLY) {
@@ -1249,10 +1249,10 @@
     _ref = inputs;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
-      input.addEventListener('focus', keyActRem, true);
-      input.addEventListener('blur', keyActAdd, true);
+      input.addEventListener('focus', keybindRem, true);
+      input.addEventListener('blur', keybindAdd, true);
     }
-    keyActAdd();
+    keybindAdd();
   }
   if (g.REPLY) {
     if (getConfig('Quick Reply') && getConfig('Persistent QR')) {
