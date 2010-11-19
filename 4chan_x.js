@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
+  var $, $$, AEOS, DAY, _, _i, _len, _ref, _ref2, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty;
   config = {
     'Thread Hiding': [true, 'Hide entire threads'],
@@ -341,6 +341,19 @@
       id: id
     });
   };
+  getThread = function() {
+    var _i, _len, _ref, _result, bottom, thread, threads;
+    threads = $$('div.thread');
+    _result = []; _ref = threads;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      thread = _ref[_i];
+      bottom = thread.getBoundingClientRect().bottom;
+      if (bottom > 0) {
+        return thread;
+      }
+    }
+    return _result;
+  };
   formSubmit = function(e) {
     var _ref, _ref2, recaptcha, span;
     if (span = this.nextSibling) {
@@ -457,7 +470,7 @@
     return d.removeEventListener('keypress', keypress, true);
   };
   keypress = function(e) {
-    var _i, _len, char, count, hash, href, img, kc, qrLink, temp;
+    var _i, _len, _ref, char, count, hash, href, img, kc, qrLink, replies, reply, temp, thread;
     kc = g.keyCode;
     if (kc === -1) {
       return null;
@@ -475,6 +488,7 @@
       }
       return null;
     }
+    g.count = 0;
     if (char === "G") {
       if (count) {
         temp = count > 15 ? 15 : count;
@@ -492,11 +506,9 @@
     if (g.REPLY) {
       switch (char) {
         case "J":
-          window.scrollBy(0, 20 * count);
-          break;
+          return window.scrollBy(0, 20 * count);
         case "K":
-          window.scrollBy(0, -20 * count);
-          break;
+          return window.scrollBy(0, -20 * count);
       }
     } else {
       switch (char) {
@@ -505,36 +517,60 @@
           if (temp < 0) {
             temp = 0;
           }
-          location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1");
-          break;
+          return (location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#1"));
         case "I":
           qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
-          quickReply.call(qrLink);
-          break;
+          return quickReply.call(qrLink);
         case "J":
-          scroll(count);
+          if (e.shiftKey) {
+            thread = getThread();
+            replies = $$('td[id]', thread);
+            _ref = replies;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              reply = _ref[_i];
+              if (reply.className === 'replyhl') {
+                reply.className = 'reply';
+                replies[_i + 1] == null ? undefined : replies[_i + 1].className = 'replyhl';
+                return null;
+              }
+            }
+            return (replies[0].className = 'replyhl');
+          } else {
+            return scroll(count);
+          }
           break;
         case "K":
-          scroll(count * -1);
+          if (e.shiftKey) {
+            thread = getThread();
+            replies = $$('td[id]', thread);
+            _ref = replies;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              reply = _ref[_i];
+              if (reply.className === 'replyhl') {
+                reply.className = 'reply';
+                replies[_i - 1] == null ? undefined : replies[_i - 1].className = 'replyhl';
+                return null;
+              }
+            }
+            return (replies[_len - 1].className = 'replyhl');
+          } else {
+            return scroll(count * -1);
+          }
           break;
         case "L":
           temp = g.PAGENUM + count;
           if (temp > 15) {
             temp = 15;
           }
-          location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#0");
-          break;
+          return (location.pathname = ("/" + (g.BOARD) + "/" + (temp) + "#0"));
         case "M":
           img = $("" + (hash) + " ~ img");
-          watch.call(img);
-          break;
+          return watch.call(img);
         case "O":
           href = $("" + (hash) + " ~ span[id] a:last-of-type").href;
-          GM_openInTab(href);
-          break;
+          return GM_openInTab(href);
       }
     }
-    return (g.count = 0);
   };
   keydown = function(e) {
     var kc;

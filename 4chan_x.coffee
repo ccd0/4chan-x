@@ -273,6 +273,13 @@ expandThread = ->
         id: id
     }
 
+getThread = ->
+    threads = $$ 'div.thread'
+    for thread in threads
+        bottom = thread.getBoundingClientRect().bottom
+        if bottom > 0 #we have not scrolled past
+            return thread
+
 formSubmit = (e) ->
     if span = @nextSibling
         remove span
@@ -384,6 +391,7 @@ keypress = (e) ->
         else
             g.count = (count * 10) + temp
         return
+    g.count = 0
     if char is "G"
         if count
             temp = if count > 15 then 15 else count
@@ -411,9 +419,29 @@ keypress = (e) ->
                 qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
                 quickReply.call qrLink
             when "J"
-                scroll count
+                if e.shiftKey
+                    thread = getThread()
+                    replies = $$ 'td[id]', thread
+                    for reply in replies
+                        if reply.className is 'replyhl'
+                            reply.className = 'reply'
+                            replies[_i+1]?.className = 'replyhl'
+                            return
+                    replies[0].className = 'replyhl'
+                else
+                    scroll count
             when "K"
-                scroll count * -1
+                if e.shiftKey
+                    thread = getThread()
+                    replies = $$ 'td[id]', thread
+                    for reply in replies
+                        if reply.className is 'replyhl'
+                            reply.className = 'reply'
+                            replies[_i-1]?.className = 'replyhl'
+                            return
+                    replies[_len-1].className = 'replyhl'
+                else
+                    scroll count * -1
             when "L"
                 temp = g.PAGENUM + count
                 if temp > 15 then temp = 15
@@ -424,7 +452,6 @@ keypress = (e) ->
             when "O"
                 href = $("#{hash} ~ span[id] a:last-of-type").href
                 GM_openInTab href
-    g.count = 0
 
 keydown = (e) ->
     kc = e.keyCode
