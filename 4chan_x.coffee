@@ -552,6 +552,11 @@ quickReply = (e) ->
         m clone,
             listener: ['submit', formSubmit]
             target: 'iframe'
+        if getConfig 'Keyboard Actions'
+            inputs = $$ 'input[type=text], textarea', clone
+            for input in inputs
+                input.addEventListener 'focus', keyActRem, true
+                input.addEventListener 'blur',  keyActAdd, true
         if not g.REPLY
             #figure out which thread we're replying to
             xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
@@ -560,11 +565,6 @@ quickReply = (e) ->
                 name: 'resto'
                 value: x(xpath, this).name
             addTo clone, input
-            if getConfig 'Keyboard Actions'
-                inputs = $$ 'input[type=text], textarea', clone
-                for input in inputs
-                    input.addEventListener 'focus', keyActRem, true
-                    input.addEventListener 'blur',  keyActAdd, true
         else if getConfig 'Persistent QR'
             submit = $ 'input[type=submit]', clone
             auto = n 'label',

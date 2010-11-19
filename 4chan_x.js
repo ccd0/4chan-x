@@ -714,6 +714,15 @@
         listener: ['submit', formSubmit],
         target: 'iframe'
       });
+      if (getConfig('Keyboard Actions')) {
+        inputs = $$('input[type=text], textarea', clone);
+        _ref = inputs;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          input = _ref[_i];
+          input.addEventListener('focus', keyActRem, true);
+          input.addEventListener('blur', keyActAdd, true);
+        }
+      }
       if (!g.REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
         input = n('input', {
@@ -722,15 +731,6 @@
           value: x(xpath, this).name
         });
         addTo(clone, input);
-        if (getConfig('Keyboard Actions')) {
-          inputs = $$('input[type=text], textarea', clone);
-          _ref = inputs;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            input = _ref[_i];
-            input.addEventListener('focus', keyActRem, true);
-            input.addEventListener('blur', keyActAdd, true);
-          }
-        }
       } else if (getConfig('Persistent QR')) {
         submit = $('input[type=submit]', clone);
         auto = n('label', {
