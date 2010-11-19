@@ -6,7 +6,7 @@
     'Reply Hiding': [true, 'Hide single replies'],
     'Show Stubs': [true, 'Of hidden threads / replies'],
     'Thread Navigation': [true, 'Navigate to previous / next thread'],
-    'Keyboard Actions': [true, 'Perform actions with your keyboard'],
+    'Keybinds': [true, 'Binds actions to keys'],
     'Reply Navigation': [true, 'Navigate to the beginning / end of a thread'],
     'Thread Watcher': [true, 'Bookmark threads'],
     'Thread Expansion': [true, 'View all replies'],
@@ -554,7 +554,7 @@
     }
   };
   keyActAdd = function() {
-    if (getConfig('Keyboard Actions')) {
+    if (getConfig('Keybinds')) {
       d.addEventListener('keydown', keydown, true);
       return d.addEventListener('keypress', keypress, true);
     }
@@ -714,7 +714,7 @@
         listener: ['submit', formSubmit],
         target: 'iframe'
       });
-      if (getConfig('Keyboard Actions')) {
+      if (getConfig('Keybinds')) {
         inputs = $$('input[type=text], textarea', clone);
         _ref = inputs;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1243,7 +1243,7 @@
       return _result;
     });
   }
-  if (getConfig('Keyboard Actions')) {
+  if (getConfig('Keybinds')) {
     form = $('div.postarea > form');
     inputs = $$('input[type=text], textarea', form);
     _ref = inputs;
