@@ -447,7 +447,7 @@
     return recaptchaReload();
   };
   keypress = function(e) {
-    var _i, _len, char, count, hash, href, img, kc, position, qrLink, ta, temp;
+    var _i, _len, char, count, hash, href, img, kc, position, qrLink, temp;
     kc = g.keyCode;
     if (kc === -1) {
       return null;
@@ -506,8 +506,6 @@
         case "I":
           qrLink = $("" + (hash) + " ~ span[id] a:not(:first-child)");
           quickReply.call(qrLink);
-          ta = $('#qr textarea');
-          ta.focus();
           break;
         case "J":
           temp = position + count;
@@ -747,8 +745,8 @@
       addTo(qr, clone);
       addTo(d.body, qr);
     }
-    if (e) {
-      e.preventDefault();
+    if (!(g.startup)) {
+      (typeof e === "undefined" || e === null) ? undefined : e.preventDefault();
       (typeof (_ref2 = ((_ref = $('input[title=autohide]:checked', qr)))) === "undefined" || _ref2 === null) ? undefined : _ref2.click();
       selection = window.getSelection();
       id = (typeof (_ref2 = ((_ref = x('preceding::span[@id][1]', selection.anchorNode)))) === "undefined" || _ref2 === null) ? undefined : _ref2.id;
@@ -921,7 +919,8 @@
     watched: JSON.parse(GM_getValue('watched', '{}')),
     favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     favNormal: ((typeof (_ref2 = ((_ref = $('link[rel="shortcut icon"]', $('head', d))))) === "undefined" || _ref2 === null) ? undefined : _ref2.href) || 'http://static.4chan.org/image/favicon.ico',
-    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n')
+    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n'),
+    startup: true
   };
   pathname = location.pathname.substring(1).split('/');
   _ref = pathname;
@@ -1350,4 +1349,5 @@
     callback();
   }
   d.body.addEventListener('DOMNodeInserted', nodeInserted, true);
+  g.startup = false;
 }).call(this);

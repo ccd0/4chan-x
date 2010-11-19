@@ -407,8 +407,6 @@ keypress = (e) ->
             when "I"
                 qrLink = $ "#{hash} ~ span[id] a:not(:first-child)"
                 quickReply.call qrLink
-                ta = $ '#qr textarea'
-                ta.focus()
             when "J"
                 temp = position + count
                 if temp > 9 then temp = 9
@@ -577,8 +575,8 @@ quickReply = (e) ->
             inBefore submit, auto
         addTo qr, clone
         addTo d.body, qr
-    if e
-        e.preventDefault()
+    unless g.startup
+        e?.preventDefault()
         $('input[title=autohide]:checked', qr)?.click()
         selection = window.getSelection()
         id = x('preceding::span[@id][1]', selection.anchorNode)?.id
@@ -723,6 +721,7 @@ g =
         'http://saucenao.com/search.php?db=999&url='
         'http://tineye.com/search?url='
     ].join '\n'
+    startup: true
 pathname = location.pathname.substring(1).split('/')
 [g.BOARD, temp] = pathname
 if temp is 'res'
@@ -1042,3 +1041,4 @@ else #not reply
 
 callback() for callback in g.callbacks
 d.body.addEventListener('DOMNodeInserted', nodeInserted, true)
+g.startup = false
