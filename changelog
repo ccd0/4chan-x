@@ -1,3 +1,9 @@
+1.12.0
+- disable keybinds by default
+- qr to replies
+- J/K - select next / previous reply
+- smarter scrolling
+
 1.11.1
 - fix reply mode switching (bringing up quick reply now correctly disables
 keybinds)
