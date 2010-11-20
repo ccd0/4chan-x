@@ -6,7 +6,7 @@
     'Reply Hiding': [true, 'Hide single replies'],
     'Show Stubs': [true, 'Of hidden threads / replies'],
     'Thread Navigation': [true, 'Navigate to previous / next thread'],
-    'Keybinds': [true, 'Binds actions to keys'],
+    'Keybinds': [false, 'Binds actions to keys'],
     'Reply Navigation': [true, 'Navigate to the beginning / end of a thread'],
     'Thread Watcher': [true, 'Bookmark threads'],
     'Thread Expansion': [true, 'View all replies'],
