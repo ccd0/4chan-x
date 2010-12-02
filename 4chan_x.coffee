@@ -12,6 +12,7 @@ config =
     'Auto Watch':          [true, 'Automatically watch threads that you start (Firefox only)']
     'Comment Expansion':   [true, 'Expand too long comments']
     'Keybinds':            [false, 'Binds actions to keys']
+    'Localize Time':       [true, 'Show times based on your timezone']
     'Persistent QR':       [false, 'Quick reply won\'t disappear after posting. Only in replies.']
     'Post in Title':       [true, 'Show the op\'s post in the tab title']
     'Quick Reply':         [true, 'Reply without leaving the page']
@@ -181,6 +182,8 @@ x = (path, root) ->
     root or= d.body
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
         singleNodeValue
+zeroPad = (n) ->
+    if n < 10 then '0' + n else n
 
 #funks
 autohide = ->
@@ -770,6 +773,9 @@ else
     g.PAGENUM = parseInt(temp) || 0
 g.hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/#{g.BOARD}/", '[]'))
 g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/#{g.BOARD}/", '[]'))
+tzOffset = (new Date()).getTimezoneOffset() / 60
+# GMT -8 is given as +480; would GMT +8 be -480 ?
+g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5
 
 if location.hostname.split('.')[0] is 'sys'
     if recaptcha = $ '#recaptcha_response_field'
@@ -888,6 +894,32 @@ recaptcha = $ '#recaptcha_response_field'
 recaptcha.addEventListener('keydown', recaptchaListener, true)
 
 #major features
+if getConfig 'Localize Time'
+    g.callbacks.push (root) ->
+        spans = $$ 'span[id^=no]', root
+        for span in spans
+            s = span.previousSibling
+            [_, month, day, year, hour, min_sec] =
+                s.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/
+            year = "20#{year}"
+            month -= 1 #months start at 0
+            hour = g.chanOffset + Number hour
+            date = new Date year, month, day, hour
+            year = date.getFullYear() - 2000
+            month = zeroPad date.getMonth() + 1
+            day = zeroPad date.getDate()
+            hour = zeroPad date.getHours()
+            dotw = [
+                'Sun'
+                'Mon'
+                'Tue'
+                'Wed'
+                'Thu'
+                'Fri'
+                'Sat'
+            ][date.getDay()]
+            s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec} "
+
 if getConfig 'Sauce'
     g.callbacks.push (root) ->
         spans = $$ 'span.filesize', root

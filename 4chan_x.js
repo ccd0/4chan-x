@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, up, watch, watchX, watcher, watcherUpdate, x, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -12,6 +12,7 @@
     'Auto Watch': [true, 'Automatically watch threads that you start (Firefox only)'],
     'Comment Expansion': [true, 'Expand too long comments'],
     'Keybinds': [false, 'Binds actions to keys'],
+    'Localize Time': [true, 'Show times based on your timezone'],
     'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
     'Post in Title': [true, 'Show the op\'s post in the tab title'],
     'Quick Reply': [true, 'Reply without leaving the page'],
@@ -244,6 +245,13 @@
   x = function(path, root) {
     root || (root = d.body);
     return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
+  };
+  zeroPad = function(n) {
+    if (n < 10) {
+      return '0' + n;
+    } else {
+      return n;
+    }
   };
   autohide = function() {
     var klass, qr;
@@ -988,6 +996,8 @@
   }
   g.hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/" + g.BOARD + "/", '[]'));
   g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/" + g.BOARD + "/", '[]'));
+  tzOffset = (new Date()).getTimezoneOffset() / 60;
+  g.chanOffset = 5 - tzOffset;
   if (location.hostname.split('.')[0] === 'sys') {
     if (recaptcha = $('#recaptcha_response_field')) {
       m(recaptcha, {
@@ -1113,6 +1123,29 @@
   }
   recaptcha = $('#recaptcha_response_field');
   recaptcha.addEventListener('keydown', recaptchaListener, true);
+  if (getConfig('Localize Time')) {
+    g.callbacks.push(function(root) {
+      var date, day, dotw, hour, min_sec, month, s, span, spans, year, _i, _len, _ref, _results;
+      spans = $$('span[id^=no]', root);
+      _results = [];
+      for (_i = 0, _len = spans.length; _i < _len; _i++) {
+        span = spans[_i];
+        s = span.previousSibling;
+        _ref = s.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min_sec = _ref[5];
+        year = "20" + year;
+        month -= 1;
+        hour = g.chanOffset + Number(hour);
+        date = new Date(year, month, day, hour);
+        year = date.getFullYear() - 2000;
+        month = zeroPad(date.getMonth() + 1);
+        day = zeroPad(date.getDate());
+        hour = zeroPad(date.getHours());
+        dotw = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
+        _results.push(s.textContent = " " + month + "/" + day + "/" + year + "(" + dotw + ")" + hour + ":" + min_sec + " ");
+      }
+      return _results;
+    });
+  }
   if (getConfig('Sauce')) {
     g.callbacks.push(function(root) {
       var i, l, link, names, prefix, prefixes, span, spans, suffix, _i, _j, _len, _len2, _results, _results2, _results3;
