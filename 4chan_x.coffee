@@ -7,23 +7,23 @@
 #TODO - expose 'hidden' configs
 
 config =
-    'Thread Hiding':       [true, 'Hide entire threads']
-    'Reply Hiding':        [true, 'Hide single replies']
-    'Show Stubs':          [true, 'Of hidden threads / replies']
-    'Thread Navigation':   [true, 'Navigate to previous / next thread']
-    'Keybinds':            [false, 'Binds actions to keys']
-    'Reply Navigation':    [true, 'Navigate to the beginning / end of a thread']
-    'Thread Watcher':      [true, 'Bookmark threads']
-    'Thread Expansion':    [true, 'View all replies']
-    'Comment Expansion':   [true, 'Expand too long comments']
-    'Quick Report':        [true, 'Add quick report buttons']
-    'Quick Reply':         [true, 'Reply without leaving the page']
-    'Persistent QR':       [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+    '404 Redirect':        [true, 'Redirect dead threads']
     'Anonymize':           [false, 'Make everybody anonymous']
     'Auto Watch':          [true, 'Automatically watch threads that you start (Firefox only)']
-    '404 Redirect':        [true, 'Redirect dead threads']
+    'Comment Expansion':   [true, 'Expand too long comments']
+    'Keybinds':            [false, 'Binds actions to keys']
+    'Persistent QR':       [false, 'Quick reply won\'t disappear after posting. Only in replies.']
     'Post in Title':       [true, 'Show the op\'s post in the tab title']
+    'Quick Reply':         [true, 'Reply without leaving the page']
+    'Quick Report':        [true, 'Add quick report buttons']
+    'Reply Hiding':        [true, 'Hide single replies']
+    'Reply Navigation':    [true, 'Navigate to the beginning / end of a thread']
     'Sauce':               [true, 'Add sauce to images']
+    'Show Stubs':          [true, 'Of hidden threads / replies']
+    'Thread Expansion':    [true, 'View all replies']
+    'Thread Hiding':       [true, 'Hide entire threads']
+    'Thread Navigation':   [true, 'Navigate to previous / next thread']
+    'Thread Watcher':      [true, 'Bookmark threads']
 
 #utility
 AEOS =
