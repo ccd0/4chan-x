@@ -603,7 +603,7 @@
   keydown = function(e) {
     var kc;
     kc = e.keyCode;
-    if (48 <= kc && kc > 90) {
+    if (!(48 <= kc && kc <= 90)) {
       return g.keyCode = -1;
     } else if (e.ctrlKey || e.altKey) {
       return g.keyCode = -1;
@@ -1360,9 +1360,9 @@
         el = arr[_l];
         span = n('span', {
           className: 'navlinks',
-          id: 'p' + _i
+          id: 'p' + _l
         });
-        if (_i) {
+        if (_l) {
           textContent = '▲';
           href = "#p" + (_i - 1);
         } else if (g.PAGENUM) {
@@ -1377,7 +1377,7 @@
           textContent: textContent,
           href: href
         });
-        if (_i < l1) {
+        if (_l < l1) {
           textContent = '▼';
           href = "#p" + (_i + 1);
         } else {

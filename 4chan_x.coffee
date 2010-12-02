@@ -463,7 +463,7 @@ keydown = (e) ->
     kc = e.keyCode
     #https://developer.mozilla.org/en/DOM/Event/UIEvent/KeyEvent
     # [0-9;=A-Z]
-    unless 48 <= kc <= 90
+    unless (48 <= kc <= 90)
         g.keyCode = -1
     else if e.ctrlKey or e.altKey
         g.keyCode = -1
@@ -1067,8 +1067,8 @@ else #not reply
         for el in arr
             span = n 'span',
                 className: 'navlinks'
-                id: 'p' + _i
-            if _i
+                id: 'p' + _l
+            if _l
                 textContent = '▲'
                 href = "#p#{_i - 1}"
             else if g.PAGENUM
@@ -1081,7 +1081,7 @@ else #not reply
                 className: 'pointer'
                 textContent: textContent
                 href: href
-            if _i < l1
+            if _l < l1
                 textContent = '▼'
                 href = "#p#{_i + 1}"
             else
