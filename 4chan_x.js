@@ -978,13 +978,13 @@
   g = {
     callbacks: [],
     count: 0,
-    iframe: false,
-    xhrs: [],
-    watched: JSON.parse(GM_getValue('watched', '{}')),
     favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     favNormal: ((_ref = $('link[rel="shortcut icon"]', $('head', d))) != null ? _ref.href : void 0) || 'http://static.4chan.org/image/favicon.ico',
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n'),
-    startup: true
+    iframe: false,
+    startup: true,
+    watched: JSON.parse(GM_getValue('watched', '{}')),
+    xhrs: []
   };
   pathname = location.pathname.substring(1).split('/');
   g.BOARD = pathname[0], temp = pathname[1];

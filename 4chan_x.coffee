@@ -752,9 +752,6 @@ AEOS.init()
 g =
     callbacks: []
     count: 0
-    iframe: false
-    xhrs: []
-    watched:       JSON.parse(GM_getValue('watched', '{}'))
     favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
     favNormal: $('link[rel="shortcut icon"]', $('head', d))?.href or 'http://static.4chan.org/image/favicon.ico'
     flavors: [
@@ -763,7 +760,10 @@ g =
         'http://saucenao.com/search.php?db=999&url='
         'http://tineye.com/search?url='
     ].join '\n'
+    iframe: false
     startup: true
+    watched: JSON.parse(GM_getValue('watched', '{}'))
+    xhrs: []
 pathname = location.pathname.substring(1).split('/')
 [g.BOARD, temp] = pathname
 if temp is 'res'
