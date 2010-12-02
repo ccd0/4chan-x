@@ -892,7 +892,7 @@ if getConfig 'Sauce'
     g.callbacks.push (root) ->
         spans = $$ 'span.filesize', root
         prefixes = GM_getValue('flavors', g.flavors).split '\n'
-        names = prefix.match(/(\w+)\./)[1] for prefix in prefixes
+        names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
         for span in spans
             suffix = $('a', span).href
             i = 0; l = names.length

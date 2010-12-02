@@ -1115,33 +1115,37 @@
   recaptcha.addEventListener('keydown', recaptchaListener, true);
   if (getConfig('Sauce')) {
     g.callbacks.push(function(root) {
-      var i, l, link, names, prefix, prefixes, span, spans, suffix, _i, _j, _len, _len2, _results, _results2;
+      var i, l, link, names, prefix, prefixes, span, spans, suffix, _i, _j, _len, _len2, _results, _results2, _results3;
       spans = $$('span.filesize', root);
       prefixes = GM_getValue('flavors', g.flavors).split('\n');
-      for (_i = 0, _len = prefixes.length; _i < _len; _i++) {
-        prefix = prefixes[_i];
-        names = prefix.match(/(\w+)\./)[1];
-      }
-      _results = [];
+      names = (function() {
+        _results = [];
+        for (_i = 0, _len = prefixes.length; _i < _len; _i++) {
+          prefix = prefixes[_i];
+          _results.push(prefix.match(/(\w+)\./)[1]);
+        }
+        return _results;
+      }());
+      _results2 = [];
       for (_j = 0, _len2 = spans.length; _j < _len2; _j++) {
         span = spans[_j];
         suffix = $('a', span).href;
         i = 0;
         l = names.length;
-        _results.push(function() {
-          _results2 = [];
+        _results2.push(function() {
+          _results3 = [];
           while (i < l) {
             link = n('a', {
               textContent: names[i],
               href: prefixes[i] + suffix
             });
             addTo(span, tn(' '), link);
-            _results2.push(i++);
+            _results3.push(i++);
           }
-          return _results2;
+          return _results3;
         }());
       }
-      return _results;
+      return _results2;
     });
   }
   if (getConfig('Reply Hiding')) {
