@@ -278,10 +278,10 @@ expandThread = ->
 
 getThread = ->
     threads = $$ 'div.thread'
-    for thread in threads
+    for thread, i in threads
         bottom = thread.getBoundingClientRect().bottom
         if bottom > 0 #we have not scrolled past
-            return [thread, _i]
+            return [thread, i]
 
 formSubmit = (e) ->
     if span = @nextSibling
@@ -468,10 +468,10 @@ keypress = (e) ->
                 if e.shiftKey
                     [thread] = getThread()
                     replies = $$ 'td[id]', thread
-                    for reply in replies
+                    for reply, i in replies
                         if reply.className is 'replyhl'
                             reply.className = 'reply'
-                            replies[_i+1]?.className = 'replyhl'
+                            replies[i+1]?.className = 'replyhl'
                             return
                     replies[0].className = 'replyhl'
                 else
@@ -480,12 +480,12 @@ keypress = (e) ->
                 if e.shiftKey
                     [thread] = getThread()
                     replies = $$ 'td[id]', thread
-                    for reply in replies
+                    for reply, i in replies
                         if reply.className is 'replyhl'
                             reply.className = 'reply'
-                            replies[_i-1]?.className = 'replyhl'
+                            replies[i-1]?.className = 'replyhl'
                             return
-                    replies[_len-1].className = 'replyhl'
+                    replies.pop().className = 'replyhl'
                 else
                     scroll count * -1
             when "L"
@@ -1104,13 +1104,13 @@ else #not reply
     if getConfig 'Thread Navigation'
         arr = $$ 'div > span.filesize, form > span.filesize'
         l1 = arr.length - 1
-        for el in arr
+        for el, i in arr
             span = n 'span',
                 className: 'navlinks'
-                id: 'p' + _l
-            if _l
+                id: 'p' + i
+            if i
                 textContent = '▲'
-                href = "#p#{_i - 1}"
+                href = "#p#{i - 1}"
             else if g.PAGENUM
                 textContent = '◀'
                 href = "#{g.PAGENUM - 1}#p0"
@@ -1121,9 +1121,9 @@ else #not reply
                 className: 'pointer'
                 textContent: textContent
                 href: href
-            if _l < l1
+            if i < l1
                 textContent = '▼'
-                href = "#p#{_i + 1}"
+                href = "#p#{i + 1}"
             else
                 textContent = '▶'
                 href = "#{g.PAGENUM + 1}#p0"

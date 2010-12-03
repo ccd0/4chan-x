@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -357,13 +357,13 @@
     });
   };
   getThread = function() {
-    var bottom, thread, threads, _i, _len;
+    var bottom, i, thread, threads, _len;
     threads = $$('div.thread');
-    for (_i = 0, _len = threads.length; _i < _len; _i++) {
-      thread = threads[_i];
+    for (i = 0, _len = threads.length; i < _len; i++) {
+      thread = threads[i];
       bottom = thread.getBoundingClientRect().bottom;
       if (bottom > 0) {
-        return [thread, _i];
+        return [thread, i];
       }
     }
   };
@@ -489,7 +489,7 @@
     return d.removeEventListener('keypress', keypress, true);
   };
   keypress = function(e) {
-    var bot, char, count, hash, height, href, img, kc, next, prev, qrLink, rect, replies, reply, td, temp, thread, top, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2;
+    var bot, char, count, hash, height, href, i, img, kc, next, prev, qrLink, rect, replies, reply, td, temp, thread, top, _i, _j, _len, _len2, _len3, _len4, _ref, _ref2;
     kc = g.keyCode;
     if (kc === -1) {
       return;
@@ -606,11 +606,11 @@
           if (e.shiftKey) {
             thread = getThread()[0];
             replies = $$('td[id]', thread);
-            for (_k = 0, _len3 = replies.length; _k < _len3; _k++) {
-              reply = replies[_k];
+            for (i = 0, _len3 = replies.length; i < _len3; i++) {
+              reply = replies[i];
               if (reply.className === 'replyhl') {
                 reply.className = 'reply';
-                if ((_ref = replies[_i + 1]) != null) {
+                if ((_ref = replies[i + 1]) != null) {
                   _ref.className = 'replyhl';
                 }
                 return;
@@ -625,17 +625,17 @@
           if (e.shiftKey) {
             thread = getThread()[0];
             replies = $$('td[id]', thread);
-            for (_l = 0, _len4 = replies.length; _l < _len4; _l++) {
-              reply = replies[_l];
+            for (i = 0, _len4 = replies.length; i < _len4; i++) {
+              reply = replies[i];
               if (reply.className === 'replyhl') {
                 reply.className = 'reply';
-                if ((_ref2 = replies[_i - 1]) != null) {
+                if ((_ref2 = replies[i - 1]) != null) {
                   _ref2.className = 'replyhl';
                 }
                 return;
               }
             }
-            return replies[_len - 1].className = 'replyhl';
+            return replies.pop().className = 'replyhl';
           } else {
             return scroll(count * -1);
           }
@@ -1413,15 +1413,15 @@
     if (getConfig('Thread Navigation')) {
       arr = $$('div > span.filesize, form > span.filesize');
       l1 = arr.length - 1;
-      for (_l = 0, _len4 = arr.length; _l < _len4; _l++) {
-        el = arr[_l];
+      for (i = 0, _len4 = arr.length; i < _len4; i++) {
+        el = arr[i];
         span = n('span', {
           className: 'navlinks',
-          id: 'p' + _l
+          id: 'p' + i
         });
-        if (_l) {
+        if (i) {
           textContent = '▲';
-          href = "#p" + (_i - 1);
+          href = "#p" + (i - 1);
         } else if (g.PAGENUM) {
           textContent = '◀';
           href = "" + (g.PAGENUM - 1) + "#p0";
@@ -1434,9 +1434,9 @@
           textContent: textContent,
           href: href
         });
-        if (_l < l1) {
+        if (i < l1) {
           textContent = '▼';
-          href = "#p" + (_i + 1);
+          href = "#p" + (i + 1);
         } else {
           textContent = '▶';
           href = "" + (g.PAGENUM + 1) + "#p0";
@@ -1455,8 +1455,8 @@
     }
     if (getConfig('Thread Expansion')) {
       omitted = $$('span.omittedposts');
-      for (_m = 0, _len5 = omitted.length; _m < _len5; _m++) {
-        span = omitted[_m];
+      for (_l = 0, _len5 = omitted.length; _l < _len5; _l++) {
+        span = omitted[_l];
         a = n('a', {
           className: 'pointer omittedposts',
           textContent: "+ " + span.textContent,
@@ -1467,15 +1467,15 @@
     }
     if (getConfig('Comment Expansion')) {
       as = $$('span.abbr a');
-      for (_n = 0, _len6 = as.length; _n < _len6; _n++) {
-        a = as[_n];
+      for (_m = 0, _len6 = as.length; _m < _len6; _m++) {
+        a = as[_m];
         a.addEventListener('click', expandComment, true);
       }
     }
   }
   _ref4 = g.callbacks;
-  for (_o = 0, _len7 = _ref4.length; _o < _len7; _o++) {
-    callback = _ref4[_o];
+  for (_n = 0, _len7 = _ref4.length; _n < _len7; _n++) {
+    callback = _ref4[_n];
     callback();
   }
   d.body.addEventListener('DOMNodeInserted', nodeInserted, true);
