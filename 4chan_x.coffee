@@ -408,10 +408,50 @@ keypress = (e) ->
     count or= 1
     if g.REPLY
         switch char
+            when "I"
+                unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)'
+                    qrLink = $ "span[id^=nothread] a:not(:first-child)"
+                quickReply.call qrLink
             when "J"
-                window.scrollBy 0,  20 * count
+                if e.shiftKey
+                    if td = $ 'td.replyhl'
+                        td.className = 'reply'
+                        rect = td.getBoundingClientRect()
+                        if rect.top > 0 and rect.bottom < d.body.clientHeight #you're visible
+                            next = x 'following::td[@class="reply"]', td
+                            rect = next.getBoundingClientRect()
+                            if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the next
+                                next.className = 'replyhl'
+                            return
+                    replies = $$ 'td.reply'
+                    for reply in replies
+                        top = reply.getBoundingClientRect().top
+                        if top > 0
+                            reply.className = 'replyhl'
+                            break
+                else
+                    window.scrollBy 0,  20 * count
             when "K"
-                window.scrollBy 0, -20 * count
+                if e.shiftKey
+                    if td = $ 'td.replyhl'
+                        td.className = 'reply'
+                        rect = td.getBoundingClientRect()
+                        if rect.top > 0 and rect.bottom < d.body.clientHeight #you're visible
+                            prev = x 'preceding::td[@class="reply"][1]', td
+                            rect = prev.getBoundingClientRect()
+                            if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the prev
+                                prev.className = 'replyhl'
+                            return
+                    replies = $$ 'td.reply'
+                    replies.reverse()
+                    height = d.body.clientHeight
+                    for reply in replies
+                        bot = reply.getBoundingClientRect().bottom
+                        if bot < height
+                            reply.className = 'replyhl'
+                            break
+                else
+                    window.scrollBy 0, -20 * count
     else
         switch char
             when "H"

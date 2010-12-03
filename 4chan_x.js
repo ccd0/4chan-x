@@ -489,7 +489,7 @@
     return d.removeEventListener('keypress', keypress, true);
   };
   keypress = function(e) {
-    var char, count, hash, href, img, kc, qrLink, replies, reply, temp, thread, _i, _j, _len, _len2, _ref, _ref2;
+    var bot, char, count, hash, height, href, img, kc, next, prev, qrLink, rect, replies, reply, td, temp, thread, top, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2;
     kc = g.keyCode;
     if (kc === -1) {
       return;
@@ -524,10 +524,67 @@
     count || (count = 1);
     if (g.REPLY) {
       switch (char) {
+        case "I":
+          if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
+            qrLink = $("span[id^=nothread] a:not(:first-child)");
+          }
+          return quickReply.call(qrLink);
+          break;
         case "J":
-          return window.scrollBy(0, 20 * count);
+          if (e.shiftKey) {
+            if (td = $('td.replyhl')) {
+              td.className = 'reply';
+              rect = td.getBoundingClientRect();
+              if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+                next = x('following::td[@class="reply"]', td);
+                rect = next.getBoundingClientRect();
+                if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+                  next.className = 'replyhl';
+                }
+                return;
+              }
+            }
+            replies = $$('td.reply');
+            for (_i = 0, _len = replies.length; _i < _len; _i++) {
+              reply = replies[_i];
+              top = reply.getBoundingClientRect().top;
+              if (top > 0) {
+                reply.className = 'replyhl';
+                break;
+              }
+            }
+          } else {
+            return window.scrollBy(0, 20 * count);
+          }
+          break;
         case "K":
-          return window.scrollBy(0, -20 * count);
+          if (e.shiftKey) {
+            if (td = $('td.replyhl')) {
+              td.className = 'reply';
+              rect = td.getBoundingClientRect();
+              if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+                prev = x('preceding::td[@class="reply"][1]', td);
+                rect = prev.getBoundingClientRect();
+                if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+                  prev.className = 'replyhl';
+                }
+                return;
+              }
+            }
+            replies = $$('td.reply');
+            replies.reverse();
+            height = d.body.clientHeight;
+            for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
+              reply = replies[_j];
+              bot = reply.getBoundingClientRect().bottom;
+              if (bot < height) {
+                reply.className = 'replyhl';
+                break;
+              }
+            }
+          } else {
+            return window.scrollBy(0, -20 * count);
+          }
       }
     } else {
       switch (char) {
@@ -549,8 +606,8 @@
           if (e.shiftKey) {
             thread = getThread()[0];
             replies = $$('td[id]', thread);
-            for (_i = 0, _len = replies.length; _i < _len; _i++) {
-              reply = replies[_i];
+            for (_k = 0, _len3 = replies.length; _k < _len3; _k++) {
+              reply = replies[_k];
               if (reply.className === 'replyhl') {
                 reply.className = 'reply';
                 if ((_ref = replies[_i + 1]) != null) {
@@ -568,8 +625,8 @@
           if (e.shiftKey) {
             thread = getThread()[0];
             replies = $$('td[id]', thread);
-            for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
-              reply = replies[_j];
+            for (_l = 0, _len4 = replies.length; _l < _len4; _l++) {
+              reply = replies[_l];
               if (reply.className === 'replyhl') {
                 reply.className = 'reply';
                 if ((_ref2 = replies[_i - 1]) != null) {
