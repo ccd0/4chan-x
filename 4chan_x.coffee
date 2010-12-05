@@ -661,9 +661,11 @@ recaptchaReload = ->
 redirect = ->
     switch g.BOARD
         when 'a', 'g', 'lit', 'sci', 'tv'
-            url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}#p"
+            url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
         when 'cgl', 'jp', 'm', 'tg'
-            url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}#p"
+            url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
+        when '3', 'adv', 'an', 'c', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'new', 'o', 'p', 'po', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
+            url = "http://173.74.0.45/archive/#{g.BOARD}/thread/#{g.THREAD_ID}"
         else
             url = "http://boards.4chan.org/#{g.BOARD}"
     location.href = url

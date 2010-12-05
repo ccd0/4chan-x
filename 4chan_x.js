@@ -874,13 +874,37 @@
       case 'lit':
       case 'sci':
       case 'tv':
-        url = "http://green-oval.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID + "#p";
+        url = "http://green-oval.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case 'cgl':
       case 'jp':
       case 'm':
       case 'tg':
-        url = "http://archive.easymodo.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID + "#p";
+        url = "http://archive.easymodo.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        break;
+      case '3':
+      case 'adv':
+      case 'an':
+      case 'c':
+      case 'ck':
+      case 'co':
+      case 'fa':
+      case 'fit':
+      case 'int':
+      case 'k':
+      case 'mu':
+      case 'n':
+      case 'new':
+      case 'o':
+      case 'p':
+      case 'po':
+      case 'sp':
+      case 'toy':
+      case 'trv':
+      case 'v':
+      case 'vp':
+      case 'x':
+        url = "http://173.74.0.45/archive/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       default:
         url = "http://boards.4chan.org/" + g.BOARD;
