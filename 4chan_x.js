@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, img, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, img, inAfter, inBefore, input, inputs, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -271,8 +271,7 @@
   closeQR = function() {
     var div;
     div = this.parentNode.parentNode;
-    remove(div);
-    return keybindAdd();
+    return remove(div);
   };
   clearHidden = function() {
     GM_deleteValue("hiddenReplies/" + g.BOARD + "/");
@@ -373,10 +372,7 @@
     }
     recaptcha = $('input[name=recaptcha_response_field]', this);
     if (recaptcha.value) {
-      if ((_ref = $('#qr input[title=autohide]:not(:checked)')) != null) {
-        _ref.click();
-      }
-      return keybindAdd();
+      return (_ref = $('#qr input[title=autohide]:not(:checked)')) != null ? _ref.click() : void 0;
     } else {
       e.preventDefault();
       span = n('span', {
@@ -458,7 +454,6 @@
       if ((_ref = $('input[title=autohide]:checked', qr)) != null) {
         _ref.click();
       }
-      keybindRem();
     } else if (g.REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';
@@ -477,24 +472,23 @@
     }
     return recaptchaReload();
   };
-  keybindAdd = function() {
-    if (getConfig('Keybinds')) {
-      d.addEventListener('keydown', keydown, true);
-      return d.addEventListener('keypress', keypress, true);
+  keydown = function(e) {
+    var char, _ref;
+    if ((_ref = document.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') {
+      char = null;
+    } else if (e.ctrlKey || e.altKey) {
+      char = null;
+    } else {
+      char = String.fromCharCode(e.keyCode);
     }
-  };
-  keybindRem = function() {
-    d.removeEventListener('keydown', keydown, true);
-    return d.removeEventListener('keypress', keypress, true);
+    return g.char = char;
   };
   keypress = function(e) {
-    var bot, char, count, hash, height, href, i, img, kc, next, prev, qrLink, rect, replies, reply, td, temp, thread, top, _i, _j, _len, _len2, _len3, _len4, _ref, _ref2;
-    kc = g.keyCode;
-    if (kc === -1) {
+    var bot, char, count, hash, height, href, i, img, next, prev, qrLink, rect, replies, reply, td, temp, thread, top, _i, _j, _len, _len2, _len3, _len4, _ref, _ref2;
+    char = g.char;
+    if (!char) {
       return;
     }
-    e.preventDefault();
-    char = String.fromCharCode(kc);
     hash = location.hash;
     count = g.count;
     if (__indexOf.call('1234567890', char) >= 0) {
@@ -656,17 +650,6 @@
       }
     }
   };
-  keydown = function(e) {
-    var kc;
-    kc = e.keyCode;
-    if (!((48 <= kc && kc <= 90))) {
-      return g.keyCode = -1;
-    } else if (e.ctrlKey || e.altKey) {
-      return g.keyCode = -1;
-    } else {
-      return g.keyCode = kc;
-    }
-  };
   nodeInserted = function(e) {
     var callback, qr, target, _i, _len, _ref, _results;
     target = e.target;
@@ -772,7 +755,7 @@
     return [replies, opbq];
   };
   quickReply = function(e) {
-    var auto, autoBox, autohideB, clone, closeB, form, id, input, inputs, qr, script, selection, submit, text, textarea, titlebar, xpath, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+    var auto, autoBox, autohideB, clone, closeB, form, id, input, inputs, qr, script, selection, submit, text, textarea, titlebar, xpath, _i, _len, _ref, _ref2, _ref3;
     if (!(qr = $('#qr'))) {
       qr = AEOS.makeDialog('qr', 'topleft');
       titlebar = n('div', {
@@ -810,11 +793,6 @@
       });
       if (getConfig('Keybinds')) {
         inputs = $$('input[type=text], textarea', clone);
-        for (_j = 0, _len2 = inputs.length; _j < _len2; _j++) {
-          input = inputs[_j];
-          input.addEventListener('focus', keybindRem, true);
-          input.addEventListener('blur', keybindAdd, true);
-        }
       }
       if (!g.REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
@@ -1397,14 +1375,8 @@
     });
   }
   if (getConfig('Keybinds')) {
-    form = $('div.postarea > form');
-    inputs = $$('input[type=text], textarea', form);
-    for (_k = 0, _len3 = inputs.length; _k < _len3; _k++) {
-      input = inputs[_k];
-      input.addEventListener('focus', keybindRem, true);
-      input.addEventListener('blur', keybindAdd, true);
-    }
-    keybindAdd();
+    document.addEventListener('keydown', keydown, true);
+    document.addEventListener('keypress', keypress, true);
   }
   if (g.REPLY) {
     if (getConfig('Quick Reply') && getConfig('Persistent QR')) {
@@ -1432,7 +1404,7 @@
     if (getConfig('Thread Navigation')) {
       arr = $$('div > span.filesize, form > span.filesize');
       l1 = arr.length - 1;
-      for (i = 0, _len4 = arr.length; i < _len4; i++) {
+      for (i = 0, _len3 = arr.length; i < _len3; i++) {
         el = arr[i];
         span = n('span', {
           className: 'navlinks',
@@ -1474,8 +1446,8 @@
     }
     if (getConfig('Thread Expansion')) {
       omitted = $$('span.omittedposts');
-      for (_l = 0, _len5 = omitted.length; _l < _len5; _l++) {
-        span = omitted[_l];
+      for (_k = 0, _len4 = omitted.length; _k < _len4; _k++) {
+        span = omitted[_k];
         a = n('a', {
           className: 'pointer omittedposts',
           textContent: "+ " + span.textContent,
@@ -1486,15 +1458,15 @@
     }
     if (getConfig('Comment Expansion')) {
       as = $$('span.abbr a');
-      for (_m = 0, _len6 = as.length; _m < _len6; _m++) {
-        a = as[_m];
+      for (_l = 0, _len5 = as.length; _l < _len5; _l++) {
+        a = as[_l];
         a.addEventListener('click', expandComment, true);
       }
     }
   }
   _ref4 = g.callbacks;
-  for (_n = 0, _len7 = _ref4.length; _n < _len7; _n++) {
-    callback = _ref4[_n];
+  for (_m = 0, _len6 = _ref4.length; _m < _len6; _m++) {
+    callback = _ref4[_m];
     callback();
   }
   d.body.addEventListener('DOMNodeInserted', nodeInserted, true);

@@ -203,7 +203,6 @@ autoWatch = ->
 closeQR = ->
     div = this.parentNode.parentNode
     remove div
-    keybindAdd()
 
 clearHidden = ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -289,7 +288,6 @@ formSubmit = (e) ->
     recaptcha = $('input[name=recaptcha_response_field]', this)
     if recaptcha.value
         $('#qr input[title=autohide]:not(:checked)')?.click()
-        keybindAdd()
     else
         e.preventDefault()
         span = n 'span',
@@ -355,7 +353,6 @@ iframeLoad = ->
             className: 'error'
         addTo qr, span
         $('input[title=autohide]:checked', qr)?.click()
-        keybindRem()
     else if g.REPLY and getConfig 'Persistent QR'
         $('textarea', qr).value = ''
         $('input[name=recaptcha_response_field]', qr).value = ''
@@ -371,20 +368,18 @@ iframeLoad = ->
         remove qr
     recaptchaReload()
 
-keybindAdd = ->
-    if getConfig 'Keybinds'
-        d.addEventListener 'keydown', keydown, true
-        d.addEventListener 'keypress', keypress, true
-
-keybindRem = ->
-    d.removeEventListener 'keydown', keydown, true
-    d.removeEventListener 'keypress', keypress, true
+keydown = (e) ->
+    if document.activeElement.nodeName in ['TEXTAREA', 'INPUT']
+        char = null
+    else if e.ctrlKey or e.altKey
+        char = null
+    else
+        char = String.fromCharCode e.keyCode
+    g.char = char
 
 keypress = (e) ->
-    kc = g.keyCode
-    if kc is -1 then return
-    e.preventDefault()
-    char = String.fromCharCode kc
+    char = g.char
+    return unless char
     hash = location.hash
     count = g.count
     if char in '1234567890'
@@ -499,17 +494,6 @@ keypress = (e) ->
                 href = $("#{hash} ~ span[id] a:last-of-type").href
                 GM_openInTab href
 
-keydown = (e) ->
-    kc = e.keyCode
-    #https://developer.mozilla.org/en/DOM/Event/UIEvent/KeyEvent
-    # [0-9;=A-Z]
-    unless (48 <= kc <= 90)
-        g.keyCode = -1
-    else if e.ctrlKey or e.altKey
-        g.keyCode = -1
-    else
-        g.keyCode = kc
-
 nodeInserted = (e) ->
     target = e.target
     if target.nodeName is 'TABLE'
@@ -617,9 +601,6 @@ quickReply = (e) ->
             target: 'iframe'
         if getConfig 'Keybinds'
             inputs = $$ 'input[type=text], textarea', clone
-            for input in inputs
-                input.addEventListener 'focus', keybindRem, true
-                input.addEventListener 'blur',  keybindAdd, true
         if not g.REPLY
             #figure out which thread we're replying to
             xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
@@ -1075,12 +1056,8 @@ if getConfig 'Reply Navigation'
             inAfter el, span
 
 if getConfig 'Keybinds'
-    form = $ 'div.postarea > form'
-    inputs = $$ 'input[type=text], textarea', form
-    for input in inputs
-        input.addEventListener 'focus', keybindRem, true
-        input.addEventListener 'blur',  keybindAdd, true
-    keybindAdd()
+    document.addEventListener 'keydown', keydown, true
+    document.addEventListener 'keypress', keypress, true
 
 if g.REPLY
     if getConfig('Quick Reply') and getConfig 'Persistent QR'
