@@ -201,7 +201,7 @@ autoWatch = ->
     GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
 
 closeQR = ->
-    div = this.parentNode.parentNode
+    div = @parentNode.parentNode
     remove div
 
 clearHidden = ->
@@ -237,7 +237,7 @@ expandComment = (e) ->
     href = a.getAttribute('href')
     r = new XMLHttpRequest()
     r.onload = ->
-        onloadComment(this.responseText, a, href)
+        onloadComment(@responseText, a, href)
     r.open('GET', href, true)
     r.send()
     g.xhrs.push {
@@ -267,7 +267,7 @@ expandThread = ->
     #create new request
     r = new XMLHttpRequest()
     r.onload = ->
-        onloadThread this.responseText, span
+        onloadThread @responseText, span
     r.open 'GET', "res/#{id}", true
     r.send()
     g.xhrs.push {
@@ -298,7 +298,7 @@ formSubmit = (e) ->
         recaptcha.focus()
 
 hideReply = (reply) ->
-    if p = this.parentNode
+    if p = @parentNode
         reply = p.nextSibling
         g.hiddenReplies.push {
             id: reply.id
@@ -629,11 +629,11 @@ quickReply = (e) ->
         textarea.focus()
         #we can't just use @textContent b/c of the xxxs. goddamit moot.
         textarea.value += '>>' + @parentNode.id.match(/\d+$/)[0] + '\n'
-        if text and id is this.parentNode.id
+        if text and id is @parentNode.id
             textarea.value += ">#{text}\n"
 
 recaptchaListener = (e) ->
-    if e.keyCode is 8 and this.value is ''
+    if e.keyCode is 8 and @value is ''
         recaptchaReload()
 
 recaptchaReload = ->
@@ -685,7 +685,7 @@ scroll = (count) ->
     location.hash = hash
 
 showReply = ->
-    div = this.parentNode
+    div = @parentNode
     table = div.nextSibling
     show(table)
     remove(div)
@@ -729,9 +729,9 @@ threadF = (current) ->
         threadF(current)
 
 watch = ->
-    id = this.nextSibling.name
-    if this.src[0] is 'd'#data:png
-        this.src = g.favNormal
+    id = @nextSibling.name
+    if @src[0] is 'd'#data:png
+        @src = g.favNormal
         text = "/#{g.BOARD}/ - " +
             x('following-sibling::blockquote', this).textContent.slice(0,25)
         g.watched[g.BOARD] or= []
@@ -740,7 +740,7 @@ watch = ->
             text: text
         }
     else
-        this.src = g.favEmpty
+        @src = g.favEmpty
         g.watched[g.BOARD] = slice(g.watched[g.BOARD], id)
     GM_setValue('watched', JSON.stringify(g.watched))
     watcherUpdate()
