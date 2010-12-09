@@ -1,6 +1,6 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
-  var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) {
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, form, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, img, inAfter, inBefore, input, inputs, keybindAdd, keybindRem, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
     }
@@ -202,7 +202,6 @@
       el.addEventListener(event, funk, true);
     }
     for (key in props) {
-      if (!__hasProp.call(props, key)) continue;
       val = props[key];
       el[key] = val;
     }
@@ -660,7 +659,7 @@
   keydown = function(e) {
     var kc;
     kc = e.keyCode;
-    if (!(48 <= kc && kc <= 90)) {
+    if (!((48 <= kc && kc <= 90))) {
       return g.keyCode = -1;
     } else if (e.ctrlKey || e.altKey) {
       return g.keyCode = -1;
@@ -735,7 +734,6 @@
       hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length;
       html = '<div class="move">Options <a class=pointer>X</a></div><div>';
       for (option in config) {
-        if (!__hasProp.call(config, option)) continue;
         value = config[option];
         description = value[1];
         checked = getConfig(option) ? "checked" : "";
@@ -1021,14 +1019,12 @@
     return watcherUpdate();
   };
   watcherUpdate = function() {
-    var a, board, div, link, old, thread, _i, _len, _ref, _ref2;
+    var a, board, div, link, old, thread, _i, _len, _ref;
     div = n('div');
-    _ref = g.watched;
-    for (board in _ref) {
-      if (!__hasProp.call(_ref, board)) continue;
-      _ref2 = g.watched[board];
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        thread = _ref2[_i];
+    for (board in g.watched) {
+      _ref = g.watched[board];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        thread = _ref[_i];
         a = n('a', {
           textContent: 'X',
           className: 'pointer',
@@ -1336,7 +1332,6 @@
     threads = g.watched[g.BOARD] || [];
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');
     _fn = function(input) {
-      var img, src;
       id = input.name;
       src = (function() {
         var thread, _i, _len;
