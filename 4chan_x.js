@@ -485,8 +485,7 @@
   };
   keypress = function(e) {
     var bot, char, count, hash, height, href, i, img, next, prev, qrLink, rect, replies, reply, td, temp, thread, top, _i, _j, _len, _len2, _len3, _len4, _ref, _ref2;
-    char = g.char;
-    if (!char) {
+    if (!(char = g.char)) {
       return;
     }
     hash = location.hash;

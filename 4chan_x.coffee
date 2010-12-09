@@ -378,8 +378,7 @@ keydown = (e) ->
     g.char = char
 
 keypress = (e) ->
-    char = g.char
-    return unless char
+    return unless char = g.char
     hash = location.hash
     count = g.count
     if char in '1234567890'
