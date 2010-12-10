@@ -932,32 +932,48 @@ for el in $$ '#recaptcha_table a'
 recaptcha = $ '#recaptcha_response_field'
 recaptcha.addEventListener('keydown', recaptchaListener, true)
 
-#major features
-if getConfig 'Image Expansion'
-    g.callbacks.push (root) ->
-        thumbs = $$ 'img[md5]', root
+expandClick = ->
+    thumbs = $$ 'img[md5]'
+    if @checked #Expand
         for thumb in thumbs
-            thumb.parentNode.addEventListener 'click', imageClick, true
+            if thumb.className isnt 'hide'
+                thumbHide thumb
+    else
+        for thumb in thumbs
+            if thumb.className is 'hide'
+                thumbShow thumb
 
 imageClick = (e) ->
     e.preventDefault()
     thumb = @firstChild
     if thumb.className is 'hide'
-        imageContract this
+        thumbShow thumb
     else
-        imageExpand this
+        thumbHide thumb
 
-imageContract = (a) ->
-    thumb = a.firstChild
+thumbShow = (thumb) ->
     thumb.className = ''
-    remove a.lastChild
+    remove thumb.nextSibling
 
-imageExpand = (a) ->
-    thumb = a.firstChild
+thumbHide = (thumb) ->
     thumb.className = 'hide'
+    link = thumb.parentNode
     img = n 'img',
-        src: a.href
-    a.appendChild img
+        src: link.href
+    link.appendChild img
+
+#major features
+if getConfig 'Image Expansion'
+    delform = $ 'form[name=delform]'
+    expand = n 'div',
+        innerHTML: "<label>Expand Images<input type=checkbox></label>"
+    $("input", expand).addEventListener 'click', expandClick, true
+    inBefore delform.firstChild, expand
+
+    g.callbacks.push (root) ->
+        thumbs = $$ 'img[md5]', root
+        for thumb in thumbs
+            thumb.parentNode.addEventListener 'click', imageClick, true
 
 if getConfig 'Localize Time'
     g.callbacks.push (root) ->
