@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandClick, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, img, inAfter, inBefore, input, inputs, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, stopPropagation, temp, text, textContent, thread, threadF, threads, thumbHide, thumbShow, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, img, inAfter, inBefore, input, inputs, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -472,6 +472,48 @@
       remove(qr);
     }
     return recaptchaReload();
+  };
+  imageClick = function(e) {
+    var thumb;
+    e.preventDefault();
+    thumb = this.firstChild;
+    if (thumb.className === 'hide') {
+      return imageThumb(thumb);
+    } else {
+      return imageFull(thumb);
+    }
+  };
+  imageExpandClick = function() {
+    var thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
+    thumbs = $$('img[md5]');
+    if (this.checked) {
+      _results = [];
+      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+        thumb = thumbs[_i];
+        _results.push(thumb.className !== 'hide' ? imageFull(thumb) : void 0);
+      }
+      return _results;
+    } else {
+      _results2 = [];
+      for (_j = 0, _len2 = thumbs.length; _j < _len2; _j++) {
+        thumb = thumbs[_j];
+        _results2.push(thumb.className === 'hide' ? imageThumb(thumb) : void 0);
+      }
+      return _results2;
+    }
+  };
+  imageFull = function(thumb) {
+    var img, link;
+    thumb.className = 'hide';
+    link = thumb.parentNode;
+    img = n('img', {
+      src: link.href
+    });
+    return link.appendChild(img);
+  };
+  imageThumb = function(thumb) {
+    thumb.className = '';
+    return remove(thumb.nextSibling);
   };
   keydown = function(e) {
     var char, _ref;
@@ -1194,54 +1236,12 @@
   }
   recaptcha = $('#recaptcha_response_field');
   recaptcha.addEventListener('keydown', recaptchaListener, true);
-  expandClick = function() {
-    var thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
-    thumbs = $$('img[md5]');
-    if (this.checked) {
-      _results = [];
-      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-        thumb = thumbs[_i];
-        _results.push(thumb.className !== 'hide' ? thumbHide(thumb) : void 0);
-      }
-      return _results;
-    } else {
-      _results2 = [];
-      for (_j = 0, _len2 = thumbs.length; _j < _len2; _j++) {
-        thumb = thumbs[_j];
-        _results2.push(thumb.className === 'hide' ? thumbShow(thumb) : void 0);
-      }
-      return _results2;
-    }
-  };
-  imageClick = function(e) {
-    var thumb;
-    e.preventDefault();
-    thumb = this.firstChild;
-    if (thumb.className === 'hide') {
-      return thumbShow(thumb);
-    } else {
-      return thumbHide(thumb);
-    }
-  };
-  thumbShow = function(thumb) {
-    thumb.className = '';
-    return remove(thumb.nextSibling);
-  };
-  thumbHide = function(thumb) {
-    var img, link;
-    thumb.className = 'hide';
-    link = thumb.parentNode;
-    img = n('img', {
-      src: link.href
-    });
-    return link.appendChild(img);
-  };
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = n('div', {
       innerHTML: "<label>Expand Images<input type=checkbox></label>"
     });
-    $("input", expand).addEventListener('click', expandClick, true);
+    $("input", expand).addEventListener('click', imageExpandClick, true);
     inBefore(delform.firstChild, expand);
     g.callbacks.push(function(root) {
       var thumb, thumbs, _i, _len, _results;

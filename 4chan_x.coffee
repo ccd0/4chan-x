@@ -369,6 +369,40 @@ iframeLoad = ->
         remove qr
     recaptchaReload()
 
+imageClick = (e) ->
+    e.preventDefault()
+    thumb = @firstChild
+    if thumb.className is 'hide'
+        imageThumb thumb
+    else
+        imageFull thumb
+
+imageExpandClick = ->
+    thumbs = $$ 'img[md5]'
+    if @checked #expand
+        for thumb in thumbs
+            if thumb.className isnt 'hide'
+                #we want the thumbs hidden - we want full sized images
+                imageFull thumb
+    else #contract
+        for thumb in thumbs
+            if thumb.className is 'hide'
+                #we want thumbs shown
+                imageThumb thumb
+
+imageFull = (thumb) ->
+    # show full size image, hide thumb
+    thumb.className = 'hide'
+    link = thumb.parentNode
+    img = n 'img',
+        src: link.href
+    link.appendChild img
+
+imageThumb = (thumb) ->
+    #thumbify the image - show thumb, remove full sized image
+    thumb.className = ''
+    remove thumb.nextSibling
+
 keydown = (e) ->
     if document.activeElement.nodeName in ['TEXTAREA', 'INPUT']
         char = null
@@ -932,42 +966,12 @@ for el in $$ '#recaptcha_table a'
 recaptcha = $ '#recaptcha_response_field'
 recaptcha.addEventListener('keydown', recaptchaListener, true)
 
-expandClick = ->
-    thumbs = $$ 'img[md5]'
-    if @checked #Expand
-        for thumb in thumbs
-            if thumb.className isnt 'hide'
-                thumbHide thumb
-    else
-        for thumb in thumbs
-            if thumb.className is 'hide'
-                thumbShow thumb
-
-imageClick = (e) ->
-    e.preventDefault()
-    thumb = @firstChild
-    if thumb.className is 'hide'
-        thumbShow thumb
-    else
-        thumbHide thumb
-
-thumbShow = (thumb) ->
-    thumb.className = ''
-    remove thumb.nextSibling
-
-thumbHide = (thumb) ->
-    thumb.className = 'hide'
-    link = thumb.parentNode
-    img = n 'img',
-        src: link.href
-    link.appendChild img
-
 #major features
 if getConfig 'Image Expansion'
     delform = $ 'form[name=delform]'
     expand = n 'div',
         innerHTML: "<label>Expand Images<input type=checkbox></label>"
-    $("input", expand).addEventListener 'click', expandClick, true
+    $("input", expand).addEventListener 'click', imageExpandClick, true
     inBefore delform.firstChild, expand
 
     g.callbacks.push (root) ->
