@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, img, inAfter, inBefore, input, inputs, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageContract, imageExpand, img, inAfter, inBefore, input, inputs, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -11,6 +11,7 @@
     'Anonymize': [false, 'Make everybody anonymous'],
     'Auto Watch': [true, 'Automatically watch threads that you start (Firefox only)'],
     'Comment Expansion': [true, 'Expand too long comments'],
+    'Image Expansion': [true, 'Expand images'],
     'Keybinds': [false, 'Binds actions to keys'],
     'Localize Time': [true, 'Show times based on your timezone'],
     'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
@@ -1148,6 +1149,9 @@
         padding: 5px;\
         text-align: right;\
     }\
+    a img {\
+        border: 0px;\
+    }\
     span.navlinks {\
         position: absolute;\
         right: 5px;\
@@ -1190,6 +1194,43 @@
   }
   recaptcha = $('#recaptcha_response_field');
   recaptcha.addEventListener('keydown', recaptchaListener, true);
+  if (getConfig('Image Expansion')) {
+    g.callbacks.push(function(root) {
+      var thumb, thumbs, _i, _len, _results;
+      thumbs = $$('img[md5]', root);
+      _results = [];
+      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+        thumb = thumbs[_i];
+        _results.push(thumb.parentNode.addEventListener('click', imageClick, true));
+      }
+      return _results;
+    });
+  }
+  imageClick = function(e) {
+    var thumb;
+    e.preventDefault();
+    thumb = this.firstChild;
+    if (thumb.className === 'hide') {
+      return imageContract(this);
+    } else {
+      return imageExpand(this);
+    }
+  };
+  imageContract = function(a) {
+    var thumb;
+    thumb = a.firstChild;
+    thumb.className = '';
+    return remove(a.lastChild);
+  };
+  imageExpand = function(a) {
+    var img, thumb;
+    thumb = a.firstChild;
+    thumb.className = 'hide';
+    img = n('img', {
+      src: a.href
+    });
+    return a.appendChild(img);
+  };
   if (getConfig('Localize Time')) {
     g.callbacks.push(function(root) {
       var date, day, dotw, hour, min_sec, month, s, span, spans, year, _i, _len, _ref, _results;

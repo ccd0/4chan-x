@@ -11,6 +11,7 @@ config =
     'Anonymize':           [false, 'Make everybody anonymous']
     'Auto Watch':          [true, 'Automatically watch threads that you start (Firefox only)']
     'Comment Expansion':   [true, 'Expand too long comments']
+    'Image Expansion':     [true, 'Expand images']
     'Keybinds':            [false, 'Binds actions to keys']
     'Localize Time':       [true, 'Show times based on your timezone']
     'Persistent QR':       [false, 'Quick reply won\'t disappear after posting. Only in replies.']
@@ -888,6 +889,9 @@ GM_addStyle '
         padding: 5px;
         text-align: right;
     }
+    a img {
+        border: 0px;
+    }
     span.navlinks {
         position: absolute;
         right: 5px;
@@ -929,6 +933,32 @@ recaptcha = $ '#recaptcha_response_field'
 recaptcha.addEventListener('keydown', recaptchaListener, true)
 
 #major features
+if getConfig 'Image Expansion'
+    g.callbacks.push (root) ->
+        thumbs = $$ 'img[md5]', root
+        for thumb in thumbs
+            thumb.parentNode.addEventListener 'click', imageClick, true
+
+imageClick = (e) ->
+    e.preventDefault()
+    thumb = @firstChild
+    if thumb.className is 'hide'
+        imageContract this
+    else
+        imageExpand this
+
+imageContract = (a) ->
+    thumb = a.firstChild
+    thumb.className = ''
+    remove a.lastChild
+
+imageExpand = (a) ->
+    thumb = a.firstChild
+    thumb.className = 'hide'
+    img = n 'img',
+        src: a.href
+    a.appendChild img
+
 if getConfig 'Localize Time'
     g.callbacks.push (root) ->
         spans = $$ 'span[id^=no]', root
