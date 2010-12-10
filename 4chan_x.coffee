@@ -1134,9 +1134,11 @@ if g.REPLY
 else #not reply
     if getConfig 'Thread Hiding'
         delform = $('form[name=delform]')
+        first = $ 'form[name=delform] > *'
+        start = first.nextSibling if getConfig 'Image Expansion'
         #don't confuse other scripts
         d.addEventListener('DOMNodeInserted', stopPropagation, true)
-        threadF(delform.firstChild)
+        threadF start
         d.removeEventListener('DOMNodeInserted', stopPropagation, true)
 
     if getConfig 'Auto Watch'
