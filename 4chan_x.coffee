@@ -30,7 +30,7 @@ config =
 AEOS =
     init: ->
         #x-browser
-        unless GM_deleteValue?
+        if typeof GM_deleteValue is 'undefined'
             window.GM_setValue = (name, value) ->
                 value = (typeof value)[0] + value
                 localStorage.setItem name, value
@@ -38,14 +38,14 @@ AEOS =
                 unless value = localStorage.getItem name
                     return defaultValue
                 type = value[0]
-                value = value.substring 1
+                value = value[1..]
                 switch type
                     when 'b'
-                        return value == 'true'
+                        value == 'true'
                     when 'n'
-                        return Number value
+                        Number value
                     else
-                        return value
+                        value
             window.GM_addStyle = (css) ->
                 style = document.createElement 'style'
                 style.type = 'text/css'
@@ -405,7 +405,10 @@ keypress = (e) ->
             when "I"
                 unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)'
                     qrLink = $ "span[id^=nothread] a:not(:first-child)"
-                quickReply.call qrLink
+                if e.shiftKey
+                    quickReply qrLink
+                else
+                    quickReply qrLink, qrText qrLink
             when "J"
                 if e.shiftKey
                     if td = $ 'td.replyhl'
@@ -457,7 +460,10 @@ keypress = (e) ->
                 [thread] = getThread()
                 unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
                     qrLink = $ "span#nothread#{thread.id} a:not(:first-child)", thread
-                quickReply.call qrLink
+                if e.shiftKey
+                    quickReply qrLink
+                else
+                    quickReply qrLink, qrText qrLink
             when "J"
                 if e.shiftKey
                     [thread] = getThread()
@@ -568,7 +574,23 @@ parseResponse = (responseText) ->
     opbq = $ 'blockquote', body
     return [replies, opbq]
 
-quickReply = (e) ->
+qrListener = (e) ->
+    e.preventDefault()
+    link = e.target
+    text = qrText link
+    quickReply link, text
+
+qrText = (link) ->
+    #we can't just use textContent b/c of the xxxs. goddamit moot.
+    text = '>>' + link.parentNode.id.match(/\d+$/)[0] + '\n'
+
+    selection = window.getSelection()
+    id = x('preceding::span[@id][1]', selection.anchorNode)?.id
+    text += selection.toString() if id is link.id
+
+    text
+
+quickReply = (link, text) ->
     unless qr = $ '#qr'
         #make quick reply dialog
         qr = AEOS.makeDialog 'qr', 'topleft'
@@ -598,15 +620,13 @@ quickReply = (e) ->
         m clone,
             listener: ['submit', formSubmit]
             target: 'iframe'
-        if getConfig 'Keybinds'
-            inputs = $$ 'input[type=text], textarea', clone
         if not g.REPLY
             #figure out which thread we're replying to
             xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
             input = n 'input',
                 type: 'hidden'
                 name: 'resto'
-                value: x(xpath, this).name
+                value: x(xpath, link).name
             addTo clone, input
         else if getConfig 'Persistent QR'
             submit = $ 'input[type=submit]', clone
@@ -618,18 +638,11 @@ quickReply = (e) ->
             inBefore submit, auto
         addTo qr, clone
         addTo d.body, qr
-    unless g.startup
-        e?.preventDefault()
-        $('input[title=autohide]:checked', qr)?.click()
-        selection = window.getSelection()
-        id = x('preceding::span[@id][1]', selection.anchorNode)?.id
-        text = selection.toString()
-        textarea = $('textarea', qr)
-        textarea.focus()
-        #we can't just use @textContent b/c of the xxxs. goddamit moot.
-        textarea.value += '>>' + @parentNode.id.match(/\d+$/)[0] + '\n'
-        if text and id is @parentNode.id
-            textarea.value += ">#{text}\n"
+
+    $('input[title=autohide]:checked', qr)?.click()
+    textarea = $('textarea', qr)
+    textarea.focus()
+    if text then textarea.value += text
 
 recaptchaListener = (e) ->
     if e.keyCode is 8 and @value is ''
@@ -983,7 +996,7 @@ if getConfig 'Quick Reply'
     g.callbacks.push (root) ->
         quotes = $$('a.quotejs:not(:first-child)', root)
         for quote in quotes
-            quote.addEventListener('click', quickReply, true)
+            quote.addEventListener('click', qrListener, true)
 
     #hack - nuke id so it doesn't grab focus when reloading
     recaptcha.id = ''

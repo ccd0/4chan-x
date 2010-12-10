@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, img, inAfter, inBefore, input, inputs, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, img, inAfter, inBefore, input, inputs, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -28,7 +28,7 @@
   };
   AEOS = {
     init: function() {
-      if (typeof GM_deleteValue == "undefined" || GM_deleteValue === null) {
+      if (typeof GM_deleteValue === 'undefined') {
         window.GM_setValue = function(name, value) {
           value = (typeof value)[0] + value;
           return localStorage.setItem(name, value);
@@ -39,7 +39,7 @@
             return defaultValue;
           }
           type = value[0];
-          value = value.substring(1);
+          value = value.slice(1);
           switch (type) {
             case 'b':
               return value === 'true';
@@ -520,7 +520,11 @@
           if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
             qrLink = $("span[id^=nothread] a:not(:first-child)");
           }
-          return quickReply.call(qrLink);
+          if (e.shiftKey) {
+            return quickReply(qrLink);
+          } else {
+            return quickReply(qrLink, qrText(qrLink));
+          }
           break;
         case "J":
           if (e.shiftKey) {
@@ -592,7 +596,11 @@
           if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)', thread))) {
             qrLink = $("span#nothread" + thread.id + " a:not(:first-child)", thread);
           }
-          return quickReply.call(qrLink);
+          if (e.shiftKey) {
+            return quickReply(qrLink);
+          } else {
+            return quickReply(qrLink, qrText(qrLink));
+          }
           break;
         case "J":
           if (e.shiftKey) {
@@ -753,8 +761,25 @@
     opbq = $('blockquote', body);
     return [replies, opbq];
   };
-  quickReply = function(e) {
-    var auto, autoBox, autohideB, clone, closeB, form, id, input, inputs, qr, script, selection, submit, text, textarea, titlebar, xpath, _i, _len, _ref, _ref2, _ref3;
+  qrListener = function(e) {
+    var link, text;
+    e.preventDefault();
+    link = e.target;
+    text = qrText(link);
+    return quickReply(link, text);
+  };
+  qrText = function(link) {
+    var id, selection, text, _ref;
+    text = '>>' + link.parentNode.id.match(/\d+$/)[0] + '\n';
+    selection = window.getSelection();
+    id = (_ref = x('preceding::span[@id][1]', selection.anchorNode)) != null ? _ref.id : void 0;
+    if (id === link.id) {
+      text += selection.toString();
+    }
+    return text;
+  };
+  quickReply = function(link, text) {
+    var auto, autoBox, autohideB, clone, closeB, form, input, qr, script, submit, textarea, titlebar, xpath, _i, _len, _ref, _ref2;
     if (!(qr = $('#qr'))) {
       qr = AEOS.makeDialog('qr', 'topleft');
       titlebar = n('div', {
@@ -790,15 +815,12 @@
         listener: ['submit', formSubmit],
         target: 'iframe'
       });
-      if (getConfig('Keybinds')) {
-        inputs = $$('input[type=text], textarea', clone);
-      }
       if (!g.REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
         input = n('input', {
           type: 'hidden',
           name: 'resto',
-          value: x(xpath, this).name
+          value: x(xpath, link).name
         });
         addTo(clone, input);
       } else if (getConfig('Persistent QR')) {
@@ -815,22 +837,13 @@
       addTo(qr, clone);
       addTo(d.body, qr);
     }
-    if (!g.startup) {
-      if (e != null) {
-        e.preventDefault();
-      }
-      if ((_ref2 = $('input[title=autohide]:checked', qr)) != null) {
-        _ref2.click();
-      }
-      selection = window.getSelection();
-      id = (_ref3 = x('preceding::span[@id][1]', selection.anchorNode)) != null ? _ref3.id : void 0;
-      text = selection.toString();
-      textarea = $('textarea', qr);
-      textarea.focus();
-      textarea.value += '>>' + this.parentNode.id.match(/\d+$/)[0] + '\n';
-      if (text && id === this.parentNode.id) {
-        return textarea.value += ">" + text + "\n";
-      }
+    if ((_ref2 = $('input[title=autohide]:checked', qr)) != null) {
+      _ref2.click();
+    }
+    textarea = $('textarea', qr);
+    textarea.focus();
+    if (text) {
+      return textarea.value += text;
     }
   };
   recaptchaListener = function(e) {
@@ -1276,7 +1289,7 @@
       _results = [];
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
-        _results.push(quote.addEventListener('click', quickReply, true));
+        _results.push(quote.addEventListener('click', qrListener, true));
       }
       return _results;
     });
