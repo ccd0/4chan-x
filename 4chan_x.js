@@ -1198,6 +1198,7 @@
     }\
     a img {\
         border: 0px;\
+        float: left;\
     }\
     span.navlinks {\
         position: absolute;\
