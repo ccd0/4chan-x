@@ -489,6 +489,7 @@
   imageExpandClick = function() {
     var thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
     thumbs = $$('img[md5]');
+    g.expand = this.checked;
     if (this.checked) {
       _results = [];
       for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
@@ -1091,6 +1092,7 @@
   g = {
     callbacks: [],
     count: 0,
+    expand: false,
     favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     favNormal: ((_ref = $('link[rel="shortcut icon"]', $('head', d))) != null ? _ref.href : void 0) || 'http://static.4chan.org/image/favicon.ico',
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n'),
@@ -1255,7 +1257,8 @@
       _results = [];
       for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
         thumb = thumbs[_i];
-        _results.push(thumb.parentNode.addEventListener('click', imageClick, true));
+        thumb.parentNode.addEventListener('click', imageClick, true);
+        _results.push(g.expand ? imageFull(thumb) : void 0);
       }
       return _results;
     });

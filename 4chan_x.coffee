@@ -380,6 +380,7 @@ imageClick = (e) ->
 
 imageExpandClick = ->
     thumbs = $$ 'img[md5]'
+    g.expand = @checked
     if @checked #expand
         for thumb in thumbs
             if thumb.className isnt 'hide'
@@ -823,6 +824,7 @@ AEOS.init()
 g =
     callbacks: []
     count: 0
+    expand: false
     favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
     favNormal: $('link[rel="shortcut icon"]', $('head', d))?.href or 'http://static.4chan.org/image/favicon.ico'
     flavors: [
@@ -982,6 +984,7 @@ if getConfig 'Image Expansion'
         thumbs = $$ 'img[md5]', root
         for thumb in thumbs
             thumb.parentNode.addEventListener 'click', imageClick, true
+            if g.expand then imageFull thumb
 
 if getConfig 'Localize Time'
     g.callbacks.push (root) ->
