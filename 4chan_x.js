@@ -475,6 +475,9 @@
   };
   imageClick = function(e) {
     var thumb;
+    if (e.shiftKey || e.altKey || e.ctrlKey) {
+      return;
+    }
     e.preventDefault();
     thumb = this.firstChild;
     if (thumb.className === 'hide') {

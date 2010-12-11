@@ -370,6 +370,7 @@ iframeLoad = ->
     recaptchaReload()
 
 imageClick = (e) ->
+    return if e.shiftKey or e.altKey or e.ctrlKey
     e.preventDefault()
     thumb = @firstChild
     if thumb.className is 'hide'
