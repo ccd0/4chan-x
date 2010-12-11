@@ -935,6 +935,9 @@ GM_addStyle '
         font-size: 16px;
         text-decoration: none;
     }
+    .hide {
+        display: none;
+    }
     .pointer {
         cursor: pointer;
     }
