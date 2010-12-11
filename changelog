@@ -1,3 +1,6 @@
+1.17.2
+- expand images in new posts
+
 1.17.1
 - don't affect image clicks when ctrl | alt | shift held
 - add .hide class so thumbnail hiding works
