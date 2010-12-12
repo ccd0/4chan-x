@@ -1196,7 +1196,7 @@
         padding: 5px;\
         text-align: right;\
     }\
-    a img {\
+    form[name=delform] a img {\
         border: 0px;\
         float: left;\
         margin: 0px 20px;\
