@@ -1143,8 +1143,8 @@ if g.REPLY
 else #not reply
     if getConfig 'Thread Hiding'
         delform = $('form[name=delform]')
-        first = $ 'form[name=delform] > *'
-        start = first.nextSibling if getConfig 'Image Expansion'
+        start = $ 'form[name=delform] > *'
+        start = start.nextSibling if getConfig 'Image Expansion' #skip over image expansion dialog
         #don't confuse other scripts
         d.addEventListener('DOMNodeInserted', stopPropagation, true)
         threadF start
