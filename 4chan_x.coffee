@@ -63,8 +63,7 @@ AEOS =
             div.dialog > div.move {
                 cursor: move;
             }
-            div.dialog label,
-            div.dialog a {
+            label, a {
                 cursor: pointer;
             }
         '
