@@ -426,7 +426,20 @@ keyModeInsert = (e) ->
         remove $ '#qr'
         e.preventDefault()
     else if e.ctrlKey and char is "S"
-        console.log 'spoiler'
+        ta = document.activeElement
+        return unless ta.nodeName is 'TEXTAREA'
+
+        value    = ta.value
+        selStart = ta.selectionStart
+        selEnd   = ta.selectionEnd
+
+        valStart = value[0...selStart] + '[spoiler]'
+        valMid   = value[selStart...selEnd]
+        valEnd   = '[/spoiler]' + value[selEnd..]
+
+        ta.value = valStart + valMid + valEnd
+        range = valStart.length + valMid.length
+        ta.setSelectionRange range, range
         e.preventDefault()
 
 keyModeNormal = (e) ->

@@ -536,14 +536,26 @@
     }
   };
   keyModeInsert = function(e) {
-    var char, kc;
+    var char, kc, range, selEnd, selStart, ta, valEnd, valMid, valStart, value;
     kc = g.keyCode;
     char = g.char;
     if (kc === 27) {
       remove($('#qr'));
       return e.preventDefault();
     } else if (e.ctrlKey && char === "S") {
-      console.log('spoiler');
+      ta = document.activeElement;
+      if (ta.nodeName !== 'TEXTAREA') {
+        return;
+      }
+      value = ta.value;
+      selStart = ta.selectionStart;
+      selEnd = ta.selectionEnd;
+      valStart = value.slice(0, selStart) + '[spoiler]';
+      valMid = value.slice(selStart, selEnd);
+      valEnd = '[/spoiler]' + value.slice(selEnd);
+      ta.value = valStart + valMid + valEnd;
+      range = valStart.length + valMid.length;
+      ta.setSelectionRange(range, range);
       return e.preventDefault();
     }
   };
