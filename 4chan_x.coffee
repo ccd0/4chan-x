@@ -468,10 +468,13 @@ keyModeNormal = (e) ->
     count or= 1
     switch char
         when "H"
-            unless g.REPLY
-                temp = g.PAGENUM - count
-                if temp < 0 then temp = 0
-                location.pathname = "/#{g.BOARD}/#{temp}#1"
+            if e.shiftKey
+                unless g.REPLY
+                    temp = g.PAGENUM - count
+                    if temp < 0 then temp = 0
+                    location.pathname = "/#{g.BOARD}/#{temp}#1"
+            else
+                window.scrollBy -20 * count, 0
         when "I"
             if g.reply
                 unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)'
@@ -527,10 +530,13 @@ keyModeNormal = (e) ->
             else
                 window.scrollBy 0, -20 * count
         when "L"
-            unless g.REPLY
-                temp = g.PAGENUM + count
-                if temp > 15 then temp = 15
-                location.pathname = "/#{g.BOARD}/#{temp}#0"
+            if e.shiftKey
+                unless g.REPLY
+                    temp = g.PAGENUM + count
+                    if temp > 15 then temp = 15
+                    location.pathname = "/#{g.BOARD}/#{temp}#0"
+            else
+                window.scrollBy 20 * count, 0
         when "M"
             if e.shiftKey
                 $("#imageExpand").click()

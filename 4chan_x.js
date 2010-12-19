@@ -593,12 +593,16 @@
     count || (count = 1);
     switch (char) {
       case "H":
-        if (!g.REPLY) {
-          temp = g.PAGENUM - count;
-          if (temp < 0) {
-            temp = 0;
+        if (e.shiftKey) {
+          if (!g.REPLY) {
+            temp = g.PAGENUM - count;
+            if (temp < 0) {
+              temp = 0;
+            }
+            return location.pathname = "/" + g.BOARD + "/" + temp + "#1";
           }
-          return location.pathname = "/" + g.BOARD + "/" + temp + "#1";
+        } else {
+          return window.scrollBy(-20 * count, 0);
         }
         break;
       case "I":
@@ -681,12 +685,16 @@
         }
         break;
       case "L":
-        if (!g.REPLY) {
-          temp = g.PAGENUM + count;
-          if (temp > 15) {
-            temp = 15;
+        if (e.shiftKey) {
+          if (!g.REPLY) {
+            temp = g.PAGENUM + count;
+            if (temp > 15) {
+              temp = 15;
+            }
+            return location.pathname = "/" + g.BOARD + "/" + temp + "#0";
           }
-          return location.pathname = "/" + g.BOARD + "/" + temp + "#0";
+        } else {
+          return window.scrollBy(20 * count, 0);
         }
         break;
       case "M":
