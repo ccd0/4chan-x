@@ -466,112 +466,91 @@ keyModeNormal = (e) ->
                 window.scrollTo 0, 0
                 location.hash = ''
     count or= 1
-    if g.REPLY
-        switch char
-            when "I"
-                unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)'
-                    qrLink = $ "span[id^=nothread] a:not(:first-child)"
-                if e.shiftKey
-                    quickReply qrLink
-                else
-                    quickReply qrLink, qrText qrLink
-            when "J"
-                if e.shiftKey
-                    if td = $ 'td.replyhl'
-                        td.className = 'reply'
-                        rect = td.getBoundingClientRect()
-                        if rect.top > 0 and rect.bottom < d.body.clientHeight #you're visible
-                            next = x 'following::td[@class="reply"]', td
-                            rect = next.getBoundingClientRect()
-                            if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the next
-                                next.className = 'replyhl'
-                            return
-                    replies = $$ 'td.reply'
-                    for reply in replies
-                        top = reply.getBoundingClientRect().top
-                        if top > 0
-                            reply.className = 'replyhl'
-                            break
-                else
-                    window.scrollBy 0,  20 * count
-            when "K"
-                if e.shiftKey
-                    if td = $ 'td.replyhl'
-                        td.className = 'reply'
-                        rect = td.getBoundingClientRect()
-                        if rect.top > 0 and rect.bottom < d.body.clientHeight #you're visible
-                            prev = x 'preceding::td[@class="reply"][1]', td
-                            rect = prev.getBoundingClientRect()
-                            if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the prev
-                                prev.className = 'replyhl'
-                            return
-                    replies = $$ 'td.reply'
-                    replies.reverse()
-                    height = d.body.clientHeight
-                    for reply in replies
-                        bot = reply.getBoundingClientRect().bottom
-                        if bot < height
-                            reply.className = 'replyhl'
-                            break
-                else
-                    window.scrollBy 0, -20 * count
-    else
-        switch char
-            when "H"
+    switch char
+        when "H"
+            unless g.REPLY
                 temp = g.PAGENUM - count
                 if temp < 0 then temp = 0
                 location.pathname = "/#{g.BOARD}/#{temp}#1"
-            when "I"
-                #TODO scroll when replying to op
+        when "I"
+            if g.reply
+                unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)'
+                    qrLink = $ "span[id^=nothread] a:not(:first-child)"
+            else
                 [thread] = getThread()
                 unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
                     qrLink = $ "span#nothread#{thread.id} a:not(:first-child)", thread
-                if e.shiftKey
-                    quickReply qrLink
-                else
-                    quickReply qrLink, qrText qrLink
-            when "J"
-                if e.shiftKey
-                    [thread] = getThread()
-                    replies = $$ 'td[id]', thread
-                    for reply, i in replies
-                        if reply.className is 'replyhl'
-                            reply.className = 'reply'
-                            replies[i+1]?.className = 'replyhl'
-                            return
-                    replies[0].className = 'replyhl'
-                else
-                    scroll count
-            when "K"
-                if e.shiftKey
-                    [thread] = getThread()
-                    replies = $$ 'td[id]', thread
-                    for reply, i in replies
-                        if reply.className is 'replyhl'
-                            reply.className = 'reply'
-                            replies[i-1]?.className = 'replyhl'
-                            return
-                    replies.pop().className = 'replyhl'
-                else
-                    scroll count * -1
-            when "L"
+            if e.shiftKey
+                quickReply qrLink
+            else
+                quickReply qrLink, qrText qrLink
+        when "J"
+            if e.shiftKey
+                if not g.REPLY then [root] = getThread()
+                if td = $ 'td.replyhl', root
+                    td.className = 'reply'
+                    rect = td.getBoundingClientRect()
+                    if rect.top > 0 and rect.bottom < d.body.clientHeight #you're visible
+                        next = x 'following::td[@class="reply"]', td
+                        rect = next.getBoundingClientRect()
+                        if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the next
+                            next.className = 'replyhl'
+                        return
+                replies = $$ 'td.reply', root
+                for reply in replies
+                    top = reply.getBoundingClientRect().top
+                    if top > 0
+                        reply.className = 'replyhl'
+                        break
+            else
+                window.scrollBy 0,  20 * count
+        when "K"
+            if e.shiftKey
+                if not g.REPLY then [root] = getThread()
+                if td = $ 'td.replyhl', root
+                    td.className = 'reply'
+                    rect = td.getBoundingClientRect()
+                    if rect.top > 0 and rect.bottom < d.body.clientHeight #you're visible
+                        prev = x 'preceding::td[@class="reply"][1]', td
+                        rect = prev.getBoundingClientRect()
+                        if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the prev
+                            prev.className = 'replyhl'
+                        return
+                replies = $$ 'td.reply', root
+                replies.reverse()
+                height = d.body.clientHeight
+                for reply in replies
+                    bot = reply.getBoundingClientRect().bottom
+                    if bot < height
+                        reply.className = 'replyhl'
+                        break
+            else
+                window.scrollBy 0, -20 * count
+        when "L"
+            unless g.REPLY
                 temp = g.PAGENUM + count
                 if temp > 15 then temp = 15
                 location.pathname = "/#{g.BOARD}/#{temp}#0"
-            when "M"
-                if e.shiftKey
-                    $("#imageExpand").click()
-                else
-                    [thread] = getThread()
-                    unless image = $ 'td.replyhl span.filesize ~ a[target]', thread
-                        image = $ 'span.filesize ~ a[target]', thread
-                    imageToggle image
-            when "O"
-                href = $("#{hash} ~ span[id] a:last-of-type").href
+        when "M"
+            if e.shiftKey
+                $("#imageExpand").click()
+            else
+                if not g.REPLY then [root] = getThread()
+                unless image = $ 'td.replyhl span.filesize ~ a[target]', root
+                    image = $ 'span.filesize ~ a[target]', root
+                imageToggle image
+        when "N"
+            sign = if e.shiftKey then -1 else 1
+            scroll sign * count
+        when "O"
+            href = $("#{hash} ~ span[id] a:last-of-type").href
+            if e.shiftKey
+                location.href = href
+            else
                 GM_openInTab href
-            when "W"
-                 watchButton = $("#{hash} ~ img")
-                 watch.call watchButton
+        when "W"
+             watchButton = $("#{hash} ~ img")
+             watch.call watchButton
 
 nodeInserted = (e) ->
     target = e.target

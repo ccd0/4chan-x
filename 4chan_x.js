@@ -560,7 +560,7 @@
     }
   };
   keyModeNormal = function(e) {
-    var bot, char, count, hash, height, href, i, image, next, prev, qrLink, rect, replies, reply, td, temp, thread, top, watchButton, _i, _j, _len, _len2, _len3, _len4, _ref, _ref2;
+    var bot, char, count, hash, height, href, image, next, prev, qrLink, rect, replies, reply, root, sign, td, temp, thread, top, watchButton, _i, _j, _len, _len2;
     if (e.ctrlKey || e.altKey) {
       return;
     }
@@ -591,158 +591,132 @@
       }
     }
     count || (count = 1);
-    if (g.REPLY) {
-      switch (char) {
-        case "I":
-          if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
-            qrLink = $("span[id^=nothread] a:not(:first-child)");
-          }
-          if (e.shiftKey) {
-            return quickReply(qrLink);
-          } else {
-            return quickReply(qrLink, qrText(qrLink));
-          }
-          break;
-        case "J":
-          if (e.shiftKey) {
-            if (td = $('td.replyhl')) {
-              td.className = 'reply';
-              rect = td.getBoundingClientRect();
-              if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-                next = x('following::td[@class="reply"]', td);
-                rect = next.getBoundingClientRect();
-                if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-                  next.className = 'replyhl';
-                }
-                return;
-              }
-            }
-            replies = $$('td.reply');
-            for (_i = 0, _len = replies.length; _i < _len; _i++) {
-              reply = replies[_i];
-              top = reply.getBoundingClientRect().top;
-              if (top > 0) {
-                reply.className = 'replyhl';
-                break;
-              }
-            }
-          } else {
-            return window.scrollBy(0, 20 * count);
-          }
-          break;
-        case "K":
-          if (e.shiftKey) {
-            if (td = $('td.replyhl')) {
-              td.className = 'reply';
-              rect = td.getBoundingClientRect();
-              if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-                prev = x('preceding::td[@class="reply"][1]', td);
-                rect = prev.getBoundingClientRect();
-                if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-                  prev.className = 'replyhl';
-                }
-                return;
-              }
-            }
-            replies = $$('td.reply');
-            replies.reverse();
-            height = d.body.clientHeight;
-            for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
-              reply = replies[_j];
-              bot = reply.getBoundingClientRect().bottom;
-              if (bot < height) {
-                reply.className = 'replyhl';
-                break;
-              }
-            }
-          } else {
-            return window.scrollBy(0, -20 * count);
-          }
-      }
-    } else {
-      switch (char) {
-        case "H":
+    switch (char) {
+      case "H":
+        if (!g.REPLY) {
           temp = g.PAGENUM - count;
           if (temp < 0) {
             temp = 0;
           }
           return location.pathname = "/" + g.BOARD + "/" + temp + "#1";
-          break;
-        case "I":
+        }
+        break;
+      case "I":
+        if (g.reply) {
+          if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
+            qrLink = $("span[id^=nothread] a:not(:first-child)");
+          }
+        } else {
           thread = getThread()[0];
           if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)', thread))) {
             qrLink = $("span#nothread" + thread.id + " a:not(:first-child)", thread);
           }
-          if (e.shiftKey) {
-            return quickReply(qrLink);
-          } else {
-            return quickReply(qrLink, qrText(qrLink));
+        }
+        if (e.shiftKey) {
+          return quickReply(qrLink);
+        } else {
+          return quickReply(qrLink, qrText(qrLink));
+        }
+        break;
+      case "J":
+        if (e.shiftKey) {
+          if (!g.REPLY) {
+            root = getThread()[0];
           }
-          break;
-        case "J":
-          if (e.shiftKey) {
-            thread = getThread()[0];
-            replies = $$('td[id]', thread);
-            for (i = 0, _len3 = replies.length; i < _len3; i++) {
-              reply = replies[i];
-              if (reply.className === 'replyhl') {
-                reply.className = 'reply';
-                if ((_ref = replies[i + 1]) != null) {
-                  _ref.className = 'replyhl';
-                }
-                return;
+          if (td = $('td.replyhl', root)) {
+            td.className = 'reply';
+            rect = td.getBoundingClientRect();
+            if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+              next = x('following::td[@class="reply"]', td);
+              rect = next.getBoundingClientRect();
+              if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+                next.className = 'replyhl';
               }
+              return;
             }
-            return replies[0].className = 'replyhl';
-          } else {
-            return scroll(count);
           }
-          break;
-        case "K":
-          if (e.shiftKey) {
-            thread = getThread()[0];
-            replies = $$('td[id]', thread);
-            for (i = 0, _len4 = replies.length; i < _len4; i++) {
-              reply = replies[i];
-              if (reply.className === 'replyhl') {
-                reply.className = 'reply';
-                if ((_ref2 = replies[i - 1]) != null) {
-                  _ref2.className = 'replyhl';
-                }
-                return;
+          replies = $$('td.reply', root);
+          for (_i = 0, _len = replies.length; _i < _len; _i++) {
+            reply = replies[_i];
+            top = reply.getBoundingClientRect().top;
+            if (top > 0) {
+              reply.className = 'replyhl';
+              break;
+            }
+          }
+        } else {
+          return window.scrollBy(0, 20 * count);
+        }
+        break;
+      case "K":
+        if (e.shiftKey) {
+          if (!g.REPLY) {
+            root = getThread()[0];
+          }
+          if (td = $('td.replyhl', root)) {
+            td.className = 'reply';
+            rect = td.getBoundingClientRect();
+            if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+              prev = x('preceding::td[@class="reply"][1]', td);
+              rect = prev.getBoundingClientRect();
+              if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+                prev.className = 'replyhl';
               }
+              return;
             }
-            return replies.pop().className = 'replyhl';
-          } else {
-            return scroll(count * -1);
           }
-          break;
-        case "L":
+          replies = $$('td.reply', root);
+          replies.reverse();
+          height = d.body.clientHeight;
+          for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
+            reply = replies[_j];
+            bot = reply.getBoundingClientRect().bottom;
+            if (bot < height) {
+              reply.className = 'replyhl';
+              break;
+            }
+          }
+        } else {
+          return window.scrollBy(0, -20 * count);
+        }
+        break;
+      case "L":
+        if (!g.REPLY) {
           temp = g.PAGENUM + count;
           if (temp > 15) {
             temp = 15;
           }
           return location.pathname = "/" + g.BOARD + "/" + temp + "#0";
-          break;
-        case "M":
-          if (e.shiftKey) {
-            return $("#imageExpand").click();
-          } else {
-            thread = getThread()[0];
-            if (!(image = $('td.replyhl span.filesize ~ a[target]', thread))) {
-              image = $('span.filesize ~ a[target]', thread);
-            }
-            return imageToggle(image);
+        }
+        break;
+      case "M":
+        if (e.shiftKey) {
+          return $("#imageExpand").click();
+        } else {
+          if (!g.REPLY) {
+            root = getThread()[0];
           }
-          break;
-        case "O":
-          href = $("" + hash + " ~ span[id] a:last-of-type").href;
+          if (!(image = $('td.replyhl span.filesize ~ a[target]', root))) {
+            image = $('span.filesize ~ a[target]', root);
+          }
+          return imageToggle(image);
+        }
+        break;
+      case "N":
+        sign = e.shiftKey ? -1 : 1;
+        return scroll(sign * count);
+        break;
+      case "O":
+        href = $("" + hash + " ~ span[id] a:last-of-type").href;
+        if (e.shiftKey) {
+          return location.href = href;
+        } else {
           return GM_openInTab(href);
-          break;
-        case "W":
-          watchButton = $("" + hash + " ~ img");
-          return watch.call(watchButton);
-      }
+        }
+        break;
+      case "W":
+        watchButton = $("" + hash + " ~ img");
+        return watch.call(watchButton);
     }
   };
   nodeInserted = function(e) {
