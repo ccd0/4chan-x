@@ -528,12 +528,12 @@ keypress = (e) ->
                 temp = g.PAGENUM + count
                 if temp > 15 then temp = 15
                 location.pathname = "/#{g.BOARD}/#{temp}#0"
-            when "M"
-                 img = $("#{hash} ~ img")
-                 watch.call img
             when "O"
                 href = $("#{hash} ~ span[id] a:last-of-type").href
                 GM_openInTab href
+            when "W"
+                 img = $("#{hash} ~ img")
+                 watch.call img
 
 nodeInserted = (e) ->
     target = e.target

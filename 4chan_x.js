@@ -693,13 +693,13 @@
           }
           return location.pathname = "/" + g.BOARD + "/" + temp + "#0";
           break;
-        case "M":
-          img = $("" + hash + " ~ img");
-          return watch.call(img);
-          break;
         case "O":
           href = $("" + hash + " ~ span[id] a:last-of-type").href;
           return GM_openInTab(href);
+          break;
+        case "W":
+          img = $("" + hash + " ~ img");
+          return watch.call(img);
       }
     }
   };
