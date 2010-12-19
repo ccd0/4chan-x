@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -522,21 +522,37 @@
     return remove(thumb.nextSibling);
   };
   keydown = function(e) {
-    var char, _ref;
-    if ((_ref = document.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') {
-      char = null;
-    } else if (e.ctrlKey || e.altKey) {
-      char = null;
-    } else {
-      char = String.fromCharCode(e.keyCode);
-    }
-    return g.char = char;
+    var kc;
+    kc = e.keyCode;
+    g.keyCode = kc;
+    return g.char = String.fromCharCode(kc);
   };
   keypress = function(e) {
+    var _ref;
+    if ((_ref = document.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') {
+      return keyModeInsert(e);
+    } else {
+      return keyModeNormal(e);
+    }
+  };
+  keyModeInsert = function(e) {
+    var char, kc;
+    kc = g.keyCode;
+    char = g.char;
+    if (kc === 27) {
+      remove($('#qr'));
+      return e.preventDefault();
+    } else if (e.ctrlKey && char === "S") {
+      console.log('spoiler');
+      return e.preventDefault();
+    }
+  };
+  keyModeNormal = function(e) {
     var bot, char, count, hash, height, href, i, image, next, prev, qrLink, rect, replies, reply, td, temp, thread, top, watchButton, _i, _j, _len, _len2, _len3, _len4, _ref, _ref2;
-    if (!(char = g.char)) {
+    if (e.ctrlKey || e.altKey) {
       return;
     }
+    char = g.char;
     hash = location.hash;
     count = g.count;
     if (__indexOf.call('1234567890', char) >= 0) {

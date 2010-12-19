@@ -409,16 +409,29 @@ imageThumb = (thumb) ->
     remove thumb.nextSibling
 
 keydown = (e) ->
-    if document.activeElement.nodeName in ['TEXTAREA', 'INPUT']
-        char = null
-    else if e.ctrlKey or e.altKey
-        char = null
-    else
-        char = String.fromCharCode e.keyCode
-    g.char = char
+    kc = e.keyCode
+    g.keyCode = kc
+    g.char = String.fromCharCode kc
 
 keypress = (e) ->
-    return unless char = g.char
+    if document.activeElement.nodeName in ['TEXTAREA', 'INPUT']
+        keyModeInsert e
+    else
+        keyModeNormal e
+
+keyModeInsert = (e) ->
+    kc = g.keyCode
+    char = g.char
+    if kc is 27 #escape
+        remove $ '#qr'
+        e.preventDefault()
+    else if e.ctrlKey and char is "S"
+        console.log 'spoiler'
+        e.preventDefault()
+
+keyModeNormal = (e) ->
+    return if e.ctrlKey or e.altKey
+    char = g.char
     hash = location.hash
     count = g.count
     if char in '1234567890'
