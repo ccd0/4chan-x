@@ -533,10 +533,13 @@ keypress = (e) ->
                 if temp > 15 then temp = 15
                 location.pathname = "/#{g.BOARD}/#{temp}#0"
             when "M"
-                [thread] = getThread()
-                unless image = $ 'td.replyhl span.filesize ~ a[target]', thread
-                    image = $ 'span.filesize ~ a[target]', thread
-                imageToggle image
+                if e.shiftKey
+                    $("#imageExpand").click()
+                else
+                    [thread] = getThread()
+                    unless image = $ 'td.replyhl span.filesize ~ a[target]', thread
+                        image = $ 'span.filesize ~ a[target]', thread
+                    imageToggle image
             when "O"
                 href = $("#{hash} ~ span[id] a:last-of-type").href
                 GM_openInTab href
@@ -986,7 +989,7 @@ recaptcha.addEventListener('keydown', recaptchaListener, true)
 if getConfig 'Image Expansion'
     delform = $ 'form[name=delform]'
     expand = n 'div',
-        innerHTML: "<label>Expand Images<input type=checkbox></label>"
+        innerHTML: "<label>Expand Images<input type=checkbox id=imageExpand></label>"
     $("input", expand).addEventListener 'click', imageExpandClick, true
     inBefore delform.firstChild, expand
 

@@ -697,11 +697,15 @@
           return location.pathname = "/" + g.BOARD + "/" + temp + "#0";
           break;
         case "M":
-          thread = getThread()[0];
-          if (!(image = $('td.replyhl span.filesize ~ a[target]', thread))) {
-            image = $('span.filesize ~ a[target]', thread);
+          if (e.shiftKey) {
+            return $("#imageExpand").click();
+          } else {
+            thread = getThread()[0];
+            if (!(image = $('td.replyhl span.filesize ~ a[target]', thread))) {
+              image = $('span.filesize ~ a[target]', thread);
+            }
+            return imageToggle(image);
           }
-          return imageToggle(image);
           break;
         case "O":
           href = $("" + hash + " ~ span[id] a:last-of-type").href;
@@ -1258,7 +1262,7 @@
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = n('div', {
-      innerHTML: "<label>Expand Images<input type=checkbox></label>"
+      innerHTML: "<label>Expand Images<input type=checkbox id=imageExpand></label>"
     });
     $("input", expand).addEventListener('click', imageExpandClick, true);
     inBefore(delform.firstChild, expand);
