@@ -371,7 +371,11 @@ iframeLoad = ->
 imageClick = (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey
     e.preventDefault()
-    thumb = @firstChild
+    imageToggle this
+
+imageToggle = (image) ->
+    # 'image' is actually the <a> container
+    thumb = image.firstChild
     if thumb.className is 'hide'
         imageThumb thumb
     else
@@ -528,12 +532,17 @@ keypress = (e) ->
                 temp = g.PAGENUM + count
                 if temp > 15 then temp = 15
                 location.pathname = "/#{g.BOARD}/#{temp}#0"
+            when "M"
+                [thread] = getThread()
+                unless image = $ 'td.replyhl span.filesize ~ a[target]', thread
+                    image = $ 'span.filesize ~ a[target]', thread
+                imageToggle image
             when "O"
                 href = $("#{hash} ~ span[id] a:last-of-type").href
                 GM_openInTab href
             when "W"
-                 img = $("#{hash} ~ img")
-                 watch.call img
+                 watchButton = $("#{hash} ~ img")
+                 watch.call watchButton
 
 nodeInserted = (e) ->
     target = e.target

@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, img, inAfter, inBefore, input, inputs, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -473,12 +473,15 @@
     return recaptchaReload();
   };
   imageClick = function(e) {
-    var thumb;
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
     }
     e.preventDefault();
-    thumb = this.firstChild;
+    return imageToggle(this);
+  };
+  imageToggle = function(image) {
+    var thumb;
+    thumb = image.firstChild;
     if (thumb.className === 'hide') {
       return imageThumb(thumb);
     } else {
@@ -530,7 +533,7 @@
     return g.char = char;
   };
   keypress = function(e) {
-    var bot, char, count, hash, height, href, i, img, next, prev, qrLink, rect, replies, reply, td, temp, thread, top, _i, _j, _len, _len2, _len3, _len4, _ref, _ref2;
+    var bot, char, count, hash, height, href, i, image, next, prev, qrLink, rect, replies, reply, td, temp, thread, top, watchButton, _i, _j, _len, _len2, _len3, _len4, _ref, _ref2;
     if (!(char = g.char)) {
       return;
     }
@@ -693,13 +696,20 @@
           }
           return location.pathname = "/" + g.BOARD + "/" + temp + "#0";
           break;
+        case "M":
+          thread = getThread()[0];
+          if (!(image = $('td.replyhl span.filesize ~ a[target]', thread))) {
+            image = $('span.filesize ~ a[target]', thread);
+          }
+          return imageToggle(image);
+          break;
         case "O":
           href = $("" + hash + " ~ span[id] a:last-of-type").href;
           return GM_openInTab(href);
           break;
         case "W":
-          img = $("" + hash + " ~ img");
-          return watch.call(img);
+          watchButton = $("" + hash + " ~ img");
+          return watch.call(watchButton);
       }
     }
   };
