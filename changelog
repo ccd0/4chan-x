@@ -1,3 +1,7 @@
+1.18.3
+- fix w / i / I keybinds
+- git rid of body padding
+
 1.18.2
 - logic fail
 
