@@ -912,7 +912,7 @@ if lastChecked < now - 1*DAY
     GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
     GM_setValue('lastChecked', now)
 
-css = '
+GM_addStyle '
     #watcher {
         position: absolute;
     }
@@ -969,12 +969,6 @@ css = '
         cursor: pointer;
     }
 '
-if not g.REPLY and getConfig 'Thread Navigation'
-    css += "
-    body {
-        padding-bottom: #{document.body.clientHeight}px;
-    }"
-GM_addStyle css
 
 if navtopr = $ '#navtopr a'
     text = navtopr.nextSibling #css doesn't see text nodes
