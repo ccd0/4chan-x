@@ -1,3 +1,14 @@
+1.18.0
+- body { padding-bottom } when Thread Navigation
+- keybinds
+    - insert mode
+	^s - quick spoiler
+	escape - remove quick reply
+    - normal mode
+	h/l - scroll left/right, H/L - move pages
+	m/M - expand selected / all images
+	w - watch thread (changed from m)
+
 1.17.5
 - fix threading
 - fix images
