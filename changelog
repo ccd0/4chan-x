@@ -1,3 +1,6 @@
+1.18.1
+- only adding padding when not in replies
+
 1.18.0
 - body { padding-bottom } when Thread Navigation
 - keybinds
