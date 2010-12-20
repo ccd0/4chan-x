@@ -606,7 +606,7 @@
         }
         break;
       case "I":
-        if (g.reply) {
+        if (g.REPLY) {
           if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
             qrLink = $("span[id^=nothread] a:not(:first-child)");
           }

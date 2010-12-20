@@ -476,7 +476,7 @@ keyModeNormal = (e) ->
             else
                 window.scrollBy -20 * count, 0
         when "I"
-            if g.reply
+            if g.REPLY
                 unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)'
                     qrLink = $ "span[id^=nothread] a:not(:first-child)"
             else
