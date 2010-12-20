@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, css, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -1182,7 +1182,67 @@
     GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
     GM_setValue('lastChecked', now);
   }
-  GM_addStyle("    #watcher {        position: absolute;    }    #watcher > div.move {        text-decoration: underline;        padding: 5px 5px 0 5px;    }    #watcher > div:last-child {        padding: 0 5px 5px 5px;    }    span.error {        color: red;    }    #qr.auto:not(:hover) form {        visibility: collapse;    }    #qr span.error {        position: absolute;        bottom: 0;        left: 0;    }    #qr {        position: fixed;    }    #qr > div {        text-align: right;    }    #qr > form > div, /* ad */    #qr td.rules {        display: none;    }    #options {        position: fixed;        padding: 5px;        text-align: right;    }    form[name=delform] a img {        border: 0px;        float: left;        margin: 0px 20px;    }    span.navlinks {        position: absolute;        right: 5px;    }    span.navlinks > a {        font-size: 16px;        text-decoration: none;    }    .hide {        display: none;    }    .pointer {        cursor: pointer;    }    " + (g.REPLY && getConfig('Thread Navigation') ? "body {            padding-bottom: " + document.body.clientHeight + "px;        }" : '') + "");
+  css = '\
+    #watcher {\
+        position: absolute;\
+    }\
+    #watcher > div.move {\
+        text-decoration: underline;\
+        padding: 5px 5px 0 5px;\
+    }\
+    #watcher > div:last-child {\
+        padding: 0 5px 5px 5px;\
+    }\
+    span.error {\
+        color: red;\
+    }\
+    #qr.auto:not(:hover) form {\
+        visibility: collapse;\
+    }\
+    #qr span.error {\
+        position: absolute;\
+        bottom: 0;\
+        left: 0;\
+    }\
+    #qr {\
+        position: fixed;\
+    }\
+    #qr > div {\
+        text-align: right;\
+    }\
+    #qr > form > div, /* ad */\
+    #qr td.rules {\
+        display: none;\
+    }\
+    #options {\
+        position: fixed;\
+        padding: 5px;\
+        text-align: right;\
+    }\
+    form[name=delform] a img {\
+        border: 0px;\
+        float: left;\
+        margin: 0px 20px;\
+    }\
+    span.navlinks {\
+        position: absolute;\
+        right: 5px;\
+    }\
+    span.navlinks > a {\
+        font-size: 16px;\
+        text-decoration: none;\
+    }\
+    .hide {\
+        display: none;\
+    }\
+    .pointer {\
+        cursor: pointer;\
+    }\
+';
+  if (!g.REPLY && getConfig('Thread Navigation')) {
+    css += "    body {        padding-bottom: " + document.body.clientHeight + "px;    }";
+  }
+  GM_addStyle(css);
   if (navtopr = $('#navtopr a')) {
     text = navtopr.nextSibling;
     a = n('a', {
