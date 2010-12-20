@@ -555,8 +555,9 @@ keyModeNormal = (e) ->
             else
                 GM_openInTab href
         when "W"
-             watchButton = $("#{hash} ~ img")
-             watch.call watchButton
+            root = if g.REPLY then null else getThread()[0]
+            watchButton = $ "span.filesize ~ img", root
+            watch.call watchButton
 
 nodeInserted = (e) ->
     target = e.target
@@ -801,7 +802,7 @@ threadF = (current) ->
 
 watch = ->
     id = @nextSibling.name
-    if @src[0] is 'd'#data:png
+    if @src is g.favEmpty
         @src = g.favNormal
         text = "/#{g.BOARD}/ - " +
             x('following-sibling::blockquote', this).textContent.slice(0,25)
@@ -847,7 +848,7 @@ g =
     callbacks: []
     count: 0
     expand: false
-    favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
+    favEmpty: 'http://static.4chan.org/image/favicon-dis.ico'
     favNormal: $('link[rel="shortcut icon"]', $('head', d))?.href or 'http://static.4chan.org/image/favicon.ico'
     flavors: [
         'http://regex.info/exif.cgi?url='

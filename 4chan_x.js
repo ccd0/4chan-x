@@ -723,7 +723,8 @@
         }
         break;
       case "W":
-        watchButton = $("" + hash + " ~ img");
+        root = g.REPLY ? null : getThread()[0];
+        watchButton = $("span.filesize ~ img", root);
         return watch.call(watchButton);
     }
   };
@@ -1063,7 +1064,7 @@
   watch = function() {
     var id, text, _base, _name;
     id = this.nextSibling.name;
-    if (this.src[0] === 'd') {
+    if (this.src === g.favEmpty) {
       this.src = g.favNormal;
       text = ("/" + g.BOARD + "/ - ") + x('following-sibling::blockquote', this).textContent.slice(0, 25);
       (_base = g.watched)[_name = g.BOARD] || (_base[_name] = []);
@@ -1116,7 +1117,7 @@
     callbacks: [],
     count: 0,
     expand: false,
-    favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
+    favEmpty: 'http://static.4chan.org/image/favicon-dis.ico',
     favNormal: ((_ref = $('link[rel="shortcut icon"]', $('head', d))) != null ? _ref.href : void 0) || 'http://static.4chan.org/image/favicon.ico',
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n'),
     iframe: false,
