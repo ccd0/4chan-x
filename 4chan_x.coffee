@@ -968,7 +968,7 @@ GM_addStyle "
         cursor: pointer;
     }
     #{
-    if getConfig 'Thread Navigation'
+    if g.REPLY and getConfig 'Thread Navigation'
         "body {
             padding-bottom: #{document.body.clientHeight}px;
         }"
