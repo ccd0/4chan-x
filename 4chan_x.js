@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _fn, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -560,7 +560,7 @@
     }
   };
   keyModeNormal = function(e) {
-    var bot, char, count, hash, height, href, image, next, prev, qrLink, rect, replies, reply, root, sign, td, temp, thread, top, watchButton, _i, _j, _len, _len2;
+    var bot, char, count, hash, height, href, image, next, prev, qrLink, rect, replies, reply, root, sign, td, temp, thread, top, watchButton, _i, _j, _len, _len2, _results, _results2;
     if (e.ctrlKey || e.altKey) {
       return;
     }
@@ -604,7 +604,6 @@
         } else {
           return window.scrollBy(-20 * count, 0);
         }
-        break;
       case "I":
         if (g.REPLY) {
           if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
@@ -621,7 +620,6 @@
         } else {
           return quickReply(qrLink, qrText(qrLink));
         }
-        break;
       case "J":
         if (e.shiftKey) {
           if (!g.REPLY) {
@@ -640,6 +638,7 @@
             }
           }
           replies = $$('td.reply', root);
+          _results = [];
           for (_i = 0, _len = replies.length; _i < _len; _i++) {
             reply = replies[_i];
             top = reply.getBoundingClientRect().top;
@@ -648,10 +647,10 @@
               break;
             }
           }
+          return _results;
         } else {
           return window.scrollBy(0, 20 * count);
         }
-        break;
       case "K":
         if (e.shiftKey) {
           if (!g.REPLY) {
@@ -672,6 +671,7 @@
           replies = $$('td.reply', root);
           replies.reverse();
           height = d.body.clientHeight;
+          _results2 = [];
           for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
             reply = replies[_j];
             bot = reply.getBoundingClientRect().bottom;
@@ -680,10 +680,10 @@
               break;
             }
           }
+          return _results2;
         } else {
           return window.scrollBy(0, -20 * count);
         }
-        break;
       case "L":
         if (e.shiftKey) {
           if (!g.REPLY) {
@@ -696,7 +696,6 @@
         } else {
           return window.scrollBy(20 * count, 0);
         }
-        break;
       case "M":
         if (e.shiftKey) {
           return $("#imageExpand").click();
@@ -709,11 +708,9 @@
           }
           return imageToggle(image);
         }
-        break;
       case "N":
         sign = e.shiftKey ? -1 : 1;
         return scroll(sign * count);
-        break;
       case "O":
         href = $("" + hash + " ~ span[id] a:last-of-type").href;
         if (e.shiftKey) {
@@ -721,7 +718,6 @@
         } else {
           return GM_openInTab(href);
         }
-        break;
       case "W":
         root = g.REPLY ? null : getThread()[0];
         watchButton = $("span.filesize ~ img", root);
@@ -1314,42 +1310,44 @@
   }
   if (getConfig('Sauce')) {
     g.callbacks.push(function(root) {
-      var i, l, link, names, prefix, prefixes, span, spans, suffix, _i, _j, _len, _len2, _results, _results2, _results3;
+      var i, l, link, names, prefix, prefixes, span, spans, suffix, _i, _len, _results;
       spans = $$('span.filesize', root);
       prefixes = GM_getValue('flavors', g.flavors).split('\n');
       names = (function() {
+        var _i, _len, _results;
         _results = [];
         for (_i = 0, _len = prefixes.length; _i < _len; _i++) {
           prefix = prefixes[_i];
           _results.push(prefix.match(/(\w+)\./)[1]);
         }
         return _results;
-      }());
-      _results2 = [];
-      for (_j = 0, _len2 = spans.length; _j < _len2; _j++) {
-        span = spans[_j];
+      })();
+      _results = [];
+      for (_i = 0, _len = spans.length; _i < _len; _i++) {
+        span = spans[_i];
         suffix = $('a', span).href;
         i = 0;
         l = names.length;
-        _results2.push(function() {
-          _results3 = [];
+        _results.push((function() {
+          var _results;
+          _results = [];
           while (i < l) {
             link = n('a', {
               textContent: names[i],
               href: prefixes[i] + suffix
             });
             addTo(span, tn(' '), link);
-            _results3.push(i++);
+            _results.push(i++);
           }
-          return _results3;
-        }());
+          return _results;
+        })());
       }
-      return _results2;
+      return _results;
     });
   }
   if (getConfig('Reply Hiding')) {
     g.callbacks.push(function(root) {
-      var next, obj, td, tds, _i, _j, _len, _len2, _ref, _results, _results2;
+      var next, obj, td, tds, _i, _len, _results;
       tds = $$('td.doubledash', root);
       _results = [];
       for (_i = 0, _len = tds.length; _i < _len; _i++) {
@@ -1362,15 +1360,16 @@
         replace(td.firstChild, a);
         next = td.nextSibling;
         id = next.id;
-        _results.push(function() {
+        _results.push((function() {
+          var _i, _len, _ref, _results;
           _ref = g.hiddenReplies;
-          _results2 = [];
-          for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
-            obj = _ref[_j];
-            _results2.push(obj.id === id ? hideReply(next) : void 0);
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            obj = _ref[_i];
+            _results.push(obj.id === id ? hideReply(next) : void 0);
           }
-          return _results2;
-        }());
+          return _results;
+        })());
       }
       return _results;
     });
@@ -1420,7 +1419,8 @@
     watcherUpdate();
     threads = g.watched[g.BOARD] || [];
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');
-    _fn = function(input) {
+    for (_j = 0, _len2 = inputs.length; _j < _len2; _j++) {
+      input = inputs[_j];
       id = input.name;
       src = (function() {
         var thread, _i, _len;
@@ -1437,11 +1437,7 @@
         className: 'pointer',
         listener: ['click', watch]
       });
-      return inBefore(input, img);
-    };
-    for (_j = 0, _len2 = inputs.length; _j < _len2; _j++) {
-      input = inputs[_j];
-      _fn(input);
+      inBefore(input, img);
     }
   }
   if (getConfig('Anonymize')) {
