@@ -811,8 +811,11 @@ updateCallback = (res) ->
     body = n 'body', innerHTML: res.responseText
     replies = $$ 'td.reply', body
 
-    root = x './/br[@clear]/preceding::table[1]'
-    id = Number $('td.reply, td.replyhl', root).id
+    root = $('br[clear]').previousElementSibling
+    if reply = $ 'td.reply, td.replyhl', root
+        id = Number reply.id
+    else
+        id = 0
     i = 0
 
     while (reply = replies.pop()) and (Number reply.id > id)
@@ -820,19 +823,40 @@ updateCallback = (res) ->
         inAfter root, table
         ++i
 
-    $('#updater div.move').textContent = "+#{i}"
+    count = $ '#updater #count'
+    count.textContent = "+#{i}"
+    count.className = if i is 0 then '' else 'new'
+
+    span = $ '#updater #timer'
+    span.textContent = -10
+
+updateTime = ->
+    span = $ '#updater #timer'
+    time = Number span.textContent
+    if ++time is 0 then updateNow()
+    span.textContent = time
+
+updateAuto = ->
+    span = $ '#updater #timer'
+    if @checked
+        span.textContent = -10
+        g.timer = window.setInterval updateTime, 1000
+    else
+        span.textContent = ''
+        clearInterval g.timer
 
 updateNow = ->
     request location.href, updateCallback
 
 updaterMake = ->
     div = AEOS.makeDialog 'updater', 'topright'
-    html  = "<div class=move>Thread Updater</div>"
-    html += "<div><label>Update<input type=checkbox></label></div>"
+    html  = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>"
+    html += "<div><label>Auto Update<input type=checkbox></label></div>"
     html += "<div><input type=button value='Update Now'></div>"
     div.innerHTML = html
 
     $('div.move', div).addEventListener 'mousedown', AEOS.move, true
+    $('input[type=checkbox]', div).addEventListener 'click', updateAuto, true
     $('input[type=button]', div).addEventListener 'click', updateNow, true
     document.body.appendChild div
 
@@ -1005,8 +1029,8 @@ GM_addStyle '
     .hide {
         display: none;
     }
-    .pointer {
-        cursor: pointer;
+    .new {
+        background: lime;
     }
 '
 

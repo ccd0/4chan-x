@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateCallback, updateNow, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateNow, updateTime, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -1068,20 +1068,48 @@
     return r.send();
   };
   updateCallback = function(res) {
-    var body, i, id, replies, reply, root, table;
+    var body, count, i, id, replies, reply, root, span, table;
     body = n('body', {
       innerHTML: res.responseText
     });
     replies = $$('td.reply', body);
-    root = x('.//br[@clear]/preceding::table[1]');
-    id = Number($('td.reply, td.replyhl', root).id);
+    root = $('br[clear]').previousElementSibling;
+    if (reply = $('td.reply, td.replyhl', root)) {
+      id = Number(reply.id);
+    } else {
+      id = 0;
+    }
     i = 0;
     while ((reply = replies.pop()) && (Number(reply.id > id))) {
       table = x('ancestor::table', reply);
       inAfter(root, table);
       ++i;
     }
-    return $('#updater div.move').textContent = "+" + i;
+    count = $('#updater #count');
+    count.textContent = "+" + i;
+    count.className = i === 0 ? '' : 'new';
+    span = $('#updater #timer');
+    return span.textContent = -10;
+  };
+  updateTime = function() {
+    var span, time;
+    span = $('#updater #timer');
+    time = Number(span.textContent);
+    if (++time === 0) {
+      updateNow();
+    }
+    return span.textContent = time;
+  };
+  updateAuto = function() {
+    var span;
+    span = $('#updater #timer');
+    if (this.checked) {
+      span.textContent = -10;
+      return g.timer = window.setInterval(updateTime, 1000);
+    } else {
+      span.textContent = '';
+      return clearInterval(g.timer);
+    }
   };
   updateNow = function() {
     return request(location.href, updateCallback);
@@ -1089,11 +1117,12 @@
   updaterMake = function() {
     var div, html;
     div = AEOS.makeDialog('updater', 'topright');
-    html = "<div class=move>Thread Updater</div>";
-    html += "<div><label>Update<input type=checkbox></label></div>";
+    html = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>";
+    html += "<div><label>Auto Update<input type=checkbox></label></div>";
     html += "<div><input type=button value='Update Now'></div>";
     div.innerHTML = html;
     $('div.move', div).addEventListener('mousedown', AEOS.move, true);
+    $('input[type=checkbox]', div).addEventListener('click', updateAuto, true);
     $('input[type=button]', div).addEventListener('click', updateNow, true);
     return document.body.appendChild(div);
   };
@@ -1276,8 +1305,8 @@
     .hide {\
         display: none;\
     }\
-    .pointer {\
-        cursor: pointer;\
+    .new {\
+        background: lime;\
     }\
 ');
   if (navtopr = $('#navtopr a')) {
