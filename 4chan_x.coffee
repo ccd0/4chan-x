@@ -25,6 +25,7 @@ config =
     'Thread Expansion':    [true, 'View all replies']
     'Thread Hiding':       [true, 'Hide entire threads']
     'Thread Navigation':   [true, 'Navigate to previous / next thread']
+    'Thread Updater':      [true, 'Update threads']
     'Thread Watcher':      [true, 'Bookmark threads']
 
 #utility
@@ -800,6 +801,41 @@ threadF = (current) ->
     if current.nodeName isnt 'CENTER'
         threadF(current)
 
+request = (url, callback) ->
+    r = new XMLHttpRequest()
+    r.onload = -> callback this
+    r.open 'get', url, true
+    r.send()
+
+updateCallback = (res) ->
+    body = n 'body', innerHTML: res.responseText
+    replies = $$ 'td.reply', body
+
+    root = x './/br[@clear]/preceding::table[1]'
+    id = Number $('td.reply, td.replyhl', root).id
+    i = 0
+
+    while (reply = replies.pop()) and (Number reply.id > id)
+        table = x 'ancestor::table', reply
+        inAfter root, table
+        ++i
+
+    $('#updater div.move').textContent = "+#{i}"
+
+updateNow = ->
+    request location.href, updateCallback
+
+updaterMake = ->
+    div = AEOS.makeDialog 'updater', 'topright'
+    html  = "<div class=move>Thread Updater</div>"
+    html += "<div><label>Update<input type=checkbox></label></div>"
+    html += "<div><input type=button value='Update Now'></div>"
+    div.innerHTML = html
+
+    $('div.move', div).addEventListener 'mousedown', AEOS.move, true
+    $('input[type=button]', div).addEventListener 'click', updateNow, true
+    document.body.appendChild div
+
 watch = ->
     id = @nextSibling.name
     if @src is g.favEmpty
@@ -913,6 +949,10 @@ if lastChecked < now - 1*DAY
     GM_setValue('lastChecked', now)
 
 GM_addStyle '
+    #updater {
+        position: fixed;
+        text-align: right;
+    }
     #watcher {
         position: absolute;
     }
@@ -1154,6 +1194,8 @@ if getConfig 'Keybinds'
     document.addEventListener 'keypress', keypress, true
 
 if g.REPLY
+    if getConfig 'Thread Updater'
+        updaterMake()
     if getConfig('Quick Reply') and getConfig 'Persistent QR'
         quickReply()
         $('#qr input[title=autohide]').click()
