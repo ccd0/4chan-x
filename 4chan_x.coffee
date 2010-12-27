@@ -10,6 +10,7 @@ config =
     '404 Redirect':        [true, 'Redirect dead threads']
     'Anonymize':           [false, 'Make everybody anonymous']
     'Auto Watch':          [true, 'Automatically watch threads that you start (Firefox only)']
+    'Auto Update':         [true, 'Automatically enable automatic updating']
     'Comment Expansion':   [true, 'Expand too long comments']
     'Image Expansion':     [true, 'Expand images']
     'Keybinds':            [false, 'Binds actions to keys']
@@ -856,9 +857,11 @@ updaterMake = ->
     div.innerHTML = html
 
     $('div.move', div).addEventListener 'mousedown', AEOS.move, true
-    $('input[type=checkbox]', div).addEventListener 'click', updateAuto, true
+    cb = $ 'input[type=checkbox]', div
+    cb.addEventListener 'click', updateAuto, true
     $('input[type=button]', div).addEventListener 'click', updateNow, true
     document.body.appendChild div
+    if getConfig 'Auto Update' then cb.click()
 
 watch = ->
     id = @nextSibling.name

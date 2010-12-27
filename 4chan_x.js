@@ -10,6 +10,7 @@
     '404 Redirect': [true, 'Redirect dead threads'],
     'Anonymize': [false, 'Make everybody anonymous'],
     'Auto Watch': [true, 'Automatically watch threads that you start (Firefox only)'],
+    'Auto Update': [true, 'Automatically enable automatic updating'],
     'Comment Expansion': [true, 'Expand too long comments'],
     'Image Expansion': [true, 'Expand images'],
     'Keybinds': [false, 'Binds actions to keys'],
@@ -1115,16 +1116,20 @@
     return request(location.href, updateCallback);
   };
   updaterMake = function() {
-    var div, html;
+    var cb, div, html;
     div = AEOS.makeDialog('updater', 'topright');
     html = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>";
     html += "<div><label>Auto Update<input type=checkbox></label></div>";
     html += "<div><input type=button value='Update Now'></div>";
     div.innerHTML = html;
     $('div.move', div).addEventListener('mousedown', AEOS.move, true);
-    $('input[type=checkbox]', div).addEventListener('click', updateAuto, true);
+    cb = $('input[type=checkbox]', div);
+    cb.addEventListener('click', updateAuto, true);
     $('input[type=button]', div).addEventListener('click', updateNow, true);
-    return document.body.appendChild(div);
+    document.body.appendChild(div);
+    if (getConfig('Auto Update')) {
+      return cb.click();
+    }
   };
   watch = function() {
     var id, text, _base, _name;
