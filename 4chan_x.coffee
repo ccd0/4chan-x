@@ -1003,6 +1003,13 @@ GM_addStyle '
     #updater input[type=text] {
         width: 50px;
     }
+    #updater:not(:hover) {
+        border: none;
+        background: transparent;
+    }
+    #updater:not(:hover) > div:not(.move) {
+        display: none;
+    }
     #watcher {
         position: absolute;
     }
