@@ -840,7 +840,7 @@ updateTime = ->
         updateNow()
     else if time > 10
         time = 0
-        g.r.abort()
+        g.req.abort()
         updateNow()
     span.textContent = time
 
@@ -864,7 +864,7 @@ updateInterval = ->
         span.textContent = -1 * n
 
 updateNow = ->
-    g.r = request location.href, updateCallback
+    g.req = request location.href, updateCallback
 
 updaterMake = ->
     div = AEOS.makeDialog 'updater', 'topright'

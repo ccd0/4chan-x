@@ -1102,7 +1102,7 @@
       updateNow();
     } else if (time > 10) {
       time = 0;
-      g.r.abort();
+      g.req.abort();
       updateNow();
     }
     return span.textContent = time;
@@ -1131,7 +1131,7 @@
     }
   };
   updateNow = function() {
-    return g.r = request(location.href, updateCallback);
+    return g.req = request(location.href, updateCallback);
   };
   updaterMake = function() {
     var auto, div, html, interval;
