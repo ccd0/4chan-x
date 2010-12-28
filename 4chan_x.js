@@ -1689,7 +1689,7 @@
     document.title = '(0) ' + document.title;
     document.addEventListener('scroll', scroll, true);
     g.callbacks.push(function(root) {
-      g.replies.push($$('td.reply, td.replyhl', root));
+      g.replies = g.replies.concat($$('td.reply, td.replyhl', root));
       return scroll();
     });
   }

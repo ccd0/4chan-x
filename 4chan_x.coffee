@@ -1322,7 +1322,7 @@ if getConfig 'Unread Count'
     document.title = '(0) ' + document.title
     document.addEventListener 'scroll', scroll, true
     g.callbacks.push (root) ->
-        g.replies.push $$ 'td.reply, td.replyhl', root
+        g.replies = g.replies.concat $$ 'td.reply, td.replyhl', root
         scroll()
 
 callback() for callback in g.callbacks
