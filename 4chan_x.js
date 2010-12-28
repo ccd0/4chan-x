@@ -1067,7 +1067,8 @@
       return callback(this);
     };
     r.open('get', url, true);
-    return r.send();
+    r.send();
+    return r;
   };
   updateCallback = function(res) {
     var body, count, i, id, replies, reply, root, span, table;
@@ -1099,6 +1100,10 @@
     time = Number(span.textContent);
     if (++time === 0) {
       updateNow();
+    } else if (time > 10) {
+      time = 0;
+      g.r.abort();
+      updateNow();
     }
     return span.textContent = time;
   };
@@ -1126,7 +1131,7 @@
     }
   };
   updateNow = function() {
-    return request(location.href, updateCallback);
+    return g.r = request(location.href, updateCallback);
   };
   updaterMake = function() {
     var auto, div, html, interval;
@@ -1273,6 +1278,9 @@
     #updater {\
         position: fixed;\
         text-align: right;\
+    }\
+    #updater input[type=text] {\
+        width: 50px;\
     }\
     #watcher {\
         position: absolute;\

@@ -808,6 +808,7 @@ request = (url, callback) ->
     r.onload = -> callback this
     r.open 'get', url, true
     r.send()
+    r
 
 updateCallback = (res) ->
     body = n 'body', innerHTML: res.responseText
@@ -835,7 +836,12 @@ updateCallback = (res) ->
 updateTime = ->
     span = $ '#updater #timer'
     time = Number span.textContent
-    if ++time is 0 then updateNow()
+    if ++time is 0
+        updateNow()
+    else if time > 10
+        time = 0
+        g.r.abort()
+        updateNow()
     span.textContent = time
 
 updateAuto = ->
@@ -858,7 +864,7 @@ updateInterval = ->
         span.textContent = -1 * n
 
 updateNow = ->
-    request location.href, updateCallback
+    g.r = request location.href, updateCallback
 
 updaterMake = ->
     div = AEOS.makeDialog 'updater', 'topright'
@@ -993,6 +999,9 @@ GM_addStyle '
     #updater {
         position: fixed;
         text-align: right;
+    }
+    #updater input[type=text] {
+        width: 50px;
     }
     #watcher {
         position: absolute;
