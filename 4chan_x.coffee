@@ -1318,10 +1318,12 @@ else #not reply
             a.addEventListener('click', expandComment, true)
 
 if getConfig 'Unread Count'
-    g.replies = $$ 'td.reply, td.replyhl'
+    g.replies = []
     document.title = '(0) ' + document.title
-    scroll()
     document.addEventListener 'scroll', scroll, true
+    g.callbacks.push (root) ->
+        g.replies.push $$ 'td.reply, td.replyhl', root
+        scroll()
 
 callback() for callback in g.callbacks
 d.body.addEventListener('DOMNodeInserted', nodeInserted, true)

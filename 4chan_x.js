@@ -1685,10 +1685,13 @@
     }
   }
   if (getConfig('Unread Count')) {
-    g.replies = $$('td.reply, td.replyhl');
+    g.replies = [];
     document.title = '(0) ' + document.title;
-    scroll();
     document.addEventListener('scroll', scroll, true);
+    g.callbacks.push(function(root) {
+      g.replies.push($$('td.reply, td.replyhl', root));
+      return scroll();
+    });
   }
   _ref4 = g.callbacks;
   for (_m = 0, _len6 = _ref4.length; _m < _len6; _m++) {
