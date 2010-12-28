@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateNow, updateTime, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateInterval, updateNow, updateTime, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -1090,7 +1090,7 @@
     count.textContent = "+" + i;
     count.className = i === 0 ? '' : 'new';
     span = $('#updater #timer');
-    return span.textContent = -10;
+    return span.textContent = -1 * GM_getValue('Interval', 10);
   };
   updateTime = function() {
     var span, time;
@@ -1105,30 +1105,46 @@
     var span;
     span = $('#updater #timer');
     if (this.checked) {
-      span.textContent = -10;
+      span.textContent = -1 * GM_getValue('Interval', 10);
       return g.timer = window.setInterval(updateTime, 1000);
     } else {
       span.textContent = '';
       return clearInterval(g.timer);
     }
   };
+  updateInterval = function() {
+    var span;
+    if (!(n = Number(this.value))) {
+      n = 10;
+    }
+    this.value = n;
+    GM_setValue('Interval', n);
+    span = $('#updater #timer');
+    if (0 > Number(span.textContent)) {
+      return span.textContent = -1 * n;
+    }
+  };
   updateNow = function() {
     return request(location.href, updateCallback);
   };
   updaterMake = function() {
-    var cb, div, html;
+    var auto, div, html, interval;
     div = AEOS.makeDialog('updater', 'topright');
     html = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>";
-    html += "<div><label>Auto Update<input type=checkbox></label></div>";
+    html += "<div><label>Auto Update<input type=checkbox name=auto></label></div>";
+    html += "<div><label>Interval (s)<input type=text name=interval></label></div>";
     html += "<div><input type=button value='Update Now'></div>";
     div.innerHTML = html;
     $('div.move', div).addEventListener('mousedown', AEOS.move, true);
-    cb = $('input[type=checkbox]', div);
-    cb.addEventListener('click', updateAuto, true);
+    auto = $('input[name=auto]', div);
+    auto.addEventListener('click', updateAuto, true);
+    interval = $('input[name=interval]', div);
+    interval.value = GM_getValue('Interval', 10);
+    interval.addEventListener('change', updateInterval, true);
     $('input[type=button]', div).addEventListener('click', updateNow, true);
     document.body.appendChild(div);
     if (getConfig('Auto Update')) {
-      return cb.click();
+      return auto.click();
     }
   };
   watch = function() {

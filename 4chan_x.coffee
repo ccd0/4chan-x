@@ -829,7 +829,7 @@ updateCallback = (res) ->
     count.className = if i is 0 then '' else 'new'
 
     span = $ '#updater #timer'
-    span.textContent = -10
+    span.textContent = -1 * GM_getValue 'Interval', 10
 
 updateTime = ->
     span = $ '#updater #timer'
@@ -840,11 +840,21 @@ updateTime = ->
 updateAuto = ->
     span = $ '#updater #timer'
     if @checked
-        span.textContent = -10
+        span.textContent = -1 * GM_getValue 'Interval', 10
         g.timer = window.setInterval updateTime, 1000
     else
         span.textContent = ''
         clearInterval g.timer
+
+updateInterval = ->
+    unless n = Number @value
+        n = 10
+    @value = n
+    GM_setValue 'Interval', n
+
+    span = $ '#updater #timer'
+    if 0 > Number span.textContent
+        span.textContent = -1 * n
 
 updateNow = ->
     request location.href, updateCallback
@@ -852,16 +862,20 @@ updateNow = ->
 updaterMake = ->
     div = AEOS.makeDialog 'updater', 'topright'
     html  = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>"
-    html += "<div><label>Auto Update<input type=checkbox></label></div>"
+    html += "<div><label>Auto Update<input type=checkbox name=auto></label></div>"
+    html += "<div><label>Interval (s)<input type=text name=interval></label></div>"
     html += "<div><input type=button value='Update Now'></div>"
     div.innerHTML = html
 
     $('div.move', div).addEventListener 'mousedown', AEOS.move, true
-    cb = $ 'input[type=checkbox]', div
-    cb.addEventListener 'click', updateAuto, true
+    auto = $ 'input[name=auto]', div
+    auto.addEventListener 'click', updateAuto, true
+    interval = $ 'input[name=interval]', div
+    interval.value = GM_getValue 'Interval', 10
+    interval.addEventListener 'change', updateInterval, true
     $('input[type=button]', div).addEventListener 'click', updateNow, true
     document.body.appendChild div
-    if getConfig 'Auto Update' then cb.click()
+    if getConfig 'Auto Update' then auto.click()
 
 watch = ->
     id = @nextSibling.name
