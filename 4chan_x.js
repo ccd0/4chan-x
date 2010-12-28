@@ -21,6 +21,7 @@
     'Quick Report': [true, 'Add quick report buttons'],
     'Reply Hiding': [true, 'Hide single replies'],
     'Reply Navigation': [true, 'Navigate to the beginning / end of a thread'],
+    'Restore IDs': [true, 'Check \'em'],
     'Sauce': [true, 'Add sauce to images'],
     'Show Stubs': [true, 'Of hidden threads / replies'],
     'Thread Expansion': [true, 'View all replies'],
@@ -1387,6 +1388,18 @@
     }
     return updateTitle();
   };
+  if (getConfig('Restore IDs')) {
+    g.callbacks.push(function(root) {
+      var quote, quotes, _i, _len, _results;
+      quotes = $$('a.quotejs:not(:first-child)', root);
+      _results = [];
+      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+        quote = quotes[_i];
+        _results.push(quote.textContent = quote.parentNode.id.match(/\d+$/)[0]);
+      }
+      return _results;
+    });
+  }
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = n('div', {
