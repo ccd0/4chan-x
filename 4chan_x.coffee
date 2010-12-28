@@ -1085,7 +1085,7 @@ scroll = ->
         if bottom > height #post is not completely read
             break
         g.replies.shift()
-    document.title = document.title.replace /\d+/, g.replies.length
+    updateTitle()
 
 #major features
 if getConfig 'Image Expansion'
@@ -1243,6 +1243,9 @@ if getConfig 'Keybinds'
     document.addEventListener 'keydown', keydown, true
     document.addEventListener 'keypress', keypress, true
 
+updateTitle = ->
+    document.title = document.title.replace /\d+/, g.replies.length
+
 if g.REPLY
     if getConfig 'Thread Updater'
         updaterMake()
@@ -1254,6 +1257,13 @@ if g.REPLY
             text = $('blockquote').textContent
         if text
             d.title = "/#{g.BOARD}/ - #{text}"
+    if getConfig 'Unread Count'
+        g.replies = []
+        document.title = '(0) ' + document.title
+        document.addEventListener 'scroll', scroll, true
+        g.callbacks.push (root) ->
+            g.replies = g.replies.concat $$ 'td.reply, td.replyhl', root
+            updateTitle()
 
 else #not reply
     if getConfig 'Thread Hiding'
@@ -1316,14 +1326,6 @@ else #not reply
         as = $$('span.abbr a')
         for a in as
             a.addEventListener('click', expandComment, true)
-
-if getConfig 'Unread Count'
-    g.replies = []
-    document.title = '(0) ' + document.title
-    document.addEventListener 'scroll', scroll, true
-    g.callbacks.push (root) ->
-        g.replies = g.replies.concat $$ 'td.reply, td.replyhl', root
-        scroll()
 
 callback() for callback in g.callbacks
 d.body.addEventListener('DOMNodeInserted', nodeInserted, true)

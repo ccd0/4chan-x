@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateInterval, updateNow, updateTime, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -1370,7 +1370,7 @@
       }
       g.replies.shift();
     }
-    return document.title = document.title.replace(/\d+/, g.replies.length);
+    return updateTitle();
   };
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
@@ -1591,6 +1591,9 @@
     document.addEventListener('keydown', keydown, true);
     document.addEventListener('keypress', keypress, true);
   }
+  updateTitle = function() {
+    return document.title = document.title.replace(/\d+/, g.replies.length);
+  };
   if (g.REPLY) {
     if (getConfig('Thread Updater')) {
       updaterMake();
@@ -1606,6 +1609,15 @@
       if (text) {
         d.title = "/" + g.BOARD + "/ - " + text;
       }
+    }
+    if (getConfig('Unread Count')) {
+      g.replies = [];
+      document.title = '(0) ' + document.title;
+      document.addEventListener('scroll', scroll, true);
+      g.callbacks.push(function(root) {
+        g.replies = g.replies.concat($$('td.reply, td.replyhl', root));
+        return updateTitle();
+      });
     }
   } else {
     if (getConfig('Thread Hiding')) {
@@ -1683,15 +1695,6 @@
         a.addEventListener('click', expandComment, true);
       }
     }
-  }
-  if (getConfig('Unread Count')) {
-    g.replies = [];
-    document.title = '(0) ' + document.title;
-    document.addEventListener('scroll', scroll, true);
-    g.callbacks.push(function(root) {
-      g.replies = g.replies.concat($$('td.reply, td.replyhl', root));
-      return scroll();
-    });
   }
   _ref4 = g.callbacks;
   for (_m = 0, _len6 = _ref4.length; _m < _len6; _m++) {
