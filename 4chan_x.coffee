@@ -28,6 +28,7 @@ config =
     'Thread Navigation':   [true, 'Navigate to previous / next thread']
     'Thread Updater':      [true, 'Update threads']
     'Thread Watcher':      [true, 'Bookmark threads']
+    'Unread Count':        [true, 'Show unread post count in tab title']
 
 #utility
 AEOS =
@@ -1077,6 +1078,15 @@ for el in $$ '#recaptcha_table a'
 recaptcha = $ '#recaptcha_response_field'
 recaptcha.addEventListener('keydown', recaptchaListener, true)
 
+scroll = ->
+    height = document.body.clientHeight
+    while reply = g.replies[0]
+        bottom = reply.getBoundingClientRect().bottom
+        if bottom > height #post is not completely read
+            break
+        g.replies.shift()
+    document.title = document.title.replace /\d+/, g.replies.length
+
 #major features
 if getConfig 'Image Expansion'
     delform = $ 'form[name=delform]'
@@ -1306,6 +1316,12 @@ else #not reply
         as = $$('span.abbr a')
         for a in as
             a.addEventListener('click', expandComment, true)
+
+if getConfig 'Unread Count'
+    g.replies = $$ 'td.reply, td.replyhl'
+    document.title = '(0) ' + document.title
+    scroll()
+    document.addEventListener 'scroll', scroll, true
 
 callback() for callback in g.callbacks
 d.body.addEventListener('DOMNodeInserted', nodeInserted, true)

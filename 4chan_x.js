@@ -27,7 +27,8 @@
     'Thread Hiding': [true, 'Hide entire threads'],
     'Thread Navigation': [true, 'Navigate to previous / next thread'],
     'Thread Updater': [true, 'Update threads'],
-    'Thread Watcher': [true, 'Bookmark threads']
+    'Thread Watcher': [true, 'Bookmark threads'],
+    'Unread Count': [true, 'Show unread post count in tab title']
   };
   AEOS = {
     init: function() {
@@ -1359,6 +1360,18 @@
   }
   recaptcha = $('#recaptcha_response_field');
   recaptcha.addEventListener('keydown', recaptchaListener, true);
+  scroll = function() {
+    var bottom, height, reply;
+    height = document.body.clientHeight;
+    while (reply = g.replies[0]) {
+      bottom = reply.getBoundingClientRect().bottom;
+      if (bottom > height) {
+        break;
+      }
+      g.replies.shift();
+    }
+    return document.title = document.title.replace(/\d+/, g.replies.length);
+  };
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = n('div', {
@@ -1670,6 +1683,12 @@
         a.addEventListener('click', expandComment, true);
       }
     }
+  }
+  if (getConfig('Unread Count')) {
+    g.replies = $$('td.reply, td.replyhl');
+    document.title = '(0) ' + document.title;
+    scroll();
+    document.addEventListener('scroll', scroll, true);
   }
   _ref4 = g.callbacks;
   for (_m = 0, _len6 = _ref4.length; _m < _len6; _m++) {
