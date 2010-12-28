@@ -1207,7 +1207,6 @@
     favNormal: ((_ref = $('link[rel="shortcut icon"]', $('head', d))) != null ? _ref.href : void 0) || 'http://static.4chan.org/image/favicon.ico',
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n'),
     iframe: false,
-    startup: true,
     watched: JSON.parse(GM_getValue('watched', '{}')),
     xhrs: []
   };
@@ -1678,5 +1677,4 @@
     callback();
   }
   d.body.addEventListener('DOMNodeInserted', nodeInserted, true);
-  g.startup = false;
 }).call(this);

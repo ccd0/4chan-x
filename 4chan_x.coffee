@@ -934,7 +934,6 @@ g =
         'http://tineye.com/search?url='
     ].join '\n'
     iframe: false
-    startup: true
     watched: JSON.parse(GM_getValue('watched', '{}'))
     xhrs: []
 pathname = location.pathname.substring(1).split('/')
@@ -1310,4 +1309,3 @@ else #not reply
 
 callback() for callback in g.callbacks
 d.body.addEventListener('DOMNodeInserted', nodeInserted, true)
-g.startup = false
