@@ -550,7 +550,7 @@ keyModeNormal = (e) ->
                 imageToggle image
         when "N"
             sign = if e.shiftKey then -1 else 1
-            scroll sign * count
+            scrollThread sign * count
         when "O"
             href = $("#{hash} ~ span[id] a:last-of-type").href
             if e.shiftKey
@@ -740,7 +740,7 @@ report = ->
     $('input[value="Report"]').click()
     input.click()
 
-scroll = (count) ->
+scrollThread = (count) ->
     [thread, idx] = getThread()
     top = thread.getBoundingClientRect().top
     if idx is 0 and top > 1
