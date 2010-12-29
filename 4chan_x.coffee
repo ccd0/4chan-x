@@ -450,27 +450,15 @@ keyModeNormal = (e) ->
     return if e.ctrlKey or e.altKey
     char = g.char
     hash = location.hash
-    count = g.count
-    if char in '1234567890'
-        temp = Number char
-        if temp is 0 and count is 0 # special - immediately go to page 0
+    switch char
+        when "0"
             location.pathname = "/#{g.BOARD}"
-        else
-            g.count = (count * 10) + temp
-        return
-    g.count = 0
-    if char is "G"
-        if count
-            temp = if count > 15 then 15 else count
-            location.pathname = "/#{g.BOARD}/#{temp}#1"
-        else
+        when "G"
             if e.shiftKey
                 window.scrollTo 0, 99999
             else
                 window.scrollTo 0, 0
                 location.hash = ''
-    count or= 1
-    switch char
         when "I"
             if g.REPLY
                 unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)'
@@ -531,7 +519,7 @@ keyModeNormal = (e) ->
                 imageToggle image
         when "N"
             sign = if e.shiftKey then -1 else 1
-            scrollThread sign * count
+            scrollThread sign
         when "O"
             href = $("#{hash} ~ span[id] a:last-of-type").href
             if e.shiftKey
@@ -954,7 +942,6 @@ watchX = ->
 AEOS.init()
 g =
     callbacks: []
-    count: 0
     expand: false
     favDead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC'
     favDeadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII='

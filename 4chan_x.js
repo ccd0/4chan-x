@@ -1,11 +1,6 @@
 (function() {
   var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
-  var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i] === item) return i;
-    }
-    return -1;
-  };
+  var __slice = Array.prototype.slice;
   config = {
     '404 Redirect': [true, 'Redirect dead threads'],
     'Anonymize': [false, 'Make everybody anonymous'],
@@ -564,38 +559,22 @@
     }
   };
   keyModeNormal = function(e) {
-    var bot, char, count, hash, height, href, image, next, prev, qrLink, rect, replies, reply, root, sign, td, temp, thread, top, watchButton, _i, _j, _len, _len2, _results, _results2;
+    var bot, char, hash, height, href, image, next, prev, qrLink, rect, replies, reply, root, sign, td, thread, top, watchButton, _i, _j, _len, _len2, _results, _results2;
     if (e.ctrlKey || e.altKey) {
       return;
     }
     char = g.char;
     hash = location.hash;
-    count = g.count;
-    if (__indexOf.call('1234567890', char) >= 0) {
-      temp = Number(char);
-      if (temp === 0 && count === 0) {
-        location.pathname = "/" + g.BOARD;
-      } else {
-        g.count = (count * 10) + temp;
-      }
-      return;
-    }
-    g.count = 0;
-    if (char === "G") {
-      if (count) {
-        temp = count > 15 ? 15 : count;
-        location.pathname = "/" + g.BOARD + "/" + temp + "#1";
-      } else {
+    switch (char) {
+      case "0":
+        return location.pathname = "/" + g.BOARD;
+      case "G":
         if (e.shiftKey) {
-          window.scrollTo(0, 99999);
+          return window.scrollTo(0, 99999);
         } else {
           window.scrollTo(0, 0);
-          location.hash = '';
+          return location.hash = '';
         }
-      }
-    }
-    count || (count = 1);
-    switch (char) {
       case "I":
         if (g.REPLY) {
           if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
@@ -686,7 +665,7 @@
         }
       case "N":
         sign = e.shiftKey ? -1 : 1;
-        return scrollThread(sign * count);
+        return scrollThread(sign);
       case "O":
         href = $("" + hash + " ~ span[id] a:last-of-type").href;
         if (e.shiftKey) {
@@ -1231,7 +1210,6 @@
   AEOS.init();
   g = {
     callbacks: [],
-    count: 0,
     expand: false,
     favDead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC',
     favDeadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII=',
