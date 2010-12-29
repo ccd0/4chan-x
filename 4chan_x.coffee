@@ -558,6 +558,8 @@ keyModeNormal = (e) ->
                 location.href = href
             else
                 GM_openInTab href
+        when "U"
+            updateNow()
         when "W"
             root = if g.REPLY then null else getThread()[0]
             watchButton = $ "span.filesize ~ img", root

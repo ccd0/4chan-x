@@ -722,6 +722,8 @@
         } else {
           return GM_openInTab(href);
         }
+      case "U":
+        return updateNow();
       case "W":
         root = g.REPLY ? null : getThread()[0];
         watchButton = $("span.filesize ~ img", root);
