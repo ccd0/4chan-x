@@ -1117,7 +1117,7 @@
       span.textContent = -1 * GM_getValue('Interval', 10);
       return g.interval = window.setInterval(updateTime, 1000);
     } else {
-      span.textContent = '';
+      span.textContent = 'Thread Updater';
       return clearInterval(g.interval);
     }
   };

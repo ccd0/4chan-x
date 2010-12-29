@@ -862,7 +862,7 @@ updateAuto = ->
         span.textContent = -1 * GM_getValue 'Interval', 10
         g.interval = window.setInterval updateTime, 1000
     else
-        span.textContent = ''
+        span.textContent = 'Thread Updater'
         clearInterval g.interval
 
 updateInterval = ->
