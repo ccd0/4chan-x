@@ -888,7 +888,7 @@ updaterMake = ->
 watch = ->
     id = @nextSibling.name
     if @src is g.favEmpty
-        @src = g.favNormal
+        @src = g.favDefault
         text = "/#{g.BOARD}/ - " +
             x('following-sibling::blockquote', this).textContent.slice(0,25)
         g.watched[g.BOARD] or= []
@@ -934,7 +934,10 @@ g =
     count: 0
     expand: false
     favEmpty: 'http://static.4chan.org/image/favicon-dis.ico'
-    favNormal: $('link[rel="shortcut icon"]', $('head', d))?.href or 'http://static.4chan.org/image/favicon.ico'
+    favDefault: $('link[rel="shortcut icon"]', $('head', d))?.href or 'http://static.4chan.org/image/favicon.ico'
+    favHalo: if /ws/.test(favDefault) then 'data =image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC' else 'data =image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
+    favDeadHalo: 'data =image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII='
+    favDead: 'data =image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC'
     flavors: [
         'http://regex.info/exif.cgi?url='
         'http://iqdb.org/?url='
@@ -1225,7 +1228,7 @@ if getConfig 'Thread Watcher'
         src = (->
             for thread in threads
                 if id is thread.id
-                    return g.favNormal
+                    return g.favDefault
             g.favEmpty
         )()
         img = n 'img',
@@ -1265,9 +1268,6 @@ if getConfig 'Reply Navigation'
 if getConfig 'Keybinds'
     document.addEventListener 'keydown', keydown, true
     document.addEventListener 'keypress', keypress, true
-
-updateTitle = ->
-    document.title = document.title.replace /\d+/, g.replies.length
 
 if g.REPLY
     if getConfig 'Thread Updater'
