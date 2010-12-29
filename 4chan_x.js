@@ -1070,7 +1070,7 @@
     return r;
   };
   updateCallback = function() {
-    var body, count, i, id, input, replies, reply, root, s, table, timer, _i, _len, _ref;
+    var arr, body, count, id, input, l, replies, reply, root, s, table, timer, _i, _len, _ref;
     count = $('#updater #count');
     timer = $('#updater #timer');
     if (this.status === 404) {
@@ -1098,20 +1098,23 @@
       innerHTML: this.responseText
     });
     replies = $$('td.reply', body);
-    root = $('br[clear]').previousElementSibling;
-    if (reply = $('td.reply, td.replyhl', root)) {
+    root = $('br[clear]');
+    if (reply = $('td.reply, td.replyhl', root.previousElementSibling)) {
       id = Number(reply.id);
     } else {
       id = 0;
     }
-    i = 0;
+    arr = [];
     while ((reply = replies.pop()) && (Number(reply.id > id))) {
-      table = x('ancestor::table', reply);
-      inAfter(root, table);
-      ++i;
+      arr.push(reply);
     }
-    count.textContent = "+" + i;
-    count.className = i === 0 ? '' : 'new';
+    l = arr.length;
+    count.textContent = "+" + l;
+    count.className = l === 0 ? '' : 'new';
+    while (reply = arr.pop()) {
+      table = x('ancestor::table', reply);
+      inBefore(root, table);
+    }
     return timer.textContent = -1 * GM_getValue('Interval', 10);
   };
   updateFavicon = function() {

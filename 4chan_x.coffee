@@ -832,20 +832,24 @@ updateCallback = ->
     body = n 'body', innerHTML: @responseText
     replies = $$ 'td.reply', body
 
-    root = $('br[clear]').previousElementSibling
-    if reply = $ 'td.reply, td.replyhl', root
+    root = $('br[clear]')
+    if reply = $ 'td.reply, td.replyhl', root.previousElementSibling
         id = Number reply.id
     else
         id = 0
-    i = 0
 
+    arr = []
     while (reply = replies.pop()) and (Number reply.id > id)
-        table = x 'ancestor::table', reply
-        inAfter root, table
-        ++i
+        arr.push reply
 
-    count.textContent = "+#{i}"
-    count.className = if i is 0 then '' else 'new'
+    l = arr.length
+    count.textContent = "+#{l}"
+    count.className = if l is 0 then '' else 'new'
+
+    #insert replies in order, so backlinks resolve
+    while reply = arr.pop()
+        table = x 'ancestor::table', reply
+        inBefore root, table
 
     timer.textContent = -1 * GM_getValue 'Interval', 10
 
