@@ -812,6 +812,13 @@ request = (url, callback) ->
     r
 
 updateCallback = ->
+    count = $ '#updater #count'
+    if @status is 404
+        count.textContent = 404
+        count.className = 'error'
+        g.dead = true
+        updateFavicon()
+        return
     body = n 'body', innerHTML: @responseText
     replies = $$ 'td.reply', body
 
@@ -827,12 +834,28 @@ updateCallback = ->
         inAfter root, table
         ++i
 
-    count = $ '#updater #count'
     count.textContent = "+#{i}"
     count.className = if i is 0 then '' else 'new'
 
     span = $ '#updater #timer'
     span.textContent = -1 * GM_getValue 'Interval', 10
+
+updateFavicon = ->
+    len = g.replies.length
+    if g.dead
+        if len > 0
+            href = g.favDeadHalo
+        else
+            href = g.favDead
+    else
+        if len > 0
+            href = g.favHalo
+        else
+            href = g.favDefault
+    favicon = $ 'link[rel="shortcut icon"]', d
+    clone = favicon.cloneNode true
+    clone.href = href
+    replace favicon, clone
 
 updateTime = ->
     span = $ '#updater #timer'
@@ -848,6 +871,7 @@ updateTime = ->
 updateTitle = ->
     len = g.replies.length
     document.title = document.title.replace /\d+/, len
+    updateFavicon()
 
 updateAuto = ->
     span = $ '#updater #timer'
@@ -937,10 +961,10 @@ g =
     callbacks: []
     count: 0
     expand: false
+    favDead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC'
+    favDeadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII='
+    favDefault: $('link[rel="shortcut icon"]', d)?.href or '' #no favicon in `post successful` page
     favEmpty: 'http://static.4chan.org/image/favicon-dis.ico'
-    favDefault: $('link[rel="shortcut icon"]', $('head', d))?.href or 'http://static.4chan.org/image/favicon.ico'
-    favDeadHalo: 'data =image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII='
-    favDead: 'data =image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC'
     flavors: [
         'http://regex.info/exif.cgi?url='
         'http://iqdb.org/?url='
@@ -950,7 +974,7 @@ g =
     iframe: false
     watched: JSON.parse(GM_getValue('watched', '{}'))
     xhrs: []
-g.favHalo = if /ws/.test(g.favDefault) then 'data =image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC' else 'data =image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
+g.favHalo = if /ws/.test g.favDefault then 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC' else 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
 pathname = location.pathname.substring(1).split('/')
 [g.BOARD, temp] = pathname
 if temp is 'res'
