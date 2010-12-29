@@ -1,3 +1,12 @@
+1.20.0
+- keybinds
+    - add u - update now
+    - remove hHlLjk, numerical prefixes
+	- use [vimus](http://userscripts.org/scripts/show/93187) for non-chan keybinds
+- fix slow scrolling
+- add replies in original order so backlinks resolve properly
+- fix qr quoting
+
 1.19.0
 - restore ids
 - thread updater
