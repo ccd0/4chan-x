@@ -1,3 +1,7 @@
+1.19.0
+- restore ids
+- thread updater
+
 1.18.4
 - fix qr quoting of selected text
 
