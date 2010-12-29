@@ -845,6 +845,10 @@ updateTime = ->
         updateNow()
     span.textContent = time
 
+updateTitle = ->
+    len = g.replies.length
+    document.title = document.title.replace /\d+/, len
+
 updateAuto = ->
     span = $ '#updater #timer'
     if @checked
