@@ -813,9 +813,19 @@ request = (url, callback) ->
 
 updateCallback = ->
     count = $ '#updater #count'
+    timer = $ '#updater #timer'
     if @status is 404
         count.textContent = 404
         count.className = 'error'
+        timer.textContent = ''
+        clearInterval g.interval
+        for input in $$ 'input[type=submit]'
+            input.disabled = true
+            input.value = 404
+        s = ''
+        if getConfig 'Unread Count' then s += "(#{g.replies.length}) "
+        s += "/#{g.BOARD}/ - 404"
+        document.title = s
         g.dead = true
         updateFavicon()
         return
@@ -837,8 +847,7 @@ updateCallback = ->
     count.textContent = "+#{i}"
     count.className = if i is 0 then '' else 'new'
 
-    span = $ '#updater #timer'
-    span.textContent = -1 * GM_getValue 'Interval', 10
+    timer.textContent = -1 * GM_getValue 'Interval', 10
 
 updateFavicon = ->
     len = g.replies.length
@@ -877,10 +886,10 @@ updateAuto = ->
     span = $ '#updater #timer'
     if @checked
         span.textContent = -1 * GM_getValue 'Interval', 10
-        g.timer = window.setInterval updateTime, 1000
+        g.interval = window.setInterval updateTime, 1000
     else
         span.textContent = ''
-        clearInterval g.timer
+        clearInterval g.interval
 
 updateInterval = ->
     unless n = Number @value

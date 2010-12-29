@@ -1070,11 +1070,26 @@
     return r;
   };
   updateCallback = function() {
-    var body, count, i, id, replies, reply, root, span, table;
+    var body, count, i, id, input, replies, reply, root, s, table, timer, _i, _len, _ref;
     count = $('#updater #count');
+    timer = $('#updater #timer');
     if (this.status === 404) {
       count.textContent = 404;
       count.className = 'error';
+      timer.textContent = '';
+      clearInterval(g.interval);
+      _ref = $$('input[type=submit]');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
+        input.disabled = true;
+        input.value = 404;
+      }
+      s = '';
+      if (getConfig('Unread Count')) {
+        s += "(" + g.replies.length + ") ";
+      }
+      s += "/" + g.BOARD + "/ - 404";
+      document.title = s;
       g.dead = true;
       updateFavicon();
       return;
@@ -1097,8 +1112,7 @@
     }
     count.textContent = "+" + i;
     count.className = i === 0 ? '' : 'new';
-    span = $('#updater #timer');
-    return span.textContent = -1 * GM_getValue('Interval', 10);
+    return timer.textContent = -1 * GM_getValue('Interval', 10);
   };
   updateFavicon = function() {
     var clone, favicon, href, len;
@@ -1145,10 +1159,10 @@
     span = $('#updater #timer');
     if (this.checked) {
       span.textContent = -1 * GM_getValue('Interval', 10);
-      return g.timer = window.setInterval(updateTime, 1000);
+      return g.interval = window.setInterval(updateTime, 1000);
     } else {
       span.textContent = '';
-      return clearInterval(g.timer);
+      return clearInterval(g.interval);
     }
   };
   updateInterval = function() {
