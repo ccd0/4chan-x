@@ -1119,7 +1119,7 @@ scroll = ->
     updateTitle()
 
 #major features
-if getConfig 'Restore IDs'
+if (getConfig 'Restore IDs') and g.BOARD in ['b', 'v']
     g.callbacks.push (root) ->
         quotes = $$ 'a.quotejs:not(:first-child)', root
         for quote in quotes
