@@ -1064,17 +1064,15 @@
   request = function(url, callback) {
     var r;
     r = new XMLHttpRequest();
-    r.onload = function() {
-      return callback(this);
-    };
+    r.onload = callback;
     r.open('get', url, true);
     r.send();
     return r;
   };
-  updateCallback = function(res) {
+  updateCallback = function() {
     var body, count, i, id, replies, reply, root, span, table;
     body = n('body', {
-      innerHTML: res.responseText
+      innerHTML: this.responseText
     });
     replies = $$('td.reply', body);
     root = $('br[clear]').previousElementSibling;

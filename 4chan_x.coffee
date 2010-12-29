@@ -806,13 +806,13 @@ threadF = (current) ->
 
 request = (url, callback) ->
     r = new XMLHttpRequest()
-    r.onload = -> callback this
+    r.onload = callback
     r.open 'get', url, true
     r.send()
     r
 
-updateCallback = (res) ->
-    body = n 'body', innerHTML: res.responseText
+updateCallback = ->
+    body = n 'body', innerHTML: @responseText
     replies = $$ 'td.reply', body
 
     root = $('br[clear]').previousElementSibling
