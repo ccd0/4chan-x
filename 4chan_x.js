@@ -596,18 +596,6 @@
     }
     count || (count = 1);
     switch (char) {
-      case "H":
-        if (e.shiftKey) {
-          if (!g.REPLY) {
-            temp = g.PAGENUM - count;
-            if (temp < 0) {
-              temp = 0;
-            }
-            return location.pathname = "/" + g.BOARD + "/" + temp + "#1";
-          }
-        } else {
-          return window.scrollBy(-20 * count, 0);
-        }
       case "I":
         if (g.REPLY) {
           if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
@@ -652,8 +640,6 @@
             }
           }
           return _results;
-        } else {
-          return window.scrollBy(0, 20 * count);
         }
       case "K":
         if (e.shiftKey) {
@@ -685,20 +671,6 @@
             }
           }
           return _results2;
-        } else {
-          return window.scrollBy(0, -20 * count);
-        }
-      case "L":
-        if (e.shiftKey) {
-          if (!g.REPLY) {
-            temp = g.PAGENUM + count;
-            if (temp > 15) {
-              temp = 15;
-            }
-            return location.pathname = "/" + g.BOARD + "/" + temp + "#0";
-          }
-        } else {
-          return window.scrollBy(20 * count, 0);
         }
       case "M":
         if (e.shiftKey) {

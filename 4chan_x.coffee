@@ -471,14 +471,6 @@ keyModeNormal = (e) ->
                 location.hash = ''
     count or= 1
     switch char
-        when "H"
-            if e.shiftKey
-                unless g.REPLY
-                    temp = g.PAGENUM - count
-                    if temp < 0 then temp = 0
-                    location.pathname = "/#{g.BOARD}/#{temp}#1"
-            else
-                window.scrollBy -20 * count, 0
         when "I"
             if g.REPLY
                 unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)'
@@ -509,8 +501,6 @@ keyModeNormal = (e) ->
                     if top > 0
                         reply.className = 'replyhl'
                         break
-            else
-                window.scrollBy 0,  20 * count
         when "K"
             if e.shiftKey
                 if not g.REPLY then [root] = getThread()
@@ -531,16 +521,6 @@ keyModeNormal = (e) ->
                     if bot < height
                         reply.className = 'replyhl'
                         break
-            else
-                window.scrollBy 0, -20 * count
-        when "L"
-            if e.shiftKey
-                unless g.REPLY
-                    temp = g.PAGENUM + count
-                    if temp > 15 then temp = 15
-                    location.pathname = "/#{g.BOARD}/#{temp}#0"
-            else
-                window.scrollBy 20 * count, 0
         when "M"
             if e.shiftKey
                 $("#imageExpand").click()
