@@ -1429,15 +1429,20 @@
   recaptcha = $('#recaptcha_response_field');
   recaptcha.addEventListener('keydown', recaptchaListener, true);
   scroll = function() {
-    var bottom, height, reply;
+    var bottom, height, i, reply, _len, _ref;
     height = document.body.clientHeight;
-    while (reply = g.replies[0]) {
+    _ref = g.replies;
+    for (i = 0, _len = _ref.length; i < _len; i++) {
+      reply = _ref[i];
       bottom = reply.getBoundingClientRect().bottom;
       if (bottom > height) {
         break;
       }
-      g.replies.shift();
     }
+    if (i === 0) {
+      return;
+    }
+    g.replies = g.replies.slice(i);
     return updateTitle();
   };
   if (getConfig('Restore IDs')) {

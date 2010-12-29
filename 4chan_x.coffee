@@ -1141,11 +1141,12 @@ recaptcha.addEventListener('keydown', recaptchaListener, true)
 
 scroll = ->
     height = document.body.clientHeight
-    while reply = g.replies[0]
+    for reply, i in g.replies
         bottom = reply.getBoundingClientRect().bottom
         if bottom > height #post is not completely read
             break
-        g.replies.shift()
+    if i is 0 then return
+    g.replies = g.replies[i..]
     updateTitle()
 
 #major features
