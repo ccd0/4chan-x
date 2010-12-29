@@ -798,7 +798,7 @@
     selection = window.getSelection();
     id = (_ref = x('preceding::span[@id][1]', selection.anchorNode)) != null ? _ref.id : void 0;
     if (id === link.parentNode.id) {
-      text += selection.toString();
+      text += '>' + selection.toString();
     }
     return text;
   };
