@@ -489,6 +489,7 @@ keyModeNormal = (e) ->
                     if top > 0
                         reply.className = 'replyhl'
                         break
+            break
         when "K"
             if e.shiftKey
                 if not g.REPLY then [root] = getThread()
@@ -509,6 +510,7 @@ keyModeNormal = (e) ->
                     if bot < height
                         reply.className = 'replyhl'
                         break
+            break
         when "M"
             if e.shiftKey
                 $("#imageExpand").click()

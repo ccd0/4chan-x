@@ -559,7 +559,7 @@
     }
   };
   keyModeNormal = function(e) {
-    var bot, char, hash, height, href, image, next, prev, qrLink, rect, replies, reply, root, sign, td, thread, top, watchButton, _i, _j, _len, _len2, _results, _results2;
+    var bot, char, hash, height, href, image, next, prev, qrLink, rect, replies, reply, root, sign, td, thread, top, watchButton, _i, _j, _len, _len2;
     if (e.ctrlKey || e.altKey) {
       return;
     }
@@ -609,7 +609,6 @@
             }
           }
           replies = $$('td.reply', root);
-          _results = [];
           for (_i = 0, _len = replies.length; _i < _len; _i++) {
             reply = replies[_i];
             top = reply.getBoundingClientRect().top;
@@ -618,8 +617,8 @@
               break;
             }
           }
-          return _results;
         }
+        break;
       case "K":
         if (e.shiftKey) {
           if (!g.REPLY) {
@@ -640,7 +639,6 @@
           replies = $$('td.reply', root);
           replies.reverse();
           height = d.body.clientHeight;
-          _results2 = [];
           for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
             reply = replies[_j];
             bot = reply.getBoundingClientRect().bottom;
@@ -649,8 +647,8 @@
               break;
             }
           }
-          return _results2;
         }
+        break;
       case "M":
         if (e.shiftKey) {
           return $("#imageExpand").click();
