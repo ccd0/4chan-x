@@ -1,3 +1,8 @@
+1.20.1
+- fix disappearing updater bug
+- only restore ids on /b/ and /v/
+- fix JK keybinds
+
 1.20.0
 - keybinds
     - add u - update now
