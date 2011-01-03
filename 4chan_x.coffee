@@ -868,14 +868,14 @@ updateAuto = ->
         clearInterval g.interval
 
 updateInterval = ->
-    unless n = Number @value
-        n = 10
-    @value = n
-    GM_setValue 'Interval', n
+    unless num = Number @value
+        num = 10
+    @value = num
+    GM_setValue 'Interval', num
 
     span = $ '#updater #timer'
     if 0 > Number span.textContent
-        span.textContent = -1 * n
+        span.textContent = -1 * num
 
 updateNow = ->
     g.req = request location.href, updateCallback

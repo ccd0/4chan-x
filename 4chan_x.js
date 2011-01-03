@@ -1120,15 +1120,15 @@
     }
   };
   updateInterval = function() {
-    var span;
-    if (!(n = Number(this.value))) {
-      n = 10;
+    var num, span;
+    if (!(num = Number(this.value))) {
+      num = 10;
     }
-    this.value = n;
-    GM_setValue('Interval', n);
+    this.value = num;
+    GM_setValue('Interval', num);
     span = $('#updater #timer');
     if (0 > Number(span.textContent)) {
-      return span.textContent = -1 * n;
+      return span.textContent = -1 * num;
     }
   };
   updateNow = function() {
