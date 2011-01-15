@@ -622,7 +622,8 @@ qrText = (link) ->
 
     selection = window.getSelection()
     id = x('preceding::span[@id][1]', selection.anchorNode)?.id
-    text += '>' + selection.toString() if id is link.parentNode.id
+    if (s = selection.toString()) and (id is link.parentNode.id)
+        text += ">#{s}"
 
     text
 

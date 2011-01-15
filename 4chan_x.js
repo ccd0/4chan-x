@@ -791,12 +791,12 @@
     return quickReply(link, text);
   };
   qrText = function(link) {
-    var id, selection, text, _ref;
+    var id, s, selection, text, _ref;
     text = '>>' + link.parentNode.id.match(/\d+$/)[0] + '\n';
     selection = window.getSelection();
     id = (_ref = x('preceding::span[@id][1]', selection.anchorNode)) != null ? _ref.id : void 0;
-    if (id === link.parentNode.id) {
-      text += '>' + selection.toString();
+    if ((s = selection.toString()) && (id === link.parentNode.id)) {
+      text += ">" + s;
     }
     return text;
   };
