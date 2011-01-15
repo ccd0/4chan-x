@@ -573,35 +573,36 @@ onloadThread = (responseText, span) ->
         for reply in replies
             addTo div, x 'ancestor::table', reply
 
+changeCheckbox = ->
+    GM_setValue @name, @checked
+
+changeText = ->
+    GM_setValue @name, @value
+
 options = ->
     if div = $ '#options'
         remove div
-    else
-        div = AEOS.makeDialog 'options', 'center'
-        hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length
-        html = '<div class="move">Options <a class=pointer>X</a></div><div>'
-        for option, value of config
-            description  = value[1]
-            checked = if getConfig option then "checked" else ""
-            html += "<label title=\"#{description}\">#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
-        html += "<div><a class=sauce>Flavors</a></div>"
-        html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>"
-        html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
-        div.innerHTML = html
-        $('div.move', div).addEventListener 'mousedown', AEOS.move, true
-        $('a.pointer', div).addEventListener 'click', optionsClose, true
-        $('a.sauce', div).addEventListener 'click', editSauce, true
-        $('textarea', div).value = GM_getValue 'flavors', g.flavors
-        $('input[type="button"]', div).addEventListener 'click', clearHidden, true
-        addTo d.body, div
+        return
 
-optionsClose = ->
-    div = @parentNode.parentNode
-    inputs = $$ 'input', div
-    for input in inputs
-        GM_setValue(input.name, input.checked)
-    GM_setValue 'flavors', $('textarea', div).value
-    remove div
+    div = AEOS.makeDialog 'options', 'center'
+    hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length
+    html = '<div class="move">Options <a name=close>X</a></div><div>'
+    for option, value of config
+        description  = value[1]
+        checked = if getConfig option then "checked" else ""
+        html += "<label title=\"#{description}\">#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
+    html += "<div><a class=sauce>Flavors</a></div>"
+    html += "<div><textarea style=\"display: none;\" name=flavors>#{GM_getValue 'flavors', g.flavors}</textarea></div>"
+    html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
+    div.innerHTML = html
+    $('div.move', div).addEventListener 'mousedown', AEOS.move, true
+    $('a[name=close]', div).addEventListener 'click', (-> remove($ '#options')), true
+    for input in $$ 'input', div
+        input.addEventListener 'change', changeCheckbox, true
+    $('a.sauce', div).addEventListener 'click', editSauce, true
+    $('textarea', div).addEventListener 'change', changeText, true
+    $('input[type="button"]', div).addEventListener 'click', clearHidden, true
+    addTo d.body, div
 
 parseResponse = (responseText) ->
     body = n 'body',
@@ -877,7 +878,8 @@ updateInterval = ->
         span.textContent = -1 * num
 
 updateNow = ->
-    g.req = request location.href, updateCallback
+    url = location.href + '?' + new Date().getTime() # fool the cache
+    g.req = request url, updateCallback
 
 updaterMake = ->
     div = AEOS.makeDialog 'updater', 'topright'
@@ -1011,6 +1013,10 @@ if lastChecked < now - 1*DAY
     GM_setValue('lastChecked', now)
 
 GM_addStyle '
+    #options textarea {
+        height: 100px;
+        width: 500px;
+    }
     #updater {
         position: fixed;
         text-align: right;

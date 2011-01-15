@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, optionsClose, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
+  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
   var __slice = Array.prototype.slice;
   config = {
     '404 Redirect': [true, 'Redirect dead threads'],
@@ -737,42 +737,44 @@
       return _results2;
     }
   };
-  options = function() {
-    var checked, description, div, hiddenNum, html, option, value;
-    if (div = $('#options')) {
-      return remove(div);
-    } else {
-      div = AEOS.makeDialog('options', 'center');
-      hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length;
-      html = '<div class="move">Options <a class=pointer>X</a></div><div>';
-      for (option in config) {
-        value = config[option];
-        description = value[1];
-        checked = getConfig(option) ? "checked" : "";
-        html += "<label title=\"" + description + "\">" + option + "<input " + checked + " name=\"" + option + "\" type=\"checkbox\"></label><br>";
-      }
-      html += "<div><a class=sauce>Flavors</a></div>";
-      html += "<div><textarea cols=50 rows=4 style=\"display: none;\"></textarea></div>";
-      html += "<input type=\"button\" value=\"hidden: " + hiddenNum + "\"><br>";
-      div.innerHTML = html;
-      $('div.move', div).addEventListener('mousedown', AEOS.move, true);
-      $('a.pointer', div).addEventListener('click', optionsClose, true);
-      $('a.sauce', div).addEventListener('click', editSauce, true);
-      $('textarea', div).value = GM_getValue('flavors', g.flavors);
-      $('input[type="button"]', div).addEventListener('click', clearHidden, true);
-      return addTo(d.body, div);
-    }
+  changeCheckbox = function() {
+    return GM_setValue(this.name, this.checked);
   };
-  optionsClose = function() {
-    var div, input, inputs, _i, _len;
-    div = this.parentNode.parentNode;
-    inputs = $$('input', div);
-    for (_i = 0, _len = inputs.length; _i < _len; _i++) {
-      input = inputs[_i];
-      GM_setValue(input.name, input.checked);
+  changeText = function() {
+    return GM_setValue(this.name, this.value);
+  };
+  options = function() {
+    var checked, description, div, hiddenNum, html, input, option, value, _i, _len, _ref;
+    if (div = $('#options')) {
+      remove(div);
+      return;
     }
-    GM_setValue('flavors', $('textarea', div).value);
-    return remove(div);
+    div = AEOS.makeDialog('options', 'center');
+    hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length;
+    html = '<div class="move">Options <a name=close>X</a></div><div>';
+    for (option in config) {
+      value = config[option];
+      description = value[1];
+      checked = getConfig(option) ? "checked" : "";
+      html += "<label title=\"" + description + "\">" + option + "<input " + checked + " name=\"" + option + "\" type=\"checkbox\"></label><br>";
+    }
+    html += "<div><a class=sauce>Flavors</a></div>";
+    html += "<div><textarea style=\"display: none;\" name=flavors>" + (GM_getValue('flavors', g.flavors)) + "</textarea></div>";
+    html += "<input type=\"button\" value=\"hidden: " + hiddenNum + "\"><br>";
+    div.innerHTML = html;
+    $('div.move', div).addEventListener('mousedown', AEOS.move, true);
+    $('a[name=close]', div).addEventListener('click', (function() {
+      return remove($('#options'));
+    }), true);
+    _ref = $$('input', div);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      input = _ref[_i];
+      input.addEventListener('change', changeCheckbox, true);
+    }
+    $('a.sauce', div).addEventListener('click', editSauce, true);
+    $('textarea', div).addEventListener('change', changeText, true);
+    $('input[type="button"]', div).addEventListener('click', clearHidden, true);
+    return addTo(d.body, div);
   };
   parseResponse = function(responseText) {
     var body, opbq, replies;
@@ -1111,7 +1113,9 @@
     }
   };
   updateNow = function() {
-    return g.req = request(location.href, updateCallback);
+    var url;
+    url = location.href + '?' + new Date().getTime();
+    return g.req = request(url, updateCallback);
   };
   updaterMake = function() {
     var auto, div, html, interval;
@@ -1257,6 +1261,10 @@
     GM_setValue('lastChecked', now);
   }
   GM_addStyle('\
+    #options textarea {\
+        height: 100px;\
+        width: 500px;\
+    }\
     #updater {\
         position: fixed;\
         text-align: right;\
