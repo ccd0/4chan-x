@@ -597,7 +597,7 @@ options = ->
     div.innerHTML = html
     $('div.move', div).addEventListener 'mousedown', AEOS.move, true
     $('a[name=close]', div).addEventListener 'click', (-> remove($ '#options')), true
-    for input in $$ 'input', div
+    for input in $$ 'input[type="checkbox"]', div
         input.addEventListener 'change', changeCheckbox, true
     $('a.sauce', div).addEventListener 'click', editSauce, true
     $('textarea', div).addEventListener 'change', changeText, true

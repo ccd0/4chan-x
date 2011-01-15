@@ -766,7 +766,7 @@
     $('a[name=close]', div).addEventListener('click', (function() {
       return remove($('#options'));
     }), true);
-    _ref = $$('input', div);
+    _ref = $$('input[type="checkbox"]', div);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
       input.addEventListener('change', changeCheckbox, true);
