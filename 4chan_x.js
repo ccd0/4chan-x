@@ -72,10 +72,11 @@
             }\
         ');
     },
-    makeDialog: function(id, position) {
-      var dialog, left, top;
+    makeDialog: function(id, position, html) {
+      var dialog, left, top, _ref;
       dialog = document.createElement('div');
       dialog.className = 'reply dialog';
+      dialog.innerHTML = html;
       dialog.id = id;
       switch (position) {
         case 'topleft':
@@ -105,6 +106,12 @@
         dialog.style.top = top;
       } else {
         dialog.style.bottom = '0px';
+      }
+      $('div.move', dialog).addEventListener('mousedown', AEOS.move, true);
+      if ((_ref = $('div.move a[name=close]', dialog)) != null) {
+        _ref.addEventListener('click', (function() {
+          return remove($(id));
+        }), true);
       }
       return dialog;
     },
@@ -749,7 +756,6 @@
       remove(div);
       return;
     }
-    div = AEOS.makeDialog('options', 'center');
     hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length;
     html = '<div class="move">Options <a name=close>X</a></div><div>';
     for (option in config) {
@@ -761,11 +767,7 @@
     html += "<div><a class=sauce>Flavors</a></div>";
     html += "<div><textarea style=\"display: none;\" name=flavors>" + (GM_getValue('flavors', g.flavors)) + "</textarea></div>";
     html += "<input type=\"button\" value=\"hidden: " + hiddenNum + "\"><br>";
-    div.innerHTML = html;
-    $('div.move', div).addEventListener('mousedown', AEOS.move, true);
-    $('a[name=close]', div).addEventListener('click', (function() {
-      return remove($('#options'));
-    }), true);
+    div = AEOS.makeDialog('options', 'center', html);
     _ref = $$('input[type="checkbox"]', div);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
@@ -803,28 +805,10 @@
     return text;
   };
   quickReply = function(link, text) {
-    var auto, autoBox, autohideB, clone, closeB, form, input, qr, script, submit, textarea, titlebar, xpath, _i, _len, _ref, _ref2;
+    var auto, autoBox, clone, form, html, input, qr, script, submit, textarea, xpath, _i, _len, _ref, _ref2;
     if (!(qr = $('#qr'))) {
-      qr = AEOS.makeDialog('qr', 'topleft');
-      titlebar = n('div', {
-        innerHTML: 'Quick Reply ',
-        className: 'move',
-        listener: ['mousedown', AEOS.move]
-      });
-      addTo(qr, titlebar);
-      autohideB = n('input', {
-        type: 'checkbox',
-        className: 'pointer',
-        title: 'autohide',
-        listener: ['click', autohide]
-      });
-      closeB = n('a', {
-        textContent: 'X',
-        className: 'pointer',
-        title: 'close',
-        listener: ['click', closeQR]
-      });
-      addTo(titlebar, autohideB, tn(' '), closeB);
+      html = "<div class=move>Quick Reply <input type=checkbox title=autohide><a name=close title=close>X</a></div>";
+      qr = AEOS.makeDialog('qr', 'topleft', html);
       form = $('form[name=post]');
       clone = form.cloneNode(true);
       _ref = $$('script', clone);
@@ -1119,13 +1103,11 @@
   };
   updaterMake = function() {
     var auto, div, html, interval;
-    div = AEOS.makeDialog('updater', 'topright');
     html = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>";
     html += "<div><label>Auto Update<input type=checkbox name=auto></label></div>";
     html += "<div><label>Interval (s)<input type=text name=interval></label></div>";
     html += "<div><input type=button value='Update Now'></div>";
-    div.innerHTML = html;
-    $('div.move', div).addEventListener('mousedown', AEOS.move, true);
+    div = AEOS.makeDialog('updater', 'topright', html);
     auto = $('input[name=auto]', div);
     auto.addEventListener('click', updateAuto, true);
     interval = $('input[name=interval]', div);
@@ -1397,7 +1379,8 @@
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = n('div', {
-      innerHTML: "<label>Expand Images<input type=checkbox id=imageExpand></label>"
+      innerHTML: '<label>Expand Images<input type=checkbox id=imageExpand></label>\
+                    <select><option>full</option><option>fit width</option><option>fit screen</option></select>'
     });
     $("input", expand).addEventListener('click', imageExpandClick, true);
     inBefore(delform.firstChild, expand);
@@ -1540,9 +1523,8 @@
     });
   }
   if (getConfig('Thread Watcher')) {
-    watcher = AEOS.makeDialog('watcher', 'topleft');
     watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>';
-    $('div', watcher).addEventListener('mousedown', AEOS.move, true);
+    watcher = AEOS.makeDialog('watcher', 'topleft', html);
     addTo(d.body, watcher);
     watcherUpdate();
     threads = g.watched[g.BOARD] || [];

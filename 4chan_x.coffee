@@ -31,7 +31,7 @@ config =
     'Thread Watcher':      [true, 'Bookmark threads']
     'Unread Count':        [true, 'Show unread post count in tab title']
 
-#utility
+#framework
 AEOS =
     init: ->
         #x-browser
@@ -72,9 +72,10 @@ AEOS =
             }
         '
     #dialog creation
-    makeDialog: (id, position) ->
+    makeDialog: (id, position, html) ->
         dialog = document.createElement 'div'
         dialog.className = 'reply dialog'
+        dialog.innerHTML = html
         dialog.id = id
         switch position
             when 'topleft'
@@ -93,6 +94,9 @@ AEOS =
         top  = GM_getValue "#{id}Top", top
         if left then dialog.style.left = left else dialog.style.right = '0px'
         if top then dialog.style.top = top else dialog.style.bottom = '0px'
+
+        $('div.move', dialog).addEventListener 'mousedown', AEOS.move, true
+        $('div.move a[name=close]', dialog)?.addEventListener 'click', (-> remove $ id), true
         dialog
     #movement
     move: (e) ->
@@ -128,9 +132,11 @@ AEOS =
         GM_setValue "#{id}Left", div.style.left
         GM_setValue "#{id}Top",  div.style.top
 
+#convenience
 d = document
 g = null #globals
 
+#utility
 $ = (selector, root) ->
     root or= d.body
     root.querySelector selector
@@ -584,7 +590,6 @@ options = ->
         remove div
         return
 
-    div = AEOS.makeDialog 'options', 'center'
     hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length
     html = '<div class="move">Options <a name=close>X</a></div><div>'
     for option, value of config
@@ -594,9 +599,9 @@ options = ->
     html += "<div><a class=sauce>Flavors</a></div>"
     html += "<div><textarea style=\"display: none;\" name=flavors>#{GM_getValue 'flavors', g.flavors}</textarea></div>"
     html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
-    div.innerHTML = html
-    $('div.move', div).addEventListener 'mousedown', AEOS.move, true
-    $('a[name=close]', div).addEventListener 'click', (-> remove($ '#options')), true
+
+    div = AEOS.makeDialog 'options', 'center', html
+
     for input in $$ 'input[type="checkbox"]', div
         input.addEventListener 'change', changeCheckbox, true
     $('a.sauce', div).addEventListener 'click', editSauce, true
@@ -630,24 +635,9 @@ qrText = (link) ->
 
 quickReply = (link, text) ->
     unless qr = $ '#qr'
-        #make quick reply dialog
-        qr = AEOS.makeDialog 'qr', 'topleft'
-        titlebar = n 'div',
-            innerHTML: 'Quick Reply '
-            className: 'move'
-            listener: ['mousedown', AEOS.move]
-        addTo qr, titlebar
-        autohideB = n 'input',
-            type: 'checkbox'
-            className: 'pointer'
-            title: 'autohide'
-            listener: ['click', autohide]
-        closeB = n 'a',
-            textContent: 'X'
-            className: 'pointer'
-            title: 'close'
-            listener: ['click', closeQR]
-        addTo titlebar, autohideB, tn(' '), closeB
+        html = "<div class=move>Quick Reply <input type=checkbox title=autohide><a name=close title=close>X</a></div>"
+        qr = AEOS.makeDialog 'qr', 'topleft', html
+
         form = $ 'form[name=post]'
         clone = form.cloneNode true
         #remove recaptcha scripts
@@ -882,14 +872,12 @@ updateNow = ->
     g.req = request url, updateCallback
 
 updaterMake = ->
-    div = AEOS.makeDialog 'updater', 'topright'
     html  = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>"
     html += "<div><label>Auto Update<input type=checkbox name=auto></label></div>"
     html += "<div><label>Interval (s)<input type=text name=interval></label></div>"
     html += "<div><input type=button value='Update Now'></div>"
-    div.innerHTML = html
+    div = AEOS.makeDialog 'updater', 'topright', html
 
-    $('div.move', div).addEventListener 'mousedown', AEOS.move, true
     auto = $ 'input[name=auto]', div
     auto.addEventListener 'click', updateAuto, true
     interval = $ 'input[name=interval]', div
@@ -1231,9 +1219,8 @@ if getConfig 'Quick Report'
 
 if getConfig 'Thread Watcher'
     #create watcher
-    watcher = AEOS.makeDialog 'watcher', 'topleft'
     watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>'
-    $('div', watcher).addEventListener('mousedown', AEOS.move, true)
+    watcher = AEOS.makeDialog 'watcher', 'topleft', html
     addTo d.body, watcher
     watcherUpdate()
 
