@@ -94,6 +94,10 @@
         case 'bottomright':
           left = null;
           top = null;
+          break;
+        case 'center':
+          left = '50%';
+          top = '25%';
       }
       left = GM_getValue("" + id + "Left", left);
       top = GM_getValue("" + id + "Top", top);
@@ -1379,8 +1383,7 @@
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = n('div', {
-      innerHTML: '<label>Expand Images<input type=checkbox id=imageExpand></label>\
-                    <select><option>full</option><option>fit width</option><option>fit screen</option></select>'
+      innerHTML: "<label>Expand Images<input type=checkbox id=imageExpand></label>"
     });
     $("input", expand).addEventListener('click', imageExpandClick, true);
     inBefore(delform.firstChild, expand);
@@ -1523,7 +1526,7 @@
     });
   }
   if (getConfig('Thread Watcher')) {
-    watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>';
+    html = '<div class="move">Thread Watcher</div><div></div>';
     watcher = AEOS.makeDialog('watcher', 'topleft', html);
     addTo(d.body, watcher);
     watcherUpdate();

@@ -80,20 +80,23 @@ AEOS =
         switch position
             when 'topleft'
                 left = '0px'
-                top = '0px'
+                top  = '0px'
             when 'topright'
                 left = null
-                top = '0px'
+                top  = '0px'
             when 'bottomleft'
                 left = '0px'
-                top = null
+                top  = null
             when 'bottomright'
                 left = null
-                top = null
+                top  = null
+            when 'center'
+                left = '50%'
+                top  = '25%'
         left = GM_getValue "#{id}Left", left
-        top  = GM_getValue "#{id}Top", top
-        if left then dialog.style.left = left else dialog.style.right = '0px'
-        if top then dialog.style.top = top else dialog.style.bottom = '0px'
+        top  = GM_getValue "#{id}Top",  top
+        if left then dialog.style.left = left else dialog.style.right  = '0px'
+        if top  then dialog.style.top  = top  else dialog.style.bottom = '0px'
 
         $('div.move', dialog).addEventListener 'mousedown', AEOS.move, true
         $('div.move a[name=close]', dialog)?.addEventListener 'click', (-> remove $ id), true
@@ -1219,7 +1222,7 @@ if getConfig 'Quick Report'
 
 if getConfig 'Thread Watcher'
     #create watcher
-    watcher.innerHTML = '<div class="move">Thread Watcher</div><div></div>'
+    html = '<div class="move">Thread Watcher</div><div></div>'
     watcher = AEOS.makeDialog 'watcher', 'topleft', html
     addTo d.body, watcher
     watcherUpdate()
