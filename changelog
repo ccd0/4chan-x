@@ -1,3 +1,6 @@
+1.20.2
+- fix qr again
+
 1.20.1
 - fix disappearing updater bug
 - only restore ids on /b/ and /v/
