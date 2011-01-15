@@ -114,7 +114,7 @@
       $('div.move', dialog).addEventListener('mousedown', AEOS.move, true);
       if ((_ref = $('div.move a[name=close]', dialog)) != null) {
         _ref.addEventListener('click', (function() {
-          return remove($(id));
+          return remove($('#' + id));
         }), true);
       }
       return dialog;

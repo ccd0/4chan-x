@@ -99,7 +99,7 @@ AEOS =
         if top  then dialog.style.top  = top  else dialog.style.bottom = '0px'
 
         $('div.move', dialog).addEventListener 'mousedown', AEOS.move, true
-        $('div.move a[name=close]', dialog)?.addEventListener 'click', (-> remove $ id), true
+        $('div.move a[name=close]', dialog)?.addEventListener 'click', (-> remove $ '#'+id), true
         dialog
     #movement
     move: (e) ->
