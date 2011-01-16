@@ -611,9 +611,6 @@ changeCheckbox = ->
 changeValue = ->
     GM_setValue @name, @value
 
-changeText = ->
-    GM_setValue @name, @value
-
 options = ->
     if div = $ '#options'
         rm div
@@ -634,7 +631,7 @@ options = ->
     for input in $$ 'input[type="checkbox"]', div
         input.addEventListener 'change', changeCheckbox, true
     $('a.sauce', div).addEventListener 'click', editSauce, true
-    $('textarea', div).addEventListener 'change', changeText, true
+    $('textarea', div).addEventListener 'change', changeValue, true
     $('input[type="button"]', div).addEventListener 'click', clearHidden, true
     mv div, d.body
 

@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
+  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   config = {
     '404 Redirect': [true, 'Redirect dead threads'],
@@ -799,9 +799,6 @@
   changeValue = function() {
     return GM_setValue(this.name, this.value);
   };
-  changeText = function() {
-    return GM_setValue(this.name, this.value);
-  };
   options = function() {
     var checked, description, div, hiddenNum, html, input, option, value, _i, _len, _ref;
     if (div = $('#options')) {
@@ -826,7 +823,7 @@
       input.addEventListener('change', changeCheckbox, true);
     }
     $('a.sauce', div).addEventListener('click', editSauce, true);
-    $('textarea', div).addEventListener('change', changeText, true);
+    $('textarea', div).addEventListener('change', changeValue, true);
     $('input[type="button"]', div).addEventListener('click', clearHidden, true);
     return mv(div, d.body);
   };
