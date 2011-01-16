@@ -74,10 +74,10 @@ AEOS =
 
 class Dialog
     constructor: (id, position, html) ->
-        @el = dialog = document.createElement 'div'
-        dialog.className = 'reply dialog'
-        dialog.innerHTML = html
-        dialog.id = id
+        @el = el = document.createElement 'div'
+        el.className = 'reply dialog'
+        el.innerHTML = html
+        el.id = id
         switch position
             when 'topleft'
                 left = '0px'
@@ -96,42 +96,41 @@ class Dialog
                 top  = '25%'
         left = GM_getValue "#{id}Left", left
         top  = GM_getValue "#{id}Top",  top
-        if left then dialog.style.left = left else dialog.style.right  = '0px'
-        if top  then dialog.style.top  = top  else dialog.style.bottom = '0px'
-
-        $('div.move', dialog).addEventListener 'mousedown', @move, true
-        $('div.move a[name=close]', dialog)?.addEventListener 'click', (-> remove dialog), true
+        if left then el.style.left = left else el.style.right  = '0px'
+        if top  then el.style.top  = top  else el.style.bottom = '0px'
+        $('div.move', el).addEventListener 'mousedown', @move, true
+        $('div.move a[name=close]', el)?.addEventListener 'click', (-> remove el), true
     move: (e) =>
-        div = @el
-        #distance from pointer to div edge is constant; calculate it here.
-        @dx = e.clientX - div.offsetLeft
-        @dy = e.clientY - div.offsetTop
-        #factor out div from document dimensions
-        @width  = document.body.clientWidth  - div.offsetWidth
-        @height = document.body.clientHeight - div.offsetHeight
+        el = @el
+        #distance from pointer to el edge is constant; calculate it here.
+        @dx = e.clientX - el.offsetLeft
+        @dy = e.clientY - el.offsetTop
+        #factor out el from document dimensions
+        @width  = document.body.clientWidth  - el.offsetWidth
+        @height = document.body.clientHeight - el.offsetHeight
         document.addEventListener 'mousemove', @moveMove, true
         document.addEventListener 'mouseup',   @moveEnd, true
     moveMove: (e) =>
-        div = @el
+        el = @el
         left = e.clientX - @dx
         if left < 20 then left = '0px'
         else if @width - left < 20 then left = ''
         right = if left then '' else '0px'
-        div.style.left  = left
-        div.style.right = right
+        el.style.left  = left
+        el.style.right = right
         top = e.clientY - @dy
         if top < 20 then top = '0px'
         else if @height - top < 20 then top = ''
         bottom = if top then '' else '0px'
-        div.style.top    = top
-        div.style.bottom = bottom
+        el.style.top    = top
+        el.style.bottom = bottom
     moveEnd: =>
         document.removeEventListener 'mousemove', @moveMove, true
         document.removeEventListener 'mouseup',   @moveEnd, true
-        div = @el
-        id = div.id
-        GM_setValue "#{id}Left", div.style.left
-        GM_setValue "#{id}Top",  div.style.top
+        el = @el
+        id = el.id
+        GM_setValue "#{id}Left", el.style.left
+        GM_setValue "#{id}Top",  el.style.top
 
 #convenience
 d = document

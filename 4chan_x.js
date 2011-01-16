@@ -77,11 +77,11 @@
     function Dialog(id, position, html) {
       this.moveEnd = __bind(this.moveEnd, this);;
       this.moveMove = __bind(this.moveMove, this);;
-      this.move = __bind(this.move, this);;      var dialog, left, top, _ref;
-      this.el = dialog = document.createElement('div');
-      dialog.className = 'reply dialog';
-      dialog.innerHTML = html;
-      dialog.id = id;
+      this.move = __bind(this.move, this);;      var el, left, top, _ref;
+      this.el = el = document.createElement('div');
+      el.className = 'reply dialog';
+      el.innerHTML = html;
+      el.id = id;
       switch (position) {
         case 'topleft':
           left = '0px';
@@ -106,35 +106,35 @@
       left = GM_getValue("" + id + "Left", left);
       top = GM_getValue("" + id + "Top", top);
       if (left) {
-        dialog.style.left = left;
+        el.style.left = left;
       } else {
-        dialog.style.right = '0px';
+        el.style.right = '0px';
       }
       if (top) {
-        dialog.style.top = top;
+        el.style.top = top;
       } else {
-        dialog.style.bottom = '0px';
+        el.style.bottom = '0px';
       }
-      $('div.move', dialog).addEventListener('mousedown', this.move, true);
-      if ((_ref = $('div.move a[name=close]', dialog)) != null) {
+      $('div.move', el).addEventListener('mousedown', this.move, true);
+      if ((_ref = $('div.move a[name=close]', el)) != null) {
         _ref.addEventListener('click', (function() {
-          return remove(dialog);
+          return remove(el);
         }), true);
       }
     }
     Dialog.prototype.move = function(e) {
-      var div;
-      div = this.el;
-      this.dx = e.clientX - div.offsetLeft;
-      this.dy = e.clientY - div.offsetTop;
-      this.width = document.body.clientWidth - div.offsetWidth;
-      this.height = document.body.clientHeight - div.offsetHeight;
+      var el;
+      el = this.el;
+      this.dx = e.clientX - el.offsetLeft;
+      this.dy = e.clientY - el.offsetTop;
+      this.width = document.body.clientWidth - el.offsetWidth;
+      this.height = document.body.clientHeight - el.offsetHeight;
       document.addEventListener('mousemove', this.moveMove, true);
       return document.addEventListener('mouseup', this.moveEnd, true);
     };
     Dialog.prototype.moveMove = function(e) {
-      var bottom, div, left, right, top;
-      div = this.el;
+      var bottom, el, left, right, top;
+      el = this.el;
       left = e.clientX - this.dx;
       if (left < 20) {
         left = '0px';
@@ -142,8 +142,8 @@
         left = '';
       }
       right = left ? '' : '0px';
-      div.style.left = left;
-      div.style.right = right;
+      el.style.left = left;
+      el.style.right = right;
       top = e.clientY - this.dy;
       if (top < 20) {
         top = '0px';
@@ -151,17 +151,17 @@
         top = '';
       }
       bottom = top ? '' : '0px';
-      div.style.top = top;
-      return div.style.bottom = bottom;
+      el.style.top = top;
+      return el.style.bottom = bottom;
     };
     Dialog.prototype.moveEnd = function() {
-      var div, id;
+      var el, id;
       document.removeEventListener('mousemove', this.moveMove, true);
       document.removeEventListener('mouseup', this.moveEnd, true);
-      div = this.el;
-      id = div.id;
-      GM_setValue("" + id + "Left", div.style.left);
-      return GM_setValue("" + id + "Top", div.style.top);
+      el = this.el;
+      id = el.id;
+      GM_setValue("" + id + "Left", el.style.left);
+      return GM_setValue("" + id + "Top", el.style.top);
     };
     return Dialog;
   })();
