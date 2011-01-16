@@ -5,7 +5,6 @@
     '404 Redirect': [true, 'Redirect dead threads'],
     'Anonymize': [false, 'Make everybody anonymous'],
     'Auto Watch': [true, 'Automatically watch threads that you start (Firefox only)'],
-    'Auto Update': [true, 'Automatically enable automatic updating'],
     'Comment Expansion': [true, 'Expand too long comments'],
     'Image Expansion': [true, 'Expand images'],
     'Keybinds': [false, 'Binds actions to keys'],
@@ -1151,21 +1150,25 @@
     return g.req = request(url, updateCallback);
   };
   updaterMake = function() {
-    var auto, div, html, interval;
+    var autoG, autoL, div, html, interval;
     html = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>";
-    html += "<div><label>Auto Update<input type=checkbox name=auto></label></div>";
+    html += "<div><label title=\"Make all threads auto update\">Auto Update Global<input type=checkbox name=autoG></label></div>";
+    html += "<div><label title=\"Make this thread auto update\">Auto Update Local<input type=checkbox name=autoL></label></div>";
     html += "<div><label>Interval (s)<input type=text name=interval></label></div>";
     html += "<div><input type=button value='Update Now'></div>";
     div = new Dialog('updater', 'topright', html).el;
-    auto = $('input[name=auto]', div);
-    auto.addEventListener('click', updateAuto, true);
+    autoG = $('input[name=autoG]', div);
+    autoG.addEventListener('click', changeCheckbox, true);
+    autoG.checked = GM_getValue('autoG', false);
+    autoL = $('input[name=autoL]', div);
+    autoL.addEventListener('click', updateAuto, true);
     interval = $('input[name=interval]', div);
     interval.value = GM_getValue('Interval', 10);
     interval.addEventListener('change', updateInterval, true);
     $('input[type=button]', div).addEventListener('click', updateNow, true);
     d.body.appendChild(div);
-    if (getConfig('Auto Update')) {
-      return auto.click();
+    if (autoG.checked) {
+      return autoL.click();
     }
   };
   watch = function() {
@@ -1449,7 +1452,7 @@
       for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
         thumb = thumbs[_i];
         thumb.parentNode.addEventListener('click', imageClick, true);
-        _results.push(g.expand ? imageFull(thumb) : void 0);
+        _results.push(g.expand ? imageToggle(thumb.parentNode) : void 0);
       }
       return _results;
     });
