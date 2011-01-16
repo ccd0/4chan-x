@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, DAY, Dialog, a, addTo, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
+  var $, $$, DAY, Dialog, a, addTo, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   config = {
     '404 Redirect': [true, 'Redirect dead threads'],
@@ -114,7 +114,7 @@
       $('div.move', el).addEventListener('mousedown', this.move, true);
       if ((_ref = $('div.move a[name=close]', el)) != null) {
         _ref.addEventListener('click', (function() {
-          return remove(el);
+          return rm(el);
         }), true);
       }
     }
@@ -164,12 +164,16 @@
   d = document;
   g = null;
   $ = function(selector, root) {
-    root || (root = d.body);
+    if (root == null) {
+      root = d.body;
+    }
     return root.querySelector(selector);
   };
   $$ = function(selector, root) {
     var node, result, _i, _len, _results;
-    root || (root = d.body);
+    if (root == null) {
+      root = d.body;
+    }
     result = root.querySelectorAll(selector);
     _results = [];
     for (_i = 0, _len = result.length; _i < _len; _i++) {
@@ -224,7 +228,7 @@
     }
     return el;
   };
-  remove = function(el) {
+  rm = function(el) {
     return el.parentNode.removeChild(el);
   };
   replace = function(root, el) {
@@ -251,7 +255,9 @@
     return d.createTextNode(s);
   };
   x = function(path, root) {
-    root || (root = d.body);
+    if (root == null) {
+      root = d.body;
+    }
     return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
   };
   zeroPad = function(n) {
@@ -280,7 +286,7 @@
   closeQR = function() {
     var div;
     div = this.parentNode.parentNode;
-    return remove(div);
+    return rm(div);
   };
   clearHidden = function() {
     GM_deleteValue("hiddenReplies/" + g.BOARD + "/");
@@ -338,7 +344,7 @@
       num = board === 'b' ? 3 : 5;
       table = x("following::br[@clear][1]/preceding::table[" + num + "]", span);
       while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
-        remove(prev);
+        rm(prev);
       }
       span.textContent = span.textContent.replace('-', '+');
       return;
@@ -377,7 +383,7 @@
   formSubmit = function(e) {
     var recaptcha, span, _ref;
     if (span = this.nextSibling) {
-      remove(span);
+      rm(span);
     }
     recaptcha = $('input[name=recaptcha_response_field]', this);
     if (recaptcha.value) {
@@ -477,7 +483,7 @@
         }
       }
     } else {
-      remove(qr);
+      rm(qr);
     }
     return recaptchaReload();
   };
@@ -528,7 +534,7 @@
   };
   imageThumb = function(thumb) {
     thumb.className = '';
-    return remove(thumb.nextSibling);
+    return rm(thumb.nextSibling);
   };
   keydown = function(e) {
     var kc;
@@ -538,7 +544,7 @@
   };
   keypress = function(e) {
     var _ref;
-    if ((_ref = document.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') {
+    if ((_ref = d.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') {
       return keyModeInsert(e);
     } else {
       return keyModeNormal(e);
@@ -549,10 +555,10 @@
     kc = g.keyCode;
     char = g.char;
     if (kc === 27) {
-      remove($('#qr'));
+      rm($('#qr'));
       return e.preventDefault();
     } else if (e.ctrlKey && char === "S") {
-      ta = document.activeElement;
+      ta = d.activeElement;
       if (ta.nodeName !== 'TEXTAREA') {
         return;
       }
@@ -728,7 +734,7 @@
     span.textContent = span.textContent.replace('X Loading...', '- ');
     span.previousSibling.innerHTML = opbq.innerHTML;
     while ((next = span.nextSibling) && !next.clear) {
-      remove(next);
+      rm(next);
     }
     if (next) {
       _results = [];
@@ -756,7 +762,7 @@
   options = function() {
     var checked, description, div, hiddenNum, html, input, option, value, _i, _len, _ref;
     if (div = $('#options')) {
-      remove(div);
+      rm(div);
       return;
     }
     hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length;
@@ -817,7 +823,7 @@
       _ref = $$('script', clone);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         script = _ref[_i];
-        remove(script);
+        rm(script);
       }
       m($('input[name=recaptcha_response_field]', clone), {
         listener: ['keydown', recaptchaListener]
@@ -931,7 +937,7 @@
     div = this.parentNode;
     table = div.nextSibling;
     show(table);
-    remove(div);
+    rm(div);
     id = $('td.reply, td.replyhl', table).id;
     slice(g.hiddenReplies, id);
     return GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
@@ -1008,7 +1014,7 @@
         s += "(" + g.replies.length + ") ";
       }
       s += "/" + g.BOARD + "/ - 404";
-      document.title = s;
+      d.title = s;
       g.dead = true;
       updateFavicon();
       return;
@@ -1073,7 +1079,7 @@
   updateTitle = function() {
     var len;
     len = g.replies.length;
-    document.title = document.title.replace(/\d+/, len);
+    d.title = d.title.replace(/\d+/, len);
     return updateFavicon();
   };
   updateAuto = function() {
@@ -1117,7 +1123,7 @@
     interval.value = GM_getValue('Interval', 10);
     interval.addEventListener('change', updateInterval, true);
     $('input[type=button]', div).addEventListener('click', updateNow, true);
-    document.body.appendChild(div);
+    d.body.appendChild(div);
     if (getConfig('Auto Update')) {
       return auto.click();
     }
@@ -1351,7 +1357,7 @@
   recaptcha.addEventListener('keydown', recaptchaListener, true);
   scroll = function() {
     var bottom, height, i, reply, _len, _ref;
-    height = document.body.clientHeight;
+    height = d.body.clientHeight;
     _ref = g.replies;
     for (i = 0, _len = _ref.length; i < _len; i++) {
       reply = _ref[i];
@@ -1563,7 +1569,7 @@
       _results = [];
       for (_j = 0, _len2 = trips.length; _j < _len2; _j++) {
         trip = trips[_j];
-        _results.push(trip.parentNode.nodeName === 'A' ? remove(trip.parentNode) : remove(trip));
+        _results.push(trip.parentNode.nodeName === 'A' ? rm(trip.parentNode) : rm(trip));
       }
       return _results;
     });
@@ -1593,8 +1599,8 @@
     });
   }
   if (getConfig('Keybinds')) {
-    document.addEventListener('keydown', keydown, true);
-    document.addEventListener('keypress', keypress, true);
+    d.addEventListener('keydown', keydown, true);
+    d.addEventListener('keypress', keypress, true);
   }
   if (g.REPLY) {
     if (getConfig('Thread Updater')) {
@@ -1614,8 +1620,8 @@
     }
     if (getConfig('Unread Count')) {
       g.replies = [];
-      document.title = '(0) ' + document.title;
-      document.addEventListener('scroll', scroll, true);
+      d.title = '(0) ' + d.title;
+      d.addEventListener('scroll', scroll, true);
       g.callbacks.push(function(root) {
         g.replies = g.replies.concat($$('td.reply, td.replyhl', root));
         return updateTitle();

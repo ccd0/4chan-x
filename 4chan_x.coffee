@@ -96,7 +96,7 @@ class Dialog
         if left then el.style.left = left else el.style.right  = '0px'
         if top  then el.style.top  = top  else el.style.bottom = '0px'
         $('div.move', el).addEventListener 'mousedown', @move, true
-        $('div.move a[name=close]', el)?.addEventListener 'click', (-> remove el), true
+        $('div.move a[name=close]', el)?.addEventListener 'click', (-> rm el), true
     move: (e) =>
         el = @el
         #distance from pointer to el edge is constant; calculate it here.
@@ -134,11 +134,9 @@ d = document
 g = null #globals
 
 #utility
-$ = (selector, root) ->
-    root or= d.body
+$ = (selector, root=d.body) ->
     root.querySelector selector
-$$ = (selector, root) ->
-    root or= d.body
+$$ = (selector, root=d.body) ->
     result = root.querySelectorAll selector
     #magic that turns the results object into an array:
     node for node in result
@@ -166,7 +164,7 @@ n = (tag, props) -> #new
     el = d.createElement tag
     if props then m el, props
     el
-remove = (el) ->
+rm = (el) ->
     el.parentNode.removeChild el
 replace = (root, el) ->
     root.parentNode.replaceChild el, root
@@ -185,8 +183,7 @@ slice = (arr, id) ->
         i++
 tn = (s) ->
     d.createTextNode s
-x = (path, root) ->
-    root or= d.body
+x = (path, root=d.body) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
         singleNodeValue
 zeroPad = (n) ->
@@ -209,7 +206,7 @@ autoWatch = ->
 
 closeQR = ->
     div = @parentNode.parentNode
-    remove div
+    rm div
 
 clearHidden = ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -261,7 +258,7 @@ expandThread = ->
         num = if board is 'b' then 3 else 5
         table = x "following::br[@clear][1]/preceding::table[#{num}]", span
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
-            remove prev
+            rm prev
         span.textContent = span.textContent.replace '-', '+'
         return
     span.textContent = span.textContent.replace '+', 'X Loading...'
@@ -291,7 +288,7 @@ getThread = ->
 
 formSubmit = (e) ->
     if span = @nextSibling
-        remove span
+        rm span
     recaptcha = $('input[name=recaptcha_response_field]', this)
     if recaptcha.value
         $('#qr input[title=autohide]:not(:checked)')?.click()
@@ -372,7 +369,7 @@ iframeLoad = ->
             #unhide the qr so you know it's ready for the next item
             $('input[title=autohide]:checked', qr)?.click()
     else
-        remove qr
+        rm qr
     recaptchaReload()
 
 imageClick = (e) ->
@@ -413,7 +410,7 @@ imageFull = (thumb) ->
 imageThumb = (thumb) ->
     #thumbify the image - show thumb, remove full sized image
     thumb.className = ''
-    remove thumb.nextSibling
+    rm thumb.nextSibling
 
 keydown = (e) ->
     kc = e.keyCode
@@ -421,7 +418,7 @@ keydown = (e) ->
     g.char = String.fromCharCode kc
 
 keypress = (e) ->
-    if document.activeElement.nodeName in ['TEXTAREA', 'INPUT']
+    if d.activeElement.nodeName in ['TEXTAREA', 'INPUT']
         keyModeInsert e
     else
         keyModeNormal e
@@ -430,10 +427,10 @@ keyModeInsert = (e) ->
     kc = g.keyCode
     char = g.char
     if kc is 27 #escape
-        remove $ '#qr'
+        rm $ '#qr'
         e.preventDefault()
     else if e.ctrlKey and char is "S"
-        ta = document.activeElement
+        ta = d.activeElement
         return unless ta.nodeName is 'TEXTAREA'
 
         value    = ta.value
@@ -567,7 +564,7 @@ onloadThread = (responseText, span) ->
     #make sure all comments are fully expanded
     span.previousSibling.innerHTML = opbq.innerHTML
     while (next = span.nextSibling) and not next.clear#<br clear>
-        remove next
+        rm next
     if next
         for reply in replies
             inBefore next, x('ancestor::table', reply)
@@ -584,7 +581,7 @@ changeText = ->
 
 options = ->
     if div = $ '#options'
-        remove div
+        rm div
         return
 
     hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length
@@ -639,7 +636,7 @@ quickReply = (link, text) ->
         clone = form.cloneNode true
         #remove recaptcha scripts
         for script in $$ 'script', clone
-            remove script
+            rm script
         m $('input[name=recaptcha_response_field]', clone),
             listener: ['keydown', recaptchaListener]
         m clone,
@@ -722,11 +719,11 @@ scrollThread = (count) ->
 showReply = ->
     div = @parentNode
     table = div.nextSibling
-    show(table)
-    remove(div)
+    show table
+    rm div
     id = $('td.reply, td.replyhl', table).id
-    slice(g.hiddenReplies, id)
-    GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
+    slice g.hiddenReplies, id
+    GM_setValue "hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies)
 
 showThread = ->
     div = @nextSibling
@@ -784,7 +781,7 @@ updateCallback = ->
         s = ''
         if getConfig 'Unread Count' then s += "(#{g.replies.length}) "
         s += "/#{g.BOARD}/ - 404"
-        document.title = s
+        d.title = s
         g.dead = true
         updateFavicon()
         return
@@ -842,7 +839,7 @@ updateTime = ->
 
 updateTitle = ->
     len = g.replies.length
-    document.title = document.title.replace /\d+/, len
+    d.title = d.title.replace /\d+/, len
     updateFavicon()
 
 updateAuto = ->
@@ -881,7 +878,7 @@ updaterMake = ->
     interval.value = GM_getValue 'Interval', 10
     interval.addEventListener 'change', updateInterval, true
     $('input[type=button]', div).addEventListener 'click', updateNow, true
-    document.body.appendChild div
+    d.body.appendChild div
     if getConfig 'Auto Update' then auto.click()
 
 watch = ->
@@ -1100,7 +1097,7 @@ recaptcha = $ '#recaptcha_response_field'
 recaptcha.addEventListener('keydown', recaptchaListener, true)
 
 scroll = ->
-    height = document.body.clientHeight
+    height = d.body.clientHeight
     for reply, i in g.replies
         bottom = reply.getBoundingClientRect().bottom
         if bottom > height #post is not completely read
@@ -1246,9 +1243,9 @@ if getConfig 'Anonymize'
         trips = $$('span.postertrip', root)
         for trip in trips
             if trip.parentNode.nodeName is 'A'
-                remove(trip.parentNode)
+                rm trip.parentNode
             else
-                remove(trip)
+                rm trip
 
 if getConfig 'Reply Navigation'
     g.callbacks.push (root) ->
@@ -1267,8 +1264,8 @@ if getConfig 'Reply Navigation'
             inAfter el, span
 
 if getConfig 'Keybinds'
-    document.addEventListener 'keydown', keydown, true
-    document.addEventListener 'keypress', keypress, true
+    d.addEventListener 'keydown', keydown, true
+    d.addEventListener 'keypress', keypress, true
 
 if g.REPLY
     if getConfig 'Thread Updater'
@@ -1283,8 +1280,8 @@ if g.REPLY
             d.title = "/#{g.BOARD}/ - #{text}"
     if getConfig 'Unread Count'
         g.replies = []
-        document.title = '(0) ' + document.title
-        document.addEventListener 'scroll', scroll, true
+        d.title = '(0) ' + d.title
+        d.addEventListener 'scroll', scroll, true
         g.callbacks.push (root) ->
             g.replies = g.replies.concat $$ 'td.reply, td.replyhl', root
             updateTitle()
