@@ -1173,7 +1173,6 @@
       return favicon.src = g.favEmpty;
     }
   };
-  AEOS.init();
   g = {
     callbacks: [],
     expand: false,

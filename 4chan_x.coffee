@@ -927,7 +927,6 @@ watchX = ->
         favicon.src = g.favEmpty
 
 #main
-AEOS.init()
 g =
     callbacks: []
     expand: false
