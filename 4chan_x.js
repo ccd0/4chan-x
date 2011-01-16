@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, DAY, Dialog, a, addTo, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
+  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   config = {
     '404 Redirect': [true, 'Redirect dead threads'],
@@ -182,12 +182,13 @@
     }
     return _results;
   };
-  addTo = function() {
-    var child, children, parent, _i, _len, _results;
-    parent = arguments[0], children = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+  mv = function() {
+    var args, child, parent, _i, _len, _results;
+    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    parent = args.pop();
     _results = [];
-    for (_i = 0, _len = children.length; _i < _len; _i++) {
-      child = children[_i];
+    for (_i = 0, _len = args.length; _i < _len; _i++) {
+      child = args[_i];
       _results.push(parent.appendChild(child));
     }
     return _results;
@@ -394,7 +395,7 @@
         className: 'error',
         textContent: 'You forgot to type in the verification.'
       });
-      addTo(this.parentNode, span);
+      mv(span, this.parentNode);
       alert('You forgot to type in the verification.');
       return recaptcha.focus();
     }
@@ -420,7 +421,7 @@
         listener: ['click', showReply]
       });
       div = n('div');
-      addTo(div, a);
+      mv(a, div);
       return inBefore(table, div);
     }
   };
@@ -465,7 +466,7 @@
         textContent: error,
         className: 'error'
       });
-      addTo(qr, span);
+      mv(span, qr);
       if ((_ref = $('input[title=autohide]:checked', qr)) != null) {
         _ref.click();
       }
@@ -748,7 +749,7 @@
       _results2 = [];
       for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
         reply = replies[_j];
-        _results2.push(addTo(div, x('ancestor::table', reply)));
+        _results2.push(mv(x('ancestor::table', reply), div));
       }
       return _results2;
     }
@@ -785,7 +786,7 @@
     $('a.sauce', div).addEventListener('click', editSauce, true);
     $('textarea', div).addEventListener('change', changeText, true);
     $('input[type="button"]', div).addEventListener('click', clearHidden, true);
-    return addTo(d.body, div);
+    return mv(div, d.body);
   };
   parseResponse = function(responseText) {
     var body, opbq, replies;
@@ -839,7 +840,7 @@
           name: 'resto',
           value: x(xpath, link).name
         });
-        addTo(clone, input);
+        mv(input, clone);
       } else if (getConfig('Persistent QR')) {
         submit = $('input[type=submit]', clone);
         auto = n('label', {
@@ -848,11 +849,11 @@
         autoBox = n('input', {
           type: 'checkbox'
         });
-        addTo(auto, autoBox);
+        mv(autoBox, auto);
         inBefore(submit, auto);
       }
-      addTo(qr, clone);
-      addTo(d.body, qr);
+      mv(clone, qr);
+      mv(qr, d.body);
     }
     if ((_ref2 = $('input[title=autohide]:checked', qr)) != null) {
       _ref2.click();
@@ -964,13 +965,13 @@
       className: 'pointer',
       listener: ['click', hideThread]
     });
-    addTo(div, a);
+    mv(a, div);
     inBefore(current, div);
     while (!current.clear) {
-      addTo(div, current);
+      mv(current, div);
       current = div.nextSibling;
     }
-    addTo(div, current);
+    mv(current, div);
     current = div.nextSibling;
     id = $('input[value="delete"]', div).name;
     div.id = id;
@@ -1162,7 +1163,7 @@
           textContent: thread.text,
           href: "/" + board + "/res/" + thread.id
         });
-        addTo(div, a, tn(' '), link, n('br'));
+        mv(a, tn(' '), link, n('br'), div);
       }
     }
     old = $('#watcher div:last-child');
@@ -1454,7 +1455,7 @@
               textContent: names[i],
               href: prefixes[i] + suffix
             });
-            addTo(span, tn(' '), link);
+            mv(tn(' '), link, span);
             _results.push(i++);
           }
           return _results;
@@ -1498,7 +1499,7 @@
       listener: ['load', iframeLoad]
     });
     hide(iframe);
-    addTo(d.body, iframe);
+    mv(iframe, d.body);
     g.callbacks.push(function(root) {
       var quote, quotes, _i, _len, _results;
       quotes = $$('a.quotejs:not(:first-child)', root);
@@ -1532,7 +1533,7 @@
   if (getConfig('Thread Watcher')) {
     html = '<div class="move">Thread Watcher</div><div></div>';
     watcher = new Dialog('watcher', 'topleft', html).el;
-    addTo(d.body, watcher);
+    mv(watcher, d.body);
     watcherUpdate();
     threads = g.watched[g.BOARD] || [];
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');
@@ -1592,7 +1593,7 @@
           className: 'pointer',
           listener: ['click', replyNav]
         });
-        addTo(span, tn(' '), up, tn(' '), down);
+        mv(tn(' '), up, tn(' '), down, span);
         _results.push(inAfter(el, span));
       }
       return _results;
@@ -1677,7 +1678,7 @@
           textContent: textContent,
           href: href
         });
-        addTo(span, up, tn(' '), down);
+        mv(up, tn(' '), down, span);
         inBefore(el, span);
       }
       if (location.hash === '#p0') {

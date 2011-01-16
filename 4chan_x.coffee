@@ -138,11 +138,10 @@ $ = (selector, root=d.body) ->
     root.querySelector selector
 $$ = (selector, root=d.body) ->
     result = root.querySelectorAll selector
-    #magic that turns the results object into an array:
     node for node in result
-addTo = (parent, children...) ->
-    for child in children
-      parent.appendChild child
+mv = (args...) ->
+    parent = args.pop()
+    (parent.appendChild child) for child in args
 getConfig = (name) ->
     GM_getValue name, config[name][0]
 getTime = ->
@@ -297,7 +296,7 @@ formSubmit = (e) ->
         span = n 'span',
             className: 'error'
             textContent: 'You forgot to type in the verification.'
-        addTo @parentNode, span
+        mv span, @parentNode
         alert 'You forgot to type in the verification.'
         recaptcha.focus()
 
@@ -319,7 +318,7 @@ hideReply = (reply) ->
             className: 'pointer'
             listener: ['click', showReply]
         div = n 'div'
-        addTo div, a
+        mv a, div
         inBefore table, div
 
 hideThread = (div) ->
@@ -355,7 +354,7 @@ iframeLoad = ->
         span = n 'span',
             textContent: error
             className: 'error'
-        addTo qr, span
+        mv span, qr
         $('input[title=autohide]:checked', qr)?.click()
     else if g.REPLY and getConfig 'Persistent QR'
         $('textarea', qr).value = ''
@@ -571,7 +570,7 @@ onloadThread = (responseText, span) ->
     else#threading
         div = span.parentNode
         for reply in replies
-            addTo div, x 'ancestor::table', reply
+            mv x('ancestor::table', reply), div
 
 changeCheckbox = ->
     GM_setValue @name, @checked
@@ -601,7 +600,7 @@ options = ->
     $('a.sauce', div).addEventListener 'click', editSauce, true
     $('textarea', div).addEventListener 'change', changeText, true
     $('input[type="button"]', div).addEventListener 'click', clearHidden, true
-    addTo d.body, div
+    mv div, d.body
 
 parseResponse = (responseText) ->
     body = n 'body',
@@ -649,17 +648,17 @@ quickReply = (link, text) ->
                 type: 'hidden'
                 name: 'resto'
                 value: x(xpath, link).name
-            addTo clone, input
+            mv input, clone
         else if getConfig 'Persistent QR'
             submit = $ 'input[type=submit]', clone
             auto = n 'label',
                 textContent: 'Auto'
             autoBox = n 'input',
                 type: 'checkbox'
-            addTo auto, autoBox
+            mv autoBox, auto
             inBefore submit, auto
-        addTo qr, clone
-        addTo d.body, qr
+        mv clone, qr
+        mv qr, d.body
 
     $('input[title=autohide]:checked', qr)?.click()
     textarea = $('textarea', qr)
@@ -743,12 +742,12 @@ threadF = (current) ->
         textContent: '[ - ]'
         className: 'pointer'
         listener: ['click', hideThread]
-    addTo div, a
+    mv a, div
     inBefore current, div
     while (!current.clear)#<br clear>
-        addTo div, current
+        mv current, div
         current = div.nextSibling
-    addTo div, current
+    mv current, div
     current = div.nextSibling
     id = $('input[value="delete"]', div).name
     div.id = id
@@ -909,7 +908,7 @@ watcherUpdate = ->
             link = n 'a',
                 textContent: thread.text
                 href: "/#{board}/res/#{thread.id}"
-            addTo div, a, tn(' '), link, n('br')
+            mv a, tn(' '), link, n('br'), div
     old = $('#watcher div:last-child')
     replace(old, div)
 
@@ -1164,7 +1163,7 @@ if getConfig 'Sauce'
                 link = n 'a',
                     textContent: names[i]
                     href: prefixes[i] + suffix
-                addTo span, tn(' '), link
+                mv tn(' '), link, span
                 i++
 
 if getConfig 'Reply Hiding'
@@ -1188,7 +1187,7 @@ if getConfig 'Quick Reply'
         name: 'iframe'
         listener: ['load', iframeLoad]
     hide(iframe)
-    addTo d.body, iframe
+    mv iframe, d.body
 
     g.callbacks.push (root) ->
         quotes = $$('a.quotejs:not(:first-child)', root)
@@ -1214,7 +1213,7 @@ if getConfig 'Thread Watcher'
     #create watcher
     html = '<div class="move">Thread Watcher</div><div></div>'
     watcher = new Dialog('watcher', 'topleft', html).el
-    addTo d.body, watcher
+    mv watcher, d.body
     watcherUpdate()
 
     #add buttons
@@ -1260,7 +1259,7 @@ if getConfig 'Reply Navigation'
                 textContent: '▼'
                 className: 'pointer'
                 listener: ['click', replyNav]
-            addTo span, tn(' '), up, tn(' '), down
+            mv tn(' '), up, tn(' '), down, span
             inAfter el, span
 
 if getConfig 'Keybinds'
@@ -1329,7 +1328,7 @@ else #not reply
                 className: 'pointer'
                 textContent: textContent
                 href: href
-            addTo span, up, tn(' '), down
+            mv up, tn(' '), down, span
             inBefore el, span
         if location.hash is '#p0'
             window.location = window.location
