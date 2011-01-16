@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
+  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   config = {
     '404 Redirect': [true, 'Redirect dead threads'],
@@ -496,23 +496,42 @@
     return imageToggle(this);
   };
   imageToggle = function(image) {
-    var thumb;
+    var ch, cw, imageType, thumb;
     thumb = image.firstChild;
+    cw = d.body.clientWidth;
+    ch = d.body.clientHeight;
+    imageType = $("#imageType").value;
     if (thumb.className === 'hide') {
       return imageThumb(thumb);
     } else {
-      return imageFull(thumb);
+      return imageExpand(thumb, cw, ch, imageType);
     }
   };
+  imageTypeChange = function() {
+    var ch, cw, image, imageType, images, _i, _len, _results;
+    images = $$('img[md5] + img');
+    cw = d.body.clientWidth;
+    ch = d.body.clientHeight;
+    imageType = this.value;
+    _results = [];
+    for (_i = 0, _len = images.length; _i < _len; _i++) {
+      image = images[_i];
+      _results.push(imageResize(cw, ch, imageType, image));
+    }
+    return _results;
+  };
   imageExpandClick = function() {
-    var thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
+    var ch, cw, imageType, thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
     thumbs = $$('img[md5]');
     g.expand = this.checked;
+    cw = d.body.clientWidth;
+    ch = d.body.clientHeight;
+    imageType = $("#imageType").value;
     if (this.checked) {
       _results = [];
       for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
         thumb = thumbs[_i];
-        _results.push(thumb.className !== 'hide' ? imageFull(thumb) : void 0);
+        _results.push(thumb.className !== 'hide' ? imageExpand(thumb, cw, ch, imageType) : void 0);
       }
       return _results;
     } else {
@@ -524,14 +543,34 @@
       return _results2;
     }
   };
-  imageFull = function(thumb) {
-    var img, link;
+  imageExpand = function(thumb, cw, ch, imageType) {
+    var image, link;
     thumb.className = 'hide';
     link = thumb.parentNode;
-    img = n('img', {
+    image = n('img', {
       src: link.href
     });
-    return link.appendChild(img);
+    link.appendChild(image);
+    return imageResize(cw, ch, imageType, image);
+  };
+  imageResize = function(cw, ch, imageType, image) {
+    var ih, iw, ratio, _, _ref;
+    _ref = x("preceding::span[@class][1]/text()[2]", image).textContent.match(/(\d+)x(\d+)/), _ = _ref[0], iw = _ref[1], ih = _ref[2];
+    iw = Number(iw);
+    ih = Number(ih);
+    switch (imageType) {
+      case 'full':
+        image.removeAttribute('width');
+        return;
+      case 'fit width':
+        ratio = cw / iw;
+        break;
+      case 'fit screen':
+        ratio = Math.min(cw / iw, ch / ih);
+    }
+    if (ratio < 1) {
+      return image.width = Math.floor(ratio * iw);
+    }
   };
   imageThumb = function(thumb) {
     thumb.className = '';
@@ -756,6 +795,9 @@
   };
   changeCheckbox = function() {
     return GM_setValue(this.name, this.checked);
+  };
+  changeValue = function() {
+    return GM_setValue(this.name, this.value);
   };
   changeText = function() {
     return GM_setValue(this.name, this.value);
@@ -1388,8 +1430,19 @@
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = n('div', {
-      innerHTML: "<label>Expand Images<input type=checkbox id=imageExpand></label>"
+      innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>            <label>Expand Images<input type=checkbox id=imageExpand></label>"
     });
+    imageType = GM_getValue('imageType', 'full');
+    _ref5 = $$("option", expand);
+    for (_j = 0, _len2 = _ref5.length; _j < _len2; _j++) {
+      option = _ref5[_j];
+      if (option.textContent === imageType) {
+        option.selected = true;
+        break;
+      }
+    }
+    $("select", expand).addEventListener('change', changeValue, true);
+    $("select", expand).addEventListener('change', imageTypeChange, true);
     $("input", expand).addEventListener('click', imageExpandClick, true);
     inBefore(delform.firstChild, expand);
     g.callbacks.push(function(root) {
@@ -1537,8 +1590,8 @@
     watcherUpdate();
     threads = g.watched[g.BOARD] || [];
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');
-    for (_j = 0, _len2 = inputs.length; _j < _len2; _j++) {
-      input = inputs[_j];
+    for (_k = 0, _len3 = inputs.length; _k < _len3; _k++) {
+      input = inputs[_k];
       id = input.name;
       src = (function() {
         var thread, _i, _len;
@@ -1645,7 +1698,7 @@
     if (getConfig('Thread Navigation')) {
       arr = $$('div > span.filesize, form > span.filesize');
       l1 = arr.length - 1;
-      for (i = 0, _len3 = arr.length; i < _len3; i++) {
+      for (i = 0, _len4 = arr.length; i < _len4; i++) {
         el = arr[i];
         span = n('span', {
           className: 'navlinks',
@@ -1687,8 +1740,8 @@
     }
     if (getConfig('Thread Expansion')) {
       omitted = $$('span.omittedposts');
-      for (_k = 0, _len4 = omitted.length; _k < _len4; _k++) {
-        span = omitted[_k];
+      for (_l = 0, _len5 = omitted.length; _l < _len5; _l++) {
+        span = omitted[_l];
         a = n('a', {
           className: 'pointer omittedposts',
           textContent: "+ " + span.textContent,
@@ -1699,15 +1752,15 @@
     }
     if (getConfig('Comment Expansion')) {
       as = $$('span.abbr a');
-      for (_l = 0, _len5 = as.length; _l < _len5; _l++) {
-        a = as[_l];
+      for (_m = 0, _len6 = as.length; _m < _len6; _m++) {
+        a = as[_m];
         a.addEventListener('click', expandComment, true);
       }
     }
   }
-  _ref5 = g.callbacks;
-  for (_m = 0, _len6 = _ref5.length; _m < _len6; _m++) {
-    callback = _ref5[_m];
+  _ref6 = g.callbacks;
+  for (_n = 0, _len7 = _ref6.length; _n < _len7; _n++) {
+    callback = _ref6[_n];
     callback();
   }
   d.body.addEventListener('DOMNodeInserted', nodeInserted, true);

@@ -379,35 +379,68 @@ imageClick = (e) ->
 imageToggle = (image) ->
     # 'image' is actually the <a> container
     thumb = image.firstChild
+    cw = d.body.clientWidth
+    ch = d.body.clientHeight
+    imageType = $("#imageType").value
     if thumb.className is 'hide'
         imageThumb thumb
     else
-        imageFull thumb
+        imageExpand thumb, cw, ch, imageType
+
+imageTypeChange = ->
+    images = $$ 'img[md5] + img'
+    cw = d.body.clientWidth
+    ch = d.body.clientHeight
+    imageType = @value
+    for image in images
+        imageResize cw, ch, imageType, image
 
 imageExpandClick = ->
     thumbs = $$ 'img[md5]'
     g.expand = @checked
+    cw = d.body.clientWidth
+    ch = d.body.clientHeight
+    imageType = $("#imageType").value
     if @checked #expand
         for thumb in thumbs
             if thumb.className isnt 'hide'
-                #we want the thumbs hidden - we want full sized images
-                imageFull thumb
+                #hide the thumb and show image
+                imageExpand thumb, cw, ch, imageType
     else #contract
         for thumb in thumbs
             if thumb.className is 'hide'
-                #we want thumbs shown
+                #unhide thumb and remove image
                 imageThumb thumb
 
-imageFull = (thumb) ->
-    # show full size image, hide thumb
+
+imageExpand = (thumb, cw, ch, imageType) ->
     thumb.className = 'hide'
     link = thumb.parentNode
-    img = n 'img',
+    image = n 'img',
         src: link.href
-    link.appendChild img
+    link.appendChild image
+
+    imageResize cw, ch, imageType, image
+
+imageResize = (cw, ch, imageType, image) ->
+    [_, iw, ih] =
+        x("preceding::span[@class][1]/text()[2]", image)
+        .textContent.match(/(\d+)x(\d+)/)
+    iw = Number iw
+    ih = Number ih
+
+    switch imageType
+        when 'full'
+            image.removeAttribute 'width'
+            return
+        when 'fit width'
+            ratio = cw/iw
+        when 'fit screen'
+            ratio = Math.min cw/iw, ch/ih
+    if ratio < 1
+        image.width = Math.floor ratio * iw
 
 imageThumb = (thumb) ->
-    #thumbify the image - show thumb, remove full sized image
     thumb.className = ''
     rm thumb.nextSibling
 
@@ -574,6 +607,9 @@ onloadThread = (responseText, span) ->
 
 changeCheckbox = ->
     GM_setValue @name, @checked
+
+changeValue = ->
+    GM_setValue @name, @value
 
 changeText = ->
     GM_setValue @name, @value
@@ -1115,7 +1151,16 @@ if (getConfig 'Restore IDs') and g.BOARD in ['b', 'v']
 if getConfig 'Image Expansion'
     delform = $ 'form[name=delform]'
     expand = n 'div',
-        innerHTML: "<label>Expand Images<input type=checkbox id=imageExpand></label>"
+        innerHTML:
+            "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>
+            <label>Expand Images<input type=checkbox id=imageExpand></label>"
+    imageType = GM_getValue 'imageType', 'full'
+    for option in $$("option", expand)
+        if option.textContent is imageType
+            option.selected = true
+            break
+    $("select", expand).addEventListener 'change', changeValue, true
+    $("select", expand).addEventListener 'change', imageTypeChange, true
     $("input", expand).addEventListener 'click', imageExpandClick, true
     inBefore delform.firstChild, expand
 
