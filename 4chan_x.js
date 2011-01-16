@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, AEOS, DAY, Dialog, a, addTo, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
+  var $, $$, DAY, Dialog, a, addTo, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   config = {
     '404 Redirect': [true, 'Redirect dead threads'],
@@ -26,53 +26,49 @@
     'Thread Watcher': [true, 'Bookmark threads'],
     'Unread Count': [true, 'Show unread post count in tab title']
   };
-  AEOS = {
-    init: function() {
-      if (typeof GM_deleteValue === 'undefined') {
-        window.GM_setValue = function(name, value) {
-          value = (typeof value)[0] + value;
-          return localStorage.setItem(name, value);
-        };
-        window.GM_getValue = function(name, defaultValue) {
-          var type, value;
-          if (!(value = localStorage.getItem(name))) {
-            return defaultValue;
-          }
-          type = value[0];
-          value = value.slice(1);
-          switch (type) {
-            case 'b':
-              return value === 'true';
-            case 'n':
-              return Number(value);
-            default:
-              return value;
-          }
-        };
-        window.GM_addStyle = function(css) {
-          var style;
-          style = document.createElement('style');
-          style.type = 'text/css';
-          style.textContent = css;
-          return document.getElementsByTagName('head')[0].appendChild(style);
-        };
-        window.GM_openInTab = function(url) {
-          return window.open(url, "_blank");
-        };
+  if (typeof GM_deleteValue === 'undefined') {
+    window.GM_setValue = function(name, value) {
+      value = (typeof value)[0] + value;
+      return localStorage.setItem(name, value);
+    };
+    window.GM_getValue = function(name, defaultValue) {
+      var type, value;
+      if (!(value = localStorage.getItem(name))) {
+        return defaultValue;
       }
-      return GM_addStyle('\
-            div.dialog {\
-                border: 1px solid;\
-            }\
-            div.dialog > div.move {\
-                cursor: move;\
-            }\
-            label, a {\
-                cursor: pointer;\
-            }\
-        ');
-    }
-  };
+      type = value[0];
+      value = value.slice(1);
+      switch (type) {
+        case 'b':
+          return value === 'true';
+        case 'n':
+          return Number(value);
+        default:
+          return value;
+      }
+    };
+    window.GM_addStyle = function(css) {
+      var style;
+      style = document.createElement('style');
+      style.type = 'text/css';
+      style.textContent = css;
+      return document.getElementsByTagName('head')[0].appendChild(style);
+    };
+    window.GM_openInTab = function(url) {
+      return window.open(url, "_blank");
+    };
+  }
+  GM_addStyle('\
+    div.dialog {\
+        border: 1px solid;\
+    }\
+    div.dialog > div.move {\
+        cursor: move;\
+    }\
+    label, a {\
+        cursor: pointer;\
+    }\
+');
   Dialog = (function() {
     function Dialog(id, position, html) {
       this.moveEnd = __bind(this.moveEnd, this);;

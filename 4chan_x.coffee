@@ -31,46 +31,43 @@ config =
     'Thread Watcher':      [true, 'Bookmark threads']
     'Unread Count':        [true, 'Show unread post count in tab title']
 
-#framework
-AEOS =
-    init: ->
-        #x-browser
-        if typeof GM_deleteValue is 'undefined'
-            window.GM_setValue = (name, value) ->
-                value = (typeof value)[0] + value
-                localStorage.setItem name, value
-            window.GM_getValue = (name, defaultValue) ->
-                unless value = localStorage.getItem name
-                    return defaultValue
-                type = value[0]
-                value = value[1..]
-                switch type
-                    when 'b'
-                        value == 'true'
-                    when 'n'
-                        Number value
-                    else
-                        value
-            window.GM_addStyle = (css) ->
-                style = document.createElement 'style'
-                style.type = 'text/css'
-                style.textContent = css
-                document.getElementsByTagName('head')[0].appendChild style
-            window.GM_openInTab = (url) ->
-                window.open url, "_blank"
+#x-browser
+if typeof GM_deleteValue is 'undefined'
+    window.GM_setValue = (name, value) ->
+        value = (typeof value)[0] + value
+        localStorage.setItem name, value
+    window.GM_getValue = (name, defaultValue) ->
+        unless value = localStorage.getItem name
+            return defaultValue
+        type = value[0]
+        value = value[1..]
+        switch type
+            when 'b'
+                value == 'true'
+            when 'n'
+                Number value
+            else
+                value
+    window.GM_addStyle = (css) ->
+        style = document.createElement 'style'
+        style.type = 'text/css'
+        style.textContent = css
+        document.getElementsByTagName('head')[0].appendChild style
+    window.GM_openInTab = (url) ->
+        window.open url, "_blank"
 
-        #dialog styling
-        GM_addStyle '
-            div.dialog {
-                border: 1px solid;
-            }
-            div.dialog > div.move {
-                cursor: move;
-            }
-            label, a {
-                cursor: pointer;
-            }
-        '
+#dialog styling
+GM_addStyle '
+    div.dialog {
+        border: 1px solid;
+    }
+    div.dialog > div.move {
+        cursor: move;
+    }
+    label, a {
+        cursor: pointer;
+    }
+'
 
 class Dialog
     constructor: (id, position, html) ->
