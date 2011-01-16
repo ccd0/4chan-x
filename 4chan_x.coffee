@@ -71,9 +71,10 @@ AEOS =
                 cursor: pointer;
             }
         '
-    #dialog creation
-    makeDialog: (id, position, html) ->
-        dialog = document.createElement 'div'
+
+class Dialog
+    constructor: (id, position, html) ->
+        @el = dialog = document.createElement 'div'
         dialog.className = 'reply dialog'
         dialog.innerHTML = html
         dialog.id = id
@@ -98,39 +99,36 @@ AEOS =
         if left then dialog.style.left = left else dialog.style.right  = '0px'
         if top  then dialog.style.top  = top  else dialog.style.bottom = '0px'
 
-        $('div.move', dialog).addEventListener 'mousedown', AEOS.move, true
-        $('div.move a[name=close]', dialog)?.addEventListener 'click', (-> remove $ '#'+id), true
-        dialog
-    #movement
-    move: (e) ->
-        div = @parentNode
-        AEOS.div = div
+        $('div.move', dialog).addEventListener 'mousedown', @move, true
+        $('div.move a[name=close]', dialog)?.addEventListener 'click', (-> remove dialog), true
+    move: (e) =>
+        div = @el
         #distance from pointer to div edge is constant; calculate it here.
-        AEOS.dx = e.clientX - div.offsetLeft
-        AEOS.dy = e.clientY - div.offsetTop
+        @dx = e.clientX - div.offsetLeft
+        @dy = e.clientY - div.offsetTop
         #factor out div from document dimensions
-        AEOS.width  = document.body.clientWidth  - div.offsetWidth
-        AEOS.height = document.body.clientHeight - div.offsetHeight
-        document.addEventListener 'mousemove', AEOS.moveMove, true
-        document.addEventListener 'mouseup',   AEOS.moveEnd, true
-    moveMove: (e) ->
-        div = AEOS.div
-        left = e.clientX - AEOS.dx
+        @width  = document.body.clientWidth  - div.offsetWidth
+        @height = document.body.clientHeight - div.offsetHeight
+        document.addEventListener 'mousemove', @moveMove, true
+        document.addEventListener 'mouseup',   @moveEnd, true
+    moveMove: (e) =>
+        div = @el
+        left = e.clientX - @dx
         if left < 20 then left = '0px'
-        else if AEOS.width - left < 20 then left = ''
+        else if @width - left < 20 then left = ''
         right = if left then '' else '0px'
         div.style.left  = left
         div.style.right = right
-        top = e.clientY - AEOS.dy
+        top = e.clientY - @dy
         if top < 20 then top = '0px'
-        else if AEOS.height - top < 20 then top = ''
+        else if @height - top < 20 then top = ''
         bottom = if top then '' else '0px'
         div.style.top    = top
         div.style.bottom = bottom
-    moveEnd: ->
-        document.removeEventListener 'mousemove', AEOS.moveMove, true
-        document.removeEventListener 'mouseup',   AEOS.moveEnd, true
-        div = AEOS.div
+    moveEnd: =>
+        document.removeEventListener 'mousemove', @moveMove, true
+        document.removeEventListener 'mouseup',   @moveEnd, true
+        div = @el
         id = div.id
         GM_setValue "#{id}Left", div.style.left
         GM_setValue "#{id}Top",  div.style.top
@@ -603,7 +601,7 @@ options = ->
     html += "<div><textarea style=\"display: none;\" name=flavors>#{GM_getValue 'flavors', g.flavors}</textarea></div>"
     html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
 
-    div = AEOS.makeDialog 'options', 'center', html
+    div = new Dialog('options', 'center', html).el
 
     for input in $$ 'input[type="checkbox"]', div
         input.addEventListener 'change', changeCheckbox, true
@@ -639,7 +637,7 @@ qrText = (link) ->
 quickReply = (link, text) ->
     unless qr = $ '#qr'
         html = "<div class=move>Quick Reply <input type=checkbox title=autohide><a name=close title=close>X</a></div>"
-        qr = AEOS.makeDialog 'qr', 'topleft', html
+        qr = new Dialog('qr', 'topleft', html).el
 
         form = $ 'form[name=post]'
         clone = form.cloneNode true
@@ -879,7 +877,7 @@ updaterMake = ->
     html += "<div><label>Auto Update<input type=checkbox name=auto></label></div>"
     html += "<div><label>Interval (s)<input type=text name=interval></label></div>"
     html += "<div><input type=button value='Update Now'></div>"
-    div = AEOS.makeDialog 'updater', 'topright', html
+    div = new Dialog('updater', 'topright', html).el
 
     auto = $ 'input[name=auto]', div
     auto.addEventListener 'click', updateAuto, true
@@ -1223,7 +1221,7 @@ if getConfig 'Quick Report'
 if getConfig 'Thread Watcher'
     #create watcher
     html = '<div class="move">Thread Watcher</div><div></div>'
-    watcher = AEOS.makeDialog 'watcher', 'topleft', html
+    watcher = new Dialog('watcher', 'topleft', html).el
     addTo d.body, watcher
     watcherUpdate()
 

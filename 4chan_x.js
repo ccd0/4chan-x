@@ -1,6 +1,6 @@
 (function() {
-  var $, $$, AEOS, DAY, a, addTo, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
-  var __slice = Array.prototype.slice;
+  var $, $$, AEOS, DAY, Dialog, a, addTo, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeText, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpandClick, imageFull, imageThumb, imageToggle, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, remove, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4, _ref5;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   config = {
     '404 Redirect': [true, 'Redirect dead threads'],
     'Anonymize': [false, 'Make everybody anonymous'],
@@ -71,10 +71,14 @@
                 cursor: pointer;\
             }\
         ');
-    },
-    makeDialog: function(id, position, html) {
-      var dialog, left, top, _ref;
-      dialog = document.createElement('div');
+    }
+  };
+  Dialog = (function() {
+    function Dialog(id, position, html) {
+      this.moveEnd = __bind(this.moveEnd, this);;
+      this.moveMove = __bind(this.moveMove, this);;
+      this.move = __bind(this.move, this);;      var dialog, left, top, _ref;
+      this.el = dialog = document.createElement('div');
       dialog.className = 'reply dialog';
       dialog.innerHTML = html;
       dialog.id = id;
@@ -111,57 +115,56 @@
       } else {
         dialog.style.bottom = '0px';
       }
-      $('div.move', dialog).addEventListener('mousedown', AEOS.move, true);
+      $('div.move', dialog).addEventListener('mousedown', this.move, true);
       if ((_ref = $('div.move a[name=close]', dialog)) != null) {
         _ref.addEventListener('click', (function() {
-          return remove($('#' + id));
+          return remove(dialog);
         }), true);
       }
-      return dialog;
-    },
-    move: function(e) {
+    }
+    Dialog.prototype.move = function(e) {
       var div;
-      div = this.parentNode;
-      AEOS.div = div;
-      AEOS.dx = e.clientX - div.offsetLeft;
-      AEOS.dy = e.clientY - div.offsetTop;
-      AEOS.width = document.body.clientWidth - div.offsetWidth;
-      AEOS.height = document.body.clientHeight - div.offsetHeight;
-      document.addEventListener('mousemove', AEOS.moveMove, true);
-      return document.addEventListener('mouseup', AEOS.moveEnd, true);
-    },
-    moveMove: function(e) {
+      div = this.el;
+      this.dx = e.clientX - div.offsetLeft;
+      this.dy = e.clientY - div.offsetTop;
+      this.width = document.body.clientWidth - div.offsetWidth;
+      this.height = document.body.clientHeight - div.offsetHeight;
+      document.addEventListener('mousemove', this.moveMove, true);
+      return document.addEventListener('mouseup', this.moveEnd, true);
+    };
+    Dialog.prototype.moveMove = function(e) {
       var bottom, div, left, right, top;
-      div = AEOS.div;
-      left = e.clientX - AEOS.dx;
+      div = this.el;
+      left = e.clientX - this.dx;
       if (left < 20) {
         left = '0px';
-      } else if (AEOS.width - left < 20) {
+      } else if (this.width - left < 20) {
         left = '';
       }
       right = left ? '' : '0px';
       div.style.left = left;
       div.style.right = right;
-      top = e.clientY - AEOS.dy;
+      top = e.clientY - this.dy;
       if (top < 20) {
         top = '0px';
-      } else if (AEOS.height - top < 20) {
+      } else if (this.height - top < 20) {
         top = '';
       }
       bottom = top ? '' : '0px';
       div.style.top = top;
       return div.style.bottom = bottom;
-    },
-    moveEnd: function() {
+    };
+    Dialog.prototype.moveEnd = function() {
       var div, id;
-      document.removeEventListener('mousemove', AEOS.moveMove, true);
-      document.removeEventListener('mouseup', AEOS.moveEnd, true);
-      div = AEOS.div;
+      document.removeEventListener('mousemove', this.moveMove, true);
+      document.removeEventListener('mouseup', this.moveEnd, true);
+      div = this.el;
       id = div.id;
       GM_setValue("" + id + "Left", div.style.left);
       return GM_setValue("" + id + "Top", div.style.top);
-    }
-  };
+    };
+    return Dialog;
+  })();
   d = document;
   g = null;
   $ = function(selector, root) {
@@ -771,7 +774,7 @@
     html += "<div><a class=sauce>Flavors</a></div>";
     html += "<div><textarea style=\"display: none;\" name=flavors>" + (GM_getValue('flavors', g.flavors)) + "</textarea></div>";
     html += "<input type=\"button\" value=\"hidden: " + hiddenNum + "\"><br>";
-    div = AEOS.makeDialog('options', 'center', html);
+    div = new Dialog('options', 'center', html).el;
     _ref = $$('input[type="checkbox"]', div);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
@@ -812,7 +815,7 @@
     var auto, autoBox, clone, form, html, input, qr, script, submit, textarea, xpath, _i, _len, _ref, _ref2;
     if (!(qr = $('#qr'))) {
       html = "<div class=move>Quick Reply <input type=checkbox title=autohide><a name=close title=close>X</a></div>";
-      qr = AEOS.makeDialog('qr', 'topleft', html);
+      qr = new Dialog('qr', 'topleft', html).el;
       form = $('form[name=post]');
       clone = form.cloneNode(true);
       _ref = $$('script', clone);
@@ -1111,7 +1114,7 @@
     html += "<div><label>Auto Update<input type=checkbox name=auto></label></div>";
     html += "<div><label>Interval (s)<input type=text name=interval></label></div>";
     html += "<div><input type=button value='Update Now'></div>";
-    div = AEOS.makeDialog('updater', 'topright', html);
+    div = new Dialog('updater', 'topright', html).el;
     auto = $('input[name=auto]', div);
     auto.addEventListener('click', updateAuto, true);
     interval = $('input[name=interval]', div);
@@ -1527,7 +1530,7 @@
   }
   if (getConfig('Thread Watcher')) {
     html = '<div class="move">Thread Watcher</div><div></div>';
-    watcher = AEOS.makeDialog('watcher', 'topleft', html);
+    watcher = new Dialog('watcher', 'topleft', html).el;
     addTo(d.body, watcher);
     watcherUpdate();
     threads = g.watched[g.BOARD] || [];
