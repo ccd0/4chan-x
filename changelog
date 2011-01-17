@@ -1,3 +1,7 @@
+1.22.0
+- update archives
+- tweak updater feedback/ui
+
 1.21.0
 - image expansion types
 - move global auto update option to updater dialog
