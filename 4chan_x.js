@@ -1097,7 +1097,9 @@
     }
     l = arr.length;
     count.textContent = "+" + l;
-    count.className = l === 0 ? '' : 'new';
+    if (l > 0) {
+      count.className = 'new';
+    }
     while (reply = arr.pop()) {
       table = x('ancestor::table', reply);
       inBefore(root, table);
@@ -1168,9 +1170,12 @@
     }
   };
   updateNow = function() {
-    var url;
+    var count, url;
     url = location.href + '?' + new Date().getTime();
-    return g.req = request(url, updateCallback);
+    g.req = request(url, updateCallback);
+    count = $('#updater #count');
+    count.textContent = 'Updating...';
+    return count.className = '';
   };
   updaterMake = function() {
     var autoG, autoL, div, html, interval;

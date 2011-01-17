@@ -833,7 +833,7 @@ updateCallback = ->
 
     l = arr.length
     count.textContent = "+#{l}"
-    count.className = if l is 0 then '' else 'new'
+    if l > 0 then count.className = 'new'
 
     #insert replies in order, so backlinks resolve
     while reply = arr.pop()
@@ -897,6 +897,9 @@ updateInterval = ->
 updateNow = ->
     url = location.href + '?' + new Date().getTime() # fool the cache
     g.req = request url, updateCallback
+    count = $ '#updater #count'
+    count.textContent = 'Updating...'
+    count.className = ''
 
 updaterMake = ->
     html  = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>"
