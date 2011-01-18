@@ -871,7 +871,9 @@ updateTime = ->
         time = 0
         g.req.abort()
         updateNow()
-    span.textContent = time
+        $("#updater #count").textContent = 'retry'
+    else
+        span.textContent = time
 
 updateTitle = ->
     len = g.replies.length
@@ -901,8 +903,9 @@ updateNow = ->
     url = location.href + '?' + new Date().getTime() # fool the cache
     g.req = request url, updateCallback
     count = $ '#updater #count'
-    count.textContent = 'Updating...'
+    count.textContent = ''
     count.className = ''
+    $("#updater #timer").textContent = 0
 
 updaterMake = ->
     html  = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>"

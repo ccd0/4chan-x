@@ -1190,13 +1190,15 @@
     span = $('#updater #timer');
     time = Number(span.textContent);
     if (++time === 0) {
-      updateNow();
+      return updateNow();
     } else if (time > 10) {
       time = 0;
       g.req.abort();
       updateNow();
+      return $("#updater #count").textContent = 'retry';
+    } else {
+      return span.textContent = time;
     }
-    return span.textContent = time;
   };
   updateTitle = function() {
     var len;
@@ -1232,8 +1234,9 @@
     url = location.href + '?' + new Date().getTime();
     g.req = request(url, updateCallback);
     count = $('#updater #count');
-    count.textContent = 'Updating...';
-    return count.className = '';
+    count.textContent = '';
+    count.className = '';
+    return $("#updater #timer").textContent = 0;
   };
   updaterMake = function() {
     var autoG, autoL, div, html, interval;
