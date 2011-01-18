@@ -1,3 +1,8 @@
+1.23.0
+- 'verbose' updater option
+- remove /new/, /r9k/ from archivers
+- tweak 'fit width' to get rid of horizontal scrollbar, only partially working
+
 1.22.0
 - update archives
 - tweak updater feedback/ui
