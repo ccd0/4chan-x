@@ -429,14 +429,17 @@ imageResize = (cw, ch, imageType, image) ->
 
     switch imageType
         when 'full'
-            image.removeAttribute 'width'
+            image.removeAttribute 'style'
             return
         when 'fit width'
-            ratio = cw/iw
+            if iw > cw
+                image.style.width = '100%'
+                image.style.margin = '0px'
         when 'fit screen'
             ratio = Math.min cw/iw, ch/ih
-    if ratio < 1
-        image.width = Math.floor ratio * iw
+            if ratio < 1
+                image.style.width = Math.floor ratio * iw
+                image.style.margin = '0px'
 
 imageThumb = (thumb) ->
     thumb.className = ''

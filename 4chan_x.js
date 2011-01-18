@@ -615,16 +615,19 @@
     ih = Number(ih);
     switch (imageType) {
       case 'full':
-        image.removeAttribute('width');
+        image.removeAttribute('style');
         return;
       case 'fit width':
-        ratio = cw / iw;
-        break;
+        if (iw > cw) {
+          image.style.width = '100%';
+          return image.style.margin = '0px';
+        }
       case 'fit screen':
         ratio = Math.min(cw / iw, ch / ih);
-    }
-    if (ratio < 1) {
-      return image.width = Math.floor(ratio * iw);
+        if (ratio < 1) {
+          image.style.width = Math.floor(ratio * iw);
+          return image.style.margin = '0px';
+        }
     }
   };
   imageThumb = function(thumb) {
