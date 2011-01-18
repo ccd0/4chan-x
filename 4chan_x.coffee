@@ -865,17 +865,13 @@ updateFavicon = ->
 updateTime = ->
     span = $ '#updater #timer'
     time = Number span.textContent
-    count = $ '#updater #count'
-    count.textContent = ''
-    count.className = ''
     if ++time is 0
         updateNow()
     else if time > 10
+        time = 0
         g.req.abort()
         updateNow()
-        count.textContent = 'retry'
-    else
-        span.textContent = time
+    span.textContent = time
 
 updateTitle = ->
     len = g.replies.length
@@ -902,9 +898,11 @@ updateInterval = ->
         span.textContent = -1 * num
 
 updateNow = ->
-    $("#updater #timer").textContent = 0
     url = location.href + '?' + new Date().getTime() # fool the cache
     g.req = request url, updateCallback
+    count = $ '#updater #count'
+    count.textContent = 'Updating...'
+    count.className = ''
 
 updaterMake = ->
     html  = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>"

@@ -1186,21 +1186,17 @@
     return replace(favicon, clone);
   };
   updateTime = function() {
-    var count, span, time;
+    var span, time;
     span = $('#updater #timer');
     time = Number(span.textContent);
-    count = $('#updater #count');
-    count.textContent = '';
-    count.className = '';
     if (++time === 0) {
-      return updateNow();
+      updateNow();
     } else if (time > 10) {
+      time = 0;
       g.req.abort();
       updateNow();
-      return count.textContent = 'retry';
-    } else {
-      return span.textContent = time;
     }
+    return span.textContent = time;
   };
   updateTitle = function() {
     var len;
@@ -1232,10 +1228,12 @@
     }
   };
   updateNow = function() {
-    var url;
-    $("#updater #timer").textContent = 0;
+    var count, url;
     url = location.href + '?' + new Date().getTime();
-    return g.req = request(url, updateCallback);
+    g.req = request(url, updateCallback);
+    count = $('#updater #count');
+    count.textContent = 'Updating...';
+    return count.className = '';
   };
   updaterMake = function() {
     var autoG, autoL, div, html, interval;
