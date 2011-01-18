@@ -834,9 +834,10 @@ updateCallback = ->
     while (reply = replies.pop()) and (Number reply.id > id)
         arr.push reply
 
-    l = arr.length
-    count.textContent = "+#{l}"
-    if l > 0 then count.className = 'new'
+    if g.verbose
+        l = arr.length
+        count.textContent = "+#{l}"
+        if l > 0 then count.className = 'new'
 
     #insert replies in order, so backlinks resolve
     while reply = arr.pop()
@@ -871,7 +872,10 @@ updateTime = ->
         time = 0
         g.req.abort()
         updateNow()
-        $("#updater #count").textContent = 'retry'
+        if g.verbose
+            count = $ '#updater #count'
+            count.textContent = 'retry'
+            count.className = ''
     else
         span.textContent = time
 
@@ -902,25 +906,41 @@ updateInterval = ->
 updateNow = ->
     url = location.href + '?' + new Date().getTime() # fool the cache
     g.req = request url, updateCallback
-    count = $ '#updater #count'
-    count.textContent = ''
-    count.className = ''
     $("#updater #timer").textContent = 0
 
+updateVerbose = ->
+    g.verbose = @checked
+    timer = $ '#updater #timer'
+    if @checked
+        timer.hidden = false
+    else
+        timer.hidden = true
+        $("#updater #count").textContent = 'Thread Updater'
+
 updaterMake = ->
-    html  = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>"
+    html  = "<div class=move><span id=count>Thread Updater</span> <span id=timer></span></div>"
+    html += "<div><label>Verbose<input type=checkbox name=verbose></label></div>"
     html += "<div><label title=\"Make all threads auto update\">Auto Update Global<input type=checkbox name=autoG></label></div>"
     html += "<div><label title=\"Make this thread auto update\">Auto Update Local<input type=checkbox name=autoL></label></div>"
     html += "<div><label>Interval (s)<input type=text name=interval></label></div>"
     html += "<div><input type=button value='Update Now'></div>"
     div = new Dialog('updater', 'topright', html).el
 
-    autoG = $('input[name=autoG]', div)
-    autoG.addEventListener 'click', changeCheckbox, true
-    autoG.checked = GM_getValue 'autoG', false
+    for input in $$ 'input[type=checkbox]', div
+        input.addEventListener 'click', changeCheckbox, true
+        name = input.name
+        if name is 'autoL'
+            input.checked = GM_getValue 'autoG', true
+        else
+            input.checked = GM_getValue name, true
+        switch name
+            when 'autoL'
+                input.addEventListener 'click', updateAuto, true
+            when 'verbose'
+                input.addEventListener 'click', updateVerbose, true
 
-    autoL = $ 'input[name=autoL]', div
-    autoL.addEventListener 'click', updateAuto, true
+    unless g.verbose = GM_getValue 'verbose', true
+        $("#timer", div).hidden = true
 
     interval = $ 'input[name=interval]', div
     interval.value = GM_getValue 'Interval', 10
@@ -930,7 +950,7 @@ updaterMake = ->
 
     d.body.appendChild div
 
-    if autoG.checked then autoL.click()
+    if GM_getValue 'autoG' then updateAuto.call $("input[name=autoL]", div)
 
 watch = ->
     id = @nextSibling.name

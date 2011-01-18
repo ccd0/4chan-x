@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
+  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   config = {
     '404 Redirect': [true, 'Redirect dead threads'],
@@ -1153,10 +1153,12 @@
     while ((reply = replies.pop()) && (Number(reply.id > id))) {
       arr.push(reply);
     }
-    l = arr.length;
-    count.textContent = "+" + l;
-    if (l > 0) {
-      count.className = 'new';
+    if (g.verbose) {
+      l = arr.length;
+      count.textContent = "+" + l;
+      if (l > 0) {
+        count.className = 'new';
+      }
     }
     while (reply = arr.pop()) {
       table = x('ancestor::table', reply);
@@ -1186,7 +1188,7 @@
     return replace(favicon, clone);
   };
   updateTime = function() {
-    var span, time;
+    var count, span, time;
     span = $('#updater #timer');
     time = Number(span.textContent);
     if (++time === 0) {
@@ -1195,7 +1197,11 @@
       time = 0;
       g.req.abort();
       updateNow();
-      return $("#updater #count").textContent = 'retry';
+      if (g.verbose) {
+        count = $('#updater #count');
+        count.textContent = 'retry';
+        return count.className = '';
+      }
     } else {
       return span.textContent = time;
     }
@@ -1230,34 +1236,59 @@
     }
   };
   updateNow = function() {
-    var count, url;
+    var url;
     url = location.href + '?' + new Date().getTime();
     g.req = request(url, updateCallback);
-    count = $('#updater #count');
-    count.textContent = '';
-    count.className = '';
     return $("#updater #timer").textContent = 0;
   };
+  updateVerbose = function() {
+    var timer;
+    g.verbose = this.checked;
+    timer = $('#updater #timer');
+    if (this.checked) {
+      return timer.hidden = false;
+    } else {
+      timer.hidden = true;
+      return $("#updater #count").textContent = 'Thread Updater';
+    }
+  };
   updaterMake = function() {
-    var autoG, autoL, div, html, interval;
-    html = "<div class=move><span id=count></span> <span id=timer>Thread Updater</span></div>";
+    var div, html, input, interval, name, _i, _len, _ref;
+    html = "<div class=move><span id=count>Thread Updater</span> <span id=timer></span></div>";
+    html += "<div><label>Verbose<input type=checkbox name=verbose></label></div>";
     html += "<div><label title=\"Make all threads auto update\">Auto Update Global<input type=checkbox name=autoG></label></div>";
     html += "<div><label title=\"Make this thread auto update\">Auto Update Local<input type=checkbox name=autoL></label></div>";
     html += "<div><label>Interval (s)<input type=text name=interval></label></div>";
     html += "<div><input type=button value='Update Now'></div>";
     div = new Dialog('updater', 'topright', html).el;
-    autoG = $('input[name=autoG]', div);
-    autoG.addEventListener('click', changeCheckbox, true);
-    autoG.checked = GM_getValue('autoG', false);
-    autoL = $('input[name=autoL]', div);
-    autoL.addEventListener('click', updateAuto, true);
+    _ref = $$('input[type=checkbox]', div);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      input = _ref[_i];
+      input.addEventListener('click', changeCheckbox, true);
+      name = input.name;
+      if (name === 'autoL') {
+        input.checked = GM_getValue('autoG', true);
+      } else {
+        input.checked = GM_getValue(name, true);
+      }
+      switch (name) {
+        case 'autoL':
+          input.addEventListener('click', updateAuto, true);
+          break;
+        case 'verbose':
+          input.addEventListener('click', updateVerbose, true);
+      }
+    }
+    if (!(g.verbose = GM_getValue('verbose', true))) {
+      $("#timer", div).hidden = true;
+    }
     interval = $('input[name=interval]', div);
     interval.value = GM_getValue('Interval', 10);
     interval.addEventListener('change', updateInterval, true);
     $('input[type=button]', div).addEventListener('click', updateNow, true);
     d.body.appendChild(div);
-    if (autoG.checked) {
-      return autoL.click();
+    if (GM_getValue('autoG')) {
+      return updateAuto.call($("input[name=autoL]", div));
     }
   };
   watch = function() {
