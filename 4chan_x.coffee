@@ -138,8 +138,7 @@ $ = (selector, root=d.body) ->
 $$ = (selector, root=d.body) ->
     result = root.querySelectorAll selector
     node for node in result
-mv = (args...) ->
-    parent = args.pop()
+mv = (args..., parent) ->
     (parent.appendChild child) for child in args
 getConfig = (name) ->
     GM_getValue name, config[name][0]

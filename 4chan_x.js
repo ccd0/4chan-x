@@ -182,12 +182,11 @@
     return _results;
   };
   mv = function() {
-    var args, child, parent, _i, _len, _results;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    parent = args.pop();
+    var args, child, parent, _i, _j, _len, _results;
+    args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), parent = arguments[_i++];
     _results = [];
-    for (_i = 0, _len = args.length; _i < _len; _i++) {
-      child = args[_i];
+    for (_j = 0, _len = args.length; _j < _len; _j++) {
+      child = args[_j];
       _results.push(parent.appendChild(child));
     }
     return _results;
