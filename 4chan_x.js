@@ -1,4 +1,59 @@
-(function() {
+// ==UserScript==
+// @name           4chan x
+// @namespace      aeosynth
+// @description    Adds various features.
+// @version        1.22.0
+// @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
+// @license        MIT; http://en.wikipedia.org/wiki/Mit_license
+// @include        http://boards.4chan.org/*
+// @include        http://sys.4chan.org/*
+// ==/UserScript==
+
+/* LICENSE
+ *
+ * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/* HACKING
+ *
+ * 4chan x is written in CoffeeScript[1], and developed on github[2].
+ *
+ * [1]: http://jashkenas.github.com/coffee-script/
+ * [2]: http://github.com/aeosynth/4chan-x
+ */
+
+/* CONTRIBUTORS
+ *
+ * Ongpot - sfw favicon
+ * thisisanon - nsfw + 404 favicons
+ * Anonymous - empty favicon
+ * Seiba - chrome quick reply focusing
+ * herpaderpderp - recaptcha fixes
+ * wakimoko - recaptcha tab order http://userscripts.org/scripts/show/82657
+ * All the people who've taken the time to write bug reports.
+ *
+ * Thank you.
+ */(function() {
   var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   config = {
