@@ -997,11 +997,9 @@
       case 'k':
       case 'mu':
       case 'n':
-      case 'new':
       case 'o':
       case 'p':
       case 'po':
-      case 'r9k':
       case 'soc':
       case 'sp':
       case 'toy':
