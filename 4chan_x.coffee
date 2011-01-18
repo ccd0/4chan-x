@@ -435,6 +435,7 @@ imageResize = (cw, ch, imageType, image) ->
             if iw > cw
                 image.style.width = '100%'
                 image.style.margin = '0px'
+            break
         when 'fit screen'
             ratio = Math.min cw/iw, ch/ih
             if ratio < 1

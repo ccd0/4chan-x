@@ -620,8 +620,9 @@
       case 'fit width':
         if (iw > cw) {
           image.style.width = '100%';
-          return image.style.margin = '0px';
+          image.style.margin = '0px';
         }
+        break;
       case 'fit screen':
         ratio = Math.min(cw / iw, ch / ih);
         if (ratio < 1) {
