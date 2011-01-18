@@ -58,4 +58,5 @@ CoffeeScript.on 'success', (task) ->
      * Thank you.
      */
 
+
    """ + task.output
