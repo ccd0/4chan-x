@@ -1,3 +1,6 @@
+1.23.1
+- fix updater notifications
+
 1.23.0
 - 'verbose' updater option
 - remove /new/, /r9k/ from archivers
