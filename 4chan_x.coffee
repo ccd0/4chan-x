@@ -837,7 +837,7 @@ updateCallback = ->
     if g.verbose
         l = arr.length
         count.textContent = "+#{l}"
-        if l > 0 then count.className = 'new'
+        count.className = if l > 0 then 'new' else ''
 
     #insert replies in order, so backlinks resolve
     while reply = arr.pop()

@@ -1156,9 +1156,7 @@
     if (g.verbose) {
       l = arr.length;
       count.textContent = "+" + l;
-      if (l > 0) {
-        count.className = 'new';
-      }
+      count.className = l > 0 ? 'new' : '';
     }
     while (reply = arr.pop()) {
       table = x('ancestor::table', reply);
