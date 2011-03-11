@@ -115,15 +115,15 @@
     };
   }
   GM_addStyle('\
-    div.dialog {\
-        border: 1px solid;\
-    }\
-    div.dialog > div.move {\
-        cursor: move;\
-    }\
-    label, a {\
-        cursor: pointer;\
-    }\
+  div.dialog {\
+    border: 1px solid;\
+  }\
+  div.dialog > div.move {\
+    cursor: move;\
+  }\
+  label, a {\
+    cursor: pointer;\
+  }\
 ');
   Dialog = (function() {
     function Dialog(id, position, html) {
@@ -1416,79 +1416,79 @@
     GM_setValue('lastChecked', now);
   }
   GM_addStyle('\
-    #options textarea {\
-        height: 100px;\
-        width: 500px;\
-    }\
-    #updater {\
-        position: fixed;\
-        text-align: right;\
-    }\
-    #updater input[type=text] {\
-        width: 50px;\
-    }\
-    #updater:not(:hover) {\
-        border: none;\
-        background: transparent;\
-    }\
-    #updater:not(:hover) > div:not(.move) {\
-        display: none;\
-    }\
-    #watcher {\
-        position: absolute;\
-    }\
-    #watcher > div.move {\
-        text-decoration: underline;\
-        padding: 5px 5px 0 5px;\
-    }\
-    #watcher > div:last-child {\
-        padding: 0 5px 5px 5px;\
-    }\
-    span.error {\
-        color: red;\
-    }\
-    #qr.auto:not(:hover) form {\
-        visibility: collapse;\
-    }\
-    #qr span.error {\
-        position: absolute;\
-        bottom: 0;\
-        left: 0;\
-    }\
-    #qr {\
-        position: fixed;\
-    }\
-    #qr > div {\
-        text-align: right;\
-    }\
-    #qr > form > div, /* ad */\
-    #qr td.rules {\
-        display: none;\
-    }\
-    #options {\
-        position: fixed;\
-        padding: 5px;\
-        text-align: right;\
-    }\
-    form[name=delform] a img {\
-        border: 0px;\
-        float: left;\
-        margin: 0px 20px;\
-    }\
-    span.navlinks {\
-        position: absolute;\
-        right: 5px;\
-    }\
-    span.navlinks > a {\
-        font-size: 16px;\
-        text-decoration: none;\
-    }\
-    .hide {\
-        display: none;\
-    }\
-    .new {\
-        background: lime;\
-    }\
+  #options textarea {\
+    height: 100px;\
+    width: 500px;\
+  }\
+  #updater {\
+    position: fixed;\
+    text-align: right;\
+  }\
+  #updater input[type=text] {\
+    width: 50px;\
+  }\
+  #updater:not(:hover) {\
+    border: none;\
+    background: transparent;\
+  }\
+  #updater:not(:hover) > div:not(.move) {\
+    display: none;\
+  }\
+  #watcher {\
+    position: absolute;\
+  }\
+  #watcher > div.move {\
+    text-decoration: underline;\
+    padding: 5px 5px 0 5px;\
+  }\
+  #watcher > div:last-child {\
+    padding: 0 5px 5px 5px;\
+  }\
+  span.error {\
+    color: red;\
+  }\
+  #qr.auto:not(:hover) form {\
+    visibility: collapse;\
+  }\
+  #qr span.error {\
+    position: absolute;\
+    bottom: 0;\
+    left: 0;\
+  }\
+  #qr {\
+    position: fixed;\
+  }\
+  #qr > div {\
+    text-align: right;\
+  }\
+  #qr > form > div, /* ad */\
+  #qr td.rules {\
+    display: none;\
+  }\
+  #options {\
+    position: fixed;\
+    padding: 5px;\
+    text-align: right;\
+  }\
+  form[name=delform] a img {\
+    border: 0px;\
+    float: left;\
+    margin: 0px 20px;\
+  }\
+  span.navlinks {\
+    position: absolute;\
+    right: 5px;\
+  }\
+  span.navlinks > a {\
+    font-size: 16px;\
+    text-decoration: none;\
+  }\
+  .hide {\
+    display: none;\
+  }\
+  .new {\
+    background: lime;\
+  }\
 ');
   if (navtopr = $('#navtopr a')) {
     text = navtopr.nextSibling;
@@ -1552,7 +1552,7 @@
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = n('div', {
-      innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>            <label>Expand Images<input type=checkbox id=imageExpand></label>"
+      innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>      <label>Expand Images<input type=checkbox id=imageExpand></label>"
     });
     imageType = GM_getValue('imageType', 'full');
     _ref5 = $$("option", expand);
