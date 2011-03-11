@@ -56,14 +56,18 @@
  */
 
 (function() {
-  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
+  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
+  if (typeof console != "undefined" && console !== null) {
+    log = console.log;
+  }
   config = {
     '404 Redirect': [true, 'Redirect dead threads'],
     'Anonymize': [false, 'Make everybody anonymous'],
     'Auto Watch': [true, 'Automatically watch threads that you start (Firefox only)'],
     'Comment Expansion': [true, 'Expand too long comments'],
     'Image Expansion': [true, 'Expand images'],
+    'Image Preloading': [false, 'Preload Images'],
     'Keybinds': [false, 'Binds actions to keys'],
     'Localize Time': [true, 'Show times based on your timezone'],
     'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
@@ -1575,6 +1579,21 @@
         thumb = thumbs[_i];
         thumb.parentNode.addEventListener('click', imageClick, true);
         _results.push(g.expand ? imageToggle(thumb.parentNode) : void 0);
+      }
+      return _results;
+    });
+  }
+  if (getConfig('Image Preloading')) {
+    g.callbacks.push(function(root) {
+      var parent, thumb, thumbs, _i, _len, _results;
+      thumbs = $$('img[md5]', root);
+      _results = [];
+      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+        thumb = thumbs[_i];
+        parent = thumb.parentNode;
+        _results.push(el = n('img', {
+          src: parent.href
+        }));
       }
       return _results;
     });

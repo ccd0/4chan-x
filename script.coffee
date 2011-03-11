@@ -1,3 +1,4 @@
+{log} = console if console?
 #todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
 #todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
 #todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
@@ -7,28 +8,29 @@
 #TODO - expose 'hidden' configs
 
 config =
-  '404 Redirect':      [true, 'Redirect dead threads']
+  '404 Redirect':      [true,  'Redirect dead threads']
   'Anonymize':         [false, 'Make everybody anonymous']
-  'Auto Watch':        [true, 'Automatically watch threads that you start (Firefox only)']
-  'Comment Expansion': [true, 'Expand too long comments']
-  'Image Expansion':   [true, 'Expand images']
+  'Auto Watch':        [true,  'Automatically watch threads that you start (Firefox only)']
+  'Comment Expansion': [true,  'Expand too long comments']
+  'Image Expansion':   [true,  'Expand images']
+  'Image Preloading':  [false, 'Preload Images']
   'Keybinds':          [false, 'Binds actions to keys']
-  'Localize Time':     [true, 'Show times based on your timezone']
+  'Localize Time':     [true,  'Show times based on your timezone']
   'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
-  'Post in Title':     [true, 'Show the op\'s post in the tab title']
-  'Quick Reply':       [true, 'Reply without leaving the page']
-  'Quick Report':      [true, 'Add quick report buttons']
-  'Reply Hiding':      [true, 'Hide single replies']
-  'Reply Navigation':  [true, 'Navigate to the beginning / end of a thread']
-  'Restore IDs':       [true, 'Check \'em']
-  'Sauce':             [true, 'Add sauce to images']
-  'Show Stubs':        [true, 'Of hidden threads / replies']
-  'Thread Expansion':  [true, 'View all replies']
-  'Thread Hiding':     [true, 'Hide entire threads']
-  'Thread Navigation': [true, 'Navigate to previous / next thread']
-  'Thread Updater':    [true, 'Update threads']
-  'Thread Watcher':    [true, 'Bookmark threads']
-  'Unread Count':      [true, 'Show unread post count in tab title']
+  'Post in Title':     [true,  'Show the op\'s post in the tab title']
+  'Quick Reply':       [true,  'Reply without leaving the page']
+  'Quick Report':      [true,  'Add quick report buttons']
+  'Reply Hiding':      [true,  'Hide single replies']
+  'Reply Navigation':  [true,  'Navigate to the beginning / end of a thread']
+  'Restore IDs':       [true,  'Check \'em']
+  'Sauce':             [true,  'Add sauce to images']
+  'Show Stubs':        [true,  'Of hidden threads / replies']
+  'Thread Expansion':  [true,  'View all replies']
+  'Thread Hiding':     [true,  'Hide entire threads']
+  'Thread Navigation': [true,  'Navigate to previous / next thread']
+  'Thread Updater':    [true,  'Update threads']
+  'Thread Watcher':    [true,  'Bookmark threads']
+  'Unread Count':      [true,  'Show unread post count in tab title']
 
 #x-browser
 if typeof GM_deleteValue is 'undefined'
@@ -1205,6 +1207,13 @@ if getConfig 'Image Expansion'
     for thumb in thumbs
       thumb.parentNode.addEventListener 'click', imageClick, true
       if g.expand then imageToggle thumb.parentNode
+
+if getConfig 'Image Preloading'
+  g.callbacks.push (root) ->
+    thumbs = $$ 'img[md5]', root
+    for thumb in thumbs
+      parent = thumb.parentNode
+      el = n 'img', src: parent.href
 
 if getConfig 'Localize Time'
   g.callbacks.push (root) ->
