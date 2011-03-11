@@ -616,7 +616,7 @@
     switch (imageType) {
       case 'full':
         image.removeAttribute('style');
-        return;
+        break;
       case 'fit width':
         if (iw > cw) {
           image.style.width = '100%';
@@ -690,6 +690,7 @@
           window.scrollTo(0, 0);
           return location.hash = '';
         }
+        break;
       case "I":
         if (g.REPLY) {
           if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
@@ -706,6 +707,7 @@
         } else {
           return quickReply(qrLink, qrText(qrLink));
         }
+        break;
       case "J":
         if (e.shiftKey) {
           if (!g.REPLY) {
@@ -776,6 +778,7 @@
           }
           return imageToggle(image);
         }
+        break;
       case "N":
         sign = e.shiftKey ? -1 : 1;
         return scrollThread(sign);
@@ -786,6 +789,7 @@
         } else {
           return GM_openInTab(href);
         }
+        break;
       case "U":
         return updateNow();
       case "W":
