@@ -1,3 +1,7 @@
+1.26.1
+- fix unread count for opera
+- fix default thread watcher placement
+
 1.26.0
 - image hover
 - support/donate
