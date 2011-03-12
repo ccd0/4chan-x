@@ -192,7 +192,7 @@ zeroPad = (n) ->
 autohide = ->
   qr = $ '#qr'
   klass = qr.className
-  if klass.indexOf('auto') is -1
+  if @checked
     klass += ' auto'
   else
     klass = klass.replace(' auto', '')
@@ -668,6 +668,7 @@ quickReply = (link, text) ->
   unless qr = $ '#qr'
     html = "<div class=move>Quick Reply <input type=checkbox title=autohide><a name=close title=close>X</a></div>"
     qr = new Dialog('qr', 'topleft', html).el
+    $('input[title=autohide]', qr).addEventListener 'click', autohide, true
 
     form = $ 'form[name=post]'
     clone = form.cloneNode true
@@ -697,6 +698,7 @@ quickReply = (link, text) ->
       inBefore submit, auto
     mv clone, qr
     mv qr, d.body
+    qr.style.width = qr.offsetWidth
 
   $('input[title=autohide]:checked', qr)?.click()
   textarea = $('textarea', qr)
@@ -1100,7 +1102,7 @@ GM_addStyle '
     color: red;
   }
   #qr.auto:not(:hover) form {
-    visibility: collapse;
+    display: none;
   }
   #qr span.error {
     position: absolute;

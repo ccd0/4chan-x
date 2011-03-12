@@ -331,7 +331,7 @@
     var klass, qr;
     qr = $('#qr');
     klass = qr.className;
-    if (klass.indexOf('auto') === -1) {
+    if (this.checked) {
       klass += ' auto';
     } else {
       klass = klass.replace(' auto', '');
@@ -928,6 +928,7 @@
     if (!(qr = $('#qr'))) {
       html = "<div class=move>Quick Reply <input type=checkbox title=autohide><a name=close title=close>X</a></div>";
       qr = new Dialog('qr', 'topleft', html).el;
+      $('input[title=autohide]', qr).addEventListener('click', autohide, true);
       form = $('form[name=post]');
       clone = form.cloneNode(true);
       _ref = $$('script', clone);
@@ -963,6 +964,7 @@
       }
       mv(clone, qr);
       mv(qr, d.body);
+      qr.style.width = qr.offsetWidth;
     }
     if ((_ref2 = $('input[title=autohide]:checked', qr)) != null) {
       _ref2.click();
@@ -1455,7 +1457,7 @@
     color: red;\
   }\
   #qr.auto:not(:hover) form {\
-    visibility: collapse;\
+    display: none;\
   }\
   #qr span.error {\
     position: absolute;\
