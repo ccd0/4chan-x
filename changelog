@@ -1,3 +1,9 @@
+1.25.0
+- auto gif
+- only preload in threads
+- fix autohide
+- sage cooldown = 60s
+
 1.24.0
 - image preloading
 
