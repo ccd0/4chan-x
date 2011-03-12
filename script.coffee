@@ -1439,7 +1439,7 @@ if g.REPLY
   if getConfig 'Unread Count'
     g.replies = []
     d.title = '(0) ' + d.title
-    d.addEventListener 'scroll', scroll, true
+    window.addEventListener 'scroll', scroll, true
     g.callbacks.push (root) ->
       g.replies = g.replies.concat $$ 'td.reply, td.replyhl', root
       updateTitle()
