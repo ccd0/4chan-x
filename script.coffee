@@ -14,6 +14,7 @@ config =
   'Comment Expansion': [true,  'Expand too long comments']
   'Image Auto-Gif':    [false, 'Animate gif thumbnails']
   'Image Expansion':   [true,  'Expand images']
+  'Image Hover':       [false, 'Show full image on mouseover']
   'Image Preloading':  [false, 'Preload Images']
   'Keybinds':          [false, 'Binds actions to keys']
   'Localize Time':     [true,  'Show times based on your timezone']
@@ -372,6 +373,53 @@ iframeLoad = ->
   else
     rm qr
   recaptchaReload()
+
+imageHover =
+  init: ->
+    img = n 'img', id: 'iHover'
+    hide img
+    d.body.appendChild img
+    g.callbacks.push imageHover.cb.node
+  offset:
+    x: 45
+    y: -120
+  cb:
+    node: (root) ->
+      thumbs = $$ 'img[md5]', root
+      for thumb in thumbs
+        thumb.addEventListener 'mouseover', imageHover.cb.mouseover, true
+    mouseover: (e) ->
+      {target, clientX, clientY} = e
+      img = $ '#iHover'
+      img.src = target.parentNode.href
+      show img
+      imageHover.winHeight = d.body.clientHeight
+      imageHover.winWidth  = d.body.clientWidth
+      target.addEventListener 'mousemove', imageHover.cb.mousemove, true
+      target.addEventListener 'mouseout',  imageHover.cb.mouseout,  true
+    mousemove: (e) ->
+      {clientX, clientY} = e
+      img = $ '#iHover'
+      imgHeight = img.offsetHeight
+
+      top = clientY + imageHover.offset.y
+      bot = top + imgHeight
+      log bot, imageHover.winHeight
+      img.style.top =
+        if imageHover.winHeight < imgHeight or top < 0
+          '0px'
+        else if bot > imageHover.winHeight
+          imageHover.winHeight - imgHeight + 'px'
+        else
+          top + 'px'
+      img.style.left = clientX + imageHover.offset.x
+    mouseout: (e) ->
+      {target} = e
+      img = $ '#iHover'
+      hide img
+      img.src = null
+      target.removeEventListener 'mousemove', imageHover.cb.mousemove, true
+      target.removeEventListener 'mouseout',  imageHover.cb.mouseout,  true
 
 imageClick = (e) ->
   return if e.shiftKey or e.altKey or e.ctrlKey
@@ -1071,6 +1119,9 @@ if lastChecked < now - 1*DAY
   GM_setValue('lastChecked', now)
 
 GM_addStyle '
+  #iHover {
+    position: fixed;
+  }
   #options textarea {
     height: 100px;
     width: 500px;
@@ -1211,6 +1262,9 @@ if getConfig 'Image Expansion'
     for thumb in thumbs
       thumb.parentNode.addEventListener 'click', imageClick, true
       if g.expand then imageToggle thumb.parentNode
+
+if getConfig 'Image Hover'
+  imageHover.init()
 
 if getConfig 'Image Auto-Gif'
   g.callbacks.push (root) ->

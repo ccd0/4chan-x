@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
+  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -68,6 +68,7 @@
     'Comment Expansion': [true, 'Expand too long comments'],
     'Image Auto-Gif': [false, 'Animate gif thumbnails'],
     'Image Expansion': [true, 'Expand images'],
+    'Image Hover': [false, 'Show full image on mouseover'],
     'Image Preloading': [false, 'Preload Images'],
     'Keybinds': [false, 'Binds actions to keys'],
     'Localize Time': [true, 'Show times based on your timezone'],
@@ -550,6 +551,64 @@
       rm(qr);
     }
     return recaptchaReload();
+  };
+  imageHover = {
+    init: function() {
+      var img;
+      img = n('img', {
+        id: 'iHover'
+      });
+      hide(img);
+      d.body.appendChild(img);
+      return g.callbacks.push(imageHover.cb.node);
+    },
+    offset: {
+      x: 45,
+      y: -120
+    },
+    cb: {
+      node: function(root) {
+        var thumb, thumbs, _i, _len, _results;
+        thumbs = $$('img[md5]', root);
+        _results = [];
+        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+          thumb = thumbs[_i];
+          _results.push(thumb.addEventListener('mouseover', imageHover.cb.mouseover, true));
+        }
+        return _results;
+      },
+      mouseover: function(e) {
+        var clientX, clientY, img, target;
+        target = e.target, clientX = e.clientX, clientY = e.clientY;
+        img = $('#iHover');
+        img.src = target.parentNode.href;
+        show(img);
+        imageHover.winHeight = d.body.clientHeight;
+        imageHover.winWidth = d.body.clientWidth;
+        target.addEventListener('mousemove', imageHover.cb.mousemove, true);
+        return target.addEventListener('mouseout', imageHover.cb.mouseout, true);
+      },
+      mousemove: function(e) {
+        var bot, clientX, clientY, img, imgHeight, top;
+        clientX = e.clientX, clientY = e.clientY;
+        img = $('#iHover');
+        imgHeight = img.offsetHeight;
+        top = clientY + imageHover.offset.y;
+        bot = top + imgHeight;
+        log(bot, imageHover.winHeight);
+        img.style.top = imageHover.winHeight < imgHeight || top < 0 ? '0px' : bot > imageHover.winHeight ? imageHover.winHeight - imgHeight + 'px' : top + 'px';
+        return img.style.left = clientX + imageHover.offset.x;
+      },
+      mouseout: function(e) {
+        var img, target;
+        target = e.target;
+        img = $('#iHover');
+        hide(img);
+        img.src = null;
+        target.removeEventListener('mousemove', imageHover.cb.mousemove, true);
+        return target.removeEventListener('mouseout', imageHover.cb.mouseout, true);
+      }
+    }
   };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
@@ -1426,6 +1485,9 @@
     GM_setValue('lastChecked', now);
   }
   GM_addStyle('\
+  #iHover {\
+    position: fixed;\
+  }\
   #options textarea {\
     height: 100px;\
     width: 500px;\
@@ -1588,6 +1650,9 @@
       }
       return _results;
     });
+  }
+  if (getConfig('Image Hover')) {
+    imageHover.init();
   }
   if (getConfig('Image Auto-Gif')) {
     g.callbacks.push(function(root) {
