@@ -1,3 +1,6 @@
+1.26.2
+- fix thread watcher position; remember new position
+
 1.26.1
 - fix unread count for opera
 - fix default thread watcher placement
