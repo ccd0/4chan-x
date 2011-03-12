@@ -66,6 +66,7 @@
     'Anonymize': [false, 'Make everybody anonymous'],
     'Auto Watch': [true, 'Automatically watch threads that you start (Firefox only)'],
     'Comment Expansion': [true, 'Expand too long comments'],
+    'Image Auto-Gif': [false, 'Animate gif thumbnails'],
     'Image Expansion': [true, 'Expand images'],
     'Image Preloading': [false, 'Preload Images'],
     'Keybinds': [false, 'Binds actions to keys'],
@@ -1584,6 +1585,19 @@
         thumb = thumbs[_i];
         thumb.parentNode.addEventListener('click', imageClick, true);
         _results.push(g.expand ? imageToggle(thumb.parentNode) : void 0);
+      }
+      return _results;
+    });
+  }
+  if (getConfig('Image Auto-Gif')) {
+    g.callbacks.push(function(root) {
+      var src, thumb, thumbs, _i, _len, _results;
+      thumbs = $$('img[md5]', root);
+      _results = [];
+      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+        thumb = thumbs[_i];
+        src = thumb.parentNode.href;
+        _results.push(/gif$/.test(src) ? thumb.src = src : void 0);
       }
       return _results;
     });

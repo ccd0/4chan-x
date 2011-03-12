@@ -12,6 +12,7 @@ config =
   'Anonymize':         [false, 'Make everybody anonymous']
   'Auto Watch':        [true,  'Automatically watch threads that you start (Firefox only)']
   'Comment Expansion': [true,  'Expand too long comments']
+  'Image Auto-Gif':    [false, 'Animate gif thumbnails']
   'Image Expansion':   [true,  'Expand images']
   'Image Preloading':  [false, 'Preload Images']
   'Keybinds':          [false, 'Binds actions to keys']
@@ -1210,6 +1211,14 @@ if getConfig 'Image Expansion'
     for thumb in thumbs
       thumb.parentNode.addEventListener 'click', imageClick, true
       if g.expand then imageToggle thumb.parentNode
+
+if getConfig 'Image Auto-Gif'
+  g.callbacks.push (root) ->
+    thumbs = $$ 'img[md5]', root
+    for thumb in thumbs
+      src = thumb.parentNode.href
+      if /gif$/.test src
+        thumb.src = src
 
 if getConfig 'Localize Time'
   g.callbacks.push (root) ->
