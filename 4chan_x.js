@@ -447,7 +447,10 @@
     }
     recaptcha = $('input[name=recaptcha_response_field]', this);
     if (recaptcha.value) {
-      return (_ref = $('#qr input[title=autohide]:not(:checked)')) != null ? _ref.click() : void 0;
+      if ((_ref = $('#qr input[title=autohide]:not(:checked)')) != null) {
+        _ref.click();
+      }
+      return g.sage = $('#qr input[name=email]').value === 'sage' ? true : false;
     } else {
       e.preventDefault();
       span = n('span', {
@@ -533,7 +536,7 @@
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';
       submit = $('input[type=submit]', qr);
-      submit.value = 30;
+      submit.value = g.sage ? 60 : 30;
       submit.disabled = true;
       window.setTimeout(cooldown, 1000);
       auto = submit.previousSibling.lastChild;

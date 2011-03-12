@@ -291,6 +291,7 @@ formSubmit = (e) ->
   recaptcha = $('input[name=recaptcha_response_field]', this)
   if recaptcha.value
     $('#qr input[title=autohide]:not(:checked)')?.click()
+    g.sage = if $('#qr input[name=email]').value is 'sage' then true else false
   else
     e.preventDefault()
     span = n 'span',
@@ -360,7 +361,7 @@ iframeLoad = ->
     $('textarea', qr).value = ''
     $('input[name=recaptcha_response_field]', qr).value = ''
     submit = $ 'input[type=submit]', qr
-    submit.value = 30
+    submit.value = if g.sage then 60 else 30
     submit.disabled = true
     window.setTimeout cooldown, 1000
     auto = submit.previousSibling.lastChild
