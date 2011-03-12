@@ -1588,21 +1588,6 @@
       return _results;
     });
   }
-  if (getConfig('Image Preloading')) {
-    g.callbacks.push(function(root) {
-      var parent, thumb, thumbs, _i, _len, _results;
-      thumbs = $$('img[md5]', root);
-      _results = [];
-      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-        thumb = thumbs[_i];
-        parent = thumb.parentNode;
-        _results.push(el = n('img', {
-          src: parent.href
-        }));
-      }
-      return _results;
-    });
-  }
   if (getConfig('Localize Time')) {
     g.callbacks.push(function(root) {
       var date, day, dotw, hour, min_sec, month, s, span, spans, year, _i, _len, _ref, _results;
@@ -1803,6 +1788,21 @@
     d.addEventListener('keypress', keypress, true);
   }
   if (g.REPLY) {
+    if (getConfig('Image Preloading')) {
+      g.callbacks.push(function(root) {
+        var parent, thumb, thumbs, _i, _len, _results;
+        thumbs = $$('img[md5]', root);
+        _results = [];
+        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+          thumb = thumbs[_i];
+          parent = thumb.parentNode;
+          _results.push(el = n('img', {
+            src: parent.href
+          }));
+        }
+        return _results;
+      });
+    }
     if (getConfig('Thread Updater')) {
       updaterMake();
     }

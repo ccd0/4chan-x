@@ -698,7 +698,7 @@ quickReply = (link, text) ->
       inBefore submit, auto
     mv clone, qr
     mv qr, d.body
-    qr.style.width = qr.offsetWidth
+    qr.style.width = qr.offsetWidth #lock
 
   $('input[title=autohide]:checked', qr)?.click()
   textarea = $('textarea', qr)
@@ -1211,13 +1211,6 @@ if getConfig 'Image Expansion'
       thumb.parentNode.addEventListener 'click', imageClick, true
       if g.expand then imageToggle thumb.parentNode
 
-if getConfig 'Image Preloading'
-  g.callbacks.push (root) ->
-    thumbs = $$ 'img[md5]', root
-    for thumb in thumbs
-      parent = thumb.parentNode
-      el = n 'img', src: parent.href
-
 if getConfig 'Localize Time'
   g.callbacks.push (root) ->
     spans = $$ 'span[id^=no]', root
@@ -1360,6 +1353,12 @@ if getConfig 'Keybinds'
   d.addEventListener 'keypress', keypress, true
 
 if g.REPLY
+  if getConfig 'Image Preloading'
+    g.callbacks.push (root) ->
+      thumbs = $$ 'img[md5]', root
+      for thumb in thumbs
+        parent = thumb.parentNode
+        el = n 'img', src: parent.href
   if getConfig 'Thread Updater'
     updaterMake()
   if getConfig('Quick Reply') and getConfig 'Persistent QR'
