@@ -140,26 +140,30 @@
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
-      switch (position) {
-        case 'topleft':
-          left = '0px';
-          top = '0px';
-          break;
-        case 'topright':
-          left = null;
-          top = '0px';
-          break;
-        case 'bottomleft':
-          left = '0px';
-          top = null;
-          break;
-        case 'bottomright':
-          left = null;
-          top = null;
-          break;
-        case 'center':
-          left = '50%';
-          top = '25%';
+      if (typeof position === 'object') {
+        left = position.left, top = position.top;
+      } else {
+        switch (position) {
+          case 'topleft':
+            left = '0px';
+            top = '0px';
+            break;
+          case 'topright':
+            left = null;
+            top = '0px';
+            break;
+          case 'bottomleft':
+            left = '0px';
+            top = null;
+            break;
+          case 'bottomright':
+            left = null;
+            top = null;
+            break;
+          case 'center':
+            left = '50%';
+            top = '25%';
+        }
       }
       left = GM_getValue("" + id + "Left", left);
       top = GM_getValue("" + id + "Top", top);
@@ -1798,8 +1802,10 @@
   }
   if (getConfig('Thread Watcher')) {
     html = '<div class="move">Thread Watcher</div><div></div>';
-    watcher = new Dialog('watcher', 'topleft', html).el;
-    watcher.style.top = '50px';
+    watcher = new Dialog('watcher', {
+      top: '50px',
+      left: '0px'
+    }, html).el;
     mv(watcher, d.body);
     watcherUpdate();
     threads = g.watched[g.BOARD] || [];

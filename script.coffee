@@ -78,22 +78,25 @@ class Dialog
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
-    switch position
-      when 'topleft'
-        left = '0px'
-        top  = '0px'
-      when 'topright'
-        left = null
-        top  = '0px'
-      when 'bottomleft'
-        left = '0px'
-        top  = null
-      when 'bottomright'
-        left = null
-        top  = null
-      when 'center'
-        left = '50%'
-        top  = '25%'
+    if typeof position is 'object'
+      {left, top} = position
+    else
+      switch position
+        when 'topleft'
+          left = '0px'
+          top  = '0px'
+        when 'topright'
+          left = null
+          top  = '0px'
+        when 'bottomleft'
+          left = '0px'
+          top  = null
+        when 'bottomright'
+          left = null
+          top  = null
+        when 'center'
+          left = '50%'
+          top  = '25%'
     left = GM_getValue "#{id}Left", left
     top  = GM_getValue "#{id}Top",  top
     if left then el.style.left = left else el.style.right  = '0px'
@@ -1364,8 +1367,7 @@ if getConfig 'Quick Report'
 if getConfig 'Thread Watcher'
   #create watcher
   html = '<div class="move">Thread Watcher</div><div></div>'
-  watcher = new Dialog('watcher', 'topleft', html).el
-  watcher.style.top = '50px' #don't cover the board links
+  watcher = new Dialog('watcher', top: '50px', left: '0px', html).el
   mv watcher, d.body
   watcherUpdate()
 
