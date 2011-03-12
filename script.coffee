@@ -1365,6 +1365,7 @@ if getConfig 'Thread Watcher'
   #create watcher
   html = '<div class="move">Thread Watcher</div><div></div>'
   watcher = new Dialog('watcher', 'topleft', html).el
+  watcher.style.top = '50px' #don't cover the board links
   mv watcher, d.body
   watcherUpdate()
 

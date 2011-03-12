@@ -1799,6 +1799,7 @@
   if (getConfig('Thread Watcher')) {
     html = '<div class="move">Thread Watcher</div><div></div>';
     watcher = new Dialog('watcher', 'topleft', html).el;
+    watcher.style.top = '50px';
     mv(watcher, d.body);
     watcherUpdate();
     threads = g.watched[g.BOARD] || [];
