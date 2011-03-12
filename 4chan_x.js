@@ -946,6 +946,9 @@
     html += "<div><a class=sauce>Flavors</a></div>";
     html += "<div><textarea style=\"display: none;\" name=flavors>" + (GM_getValue('flavors', g.flavors)) + "</textarea></div>";
     html += "<input type=\"button\" value=\"hidden: " + hiddenNum + "\"><br>";
+    html += "<hr>";
+    html += "<div><a href=\"http://chat.now.im/x/aeos\">support</a></div>";
+    html += '<div><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img alt="Donate" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"/></a></div>';
     div = new Dialog('options', 'center', html).el;
     _ref = $$('input[type="checkbox"]', div);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
