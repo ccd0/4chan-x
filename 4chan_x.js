@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
+  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, util, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1420,6 +1420,49 @@
       return favicon.src = g.favEmpty;
     }
   };
+  util = {
+    isDST: function() {
+      /*
+             http://en.wikipedia.org/wiki/Daylight_saving_time_in_the_United_States
+             Since 2007, daylight saving time starts on the second Sunday of March
+             and ends on the first Sunday of November, with all time changes taking
+             place at 2:00 AM (0200) local time.
+          */      var date, month, sunday;
+      date = new Date();
+      month = date.getMonth();
+      if (month < 2 || 10 < month) {
+        return false;
+      }
+      if ((2 < month && month < 10)) {
+        return true;
+      }
+      sunday = date.getDate() - date.getDay();
+      if (month === 2) {
+        if (sunday < 8) {
+          return false;
+        }
+        if (sunday < 15 && date.getDay() === 0) {
+          if (date.getHour() < 1) {
+            return false;
+          }
+          return true;
+        }
+        return true;
+      }
+      if (month === 10) {
+        if (sunday < 1) {
+          return true;
+        }
+        if (sunday < 8 && date.getDay() === 0) {
+          if (date.getHour() < 1) {
+            return true;
+          }
+          return false;
+        }
+        return false;
+      }
+    }
+  };
   g = {
     callbacks: [],
     expand: false,
@@ -1445,6 +1488,9 @@
   g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/" + g.BOARD + "/", '[]'));
   tzOffset = (new Date()).getTimezoneOffset() / 60;
   g.chanOffset = 5 - tzOffset;
+  if (util.isDST()) {
+    g.chanOffset -= 1;
+  }
   if (location.hostname.split('.')[0] === 'sys') {
     if (recaptcha = $('#recaptcha_response_field')) {
       m(recaptcha, {

@@ -1054,6 +1054,56 @@ watchX = ->
     favicon = input.previousSibling
     favicon.src = g.favEmpty
 
+util =
+  isDST: ->
+    ###
+       http://en.wikipedia.org/wiki/Daylight_saving_time_in_the_United_States
+       Since 2007, daylight saving time starts on the second Sunday of March
+       and ends on the first Sunday of November, with all time changes taking
+       place at 2:00 AM (0200) local time.
+    ###
+
+    date = new Date()
+    month = date.getMonth()
+
+    #this is the easy part
+    if month < 2 or 10 < month
+      return false
+    if 2 < month < 10
+      return true
+
+    # (sunday's date) = (today's date) - (number of days past sunday)
+    # date is not zero-indexed
+    sunday = date.getDate() - date.getDay()
+
+    if month is 2
+      #before second sunday
+      if sunday < 8
+        return false
+
+      #during second sunday
+      if sunday < 15 and date.getDay() is 0
+        if date.getHour() < 1
+          return false
+        return true
+
+      #after second sunday
+      return true
+
+    if month is 10
+      # before first sunday
+      if sunday < 1
+        return true
+
+      # during first sunday
+      if sunday < 8 and date.getDay() is 0
+        if date.getHour() < 1
+          return true
+        return false
+
+      #after first sunday
+      return false
+
 #main
 g =
   callbacks: []
@@ -1084,6 +1134,7 @@ g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/#{g.BOARD}/", '[]'))
 tzOffset = (new Date()).getTimezoneOffset() / 60
 # GMT -8 is given as +480; would GMT +8 be -480 ?
 g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5
+if util.isDST() then g.chanOffset -= 1
 
 if location.hostname.split('.')[0] is 'sys'
   if recaptcha = $ '#recaptcha_response_field'
