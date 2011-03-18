@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, util, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
+  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, util, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -78,7 +78,6 @@
     'Quick Report': [true, 'Add quick report buttons'],
     'Reply Hiding': [true, 'Hide single replies'],
     'Reply Navigation': [true, 'Navigate to the beginning / end of a thread'],
-    'Restore IDs': [true, 'Check \'em'],
     'Sauce': [true, 'Add sauce to images'],
     'Show Stubs': [true, 'Of hidden threads / replies'],
     'Thread Expansion': [true, 'View all replies'],
@@ -1662,27 +1661,15 @@
     g.replies = g.replies.slice(i);
     return updateTitle();
   };
-  if ((getConfig('Restore IDs')) && ((_ref4 = g.BOARD) === 'b' || _ref4 === 'v')) {
-    g.callbacks.push(function(root) {
-      var quote, quotes, _i, _len, _results;
-      quotes = $$('a.quotejs:not(:first-child)', root);
-      _results = [];
-      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-        quote = quotes[_i];
-        _results.push(quote.textContent = quote.parentNode.id.match(/\d+$/)[0]);
-      }
-      return _results;
-    });
-  }
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = n('div', {
       innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>      <label>Expand Images<input type=checkbox id=imageExpand></label>"
     });
     imageType = GM_getValue('imageType', 'full');
-    _ref5 = $$("option", expand);
-    for (_j = 0, _len2 = _ref5.length; _j < _len2; _j++) {
-      option = _ref5[_j];
+    _ref4 = $$("option", expand);
+    for (_j = 0, _len2 = _ref4.length; _j < _len2; _j++) {
+      option = _ref4[_j];
       if (option.textContent === imageType) {
         option.selected = true;
         break;
@@ -2039,9 +2026,9 @@
       }
     }
   }
-  _ref6 = g.callbacks;
-  for (_n = 0, _len7 = _ref6.length; _n < _len7; _n++) {
-    callback = _ref6[_n];
+  _ref5 = g.callbacks;
+  for (_n = 0, _len7 = _ref5.length; _n < _len7; _n++) {
+    callback = _ref5[_n];
     callback();
   }
   d.body.addEventListener('DOMNodeInserted', nodeInserted, true);

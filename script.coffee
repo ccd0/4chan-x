@@ -24,7 +24,6 @@ config =
   'Quick Report':      [true,  'Add quick report buttons']
   'Reply Hiding':      [true,  'Hide single replies']
   'Reply Navigation':  [true,  'Navigate to the beginning / end of a thread']
-  'Restore IDs':       [true,  'Check \'em']
   'Sauce':             [true,  'Add sauce to images']
   'Show Stubs':        [true,  'Of hidden threads / replies']
   'Thread Expansion':  [true,  'View all replies']
@@ -1292,12 +1291,6 @@ scroll = ->
   updateTitle()
 
 #major features
-if (getConfig 'Restore IDs') and g.BOARD in ['b', 'v']
-  g.callbacks.push (root) ->
-    quotes = $$ 'a.quotejs:not(:first-child)', root
-    for quote in quotes
-      quote.textContent = quote.parentNode.id.match(/\d+$/)[0]
-
 if getConfig 'Image Expansion'
   delform = $ 'form[name=delform]'
   expand = n 'div',
