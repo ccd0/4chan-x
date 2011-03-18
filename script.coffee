@@ -23,7 +23,7 @@ config =
   'Quick Reply':       [true,  'Reply without leaving the page']
   'Quick Report':      [true,  'Add quick report buttons']
   'Reply Hiding':      [true,  'Hide single replies']
-  'Reply Navigation':  [true,  'Navigate to the beginning / end of a thread']
+  'Reply Navigation':  [false, 'Navigate to the beginning / end of a thread']
   'Sauce':             [true,  'Add sauce to images']
   'Show Stubs':        [true,  'Of hidden threads / replies']
   'Thread Expansion':  [true,  'View all replies']
