@@ -1,3 +1,9 @@
+1.26.3
+- don't enable reply nav by default
+- reset file input after posting (persistent qr)
+- remove restore ids
+- check for dst
+
 1.26.2
 - fix thread watcher position; remember new position
 
