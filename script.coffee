@@ -364,6 +364,9 @@ iframeLoad = ->
   else if g.REPLY and getConfig 'Persistent QR'
     $('textarea', qr).value = ''
     $('input[name=recaptcha_response_field]', qr).value = ''
+    # XXX file.value = '' doesn't work in opera
+    f = $('input[type=file]', qr).parentNode
+    f.innerHTML = f.innerHTML
     submit = $ 'input[type=submit]', qr
     submit.value = if g.sage then 60 else 30
     submit.disabled = true

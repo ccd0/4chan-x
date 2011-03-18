@@ -522,7 +522,7 @@
     }
   };
   iframeLoad = function() {
-    var auto, error, qr, span, submit, _ref, _ref2;
+    var auto, error, f, qr, span, submit, _ref, _ref2;
     if (g.iframe = !g.iframe) {
       return;
     }
@@ -540,6 +540,8 @@
     } else if (g.REPLY && getConfig('Persistent QR')) {
       $('textarea', qr).value = '';
       $('input[name=recaptcha_response_field]', qr).value = '';
+      f = $('input[type=file]', qr).parentNode;
+      f.innerHTML = f.innerHTML;
       submit = $('input[type=submit]', qr);
       submit.value = g.sage ? 60 : 30;
       submit.disabled = true;
