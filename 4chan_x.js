@@ -1339,7 +1339,7 @@
     html += "<div><label title=\"Make this thread auto update\">Auto Update Local<input type=checkbox name=autoL></label></div>";
     html += "<div><label>Interval (s)<input type=text name=interval></label></div>";
     html += "<div><input type=button value='Update Now'></div>";
-    div = new Dialog('updater', 'topright', html).el;
+    div = new Dialog('updater', 'bottomright', html).el;
     _ref = $$('input[type=checkbox]', div);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
