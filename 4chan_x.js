@@ -1617,23 +1617,19 @@
   }\
 ');
   if (navtopr = $('#navtopr a')) {
-    text = navtopr.nextSibling;
     a = n('a', {
-      textContent: 'X',
+      textContent: '4chan X',
       className: 'pointer',
       listener: ['click', options]
     });
-    inBefore(text, tn(' / '));
-    inBefore(text, a);
+    replace(navtopr, a);
     navbotr = $('#navbotr a');
-    text = navbotr.nextSibling;
     a = n('a', {
-      textContent: 'X',
+      textContent: '4chan X',
       className: 'pointer',
       listener: ['click', options]
     });
-    inBefore(text, tn(' / '));
-    inBefore(text, a);
+    replace(navbotr, a);
   } else if (getConfig('404 Redirect') && d.title === '4chan - 404') {
     redirect();
   } else {

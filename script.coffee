@@ -1257,21 +1257,17 @@ GM_addStyle '
 '
 
 if navtopr = $ '#navtopr a'
-  text = navtopr.nextSibling #css doesn't see text nodes
   a = n 'a',
-    textContent: 'X'
+    textContent: '4chan X'
     className: 'pointer'
     listener: ['click', options]
-  inBefore text, tn(' / ')
-  inBefore text, a
+  replace navtopr, a
   navbotr = $ '#navbotr a'
-  text = navbotr.nextSibling
   a = n 'a',
-    textContent: 'X'
+    textContent: '4chan X'
     className: 'pointer'
     listener: ['click', options]
-  inBefore text, tn(' / ')
-  inBefore text, a
+  replace navbotr, a
 else if getConfig('404 Redirect') and d.title is '4chan - 404'
   redirect()
 else
