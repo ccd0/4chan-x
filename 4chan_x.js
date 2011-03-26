@@ -56,8 +56,8 @@
  */
 
 (function() {
-  var $, $$, DAY, Dialog, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, util, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
+  var $, $$, DAY, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, util, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5;
+  var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
   }
@@ -130,12 +130,10 @@
     cursor: pointer;\
   }\
 ');
-  Dialog = (function() {
-    function Dialog(id, position, html) {
-      this.moveEnd = __bind(this.moveEnd, this);;
-      this.moveMove = __bind(this.moveMove, this);;
-      this.move = __bind(this.move, this);;      var el, left, top, _ref;
-      this.el = el = document.createElement('div');
+  ui = {
+    dialog: function(id, position, html) {
+      var el, left, top, _ref;
+      ui.el = el = document.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
@@ -164,8 +162,8 @@
             top = '25%';
         }
       }
-      left = GM_getValue("" + id + "Left", left);
-      top = GM_getValue("" + id + "Top", top);
+      left = localStorage["" + id + "Left"] || left;
+      top = localStorage["" + id + "Top"] || top;
       if (left) {
         el.style.left = left;
       } else {
@@ -176,56 +174,56 @@
       } else {
         el.style.bottom = '0px';
       }
-      $('div.move', el).addEventListener('mousedown', this.move, true);
-      if ((_ref = $('div.move a[name=close]', el)) != null) {
+      el.querySelector('div.move').addEventListener('mousedown', ui.move, true);
+      if ((_ref = el.querySelector('div.move a[name=close]')) != null) {
         _ref.addEventListener('click', (function() {
-          return rm(el);
+          return el.parentNode.removeChild(el);
         }), true);
       }
-    }
-    Dialog.prototype.move = function(e) {
+      return el;
+    },
+    move: function(e) {
       var el;
-      el = this.el;
-      this.dx = e.clientX - el.offsetLeft;
-      this.dy = e.clientY - el.offsetTop;
-      this.width = document.body.clientWidth - el.offsetWidth;
-      this.height = document.body.clientHeight - el.offsetHeight;
-      document.addEventListener('mousemove', this.moveMove, true);
-      return document.addEventListener('mouseup', this.moveEnd, true);
-    };
-    Dialog.prototype.moveMove = function(e) {
+      el = ui.el;
+      ui.dx = e.clientX - el.offsetLeft;
+      ui.dy = e.clientY - el.offsetTop;
+      ui.width = document.body.clientWidth - el.offsetWidth;
+      ui.height = document.body.clientHeight - el.offsetHeight;
+      document.addEventListener('mousemove', ui.moveMove, true);
+      return document.addEventListener('mouseup', ui.moveEnd, true);
+    },
+    moveMove: function(e) {
       var bottom, el, left, right, top;
-      el = this.el;
-      left = e.clientX - this.dx;
+      el = ui.el;
+      left = e.clientX - ui.dx;
       if (left < 20) {
         left = '0px';
-      } else if (this.width - left < 20) {
+      } else if (ui.width - left < 20) {
         left = '';
       }
       right = left ? '' : '0px';
       el.style.left = left;
       el.style.right = right;
-      top = e.clientY - this.dy;
+      top = e.clientY - ui.dy;
       if (top < 20) {
         top = '0px';
-      } else if (this.height - top < 20) {
+      } else if (ui.height - top < 20) {
         top = '';
       }
       bottom = top ? '' : '0px';
       el.style.top = top;
       return el.style.bottom = bottom;
-    };
-    Dialog.prototype.moveEnd = function() {
+    },
+    moveEnd: function() {
       var el, id;
-      document.removeEventListener('mousemove', this.moveMove, true);
-      document.removeEventListener('mouseup', this.moveEnd, true);
-      el = this.el;
+      document.removeEventListener('mousemove', ui.moveMove, true);
+      document.removeEventListener('mouseup', ui.moveEnd, true);
+      el = ui.el;
       id = el.id;
-      GM_setValue("" + id + "Left", el.style.left);
-      return GM_setValue("" + id + "Top", el.style.top);
-    };
-    return Dialog;
-  })();
+      localStorage["" + id + "Left"] = el.style.left;
+      return localStorage["" + id + "Top"] = el.style.top;
+    }
+  };
   d = document;
   g = null;
   $ = function(selector, root) {
@@ -954,7 +952,7 @@
     html += "<hr>";
     html += "<div><a href=\"http://chat.now.im/x/aeos\">support</a></div>";
     html += '<div><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img alt="Donate" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"/></a></div>';
-    div = new Dialog('options', 'center', html).el;
+    div = ui.dialog('options', 'center', html);
     _ref = $$('input[type="checkbox"]', div);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
@@ -995,7 +993,7 @@
     var auto, autoBox, clone, form, html, input, qr, script, submit, textarea, xpath, _i, _len, _ref, _ref2;
     if (!(qr = $('#qr'))) {
       html = "<div class=move>Quick Reply <input type=checkbox title=autohide><a name=close title=close>X</a></div>";
-      qr = new Dialog('qr', 'topleft', html).el;
+      qr = ui.dialog('qr', 'topleft', html);
       $('input[title=autohide]', qr).addEventListener('click', autohide, true);
       form = $('form[name=post]');
       clone = form.cloneNode(true);
@@ -1339,7 +1337,7 @@
     html += "<div><label title=\"Make this thread auto update\">Auto Update Local<input type=checkbox name=autoL></label></div>";
     html += "<div><label>Interval (s)<input type=text name=interval></label></div>";
     html += "<div><input type=button value='Update Now'></div>";
-    div = new Dialog('updater', 'bottomright', html).el;
+    div = ui.dialog('updater', 'bottomright', html);
     _ref = $$('input[type=checkbox]', div);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
@@ -1833,10 +1831,10 @@
   }
   if (getConfig('Thread Watcher')) {
     html = '<div class="move">Thread Watcher</div><div></div>';
-    watcher = new Dialog('watcher', {
+    watcher = ui.dialog('watcher', {
       top: '50px',
       left: '0px'
-    }, html).el;
+    }, html);
     mv(watcher, d.body);
     watcherUpdate();
     threads = g.watched[g.BOARD] || [];

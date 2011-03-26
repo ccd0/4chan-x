@@ -1,11 +1,4 @@
 {log} = console if console?
-#todo: remove close()?, make hiddenReplies/hiddenThreads local, comments, gc
-#todo: remove stupid 'obj', arr el, make hidden an object, smarter xhr, text(), @this, images, clear hidden
-#todo: watch - add board in updateWatcher?, redundant move divs?, redo css / hiding, manual clear
-#
-#TODO - 4chan time
-#addClass, removeClass; remove hide / show; makeDialog el, 'center'
-#TODO - expose 'hidden' configs
 
 config =
   '404 Redirect':      [true,  'Redirect dead threads']
@@ -71,9 +64,9 @@ GM_addStyle '
   }
 '
 
-class Dialog
-  constructor: (id, position, html) ->
-    @el = el = document.createElement 'div'
+ui =
+  dialog: (id, position, html) ->
+    ui.el = el = document.createElement 'div'
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
@@ -96,43 +89,45 @@ class Dialog
         when 'center'
           left = '50%'
           top  = '25%'
-    left = GM_getValue "#{id}Left", left
-    top  = GM_getValue "#{id}Top",  top
+    left = localStorage["#{id}Left"] or left
+    top  = localStorage["#{id}Top"]  or top
     if left then el.style.left = left else el.style.right  = '0px'
     if top  then el.style.top  = top  else el.style.bottom = '0px'
-    $('div.move', el).addEventListener 'mousedown', @move, true
-    $('div.move a[name=close]', el)?.addEventListener 'click', (-> rm el), true
-  move: (e) =>
-    el = @el
+    el.querySelector('div.move').addEventListener 'mousedown', ui.move, true
+    el.querySelector('div.move a[name=close]')?.addEventListener 'click',
+      (-> el.parentNode.removeChild(el)), true
+    el
+  move: (e) ->
+    {el} = ui
     #distance from pointer to el edge is constant; calculate it here.
-    @dx = e.clientX - el.offsetLeft
-    @dy = e.clientY - el.offsetTop
+    ui.dx = e.clientX - el.offsetLeft
+    ui.dy = e.clientY - el.offsetTop
     #factor out el from document dimensions
-    @width  = document.body.clientWidth  - el.offsetWidth
-    @height = document.body.clientHeight - el.offsetHeight
-    document.addEventListener 'mousemove', @moveMove, true
-    document.addEventListener 'mouseup',   @moveEnd, true
-  moveMove: (e) =>
-    el = @el
-    left = e.clientX - @dx
+    ui.width  = document.body.clientWidth  - el.offsetWidth
+    ui.height = document.body.clientHeight - el.offsetHeight
+    document.addEventListener 'mousemove', ui.moveMove, true
+    document.addEventListener 'mouseup',   ui.moveEnd, true
+  moveMove: (e) ->
+    {el} = ui
+    left = e.clientX - ui.dx
     if left < 20 then left = '0px'
-    else if @width - left < 20 then left = ''
+    else if ui.width - left < 20 then left = ''
     right = if left then '' else '0px'
     el.style.left  = left
     el.style.right = right
-    top = e.clientY - @dy
+    top = e.clientY - ui.dy
     if top < 20 then top = '0px'
-    else if @height - top < 20 then top = ''
+    else if ui.height - top < 20 then top = ''
     bottom = if top then '' else '0px'
     el.style.top  = top
     el.style.bottom = bottom
-  moveEnd: =>
-    document.removeEventListener 'mousemove', @moveMove, true
-    document.removeEventListener 'mouseup',   @moveEnd, true
-    el = @el
-    id = el.id
-    GM_setValue "#{id}Left", el.style.left
-    GM_setValue "#{id}Top",  el.style.top
+  moveEnd: ->
+    document.removeEventListener 'mousemove', ui.moveMove, true
+    document.removeEventListener 'mouseup',   ui.moveEnd, true
+    {el} = ui #{id} = {el} = ui doesn't work
+    {id} = el
+    localStorage["#{id}Left"] = el.style.left
+    localStorage["#{id}Top"]  = el.style.top
 
 #convenience
 d = document
@@ -688,7 +683,7 @@ options = ->
   html += "<div><a href=\"http://chat.now.im/x/aeos\">support</a></div>"
   html += '<div><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img alt="Donate" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"/></a></div>'
 
-  div = new Dialog('options', 'center', html).el
+  div = ui.dialog 'options', 'center', html
 
   for input in $$ 'input[type="checkbox"]', div
     input.addEventListener 'change', changeCheckbox, true
@@ -724,7 +719,7 @@ qrText = (link) ->
 quickReply = (link, text) ->
   unless qr = $ '#qr'
     html = "<div class=move>Quick Reply <input type=checkbox title=autohide><a name=close title=close>X</a></div>"
-    qr = new Dialog('qr', 'topleft', html).el
+    qr = ui.dialog 'qr', 'topleft', html
     $('input[title=autohide]', qr).addEventListener 'click', autohide, true
 
     form = $ 'form[name=post]'
@@ -986,7 +981,7 @@ updaterMake = ->
   html += "<div><label title=\"Make this thread auto update\">Auto Update Local<input type=checkbox name=autoL></label></div>"
   html += "<div><label>Interval (s)<input type=text name=interval></label></div>"
   html += "<div><input type=button value='Update Now'></div>"
-  div = new Dialog('updater', 'bottomright', html).el
+  div = ui.dialog 'updater', 'bottomright', html
 
   for input in $$ 'input[type=checkbox]', div
     input.addEventListener 'click', changeCheckbox, true
@@ -1410,7 +1405,7 @@ if getConfig 'Quick Report'
 if getConfig 'Thread Watcher'
   #create watcher
   html = '<div class="move">Thread Watcher</div><div></div>'
-  watcher = new Dialog('watcher', top: '50px', left: '0px', html).el
+  watcher = ui.dialog 'watcher', top: '50px', left: '0px', html
   mv watcher, d.body
   watcherUpdate()
 
