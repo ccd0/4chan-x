@@ -755,6 +755,7 @@ qr =
       {target} = e
       unless dialog = $ '#qr'
         dialog = qr.dialog target
+      qr.autohide.unset()
 
       id = target.textContent
       text = ">>#{id}\n"
