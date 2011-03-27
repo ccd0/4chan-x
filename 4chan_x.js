@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -242,6 +242,16 @@
     return object;
   };
   $.extend($, {
+    config: function(name) {
+      return GM_getValue(name, config[name][0]);
+    },
+    zeroPad: function(n) {
+      if (n < 10) {
+        return '0' + n;
+      } else {
+        return n;
+      }
+    },
     slice: function(arr, id) {
       var el, i, _len;
       for (i = 0, _len = arr.length; i < _len; i++) {
@@ -364,16 +374,6 @@
     }
     return _results;
   };
-  getConfig = function(name) {
-    return GM_getValue(name, config[name][0]);
-  };
-  zeroPad = function(n) {
-    if (n < 10) {
-      return '0' + n;
-    } else {
-      return n;
-    }
-  };
   autoWatch = function() {
     var autoText;
     autoText = $('textarea', this).value.slice(0, 25);
@@ -490,7 +490,7 @@
     trip = ((_ref = $('span.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
     table = $.x('ancestor::table', reply);
     $.hide(table);
-    if (getConfig('Show Stubs')) {
+    if ($.config('Show Stubs')) {
       a = $.el('a', {
         textContent: "[ + ] " + name + " " + trip,
         className: 'pointer'
@@ -512,7 +512,7 @@
       GM_setValue("hiddenThreads/" + g.BOARD + "/", JSON.stringify(g.hiddenThreads));
     }
     $.hide(div);
-    if (getConfig('Show Stubs')) {
+    if ($.config('Show Stubs')) {
       if (span = $('.omittedposts', div)) {
         num = Number(span.textContent.match(/\d+/)[0]);
       } else {
@@ -923,7 +923,7 @@
     for (option in config) {
       value = config[option];
       description = value[1];
-      checked = getConfig(option) ? "checked" : "";
+      checked = $.config(option) ? "checked" : "";
       html += "<label title=\"" + description + "\">" + option + "<input " + checked + " name=\"" + option + "\" type=\"checkbox\"></label><br>";
     }
     html += "<div><a class=sauce>Flavors</a></div>";
@@ -999,7 +999,7 @@
         dialog = $('#qr');
         if (data === 'Post successful!') {
           if (dialog) {
-            if (getConfig('Persistent QR')) {
+            if ($.config('Persistent QR')) {
               qr.refresh(dialog);
             } else {
               $.remove(dialog);
@@ -1107,7 +1107,7 @@
           value: $.x(xpath, link).name
         });
         $.append(clone, input);
-      } else if (getConfig('Persistent QR')) {
+      } else if ($.config('Persistent QR')) {
         submit = $('input[type=submit]', clone);
         auto = $.el('label', {
           textContent: 'Auto'
@@ -1133,7 +1133,7 @@
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', recaptchaListener);
       }
-      if (getConfig('Auto Watch')) {
+      if ($.config('Auto Watch')) {
         html = $('b').innerHTML;
         _ref = html.match(/<!-- thread:(\d+),no:(\d+) -->/), _ = _ref[0], thread = _ref[1], id = _ref[2];
         if (thread === '0') {
@@ -1316,7 +1316,7 @@
         input.value = 404;
       }
       s = '';
-      if (getConfig('Unread Count')) {
+      if ($.config('Unread Count')) {
         s += "(" + g.replies.length + ") ";
       }
       s += "/" + g.BOARD + "/ - 404";
@@ -1673,7 +1673,7 @@
     });
     $.bind(a, 'click', options);
     $.replace(navbotr, a);
-  } else if (getConfig('404 Redirect') && d.title === '4chan - 404') {
+  } else if ($.config('404 Redirect') && d.title === '4chan - 404') {
     redirect();
   } else {
     return;
@@ -1702,7 +1702,7 @@
     g.replies = g.replies.slice(i);
     return updateTitle();
   };
-  if (getConfig('Image Expansion')) {
+  if ($.config('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = $.el('div', {
       innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>      <label>Expand Images<input type=checkbox id=imageExpand></label>"
@@ -1732,10 +1732,10 @@
       return _results;
     });
   }
-  if (getConfig('Image Hover')) {
+  if ($.config('Image Hover')) {
     imageHover.init();
   }
-  if (getConfig('Image Auto-Gif')) {
+  if ($.config('Image Auto-Gif')) {
     g.callbacks.push(function(root) {
       var src, thumb, thumbs, _i, _len, _results;
       thumbs = $$('img[md5]', root);
@@ -1748,7 +1748,7 @@
       return _results;
     });
   }
-  if (getConfig('Localize Time')) {
+  if ($.config('Localize Time')) {
     g.callbacks.push(function(root) {
       var date, day, dotw, hour, min_sec, month, s, span, spans, year, _, _i, _len, _ref, _results;
       spans = $$('span[id^=no]', root);
@@ -1762,16 +1762,16 @@
         hour = g.chanOffset + Number(hour);
         date = new Date(year, month, day, hour);
         year = date.getFullYear() - 2000;
-        month = zeroPad(date.getMonth() + 1);
-        day = zeroPad(date.getDate());
-        hour = zeroPad(date.getHours());
+        month = $.zeroPad(date.getMonth() + 1);
+        day = $.zeroPad(date.getDate());
+        hour = $.zeroPad(date.getHours());
         dotw = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
         _results.push(s.textContent = " " + month + "/" + day + "/" + year + "(" + dotw + ")" + hour + ":" + min_sec + " ");
       }
       return _results;
     });
   }
-  if (getConfig('Sauce')) {
+  if ($.config('Sauce')) {
     g.callbacks.push(function(root) {
       var i, l, link, names, prefix, prefixes, span, spans, suffix, _i, _len, _results;
       spans = $$('span.filesize', root);
@@ -1808,7 +1808,7 @@
       return _results;
     });
   }
-  if (getConfig('Reply Hiding')) {
+  if ($.config('Reply Hiding')) {
     g.callbacks.push(function(root) {
       var id, next, obj, td, tds, _i, _len, _results;
       tds = $$('td.doubledash', root);
@@ -1837,10 +1837,10 @@
       return _results;
     });
   }
-  if (getConfig('Quick Reply')) {
+  if ($.config('Quick Reply')) {
     qr.init();
   }
-  if (getConfig('Quick Report')) {
+  if ($.config('Quick Report')) {
     g.callbacks.push(function(root) {
       var arr, el, _i, _len, _results;
       arr = $$('span[id^=no]', root);
@@ -1858,7 +1858,7 @@
       return _results;
     });
   }
-  if (getConfig('Thread Watcher')) {
+  if ($.config('Thread Watcher')) {
     html = '<div class="move">Thread Watcher</div><div></div>';
     watcher = ui.dialog('watcher', {
       top: '50px',
@@ -1889,7 +1889,7 @@
       $.before(input, img);
     }
   }
-  if (getConfig('Anonymize')) {
+  if ($.config('Anonymize')) {
     g.callbacks.push(function(root) {
       var name, names, trip, trips, _i, _j, _len, _len2, _results;
       names = $$('span.postername, span.commentpostername', root);
@@ -1906,7 +1906,7 @@
       return _results;
     });
   }
-  if (getConfig('Reply Navigation')) {
+  if ($.config('Reply Navigation')) {
     g.callbacks.push(function(root) {
       var arr, down, el, span, up, _i, _len, _results;
       arr = $$('span[id^=norep]', root);
@@ -1930,12 +1930,12 @@
       return _results;
     });
   }
-  if (getConfig('Keybinds')) {
+  if ($.config('Keybinds')) {
     d.addEventListener('keydown', keydown, true);
     d.addEventListener('keypress', keypress, true);
   }
   if (g.REPLY) {
-    if (getConfig('Image Preloading')) {
+    if ($.config('Image Preloading')) {
       g.callbacks.push(function(root) {
         var parent, thumb, thumbs, _i, _len, _results;
         thumbs = $$('img[md5]', root);
@@ -1950,13 +1950,13 @@
         return _results;
       });
     }
-    if (getConfig('Thread Updater')) {
+    if ($.config('Thread Updater')) {
       updaterMake();
     }
-    if (getConfig('Quick Reply') && getConfig('Persistent QR')) {
+    if ($.config('Quick Reply') && $.config('Persistent QR')) {
       qr.persist();
     }
-    if (getConfig('Post in Title')) {
+    if ($.config('Post in Title')) {
       if (!(text = $('span.filetitle').textContent)) {
         text = $('blockquote').textContent;
       }
@@ -1964,7 +1964,7 @@
         d.title = "/" + g.BOARD + "/ - " + text;
       }
     }
-    if (getConfig('Unread Count')) {
+    if ($.config('Unread Count')) {
       g.replies = [];
       d.title = '(0) ' + d.title;
       window.addEventListener('scroll', scroll, true);
@@ -1974,20 +1974,20 @@
       });
     }
   } else {
-    if (getConfig('Thread Hiding')) {
+    if ($.config('Thread Hiding')) {
       delform = $('form[name=delform]');
       start = $('form[name=delform] > *');
-      if (getConfig('Image Expansion')) {
+      if ($.config('Image Expansion')) {
         start = start.nextSibling;
       }
       d.addEventListener('DOMNodeInserted', stopPropagation, true);
       threadF(start);
       d.removeEventListener('DOMNodeInserted', stopPropagation, true);
     }
-    if (getConfig('Auto Watch')) {
+    if ($.config('Auto Watch')) {
       $('form[name="post"]').addEventListener('submit', autoWatch, true);
     }
-    if (getConfig('Thread Navigation')) {
+    if ($.config('Thread Navigation')) {
       arr = $$('div > span.filesize, form > span.filesize');
       l1 = arr.length - 1;
       for (i = 0, _len4 = arr.length; i < _len4; i++) {
@@ -2030,7 +2030,7 @@
         window.location = window.location;
       }
     }
-    if (getConfig('Thread Expansion')) {
+    if ($.config('Thread Expansion')) {
       omitted = $$('span.omittedposts');
       for (_l = 0, _len5 = omitted.length; _l < _len5; _l++) {
         span = omitted[_l];
@@ -2042,7 +2042,7 @@
         $.replace(span, a);
       }
     }
-    if (getConfig('Comment Expansion')) {
+    if ($.config('Comment Expansion')) {
       as = $$('span.abbr a');
       for (_m = 0, _len6 = as.length; _m < _len6; _m++) {
         a = as[_m];

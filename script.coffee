@@ -145,6 +145,10 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  config: (name) ->
+    GM_getValue name, config[name][0]
+  zeroPad: (n) ->
+    if n < 10 then '0' + n else n
   slice: (arr, id) ->
     # do I actually need this?
     for el, i in arr
@@ -236,10 +240,6 @@ $.extend $,
 $$ = (selector, root=d.body) ->
   result = root.querySelectorAll selector
   node for node in result
-getConfig = (name) ->
-  GM_getValue name, config[name][0]
-zeroPad = (n) ->
-  if n < 10 then '0' + n else n
 
 #funks
 autoWatch = ->
@@ -341,7 +341,7 @@ hideReply = (reply) ->
   trip = $('span.postertrip', reply)?.textContent or ''
   table = $.x 'ancestor::table', reply
   $.hide table
-  if getConfig 'Show Stubs'
+  if $.config 'Show Stubs'
     a = $.el 'a',
       textContent: "[ + ] #{name} #{trip}"
       className: 'pointer'
@@ -359,7 +359,7 @@ hideThread = (div) ->
     }
     GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
   $.hide div
-  if getConfig 'Show Stubs'
+  if $.config 'Show Stubs'
     if span = $ '.omittedposts', div
       num = Number(span.textContent.match(/\d+/)[0])
     else
@@ -679,7 +679,7 @@ options = ->
   html = '<div class="move">Options <a name=close>X</a></div><div>'
   for option, value of config
     description  = value[1]
-    checked = if getConfig option then "checked" else ""
+    checked = if $.config option then "checked" else ""
     html += "<label title=\"#{description}\">#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
   html += "<div><a class=sauce>Flavors</a></div>"
   html += "<div><textarea style=\"display: none;\" name=flavors>#{GM_getValue 'flavors', g.flavors}</textarea></div>"
@@ -743,7 +743,7 @@ qr =
       dialog = $ '#qr'
       if data is 'Post successful!'
         if dialog
-          if getConfig 'Persistent QR'
+          if $.config 'Persistent QR'
             qr.refresh dialog
           else
             $.remove dialog
@@ -832,7 +832,7 @@ qr =
         name: 'resto'
         value: $.x(xpath, link).name
       $.append clone, input
-    else if getConfig 'Persistent QR'
+    else if $.config 'Persistent QR'
       submit = $ 'input[type=submit]', clone
       auto = $.el 'label',
         textContent: 'Auto'
@@ -856,7 +856,7 @@ qr =
     if recaptcha = $ '#recaptcha_response_field'
       # post reporting
       $.bind recaptcha, 'keydown', recaptchaListener
-    if getConfig 'Auto Watch'
+    if $.config 'Auto Watch'
       html = $('b').innerHTML
       [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
       if thread is '0'
@@ -983,7 +983,7 @@ updateCallback = ->
       input.disabled = true
       input.value = 404
     s = ''
-    if getConfig 'Unread Count' then s += "(#{g.replies.length}) "
+    if $.config 'Unread Count' then s += "(#{g.replies.length}) "
     s += "/#{g.BOARD}/ - 404"
     d.title = s
     g.dead = true
@@ -1310,7 +1310,7 @@ if navtopr = $ '#navtopr a'
     className: 'pointer'
   $.bind a, 'click', options
   $.replace navbotr, a
-else if getConfig('404 Redirect') and d.title is '4chan - 404'
+else if $.config('404 Redirect') and d.title is '4chan - 404'
   redirect()
 else
   return
@@ -1332,7 +1332,7 @@ scroll = ->
   updateTitle()
 
 #major features
-if getConfig 'Image Expansion'
+if $.config 'Image Expansion'
   delform = $ 'form[name=delform]'
   expand = $.el 'div',
     innerHTML:
@@ -1354,10 +1354,10 @@ if getConfig 'Image Expansion'
       thumb.parentNode.addEventListener 'click', imageClick, true
       if g.expand then imageToggle thumb.parentNode
 
-if getConfig 'Image Hover'
+if $.config 'Image Hover'
   imageHover.init()
 
-if getConfig 'Image Auto-Gif'
+if $.config 'Image Auto-Gif'
   g.callbacks.push (root) ->
     thumbs = $$ 'img[md5]', root
     for thumb in thumbs
@@ -1365,7 +1365,7 @@ if getConfig 'Image Auto-Gif'
       if /gif$/.test src
         thumb.src = src
 
-if getConfig 'Localize Time'
+if $.config 'Localize Time'
   g.callbacks.push (root) ->
     spans = $$ 'span[id^=no]', root
     for span in spans
@@ -1377,9 +1377,9 @@ if getConfig 'Localize Time'
       hour = g.chanOffset + Number hour
       date = new Date year, month, day, hour
       year = date.getFullYear() - 2000
-      month = zeroPad date.getMonth() + 1
-      day = zeroPad date.getDate()
-      hour = zeroPad date.getHours()
+      month = $.zeroPad date.getMonth() + 1
+      day = $.zeroPad date.getDate()
+      hour = $.zeroPad date.getHours()
       dotw = [
         'Sun'
         'Mon'
@@ -1391,7 +1391,7 @@ if getConfig 'Localize Time'
       ][date.getDay()]
       s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec} "
 
-if getConfig 'Sauce'
+if $.config 'Sauce'
   g.callbacks.push (root) ->
     spans = $$ 'span.filesize', root
     prefixes = GM_getValue('flavors', g.flavors).split '\n'
@@ -1406,7 +1406,7 @@ if getConfig 'Sauce'
         $.append span, $.tn(' '), link
         i++
 
-if getConfig 'Reply Hiding'
+if $.config 'Reply Hiding'
   g.callbacks.push (root) ->
     tds = $$('td.doubledash', root)
     for td in tds
@@ -1422,10 +1422,10 @@ if getConfig 'Reply Hiding'
         if obj.id is id
           hideReply(next)
 
-if getConfig 'Quick Reply'
+if $.config 'Quick Reply'
   qr.init()
 
-if getConfig 'Quick Report'
+if $.config 'Quick Report'
   g.callbacks.push (root) ->
     arr = $$('span[id^=no]', root)
     for el in arr
@@ -1436,7 +1436,7 @@ if getConfig 'Quick Report'
       $.after el, a
       $.after el, $.tn(' ')
 
-if getConfig 'Thread Watcher'
+if $.config 'Thread Watcher'
   #create watcher
   html = '<div class="move">Thread Watcher</div><div></div>'
   watcher = ui.dialog 'watcher', top: '50px', left: '0px', html
@@ -1461,7 +1461,7 @@ if getConfig 'Thread Watcher'
     $.bind img, 'click', watch
     $.before input, img
 
-if getConfig 'Anonymize'
+if $.config 'Anonymize'
   g.callbacks.push (root) ->
     names = $$('span.postername, span.commentpostername', root)
     for name in names
@@ -1473,7 +1473,7 @@ if getConfig 'Anonymize'
       else
         $.remove trip
 
-if getConfig 'Reply Navigation'
+if $.config 'Reply Navigation'
   g.callbacks.push (root) ->
     arr = $$('span[id^=norep]', root)
     for el in arr
@@ -1489,27 +1489,27 @@ if getConfig 'Reply Navigation'
       $.append span, $.tn(' '), up, $.tn(' '), down
       $.after el, span
 
-if getConfig 'Keybinds'
+if $.config 'Keybinds'
   d.addEventListener 'keydown', keydown, true
   d.addEventListener 'keypress', keypress, true
 
 if g.REPLY
-  if getConfig 'Image Preloading'
+  if $.config 'Image Preloading'
     g.callbacks.push (root) ->
       thumbs = $$ 'img[md5]', root
       for thumb in thumbs
         parent = thumb.parentNode
         el = $.el 'img', src: parent.href
-  if getConfig 'Thread Updater'
+  if $.config 'Thread Updater'
     updaterMake()
-  if getConfig('Quick Reply') and getConfig 'Persistent QR'
+  if $.config('Quick Reply') and $.config 'Persistent QR'
     qr.persist()
-  if getConfig 'Post in Title'
+  if $.config 'Post in Title'
     unless text = $('span.filetitle').textContent
       text = $('blockquote').textContent
     if text
       d.title = "/#{g.BOARD}/ - #{text}"
-  if getConfig 'Unread Count'
+  if $.config 'Unread Count'
     g.replies = []
     d.title = '(0) ' + d.title
     window.addEventListener 'scroll', scroll, true
@@ -1518,19 +1518,19 @@ if g.REPLY
       updateTitle()
 
 else #not reply
-  if getConfig 'Thread Hiding'
+  if $.config 'Thread Hiding'
     delform = $('form[name=delform]')
     start = $ 'form[name=delform] > *'
-    start = start.nextSibling if getConfig 'Image Expansion' #skip over image expansion dialog
+    start = start.nextSibling if $.config 'Image Expansion' #skip over image expansion dialog
     #don't confuse other scripts
     d.addEventListener('DOMNodeInserted', stopPropagation, true)
     threadF start
     d.removeEventListener('DOMNodeInserted', stopPropagation, true)
 
-  if getConfig 'Auto Watch'
+  if $.config 'Auto Watch'
     $('form[name="post"]').addEventListener('submit', autoWatch, true)
 
-  if getConfig 'Thread Navigation'
+  if $.config 'Thread Navigation'
     arr = $$ 'div > span.filesize, form > span.filesize'
     l1 = arr.length - 1
     for el, i in arr
@@ -1565,7 +1565,7 @@ else #not reply
     if location.hash is '#p0'
       window.location = window.location
 
-  if getConfig 'Thread Expansion'
+  if $.config 'Thread Expansion'
     omitted = $$('span.omittedposts')
     for span in omitted
       a = $.el 'a',
@@ -1574,7 +1574,7 @@ else #not reply
       $.bind a, 'click', expandThread
       $.replace(span, a)
 
-  if getConfig 'Comment Expansion'
+  if $.config 'Comment Expansion'
     as = $$('span.abbr a')
     for a in as
       a.addEventListener('click', expandComment, true)
