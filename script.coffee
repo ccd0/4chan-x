@@ -714,6 +714,8 @@ qr =
         else
           $.remove dialog
 
+        recaptchaReload()
+
     messageIframe: (e) ->
       message = $('table b').firstChild.textContent
       e.source.postMessage message, '*'

@@ -963,10 +963,11 @@
         } catch (err) {
           dialog = $('#qr');
           if (g.REPLY && $.config('Persistent QR')) {
-            return qr.refresh(dialog);
+            qr.refresh(dialog);
           } else {
-            return $.remove(dialog);
+            $.remove(dialog);
           }
+          return recaptchaReload();
         }
       },
       messageIframe: function(e) {
