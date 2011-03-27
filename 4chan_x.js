@@ -1560,7 +1560,7 @@
   if ($.isDST()) {
     g.chanOffset -= 1;
   }
-  lastChecked = GM_getValue('lastChecked', 0);
+  lastChecked = Number(GM_getValue('lastChecked', '0'));
   now = Date.now();
   DAY = 24 * 60 * 60;
   if (lastChecked < now - 1 * DAY) {
@@ -1579,7 +1579,7 @@
     }
     GM_setValue("hiddenThreads/" + g.BOARD + "/", JSON.stringify(g.hiddenThreads));
     GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
-    GM_setValue('lastChecked', now);
+    GM_setValue('lastChecked', now.toString());
   }
   GM_addStyle('\
   #iHover {\
