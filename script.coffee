@@ -256,20 +256,6 @@ clearHidden = ->
   g.hiddenReplies = []
   g.hiddenThreads = []
 
-cooldown = ->
-  submit = $ '#qr input[type=submit]'
-  seconds = parseInt submit.value
-  if seconds == 0
-    submit.disabled = false
-    submit.value = 'Submit'
-    auto = submit.previousSibling.lastChild
-    if auto.checked
-      $('#qr form').submit()
-      #submit.click() doesn't work
-  else
-    submit.value = seconds - 1
-    window.setTimeout cooldown, 1000
-
 editSauce = ->
   ta = $ '#options textarea'
   if ta.style.display then $.show ta else $.hide ta
@@ -801,11 +787,25 @@ qr =
       submit = $ 'input[type=submit]', qr
       submit.value = if g.sage then 60 else 30
       submit.disabled = true
-      window.setTimeout cooldown, 1000
+      window.setTimeout qr.cooldown, 1000
       auto = submit.previousSibling.lastChild
       if auto.checked
         #unhide the qr so you know it's ready for the next item
         $('input[title=autohide]:checked', qr)?.click()
+
+  cooldown: ->
+    submit = $ '#qr input[type=submit]'
+    seconds = parseInt submit.value
+    if seconds == 0
+      submit.disabled = false
+      submit.value = 'Submit'
+      auto = submit.previousSibling.lastChild
+      if auto.checked
+        $('#qr form').submit()
+        #submit.click() doesn't work
+    else
+      submit.value = seconds - 1
+      window.setTimeout qr.cooldown, 1000
 
   dialog: (link) ->
     html = "<div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>"

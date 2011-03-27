@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -385,22 +385,6 @@
     this.value = "hidden: 0";
     g.hiddenReplies = [];
     return g.hiddenThreads = [];
-  };
-  cooldown = function() {
-    var auto, seconds, submit;
-    submit = $('#qr input[type=submit]');
-    seconds = parseInt(submit.value);
-    if (seconds === 0) {
-      submit.disabled = false;
-      submit.value = 'Submit';
-      auto = submit.previousSibling.lastChild;
-      if (auto.checked) {
-        return $('#qr form').submit();
-      }
-    } else {
-      submit.value = seconds - 1;
-      return window.setTimeout(cooldown, 1000);
-    }
   };
   editSauce = function() {
     var ta;
@@ -1069,11 +1053,27 @@
         submit = $('input[type=submit]', qr);
         submit.value = g.sage ? 60 : 30;
         submit.disabled = true;
-        window.setTimeout(cooldown, 1000);
+        window.setTimeout(qr.cooldown, 1000);
         auto = submit.previousSibling.lastChild;
         if (auto.checked) {
           return (_ref = $('input[title=autohide]:checked', qr)) != null ? _ref.click() : void 0;
         }
+      }
+    },
+    cooldown: function() {
+      var auto, seconds, submit;
+      submit = $('#qr input[type=submit]');
+      seconds = parseInt(submit.value);
+      if (seconds === 0) {
+        submit.disabled = false;
+        submit.value = 'Submit';
+        auto = submit.previousSibling.lastChild;
+        if (auto.checked) {
+          return $('#qr form').submit();
+        }
+      } else {
+        submit.value = seconds - 1;
+        return window.setTimeout(qr.cooldown, 1000);
       }
     },
     dialog: function(link) {
