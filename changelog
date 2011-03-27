@@ -1,3 +1,9 @@
+1.27.0
+- x-browser qr error checking (except for batshit insane chrome)
+- fix opera movement, again
+- bigger options button
+- move updater to bottom-right by default
+
 1.26.3
 - don't enable reply nav by default
 - reset file input after posting (persistent qr)
