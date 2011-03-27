@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -348,9 +348,6 @@
   inAfter = function(root, el) {
     return root.parentNode.insertBefore(el, root.nextSibling);
   };
-  inBefore = function(root, el) {
-    return root.parentNode.insertBefore(el, root);
-  };
   replace = function(root, el) {
     return root.parentNode.replaceChild(el, root);
   };
@@ -511,7 +508,7 @@
       $.bind(a, 'click', showReply);
       div = $.el('div');
       mv(a, div);
-      return inBefore(table, div);
+      return $.before(table, div);
     }
   };
   hideThread = function(div) {
@@ -540,7 +537,7 @@
         className: 'pointer'
       });
       $.bind(a, 'click', showThread);
-      return inBefore(div, a);
+      return $.before(div, a);
     }
   };
   imageHover = {
@@ -906,7 +903,7 @@
       _results = [];
       for (_i = 0, _len = replies.length; _i < _len; _i++) {
         reply = replies[_i];
-        _results.push(inBefore(next, x('ancestor::table', reply)));
+        _results.push($.before(next, x('ancestor::table', reply)));
       }
       return _results;
     } else {
@@ -1284,7 +1281,7 @@
     });
     $.bind(a, 'click', hideThread);
     mv(a, div);
-    inBefore(current, div);
+    $.before(current, div);
     while (!current.clear) {
       mv(current, div);
       current = div.nextSibling;
@@ -1359,7 +1356,7 @@
     }
     while (reply = arr.pop()) {
       table = x('ancestor::table', reply);
-      inBefore(root, table);
+      $.before(root, table);
     }
     return timer.textContent = -1 * GM_getValue('Interval', 10);
   };
@@ -1732,7 +1729,7 @@
     $("select", expand).addEventListener('change', changeValue, true);
     $("select", expand).addEventListener('change', imageTypeChange, true);
     $("input", expand).addEventListener('click', imageExpandClick, true);
-    inBefore(delform.firstChild, expand);
+    $.before(delform.firstChild, expand);
     g.callbacks.push(function(root) {
       var thumb, thumbs, _i, _len, _results;
       thumbs = $$('img[md5]', root);
@@ -1899,7 +1896,7 @@
         className: 'pointer'
       });
       $.bind(img, 'click', watch);
-      inBefore(input, img);
+      $.before(input, img);
     }
   }
   if (getConfig('Anonymize')) {
@@ -2037,7 +2034,7 @@
           href: href
         });
         mv(up, tn(' '), down, span);
-        inBefore(el, span);
+        $.before(el, span);
       }
       if (location.hash === '#p0') {
         window.location = window.location;

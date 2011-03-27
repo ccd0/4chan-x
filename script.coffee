@@ -226,8 +226,6 @@ hide = (el) ->
   el.style.display = 'none'
 inAfter = (root, el) ->
   root.parentNode.insertBefore el, root.nextSibling
-inBefore = (root, el) ->
-  root.parentNode.insertBefore el, root
 replace = (root, el) ->
   root.parentNode.replaceChild el, root
 show = (el) ->
@@ -358,7 +356,7 @@ hideReply = (reply) ->
     $.bind a, 'click', showReply
     div = $.el 'div'
     mv a, div
-    inBefore table, div
+    $.before table, div
 
 hideThread = (div) ->
   if p = @parentNode
@@ -382,7 +380,7 @@ hideThread = (div) ->
       textContent: "[ + ] #{name}#{trip} (#{text})"
       className: 'pointer'
     $.bind a, 'click', showThread
-    inBefore div, a
+    $.before div, a
 
 imageHover =
   init: ->
@@ -668,7 +666,7 @@ onloadThread = (responseText, span) ->
     $.remove next
   if next
     for reply in replies
-      inBefore next, x('ancestor::table', reply)
+      $.before next, x('ancestor::table', reply)
   else#threading
     div = span.parentNode
     for reply in replies
@@ -958,7 +956,7 @@ threadF = (current) ->
     className: 'pointer'
   $.bind a, 'click', hideThread
   mv a, div
-  inBefore current, div
+  $.before current, div
   while (!current.clear)#<br clear>
     mv current, div
     current = div.nextSibling
@@ -1020,7 +1018,7 @@ updateCallback = ->
   #insert replies in order, so backlinks resolve
   while reply = arr.pop()
     table = x 'ancestor::table', reply
-    inBefore root, table
+    $.before root, table
 
   timer.textContent = -1 * GM_getValue 'Interval', 10
 
@@ -1356,7 +1354,7 @@ if getConfig 'Image Expansion'
   $("select", expand).addEventListener 'change', changeValue, true
   $("select", expand).addEventListener 'change', imageTypeChange, true
   $("input", expand).addEventListener 'click', imageExpandClick, true
-  inBefore delform.firstChild, expand
+  $.before delform.firstChild, expand
 
   g.callbacks.push (root) ->
     thumbs = $$ 'img[md5]', root
@@ -1469,7 +1467,7 @@ if getConfig 'Thread Watcher'
       src: src
       className: 'pointer'
     $.bind img, 'click', watch
-    inBefore input, img
+    $.before input, img
 
 if getConfig 'Anonymize'
   g.callbacks.push (root) ->
@@ -1571,7 +1569,7 @@ else #not reply
         textContent: textContent
         href: href
       mv up, tn(' '), down, span
-      inBefore el, span
+      $.before el, span
     if location.hash is '#p0'
       window.location = window.location
 
