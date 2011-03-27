@@ -143,12 +143,26 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  addClass: (el, className) ->
+    el.className += ' ' + className
+  removeClass: (el, className) ->
+    el.className = el.className.replace ' ' + className, ''
+  rm: (el) ->
+    el.parentNode.removeChild el
+  append: (parent, child) ->
+    parent.appendChild child
+  before: (root, el) ->
+    root.parentNode.insertBefore el, root
+  el: (tag, properties) ->
+    el = d.createElement tag
+    $.extend el, properties if properties
+    el
   bind: (el, eventType, handler) ->
     el.addEventListener eventType, handler, true
   unbind: (el, eventType, handler) ->
     el.removeEventListener eventType, handler, true
   isDST: ->
-    # XXX this should be isDSTinNY
+    # XXX this should check for DST in NY
     ###
        http://en.wikipedia.org/wiki/Daylight_saving_time_in_the_United_States
        Since 2007, daylight saving time starts on the second Sunday of March
@@ -249,15 +263,6 @@ zeroPad = (n) ->
   if n < 10 then '0' + n else n
 
 #funks
-autohide = ->
-  qr = $ '#qr'
-  klass = qr.className
-  if @checked
-    klass += ' auto'
-  else
-    klass = klass.replace(' auto', '')
-  qr.className = klass
-
 autoWatch = ->
   #TODO look for subject
   autoText = $('textarea', this).value.slice(0, 25)
@@ -345,22 +350,6 @@ getThread = ->
     if bottom > 0 #we have not scrolled past
       return [thread, i]
 
-formSubmit = (e) ->
-  if span = @nextSibling
-    rm span
-  recaptcha = $('input[name=recaptcha_response_field]', this)
-  if recaptcha.value
-    $('#qr input[title=autohide]:not(:checked)')?.click()
-    g.sage = if $('#qr input[name=email]').value is 'sage' then true else false
-  else
-    e.preventDefault()
-    span = n 'span',
-      className: 'error'
-      textContent: 'You forgot to type in the verification.'
-    mv span, @parentNode
-    alert 'You forgot to type in the verification.'
-    recaptcha.focus()
-
 hideReply = (reply) ->
   if p = @parentNode
     reply = p.nextSibling
@@ -405,35 +394,6 @@ hideThread = (div) ->
       className: 'pointer'
       listener: ['click', showThread]
     inBefore div, a
-
-iframeLoad = ->
-  if g.iframe = !g.iframe
-    return
-  $('iframe').src = 'about:blank'
-  qr = $ '#qr'
-  if error = GM_getValue 'error'
-    span = n 'span',
-      textContent: error
-      className: 'error'
-    mv span, qr
-    $('input[title=autohide]:checked', qr)?.click()
-  else if g.REPLY and getConfig 'Persistent QR'
-    $('textarea', qr).value = ''
-    $('input[name=recaptcha_response_field]', qr).value = ''
-    # XXX file.value = '' doesn't work in opera
-    f = $('input[type=file]', qr).parentNode
-    f.innerHTML = f.innerHTML
-    submit = $ 'input[type=submit]', qr
-    submit.value = if g.sage then 60 else 30
-    submit.disabled = true
-    window.setTimeout cooldown, 1000
-    auto = submit.previousSibling.lastChild
-    if auto.checked
-      #unhide the qr so you know it's ready for the next item
-      $('input[title=autohide]:checked', qr)?.click()
-  else
-    rm qr
-  recaptchaReload()
 
 imageHover =
   init: ->
@@ -615,9 +575,14 @@ keyModeNormal = (e) ->
         unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
           qrLink = $ "span#nothread#{thread.id} a:not(:first-child)", thread
       if e.shiftKey
-        quickReply qrLink
+        $.append d.body, qr.dialog qrLink
+        $('#qr textarea').focus()
       else
-        quickReply qrLink, qrText qrLink
+        # qrLink.click() doesn't work, so use this hack
+        e =
+          preventDefault: ->
+          target: qrLink
+        qr.cb.quote e
     when "J"
       if e.shiftKey
         if not g.REPLY then [root] = getThread()
@@ -687,9 +652,9 @@ nodeInserted = (e) ->
   if target.nodeName is 'TABLE'
     for callback in g.callbacks
       callback target
-  else if target.id is 'recaptcha_challenge_field' and qr = $ '#qr'
-    $('#recaptcha_image img', qr).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('#recaptcha_challenge_field', qr).value = target.value
+  else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
+    $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+    $('#recaptcha_challenge_field', dialog).value = target.value
 
 onloadComment = (responseText, a, href) ->
   [_, op, id] = href.match /(\d+)#(\d+)/
@@ -760,63 +725,169 @@ parseResponse = (responseText) ->
   opbq = $ 'blockquote', body
   return [replies, opbq]
 
-qrListener = (e) ->
-  e.preventDefault()
-  link = e.target
-  text = qrText link
-  quickReply link, text
+qr =
+  init: ->
+    g.callbacks.push qr.cb.node
+    iframe = $.el 'iframe',
+      name: 'iframe'
+    $.append d.body, iframe
+    $.bind iframe, 'load', qr.cb.load
+    $.bind window, 'message', qr.cb.messageTop
 
-qrText = (link) ->
-  #we can't just use textContent b/c of the xxxs. goddamit moot.
-  text = '>>' + link.parentNode.id.match(/\d+$/)[0] + '\n'
+    #hack - nuke id so it doesn't grab focus when reloading
+    $('#recaptcha_response_field').id = ''
 
-  selection = window.getSelection()
-  id = x('preceding::span[@id][1]', selection.anchorNode)?.id
-  if (s = selection.toString()) and (id is link.parentNode.id)
-    text += ">#{s}"
+  autohide:
+    set: ->
+      $('#qr input[title=autohide]:not(:checked)')?.click()
+    unset: ->
+      $('#qr input[title=autohide]:checked')?.click()
 
-  text
+  cb:
+    autohide: (e) ->
+      dialog = $ '#qr'
+      if @checked
+        $.addClass dialog, 'auto'
+      else
+        $.removeClass dialog, 'auto'
 
-quickReply = (link, text) ->
-  unless qr = $ '#qr'
-    html = "<div class=move>Quick Reply <input type=checkbox title=autohide><a name=close title=close>X</a></div>"
-    qr = ui.dialog 'qr', 'topleft', html
-    $('input[title=autohide]', qr).addEventListener 'click', autohide, true
+    load: (e) ->
+      e.target.contentWindow.postMessage '', '*'
 
-    form = $ 'form[name=post]'
-    clone = form.cloneNode true
-    #remove recaptcha scripts
+    messageIframe: (e) ->
+      message = $('table b').firstChild.textContent
+      e.source.postMessage message, '*'
+      window.location = 'about:blank'
+
+    messageTop: (e) ->
+      {data} = e
+      dialog = $ '#qr'
+      if data is 'Post successful!'
+        if dialog
+          if getConfig 'Persistent QR'
+            qr.refresh dialog
+          else
+            $.rm dialog
+      else
+        error = $.el 'span',
+          className: 'error'
+          textContent: data
+        $.append dialog, error
+        qr.autohide.unset()
+
+      recaptchaReload()
+
+    node: (root) ->
+      quotes = $$ 'a.quotejs:not(:first-child)', root
+      for quote in quotes
+        $.bind quote, 'click', qr.cb.quote
+
+    submit: (e) ->
+      if span = @nextSibling
+        $.rm span
+      recaptcha = $('input[name=recaptcha_response_field]', this)
+      if recaptcha.value
+        qr.autohide.set()
+        g.sage = $('#qr input[name=email]').value == 'sage'
+      else
+        e.preventDefault()
+        span = $.el 'span',
+          className: 'error'
+          textContent: 'You forgot to type in the verification.'
+        $.append @parentNode, span
+        alert 'You forgot to type in the verification.'
+        recaptcha.focus()
+
+    quote: (e) ->
+      e.preventDefault()
+      {target} = e
+      unless dialog = $ '#qr'
+        dialog = qr.dialog target
+
+      id = target.textContent
+      text = ">>#{id}\n"
+
+      selection = window.getSelection()
+      if s = selection.toString()
+        selectionID = x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
+        if selectionID == id
+          text += ">#{s}\n"
+
+      ta = $ 'textarea', dialog
+      ta.focus()
+      ta.value += text
+
+    refresh: (dialog) ->
+      $('textarea', dialog).value = ''
+      $('input[name=recaptcha_response_field]', dialog).value = ''
+      # XXX file.value = '' doesn't work in opera
+      f = $('input[type=file]', dialog).parentNode
+      f.innerHTML = f.innerHTML
+      submit = $ 'input[type=submit]', qr
+      submit.value = if g.sage then 60 else 30
+      submit.disabled = true
+      window.setTimeout cooldown, 1000
+      auto = submit.previousSibling.lastChild
+      if auto.checked
+        #unhide the qr so you know it's ready for the next item
+        $('input[title=autohide]:checked', qr)?.click()
+
+  dialog: (link) ->
+    html = "<div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>"
+    dialog = ui.dialog 'qr', top: '0px', left: '0px', html
+    el = $ 'input[title=autohide]', dialog
+    $.bind el, 'click', qr.cb.autohide
+
+    clone = $('form[name=post]').cloneNode(true)
     for script in $$ 'script', clone
-      rm script
-    m $('input[name=recaptcha_response_field]', clone),
-      listener: ['keydown', recaptchaListener]
-    m clone,
-      listener: ['submit', formSubmit]
-      target: 'iframe'
+      $.rm script
+    clone.target = 'iframe'
+    $.bind clone, 'submit', qr.cb.submit
+    $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', recaptchaListener
+
     if not g.REPLY
       #figure out which thread we're replying to
       xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
-      input = n 'input',
+      input = $.el 'input',
         type: 'hidden'
         name: 'resto'
         value: x(xpath, link).name
-      mv input, clone
+      $.append clone, input
     else if getConfig 'Persistent QR'
       submit = $ 'input[type=submit]', clone
-      auto = n 'label',
+      auto = $.el 'label',
         textContent: 'Auto'
-      autoBox = n 'input',
+      autobox = $.el 'input',
         type: 'checkbox'
-      mv autoBox, auto
-      inBefore submit, auto
-    mv clone, qr
-    mv qr, d.body
-    qr.style.width = qr.offsetWidth #lock
+      $.append auto, autobox
+      $.before submit, auto
 
-  $('input[title=autohide]:checked', qr)?.click()
-  textarea = $('textarea', qr)
-  textarea.focus()
-  if text then textarea.value += text
+    $.append dialog, clone
+    $.append d.body, dialog
+    dialog.style.width = dialog.offsetWidth # lock
+
+    dialog
+
+  persist: ->
+    $.append d.body, qr.dialog()
+    qr.autohide.set()
+
+  sys: ->
+    $.bind window, 'message', qr.cb.messageIframe
+    if recaptcha = $ '#recaptcha_response_field'
+      # post reporting
+      $.bind recaptcha, 'keydown', recaptchaListener
+    if getConfig 'Auto Watch'
+      html = $('b').innerHTML
+      [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
+      if thread is '0'
+        [_, board] = $('meta', d).content.match(/4chan.org\/(\w+)\//)
+        g.watched[board] or= []
+        g.watched[board].push {
+          id: id,
+          text: GM_getValue 'autoText'
+        }
+        GM_setValue 'watched', JSON.stringify g.watched
 
 recaptchaListener = (e) ->
   if e.keyCode is 8 and @value is ''
@@ -1127,7 +1198,6 @@ g =
     'http://saucenao.com/search.php?db=999&url='
     'http://tineye.com/search?url='
   ].join '\n'
-  iframe: false
   watched: JSON.parse(GM_getValue('watched', '{}'))
   xhrs: []
 g.favHalo = if /ws/.test g.favDefault then 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC' else 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
@@ -1144,26 +1214,6 @@ tzOffset = (new Date()).getTimezoneOffset() / 60
 # GMT -8 is given as +480; would GMT +8 be -480 ?
 g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5
 if $.isDST() then g.chanOffset -= 1
-
-if location.hostname.split('.')[0] is 'sys'
-  if recaptcha = $ '#recaptcha_response_field'
-    m recaptcha, listener: ['keydown', recaptchaListener]
-  else if b = $ 'table font b'
-    GM_setValue 'error', b.firstChild.textContent
-  else
-    GM_setValue 'error', ''
-    if getConfig 'Auto Watch'
-      html = $('b').innerHTML
-      [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
-      if thread is '0'
-        board = $('meta', d).content.match(/4chan.org\/(\w+)\//)[1]
-        g.watched[board] or= []
-        g.watched[board].push {
-          id: id,
-          text: GM_getValue 'autoText'
-        }
-        GM_setValue 'watched', JSON.stringify g.watched
-  return
 
 lastChecked = GM_getValue('lastChecked', 0)
 now = getTime()
@@ -1263,6 +1313,9 @@ GM_addStyle '
   }
 '
 
+if location.hostname is 'sys.4chan.org'
+  qr.sys()
+  return
 if navtopr = $ '#navtopr a'
   a = n 'a',
     textContent: '4chan X'
@@ -1388,20 +1441,7 @@ if getConfig 'Reply Hiding'
           hideReply(next)
 
 if getConfig 'Quick Reply'
-  iframe = n 'iframe',
-    name: 'iframe'
-    listener: ['load', iframeLoad]
-  hide(iframe)
-  mv iframe, d.body
-
-  g.callbacks.push (root) ->
-    quotes = $$('a.quotejs:not(:first-child)', root)
-    for quote in quotes
-      quote.addEventListener('click', qrListener, true)
-
-  #hack - nuke id so it doesn't grab focus when reloading
-  recaptcha.id = ''
-
+  qr.init()
 
 if getConfig 'Quick Report'
   g.callbacks.push (root) ->
@@ -1481,8 +1521,7 @@ if g.REPLY
   if getConfig 'Thread Updater'
     updaterMake()
   if getConfig('Quick Reply') and getConfig 'Persistent QR'
-    quickReply()
-    $('#qr input[title=autohide]').click()
+    qr.persist()
   if getConfig 'Post in Title'
     unless text = $('span.filetitle').textContent
       text = $('blockquote').textContent

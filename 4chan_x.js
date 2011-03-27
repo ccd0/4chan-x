@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, autohide, b, board, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, formSubmit, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, iframe, iframeLoad, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qrListener, qrText, quickReply, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, thread, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -241,6 +241,29 @@
     return object;
   };
   $.extend($, {
+    addClass: function(el, className) {
+      return el.className += ' ' + className;
+    },
+    removeClass: function(el, className) {
+      return el.className = el.className.replace(' ' + className, '');
+    },
+    rm: function(el) {
+      return el.parentNode.removeChild(el);
+    },
+    append: function(parent, child) {
+      return parent.appendChild(child);
+    },
+    before: function(root, el) {
+      return root.parentNode.insertBefore(el, root);
+    },
+    el: function(tag, properties) {
+      var el;
+      el = d.createElement(tag);
+      if (properties) {
+        $.extend(el, properties);
+      }
+      return el;
+    },
     bind: function(el, eventType, handler) {
       return el.addEventListener(eventType, handler, true);
     },
@@ -387,17 +410,6 @@
       return n;
     }
   };
-  autohide = function() {
-    var klass, qr;
-    qr = $('#qr');
-    klass = qr.className;
-    if (this.checked) {
-      klass += ' auto';
-    } else {
-      klass = klass.replace(' auto', '');
-    }
-    return qr.className = klass;
-  };
   autoWatch = function() {
     var autoText;
     autoText = $('textarea', this).value.slice(0, 25);
@@ -500,28 +512,6 @@
       }
     }
   };
-  formSubmit = function(e) {
-    var recaptcha, span, _ref;
-    if (span = this.nextSibling) {
-      rm(span);
-    }
-    recaptcha = $('input[name=recaptcha_response_field]', this);
-    if (recaptcha.value) {
-      if ((_ref = $('#qr input[title=autohide]:not(:checked)')) != null) {
-        _ref.click();
-      }
-      return g.sage = $('#qr input[name=email]').value === 'sage' ? true : false;
-    } else {
-      e.preventDefault();
-      span = n('span', {
-        className: 'error',
-        textContent: 'You forgot to type in the verification.'
-      });
-      mv(span, this.parentNode);
-      alert('You forgot to type in the verification.');
-      return recaptcha.focus();
-    }
-  };
   hideReply = function(reply) {
     var a, div, name, p, table, trip, _ref;
     if (p = this.parentNode) {
@@ -575,42 +565,6 @@
       });
       return inBefore(div, a);
     }
-  };
-  iframeLoad = function() {
-    var auto, error, f, qr, span, submit, _ref, _ref2;
-    if (g.iframe = !g.iframe) {
-      return;
-    }
-    $('iframe').src = 'about:blank';
-    qr = $('#qr');
-    if (error = GM_getValue('error')) {
-      span = n('span', {
-        textContent: error,
-        className: 'error'
-      });
-      mv(span, qr);
-      if ((_ref = $('input[title=autohide]:checked', qr)) != null) {
-        _ref.click();
-      }
-    } else if (g.REPLY && getConfig('Persistent QR')) {
-      $('textarea', qr).value = '';
-      $('input[name=recaptcha_response_field]', qr).value = '';
-      f = $('input[type=file]', qr).parentNode;
-      f.innerHTML = f.innerHTML;
-      submit = $('input[type=submit]', qr);
-      submit.value = g.sage ? 60 : 30;
-      submit.disabled = true;
-      window.setTimeout(cooldown, 1000);
-      auto = submit.previousSibling.lastChild;
-      if (auto.checked) {
-        if ((_ref2 = $('input[title=autohide]:checked', qr)) != null) {
-          _ref2.click();
-        }
-      }
-    } else {
-      rm(qr);
-    }
-    return recaptchaReload();
   };
   imageHover = {
     init: function() {
@@ -830,9 +784,14 @@
           }
         }
         if (e.shiftKey) {
-          return quickReply(qrLink);
+          $.append(d.body, qr.dialog(qrLink));
+          return $('#qr textarea').focus();
         } else {
-          return quickReply(qrLink, qrText(qrLink));
+          e = {
+            preventDefault: function() {},
+            target: qrLink
+          };
+          return qr.cb.quote(e);
         }
         break;
       case "J":
@@ -926,7 +885,7 @@
     }
   };
   nodeInserted = function(e) {
-    var callback, qr, target, _i, _len, _ref, _results;
+    var callback, dialog, target, _i, _len, _ref, _results;
     target = e.target;
     if (target.nodeName === 'TABLE') {
       _ref = g.callbacks;
@@ -936,9 +895,9 @@
         _results.push(callback(target));
       }
       return _results;
-    } else if (target.id === 'recaptcha_challenge_field' && (qr = $('#qr'))) {
-      $('#recaptcha_image img', qr).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('#recaptcha_challenge_field', qr).value = target.value;
+    } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
+      $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+      return $('#recaptcha_challenge_field', dialog).value = target.value;
     }
   };
   onloadComment = function(responseText, a, href) {
@@ -1029,73 +988,200 @@
     opbq = $('blockquote', body);
     return [replies, opbq];
   };
-  qrListener = function(e) {
-    var link, text;
-    e.preventDefault();
-    link = e.target;
-    text = qrText(link);
-    return quickReply(link, text);
-  };
-  qrText = function(link) {
-    var id, s, selection, text, _ref;
-    text = '>>' + link.parentNode.id.match(/\d+$/)[0] + '\n';
-    selection = window.getSelection();
-    id = (_ref = x('preceding::span[@id][1]', selection.anchorNode)) != null ? _ref.id : void 0;
-    if ((s = selection.toString()) && (id === link.parentNode.id)) {
-      text += ">" + s;
-    }
-    return text;
-  };
-  quickReply = function(link, text) {
-    var auto, autoBox, clone, form, html, input, qr, script, submit, textarea, xpath, _i, _len, _ref, _ref2;
-    if (!(qr = $('#qr'))) {
-      html = "<div class=move>Quick Reply <input type=checkbox title=autohide><a name=close title=close>X</a></div>";
-      qr = ui.dialog('qr', 'topleft', html);
-      $('input[title=autohide]', qr).addEventListener('click', autohide, true);
-      form = $('form[name=post]');
-      clone = form.cloneNode(true);
+  qr = {
+    init: function() {
+      var iframe;
+      g.callbacks.push(qr.cb.node);
+      iframe = $.el('iframe', {
+        name: 'iframe'
+      });
+      $.append(d.body, iframe);
+      $.bind(iframe, 'load', qr.cb.load);
+      $.bind(window, 'message', qr.cb.messageTop);
+      return $('#recaptcha_response_field').id = '';
+    },
+    autohide: {
+      set: function() {
+        var _ref;
+        return (_ref = $('#qr input[title=autohide]:not(:checked)')) != null ? _ref.click() : void 0;
+      },
+      unset: function() {
+        var _ref;
+        return (_ref = $('#qr input[title=autohide]:checked')) != null ? _ref.click() : void 0;
+      }
+    },
+    cb: {
+      autohide: function(e) {
+        var dialog;
+        dialog = $('#qr');
+        if (this.checked) {
+          return $.addClass(dialog, 'auto');
+        } else {
+          return $.removeClass(dialog, 'auto');
+        }
+      },
+      load: function(e) {
+        return e.target.contentWindow.postMessage('', '*');
+      },
+      messageIframe: function(e) {
+        var message;
+        message = $('table b').firstChild.textContent;
+        e.source.postMessage(message, '*');
+        return window.location = 'about:blank';
+      },
+      messageTop: function(e) {
+        var data, dialog, error;
+        data = e.data;
+        dialog = $('#qr');
+        if (data === 'Post successful!') {
+          if (dialog) {
+            if (getConfig('Persistent QR')) {
+              qr.refresh(dialog);
+            } else {
+              $.rm(dialog);
+            }
+          }
+        } else {
+          error = $.el('span', {
+            className: 'error',
+            textContent: data
+          });
+          $.append(dialog, error);
+          qr.autohide.unset();
+        }
+        return recaptchaReload();
+      },
+      node: function(root) {
+        var quote, quotes, _i, _len, _results;
+        quotes = $$('a.quotejs:not(:first-child)', root);
+        _results = [];
+        for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+          quote = quotes[_i];
+          _results.push($.bind(quote, 'click', qr.cb.quote));
+        }
+        return _results;
+      },
+      submit: function(e) {
+        var recaptcha, span;
+        if (span = this.nextSibling) {
+          $.rm(span);
+        }
+        recaptcha = $('input[name=recaptcha_response_field]', this);
+        if (recaptcha.value) {
+          qr.autohide.set();
+          return g.sage = $('#qr input[name=email]').value === 'sage';
+        } else {
+          e.preventDefault();
+          span = $.el('span', {
+            className: 'error',
+            textContent: 'You forgot to type in the verification.'
+          });
+          $.append(this.parentNode, span);
+          alert('You forgot to type in the verification.');
+          return recaptcha.focus();
+        }
+      },
+      quote: function(e) {
+        var dialog, id, s, selection, selectionID, ta, target, text, _ref;
+        e.preventDefault();
+        target = e.target;
+        if (!(dialog = $('#qr'))) {
+          dialog = qr.dialog(target);
+        }
+        id = target.textContent;
+        text = ">>" + id + "\n";
+        selection = window.getSelection();
+        if (s = selection.toString()) {
+          selectionID = (_ref = x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
+          if (selectionID === id) {
+            text += ">" + s + "\n";
+          }
+        }
+        ta = $('textarea', dialog);
+        ta.focus();
+        return ta.value += text;
+      },
+      refresh: function(dialog) {
+        var auto, f, submit, _ref;
+        $('textarea', dialog).value = '';
+        $('input[name=recaptcha_response_field]', dialog).value = '';
+        f = $('input[type=file]', dialog).parentNode;
+        f.innerHTML = f.innerHTML;
+        submit = $('input[type=submit]', qr);
+        submit.value = g.sage ? 60 : 30;
+        submit.disabled = true;
+        window.setTimeout(cooldown, 1000);
+        auto = submit.previousSibling.lastChild;
+        if (auto.checked) {
+          return (_ref = $('input[title=autohide]:checked', qr)) != null ? _ref.click() : void 0;
+        }
+      }
+    },
+    dialog: function(link) {
+      var auto, autobox, clone, dialog, el, html, input, script, submit, xpath, _i, _len, _ref;
+      html = "<div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>";
+      dialog = ui.dialog('qr', {
+        top: '0px',
+        left: '0px'
+      }, html);
+      el = $('input[title=autohide]', dialog);
+      $.bind(el, 'click', qr.cb.autohide);
+      clone = $('form[name=post]').cloneNode(true);
       _ref = $$('script', clone);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         script = _ref[_i];
-        rm(script);
+        $.rm(script);
       }
-      m($('input[name=recaptcha_response_field]', clone), {
-        listener: ['keydown', recaptchaListener]
-      });
-      m(clone, {
-        listener: ['submit', formSubmit],
-        target: 'iframe'
-      });
+      clone.target = 'iframe';
+      $.bind(clone, 'submit', qr.cb.submit);
+      $.bind($('input[name=recaptcha_response_field]', clone), 'keydown', recaptchaListener);
       if (!g.REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
-        input = n('input', {
+        input = $.el('input', {
           type: 'hidden',
           name: 'resto',
           value: x(xpath, link).name
         });
-        mv(input, clone);
+        $.append(clone, input);
       } else if (getConfig('Persistent QR')) {
         submit = $('input[type=submit]', clone);
-        auto = n('label', {
+        auto = $.el('label', {
           textContent: 'Auto'
         });
-        autoBox = n('input', {
+        autobox = $.el('input', {
           type: 'checkbox'
         });
-        mv(autoBox, auto);
-        inBefore(submit, auto);
+        $.append(auto, autobox);
+        $.before(submit, auto);
       }
-      mv(clone, qr);
-      mv(qr, d.body);
-      qr.style.width = qr.offsetWidth;
-    }
-    if ((_ref2 = $('input[title=autohide]:checked', qr)) != null) {
-      _ref2.click();
-    }
-    textarea = $('textarea', qr);
-    textarea.focus();
-    if (text) {
-      return textarea.value += text;
+      $.append(dialog, clone);
+      $.append(d.body, dialog);
+      dialog.style.width = dialog.offsetWidth;
+      return dialog;
+    },
+    persist: function() {
+      $.append(d.body, qr.dialog());
+      return qr.autohide.set();
+    },
+    sys: function() {
+      var board, html, id, recaptcha, thread, _, _base, _ref, _ref2;
+      $.bind(window, 'message', qr.cb.messageIframe);
+      if (recaptcha = $('#recaptcha_response_field')) {
+        $.bind(recaptcha, 'keydown', recaptchaListener);
+      }
+      if (getConfig('Auto Watch')) {
+        html = $('b').innerHTML;
+        _ref = html.match(/<!-- thread:(\d+),no:(\d+) -->/), _ = _ref[0], thread = _ref[1], id = _ref[2];
+        if (thread === '0') {
+          _ref2 = $('meta', d).content.match(/4chan.org\/(\w+)\//), _ = _ref2[0], board = _ref2[1];
+          (_base = g.watched)[board] || (_base[board] = []);
+          g.watched[board].push({
+            id: id,
+            text: GM_getValue('autoText')
+          });
+          return GM_setValue('watched', JSON.stringify(g.watched));
+        }
+      }
     }
   };
   recaptchaListener = function(e) {
@@ -1484,7 +1570,6 @@
     favDefault: ((_ref = $('link[rel="shortcut icon"]', d)) != null ? _ref.href : void 0) || '',
     favEmpty: 'http://static.4chan.org/image/favicon-dis.ico',
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n'),
-    iframe: false,
     watched: JSON.parse(GM_getValue('watched', '{}')),
     xhrs: []
   };
@@ -1503,31 +1588,6 @@
   g.chanOffset = 5 - tzOffset;
   if ($.isDST()) {
     g.chanOffset -= 1;
-  }
-  if (location.hostname.split('.')[0] === 'sys') {
-    if (recaptcha = $('#recaptcha_response_field')) {
-      m(recaptcha, {
-        listener: ['keydown', recaptchaListener]
-      });
-    } else if (b = $('table font b')) {
-      GM_setValue('error', b.firstChild.textContent);
-    } else {
-      GM_setValue('error', '');
-      if (getConfig('Auto Watch')) {
-        html = $('b').innerHTML;
-        _ref2 = html.match(/<!-- thread:(\d+),no:(\d+) -->/), _ = _ref2[0], thread = _ref2[1], id = _ref2[2];
-        if (thread === '0') {
-          board = $('meta', d).content.match(/4chan.org\/(\w+)\//)[1];
-          (_base = g.watched)[board] || (_base[board] = []);
-          g.watched[board].push({
-            id: id,
-            text: GM_getValue('autoText')
-          });
-          GM_setValue('watched', JSON.stringify(g.watched));
-        }
-      }
-    }
-    return;
   }
   lastChecked = GM_getValue('lastChecked', 0);
   now = getTime();
@@ -1628,6 +1688,10 @@
     background: lime;\
   }\
 ');
+  if (location.hostname === 'sys.4chan.org') {
+    qr.sys();
+    return;
+  }
   if (navtopr = $('#navtopr a')) {
     a = n('a', {
       textContent: '4chan X',
@@ -1647,9 +1711,9 @@
   } else {
     return;
   }
-  _ref3 = $$('#recaptcha_table a');
-  for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-    el = _ref3[_i];
+  _ref2 = $$('#recaptcha_table a');
+  for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+    el = _ref2[_i];
     el.tabIndex = 1;
   }
   recaptcha = $('#recaptcha_response_field');
@@ -1677,9 +1741,9 @@
       innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>      <label>Expand Images<input type=checkbox id=imageExpand></label>"
     });
     imageType = GM_getValue('imageType', 'full');
-    _ref4 = $$("option", expand);
-    for (_j = 0, _len2 = _ref4.length; _j < _len2; _j++) {
-      option = _ref4[_j];
+    _ref3 = $$("option", expand);
+    for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+      option = _ref3[_j];
       if (option.textContent === imageType) {
         option.selected = true;
         break;
@@ -1719,7 +1783,7 @@
   }
   if (getConfig('Localize Time')) {
     g.callbacks.push(function(root) {
-      var date, day, dotw, hour, min_sec, month, s, span, spans, year, _i, _len, _ref, _results;
+      var date, day, dotw, hour, min_sec, month, s, span, spans, year, _, _i, _len, _ref, _results;
       spans = $$('span[id^=no]', root);
       _results = [];
       for (_i = 0, _len = spans.length; _i < _len; _i++) {
@@ -1779,7 +1843,7 @@
   }
   if (getConfig('Reply Hiding')) {
     g.callbacks.push(function(root) {
-      var next, obj, td, tds, _i, _len, _results;
+      var id, next, obj, td, tds, _i, _len, _results;
       tds = $$('td.doubledash', root);
       _results = [];
       for (_i = 0, _len = tds.length; _i < _len; _i++) {
@@ -1807,23 +1871,7 @@
     });
   }
   if (getConfig('Quick Reply')) {
-    iframe = n('iframe', {
-      name: 'iframe',
-      listener: ['load', iframeLoad]
-    });
-    hide(iframe);
-    mv(iframe, d.body);
-    g.callbacks.push(function(root) {
-      var quote, quotes, _i, _len, _results;
-      quotes = $$('a.quotejs:not(:first-child)', root);
-      _results = [];
-      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-        quote = quotes[_i];
-        _results.push(quote.addEventListener('click', qrListener, true));
-      }
-      return _results;
-    });
-    recaptcha.id = '';
+    qr.init();
   }
   if (getConfig('Quick Report')) {
     g.callbacks.push(function(root) {
@@ -1939,8 +1987,7 @@
       updaterMake();
     }
     if (getConfig('Quick Reply') && getConfig('Persistent QR')) {
-      quickReply();
-      $('#qr input[title=autohide]').click();
+      qr.persist();
     }
     if (getConfig('Post in Title')) {
       if (!(text = $('span.filetitle').textContent)) {
@@ -2036,9 +2083,9 @@
       }
     }
   }
-  _ref5 = g.callbacks;
-  for (_n = 0, _len7 = _ref5.length; _n < _len7; _n++) {
-    callback = _ref5[_n];
+  _ref4 = g.callbacks;
+  for (_n = 0, _len7 = _ref4.length; _n < _len7; _n++) {
+    callback = _ref4[_n];
     callback();
   }
   d.body.addEventListener('DOMNodeInserted', nodeInserted, true);
