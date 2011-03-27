@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -242,6 +242,12 @@
     return object;
   };
   $.extend($, {
+    x: function(path, root) {
+      if (root == null) {
+        root = d.body;
+      }
+      return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
+    },
     tn: function(s) {
       return d.createTextNode(s);
     },
@@ -368,12 +374,6 @@
     }
     return _results;
   };
-  x = function(path, root) {
-    if (root == null) {
-      root = d.body;
-    }
-    return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
-  };
   zeroPad = function(n) {
     if (n < 10) {
       return '0' + n;
@@ -441,11 +441,11 @@
   };
   expandThread = function() {
     var id, num, prev, r, span, table, xhr, _i, _len, _ref;
-    id = x('preceding-sibling::input[1]', this).name;
+    id = $.x('preceding-sibling::input[1]', this).name;
     span = this;
     if (span.textContent[0] === '-') {
       num = board === 'b' ? 3 : 5;
-      table = x("following::br[@clear][1]/preceding::table[" + num + "]", span);
+      table = $.x("following::br[@clear][1]/preceding::table[" + num + "]", span);
       while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
         $.remove(prev);
       }
@@ -495,7 +495,7 @@
     }
     name = $('span.commentpostername', reply).textContent;
     trip = ((_ref = $('span.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
-    table = x('ancestor::table', reply);
+    table = $.x('ancestor::table', reply);
     $.hide(table);
     if (getConfig('Show Stubs')) {
       a = $.el('a', {
@@ -662,7 +662,7 @@
   };
   imageResize = function(cw, ch, imageType, image) {
     var ih, iw, ratio, _, _ref;
-    _ref = x("preceding::span[@class][1]/text()[2]", image).textContent.match(/(\d+)x(\d+)/), _ = _ref[0], iw = _ref[1], ih = _ref[2];
+    _ref = $.x("preceding::span[@class][1]/text()[2]", image).textContent.match(/(\d+)x(\d+)/), _ = _ref[0], iw = _ref[1], ih = _ref[2];
     iw = Number(iw);
     ih = Number(ih);
     switch (imageType) {
@@ -774,7 +774,7 @@
             td.className = 'reply';
             rect = td.getBoundingClientRect();
             if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-              next = x('following::td[@class="reply"]', td);
+              next = $.x('following::td[@class="reply"]', td);
               rect = next.getBoundingClientRect();
               if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
                 next.className = 'replyhl';
@@ -802,7 +802,7 @@
             td.className = 'reply';
             rect = td.getBoundingClientRect();
             if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-              prev = x('preceding::td[@class="reply"][1]', td);
+              prev = $.x('preceding::td[@class="reply"][1]', td);
               rect = prev.getBoundingClientRect();
               if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
                 prev.className = 'replyhl';
@@ -885,7 +885,7 @@
         }
       }
     }
-    bq = x('ancestor::blockquote', a);
+    bq = $.x('ancestor::blockquote', a);
     return bq.innerHTML = html;
   };
   onloadThread = function(responseText, span) {
@@ -900,7 +900,7 @@
       _results = [];
       for (_i = 0, _len = replies.length; _i < _len; _i++) {
         reply = replies[_i];
-        _results.push($.before(next, x('ancestor::table', reply)));
+        _results.push($.before(next, $.x('ancestor::table', reply)));
       }
       return _results;
     } else {
@@ -908,7 +908,7 @@
       _results2 = [];
       for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
         reply = replies[_j];
-        _results2.push(mv(x('ancestor::table', reply), div));
+        _results2.push(mv($.x('ancestor::table', reply), div));
       }
       return _results2;
     }
@@ -1063,7 +1063,7 @@
         text = ">>" + id + "\n";
         selection = window.getSelection();
         if (s = selection.toString()) {
-          selectionID = (_ref = x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
+          selectionID = (_ref = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
           if (selectionID === id) {
             text += ">" + s + "\n";
           }
@@ -1111,7 +1111,7 @@
         input = $.el('input', {
           type: 'hidden',
           name: 'resto',
-          value: x(xpath, link).name
+          value: $.x(xpath, link).name
         });
         $.append(clone, input);
       } else if (getConfig('Persistent QR')) {
@@ -1214,13 +1214,13 @@
       return window.location = this.textContent === '▲' ? '#navtop' : '#navbot';
     } else {
       direction = this.textContent === '▲' ? 'preceding' : 'following';
-      op = x("" + direction + "::span[starts-with(@id, 'nothread')][1]", this).id;
+      op = $.x("" + direction + "::span[starts-with(@id, 'nothread')][1]", this).id;
       return window.location = "#" + op;
     }
   };
   report = function() {
     var input;
-    input = x('preceding-sibling::input[1]', this);
+    input = $.x('preceding-sibling::input[1]', this);
     input.click();
     $('input[value="Report"]').click();
     return input.click();
@@ -1352,7 +1352,7 @@
       count.className = l > 0 ? 'new' : '';
     }
     while (reply = arr.pop()) {
-      table = x('ancestor::table', reply);
+      table = $.x('ancestor::table', reply);
       $.before(root, table);
     }
     return timer.textContent = -1 * GM_getValue('Interval', 10);
@@ -1487,7 +1487,7 @@
     id = this.nextSibling.name;
     if (this.src === g.favEmpty) {
       this.src = g.favDefault;
-      text = ("/" + g.BOARD + "/ - ") + x('following-sibling::blockquote', this).textContent.slice(0, 25);
+      text = ("/" + g.BOARD + "/ - ") + $.x('following-sibling::blockquote', this).textContent.slice(0, 25);
       (_base = g.watched)[_name = g.BOARD] || (_base[_name] = []);
       g.watched[g.BOARD].push({
         id: id,

@@ -145,6 +145,9 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  x: (path, root=d.body) ->
+    d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
+      singleNodeValue
   tn: (s) ->
     d.createTextNode s
   replace: (root, el) ->
@@ -241,9 +244,6 @@ slice = (arr, id) ->
       arr.splice i, 1
       return arr
     i++
-x = (path, root=d.body) ->
-  d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
-    singleNodeValue
 zeroPad = (n) ->
   if n < 10 then '0' + n else n
 
@@ -299,13 +299,13 @@ expandComment = (e) ->
   }
 
 expandThread = ->
-  id = x('preceding-sibling::input[1]', this).name
+  id = $.x('preceding-sibling::input[1]', this).name
   span = this
   #close expanded thread
   if span.textContent[0] is '-'
     #goddamit moot
     num = if board is 'b' then 3 else 5
-    table = x "following::br[@clear][1]/preceding::table[#{num}]", span
+    table = $.x "following::br[@clear][1]/preceding::table[#{num}]", span
     while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
       $.remove prev
     span.textContent = span.textContent.replace '-', '+'
@@ -345,7 +345,7 @@ hideReply = (reply) ->
     GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
   name = $('span.commentpostername', reply).textContent
   trip = $('span.postertrip', reply)?.textContent or ''
-  table = x 'ancestor::table', reply
+  table = $.x 'ancestor::table', reply
   $.hide table
   if getConfig 'Show Stubs'
     a = $.el 'a',
@@ -480,7 +480,7 @@ imageExpand = (thumb, cw, ch, imageType) ->
 
 imageResize = (cw, ch, imageType, image) ->
   [_, iw, ih] =
-    x("preceding::span[@class][1]/text()[2]", image)
+    $.x("preceding::span[@class][1]/text()[2]", image)
     .textContent.match(/(\d+)x(\d+)/)
   iw = Number iw
   ih = Number ih
@@ -575,7 +575,7 @@ keyModeNormal = (e) ->
           td.className = 'reply'
           rect = td.getBoundingClientRect()
           if rect.top > 0 and rect.bottom < d.body.clientHeight #you're visible
-            next = x 'following::td[@class="reply"]', td
+            next = $.x 'following::td[@class="reply"]', td
             rect = next.getBoundingClientRect()
             if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the next
               next.className = 'replyhl'
@@ -594,7 +594,7 @@ keyModeNormal = (e) ->
           td.className = 'reply'
           rect = td.getBoundingClientRect()
           if rect.top > 0 and rect.bottom < d.body.clientHeight #you're visible
-            prev = x 'preceding::td[@class="reply"][1]', td
+            prev = $.x 'preceding::td[@class="reply"][1]', td
             rect = prev.getBoundingClientRect()
             if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the prev
               prev.className = 'replyhl'
@@ -652,7 +652,7 @@ onloadComment = (responseText, a, href) ->
     for reply in replies
       if reply.id == id
         html = $('blockquote', reply).innerHTML
-  bq = x 'ancestor::blockquote', a
+  bq = $.x 'ancestor::blockquote', a
   bq.innerHTML = html
 
 onloadThread = (responseText, span) ->
@@ -664,11 +664,11 @@ onloadThread = (responseText, span) ->
     $.remove next
   if next
     for reply in replies
-      $.before next, x('ancestor::table', reply)
+      $.before next, $.x('ancestor::table', reply)
   else#threading
     div = span.parentNode
     for reply in replies
-      mv x('ancestor::table', reply), div
+      mv $.x('ancestor::table', reply), div
 
 changeCheckbox = ->
   GM_setValue @name, @checked
@@ -794,7 +794,7 @@ qr =
 
       selection = window.getSelection()
       if s = selection.toString()
-        selectionID = x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
+        selectionID = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
         if selectionID == id
           text += ">#{s}\n"
 
@@ -836,7 +836,7 @@ qr =
       input = $.el 'input',
         type: 'hidden'
         name: 'resto'
-        value: x(xpath, link).name
+        value: $.x(xpath, link).name
       $.append clone, input
     else if getConfig 'Persistent QR'
       submit = $ 'input[type=submit]', clone
@@ -898,11 +898,11 @@ replyNav = ->
     window.location = if @textContent is '▲' then '#navtop' else '#navbot'
   else
     direction = if @textContent is '▲' then 'preceding' else 'following'
-    op = x("#{direction}::span[starts-with(@id, 'nothread')][1]", this).id
+    op = $.x("#{direction}::span[starts-with(@id, 'nothread')][1]", this).id
     window.location = "##{op}"
 
 report = ->
-  input = x('preceding-sibling::input[1]', this)
+  input = $.x('preceding-sibling::input[1]', this)
   input.click()
   $('input[value="Report"]').click()
   input.click()
@@ -1015,7 +1015,7 @@ updateCallback = ->
 
   #insert replies in order, so backlinks resolve
   while reply = arr.pop()
-    table = x 'ancestor::table', reply
+    table = $.x 'ancestor::table', reply
     $.before root, table
 
   timer.textContent = -1 * GM_getValue 'Interval', 10
@@ -1131,7 +1131,7 @@ watch = ->
   if @src is g.favEmpty
     @src = g.favDefault
     text = "/#{g.BOARD}/ - " +
-      x('following-sibling::blockquote', this).textContent.slice(0,25)
+      $.x('following-sibling::blockquote', this).textContent.slice(0,25)
     g.watched[g.BOARD] or= []
     g.watched[g.BOARD].push {
       id: id,
