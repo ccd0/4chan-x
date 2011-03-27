@@ -145,6 +145,8 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  tn: (s) ->
+    d.createTextNode s
   replace: (root, el) ->
     root.parentNode.replaceChild el, root
   hide: (el) ->
@@ -239,8 +241,6 @@ slice = (arr, id) ->
       arr.splice i, 1
       return arr
     i++
-tn = (s) ->
-  d.createTextNode s
 x = (path, root=d.body) ->
   d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
     singleNodeValue
@@ -1154,7 +1154,7 @@ watcherUpdate = ->
       link = $.el 'a',
         textContent: thread.text
         href: "/#{board}/res/#{thread.id}"
-      mv a, tn(' '), link, $.el('br'), div
+      mv a, $.tn(' '), link, $.el('br'), div
   old = $('#watcher div:last-child')
   $.replace(old, div)
 
@@ -1409,7 +1409,7 @@ if getConfig 'Sauce'
         link = $.el 'a',
           textContent: names[i]
           href: prefixes[i] + suffix
-        mv tn(' '), link, span
+        mv $.tn(' '), link, span
         i++
 
 if getConfig 'Reply Hiding'
@@ -1440,7 +1440,7 @@ if getConfig 'Quick Report'
         className: 'pointer'
       $.bind a, 'click', report
       inAfter el, a
-      inAfter el, tn(' ')
+      inAfter el, $.tn(' ')
 
 if getConfig 'Thread Watcher'
   #create watcher
@@ -1492,7 +1492,7 @@ if getConfig 'Reply Navigation'
         textContent: '▼'
         className: 'pointer'
       $.bind down, 'click', replyNav
-      mv tn(' '), up, tn(' '), down, span
+      mv $.tn(' '), up, $.tn(' '), down, span
       inAfter el, span
 
 if getConfig 'Keybinds'
@@ -1566,7 +1566,7 @@ else #not reply
         className: 'pointer'
         textContent: textContent
         href: href
-      mv up, tn(' '), down, span
+      mv up, $.tn(' '), down, span
       $.before el, span
     if location.hash is '#p0'
       window.location = window.location

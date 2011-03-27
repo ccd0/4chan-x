@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -242,6 +242,9 @@
     return object;
   };
   $.extend($, {
+    tn: function(s) {
+      return d.createTextNode(s);
+    },
     replace: function(root, el) {
       return root.parentNode.replaceChild(el, root);
     },
@@ -364,9 +367,6 @@
       _results.push(i++);
     }
     return _results;
-  };
-  tn = function(s) {
-    return d.createTextNode(s);
   };
   x = function(path, root) {
     if (root == null) {
@@ -1516,7 +1516,7 @@
           textContent: thread.text,
           href: "/" + board + "/res/" + thread.id
         });
-        mv(a, tn(' '), link, $.el('br'), div);
+        mv(a, $.tn(' '), link, $.el('br'), div);
       }
     }
     old = $('#watcher div:last-child');
@@ -1806,7 +1806,7 @@
               textContent: names[i],
               href: prefixes[i] + suffix
             });
-            mv(tn(' '), link, span);
+            mv($.tn(' '), link, span);
             _results.push(i++);
           }
           return _results;
@@ -1860,7 +1860,7 @@
         });
         $.bind(a, 'click', report);
         inAfter(el, a);
-        _results.push(inAfter(el, tn(' ')));
+        _results.push(inAfter(el, $.tn(' ')));
       }
       return _results;
     });
@@ -1931,7 +1931,7 @@
           className: 'pointer'
         });
         $.bind(down, 'click', replyNav);
-        mv(tn(' '), up, tn(' '), down, span);
+        mv($.tn(' '), up, $.tn(' '), down, span);
         _results.push(inAfter(el, span));
       }
       return _results;
@@ -2030,7 +2030,7 @@
           textContent: textContent,
           href: href
         });
-        mv(up, tn(' '), down, span);
+        mv(up, $.tn(' '), down, span);
         $.before(el, span);
       }
       if (location.hash === '#p0') {
