@@ -149,7 +149,7 @@ $.extend $,
     el.className += ' ' + className
   removeClass: (el, className) ->
     el.className = el.className.replace ' ' + className, ''
-  rm: (el) ->
+  remove: (el) ->
     el.parentNode.removeChild el
   append: (parent, child) ->
     parent.appendChild child
@@ -228,8 +228,6 @@ inAfter = (root, el) ->
   root.parentNode.insertBefore el, root.nextSibling
 inBefore = (root, el) ->
   root.parentNode.insertBefore el, root
-rm = (el) ->
-  el.parentNode.removeChild el
 replace = (root, el) ->
   root.parentNode.replaceChild el, root
 show = (el) ->
@@ -261,7 +259,7 @@ autoWatch = ->
 
 closeQR = ->
   div = @parentNode.parentNode
-  rm div
+  $.remove div
 
 clearHidden = ->
   #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -313,7 +311,7 @@ expandThread = ->
     num = if board is 'b' then 3 else 5
     table = x "following::br[@clear][1]/preceding::table[#{num}]", span
     while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
-      rm prev
+      $.remove prev
     span.textContent = span.textContent.replace '-', '+'
     return
   span.textContent = span.textContent.replace '+', 'X Loading...'
@@ -508,7 +506,7 @@ imageResize = (cw, ch, imageType, image) ->
 
 imageThumb = (thumb) ->
   thumb.className = ''
-  rm thumb.nextSibling
+  $.remove thumb.nextSibling
 
 keydown = (e) ->
   kc = e.keyCode
@@ -525,7 +523,7 @@ keyModeInsert = (e) ->
   kc = g.keyCode
   char = g.char
   if kc is 27 #escape
-    rm $ '#qr'
+    $.remove $ '#qr'
     e.preventDefault()
   else if e.ctrlKey and char is "S"
     ta = d.activeElement
@@ -667,7 +665,7 @@ onloadThread = (responseText, span) ->
   #make sure all comments are fully expanded
   span.previousSibling.innerHTML = opbq.innerHTML
   while (next = span.nextSibling) and not next.clear#<br clear>
-    rm next
+    $.remove next
   if next
     for reply in replies
       inBefore next, x('ancestor::table', reply)
@@ -684,7 +682,7 @@ changeValue = ->
 
 options = ->
   if div = $ '#options'
-    rm div
+    $.remove div
     return
 
   hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length
@@ -758,7 +756,7 @@ qr =
           if getConfig 'Persistent QR'
             qr.refresh dialog
           else
-            $.rm dialog
+            $.remove dialog
       else
         error = $.el 'span',
           className: 'error'
@@ -775,7 +773,7 @@ qr =
 
     submit: (e) ->
       if span = @nextSibling
-        $.rm span
+        $.remove span
       recaptcha = $('input[name=recaptcha_response_field]', this)
       if recaptcha.value
         qr.autohide.set()
@@ -831,7 +829,7 @@ qr =
 
     clone = $('form[name=post]').cloneNode(true)
     for script in $$ 'script', clone
-      $.rm script
+      $.remove script
     clone.target = 'iframe'
     $.bind clone, 'submit', qr.cb.submit
     $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', recaptchaListener
@@ -936,7 +934,7 @@ showReply = ->
   div = @parentNode
   table = div.nextSibling
   show table
-  rm div
+  $.remove div
   id = $('td.reply, td.replyhl', table).id
   slice g.hiddenReplies, id
   GM_setValue "hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies)
@@ -1481,9 +1479,9 @@ if getConfig 'Anonymize'
     trips = $$('span.postertrip', root)
     for trip in trips
       if trip.parentNode.nodeName is 'A'
-        rm trip.parentNode
+        $.remove trip.parentNode
       else
-        rm trip
+        $.remove trip
 
 if getConfig 'Reply Navigation'
   g.callbacks.push (root) ->

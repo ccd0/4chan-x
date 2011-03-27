@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -248,7 +248,7 @@
     removeClass: function(el, className) {
       return el.className = el.className.replace(' ' + className, '');
     },
-    rm: function(el) {
+    remove: function(el) {
       return el.parentNode.removeChild(el);
     },
     append: function(parent, child) {
@@ -351,9 +351,6 @@
   inBefore = function(root, el) {
     return root.parentNode.insertBefore(el, root);
   };
-  rm = function(el) {
-    return el.parentNode.removeChild(el);
-  };
   replace = function(root, el) {
     return root.parentNode.replaceChild(el, root);
   };
@@ -398,7 +395,7 @@
   closeQR = function() {
     var div;
     div = this.parentNode.parentNode;
-    return rm(div);
+    return $.remove(div);
   };
   clearHidden = function() {
     GM_deleteValue("hiddenReplies/" + g.BOARD + "/");
@@ -456,7 +453,7 @@
       num = board === 'b' ? 3 : 5;
       table = x("following::br[@clear][1]/preceding::table[" + num + "]", span);
       while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
-        rm(prev);
+        $.remove(prev);
       }
       span.textContent = span.textContent.replace('-', '+');
       return;
@@ -694,7 +691,7 @@
   };
   imageThumb = function(thumb) {
     thumb.className = '';
-    return rm(thumb.nextSibling);
+    return $.remove(thumb.nextSibling);
   };
   keydown = function(e) {
     var kc;
@@ -715,7 +712,7 @@
     kc = g.keyCode;
     char = g.char;
     if (kc === 27) {
-      rm($('#qr'));
+      $.remove($('#qr'));
       return e.preventDefault();
     } else if (e.ctrlKey && char === "S") {
       ta = d.activeElement;
@@ -903,7 +900,7 @@
     span.textContent = span.textContent.replace('X Loading...', '- ');
     span.previousSibling.innerHTML = opbq.innerHTML;
     while ((next = span.nextSibling) && !next.clear) {
-      rm(next);
+      $.remove(next);
     }
     if (next) {
       _results = [];
@@ -931,7 +928,7 @@
   options = function() {
     var checked, description, div, hiddenNum, html, input, option, value, _i, _len, _ref;
     if (div = $('#options')) {
-      rm(div);
+      $.remove(div);
       return;
     }
     hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length;
@@ -1018,7 +1015,7 @@
             if (getConfig('Persistent QR')) {
               qr.refresh(dialog);
             } else {
-              $.rm(dialog);
+              $.remove(dialog);
             }
           }
         } else {
@@ -1044,7 +1041,7 @@
       submit: function(e) {
         var recaptcha, span;
         if (span = this.nextSibling) {
-          $.rm(span);
+          $.remove(span);
         }
         recaptcha = $('input[name=recaptcha_response_field]', this);
         if (recaptcha.value) {
@@ -1110,7 +1107,7 @@
       _ref = $$('script', clone);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         script = _ref[_i];
-        $.rm(script);
+        $.remove(script);
       }
       clone.target = 'iframe';
       $.bind(clone, 'submit', qr.cb.submit);
@@ -1259,7 +1256,7 @@
     div = this.parentNode;
     table = div.nextSibling;
     show(table);
-    rm(div);
+    $.remove(div);
     id = $('td.reply, td.replyhl', table).id;
     slice(g.hiddenReplies, id);
     return GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
@@ -1917,7 +1914,7 @@
       _results = [];
       for (_j = 0, _len2 = trips.length; _j < _len2; _j++) {
         trip = trips[_j];
-        _results.push(trip.parentNode.nodeName === 'A' ? rm(trip.parentNode) : rm(trip));
+        _results.push(trip.parentNode.nodeName === 'A' ? $.remove(trip.parentNode) : $.remove(trip));
       }
       return _results;
     });
