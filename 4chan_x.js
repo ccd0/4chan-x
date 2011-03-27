@@ -957,7 +957,17 @@
         }
       },
       load: function(e) {
-        return e.target.contentWindow.postMessage('', '*');
+        var dialog;
+        try {
+          return e.target.contentWindow.postMessage('', '*');
+        } catch (err) {
+          dialog = $('#qr');
+          if (g.REPLY && $.config('Persistent QR')) {
+            return qr.refresh(dialog);
+          } else {
+            return $.remove(dialog);
+          }
+        }
       },
       messageIframe: function(e) {
         var message;

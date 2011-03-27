@@ -704,7 +704,15 @@ qr =
         $.removeClass dialog, 'auto'
 
     load: (e) ->
-      e.target.contentWindow.postMessage '', '*'
+      try
+        e.target.contentWindow.postMessage '', '*'
+      catch err
+        # fucking chrome
+        dialog = $ '#qr'
+        if g.REPLY and $.config 'Persistent QR'
+          qr.refresh dialog
+        else
+          $.remove dialog
 
     messageIframe: (e) ->
       message = $('table b').firstChild.textContent
