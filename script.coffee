@@ -100,8 +100,10 @@ ui =
   move: (e) ->
     {el} = ui
     #distance from pointer to el edge is constant; calculate it here.
-    ui.dx = e.clientX - el.offsetLeft
-    ui.dy = e.clientY - el.offsetTop
+    # XXX opera reports el.offsetLeft / el.offsetTop as 0
+    rect = el.getBoundingClientRect()
+    ui.dx = e.clientX - rect.left
+    ui.dy = e.clientY - rect.top
     #factor out el from document dimensions
     ui.width  = document.body.clientWidth  - el.offsetWidth
     ui.height = document.body.clientHeight - el.offsetHeight

@@ -183,10 +183,11 @@
       return el;
     },
     move: function(e) {
-      var el;
+      var el, rect;
       el = ui.el;
-      ui.dx = e.clientX - el.offsetLeft;
-      ui.dy = e.clientY - el.offsetTop;
+      rect = el.getBoundingClientRect();
+      ui.dx = e.clientX - rect.left;
+      ui.dy = e.clientY - rect.top;
       ui.width = document.body.clientWidth - el.offsetWidth;
       ui.height = document.body.clientHeight - el.offsetHeight;
       document.addEventListener('mousemove', ui.moveMove, true);
