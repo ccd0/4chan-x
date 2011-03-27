@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -245,6 +245,9 @@
     hide: function(el) {
       return el.style.display = 'none';
     },
+    show: function(el) {
+      return el.style.display = '';
+    },
     addClass: function(el, className) {
       return el.className += ' ' + className;
     },
@@ -351,9 +354,6 @@
   replace = function(root, el) {
     return root.parentNode.replaceChild(el, root);
   };
-  show = function(el) {
-    return el.style.display = '';
-  };
   slice = function(arr, id) {
     var i, l, _results;
     i = 0;
@@ -421,7 +421,7 @@
     var ta;
     ta = $('#options textarea');
     if (ta.style.display) {
-      return show(ta);
+      return $.show(ta);
     } else {
       return $.hide(ta);
     }
@@ -570,7 +570,7 @@
         target = e.target, clientX = e.clientX, clientY = e.clientY;
         img = $('#iHover');
         img.src = target.parentNode.href;
-        show(img);
+        $.show(img);
         imageHover.winHeight = d.body.clientHeight;
         imageHover.winWidth = d.body.clientWidth;
         target.addEventListener('mousemove', imageHover.cb.mousemove, true);
@@ -1252,7 +1252,7 @@
     var div, id, table;
     div = this.parentNode;
     table = div.nextSibling;
-    show(table);
+    $.show(table);
     $.remove(div);
     id = $('td.reply, td.replyhl', table).id;
     slice(g.hiddenReplies, id);
@@ -1261,7 +1261,7 @@
   showThread = function() {
     var div, id;
     div = this.nextSibling;
-    show(div);
+    $.show(div);
     $.hide(this);
     id = div.id;
     slice(g.hiddenThreads, id);

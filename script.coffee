@@ -147,6 +147,8 @@ $.extend = (object, properties) ->
 $.extend $,
   hide: (el) ->
     el.style.display = 'none'
+  show: (el) ->
+    el.style.display = ''
   addClass: (el, className) ->
     el.className += ' ' + className
   removeClass: (el, className) ->
@@ -228,8 +230,6 @@ inAfter = (root, el) ->
   root.parentNode.insertBefore el, root.nextSibling
 replace = (root, el) ->
   root.parentNode.replaceChild el, root
-show = (el) ->
-  el.style.display = ''
 slice = (arr, id) ->
   # the while loop is the only low-level loop left in coffeescript.
   # we need to use it to see the index.
@@ -284,7 +284,7 @@ cooldown = ->
 
 editSauce = ->
   ta = $ '#options textarea'
-  if ta.style.display then show ta else $.hide ta
+  if ta.style.display then $.show ta else $.hide ta
 
 expandComment = (e) ->
   e.preventDefault()
@@ -400,7 +400,7 @@ imageHover =
       {target, clientX, clientY} = e
       img = $ '#iHover'
       img.src = target.parentNode.href
-      show img
+      $.show img
       imageHover.winHeight = d.body.clientHeight
       imageHover.winWidth  = d.body.clientWidth
       target.addEventListener 'mousemove', imageHover.cb.mousemove, true
@@ -931,7 +931,7 @@ scrollThread = (count) ->
 showReply = ->
   div = @parentNode
   table = div.nextSibling
-  show table
+  $.show table
   $.remove div
   id = $('td.reply, td.replyhl', table).id
   slice g.hiddenReplies, id
@@ -939,7 +939,7 @@ showReply = ->
 
 showThread = ->
   div = @nextSibling
-  show div
+  $.show div
   $.hide this
   id = div.id
   slice g.hiddenThreads, id
