@@ -51,19 +51,6 @@ if typeof GM_deleteValue is 'undefined'
   window.GM_openInTab = (url) ->
     window.open url, "_blank"
 
-#dialog styling
-GM_addStyle '
-  div.dialog {
-    border: 1px solid;
-  }
-  div.dialog > div.move {
-    cursor: move;
-  }
-  label, a {
-    cursor: pointer;
-  }
-'
-
 ui =
   dialog: (id, position, html) ->
     ui.el = el = document.createElement 'div'
@@ -1210,6 +1197,17 @@ if lastChecked < now - 1*DAY
   GM_setValue('lastChecked', now.toString())
 
 GM_addStyle '
+  /* dialog styling */
+  div.dialog {
+    border: 1px solid;
+  }
+  div.dialog > div.move {
+    cursor: move;
+  }
+  label, a {
+    cursor: pointer;
+  }
+
   #iHover {
     position: fixed;
   }

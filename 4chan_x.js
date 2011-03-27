@@ -119,17 +119,6 @@
       return window.open(url, "_blank");
     };
   }
-  GM_addStyle('\
-  div.dialog {\
-    border: 1px solid;\
-  }\
-  div.dialog > div.move {\
-    cursor: move;\
-  }\
-  label, a {\
-    cursor: pointer;\
-  }\
-');
   ui = {
     dialog: function(id, position, html) {
       var el, left, top, _ref;
@@ -1570,6 +1559,17 @@
     GM_setValue('lastChecked', now.toString());
   }
   GM_addStyle('\
+  /* dialog styling */\
+  div.dialog {\
+    border: 1px solid;\
+  }\
+  div.dialog > div.move {\
+    cursor: move;\
+  }\
+  label, a {\
+    cursor: pointer;\
+  }\
+\
   #iHover {\
     position: fixed;\
   }\
