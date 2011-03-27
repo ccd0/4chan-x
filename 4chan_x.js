@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -242,6 +242,16 @@
     return object;
   };
   $.extend($, {
+    slice: function(arr, id) {
+      var el, i, _len;
+      for (i = 0, _len = arr.length; i < _len; i++) {
+        el = arr[i];
+        if (id === el.id) {
+          arr.splice(i, 1);
+          return arr;
+        }
+      }
+    },
     x: function(path, root) {
       if (root == null) {
         root = d.body;
@@ -356,20 +366,6 @@
   };
   getConfig = function(name) {
     return GM_getValue(name, config[name][0]);
-  };
-  slice = function(arr, id) {
-    var i, l, _results;
-    i = 0;
-    l = arr.length;
-    _results = [];
-    while (i < l) {
-      if (id === arr[i].id) {
-        arr.splice(i, 1);
-        return arr;
-      }
-      _results.push(i++);
-    }
-    return _results;
   };
   zeroPad = function(n) {
     if (n < 10) {
@@ -1249,7 +1245,7 @@
     $.show(table);
     $.remove(div);
     id = $('td.reply, td.replyhl', table).id;
-    slice(g.hiddenReplies, id);
+    $.slice(g.hiddenReplies, id);
     return GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
   };
   showThread = function() {
@@ -1258,7 +1254,7 @@
     $.show(div);
     $.hide(this);
     id = div.id;
-    slice(g.hiddenThreads, id);
+    $.slice(g.hiddenThreads, id);
     return GM_setValue("hiddenThreads/" + g.BOARD + "/", JSON.stringify(g.hiddenThreads));
   };
   stopPropagation = function(e) {
@@ -1492,7 +1488,7 @@
       });
     } else {
       this.src = g.favEmpty;
-      g.watched[g.BOARD] = slice(g.watched[g.BOARD], id);
+      g.watched[g.BOARD] = $.slice(g.watched[g.BOARD], id);
     }
     GM_setValue('watched', JSON.stringify(g.watched));
     return watcherUpdate();
@@ -1522,7 +1518,7 @@
   watchX = function() {
     var board, favicon, id, input, _, _ref;
     _ref = this.nextElementSibling.getAttribute('href').substring(1).split('/'), board = _ref[0], _ = _ref[1], id = _ref[2];
-    g.watched[board] = slice(g.watched[board], id);
+    g.watched[board] = $.slice(g.watched[board], id);
     GM_setValue('watched', JSON.stringify(g.watched));
     watcherUpdate();
     if (input = $("input[name=\"" + id + "\"]")) {

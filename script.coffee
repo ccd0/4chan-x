@@ -145,6 +145,12 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  slice: (arr, id) ->
+    # do I actually need this?
+    for el, i in arr
+      if id == el.id
+        arr.splice i, 1
+        return arr
   x: (path, root=d.body) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
       singleNodeValue
@@ -232,17 +238,6 @@ $$ = (selector, root=d.body) ->
   node for node in result
 getConfig = (name) ->
   GM_getValue name, config[name][0]
-slice = (arr, id) ->
-  # the while loop is the only low-level loop left in coffeescript.
-  # we need to use it to see the index.
-  # would it be better to just use objects and the `delete` keyword?
-  i = 0
-  l = arr.length
-  while (i < l)
-    if id == arr[i].id
-      arr.splice i, 1
-      return arr
-    i++
 zeroPad = (n) ->
   if n < 10 then '0' + n else n
 
@@ -931,7 +926,7 @@ showReply = ->
   $.show table
   $.remove div
   id = $('td.reply, td.replyhl', table).id
-  slice g.hiddenReplies, id
+  $.slice g.hiddenReplies, id
   GM_setValue "hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies)
 
 showThread = ->
@@ -939,7 +934,7 @@ showThread = ->
   $.show div
   $.hide this
   id = div.id
-  slice g.hiddenThreads, id
+  $.slice g.hiddenThreads, id
   GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
 
 stopPropagation = (e) ->
@@ -1138,7 +1133,7 @@ watch = ->
     }
   else
     @src = g.favEmpty
-    g.watched[g.BOARD] = slice(g.watched[g.BOARD], id)
+    g.watched[g.BOARD] = $.slice(g.watched[g.BOARD], id)
   GM_setValue('watched', JSON.stringify(g.watched))
   watcherUpdate()
 
@@ -1160,7 +1155,7 @@ watcherUpdate = ->
 watchX = ->
   [board, _, id] = @nextElementSibling.
     getAttribute('href').substring(1).split('/')
-  g.watched[board] = slice(g.watched[board], id)
+  g.watched[board] = $.slice(g.watched[board], id)
   GM_setValue('watched', JSON.stringify(g.watched))
   watcherUpdate()
   if input = $("input[name=\"#{id}\"]")
