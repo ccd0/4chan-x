@@ -162,8 +162,9 @@ $.extend $,
     el.className = el.className.replace ' ' + className, ''
   remove: (el) ->
     el.parentNode.removeChild el
-  append: (parent, child) ->
-    parent.appendChild child
+  append: (parent, children...) ->
+    for child in children
+      parent.appendChild child
   before: (root, el) ->
     root.parentNode.insertBefore el, root
   el: (tag, properties) ->
@@ -227,8 +228,6 @@ $.extend $,
 $$ = (selector, root=d.body) ->
   result = root.querySelectorAll selector
   node for node in result
-mv = (children..., parent) ->
-  (parent.appendChild child) for child in children
 getConfig = (name) ->
   GM_getValue name, config[name][0]
 inAfter = (root, el) ->
@@ -353,7 +352,7 @@ hideReply = (reply) ->
       className: 'pointer'
     $.bind a, 'click', showReply
     div = $.el 'div'
-    mv a, div
+    $.append div, a
     $.before table, div
 
 hideThread = (div) ->
@@ -668,7 +667,7 @@ onloadThread = (responseText, span) ->
   else#threading
     div = span.parentNode
     for reply in replies
-      mv $.x('ancestor::table', reply), div
+      $.append div, $.x('ancestor::table', reply)
 
 changeCheckbox = ->
   GM_setValue @name, @checked
@@ -701,7 +700,7 @@ options = ->
   $('a.sauce', div).addEventListener 'click', editSauce, true
   $('textarea', div).addEventListener 'change', changeValue, true
   $('input[type="button"]', div).addEventListener 'click', clearHidden, true
-  mv div, d.body
+  $.append d.body, div
 
 parseResponse = (responseText) ->
   body = $.el 'body',
@@ -953,12 +952,12 @@ threadF = (current) ->
     textContent: '[ - ]'
     className: 'pointer'
   $.bind a, 'click', hideThread
-  mv a, div
+  $.append div, a
   $.before current, div
   while (!current.clear)#<br clear>
-    mv current, div
+    $.append div, current
     current = div.nextSibling
-  mv current, div
+  $.append div, current
   current = div.nextSibling
   id = $('input[value="delete"]', div).name
   div.id = id
@@ -1154,7 +1153,7 @@ watcherUpdate = ->
       link = $.el 'a',
         textContent: thread.text
         href: "/#{board}/res/#{thread.id}"
-      mv a, $.tn(' '), link, $.el('br'), div
+      $.append div, a, $.tn(' '), link, $.el('br')
   old = $('#watcher div:last-child')
   $.replace(old, div)
 
@@ -1409,7 +1408,7 @@ if getConfig 'Sauce'
         link = $.el 'a',
           textContent: names[i]
           href: prefixes[i] + suffix
-        mv $.tn(' '), link, span
+        $.append span, $.tn(' '), link
         i++
 
 if getConfig 'Reply Hiding'
@@ -1446,7 +1445,7 @@ if getConfig 'Thread Watcher'
   #create watcher
   html = '<div class="move">Thread Watcher</div><div></div>'
   watcher = ui.dialog 'watcher', top: '50px', left: '0px', html
-  mv watcher, d.body
+  $.append d.body, watcher
   watcherUpdate()
 
   #add buttons
@@ -1492,7 +1491,7 @@ if getConfig 'Reply Navigation'
         textContent: '▼'
         className: 'pointer'
       $.bind down, 'click', replyNav
-      mv $.tn(' '), up, $.tn(' '), down, span
+      $.append span, $.tn(' '), up, $.tn(' '), down
       inAfter el, span
 
 if getConfig 'Keybinds'
@@ -1566,7 +1565,7 @@ else #not reply
         className: 'pointer'
         textContent: textContent
         href: href
-      mv up, $.tn(' '), down, span
+      $.append span, up, $.tn(' '), down
       $.before el, span
     if location.hash is '#p0'
       window.location = window.location

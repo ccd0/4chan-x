@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -269,8 +269,15 @@
     remove: function(el) {
       return el.parentNode.removeChild(el);
     },
-    append: function(parent, child) {
-      return parent.appendChild(child);
+    append: function() {
+      var child, children, parent, _i, _len, _results;
+      parent = arguments[0], children = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      _results = [];
+      for (_i = 0, _len = children.length; _i < _len; _i++) {
+        child = children[_i];
+        _results.push(parent.appendChild(child));
+      }
+      return _results;
     },
     before: function(root, el) {
       return root.parentNode.insertBefore(el, root);
@@ -341,16 +348,6 @@
     for (_i = 0, _len = result.length; _i < _len; _i++) {
       node = result[_i];
       _results.push(node);
-    }
-    return _results;
-  };
-  mv = function() {
-    var child, children, parent, _i, _j, _len, _results;
-    children = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), parent = arguments[_i++];
-    _results = [];
-    for (_j = 0, _len = children.length; _j < _len; _j++) {
-      child = children[_j];
-      _results.push(parent.appendChild(child));
     }
     return _results;
   };
@@ -504,7 +501,7 @@
       });
       $.bind(a, 'click', showReply);
       div = $.el('div');
-      mv(a, div);
+      $.append(div, a);
       return $.before(table, div);
     }
   };
@@ -908,7 +905,7 @@
       _results2 = [];
       for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
         reply = replies[_j];
-        _results2.push(mv($.x('ancestor::table', reply), div));
+        _results2.push($.append(div, $.x('ancestor::table', reply)));
       }
       return _results2;
     }
@@ -948,7 +945,7 @@
     $('a.sauce', div).addEventListener('click', editSauce, true);
     $('textarea', div).addEventListener('change', changeValue, true);
     $('input[type="button"]', div).addEventListener('click', clearHidden, true);
-    return mv(div, d.body);
+    return $.append(d.body, div);
   };
   parseResponse = function(responseText) {
     var body, opbq, replies;
@@ -1277,13 +1274,13 @@
       className: 'pointer'
     });
     $.bind(a, 'click', hideThread);
-    mv(a, div);
+    $.append(div, a);
     $.before(current, div);
     while (!current.clear) {
-      mv(current, div);
+      $.append(div, current);
       current = div.nextSibling;
     }
-    mv(current, div);
+    $.append(div, current);
     current = div.nextSibling;
     id = $('input[value="delete"]', div).name;
     div.id = id;
@@ -1516,7 +1513,7 @@
           textContent: thread.text,
           href: "/" + board + "/res/" + thread.id
         });
-        mv(a, $.tn(' '), link, $.el('br'), div);
+        $.append(div, a, $.tn(' '), link, $.el('br'));
       }
     }
     old = $('#watcher div:last-child');
@@ -1806,7 +1803,7 @@
               textContent: names[i],
               href: prefixes[i] + suffix
             });
-            mv($.tn(' '), link, span);
+            $.append(span, $.tn(' '), link);
             _results.push(i++);
           }
           return _results;
@@ -1871,7 +1868,7 @@
       top: '50px',
       left: '0px'
     }, html);
-    mv(watcher, d.body);
+    $.append(d.body, watcher);
     watcherUpdate();
     threads = g.watched[g.BOARD] || [];
     inputs = $$('form > input[value="delete"], div > input[value="delete"]');
@@ -1931,7 +1928,7 @@
           className: 'pointer'
         });
         $.bind(down, 'click', replyNav);
-        mv($.tn(' '), up, $.tn(' '), down, span);
+        $.append(span, $.tn(' '), up, $.tn(' '), down);
         _results.push(inAfter(el, span));
       }
       return _results;
@@ -2030,7 +2027,7 @@
           textContent: textContent,
           href: href
         });
-        mv(up, $.tn(' '), down, span);
+        $.append(span, up, $.tn(' '), down);
         $.before(el, span);
       }
       if (location.hash === '#p0') {
