@@ -674,6 +674,10 @@ parseResponse = (responseText) ->
   return [replies, opbq]
 
 qr =
+  ###
+  lol chrome - http://code.google.com/p/chromium/issues/detail?id=20773
+  we can't access other frames, so no error checking until I make a workaround
+  ###
   init: ->
     g.callbacks.push qr.cb.node
     iframe = $.el 'iframe',
