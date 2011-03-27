@@ -247,10 +247,6 @@ autoWatch = ->
   autoText = $('textarea', this).value.slice(0, 25)
   GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
 
-closeQR = ->
-  div = @parentNode.parentNode
-  $.remove div
-
 clearHidden = ->
   #'hidden' might be misleading; it's the number of IDs we're *looking* for,
   # not the number of posts actually hidden on the page.
