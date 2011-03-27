@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, m, mv, n, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hide, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, inBefore, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, rm, scroll, scrollThread, show, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -351,27 +351,6 @@
   inBefore = function(root, el) {
     return root.parentNode.insertBefore(el, root);
   };
-  m = function(el, props) {
-    var event, funk, key, l, val;
-    if (l = props.listener) {
-      delete props.listener;
-      event = l[0], funk = l[1];
-      el.addEventListener(event, funk, true);
-    }
-    for (key in props) {
-      val = props[key];
-      el[key] = val;
-    }
-    return el;
-  };
-  n = function(tag, props) {
-    var el;
-    el = d.createElement(tag);
-    if (props) {
-      m(el, props);
-    }
-    return el;
-  };
   rm = function(el) {
     return el.parentNode.removeChild(el);
   };
@@ -528,12 +507,12 @@
     table = x('ancestor::table', reply);
     hide(table);
     if (getConfig('Show Stubs')) {
-      a = n('a', {
+      a = $.el('a', {
         textContent: "[ + ] " + name + " " + trip,
-        className: 'pointer',
-        listener: ['click', showReply]
+        className: 'pointer'
       });
-      div = n('div');
+      $.bind(a, 'click', showReply);
+      div = $.el('div');
       mv(a, div);
       return inBefore(table, div);
     }
@@ -559,18 +538,18 @@
       text = num === 1 ? "1 reply" : "" + num + " replies";
       name = $('span.postername', div).textContent;
       trip = ((_ref = $('span.postername + span.postertrip', div)) != null ? _ref.textContent : void 0) || '';
-      a = n('a', {
+      a = $.el('a', {
         textContent: "[ + ] " + name + trip + " (" + text + ")",
-        className: 'pointer',
-        listener: ['click', showThread]
+        className: 'pointer'
       });
+      $.bind(a, 'click', showThread);
       return inBefore(div, a);
     }
   };
   imageHover = {
     init: function() {
       var img;
-      img = n('img', {
+      img = $.el('img', {
         id: 'iHover'
       });
       hide(img);
@@ -684,7 +663,7 @@
     var image, link;
     thumb.className = 'hide';
     link = thumb.parentNode;
-    image = n('img', {
+    image = $.el('img', {
       src: link.href
     });
     link.appendChild(image);
@@ -982,7 +961,7 @@
   };
   parseResponse = function(responseText) {
     var body, opbq, replies;
-    body = n('body', {
+    body = $.el('body', {
       innerHTML: responseText
     });
     replies = $$('td.reply', body);
@@ -1299,14 +1278,14 @@
   };
   threadF = function(current) {
     var a, div, hidden, id, _i, _len, _ref;
-    div = n('div', {
+    div = $.el('div', {
       className: 'thread'
     });
-    a = n('a', {
+    a = $.el('a', {
       textContent: '[ - ]',
-      className: 'pointer',
-      listener: ['click', hideThread]
+      className: 'pointer'
     });
+    $.bind(a, 'click', hideThread);
     mv(a, div);
     inBefore(current, div);
     while (!current.clear) {
@@ -1362,7 +1341,7 @@
       updateFavicon();
       return;
     }
-    body = n('body', {
+    body = $.el('body', {
       innerHTML: this.responseText
     });
     replies = $$('td.reply', body);
@@ -1532,21 +1511,21 @@
   };
   watcherUpdate = function() {
     var a, board, div, link, old, thread, _i, _len, _ref;
-    div = n('div');
+    div = $.el('div');
     for (board in g.watched) {
       _ref = g.watched[board];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
-        a = n('a', {
+        a = $.el('a', {
           textContent: 'X',
-          className: 'pointer',
-          listener: ['click', watchX]
+          className: 'pointer'
         });
-        link = n('a', {
+        $.bind(a, 'click', watchX);
+        link = $.el('a', {
           textContent: thread.text,
           href: "/" + board + "/res/" + thread.id
         });
-        mv(a, tn(' '), link, n('br'), div);
+        mv(a, tn(' '), link, $.el('br'), div);
       }
     }
     old = $('#watcher div:last-child');
@@ -1697,18 +1676,18 @@
     return;
   }
   if (navtopr = $('#navtopr a')) {
-    a = n('a', {
+    a = $.el('a', {
       textContent: '4chan X',
-      className: 'pointer',
-      listener: ['click', options]
+      className: 'pointer'
     });
+    $.bind(a, 'click', options);
     replace(navtopr, a);
     navbotr = $('#navbotr a');
-    a = n('a', {
+    a = $.el('a', {
       textContent: '4chan X',
-      className: 'pointer',
-      listener: ['click', options]
+      className: 'pointer'
     });
+    $.bind(a, 'click', options);
     replace(navbotr, a);
   } else if (getConfig('404 Redirect') && d.title === '4chan - 404') {
     redirect();
@@ -1741,7 +1720,7 @@
   };
   if (getConfig('Image Expansion')) {
     delform = $('form[name=delform]');
-    expand = n('div', {
+    expand = $.el('div', {
       innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>      <label>Expand Images<input type=checkbox id=imageExpand></label>"
     });
     imageType = GM_getValue('imageType', 'full');
@@ -1832,7 +1811,7 @@
           var _results;
           _results = [];
           while (i < l) {
-            link = n('a', {
+            link = $.el('a', {
               textContent: names[i],
               href: prefixes[i] + suffix
             });
@@ -1852,11 +1831,11 @@
       _results = [];
       for (_i = 0, _len = tds.length; _i < _len; _i++) {
         td = tds[_i];
-        a = n('a', {
+        a = $.el('a', {
           textContent: '[ - ]',
-          className: 'pointer',
-          listener: ['click', hideReply]
+          className: 'pointer'
         });
+        $.bind(a, 'click', hideReply);
         replace(td.firstChild, a);
         next = td.nextSibling;
         id = next.id;
@@ -1884,11 +1863,11 @@
       _results = [];
       for (_i = 0, _len = arr.length; _i < _len; _i++) {
         el = arr[_i];
-        a = n('a', {
+        a = $.el('a', {
           textContent: '[ ! ]',
-          className: 'pointer',
-          listener: ['click', report]
+          className: 'pointer'
         });
+        $.bind(a, 'click', report);
         inAfter(el, a);
         _results.push(inAfter(el, tn(' ')));
       }
@@ -1918,11 +1897,11 @@
         }
         return g.favEmpty;
       })();
-      img = n('img', {
+      img = $.el('img', {
         src: src,
-        className: 'pointer',
-        listener: ['click', watch]
+        className: 'pointer'
       });
+      $.bind(img, 'click', watch);
       inBefore(input, img);
     }
   }
@@ -1950,17 +1929,17 @@
       _results = [];
       for (_i = 0, _len = arr.length; _i < _len; _i++) {
         el = arr[_i];
-        span = n('span');
-        up = n('a', {
+        span = $.el('span');
+        up = $.el('a', {
           textContent: '▲',
-          className: 'pointer',
-          listener: ['click', replyNav]
+          className: 'pointer'
         });
-        down = n('a', {
+        $.bind(up, 'click', replyNav);
+        down = $.el('a', {
           textContent: '▼',
-          className: 'pointer',
-          listener: ['click', replyNav]
+          className: 'pointer'
         });
+        $.bind(down, 'click', replyNav);
         mv(tn(' '), up, tn(' '), down, span);
         _results.push(inAfter(el, span));
       }
@@ -1980,7 +1959,7 @@
         for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
           thumb = thumbs[_i];
           parent = thumb.parentNode;
-          _results.push(el = n('img', {
+          _results.push(el = $.el('img', {
             src: parent.href
           }));
         }
@@ -2029,7 +2008,7 @@
       l1 = arr.length - 1;
       for (i = 0, _len4 = arr.length; i < _len4; i++) {
         el = arr[i];
-        span = n('span', {
+        span = $.el('span', {
           className: 'navlinks',
           id: 'p' + i
         });
@@ -2043,7 +2022,7 @@
           textContent = '▲';
           href = "#navtop";
         }
-        up = n('a', {
+        up = $.el('a', {
           className: 'pointer',
           textContent: textContent,
           href: href
@@ -2055,7 +2034,7 @@
           textContent = '▶';
           href = "" + (g.PAGENUM + 1) + "#p0";
         }
-        down = n('a', {
+        down = $.el('a', {
           className: 'pointer',
           textContent: textContent,
           href: href
@@ -2071,11 +2050,11 @@
       omitted = $$('span.omittedposts');
       for (_l = 0, _len5 = omitted.length; _l < _len5; _l++) {
         span = omitted[_l];
-        a = n('a', {
+        a = $.el('a', {
           className: 'pointer omittedposts',
-          textContent: "+ " + span.textContent,
-          listener: ['click', expandThread]
+          textContent: "+ " + span.textContent
         });
+        $.bind(a, 'click', expandThread);
         replace(span, a);
       }
     }

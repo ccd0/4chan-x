@@ -228,17 +228,6 @@ inAfter = (root, el) ->
   root.parentNode.insertBefore el, root.nextSibling
 inBefore = (root, el) ->
   root.parentNode.insertBefore el, root
-m = (el, props) -> #mod
-  if l = props.listener
-    delete props.listener
-    [event, funk] = l
-    el.addEventListener event, funk, true
-  (el[key] = val) for key, val of props
-  el
-n = (tag, props) -> #new
-  el = d.createElement tag
-  if props then m el, props
-  el
 rm = (el) ->
   el.parentNode.removeChild el
 replace = (root, el) ->
@@ -365,11 +354,11 @@ hideReply = (reply) ->
   table = x 'ancestor::table', reply
   hide table
   if getConfig 'Show Stubs'
-    a = n 'a',
+    a = $.el 'a',
       textContent: "[ + ] #{name} #{trip}"
       className: 'pointer'
-      listener: ['click', showReply]
-    div = n 'div'
+    $.bind a, 'click', showReply
+    div = $.el 'div'
     mv a, div
     inBefore table, div
 
@@ -391,15 +380,15 @@ hideThread = (div) ->
     text = if num is 1 then "1 reply" else "#{num} replies"
     name = $('span.postername', div).textContent
     trip = $('span.postername + span.postertrip', div)?.textContent || ''
-    a = n 'a',
+    a = $.el 'a',
       textContent: "[ + ] #{name}#{trip} (#{text})"
       className: 'pointer'
-      listener: ['click', showThread]
+    $.bind a, 'click', showThread
     inBefore div, a
 
 imageHover =
   init: ->
-    img = n 'img', id: 'iHover'
+    img = $.el 'img', id: 'iHover'
     hide img
     d.body.appendChild img
     g.callbacks.push imageHover.cb.node
@@ -489,7 +478,7 @@ imageExpandClick = ->
 imageExpand = (thumb, cw, ch, imageType) ->
   thumb.className = 'hide'
   link = thumb.parentNode
-  image = n 'img',
+  image = $.el 'img',
     src: link.href
   link.appendChild image
 
@@ -721,7 +710,7 @@ options = ->
   mv div, d.body
 
 parseResponse = (responseText) ->
-  body = n 'body',
+  body = $.el 'body',
     innerHTML: responseText
   replies = $$ 'td.reply', body
   opbq = $ 'blockquote', body
@@ -964,12 +953,12 @@ stopPropagation = (e) ->
   e.stopPropagation()
 
 threadF = (current) ->
-  div = n 'div',
+  div = $.el 'div',
     className: 'thread'
-  a = n 'a',
+  a = $.el 'a',
     textContent: '[ - ]'
     className: 'pointer'
-    listener: ['click', hideThread]
+  $.bind a, 'click', hideThread
   mv a, div
   inBefore current, div
   while (!current.clear)#<br clear>
@@ -1012,7 +1001,7 @@ updateCallback = ->
     g.dead = true
     updateFavicon()
     return
-  body = n 'body', innerHTML: @responseText
+  body = $.el 'body', innerHTML: @responseText
   replies = $$ 'td.reply', body
 
   root = $('br[clear]')
@@ -1161,17 +1150,17 @@ watch = ->
   watcherUpdate()
 
 watcherUpdate = ->
-  div = n 'div'
+  div = $.el 'div'
   for board of g.watched
     for thread in g.watched[board]
-      a = n 'a',
+      a = $.el 'a',
         textContent: 'X'
         className: 'pointer'
-        listener: ['click', watchX]
-      link = n 'a',
+      $.bind a, 'click', watchX
+      link = $.el 'a',
         textContent: thread.text
         href: "/#{board}/res/#{thread.id}"
-      mv a, tn(' '), link, n('br'), div
+      mv a, tn(' '), link, $.el('br'), div
   old = $('#watcher div:last-child')
   replace(old, div)
 
@@ -1322,16 +1311,16 @@ if location.hostname is 'sys.4chan.org'
   qr.sys()
   return
 if navtopr = $ '#navtopr a'
-  a = n 'a',
+  a = $.el 'a',
     textContent: '4chan X'
     className: 'pointer'
-    listener: ['click', options]
+  $.bind a, 'click', options
   replace navtopr, a
   navbotr = $ '#navbotr a'
-  a = n 'a',
+  a = $.el 'a',
     textContent: '4chan X'
     className: 'pointer'
-    listener: ['click', options]
+  $.bind a, 'click', options
   replace navbotr, a
 else if getConfig('404 Redirect') and d.title is '4chan - 404'
   redirect()
@@ -1357,7 +1346,7 @@ scroll = ->
 #major features
 if getConfig 'Image Expansion'
   delform = $ 'form[name=delform]'
-  expand = n 'div',
+  expand = $.el 'div',
     innerHTML:
       "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>
       <label>Expand Images<input type=checkbox id=imageExpand></label>"
@@ -1423,7 +1412,7 @@ if getConfig 'Sauce'
       suffix = $('a', span).href
       i = 0; l = names.length
       while i < l
-        link = n 'a',
+        link = $.el 'a',
           textContent: names[i]
           href: prefixes[i] + suffix
         mv tn(' '), link, span
@@ -1433,10 +1422,10 @@ if getConfig 'Reply Hiding'
   g.callbacks.push (root) ->
     tds = $$('td.doubledash', root)
     for td in tds
-      a = n 'a',
+      a = $.el 'a',
         textContent: '[ - ]'
         className: 'pointer'
-        listener: ['click', hideReply]
+      $.bind a, 'click', hideReply
       replace(td.firstChild, a)
 
       next = td.nextSibling
@@ -1452,10 +1441,10 @@ if getConfig 'Quick Report'
   g.callbacks.push (root) ->
     arr = $$('span[id^=no]', root)
     for el in arr
-      a = n 'a',
+      a = $.el 'a',
         textContent: '[ ! ]'
         className: 'pointer'
-        listener: ['click', report]
+      $.bind a, 'click', report
       inAfter el, a
       inAfter el, tn(' ')
 
@@ -1478,10 +1467,10 @@ if getConfig 'Thread Watcher'
           return g.favDefault
       g.favEmpty
     )()
-    img = n 'img',
+    img = $.el 'img',
       src: src
       className: 'pointer'
-      listener: ['click', watch]
+    $.bind img, 'click', watch
     inBefore input, img
 
 if getConfig 'Anonymize'
@@ -1500,15 +1489,15 @@ if getConfig 'Reply Navigation'
   g.callbacks.push (root) ->
     arr = $$('span[id^=norep]', root)
     for el in arr
-      span = n 'span'
-      up = n 'a',
+      span = $.el 'span'
+      up = $.el 'a',
         textContent: '▲'
         className: 'pointer'
-        listener: ['click', replyNav]
-      down = n 'a',
+      $.bind up, 'click', replyNav
+      down = $.el 'a',
         textContent: '▼'
         className: 'pointer'
-        listener: ['click', replyNav]
+      $.bind down, 'click', replyNav
       mv tn(' '), up, tn(' '), down, span
       inAfter el, span
 
@@ -1522,7 +1511,7 @@ if g.REPLY
       thumbs = $$ 'img[md5]', root
       for thumb in thumbs
         parent = thumb.parentNode
-        el = n 'img', src: parent.href
+        el = $.el 'img', src: parent.href
   if getConfig 'Thread Updater'
     updaterMake()
   if getConfig('Quick Reply') and getConfig 'Persistent QR'
@@ -1557,7 +1546,7 @@ else #not reply
     arr = $$ 'div > span.filesize, form > span.filesize'
     l1 = arr.length - 1
     for el, i in arr
-      span = n 'span',
+      span = $.el 'span',
         className: 'navlinks'
         id: 'p' + i
       if i
@@ -1569,7 +1558,7 @@ else #not reply
       else
         textContent = '▲'
         href = "#navtop"
-      up = n 'a',
+      up = $.el 'a',
         className: 'pointer'
         textContent: textContent
         href: href
@@ -1579,7 +1568,7 @@ else #not reply
       else
         textContent = '▶'
         href = "#{g.PAGENUM + 1}#p0"
-      down = n 'a',
+      down = $.el 'a',
         className: 'pointer'
         textContent: textContent
         href: href
@@ -1591,10 +1580,10 @@ else #not reply
   if getConfig 'Thread Expansion'
     omitted = $$('span.omittedposts')
     for span in omitted
-      a = n 'a',
+      a = $.el 'a',
         className: 'pointer omittedposts'
         textContent: "+ #{span.textContent}"
-        listener: ['click', expandThread]
+      $.bind a, 'click', expandThread
       replace(span, a)
 
   if getConfig 'Comment Expansion'
