@@ -145,6 +145,8 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  hide: (el) ->
+    el.style.display = 'none'
   addClass: (el, className) ->
     el.className += ' ' + className
   removeClass: (el, className) ->
@@ -222,8 +224,6 @@ getConfig = (name) ->
   GM_getValue name, config[name][0]
 getTime = ->
   Math.floor(new Date().getTime() / 1000)
-hide = (el) ->
-  el.style.display = 'none'
 inAfter = (root, el) ->
   root.parentNode.insertBefore el, root.nextSibling
 replace = (root, el) ->
@@ -284,7 +284,7 @@ cooldown = ->
 
 editSauce = ->
   ta = $ '#options textarea'
-  if ta.style.display then show ta else hide ta
+  if ta.style.display then show ta else $.hide ta
 
 expandComment = (e) ->
   e.preventDefault()
@@ -348,7 +348,7 @@ hideReply = (reply) ->
   name = $('span.commentpostername', reply).textContent
   trip = $('span.postertrip', reply)?.textContent or ''
   table = x 'ancestor::table', reply
-  hide table
+  $.hide table
   if getConfig 'Show Stubs'
     a = $.el 'a',
       textContent: "[ + ] #{name} #{trip}"
@@ -366,7 +366,7 @@ hideThread = (div) ->
       timestamp: getTime()
     }
     GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
-  hide div
+  $.hide div
   if getConfig 'Show Stubs'
     if span = $ '.omittedposts', div
       num = Number(span.textContent.match(/\d+/)[0])
@@ -385,7 +385,7 @@ hideThread = (div) ->
 imageHover =
   init: ->
     img = $.el 'img', id: 'iHover'
-    hide img
+    $.hide img
     d.body.appendChild img
     g.callbacks.push imageHover.cb.node
   offset:
@@ -424,7 +424,7 @@ imageHover =
     mouseout: (e) ->
       {target} = e
       img = $ '#iHover'
-      hide img
+      $.hide img
       img.src = null
       target.removeEventListener 'mousemove', imageHover.cb.mousemove, true
       target.removeEventListener 'mouseout',  imageHover.cb.mouseout,  true
@@ -940,7 +940,7 @@ showReply = ->
 showThread = ->
   div = @nextSibling
   show div
-  hide this
+  $.hide this
   id = div.id
   slice g.hiddenThreads, id
   GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
