@@ -1297,6 +1297,9 @@ GM_addStyle '
     float: left;
     margin: 0px 20px;
   }
+  iframe {
+    display: none;
+  }
   span.navlinks {
     position: absolute;
     right: 5px;
