@@ -226,8 +226,6 @@ mv = (children..., parent) ->
   (parent.appendChild child) for child in children
 getConfig = (name) ->
   GM_getValue name, config[name][0]
-getTime = ->
-  Math.floor(new Date().getTime() / 1000)
 inAfter = (root, el) ->
   root.parentNode.insertBefore el, root.nextSibling
 slice = (arr, id) ->
@@ -342,7 +340,7 @@ hideReply = (reply) ->
     reply = p.nextSibling
     g.hiddenReplies.push {
       id: reply.id
-      timestamp: getTime()
+      timestamp: Date.now()
     }
     GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
   name = $('span.commentpostername', reply).textContent
@@ -363,7 +361,7 @@ hideThread = (div) ->
     div = p
     g.hiddenThreads.push {
       id: div.id
-      timestamp: getTime()
+      timestamp: Date.now()
     }
     GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
   $.hide div
@@ -1080,7 +1078,7 @@ updateInterval = ->
     span.textContent = -1 * num
 
 updateNow = ->
-  url = location.href + '?' + new Date().getTime() # fool the cache
+  url = location.href + '?' + Date.now() # fool the cache
   g.req = request url, updateCallback
   $("#updater #timer").textContent = 0
 
@@ -1203,7 +1201,7 @@ g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5
 if $.isDST() then g.chanOffset -= 1
 
 lastChecked = GM_getValue('lastChecked', 0)
-now = getTime()
+now = Date.now()
 DAY = 24 * 60 * 60
 if lastChecked < now - 1*DAY
   cutoff = now - 7*DAY

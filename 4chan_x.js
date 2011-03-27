@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -348,9 +348,6 @@
   getConfig = function(name) {
     return GM_getValue(name, config[name][0]);
   };
-  getTime = function() {
-    return Math.floor(new Date().getTime() / 1000);
-  };
   inAfter = function(root, el) {
     return root.parentNode.insertBefore(el, root.nextSibling);
   };
@@ -492,7 +489,7 @@
       reply = p.nextSibling;
       g.hiddenReplies.push({
         id: reply.id,
-        timestamp: getTime()
+        timestamp: Date.now()
       });
       GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
     }
@@ -517,7 +514,7 @@
       div = p;
       g.hiddenThreads.push({
         id: div.id,
-        timestamp: getTime()
+        timestamp: Date.now()
       });
       GM_setValue("hiddenThreads/" + g.BOARD + "/", JSON.stringify(g.hiddenThreads));
     }
@@ -1431,7 +1428,7 @@
   };
   updateNow = function() {
     var url;
-    url = location.href + '?' + new Date().getTime();
+    url = location.href + '?' + Date.now();
     g.req = request(url, updateCallback);
     return $("#updater #timer").textContent = 0;
   };
@@ -1564,7 +1561,7 @@
     g.chanOffset -= 1;
   }
   lastChecked = GM_getValue('lastChecked', 0);
-  now = getTime();
+  now = Date.now();
   DAY = 24 * 60 * 60;
   if (lastChecked < now - 1 * DAY) {
     cutoff = now - 7 * DAY;
