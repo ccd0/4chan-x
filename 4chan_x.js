@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replace, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, getTime, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, mv, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tn, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, x, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -242,6 +242,9 @@
     return object;
   };
   $.extend($, {
+    replace: function(root, el) {
+      return root.parentNode.replaceChild(el, root);
+    },
     hide: function(el) {
       return el.style.display = 'none';
     },
@@ -350,9 +353,6 @@
   };
   inAfter = function(root, el) {
     return root.parentNode.insertBefore(el, root.nextSibling);
-  };
-  replace = function(root, el) {
-    return root.parentNode.replaceChild(el, root);
   };
   slice = function(arr, id) {
     var i, l, _results;
@@ -1379,7 +1379,7 @@
     favicon = $('link[rel="shortcut icon"]', d);
     clone = favicon.cloneNode(true);
     clone.href = href;
-    return replace(favicon, clone);
+    return $.replace(favicon, clone);
   };
   updateTime = function() {
     var count, span, time;
@@ -1523,7 +1523,7 @@
       }
     }
     old = $('#watcher div:last-child');
-    return replace(old, div);
+    return $.replace(old, div);
   };
   watchX = function() {
     var board, favicon, id, input, _, _ref;
@@ -1675,14 +1675,14 @@
       className: 'pointer'
     });
     $.bind(a, 'click', options);
-    replace(navtopr, a);
+    $.replace(navtopr, a);
     navbotr = $('#navbotr a');
     a = $.el('a', {
       textContent: '4chan X',
       className: 'pointer'
     });
     $.bind(a, 'click', options);
-    replace(navbotr, a);
+    $.replace(navbotr, a);
   } else if (getConfig('404 Redirect') && d.title === '4chan - 404') {
     redirect();
   } else {
@@ -1830,7 +1830,7 @@
           className: 'pointer'
         });
         $.bind(a, 'click', hideReply);
-        replace(td.firstChild, a);
+        $.replace(td.firstChild, a);
         next = td.nextSibling;
         id = next.id;
         _results.push((function() {
@@ -2049,7 +2049,7 @@
           textContent: "+ " + span.textContent
         });
         $.bind(a, 'click', expandThread);
-        replace(span, a);
+        $.replace(span, a);
       }
     }
     if (getConfig('Comment Expansion')) {

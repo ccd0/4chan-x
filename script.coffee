@@ -145,6 +145,8 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  replace: (root, el) ->
+    root.parentNode.replaceChild el, root
   hide: (el) ->
     el.style.display = 'none'
   show: (el) ->
@@ -228,8 +230,6 @@ getTime = ->
   Math.floor(new Date().getTime() / 1000)
 inAfter = (root, el) ->
   root.parentNode.insertBefore el, root.nextSibling
-replace = (root, el) ->
-  root.parentNode.replaceChild el, root
 slice = (arr, id) ->
   # the while loop is the only low-level loop left in coffeescript.
   # we need to use it to see the index.
@@ -1037,7 +1037,7 @@ updateFavicon = ->
   favicon = $ 'link[rel="shortcut icon"]', d
   clone = favicon.cloneNode true
   clone.href = href
-  replace favicon, clone
+  $.replace favicon, clone
 
 updateTime = ->
   span = $ '#updater #timer'
@@ -1158,7 +1158,7 @@ watcherUpdate = ->
         href: "/#{board}/res/#{thread.id}"
       mv a, tn(' '), link, $.el('br'), div
   old = $('#watcher div:last-child')
-  replace(old, div)
+  $.replace(old, div)
 
 watchX = ->
   [board, _, id] = @nextElementSibling.
@@ -1311,13 +1311,13 @@ if navtopr = $ '#navtopr a'
     textContent: '4chan X'
     className: 'pointer'
   $.bind a, 'click', options
-  replace navtopr, a
+  $.replace navtopr, a
   navbotr = $ '#navbotr a'
   a = $.el 'a',
     textContent: '4chan X'
     className: 'pointer'
   $.bind a, 'click', options
-  replace navbotr, a
+  $.replace navbotr, a
 else if getConfig('404 Redirect') and d.title is '4chan - 404'
   redirect()
 else
@@ -1422,7 +1422,7 @@ if getConfig 'Reply Hiding'
         textContent: '[ - ]'
         className: 'pointer'
       $.bind a, 'click', hideReply
-      replace(td.firstChild, a)
+      $.replace(td.firstChild, a)
 
       next = td.nextSibling
       id = next.id
@@ -1580,7 +1580,7 @@ else #not reply
         className: 'pointer omittedposts'
         textContent: "+ #{span.textContent}"
       $.bind a, 'click', expandThread
-      replace(span, a)
+      $.replace(span, a)
 
   if getConfig 'Comment Expansion'
     as = $$('span.abbr a')
