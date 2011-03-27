@@ -165,6 +165,8 @@ $.extend $,
   append: (parent, children...) ->
     for child in children
       parent.appendChild child
+  after: (root, el) ->
+    root.parentNode.insertBefore el, root.nextSibling
   before: (root, el) ->
     root.parentNode.insertBefore el, root
   el: (tag, properties) ->
@@ -230,8 +232,6 @@ $$ = (selector, root=d.body) ->
   node for node in result
 getConfig = (name) ->
   GM_getValue name, config[name][0]
-inAfter = (root, el) ->
-  root.parentNode.insertBefore el, root.nextSibling
 slice = (arr, id) ->
   # the while loop is the only low-level loop left in coffeescript.
   # we need to use it to see the index.
@@ -1438,8 +1438,8 @@ if getConfig 'Quick Report'
         textContent: '[ ! ]'
         className: 'pointer'
       $.bind a, 'click', report
-      inAfter el, a
-      inAfter el, $.tn(' ')
+      $.after el, a
+      $.after el, $.tn(' ')
 
 if getConfig 'Thread Watcher'
   #create watcher
@@ -1492,7 +1492,7 @@ if getConfig 'Reply Navigation'
         className: 'pointer'
       $.bind down, 'click', replyNav
       $.append span, $.tn(' '), up, $.tn(' '), down
-      inAfter el, span
+      $.after el, span
 
 if getConfig 'Keybinds'
   d.addEventListener 'keydown', keydown, true

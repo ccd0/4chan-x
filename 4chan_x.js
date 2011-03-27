@@ -56,7 +56,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, inAfter, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, closeQR, config, cooldown, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getConfig, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, slice, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, zeroPad, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -279,6 +279,9 @@
       }
       return _results;
     },
+    after: function(root, el) {
+      return root.parentNode.insertBefore(el, root.nextSibling);
+    },
     before: function(root, el) {
       return root.parentNode.insertBefore(el, root);
     },
@@ -353,9 +356,6 @@
   };
   getConfig = function(name) {
     return GM_getValue(name, config[name][0]);
-  };
-  inAfter = function(root, el) {
-    return root.parentNode.insertBefore(el, root.nextSibling);
   };
   slice = function(arr, id) {
     var i, l, _results;
@@ -1856,8 +1856,8 @@
           className: 'pointer'
         });
         $.bind(a, 'click', report);
-        inAfter(el, a);
-        _results.push(inAfter(el, $.tn(' ')));
+        $.after(el, a);
+        _results.push($.after(el, $.tn(' ')));
       }
       return _results;
     });
@@ -1929,7 +1929,7 @@
         });
         $.bind(down, 'click', replyNav);
         $.append(span, $.tn(' '), up, $.tn(' '), down);
-        _results.push(inAfter(el, span));
+        _results.push($.after(el, span));
       }
       return _results;
     });
