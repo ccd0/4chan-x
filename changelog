@@ -6,7 +6,8 @@
 - fix regression - unhide qr when quoting
 
 1.27.0
-- x-browser qr error checking (except for batshit insane chrome)
+- x-browser qr error checking (except for batshit insane chrome - see
+  http://code.google.com/p/chromium/issues/detail?id=20773)
 - fix opera movement, again
 - bigger options button
 - move updater to bottom-right by default
