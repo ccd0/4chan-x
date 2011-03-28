@@ -356,7 +356,7 @@ imageHover =
     node: (root) ->
       thumbs = $$ 'img[md5]', root
       for thumb in thumbs
-        thumb.addEventListener 'mouseover', imageHover.cb.mouseover, true
+        $.bind thumb, 'mouseover', imageHover.cb.mouseover
     mouseover: (e) ->
       {target, clientX, clientY} = e
       img = $ '#iHover'
@@ -364,8 +364,8 @@ imageHover =
       $.show img
       imageHover.winHeight = d.body.clientHeight
       imageHover.winWidth  = d.body.clientWidth
-      target.addEventListener 'mousemove', imageHover.cb.mousemove, true
-      target.addEventListener 'mouseout',  imageHover.cb.mouseout,  true
+      $.bind target, 'mousemove', imageHover.cb.mousemove
+      $.bind target, 'mouseout',  imageHover.cb.mouseout
     mousemove: (e) ->
       {clientX, clientY} = e
       img = $ '#iHover'
@@ -387,8 +387,8 @@ imageHover =
       img = $ '#iHover'
       $.hide img
       img.src = null
-      target.removeEventListener 'mousemove', imageHover.cb.mousemove, true
-      target.removeEventListener 'mouseout',  imageHover.cb.mouseout,  true
+      $.unbind target, 'mousemove', imageHover.cb.mousemove
+      $.unbind target, 'mouseout',  imageHover.cb.mouseout
 
 imageClick = (e) ->
   return if e.shiftKey or e.altKey or e.ctrlKey
@@ -660,10 +660,10 @@ options = ->
   div = ui.dialog 'options', 'center', html
 
   for input in $$ 'input[type="checkbox"]', div
-    input.addEventListener 'change', changeCheckbox, true
-  $('a.sauce', div).addEventListener 'click', editSauce, true
-  $('textarea', div).addEventListener 'change', changeValue, true
-  $('input[type="button"]', div).addEventListener 'click', clearHidden, true
+    $.bind input, 'change', changeCheckbox
+  $.bind $('a.sauce', div), 'click', editSauce
+  $.bind $('textarea', div), 'change', changeValue
+  $.bind $('input[type="button"]', div), 'click', clearHidden
   $.append d.body, div
 
 parseResponse = (responseText) ->
@@ -1093,7 +1093,7 @@ updaterMake = ->
   div = ui.dialog 'updater', 'bottomright', html
 
   for input in $$ 'input[type=checkbox]', div
-    input.addEventListener 'click', changeCheckbox, true
+    $.bind input, 'click', changeCheckbox
     name = input.name
     if name is 'autoL'
       input.checked = GM_getValue 'autoG', true
@@ -1101,18 +1101,18 @@ updaterMake = ->
       input.checked = GM_getValue name, true
     switch name
       when 'autoL'
-        input.addEventListener 'click', updateAuto, true
+        $.bind input, 'click', updateAuto
       when 'verbose'
-        input.addEventListener 'click', updateVerbose, true
+        $.bind input, 'click', updateVerbose
 
   unless g.verbose = GM_getValue 'verbose', true
     $("#timer", div).hidden = true
 
   interval = $ 'input[name=interval]', div
   interval.value = GM_getValue 'Interval', 10
-  interval.addEventListener 'change', updateInterval, true
+  $.bind interval, 'change', updateInterval
 
-  $('input[type=button]', div).addEventListener 'click', updateNow, true
+  $.bind $('input[type=button]'), 'click', updateNow
 
   d.body.appendChild div
 
@@ -1328,7 +1328,7 @@ else
 for el in $$ '#recaptcha_table a'
   el.tabIndex = 1
 recaptcha = $ '#recaptcha_response_field'
-recaptcha.addEventListener('keydown', recaptchaListener, true)
+$.bind recaptcha, 'keydown', recaptchaListener
 
 scroll = ->
   height = d.body.clientHeight
@@ -1352,15 +1352,15 @@ if $.config 'Image Expansion'
     if option.textContent is imageType
       option.selected = true
       break
-  $("select", expand).addEventListener 'change', changeValue, true
-  $("select", expand).addEventListener 'change', imageTypeChange, true
-  $("input", expand).addEventListener 'click', imageExpandClick, true
+  $.bind $('select', expand), 'change', changeValue
+  $.bind $('select', expand), 'change', imageTypeChange
+  $.bind $('input', expand),  'click', imageExpandClick
   $.before delform.firstChild, expand
 
   g.callbacks.push (root) ->
     thumbs = $$ 'img[md5]', root
     for thumb in thumbs
-      thumb.parentNode.addEventListener 'click', imageClick, true
+      $.bind thumb.parentNode, 'click', imageClick
       if g.expand then imageToggle thumb.parentNode
 
 if $.config 'Image Hover'
@@ -1499,8 +1499,8 @@ if $.config 'Reply Navigation'
       $.after el, span
 
 if $.config 'Keybinds'
-  d.addEventListener 'keydown', keydown, true
-  d.addEventListener 'keypress', keypress, true
+  $.bind d, 'keydown',  keydown
+  $.bind d, 'keypress', keypress
 
 if g.REPLY
   if $.config 'Image Preloading'
@@ -1521,7 +1521,7 @@ if g.REPLY
   if $.config 'Unread Count'
     g.replies = []
     d.title = '(0) ' + d.title
-    window.addEventListener 'scroll', scroll, true
+    $.bind window, 'scroll', scroll
     g.callbacks.push (root) ->
       g.replies = g.replies.concat $$ 'td.reply, td.replyhl', root
       updateTitle()
@@ -1532,12 +1532,12 @@ else #not reply
     start = $ 'form[name=delform] > *'
     start = start.nextSibling if $.config 'Image Expansion' #skip over image expansion dialog
     #don't confuse other scripts
-    d.addEventListener('DOMNodeInserted', stopPropagation, true)
+    $.bind d, 'DOMNodeInserted', stopPropagation
     threadF start
-    d.removeEventListener('DOMNodeInserted', stopPropagation, true)
+    $.unbind d, 'DOMNodeInserted', stopPropagation
 
   if $.config 'Auto Watch'
-    $('form[name="post"]').addEventListener('submit', autoWatch, true)
+    $.bind $('form[name=post]'), 'submit', autoWatch
 
   if $.config 'Thread Navigation'
     arr = $$ 'div > span.filesize, form > span.filesize'
@@ -1586,7 +1586,7 @@ else #not reply
   if $.config 'Comment Expansion'
     as = $$('span.abbr a')
     for a in as
-      a.addEventListener('click', expandComment, true)
+      $.bind a, 'click', expandComment
 
 callback() for callback in g.callbacks
-d.body.addEventListener('DOMNodeInserted', nodeInserted, true)
+$.bind d.body, 'DOMNodeInserted', nodeInserted

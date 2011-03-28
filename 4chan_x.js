@@ -520,7 +520,7 @@
         _results = [];
         for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
           thumb = thumbs[_i];
-          _results.push(thumb.addEventListener('mouseover', imageHover.cb.mouseover, true));
+          _results.push($.bind(thumb, 'mouseover', imageHover.cb.mouseover));
         }
         return _results;
       },
@@ -532,8 +532,8 @@
         $.show(img);
         imageHover.winHeight = d.body.clientHeight;
         imageHover.winWidth = d.body.clientWidth;
-        target.addEventListener('mousemove', imageHover.cb.mousemove, true);
-        return target.addEventListener('mouseout', imageHover.cb.mouseout, true);
+        $.bind(target, 'mousemove', imageHover.cb.mousemove);
+        return $.bind(target, 'mouseout', imageHover.cb.mouseout);
       },
       mousemove: function(e) {
         var bot, clientX, clientY, img, imgHeight, top;
@@ -552,8 +552,8 @@
         img = $('#iHover');
         $.hide(img);
         img.src = null;
-        target.removeEventListener('mousemove', imageHover.cb.mousemove, true);
-        return target.removeEventListener('mouseout', imageHover.cb.mouseout, true);
+        $.unbind(target, 'mousemove', imageHover.cb.mousemove);
+        return $.unbind(target, 'mouseout', imageHover.cb.mouseout);
       }
     }
   };
@@ -905,11 +905,11 @@
     _ref = $$('input[type="checkbox"]', div);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
-      input.addEventListener('change', changeCheckbox, true);
+      $.bind(input, 'change', changeCheckbox);
     }
-    $('a.sauce', div).addEventListener('click', editSauce, true);
-    $('textarea', div).addEventListener('change', changeValue, true);
-    $('input[type="button"]', div).addEventListener('click', clearHidden, true);
+    $.bind($('a.sauce', div), 'click', editSauce);
+    $.bind($('textarea', div), 'change', changeValue);
+    $.bind($('input[type="button"]', div), 'click', clearHidden);
     return $.append(d.body, div);
   };
   parseResponse = function(responseText) {
@@ -1449,7 +1449,7 @@
     _ref = $$('input[type=checkbox]', div);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       input = _ref[_i];
-      input.addEventListener('click', changeCheckbox, true);
+      $.bind(input, 'click', changeCheckbox);
       name = input.name;
       if (name === 'autoL') {
         input.checked = GM_getValue('autoG', true);
@@ -1458,10 +1458,10 @@
       }
       switch (name) {
         case 'autoL':
-          input.addEventListener('click', updateAuto, true);
+          $.bind(input, 'click', updateAuto);
           break;
         case 'verbose':
-          input.addEventListener('click', updateVerbose, true);
+          $.bind(input, 'click', updateVerbose);
       }
     }
     if (!(g.verbose = GM_getValue('verbose', true))) {
@@ -1469,8 +1469,8 @@
     }
     interval = $('input[name=interval]', div);
     interval.value = GM_getValue('Interval', 10);
-    interval.addEventListener('change', updateInterval, true);
-    $('input[type=button]', div).addEventListener('click', updateNow, true);
+    $.bind(interval, 'change', updateInterval);
+    $.bind($('input[type=button]'), 'click', updateNow);
     d.body.appendChild(div);
     if (GM_getValue('autoG')) {
       return updateAuto.call($("input[name=autoL]", div));
@@ -1696,7 +1696,7 @@
     el.tabIndex = 1;
   }
   recaptcha = $('#recaptcha_response_field');
-  recaptcha.addEventListener('keydown', recaptchaListener, true);
+  $.bind(recaptcha, 'keydown', recaptchaListener);
   scroll = function() {
     var bottom, height, i, reply, _len, _ref;
     height = d.body.clientHeight;
@@ -1728,9 +1728,9 @@
         break;
       }
     }
-    $("select", expand).addEventListener('change', changeValue, true);
-    $("select", expand).addEventListener('change', imageTypeChange, true);
-    $("input", expand).addEventListener('click', imageExpandClick, true);
+    $.bind($('select', expand), 'change', changeValue);
+    $.bind($('select', expand), 'change', imageTypeChange);
+    $.bind($('input', expand), 'click', imageExpandClick);
     $.before(delform.firstChild, expand);
     g.callbacks.push(function(root) {
       var thumb, thumbs, _i, _len, _results;
@@ -1738,7 +1738,7 @@
       _results = [];
       for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
         thumb = thumbs[_i];
-        thumb.parentNode.addEventListener('click', imageClick, true);
+        $.bind(thumb.parentNode, 'click', imageClick);
         _results.push(g.expand ? imageToggle(thumb.parentNode) : void 0);
       }
       return _results;
@@ -1943,8 +1943,8 @@
     });
   }
   if ($.config('Keybinds')) {
-    d.addEventListener('keydown', keydown, true);
-    d.addEventListener('keypress', keypress, true);
+    $.bind(d, 'keydown', keydown);
+    $.bind(d, 'keypress', keypress);
   }
   if (g.REPLY) {
     if ($.config('Image Preloading')) {
@@ -1979,7 +1979,7 @@
     if ($.config('Unread Count')) {
       g.replies = [];
       d.title = '(0) ' + d.title;
-      window.addEventListener('scroll', scroll, true);
+      $.bind(window, 'scroll', scroll);
       g.callbacks.push(function(root) {
         g.replies = g.replies.concat($$('td.reply, td.replyhl', root));
         return updateTitle();
@@ -1992,12 +1992,12 @@
       if ($.config('Image Expansion')) {
         start = start.nextSibling;
       }
-      d.addEventListener('DOMNodeInserted', stopPropagation, true);
+      $.bind(d, 'DOMNodeInserted', stopPropagation);
       threadF(start);
-      d.removeEventListener('DOMNodeInserted', stopPropagation, true);
+      $.unbind(d, 'DOMNodeInserted', stopPropagation);
     }
     if ($.config('Auto Watch')) {
-      $('form[name="post"]').addEventListener('submit', autoWatch, true);
+      $.bind($('form[name=post]'), 'submit', autoWatch);
     }
     if ($.config('Thread Navigation')) {
       arr = $$('div > span.filesize, form > span.filesize');
@@ -2058,7 +2058,7 @@
       as = $$('span.abbr a');
       for (_m = 0, _len6 = as.length; _m < _len6; _m++) {
         a = as[_m];
-        a.addEventListener('click', expandComment, true);
+        $.bind(a, 'click', expandComment);
       }
     }
   }
@@ -2067,5 +2067,5 @@
     callback = _ref4[_n];
     callback();
   }
-  d.body.addEventListener('DOMNodeInserted', nodeInserted, true);
+  $.bind(d.body, 'DOMNodeInserted', nodeInserted);
 }).call(this);
