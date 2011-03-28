@@ -1,3 +1,7 @@
+1.27.2
+- fix regression - close / refresh qr on chrome
+- add updateURL for scriptish
+
 1.27.1
 - fix regression - unhide qr when quoting
 
