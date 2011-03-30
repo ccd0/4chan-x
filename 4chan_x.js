@@ -109,13 +109,6 @@
           return value;
       }
     };
-    window.GM_addStyle = function(css) {
-      var style;
-      style = document.createElement('style');
-      style.type = 'text/css';
-      style.textContent = css;
-      return document.getElementsByTagName('head')[0].appendChild(style);
-    };
     window.GM_openInTab = function(url) {
       return window.open(url, "_blank");
     };
@@ -232,6 +225,13 @@
     return object;
   };
   $.extend($, {
+    addStyle: function(css) {
+      var style;
+      style = document.createElement('style');
+      style.type = 'text/css';
+      style.textContent = css;
+      return $.append(d.head, style);
+    },
     config: function(name) {
       return GM_getValue(name, config[name][0]);
     },
@@ -1575,7 +1575,7 @@
     GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
     GM_setValue('lastChecked', now.toString());
   }
-  GM_addStyle('\
+  $.addStyle('\
   /* dialog styling */\
   div.dialog {\
     border: 1px solid;\

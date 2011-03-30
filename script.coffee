@@ -43,11 +43,6 @@ if typeof GM_deleteValue is 'undefined'
         Number value
       else
         value
-  window.GM_addStyle = (css) ->
-    style = document.createElement 'style'
-    style.type = 'text/css'
-    style.textContent = css
-    document.getElementsByTagName('head')[0].appendChild style
   window.GM_openInTab = (url) ->
     window.open url, "_blank"
 
@@ -132,6 +127,11 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  addStyle: (css) ->
+    style = document.createElement 'style'
+    style.type = 'text/css'
+    style.textContent = css
+    $.append d.head, style
   config: (name) ->
     GM_getValue name, config[name][0]
   zeroPad: (n) ->
@@ -1211,7 +1211,7 @@ if lastChecked < now - 1*DAY
   GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
   GM_setValue('lastChecked', now.toString())
 
-GM_addStyle '
+$.addStyle '
   /* dialog styling */
   div.dialog {
     border: 1px solid;
