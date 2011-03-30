@@ -990,6 +990,7 @@
               $.remove(dialog);
             }
           }
+          g.seconds = g.sage ? 60 : 30;
           qr.cooldownStart();
         } else {
           error = $.el('span', {
@@ -1015,6 +1016,17 @@
         var recaptcha, span;
         if (span = this.nextSibling) {
           $.remove(span);
+        }
+        if (g.seconds = GM_getValue('seconds')) {
+          e.preventDefault();
+          span = $.el('span', {
+            className: 'error',
+            textContent: 'Stop posting so often!'
+          });
+          $.append(this.parentNode, span);
+          alert('Stop posting so often!');
+          qr.cooldownStart();
+          return;
         }
         recaptcha = $('input[name=recaptcha_response_field]', this);
         if (recaptcha.value) {
@@ -1070,6 +1082,7 @@
           submit.value = 'Submit';
         } else {
           submit.value = g.seconds = g.seconds - 1;
+          GM_setValue('seconds', g.seconds);
         }
       }
       if (g.seconds !== 0) {
@@ -1078,7 +1091,7 @@
     },
     cooldownStart: function() {
       var submit, submits, _i, _len;
-      g.seconds = g.sage ? 60 : 30;
+      GM_setValue('seconds', g.seconds);
       submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];

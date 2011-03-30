@@ -730,6 +730,7 @@ qr =
             qr.refresh dialog
           else
             $.remove dialog
+        g.seconds = if g.sage then 60 else 30
         qr.cooldownStart()
       else
         error = $.el 'span',
@@ -748,6 +749,17 @@ qr =
     submit: (e) ->
       if span = @nextSibling
         $.remove span
+
+      if g.seconds = GM_getValue 'seconds'
+        e.preventDefault()
+        span = $.el 'span',
+          className: 'error'
+          textContent: 'Stop posting so often!'
+        $.append @parentNode, span
+        alert 'Stop posting so often!'
+        qr.cooldownStart()
+        return
+
       recaptcha = $('input[name=recaptcha_response_field]', this)
       if recaptcha.value
         qr.autohide.set()
@@ -796,12 +808,13 @@ qr =
         submit.value = 'Submit'
       else
         submit.value = g.seconds = g.seconds - 1
+        GM_setValue 'seconds', g.seconds
 
     if g.seconds != 0
       window.setTimeout qr.cooldown, 1000
 
   cooldownStart: ->
-    g.seconds = if g.sage then 60 else 30
+    GM_setValue 'seconds', g.seconds
     submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
     for submit in submits
       submit.value = g.seconds
