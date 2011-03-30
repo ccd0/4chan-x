@@ -1,3 +1,6 @@
+1.27.3
+- fix regression - movement
+
 1.27.2
 - fix regression - close / refresh qr on chrome
 - add updateURL for scriptish
