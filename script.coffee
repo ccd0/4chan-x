@@ -790,10 +790,6 @@ qr =
       submit.value = if g.sage then 60 else 30
       submit.disabled = true
       window.setTimeout qr.cooldown, 1000
-      auto = submit.previousSibling.lastChild
-      if auto.checked
-        #unhide the qr so you know it's ready for the next item
-        $('input[title=autohide]:checked', qr)?.click()
 
   cooldown: ->
     submit = $ '#qr input[type=submit]'
@@ -801,10 +797,6 @@ qr =
     if seconds == 0
       submit.disabled = false
       submit.value = 'Submit'
-      auto = submit.previousSibling.lastChild
-      if auto.checked
-        $('#qr form').submit()
-        #submit.click() doesn't work
     else
       submit.value = seconds - 1
       window.setTimeout qr.cooldown, 1000
@@ -830,14 +822,6 @@ qr =
         name: 'resto'
         value: $.x(xpath, link).name
       $.append clone, input
-    else if $.config 'Persistent QR'
-      submit = $ 'input[type=submit]', clone
-      auto = $.el 'label',
-        textContent: 'Auto'
-      autobox = $.el 'input',
-        type: 'checkbox'
-      $.append auto, autobox
-      $.before submit, auto
 
     $.append dialog, clone
     $.append d.body, dialog

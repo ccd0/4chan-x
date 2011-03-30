@@ -1052,7 +1052,7 @@
         return ta.value += text;
       },
       refresh: function(dialog) {
-        var auto, f, submit, _ref;
+        var f, submit;
         $('textarea', dialog).value = '';
         $('input[name=recaptcha_response_field]', dialog).value = '';
         f = $('input[type=file]', dialog).parentNode;
@@ -1060,31 +1060,23 @@
         submit = $('input[type=submit]', qr);
         submit.value = g.sage ? 60 : 30;
         submit.disabled = true;
-        window.setTimeout(qr.cooldown, 1000);
-        auto = submit.previousSibling.lastChild;
-        if (auto.checked) {
-          return (_ref = $('input[title=autohide]:checked', qr)) != null ? _ref.click() : void 0;
-        }
+        return window.setTimeout(qr.cooldown, 1000);
       }
     },
     cooldown: function() {
-      var auto, seconds, submit;
+      var seconds, submit;
       submit = $('#qr input[type=submit]');
       seconds = parseInt(submit.value);
       if (seconds === 0) {
         submit.disabled = false;
-        submit.value = 'Submit';
-        auto = submit.previousSibling.lastChild;
-        if (auto.checked) {
-          return $('#qr form').submit();
-        }
+        return submit.value = 'Submit';
       } else {
         submit.value = seconds - 1;
         return window.setTimeout(qr.cooldown, 1000);
       }
     },
     dialog: function(link) {
-      var auto, autobox, clone, dialog, el, html, input, script, submit, xpath, _i, _len, _ref;
+      var clone, dialog, el, html, input, script, xpath, _i, _len, _ref;
       html = "<div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>";
       dialog = ui.dialog('qr', {
         top: '0px',
@@ -1109,16 +1101,6 @@
           value: $.x(xpath, link).name
         });
         $.append(clone, input);
-      } else if ($.config('Persistent QR')) {
-        submit = $('input[type=submit]', clone);
-        auto = $.el('label', {
-          textContent: 'Auto'
-        });
-        autobox = $.el('input', {
-          type: 'checkbox'
-        });
-        $.append(auto, autobox);
-        $.before(submit, auto);
       }
       $.append(dialog, clone);
       $.append(d.body, dialog);
