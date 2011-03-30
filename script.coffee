@@ -747,31 +747,40 @@ qr =
         $.bind quote, 'click', qr.cb.quote
 
     submit: (e) ->
-      if span = @nextSibling
-        $.remove span
+      isQR = e.target.parentNode.id == 'qr'
+
+      if isQR
+        if span = @nextSibling
+          $.remove span
 
       if g.seconds = GM_getValue 'seconds'
         e.preventDefault()
-        span = $.el 'span',
-          className: 'error'
-          textContent: 'Stop posting so often!'
-        $.append @parentNode, span
-        alert 'Stop posting so often!'
         qr.cooldownStart()
+        alert 'Stop posting so often!'
+
+        if isQR
+          span = $.el 'span',
+            className: 'error'
+            textContent: 'Stop posting so often!'
+          $.append @parentNode, span
+
         return
 
       recaptcha = $('input[name=recaptcha_response_field]', this)
       if recaptcha.value
-        qr.autohide.set()
         g.sage = $('#qr input[name=email]').value == 'sage'
+        if isQR
+          qr.autohide.set()
       else
         e.preventDefault()
-        span = $.el 'span',
-          className: 'error'
-          textContent: 'You forgot to type in the verification.'
-        $.append @parentNode, span
         alert 'You forgot to type in the verification.'
         recaptcha.focus()
+
+        if isQR
+          span = $.el 'span',
+            className: 'error'
+            textContent: 'You forgot to type in the verification.'
+          $.append @parentNode, span
 
     quote: (e) ->
       e.preventDefault()
@@ -1333,6 +1342,8 @@ for el in $$ '#recaptcha_table a'
   el.tabIndex = 1
 recaptcha = $ '#recaptcha_response_field'
 $.bind recaptcha, 'keydown', recaptchaListener
+
+$.bind $('form[name=post]'), 'submit', qr.cb.submit
 
 scroll = ->
   height = d.body.clientHeight

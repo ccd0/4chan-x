@@ -1013,34 +1013,43 @@
         return _results;
       },
       submit: function(e) {
-        var recaptcha, span;
-        if (span = this.nextSibling) {
-          $.remove(span);
+        var isQR, recaptcha, span;
+        isQR = e.target.parentNode.id === 'qr';
+        if (isQR) {
+          if (span = this.nextSibling) {
+            $.remove(span);
+          }
         }
         if (g.seconds = GM_getValue('seconds')) {
           e.preventDefault();
-          span = $.el('span', {
-            className: 'error',
-            textContent: 'Stop posting so often!'
-          });
-          $.append(this.parentNode, span);
-          alert('Stop posting so often!');
           qr.cooldownStart();
+          alert('Stop posting so often!');
+          if (isQR) {
+            span = $.el('span', {
+              className: 'error',
+              textContent: 'Stop posting so often!'
+            });
+            $.append(this.parentNode, span);
+          }
           return;
         }
         recaptcha = $('input[name=recaptcha_response_field]', this);
         if (recaptcha.value) {
-          qr.autohide.set();
-          return g.sage = $('#qr input[name=email]').value === 'sage';
+          g.sage = $('#qr input[name=email]').value === 'sage';
+          if (isQR) {
+            return qr.autohide.set();
+          }
         } else {
           e.preventDefault();
-          span = $.el('span', {
-            className: 'error',
-            textContent: 'You forgot to type in the verification.'
-          });
-          $.append(this.parentNode, span);
           alert('You forgot to type in the verification.');
-          return recaptcha.focus();
+          recaptcha.focus();
+          if (isQR) {
+            span = $.el('span', {
+              className: 'error',
+              textContent: 'You forgot to type in the verification.'
+            });
+            return $.append(this.parentNode, span);
+          }
         }
       },
       quote: function(e) {
@@ -1705,6 +1714,7 @@
   }
   recaptcha = $('#recaptcha_response_field');
   $.bind(recaptcha, 'keydown', recaptchaListener);
+  $.bind($('form[name=post]'), 'submit', qr.cb.submit);
   scroll = function() {
     var bottom, height, i, reply, _len, _ref;
     height = d.body.clientHeight;
