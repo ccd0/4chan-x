@@ -53,7 +53,7 @@ if typeof GM_deleteValue is 'undefined'
 
 ui =
   dialog: (id, position, html) ->
-    ui.el = el = document.createElement 'div'
+    el = document.createElement 'div'
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
@@ -85,7 +85,7 @@ ui =
       (-> el.parentNode.removeChild(el)), true
     el
   move: (e) ->
-    {el} = ui
+    ui.el = el = e.target.parentNode
     #distance from pointer to el edge is constant; calculate it here.
     # XXX opera reports el.offsetLeft / el.offsetTop as 0
     rect = el.getBoundingClientRect()

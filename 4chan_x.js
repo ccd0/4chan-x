@@ -123,7 +123,7 @@
   ui = {
     dialog: function(id, position, html) {
       var el, left, top, _ref;
-      ui.el = el = document.createElement('div');
+      el = document.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
@@ -174,7 +174,7 @@
     },
     move: function(e) {
       var el, rect;
-      el = ui.el;
+      ui.el = el = e.target.parentNode;
       rect = el.getBoundingClientRect();
       ui.dx = e.clientX - rect.left;
       ui.dy = e.clientY - rect.top;
