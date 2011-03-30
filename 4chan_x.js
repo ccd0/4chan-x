@@ -990,6 +990,7 @@
               $.remove(dialog);
             }
           }
+          qr.cooldownStart();
         } else {
           error = $.el('span', {
             className: 'error',
@@ -1052,28 +1053,39 @@
         return ta.value += text;
       },
       refresh: function(dialog) {
-        var f, submit;
+        var f;
         $('textarea', dialog).value = '';
         $('input[name=recaptcha_response_field]', dialog).value = '';
         f = $('input[type=file]', dialog).parentNode;
-        f.innerHTML = f.innerHTML;
-        submit = $('input[type=submit]', qr);
-        submit.value = g.sage ? 60 : 30;
-        submit.disabled = true;
-        return window.setTimeout(qr.cooldown, 1000);
+        return f.innerHTML = f.innerHTML;
       }
     },
     cooldown: function() {
-      var seconds, submit;
-      submit = $('#qr input[type=submit]');
-      seconds = parseInt(submit.value);
-      if (seconds === 0) {
-        submit.disabled = false;
-        return submit.value = 'Submit';
-      } else {
-        submit.value = seconds - 1;
+      var submit, submits, _i, _len;
+      submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
+      for (_i = 0, _len = submits.length; _i < _len; _i++) {
+        submit = submits[_i];
+        if (g.seconds === 0) {
+          submit.disabled = false;
+          submit.value = 'Submit';
+        } else {
+          submit.value = g.seconds = g.seconds - 1;
+        }
+      }
+      if (g.seconds !== 0) {
         return window.setTimeout(qr.cooldown, 1000);
       }
+    },
+    cooldownStart: function() {
+      var submit, submits, _i, _len;
+      g.seconds = g.sage ? 60 : 30;
+      submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
+      for (_i = 0, _len = submits.length; _i < _len; _i++) {
+        submit = submits[_i];
+        submit.value = g.seconds;
+        submit.disabled = true;
+      }
+      return window.setTimeout(qr.cooldown, 1000);
     },
     dialog: function(link) {
       var clone, dialog, el, html, input, script, xpath, _i, _len, _ref;

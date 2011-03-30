@@ -730,6 +730,7 @@ qr =
             qr.refresh dialog
           else
             $.remove dialog
+        qr.cooldownStart()
       else
         error = $.el 'span',
           className: 'error'
@@ -786,20 +787,26 @@ qr =
       # XXX file.value = '' doesn't work in opera
       f = $('input[type=file]', dialog).parentNode
       f.innerHTML = f.innerHTML
-      submit = $ 'input[type=submit]', qr
-      submit.value = if g.sage then 60 else 30
-      submit.disabled = true
-      window.setTimeout qr.cooldown, 1000
 
   cooldown: ->
-    submit = $ '#qr input[type=submit]'
-    seconds = parseInt submit.value
-    if seconds == 0
-      submit.disabled = false
-      submit.value = 'Submit'
-    else
-      submit.value = seconds - 1
+    submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
+    for submit in submits
+      if g.seconds == 0
+        submit.disabled = false
+        submit.value = 'Submit'
+      else
+        submit.value = g.seconds = g.seconds - 1
+
+    if g.seconds != 0
       window.setTimeout qr.cooldown, 1000
+
+  cooldownStart: ->
+    g.seconds = if g.sage then 60 else 30
+    submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
+    for submit in submits
+      submit.value = g.seconds
+      submit.disabled = true
+    window.setTimeout qr.cooldown, 1000
 
   dialog: (link) ->
     html = "<div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>"
