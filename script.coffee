@@ -127,6 +127,15 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  getValue: (name, defaultValue) ->
+    name = NAMESPACE + name
+    if value = localStorage[name]
+      value = JSON.parse value
+    else
+      defaultValue
+  setValue: (name, value) ->
+    name = NAMESPACE + name
+    localStorage[name] = JSON.stringify value
   addStyle: (css) ->
     style = document.createElement 'style'
     style.type = 'text/css'
@@ -1226,6 +1235,7 @@ watchX = ->
 
 
 #main
+NAMESPACE = 'AEOS.4chan_x.'
 g =
   callbacks: []
   expand: false

@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, log, navbotr, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, src, temp, text, textContent, threadHiding, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, log, navbotr, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, src, temp, text, textContent, threadHiding, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -226,6 +226,19 @@
     return object;
   };
   $.extend($, {
+    getValue: function(name, defaultValue) {
+      var value;
+      name = NAMESPACE + name;
+      if (value = localStorage[name]) {
+        return value = JSON.parse(value);
+      } else {
+        return defaultValue;
+      }
+    },
+    setValue: function(name, value) {
+      name = NAMESPACE + name;
+      return localStorage[name] = JSON.stringify(value);
+    },
     addStyle: function(css) {
       var style;
       style = document.createElement('style');
@@ -1592,6 +1605,7 @@
       return favicon.src = g.favEmpty;
     }
   };
+  NAMESPACE = 'AEOS.4chan_x.';
   g = {
     callbacks: [],
     expand: false,
