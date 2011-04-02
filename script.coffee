@@ -1,3 +1,4 @@
+# XXX error on FUCKING CHROME
 {log} = console if console?
 
 config =
