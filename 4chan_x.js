@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, log, navbotr, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, src, temp, text, textContent, threadHiding, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, href, i, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeInsert, keyModeNormal, keydown, keypress, l1, log, navbotr, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, textContent, threadHiding, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1605,6 +1605,52 @@
       return favicon.src = g.favEmpty;
     }
   };
+  watcher = {
+    init: function() {
+      var dialog, html, img, input, inputs, _i, _len, _results;
+      html = '<div class=move>Thread Watcher</div>';
+      dialog = ui.dialog('watcher', {
+        top: '50px',
+        left: '0px'
+      }, html);
+      $.append(d.body, dialog);
+      inputs = $$('form > input[value=delete], div.thread > input[value=delete]');
+      _results = [];
+      for (_i = 0, _len = inputs.length; _i < _len; _i++) {
+        input = inputs[_i];
+        img = $.el('img', {
+          src: g.favEmpty
+        });
+        _results.push($.before(input, img));
+      }
+      return _results;
+      /*
+          #create watcher
+          html = '<div class="move">Thread Watcher</div><div></div>'
+          watcher = ui.dialog 'watcher', top: '50px', left: '0px', html
+          $.append d.body, watcher
+          watcherUpdate()
+
+          #add buttons
+          threads = g.watched[g.BOARD] || []
+          #normal, threading
+          inputs = $$('form > input[value="delete"], div > input[value="delete"]')
+          for input in inputs
+            id = input.name
+            src = (->
+              for thread in threads
+                if id is thread.id
+                  return g.favDefault
+              g.favEmpty
+            )()
+            img = $.el 'img',
+              src: src
+              className: 'pointer'
+            $.bind img, 'click', watch
+            $.before input, img
+          */
+    }
+  };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {
     callbacks: [],
@@ -1925,35 +1971,7 @@
     });
   }
   if ($.config('Thread Watcher')) {
-    html = '<div class="move">Thread Watcher</div><div></div>';
-    watcher = ui.dialog('watcher', {
-      top: '50px',
-      left: '0px'
-    }, html);
-    $.append(d.body, watcher);
-    watcherUpdate();
-    threads = g.watched[g.BOARD] || [];
-    inputs = $$('form > input[value="delete"], div > input[value="delete"]');
-    for (_k = 0, _len3 = inputs.length; _k < _len3; _k++) {
-      input = inputs[_k];
-      id = input.name;
-      src = (function() {
-        var thread, _i, _len;
-        for (_i = 0, _len = threads.length; _i < _len; _i++) {
-          thread = threads[_i];
-          if (id === thread.id) {
-            return g.favDefault;
-          }
-        }
-        return g.favEmpty;
-      })();
-      img = $.el('img', {
-        src: src,
-        className: 'pointer'
-      });
-      $.bind(img, 'click', watch);
-      $.before(input, img);
-    }
+    watcher.init();
   }
   if ($.config('Anonymize')) {
     g.callbacks.push(function(root) {
@@ -2049,7 +2067,7 @@
     if ($.config('Thread Navigation')) {
       arr = $$('div > span.filesize, form > span.filesize');
       l1 = arr.length - 1;
-      for (i = 0, _len4 = arr.length; i < _len4; i++) {
+      for (i = 0, _len3 = arr.length; i < _len3; i++) {
         el = arr[i];
         span = $.el('span', {
           className: 'navlinks',
@@ -2091,8 +2109,8 @@
     }
     if ($.config('Thread Expansion')) {
       omitted = $$('span.omittedposts');
-      for (_l = 0, _len5 = omitted.length; _l < _len5; _l++) {
-        span = omitted[_l];
+      for (_k = 0, _len4 = omitted.length; _k < _len4; _k++) {
+        span = omitted[_k];
         a = $.el('a', {
           className: 'pointer omittedposts',
           textContent: "+ " + span.textContent
@@ -2103,15 +2121,15 @@
     }
     if ($.config('Comment Expansion')) {
       as = $$('span.abbr a');
-      for (_m = 0, _len6 = as.length; _m < _len6; _m++) {
-        a = as[_m];
+      for (_l = 0, _len5 = as.length; _l < _len5; _l++) {
+        a = as[_l];
         $.bind(a, 'click', expandComment);
       }
     }
   }
   _ref4 = g.callbacks;
-  for (_n = 0, _len7 = _ref4.length; _n < _len7; _n++) {
-    callback = _ref4[_n];
+  for (_m = 0, _len6 = _ref4.length; _m < _len6; _m++) {
+    callback = _ref4[_m];
     callback();
   }
   $.bind(d.body, 'DOMNodeInserted', nodeInserted);

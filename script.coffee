@@ -1233,6 +1233,44 @@ watchX = ->
     favicon = input.previousSibling
     favicon.src = g.favEmpty
 
+watcher =
+  init: ->
+    html = '<div class=move>Thread Watcher</div>'
+    dialog = ui.dialog 'watcher', top: '50px', left: '0px', html
+    $.append d.body, dialog
+
+    inputs = $$ 'form > input[value=delete], div.thread > input[value=delete]'
+    for input in inputs
+      img = $.el 'img',
+        src: g.favEmpty
+      $.before input, img
+
+
+    ###
+    #create watcher
+    html = '<div class="move">Thread Watcher</div><div></div>'
+    watcher = ui.dialog 'watcher', top: '50px', left: '0px', html
+    $.append d.body, watcher
+    watcherUpdate()
+
+    #add buttons
+    threads = g.watched[g.BOARD] || []
+    #normal, threading
+    inputs = $$('form > input[value="delete"], div > input[value="delete"]')
+    for input in inputs
+      id = input.name
+      src = (->
+        for thread in threads
+          if id is thread.id
+            return g.favDefault
+        g.favEmpty
+      )()
+      img = $.el 'img',
+        src: src
+        className: 'pointer'
+      $.bind img, 'click', watch
+      $.before input, img
+    ###
 
 #main
 NAMESPACE = 'AEOS.4chan_x.'
@@ -1512,29 +1550,7 @@ if $.config 'Quick Report'
       $.after el, $.tn(' ')
 
 if $.config 'Thread Watcher'
-  #create watcher
-  html = '<div class="move">Thread Watcher</div><div></div>'
-  watcher = ui.dialog 'watcher', top: '50px', left: '0px', html
-  $.append d.body, watcher
-  watcherUpdate()
-
-  #add buttons
-  threads = g.watched[g.BOARD] || []
-  #normal, threading
-  inputs = $$('form > input[value="delete"], div > input[value="delete"]')
-  for input in inputs
-    id = input.name
-    src = (->
-      for thread in threads
-        if id is thread.id
-          return g.favDefault
-      g.favEmpty
-    )()
-    img = $.el 'img',
-      src: src
-      className: 'pointer'
-    $.bind img, 'click', watch
-    $.before input, img
+  watcher.init()
 
 if $.config 'Anonymize'
   g.callbacks.push (root) ->
