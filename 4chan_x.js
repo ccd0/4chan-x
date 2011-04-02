@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, hideReply, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, span, src, temp, text, textContent, threadHiding, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, log, navbotr, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, src, temp, text, textContent, threadHiding, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -449,29 +449,66 @@
       }
     }
   };
-  hideReply = function(reply) {
-    var a, div, name, p, table, trip, _ref;
-    if (p = this.parentNode) {
-      reply = p.nextSibling;
-      g.hiddenReplies.push({
-        id: reply.id,
-        timestamp: Date.now()
-      });
-      GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
-    }
-    name = $('span.commentpostername', reply).textContent;
-    trip = ((_ref = $('span.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
-    table = $.x('ancestor::table', reply);
-    $.hide(table);
-    if ($.config('Show Stubs')) {
-      a = $.el('a', {
-        textContent: "[ + ] " + name + " " + trip,
-        className: 'pointer'
-      });
-      $.bind(a, 'click', showReply);
-      div = $.el('div');
-      $.append(div, a);
-      return $.before(table, div);
+  replyHiding = {
+    init: function() {
+      return g.callbacks.push(replyHiding.cb.node);
+    },
+    cb: {
+      hide: function(e) {
+        var reply;
+        reply = e.target.parentNode.nextSibling;
+        return replyHiding.hide(reply);
+      },
+      node: function(root) {
+        var a, id, reply, td, tds, _i, _len, _results;
+        tds = $$('td.doubledash', root);
+        _results = [];
+        for (_i = 0, _len = tds.length; _i < _len; _i++) {
+          td = tds[_i];
+          a = $.el('a', {
+            textContent: '[ - ]'
+          });
+          $.bind(a, 'click', replyHiding.cb.hide);
+          $.replace(td.firstChild, a);
+          reply = td.nextSibling;
+          id = reply.id;
+          _results.push(id in g.hiddenReply ? replyHiding.hide(reply) : void 0);
+        }
+        return _results;
+      },
+      show: function(e) {
+        var div, table;
+        div = e.target.parentNode;
+        table = div.nextSibling;
+        replyHiding.show(table);
+        return $.remove(div);
+      }
+    },
+    hide: function(reply) {
+      var a, div, id, name, table, trip, _ref;
+      table = reply.parentNode.parentNode.parentNode;
+      $.hide(table);
+      if ($.config('Show Stubs')) {
+        name = $('span.commentpostername', reply).textContent;
+        trip = ((_ref = $('span.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
+        a = $.el('a', {
+          textContent: "[ + ] " + name + " " + trip
+        });
+        $.bind(a, 'click', replyHiding.cb.show);
+        div = $.el('div');
+        $.append(div, a);
+        $.before(table, div);
+      }
+      id = reply.id;
+      g.hiddenReply[id] = Date.now();
+      return GM_setValue("hiddenReply/" + g.BOARD + "/", JSON.stringify(g.hiddenReply));
+    },
+    show: function(table) {
+      var id;
+      $.show(table);
+      id = $('td[id]', table).id;
+      delete g.hiddenReply[id];
+      return GM_setValue("hiddenReply/" + g.BOARD + "/", JSON.stringify(g.hiddenReply));
     }
   };
   imageHover = {
@@ -1230,16 +1267,6 @@
     }
     return location.hash = hash;
   };
-  showReply = function() {
-    var div, id, table;
-    div = this.parentNode;
-    table = div.nextSibling;
-    $.show(table);
-    $.remove(div);
-    id = $('td.reply, td.replyhl', table).id;
-    $.slice(g.hiddenReplies, id);
-    return GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
-  };
   threadHiding = {
     init: function() {
       var a, hiddenThreads, id, node, thread, _i, _len, _ref, _results;
@@ -1587,32 +1614,32 @@
   }
   g.hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/" + g.BOARD + "/", '[]'));
   g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/" + g.BOARD + "/", '[]'));
+  g.hiddenReply = JSON.parse(GM_getValue("hiddenReply/" + g.BOARD + "/", '{}'));
   tzOffset = (new Date()).getTimezoneOffset() / 60;
   g.chanOffset = 5 - tzOffset;
   if ($.isDST()) {
     g.chanOffset -= 1;
   }
-  lastChecked = Number(GM_getValue('lastChecked', '0'));
-  now = Date.now();
-  DAY = 24 * 60 * 60;
-  if (lastChecked < now - 1 * DAY) {
-    cutoff = now - 7 * DAY;
-    while (g.hiddenThreads.length) {
-      if (g.hiddenThreads[0].timestamp > cutoff) {
-        break;
-      }
-      g.hiddenThreads.shift();
-    }
-    while (g.hiddenReplies.length) {
-      if (g.hiddenReplies[0].timestamp > cutoff) {
-        break;
-      }
-      g.hiddenReplies.shift();
-    }
-    GM_setValue("hiddenThreads/" + g.BOARD + "/", JSON.stringify(g.hiddenThreads));
-    GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
-    GM_setValue('lastChecked', now.toString());
-  }
+  /*
+  lastChecked = Number GM_getValue('lastChecked', '0')
+  now = Date.now()
+  DAY = 24 * 60 * 60
+  if lastChecked < now - 1*DAY
+    cutoff = now - 7*DAY
+    while g.hiddenThreads.length
+      if g.hiddenThreads[0].timestamp > cutoff
+        break
+      g.hiddenThreads.shift()
+
+    while g.hiddenReplies.length
+      if g.hiddenReplies[0].timestamp > cutoff
+        break
+      g.hiddenReplies.shift()
+
+    GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
+    GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
+    GM_setValue('lastChecked', now.toString())
+  */
   $.addStyle('\
   /* dialog styling */\
   div.dialog {\
@@ -1860,33 +1887,7 @@
     });
   }
   if ($.config('Reply Hiding')) {
-    g.callbacks.push(function(root) {
-      var id, next, obj, td, tds, _i, _len, _results;
-      tds = $$('td.doubledash', root);
-      _results = [];
-      for (_i = 0, _len = tds.length; _i < _len; _i++) {
-        td = tds[_i];
-        a = $.el('a', {
-          textContent: '[ - ]',
-          className: 'pointer'
-        });
-        $.bind(a, 'click', hideReply);
-        $.replace(td.firstChild, a);
-        next = td.nextSibling;
-        id = next.id;
-        _results.push((function() {
-          var _i, _len, _ref, _results;
-          _ref = g.hiddenReplies;
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            obj = _ref[_i];
-            _results.push(obj.id === id ? hideReply(next) : void 0);
-          }
-          return _results;
-        })());
-      }
-      return _results;
-    });
+    replyHiding.init();
   }
   if ($.config('Quick Reply')) {
     qr.init();

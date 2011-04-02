@@ -300,26 +300,60 @@ getThread = ->
     if bottom > 0 #we have not scrolled past
       return [thread, i]
 
-hideReply = (reply) ->
-  if p = @parentNode
-    reply = p.nextSibling
-    g.hiddenReplies.push {
-      id: reply.id
-      timestamp: Date.now()
-    }
-    GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
-  name = $('span.commentpostername', reply).textContent
-  trip = $('span.postertrip', reply)?.textContent or ''
-  table = $.x 'ancestor::table', reply
-  $.hide table
-  if $.config 'Show Stubs'
-    a = $.el 'a',
-      textContent: "[ + ] #{name} #{trip}"
-      className: 'pointer'
-    $.bind a, 'click', showReply
-    div = $.el 'div'
-    $.append div, a
-    $.before table, div
+replyHiding =
+  init: ->
+    g.callbacks.push replyHiding.cb.node
+
+  cb:
+    hide: (e) ->
+      reply = e.target.parentNode.nextSibling
+      replyHiding.hide reply
+
+    node: (root) ->
+      tds = $$('td.doubledash', root)
+      for td in tds
+        a = $.el 'a',
+          textContent: '[ - ]'
+        $.bind a, 'click', replyHiding.cb.hide
+        $.replace td.firstChild, a
+
+        reply = td.nextSibling
+        id = reply.id
+        if id of g.hiddenReply
+          replyHiding.hide reply
+
+    show: (e) ->
+      div = e.target.parentNode
+      table = div.nextSibling
+      replyHiding.show table
+
+      $.remove div
+
+  hide: (reply) ->
+    table = reply.parentNode.parentNode.parentNode
+    $.hide table
+
+    if $.config 'Show Stubs'
+      name = $('span.commentpostername', reply).textContent
+      trip = $('span.postertrip', reply)?.textContent or ''
+      a = $.el 'a',
+        textContent: "[ + ] #{name} #{trip}"
+      $.bind a, 'click', replyHiding.cb.show
+
+      div = $.el 'div'
+      $.append div, a
+      $.before table, div
+
+    id = reply.id
+    g.hiddenReply[id] = Date.now()
+    GM_setValue "hiddenReply/#{g.BOARD}/", JSON.stringify g.hiddenReply
+
+  show: (table) ->
+    $.show table
+
+    id = $('td[id]', table).id
+    delete g.hiddenReply[id]
+    GM_setValue "hiddenReply/#{g.BOARD}/", JSON.stringify g.hiddenReply
 
 imageHover =
   init: ->
@@ -909,15 +943,6 @@ scrollThread = (count) ->
     hash = "p#{temp}"
   location.hash = hash
 
-showReply = ->
-  div = @parentNode
-  table = div.nextSibling
-  $.show table
-  $.remove div
-  id = $('td.reply, td.replyhl', table).id
-  $.slice g.hiddenReplies, id
-  GM_setValue "hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies)
-
 threadHiding =
   init: ->
     node = $ 'form[name=delform] > *'
@@ -1226,11 +1251,13 @@ else
   g.PAGENUM = parseInt(temp) || 0
 g.hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/#{g.BOARD}/", '[]'))
 g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/#{g.BOARD}/", '[]'))
+g.hiddenReply = JSON.parse GM_getValue "hiddenReply/#{g.BOARD}/", '{}'
 tzOffset = (new Date()).getTimezoneOffset() / 60
 # GMT -8 is given as +480; would GMT +8 be -480 ?
 g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5
 if $.isDST() then g.chanOffset -= 1
 
+###
 lastChecked = Number GM_getValue('lastChecked', '0')
 now = Date.now()
 DAY = 24 * 60 * 60
@@ -1249,6 +1276,7 @@ if lastChecked < now - 1*DAY
   GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
   GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
   GM_setValue('lastChecked', now.toString())
+###
 
 $.addStyle '
   /* dialog styling */
@@ -1457,20 +1485,7 @@ if $.config 'Sauce'
         i++
 
 if $.config 'Reply Hiding'
-  g.callbacks.push (root) ->
-    tds = $$('td.doubledash', root)
-    for td in tds
-      a = $.el 'a',
-        textContent: '[ - ]'
-        className: 'pointer'
-      $.bind a, 'click', hideReply
-      $.replace(td.firstChild, a)
-
-      next = td.nextSibling
-      id = next.id
-      for obj in g.hiddenReplies
-        if obj.id is id
-          hideReply(next)
+  replyHiding.init()
 
 if $.config 'Quick Reply'
   qr.init()
