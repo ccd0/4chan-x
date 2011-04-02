@@ -542,7 +542,6 @@
         imgHeight = img.offsetHeight;
         top = clientY + imageHover.offset.y;
         bot = top + imgHeight;
-        log(bot, imageHover.winHeight);
         img.style.top = imageHover.winHeight < imgHeight || top < 0 ? '0px' : bot > imageHover.winHeight ? imageHover.winHeight - imgHeight + 'px' : top + 'px';
         return img.style.left = clientX + imageHover.offset.x;
       },

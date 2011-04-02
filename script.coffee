@@ -373,7 +373,6 @@ imageHover =
 
       top = clientY + imageHover.offset.y
       bot = top + imgHeight
-      log bot, imageHover.winHeight
       img.style.top =
         if imageHover.winHeight < imgHeight or top < 0
           '0px'
