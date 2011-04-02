@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, span, src, start, stopPropagation, temp, text, textContent, threadF, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, span, src, stopPropagation, temp, text, textContent, threadHiding, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -290,6 +290,9 @@
       }
       return _results;
     },
+    prepend: function(parent, child) {
+      return parent.insertBefore(child, parent.firstChild);
+    },
     after: function(root, el) {
       return root.parentNode.insertBefore(el, root.nextSibling);
     },
@@ -469,35 +472,6 @@
       div = $.el('div');
       $.append(div, a);
       return $.before(table, div);
-    }
-  };
-  hideThread = function(div) {
-    var a, name, num, p, span, text, trip, _ref;
-    if (p = this.parentNode) {
-      div = p;
-      g.hiddenThreads.push({
-        id: div.id,
-        timestamp: Date.now()
-      });
-      GM_setValue("hiddenThreads/" + g.BOARD + "/", JSON.stringify(g.hiddenThreads));
-    }
-    $.hide(div);
-    if ($.config('Show Stubs')) {
-      if (span = $('.omittedposts', div)) {
-        num = Number(span.textContent.match(/\d+/)[0]);
-      } else {
-        num = 0;
-      }
-      num += $$('table', div).length;
-      text = num === 1 ? "1 reply" : "" + num + " replies";
-      name = $('span.postername', div).textContent;
-      trip = ((_ref = $('span.postername + span.postertrip', div)) != null ? _ref.textContent : void 0) || '';
-      a = $.el('a', {
-        textContent: "[ + ] " + name + trip + " (" + text + ")",
-        className: 'pointer'
-      });
-      $.bind(a, 'click', showThread);
-      return $.before(div, a);
     }
   };
   imageHover = {
@@ -1278,36 +1252,90 @@
   stopPropagation = function(e) {
     return e.stopPropagation();
   };
-  threadF = function(current) {
-    var a, div, hidden, id, _i, _len, _ref;
-    div = $.el('div', {
-      className: 'thread'
-    });
-    a = $.el('a', {
-      textContent: '[ - ]',
-      className: 'pointer'
-    });
-    $.bind(a, 'click', hideThread);
-    $.append(div, a);
-    $.before(current, div);
-    while (!current.clear) {
-      $.append(div, current);
-      current = div.nextSibling;
+  hideThread = function(div) {
+    var a, name, num, p, span, text, trip, _ref;
+    if (p = this.parentNode) {
+      div = p;
+      g.hiddenThreads.push({
+        id: div.id,
+        timestamp: Date.now()
+      });
+      GM_setValue("hiddenThreads/" + g.BOARD + "/", JSON.stringify(g.hiddenThreads));
     }
-    $.append(div, current);
-    current = div.nextSibling;
-    id = $('input[value="delete"]', div).name;
-    div.id = id;
-    _ref = g.hiddenThreads;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      hidden = _ref[_i];
-      if (id === hidden.id) {
-        hideThread(div);
+    $.hide(div);
+    if ($.config('Show Stubs')) {
+      if (span = $('.omittedposts', div)) {
+        num = Number(span.textContent.match(/\d+/)[0]);
+      } else {
+        num = 0;
       }
+      num += $$('table', div).length;
+      text = num === 1 ? "1 reply" : "" + num + " replies";
+      name = $('span.postername', div).textContent;
+      trip = ((_ref = $('span.postername + span.postertrip', div)) != null ? _ref.textContent : void 0) || '';
+      a = $.el('a', {
+        textContent: "[ + ] " + name + trip + " (" + text + ")",
+        className: 'pointer'
+      });
+      $.bind(a, 'click', showThread);
+      return $.before(div, a);
     }
-    current = current.nextSibling.nextSibling;
-    if (current.nodeName !== 'CENTER') {
-      return threadF(current);
+  };
+  threadHiding = {
+    init: function() {
+      var a, hiddenThreads, id, node, thread, _i, _len, _ref, _results;
+      node = $('form[name=delform] > *');
+      threadHiding.thread(node);
+      hiddenThreads = JSON.parse(GM_getValue("hiddenThread/" + g.BOARD + "/", '{}'));
+      _ref = $$('div.thread');
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        thread = _ref[_i];
+        a = $.el('a', {
+          textContent: '[ - ]'
+        });
+        $.bind(a, 'click', threadHiding.cb.hide);
+        $.prepend(thread, a);
+        id = $('input[value=delete]', thread).name;
+        _results.push(id in hiddenThreads ? threadHiding.hideHide(thread) : void 0);
+      }
+      return _results;
+    },
+    cb: {
+      hide: function(e) {
+        var thread;
+        thread = e.target.parentNode;
+        return threadHiding.hide(thread);
+      }
+    },
+    hide: function(thread) {
+      var hiddenThreads, id;
+      threadHiding.hideHide(thread);
+      id = $('input[value=delete]', thread).name;
+      hiddenThreads = JSON.parse(GM_getValue("hiddenThread/" + g.BOARD + "/", '{}'));
+      hiddenThreads[id] = Date.now();
+      return GM_setValue("hiddenThread/" + g.BOARD + "/", JSON.stringify(hiddenThreads));
+    },
+    hideHide: function(thread) {
+      if (true) {
+        $.hide(thread);
+        return $.hide(thread.nextSibling);
+      }
+    },
+    thread: function(node) {
+      var div;
+      div = $.el('div', {
+        className: 'thread'
+      });
+      $.before(node, div);
+      while (node.nodeName !== 'HR') {
+        $.append(div, node);
+        node = div.nextSibling;
+      }
+      node = node.nextElementSibling;
+      if (node.nodeName !== 'CENTER') {
+        return threadHiding.thread(node);
+      }
     }
   };
   request = function(url, callback) {
@@ -2005,14 +2033,7 @@
     }
   } else {
     if ($.config('Thread Hiding')) {
-      delform = $('form[name=delform]');
-      start = $('form[name=delform] > *');
-      if ($.config('Image Expansion')) {
-        start = start.nextSibling;
-      }
-      $.bind(d, 'DOMNodeInserted', stopPropagation);
-      threadF(start);
-      $.unbind(d, 'DOMNodeInserted', stopPropagation);
+      threadHiding.init();
     }
     if ($.config('Auto Watch')) {
       $.bind($('form[name=post]'), 'submit', autoWatch);

@@ -162,6 +162,8 @@ $.extend $,
   append: (parent, children...) ->
     for child in children
       parent.appendChild child
+  prepend: (parent, child) ->
+    parent.insertBefore child, parent.firstChild
   after: (root, el) ->
     root.parentNode.insertBefore el, root.nextSibling
   before: (root, el) ->
@@ -318,30 +320,6 @@ hideReply = (reply) ->
     div = $.el 'div'
     $.append div, a
     $.before table, div
-
-hideThread = (div) ->
-  if p = @parentNode
-    div = p
-    g.hiddenThreads.push {
-      id: div.id
-      timestamp: Date.now()
-    }
-    GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
-  $.hide div
-  if $.config 'Show Stubs'
-    if span = $ '.omittedposts', div
-      num = Number(span.textContent.match(/\d+/)[0])
-    else
-      num = 0
-    num += $$('table', div).length
-    text = if num is 1 then "1 reply" else "#{num} replies"
-    name = $('span.postername', div).textContent
-    trip = $('span.postername + span.postertrip', div)?.textContent || ''
-    a = $.el 'a',
-      textContent: "[ + ] #{name}#{trip} (#{text})"
-      className: 'pointer'
-    $.bind a, 'click', showThread
-    $.before div, a
 
 imageHover =
   init: ->
@@ -951,29 +929,77 @@ showThread = ->
 stopPropagation = (e) ->
   e.stopPropagation()
 
-threadF = (current) ->
-  div = $.el 'div',
-    className: 'thread'
-  a = $.el 'a',
-    textContent: '[ - ]'
-    className: 'pointer'
-  $.bind a, 'click', hideThread
-  $.append div, a
-  $.before current, div
-  while (!current.clear)#<br clear>
-    $.append div, current
-    current = div.nextSibling
-  $.append div, current
-  current = div.nextSibling
-  id = $('input[value="delete"]', div).name
-  div.id = id
-  #check if we should hide the thread
-  for hidden in g.hiddenThreads
-    if id == hidden.id
-      hideThread(div)
-  current = current.nextSibling.nextSibling
-  if current.nodeName isnt 'CENTER'
-    threadF(current)
+hideThread = (div) ->
+  if p = @parentNode
+    div = p
+    g.hiddenThreads.push {
+      id: div.id
+      timestamp: Date.now()
+    }
+    GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
+  $.hide div
+  if $.config 'Show Stubs'
+    if span = $ '.omittedposts', div
+      num = Number(span.textContent.match(/\d+/)[0])
+    else
+      num = 0
+    num += $$('table', div).length
+    text = if num is 1 then "1 reply" else "#{num} replies"
+    name = $('span.postername', div).textContent
+    trip = $('span.postername + span.postertrip', div)?.textContent || ''
+    a = $.el 'a',
+      textContent: "[ + ] #{name}#{trip} (#{text})"
+      className: 'pointer'
+    $.bind a, 'click', showThread
+    $.before div, a
+
+threadHiding =
+  init: ->
+    node = $ 'form[name=delform] > *'
+    threadHiding.thread node
+
+    hiddenThreads = JSON.parse GM_getValue "hiddenThread/#{g.BOARD}/", '{}'
+    for thread in $$ 'div.thread'
+      a = $.el 'a',
+        textContent: '[ - ]'
+      $.bind a, 'click', threadHiding.cb.hide
+      $.prepend thread, a
+
+      id = $('input[value=delete]', thread).name
+      if id of hiddenThreads
+        threadHiding.hideHide thread
+
+  cb:
+    hide: (e) ->
+      thread = e.target.parentNode
+      threadHiding.hide thread
+
+  hide: (thread) ->
+    threadHiding.hideHide thread
+
+    id = $('input[value=delete]', thread).name
+
+    hiddenThreads = JSON.parse GM_getValue "hiddenThread/#{g.BOARD}/", '{}'
+    hiddenThreads[id] = Date.now()
+    GM_setValue "hiddenThread/#{g.BOARD}/", JSON.stringify hiddenThreads
+
+  hideHide: (thread) ->
+    if true
+      $.hide thread
+      $.hide thread.nextSibling
+
+  thread: (node) ->
+    div = $.el 'div',
+      className: 'thread'
+    $.before node, div
+
+    while node.nodeName isnt 'HR'
+      $.append div, node
+      node = div.nextSibling
+
+    node = node.nextElementSibling #skip text node
+    unless node.nodeName is 'CENTER'
+      threadHiding.thread node
 
 request = (url, callback) ->
   r = new XMLHttpRequest()
@@ -1543,13 +1569,7 @@ if g.REPLY
 
 else #not reply
   if $.config 'Thread Hiding'
-    delform = $('form[name=delform]')
-    start = $ 'form[name=delform] > *'
-    start = start.nextSibling if $.config 'Image Expansion' #skip over image expansion dialog
-    #don't confuse other scripts
-    $.bind d, 'DOMNodeInserted', stopPropagation
-    threadF start
-    $.unbind d, 'DOMNodeInserted', stopPropagation
+    threadHiding.init()
 
   if $.config 'Auto Watch'
     $.bind $('form[name=post]'), 'submit', autoWatch
