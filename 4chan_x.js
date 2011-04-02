@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, hideReply, hideThread, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, showThread, span, src, stopPropagation, temp, text, textContent, threadHiding, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
+  var $, $$, DAY, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, cutoff, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, hideReply, href, html, i, id, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, img, input, inputs, keyModeInsert, keyModeNormal, keydown, keypress, l1, lastChecked, log, navbotr, navtopr, nodeInserted, now, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyNav, report, request, scroll, scrollThread, showReply, span, src, temp, text, textContent, threadHiding, threads, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1240,47 +1240,6 @@
     $.slice(g.hiddenReplies, id);
     return GM_setValue("hiddenReplies/" + g.BOARD + "/", JSON.stringify(g.hiddenReplies));
   };
-  showThread = function() {
-    var div, id;
-    div = this.nextSibling;
-    $.show(div);
-    $.hide(this);
-    id = div.id;
-    $.slice(g.hiddenThreads, id);
-    return GM_setValue("hiddenThreads/" + g.BOARD + "/", JSON.stringify(g.hiddenThreads));
-  };
-  stopPropagation = function(e) {
-    return e.stopPropagation();
-  };
-  hideThread = function(div) {
-    var a, name, num, p, span, text, trip, _ref;
-    if (p = this.parentNode) {
-      div = p;
-      g.hiddenThreads.push({
-        id: div.id,
-        timestamp: Date.now()
-      });
-      GM_setValue("hiddenThreads/" + g.BOARD + "/", JSON.stringify(g.hiddenThreads));
-    }
-    $.hide(div);
-    if ($.config('Show Stubs')) {
-      if (span = $('.omittedposts', div)) {
-        num = Number(span.textContent.match(/\d+/)[0]);
-      } else {
-        num = 0;
-      }
-      num += $$('table', div).length;
-      text = num === 1 ? "1 reply" : "" + num + " replies";
-      name = $('span.postername', div).textContent;
-      trip = ((_ref = $('span.postername + span.postertrip', div)) != null ? _ref.textContent : void 0) || '';
-      a = $.el('a', {
-        textContent: "[ + ] " + name + trip + " (" + text + ")",
-        className: 'pointer'
-      });
-      $.bind(a, 'click', showThread);
-      return $.before(div, a);
-    }
-  };
   threadHiding = {
     init: function() {
       var a, hiddenThreads, id, node, thread, _i, _len, _ref, _results;
@@ -1306,6 +1265,13 @@
         var thread;
         thread = e.target.parentNode;
         return threadHiding.hide(thread);
+      },
+      show: function(e) {
+        var div, thread;
+        div = e.target.parentNode;
+        thread = div.nextSibling;
+        threadHiding.show(thread);
+        return $.remove(div);
       }
     },
     hide: function(thread) {
@@ -1317,10 +1283,37 @@
       return GM_setValue("hiddenThread/" + g.BOARD + "/", JSON.stringify(hiddenThreads));
     },
     hideHide: function(thread) {
-      if (true) {
-        $.hide(thread);
+      var a, div, name, num, span, text, trip, _ref;
+      $.hide(thread);
+      if ($.config('Show Stubs')) {
+        if (span = $('.omittedposts', thread)) {
+          num = Number(span.textContent.match(/\d+/)[0]);
+        } else {
+          num = 0;
+        }
+        num += $$('table', thread).length;
+        text = num === 1 ? "1 reply" : "" + num + " replies";
+        name = $('span.postername', thread).textContent;
+        trip = ((_ref = $('span.postername + span.postertrip', thread)) != null ? _ref.textContent : void 0) || '';
+        a = $.el('a', {
+          textContent: "[ + ] " + name + trip + " (" + text + ")"
+        });
+        $.bind(a, 'click', threadHiding.cb.show);
+        div = $.el('div');
+        $.append(div, a);
+        return $.before(thread, div);
+      } else {
         return $.hide(thread.nextSibling);
       }
+    },
+    show: function(thread) {
+      var hiddenThreads, id;
+      $.show(thread);
+      $.show(thread.nextSibling);
+      id = $('input[value=delete]', thread).name;
+      hiddenThreads = JSON.parse(GM_getValue("hiddenThread/" + g.BOARD + "/", '{}'));
+      delete hiddenThreads[id];
+      return GM_setValue("hiddenThread/" + g.BOARD + "/", JSON.stringify(hiddenThreads));
     },
     thread: function(node) {
       var div;

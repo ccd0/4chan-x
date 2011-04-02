@@ -918,41 +918,6 @@ showReply = ->
   $.slice g.hiddenReplies, id
   GM_setValue "hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies)
 
-showThread = ->
-  div = @nextSibling
-  $.show div
-  $.hide this
-  id = div.id
-  $.slice g.hiddenThreads, id
-  GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
-
-stopPropagation = (e) ->
-  e.stopPropagation()
-
-hideThread = (div) ->
-  if p = @parentNode
-    div = p
-    g.hiddenThreads.push {
-      id: div.id
-      timestamp: Date.now()
-    }
-    GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
-  $.hide div
-  if $.config 'Show Stubs'
-    if span = $ '.omittedposts', div
-      num = Number(span.textContent.match(/\d+/)[0])
-    else
-      num = 0
-    num += $$('table', div).length
-    text = if num is 1 then "1 reply" else "#{num} replies"
-    name = $('span.postername', div).textContent
-    trip = $('span.postername + span.postertrip', div)?.textContent || ''
-    a = $.el 'a',
-      textContent: "[ + ] #{name}#{trip} (#{text})"
-      className: 'pointer'
-    $.bind a, 'click', showThread
-    $.before div, a
-
 threadHiding =
   init: ->
     node = $ 'form[name=delform] > *'
@@ -973,6 +938,12 @@ threadHiding =
     hide: (e) ->
       thread = e.target.parentNode
       threadHiding.hide thread
+    show: (e) ->
+      div = e.target.parentNode
+      thread = div.nextSibling
+      threadHiding.show thread
+
+      $.remove div
 
   hide: (thread) ->
     threadHiding.hideHide thread
@@ -984,9 +955,38 @@ threadHiding =
     GM_setValue "hiddenThread/#{g.BOARD}/", JSON.stringify hiddenThreads
 
   hideHide: (thread) ->
-    if true
-      $.hide thread
+    $.hide thread
+
+    if $.config 'Show Stubs'
+      if span = $ '.omittedposts', thread
+        num = Number span.textContent.match(/\d+/)[0]
+      else
+        num = 0
+      num += $$('table', thread).length
+      text = if num is 1 then "1 reply" else "#{num} replies"
+      name = $('span.postername', thread).textContent
+      trip = $('span.postername + span.postertrip', thread)?.textContent || ''
+
+      a = $.el 'a',
+        textContent: "[ + ] #{name}#{trip} (#{text})"
+      $.bind a, 'click', threadHiding.cb.show
+
+      div = $.el 'div'
+
+      $.append div, a
+      $.before thread, div
+    else
       $.hide thread.nextSibling
+
+  show: (thread) ->
+    $.show thread
+    $.show thread.nextSibling
+
+    id = $('input[value=delete]', thread).name
+
+    hiddenThreads = JSON.parse GM_getValue "hiddenThread/#{g.BOARD}/", '{}'
+    delete hiddenThreads[id]
+    GM_setValue "hiddenThread/#{g.BOARD}/", JSON.stringify hiddenThreads
 
   thread: (node) ->
     div = $.el 'div',
