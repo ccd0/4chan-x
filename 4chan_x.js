@@ -256,16 +256,6 @@
         return n;
       }
     },
-    slice: function(arr, id) {
-      var el, i, _len;
-      for (i = 0, _len = arr.length; i < _len; i++) {
-        el = arr[i];
-        if (id === el.id) {
-          arr.splice(i, 1);
-          return arr;
-        }
-      }
-    },
     x: function(path, root) {
       if (root == null) {
         root = d.body;

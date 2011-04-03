@@ -145,12 +145,6 @@ $.extend $,
     GM_getValue name, config[name][0]
   zeroPad: (n) ->
     if n < 10 then '0' + n else n
-  slice: (arr, id) ->
-    # do I actually need this?
-    for el, i in arr
-      if id == el.id
-        arr.splice i, 1
-        return arr
   x: (path, root=d.body) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
       singleNodeValue
