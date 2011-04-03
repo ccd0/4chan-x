@@ -127,6 +127,9 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  deleteValue: (name) ->
+    name = NAMESPACE + name
+    delete localStorage[name]
   getValue: (name, defaultValue) ->
     name = NAMESPACE + name
     if value = localStorage[name]
@@ -242,11 +245,10 @@ autoWatch = ->
 clearHidden = ->
   #'hidden' might be misleading; it's the number of IDs we're *looking* for,
   # not the number of posts actually hidden on the page.
-  GM_deleteValue("hiddenReplies/#{g.BOARD}/")
-  GM_deleteValue("hiddenThreads/#{g.BOARD}/")
+  $.deleteValue "hiddenReply/#{g.BOARD}/"
+  $.deleteValue "hiddenThread/#{g.BOARD}/"
   @value = "hidden: 0"
-  g.hiddenReplies = []
-  g.hiddenThreads = []
+  g.hiddenReplies = {}
 
 editSauce = ->
   ta = $ '#options textarea'
@@ -659,7 +661,8 @@ options = ->
     $.remove div
     return
 
-  hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length
+  hiddenThread = $.getValue "hiddenThread/#{g.BOARD}/", {}
+  hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length
   html = '<div class="move">Options <a name=close>X</a></div><div>'
   for option, value of config
     description  = value[1]
@@ -951,7 +954,7 @@ threadHiding =
     node = $ 'form[name=delform] > *'
     threadHiding.thread node
 
-    hiddenThreads = JSON.parse GM_getValue "hiddenThread/#{g.BOARD}/", '{}'
+    hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
     for thread in $$ 'div.thread'
       a = $.el 'a',
         textContent: '[ - ]'
@@ -978,9 +981,9 @@ threadHiding =
 
     id = $('input[value=delete]', thread).name
 
-    hiddenThreads = JSON.parse GM_getValue "hiddenThread/#{g.BOARD}/", '{}'
+    hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
     hiddenThreads[id] = Date.now()
-    GM_setValue "hiddenThread/#{g.BOARD}/", JSON.stringify hiddenThreads
+    $.setValue "hiddenThread/#{g.BOARD}/", hiddenThreads
 
   hideHide: (thread) ->
     $.hide thread
@@ -1012,9 +1015,9 @@ threadHiding =
 
     id = $('input[value=delete]', thread).name
 
-    hiddenThreads = JSON.parse GM_getValue "hiddenThread/#{g.BOARD}/", '{}'
+    hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
     delete hiddenThreads[id]
-    GM_setValue "hiddenThread/#{g.BOARD}/", JSON.stringify hiddenThreads
+    $.setValue "hiddenThread/#{g.BOARD}/", hiddenThreads
 
   thread: (node) ->
     div = $.el 'div',
@@ -1290,8 +1293,6 @@ if temp is 'res'
   g.THREAD_ID = pathname[2]
 else
   g.PAGENUM = parseInt(temp) || 0
-g.hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/#{g.BOARD}/", '[]'))
-g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/#{g.BOARD}/", '[]'))
 g.hiddenReply = JSON.parse GM_getValue "hiddenReply/#{g.BOARD}/", '{}'
 tzOffset = (new Date()).getTimezoneOffset() / 60
 # GMT -8 is given as +480; would GMT +8 be -480 ?

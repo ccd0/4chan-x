@@ -226,6 +226,10 @@
     return object;
   };
   $.extend($, {
+    deleteValue: function(name) {
+      name = NAMESPACE + name;
+      return delete localStorage[name];
+    },
     getValue: function(name, defaultValue) {
       var value;
       name = NAMESPACE + name;
@@ -377,11 +381,10 @@
     return GM_setValue('autoText', "/" + g.BOARD + "/ - " + autoText);
   };
   clearHidden = function() {
-    GM_deleteValue("hiddenReplies/" + g.BOARD + "/");
-    GM_deleteValue("hiddenThreads/" + g.BOARD + "/");
+    $.deleteValue("hiddenReply/" + g.BOARD + "/");
+    $.deleteValue("hiddenThread/" + g.BOARD + "/");
     this.value = "hidden: 0";
-    g.hiddenReplies = [];
-    return g.hiddenThreads = [];
+    return g.hiddenReplies = {};
   };
   editSauce = function() {
     var ta;
@@ -897,12 +900,13 @@
     return GM_setValue(this.name, this.value);
   };
   options = function() {
-    var checked, description, div, hiddenNum, html, input, option, value, _i, _len, _ref;
+    var checked, description, div, hiddenNum, hiddenThread, html, input, option, value, _i, _len, _ref;
     if (div = $('#options')) {
       $.remove(div);
       return;
     }
-    hiddenNum = g.hiddenReplies.length + g.hiddenThreads.length;
+    hiddenThread = $.getValue("hiddenThread/" + g.BOARD + "/", {});
+    hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length;
     html = '<div class="move">Options <a name=close>X</a></div><div>';
     for (option in config) {
       value = config[option];
@@ -1275,7 +1279,7 @@
       var a, hiddenThreads, id, node, thread, _i, _len, _ref, _results;
       node = $('form[name=delform] > *');
       threadHiding.thread(node);
-      hiddenThreads = JSON.parse(GM_getValue("hiddenThread/" + g.BOARD + "/", '{}'));
+      hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
       _ref = $$('div.thread');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1308,9 +1312,9 @@
       var hiddenThreads, id;
       threadHiding.hideHide(thread);
       id = $('input[value=delete]', thread).name;
-      hiddenThreads = JSON.parse(GM_getValue("hiddenThread/" + g.BOARD + "/", '{}'));
+      hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
       hiddenThreads[id] = Date.now();
-      return GM_setValue("hiddenThread/" + g.BOARD + "/", JSON.stringify(hiddenThreads));
+      return $.setValue("hiddenThread/" + g.BOARD + "/", hiddenThreads);
     },
     hideHide: function(thread) {
       var a, div, name, num, span, text, trip, _ref;
@@ -1341,9 +1345,9 @@
       $.show(thread);
       $.show(thread.nextSibling);
       id = $('input[value=delete]', thread).name;
-      hiddenThreads = JSON.parse(GM_getValue("hiddenThread/" + g.BOARD + "/", '{}'));
+      hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
       delete hiddenThreads[id];
-      return GM_setValue("hiddenThread/" + g.BOARD + "/", JSON.stringify(hiddenThreads));
+      return $.setValue("hiddenThread/" + g.BOARD + "/", hiddenThreads);
     },
     thread: function(node) {
       var div;
@@ -1659,8 +1663,6 @@
   } else {
     g.PAGENUM = parseInt(temp) || 0;
   }
-  g.hiddenThreads = JSON.parse(GM_getValue("hiddenThreads/" + g.BOARD + "/", '[]'));
-  g.hiddenReplies = JSON.parse(GM_getValue("hiddenReplies/" + g.BOARD + "/", '[]'));
   g.hiddenReply = JSON.parse(GM_getValue("hiddenReply/" + g.BOARD + "/", '{}'));
   tzOffset = (new Date()).getTimezoneOffset() / 60;
   g.chanOffset = 5 - tzOffset;
