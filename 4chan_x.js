@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, href, i, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeInsert, keyModeNormal, keydown, keypress, l1, log, navbotr, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, textContent, threadHiding, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watch, watchX, watcher, watcherUpdate, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, href, i, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeInsert, keyModeNormal, keydown, keypress, l1, log, navbotr, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, textContent, threadHiding, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watcher, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1554,101 +1554,99 @@
       return updateAuto.call($("input[name=autoL]", div));
     }
   };
-  watch = function() {
-    var id, text, _base, _name;
-    id = this.nextSibling.name;
-    if (this.src === g.favEmpty) {
-      this.src = g.favDefault;
-      text = ("/" + g.BOARD + "/ - ") + $.x('following-sibling::blockquote', this).textContent.slice(0, 25);
-      (_base = g.watched)[_name = g.BOARD] || (_base[_name] = []);
-      g.watched[g.BOARD].push({
-        id: id,
-        text: text
-      });
-    } else {
-      this.src = g.favEmpty;
-      g.watched[g.BOARD] = $.slice(g.watched[g.BOARD], id);
-    }
-    GM_setValue('watched', JSON.stringify(g.watched));
-    return watcherUpdate();
-  };
-  watcherUpdate = function() {
-    var a, board, div, link, old, thread, _i, _len, _ref;
-    div = $.el('div');
-    for (board in g.watched) {
-      _ref = g.watched[board];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        thread = _ref[_i];
-        a = $.el('a', {
-          textContent: 'X',
-          className: 'pointer'
-        });
-        $.bind(a, 'click', watchX);
-        link = $.el('a', {
-          textContent: thread.text,
-          href: "/" + board + "/res/" + thread.id
-        });
-        $.append(div, a, $.tn(' '), link, $.el('br'));
-      }
-    }
-    old = $('#watcher div:last-child');
-    return $.replace(old, div);
-  };
-  watchX = function() {
-    var board, favicon, id, input, _, _ref;
-    _ref = this.nextElementSibling.getAttribute('href').substring(1).split('/'), board = _ref[0], _ = _ref[1], id = _ref[2];
-    g.watched[board] = $.slice(g.watched[board], id);
-    GM_setValue('watched', JSON.stringify(g.watched));
-    watcherUpdate();
-    if (input = $("input[name=\"" + id + "\"]")) {
-      favicon = input.previousSibling;
-      return favicon.src = g.favEmpty;
-    }
-  };
   watcher = {
     init: function() {
-      var dialog, html, img, input, inputs, _i, _len, _results;
+      var board, dialog, favicon, html, id, input, inputs, props, src, watched, watchedBoard, _i, _len, _ref, _results;
       html = '<div class=move>Thread Watcher</div>';
       dialog = ui.dialog('watcher', {
         top: '50px',
         left: '0px'
       }, html);
       $.append(d.body, dialog);
+      watched = $.getValue('watched', {});
+      for (board in watched) {
+        _ref = watched[board];
+        for (id in _ref) {
+          props = _ref[id];
+          watcher.addLink(props, dialog);
+        }
+      }
+      watchedBoard = watched[g.BOARD] || {};
       inputs = $$('form > input[value=delete], div.thread > input[value=delete]');
       _results = [];
       for (_i = 0, _len = inputs.length; _i < _len; _i++) {
         input = inputs[_i];
-        img = $.el('img', {
-          src: g.favEmpty
+        id = input.name;
+        if (id in watchedBoard) {
+          src = g.favDefault;
+        } else {
+          src = g.favEmpty;
+        }
+        favicon = $.el('img', {
+          src: src,
+          className: 'pointer'
         });
-        _results.push($.before(input, img));
+        $.bind(favicon, 'click', watcher.cb.toggle);
+        _results.push($.before(input, favicon));
       }
       return _results;
-      /*
-          #create watcher
-          html = '<div class="move">Thread Watcher</div><div></div>'
-          watcher = ui.dialog 'watcher', top: '50px', left: '0px', html
-          $.append d.body, watcher
-          watcherUpdate()
-
-          #add buttons
-          threads = g.watched[g.BOARD] || []
-          #normal, threading
-          inputs = $$('form > input[value="delete"], div > input[value="delete"]')
-          for input in inputs
-            id = input.name
-            src = (->
-              for thread in threads
-                if id is thread.id
-                  return g.favDefault
-              g.favEmpty
-            )()
-            img = $.el 'img',
-              src: src
-              className: 'pointer'
-            $.bind img, 'click', watch
-            $.before input, img
-          */
+    },
+    addLink: function(props, dialog) {
+      var div, link, x;
+      dialog || (dialog = $('#watcher'));
+      div = $.el('div');
+      x = $.el('a', {
+        textContent: 'X'
+      });
+      $.bind(x, 'click', watcher.cb.x);
+      link = $.el('a', props);
+      $.append(div, x, $.tn(' '), link);
+      return $.append(dialog, div);
+    },
+    cb: {
+      toggle: function(e) {
+        return watcher.toggle(e.target);
+      },
+      x: function(e) {
+        var board, id, _, _ref;
+        _ref = e.target.nextElementSibling.getAttribute('href').substring(1).split('/'), board = _ref[0], _ = _ref[1], id = _ref[2];
+        return watcher.unwatch(board, id);
+      }
+    },
+    toggle: function(favicon) {
+      var id;
+      id = favicon.nextSibling.name;
+      if (favicon.src === g.favEmpty) {
+        return watcher.watch(id, favicon);
+      } else {
+        return watcher.unwatch(g.BOARD, id);
+      }
+    },
+    unwatch: function(board, id) {
+      var div, favicon, href, input, watched;
+      href = "/" + board + "/res/" + id;
+      div = $("#watcher a[href=\"" + href + "\"]").parentNode;
+      $.remove(div);
+      if (input = $("input[name=\"" + id + "\"]")) {
+        favicon = input.previousSibling;
+        favicon.src = g.favEmpty;
+      }
+      watched = $.getValue('watched', {});
+      delete watched[board][id];
+      return $.setValue('watched', watched);
+    },
+    watch: function(id, favicon) {
+      var props, watched, _name;
+      favicon.src = g.favDefault;
+      props = {
+        textContent: ("/" + g.BOARD + "/ - ") + $.x('following-sibling::blockquote', favicon).textContent.slice(0, 25),
+        href: "/" + g.BOARD + "/res/" + id
+      };
+      watched = $.getValue('watched', {});
+      watched[_name = g.BOARD] || (watched[_name] = {});
+      watched[g.BOARD][id] = props;
+      $.setValue('watched', watched);
+      return watcher.addLink(props);
     }
   };
   NAMESPACE = 'AEOS.4chan_x.';
@@ -1660,7 +1658,6 @@
     favDefault: ((_ref = $('link[rel="shortcut icon"]', d)) != null ? _ref.href : void 0) || '',
     favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n'),
-    watched: JSON.parse(GM_getValue('watched', '{}')),
     xhrs: []
   };
   g.favHalo = /ws/.test(g.favDefault) ? 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=';
@@ -1708,7 +1705,7 @@
   div.dialog > div.move {\
     cursor: move;\
   }\
-  label, a {\
+  label, a, .pointer {\
     cursor: pointer;\
   }\
 \

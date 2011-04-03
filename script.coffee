@@ -1191,86 +1191,86 @@ updaterMake = ->
 
   if GM_getValue 'autoG' then updateAuto.call $("input[name=autoL]", div)
 
-watch = ->
-  id = @nextSibling.name
-  if @src is g.favEmpty
-    @src = g.favDefault
-    text = "/#{g.BOARD}/ - " +
-      $.x('following-sibling::blockquote', this).textContent.slice(0,25)
-    g.watched[g.BOARD] or= []
-    g.watched[g.BOARD].push {
-      id: id,
-      text: text
-    }
-  else
-    @src = g.favEmpty
-    g.watched[g.BOARD] = $.slice(g.watched[g.BOARD], id)
-  GM_setValue('watched', JSON.stringify(g.watched))
-  watcherUpdate()
-
-watcherUpdate = ->
-  div = $.el 'div'
-  for board of g.watched
-    for thread in g.watched[board]
-      a = $.el 'a',
-        textContent: 'X'
-        className: 'pointer'
-      $.bind a, 'click', watchX
-      link = $.el 'a',
-        textContent: thread.text
-        href: "/#{board}/res/#{thread.id}"
-      $.append div, a, $.tn(' '), link, $.el('br')
-  old = $('#watcher div:last-child')
-  $.replace(old, div)
-
-watchX = ->
-  [board, _, id] = @nextElementSibling.
-    getAttribute('href').substring(1).split('/')
-  g.watched[board] = $.slice(g.watched[board], id)
-  GM_setValue('watched', JSON.stringify(g.watched))
-  watcherUpdate()
-  if input = $("input[name=\"#{id}\"]")
-    favicon = input.previousSibling
-    favicon.src = g.favEmpty
-
 watcher =
   init: ->
     html = '<div class=move>Thread Watcher</div>'
     dialog = ui.dialog 'watcher', top: '50px', left: '0px', html
     $.append d.body, dialog
 
+    #populate watcher
+    watched = $.getValue 'watched', {}
+    for board of watched
+      for id, props of watched[board]
+        watcher.addLink props, dialog
+
+    #add watch buttons
+    watchedBoard = watched[g.BOARD] or {}
     inputs = $$ 'form > input[value=delete], div.thread > input[value=delete]'
     for input in inputs
-      img = $.el 'img',
-        src: g.favEmpty
-      $.before input, img
-
-
-    ###
-    #create watcher
-    html = '<div class="move">Thread Watcher</div><div></div>'
-    watcher = ui.dialog 'watcher', top: '50px', left: '0px', html
-    $.append d.body, watcher
-    watcherUpdate()
-
-    #add buttons
-    threads = g.watched[g.BOARD] || []
-    #normal, threading
-    inputs = $$('form > input[value="delete"], div > input[value="delete"]')
-    for input in inputs
       id = input.name
-      src = (->
-        for thread in threads
-          if id is thread.id
-            return g.favDefault
-        g.favEmpty
-      )()
-      img = $.el 'img',
+      if id of watchedBoard
+        src = g.favDefault
+      else
+        src = g.favEmpty
+      favicon = $.el 'img',
         src: src
         className: 'pointer'
-      $.bind img, 'click', watch
-      $.before input, img
-    ###
+      $.bind favicon, 'click', watcher.cb.toggle
+      $.before input, favicon
+
+  addLink: (props, dialog) ->
+    dialog or= $ '#watcher'
+    div = $.el 'div'
+    x = $.el 'a',
+      textContent: 'X'
+    $.bind x, 'click', watcher.cb.x
+    link = $.el 'a', props
+
+    $.append div, x, $.tn(' '), link
+    $.append dialog, div
+
+  cb:
+    toggle: (e) ->
+      watcher.toggle e.target
+    x: (e) ->
+      [board, _, id] = e.target.nextElementSibling
+        .getAttribute('href').substring(1).split('/')
+      watcher.unwatch board, id
+
+  toggle: (favicon) ->
+    id = favicon.nextSibling.name
+    if favicon.src == g.favEmpty
+      watcher.watch id, favicon
+    else # favicon.src == g.favDefault
+      watcher.unwatch g.BOARD, id
+
+  unwatch: (board, id) ->
+    href = "/#{board}/res/#{id}"
+    div = $("#watcher a[href=\"#{href}\"]").parentNode
+    $.remove div
+
+    if input = $ "input[name=\"#{id}\"]"
+      favicon = input.previousSibling
+      favicon.src = g.favEmpty
+
+    watched = $.getValue 'watched', {}
+    delete watched[board][id]
+    $.setValue 'watched', watched
+
+  watch: (id, favicon) ->
+    favicon.src = g.favDefault
+    props =
+      textContent: "/#{g.BOARD}/ - " +
+        $.x('following-sibling::blockquote', favicon)
+        .textContent.slice(0,25)
+      href: "/#{g.BOARD}/res/#{id}"
+
+    watched = $.getValue 'watched', {}
+    watched[g.BOARD] or= {}
+    watched[g.BOARD][id] = props
+    $.setValue 'watched', watched
+
+    watcher.addLink props
 
 #main
 NAMESPACE = 'AEOS.4chan_x.'
@@ -1287,7 +1287,6 @@ g =
     'http://saucenao.com/search.php?db=999&url='
     'http://tineye.com/search?url='
   ].join '\n'
-  watched: JSON.parse(GM_getValue('watched', '{}'))
   xhrs: []
 g.favHalo = if /ws/.test g.favDefault then 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC' else 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
 pathname = location.pathname.substring(1).split('/')
@@ -1334,7 +1333,7 @@ $.addStyle '
   div.dialog > div.move {
     cursor: move;
   }
-  label, a {
+  label, a, .pointer {
     cursor: pointer;
   }
 
