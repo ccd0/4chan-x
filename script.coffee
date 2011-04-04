@@ -717,25 +717,25 @@ qr =
         recaptchaReload()
 
     messageIframe: (e) ->
-      message = $('table font b')?.firstChild.textContent or ''
+      message = $('table b').firstChild.textContent
       e.source.postMessage message, '*'
       window.location = 'about:blank'
 
     messageTop: (e) ->
       {data} = e
       dialog = $ '#qr'
-      if data # error message
-        error = $.el 'span',
-          className: 'error'
-          textContent: data
-        $.append dialog, error
-        qr.autohide.unset()
-      else
+      if data is 'Post successful!'
         if dialog
           if $.config 'Persistent QR'
             qr.refresh dialog
           else
             $.remove dialog
+      else
+        error = $.el 'span',
+          className: 'error'
+          textContent: data
+        $.append dialog, error
+        qr.autohide.unset()
 
       recaptchaReload()
 

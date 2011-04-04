@@ -971,8 +971,8 @@
         }
       },
       messageIframe: function(e) {
-        var message, _ref;
-        message = ((_ref = $('table font b')) != null ? _ref.firstChild.textContent : void 0) || '';
+        var message;
+        message = $('table b').firstChild.textContent;
         e.source.postMessage(message, '*');
         return window.location = 'about:blank';
       },
@@ -980,14 +980,7 @@
         var data, dialog, error;
         data = e.data;
         dialog = $('#qr');
-        if (data) {
-          error = $.el('span', {
-            className: 'error',
-            textContent: data
-          });
-          $.append(dialog, error);
-          qr.autohide.unset();
-        } else {
+        if (data === 'Post successful!') {
           if (dialog) {
             if ($.config('Persistent QR')) {
               qr.refresh(dialog);
@@ -995,6 +988,13 @@
               $.remove(dialog);
             }
           }
+        } else {
+          error = $.el('span', {
+            className: 'error',
+            textContent: data
+          });
+          $.append(dialog, error);
+          qr.autohide.unset();
         }
         return recaptchaReload();
       },
