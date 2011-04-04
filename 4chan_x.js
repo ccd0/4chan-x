@@ -958,16 +958,16 @@
       },
       load: function(e) {
         var dialog;
+        recaptchaReload();
         try {
           return e.target.contentWindow.postMessage('', '*');
         } catch (err) {
           dialog = $('#qr');
           if (g.REPLY && $.config('Persistent QR')) {
-            qr.refresh(dialog);
+            return qr.refresh(dialog);
           } else {
-            $.remove(dialog);
+            return $.remove(dialog);
           }
-          return recaptchaReload();
         }
       },
       messageIframe: function(e) {

@@ -704,6 +704,7 @@ qr =
         $.removeClass dialog, 'auto'
 
     load: (e) ->
+      recaptchaReload()
       try
         e.target.contentWindow.postMessage '', '*'
       catch err
@@ -713,8 +714,6 @@ qr =
           qr.refresh dialog
         else
           $.remove dialog
-
-        recaptchaReload()
 
     messageIframe: (e) ->
       message = $('table b').firstChild.textContent
