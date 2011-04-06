@@ -1,3 +1,4 @@
+# XXX error on FUCKING CHROME
 {log} = console if console?
 
 config =
@@ -390,7 +391,6 @@ imageHover =
 
       top = clientY + imageHover.offset.y
       bot = top + imgHeight
-      log bot, imageHover.winHeight
       img.style.top =
         if imageHover.winHeight < imgHeight or top < 0
           '0px'
@@ -722,6 +722,7 @@ qr =
         $.removeClass dialog, 'auto'
 
     load: (e) ->
+      recaptchaReload()
       try
         e.target.contentWindow.postMessage '', '*'
       catch err
@@ -731,8 +732,6 @@ qr =
           qr.refresh dialog
         else
           $.remove dialog
-
-        recaptchaReload()
 
     messageIframe: (e) ->
       message = $('table b').firstChild.textContent
@@ -1182,7 +1181,7 @@ updaterMake = ->
   interval.value = GM_getValue 'Interval', 10
   $.bind interval, 'change', updateInterval
 
-  $.bind $('input[type=button]'), 'click', updateNow
+  $.bind $('input[type=button]', div), 'click', updateNow
 
   d.body.appendChild div
 

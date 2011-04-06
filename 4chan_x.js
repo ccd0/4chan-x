@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        1.27.3
+// @version        1.27.6
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -560,7 +560,6 @@
         imgHeight = img.offsetHeight;
         top = clientY + imageHover.offset.y;
         bot = top + imgHeight;
-        log(bot, imageHover.winHeight);
         img.style.top = imageHover.winHeight < imgHeight || top < 0 ? '0px' : bot > imageHover.winHeight ? imageHover.winHeight - imgHeight + 'px' : top + 'px';
         return img.style.left = clientX + imageHover.offset.x;
       },
@@ -978,16 +977,16 @@
       },
       load: function(e) {
         var dialog;
+        recaptchaReload();
         try {
           return e.target.contentWindow.postMessage('', '*');
         } catch (err) {
           dialog = $('#qr');
           if (g.REPLY && $.config('Persistent QR')) {
-            qr.refresh(dialog);
+            return qr.refresh(dialog);
           } else {
-            $.remove(dialog);
+            return $.remove(dialog);
           }
-          return recaptchaReload();
         }
       },
       messageIframe: function(e) {
@@ -1542,7 +1541,7 @@
     interval = $('input[name=interval]', div);
     interval.value = GM_getValue('Interval', 10);
     $.bind(interval, 'change', updateInterval);
-    $.bind($('input[type=button]'), 'click', updateNow);
+    $.bind($('input[type=button]', div), 'click', updateNow);
     d.body.appendChild(div);
     if (GM_getValue('autoG')) {
       return updateAuto.call($("input[name=autoL]", div));

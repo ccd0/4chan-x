@@ -1,3 +1,12 @@
+1.27.6
+- fix 'update now' button
+
+1.27.5
+- fix regression - reload captcha after posting
+
+1.27.4
+- fix imageHover on chrome
+
 1.27.3
 - fix regression - movement
 
