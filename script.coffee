@@ -1436,7 +1436,7 @@ $.addStyle '
 if location.hostname is 'sys.4chan.org'
   qr.sys()
   return
-if navtopr = $ '#navtopr a'
+if navtopr = $ '#navtopr'
   options.init()
 else if $.config('404 Redirect') and d.title is '4chan - 404'
   redirect()
