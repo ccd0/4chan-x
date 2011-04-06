@@ -1111,7 +1111,7 @@ updaterMake = ->
   interval.value = GM_getValue 'Interval', 10
   $.bind interval, 'change', updateInterval
 
-  $.bind $('input[type=button]'), 'click', updateNow
+  $.bind $('input[type=button]', div), 'click', updateNow
 
   d.body.appendChild div
 
