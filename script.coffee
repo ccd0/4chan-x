@@ -345,14 +345,14 @@ replyHiding =
 
     id = reply.id
     g.hiddenReply[id] = Date.now()
-    GM_setValue "hiddenReply/#{g.BOARD}/", JSON.stringify g.hiddenReply
+    $.setValue "hiddenReply/#{g.BOARD}/", g.hiddenReply
 
   show: (table) ->
     $.show table
 
     id = $('td[id]', table).id
     delete g.hiddenReply[id]
-    GM_setValue "hiddenReply/#{g.BOARD}/", JSON.stringify g.hiddenReply
+    $.setValue "hiddenReply/#{g.BOARD}/", g.hiddenReply
 
 imageHover =
   init: ->
@@ -1313,7 +1313,7 @@ if temp is 'res'
   g.THREAD_ID = pathname[2]
 else
   g.PAGENUM = parseInt(temp) || 0
-g.hiddenReply = JSON.parse GM_getValue "hiddenReply/#{g.BOARD}/", '{}'
+g.hiddenReply = $.getValue "hiddenReply/#{g.BOARD}/", {}
 tzOffset = (new Date()).getTimezoneOffset() / 60
 # GMT -8 is given as +480; would GMT +8 be -480 ?
 g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5

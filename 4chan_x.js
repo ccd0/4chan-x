@@ -500,14 +500,14 @@
       }
       id = reply.id;
       g.hiddenReply[id] = Date.now();
-      return GM_setValue("hiddenReply/" + g.BOARD + "/", JSON.stringify(g.hiddenReply));
+      return $.setValue("hiddenReply/" + g.BOARD + "/", g.hiddenReply);
     },
     show: function(table) {
       var id;
       $.show(table);
       id = $('td[id]', table).id;
       delete g.hiddenReply[id];
-      return GM_setValue("hiddenReply/" + g.BOARD + "/", JSON.stringify(g.hiddenReply));
+      return $.setValue("hiddenReply/" + g.BOARD + "/", g.hiddenReply);
     }
   };
   imageHover = {
@@ -1695,7 +1695,7 @@
   } else {
     g.PAGENUM = parseInt(temp) || 0;
   }
-  g.hiddenReply = JSON.parse(GM_getValue("hiddenReply/" + g.BOARD + "/", '{}'));
+  g.hiddenReply = $.getValue("hiddenReply/" + g.BOARD + "/", {});
   tzOffset = (new Date()).getTimezoneOffset() / 60;
   g.chanOffset = 5 - tzOffset;
   if ($.isDST()) {
