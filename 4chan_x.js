@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, clearHidden, config, d, delform, down, editSauce, el, expand, expandComment, expandThread, g, getThread, href, i, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeInsert, keyModeNormal, keydown, keypress, l1, log, navbotr, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, textContent, threadHiding, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watcher, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, down, el, expand, expandComment, expandThread, g, getThread, href, i, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeInsert, keyModeNormal, keydown, keypress, l1, log, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, textContent, threadHiding, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updaterMake, watcher, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -226,6 +226,14 @@
     return object;
   };
   $.extend($, {
+    cb: {
+      checked: function() {
+        return GM_setValue(this.name, this.checked);
+      },
+      value: function() {
+        return GM_setValue(this.name, this.value);
+      }
+    },
     deleteValue: function(name) {
       name = NAMESPACE + name;
       return delete localStorage[name];
@@ -379,21 +387,6 @@
     var autoText;
     autoText = $('textarea', this).value.slice(0, 25);
     return GM_setValue('autoText', "/" + g.BOARD + "/ - " + autoText);
-  };
-  clearHidden = function() {
-    $.deleteValue("hiddenReply/" + g.BOARD + "/");
-    $.deleteValue("hiddenThread/" + g.BOARD + "/");
-    this.value = "hidden: 0";
-    return g.hiddenReplies = {};
-  };
-  editSauce = function() {
-    var ta;
-    ta = $('#options textarea');
-    if (ta.style.display) {
-      return $.show(ta);
-    } else {
-      return $.hide(ta);
-    }
   };
   expandComment = function(e) {
     var a, href, r;
@@ -898,37 +891,77 @@
   changeValue = function() {
     return GM_setValue(this.name, this.value);
   };
-  options = function() {
-    var checked, description, div, hiddenNum, hiddenThread, html, input, option, value, _i, _len, _ref;
-    if (div = $('#options')) {
-      $.remove(div);
-      return;
+  options = {
+    init: function() {
+      var a, home;
+      home = $('#navtopr a');
+      a = $.el('a', {
+        textContent: '4chan X'
+      });
+      $.bind(a, 'click', options.toggle);
+      $.replace(home, a);
+      home = $('#navbotr a');
+      a = $.el('a', {
+        textContent: '4chan X'
+      });
+      $.bind(a, 'click', options.toggle);
+      return $.replace(home, a);
+    },
+    toggle: function() {
+      var dialog;
+      if (dialog = $('#options')) {
+        return $.remove(dialog);
+      } else {
+        return options.dialog();
+      }
+    },
+    dialog: function() {
+      var checked, dialog, hiddenNum, hiddenThread, html, input, name, title, _i, _len, _ref;
+      html = "<div class=move>Options <a name=close>X</a></div>";
+      for (name in config) {
+        title = config[name][1];
+        checked = $.config(name) ? "checked" : "";
+        html += "<div><label title=\"" + title + "\">" + name + "<input " + checked + " name=\"" + name + "\" type=checkbox></label></div>";
+      }
+      html += "<div><a name=flavors>Flavors</a></div>";
+      html += "<div><textarea style=\"display: none;\" name=flavors>" + (GM_getValue('flavors', g.flavors)) + "</textarea></div>";
+      hiddenThread = $.getValue("hiddenThread/" + g.BOARD + "/", {});
+      hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length;
+      html += "<input type=\"button\" value=\"hidden: " + hiddenNum + "\"><br>";
+      html += "<hr>";
+      html += "<div><a href=\"http://chat.now.im/x/aeos\">support throd</a></div>";
+      html += '<div><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img alt="Donate" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"/></a></div>';
+      dialog = ui.dialog('options', {
+        top: '25%',
+        left: '50%'
+      }, html);
+      _ref = $$('input[type=checkbox]', dialog);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
+        $.bind(input, 'click', $.cb.checked);
+      }
+      $.bind($('input[type=button]', dialog), 'click', options.cb.clearHidden);
+      $.bind($('a[name=flavors]', dialog), 'click', options.flavors);
+      $.bind($('textarea', dialog), 'change', $.cb.value);
+      return $.append(d.body, dialog);
+    },
+    flavors: function() {
+      var ta;
+      ta = $('#options textarea');
+      if (ta.style.display) {
+        return $.show(ta);
+      } else {
+        return $.hide(ta);
+      }
+    },
+    cb: {
+      clearHidden: function(e) {
+        $.deleteValue("hiddenReply/" + g.BOARD + "/");
+        $.deleteValue("hiddenThread/" + g.BOARD + "/");
+        this.value = "hidden: 0";
+        return g.hiddenReplies = {};
+      }
     }
-    hiddenThread = $.getValue("hiddenThread/" + g.BOARD + "/", {});
-    hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length;
-    html = '<div class="move">Options <a name=close>X</a></div><div>';
-    for (option in config) {
-      value = config[option];
-      description = value[1];
-      checked = $.config(option) ? "checked" : "";
-      html += "<label title=\"" + description + "\">" + option + "<input " + checked + " name=\"" + option + "\" type=\"checkbox\"></label><br>";
-    }
-    html += "<div><a class=sauce>Flavors</a></div>";
-    html += "<div><textarea style=\"display: none;\" name=flavors>" + (GM_getValue('flavors', g.flavors)) + "</textarea></div>";
-    html += "<input type=\"button\" value=\"hidden: " + hiddenNum + "\"><br>";
-    html += "<hr>";
-    html += "<div><a href=\"http://chat.now.im/x/aeos\">support</a></div>";
-    html += '<div><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img alt="Donate" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"/></a></div>';
-    div = ui.dialog('options', 'center', html);
-    _ref = $$('input[type="checkbox"]', div);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      input = _ref[_i];
-      $.bind(input, 'change', changeCheckbox);
-    }
-    $.bind($('a.sauce', div), 'click', editSauce);
-    $.bind($('textarea', div), 'change', changeValue);
-    $.bind($('input[type="button"]', div), 'click', clearHidden);
-    return $.append(d.body, div);
   };
   parseResponse = function(responseText) {
     var body, opbq, replies;
@@ -1650,7 +1683,7 @@
     favDeadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII=',
     favDefault: ((_ref = $('link[rel="shortcut icon"]', d)) != null ? _ref.href : void 0) || '',
     favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://saucenao.com/search.php?db=999&url=', 'http://tineye.com/search?url='].join('\n'),
+    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url='].join('\n'),
     xhrs: []
   };
   g.favHalo = /ws/.test(g.favDefault) ? 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=';
@@ -1785,19 +1818,7 @@
     return;
   }
   if (navtopr = $('#navtopr a')) {
-    a = $.el('a', {
-      textContent: '4chan X',
-      className: 'pointer'
-    });
-    $.bind(a, 'click', options);
-    $.replace(navtopr, a);
-    navbotr = $('#navbotr a');
-    a = $.el('a', {
-      textContent: '4chan X',
-      className: 'pointer'
-    });
-    $.bind(a, 'click', options);
-    $.replace(navbotr, a);
+    options.init();
   } else if ($.config('404 Redirect') && d.title === '4chan - 404') {
     redirect();
   } else {
@@ -1942,7 +1963,7 @@
   }
   if ($.config('Quick Report')) {
     g.callbacks.push(function(root) {
-      var arr, el, _i, _len, _results;
+      var a, arr, el, _i, _len, _results;
       arr = $$('span[id^=no]', root);
       _results = [];
       for (_i = 0, _len = arr.length; _i < _len; _i++) {

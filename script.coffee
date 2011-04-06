@@ -128,6 +128,11 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  cb:
+    checked: ->
+      GM_setValue @name, @checked
+    value: ->
+      GM_setValue @name, @value
   deleteValue: (name) ->
     name = NAMESPACE + name
     delete localStorage[name]
@@ -242,18 +247,6 @@ autoWatch = ->
   #TODO look for subject
   autoText = $('textarea', this).value.slice(0, 25)
   GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
-
-clearHidden = ->
-  #'hidden' might be misleading; it's the number of IDs we're *looking* for,
-  # not the number of posts actually hidden on the page.
-  $.deleteValue "hiddenReply/#{g.BOARD}/"
-  $.deleteValue "hiddenThread/#{g.BOARD}/"
-  @value = "hidden: 0"
-  g.hiddenReplies = {}
-
-editSauce = ->
-  ta = $ '#options textarea'
-  if ta.style.display then $.show ta else $.hide ta
 
 expandComment = (e) ->
   e.preventDefault()
@@ -656,33 +649,62 @@ changeCheckbox = ->
 changeValue = ->
   GM_setValue @name, @value
 
-options = ->
-  if div = $ '#options'
-    $.remove div
-    return
+options =
+  init: ->
+    home = $ '#navtopr a'
+    a = $.el 'a',
+      textContent: '4chan X'
+    $.bind a, 'click', options.toggle
+    $.replace home, a
+    home = $ '#navbotr a'
+    a = $.el 'a',
+      textContent: '4chan X'
+    $.bind a, 'click', options.toggle
+    $.replace home, a
 
-  hiddenThread = $.getValue "hiddenThread/#{g.BOARD}/", {}
-  hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length
-  html = '<div class="move">Options <a name=close>X</a></div><div>'
-  for option, value of config
-    description  = value[1]
-    checked = if $.config option then "checked" else ""
-    html += "<label title=\"#{description}\">#{option}<input #{checked} name=\"#{option}\" type=\"checkbox\"></label><br>"
-  html += "<div><a class=sauce>Flavors</a></div>"
-  html += "<div><textarea style=\"display: none;\" name=flavors>#{GM_getValue 'flavors', g.flavors}</textarea></div>"
-  html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
-  html += "<hr>"
-  html += "<div><a href=\"http://chat.now.im/x/aeos\">support</a></div>"
-  html += '<div><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img alt="Donate" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"/></a></div>'
+  toggle: ->
+    if dialog = $ '#options'
+      $.remove dialog
+    else
+      options.dialog()
 
-  div = ui.dialog 'options', 'center', html
+  dialog: ->
+    html  = "<div class=move>Options <a name=close>X</a></div>"
+    for name of config
+      title = config[name][1]
+      checked = if $.config name then "checked" else ""
+      html += "<div><label title=\"#{title}\">#{name}<input #{checked} name=\"#{name}\" type=checkbox></label></div>"
+    html += "<div><a name=flavors>Flavors</a></div>"
+    html += "<div><textarea style=\"display: none;\" name=flavors>#{GM_getValue 'flavors', g.flavors}</textarea></div>"
 
-  for input in $$ 'input[type="checkbox"]', div
-    $.bind input, 'change', changeCheckbox
-  $.bind $('a.sauce', div), 'click', editSauce
-  $.bind $('textarea', div), 'change', changeValue
-  $.bind $('input[type="button"]', div), 'click', clearHidden
-  $.append d.body, div
+    hiddenThread = $.getValue "hiddenThread/#{g.BOARD}/", {}
+    hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length
+    html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
+
+    html += "<hr>"
+    html += "<div><a href=\"http://chat.now.im/x/aeos\">support throd</a></div>"
+    html += '<div><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img alt="Donate" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"/></a></div>'
+
+    dialog = ui.dialog 'options', top: '25%', left: '50%', html
+    for input in $$ 'input[type=checkbox]', dialog
+      $.bind input, 'click', $.cb.checked
+    $.bind $('input[type=button]', dialog), 'click', options.cb.clearHidden
+    $.bind $('a[name=flavors]', dialog), 'click', options.flavors
+    $.bind $('textarea', dialog), 'change', $.cb.value
+    $.append d.body, dialog
+
+  flavors: ->
+    ta = $ '#options textarea'
+    if ta.style.display then $.show ta else $.hide ta
+
+  cb:
+    clearHidden: (e) ->
+      #'hidden' might be misleading; it's the number of IDs we're *looking* for,
+      # not the number of posts actually hidden on the page.
+      $.deleteValue "hiddenReply/#{g.BOARD}/"
+      $.deleteValue "hiddenThread/#{g.BOARD}/"
+      @value = "hidden: 0"
+      g.hiddenReplies = {}
 
 parseResponse = (responseText) ->
   body = $.el 'body',
@@ -1280,7 +1302,6 @@ g =
   flavors: [
     'http://regex.info/exif.cgi?url='
     'http://iqdb.org/?url='
-    'http://saucenao.com/search.php?db=999&url='
     'http://tineye.com/search?url='
   ].join '\n'
   xhrs: []
@@ -1416,17 +1437,7 @@ if location.hostname is 'sys.4chan.org'
   qr.sys()
   return
 if navtopr = $ '#navtopr a'
-  a = $.el 'a',
-    textContent: '4chan X'
-    className: 'pointer'
-  $.bind a, 'click', options
-  $.replace navtopr, a
-  navbotr = $ '#navbotr a'
-  a = $.el 'a',
-    textContent: '4chan X'
-    className: 'pointer'
-  $.bind a, 'click', options
-  $.replace navbotr, a
+  options.init()
 else if $.config('404 Redirect') and d.title is '4chan - 404'
   redirect()
 else
