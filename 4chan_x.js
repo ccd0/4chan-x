@@ -45,6 +45,7 @@
 
 /* CONTRIBUTORS
  *
+ * Mayhem - fix updater default options
  * Ongpot - sfw favicon
  * thisisanon - nsfw + 404 favicons
  * Anonymous - empty favicon
