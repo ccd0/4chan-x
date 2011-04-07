@@ -1,3 +1,5 @@
+# TODO floating nav buttons FUCKING AWESOME
+
 # XXX error on FUCKING CHROME
 {log} = console if console?
 
