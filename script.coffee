@@ -824,9 +824,10 @@ qr =
     quote: (e) ->
       e.preventDefault()
       {target} = e
-      unless dialog = $ '#qr'
+      if dialog = $ '#qr'
+        qr.autohide.unset()
+      else
         dialog = qr.dialog target
-      qr.autohide.unset()
 
       id = target.textContent
       text = ">>#{id}\n"

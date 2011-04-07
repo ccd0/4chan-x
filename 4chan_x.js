@@ -1106,10 +1106,11 @@
         var dialog, id, s, selection, selectionID, ta, target, text, _ref;
         e.preventDefault();
         target = e.target;
-        if (!(dialog = $('#qr'))) {
+        if (dialog = $('#qr')) {
+          qr.autohide.unset();
+        } else {
           dialog = qr.dialog(target);
         }
-        qr.autohide.unset();
         id = target.textContent;
         text = ">>" + id + "\n";
         selection = window.getSelection();
