@@ -841,12 +841,12 @@ qr =
       ta.focus()
       ta.value += text
 
-    refresh: (dialog) ->
-      $('textarea', dialog).value = ''
-      $('input[name=recaptcha_response_field]', dialog).value = ''
-      # XXX file.value = '' doesn't work in opera
-      f = $('input[type=file]', dialog).parentNode
-      f.innerHTML = f.innerHTML
+  refresh: (dialog) ->
+    $('textarea', dialog).value = ''
+    $('input[name=recaptcha_response_field]', dialog).value = ''
+    # XXX file.value = '' doesn't work in opera
+    f = $('input[type=file]', dialog).parentNode
+    f.innerHTML = f.innerHTML
 
   cooldown: ->
     submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'

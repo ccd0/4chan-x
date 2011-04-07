@@ -1122,14 +1122,14 @@
         ta = $('textarea', dialog);
         ta.focus();
         return ta.value += text;
-      },
-      refresh: function(dialog) {
-        var f;
-        $('textarea', dialog).value = '';
-        $('input[name=recaptcha_response_field]', dialog).value = '';
-        f = $('input[type=file]', dialog).parentNode;
-        return f.innerHTML = f.innerHTML;
       }
+    },
+    refresh: function(dialog) {
+      var f;
+      $('textarea', dialog).value = '';
+      $('input[name=recaptcha_response_field]', dialog).value = '';
+      f = $('input[type=file]', dialog).parentNode;
+      return f.innerHTML = f.innerHTML;
     },
     cooldown: function() {
       var submit, submits, _i, _len;
