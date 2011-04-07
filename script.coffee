@@ -1,4 +1,7 @@
 # TODO floating nav buttons FUCKING AWESOME
+# option to skip post form directly to contents on first page,
+# like what happens when using thread nav to go to next page
+# (floating) qr no-quote button?
 
 # XXX error on FUCKING CHROME
 {log} = console if console?
