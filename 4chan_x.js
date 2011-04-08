@@ -1049,21 +1049,21 @@
         ta = $('textarea', dialog);
         ta.focus();
         return ta.value += text;
-      },
-      refresh: function(dialog) {
-        var auto, f, submit, _ref;
-        $('textarea', dialog).value = '';
-        $('input[name=recaptcha_response_field]', dialog).value = '';
-        f = $('input[type=file]', dialog).parentNode;
-        f.innerHTML = f.innerHTML;
-        submit = $('input[type=submit]', qr);
-        submit.value = g.sage ? 60 : 30;
-        submit.disabled = true;
-        window.setTimeout(qr.cooldown, 1000);
-        auto = submit.previousSibling.lastChild;
-        if (auto.checked) {
-          return (_ref = $('input[title=autohide]:checked', qr)) != null ? _ref.click() : void 0;
-        }
+      }
+    },
+    refresh: function(dialog) {
+      var auto, f, submit, _ref;
+      $('textarea', dialog).value = '';
+      $('input[name=recaptcha_response_field]', dialog).value = '';
+      f = $('input[type=file]', dialog).parentNode;
+      f.innerHTML = f.innerHTML;
+      submit = $('input[type=submit]', qr);
+      submit.value = g.sage ? 60 : 30;
+      submit.disabled = true;
+      window.setTimeout(qr.cooldown, 1000);
+      auto = submit.previousSibling.lastChild;
+      if (auto.checked) {
+        return (_ref = $('input[title=autohide]:checked', qr)) != null ? _ref.click() : void 0;
       }
     },
     cooldown: function() {

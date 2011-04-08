@@ -779,20 +779,20 @@ qr =
       ta.focus()
       ta.value += text
 
-    refresh: (dialog) ->
-      $('textarea', dialog).value = ''
-      $('input[name=recaptcha_response_field]', dialog).value = ''
-      # XXX file.value = '' doesn't work in opera
-      f = $('input[type=file]', dialog).parentNode
-      f.innerHTML = f.innerHTML
-      submit = $ 'input[type=submit]', qr
-      submit.value = if g.sage then 60 else 30
-      submit.disabled = true
-      window.setTimeout qr.cooldown, 1000
-      auto = submit.previousSibling.lastChild
-      if auto.checked
-        #unhide the qr so you know it's ready for the next item
-        $('input[title=autohide]:checked', qr)?.click()
+  refresh: (dialog) ->
+    $('textarea', dialog).value = ''
+    $('input[name=recaptcha_response_field]', dialog).value = ''
+    # XXX file.value = '' doesn't work in opera
+    f = $('input[type=file]', dialog).parentNode
+    f.innerHTML = f.innerHTML
+    submit = $ 'input[type=submit]', qr
+    submit.value = if g.sage then 60 else 30
+    submit.disabled = true
+    window.setTimeout qr.cooldown, 1000
+    auto = submit.previousSibling.lastChild
+    if auto.checked
+      #unhide the qr so you know it's ready for the next item
+      $('input[title=autohide]:checked', qr)?.click()
 
   cooldown: ->
     submit = $ '#qr input[type=submit]'
