@@ -1,3 +1,7 @@
+1.27.7
+- fix qr persist
+- fix updater defaults
+
 1.27.6
 - fix 'update now' button
 
