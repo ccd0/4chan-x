@@ -46,6 +46,7 @@
 
 /* CONTRIBUTORS
  *
+ * Mayhem - fix updater default options
  * Ongpot - sfw favicon
  * thisisanon - nsfw + 404 favicons
  * Anonymous - empty favicon
@@ -1577,7 +1578,7 @@
     $.bind(interval, 'change', updateInterval);
     $.bind($('input[type=button]', div), 'click', updateNow);
     d.body.appendChild(div);
-    if (GM_getValue('autoG')) {
+    if (GM_getValue('autoG', true)) {
       return updateAuto.call($("input[name=autoL]", div));
     }
   };

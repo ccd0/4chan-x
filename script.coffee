@@ -1213,7 +1213,7 @@ updaterMake = ->
 
   d.body.appendChild div
 
-  if GM_getValue 'autoG' then updateAuto.call $("input[name=autoL]", div)
+  if GM_getValue 'autoG', true then updateAuto.call $("input[name=autoL]", div)
 
 watcher =
   init: ->
