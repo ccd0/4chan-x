@@ -24,7 +24,6 @@ config =
       'Quick Reply':       [true,  'Reply without leaving the page']
       'Quick Report':      [true,  'Add quick report buttons']
       'Reply Hiding':      [true,  'Hide single replies']
-      'Reply Navigation':  [false, 'Navigate to the beginning / end of a thread']
       'Sauce':             [true,  'Add sauce to images']
       'Show Stubs':        [true,  'Of hidden threads / replies']
       'Thread Expansion':  [true,  'View all replies']
@@ -611,6 +610,7 @@ keyModeNormal = (e) ->
       watch.call watchButton
 
 nav =
+  #TODO page nav
   # ◀ ▶
   init: ->
     span = $.el 'span',
@@ -1672,22 +1672,6 @@ if $.config 'Anonymize'
         $.remove trip.parentNode
       else
         $.remove trip
-
-if $.config 'Reply Navigation'
-  g.callbacks.push (root) ->
-    arr = $$('span[id^=norep]', root)
-    for el in arr
-      span = $.el 'span'
-      up = $.el 'a',
-        textContent: '▲'
-        className: 'pointer'
-      $.bind up, 'click', replyNav
-      down = $.el 'a',
-        textContent: '▼'
-        className: 'pointer'
-      $.bind down, 'click', replyNav
-      $.append span, $.tn(' '), up, $.tn(' '), down
-      $.after el, span
 
 if $.config 'Keybinds'
   $.bind d, 'keydown',  keydown

@@ -82,7 +82,6 @@
         'Quick Reply': [true, 'Reply without leaving the page'],
         'Quick Report': [true, 'Add quick report buttons'],
         'Reply Hiding': [true, 'Hide single replies'],
-        'Reply Navigation': [false, 'Navigate to the beginning / end of a thread'],
         'Sauce': [true, 'Add sauce to images'],
         'Show Stubs': [true, 'Of hidden threads / replies'],
         'Thread Expansion': [true, 'View all replies'],
@@ -2115,30 +2114,6 @@
       for (_j = 0, _len2 = trips.length; _j < _len2; _j++) {
         trip = trips[_j];
         _results.push(trip.parentNode.nodeName === 'A' ? $.remove(trip.parentNode) : $.remove(trip));
-      }
-      return _results;
-    });
-  }
-  if ($.config('Reply Navigation')) {
-    g.callbacks.push(function(root) {
-      var arr, down, el, span, up, _i, _len, _results;
-      arr = $$('span[id^=norep]', root);
-      _results = [];
-      for (_i = 0, _len = arr.length; _i < _len; _i++) {
-        el = arr[_i];
-        span = $.el('span');
-        up = $.el('a', {
-          textContent: '▲',
-          className: 'pointer'
-        });
-        $.bind(up, 'click', replyNav);
-        down = $.el('a', {
-          textContent: '▼',
-          className: 'pointer'
-        });
-        $.bind(down, 'click', replyNav);
-        $.append(span, $.tn(' '), up, $.tn(' '), down);
-        _results.push($.after(el, span));
       }
       return _results;
     });
