@@ -1,4 +1,4 @@
-# TODO floating nav buttons FUCKING AWESOME
+# TODO
 # option to skip post form directly to contents on first page,
 # like what happens when using thread nav to go to next page
 # (floating) qr no-quote button?
@@ -6,6 +6,7 @@
 # XXX error on FUCKING CHROME
 {log} = console if console?
 
+# TODO put keybinds back to false when done
 config =
   main:
     checkbox:
@@ -17,7 +18,7 @@ config =
       'Image Expansion':   [true,  'Expand images']
       'Image Hover':       [false, 'Show full image on mouseover']
       'Image Preloading':  [false, 'Preload Images']
-      'Keybinds':          [false, 'Binds actions to keys']
+      'Keybinds':          [true, 'Binds actions to keys']
       'Localize Time':     [true,  'Show times based on your timezone']
       'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
       'Post in Title':     [true,  'Show the op\'s post in the tab title']
@@ -481,53 +482,98 @@ imageThumb = (thumb) ->
   thumb.className = ''
   $.remove thumb.nextSibling
 
-keydown = (e) ->
-  kc = e.keyCode
-  g.keyCode = kc
-  g.char = String.fromCharCode kc
+keybinds =
+  init: ->
+    $.bind d, 'keydown',  keybinds.cb.keydown
+    $.bind d, 'keypress', keybinds.cb.keypress
 
-keypress = (e) ->
-  if d.activeElement.nodeName in ['TEXTAREA', 'INPUT']
-    keyModeInsert e
-  else
-    keyModeNormal e
+  cb:
+    keydown: (e) ->
+      if d.activeElement.nodeName in ['TEXTAREA', 'INPUT']
+        keybinds.mode = keybinds.insert
+      else
+        keybinds.mode = keybinds.normal
 
-keyModeInsert = (e) ->
-  kc = g.keyCode
-  char = g.char
-  if kc is 27 #escape
-    $.remove $ '#qr'
-    e.preventDefault()
-  else if e.ctrlKey and char is "S"
-    ta = d.activeElement
-    return unless ta.nodeName is 'TEXTAREA'
+      kc = e.keyCode
+      if 65 <= kc <= 90 #A-Z
+        key = String.fromCharCode kc
+        if !e.shiftKey
+          key = key.toLowerCase()
+        if e.ctrlKey then key = '^' + key
+      else
+        if kc is 27
+          key = '<Esc>'
+      keybinds.key = key
 
-    value  = ta.value
-    selStart = ta.selectionStart
-    selEnd   = ta.selectionEnd
+    keypress: (e) ->
+      keybinds.mode e
 
-    valStart = value[0...selStart] + '[spoiler]'
-    valMid   = value[selStart...selEnd]
-    valEnd   = '[/spoiler]' + value[selEnd..]
+  insert: (e) ->
+    switch keybinds.key
+      when '<Esc>'
+        e.preventDefault()
+        $.remove $ '#qr'
+      when '^s'
+        ta = d.activeElement
+        return unless ta.nodeName is 'TEXTAREA'
 
-    ta.value = valStart + valMid + valEnd
-    range = valStart.length + valMid.length
-    ta.setSelectionRange range, range
-    e.preventDefault()
+        e.preventDefault()
+
+        value    = ta.value
+        selStart = ta.selectionStart
+        selEnd   = ta.selectionEnd
+
+        valStart = value[0...selStart] + '[spoiler]'
+        valMid   = value[selStart...selEnd]
+        valEnd   = '[/spoiler]' + value[selEnd..]
+
+        ta.value = valStart + valMid + valEnd
+        range = valStart.length + valMid.length
+        ta.setSelectionRange range, range
+
+  normal: (e) ->
+    switch keybinds.key
+      when 'I'
+        #qr no text
+        return
+      when 'J'
+        #highlight next
+        return
+      when 'K'
+        #highlight prev
+        return
+      when 'M'
+        #expand all
+        return
+      when 'i'
+        #qr
+        return
+      when 'm'
+        #expand img
+        return
+      when 'n'
+        nav.down()
+      when 'o'
+        #open in new tab
+        return
+      when 'p'
+        nav.up()
+      when 'u'
+        #update now
+        return
+      when 'w'
+        [thread] = nav.getThread()
+        watcher.toggle thread
+      when 'x'
+        #toggle hide thread
+        return
+
 
 keyModeNormal = (e) ->
   return if e.ctrlKey or e.altKey
   char = g.char
   hash = location.hash
   switch char
-    when "0"
-      location.pathname = "/#{g.BOARD}"
-    when "G"
-      if e.shiftKey
-        window.scrollTo 0, 99999
-      else
-        window.scrollTo 0, 0
-        location.hash = ''
     when "I"
       if g.REPLY
         unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)'
@@ -1337,7 +1383,7 @@ watcher =
         src = g.favEmpty
       favicon = $.el 'img',
         src: src
-        className: 'pointer'
+        className: 'favicon'
       $.bind favicon, 'click', watcher.cb.toggle
       $.before input, favicon
 
@@ -1354,13 +1400,14 @@ watcher =
 
   cb:
     toggle: (e) ->
-      watcher.toggle e.target
+      watcher.toggle e.target.parentNode
     x: (e) ->
       [board, _, id] = e.target.nextElementSibling
         .getAttribute('href').substring(1).split('/')
       watcher.unwatch board, id
 
-  toggle: (favicon) ->
+  toggle: (thread) ->
+    favicon = $ 'img.favicon', thread
     id = favicon.nextSibling.name
     if favicon.src == g.favEmpty
       watcher.watch id, favicon
@@ -1453,7 +1500,7 @@ $.addStyle '
   div.dialog > div.move {
     cursor: move;
   }
-  label, a, .pointer {
+  label, a, {
     cursor: pointer;
   }
 
@@ -1535,6 +1582,9 @@ $.addStyle '
   }
   .new {
     background: lime;
+  }
+  .favicon {
+    cursor: pointer;
   }
 '
 
@@ -1653,7 +1703,6 @@ if $.config 'Quick Report'
     for el in arr
       a = $.el 'a',
         textContent: '[ ! ]'
-        className: 'pointer'
       $.bind a, 'click', report
       $.after el, a
       $.after el, $.tn(' ')
@@ -1674,8 +1723,7 @@ if $.config 'Anonymize'
         $.remove trip
 
 if $.config 'Keybinds'
-  $.bind d, 'keydown',  keydown
-  $.bind d, 'keypress', keypress
+  keybinds.init()
 
 if $.config 'Thread Updater'
   updater.init()
@@ -1716,7 +1764,7 @@ else #not reply
     omitted = $$('span.omittedposts')
     for span in omitted
       a = $.el 'a',
-        className: 'pointer omittedposts'
+        className: 'omittedposts'
         textContent: "+ #{span.textContent}"
       $.bind a, 'click', expandThread
       $.replace(span, a)

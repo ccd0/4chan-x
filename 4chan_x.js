@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeInsert, keyModeNormal, keydown, keypress, log, nav, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, threadHiding, tzOffset, ui, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updater, updaterMake, watcher, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, threadHiding, tzOffset, ui, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updater, updaterMake, watcher, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -75,7 +75,7 @@
         'Image Expansion': [true, 'Expand images'],
         'Image Hover': [false, 'Show full image on mouseover'],
         'Image Preloading': [false, 'Preload Images'],
-        'Keybinds': [false, 'Binds actions to keys'],
+        'Keybinds': [true, 'Binds actions to keys'],
         'Localize Time': [true, 'Show times based on your timezone'],
         'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
@@ -662,42 +662,90 @@
     thumb.className = '';
     return $.remove(thumb.nextSibling);
   };
-  keydown = function(e) {
-    var kc;
-    kc = e.keyCode;
-    g.keyCode = kc;
-    return g.char = String.fromCharCode(kc);
-  };
-  keypress = function(e) {
-    var _ref;
-    if ((_ref = d.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') {
-      return keyModeInsert(e);
-    } else {
-      return keyModeNormal(e);
-    }
-  };
-  keyModeInsert = function(e) {
-    var char, kc, range, selEnd, selStart, ta, valEnd, valMid, valStart, value;
-    kc = g.keyCode;
-    char = g.char;
-    if (kc === 27) {
-      $.remove($('#qr'));
-      return e.preventDefault();
-    } else if (e.ctrlKey && char === "S") {
-      ta = d.activeElement;
-      if (ta.nodeName !== 'TEXTAREA') {
-        return;
+  keybinds = {
+    init: function() {
+      $.bind(d, 'keydown', keybinds.cb.keydown);
+      return $.bind(d, 'keypress', keybinds.cb.keypress);
+    },
+    cb: {
+      keydown: function(e) {
+        var kc, key, _ref;
+        if ((_ref = d.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') {
+          keybinds.mode = keybinds.insert;
+        } else {
+          keybinds.mode = keybinds.normal;
+        }
+        kc = e.keyCode;
+        if ((65 <= kc && kc <= 90)) {
+          key = String.fromCharCode(kc);
+          if (!e.shiftKey) {
+            key = key.toLowerCase();
+          }
+          if (e.ctrlKey) {
+            key = '^' + key;
+          }
+        } else {
+          if (kc === 27) {
+            key = '<Esc>';
+          }
+        }
+        return keybinds.key = key;
+      },
+      keypress: function(e) {
+        return keybinds.mode(e);
       }
-      value = ta.value;
-      selStart = ta.selectionStart;
-      selEnd = ta.selectionEnd;
-      valStart = value.slice(0, selStart) + '[spoiler]';
-      valMid = value.slice(selStart, selEnd);
-      valEnd = '[/spoiler]' + value.slice(selEnd);
-      ta.value = valStart + valMid + valEnd;
-      range = valStart.length + valMid.length;
-      ta.setSelectionRange(range, range);
-      return e.preventDefault();
+    },
+    insert: function(e) {
+      var range, selEnd, selStart, ta, valEnd, valMid, valStart, value;
+      switch (keybinds.key) {
+        case '<Esc>':
+          e.preventDefault();
+          return $.remove($('#qr'));
+        case '^s':
+          ta = d.activeElement;
+          if (ta.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          e.preventDefault();
+          value = ta.value;
+          selStart = ta.selectionStart;
+          selEnd = ta.selectionEnd;
+          valStart = value.slice(0, selStart) + '[spoiler]';
+          valMid = value.slice(selStart, selEnd);
+          valEnd = '[/spoiler]' + value.slice(selEnd);
+          ta.value = valStart + valMid + valEnd;
+          range = valStart.length + valMid.length;
+          return ta.setSelectionRange(range, range);
+      }
+    },
+    normal: function(e) {
+      var thread;
+      switch (keybinds.key) {
+        case 'I':
+          break;
+        case 'J':
+          break;
+        case 'K':
+          break;
+        case 'M':
+          break;
+        case 'i':
+          break;
+        case 'm':
+          break;
+        case 'n':
+          return nav.down();
+        case 'o':
+          break;
+        case 'p':
+          return nav.up();
+        case 'u':
+          break;
+        case 'w':
+          thread = nav.getThread()[0];
+          return watcher.toggle(thread);
+        case 'x':
+      }
     }
   };
   keyModeNormal = function(e) {
@@ -708,16 +756,6 @@
     char = g.char;
     hash = location.hash;
     switch (char) {
-      case "0":
-        return location.pathname = "/" + g.BOARD;
-      case "G":
-        if (e.shiftKey) {
-          return window.scrollTo(0, 99999);
-        } else {
-          window.scrollTo(0, 0);
-          return location.hash = '';
-        }
-        break;
       case "I":
         if (g.REPLY) {
           if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
@@ -1729,7 +1767,7 @@
         }
         favicon = $.el('img', {
           src: src,
-          className: 'pointer'
+          className: 'favicon'
         });
         $.bind(favicon, 'click', watcher.cb.toggle);
         _results.push($.before(input, favicon));
@@ -1750,7 +1788,7 @@
     },
     cb: {
       toggle: function(e) {
-        return watcher.toggle(e.target);
+        return watcher.toggle(e.target.parentNode);
       },
       x: function(e) {
         var board, id, _, _ref;
@@ -1758,8 +1796,9 @@
         return watcher.unwatch(board, id);
       }
     },
-    toggle: function(favicon) {
-      var id;
+    toggle: function(thread) {
+      var favicon, id;
+      favicon = $('img.favicon', thread);
       id = favicon.nextSibling.name;
       if (favicon.src === g.favEmpty) {
         return watcher.watch(id, favicon);
@@ -1848,7 +1887,7 @@
   div.dialog > div.move {\
     cursor: move;\
   }\
-  label, a, .pointer {\
+  label, a, {\
     cursor: pointer;\
   }\
 \
@@ -1930,6 +1969,9 @@
   }\
   .new {\
     background: lime;\
+  }\
+  .favicon {\
+    cursor: pointer;\
   }\
 ');
   if (location.hostname === 'sys.4chan.org') {
@@ -2088,8 +2130,7 @@
       for (_i = 0, _len = arr.length; _i < _len; _i++) {
         el = arr[_i];
         a = $.el('a', {
-          textContent: '[ ! ]',
-          className: 'pointer'
+          textContent: '[ ! ]'
         });
         $.bind(a, 'click', report);
         $.after(el, a);
@@ -2119,8 +2160,7 @@
     });
   }
   if ($.config('Keybinds')) {
-    $.bind(d, 'keydown', keydown);
-    $.bind(d, 'keypress', keypress);
+    keybinds.init();
   }
   if ($.config('Thread Updater')) {
     updater.init();
@@ -2176,7 +2216,7 @@
       for (_k = 0, _len3 = omitted.length; _k < _len3; _k++) {
         span = omitted[_k];
         a = $.el('a', {
-          className: 'pointer omittedposts',
+          className: 'omittedposts',
           textContent: "+ " + span.textContent
         });
         $.bind(a, 'click', expandThread);
