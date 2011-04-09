@@ -552,12 +552,12 @@ keybinds =
         #expand img
         return
       when 'n'
-        nav.down()
+        nav.next()
       when 'o'
         #open in new tab
         return
       when 'p'
-        nav.up()
+        nav.prev()
       when 'u'
         #update now
         return
@@ -661,54 +661,53 @@ nav =
   init: ->
     span = $.el 'span',
       id: 'navlinks'
-    up = $.el 'a',
+    prev = $.el 'a',
       textContent: '▲'
-    down = $.el 'a',
+    next = $.el 'a',
       textContent: '▼'
 
-    $.bind up,   'click', nav.up
-    $.bind down, 'click', nav.down
+    $.bind prev, 'click', nav.prev
+    $.bind next, 'click', nav.next
 
-    $.append span, up, $.tn(' '), down
+    $.append span, prev, $.tn(' '), next
     $.append d.body, span
 
-  up: ->
-    [thread, i, rect] = nav.getThread()
-    {top} = rect
+    nav.threads = $$ 'div.thread'
 
-    if top > 1
-      i = -1
-    else if Math.floor(Math.abs(top)) == 0
-      #only move to prev thread if we're at the start of current one
-      #XXX fucking fractional scrolls
-      i -= 1
-    nav.setThread i
+  prev: ->
+    nav.scroll -1
 
-  down: ->
-    [thread, i, rect] = nav.getThread()
-    unless rect.top > 1 # if rect.top > 1, we're above the first thread
-      i += 1
-    nav.setThread i
+  next: ->
+    nav.scroll +1
 
-  getThread: ->
-    nav.threads = threads = $$ 'div.thread'
-    for thread, i in threads
+  getThread: (full) ->
+    for thread, i in nav.threads
       rect = thread.getBoundingClientRect()
       {bottom} = rect
       if bottom > 0 #we have not scrolled past
-        return [thread, i, rect]
+        if full
+          return [thread, i, rect]
+        return thread
 
-  setThread: (i) ->
-    if i == -1
+  scroll: (delta) ->
+    [thread, i, rect] = nav.getThread true
+    {top} = rect
+
+    #unless we're not at the beginning of the current thread
+    # (and thus wanting to move to beginning)
+    # or we're above the first thread and don't want to skip it
+    unless (delta is -1 and Math.ceil(top) < 0) or (delta is +1 and top > 1)
+      i += delta
+
+    if i is -1
       window.scrollTo 0, 0
       return
-    if i == 10
+    if i is 10
       window.location = "#{g.PAGENUM + 1}#p0"
       return
 
     {top} = nav.threads[i].getBoundingClientRect()
     window.scrollBy 0, top
-    delete nav.threads
 
 scrollThread = (count) ->
   [thread, idx] = getThread()
@@ -1754,11 +1753,11 @@ else #not reply
   if $.config 'Thread Hiding'
     threadHiding.init()
 
-  if $.config 'Auto Watch'
-    $.bind $('form[name=post]'), 'submit', autoWatch
-
   if $.config 'Thread Navigation'
     nav.init()
+
+  if $.config 'Auto Watch'
+    $.bind $('form[name=post]'), 'submit', autoWatch
 
   if $.config 'Thread Expansion'
     omitted = $$('span.omittedposts')

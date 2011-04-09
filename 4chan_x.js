@@ -734,11 +734,11 @@
         case 'm':
           break;
         case 'n':
-          return nav.down();
+          return nav.next();
         case 'o':
           break;
         case 'p':
-          return nav.up();
+          return nav.prev();
         case 'u':
           break;
         case 'w':
@@ -870,54 +870,52 @@
   };
   nav = {
     init: function() {
-      var down, span, up;
+      var next, prev, span;
       span = $.el('span', {
         id: 'navlinks'
       });
-      up = $.el('a', {
+      prev = $.el('a', {
         textContent: '▲'
       });
-      down = $.el('a', {
+      next = $.el('a', {
         textContent: '▼'
       });
-      $.bind(up, 'click', nav.up);
-      $.bind(down, 'click', nav.down);
-      $.append(span, up, $.tn(' '), down);
-      return $.append(d.body, span);
+      $.bind(prev, 'click', nav.prev);
+      $.bind(next, 'click', nav.next);
+      $.append(span, prev, $.tn(' '), next);
+      $.append(d.body, span);
+      return nav.threads = $$('div.thread');
     },
-    up: function() {
-      var i, rect, thread, top, _ref;
-      _ref = nav.getThread(), thread = _ref[0], i = _ref[1], rect = _ref[2];
-      top = rect.top;
-      if (top > 1) {
-        i = -1;
-      } else if (Math.floor(Math.abs(top)) === 0) {
-        i -= 1;
-      }
-      return nav.setThread(i);
+    prev: function() {
+      return nav.scroll(-1);
     },
-    down: function() {
-      var i, rect, thread, _ref;
-      _ref = nav.getThread(), thread = _ref[0], i = _ref[1], rect = _ref[2];
-      if (!(rect.top > 1)) {
-        i += 1;
-      }
-      return nav.setThread(i);
+    next: function() {
+      return nav.scroll(+1);
     },
-    getThread: function() {
-      var bottom, i, rect, thread, threads, _len;
-      nav.threads = threads = $$('div.thread');
-      for (i = 0, _len = threads.length; i < _len; i++) {
-        thread = threads[i];
+    getThread: function(full) {
+      var bottom, i, rect, thread, _len, _ref, _results;
+      _ref = nav.threads;
+      _results = [];
+      for (i = 0, _len = _ref.length; i < _len; i++) {
+        thread = _ref[i];
         rect = thread.getBoundingClientRect();
         bottom = rect.bottom;
         if (bottom > 0) {
-          return [thread, i, rect];
+          if (full) {
+            return [thread, i, rect];
+          }
+          return thread;
         }
       }
+      return _results;
     },
-    setThread: function(i) {
-      var top;
+    scroll: function(delta) {
+      var i, rect, thread, top, _ref;
+      _ref = nav.getThread(true), thread = _ref[0], i = _ref[1], rect = _ref[2];
+      top = rect.top;
+      if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
+        i += delta;
+      }
       if (i === -1) {
         window.scrollTo(0, 0);
         return;
@@ -927,8 +925,7 @@
         return;
       }
       top = nav.threads[i].getBoundingClientRect().top;
-      window.scrollBy(0, top);
-      return delete nav.threads;
+      return window.scrollBy(0, top);
     }
   };
   scrollThread = function(count) {
@@ -2205,11 +2202,11 @@
     if ($.config('Thread Hiding')) {
       threadHiding.init();
     }
-    if ($.config('Auto Watch')) {
-      $.bind($('form[name=post]'), 'submit', autoWatch);
-    }
     if ($.config('Thread Navigation')) {
       nav.init();
+    }
+    if ($.config('Auto Watch')) {
+      $.bind($('form[name=post]'), 'submit', autoWatch);
     }
     if ($.config('Thread Expansion')) {
       omitted = $$('span.omittedposts');
