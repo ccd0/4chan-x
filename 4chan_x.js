@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, a, arr, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, down, el, expand, expandComment, expandThread, g, getThread, href, i, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeInsert, keyModeNormal, keydown, keypress, l1, log, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, textContent, threadHiding, tzOffset, ui, up, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updater, updaterMake, watcher, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeInsert, keyModeNormal, keydown, keypress, log, nav, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, threadHiding, tzOffset, ui, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updater, updaterMake, watcher, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -452,17 +452,6 @@
       id: id
     });
   };
-  getThread = function() {
-    var bottom, i, thread, threads, _len;
-    threads = $$('div.thread');
-    for (i = 0, _len = threads.length; i < _len; i++) {
-      thread = threads[i];
-      bottom = thread.getBoundingClientRect().bottom;
-      if (bottom > 0) {
-        return [thread, i];
-      }
-    }
-  };
   replyHiding = {
     init: function() {
       return g.callbacks.push(replyHiding.cb.node);
@@ -841,6 +830,89 @@
         watchButton = $("span.filesize ~ img", root);
         return watch.call(watchButton);
     }
+  };
+  nav = {
+    init: function() {
+      var down, span, up;
+      span = $.el('span', {
+        id: 'navlinks'
+      });
+      up = $.el('a', {
+        textContent: '▲'
+      });
+      down = $.el('a', {
+        textContent: '▼'
+      });
+      $.bind(up, 'click', nav.up);
+      $.bind(down, 'click', nav.down);
+      $.append(span, up, $.tn(' '), down);
+      return $.append(d.body, span);
+    },
+    up: function() {
+      var i, rect, thread, top, _ref;
+      _ref = nav.getThread(), thread = _ref[0], i = _ref[1], rect = _ref[2];
+      top = rect.top;
+      if (top > 1) {
+        i = -1;
+      } else if (Math.floor(Math.abs(top)) === 0) {
+        i -= 1;
+      }
+      return nav.setThread(i);
+    },
+    down: function() {
+      var i, rect, thread, _ref;
+      _ref = nav.getThread(), thread = _ref[0], i = _ref[1], rect = _ref[2];
+      if (!(rect.top > 1)) {
+        i += 1;
+      }
+      return nav.setThread(i);
+    },
+    getThread: function() {
+      var bottom, i, rect, thread, threads, _len;
+      nav.threads = threads = $$('div.thread');
+      for (i = 0, _len = threads.length; i < _len; i++) {
+        thread = threads[i];
+        rect = thread.getBoundingClientRect();
+        bottom = rect.bottom;
+        if (bottom > 0) {
+          return [thread, i, rect];
+        }
+      }
+    },
+    setThread: function(i) {
+      var top;
+      if (i === -1) {
+        window.scrollTo(0, 0);
+        return;
+      }
+      if (i === 10) {
+        window.location = "" + (g.PAGENUM + 1) + "#p0";
+        return;
+      }
+      top = nav.threads[i].getBoundingClientRect().top;
+      window.scrollBy(0, top);
+      return delete nav.threads;
+    }
+  };
+  scrollThread = function(count) {
+    var hash, idx, temp, thread, top, _ref;
+    _ref = getThread(), thread = _ref[0], idx = _ref[1];
+    top = thread.getBoundingClientRect().top;
+    if (idx === 0 && top > 1) {
+      idx = -1;
+    }
+    if (count < 0 && top < -1) {
+      count++;
+    }
+    temp = idx + count;
+    if (temp < 0) {
+      hash = '';
+    } else if (temp > 9) {
+      hash = 'p9';
+    } else {
+      hash = "p" + temp;
+    }
+    return location.hash = hash;
   };
   nodeInserted = function(e) {
     var callback, dialog, target, _i, _len, _ref, _results;
@@ -1302,26 +1374,6 @@
     input.click();
     $('input[value="Report"]').click();
     return input.click();
-  };
-  scrollThread = function(count) {
-    var hash, idx, temp, thread, top, _ref;
-    _ref = getThread(), thread = _ref[0], idx = _ref[1];
-    top = thread.getBoundingClientRect().top;
-    if (idx === 0 && top > 1) {
-      idx = -1;
-    }
-    if (count < 0 && top < -1) {
-      count++;
-    }
-    temp = idx + count;
-    if (temp < 0) {
-      hash = '';
-    } else if (temp > 9) {
-      hash = 'p9';
-    } else {
-      hash = "p" + temp;
-    }
-    return location.hash = hash;
   };
   threadHiding = {
     init: function() {
@@ -1866,13 +1918,13 @@
   iframe {\
     display: none;\
   }\
-  span.navlinks {\
-    position: absolute;\
+  #navlinks {\
+    position: fixed;\
+    top: 25px;\
     right: 5px;\
   }\
-  span.navlinks > a {\
+  #navlinks > a {\
     font-size: 16px;\
-    text-decoration: none;\
   }\
   .hide {\
     display: none;\
@@ -2142,51 +2194,11 @@
       $.bind($('form[name=post]'), 'submit', autoWatch);
     }
     if ($.config('Thread Navigation')) {
-      arr = $$('div > span.filesize, form > span.filesize');
-      l1 = arr.length - 1;
-      for (i = 0, _len3 = arr.length; i < _len3; i++) {
-        el = arr[i];
-        span = $.el('span', {
-          className: 'navlinks',
-          id: 'p' + i
-        });
-        if (i) {
-          textContent = '▲';
-          href = "#p" + (i - 1);
-        } else if (g.PAGENUM) {
-          textContent = '◀';
-          href = "" + (g.PAGENUM - 1) + "#p0";
-        } else {
-          textContent = '▲';
-          href = "#navtop";
-        }
-        up = $.el('a', {
-          className: 'pointer',
-          textContent: textContent,
-          href: href
-        });
-        if (i < l1) {
-          textContent = '▼';
-          href = "#p" + (i + 1);
-        } else {
-          textContent = '▶';
-          href = "" + (g.PAGENUM + 1) + "#p0";
-        }
-        down = $.el('a', {
-          className: 'pointer',
-          textContent: textContent,
-          href: href
-        });
-        $.append(span, up, $.tn(' '), down);
-        $.before(el, span);
-      }
-      if (location.hash === '#p0') {
-        window.location = window.location;
-      }
+      nav.init();
     }
     if ($.config('Thread Expansion')) {
       omitted = $$('span.omittedposts');
-      for (_k = 0, _len4 = omitted.length; _k < _len4; _k++) {
+      for (_k = 0, _len3 = omitted.length; _k < _len3; _k++) {
         span = omitted[_k];
         a = $.el('a', {
           className: 'pointer omittedposts',
@@ -2198,14 +2210,14 @@
     }
     if ($.config('Comment Expansion')) {
       as = $$('span.abbr a');
-      for (_l = 0, _len5 = as.length; _l < _len5; _l++) {
+      for (_l = 0, _len4 = as.length; _l < _len4; _l++) {
         a = as[_l];
         $.bind(a, 'click', expandComment);
       }
     }
   }
   _ref4 = g.callbacks;
-  for (_m = 0, _len6 = _ref4.length; _m < _len6; _m++) {
+  for (_m = 0, _len5 = _ref4.length; _m < _len5; _m++) {
     callback = _ref4[_m];
     callback();
   }

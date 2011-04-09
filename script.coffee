@@ -304,13 +304,6 @@ expandThread = ->
     id: id
   }
 
-getThread = ->
-  threads = $$ 'div.thread'
-  for thread, i in threads
-    bottom = thread.getBoundingClientRect().bottom
-    if bottom > 0 #we have not scrolled past
-      return [thread, i]
-
 replyHiding =
   init: ->
     g.callbacks.push replyHiding.cb.node
@@ -616,6 +609,79 @@ keyModeNormal = (e) ->
       root = if g.REPLY then null else getThread()[0]
       watchButton = $ "span.filesize ~ img", root
       watch.call watchButton
+
+nav =
+  # ◀ ▶
+  init: ->
+    span = $.el 'span',
+      id: 'navlinks'
+    up = $.el 'a',
+      textContent: '▲'
+    down = $.el 'a',
+      textContent: '▼'
+
+    $.bind up,   'click', nav.up
+    $.bind down, 'click', nav.down
+
+    $.append span, up, $.tn(' '), down
+    $.append d.body, span
+
+  up: ->
+    [thread, i, rect] = nav.getThread()
+    {top} = rect
+
+    if top > 1
+      i = -1
+    else if Math.floor(Math.abs(top)) == 0
+      #only move to prev thread if we're at the start of current one
+      #XXX fucking fractional scrolls
+      i -= 1
+    nav.setThread i
+
+  down: ->
+    [thread, i, rect] = nav.getThread()
+    unless rect.top > 1 # if rect.top > 1, we're above the first thread
+      i += 1
+    nav.setThread i
+
+  getThread: ->
+    nav.threads = threads = $$ 'div.thread'
+    for thread, i in threads
+      rect = thread.getBoundingClientRect()
+      {bottom} = rect
+      if bottom > 0 #we have not scrolled past
+        return [thread, i, rect]
+
+  setThread: (i) ->
+    if i == -1
+      window.scrollTo 0, 0
+      return
+    if i == 10
+      window.location = "#{g.PAGENUM + 1}#p0"
+      return
+
+    {top} = nav.threads[i].getBoundingClientRect()
+    window.scrollBy 0, top
+    delete nav.threads
+
+scrollThread = (count) ->
+  [thread, idx] = getThread()
+  top = thread.getBoundingClientRect().top
+  if idx is 0 and top > 1
+    #we haven't scrolled to the first thread
+    idx = -1
+  if count < 0 and top < -1
+    #we've started scrolling past this thread,
+    # but now want to read from the beginning
+    count++
+  temp = idx + count
+  if temp < 0
+    hash = ''
+  else if temp > 9
+    hash = 'p9'
+  else
+    hash = "p#{temp}"
+  location.hash = hash
 
 nodeInserted = (e) ->
   target = e.target
@@ -964,25 +1030,6 @@ report = ->
   input.click()
   $('input[value="Report"]').click()
   input.click()
-
-scrollThread = (count) ->
-  [thread, idx] = getThread()
-  top = thread.getBoundingClientRect().top
-  if idx is 0 and top > 1
-    #we haven't scrolled to the first thread
-    idx = -1
-  if count < 0 and top < -1
-    #we've started scrolling past this thread,
-    # but now want to read from the beginning
-    count++
-  temp = idx + count
-  if temp < 0
-    hash = ''
-  else if temp > 9
-    hash = 'p9'
-  else
-    hash = "p#{temp}"
-  location.hash = hash
 
 threadHiding =
   init: ->
@@ -1475,13 +1522,13 @@ $.addStyle '
   iframe {
     display: none;
   }
-  span.navlinks {
-    position: absolute;
+  #navlinks {
+    position: fixed;
+    top: 25px;
     right: 5px;
   }
-  span.navlinks > a {
+  #navlinks > a {
     font-size: 16px;
-    text-decoration: none;
   }
   .hide {
     display: none;
@@ -1679,39 +1726,7 @@ else #not reply
     $.bind $('form[name=post]'), 'submit', autoWatch
 
   if $.config 'Thread Navigation'
-    arr = $$ 'div > span.filesize, form > span.filesize'
-    l1 = arr.length - 1
-    for el, i in arr
-      span = $.el 'span',
-        className: 'navlinks'
-        id: 'p' + i
-      if i
-        textContent = '▲'
-        href = "#p#{i - 1}"
-      else if g.PAGENUM
-        textContent = '◀'
-        href = "#{g.PAGENUM - 1}#p0"
-      else
-        textContent = '▲'
-        href = "#navtop"
-      up = $.el 'a',
-        className: 'pointer'
-        textContent: textContent
-        href: href
-      if i < l1
-        textContent = '▼'
-        href = "#p#{i + 1}"
-      else
-        textContent = '▶'
-        href = "#{g.PAGENUM + 1}#p0"
-      down = $.el 'a',
-        className: 'pointer'
-        textContent: textContent
-        href: href
-      $.append span, up, $.tn(' '), down
-      $.before el, span
-    if location.hash is '#p0'
-      window.location = window.location
+    nav.init()
 
   if $.config 'Thread Expansion'
     omitted = $$('span.omittedposts')
