@@ -1500,7 +1500,7 @@ $.addStyle '
   div.dialog > div.move {
     cursor: move;
   }
-  label, a, {
+  label, a {
     cursor: pointer;
   }
 
