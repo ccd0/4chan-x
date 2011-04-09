@@ -7,30 +7,37 @@
 {log} = console if console?
 
 config =
-  '404 Redirect':      [true,  'Redirect dead threads']
-  'Anonymize':         [false, 'Make everybody anonymous']
-  'Auto Watch':        [true,  'Automatically watch threads that you start (Firefox only)']
-  'Comment Expansion': [true,  'Expand too long comments']
-  'Image Auto-Gif':    [false, 'Animate gif thumbnails']
-  'Image Expansion':   [true,  'Expand images']
-  'Image Hover':       [false, 'Show full image on mouseover']
-  'Image Preloading':  [false, 'Preload Images']
-  'Keybinds':          [false, 'Binds actions to keys']
-  'Localize Time':     [true,  'Show times based on your timezone']
-  'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
-  'Post in Title':     [true,  'Show the op\'s post in the tab title']
-  'Quick Reply':       [true,  'Reply without leaving the page']
-  'Quick Report':      [true,  'Add quick report buttons']
-  'Reply Hiding':      [true,  'Hide single replies']
-  'Reply Navigation':  [false, 'Navigate to the beginning / end of a thread']
-  'Sauce':             [true,  'Add sauce to images']
-  'Show Stubs':        [true,  'Of hidden threads / replies']
-  'Thread Expansion':  [true,  'View all replies']
-  'Thread Hiding':     [true,  'Hide entire threads']
-  'Thread Navigation': [true,  'Navigate to previous / next thread']
-  'Thread Updater':    [true,  'Update threads']
-  'Thread Watcher':    [true,  'Bookmark threads']
-  'Unread Count':      [true,  'Show unread post count in tab title']
+  main:
+    checkbox:
+      '404 Redirect':      [true,  'Redirect dead threads']
+      'Anonymize':         [false, 'Make everybody anonymous']
+      'Auto Watch':        [true,  'Automatically watch threads that you start (Firefox only)']
+      'Comment Expansion': [true,  'Expand too long comments']
+      'Image Auto-Gif':    [false, 'Animate gif thumbnails']
+      'Image Expansion':   [true,  'Expand images']
+      'Image Hover':       [false, 'Show full image on mouseover']
+      'Image Preloading':  [false, 'Preload Images']
+      'Keybinds':          [false, 'Binds actions to keys']
+      'Localize Time':     [true,  'Show times based on your timezone']
+      'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+      'Post in Title':     [true,  'Show the op\'s post in the tab title']
+      'Quick Reply':       [true,  'Reply without leaving the page']
+      'Quick Report':      [true,  'Add quick report buttons']
+      'Reply Hiding':      [true,  'Hide single replies']
+      'Reply Navigation':  [false, 'Navigate to the beginning / end of a thread']
+      'Sauce':             [true,  'Add sauce to images']
+      'Show Stubs':        [true,  'Of hidden threads / replies']
+      'Thread Expansion':  [true,  'View all replies']
+      'Thread Hiding':     [true,  'Hide entire threads']
+      'Thread Navigation': [true,  'Navigate to previous / next thread']
+      'Thread Updater':    [true,  'Update threads']
+      'Thread Watcher':    [true,  'Bookmark threads']
+      'Unread Count':      [true,  'Show unread post count in tab title']
+  updater:
+    checkbox:
+      'Verbose':     [true, 'Show countdown timer, new post count']
+      'Auto Update': [false, 'Automatically fetch new posts']
+    'Interval': 30
 
 #x-browser
 if typeof GM_deleteValue is 'undefined'
@@ -135,9 +142,9 @@ $.extend = (object, properties) ->
 $.extend $,
   cb:
     checked: ->
-      GM_setValue @name, @checked
+      $.getValue @name, @checked
     value: ->
-      GM_setValue @name, @value
+      $.setValue @name, @checked
   deleteValue: (name) ->
     name = NAMESPACE + name
     delete localStorage[name]
@@ -155,8 +162,8 @@ $.extend $,
     style.type = 'text/css'
     style.textContent = css
     $.append d.head, style
-  config: (name) ->
-    GM_getValue name, config[name][0]
+  config: (name, conf=config.main.checkbox) ->
+    $.getValue name, conf[name][0]
   zeroPad: (n) ->
     if n < 10 then '0' + n else n
   x: (path, root=d.body) ->
@@ -675,10 +682,11 @@ options =
 
   dialog: ->
     html  = "<div class=move>Options <a name=close>X</a></div>"
-    for name of config
-      title = config[name][1]
+    conf = config.main.checkbox
+    for name of conf
+      title = conf[name][1]
       checked = if $.config name then "checked" else ""
-      html += "<div><label title=\"#{title}\">#{name}<input #{checked} name=\"#{name}\" type=checkbox></label></div>"
+      html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
     html += "<div><a name=flavors>Flavors</a></div>"
     html += "<div><textarea style=\"display: none;\" name=flavors>#{GM_getValue 'flavors', g.flavors}</textarea></div>"
 
@@ -1180,6 +1188,50 @@ updateVerbose = ->
     timer.hidden = true
     $("#updater #count").textContent = 'Thread Updater'
 
+updater =
+  init: ->
+    html  = "<div class=move><span id=count></span> <span id=timer></span></div>"
+    conf = config.updater.checkbox
+    for name of conf
+      title = conf[name][1]
+      checked = if $.config name, conf then "checked" else ""
+      html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
+
+    name = 'Auto Update This'
+    title = 'Controls whether *this* thread auotmatically updates or not'
+    checked = if $.config 'Auto Update', conf then 'checked' else ''
+    html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
+
+    dialog = ui.dialog 'updater', bottom: '0px', right: '0px', html
+
+    for box in $$ 'input[type=checkbox]', dialog
+      $.bind box, 'click', $.cb.checked
+
+    verbose = $ 'input[name=\"Verbose\"]',          dialog
+    autoUpT = $ 'input[name=\"Auto Update This\"]', dialog
+    $.bind verbose, 'click', updater.cb.verbose
+    $.bind autoUpT, 'click', updater.cb.autoUpdate
+
+    $.append d.body, dialog
+
+    updater.cb.verbose.call    verbose
+    #updater.cb.autoUpdate.call autoUpT
+
+  cb:
+    verbose: (e) ->
+      if @checked
+        $.show $ '#count'
+        $('#timer').textContent = if t = updater.timer then t else 'Thread Updater'
+      else
+        $.hide $ '#count'
+        $('#timer').textContent = 'Thread Updater'
+    autoUpdate: (e) ->
+      if @checked
+        updater.timer = $.config 'Interval', config.updater
+        $('#timer').textContent = updater.timer
+      else
+        updater.timer = null
+
 updaterMake = ->
   html  = "<div class=move><span id=count>Thread Updater</span> <span id=timer></span></div>"
   html += "<div><label>Verbose<input type=checkbox name=verbose></label></div>"
@@ -1594,6 +1646,9 @@ if $.config 'Keybinds'
   $.bind d, 'keydown',  keydown
   $.bind d, 'keypress', keypress
 
+if $.config 'Thread Updater'
+  updater.init()
+
 if g.REPLY
   if $.config 'Image Preloading'
     g.callbacks.push (root) ->
@@ -1601,8 +1656,6 @@ if g.REPLY
       for thumb in thumbs
         parent = thumb.parentNode
         el = $.el 'img', src: parent.href
-  if $.config 'Thread Updater'
-    updaterMake()
   if $.config('Quick Reply') and $.config 'Persistent QR'
     qr.persist()
   if $.config 'Post in Title'
