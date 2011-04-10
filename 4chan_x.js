@@ -1432,13 +1432,13 @@
     cb: {
       hide: function(e) {
         var thread;
-        thread = e.target.parentNode;
+        thread = e.target.parentNode.parentNode;
         return threadHiding.hide(thread);
       },
       show: function(e) {
         var div, thread;
         div = e.target.parentNode;
-        thread = div.nextSibling;
+        thread = div.parentNode;
         threadHiding.show(thread);
         return $.remove(div);
       }
@@ -1446,14 +1446,13 @@
     hide: function(thread) {
       var hiddenThreads, id;
       threadHiding.hideHide(thread);
-      id = $('input[value=delete]', thread).name;
+      id = thread.firstChild.id;
       hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
       hiddenThreads[id] = Date.now();
       return $.setValue("hiddenThread/" + g.BOARD + "/", hiddenThreads);
     },
     hideHide: function(thread) {
       var a, div, name, num, span, text, trip, _ref;
-      $.hide(thread);
       if ($.config('Show Stubs')) {
         if (span = $('.omittedposts', thread)) {
           num = Number(span.textContent.match(/\d+/)[0]);
@@ -1468,18 +1467,23 @@
           textContent: "[ + ] " + name + trip + " (" + text + ")"
         });
         $.bind(a, 'click', threadHiding.cb.show);
-        div = $.el('div');
+        div = $.el('div', {
+          className: 'block'
+        });
         $.append(div, a);
-        return $.before(thread, div);
+        $.append(thread, div);
+        return $.addClass(thread, 'stub');
       } else {
+        $.hide(thread);
         return $.hide(thread.nextSibling);
       }
     },
     show: function(thread) {
       var hiddenThreads, id;
+      $.removeClass(thread, 'stub');
       $.show(thread);
       $.show(thread.nextSibling);
-      id = $('input[value=delete]', thread).name;
+      id = thread.firstChild.id;
       hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
       delete hiddenThreads[id];
       return $.setValue("hiddenThread/" + g.BOARD + "/", hiddenThreads);
@@ -1971,6 +1975,9 @@
   }\
   #navlinks > a {\
     font-size: 16px;\
+  }\
+  div.thread.stub > *:not(.block) {\
+    display: none;\
   }\
   .hide {\
     display: none;\

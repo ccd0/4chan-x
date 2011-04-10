@@ -1094,11 +1094,11 @@ threadHiding =
 
   cb:
     hide: (e) ->
-      thread = e.target.parentNode
+      thread = e.target.parentNode.parentNode
       threadHiding.hide thread
     show: (e) ->
       div = e.target.parentNode
-      thread = div.nextSibling
+      thread = div.parentNode
       threadHiding.show thread
 
       $.remove div
@@ -1106,15 +1106,13 @@ threadHiding =
   hide: (thread) ->
     threadHiding.hideHide thread
 
-    id = $('input[value=delete]', thread).name
+    id = thread.firstChild.id
 
     hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
     hiddenThreads[id] = Date.now()
     $.setValue "hiddenThread/#{g.BOARD}/", hiddenThreads
 
   hideHide: (thread) ->
-    $.hide thread
-
     if $.config 'Show Stubs'
       if span = $ '.omittedposts', thread
         num = Number span.textContent.match(/\d+/)[0]
@@ -1129,18 +1127,22 @@ threadHiding =
         textContent: "[ + ] #{name}#{trip} (#{text})"
       $.bind a, 'click', threadHiding.cb.show
 
-      div = $.el 'div'
+      div = $.el 'div',
+        className: 'block'
 
       $.append div, a
-      $.before thread, div
+      $.append thread, div
+      $.addClass thread, 'stub'
     else
+      $.hide thread
       $.hide thread.nextSibling
 
   show: (thread) ->
+    $.removeClass thread, 'stub'
     $.show thread
     $.show thread.nextSibling
 
-    id = $('input[value=delete]', thread).name
+    id = thread.firstChild.id
 
     hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
     delete hiddenThreads[id]
@@ -1586,6 +1588,9 @@ $.addStyle '
   }
   #navlinks > a {
     font-size: 16px;
+  }
+  div.thread.stub > *:not(.block) {
+    display: none;
   }
   .hide {
     display: none;
