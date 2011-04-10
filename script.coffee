@@ -562,12 +562,12 @@ keybinds =
         #update now
         return
       when 'w'
-        [thread] = nav.getThread()
+        thread = nav.getThread()
         watcher.toggle thread
       when 'x'
-        #toggle hide thread
+        thread = nav.getThread()
+        threadHiding.toggle thread
         return
-
 
 keyModeNormal = (e) ->
   return if e.ctrlKey or e.altKey
@@ -1097,11 +1097,14 @@ threadHiding =
       thread = e.target.parentNode.parentNode
       threadHiding.hide thread
     show: (e) ->
-      div = e.target.parentNode
-      thread = div.parentNode
+      thread = e.target.parentNode.parentNode
       threadHiding.show thread
 
-      $.remove div
+  toggle: (thread) ->
+    if thread.className.indexOf('stub') != -1 or thread.style.display is 'none'
+      threadHiding.show thread
+    else
+      threadHiding.hide thread
 
   hide: (thread) ->
     threadHiding.hideHide thread
@@ -1138,6 +1141,7 @@ threadHiding =
       $.hide thread.nextSibling
 
   show: (thread) ->
+    $.remove $ 'div.block', thread
     $.removeClass thread, 'stub'
     $.show thread
     $.show thread.nextSibling

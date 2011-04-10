@@ -742,9 +742,11 @@
         case 'u':
           break;
         case 'w':
-          thread = nav.getThread()[0];
+          thread = nav.getThread();
           return watcher.toggle(thread);
         case 'x':
+          thread = nav.getThread();
+          threadHiding.toggle(thread);
       }
     }
   };
@@ -1436,11 +1438,16 @@
         return threadHiding.hide(thread);
       },
       show: function(e) {
-        var div, thread;
-        div = e.target.parentNode;
-        thread = div.parentNode;
-        threadHiding.show(thread);
-        return $.remove(div);
+        var thread;
+        thread = e.target.parentNode.parentNode;
+        return threadHiding.show(thread);
+      }
+    },
+    toggle: function(thread) {
+      if (thread.className.indexOf('stub') !== -1 || thread.style.display === 'none') {
+        return threadHiding.show(thread);
+      } else {
+        return threadHiding.hide(thread);
       }
     },
     hide: function(thread) {
@@ -1480,6 +1487,7 @@
     },
     show: function(thread) {
       var hiddenThreads, id;
+      $.remove($('div.block', thread));
       $.removeClass(thread, 'stub');
       $.show(thread);
       $.show(thread.nextSibling);
