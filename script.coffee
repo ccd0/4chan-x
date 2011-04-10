@@ -1083,13 +1083,13 @@ threadHiding =
 
     hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
     for thread in $$ 'div.thread'
+      op = thread.firstChild
       a = $.el 'a',
         textContent: '[ - ]'
       $.bind a, 'click', threadHiding.cb.hide
-      $.prepend thread, a
+      $.prepend op, a
 
-      id = $('input[value=delete]', thread).name
-      if id of hiddenThreads
+      if op.id of hiddenThreads
         threadHiding.hideHide thread
 
   cb:
@@ -1147,6 +1147,17 @@ threadHiding =
     $.setValue "hiddenThread/#{g.BOARD}/", hiddenThreads
 
   thread: (node) ->
+    op = $.el 'div',
+      className: 'op'
+    $.before node, op
+    while node.nodeName isnt 'BLOCKQUOTE'
+      $.append op, node
+      node = op.nextSibling
+    $.append op, node #add the blockquote
+    op.id = $('input[name]', op).name
+
+    node = op
+
     div = $.el 'div',
       className: 'thread'
     $.before node, div

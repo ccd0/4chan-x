@@ -1411,7 +1411,7 @@
   };
   threadHiding = {
     init: function() {
-      var a, hiddenThreads, id, node, thread, _i, _len, _ref, _results;
+      var a, hiddenThreads, node, op, thread, _i, _len, _ref, _results;
       node = $('form[name=delform] > *');
       threadHiding.thread(node);
       hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
@@ -1419,13 +1419,13 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
+        op = thread.firstChild;
         a = $.el('a', {
           textContent: '[ - ]'
         });
         $.bind(a, 'click', threadHiding.cb.hide);
-        $.prepend(thread, a);
-        id = $('input[value=delete]', thread).name;
-        _results.push(id in hiddenThreads ? threadHiding.hideHide(thread) : void 0);
+        $.prepend(op, a);
+        _results.push(op.id in hiddenThreads ? threadHiding.hideHide(thread) : void 0);
       }
       return _results;
     },
@@ -1485,7 +1485,18 @@
       return $.setValue("hiddenThread/" + g.BOARD + "/", hiddenThreads);
     },
     thread: function(node) {
-      var div;
+      var div, op;
+      op = $.el('div', {
+        className: 'op'
+      });
+      $.before(node, op);
+      while (node.nodeName !== 'BLOCKQUOTE') {
+        $.append(op, node);
+        node = op.nextSibling;
+      }
+      $.append(op, node);
+      op.id = $('input[name]', op).name;
+      node = op;
       div = $.el('div', {
         className: 'thread'
       });
