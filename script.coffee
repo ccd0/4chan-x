@@ -84,8 +84,8 @@ ui =
         when 'center'
           left = '50%'
           top  = '25%'
-    left = localStorage["#{id}Left"] or left
-    top  = localStorage["#{id}Top"]  or top
+    left = localStorage["#{id}Left"] ? left
+    top  = localStorage["#{id}Top"]  ? top
     if left then el.style.left = left else el.style.right  = '0px'
     if top  then el.style.top  = top  else el.style.bottom = '0px'
     el.querySelector('div.move').addEventListener 'mousedown', ui.move, true
