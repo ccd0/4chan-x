@@ -716,7 +716,7 @@ qr =
           $.remove dialog
 
     messageIframe: (e) ->
-      message = $('table font b')?.firstChild.textContent
+      message = $('table font b')?.firstChild.textContent or ''
       e.source.postMessage message, '*'
       window.location = 'about:blank'
 
