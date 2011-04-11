@@ -116,7 +116,7 @@
   }
   ui = {
     dialog: function(id, position, html) {
-      var el, left, top, _ref;
+      var el, left, top, _ref, _ref2, _ref3;
       el = document.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
@@ -146,8 +146,8 @@
             top = '25%';
         }
       }
-      left = localStorage["" + id + "Left"] || left;
-      top = localStorage["" + id + "Top"] || top;
+      left = (_ref = localStorage["" + id + "Left"]) != null ? _ref : left;
+      top = (_ref2 = localStorage["" + id + "Top"]) != null ? _ref2 : top;
       if (left) {
         el.style.left = left;
       } else {
@@ -159,8 +159,8 @@
         el.style.bottom = '0px';
       }
       el.querySelector('div.move').addEventListener('mousedown', ui.move, true);
-      if ((_ref = el.querySelector('div.move a[name=close]')) != null) {
-        _ref.addEventListener('click', (function() {
+      if ((_ref3 = el.querySelector('div.move a[name=close]')) != null) {
+        _ref3.addEventListener('click', (function() {
           return el.parentNode.removeChild(el);
         }), true);
       }
