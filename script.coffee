@@ -1193,7 +1193,7 @@ if $.isDST() then g.chanOffset -= 1
 
 lastChecked = Number GM_getValue('lastChecked', '0')
 now = Date.now()
-DAY = 24 * 60 * 60
+DAY = 1000 * 60 * 60 * 24
 if lastChecked < now - 1*DAY
   cutoff = now - 7*DAY
   while g.hiddenThreads.length
