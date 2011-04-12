@@ -1285,7 +1285,7 @@
       return window.setTimeout(qr.cooldown, 1000);
     },
     dialog: function(link) {
-      var clone, dialog, el, html, input, script, xpath, _i, _len, _ref;
+      var clone, dialog, el, html, resto, script, xpath, _i, _len, _ref;
       html = "<div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>";
       dialog = ui.dialog('qr', {
         top: '0px',
@@ -1304,12 +1304,12 @@
       $.bind($('input[name=recaptcha_response_field]', clone), 'keydown', recaptchaListener);
       if (!g.REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
-        input = $.el('input', {
+        resto = $.el('input', {
           type: 'hidden',
           name: 'resto',
           value: $.x(xpath, link).name
         });
-        $.append(clone, input);
+        $.before(clone.lastChild, resto);
       }
       $.append(dialog, clone);
       $.append(d.body, dialog);

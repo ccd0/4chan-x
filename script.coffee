@@ -1010,11 +1010,11 @@ qr =
     if not g.REPLY
       #figure out which thread we're replying to
       xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
-      input = $.el 'input',
+      resto = $.el 'input',
         type: 'hidden'
         name: 'resto'
         value: $.x(xpath, link).name
-      $.append clone, input
+      $.before clone.lastChild, resto
 
     $.append dialog, clone
     $.append d.body, dialog
