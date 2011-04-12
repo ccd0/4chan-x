@@ -1014,6 +1014,8 @@ qr =
         type: 'hidden'
         name: 'resto'
         value: $.x(xpath, link).name
+
+      # place resto before table to let userstyles know we're responding to a thread
       $.before clone.lastChild, resto
 
     $.append dialog, clone
