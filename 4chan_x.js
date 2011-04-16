@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, span, temp, text, threadHiding, tzOffset, ui, updateCallback, updateFavicon, updateTime, updateTitle, updater, watcher, _config, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, span, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1565,80 +1565,11 @@
     clone.href = href;
     return $.replace(favicon, clone);
   };
-  updateTime = function() {
-    var count, span, time;
-    span = $('#updater #timer');
-    time = Number(span.textContent);
-    if (++time === 0) {
-      return updateNow();
-    } else if (time > 10) {
-      time = 0;
-      g.req.abort();
-      updateNow();
-      if (g.verbose) {
-        count = $('#updater #count');
-        count.textContent = 'retry';
-        return count.className = '';
-      }
-    } else {
-      return span.textContent = time;
-    }
-  };
   updateTitle = function() {
     var len;
     len = g.replies.length;
     d.title = d.title.replace(/\d+/, len);
     return updateFavicon();
-  };
-  updateCallback = function() {
-    var arr, body, count, id, input, l, replies, reply, root, s, table, timer, _i, _len, _ref;
-    count = $('#updater #count');
-    timer = $('#updater #timer');
-    if (this.status === 404) {
-      count.textContent = 404;
-      count.className = 'error';
-      timer.textContent = '';
-      clearInterval(g.interval);
-      _ref = $$('input[type=submit]');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        input = _ref[_i];
-        input.disabled = true;
-        input.value = 404;
-      }
-      s = '';
-      if ($.config('Unread Count')) {
-        s += "(" + g.replies.length + ") ";
-      }
-      s += "/" + g.BOARD + "/ - 404";
-      d.title = s;
-      g.dead = true;
-      updateFavicon();
-      return;
-    }
-    body = $.el('body', {
-      innerHTML: this.responseText
-    });
-    replies = $$('td.reply', body);
-    root = $('br[clear]');
-    if (reply = $('td.reply, td.replyhl', root.previousElementSibling)) {
-      id = Number(reply.id);
-    } else {
-      id = 0;
-    }
-    arr = [];
-    while ((reply = replies.pop()) && (Number(reply.id > id))) {
-      arr.push(reply);
-    }
-    if (g.verbose) {
-      l = arr.length;
-      count.textContent = "+" + l;
-      count.className = l > 0 ? 'new' : '';
-    }
-    while (reply = arr.pop()) {
-      table = $.x('ancestor::table', reply);
-      $.before(root, table);
-    }
-    return timer.textContent = -1 * GM_getValue('Interval', 10);
   };
   updater = {
     init: function() {
@@ -1700,32 +1631,62 @@
         }
       },
       update: function(e) {
-        var arr, body, br, id, replies, reply;
+        var arr, body, br, count, id, input, replies, reply, s, timer, _i, _len, _ref, _ref2, _results;
+        count = $('#count');
+        timer = $('#timer');
+        if (this.status === 404) {
+          count.textContent = 404;
+          count.className = 'error';
+          timer.textContent = '';
+          clearInterval(updater.intervalID);
+          _ref = $$('input[type=submit]');
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            input = _ref[_i];
+            input.disabled = true;
+            input.value = 404;
+          }
+          s = d.title.match(/.+- /)[0];
+          s += '404';
+          return;
+        }
         br = $('br[clear]');
-        id = Number($('td[id]', br.previousElementSibling).id);
+        id = Number(((_ref2 = $('td[id]', br.previousElementSibling)) != null ? _ref2.id : void 0) || 0);
+        arr = [];
         body = $.el('body', {
           innerHTML: this.responseText
         });
-        arr = [];
         replies = $$('td[id]', body);
-        log(replies.length);
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        log(arr.length);
-        while (reply = arr.pop()) {
-          $.before(br, reply);
+        if ($.config('Verbose')) {
+          timer.textContent = '-' + $.config('Interval');
+          count.textContent = '+' + arr.length;
+          if (arr.length > 0) {
+            count.className = 'new';
+          }
         }
-        return log('end');
+        _results = [];
+        while (reply = arr.pop()) {
+          _results.push($.before(br, reply));
+        }
+        return _results;
       }
     },
     timeout: function() {
-      var n, timer;
+      var count, n, timer;
       timer = $('#timer');
       n = Number(timer.textContent);
       n += 1;
       timer.textContent = n;
-      if (n === 0 || n === 10) {
+      if (n === 10) {
+        updater.r.abort();
+        count = $('#count');
+        counte.textContent = 'retry';
+        count.className = '';
+        n = 0;
+      }
+      if (n === 0) {
         return updater.update();
       }
     },
@@ -2167,10 +2128,10 @@
   if ($.config('Keybinds')) {
     keybinds.init();
   }
-  if ($.config('Thread Updater')) {
-    updater.init();
-  }
   if (g.REPLY) {
+    if ($.config('Thread Updater')) {
+      updater.init();
+    }
     if ($.config('Image Preloading')) {
       g.callbacks.push(function(root) {
         var parent, thumb, thumbs, _i, _len, _results;

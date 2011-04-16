@@ -6,7 +6,7 @@
 # XXX error on FUCKING CHROME
 {log} = console if console?
 
-# TODO put keybinds back to false when done
+# TODO reset defaults
 config =
   main:
     checkbox:
@@ -1213,69 +1213,10 @@ updateFavicon = ->
   clone.href = href
   $.replace favicon, clone
 
-updateTime = ->
-  span = $ '#updater #timer'
-  time = Number span.textContent
-  if ++time is 0
-    updateNow()
-  else if time > 10
-    time = 0
-    g.req.abort()
-    updateNow()
-    if g.verbose
-      count = $ '#updater #count'
-      count.textContent = 'retry'
-      count.className = ''
-  else
-    span.textContent = time
-
 updateTitle = ->
   len = g.replies.length
   d.title = d.title.replace /\d+/, len
   updateFavicon()
-
-updateCallback = ->
-  count = $ '#updater #count'
-  timer = $ '#updater #timer'
-  if @status is 404
-    count.textContent = 404
-    count.className = 'error'
-    timer.textContent = ''
-    clearInterval g.interval
-    for input in $$ 'input[type=submit]'
-      input.disabled = true
-      input.value = 404
-    s = ''
-    if $.config 'Unread Count' then s += "(#{g.replies.length}) "
-    s += "/#{g.BOARD}/ - 404"
-    d.title = s
-    g.dead = true
-    updateFavicon()
-    return
-  body = $.el 'body', innerHTML: @responseText
-  replies = $$ 'td.reply', body
-
-  root = $('br[clear]')
-  if reply = $ 'td.reply, td.replyhl', root.previousElementSibling
-    id = Number reply.id
-  else
-    id = 0
-
-  arr = []
-  while (reply = replies.pop()) and (Number reply.id > id)
-    arr.push reply
-
-  if g.verbose
-    l = arr.length
-    count.textContent = "+#{l}"
-    count.className = if l > 0 then 'new' else ''
-
-  #insert replies in order, so backlinks resolve
-  while reply = arr.pop()
-    table = $.x 'ancestor::table', reply
-    $.before root, table
-
-  timer.textContent = -1 * GM_getValue 'Interval', 10
 
 updater =
   init: ->
@@ -1330,25 +1271,42 @@ updater =
         timer.textContent = 'Thread Updater'
         window.clearInterval updater.intervalID
     update: (e) ->
+      count = $ '#count'
+      timer = $ '#timer'
+
+      if @status is 404
+        count.textContent = 404
+        count.className = 'error'
+        timer.textContent = ''
+        clearInterval updater.intervalID
+        for input in $$ 'input[type=submit]'
+          input.disabled = true
+          input.value = 404
+        s = d.title.match(/.+- /)[0]
+        s += '404'
+        # TODO
+        #updateFavicon()
+        return
+
       br = $ 'br[clear]'
-
-      id = Number $('td[id]', br.previousElementSibling).id
-
-      body = $.el 'body',
-        innerHTML: @responseText
+      id = Number $('td[id]', br.previousElementSibling)?.id or 0
 
       arr = []
+      body = $.el 'body',
+        innerHTML: @responseText
       replies = $$ 'td[id]', body
-      log replies.length
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      log arr.length
+      if $.config 'Verbose'
+        timer.textContent = '-' + $.config 'Interval'
+        count.textContent = '+' + arr.length
+        if arr.length > 0
+          count.className = 'new'
+
       #XXX add replies in correct order so /b/acklinks resolve
       while reply = arr.pop()
         $.before br, reply
-
-      log 'end'
 
   timeout: ->
     timer = $ '#timer'
@@ -1356,7 +1314,14 @@ updater =
     n += 1
     timer.textContent = n
 
-    if n == 0 or n == 10 #retry
+    if n == 10
+      updater.r.abort()
+      count = $ '#count'
+      counte.textContent = 'retry'
+      count.className = ''
+      n = 0
+
+    if n == 0
       updater.update()
 
   update: ->
@@ -1733,10 +1698,10 @@ if $.config 'Anonymize'
 if $.config 'Keybinds'
   keybinds.init()
 
-if $.config 'Thread Updater'
-  updater.init()
-
 if g.REPLY
+  if $.config 'Thread Updater'
+    updater.init()
+
   if $.config 'Image Preloading'
     g.callbacks.push (root) ->
       thumbs = $$ 'img[md5]', root
