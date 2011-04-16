@@ -2,6 +2,7 @@
 # option to skip post form directly to contents on first page,
 # like what happens when using thread nav to go to next page
 # (floating) qr no-quote button?
+# updater cache hacks
 
 # XXX error on FUCKING CHROME
 {log} = console if console?
