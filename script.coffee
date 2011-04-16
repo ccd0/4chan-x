@@ -39,6 +39,18 @@ config =
       'Auto Update': [false, 'Automatically fetch new posts']
     'Interval': 30
 
+# create 'global' options, no namespacing
+_config = {}
+((parent, obj) ->
+  if obj.length #array
+    _config[parent] = obj[0]
+  else if typeof obj is 'object'
+    for key, val of obj
+      arguments.callee key, val
+  else #constant
+    _config[parent] = obj
+) null, config
+
 #x-browser
 if typeof GM_deleteValue is 'undefined'
   window.GM_setValue = (name, value) ->
@@ -162,8 +174,8 @@ $.extend $,
     style.type = 'text/css'
     style.textContent = css
     $.append d.head, style
-  config: (name, conf=config.main.checkbox) ->
-    $.getValue name, conf[name][0]
+  config: (name) ->
+    $.getValue name, _config[name]
   zeroPad: (n) ->
     if n < 10 then '0' + n else n
   x: (path, root=d.body) ->
@@ -1305,12 +1317,12 @@ updater =
     conf = config.updater.checkbox
     for name of conf
       title = conf[name][1]
-      checked = if $.config name, conf then "checked" else ""
+      checked = if $.config name then "checked" else ""
       html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
 
     name = 'Auto Update This'
     title = 'Controls whether *this* thread auotmatically updates or not'
-    checked = if $.config 'Auto Update', conf then 'checked' else ''
+    checked = if $.config 'Auto Update' then 'checked' else ''
     html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
 
     dialog = ui.dialog 'updater', bottom: '0px', right: '0px', html
@@ -1338,7 +1350,7 @@ updater =
         $('#timer').textContent = 'Thread Updater'
     autoUpdate: (e) ->
       if @checked
-        updater.timer = $.config 'Interval', config.updater
+        updater.timer = $.config 'Interval'
         $('#timer').textContent = updater.timer
       else
         updater.timer = null

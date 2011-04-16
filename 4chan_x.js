@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, threadHiding, tzOffset, ui, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updater, updaterMake, watcher, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, threadHiding, tzOffset, ui, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updater, updaterMake, watcher, _config, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -100,6 +100,22 @@
       'Interval': 30
     }
   };
+  _config = {};
+  (function(parent, obj) {
+    var key, val, _results;
+    if (obj.length) {
+      return _config[parent] = obj[0];
+    } else if (typeof obj === 'object') {
+      _results = [];
+      for (key in obj) {
+        val = obj[key];
+        _results.push(arguments.callee(key, val));
+      }
+      return _results;
+    } else {
+      return _config[parent] = obj;
+    }
+  })(null, config);
   if (typeof GM_deleteValue === 'undefined') {
     window.GM_setValue = function(name, value) {
       value = (typeof value)[0] + value;
@@ -269,11 +285,8 @@
       style.textContent = css;
       return $.append(d.head, style);
     },
-    config: function(name, conf) {
-      if (conf == null) {
-        conf = config.main.checkbox;
-      }
-      return $.getValue(name, conf[name][0]);
+    config: function(name) {
+      return $.getValue(name, _config[name]);
     },
     zeroPad: function(n) {
       if (n < 10) {
@@ -1674,12 +1687,12 @@
       conf = config.updater.checkbox;
       for (name in conf) {
         title = conf[name][1];
-        checked = $.config(name, conf) ? "checked" : "";
+        checked = $.config(name) ? "checked" : "";
         html += "<div><label title=\"" + title + "\">" + name + "<input name=\"" + name + "\" " + checked + " type=checkbox></label></div>";
       }
       name = 'Auto Update This';
       title = 'Controls whether *this* thread auotmatically updates or not';
-      checked = $.config('Auto Update', conf) ? 'checked' : '';
+      checked = $.config('Auto Update') ? 'checked' : '';
       html += "<div><label title=\"" + title + "\">" + name + "<input name=\"" + name + "\" " + checked + " type=checkbox></label></div>";
       dialog = ui.dialog('updater', {
         bottom: '0px',
@@ -1710,7 +1723,7 @@
       },
       autoUpdate: function(e) {
         if (this.checked) {
-          updater.timer = $.config('Interval', config.updater);
+          updater.timer = $.config('Interval');
           return $('#timer').textContent = updater.timer;
         } else {
           return updater.timer = null;
