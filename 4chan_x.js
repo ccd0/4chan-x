@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, request, scroll, scrollThread, span, temp, text, threadHiding, tzOffset, ui, updateAuto, updateCallback, updateFavicon, updateInterval, updateNow, updateTime, updateTitle, updateVerbose, updater, updaterMake, watcher, _config, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, span, temp, text, threadHiding, tzOffset, ui, updateCallback, updateFavicon, updateTime, updateTitle, updater, watcher, _config, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _m, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -253,12 +253,20 @@
     return object;
   };
   $.extend($, {
+    get: function(url, cb) {
+      var r;
+      r = new XMLHttpRequest();
+      r.onload = cb;
+      r.open('get', url, true);
+      r.send();
+      return r;
+    },
     cb: {
       checked: function() {
         return $.getValue(this.name, this.checked);
       },
       value: function() {
-        return $.setValue(this.name, this.checked);
+        return $.setValue(this.name, this.value);
       }
     },
     deleteValue: function(name) {
@@ -1536,13 +1544,51 @@
       }
     }
   };
-  request = function(url, callback) {
-    var r;
-    r = new XMLHttpRequest();
-    r.onload = callback;
-    r.open('get', url, true);
-    r.send();
-    return r;
+  updateFavicon = function() {
+    var clone, favicon, href, len;
+    len = g.replies.length;
+    if (g.dead) {
+      if (len > 0) {
+        href = g.favDeadHalo;
+      } else {
+        href = g.favDead;
+      }
+    } else {
+      if (len > 0) {
+        href = g.favHalo;
+      } else {
+        href = g.favDefault;
+      }
+    }
+    favicon = $('link[rel="shortcut icon"]', d);
+    clone = favicon.cloneNode(true);
+    clone.href = href;
+    return $.replace(favicon, clone);
+  };
+  updateTime = function() {
+    var count, span, time;
+    span = $('#updater #timer');
+    time = Number(span.textContent);
+    if (++time === 0) {
+      return updateNow();
+    } else if (time > 10) {
+      time = 0;
+      g.req.abort();
+      updateNow();
+      if (g.verbose) {
+        count = $('#updater #count');
+        count.textContent = 'retry';
+        return count.className = '';
+      }
+    } else {
+      return span.textContent = time;
+    }
+  };
+  updateTitle = function() {
+    var len;
+    len = g.replies.length;
+    d.title = d.title.replace(/\d+/, len);
+    return updateFavicon();
   };
   updateCallback = function() {
     var arr, body, count, id, input, l, replies, reply, root, s, table, timer, _i, _len, _ref;
@@ -1594,95 +1640,9 @@
     }
     return timer.textContent = -1 * GM_getValue('Interval', 10);
   };
-  updateFavicon = function() {
-    var clone, favicon, href, len;
-    len = g.replies.length;
-    if (g.dead) {
-      if (len > 0) {
-        href = g.favDeadHalo;
-      } else {
-        href = g.favDead;
-      }
-    } else {
-      if (len > 0) {
-        href = g.favHalo;
-      } else {
-        href = g.favDefault;
-      }
-    }
-    favicon = $('link[rel="shortcut icon"]', d);
-    clone = favicon.cloneNode(true);
-    clone.href = href;
-    return $.replace(favicon, clone);
-  };
-  updateTime = function() {
-    var count, span, time;
-    span = $('#updater #timer');
-    time = Number(span.textContent);
-    if (++time === 0) {
-      return updateNow();
-    } else if (time > 10) {
-      time = 0;
-      g.req.abort();
-      updateNow();
-      if (g.verbose) {
-        count = $('#updater #count');
-        count.textContent = 'retry';
-        return count.className = '';
-      }
-    } else {
-      return span.textContent = time;
-    }
-  };
-  updateTitle = function() {
-    var len;
-    len = g.replies.length;
-    d.title = d.title.replace(/\d+/, len);
-    return updateFavicon();
-  };
-  updateAuto = function() {
-    var span;
-    span = $('#updater #timer');
-    if (this.checked) {
-      span.textContent = -1 * GM_getValue('Interval', 10);
-      return g.interval = window.setInterval(updateTime, 1000);
-    } else {
-      span.textContent = 'Thread Updater';
-      return clearInterval(g.interval);
-    }
-  };
-  updateInterval = function() {
-    var num, span;
-    if (!(num = Number(this.value))) {
-      num = 10;
-    }
-    this.value = num;
-    GM_setValue('Interval', num);
-    span = $('#updater #timer');
-    if (0 > Number(span.textContent)) {
-      return span.textContent = -1 * num;
-    }
-  };
-  updateNow = function() {
-    var url;
-    url = location.href + '?' + Date.now();
-    g.req = request(url, updateCallback);
-    return $("#updater #timer").textContent = 0;
-  };
-  updateVerbose = function() {
-    var timer;
-    g.verbose = this.checked;
-    timer = $('#updater #timer');
-    if (this.checked) {
-      return timer.hidden = false;
-    } else {
-      timer.hidden = true;
-      return $("#updater #count").textContent = 'Thread Updater';
-    }
-  };
   updater = {
     init: function() {
-      var autoUpT, box, checked, conf, dialog, html, name, title, verbose, _i, _len, _ref;
+      var autoUpT, checked, conf, dialog, html, input, interva, name, title, updNow, verbose, _i, _len, _ref;
       html = "<div class=move><span id=count></span> <span id=timer></span></div>";
       conf = config.updater.checkbox;
       for (name in conf) {
@@ -1694,21 +1654,28 @@
       title = 'Controls whether *this* thread auotmatically updates or not';
       checked = $.config('Auto Update') ? 'checked' : '';
       html += "<div><label title=\"" + title + "\">" + name + "<input name=\"" + name + "\" " + checked + " type=checkbox></label></div>";
+      html += "<div><label>Interval (s)<input name=Interval value=" + ($.config('Interval')) + " type=text></label></div>";
+      html += "<div><input value=\"Update Now\" type=button></div>";
       dialog = ui.dialog('updater', {
         bottom: '0px',
         right: '0px'
       }, html);
       _ref = $$('input[type=checkbox]', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        $.bind(box, 'click', $.cb.checked);
+        input = _ref[_i];
+        $.bind(input, 'click', $.cb.checked);
       }
+      $.bind($('input[type=text]', dialog), 'change', $.cb.value);
       verbose = $('input[name=\"Verbose\"]', dialog);
       autoUpT = $('input[name=\"Auto Update This\"]', dialog);
+      interva = $('input[name=\"Interval\"]', dialog);
+      updNow = $('input[type=button]', dialog);
       $.bind(verbose, 'click', updater.cb.verbose);
       $.bind(autoUpT, 'click', updater.cb.autoUpdate);
+      $.bind(updNow, 'click', updater.update);
       $.append(d.body, dialog);
-      return updater.cb.verbose.call(verbose);
+      updater.cb.verbose.call(verbose);
+      return updater.cb.autoUpdate.call(autoUpT);
     },
     cb: {
       verbose: function(e) {
@@ -1722,52 +1689,54 @@
         }
       },
       autoUpdate: function(e) {
+        var timer;
+        timer = $('#timer');
         if (this.checked) {
-          updater.timer = $.config('Interval');
-          return $('#timer').textContent = updater.timer;
+          timer.textContent = '-' + $.config('Interval');
+          return updater.intervalID = window.setInterval(updater.timeout, 1000);
         } else {
-          return updater.timer = null;
+          timer.textContent = 'Thread Updater';
+          return window.clearInterval(updater.intervalID);
         }
+      },
+      update: function(e) {
+        var arr, body, br, id, replies, reply;
+        br = $('br[clear]');
+        id = Number($('td[id]', br.previousElementSibling).id);
+        body = $.el('body', {
+          innerHTML: this.responseText
+        });
+        arr = [];
+        replies = $$('td[id]', body);
+        log(replies.length);
+        while ((reply = replies.pop()) && (reply.id > id)) {
+          arr.push(reply.parentNode.parentNode.parentNode);
+        }
+        log(arr.length);
+        while (reply = arr.pop()) {
+          $.before(br, reply);
+        }
+        return log('end');
       }
-    }
-  };
-  updaterMake = function() {
-    var div, html, input, interval, name, _i, _len, _ref;
-    html = "<div class=move><span id=count>Thread Updater</span> <span id=timer></span></div>";
-    html += "<div><label>Verbose<input type=checkbox name=verbose></label></div>";
-    html += "<div><label title=\"Make all threads auto update\">Auto Update Global<input type=checkbox name=autoG></label></div>";
-    html += "<div><label title=\"Make this thread auto update\">Auto Update Local<input type=checkbox name=autoL></label></div>";
-    html += "<div><label>Interval (s)<input type=text name=interval></label></div>";
-    html += "<div><input type=button value='Update Now'></div>";
-    div = ui.dialog('updater', 'bottomright', html);
-    _ref = $$('input[type=checkbox]', div);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      input = _ref[_i];
-      $.bind(input, 'click', changeCheckbox);
-      name = input.name;
-      if (name === 'autoL') {
-        input.checked = GM_getValue('autoG', true);
-      } else {
-        input.checked = GM_getValue(name, true);
+    },
+    timeout: function() {
+      var n, timer;
+      timer = $('#timer');
+      n = Number(timer.textContent);
+      n += 1;
+      timer.textContent = n;
+      if (n === 0 || n === 10) {
+        return updater.update();
       }
-      switch (name) {
-        case 'autoL':
-          $.bind(input, 'click', updateAuto);
-          break;
-        case 'verbose':
-          $.bind(input, 'click', updateVerbose);
+    },
+    update: function() {
+      var cb, url, _ref;
+      if ((_ref = updater.request) != null) {
+        _ref.abort();
       }
-    }
-    if (!(g.verbose = GM_getValue('verbose', true))) {
-      $("#timer", div).hidden = true;
-    }
-    interval = $('input[name=interval]', div);
-    interval.value = GM_getValue('Interval', 10);
-    $.bind(interval, 'change', updateInterval);
-    $.bind($('input[type=button]', div), 'click', updateNow);
-    d.body.appendChild(div);
-    if (GM_getValue('autoG', true)) {
-      return updateAuto.call($("input[name=autoL]", div));
+      url = location.href;
+      cb = updater.cb.update;
+      return updater.request = $.get(url, cb);
     }
   };
   watcher = {

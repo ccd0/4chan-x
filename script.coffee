@@ -35,7 +35,7 @@ config =
       'Unread Count':      [true,  'Show unread post count in tab title']
   updater:
     checkbox:
-      'Verbose':     [true, 'Show countdown timer, new post count']
+      'Verbose':     [true,  'Show countdown timer, new post count']
       'Auto Update': [false, 'Automatically fetch new posts']
     'Interval': 30
 
@@ -152,11 +152,17 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  get: (url, cb) ->
+    r = new XMLHttpRequest()
+    r.onload = cb
+    r.open 'get', url, true
+    r.send()
+    r
   cb:
     checked: ->
       $.getValue @name, @checked
     value: ->
-      $.setValue @name, @checked
+      $.setValue @name, @value
   deleteValue: (name) ->
     name = NAMESPACE + name
     delete localStorage[name]
@@ -1190,12 +1196,43 @@ threadHiding =
     unless node.nodeName is 'CENTER'
       threadHiding.thread node
 
-request = (url, callback) ->
-  r = new XMLHttpRequest()
-  r.onload = callback
-  r.open 'get', url, true
-  r.send()
-  r
+updateFavicon = ->
+  len = g.replies.length
+  if g.dead
+    if len > 0
+      href = g.favDeadHalo
+    else
+      href = g.favDead
+  else
+    if len > 0
+      href = g.favHalo
+    else
+      href = g.favDefault
+  favicon = $ 'link[rel="shortcut icon"]', d
+  clone = favicon.cloneNode true
+  clone.href = href
+  $.replace favicon, clone
+
+updateTime = ->
+  span = $ '#updater #timer'
+  time = Number span.textContent
+  if ++time is 0
+    updateNow()
+  else if time > 10
+    time = 0
+    g.req.abort()
+    updateNow()
+    if g.verbose
+      count = $ '#updater #count'
+      count.textContent = 'retry'
+      count.className = ''
+  else
+    span.textContent = time
+
+updateTitle = ->
+  len = g.replies.length
+  d.title = d.title.replace /\d+/, len
+  updateFavicon()
 
 updateCallback = ->
   count = $ '#updater #count'
@@ -1240,77 +1277,6 @@ updateCallback = ->
 
   timer.textContent = -1 * GM_getValue 'Interval', 10
 
-updateFavicon = ->
-  len = g.replies.length
-  if g.dead
-    if len > 0
-      href = g.favDeadHalo
-    else
-      href = g.favDead
-  else
-    if len > 0
-      href = g.favHalo
-    else
-      href = g.favDefault
-  favicon = $ 'link[rel="shortcut icon"]', d
-  clone = favicon.cloneNode true
-  clone.href = href
-  $.replace favicon, clone
-
-updateTime = ->
-  span = $ '#updater #timer'
-  time = Number span.textContent
-  if ++time is 0
-    updateNow()
-  else if time > 10
-    time = 0
-    g.req.abort()
-    updateNow()
-    if g.verbose
-      count = $ '#updater #count'
-      count.textContent = 'retry'
-      count.className = ''
-  else
-    span.textContent = time
-
-updateTitle = ->
-  len = g.replies.length
-  d.title = d.title.replace /\d+/, len
-  updateFavicon()
-
-updateAuto = ->
-  span = $ '#updater #timer'
-  if @checked
-    span.textContent = -1 * GM_getValue 'Interval', 10
-    g.interval = window.setInterval updateTime, 1000
-  else
-    span.textContent = 'Thread Updater'
-    clearInterval g.interval
-
-updateInterval = ->
-  unless num = Number @value
-    num = 10
-  @value = num
-  GM_setValue 'Interval', num
-
-  span = $ '#updater #timer'
-  if 0 > Number span.textContent
-    span.textContent = -1 * num
-
-updateNow = ->
-  url = location.href + '?' + Date.now() # fool the cache
-  g.req = request url, updateCallback
-  $("#updater #timer").textContent = 0
-
-updateVerbose = ->
-  g.verbose = @checked
-  timer = $ '#updater #timer'
-  if @checked
-    timer.hidden = false
-  else
-    timer.hidden = true
-    $("#updater #count").textContent = 'Thread Updater'
-
 updater =
   init: ->
     html  = "<div class=move><span id=count></span> <span id=timer></span></div>"
@@ -1325,20 +1291,27 @@ updater =
     checked = if $.config 'Auto Update' then 'checked' else ''
     html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
 
+    html += "<div><label>Interval (s)<input name=Interval value=#{$.config 'Interval'} type=text></label></div>"
+    html += "<div><input value=\"Update Now\" type=button></div>"
+
     dialog = ui.dialog 'updater', bottom: '0px', right: '0px', html
 
-    for box in $$ 'input[type=checkbox]', dialog
-      $.bind box, 'click', $.cb.checked
+    for input in $$ 'input[type=checkbox]', dialog
+      $.bind input, 'click', $.cb.checked
+    $.bind $('input[type=text]', dialog), 'change', $.cb.value
 
     verbose = $ 'input[name=\"Verbose\"]',          dialog
     autoUpT = $ 'input[name=\"Auto Update This\"]', dialog
+    interva = $ 'input[name=\"Interval\"]', dialog
+    updNow  = $ 'input[type=button]', dialog
     $.bind verbose, 'click', updater.cb.verbose
     $.bind autoUpT, 'click', updater.cb.autoUpdate
+    $.bind updNow,  'click', updater.update
 
     $.append d.body, dialog
 
     updater.cb.verbose.call    verbose
-    #updater.cb.autoUpdate.call autoUpT
+    updater.cb.autoUpdate.call autoUpT
 
   cb:
     verbose: (e) ->
@@ -1349,46 +1322,48 @@ updater =
         $.hide $ '#count'
         $('#timer').textContent = 'Thread Updater'
     autoUpdate: (e) ->
+      timer = $ '#timer'
       if @checked
-        updater.timer = $.config 'Interval'
-        $('#timer').textContent = updater.timer
+        timer.textContent = '-' + $.config 'Interval'
+        updater.intervalID = window.setInterval updater.timeout, 1000
       else
-        updater.timer = null
+        timer.textContent = 'Thread Updater'
+        window.clearInterval updater.intervalID
+    update: (e) ->
+      br = $ 'br[clear]'
 
-updaterMake = ->
-  html  = "<div class=move><span id=count>Thread Updater</span> <span id=timer></span></div>"
-  html += "<div><label>Verbose<input type=checkbox name=verbose></label></div>"
-  html += "<div><label title=\"Make all threads auto update\">Auto Update Global<input type=checkbox name=autoG></label></div>"
-  html += "<div><label title=\"Make this thread auto update\">Auto Update Local<input type=checkbox name=autoL></label></div>"
-  html += "<div><label>Interval (s)<input type=text name=interval></label></div>"
-  html += "<div><input type=button value='Update Now'></div>"
-  div = ui.dialog 'updater', 'bottomright', html
+      id = Number $('td[id]', br.previousElementSibling).id
 
-  for input in $$ 'input[type=checkbox]', div
-    $.bind input, 'click', changeCheckbox
-    name = input.name
-    if name is 'autoL'
-      input.checked = GM_getValue 'autoG', true
-    else
-      input.checked = GM_getValue name, true
-    switch name
-      when 'autoL'
-        $.bind input, 'click', updateAuto
-      when 'verbose'
-        $.bind input, 'click', updateVerbose
+      body = $.el 'body',
+        innerHTML: @responseText
 
-  unless g.verbose = GM_getValue 'verbose', true
-    $("#timer", div).hidden = true
+      arr = []
+      replies = $$ 'td[id]', body
+      log replies.length
+      while (reply = replies.pop()) and (reply.id > id)
+        arr.push reply.parentNode.parentNode.parentNode #table
 
-  interval = $ 'input[name=interval]', div
-  interval.value = GM_getValue 'Interval', 10
-  $.bind interval, 'change', updateInterval
+      log arr.length
+      #XXX add replies in correct order so /b/acklinks resolve
+      while reply = arr.pop()
+        $.before br, reply
 
-  $.bind $('input[type=button]', div), 'click', updateNow
+      log 'end'
 
-  d.body.appendChild div
+  timeout: ->
+    timer = $ '#timer'
+    n = Number timer.textContent
+    n += 1
+    timer.textContent = n
 
-  if GM_getValue 'autoG', true then updateAuto.call $("input[name=autoL]", div)
+    if n == 0 or n == 10 #retry
+      updater.update()
+
+  update: ->
+    updater.request?.abort()
+    url = location.href #+ '?' + Date.now() # fool the cache
+    cb = updater.cb.update
+    updater.request = $.get url, cb
 
 watcher =
   init: ->
