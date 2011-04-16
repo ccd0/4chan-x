@@ -803,7 +803,7 @@ options =
 
     hiddenThread = $.getValue "hiddenThread/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length
-    html += "<input type=\"button\" value=\"hidden: #{hiddenNum}\"><br>"
+    html += "<div><input type=\"button\" value=\"hidden: #{hiddenNum}\"></div>"
 
     html += "<hr>"
     html += "<div><a href=\"http://chat.now.im/x/aeos\">support throd</a></div>"
