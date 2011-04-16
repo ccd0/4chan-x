@@ -269,7 +269,7 @@
       var value;
       name = NAMESPACE + name;
       if (value = localStorage[name]) {
-        return value = JSON.parse(value);
+        return JSON.parse(value);
       } else {
         return defaultValue;
       }

@@ -163,7 +163,7 @@ $.extend $,
   getValue: (name, defaultValue) ->
     name = NAMESPACE + name
     if value = localStorage[name]
-      value = JSON.parse value
+      JSON.parse value
     else
       defaultValue
   setValue: (name, value) ->
