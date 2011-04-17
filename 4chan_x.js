@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, el, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageTypeChange, imgExpansion, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, el, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = function(arg) {
@@ -1855,15 +1855,122 @@
       });
     }
   };
-  imgExpansion = {
+  imgExpand = {
     init: function() {
-      var delform, expand, imageType, option, _i, _len, _ref;
-      g.callbacks.push(imgExpansion.cb.node);
-      expand = $.el('div', {
+      g.callbacks.push(imgExpand.cb.node);
+      return imgExpand.dialog();
+    },
+    cb: {
+      node: function(root) {
+        var thumb, _i, _len, _ref, _results;
+        _ref = $$('img[md5]', root);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          thumb = _ref[_i];
+          $.bind(thumb.parentNode, 'click', imgExpand.cb.toggle);
+          _results.push(g.expand ? imgExpand.expand(thumb.parentNode) : void 0);
+        }
+        return _results;
+      },
+      toggle: function(e) {
+        if (e.shiftKey || e.altKey || e.ctrlKey) {
+          return;
+        }
+        e.preventDefault();
+        return imgExpand.toggle(e.target);
+      },
+      all: function(e) {
+        var ch, cw, imageType, thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
+        thumbs = $$('img[md5]');
+        g.expand = e.target.checked;
+        cw = d.body.clientWidth;
+        ch = d.body.clientHeight;
+        imageType = $("#imageType").value;
+        if (g.expand) {
+          _results = [];
+          for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+            thumb = thumbs[_i];
+            _results.push(!thumb.style.display ? imgExpand.expand(thumb, cw, ch, imageType) : void 0);
+          }
+          return _results;
+        } else {
+          _results2 = [];
+          for (_j = 0, _len2 = thumbs.length; _j < _len2; _j++) {
+            thumb = thumbs[_j];
+            _results2.push(thumb.style.display ? imgExpand.contract(thumb) : void 0);
+          }
+          return _results2;
+        }
+      },
+      typeChange: function(e) {
+        var ch, cw, imageType, img, _i, _len, _ref, _results;
+        cw = d.body.clientWidth;
+        ch = d.body.clientHeight;
+        imageType = e.target.value;
+        _ref = $$('img[md5] + img');
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          img = _ref[_i];
+          _results.push(imgExpand.resize(cw, ch, imageType, img));
+        }
+        return _results;
+      }
+    },
+    toggle: function(a) {
+      var ch, cw, imageType, thumb;
+      thumb = a.firstChild;
+      cw = d.body.clientWidth;
+      ch = d.body.clientHeight;
+      imageType = $("#imageType").value;
+      if (thumb.style.display) {
+        return imgExpand.contract(a);
+      } else {
+        return imgExpand.expand(thumb, cw, ch, imageType, a);
+      }
+    },
+    contract: function(thumb) {
+      $.show(thumb);
+      return $.remove(thumb.nextSibling);
+    },
+    expand: function(thumb, cw, ch, imageType, a) {
+      var img;
+      $.hide(thumb);
+      img = $.el('img', {
+        src: a.href
+      });
+      a.appendChild(img);
+      return imgExpand.resize(cw, ch, imageType, img);
+    },
+    resize: function(cw, ch, imageType, img) {
+      var ih, iw, ratio, _, _ref;
+      _ref = $.x("preceding::span[@class][1]/text()[2]", img).textContent.match(/(\d+)x(\d+)/), _ = _ref[0], iw = _ref[1], ih = _ref[2];
+      iw = Number(iw);
+      ih = Number(ih);
+      switch (imageType) {
+        case 'full':
+          return img.removeAttribute('style');
+        case 'fit width':
+          if (iw > cw) {
+            img.style.width = '100%';
+            return img.style.margin = '0px';
+          }
+          break;
+        case 'fit screen':
+          ratio = Math.min(cw / iw, ch / ih);
+          if (ratio < 1) {
+            img.style.width = Math.floor(ratio * iw);
+            return img.style.margin = '0px';
+          }
+      }
+    },
+    dialog: function() {
+      var controls, delform, imageType, option, _i, _len, _ref;
+      controls = $.el('div', {
+        id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
       });
       imageType = $.getValue('imageType', 'full');
-      _ref = $$('option', expand);
+      _ref = $$('option', controls);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         option = _ref[_i];
         if (option.textContent === imageType) {
@@ -1871,117 +1978,12 @@
           break;
         }
       }
-      $.bind($('select', expand), 'change', $.cb.value);
-      $.bind($('select', expand), 'change', imageTypeChange);
-      $.bind($('input', expand), 'click', imageExpandClick);
+      $.bind($('select', controls), 'change', $.cb.value);
+      $.bind($('select', controls), 'change', imageTypeChange);
+      $.bind($('input', controls), 'click', imgExpand.cb.all);
       delform = $('form[name=delform]');
-      return $.prepend(delform, expand);
-    },
-    cb: {
-      node: function(root) {
-        var thumb, thumbs, _i, _len, _results;
-        thumbs = $$('img[md5]', root);
-        _results = [];
-        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-          thumb = thumbs[_i];
-          $.bind(thumb.parentNode, 'click', imageClick);
-          _results.push(g.expand ? imageToggle(thumb.parentNode) : void 0);
-        }
-        return _results;
-      }
+      return $.prepend(delform, controls);
     }
-  };
-  imageClick = function(e) {
-    if (e.shiftKey || e.altKey || e.ctrlKey) {
-      return;
-    }
-    e.preventDefault();
-    return imageToggle(this);
-  };
-  imageToggle = function(image) {
-    var ch, cw, imageType, thumb;
-    thumb = image.firstChild;
-    cw = d.body.clientWidth;
-    ch = d.body.clientHeight;
-    imageType = $("#imageType").value;
-    if (thumb.className === 'hide') {
-      return imageThumb(thumb);
-    } else {
-      return imageExpand(thumb, cw, ch, imageType);
-    }
-  };
-  imageTypeChange = function() {
-    var ch, cw, image, imageType, images, _i, _len, _results;
-    images = $$('img[md5] + img');
-    cw = d.body.clientWidth;
-    ch = d.body.clientHeight;
-    imageType = this.value;
-    _results = [];
-    for (_i = 0, _len = images.length; _i < _len; _i++) {
-      image = images[_i];
-      _results.push(imageResize(cw, ch, imageType, image));
-    }
-    return _results;
-  };
-  imageExpandClick = function() {
-    var ch, cw, imageType, thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
-    thumbs = $$('img[md5]');
-    g.expand = this.checked;
-    cw = d.body.clientWidth;
-    ch = d.body.clientHeight;
-    imageType = $("#imageType").value;
-    if (this.checked) {
-      _results = [];
-      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-        thumb = thumbs[_i];
-        _results.push(thumb.className !== 'hide' ? imageExpand(thumb, cw, ch, imageType) : void 0);
-      }
-      return _results;
-    } else {
-      _results2 = [];
-      for (_j = 0, _len2 = thumbs.length; _j < _len2; _j++) {
-        thumb = thumbs[_j];
-        _results2.push(thumb.className === 'hide' ? imageThumb(thumb) : void 0);
-      }
-      return _results2;
-    }
-  };
-  imageExpand = function(thumb, cw, ch, imageType) {
-    var image, link;
-    thumb.className = 'hide';
-    link = thumb.parentNode;
-    image = $.el('img', {
-      src: link.href
-    });
-    link.appendChild(image);
-    return imageResize(cw, ch, imageType, image);
-  };
-  imageResize = function(cw, ch, imageType, image) {
-    var ih, iw, ratio, _, _ref;
-    _ref = $.x("preceding::span[@class][1]/text()[2]", image).textContent.match(/(\d+)x(\d+)/), _ = _ref[0], iw = _ref[1], ih = _ref[2];
-    iw = Number(iw);
-    ih = Number(ih);
-    switch (imageType) {
-      case 'full':
-        image.removeAttribute('style');
-        break;
-      case 'fit width':
-        if (iw > cw) {
-          image.style.width = '100%';
-          image.style.margin = '0px';
-        }
-        break;
-      case 'fit screen':
-        ratio = Math.min(cw / iw, ch / ih);
-        if (ratio < 1) {
-          image.style.width = Math.floor(ratio * iw);
-          return image.style.margin = '0px';
-        }
-    }
-  };
-  imageThumb = function(thumb) {
-    thumb.className = '';
-    return $.remove(thumb.nextSibling);
   };
   autoWatch = function(e) {
     var form, tc;

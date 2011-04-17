@@ -1411,110 +1411,105 @@ imgGif =
         if /gif$/.test src
           thumb.src = src
 
-imgExpansion =
+imgExpand =
   init: ->
-    g.callbacks.push imgExpansion.cb.node
+    g.callbacks.push imgExpand.cb.node
+    imgExpand.dialog()
 
-    expand = $.el 'div',
+  cb:
+    node: (root) ->
+      for thumb in $$ 'img[md5]', root
+        $.bind thumb.parentNode, 'click', imgExpand.cb.toggle
+        if g.expand then imgExpand.expand thumb.parentNode
+    toggle: (e) ->
+      #TODO middle click (chrome)
+      return if e.shiftKey or e.altKey or e.ctrlKey
+      e.preventDefault()
+      imgExpand.toggle e.target
+    all: (e) ->
+      thumbs = $$ 'img[md5]'
+      g.expand = e.target.checked
+      cw = d.body.clientWidth
+      ch = d.body.clientHeight
+      imageType = $("#imageType").value
+      if g.expand #expand
+        for thumb in thumbs
+          unless thumb.style.display #thumbnail hidden, image already expanded
+            imgExpand.expand thumb, cw, ch, imageType
+      else #contract
+        for thumb in thumbs
+          if thumb.style.display #thumbnail hidden - unhide it
+            imgExpand.contract thumb
+    typeChange: (e) ->
+      cw = d.body.clientWidth
+      ch = d.body.clientHeight
+      imageType = e.target.value
+      for img in $$ 'img[md5] + img'
+        imgExpand.resize cw, ch, imageType, img
+
+  toggle: (a) ->
+    thumb = a.firstChild
+    cw = d.body.clientWidth
+    ch = d.body.clientHeight
+    imageType = $("#imageType").value
+    if thumb.style.display
+      imgExpand.contract a
+    else
+      imgExpand.expand thumb, cw, ch, imageType, a
+
+  contract: (thumb) ->
+    $.show thumb
+    $.remove thumb.nextSibling
+
+  expand: (thumb, cw, ch, imageType, a) ->
+    $.hide thumb
+    img = $.el 'img',
+      src: a.href
+    a.appendChild img
+
+    imgExpand.resize cw, ch, imageType, img
+
+  resize: (cw, ch, imageType, img) ->
+    [_, iw, ih] =
+      $.x("preceding::span[@class][1]/text()[2]", img)
+      .textContent.match(/(\d+)x(\d+)/)
+    iw = Number iw
+    ih = Number ih
+
+    switch imageType
+      when 'full'
+        img.removeAttribute 'style'
+      when 'fit width'
+        if iw > cw
+          img.style.width = '100%'
+          img.style.margin = '0px'
+      when 'fit screen'
+        ratio = Math.min cw/iw, ch/ih
+        if ratio < 1
+          #XXX maybe needs + 'px' ?
+          img.style.width = Math.floor ratio * iw
+          img.style.margin = '0px'
+
+  dialog: ->
+    controls = $.el 'div',
+      id: 'imgControls'
       innerHTML:
         "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>
         <label>Expand Images<input type=checkbox id=imageExpand></label>"
     imageType = $.getValue 'imageType', 'full'
-    for option in $$ 'option', expand
+    for option in $$ 'option', controls
       if option.textContent is imageType
         option.selected = true
         break
-    $.bind $('select', expand), 'change', $.cb.value
-    $.bind $('select', expand), 'change', imageTypeChange
-    $.bind $('input',  expand), 'click',  imageExpandClick
+    $.bind $('select', controls), 'change', $.cb.value
+    $.bind $('select', controls), 'change', imageTypeChange
+    $.bind $('input',  controls), 'click',  imgExpand.cb.all
 
     delform = $ 'form[name=delform]'
-    $.prepend delform, expand
+    $.prepend delform, controls
 
-  cb:
-    node: (root) ->
-      thumbs = $$ 'img[md5]', root
-      for thumb in thumbs
-        $.bind thumb.parentNode, 'click', imageClick
-        if g.expand then imageToggle thumb.parentNode
 
 # TODO rewrite these **************************************************************************
-
-imageClick = (e) ->
-  return if e.shiftKey or e.altKey or e.ctrlKey
-  e.preventDefault()
-  imageToggle this
-
-imageToggle = (image) ->
-  # 'image' is actually the <a> container
-  thumb = image.firstChild
-  cw = d.body.clientWidth
-  ch = d.body.clientHeight
-  imageType = $("#imageType").value
-  if thumb.className is 'hide'
-    imageThumb thumb
-  else
-    imageExpand thumb, cw, ch, imageType
-
-imageTypeChange = ->
-  images = $$ 'img[md5] + img'
-  cw = d.body.clientWidth
-  ch = d.body.clientHeight
-  imageType = @value
-  for image in images
-    imageResize cw, ch, imageType, image
-
-imageExpandClick = ->
-  thumbs = $$ 'img[md5]'
-  g.expand = @checked
-  cw = d.body.clientWidth
-  ch = d.body.clientHeight
-  imageType = $("#imageType").value
-  if @checked #expand
-    for thumb in thumbs
-      if thumb.className isnt 'hide'
-        #hide the thumb and show image
-        imageExpand thumb, cw, ch, imageType
-  else #contract
-    for thumb in thumbs
-      if thumb.className is 'hide'
-        #unhide thumb and remove image
-        imageThumb thumb
-
-imageExpand = (thumb, cw, ch, imageType) ->
-  thumb.className = 'hide'
-  link = thumb.parentNode
-  image = $.el 'img',
-    src: link.href
-  link.appendChild image
-
-  imageResize cw, ch, imageType, image
-
-imageResize = (cw, ch, imageType, image) ->
-  [_, iw, ih] =
-    $.x("preceding::span[@class][1]/text()[2]", image)
-    .textContent.match(/(\d+)x(\d+)/)
-  iw = Number iw
-  ih = Number ih
-
-  switch imageType
-    when 'full'
-      image.removeAttribute 'style'
-      return
-    when 'fit width'
-      if iw > cw
-        image.style.width = '100%'
-        image.style.margin = '0px'
-      break
-    when 'fit screen'
-      ratio = Math.min cw/iw, ch/ih
-      if ratio < 1
-        image.style.width = Math.floor ratio * iw
-        image.style.margin = '0px'
-
-imageThumb = (thumb) ->
-  thumb.className = ''
-  $.remove thumb.nextSibling
 
 autoWatch = (e) ->
   form = e.target
