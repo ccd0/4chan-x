@@ -1292,8 +1292,8 @@ localize =
 
 titlePost =
   init: ->
-    el = $('span.filetitle') or $('blockquote')
-    d.title = "/#{g.BOARD}/ - #{el.textContent}"
+    tc = $('span.filetitle').textContent or $('blockquote').textContent
+    d.title = "/#{g.BOARD}/ - #{tc}"
 
 imgPreloading =
   init: ->

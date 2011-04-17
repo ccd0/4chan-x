@@ -1649,9 +1649,9 @@
   };
   titlePost = {
     init: function() {
-      var el;
-      el = $('span.filetitle') || $('blockquote');
-      return d.title = "/" + g.BOARD + "/ - " + el.textContent;
+      var tc;
+      tc = $('span.filetitle').textContent || $('blockquote').textContent;
+      return d.title = "/" + g.BOARD + "/ - " + tc;
     }
   };
   imgPreloading = {
