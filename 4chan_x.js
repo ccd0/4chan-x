@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, localize, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1622,6 +1622,31 @@
       }
     }
   };
+  localize = {
+    init: function() {
+      return g.callbacks.push(function(root) {
+        var date, day, dotw, hour, min_sec, month, s, span, year, _, _i, _len, _ref, _ref2, _results;
+        _ref = $$('span[id^=no]', root);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          span = _ref[_i];
+          s = span.previousSibling;
+          _ref2 = s.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/), _ = _ref2[0], month = _ref2[1], day = _ref2[2], year = _ref2[3], hour = _ref2[4], min_sec = _ref2[5];
+          year = "20" + year;
+          month -= 1;
+          hour = g.chanOffset + Number(hour);
+          date = new Date(year, month, day, hour);
+          year = date.getFullYear() - 2000;
+          month = $.zeroPad(date.getMonth() + 1);
+          day = $.zeroPad(date.getDate());
+          hour = $.zeroPad(date.getHours());
+          dotw = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
+          _results.push(s.textContent = " " + month + "/" + day + "/" + year + "(" + dotw + ")" + hour + ":" + min_sec + " ");
+        }
+        return _results;
+      });
+    }
+  };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
@@ -2074,27 +2099,7 @@
     });
   }
   if ($.config('Localize Time')) {
-    g.callbacks.push(function(root) {
-      var date, day, dotw, hour, min_sec, month, s, span, spans, year, _, _i, _len, _ref, _results;
-      spans = $$('span[id^=no]', root);
-      _results = [];
-      for (_i = 0, _len = spans.length; _i < _len; _i++) {
-        span = spans[_i];
-        s = span.previousSibling;
-        _ref = s.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min_sec = _ref[5];
-        year = "20" + year;
-        month -= 1;
-        hour = g.chanOffset + Number(hour);
-        date = new Date(year, month, day, hour);
-        year = date.getFullYear() - 2000;
-        month = $.zeroPad(date.getMonth() + 1);
-        day = $.zeroPad(date.getDate());
-        hour = $.zeroPad(date.getHours());
-        dotw = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
-        _results.push(s.textContent = " " + month + "/" + day + "/" + year + "(" + dotw + ")" + hour + ":" + min_sec + " ");
-      }
-      return _results;
-    });
+    localize.init();
   }
   if ($.config('Sauce')) {
     sauce.init();

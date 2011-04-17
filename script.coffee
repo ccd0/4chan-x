@@ -1264,6 +1264,32 @@ sauce =
             href: prefix + suffix
           $.append span, $.tn(' '), link
 
+localize =
+  init: ->
+    g.callbacks.push (root) ->
+      for span in $$ 'span[id^=no]', root
+        s = span.previousSibling
+        [_, month, day, year, hour, min_sec] =
+          s.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/
+        year = "20#{year}"
+        month -= 1 #months start at 0
+        hour = g.chanOffset + Number hour
+        date = new Date year, month, day, hour
+        year = date.getFullYear() - 2000
+        month = $.zeroPad date.getMonth() + 1
+        day   = $.zeroPad date.getDate()
+        hour  = $.zeroPad date.getHours()
+        dotw = [
+          'Sun'
+          'Mon'
+          'Tue'
+          'Wed'
+          'Thu'
+          'Fri'
+          'Sat'
+        ][date.getDay()]
+        s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec} "
+
 # TODO rewrite these **************************************************************************
 
 imageClick = (e) ->
@@ -1628,30 +1654,7 @@ if $.config 'Image Auto-Gif'
         thumb.src = src
 
 if $.config 'Localize Time'
-  g.callbacks.push (root) ->
-    spans = $$ 'span[id^=no]', root
-    for span in spans
-      s = span.previousSibling
-      [_, month, day, year, hour, min_sec] =
-        s.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/
-      year = "20#{year}"
-      month -= 1 #months start at 0
-      hour = g.chanOffset + Number hour
-      date = new Date year, month, day, hour
-      year = date.getFullYear() - 2000
-      month = $.zeroPad date.getMonth() + 1
-      day = $.zeroPad date.getDate()
-      hour = $.zeroPad date.getHours()
-      dotw = [
-        'Sun'
-        'Mon'
-        'Tue'
-        'Wed'
-        'Thu'
-        'Fri'
-        'Sat'
-      ][date.getDay()]
-      s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec} "
+  localize.init()
 
 if $.config 'Sauce'
   sauce.init()
