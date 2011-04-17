@@ -4,8 +4,10 @@
 # (floating) qr no-quote button?
 # updater cache hacks
 
-# XXX error on FUCKING CHROME
-{log} = console if console?
+# XXX chrome can't into `{log} = console`
+if console?
+  log = (arg) ->
+    console.log arg
 
 # TODO reset defaults
 config =
@@ -620,6 +622,7 @@ keybinds =
 
 nav =
   #TODO page nav
+  #FIXME /b/
   # ◀ ▶
   init: ->
     span = $.el 'span',
@@ -1364,6 +1367,7 @@ quickReport =
 
 unread =
   init: ->
+    unread.replies = []
     d.title = '(0) ' + d.title
     $.bind window, 'scroll', unread.cb.scroll
     g.callbacks.push unread.cb.node
@@ -1372,21 +1376,25 @@ unread =
     node: (root) ->
       unread.replies = unread.replies.concat $$ 'td[id]', root
       unread.updateTitle()
+      unread.updateFavicon()
 
     scroll: (e) ->
+      return if unread.replies.length is 0
+
       height = d.body.clientHeight
       for reply, i in unread.replies
-        bottom = reply.getBoundingClientRect().bottom
+        {bottom} = reply.getBoundingClientRect()
         if bottom > height #post is not completely read
           break
-      if i is 0 then return
+      return if i is 0
+
       unread.replies = unread.replies[i..]
       unread.updateTitle()
+      if unread.replies.length is 0
+        unread.updateFavicon()
 
   updateTitle: ->
-    l = unread.replies.length
-    d.title = d.title.replace /\d+/, l
-    updateFavicon()
+    d.title = d.title.replace /\d+/, unread.replies.length
 
   updateFavicon: ->
     l = unread.replies.length

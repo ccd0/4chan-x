@@ -62,7 +62,9 @@
   var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, el, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageTypeChange, imgExpansion, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
-    log = console.log;
+    log = function(arg) {
+      return console.log(arg);
+    };
   }
   config = {
     main: {
@@ -1760,6 +1762,7 @@
   };
   unread = {
     init: function() {
+      unread.replies = [];
       d.title = '(0) ' + d.title;
       $.bind(window, 'scroll', unread.cb.scroll);
       return g.callbacks.push(unread.cb.node);
@@ -1767,10 +1770,14 @@
     cb: {
       node: function(root) {
         unread.replies = unread.replies.concat($$('td[id]', root));
-        return unread.updateTitle();
+        unread.updateTitle();
+        return unread.updateFavicon();
       },
       scroll: function(e) {
         var bottom, height, i, reply, _len, _ref;
+        if (unread.replies.length === 0) {
+          return;
+        }
         height = d.body.clientHeight;
         _ref = unread.replies;
         for (i = 0, _len = _ref.length; i < _len; i++) {
@@ -1784,14 +1791,14 @@
           return;
         }
         unread.replies = unread.replies.slice(i);
-        return unread.updateTitle();
+        unread.updateTitle();
+        if (unread.replies.length === 0) {
+          return unread.updateFavicon();
+        }
       }
     },
     updateTitle: function() {
-      var l;
-      l = unread.replies.length;
-      d.title = d.title.replace(/\d+/, l);
-      return updateFavicon();
+      return d.title = d.title.replace(/\d+/, unread.replies.length);
     },
     updateFavicon: function() {
       var clone, favicon, href, l;
