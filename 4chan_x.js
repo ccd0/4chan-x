@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, report, scroll, scrollThread, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, autoWatch, callback, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, report, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1560,26 +1560,6 @@
       return watcher.addLink(props);
     }
   };
-  scrollThread = function(count) {
-    var hash, idx, temp, thread, top, _ref;
-    _ref = getThread(), thread = _ref[0], idx = _ref[1];
-    top = thread.getBoundingClientRect().top;
-    if (idx === 0 && top > 1) {
-      idx = -1;
-    }
-    if (count < 0 && top < -1) {
-      count++;
-    }
-    temp = idx + count;
-    if (temp < 0) {
-      hash = '';
-    } else if (temp > 9) {
-      hash = 'p9';
-    } else {
-      hash = "p" + temp;
-    }
-    return location.hash = hash;
-  };
   nodeInserted = function(e) {
     var callback, dialog, target, _i, _len, _ref, _results;
     target = e.target;
@@ -1692,9 +1672,6 @@
   imageThumb = function(thumb) {
     thumb.className = '';
     return $.remove(thumb.nextSibling);
-  };
-  changeCheckbox = function() {
-    return GM_setValue(this.name, this.checked);
   };
   changeValue = function() {
     return GM_setValue(this.name, this.value);

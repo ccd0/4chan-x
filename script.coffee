@@ -1235,25 +1235,8 @@ watcher =
 
     watcher.addLink props
 
-# TODO rewrite these
-scrollThread = (count) ->
-  [thread, idx] = getThread()
-  top = thread.getBoundingClientRect().top
-  if idx is 0 and top > 1
-    #we haven't scrolled to the first thread
-    idx = -1
-  if count < 0 and top < -1
-    #we've started scrolling past this thread,
-    # but now want to read from the beginning
-    count++
-  temp = idx + count
-  if temp < 0
-    hash = ''
-  else if temp > 9
-    hash = 'p9'
-  else
-    hash = "p#{temp}"
-  location.hash = hash
+
+# TODO rewrite these **************************************************************************
 
 nodeInserted = (e) ->
   target = e.target
@@ -1344,9 +1327,6 @@ imageResize = (cw, ch, imageType, image) ->
 imageThumb = (thumb) ->
   thumb.className = ''
   $.remove thumb.nextSibling
-
-changeCheckbox = ->
-  GM_setValue @name, @checked
 
 changeValue = ->
   GM_setValue @name, @value
