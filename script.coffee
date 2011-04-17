@@ -1238,30 +1238,6 @@ watcher =
 
 # TODO rewrite these **************************************************************************
 
-nodeInserted = (e) ->
-  target = e.target
-  if target.nodeName is 'TABLE'
-    for callback in g.callbacks
-      callback target
-  else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
-    $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('#recaptcha_challenge_field', dialog).value = target.value
-
-scroll = ->
-  height = d.body.clientHeight
-  for reply, i in g.replies
-    bottom = reply.getBoundingClientRect().bottom
-    if bottom > height #post is not completely read
-      break
-  if i is 0 then return
-  g.replies = g.replies[i..]
-  updateTitle()
-
-autoWatch = ->
-  #TODO look for subject
-  autoText = $('textarea', this).value.slice(0, 25)
-  GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
-
 imageClick = (e) ->
   return if e.shiftKey or e.altKey or e.ctrlKey
   e.preventDefault()
@@ -1338,6 +1314,30 @@ imageThumb = (thumb) ->
   thumb.className = ''
   $.remove thumb.nextSibling
 
+nodeInserted = (e) ->
+  target = e.target
+  if target.nodeName is 'TABLE'
+    for callback in g.callbacks
+      callback target
+  else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
+    $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+    $('#recaptcha_challenge_field', dialog).value = target.value
+
+scroll = ->
+  height = d.body.clientHeight
+  for reply, i in g.replies
+    bottom = reply.getBoundingClientRect().bottom
+    if bottom > height #post is not completely read
+      break
+  if i is 0 then return
+  g.replies = g.replies[i..]
+  updateTitle()
+
+autoWatch = ->
+  #TODO look for subject
+  autoText = $('textarea', this).value.slice(0, 25)
+  GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
+
 recaptchaListener = (e) ->
   if e.keyCode is 8 and @value is ''
     recaptchaReload()
@@ -1357,11 +1357,26 @@ redirect = ->
       url = "http://boards.4chan.org/#{g.BOARD}"
   location.href = url
 
-report = ->
-  input = $.x('preceding-sibling::input[1]', this)
-  input.click()
-  $('input[value="Report"]').click()
-  input.click()
+quickReport =
+  init: ->
+    g.callbacks.push quickReport.cb.node
+  cb:
+    node: (root) ->
+      arr = $$ 'span[id^=no]', root
+      for el in arr
+        a = $.el 'a',
+          textContent: '[ ! ]'
+        $.bind a, 'click', quickReport.cb.report
+        $.after el, a
+        $.after el, $.tn(' ')
+    report: (e) ->
+      {target} = e
+      quickReport.report target
+  report: (target) ->
+    input = $.x('preceding-sibling::input[1]', target)
+    input.click()
+    $('input[value="Report"]').click()
+    input.click()
 
 updateFavicon = ->
   len = g.replies.length
@@ -1554,6 +1569,18 @@ $.bind recaptcha, 'keydown', recaptchaListener
 $.bind $('form[name=post]'), 'submit', qr.cb.submit
 
 #major features
+if $.config 'Anonymize'
+  g.callbacks.push (root) ->
+    names = $$('span.postername, span.commentpostername', root)
+    for name in names
+      name.innerHTML = 'Anonymous'
+    trips = $$('span.postertrip', root)
+    for trip in trips
+      if trip.parentNode.nodeName is 'A'
+        $.remove trip.parentNode
+      else
+        $.remove trip
+
 if $.config 'Image Expansion'
   delform = $ 'form[name=delform]'
   expand = $.el 'div',
@@ -1575,9 +1602,6 @@ if $.config 'Image Expansion'
     for thumb in thumbs
       $.bind thumb.parentNode, 'click', imageClick
       if g.expand then imageToggle thumb.parentNode
-
-if $.config 'Image Hover'
-  imageHover.init()
 
 if $.config 'Image Auto-Gif'
   g.callbacks.push (root) ->
@@ -1628,6 +1652,9 @@ if $.config 'Sauce'
         $.append span, $.tn(' '), link
         i++
 
+if $.config 'Image Hover'
+  imageHover.init()
+
 if $.config 'Reply Hiding'
   replyHiding.init()
 
@@ -1635,29 +1662,10 @@ if $.config 'Quick Reply'
   qr.init()
 
 if $.config 'Quick Report'
-  g.callbacks.push (root) ->
-    arr = $$('span[id^=no]', root)
-    for el in arr
-      a = $.el 'a',
-        textContent: '[ ! ]'
-      $.bind a, 'click', report
-      $.after el, a
-      $.after el, $.tn(' ')
+  quickReport.init()
 
 if $.config 'Thread Watcher'
   watcher.init()
-
-if $.config 'Anonymize'
-  g.callbacks.push (root) ->
-    names = $$('span.postername, span.commentpostername', root)
-    for name in names
-      name.innerHTML = 'Anonymous'
-    trips = $$('span.postertrip', root)
-    for trip in trips
-      if trip.parentNode.nodeName is 'A'
-        $.remove trip.parentNode
-      else
-        $.remove trip
 
 if $.config 'Keybinds'
   keybinds.init()

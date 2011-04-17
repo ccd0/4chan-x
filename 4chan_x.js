@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, report, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1560,44 +1560,6 @@
       return watcher.addLink(props);
     }
   };
-  nodeInserted = function(e) {
-    var callback, dialog, target, _i, _len, _ref, _results;
-    target = e.target;
-    if (target.nodeName === 'TABLE') {
-      _ref = g.callbacks;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        callback = _ref[_i];
-        _results.push(callback(target));
-      }
-      return _results;
-    } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
-      $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('#recaptcha_challenge_field', dialog).value = target.value;
-    }
-  };
-  scroll = function() {
-    var bottom, height, i, reply, _len, _ref;
-    height = d.body.clientHeight;
-    _ref = g.replies;
-    for (i = 0, _len = _ref.length; i < _len; i++) {
-      reply = _ref[i];
-      bottom = reply.getBoundingClientRect().bottom;
-      if (bottom > height) {
-        break;
-      }
-    }
-    if (i === 0) {
-      return;
-    }
-    g.replies = g.replies.slice(i);
-    return updateTitle();
-  };
-  autoWatch = function() {
-    var autoText;
-    autoText = $('textarea', this).value.slice(0, 25);
-    return GM_setValue('autoText', "/" + g.BOARD + "/ - " + autoText);
-  };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
@@ -1690,6 +1652,44 @@
     thumb.className = '';
     return $.remove(thumb.nextSibling);
   };
+  nodeInserted = function(e) {
+    var callback, dialog, target, _i, _len, _ref, _results;
+    target = e.target;
+    if (target.nodeName === 'TABLE') {
+      _ref = g.callbacks;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        _results.push(callback(target));
+      }
+      return _results;
+    } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
+      $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+      return $('#recaptcha_challenge_field', dialog).value = target.value;
+    }
+  };
+  scroll = function() {
+    var bottom, height, i, reply, _len, _ref;
+    height = d.body.clientHeight;
+    _ref = g.replies;
+    for (i = 0, _len = _ref.length; i < _len; i++) {
+      reply = _ref[i];
+      bottom = reply.getBoundingClientRect().bottom;
+      if (bottom > height) {
+        break;
+      }
+    }
+    if (i === 0) {
+      return;
+    }
+    g.replies = g.replies.slice(i);
+    return updateTitle();
+  };
+  autoWatch = function() {
+    var autoText;
+    autoText = $('textarea', this).value.slice(0, 25);
+    return GM_setValue('autoText', "/" + g.BOARD + "/ - " + autoText);
+  };
   recaptchaListener = function(e) {
     if (e.keyCode === 8 && this.value === '') {
       return recaptchaReload();
@@ -1743,12 +1743,39 @@
     }
     return location.href = url;
   };
-  report = function() {
-    var input;
-    input = $.x('preceding-sibling::input[1]', this);
-    input.click();
-    $('input[value="Report"]').click();
-    return input.click();
+  quickReport = {
+    init: function() {
+      return g.callbacks.push(quickReport.cb.node);
+    },
+    cb: {
+      node: function(root) {
+        var a, arr, el, _i, _len, _results;
+        arr = $$('span[id^=no]', root);
+        _results = [];
+        for (_i = 0, _len = arr.length; _i < _len; _i++) {
+          el = arr[_i];
+          a = $.el('a', {
+            textContent: '[ ! ]'
+          });
+          $.bind(a, 'click', quickReport.cb.report);
+          $.after(el, a);
+          _results.push($.after(el, $.tn(' ')));
+        }
+        return _results;
+      },
+      report: function(e) {
+        var target;
+        target = e.target;
+        return quickReport.report(target);
+      }
+    },
+    report: function(target) {
+      var input;
+      input = $.x('preceding-sibling::input[1]', target);
+      input.click();
+      $('input[value="Report"]').click();
+      return input.click();
+    }
   };
   updateFavicon = function() {
     var clone, favicon, href, len;
@@ -1941,6 +1968,23 @@
   recaptcha = $('#recaptcha_response_field');
   $.bind(recaptcha, 'keydown', recaptchaListener);
   $.bind($('form[name=post]'), 'submit', qr.cb.submit);
+  if ($.config('Anonymize')) {
+    g.callbacks.push(function(root) {
+      var name, names, trip, trips, _i, _j, _len, _len2, _results;
+      names = $$('span.postername, span.commentpostername', root);
+      for (_i = 0, _len = names.length; _i < _len; _i++) {
+        name = names[_i];
+        name.innerHTML = 'Anonymous';
+      }
+      trips = $$('span.postertrip', root);
+      _results = [];
+      for (_j = 0, _len2 = trips.length; _j < _len2; _j++) {
+        trip = trips[_j];
+        _results.push(trip.parentNode.nodeName === 'A' ? $.remove(trip.parentNode) : $.remove(trip));
+      }
+      return _results;
+    });
+  }
   if ($.config('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = $.el('div', {
@@ -1970,9 +2014,6 @@
       }
       return _results;
     });
-  }
-  if ($.config('Image Hover')) {
-    imageHover.init();
   }
   if ($.config('Image Auto-Gif')) {
     g.callbacks.push(function(root) {
@@ -2047,6 +2088,9 @@
       return _results;
     });
   }
+  if ($.config('Image Hover')) {
+    imageHover.init();
+  }
   if ($.config('Reply Hiding')) {
     replyHiding.init();
   }
@@ -2054,41 +2098,10 @@
     qr.init();
   }
   if ($.config('Quick Report')) {
-    g.callbacks.push(function(root) {
-      var a, arr, el, _i, _len, _results;
-      arr = $$('span[id^=no]', root);
-      _results = [];
-      for (_i = 0, _len = arr.length; _i < _len; _i++) {
-        el = arr[_i];
-        a = $.el('a', {
-          textContent: '[ ! ]'
-        });
-        $.bind(a, 'click', report);
-        $.after(el, a);
-        _results.push($.after(el, $.tn(' ')));
-      }
-      return _results;
-    });
+    quickReport.init();
   }
   if ($.config('Thread Watcher')) {
     watcher.init();
-  }
-  if ($.config('Anonymize')) {
-    g.callbacks.push(function(root) {
-      var name, names, trip, trips, _i, _j, _len, _len2, _results;
-      names = $$('span.postername, span.commentpostername', root);
-      for (_i = 0, _len = names.length; _i < _len; _i++) {
-        name = names[_i];
-        name.innerHTML = 'Anonymous';
-      }
-      trips = $$('span.postertrip', root);
-      _results = [];
-      for (_j = 0, _len2 = trips.length; _j < _len2; _j++) {
-        trip = trips[_j];
-        _results.push(trip.parentNode.nodeName === 'A' ? $.remove(trip.parentNode) : $.remove(trip));
-      }
-      return _results;
-    });
   }
   if ($.config('Keybinds')) {
     keybinds.init();
