@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, scroll, temp, threadHiding, titlePost, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, el, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageTypeChange, imgExpansion, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, scroll, temp, threadHiding, titlePost, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1671,6 +1671,57 @@
       });
     }
   };
+  imgGif = {
+    init: function() {
+      return g.callbacks.push(function(root) {
+        var src, thumb, thumbs, _i, _len, _results;
+        thumbs = $$('img[md5]', root);
+        _results = [];
+        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+          thumb = thumbs[_i];
+          src = thumb.parentNode.href;
+          _results.push(/gif$/.test(src) ? thumb.src = src : void 0);
+        }
+        return _results;
+      });
+    }
+  };
+  imgExpansion = {
+    init: function() {
+      var delform, expand, imageType, option, _i, _len, _ref;
+      g.callbacks.push(imgExpansion.cb.node);
+      expand = $.el('div', {
+        innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
+      });
+      imageType = $.getValue('imageType', 'full');
+      _ref = $$('option', expand);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        option = _ref[_i];
+        if (option.textContent === imageType) {
+          option.selected = true;
+          break;
+        }
+      }
+      $.bind($('select', expand), 'change', $.cb.value);
+      $.bind($('select', expand), 'change', imageTypeChange);
+      $.bind($('input', expand), 'click', imageExpandClick);
+      delform = $('form[name=delform]');
+      return $.prepend(delform, expand);
+    },
+    cb: {
+      node: function(root) {
+        var thumb, thumbs, _i, _len, _results;
+        thumbs = $$('img[md5]', root);
+        _results = [];
+        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+          thumb = thumbs[_i];
+          $.bind(thumb.parentNode, 'click', imageClick);
+          _results.push(g.expand ? imageToggle(thumb.parentNode) : void 0);
+        }
+        return _results;
+      }
+    }
+  };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
@@ -2080,47 +2131,10 @@
   $.bind(recaptcha, 'keydown', recaptchaListener);
   $.bind($('form[name=post]'), 'submit', qr.cb.submit);
   if ($.config('Image Expansion')) {
-    delform = $('form[name=delform]');
-    expand = $.el('div', {
-      innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>      <label>Expand Images<input type=checkbox id=imageExpand></label>"
-    });
-    imageType = $.getValue('imageType', 'full');
-    _ref3 = $$("option", expand);
-    for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-      option = _ref3[_j];
-      if (option.textContent === imageType) {
-        option.selected = true;
-        break;
-      }
-    }
-    $.bind($('select', expand), 'change', $.cb.value);
-    $.bind($('select', expand), 'change', imageTypeChange);
-    $.bind($('input', expand), 'click', imageExpandClick);
-    $.before(delform.firstChild, expand);
-    g.callbacks.push(function(root) {
-      var thumb, thumbs, _i, _len, _results;
-      thumbs = $$('img[md5]', root);
-      _results = [];
-      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-        thumb = thumbs[_i];
-        $.bind(thumb.parentNode, 'click', imageClick);
-        _results.push(g.expand ? imageToggle(thumb.parentNode) : void 0);
-      }
-      return _results;
-    });
+    imgExpansion.init();
   }
   if ($.config('Image Auto-Gif')) {
-    g.callbacks.push(function(root) {
-      var src, thumb, thumbs, _i, _len, _results;
-      thumbs = $$('img[md5]', root);
-      _results = [];
-      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-        thumb = thumbs[_i];
-        src = thumb.parentNode.href;
-        _results.push(/gif$/.test(src) ? thumb.src = src : void 0);
-      }
-      return _results;
-    });
+    imgGif.init();
   }
   if ($.config('Localize Time')) {
     localize.init();
@@ -2188,9 +2202,9 @@
       expandComment.init();
     }
   }
-  _ref4 = g.callbacks;
-  for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
-    callback = _ref4[_k];
+  _ref3 = g.callbacks;
+  for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+    callback = _ref3[_j];
     callback();
   }
   $.bind(d.body, 'DOMNodeInserted', nodeInserted);

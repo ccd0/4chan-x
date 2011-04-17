@@ -1303,6 +1303,42 @@ imgPreloading =
         parent = thumb.parentNode
         el = $.el 'img', src: parent.href
 
+imgGif =
+  init: ->
+    g.callbacks.push (root) ->
+      thumbs = $$ 'img[md5]', root
+      for thumb in thumbs
+        src = thumb.parentNode.href
+        if /gif$/.test src
+          thumb.src = src
+
+imgExpansion =
+  init: ->
+    g.callbacks.push imgExpansion.cb.node
+
+    expand = $.el 'div',
+      innerHTML:
+        "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>
+        <label>Expand Images<input type=checkbox id=imageExpand></label>"
+    imageType = $.getValue 'imageType', 'full'
+    for option in $$ 'option', expand
+      if option.textContent is imageType
+        option.selected = true
+        break
+    $.bind $('select', expand), 'change', $.cb.value
+    $.bind $('select', expand), 'change', imageTypeChange
+    $.bind $('input',  expand), 'click',  imageExpandClick
+
+    delform = $ 'form[name=delform]'
+    $.prepend delform, expand
+
+  cb:
+    node: (root) ->
+      thumbs = $$ 'img[md5]', root
+      for thumb in thumbs
+        $.bind thumb.parentNode, 'click', imageClick
+        if g.expand then imageToggle thumb.parentNode
+
 # TODO rewrite these **************************************************************************
 
 imageClick = (e) ->
@@ -1637,34 +1673,10 @@ $.bind $('form[name=post]'), 'submit', qr.cb.submit
 
 #major features
 if $.config 'Image Expansion'
-  delform = $ 'form[name=delform]'
-  expand = $.el 'div',
-    innerHTML:
-      "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>
-      <label>Expand Images<input type=checkbox id=imageExpand></label>"
-  imageType = $.getValue 'imageType', 'full'
-  for option in $$("option", expand)
-    if option.textContent is imageType
-      option.selected = true
-      break
-  $.bind $('select', expand), 'change', $.cb.value
-  $.bind $('select', expand), 'change', imageTypeChange
-  $.bind $('input', expand),  'click', imageExpandClick
-  $.before delform.firstChild, expand
-
-  g.callbacks.push (root) ->
-    thumbs = $$ 'img[md5]', root
-    for thumb in thumbs
-      $.bind thumb.parentNode, 'click', imageClick
-      if g.expand then imageToggle thumb.parentNode
+  imgExpansion.init()
 
 if $.config 'Image Auto-Gif'
-  g.callbacks.push (root) ->
-    thumbs = $$ 'img[md5]', root
-    for thumb in thumbs
-      src = thumb.parentNode.href
-      if /gif$/.test src
-        thumb.src = src
+  imgGif.init()
 
 if $.config 'Localize Time'
   localize.init()
@@ -1699,10 +1711,13 @@ if g.REPLY
 
   if $.config 'Image Preloading'
     imgPreloading.init()
+
   if $.config('Quick Reply') and $.config 'Persistent QR'
     qr.persist()
+
   if $.config 'Post in Title'
     titlePost.init()
+
   if $.config 'Unread Count'
     g.replies = []
     d.title = '(0) ' + d.title
