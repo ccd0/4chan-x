@@ -1338,9 +1338,6 @@ imageThumb = (thumb) ->
   thumb.className = ''
   $.remove thumb.nextSibling
 
-changeValue = ->
-  GM_setValue @name, @value
-
 recaptchaListener = (e) ->
   if e.keyCode is 8 and @value is ''
     recaptchaReload()
@@ -1563,12 +1560,12 @@ if $.config 'Image Expansion'
     innerHTML:
       "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>
       <label>Expand Images<input type=checkbox id=imageExpand></label>"
-  imageType = GM_getValue 'imageType', 'full'
+  imageType = $.getValue 'imageType', 'full'
   for option in $$("option", expand)
     if option.textContent is imageType
       option.selected = true
       break
-  $.bind $('select', expand), 'change', changeValue
+  $.bind $('select', expand), 'change', $.cb.value
   $.bind $('select', expand), 'change', imageTypeChange
   $.bind $('input', expand),  'click', imageExpandClick
   $.before delform.firstChild, expand

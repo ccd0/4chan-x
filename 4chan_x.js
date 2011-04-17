@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, autoWatch, callback, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, report, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, report, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1690,9 +1690,6 @@
     thumb.className = '';
     return $.remove(thumb.nextSibling);
   };
-  changeValue = function() {
-    return GM_setValue(this.name, this.value);
-  };
   recaptchaListener = function(e) {
     if (e.keyCode === 8 && this.value === '') {
       return recaptchaReload();
@@ -1949,7 +1946,7 @@
     expand = $.el('div', {
       innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>      <label>Expand Images<input type=checkbox id=imageExpand></label>"
     });
-    imageType = GM_getValue('imageType', 'full');
+    imageType = $.getValue('imageType', 'full');
     _ref3 = $$("option", expand);
     for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
       option = _ref3[_j];
@@ -1958,7 +1955,7 @@
         break;
       }
     }
-    $.bind($('select', expand), 'change', changeValue);
+    $.bind($('select', expand), 'change', $.cb.value);
     $.bind($('select', expand), 'change', imageTypeChange);
     $.bind($('input', expand), 'click', imageExpandClick);
     $.before(delform.firstChild, expand);
