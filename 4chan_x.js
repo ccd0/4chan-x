@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -819,143 +819,127 @@
       }
     },
     normal: function(e) {
-      var id, thread, url;
+      var thread;
       thread = nav.getThread();
       switch (keybinds.key) {
         case 'I':
-          break;
+          return keybinds.qr(thread);
         case 'J':
-          break;
+          return keybinds.hl.next(thread);
         case 'K':
-          break;
+          return keybinds.hl.prev(thread);
         case 'M':
-          break;
+          return keybinds.img(thread, true);
         case 'O':
-          id = thread.firstChild.id;
-          url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
-          return location.href = url;
+          return keybinds.open(thread);
         case 'i':
-          break;
+          return keybinds.qr(thread, true);
         case 'm':
-          break;
+          return keybinds.img(thread);
         case 'n':
           return nav.next();
         case 'o':
-          id = thread.firstChild.id;
-          url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
-          return GM_openInTab(url);
+          return keybinds.open(thread, true);
         case 'p':
           return nav.prev();
         case 'u':
-          updater.update();
-          break;
+          return updater.update();
         case 'w':
           return watcher.toggle(thread);
         case 'x':
           return threadHiding.toggle(thread);
       }
-    }
-  };
-  keyModeNormal = function(e) {
-    var bot, char, hash, height, image, next, prev, qrLink, rect, replies, reply, root, td, thread, top, _i, _j, _len, _len2;
-    if (e.ctrlKey || e.altKey) {
-      return;
-    }
-    char = g.char;
-    hash = location.hash;
-    switch (char) {
-      case "I":
-        if (g.REPLY) {
-          if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)'))) {
-            qrLink = $("span[id^=nothread] a:not(:first-child)");
-          }
-        } else {
-          thread = getThread()[0];
-          if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)', thread))) {
-            qrLink = $("span#nothread" + thread.id + " a:not(:first-child)", thread);
-          }
+    },
+    img: function(thread, all) {
+      var image;
+      if (all) {
+        return $("#imageExpand").click();
+      } else {
+        if (!(image = $('td.replyhl span.filesize ~ a[target]', thread))) {
+          image = $('span.filesize ~ a[target]', thread);
         }
-        if (e.shiftKey) {
-          $.append(d.body, qr.dialog(qrLink));
-          return $('#qr textarea').focus();
-        } else {
-          e = {
-            preventDefault: function() {},
-            target: qrLink
-          };
-          return qr.cb.quote(e);
+        return imageToggle(image);
+      }
+    },
+    qr: function(thread, quote) {
+      var e, qrLink;
+      if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)', thread))) {
+        qrLink = $("span[id^=nothread] a:not(:first-child)", thread);
+      }
+      if (quote) {
+        e = {
+          preventDefault: function() {},
+          target: qrLink
+        };
+        return qr.cb.quote(e);
+      } else {
+        if (!$('#qr')) {
+          qr.dialog(qrLink);
         }
-        break;
-      case "J":
-        if (e.shiftKey) {
-          if (!g.REPLY) {
-            root = getThread()[0];
-          }
-          if (td = $('td.replyhl', root)) {
-            td.className = 'reply';
-            rect = td.getBoundingClientRect();
+        return $('#qr textarea').focus();
+      }
+    },
+    open: function(thread, tab) {
+      var id, url;
+      id = thread.firstChild.id;
+      url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
+      if (tab) {
+        return GM_openInTab(url);
+      } else {
+        return location.href = url;
+      }
+    },
+    hl: {
+      next: function(thread) {
+        var next, rect, replies, reply, td, top, _i, _len;
+        if (td = $('td.replyhl', thread)) {
+          td.className = 'reply';
+          rect = td.getBoundingClientRect();
+          if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+            next = $.x('following::td[@class="reply"]', td);
+            rect = next.getBoundingClientRect();
             if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-              next = $.x('following::td[@class="reply"]', td);
-              rect = next.getBoundingClientRect();
-              if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-                next.className = 'replyhl';
-              }
-              return;
+              next.className = 'replyhl';
             }
-          }
-          replies = $$('td.reply', root);
-          for (_i = 0, _len = replies.length; _i < _len; _i++) {
-            reply = replies[_i];
-            top = reply.getBoundingClientRect().top;
-            if (top > 0) {
-              reply.className = 'replyhl';
-              break;
-            }
+            return;
           }
         }
-        break;
-      case "K":
-        if (e.shiftKey) {
-          if (!g.REPLY) {
-            root = getThread()[0];
+        replies = $$('td.reply', thread);
+        for (_i = 0, _len = replies.length; _i < _len; _i++) {
+          reply = replies[_i];
+          top = reply.getBoundingClientRect().top;
+          if (top > 0) {
+            reply.className = 'replyhl';
+            return;
           }
-          if (td = $('td.replyhl', root)) {
-            td.className = 'reply';
-            rect = td.getBoundingClientRect();
+        }
+      },
+      prev: function(thread) {
+        var bot, height, prev, rect, replies, reply, td, _i, _len;
+        if (td = $('td.replyhl', thread)) {
+          td.className = 'reply';
+          rect = td.getBoundingClientRect();
+          if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+            prev = $.x('preceding::td[@class="reply"][1]', td);
+            rect = prev.getBoundingClientRect();
             if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-              prev = $.x('preceding::td[@class="reply"][1]', td);
-              rect = prev.getBoundingClientRect();
-              if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-                prev.className = 'replyhl';
-              }
-              return;
+              prev.className = 'replyhl';
             }
-          }
-          replies = $$('td.reply', root);
-          replies.reverse();
-          height = d.body.clientHeight;
-          for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
-            reply = replies[_j];
-            bot = reply.getBoundingClientRect().bottom;
-            if (bot < height) {
-              reply.className = 'replyhl';
-              break;
-            }
+            return;
           }
         }
-        break;
-      case "M":
-        if (e.shiftKey) {
-          return $("#imageExpand").click();
-        } else {
-          if (!g.REPLY) {
-            root = getThread()[0];
+        replies = $$('td.reply', thread);
+        replies.reverse();
+        height = d.body.clientHeight;
+        for (_i = 0, _len = replies.length; _i < _len; _i++) {
+          reply = replies[_i];
+          bot = reply.getBoundingClientRect().bottom;
+          if (bot < height) {
+            reply.className = 'replyhl';
+            return;
           }
-          if (!(image = $('td.replyhl span.filesize ~ a[target]', root))) {
-            image = $('span.filesize ~ a[target]', root);
-          }
-          return imageToggle(image);
         }
+      }
     }
   };
   nav = {
@@ -982,10 +966,10 @@
     next: function() {
       return nav.scroll(+1);
     },
+    threads: [],
     getThread: function(full) {
-      var bottom, i, rect, thread, _len, _ref, _results;
+      var bottom, i, rect, thread, _len, _ref;
       _ref = nav.threads;
-      _results = [];
       for (i = 0, _len = _ref.length; i < _len; i++) {
         thread = _ref[i];
         rect = thread.getBoundingClientRect();
@@ -997,7 +981,7 @@
           return thread;
         }
       }
-      return _results;
+      return null;
     },
     scroll: function(delta) {
       var i, rect, thread, top, _ref;

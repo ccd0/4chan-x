@@ -604,113 +604,101 @@ keybinds =
     thread = nav.getThread()
     switch keybinds.key
       when 'I'
-        #qr no text
-        return
+        keybinds.qr thread
       when 'J'
-        #highlight next
-        return
+        keybinds.hl.next thread
       when 'K'
-        #highlight prev
-        return
+        keybinds.hl.prev thread
       when 'M'
-        #expand all
-        return
+        keybinds.img thread, true
       when 'O'
-        id = thread.firstChild.id
-        url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
-        location.href = url
+        keybinds.open thread
       when 'i'
-        #qr
-        return
+        keybinds.qr thread, true
       when 'm'
-        #expand img
-        return
+        keybinds.img thread
       when 'n'
         nav.next()
       when 'o'
-        id = thread.firstChild.id
-        url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
-        GM_openInTab url
+        keybinds.open thread, true
       when 'p'
         nav.prev()
       when 'u'
         updater.update()
-        return
       when 'w'
         watcher.toggle thread
       when 'x'
         threadHiding.toggle thread
 
-keyModeNormal = (e) ->
-  return if e.ctrlKey or e.altKey
-  char = g.char
-  hash = location.hash
-  switch char
-    when "I"
-      if g.REPLY
-        unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)'
-          qrLink = $ "span[id^=nothread] a:not(:first-child)"
-      else
-        [thread] = getThread()
-        unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
-          qrLink = $ "span#nothread#{thread.id} a:not(:first-child)", thread
-      if e.shiftKey
-        $.append d.body, qr.dialog qrLink
-        $('#qr textarea').focus()
-      else
-        # qrLink.click() doesn't work, so use this hack
-        e =
-          preventDefault: ->
-          target: qrLink
-        qr.cb.quote e
-    when "J"
-      if e.shiftKey
-        if not g.REPLY then [root] = getThread()
-        if td = $ 'td.replyhl', root
-          td.className = 'reply'
-          rect = td.getBoundingClientRect()
-          if rect.top > 0 and rect.bottom < d.body.clientHeight #you're visible
-            next = $.x 'following::td[@class="reply"]', td
-            rect = next.getBoundingClientRect()
-            if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the next
-              next.className = 'replyhl'
-            return
-        replies = $$ 'td.reply', root
-        for reply in replies
-          top = reply.getBoundingClientRect().top
-          if top > 0
-            reply.className = 'replyhl'
-            break
-      break
-    when "K"
-      if e.shiftKey
-        if not g.REPLY then [root] = getThread()
-        if td = $ 'td.replyhl', root
-          td.className = 'reply'
-          rect = td.getBoundingClientRect()
-          if rect.top > 0 and rect.bottom < d.body.clientHeight #you're visible
-            prev = $.x 'preceding::td[@class="reply"][1]', td
-            rect = prev.getBoundingClientRect()
-            if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the prev
-              prev.className = 'replyhl'
-            return
-        replies = $$ 'td.reply', root
-        replies.reverse()
-        height = d.body.clientHeight
-        for reply in replies
-          bot = reply.getBoundingClientRect().bottom
-          if bot < height
-            reply.className = 'replyhl'
-            break
-      break
-    when "M"
-      if e.shiftKey
-        $("#imageExpand").click()
-      else
-        if not g.REPLY then [root] = getThread()
-        unless image = $ 'td.replyhl span.filesize ~ a[target]', root
-          image = $ 'span.filesize ~ a[target]', root
-        imageToggle image
+  img: (thread, all) ->
+    if all
+      $("#imageExpand").click()
+    else
+      unless image = $ 'td.replyhl span.filesize ~ a[target]', thread
+        image = $ 'span.filesize ~ a[target]', thread
+      imageToggle image
+
+  qr: (thread, quote) ->
+    unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
+      qrLink = $ "span[id^=nothread] a:not(:first-child)", thread
+
+    if quote
+      # qrLink.click() doesn't work, so use this hack
+      e =
+        preventDefault: ->
+        target: qrLink
+      qr.cb.quote e
+    else
+      unless $ '#qr'
+        qr.dialog qrLink
+      $('#qr textarea').focus()
+
+  open: (thread, tab) ->
+    id = thread.firstChild.id
+    url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
+    if tab
+      GM_openInTab url
+    else
+      location.href = url
+
+  hl:
+    next: (thread) ->
+      if td = $ 'td.replyhl', thread
+        td.className = 'reply'
+        rect = td.getBoundingClientRect()
+        if rect.top > 0 and rect.bottom < d.body.clientHeight #you're fully visible
+          next = $.x 'following::td[@class="reply"]', td
+          rect = next.getBoundingClientRect()
+          if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the next
+            next.className = 'replyhl'
+          return
+
+      replies = $$ 'td.reply', thread
+      for reply in replies
+        top = reply.getBoundingClientRect().top
+        if top > 0
+          reply.className = 'replyhl'
+          return
+
+    prev: (thread) ->
+      if td = $ 'td.replyhl', thread
+        td.className = 'reply'
+        rect = td.getBoundingClientRect()
+        if rect.top > 0 and rect.bottom < d.body.clientHeight #you're fully visible
+          prev = $.x 'preceding::td[@class="reply"][1]', td
+          rect = prev.getBoundingClientRect()
+          if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the prev
+            prev.className = 'replyhl'
+          return
+
+      replies = $$ 'td.reply', thread
+      replies.reverse()
+      height = d.body.clientHeight
+      for reply in replies
+        bot = reply.getBoundingClientRect().bottom
+        if bot < height
+          reply.className = 'replyhl'
+          return
 
 nav =
   #TODO page nav
@@ -737,6 +725,8 @@ nav =
   next: ->
     nav.scroll +1
 
+  threads: []
+
   getThread: (full) ->
     for thread, i in nav.threads
       rect = thread.getBoundingClientRect()
@@ -745,6 +735,7 @@ nav =
         if full
           return [thread, i, rect]
         return thread
+    return null
 
   scroll: (delta) ->
     [thread, i, rect] = nav.getThread true
