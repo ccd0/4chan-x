@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, omitted, onloadComment, onloadThread, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, span, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _m, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, onloadComment, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -439,38 +439,91 @@
       id: href.match(/\d+/)[0]
     });
   };
-  expandThread = function() {
-    var id, num, prev, r, span, table, xhr, _i, _len, _ref;
-    id = $.x('preceding-sibling::input[1]', this).name;
-    span = this;
-    if (span.textContent[0] === '-') {
-      num = board === 'b' ? 3 : 5;
-      table = $.x("following::br[@clear][1]/preceding::table[" + num + "]", span);
-      while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
-        $.remove(prev);
+  expandThread = {
+    init: function() {
+      var a, span, _i, _len, _ref, _results;
+      _ref = $$('span.omittedposts');
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        span = _ref[_i];
+        a = $.el('a', {
+          textContent: "+ " + span.textContent,
+          className: 'omittedposts'
+        });
+        $.bind(a, 'click', expandThread.cb.toggle);
+        _results.push($.replace(span, a));
       }
-      span.textContent = span.textContent.replace('-', '+');
-      return;
-    }
-    span.textContent = span.textContent.replace('+', 'X Loading...');
-    _ref = g.xhrs;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      xhr = _ref[_i];
-      if (xhr.id === id) {
-        onloadThread(xhr.r.responseText, span);
-        return;
+      return _results;
+    },
+    cache: {},
+    requests: {},
+    cb: {
+      toggle: function(e) {
+        var thread;
+        thread = e.target.parentNode;
+        return expandThread.toggle(thread);
+      },
+      load: function(xhr, thread, a) {
+        var html, id;
+        if (xhr.status === 404) {
+          a.textContent.replace('X Loading...', '404');
+          return $.unbind(a, 'click', expandThread.cb.toggle);
+        } else {
+          html = xhr.responseText;
+          id = thread.firstChild.id;
+          expandThread.cache[id] = html;
+          return expandThread.expand(html, thread, a);
+        }
       }
+    },
+    toggle: function(thread) {
+      var a, html, id, num, prev, table, _results;
+      id = thread.firstChild.id;
+      a = $('a.omittedposts', thread);
+      switch (a.textContent[0]) {
+        case '+':
+          a.textContent = a.textContent.replace('+', 'X Loading...');
+          if (html = expandThread.cache[id]) {
+            return expandThread.expand(html, thread, a);
+          } else {
+            return expandThread.requests[id] = $.get("res/" + id, (function() {
+              return expandThread.cb.load(this, thread, a);
+            }));
+          }
+          break;
+        case 'X':
+          a.textContent = a.textContent.replace('X Loading...', '+');
+          return expandThread.requests[id].abort();
+        case '-':
+          a.textContent = a.textContent.replace('-', '+');
+          num = g.BOARD === 'b' ? 3 : 5;
+          table = $.x("following::br[@clear][1]/preceding::table[" + num + "]", a);
+          _results = [];
+          while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
+            _results.push($.remove(prev));
+          }
+          return _results;
+      }
+    },
+    expand: function(html, thread, a) {
+      var body, br, next, table, tables, _i, _len, _results;
+      a.textContent = a.textContent.replace('X Loading...', '-');
+      while ((next = a.nextSibling) && !next.clear) {
+        $.remove(next);
+      }
+      br = next;
+      body = $.el('body', {
+        innerHTML: html
+      });
+      tables = $$('form[name=delform] table', body);
+      tables.pop();
+      _results = [];
+      for (_i = 0, _len = tables.length; _i < _len; _i++) {
+        table = tables[_i];
+        _results.push($.before(br, table));
+      }
+      return _results;
     }
-    r = new XMLHttpRequest();
-    r.onload = function() {
-      return onloadThread(this.responseText, span);
-    };
-    r.open('GET', "res/" + id, true);
-    r.send();
-    return g.xhrs.push({
-      r: r,
-      id: id
-    });
   };
   replyHiding = {
     init: function() {
@@ -1003,31 +1056,6 @@
     }
     bq = $.x('ancestor::blockquote', a);
     return bq.innerHTML = html;
-  };
-  onloadThread = function(responseText, span) {
-    var div, next, opbq, replies, reply, _i, _j, _len, _len2, _ref, _results, _results2;
-    _ref = parseResponse(responseText), replies = _ref[0], opbq = _ref[1];
-    span.textContent = span.textContent.replace('X Loading...', '- ');
-    span.previousSibling.innerHTML = opbq.innerHTML;
-    while ((next = span.nextSibling) && !next.clear) {
-      $.remove(next);
-    }
-    if (next) {
-      _results = [];
-      for (_i = 0, _len = replies.length; _i < _len; _i++) {
-        reply = replies[_i];
-        _results.push($.before(next, $.x('ancestor::table', reply)));
-      }
-      return _results;
-    } else {
-      div = span.parentNode;
-      _results2 = [];
-      for (_j = 0, _len2 = replies.length; _j < _len2; _j++) {
-        reply = replies[_j];
-        _results2.push($.append(div, $.x('ancestor::table', reply)));
-      }
-      return _results2;
-    }
   };
   changeCheckbox = function() {
     return GM_setValue(this.name, this.checked);
@@ -2178,28 +2206,19 @@
       $.bind($('form[name=post]'), 'submit', autoWatch);
     }
     if ($.config('Thread Expansion')) {
-      omitted = $$('span.omittedposts');
-      for (_k = 0, _len3 = omitted.length; _k < _len3; _k++) {
-        span = omitted[_k];
-        a = $.el('a', {
-          className: 'omittedposts',
-          textContent: "+ " + span.textContent
-        });
-        $.bind(a, 'click', expandThread);
-        $.replace(span, a);
-      }
+      expandThread.init();
     }
     if ($.config('Comment Expansion')) {
       as = $$('span.abbr a');
-      for (_l = 0, _len4 = as.length; _l < _len4; _l++) {
-        a = as[_l];
+      for (_k = 0, _len3 = as.length; _k < _len3; _k++) {
+        a = as[_k];
         $.bind(a, 'click', expandComment);
       }
     }
   }
   _ref4 = g.callbacks;
-  for (_m = 0, _len5 = _ref4.length; _m < _len5; _m++) {
-    callback = _ref4[_m];
+  for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
+    callback = _ref4[_l];
     callback();
   }
   $.bind(d.body, 'DOMNodeInserted', nodeInserted);

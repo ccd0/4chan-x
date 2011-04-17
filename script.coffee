@@ -293,35 +293,73 @@ expandComment = (e) ->
     id: href.match(/\d+/)[0]
   }
 
-expandThread = ->
-  id = $.x('preceding-sibling::input[1]', this).name
-  span = this
-  #close expanded thread
-  if span.textContent[0] is '-'
-    #goddamit moot
-    num = if board is 'b' then 3 else 5
-    table = $.x "following::br[@clear][1]/preceding::table[#{num}]", span
-    while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
-      $.remove prev
-    span.textContent = span.textContent.replace '-', '+'
-    return
-  span.textContent = span.textContent.replace '+', 'X Loading...'
-  #load cache
-  for xhr in g.xhrs
-    if xhr.id == id
-      #why can't we just xhr.r.onload()?
-      onloadThread xhr.r.responseText, span
-      return
-  #create new request
-  r = new XMLHttpRequest()
-  r.onload = ->
-    onloadThread @responseText, span
-  r.open 'GET', "res/#{id}", true
-  r.send()
-  g.xhrs.push {
-    r: r,
-    id: id
-  }
+expandThread =
+  init: ->
+    for span in $$ 'span.omittedposts'
+      a = $.el 'a',
+        textContent: "+ #{span.textContent}"
+        className: 'omittedposts'
+      $.bind a, 'click', expandThread.cb.toggle
+      $.replace span, a
+
+  cache: {}
+  requests: {}
+
+  cb:
+    toggle: (e) ->
+      thread = e.target.parentNode
+      expandThread.toggle thread
+
+    load: (xhr, thread, a) ->
+      if xhr.status is 404
+        a.textContent.replace 'X Loading...', '404'
+        $.unbind a, 'click', expandThread.cb.toggle
+      else
+        html = xhr.responseText
+        id = thread.firstChild.id
+        expandThread.cache[id] = html
+        expandThread.expand html, thread, a
+
+  toggle: (thread) ->
+    id = thread.firstChild.id
+    a = $ 'a.omittedposts', thread
+
+    switch a.textContent[0]
+      when '+'
+        a.textContent = a.textContent.replace '+', 'X Loading...'
+        if html = expandThread.cache[id]
+          expandThread.expand html, thread, a
+        else
+          expandThread.requests[id] =
+            $.get "res/#{id}", (-> expandThread.cb.load this, thread, a)
+
+      when 'X'
+        a.textContent = a.textContent.replace 'X Loading...', '+'
+        expandThread.requests[id].abort()
+
+      when '-'
+        a.textContent = a.textContent.replace '-', '+'
+        #goddamit moot
+        num = if g.BOARD is 'b' then 3 else 5
+        table = $.x "following::br[@clear][1]/preceding::table[#{num}]", a
+        while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
+          $.remove prev
+
+  expand: (html, thread, a) ->
+    a.textContent = a.textContent.replace 'X Loading...', '-'
+
+    # eat everything, then replace with fresh full posts
+    while (next = a.nextSibling) and not next.clear #br[clear]
+      $.remove next
+    br = next
+
+    body = $.el 'body',
+      innerHTML: html
+
+    tables = $$ 'form[name=delform] table', body
+    tables.pop()
+    for table in tables
+      $.before br, table
 
 replyHiding =
   init: ->
@@ -769,21 +807,6 @@ onloadComment = (responseText, a, href) ->
         html = $('blockquote', reply).innerHTML
   bq = $.x 'ancestor::blockquote', a
   bq.innerHTML = html
-
-onloadThread = (responseText, span) ->
-  [replies, opbq] = parseResponse responseText
-  span.textContent = span.textContent.replace 'X Loading...', '- '
-  #make sure all comments are fully expanded
-  span.previousSibling.innerHTML = opbq.innerHTML
-  while (next = span.nextSibling) and not next.clear#<br clear>
-    $.remove next
-  if next
-    for reply in replies
-      $.before next, $.x('ancestor::table', reply)
-  else#threading
-    div = span.parentNode
-    for reply in replies
-      $.append div, $.x('ancestor::table', reply)
 
 changeCheckbox = ->
   GM_setValue @name, @checked
@@ -1735,13 +1758,7 @@ else #not reply
     $.bind $('form[name=post]'), 'submit', autoWatch
 
   if $.config 'Thread Expansion'
-    omitted = $$('span.omittedposts')
-    for span in omitted
-      a = $.el 'a',
-        className: 'omittedposts'
-        textContent: "+ #{span.textContent}"
-      $.bind a, 'click', expandThread
-      $.replace(span, a)
+    expandThread.init()
 
   if $.config 'Comment Expansion'
     as = $$('span.abbr a')
