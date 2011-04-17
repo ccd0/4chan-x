@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1560,6 +1560,28 @@
       return watcher.addLink(props);
     }
   };
+  anonymize = {
+    init: function() {
+      return g.callbacks.push(anonymize.cb.node);
+    },
+    cb: {
+      node: function(root) {
+        var name, names, trip, _i, _j, _len, _len2, _ref, _results;
+        names = $$('span.postername, span.commentpostername', root);
+        for (_i = 0, _len = names.length; _i < _len; _i++) {
+          name = names[_i];
+          name.innerHTML = 'Anonymous';
+        }
+        _ref = $$('span.postertrip', root);
+        _results = [];
+        for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
+          trip = _ref[_j];
+          _results.push(trip.parentNode.nodeName === 'A' ? $.remove(trip.parentNode) : $.remove(trip));
+        }
+        return _results;
+      }
+    }
+  };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
@@ -1968,23 +1990,6 @@
   recaptcha = $('#recaptcha_response_field');
   $.bind(recaptcha, 'keydown', recaptchaListener);
   $.bind($('form[name=post]'), 'submit', qr.cb.submit);
-  if ($.config('Anonymize')) {
-    g.callbacks.push(function(root) {
-      var name, names, trip, trips, _i, _j, _len, _len2, _results;
-      names = $$('span.postername, span.commentpostername', root);
-      for (_i = 0, _len = names.length; _i < _len; _i++) {
-        name = names[_i];
-        name.innerHTML = 'Anonymous';
-      }
-      trips = $$('span.postertrip', root);
-      _results = [];
-      for (_j = 0, _len2 = trips.length; _j < _len2; _j++) {
-        trip = trips[_j];
-        _results.push(trip.parentNode.nodeName === 'A' ? $.remove(trip.parentNode) : $.remove(trip));
-      }
-      return _results;
-    });
-  }
   if ($.config('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = $.el('div', {
@@ -2087,6 +2092,9 @@
       }
       return _results;
     });
+  }
+  if ($.config('Anonymize')) {
+    anonymize.init();
   }
   if ($.config('Image Hover')) {
     imageHover.init();

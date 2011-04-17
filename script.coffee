@@ -1235,6 +1235,19 @@ watcher =
 
     watcher.addLink props
 
+anonymize =
+  init: ->
+    g.callbacks.push anonymize.cb.node
+  cb:
+    node: (root) ->
+      names = $$ 'span.postername, span.commentpostername', root
+      for name in names
+        name.innerHTML = 'Anonymous'
+      for trip in $$ 'span.postertrip', root
+        if trip.parentNode.nodeName is 'A'
+          $.remove trip.parentNode
+        else
+          $.remove trip
 
 # TODO rewrite these **************************************************************************
 
@@ -1569,18 +1582,6 @@ $.bind recaptcha, 'keydown', recaptchaListener
 $.bind $('form[name=post]'), 'submit', qr.cb.submit
 
 #major features
-if $.config 'Anonymize'
-  g.callbacks.push (root) ->
-    names = $$('span.postername, span.commentpostername', root)
-    for name in names
-      name.innerHTML = 'Anonymous'
-    trips = $$('span.postertrip', root)
-    for trip in trips
-      if trip.parentNode.nodeName is 'A'
-        $.remove trip.parentNode
-      else
-        $.remove trip
-
 if $.config 'Image Expansion'
   delform = $ 'form[name=delform]'
   expand = $.el 'div',
@@ -1651,6 +1652,9 @@ if $.config 'Sauce'
           href: prefixes[i] + suffix
         $.append span, $.tn(' '), link
         i++
+
+if $.config 'Anonymize'
+  anonymize.init()
 
 if $.config 'Image Hover'
   imageHover.init()
