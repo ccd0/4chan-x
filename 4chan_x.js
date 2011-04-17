@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1582,6 +1582,46 @@
       }
     }
   };
+  sauce = {
+    init: function() {
+      return g.callbacks.push(sauce.cb.node);
+    },
+    cb: {
+      node: function(root) {
+        var i, link, names, prefix, prefixes, span, suffix, _i, _len, _ref, _results;
+        prefixes = $.getValue('flavors', g.flavors).split('\n');
+        names = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = prefixes.length; _i < _len; _i++) {
+            prefix = prefixes[_i];
+            _results.push(prefix.match(/(\w+)\./)[1]);
+          }
+          return _results;
+        })();
+        _ref = $$('span.filesize', root);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          span = _ref[_i];
+          suffix = $('a', span).href;
+          _results.push((function() {
+            var _len, _results;
+            _results = [];
+            for (i = 0, _len = prefixes.length; i < _len; i++) {
+              prefix = prefixes[i];
+              link = $.el('a', {
+                textContent: names[i],
+                href: prefix + suffix
+              });
+              _results.push($.append(span, $.tn(' '), link));
+            }
+            return _results;
+          })());
+        }
+        return _results;
+      }
+    }
+  };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
@@ -2057,41 +2097,7 @@
     });
   }
   if ($.config('Sauce')) {
-    g.callbacks.push(function(root) {
-      var i, l, link, names, prefix, prefixes, span, spans, suffix, _i, _len, _results;
-      spans = $$('span.filesize', root);
-      prefixes = GM_getValue('flavors', g.flavors).split('\n');
-      names = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = prefixes.length; _i < _len; _i++) {
-          prefix = prefixes[_i];
-          _results.push(prefix.match(/(\w+)\./)[1]);
-        }
-        return _results;
-      })();
-      _results = [];
-      for (_i = 0, _len = spans.length; _i < _len; _i++) {
-        span = spans[_i];
-        suffix = $('a', span).href;
-        i = 0;
-        l = names.length;
-        _results.push((function() {
-          var _results;
-          _results = [];
-          while (i < l) {
-            link = $.el('a', {
-              textContent: names[i],
-              href: prefixes[i] + suffix
-            });
-            $.append(span, $.tn(' '), link);
-            _results.push(i++);
-          }
-          return _results;
-        })());
-      }
-      return _results;
-    });
+    sauce.init();
   }
   if ($.config('Anonymize')) {
     anonymize.init();

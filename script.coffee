@@ -1249,6 +1249,21 @@ anonymize =
         else
           $.remove trip
 
+sauce =
+  init: ->
+    g.callbacks.push sauce.cb.node
+  cb:
+    node: (root) ->
+      prefixes = $.getValue('flavors', g.flavors).split '\n'
+      names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
+      for span in $$ 'span.filesize', root
+        suffix = $('a', span).href
+        for prefix, i in prefixes
+          link = $.el 'a',
+            textContent: names[i]
+            href: prefix + suffix
+          $.append span, $.tn(' '), link
+
 # TODO rewrite these **************************************************************************
 
 imageClick = (e) ->
@@ -1639,19 +1654,7 @@ if $.config 'Localize Time'
       s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec} "
 
 if $.config 'Sauce'
-  g.callbacks.push (root) ->
-    spans = $$ 'span.filesize', root
-    prefixes = GM_getValue('flavors', g.flavors).split '\n'
-    names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
-    for span in spans
-      suffix = $('a', span).href
-      i = 0; l = names.length
-      while i < l
-        link = $.el 'a',
-          textContent: names[i]
-          href: prefixes[i] + suffix
-        $.append span, $.tn(' '), link
-        i++
+  sauce.init()
 
 if $.config 'Anonymize'
   anonymize.init()
