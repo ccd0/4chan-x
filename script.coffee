@@ -858,13 +858,6 @@ options =
       @value = "hidden: 0"
       g.hiddenReplies = {}
 
-parseResponse = (responseText) ->
-  body = $.el 'body',
-    innerHTML: responseText
-  replies = $$ 'td.reply', body
-  opbq = $ 'blockquote', body
-  return [replies, opbq]
-
 qr =
   ###
   lol chrome - http://code.google.com/p/chromium/issues/detail?id=20773

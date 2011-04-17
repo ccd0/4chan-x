@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1132,15 +1132,6 @@
         return g.hiddenReplies = {};
       }
     }
-  };
-  parseResponse = function(responseText) {
-    var body, opbq, replies;
-    body = $.el('body', {
-      innerHTML: responseText
-    });
-    replies = $$('td.reply', body);
-    opbq = $('blockquote', body);
-    return [replies, opbq];
   };
   qr = {
     /*
