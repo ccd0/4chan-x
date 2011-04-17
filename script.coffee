@@ -425,52 +425,6 @@ replyHiding =
     delete g.hiddenReply[id]
     $.setValue "hiddenReply/#{g.BOARD}/", g.hiddenReply
 
-imageHover =
-  init: ->
-    img = $.el 'img', id: 'iHover'
-    $.hide img
-    d.body.appendChild img
-    g.callbacks.push imageHover.cb.node
-  offset:
-    x: 45
-    y: -120
-  cb:
-    node: (root) ->
-      thumbs = $$ 'img[md5]', root
-      for thumb in thumbs
-        $.bind thumb, 'mouseover', imageHover.cb.mouseover
-    mouseover: (e) ->
-      {target, clientX, clientY} = e
-      img = $ '#iHover'
-      img.src = target.parentNode.href
-      $.show img
-      imageHover.winHeight = d.body.clientHeight
-      imageHover.winWidth  = d.body.clientWidth
-      $.bind target, 'mousemove', imageHover.cb.mousemove
-      $.bind target, 'mouseout',  imageHover.cb.mouseout
-    mousemove: (e) ->
-      {clientX, clientY} = e
-      img = $ '#iHover'
-      imgHeight = img.offsetHeight
-
-      top = clientY + imageHover.offset.y
-      bot = top + imgHeight
-      img.style.top =
-        if imageHover.winHeight < imgHeight or top < 0
-          '0px'
-        else if bot > imageHover.winHeight
-          imageHover.winHeight - imgHeight + 'px'
-        else
-          top + 'px'
-      img.style.left = clientX + imageHover.offset.x
-    mouseout: (e) ->
-      {target} = e
-      img = $ '#iHover'
-      $.hide img
-      img.src = null
-      $.unbind target, 'mousemove', imageHover.cb.mousemove
-      $.unbind target, 'mouseout',  imageHover.cb.mouseout
-
 keybinds =
   init: ->
     $.bind d, 'keydown',  keybinds.cb.keydown
@@ -1299,50 +1253,6 @@ titlePost =
     tc = $('span.filetitle').textContent or $('blockquote').textContent
     d.title = "/#{g.BOARD}/ - #{tc}"
 
-imgPreloading =
-  init: ->
-    g.callbacks.push (root) ->
-      thumbs = $$ 'img[md5]', root
-      for thumb in thumbs
-        parent = thumb.parentNode
-        el = $.el 'img', src: parent.href
-
-imgGif =
-  init: ->
-    g.callbacks.push (root) ->
-      thumbs = $$ 'img[md5]', root
-      for thumb in thumbs
-        src = thumb.parentNode.href
-        if /gif$/.test src
-          thumb.src = src
-
-imgExpansion =
-  init: ->
-    g.callbacks.push imgExpansion.cb.node
-
-    expand = $.el 'div',
-      innerHTML:
-        "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>
-        <label>Expand Images<input type=checkbox id=imageExpand></label>"
-    imageType = $.getValue 'imageType', 'full'
-    for option in $$ 'option', expand
-      if option.textContent is imageType
-        option.selected = true
-        break
-    $.bind $('select', expand), 'change', $.cb.value
-    $.bind $('select', expand), 'change', imageTypeChange
-    $.bind $('input',  expand), 'click',  imageExpandClick
-
-    delform = $ 'form[name=delform]'
-    $.prepend delform, expand
-
-  cb:
-    node: (root) ->
-      thumbs = $$ 'img[md5]', root
-      for thumb in thumbs
-        $.bind thumb.parentNode, 'click', imageClick
-        if g.expand then imageToggle thumb.parentNode
-
 quickReport =
   init: ->
     g.callbacks.push quickReport.cb.node
@@ -1439,6 +1349,96 @@ nodeInserted = (e) ->
   else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
     $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
     $('#recaptcha_challenge_field', dialog).value = target.value
+
+imageHover =
+  init: ->
+    img = $.el 'img', id: 'iHover'
+    $.hide img
+    d.body.appendChild img
+    g.callbacks.push imageHover.cb.node
+  offset:
+    x: 45
+    y: -120
+  cb:
+    node: (root) ->
+      thumbs = $$ 'img[md5]', root
+      for thumb in thumbs
+        $.bind thumb, 'mouseover', imageHover.cb.mouseover
+    mouseover: (e) ->
+      {target, clientX, clientY} = e
+      img = $ '#iHover'
+      img.src = target.parentNode.href
+      $.show img
+      imageHover.winHeight = d.body.clientHeight
+      imageHover.winWidth  = d.body.clientWidth
+      $.bind target, 'mousemove', imageHover.cb.mousemove
+      $.bind target, 'mouseout',  imageHover.cb.mouseout
+    mousemove: (e) ->
+      {clientX, clientY} = e
+      img = $ '#iHover'
+      imgHeight = img.offsetHeight
+
+      top = clientY + imageHover.offset.y
+      bot = top + imgHeight
+      img.style.top =
+        if imageHover.winHeight < imgHeight or top < 0
+          '0px'
+        else if bot > imageHover.winHeight
+          imageHover.winHeight - imgHeight + 'px'
+        else
+          top + 'px'
+      img.style.left = clientX + imageHover.offset.x
+    mouseout: (e) ->
+      {target} = e
+      img = $ '#iHover'
+      $.hide img
+      img.src = null
+      $.unbind target, 'mousemove', imageHover.cb.mousemove
+      $.unbind target, 'mouseout',  imageHover.cb.mouseout
+
+imgPreloading =
+  init: ->
+    g.callbacks.push (root) ->
+      thumbs = $$ 'img[md5]', root
+      for thumb in thumbs
+        parent = thumb.parentNode
+        el = $.el 'img', src: parent.href
+
+imgGif =
+  init: ->
+    g.callbacks.push (root) ->
+      thumbs = $$ 'img[md5]', root
+      for thumb in thumbs
+        src = thumb.parentNode.href
+        if /gif$/.test src
+          thumb.src = src
+
+imgExpansion =
+  init: ->
+    g.callbacks.push imgExpansion.cb.node
+
+    expand = $.el 'div',
+      innerHTML:
+        "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>
+        <label>Expand Images<input type=checkbox id=imageExpand></label>"
+    imageType = $.getValue 'imageType', 'full'
+    for option in $$ 'option', expand
+      if option.textContent is imageType
+        option.selected = true
+        break
+    $.bind $('select', expand), 'change', $.cb.value
+    $.bind $('select', expand), 'change', imageTypeChange
+    $.bind $('input',  expand), 'click',  imageExpandClick
+
+    delform = $ 'form[name=delform]'
+    $.prepend delform, expand
+
+  cb:
+    node: (root) ->
+      thumbs = $$ 'img[md5]', root
+      for thumb in thumbs
+        $.bind thumb.parentNode, 'click', imageClick
+        if g.expand then imageToggle thumb.parentNode
 
 # TODO rewrite these **************************************************************************
 

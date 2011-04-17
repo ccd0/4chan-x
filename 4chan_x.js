@@ -610,63 +610,6 @@
       return $.setValue("hiddenReply/" + g.BOARD + "/", g.hiddenReply);
     }
   };
-  imageHover = {
-    init: function() {
-      var img;
-      img = $.el('img', {
-        id: 'iHover'
-      });
-      $.hide(img);
-      d.body.appendChild(img);
-      return g.callbacks.push(imageHover.cb.node);
-    },
-    offset: {
-      x: 45,
-      y: -120
-    },
-    cb: {
-      node: function(root) {
-        var thumb, thumbs, _i, _len, _results;
-        thumbs = $$('img[md5]', root);
-        _results = [];
-        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-          thumb = thumbs[_i];
-          _results.push($.bind(thumb, 'mouseover', imageHover.cb.mouseover));
-        }
-        return _results;
-      },
-      mouseover: function(e) {
-        var clientX, clientY, img, target;
-        target = e.target, clientX = e.clientX, clientY = e.clientY;
-        img = $('#iHover');
-        img.src = target.parentNode.href;
-        $.show(img);
-        imageHover.winHeight = d.body.clientHeight;
-        imageHover.winWidth = d.body.clientWidth;
-        $.bind(target, 'mousemove', imageHover.cb.mousemove);
-        return $.bind(target, 'mouseout', imageHover.cb.mouseout);
-      },
-      mousemove: function(e) {
-        var bot, clientX, clientY, img, imgHeight, top;
-        clientX = e.clientX, clientY = e.clientY;
-        img = $('#iHover');
-        imgHeight = img.offsetHeight;
-        top = clientY + imageHover.offset.y;
-        bot = top + imgHeight;
-        img.style.top = imageHover.winHeight < imgHeight || top < 0 ? '0px' : bot > imageHover.winHeight ? imageHover.winHeight - imgHeight + 'px' : top + 'px';
-        return img.style.left = clientX + imageHover.offset.x;
-      },
-      mouseout: function(e) {
-        var img, target;
-        target = e.target;
-        img = $('#iHover');
-        $.hide(img);
-        img.src = null;
-        $.unbind(target, 'mousemove', imageHover.cb.mousemove);
-        return $.unbind(target, 'mouseout', imageHover.cb.mouseout);
-      }
-    }
-  };
   keybinds = {
     init: function() {
       $.bind(d, 'keydown', keybinds.cb.keydown);
@@ -1659,74 +1602,6 @@
       return d.title = "/" + g.BOARD + "/ - " + tc;
     }
   };
-  imgPreloading = {
-    init: function() {
-      return g.callbacks.push(function(root) {
-        var el, parent, thumb, thumbs, _i, _len, _results;
-        thumbs = $$('img[md5]', root);
-        _results = [];
-        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-          thumb = thumbs[_i];
-          parent = thumb.parentNode;
-          _results.push(el = $.el('img', {
-            src: parent.href
-          }));
-        }
-        return _results;
-      });
-    }
-  };
-  imgGif = {
-    init: function() {
-      return g.callbacks.push(function(root) {
-        var src, thumb, thumbs, _i, _len, _results;
-        thumbs = $$('img[md5]', root);
-        _results = [];
-        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-          thumb = thumbs[_i];
-          src = thumb.parentNode.href;
-          _results.push(/gif$/.test(src) ? thumb.src = src : void 0);
-        }
-        return _results;
-      });
-    }
-  };
-  imgExpansion = {
-    init: function() {
-      var delform, expand, imageType, option, _i, _len, _ref;
-      g.callbacks.push(imgExpansion.cb.node);
-      expand = $.el('div', {
-        innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
-      });
-      imageType = $.getValue('imageType', 'full');
-      _ref = $$('option', expand);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        option = _ref[_i];
-        if (option.textContent === imageType) {
-          option.selected = true;
-          break;
-        }
-      }
-      $.bind($('select', expand), 'change', $.cb.value);
-      $.bind($('select', expand), 'change', imageTypeChange);
-      $.bind($('input', expand), 'click', imageExpandClick);
-      delform = $('form[name=delform]');
-      return $.prepend(delform, expand);
-    },
-    cb: {
-      node: function(root) {
-        var thumb, thumbs, _i, _len, _results;
-        thumbs = $$('img[md5]', root);
-        _results = [];
-        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-          thumb = thumbs[_i];
-          $.bind(thumb.parentNode, 'click', imageClick);
-          _results.push(g.expand ? imageToggle(thumb.parentNode) : void 0);
-        }
-        return _results;
-      }
-    }
-  };
   quickReport = {
     init: function() {
       return g.callbacks.push(quickReport.cb.node);
@@ -1892,6 +1767,131 @@
     } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
       $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
       return $('#recaptcha_challenge_field', dialog).value = target.value;
+    }
+  };
+  imageHover = {
+    init: function() {
+      var img;
+      img = $.el('img', {
+        id: 'iHover'
+      });
+      $.hide(img);
+      d.body.appendChild(img);
+      return g.callbacks.push(imageHover.cb.node);
+    },
+    offset: {
+      x: 45,
+      y: -120
+    },
+    cb: {
+      node: function(root) {
+        var thumb, thumbs, _i, _len, _results;
+        thumbs = $$('img[md5]', root);
+        _results = [];
+        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+          thumb = thumbs[_i];
+          _results.push($.bind(thumb, 'mouseover', imageHover.cb.mouseover));
+        }
+        return _results;
+      },
+      mouseover: function(e) {
+        var clientX, clientY, img, target;
+        target = e.target, clientX = e.clientX, clientY = e.clientY;
+        img = $('#iHover');
+        img.src = target.parentNode.href;
+        $.show(img);
+        imageHover.winHeight = d.body.clientHeight;
+        imageHover.winWidth = d.body.clientWidth;
+        $.bind(target, 'mousemove', imageHover.cb.mousemove);
+        return $.bind(target, 'mouseout', imageHover.cb.mouseout);
+      },
+      mousemove: function(e) {
+        var bot, clientX, clientY, img, imgHeight, top;
+        clientX = e.clientX, clientY = e.clientY;
+        img = $('#iHover');
+        imgHeight = img.offsetHeight;
+        top = clientY + imageHover.offset.y;
+        bot = top + imgHeight;
+        img.style.top = imageHover.winHeight < imgHeight || top < 0 ? '0px' : bot > imageHover.winHeight ? imageHover.winHeight - imgHeight + 'px' : top + 'px';
+        return img.style.left = clientX + imageHover.offset.x;
+      },
+      mouseout: function(e) {
+        var img, target;
+        target = e.target;
+        img = $('#iHover');
+        $.hide(img);
+        img.src = null;
+        $.unbind(target, 'mousemove', imageHover.cb.mousemove);
+        return $.unbind(target, 'mouseout', imageHover.cb.mouseout);
+      }
+    }
+  };
+  imgPreloading = {
+    init: function() {
+      return g.callbacks.push(function(root) {
+        var el, parent, thumb, thumbs, _i, _len, _results;
+        thumbs = $$('img[md5]', root);
+        _results = [];
+        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+          thumb = thumbs[_i];
+          parent = thumb.parentNode;
+          _results.push(el = $.el('img', {
+            src: parent.href
+          }));
+        }
+        return _results;
+      });
+    }
+  };
+  imgGif = {
+    init: function() {
+      return g.callbacks.push(function(root) {
+        var src, thumb, thumbs, _i, _len, _results;
+        thumbs = $$('img[md5]', root);
+        _results = [];
+        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+          thumb = thumbs[_i];
+          src = thumb.parentNode.href;
+          _results.push(/gif$/.test(src) ? thumb.src = src : void 0);
+        }
+        return _results;
+      });
+    }
+  };
+  imgExpansion = {
+    init: function() {
+      var delform, expand, imageType, option, _i, _len, _ref;
+      g.callbacks.push(imgExpansion.cb.node);
+      expand = $.el('div', {
+        innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
+      });
+      imageType = $.getValue('imageType', 'full');
+      _ref = $$('option', expand);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        option = _ref[_i];
+        if (option.textContent === imageType) {
+          option.selected = true;
+          break;
+        }
+      }
+      $.bind($('select', expand), 'change', $.cb.value);
+      $.bind($('select', expand), 'change', imageTypeChange);
+      $.bind($('input', expand), 'click', imageExpandClick);
+      delform = $('form[name=delform]');
+      return $.prepend(delform, expand);
+    },
+    cb: {
+      node: function(root) {
+        var thumb, thumbs, _i, _len, _results;
+        thumbs = $$('img[md5]', root);
+        _results = [];
+        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+          thumb = thumbs[_i];
+          $.bind(thumb.parentNode, 'click', imageClick);
+          _results.push(g.expand ? imageToggle(thumb.parentNode) : void 0);
+        }
+        return _results;
+      }
     }
   };
   imageClick = function(e) {
