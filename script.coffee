@@ -601,6 +601,7 @@ keybinds =
         ta.setSelectionRange range, range
 
   normal: (e) ->
+    thread = nav.getThread()
     switch keybinds.key
       when 'I'
         #qr no text
@@ -614,6 +615,10 @@ keybinds =
       when 'M'
         #expand all
         return
+      when 'O'
+        id = thread.firstChild.id
+        url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
+        location.href = url
       when 'i'
         #qr
         return
@@ -623,20 +628,18 @@ keybinds =
       when 'n'
         nav.next()
       when 'o'
-        #open in new tab
-        return
+        id = thread.firstChild.id
+        url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
+        GM_openInTab url
       when 'p'
         nav.prev()
       when 'u'
-        #update now
+        updater.update()
         return
       when 'w'
-        thread = nav.getThread()
         watcher.toggle thread
       when 'x'
-        thread = nav.getThread()
         threadHiding.toggle thread
-        return
 
 keyModeNormal = (e) ->
   return if e.ctrlKey or e.altKey
@@ -708,21 +711,6 @@ keyModeNormal = (e) ->
         unless image = $ 'td.replyhl span.filesize ~ a[target]', root
           image = $ 'span.filesize ~ a[target]', root
         imageToggle image
-    when "N"
-      sign = if e.shiftKey then -1 else 1
-      scrollThread sign
-    when "O"
-      href = $("#{hash} ~ span[id] a:last-of-type").href
-      if e.shiftKey
-        location.href = href
-      else
-        GM_openInTab href
-    when "U"
-      updateNow()
-    when "W"
-      root = if g.REPLY then null else getThread()[0]
-      watchButton = $ "span.filesize ~ img", root
-      watch.call watchButton
 
 nav =
   #TODO page nav

@@ -819,7 +819,8 @@
       }
     },
     normal: function(e) {
-      var thread;
+      var id, thread, url;
+      thread = nav.getThread();
       switch (keybinds.key) {
         case 'I':
           break;
@@ -829,6 +830,10 @@
           break;
         case 'M':
           break;
+        case 'O':
+          id = thread.firstChild.id;
+          url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
+          return location.href = url;
         case 'i':
           break;
         case 'm':
@@ -836,22 +841,23 @@
         case 'n':
           return nav.next();
         case 'o':
-          break;
+          id = thread.firstChild.id;
+          url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
+          return GM_openInTab(url);
         case 'p':
           return nav.prev();
         case 'u':
+          updater.update();
           break;
         case 'w':
-          thread = nav.getThread();
           return watcher.toggle(thread);
         case 'x':
-          thread = nav.getThread();
-          threadHiding.toggle(thread);
+          return threadHiding.toggle(thread);
       }
     }
   };
   keyModeNormal = function(e) {
-    var bot, char, hash, height, href, image, next, prev, qrLink, rect, replies, reply, root, sign, td, thread, top, watchButton, _i, _j, _len, _len2;
+    var bot, char, hash, height, image, next, prev, qrLink, rect, replies, reply, root, td, thread, top, _i, _j, _len, _len2;
     if (e.ctrlKey || e.altKey) {
       return;
     }
@@ -950,24 +956,6 @@
           }
           return imageToggle(image);
         }
-        break;
-      case "N":
-        sign = e.shiftKey ? -1 : 1;
-        return scrollThread(sign);
-      case "O":
-        href = $("" + hash + " ~ span[id] a:last-of-type").href;
-        if (e.shiftKey) {
-          return location.href = href;
-        } else {
-          return GM_openInTab(href);
-        }
-        break;
-      case "U":
-        return updateNow();
-      case "W":
-        root = g.REPLY ? null : getThread()[0];
-        watchButton = $("span.filesize ~ img", root);
-        return watch.call(watchButton);
     }
   };
   nav = {
