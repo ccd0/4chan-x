@@ -279,19 +279,34 @@ autoWatch = ->
   autoText = $('textarea', this).value.slice(0, 25)
   GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
 
-expandComment = (e) ->
-  e.preventDefault()
-  a = this
-  href = a.getAttribute('href')
-  r = new XMLHttpRequest()
-  r.onload = ->
-    onloadComment(@responseText, a, href)
-  r.open('GET', href, true)
-  r.send()
-  g.xhrs.push {
-    r: r,
-    id: href.match(/\d+/)[0]
-  }
+expandComment =
+  init: ->
+    for a in $$ 'span.abbr a'
+      $.bind a, 'click', expandComment.cb.expand
+
+  cb:
+    expand: (e) ->
+      e.preventDefault()
+      a = e.target
+      a.textContent = 'Loading...'
+      href = a.getAttribute 'href'
+      [_, threadID, replyID] = href.match /(\d+)#(\d+)/
+      g.cache[threadID] = $.get href, (->
+        expandComment.load this, a, threadID, replyID)
+  load: (xhr, a, threadID, replyID) ->
+    body = $.el 'body',
+      innerHTML: xhr.responseText
+
+    if threadID is replyID
+      bq = $ 'blockqoute', body
+    else
+      #css selectors don't like ids starting with numbers,
+      # getElementById only works for root document.
+      for reply in $$ 'td[id]', body
+        if reply.id == replyID
+          bq = $ 'blockquote', reply
+          break
+    $.replace a.parentNode.parentNode, bq
 
 expandThread =
   init: ->
@@ -301,9 +316,6 @@ expandThread =
         className: 'omittedposts'
       $.bind a, 'click', expandThread.cb.toggle
       $.replace span, a
-
-  cache: {}
-  requests: {}
 
   cb:
     toggle: (e) ->
@@ -317,7 +329,7 @@ expandThread =
       else
         html = xhr.responseText
         id = thread.firstChild.id
-        expandThread.cache[id] = html
+        g.cache[id] = html
         expandThread.expand html, thread, a
 
   toggle: (thread) ->
@@ -327,15 +339,15 @@ expandThread =
     switch a.textContent[0]
       when '+'
         a.textContent = a.textContent.replace '+', 'X Loading...'
-        if html = expandThread.cache[id]
+        if html = g.cache[id]
           expandThread.expand html, thread, a
         else
-          expandThread.requests[id] =
+          g.requests[id] =
             $.get "res/#{id}", (-> expandThread.cb.load this, thread, a)
 
       when 'X'
         a.textContent = a.textContent.replace 'X Loading...', '+'
-        expandThread.requests[id].abort()
+        g.requests[id].abort()
 
       when '-'
         a.textContent = a.textContent.replace '-', '+'
@@ -793,20 +805,6 @@ nodeInserted = (e) ->
   else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
     $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
     $('#recaptcha_challenge_field', dialog).value = target.value
-
-onloadComment = (responseText, a, href) ->
-  [_, op, id] = href.match /(\d+)#(\d+)/
-  [replies, opbq] = parseResponse responseText
-  if id is op
-    html = opbq.innerHTML
-  else
-    #css selectors don't like ids starting with numbers,
-    # getElementById only works for root document.
-    for reply in replies
-      if reply.id == id
-        html = $('blockquote', reply).innerHTML
-  bq = $.x 'ancestor::blockquote', a
-  bq.innerHTML = html
 
 changeCheckbox = ->
   GM_setValue @name, @checked
@@ -1439,6 +1437,8 @@ watcher =
 #main
 NAMESPACE = 'AEOS.4chan_x.'
 g =
+  cache: {}
+  requests: {}
   callbacks: []
   expand: false
   favDead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC'
@@ -1761,9 +1761,7 @@ else #not reply
     expandThread.init()
 
   if $.config 'Comment Expansion'
-    as = $$('span.abbr a')
-    for a in as
-      $.bind a, 'click', expandComment
+    expandComment.init()
 
 callback() for callback in g.callbacks
 $.bind d.body, 'DOMNodeInserted', nodeInserted

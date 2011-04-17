@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, a, as, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, onloadComment, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keyModeNormal, keybinds, log, nav, navtopr, nodeInserted, option, options, parseResponse, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -423,21 +423,49 @@
     autoText = $('textarea', this).value.slice(0, 25);
     return GM_setValue('autoText', "/" + g.BOARD + "/ - " + autoText);
   };
-  expandComment = function(e) {
-    var a, href, r;
-    e.preventDefault();
-    a = this;
-    href = a.getAttribute('href');
-    r = new XMLHttpRequest();
-    r.onload = function() {
-      return onloadComment(this.responseText, a, href);
-    };
-    r.open('GET', href, true);
-    r.send();
-    return g.xhrs.push({
-      r: r,
-      id: href.match(/\d+/)[0]
-    });
+  expandComment = {
+    init: function() {
+      var a, _i, _len, _ref, _results;
+      _ref = $$('span.abbr a');
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        a = _ref[_i];
+        _results.push($.bind(a, 'click', expandComment.cb.expand));
+      }
+      return _results;
+    },
+    cb: {
+      expand: function(e) {
+        var a, href, replyID, threadID, _, _ref;
+        e.preventDefault();
+        a = e.target;
+        a.textContent = 'Loading...';
+        href = a.getAttribute('href');
+        _ref = href.match(/(\d+)#(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
+        return g.cache[threadID] = $.get(href, (function() {
+          return expandComment.load(this, a, threadID, replyID);
+        }));
+      }
+    },
+    load: function(xhr, a, threadID, replyID) {
+      var body, bq, reply, _i, _len, _ref;
+      body = $.el('body', {
+        innerHTML: xhr.responseText
+      });
+      if (threadID === replyID) {
+        bq = $('blockqoute', body);
+      } else {
+        _ref = $$('td[id]', body);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          reply = _ref[_i];
+          if (reply.id === replyID) {
+            bq = $('blockquote', reply);
+            break;
+          }
+        }
+      }
+      return $.replace(a.parentNode.parentNode, bq);
+    }
   };
   expandThread = {
     init: function() {
@@ -455,8 +483,6 @@
       }
       return _results;
     },
-    cache: {},
-    requests: {},
     cb: {
       toggle: function(e) {
         var thread;
@@ -471,7 +497,7 @@
         } else {
           html = xhr.responseText;
           id = thread.firstChild.id;
-          expandThread.cache[id] = html;
+          g.cache[id] = html;
           return expandThread.expand(html, thread, a);
         }
       }
@@ -483,17 +509,17 @@
       switch (a.textContent[0]) {
         case '+':
           a.textContent = a.textContent.replace('+', 'X Loading...');
-          if (html = expandThread.cache[id]) {
+          if (html = g.cache[id]) {
             return expandThread.expand(html, thread, a);
           } else {
-            return expandThread.requests[id] = $.get("res/" + id, (function() {
+            return g.requests[id] = $.get("res/" + id, (function() {
               return expandThread.cb.load(this, thread, a);
             }));
           }
           break;
         case 'X':
           a.textContent = a.textContent.replace('X Loading...', '+');
-          return expandThread.requests[id].abort();
+          return g.requests[id].abort();
         case '-':
           a.textContent = a.textContent.replace('-', '+');
           num = g.BOARD === 'b' ? 3 : 5;
@@ -1039,23 +1065,6 @@
       $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
       return $('#recaptcha_challenge_field', dialog).value = target.value;
     }
-  };
-  onloadComment = function(responseText, a, href) {
-    var bq, html, id, op, opbq, replies, reply, _, _i, _len, _ref, _ref2;
-    _ref = href.match(/(\d+)#(\d+)/), _ = _ref[0], op = _ref[1], id = _ref[2];
-    _ref2 = parseResponse(responseText), replies = _ref2[0], opbq = _ref2[1];
-    if (id === op) {
-      html = opbq.innerHTML;
-    } else {
-      for (_i = 0, _len = replies.length; _i < _len; _i++) {
-        reply = replies[_i];
-        if (reply.id === id) {
-          html = $('blockquote', reply).innerHTML;
-        }
-      }
-    }
-    bq = $.x('ancestor::blockquote', a);
-    return bq.innerHTML = html;
   };
   changeCheckbox = function() {
     return GM_setValue(this.name, this.checked);
@@ -1826,6 +1835,8 @@
   };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {
+    cache: {},
+    requests: {},
     callbacks: [],
     expand: false,
     favDead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC',
@@ -2209,16 +2220,12 @@
       expandThread.init();
     }
     if ($.config('Comment Expansion')) {
-      as = $$('span.abbr a');
-      for (_k = 0, _len3 = as.length; _k < _len3; _k++) {
-        a = as[_k];
-        $.bind(a, 'click', expandComment);
-      }
+      expandComment.init();
     }
   }
   _ref4 = g.callbacks;
-  for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
-    callback = _ref4[_l];
+  for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
+    callback = _ref4[_k];
     callback();
   }
   $.bind(d.body, 'DOMNodeInserted', nodeInserted);
