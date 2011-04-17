@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, localize, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, scroll, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, localize, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, scroll, temp, threadHiding, titlePost, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1647,6 +1647,13 @@
       });
     }
   };
+  titlePost = {
+    init: function() {
+      var el;
+      el = $('span.filetitle') || $('blockquote');
+      return d.title = "/" + g.BOARD + "/ - " + el.textContent;
+    }
+  };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
@@ -2148,12 +2155,7 @@
       qr.persist();
     }
     if ($.config('Post in Title')) {
-      if (!(text = $('span.filetitle').textContent)) {
-        text = $('blockquote').textContent;
-      }
-      if (text) {
-        d.title = "/" + g.BOARD + "/ - " + text;
-      }
+      titlePost.init();
     }
     if ($.config('Unread Count')) {
       g.replies = [];

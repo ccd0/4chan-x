@@ -1290,6 +1290,11 @@ localize =
         ][date.getDay()]
         s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec} "
 
+titlePost =
+  init: ->
+    el = $('span.filetitle') or $('blockquote')
+    d.title = "/#{g.BOARD}/ - #{el.textContent}"
+
 # TODO rewrite these **************************************************************************
 
 imageClick = (e) ->
@@ -1693,10 +1698,7 @@ if g.REPLY
   if $.config('Quick Reply') and $.config 'Persistent QR'
     qr.persist()
   if $.config 'Post in Title'
-    unless text = $('span.filetitle').textContent
-      text = $('blockquote').textContent
-    if text
-      d.title = "/#{g.BOARD}/ - #{text}"
+    titlePost.init()
   if $.config 'Unread Count'
     g.replies = []
     d.title = '(0) ' + d.title
