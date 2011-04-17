@@ -1426,7 +1426,9 @@
         if ($.config('Verbose')) {
           timer.textContent = '-' + $.config('Interval');
           count.textContent = '+' + arr.length;
-          if (arr.length > 0) {
+          if (arr.length === 0) {
+            count.className = '';
+          } else {
             count.className = 'new';
           }
         }

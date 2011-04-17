@@ -1124,7 +1124,9 @@ updater =
       if $.config 'Verbose'
         timer.textContent = '-' + $.config 'Interval'
         count.textContent = '+' + arr.length
-        if arr.length > 0
+        if arr.length is 0
+          count.className = ''
+        else
           count.className = 'new'
 
       #XXX add replies in correct order so /b/acklinks resolve
