@@ -1532,7 +1532,7 @@
       favicon = $('img.favicon', thread);
       id = favicon.nextSibling.name;
       if (favicon.src === g.favEmpty) {
-        return watcher.watch(id, favicon);
+        return watcher.watch(id, favicon, thread);
       } else {
         return watcher.unwatch(g.BOARD, id);
       }
@@ -1550,11 +1550,12 @@
       delete watched[board][id];
       return $.setValue('watched', watched);
     },
-    watch: function(id, favicon) {
-      var props, watched, _name;
+    watch: function(id, favicon, thread) {
+      var props, tc, watched, _name;
       favicon.src = g.favDefault;
+      tc = $('span.filetitle', thread).textContent || $('blockquote', thread).textContent;
       props = {
-        textContent: ("/" + g.BOARD + "/ - ") + $.x('following-sibling::blockquote', favicon).textContent.slice(0, 25),
+        textContent: "/" + g.BOARD + "/ - " + tc.slice(0, 25),
         href: "/" + g.BOARD + "/res/" + id
       };
       watched = $.getValue('watched', {});
@@ -1985,10 +1986,11 @@
     thumb.className = '';
     return $.remove(thumb.nextSibling);
   };
-  autoWatch = function() {
-    var autoText;
-    autoText = $('textarea', this).value.slice(0, 25);
-    return GM_setValue('autoText', "/" + g.BOARD + "/ - " + autoText);
+  autoWatch = function(e) {
+    var form, tc;
+    form = e.target;
+    tc = $('input[name=sub]', form).value || $('textarea', form).value;
+    return GM_setValue('autoText', "/" + g.BOARD + "/ - " + tc.slice(0, 25));
   };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {

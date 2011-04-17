@@ -1208,7 +1208,7 @@ watcher =
     favicon = $ 'img.favicon', thread
     id = favicon.nextSibling.name
     if favicon.src == g.favEmpty
-      watcher.watch id, favicon
+      watcher.watch id, favicon, thread
     else # favicon.src == g.favDefault
       watcher.unwatch g.BOARD, id
 
@@ -1225,12 +1225,11 @@ watcher =
     delete watched[board][id]
     $.setValue 'watched', watched
 
-  watch: (id, favicon) ->
+  watch: (id, favicon, thread) ->
     favicon.src = g.favDefault
+    tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
     props =
-      textContent: "/#{g.BOARD}/ - " +
-        $.x('following-sibling::blockquote', favicon)
-        .textContent.slice(0,25)
+      textContent: "/#{g.BOARD}/ - #{tc[...25]}"
       href: "/#{g.BOARD}/res/#{id}"
 
     watched = $.getValue 'watched', {}
@@ -1519,10 +1518,10 @@ imageThumb = (thumb) ->
   thumb.className = ''
   $.remove thumb.nextSibling
 
-autoWatch = ->
-  #TODO look for subject
-  autoText = $('textarea', this).value.slice(0, 25)
-  GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
+autoWatch = (e) ->
+  form = e.target
+  tc = $('input[name=sub]', form).value or $('textarea', form).value
+  GM_setValue('autoText', "/#{g.BOARD}/ - #{tc[...25]}")
 
 # /TODO ***************************************************************
 
