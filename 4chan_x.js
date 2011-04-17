@@ -1576,6 +1576,23 @@
       return $('#recaptcha_challenge_field', dialog).value = target.value;
     }
   };
+  scroll = function() {
+    var bottom, height, i, reply, _len, _ref;
+    height = d.body.clientHeight;
+    _ref = g.replies;
+    for (i = 0, _len = _ref.length; i < _len; i++) {
+      reply = _ref[i];
+      bottom = reply.getBoundingClientRect().bottom;
+      if (bottom > height) {
+        break;
+      }
+    }
+    if (i === 0) {
+      return;
+    }
+    g.replies = g.replies.slice(i);
+    return updateTitle();
+  };
   autoWatch = function() {
     var autoText;
     autoText = $('textarea', this).value.slice(0, 25);
@@ -1773,8 +1790,7 @@
     favDeadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII=',
     favDefault: ((_ref = $('link[rel="shortcut icon"]', d)) != null ? _ref.href : void 0) || '',
     favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url='].join('\n'),
-    xhrs: []
+    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url='].join('\n')
   };
   g.favHalo = /ws/.test(g.favDefault) ? 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=';
   pathname = location.pathname.substring(1).split('/');
@@ -1928,23 +1944,6 @@
   recaptcha = $('#recaptcha_response_field');
   $.bind(recaptcha, 'keydown', recaptchaListener);
   $.bind($('form[name=post]'), 'submit', qr.cb.submit);
-  scroll = function() {
-    var bottom, height, i, reply, _len, _ref;
-    height = d.body.clientHeight;
-    _ref = g.replies;
-    for (i = 0, _len = _ref.length; i < _len; i++) {
-      reply = _ref[i];
-      bottom = reply.getBoundingClientRect().bottom;
-      if (bottom > height) {
-        break;
-      }
-    }
-    if (i === 0) {
-      return;
-    }
-    g.replies = g.replies.slice(i);
-    return updateTitle();
-  };
   if ($.config('Image Expansion')) {
     delform = $('form[name=delform]');
     expand = $.el('div', {

@@ -1247,6 +1247,16 @@ nodeInserted = (e) ->
     $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
     $('#recaptcha_challenge_field', dialog).value = target.value
 
+scroll = ->
+  height = d.body.clientHeight
+  for reply, i in g.replies
+    bottom = reply.getBoundingClientRect().bottom
+    if bottom > height #post is not completely read
+      break
+  if i is 0 then return
+  g.replies = g.replies[i..]
+  updateTitle()
+
 autoWatch = ->
   #TODO look for subject
   autoText = $('textarea', this).value.slice(0, 25)
@@ -1394,7 +1404,6 @@ g =
     'http://iqdb.org/?url='
     'http://tineye.com/search?url='
   ].join '\n'
-  xhrs: []
 g.favHalo = if /ws/.test g.favDefault then 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC' else 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
 pathname = location.pathname.substring(1).split('/')
 [g.BOARD, temp] = pathname
@@ -1546,16 +1555,6 @@ recaptcha = $ '#recaptcha_response_field'
 $.bind recaptcha, 'keydown', recaptchaListener
 
 $.bind $('form[name=post]'), 'submit', qr.cb.submit
-
-scroll = ->
-  height = d.body.clientHeight
-  for reply, i in g.replies
-    bottom = reply.getBoundingClientRect().bottom
-    if bottom > height #post is not completely read
-      break
-  if i is 0 then return
-  g.replies = g.replies[i..]
-  updateTitle()
 
 #major features
 if $.config 'Image Expansion'
