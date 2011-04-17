@@ -1870,6 +1870,22 @@
       return window.location = 'javascript:Recaptcha.reload()';
     }
   };
+  nodeInserted = function(e) {
+    var callback, dialog, target, _i, _len, _ref, _results;
+    target = e.target;
+    if (target.nodeName === 'TABLE') {
+      _ref = g.callbacks;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        _results.push(callback(target));
+      }
+      return _results;
+    } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
+      $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+      return $('#recaptcha_challenge_field', dialog).value = target.value;
+    }
+  };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
@@ -1961,22 +1977,6 @@
   imageThumb = function(thumb) {
     thumb.className = '';
     return $.remove(thumb.nextSibling);
-  };
-  nodeInserted = function(e) {
-    var callback, dialog, target, _i, _len, _ref, _results;
-    target = e.target;
-    if (target.nodeName === 'TABLE') {
-      _ref = g.callbacks;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        callback = _ref[_i];
-        _results.push(callback(target));
-      }
-      return _results;
-    } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
-      $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('#recaptcha_challenge_field', dialog).value = target.value;
-    }
   };
   autoWatch = function() {
     var autoText;
