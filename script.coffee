@@ -733,27 +733,25 @@ qr =
           $.remove dialog
 
     messageIframe: (e) ->
-      message = $('table b').firstChild.textContent
+      message = $('table font b')?.firstChild.textContent or ''
       e.source.postMessage message, '*'
       window.location = 'about:blank'
 
     messageTop: (e) ->
       {data} = e
       dialog = $ '#qr'
-      if data is 'Post successful!'
-        if dialog
-          if $.config 'Persistent QR'
-            qr.refresh dialog
-          else
-            $.remove dialog
-        g.seconds = if g.sage then 60 else 30
-        qr.cooldownStart()
-      else
+      if data # error message
         error = $.el 'span',
           className: 'error'
           textContent: data
         $.append dialog, error
         qr.autohide.unset()
+      else
+        if dialog
+          if $.config 'Persistent QR'
+            qr.refresh dialog
+          else
+            $.remove dialog
 
       recaptcha.reload()
 
@@ -1326,7 +1324,7 @@ redirect = ->
   switch g.BOARD
     when 'a', 'g', 'lit', 'sci', 'tv'
       url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when 'cgl', 'jp', 'm', 'tg'
+    when 'jp', 'm', 'tg'
       url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
     when '3', 'adv', 'an', 'c', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
       url = "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
@@ -1558,7 +1556,7 @@ if $.isDST() then g.chanOffset -= 1
 ###
 lastChecked = Number GM_getValue('lastChecked', '0')
 now = Date.now()
-DAY = 24 * 60 * 60
+DAY = 1000 * 60 * 60 * 24
 if lastChecked < now - 1*DAY
   cutoff = now - 7*DAY
   while g.hiddenThreads.length

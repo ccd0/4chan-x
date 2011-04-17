@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        1.27.6
+// @version        1.27.8.2
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -974,8 +974,8 @@
         }
       },
       messageIframe: function(e) {
-        var message;
-        message = $('table b').firstChild.textContent;
+        var message, _ref;
+        message = ((_ref = $('table font b')) != null ? _ref.firstChild.textContent : void 0) || '';
         e.source.postMessage(message, '*');
         return window.location = 'about:blank';
       },
@@ -983,7 +983,14 @@
         var data, dialog, error;
         data = e.data;
         dialog = $('#qr');
-        if (data === 'Post successful!') {
+        if (data) {
+          error = $.el('span', {
+            className: 'error',
+            textContent: data
+          });
+          $.append(dialog, error);
+          qr.autohide.unset();
+        } else {
           if (dialog) {
             if ($.config('Persistent QR')) {
               qr.refresh(dialog);
@@ -991,15 +998,6 @@
               $.remove(dialog);
             }
           }
-          g.seconds = g.sage ? 60 : 30;
-          qr.cooldownStart();
-        } else {
-          error = $.el('span', {
-            className: 'error',
-            textContent: data
-          });
-          $.append(dialog, error);
-          qr.autohide.unset();
         }
         return recaptcha.reload();
       },
@@ -1708,7 +1706,6 @@
       case 'tv':
         url = "http://green-oval.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
-      case 'cgl':
       case 'jp':
       case 'm':
       case 'tg':
@@ -2022,7 +2019,7 @@
   /*
   lastChecked = Number GM_getValue('lastChecked', '0')
   now = Date.now()
-  DAY = 24 * 60 * 60
+  DAY = 1000 * 60 * 60 * 24
   if lastChecked < now - 1*DAY
     cutoff = now - 7*DAY
     while g.hiddenThreads.length
