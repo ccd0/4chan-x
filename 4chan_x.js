@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, el, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageTypeChange, imgExpansion, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, el, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageTypeChange, imgExpansion, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1016,7 +1016,7 @@
       },
       load: function(e) {
         var dialog;
-        recaptchaReload();
+        recaptcha.reload();
         try {
           return e.target.contentWindow.postMessage('', '*');
         } catch (err) {
@@ -1056,7 +1056,7 @@
           $.append(dialog, error);
           qr.autohide.unset();
         }
-        return recaptchaReload();
+        return recaptcha.reload();
       },
       node: function(root) {
         var quote, quotes, _i, _len, _results;
@@ -1183,7 +1183,7 @@
       }
       clone.target = 'iframe';
       $.bind(clone, 'submit', qr.cb.submit);
-      $.bind($('input[name=recaptcha_response_field]', clone), 'keydown', recaptchaListener);
+      $.bind($('input[name=recaptcha_response_field]', clone), 'keydown', recaptcha.listener);
       if (!g.REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
         resto = $.el('input', {
@@ -1206,7 +1206,7 @@
       var board, html, id, recaptcha, thread, _, _base, _ref, _ref2;
       $.bind(window, 'message', qr.cb.messageIframe);
       if (recaptcha = $('#recaptcha_response_field')) {
-        $.bind(recaptcha, 'keydown', recaptchaListener);
+        $.bind(recaptcha, 'keydown', recaptcha.listener);
       }
       if ($.config('Auto Watch')) {
         html = $('b').innerHTML;
@@ -1815,6 +1815,61 @@
       return $.replace(favicon, clone);
     }
   };
+  redirect = function() {
+    var url;
+    switch (g.BOARD) {
+      case 'a':
+      case 'g':
+      case 'lit':
+      case 'sci':
+      case 'tv':
+        url = "http://green-oval.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        break;
+      case 'cgl':
+      case 'jp':
+      case 'm':
+      case 'tg':
+        url = "http://archive.easymodo.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        break;
+      case '3':
+      case 'adv':
+      case 'an':
+      case 'c':
+      case 'ck':
+      case 'co':
+      case 'fa':
+      case 'fit':
+      case 'int':
+      case 'k':
+      case 'mu':
+      case 'n':
+      case 'o':
+      case 'p':
+      case 'po':
+      case 'soc':
+      case 'sp':
+      case 'toy':
+      case 'trv':
+      case 'v':
+      case 'vp':
+      case 'x':
+        url = "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        break;
+      default:
+        url = "http://boards.4chan.org/" + g.BOARD;
+    }
+    return location.href = url;
+  };
+  recaptcha = {
+    listener: function(e) {
+      if (e.keyCode === 8 && this.value === '') {
+        return recaptcha.reload();
+      }
+    },
+    reload: function() {
+      return window.location = 'javascript:Recaptcha.reload()';
+    }
+  };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
@@ -1927,59 +1982,6 @@
     var autoText;
     autoText = $('textarea', this).value.slice(0, 25);
     return GM_setValue('autoText', "/" + g.BOARD + "/ - " + autoText);
-  };
-  recaptchaListener = function(e) {
-    if (e.keyCode === 8 && this.value === '') {
-      return recaptchaReload();
-    }
-  };
-  recaptchaReload = function() {
-    return window.location = 'javascript:Recaptcha.reload()';
-  };
-  redirect = function() {
-    var url;
-    switch (g.BOARD) {
-      case 'a':
-      case 'g':
-      case 'lit':
-      case 'sci':
-      case 'tv':
-        url = "http://green-oval.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      case 'cgl':
-      case 'jp':
-      case 'm':
-      case 'tg':
-        url = "http://archive.easymodo.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      case '3':
-      case 'adv':
-      case 'an':
-      case 'c':
-      case 'ck':
-      case 'co':
-      case 'fa':
-      case 'fit':
-      case 'int':
-      case 'k':
-      case 'mu':
-      case 'n':
-      case 'o':
-      case 'p':
-      case 'po':
-      case 'soc':
-      case 'sp':
-      case 'toy':
-      case 'trv':
-      case 'v':
-      case 'vp':
-      case 'x':
-        url = "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      default:
-        url = "http://boards.4chan.org/" + g.BOARD;
-    }
-    return location.href = url;
   };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {
@@ -2143,7 +2145,7 @@
     el.tabIndex = 1;
   }
   recaptcha = $('#recaptcha_response_field');
-  $.bind(recaptcha, 'keydown', recaptchaListener);
+  $.bind(recaptcha, 'keydown', recaptcha.listener);
   $.bind($('form[name=post]'), 'submit', qr.cb.submit);
   if ($.config('Image Expansion')) {
     imgExpansion.init();

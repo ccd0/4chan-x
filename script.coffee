@@ -764,7 +764,7 @@ qr =
         $.removeClass dialog, 'auto'
 
     load: (e) ->
-      recaptchaReload()
+      recaptcha.reload()
       try
         e.target.contentWindow.postMessage '', '*'
       catch err
@@ -798,7 +798,7 @@ qr =
         $.append dialog, error
         qr.autohide.unset()
 
-      recaptchaReload()
+      recaptcha.reload()
 
     node: (root) ->
       quotes = $$ 'a.quotejs:not(:first-child)', root
@@ -901,7 +901,7 @@ qr =
       $.remove script
     clone.target = 'iframe'
     $.bind clone, 'submit', qr.cb.submit
-    $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', recaptchaListener
+    $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', recaptcha.listener
 
     if not g.REPLY
       #figure out which thread we're replying to
@@ -928,7 +928,7 @@ qr =
     $.bind window, 'message', qr.cb.messageIframe
     if recaptcha = $ '#recaptcha_response_field'
       # post reporting
-      $.bind recaptcha, 'keydown', recaptchaListener
+      $.bind recaptcha, 'keydown', recaptcha.listener
     if $.config 'Auto Watch'
       html = $('b').innerHTML
       [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
@@ -1405,6 +1405,25 @@ unread =
     clone.href = href
     $.replace favicon, clone
 
+redirect = ->
+  switch g.BOARD
+    when 'a', 'g', 'lit', 'sci', 'tv'
+      url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
+    when 'cgl', 'jp', 'm', 'tg'
+      url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
+    when '3', 'adv', 'an', 'c', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
+      url = "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
+    else
+      url = "http://boards.4chan.org/#{g.BOARD}"
+  location.href = url
+
+recaptcha =
+  listener: (e) ->
+    if e.keyCode is 8 and @value is ''
+      recaptcha.reload()
+  reload: ->
+    window.location = 'javascript:Recaptcha.reload()'
+
 # TODO rewrite these **************************************************************************
 
 imageClick = (e) ->
@@ -1496,25 +1515,6 @@ autoWatch = ->
   #TODO look for subject
   autoText = $('textarea', this).value.slice(0, 25)
   GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
-
-recaptchaListener = (e) ->
-  if e.keyCode is 8 and @value is ''
-    recaptchaReload()
-
-recaptchaReload = ->
-  window.location = 'javascript:Recaptcha.reload()'
-
-redirect = ->
-  switch g.BOARD
-    when 'a', 'g', 'lit', 'sci', 'tv'
-      url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when 'cgl', 'jp', 'm', 'tg'
-      url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when '3', 'adv', 'an', 'c', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
-      url = "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    else
-      url = "http://boards.4chan.org/#{g.BOARD}"
-  location.href = url
 
 # /TODO ***************************************************************
 
@@ -1682,7 +1682,7 @@ else
 for el in $$ '#recaptcha_table a'
   el.tabIndex = 1
 recaptcha = $ '#recaptcha_response_field'
-$.bind recaptcha, 'keydown', recaptchaListener
+$.bind recaptcha, 'keydown', recaptcha.listener
 
 $.bind $('form[name=post]'), 'submit', qr.cb.submit
 
