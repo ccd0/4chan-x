@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, el, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageTypeChange, imgExpansion, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, scroll, temp, threadHiding, titlePost, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, el, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageTypeChange, imgExpansion, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1724,6 +1724,63 @@
       }
     }
   };
+  unread = {
+    init: function() {
+      d.title = '(0) ' + d.title;
+      $.bind(window, 'scroll', unread.cb.scroll);
+      return g.callbacks.push(unread.cb.node);
+    },
+    cb: {
+      node: function(root) {
+        unread.replies = unread.replies.concat($$('td[id]', root));
+        return unread.updateTitle();
+      },
+      scroll: function(e) {
+        var bottom, height, i, reply, _len, _ref;
+        height = d.body.clientHeight;
+        _ref = unread.replies;
+        for (i = 0, _len = _ref.length; i < _len; i++) {
+          reply = _ref[i];
+          bottom = reply.getBoundingClientRect().bottom;
+          if (bottom > height) {
+            break;
+          }
+        }
+        if (i === 0) {
+          return;
+        }
+        unread.replies = unread.replies.slice(i);
+        return unread.updateTitle();
+      }
+    },
+    updateTitle: function() {
+      var l;
+      l = unread.replies.length;
+      d.title = d.title.replace(/\d+/, l);
+      return updateFavicon();
+    },
+    updateFavicon: function() {
+      var clone, favicon, href, l;
+      l = unread.replies.length;
+      if (g.dead) {
+        if (l > 0) {
+          href = g.favDeadHalo;
+        } else {
+          href = g.favDead;
+        }
+      } else {
+        if (l > 0) {
+          href = g.favHalo;
+        } else {
+          href = g.favDefault;
+        }
+      }
+      favicon = $('link[rel="shortcut icon"]', d.head);
+      clone = favicon.cloneNode(true);
+      clone.href = href;
+      return $.replace(favicon, clone);
+    }
+  };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
@@ -1832,23 +1889,6 @@
       return $('#recaptcha_challenge_field', dialog).value = target.value;
     }
   };
-  scroll = function() {
-    var bottom, height, i, reply, _len, _ref;
-    height = d.body.clientHeight;
-    _ref = g.replies;
-    for (i = 0, _len = _ref.length; i < _len; i++) {
-      reply = _ref[i];
-      bottom = reply.getBoundingClientRect().bottom;
-      if (bottom > height) {
-        break;
-      }
-    }
-    if (i === 0) {
-      return;
-    }
-    g.replies = g.replies.slice(i);
-    return updateTitle();
-  };
   autoWatch = function() {
     var autoText;
     autoText = $('textarea', this).value.slice(0, 25);
@@ -1940,33 +1980,6 @@
       $('input[value="Report"]').click();
       return input.click();
     }
-  };
-  updateFavicon = function() {
-    var clone, favicon, href, len;
-    len = g.replies.length;
-    if (g.dead) {
-      if (len > 0) {
-        href = g.favDeadHalo;
-      } else {
-        href = g.favDead;
-      }
-    } else {
-      if (len > 0) {
-        href = g.favHalo;
-      } else {
-        href = g.favDefault;
-      }
-    }
-    favicon = $('link[rel="shortcut icon"]', d);
-    clone = favicon.cloneNode(true);
-    clone.href = href;
-    return $.replace(favicon, clone);
-  };
-  updateTitle = function() {
-    var len;
-    len = g.replies.length;
-    d.title = d.title.replace(/\d+/, len);
-    return updateFavicon();
   };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {
@@ -2179,13 +2192,7 @@
       titlePost.init();
     }
     if ($.config('Unread Count')) {
-      g.replies = [];
-      d.title = '(0) ' + d.title;
-      $.bind(window, 'scroll', scroll);
-      g.callbacks.push(function(root) {
-        g.replies = g.replies.concat($$('td.reply, td.replyhl', root));
-        return updateTitle();
-      });
+      unread.init();
     }
   } else {
     if ($.config('Thread Hiding')) {

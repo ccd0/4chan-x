@@ -1341,6 +1341,49 @@ imgExpansion =
         $.bind thumb.parentNode, 'click', imageClick
         if g.expand then imageToggle thumb.parentNode
 
+unread =
+  init: ->
+    d.title = '(0) ' + d.title
+    $.bind window, 'scroll', unread.cb.scroll
+    g.callbacks.push unread.cb.node
+
+  cb:
+    node: (root) ->
+      unread.replies = unread.replies.concat $$ 'td[id]', root
+      unread.updateTitle()
+
+    scroll: (e) ->
+      height = d.body.clientHeight
+      for reply, i in unread.replies
+        bottom = reply.getBoundingClientRect().bottom
+        if bottom > height #post is not completely read
+          break
+      if i is 0 then return
+      unread.replies = unread.replies[i..]
+      unread.updateTitle()
+
+  updateTitle: ->
+    l = unread.replies.length
+    d.title = d.title.replace /\d+/, l
+    updateFavicon()
+
+  updateFavicon: ->
+    l = unread.replies.length
+    if g.dead
+      if l > 0
+        href = g.favDeadHalo
+      else
+        href = g.favDead
+    else
+      if l > 0
+        href = g.favHalo
+      else
+        href = g.favDefault
+    favicon = $ 'link[rel="shortcut icon"]', d.head
+    clone = favicon.cloneNode true
+    clone.href = href
+    $.replace favicon, clone
+
 # TODO rewrite these **************************************************************************
 
 imageClick = (e) ->
@@ -1428,16 +1471,6 @@ nodeInserted = (e) ->
     $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
     $('#recaptcha_challenge_field', dialog).value = target.value
 
-scroll = ->
-  height = d.body.clientHeight
-  for reply, i in g.replies
-    bottom = reply.getBoundingClientRect().bottom
-    if bottom > height #post is not completely read
-      break
-  if i is 0 then return
-  g.replies = g.replies[i..]
-  updateTitle()
-
 autoWatch = ->
   #TODO look for subject
   autoText = $('textarea', this).value.slice(0, 25)
@@ -1483,27 +1516,7 @@ quickReport =
     $('input[value="Report"]').click()
     input.click()
 
-updateFavicon = ->
-  len = g.replies.length
-  if g.dead
-    if len > 0
-      href = g.favDeadHalo
-    else
-      href = g.favDead
-  else
-    if len > 0
-      href = g.favHalo
-    else
-      href = g.favDefault
-  favicon = $ 'link[rel="shortcut icon"]', d
-  clone = favicon.cloneNode true
-  clone.href = href
-  $.replace favicon, clone
-
-updateTitle = ->
-  len = g.replies.length
-  d.title = d.title.replace /\d+/, len
-  updateFavicon()
+# /TODO ***************************************************************
 
 #main
 NAMESPACE = 'AEOS.4chan_x.'
@@ -1721,12 +1734,7 @@ if g.REPLY
     titlePost.init()
 
   if $.config 'Unread Count'
-    g.replies = []
-    d.title = '(0) ' + d.title
-    $.bind window, 'scroll', scroll
-    g.callbacks.push (root) ->
-      g.replies = g.replies.concat $$ 'td.reply, td.replyhl', root
-      updateTitle()
+    unread.init()
 
 else #not reply
   if $.config 'Thread Hiding'
