@@ -1724,6 +1724,40 @@
       }
     }
   };
+  quickReport = {
+    init: function() {
+      return g.callbacks.push(quickReport.cb.node);
+    },
+    cb: {
+      node: function(root) {
+        var a, arr, el, _i, _len, _results;
+        arr = $$('span[id^=no]', root);
+        _results = [];
+        for (_i = 0, _len = arr.length; _i < _len; _i++) {
+          el = arr[_i];
+          a = $.el('a', {
+            textContent: '[ ! ]'
+          });
+          $.bind(a, 'click', quickReport.cb.report);
+          $.after(el, a);
+          _results.push($.after(el, $.tn(' ')));
+        }
+        return _results;
+      },
+      report: function(e) {
+        var target;
+        target = e.target;
+        return quickReport.report(target);
+      }
+    },
+    report: function(target) {
+      var input;
+      input = $.x('preceding-sibling::input[1]', target);
+      input.click();
+      $('input[value="Report"]').click();
+      return input.click();
+    }
+  };
   unread = {
     init: function() {
       d.title = '(0) ' + d.title;
@@ -1946,40 +1980,6 @@
         url = "http://boards.4chan.org/" + g.BOARD;
     }
     return location.href = url;
-  };
-  quickReport = {
-    init: function() {
-      return g.callbacks.push(quickReport.cb.node);
-    },
-    cb: {
-      node: function(root) {
-        var a, arr, el, _i, _len, _results;
-        arr = $$('span[id^=no]', root);
-        _results = [];
-        for (_i = 0, _len = arr.length; _i < _len; _i++) {
-          el = arr[_i];
-          a = $.el('a', {
-            textContent: '[ ! ]'
-          });
-          $.bind(a, 'click', quickReport.cb.report);
-          $.after(el, a);
-          _results.push($.after(el, $.tn(' ')));
-        }
-        return _results;
-      },
-      report: function(e) {
-        var target;
-        target = e.target;
-        return quickReport.report(target);
-      }
-    },
-    report: function(target) {
-      var input;
-      input = $.x('preceding-sibling::input[1]', target);
-      input.click();
-      $('input[value="Report"]').click();
-      return input.click();
-    }
   };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {

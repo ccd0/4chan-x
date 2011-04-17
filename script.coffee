@@ -1341,6 +1341,27 @@ imgExpansion =
         $.bind thumb.parentNode, 'click', imageClick
         if g.expand then imageToggle thumb.parentNode
 
+quickReport =
+  init: ->
+    g.callbacks.push quickReport.cb.node
+  cb:
+    node: (root) ->
+      arr = $$ 'span[id^=no]', root
+      for el in arr
+        a = $.el 'a',
+          textContent: '[ ! ]'
+        $.bind a, 'click', quickReport.cb.report
+        $.after el, a
+        $.after el, $.tn(' ')
+    report: (e) ->
+      {target} = e
+      quickReport.report target
+  report: (target) ->
+    input = $.x('preceding-sibling::input[1]', target)
+    input.click()
+    $('input[value="Report"]').click()
+    input.click()
+
 unread =
   init: ->
     d.title = '(0) ' + d.title
@@ -1494,27 +1515,6 @@ redirect = ->
     else
       url = "http://boards.4chan.org/#{g.BOARD}"
   location.href = url
-
-quickReport =
-  init: ->
-    g.callbacks.push quickReport.cb.node
-  cb:
-    node: (root) ->
-      arr = $$ 'span[id^=no]', root
-      for el in arr
-        a = $.el 'a',
-          textContent: '[ ! ]'
-        $.bind a, 'click', quickReport.cb.report
-        $.after el, a
-        $.after el, $.tn(' ')
-    report: (e) ->
-      {target} = e
-      quickReport.report target
-  report: (target) ->
-    input = $.x('preceding-sibling::input[1]', target)
-    input.click()
-    $('input[value="Report"]').click()
-    input.click()
 
 # /TODO ***************************************************************
 
