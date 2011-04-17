@@ -1295,6 +1295,14 @@ titlePost =
     el = $('span.filetitle') or $('blockquote')
     d.title = "/#{g.BOARD}/ - #{el.textContent}"
 
+imgPreloading =
+  init: ->
+    g.callbacks.push (root) ->
+      thumbs = $$ 'img[md5]', root
+      for thumb in thumbs
+        parent = thumb.parentNode
+        el = $.el 'img', src: parent.href
+
 # TODO rewrite these **************************************************************************
 
 imageClick = (e) ->
@@ -1690,11 +1698,7 @@ if g.REPLY
     updater.init()
 
   if $.config 'Image Preloading'
-    g.callbacks.push (root) ->
-      thumbs = $$ 'img[md5]', root
-      for thumb in thumbs
-        parent = thumb.parentNode
-        el = $.el 'img', src: parent.href
+    imgPreloading.init()
   if $.config('Quick Reply') and $.config 'Persistent QR'
     qr.persist()
   if $.config 'Post in Title'

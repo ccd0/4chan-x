@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, localize, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, scroll, temp, threadHiding, titlePost, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, option, options, pathname, qr, quickReport, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, sauce, scroll, temp, threadHiding, titlePost, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -1654,6 +1654,23 @@
       return d.title = "/" + g.BOARD + "/ - " + el.textContent;
     }
   };
+  imgPreloading = {
+    init: function() {
+      return g.callbacks.push(function(root) {
+        var el, parent, thumb, thumbs, _i, _len, _results;
+        thumbs = $$('img[md5]', root);
+        _results = [];
+        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+          thumb = thumbs[_i];
+          parent = thumb.parentNode;
+          _results.push(el = $.el('img', {
+            src: parent.href
+          }));
+        }
+        return _results;
+      });
+    }
+  };
   imageClick = function(e) {
     if (e.shiftKey || e.altKey || e.ctrlKey) {
       return;
@@ -2137,19 +2154,7 @@
       updater.init();
     }
     if ($.config('Image Preloading')) {
-      g.callbacks.push(function(root) {
-        var parent, thumb, thumbs, _i, _len, _results;
-        thumbs = $$('img[md5]', root);
-        _results = [];
-        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-          thumb = thumbs[_i];
-          parent = thumb.parentNode;
-          _results.push(el = $.el('img', {
-            src: parent.href
-          }));
-        }
-        return _results;
-      });
+      imgPreloading.init();
     }
     if ($.config('Quick Reply') && $.config('Persistent QR')) {
       qr.persist();
