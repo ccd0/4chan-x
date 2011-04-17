@@ -274,11 +274,6 @@ $$ = (selector, root=d.body) ->
   node for node in result
 
 #funks
-autoWatch = ->
-  #TODO look for subject
-  autoText = $('textarea', this).value.slice(0, 25)
-  GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
-
 expandComment =
   init: ->
     for a in $$ 'span.abbr a'
@@ -473,83 +468,6 @@ imageHover =
       img.src = null
       $.unbind target, 'mousemove', imageHover.cb.mousemove
       $.unbind target, 'mouseout',  imageHover.cb.mouseout
-
-imageClick = (e) ->
-  return if e.shiftKey or e.altKey or e.ctrlKey
-  e.preventDefault()
-  imageToggle this
-
-imageToggle = (image) ->
-  # 'image' is actually the <a> container
-  thumb = image.firstChild
-  cw = d.body.clientWidth
-  ch = d.body.clientHeight
-  imageType = $("#imageType").value
-  if thumb.className is 'hide'
-    imageThumb thumb
-  else
-    imageExpand thumb, cw, ch, imageType
-
-imageTypeChange = ->
-  images = $$ 'img[md5] + img'
-  cw = d.body.clientWidth
-  ch = d.body.clientHeight
-  imageType = @value
-  for image in images
-    imageResize cw, ch, imageType, image
-
-imageExpandClick = ->
-  thumbs = $$ 'img[md5]'
-  g.expand = @checked
-  cw = d.body.clientWidth
-  ch = d.body.clientHeight
-  imageType = $("#imageType").value
-  if @checked #expand
-    for thumb in thumbs
-      if thumb.className isnt 'hide'
-        #hide the thumb and show image
-        imageExpand thumb, cw, ch, imageType
-  else #contract
-    for thumb in thumbs
-      if thumb.className is 'hide'
-        #unhide thumb and remove image
-        imageThumb thumb
-
-
-imageExpand = (thumb, cw, ch, imageType) ->
-  thumb.className = 'hide'
-  link = thumb.parentNode
-  image = $.el 'img',
-    src: link.href
-  link.appendChild image
-
-  imageResize cw, ch, imageType, image
-
-imageResize = (cw, ch, imageType, image) ->
-  [_, iw, ih] =
-    $.x("preceding::span[@class][1]/text()[2]", image)
-    .textContent.match(/(\d+)x(\d+)/)
-  iw = Number iw
-  ih = Number ih
-
-  switch imageType
-    when 'full'
-      image.removeAttribute 'style'
-      return
-    when 'fit width'
-      if iw > cw
-        image.style.width = '100%'
-        image.style.margin = '0px'
-      break
-    when 'fit screen'
-      ratio = Math.min cw/iw, ch/ih
-      if ratio < 1
-        image.style.width = Math.floor ratio * iw
-        image.style.margin = '0px'
-
-imageThumb = (thumb) ->
-  thumb.className = ''
-  $.remove thumb.nextSibling
 
 keybinds =
   init: ->
@@ -756,40 +674,6 @@ nav =
 
     {top} = nav.threads[i].getBoundingClientRect()
     window.scrollBy 0, top
-
-scrollThread = (count) ->
-  [thread, idx] = getThread()
-  top = thread.getBoundingClientRect().top
-  if idx is 0 and top > 1
-    #we haven't scrolled to the first thread
-    idx = -1
-  if count < 0 and top < -1
-    #we've started scrolling past this thread,
-    # but now want to read from the beginning
-    count++
-  temp = idx + count
-  if temp < 0
-    hash = ''
-  else if temp > 9
-    hash = 'p9'
-  else
-    hash = "p#{temp}"
-  location.hash = hash
-
-nodeInserted = (e) ->
-  target = e.target
-  if target.nodeName is 'TABLE'
-    for callback in g.callbacks
-      callback target
-  else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
-    $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('#recaptcha_challenge_field', dialog).value = target.value
-
-changeCheckbox = ->
-  GM_setValue @name, @checked
-
-changeValue = ->
-  GM_setValue @name, @value
 
 options =
   init: ->
@@ -1057,39 +941,6 @@ qr =
         }
         GM_setValue 'watched', JSON.stringify g.watched
 
-recaptchaListener = (e) ->
-  if e.keyCode is 8 and @value is ''
-    recaptchaReload()
-
-recaptchaReload = ->
-  window.location = 'javascript:Recaptcha.reload()'
-
-redirect = ->
-  switch g.BOARD
-    when 'a', 'g', 'lit', 'sci', 'tv'
-      url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when 'cgl', 'jp', 'm', 'tg'
-      url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when '3', 'adv', 'an', 'c', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
-      url = "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    else
-      url = "http://boards.4chan.org/#{g.BOARD}"
-  location.href = url
-
-replyNav = ->
-  if g.REPLY
-    window.location = if @textContent is '▲' then '#navtop' else '#navbot'
-  else
-    direction = if @textContent is '▲' then 'preceding' else 'following'
-    op = $.x("#{direction}::span[starts-with(@id, 'nothread')][1]", this).id
-    window.location = "##{op}"
-
-report = ->
-  input = $.x('preceding-sibling::input[1]', this)
-  input.click()
-  $('input[value="Report"]').click()
-  input.click()
-
 threadHiding =
   init: ->
     node = $ 'form[name=delform] > *'
@@ -1189,28 +1040,6 @@ threadHiding =
     node = node.nextElementSibling #skip text node
     unless node.nodeName is 'CENTER'
       threadHiding.thread node
-
-updateFavicon = ->
-  len = g.replies.length
-  if g.dead
-    if len > 0
-      href = g.favDeadHalo
-    else
-      href = g.favDead
-  else
-    if len > 0
-      href = g.favHalo
-    else
-      href = g.favDefault
-  favicon = $ 'link[rel="shortcut icon"]', d
-  clone = favicon.cloneNode true
-  clone.href = href
-  $.replace favicon, clone
-
-updateTitle = ->
-  len = g.replies.length
-  d.title = d.title.replace /\d+/, len
-  updateFavicon()
 
 updater =
   init: ->
@@ -1405,6 +1234,169 @@ watcher =
     $.setValue 'watched', watched
 
     watcher.addLink props
+
+# TODO rewrite these
+scrollThread = (count) ->
+  [thread, idx] = getThread()
+  top = thread.getBoundingClientRect().top
+  if idx is 0 and top > 1
+    #we haven't scrolled to the first thread
+    idx = -1
+  if count < 0 and top < -1
+    #we've started scrolling past this thread,
+    # but now want to read from the beginning
+    count++
+  temp = idx + count
+  if temp < 0
+    hash = ''
+  else if temp > 9
+    hash = 'p9'
+  else
+    hash = "p#{temp}"
+  location.hash = hash
+
+nodeInserted = (e) ->
+  target = e.target
+  if target.nodeName is 'TABLE'
+    for callback in g.callbacks
+      callback target
+  else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
+    $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+    $('#recaptcha_challenge_field', dialog).value = target.value
+
+autoWatch = ->
+  #TODO look for subject
+  autoText = $('textarea', this).value.slice(0, 25)
+  GM_setValue('autoText', "/#{g.BOARD}/ - #{autoText}")
+
+imageClick = (e) ->
+  return if e.shiftKey or e.altKey or e.ctrlKey
+  e.preventDefault()
+  imageToggle this
+
+imageToggle = (image) ->
+  # 'image' is actually the <a> container
+  thumb = image.firstChild
+  cw = d.body.clientWidth
+  ch = d.body.clientHeight
+  imageType = $("#imageType").value
+  if thumb.className is 'hide'
+    imageThumb thumb
+  else
+    imageExpand thumb, cw, ch, imageType
+
+imageTypeChange = ->
+  images = $$ 'img[md5] + img'
+  cw = d.body.clientWidth
+  ch = d.body.clientHeight
+  imageType = @value
+  for image in images
+    imageResize cw, ch, imageType, image
+
+imageExpandClick = ->
+  thumbs = $$ 'img[md5]'
+  g.expand = @checked
+  cw = d.body.clientWidth
+  ch = d.body.clientHeight
+  imageType = $("#imageType").value
+  if @checked #expand
+    for thumb in thumbs
+      if thumb.className isnt 'hide'
+        #hide the thumb and show image
+        imageExpand thumb, cw, ch, imageType
+  else #contract
+    for thumb in thumbs
+      if thumb.className is 'hide'
+        #unhide thumb and remove image
+        imageThumb thumb
+
+imageExpand = (thumb, cw, ch, imageType) ->
+  thumb.className = 'hide'
+  link = thumb.parentNode
+  image = $.el 'img',
+    src: link.href
+  link.appendChild image
+
+  imageResize cw, ch, imageType, image
+
+imageResize = (cw, ch, imageType, image) ->
+  [_, iw, ih] =
+    $.x("preceding::span[@class][1]/text()[2]", image)
+    .textContent.match(/(\d+)x(\d+)/)
+  iw = Number iw
+  ih = Number ih
+
+  switch imageType
+    when 'full'
+      image.removeAttribute 'style'
+      return
+    when 'fit width'
+      if iw > cw
+        image.style.width = '100%'
+        image.style.margin = '0px'
+      break
+    when 'fit screen'
+      ratio = Math.min cw/iw, ch/ih
+      if ratio < 1
+        image.style.width = Math.floor ratio * iw
+        image.style.margin = '0px'
+
+imageThumb = (thumb) ->
+  thumb.className = ''
+  $.remove thumb.nextSibling
+
+changeCheckbox = ->
+  GM_setValue @name, @checked
+
+changeValue = ->
+  GM_setValue @name, @value
+
+recaptchaListener = (e) ->
+  if e.keyCode is 8 and @value is ''
+    recaptchaReload()
+
+recaptchaReload = ->
+  window.location = 'javascript:Recaptcha.reload()'
+
+redirect = ->
+  switch g.BOARD
+    when 'a', 'g', 'lit', 'sci', 'tv'
+      url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
+    when 'cgl', 'jp', 'm', 'tg'
+      url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
+    when '3', 'adv', 'an', 'c', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
+      url = "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
+    else
+      url = "http://boards.4chan.org/#{g.BOARD}"
+  location.href = url
+
+report = ->
+  input = $.x('preceding-sibling::input[1]', this)
+  input.click()
+  $('input[value="Report"]').click()
+  input.click()
+
+updateFavicon = ->
+  len = g.replies.length
+  if g.dead
+    if len > 0
+      href = g.favDeadHalo
+    else
+      href = g.favDead
+  else
+    if len > 0
+      href = g.favHalo
+    else
+      href = g.favDefault
+  favicon = $ 'link[rel="shortcut icon"]', d
+  clone = favicon.cloneNode true
+  clone.href = href
+  $.replace favicon, clone
+
+updateTitle = ->
+  len = g.replies.length
+  d.title = d.title.replace /\d+/, len
+  updateFavicon()
 
 #main
 NAMESPACE = 'AEOS.4chan_x.'

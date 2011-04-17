@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, replyNav, report, scroll, scrollThread, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+  var $, $$, NAMESPACE, autoWatch, callback, changeCheckbox, changeValue, config, d, delform, el, expand, expandComment, expandThread, g, imageClick, imageExpand, imageExpandClick, imageHover, imageResize, imageThumb, imageToggle, imageType, imageTypeChange, keybinds, log, nav, navtopr, nodeInserted, option, options, pathname, qr, recaptcha, recaptchaListener, recaptchaReload, redirect, replyHiding, report, scroll, scrollThread, temp, text, threadHiding, tzOffset, ui, updateFavicon, updateTitle, updater, watcher, _config, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = console.log;
@@ -418,11 +418,6 @@
     }
     return _results;
   };
-  autoWatch = function() {
-    var autoText;
-    autoText = $('textarea', this).value.slice(0, 25);
-    return GM_setValue('autoText', "/" + g.BOARD + "/ - " + autoText);
-  };
   expandComment = {
     init: function() {
       var a, _i, _len, _ref, _results;
@@ -670,98 +665,6 @@
       }
     }
   };
-  imageClick = function(e) {
-    if (e.shiftKey || e.altKey || e.ctrlKey) {
-      return;
-    }
-    e.preventDefault();
-    return imageToggle(this);
-  };
-  imageToggle = function(image) {
-    var ch, cw, imageType, thumb;
-    thumb = image.firstChild;
-    cw = d.body.clientWidth;
-    ch = d.body.clientHeight;
-    imageType = $("#imageType").value;
-    if (thumb.className === 'hide') {
-      return imageThumb(thumb);
-    } else {
-      return imageExpand(thumb, cw, ch, imageType);
-    }
-  };
-  imageTypeChange = function() {
-    var ch, cw, image, imageType, images, _i, _len, _results;
-    images = $$('img[md5] + img');
-    cw = d.body.clientWidth;
-    ch = d.body.clientHeight;
-    imageType = this.value;
-    _results = [];
-    for (_i = 0, _len = images.length; _i < _len; _i++) {
-      image = images[_i];
-      _results.push(imageResize(cw, ch, imageType, image));
-    }
-    return _results;
-  };
-  imageExpandClick = function() {
-    var ch, cw, imageType, thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
-    thumbs = $$('img[md5]');
-    g.expand = this.checked;
-    cw = d.body.clientWidth;
-    ch = d.body.clientHeight;
-    imageType = $("#imageType").value;
-    if (this.checked) {
-      _results = [];
-      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-        thumb = thumbs[_i];
-        _results.push(thumb.className !== 'hide' ? imageExpand(thumb, cw, ch, imageType) : void 0);
-      }
-      return _results;
-    } else {
-      _results2 = [];
-      for (_j = 0, _len2 = thumbs.length; _j < _len2; _j++) {
-        thumb = thumbs[_j];
-        _results2.push(thumb.className === 'hide' ? imageThumb(thumb) : void 0);
-      }
-      return _results2;
-    }
-  };
-  imageExpand = function(thumb, cw, ch, imageType) {
-    var image, link;
-    thumb.className = 'hide';
-    link = thumb.parentNode;
-    image = $.el('img', {
-      src: link.href
-    });
-    link.appendChild(image);
-    return imageResize(cw, ch, imageType, image);
-  };
-  imageResize = function(cw, ch, imageType, image) {
-    var ih, iw, ratio, _, _ref;
-    _ref = $.x("preceding::span[@class][1]/text()[2]", image).textContent.match(/(\d+)x(\d+)/), _ = _ref[0], iw = _ref[1], ih = _ref[2];
-    iw = Number(iw);
-    ih = Number(ih);
-    switch (imageType) {
-      case 'full':
-        image.removeAttribute('style');
-        break;
-      case 'fit width':
-        if (iw > cw) {
-          image.style.width = '100%';
-          image.style.margin = '0px';
-        }
-        break;
-      case 'fit screen':
-        ratio = Math.min(cw / iw, ch / ih);
-        if (ratio < 1) {
-          image.style.width = Math.floor(ratio * iw);
-          return image.style.margin = '0px';
-        }
-    }
-  };
-  imageThumb = function(thumb) {
-    thumb.className = '';
-    return $.remove(thumb.nextSibling);
-  };
   keybinds = {
     init: function() {
       $.bind(d, 'keydown', keybinds.cb.keydown);
@@ -1001,48 +904,6 @@
       top = nav.threads[i].getBoundingClientRect().top;
       return window.scrollBy(0, top);
     }
-  };
-  scrollThread = function(count) {
-    var hash, idx, temp, thread, top, _ref;
-    _ref = getThread(), thread = _ref[0], idx = _ref[1];
-    top = thread.getBoundingClientRect().top;
-    if (idx === 0 && top > 1) {
-      idx = -1;
-    }
-    if (count < 0 && top < -1) {
-      count++;
-    }
-    temp = idx + count;
-    if (temp < 0) {
-      hash = '';
-    } else if (temp > 9) {
-      hash = 'p9';
-    } else {
-      hash = "p" + temp;
-    }
-    return location.hash = hash;
-  };
-  nodeInserted = function(e) {
-    var callback, dialog, target, _i, _len, _ref, _results;
-    target = e.target;
-    if (target.nodeName === 'TABLE') {
-      _ref = g.callbacks;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        callback = _ref[_i];
-        _results.push(callback(target));
-      }
-      return _results;
-    } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
-      $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('#recaptcha_challenge_field', dialog).value = target.value;
-    }
-  };
-  changeCheckbox = function() {
-    return GM_setValue(this.name, this.checked);
-  };
-  changeValue = function() {
-    return GM_setValue(this.name, this.value);
   };
   options = {
     init: function() {
@@ -1362,76 +1223,6 @@
       }
     }
   };
-  recaptchaListener = function(e) {
-    if (e.keyCode === 8 && this.value === '') {
-      return recaptchaReload();
-    }
-  };
-  recaptchaReload = function() {
-    return window.location = 'javascript:Recaptcha.reload()';
-  };
-  redirect = function() {
-    var url;
-    switch (g.BOARD) {
-      case 'a':
-      case 'g':
-      case 'lit':
-      case 'sci':
-      case 'tv':
-        url = "http://green-oval.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      case 'cgl':
-      case 'jp':
-      case 'm':
-      case 'tg':
-        url = "http://archive.easymodo.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      case '3':
-      case 'adv':
-      case 'an':
-      case 'c':
-      case 'ck':
-      case 'co':
-      case 'fa':
-      case 'fit':
-      case 'int':
-      case 'k':
-      case 'mu':
-      case 'n':
-      case 'o':
-      case 'p':
-      case 'po':
-      case 'soc':
-      case 'sp':
-      case 'toy':
-      case 'trv':
-      case 'v':
-      case 'vp':
-      case 'x':
-        url = "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      default:
-        url = "http://boards.4chan.org/" + g.BOARD;
-    }
-    return location.href = url;
-  };
-  replyNav = function() {
-    var direction, op;
-    if (g.REPLY) {
-      return window.location = this.textContent === '▲' ? '#navtop' : '#navbot';
-    } else {
-      direction = this.textContent === '▲' ? 'preceding' : 'following';
-      op = $.x("" + direction + "::span[starts-with(@id, 'nothread')][1]", this).id;
-      return window.location = "#" + op;
-    }
-  };
-  report = function() {
-    var input;
-    input = $.x('preceding-sibling::input[1]', this);
-    input.click();
-    $('input[value="Report"]').click();
-    return input.click();
-  };
   threadHiding = {
     init: function() {
       var a, hiddenThreads, node, op, thread, _i, _len, _ref, _results;
@@ -1543,33 +1334,6 @@
         return threadHiding.thread(node);
       }
     }
-  };
-  updateFavicon = function() {
-    var clone, favicon, href, len;
-    len = g.replies.length;
-    if (g.dead) {
-      if (len > 0) {
-        href = g.favDeadHalo;
-      } else {
-        href = g.favDead;
-      }
-    } else {
-      if (len > 0) {
-        href = g.favHalo;
-      } else {
-        href = g.favDefault;
-      }
-    }
-    favicon = $('link[rel="shortcut icon"]', d);
-    clone = favicon.cloneNode(true);
-    clone.href = href;
-    return $.replace(favicon, clone);
-  };
-  updateTitle = function() {
-    var len;
-    len = g.replies.length;
-    d.title = d.title.replace(/\d+/, len);
-    return updateFavicon();
   };
   updater = {
     init: function() {
@@ -1795,6 +1559,232 @@
       $.setValue('watched', watched);
       return watcher.addLink(props);
     }
+  };
+  scrollThread = function(count) {
+    var hash, idx, temp, thread, top, _ref;
+    _ref = getThread(), thread = _ref[0], idx = _ref[1];
+    top = thread.getBoundingClientRect().top;
+    if (idx === 0 && top > 1) {
+      idx = -1;
+    }
+    if (count < 0 && top < -1) {
+      count++;
+    }
+    temp = idx + count;
+    if (temp < 0) {
+      hash = '';
+    } else if (temp > 9) {
+      hash = 'p9';
+    } else {
+      hash = "p" + temp;
+    }
+    return location.hash = hash;
+  };
+  nodeInserted = function(e) {
+    var callback, dialog, target, _i, _len, _ref, _results;
+    target = e.target;
+    if (target.nodeName === 'TABLE') {
+      _ref = g.callbacks;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        _results.push(callback(target));
+      }
+      return _results;
+    } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
+      $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+      return $('#recaptcha_challenge_field', dialog).value = target.value;
+    }
+  };
+  autoWatch = function() {
+    var autoText;
+    autoText = $('textarea', this).value.slice(0, 25);
+    return GM_setValue('autoText', "/" + g.BOARD + "/ - " + autoText);
+  };
+  imageClick = function(e) {
+    if (e.shiftKey || e.altKey || e.ctrlKey) {
+      return;
+    }
+    e.preventDefault();
+    return imageToggle(this);
+  };
+  imageToggle = function(image) {
+    var ch, cw, imageType, thumb;
+    thumb = image.firstChild;
+    cw = d.body.clientWidth;
+    ch = d.body.clientHeight;
+    imageType = $("#imageType").value;
+    if (thumb.className === 'hide') {
+      return imageThumb(thumb);
+    } else {
+      return imageExpand(thumb, cw, ch, imageType);
+    }
+  };
+  imageTypeChange = function() {
+    var ch, cw, image, imageType, images, _i, _len, _results;
+    images = $$('img[md5] + img');
+    cw = d.body.clientWidth;
+    ch = d.body.clientHeight;
+    imageType = this.value;
+    _results = [];
+    for (_i = 0, _len = images.length; _i < _len; _i++) {
+      image = images[_i];
+      _results.push(imageResize(cw, ch, imageType, image));
+    }
+    return _results;
+  };
+  imageExpandClick = function() {
+    var ch, cw, imageType, thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
+    thumbs = $$('img[md5]');
+    g.expand = this.checked;
+    cw = d.body.clientWidth;
+    ch = d.body.clientHeight;
+    imageType = $("#imageType").value;
+    if (this.checked) {
+      _results = [];
+      for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
+        thumb = thumbs[_i];
+        _results.push(thumb.className !== 'hide' ? imageExpand(thumb, cw, ch, imageType) : void 0);
+      }
+      return _results;
+    } else {
+      _results2 = [];
+      for (_j = 0, _len2 = thumbs.length; _j < _len2; _j++) {
+        thumb = thumbs[_j];
+        _results2.push(thumb.className === 'hide' ? imageThumb(thumb) : void 0);
+      }
+      return _results2;
+    }
+  };
+  imageExpand = function(thumb, cw, ch, imageType) {
+    var image, link;
+    thumb.className = 'hide';
+    link = thumb.parentNode;
+    image = $.el('img', {
+      src: link.href
+    });
+    link.appendChild(image);
+    return imageResize(cw, ch, imageType, image);
+  };
+  imageResize = function(cw, ch, imageType, image) {
+    var ih, iw, ratio, _, _ref;
+    _ref = $.x("preceding::span[@class][1]/text()[2]", image).textContent.match(/(\d+)x(\d+)/), _ = _ref[0], iw = _ref[1], ih = _ref[2];
+    iw = Number(iw);
+    ih = Number(ih);
+    switch (imageType) {
+      case 'full':
+        image.removeAttribute('style');
+        break;
+      case 'fit width':
+        if (iw > cw) {
+          image.style.width = '100%';
+          image.style.margin = '0px';
+        }
+        break;
+      case 'fit screen':
+        ratio = Math.min(cw / iw, ch / ih);
+        if (ratio < 1) {
+          image.style.width = Math.floor(ratio * iw);
+          return image.style.margin = '0px';
+        }
+    }
+  };
+  imageThumb = function(thumb) {
+    thumb.className = '';
+    return $.remove(thumb.nextSibling);
+  };
+  changeCheckbox = function() {
+    return GM_setValue(this.name, this.checked);
+  };
+  changeValue = function() {
+    return GM_setValue(this.name, this.value);
+  };
+  recaptchaListener = function(e) {
+    if (e.keyCode === 8 && this.value === '') {
+      return recaptchaReload();
+    }
+  };
+  recaptchaReload = function() {
+    return window.location = 'javascript:Recaptcha.reload()';
+  };
+  redirect = function() {
+    var url;
+    switch (g.BOARD) {
+      case 'a':
+      case 'g':
+      case 'lit':
+      case 'sci':
+      case 'tv':
+        url = "http://green-oval.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        break;
+      case 'cgl':
+      case 'jp':
+      case 'm':
+      case 'tg':
+        url = "http://archive.easymodo.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        break;
+      case '3':
+      case 'adv':
+      case 'an':
+      case 'c':
+      case 'ck':
+      case 'co':
+      case 'fa':
+      case 'fit':
+      case 'int':
+      case 'k':
+      case 'mu':
+      case 'n':
+      case 'o':
+      case 'p':
+      case 'po':
+      case 'soc':
+      case 'sp':
+      case 'toy':
+      case 'trv':
+      case 'v':
+      case 'vp':
+      case 'x':
+        url = "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        break;
+      default:
+        url = "http://boards.4chan.org/" + g.BOARD;
+    }
+    return location.href = url;
+  };
+  report = function() {
+    var input;
+    input = $.x('preceding-sibling::input[1]', this);
+    input.click();
+    $('input[value="Report"]').click();
+    return input.click();
+  };
+  updateFavicon = function() {
+    var clone, favicon, href, len;
+    len = g.replies.length;
+    if (g.dead) {
+      if (len > 0) {
+        href = g.favDeadHalo;
+      } else {
+        href = g.favDead;
+      }
+    } else {
+      if (len > 0) {
+        href = g.favHalo;
+      } else {
+        href = g.favDefault;
+      }
+    }
+    favicon = $('link[rel="shortcut icon"]', d);
+    clone = favicon.cloneNode(true);
+    clone.href = href;
+    return $.replace(favicon, clone);
+  };
+  updateTitle = function() {
+    var len;
+    len = g.replies.length;
+    d.title = d.title.replace(/\d+/, len);
+    return updateFavicon();
   };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {
