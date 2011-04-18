@@ -1498,7 +1498,7 @@ imgExpand =
         option.selected = true
         break
     $.bind $('select', controls), 'change', $.cb.value
-    $.bind $('select', controls), 'change', imageTypeChange
+    $.bind $('select', controls), 'change', imgExpand.cb.typeChange
     $.bind $('input',  controls), 'click',  imgExpand.cb.all
 
     delform = $ 'form[name=delform]'
@@ -1674,7 +1674,7 @@ $.bind $('form[name=post]'), 'submit', qr.cb.submit
 
 #major features
 if $.config 'Image Expansion'
-  imgExpansion.init()
+  imgExpand.init()
 
 if $.config 'Image Auto-Gif'
   imgGif.init()

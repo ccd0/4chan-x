@@ -1973,7 +1973,7 @@
         }
       }
       $.bind($('select', controls), 'change', $.cb.value);
-      $.bind($('select', controls), 'change', imageTypeChange);
+      $.bind($('select', controls), 'change', imgExpand.cb.typeChange);
       $.bind($('input', controls), 'click', imgExpand.cb.all);
       delform = $('form[name=delform]');
       return $.prepend(delform, controls);
@@ -2144,7 +2144,7 @@
   $.bind(recaptcha, 'keydown', recaptcha.listener);
   $.bind($('form[name=post]'), 'submit', qr.cb.submit);
   if ($.config('Image Expansion')) {
-    imgExpansion.init();
+    imgExpand.init();
   }
   if ($.config('Image Auto-Gif')) {
     imgGif.init();
