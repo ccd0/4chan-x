@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, anonymize, autoWatch, callback, config, d, el, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+  var $, $$, NAMESPACE, anonymize, callback, config, d, el, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = function(arg) {
@@ -1146,23 +1146,17 @@
       return qr.autohide.set();
     },
     sys: function() {
-      var board, html, id, recaptcha, thread, _, _base, _ref, _ref2;
-      $.bind(window, 'message', qr.cb.messageIframe);
+      var board, html, id, recaptcha, thread, _, _ref, _ref2;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', recaptcha.listener);
+        return;
       }
-      if ($.config('Auto Watch')) {
-        html = $('b').innerHTML;
-        _ref = html.match(/<!-- thread:(\d+),no:(\d+) -->/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-        if (thread === '0') {
-          _ref2 = $('meta', d).content.match(/4chan.org\/(\w+)\//), _ = _ref2[0], board = _ref2[1];
-          (_base = g.watched)[board] || (_base[board] = []);
-          g.watched[board].push({
-            id: id,
-            text: GM_getValue('autoText')
-          });
-          return GM_setValue('watched', JSON.stringify(g.watched));
-        }
+      $.bind(window, 'message', qr.cb.messageIframe);
+      html = $('b').innerHTML;
+      _ref = html.match(/<!-- thread:(\d+),no:(\d+) -->/), _ = _ref[0], thread = _ref[1], id = _ref[2];
+      if (thread === '0') {
+        _ref2 = $('meta', d).content.match(/4chan.org\/(\w+)\//), _ = _ref2[0], board = _ref2[1];
+        return window.location = "http://boards.4chan.org/" + board + "/res/" + thread + "#watch";
       }
     }
   };
@@ -1985,12 +1979,6 @@
       return $.prepend(delform, controls);
     }
   };
-  autoWatch = function(e) {
-    var form, tc;
-    form = e.target;
-    tc = $('input[name=sub]', form).value || $('textarea', form).value;
-    return GM_setValue('autoText', "/" + g.BOARD + "/ - " + tc.slice(0, 25));
-  };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {
     cache: {},
@@ -2211,8 +2199,8 @@
     if ($.config('Thread Navigation')) {
       nav.init();
     }
-    if ($.config('Auto Watch')) {
-      $.bind($('form[name=post]'), 'submit', autoWatch);
+    if ($.config('Auto Watch') && location.hash === '#watch') {
+      watcher.watch();
     }
     if ($.config('Thread Expansion')) {
       expandThread.init();

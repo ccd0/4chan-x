@@ -880,21 +880,17 @@ qr =
     qr.autohide.set()
 
   sys: ->
-    $.bind window, 'message', qr.cb.messageIframe
-    if recaptcha = $ '#recaptcha_response_field'
-      # post reporting
+    if recaptcha = $ '#recaptcha_response_field' #post reporting
       $.bind recaptcha, 'keydown', recaptcha.listener
-    if $.config 'Auto Watch'
-      html = $('b').innerHTML
-      [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
-      if thread is '0'
-        [_, board] = $('meta', d).content.match(/4chan.org\/(\w+)\//)
-        g.watched[board] or= []
-        g.watched[board].push {
-          id: id,
-          text: GM_getValue 'autoText'
-        }
-        GM_setValue 'watched', JSON.stringify g.watched
+      return
+
+    $.bind window, 'message', qr.cb.messageIframe
+
+    html = $('b').innerHTML
+    [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
+    if thread is '0'
+      [_, board] = $('meta', d).content.match(/4chan.org\/(\w+)\//)
+      window.location = "http://boards.4chan.org/#{board}/res/#{thread}#watch"
 
 threadHiding =
   init: ->
@@ -1508,16 +1504,6 @@ imgExpand =
     delform = $ 'form[name=delform]'
     $.prepend delform, controls
 
-
-# TODO rewrite these **************************************************************************
-
-autoWatch = (e) ->
-  form = e.target
-  tc = $('input[name=sub]', form).value or $('textarea', form).value
-  GM_setValue('autoText', "/#{g.BOARD}/ - #{tc[...25]}")
-
-# /TODO ***************************************************************
-
 #main
 NAMESPACE = 'AEOS.4chan_x.'
 g =
@@ -1743,8 +1729,8 @@ else #not reply
   if $.config 'Thread Navigation'
     nav.init()
 
-  if $.config 'Auto Watch'
-    $.bind $('form[name=post]'), 'submit', autoWatch
+  if $.config('Auto Watch') and location.hash is '#watch'
+    watcher.watch()
 
   if $.config 'Thread Expansion'
     expandThread.init()
