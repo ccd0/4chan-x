@@ -1012,8 +1012,9 @@
         return _results;
       },
       submit: function(e) {
-        var isQR, recaptcha, span;
-        isQR = e.target.parentNode.id === 'qr';
+        var form, isQR, recaptcha, span;
+        form = e.target;
+        isQR = form.parentNode.id === 'qr';
         if (isQR) {
           if (span = this.nextSibling) {
             $.remove(span);
@@ -1034,7 +1035,7 @@
         }
         recaptcha = $('input[name=recaptcha_response_field]', this);
         if (recaptcha.value) {
-          g.sage = $('#qr input[name=email]').value === 'sage';
+          g.sage = $('input[name=email]', form).value === 'sage';
           if (isQR) {
             return qr.autohide.set();
           }
@@ -1156,7 +1157,7 @@
       _ref = html.match(/<!-- thread:(\d+),no:(\d+) -->/), _ = _ref[0], thread = _ref[1], id = _ref[2];
       if (thread === '0') {
         _ref2 = $('meta', d).content.match(/4chan.org\/(\w+)\//), _ = _ref2[0], board = _ref2[1];
-        return window.location = "http://boards.4chan.org/" + board + "/res/" + thread + "#watch";
+        return window.location = "http://boards.4chan.org/" + board + "/res/" + id + "#watch";
       }
     }
   };

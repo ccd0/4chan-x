@@ -761,7 +761,8 @@ qr =
         $.bind quote, 'click', qr.cb.quote
 
     submit: (e) ->
-      isQR = e.target.parentNode.id == 'qr'
+      form = e.target
+      isQR = form.parentNode.id == 'qr'
 
       if isQR
         if span = @nextSibling
@@ -782,7 +783,7 @@ qr =
 
       recaptcha = $('input[name=recaptcha_response_field]', this)
       if recaptcha.value
-        g.sage = $('#qr input[name=email]').value == 'sage'
+        g.sage = $('input[name=email]', form).value == 'sage'
         if isQR
           qr.autohide.set()
       else
@@ -890,7 +891,7 @@ qr =
     [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
     if thread is '0'
       [_, board] = $('meta', d).content.match(/4chan.org\/(\w+)\//)
-      window.location = "http://boards.4chan.org/#{board}/res/#{thread}#watch"
+      window.location = "http://boards.4chan.org/#{board}/res/#{id}#watch"
 
 threadHiding =
   init: ->
