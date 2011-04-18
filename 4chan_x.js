@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, anonymize, callback, config, d, el, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, recaptcha, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+  var $, $$, NAMESPACE, Recaptcha, anonymize, callback, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _len, _ref, _ref2;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = function(arg) {
@@ -941,7 +941,7 @@
       },
       load: function(e) {
         var dialog;
-        recaptcha.reload();
+        Recaptcha.reload();
         try {
           return e.target.contentWindow.postMessage('', '*');
         } catch (err) {
@@ -979,7 +979,7 @@
             }
           }
         }
-        return recaptcha.reload();
+        return Recaptcha.reload();
       },
       node: function(root) {
         var quote, quotes, _i, _len, _results;
@@ -1107,7 +1107,7 @@
       }
       clone.target = 'iframe';
       $.bind(clone, 'submit', qr.cb.submit);
-      $.bind($('input[name=recaptcha_response_field]', clone), 'keydown', recaptcha.listener);
+      $.bind($('input[name=recaptcha_response_field]', clone), 'keydown', Recaptcha.listener);
       if (!g.REPLY) {
         xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]';
         resto = $.el('input', {
@@ -1129,7 +1129,7 @@
     sys: function() {
       var board, html, id, recaptcha, thread, _, _ref, _ref2;
       if (recaptcha = $('#recaptcha_response_field')) {
-        $.bind(recaptcha, 'keydown', recaptcha.listener);
+        $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
       }
       $.bind(window, 'message', qr.cb.messageIframe);
@@ -1717,10 +1717,20 @@
     }
     return location.href = url;
   };
-  recaptcha = {
+  Recaptcha = {
+    init: function() {
+      var el, recaptcha, _i, _len, _ref;
+      _ref = $$('#recaptcha_table a');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        el.tabIndex = 1;
+      }
+      recaptcha = $('#recaptcha_response_field');
+      return $.bind(recaptcha, 'keydown', Recaptcha.listener);
+    },
     listener: function(e) {
       if (e.keyCode === 8 && this.value === '') {
-        return recaptcha.reload();
+        return Recaptcha.reload();
       }
     },
     reload: function() {
@@ -1845,7 +1855,7 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           thumb = _ref[_i];
           $.bind(thumb.parentNode, 'click', imgExpand.cb.toggle);
-          _results.push(g.expand ? imgExpand.expand(thumb.parentNode) : void 0);
+          _results.push(imgExpand.on ? imgExpand.expand(thumb.parentNode) : void 0);
         }
         return _results;
       },
@@ -1859,11 +1869,11 @@
       all: function(e) {
         var ch, cw, imageType, thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
         thumbs = $$('img[md5]');
-        g.expand = e.target.checked;
+        imgExpand.on = e.target.checked;
         cw = d.body.clientWidth;
         ch = d.body.clientHeight;
         imageType = $("#imageType").value;
-        if (g.expand) {
+        if (imgExpand.on) {
           _results = [];
           for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
             thumb = thumbs[_i];
@@ -1967,7 +1977,6 @@
     cache: {},
     requests: {},
     callbacks: [],
-    expand: false,
     favDead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC',
     favDeadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII=',
     favDefault: ((_ref = $('link[rel="shortcut icon"]', d)) != null ? _ref.href : void 0) || '',
@@ -2118,13 +2127,7 @@
   } else {
     return;
   }
-  _ref2 = $$('#recaptcha_table a');
-  for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-    el = _ref2[_i];
-    el.tabIndex = 1;
-  }
-  recaptcha = $('#recaptcha_response_field');
-  $.bind(recaptcha, 'keydown', recaptcha.listener);
+  Recaptcha.init();
   $.bind($('form[name=post]'), 'submit', qr.cb.submit);
   if ($.config('Image Expansion')) {
     imgExpand.init();
@@ -2192,9 +2195,9 @@
       expandComment.init();
     }
   }
-  _ref3 = g.callbacks;
-  for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-    callback = _ref3[_j];
+  _ref2 = g.callbacks;
+  for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+    callback = _ref2[_i];
     callback();
   }
   $.bind(d.body, 'DOMNodeInserted', nodeInserted);

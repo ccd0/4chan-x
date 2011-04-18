@@ -1412,7 +1412,7 @@ imgExpand =
     node: (root) ->
       for thumb in $$ 'img[md5]', root
         $.bind thumb.parentNode, 'click', imgExpand.cb.toggle
-        if g.expand then imgExpand.expand thumb.parentNode
+        if imgExpand.on then imgExpand.expand thumb.parentNode
     toggle: (e) ->
       #TODO middle click (chrome)
       return if e.shiftKey or e.altKey or e.ctrlKey
@@ -1420,11 +1420,11 @@ imgExpand =
       imgExpand.toggle e.target
     all: (e) ->
       thumbs = $$ 'img[md5]'
-      g.expand = e.target.checked
+      imgExpand.on = e.target.checked
       cw = d.body.clientWidth
       ch = d.body.clientHeight
       imageType = $("#imageType").value
-      if g.expand #expand
+      if imgExpand.on #expand
         for thumb in thumbs
           unless thumb.style.display #thumbnail hidden, image already expanded
             imgExpand.expand thumb, cw, ch, imageType
@@ -1506,7 +1506,6 @@ g =
   cache: {}
   requests: {}
   callbacks: []
-  expand: false
   favDead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC'
   favDeadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII='
   favDefault: $('link[rel="shortcut icon"]', d)?.href or '' #no favicon in `post successful` page
