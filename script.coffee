@@ -4,24 +4,26 @@
 # (floating) qr no-quote button?
 # updater cache hacks
 
+# XXX
+# flavors saving is broken
+
 # XXX chrome can't into `{log} = console`
 if console?
   log = (arg) ->
     console.log arg
 
-# TODO reset defaults
 config =
   main:
     checkbox:
       '404 Redirect':      [true,  'Redirect dead threads']
       'Anonymize':         [false, 'Make everybody anonymous']
-      'Auto Watch':        [true,  'Automatically watch threads that you start (Firefox only)']
+      'Auto Watch':        [true,  'Automatically watch threads that you start']
       'Comment Expansion': [true,  'Expand too long comments']
       'Image Auto-Gif':    [false, 'Animate gif thumbnails']
       'Image Expansion':   [true,  'Expand images']
       'Image Hover':       [false, 'Show full image on mouseover']
       'Image Preloading':  [false, 'Preload Images']
-      'Keybinds':          [true, 'Binds actions to keys']
+      'Keybinds':          [false, 'Binds actions to keys']
       'Localize Time':     [true,  'Show times based on your timezone']
       'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
       'Post in Title':     [true,  'Show the op\'s post in the tab title']
@@ -56,21 +58,6 @@ _config = {}
 
 #x-browser
 if typeof GM_deleteValue is 'undefined'
-  window.GM_setValue = (name, value) ->
-    value = (typeof value)[0] + value
-    localStorage.setItem name, value
-  window.GM_getValue = (name, defaultValue) ->
-    unless value = localStorage.getItem name
-      return defaultValue
-    type = value[0]
-    value = value[1..]
-    switch type
-      when 'b'
-        value == 'true'
-      when 'n'
-        Number value
-      else
-        value
   window.GM_openInTab = (url) ->
     window.open url, "_blank"
 
@@ -659,7 +646,7 @@ options =
       checked = if $.config name then "checked" else ""
       html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
     html += "<div><a name=flavors>Flavors</a></div>"
-    html += "<div><textarea style=\"display: none;\" name=flavors>#{GM_getValue 'flavors', g.flavors}</textarea></div>"
+    html += "<div><textarea style=\"display: none;\" name=flavors>#{$.getValue 'flavors', g.flavors}</textarea></div>"
 
     hiddenThread = $.getValue "hiddenThread/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length
@@ -768,7 +755,7 @@ qr =
         if span = @nextSibling
           $.remove span
 
-      if g.seconds = GM_getValue 'seconds'
+      if g.seconds = $.getValue 'seconds'
         e.preventDefault()
         qr.cooldownStart()
         alert 'Stop posting so often!'
@@ -833,13 +820,13 @@ qr =
         submit.value = 'Submit'
       else
         submit.value = g.seconds = g.seconds - 1
-        GM_setValue 'seconds', g.seconds
+        $.setValue 'seconds', g.seconds
 
     if g.seconds != 0
       window.setTimeout qr.cooldown, 1000
 
   cooldownStart: ->
-    GM_setValue 'seconds', g.seconds
+    $.setValue 'seconds', g.seconds
     submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
     for submit in submits
       submit.value = g.seconds

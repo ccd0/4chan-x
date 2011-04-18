@@ -71,13 +71,13 @@
       checkbox: {
         '404 Redirect': [true, 'Redirect dead threads'],
         'Anonymize': [false, 'Make everybody anonymous'],
-        'Auto Watch': [true, 'Automatically watch threads that you start (Firefox only)'],
+        'Auto Watch': [true, 'Automatically watch threads that you start'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Image Auto-Gif': [false, 'Animate gif thumbnails'],
         'Image Expansion': [true, 'Expand images'],
         'Image Hover': [false, 'Show full image on mouseover'],
         'Image Preloading': [false, 'Preload Images'],
-        'Keybinds': [true, 'Binds actions to keys'],
+        'Keybinds': [false, 'Binds actions to keys'],
         'Localize Time': [true, 'Show times based on your timezone'],
         'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
@@ -119,26 +119,6 @@
     }
   })(null, config);
   if (typeof GM_deleteValue === 'undefined') {
-    window.GM_setValue = function(name, value) {
-      value = (typeof value)[0] + value;
-      return localStorage.setItem(name, value);
-    };
-    window.GM_getValue = function(name, defaultValue) {
-      var type, value;
-      if (!(value = localStorage.getItem(name))) {
-        return defaultValue;
-      }
-      type = value[0];
-      value = value.slice(1);
-      switch (type) {
-        case 'b':
-          return value === 'true';
-        case 'n':
-          return Number(value);
-        default:
-          return value;
-      }
-    };
     window.GM_openInTab = function(url) {
       return window.open(url, "_blank");
     };
@@ -884,7 +864,7 @@
         html += "<div><label title=\"" + title + "\">" + name + "<input name=\"" + name + "\" " + checked + " type=checkbox></label></div>";
       }
       html += "<div><a name=flavors>Flavors</a></div>";
-      html += "<div><textarea style=\"display: none;\" name=flavors>" + (GM_getValue('flavors', g.flavors)) + "</textarea></div>";
+      html += "<div><textarea style=\"display: none;\" name=flavors>" + ($.getValue('flavors', g.flavors)) + "</textarea></div>";
       hiddenThread = $.getValue("hiddenThread/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length;
       html += "<div><input type=\"button\" value=\"hidden: " + hiddenNum + "\"></div>";
@@ -1020,7 +1000,7 @@
             $.remove(span);
           }
         }
-        if (g.seconds = GM_getValue('seconds')) {
+        if (g.seconds = $.getValue('seconds')) {
           e.preventDefault();
           qr.cooldownStart();
           alert('Stop posting so often!');
@@ -1092,7 +1072,7 @@
           submit.value = 'Submit';
         } else {
           submit.value = g.seconds = g.seconds - 1;
-          GM_setValue('seconds', g.seconds);
+          $.setValue('seconds', g.seconds);
         }
       }
       if (g.seconds !== 0) {
@@ -1101,7 +1081,7 @@
     },
     cooldownStart: function() {
       var submit, submits, _i, _len;
-      GM_setValue('seconds', g.seconds);
+      $.setValue('seconds', g.seconds);
       submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];
