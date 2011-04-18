@@ -708,7 +708,7 @@ qr =
         $.removeClass dialog, 'auto'
 
     load: (e) ->
-      recaptcha.reload()
+      Recaptcha.reload()
       try
         e.target.contentWindow.postMessage '', '*'
       catch err
@@ -740,7 +740,7 @@ qr =
           else
             $.remove dialog
 
-      recaptcha.reload()
+      Recaptcha.reload()
 
     node: (root) ->
       quotes = $$ 'a.quotejs:not(:first-child)', root
@@ -844,7 +844,7 @@ qr =
       $.remove script
     clone.target = 'iframe'
     $.bind clone, 'submit', qr.cb.submit
-    $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', recaptcha.listener
+    $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', Recaptcha.listener
 
     if not g.REPLY
       #figure out which thread we're replying to
@@ -869,7 +869,7 @@ qr =
 
   sys: ->
     if recaptcha = $ '#recaptcha_response_field' #post reporting
-      $.bind recaptcha, 'keydown', recaptcha.listener
+      $.bind recaptcha, 'keydown', Recaptcha.listener
       return
 
     $.bind window, 'message', qr.cb.messageIframe
@@ -1318,10 +1318,16 @@ redirect = ->
       url = "http://boards.4chan.org/#{g.BOARD}"
   location.href = url
 
-recaptcha =
+Recaptcha =
+  init: ->
+    #hack to tab from comment straight to recaptcha
+    for el in $$ '#recaptcha_table a'
+      el.tabIndex = 1
+    recaptcha = $ '#recaptcha_response_field'
+    $.bind recaptcha, 'keydown', Recaptcha.listener
   listener: (e) ->
     if e.keyCode is 8 and @value is ''
-      recaptcha.reload()
+      Recaptcha.reload()
   reload: ->
     window.location = 'javascript:Recaptcha.reload()'
 
@@ -1654,11 +1660,7 @@ else if $.config('404 Redirect') and d.title is '4chan - 404'
 else
   return
 
-#hack to tab from comment straight to recaptcha
-for el in $$ '#recaptcha_table a'
-  el.tabIndex = 1
-recaptcha = $ '#recaptcha_response_field'
-$.bind recaptcha, 'keydown', recaptcha.listener
+Recaptcha.init()
 
 $.bind $('form[name=post]'), 'submit', qr.cb.submit
 
