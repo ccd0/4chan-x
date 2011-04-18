@@ -1629,9 +1629,6 @@
       },
       scroll: function(e) {
         var bottom, height, i, reply, _len, _ref;
-        if (unread.replies.length === 0) {
-          return;
-        }
         height = d.body.clientHeight;
         _ref = unread.replies;
         for (i = 0, _len = _ref.length; i < _len; i++) {

@@ -1274,8 +1274,6 @@ unread =
       unread.updateFavicon()
 
     scroll: (e) ->
-      return if unread.replies.length is 0
-
       height = d.body.clientHeight
       for reply, i in unread.replies
         {bottom} = reply.getBoundingClientRect()
