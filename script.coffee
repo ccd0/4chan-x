@@ -1157,7 +1157,7 @@ watcher =
     favicon = $ 'img.favicon', thread
     id = favicon.nextSibling.name
     if favicon.src == g.favEmpty
-      watcher.watch id, favicon, thread
+      watcher.watch thread
     else # favicon.src == g.favDefault
       watcher.unwatch g.BOARD, id
 
@@ -1174,8 +1174,12 @@ watcher =
     delete watched[board][id]
     $.setValue 'watched', watched
 
-  watch: (id, favicon, thread) ->
+  watch: (thread) ->
+    favicon = $ 'img.favicon', thread
+    return if favicon.src is g.favDefault
+
     favicon.src = g.favDefault
+    id = favicon.nextSibling.name
     tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
     props =
       textContent: "/#{g.BOARD}/ - #{tc[...25]}"
@@ -1723,15 +1727,15 @@ if g.REPLY
   if $.config 'Unread Count'
     unread.init()
 
+  if $.config('Auto Watch') and location.hash is '#watch'
+    watcher.watch()
+
 else #not reply
   if $.config 'Thread Hiding'
     threadHiding.init()
 
   if $.config 'Thread Navigation'
     nav.init()
-
-  if $.config('Auto Watch') and location.hash is '#watch'
-    watcher.watch()
 
   if $.config 'Thread Expansion'
     expandThread.init()

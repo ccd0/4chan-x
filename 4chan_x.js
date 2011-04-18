@@ -1468,7 +1468,7 @@
       favicon = $('img.favicon', thread);
       id = favicon.nextSibling.name;
       if (favicon.src === g.favEmpty) {
-        return watcher.watch(id, favicon, thread);
+        return watcher.watch(thread);
       } else {
         return watcher.unwatch(g.BOARD, id);
       }
@@ -1486,9 +1486,14 @@
       delete watched[board][id];
       return $.setValue('watched', watched);
     },
-    watch: function(id, favicon, thread) {
-      var props, tc, watched, _name;
+    watch: function(thread) {
+      var favicon, id, props, tc, watched, _name;
+      favicon = $('img.favicon', thread);
+      if (favicon.src === g.favDefault) {
+        return;
+      }
       favicon.src = g.favDefault;
+      id = favicon.nextSibling.name;
       tc = $('span.filetitle', thread).textContent || $('blockquote', thread).textContent;
       props = {
         textContent: "/" + g.BOARD + "/ - " + tc.slice(0, 25),
@@ -2193,15 +2198,15 @@
     if ($.config('Unread Count')) {
       unread.init();
     }
+    if ($.config('Auto Watch') && location.hash === '#watch') {
+      watcher.watch();
+    }
   } else {
     if ($.config('Thread Hiding')) {
       threadHiding.init();
     }
     if ($.config('Thread Navigation')) {
       nav.init();
-    }
-    if ($.config('Auto Watch') && location.hash === '#watch') {
-      watcher.watch();
     }
     if ($.config('Thread Expansion')) {
       expandThread.init();
