@@ -2030,13 +2030,71 @@
     cursor: pointer;\
   }\
 \
+  .new {\
+    background: lime;\
+  }\
+  .favicon {\
+    cursor: pointer;\
+  }\
+  .error {\
+    color: red;\
+  }\
+\
+  div.thread.stub > *:not(.block) {\
+    display: none;\
+  }\
+\
+  form[name=delform] a img {\
+    border: 0px;\
+    float: left;\
+    margin: 0px 20px;\
+  }\
+  iframe {\
+    display: none;\
+  }\
+\
   #iHover {\
     position: fixed;\
+  }\
+\
+  #navlinks {\
+    position: fixed;\
+    top: 25px;\
+    right: 5px;\
+  }\
+  #navlinks > a {\
+    font-size: 16px;\
+  }\
+\
+  #options {\
+    position: fixed;\
+    padding: 5px;\
+    text-align: right;\
   }\
   #options textarea {\
     height: 100px;\
     width: 500px;\
   }\
+\
+  #qr {\
+    position: fixed;\
+  }\
+  #qr > div.move {\
+    text-align: right;\
+  }\
+  #qr > form > div, /* ad */\
+  #qr td.rules {\
+    display: none;\
+  }\
+  #qr.auto:not(:hover) form {\
+    display: none;\
+  }\
+  #qr span.error {\
+    position: absolute;\
+    bottom: 0;\
+    left: 0;\
+  }\
+\
   #updater {\
     position: fixed;\
     text-align: right;\
@@ -2051,6 +2109,7 @@
   #updater:not(:hover) > div:not(.move) {\
     display: none;\
   }\
+\
   #watcher {\
     position: absolute;\
   }\
@@ -2060,60 +2119,6 @@
   }\
   #watcher > div:last-child {\
     padding: 0 5px 5px 5px;\
-  }\
-  span.error {\
-    color: red;\
-  }\
-  #qr.auto:not(:hover) form {\
-    display: none;\
-  }\
-  #qr span.error {\
-    position: absolute;\
-    bottom: 0;\
-    left: 0;\
-  }\
-  #qr {\
-    position: fixed;\
-  }\
-  #qr > div {\
-    text-align: right;\
-  }\
-  #qr > form > div, /* ad */\
-  #qr td.rules {\
-    display: none;\
-  }\
-  #options {\
-    position: fixed;\
-    padding: 5px;\
-    text-align: right;\
-  }\
-  form[name=delform] a img {\
-    border: 0px;\
-    float: left;\
-    margin: 0px 20px;\
-  }\
-  iframe {\
-    display: none;\
-  }\
-  #navlinks {\
-    position: fixed;\
-    top: 25px;\
-    right: 5px;\
-  }\
-  #navlinks > a {\
-    font-size: 16px;\
-  }\
-  div.thread.stub > *:not(.block) {\
-    display: none;\
-  }\
-  .hide {\
-    display: none;\
-  }\
-  .new {\
-    background: lime;\
-  }\
-  .favicon {\
-    cursor: pointer;\
   }\
 ');
   if (location.hostname === 'sys.4chan.org') {
