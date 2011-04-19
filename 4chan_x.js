@@ -245,7 +245,7 @@
     },
     cb: {
       checked: function() {
-        return $.getValue(this.name, this.checked);
+        return $.setValue(this.name, this.checked);
       },
       value: function() {
         return $.setValue(this.name, this.value);

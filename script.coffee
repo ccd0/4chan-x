@@ -150,7 +150,7 @@ $.extend $,
     r
   cb:
     checked: ->
-      $.getValue @name, @checked
+      $.setValue @name, @checked
     value: ->
       $.setValue @name, @value
   deleteValue: (name) ->
