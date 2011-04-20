@@ -118,11 +118,6 @@
       return _config[parent] = obj;
     }
   })(null, config);
-  if (typeof GM_deleteValue === 'undefined') {
-    window.GM_openInTab = function(url) {
-      return window.open(url, "_blank");
-    };
-  }
   ui = {
     dialog: function(id, position, html) {
       var el, left, top, _ref, _ref2, _ref3;
@@ -712,7 +707,7 @@
       id = thread.firstChild.id;
       url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
       if (tab) {
-        return GM_openInTab(url);
+        return window.open(url, "_blank");
       } else {
         return location.href = url;
       }

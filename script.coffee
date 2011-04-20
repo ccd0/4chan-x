@@ -56,11 +56,6 @@ _config = {}
     _config[parent] = obj
 ) null, config
 
-#x-browser
-if typeof GM_deleteValue is 'undefined'
-  window.GM_openInTab = (url) ->
-    window.open url, "_blank"
-
 ui =
   dialog: (id, position, html) ->
     el = document.createElement 'div'
@@ -518,7 +513,7 @@ keybinds =
     id = thread.firstChild.id
     url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab
-      GM_openInTab url
+      window.open url, "_blank"
     else
       location.href = url
 
