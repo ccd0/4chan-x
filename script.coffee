@@ -499,11 +499,7 @@ keybinds =
       qrLink = $ "span[id^=nothread] a:not(:first-child)", thread
 
     if quote
-      # qrLink.click() doesn't work, so use this hack
-      e =
-        preventDefault: ->
-        target: qrLink
-      qr.cb.quote e
+      qr.quote qrLink
     else
       unless $ '#qr'
         qr.dialog qrLink
@@ -781,24 +777,26 @@ qr =
 
     quote: (e) ->
       e.preventDefault()
-      {target} = e
-      if dialog = $ '#qr'
-        qr.autohide.unset()
-      else
-        dialog = qr.dialog target
+      qr.quote e.target
 
-      id = target.textContent
-      text = ">>#{id}\n"
+  quote: (link) ->
+    if dialog = $ '#qr'
+      qr.autohide.unset()
+    else
+      dialog = qr.dialog link
 
-      selection = window.getSelection()
-      if s = selection.toString()
-        selectionID = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
-        if selectionID == id
-          text += ">#{s}\n"
+    id = link.textContent
+    text = ">>#{id}\n"
 
-      ta = $ 'textarea', dialog
-      ta.focus()
-      ta.value += text
+    selection = window.getSelection()
+    if s = selection.toString()
+      selectionID = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
+      if selectionID == id
+        text += ">#{s}\n"
+
+    ta = $ 'textarea', dialog
+    ta.focus()
+    ta.value += text
 
   refresh: (dialog) ->
     $('textarea', dialog).value = ''

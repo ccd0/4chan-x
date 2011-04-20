@@ -684,16 +684,12 @@
       }
     },
     qr: function(thread, quote) {
-      var e, qrLink;
+      var qrLink;
       if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)', thread))) {
         qrLink = $("span[id^=nothread] a:not(:first-child)", thread);
       }
       if (quote) {
-        e = {
-          preventDefault: function() {},
-          target: qrLink
-        };
-        return qr.cb.quote(e);
+        return qr.quote(qrLink);
       } else {
         if (!$('#qr')) {
           qr.dialog(qrLink);
@@ -1027,27 +1023,29 @@
         }
       },
       quote: function(e) {
-        var dialog, id, s, selection, selectionID, ta, target, text, _ref;
         e.preventDefault();
-        target = e.target;
-        if (dialog = $('#qr')) {
-          qr.autohide.unset();
-        } else {
-          dialog = qr.dialog(target);
-        }
-        id = target.textContent;
-        text = ">>" + id + "\n";
-        selection = window.getSelection();
-        if (s = selection.toString()) {
-          selectionID = (_ref = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
-          if (selectionID === id) {
-            text += ">" + s + "\n";
-          }
-        }
-        ta = $('textarea', dialog);
-        ta.focus();
-        return ta.value += text;
+        return qr.quote(e.target);
       }
+    },
+    quote: function(link) {
+      var dialog, id, s, selection, selectionID, ta, text, _ref;
+      if (dialog = $('#qr')) {
+        qr.autohide.unset();
+      } else {
+        dialog = qr.dialog(link);
+      }
+      id = link.textContent;
+      text = ">>" + id + "\n";
+      selection = window.getSelection();
+      if (s = selection.toString()) {
+        selectionID = (_ref = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
+        if (selectionID === id) {
+          text += ">" + s + "\n";
+        }
+      }
+      ta = $('textarea', dialog);
+      ta.focus();
+      return ta.value += text;
     },
     refresh: function(dialog) {
       var f;
