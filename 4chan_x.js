@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, Recaptcha, anonymize, callback, config, d, expandComment, expandThread, fav, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, nav, navtopr, nodeInserted, options, pathname, qr, quickReport, redirect, replyHiding, sauce, temp, threadHiding, titlePost, tzOffset, ui, unread, updater, watcher, _config, _i, _len, _ref, _ref2;
+  var $, $$, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, fav, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, redirect, replyHiding, sauce, threadHiding, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = function(arg) {
@@ -1982,227 +1982,234 @@
     haloSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC',
     haloNSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
   };
-  fav.halo = /ws/.test(fav["default"]) ? fav.haloSFW : fav.haloNSFW;
-  pathname = location.pathname.substring(1).split('/');
-  g.BOARD = pathname[0], temp = pathname[1];
-  if (temp === 'res') {
-    g.REPLY = temp;
-    g.THREAD_ID = pathname[2];
-  } else {
-    g.PAGENUM = parseInt(temp) || 0;
-  }
-  g.hiddenReply = $.getValue("hiddenReply/" + g.BOARD + "/", {});
-  tzOffset = (new Date()).getTimezoneOffset() / 60;
-  g.chanOffset = 5 - tzOffset;
-  if ($.isDST()) {
-    g.chanOffset -= 1;
-  }
-  /*
-  lastChecked = Number GM_getValue('lastChecked', '0')
-  now = Date.now()
-  DAY = 1000 * 60 * 60 * 24
-  if lastChecked < now - 1*DAY
-    cutoff = now - 7*DAY
-    while g.hiddenThreads.length
-      if g.hiddenThreads[0].timestamp > cutoff
-        break
-      g.hiddenThreads.shift()
+  main = {
+    init: function() {
+      var callback, navtopr, pathname, temp, tzOffset, _i, _len, _ref;
+      fav.halo = /ws/.test(fav["default"]) ? fav.haloSFW : fav.haloNSFW;
+      pathname = location.pathname.substring(1).split('/');
+      g.BOARD = pathname[0], temp = pathname[1];
+      if (temp === 'res') {
+        g.REPLY = temp;
+        g.THREAD_ID = pathname[2];
+      } else {
+        g.PAGENUM = parseInt(temp) || 0;
+      }
+      g.hiddenReply = $.getValue("hiddenReply/" + g.BOARD + "/", {});
+      tzOffset = (new Date()).getTimezoneOffset() / 60;
+      g.chanOffset = 5 - tzOffset;
+      if ($.isDST()) {
+        g.chanOffset -= 1;
+      }
+      /*
+          lastChecked = Number GM_getValue('lastChecked', '0')
+          now = Date.now()
+          DAY = 1000 * 60 * 60 * 24
+          if lastChecked < now - 1*DAY
+            cutoff = now - 7*DAY
+            while g.hiddenThreads.length
+              if g.hiddenThreads[0].timestamp > cutoff
+                break
+              g.hiddenThreads.shift()
 
-    while g.hiddenReplies.length
-      if g.hiddenReplies[0].timestamp > cutoff
-        break
-      g.hiddenReplies.shift()
+            while g.hiddenReplies.length
+              if g.hiddenReplies[0].timestamp > cutoff
+                break
+              g.hiddenReplies.shift()
 
-    GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
-    GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
-    GM_setValue('lastChecked', now.toString())
-  */
-  $.addStyle('\
-  /* dialog styling */\
-  div.dialog {\
-    border: 1px solid;\
-  }\
-  div.dialog > div.move {\
-    cursor: move;\
-  }\
-  label, a {\
-    cursor: pointer;\
-  }\
+            GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
+            GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
+            GM_setValue('lastChecked', now.toString())
+          */
+      $.addStyle(main.css);
+      if (location.hostname === 'sys.4chan.org') {
+        qr.sys();
+        return;
+      }
+      if (navtopr = $('#navtopr')) {
+        options.init();
+      } else if ($.config('404 Redirect') && d.title === '4chan - 404') {
+        redirect();
+      } else {
+        return;
+      }
+      Recaptcha.init();
+      $.bind($('form[name=post]'), 'submit', qr.cb.submit);
+      if ($.config('Image Expansion')) {
+        imgExpand.init();
+      }
+      if ($.config('Image Auto-Gif')) {
+        imgGif.init();
+      }
+      if ($.config('Localize Time')) {
+        localize.init();
+      }
+      if ($.config('Sauce')) {
+        sauce.init();
+      }
+      if ($.config('Anonymize')) {
+        anonymize.init();
+      }
+      if ($.config('Image Hover')) {
+        imageHover.init();
+      }
+      if ($.config('Reply Hiding')) {
+        replyHiding.init();
+      }
+      if ($.config('Quick Reply')) {
+        qr.init();
+      }
+      if ($.config('Quick Report')) {
+        quickReport.init();
+      }
+      if ($.config('Thread Watcher')) {
+        watcher.init();
+      }
+      if ($.config('Keybinds')) {
+        keybinds.init();
+      }
+      if (g.REPLY) {
+        if ($.config('Thread Updater')) {
+          updater.init();
+        }
+        if ($.config('Image Preloading')) {
+          imgPreloading.init();
+        }
+        if ($.config('Quick Reply') && $.config('Persistent QR')) {
+          qr.persist();
+        }
+        if ($.config('Post in Title')) {
+          titlePost.init();
+        }
+        if ($.config('Unread Count')) {
+          unread.init();
+        }
+        if ($.config('Auto Watch') && location.hash === '#watch') {
+          watcher.watch();
+        }
+      } else {
+        if ($.config('Thread Hiding')) {
+          threadHiding.init();
+        }
+        if ($.config('Thread Navigation')) {
+          nav.init();
+        }
+        if ($.config('Thread Expansion')) {
+          expandThread.init();
+        }
+        if ($.config('Comment Expansion')) {
+          expandComment.init();
+        }
+      }
+      _ref = g.callbacks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        callback();
+      }
+      return $.bind(d.body, 'DOMNodeInserted', nodeInserted);
+    },
+    css: '\
+      /* dialog styling */\
+      div.dialog {\
+        border: 1px solid;\
+      }\
+      div.dialog > div.move {\
+        cursor: move;\
+      }\
+      label, a {\
+        cursor: pointer;\
+      }\
 \
-  .new {\
-    background: lime;\
-  }\
-  .favicon {\
-    cursor: pointer;\
-  }\
-  .error {\
-    color: red;\
-  }\
+      .new {\
+        background: lime;\
+      }\
+      .favicon {\
+        cursor: pointer;\
+      }\
+      .error {\
+        color: red;\
+      }\
 \
-  div.thread.stub > *:not(.block) {\
-    display: none;\
-  }\
+      div.thread.stub > *:not(.block) {\
+        display: none;\
+      }\
 \
-  form[name=delform] a img {\
-    border: 0px;\
-    float: left;\
-    margin: 0px 20px;\
-  }\
-  iframe {\
-    display: none;\
-  }\
+      form[name=delform] a img {\
+        border: 0px;\
+        float: left;\
+        margin: 0px 20px;\
+      }\
+      iframe {\
+        display: none;\
+      }\
 \
-  #iHover {\
-    position: fixed;\
-  }\
+      #iHover {\
+        position: fixed;\
+      }\
 \
-  #navlinks {\
-    position: fixed;\
-    top: 25px;\
-    right: 5px;\
-  }\
-  #navlinks > a {\
-    font-size: 16px;\
-  }\
+      #navlinks {\
+        position: fixed;\
+        top: 25px;\
+        right: 5px;\
+      }\
+      #navlinks > a {\
+        font-size: 16px;\
+      }\
 \
-  #options {\
-    position: fixed;\
-    padding: 5px;\
-    text-align: right;\
-  }\
-  #options textarea {\
-    height: 100px;\
-    width: 500px;\
-  }\
+      #options {\
+        position: fixed;\
+        padding: 5px;\
+        text-align: right;\
+      }\
+      #options textarea {\
+        height: 100px;\
+        width: 500px;\
+      }\
 \
-  #qr {\
-    position: fixed;\
-  }\
-  #qr > div.move {\
-    text-align: right;\
-  }\
-  #qr > form > div, /* ad */\
-  #qr td.rules {\
-    display: none;\
-  }\
-  #qr.auto:not(:hover) form {\
-    display: none;\
-  }\
-  #qr span.error {\
-    position: absolute;\
-    bottom: 0;\
-    left: 0;\
-  }\
+      #qr {\
+        position: fixed;\
+      }\
+      #qr > div.move {\
+        text-align: right;\
+      }\
+      #qr > form > div, /* ad */\
+      #qr td.rules {\
+        display: none;\
+      }\
+      #qr.auto:not(:hover) form {\
+        display: none;\
+      }\
+      #qr span.error {\
+        position: absolute;\
+        bottom: 0;\
+        left: 0;\
+      }\
 \
-  #updater {\
-    position: fixed;\
-    text-align: right;\
-  }\
-  #updater input[type=text] {\
-    width: 50px;\
-  }\
-  #updater:not(:hover) {\
-    border: none;\
-    background: transparent;\
-  }\
-  #updater:not(:hover) > div:not(.move) {\
-    display: none;\
-  }\
+      #updater {\
+        position: fixed;\
+        text-align: right;\
+      }\
+      #updater input[type=text] {\
+        width: 50px;\
+      }\
+      #updater:not(:hover) {\
+        border: none;\
+        background: transparent;\
+      }\
+      #updater:not(:hover) > div:not(.move) {\
+        display: none;\
+      }\
 \
-  #watcher {\
-    position: absolute;\
-  }\
-  #watcher > div.move {\
-    text-decoration: underline;\
-    padding: 5px 5px 0 5px;\
-  }\
-  #watcher > div:last-child {\
-    padding: 0 5px 5px 5px;\
-  }\
-');
-  if (location.hostname === 'sys.4chan.org') {
-    qr.sys();
-    return;
-  }
-  if (navtopr = $('#navtopr')) {
-    options.init();
-  } else if ($.config('404 Redirect') && d.title === '4chan - 404') {
-    redirect();
-  } else {
-    return;
-  }
-  Recaptcha.init();
-  $.bind($('form[name=post]'), 'submit', qr.cb.submit);
-  if ($.config('Image Expansion')) {
-    imgExpand.init();
-  }
-  if ($.config('Image Auto-Gif')) {
-    imgGif.init();
-  }
-  if ($.config('Localize Time')) {
-    localize.init();
-  }
-  if ($.config('Sauce')) {
-    sauce.init();
-  }
-  if ($.config('Anonymize')) {
-    anonymize.init();
-  }
-  if ($.config('Image Hover')) {
-    imageHover.init();
-  }
-  if ($.config('Reply Hiding')) {
-    replyHiding.init();
-  }
-  if ($.config('Quick Reply')) {
-    qr.init();
-  }
-  if ($.config('Quick Report')) {
-    quickReport.init();
-  }
-  if ($.config('Thread Watcher')) {
-    watcher.init();
-  }
-  if ($.config('Keybinds')) {
-    keybinds.init();
-  }
-  if (g.REPLY) {
-    if ($.config('Thread Updater')) {
-      updater.init();
-    }
-    if ($.config('Image Preloading')) {
-      imgPreloading.init();
-    }
-    if ($.config('Quick Reply') && $.config('Persistent QR')) {
-      qr.persist();
-    }
-    if ($.config('Post in Title')) {
-      titlePost.init();
-    }
-    if ($.config('Unread Count')) {
-      unread.init();
-    }
-    if ($.config('Auto Watch') && location.hash === '#watch') {
-      watcher.watch();
-    }
-  } else {
-    if ($.config('Thread Hiding')) {
-      threadHiding.init();
-    }
-    if ($.config('Thread Navigation')) {
-      nav.init();
-    }
-    if ($.config('Thread Expansion')) {
-      expandThread.init();
-    }
-    if ($.config('Comment Expansion')) {
-      expandComment.init();
-    }
-  }
-  _ref2 = g.callbacks;
-  for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-    callback = _ref2[_i];
-    callback();
-  }
-  $.bind(d.body, 'DOMNodeInserted', nodeInserted);
+      #watcher {\
+        position: absolute;\
+      }\
+      #watcher > div.move {\
+        text-decoration: underline;\
+        padding: 5px 5px 0 5px;\
+      }\
+      #watcher > div:last-child {\
+        padding: 0 5px 5px 5px;\
+      }\
+    '
+  };
+  main.init();
 }).call(this);

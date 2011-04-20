@@ -1514,224 +1514,230 @@ fav =
   haloSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC'
   haloNSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
 
-fav.halo = if /ws/.test fav.default then fav.haloSFW else fav.haloNSFW
-pathname = location.pathname.substring(1).split('/')
-[g.BOARD, temp] = pathname
-if temp is 'res'
-  g.REPLY = temp
-  g.THREAD_ID = pathname[2]
-else
-  g.PAGENUM = parseInt(temp) || 0
-g.hiddenReply = $.getValue "hiddenReply/#{g.BOARD}/", {}
-tzOffset = (new Date()).getTimezoneOffset() / 60
-# GMT -8 is given as +480; would GMT +8 be -480 ?
-g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5
-if $.isDST() then g.chanOffset -= 1
+main =
+  init: ->
+    fav.halo = if /ws/.test fav.default then fav.haloSFW else fav.haloNSFW
+    pathname = location.pathname.substring(1).split('/')
+    [g.BOARD, temp] = pathname
+    if temp is 'res'
+      g.REPLY = temp
+      g.THREAD_ID = pathname[2]
+    else
+      g.PAGENUM = parseInt(temp) || 0
+    g.hiddenReply = $.getValue "hiddenReply/#{g.BOARD}/", {}
+    tzOffset = (new Date()).getTimezoneOffset() / 60
+    # GMT -8 is given as +480; would GMT +8 be -480 ?
+    g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5
+    if $.isDST() then g.chanOffset -= 1
 
-###
-lastChecked = Number GM_getValue('lastChecked', '0')
-now = Date.now()
-DAY = 1000 * 60 * 60 * 24
-if lastChecked < now - 1*DAY
-  cutoff = now - 7*DAY
-  while g.hiddenThreads.length
-    if g.hiddenThreads[0].timestamp > cutoff
-      break
-    g.hiddenThreads.shift()
+    ###
+    lastChecked = Number GM_getValue('lastChecked', '0')
+    now = Date.now()
+    DAY = 1000 * 60 * 60 * 24
+    if lastChecked < now - 1*DAY
+      cutoff = now - 7*DAY
+      while g.hiddenThreads.length
+        if g.hiddenThreads[0].timestamp > cutoff
+          break
+        g.hiddenThreads.shift()
 
-  while g.hiddenReplies.length
-    if g.hiddenReplies[0].timestamp > cutoff
-      break
-    g.hiddenReplies.shift()
+      while g.hiddenReplies.length
+        if g.hiddenReplies[0].timestamp > cutoff
+          break
+        g.hiddenReplies.shift()
 
-  GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
-  GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
-  GM_setValue('lastChecked', now.toString())
-###
+      GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
+      GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
+      GM_setValue('lastChecked', now.toString())
+    ###
 
-$.addStyle '
-  /* dialog styling */
-  div.dialog {
-    border: 1px solid;
-  }
-  div.dialog > div.move {
-    cursor: move;
-  }
-  label, a {
-    cursor: pointer;
-  }
+    $.addStyle main.css
 
-  .new {
-    background: lime;
-  }
-  .favicon {
-    cursor: pointer;
-  }
-  .error {
-    color: red;
-  }
+    if location.hostname is 'sys.4chan.org'
+      qr.sys()
+      return
+    if navtopr = $ '#navtopr'
+      options.init()
+    else if $.config('404 Redirect') and d.title is '4chan - 404'
+      redirect()
+    else
+      return
 
-  div.thread.stub > *:not(.block) {
-    display: none;
-  }
+    Recaptcha.init()
 
-  form[name=delform] a img {
-    border: 0px;
-    float: left;
-    margin: 0px 20px;
-  }
-  iframe {
-    display: none;
-  }
+    $.bind $('form[name=post]'), 'submit', qr.cb.submit
 
-  #iHover {
-    position: fixed;
-  }
+    #major features
+    if $.config 'Image Expansion'
+      imgExpand.init()
 
-  #navlinks {
-    position: fixed;
-    top: 25px;
-    right: 5px;
-  }
-  #navlinks > a {
-    font-size: 16px;
-  }
+    if $.config 'Image Auto-Gif'
+      imgGif.init()
 
-  #options {
-    position: fixed;
-    padding: 5px;
-    text-align: right;
-  }
-  #options textarea {
-    height: 100px;
-    width: 500px;
-  }
+    if $.config 'Localize Time'
+      localize.init()
 
-  #qr {
-    position: fixed;
-  }
-  #qr > div.move {
-    text-align: right;
-  }
-  #qr > form > div, /* ad */
-  #qr td.rules {
-    display: none;
-  }
-  #qr.auto:not(:hover) form {
-    display: none;
-  }
-  #qr span.error {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-  }
+    if $.config 'Sauce'
+      sauce.init()
 
-  #updater {
-    position: fixed;
-    text-align: right;
-  }
-  #updater input[type=text] {
-    width: 50px;
-  }
-  #updater:not(:hover) {
-    border: none;
-    background: transparent;
-  }
-  #updater:not(:hover) > div:not(.move) {
-    display: none;
-  }
+    if $.config 'Anonymize'
+      anonymize.init()
 
-  #watcher {
-    position: absolute;
-  }
-  #watcher > div.move {
-    text-decoration: underline;
-    padding: 5px 5px 0 5px;
-  }
-  #watcher > div:last-child {
-    padding: 0 5px 5px 5px;
-  }
-'
+    if $.config 'Image Hover'
+      imageHover.init()
 
-if location.hostname is 'sys.4chan.org'
-  qr.sys()
-  return
-if navtopr = $ '#navtopr'
-  options.init()
-else if $.config('404 Redirect') and d.title is '4chan - 404'
-  redirect()
-else
-  return
+    if $.config 'Reply Hiding'
+      replyHiding.init()
 
-Recaptcha.init()
+    if $.config 'Quick Reply'
+      qr.init()
 
-$.bind $('form[name=post]'), 'submit', qr.cb.submit
+    if $.config 'Quick Report'
+      quickReport.init()
 
-#major features
-if $.config 'Image Expansion'
-  imgExpand.init()
+    if $.config 'Thread Watcher'
+      watcher.init()
 
-if $.config 'Image Auto-Gif'
-  imgGif.init()
+    if $.config 'Keybinds'
+      keybinds.init()
 
-if $.config 'Localize Time'
-  localize.init()
+    if g.REPLY
+      if $.config 'Thread Updater'
+        updater.init()
 
-if $.config 'Sauce'
-  sauce.init()
+      if $.config 'Image Preloading'
+        imgPreloading.init()
 
-if $.config 'Anonymize'
-  anonymize.init()
+      if $.config('Quick Reply') and $.config 'Persistent QR'
+        qr.persist()
 
-if $.config 'Image Hover'
-  imageHover.init()
+      if $.config 'Post in Title'
+        titlePost.init()
 
-if $.config 'Reply Hiding'
-  replyHiding.init()
+      if $.config 'Unread Count'
+        unread.init()
 
-if $.config 'Quick Reply'
-  qr.init()
+      if $.config('Auto Watch') and location.hash is '#watch'
+        watcher.watch()
 
-if $.config 'Quick Report'
-  quickReport.init()
+    else #not reply
+      if $.config 'Thread Hiding'
+        threadHiding.init()
 
-if $.config 'Thread Watcher'
-  watcher.init()
+      if $.config 'Thread Navigation'
+        nav.init()
 
-if $.config 'Keybinds'
-  keybinds.init()
+      if $.config 'Thread Expansion'
+        expandThread.init()
 
-if g.REPLY
-  if $.config 'Thread Updater'
-    updater.init()
+      if $.config 'Comment Expansion'
+        expandComment.init()
 
-  if $.config 'Image Preloading'
-    imgPreloading.init()
+    callback() for callback in g.callbacks
+    $.bind d.body, 'DOMNodeInserted', nodeInserted
 
-  if $.config('Quick Reply') and $.config 'Persistent QR'
-    qr.persist()
+  css: '
+      /* dialog styling */
+      div.dialog {
+        border: 1px solid;
+      }
+      div.dialog > div.move {
+        cursor: move;
+      }
+      label, a {
+        cursor: pointer;
+      }
 
-  if $.config 'Post in Title'
-    titlePost.init()
+      .new {
+        background: lime;
+      }
+      .favicon {
+        cursor: pointer;
+      }
+      .error {
+        color: red;
+      }
 
-  if $.config 'Unread Count'
-    unread.init()
+      div.thread.stub > *:not(.block) {
+        display: none;
+      }
 
-  if $.config('Auto Watch') and location.hash is '#watch'
-    watcher.watch()
+      form[name=delform] a img {
+        border: 0px;
+        float: left;
+        margin: 0px 20px;
+      }
+      iframe {
+        display: none;
+      }
 
-else #not reply
-  if $.config 'Thread Hiding'
-    threadHiding.init()
+      #iHover {
+        position: fixed;
+      }
 
-  if $.config 'Thread Navigation'
-    nav.init()
+      #navlinks {
+        position: fixed;
+        top: 25px;
+        right: 5px;
+      }
+      #navlinks > a {
+        font-size: 16px;
+      }
 
-  if $.config 'Thread Expansion'
-    expandThread.init()
+      #options {
+        position: fixed;
+        padding: 5px;
+        text-align: right;
+      }
+      #options textarea {
+        height: 100px;
+        width: 500px;
+      }
 
-  if $.config 'Comment Expansion'
-    expandComment.init()
+      #qr {
+        position: fixed;
+      }
+      #qr > div.move {
+        text-align: right;
+      }
+      #qr > form > div, /* ad */
+      #qr td.rules {
+        display: none;
+      }
+      #qr.auto:not(:hover) form {
+        display: none;
+      }
+      #qr span.error {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+      }
 
-callback() for callback in g.callbacks
-$.bind d.body, 'DOMNodeInserted', nodeInserted
+      #updater {
+        position: fixed;
+        text-align: right;
+      }
+      #updater input[type=text] {
+        width: 50px;
+      }
+      #updater:not(:hover) {
+        border: none;
+        background: transparent;
+      }
+      #updater:not(:hover) > div:not(.move) {
+        display: none;
+      }
+
+      #watcher {
+        position: absolute;
+      }
+      #watcher > div.move {
+        text-decoration: underline;
+        padding: 5px 5px 0 5px;
+      }
+      #watcher > div:last-child {
+        padding: 0 5px 5px 5px;
+      }
+    '
+
+main.init()
