@@ -1107,9 +1107,9 @@ watcher =
     for input in inputs
       id = input.name
       if id of watchedBoard
-        src = g.favDefault
+        src = fav.default
       else
-        src = g.favEmpty
+        src = fav.empty
       favicon = $.el 'img',
         src: src
         className: 'favicon'
@@ -1138,9 +1138,9 @@ watcher =
   toggle: (thread) ->
     favicon = $ 'img.favicon', thread
     id = favicon.nextSibling.name
-    if favicon.src == g.favEmpty
+    if favicon.src == fav.empty
       watcher.watch thread
-    else # favicon.src == g.favDefault
+    else # favicon.src == fav.default
       watcher.unwatch g.BOARD, id
 
   unwatch: (board, id) ->
@@ -1150,7 +1150,7 @@ watcher =
 
     if input = $ "input[name=\"#{id}\"]"
       favicon = input.previousSibling
-      favicon.src = g.favEmpty
+      favicon.src = fav.empty
 
     watched = $.getValue 'watched', {}
     delete watched[board][id]
@@ -1158,9 +1158,9 @@ watcher =
 
   watch: (thread) ->
     favicon = $ 'img.favicon', thread
-    return if favicon.src is g.favDefault
+    return if favicon.src is fav.default
 
-    favicon.src = g.favDefault
+    favicon.src = fav.default
     id = favicon.nextSibling.name
     tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
     props =
@@ -1288,14 +1288,14 @@ unread =
     l = unread.replies.length
     if g.dead
       if l > 0
-        href = g.favDeadHalo
+        href = fav.deadHalo
       else
-        href = g.favDead
+        href = fav.dead
     else
       if l > 0
-        href = g.favHalo
+        href = fav.halo
       else
-        href = g.favDefault
+        href = fav.default
     favicon = $ 'link[rel="shortcut icon"]', d.head
     clone = favicon.cloneNode true
     clone.href = href
@@ -1501,16 +1501,20 @@ g =
   cache: {}
   requests: {}
   callbacks: []
-  favDead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC'
-  favDeadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII='
-  favDefault: $('link[rel="shortcut icon"]', d)?.href or '' #no favicon in `post successful` page
-  favEmpty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
   flavors: [
     'http://regex.info/exif.cgi?url='
     'http://iqdb.org/?url='
     'http://tineye.com/search?url='
   ].join '\n'
-g.favHalo = if /ws/.test g.favDefault then 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC' else 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
+fav =
+  dead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC'
+  deadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII='
+  default: $('link[rel="shortcut icon"]', d.head)?.href or '' #no favicon in `post successful` page
+  empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
+  haloSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC'
+  haloNSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
+
+fav.halo = if /ws/.test fav.default then fav.haloSFW else fav.haloNSFW
 pathname = location.pathname.substring(1).split('/')
 [g.BOARD, temp] = pathname
 if temp is 'res'
