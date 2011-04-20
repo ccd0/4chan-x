@@ -490,9 +490,9 @@ keybinds =
     if all
       $("#imageExpand").click()
     else
-      unless image = $ 'td.replyhl span.filesize ~ a[target]', thread
-        image = $ 'span.filesize ~ a[target]', thread
-      imageToggle image
+      root = $('td.replyhl', thread) or thread
+      thumb = $ 'img[md5]', root
+      imgExpand.toggle thumb
 
   qr: (thread, quote) ->
     unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
@@ -1434,22 +1434,23 @@ imgExpand =
       for img in $$ 'img[md5] + img'
         imgExpand.resize cw, ch, imageType, img
 
-  toggle: (a) ->
-    thumb = a.firstChild
+  toggle: (img) ->
+    thumb = img.parentNode.firstChild
     cw = d.body.clientWidth
     ch = d.body.clientHeight
     imageType = $("#imageType").value
     if thumb.style.display
-      imgExpand.contract a
+      imgExpand.contract thumb
     else
-      imgExpand.expand thumb, cw, ch, imageType, a
+      imgExpand.expand thumb, cw, ch, imageType
 
   contract: (thumb) ->
     $.show thumb
     $.remove thumb.nextSibling
 
-  expand: (thumb, cw, ch, imageType, a) ->
+  expand: (thumb, cw, ch, imageType) ->
     $.hide thumb
+    a = thumb.parentNode
     img = $.el 'img',
       src: a.href
     a.appendChild img

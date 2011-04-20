@@ -674,14 +674,13 @@
       }
     },
     img: function(thread, all) {
-      var image;
+      var root, thumb;
       if (all) {
         return $("#imageExpand").click();
       } else {
-        if (!(image = $('td.replyhl span.filesize ~ a[target]', thread))) {
-          image = $('span.filesize ~ a[target]', thread);
-        }
-        return imageToggle(image);
+        root = $('td.replyhl', thread) || thread;
+        thumb = $('img[md5]', root);
+        return imgExpand.toggle(thumb);
       }
     },
     qr: function(thread, quote) {
@@ -1898,25 +1897,26 @@
         return _results;
       }
     },
-    toggle: function(a) {
+    toggle: function(img) {
       var ch, cw, imageType, thumb;
-      thumb = a.firstChild;
+      thumb = img.parentNode.firstChild;
       cw = d.body.clientWidth;
       ch = d.body.clientHeight;
       imageType = $("#imageType").value;
       if (thumb.style.display) {
-        return imgExpand.contract(a);
+        return imgExpand.contract(thumb);
       } else {
-        return imgExpand.expand(thumb, cw, ch, imageType, a);
+        return imgExpand.expand(thumb, cw, ch, imageType);
       }
     },
     contract: function(thumb) {
       $.show(thumb);
       return $.remove(thumb.nextSibling);
     },
-    expand: function(thumb, cw, ch, imageType, a) {
-      var img;
+    expand: function(thumb, cw, ch, imageType) {
+      var a, img;
       $.hide(thumb);
+      a = thumb.parentNode;
       img = $.el('img', {
         src: a.href
       });
