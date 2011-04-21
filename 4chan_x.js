@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, fav, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, redirect, replyHiding, sauce, threadHiding, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, redirect, replyHiding, sauce, threadHiding, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console != "undefined" && console !== null) {
     log = function(arg) {
@@ -1389,9 +1389,9 @@
         input = inputs[_i];
         id = input.name;
         if (id in watchedBoard) {
-          src = fav["default"];
+          src = Favicon["default"];
         } else {
-          src = fav.empty;
+          src = Favicon.empty;
         }
         favicon = $.el('img', {
           src: src,
@@ -1428,7 +1428,7 @@
       var favicon, id;
       favicon = $('img.favicon', thread);
       id = favicon.nextSibling.name;
-      if (favicon.src === fav.empty) {
+      if (favicon.src === Favicon.empty) {
         return watcher.watch(thread);
       } else {
         return watcher.unwatch(g.BOARD, id);
@@ -1441,7 +1441,7 @@
       $.remove(div);
       if (input = $("input[name=\"" + id + "\"]")) {
         favicon = input.previousSibling;
-        favicon.src = fav.empty;
+        favicon.src = Favicon.empty;
       }
       watched = $.getValue('watched', {});
       delete watched[board][id];
@@ -1450,10 +1450,10 @@
     watch: function(thread) {
       var favicon, id, props, tc, watched, _name;
       favicon = $('img.favicon', thread);
-      if (favicon.src === fav["default"]) {
+      if (favicon.src === Favicon["default"]) {
         return;
       }
-      favicon.src = fav["default"];
+      favicon.src = Favicon["default"];
       id = favicon.nextSibling.name;
       tc = $('span.filetitle', thread).textContent || $('blockquote', thread).textContent;
       props = {
@@ -1606,7 +1606,7 @@
       node: function(root) {
         unread.replies = unread.replies.concat($$('td[id]', root));
         unread.updateTitle();
-        return unread.updateFavicon();
+        return Favicon.update();
       },
       scroll: function(e) {
         var bottom, height, i, reply, _len, _ref;
@@ -1625,27 +1625,35 @@
         unread.replies = unread.replies.slice(i);
         unread.updateTitle();
         if (unread.replies.length === 0) {
-          return unread.updateFavicon();
+          return Favicon.update();
         }
       }
     },
     updateTitle: function() {
       return d.title = d.title.replace(/\d+/, unread.replies.length);
-    },
-    updateFavicon: function() {
+    }
+  };
+  Favicon = {
+    dead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC',
+    deadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII=',
+    "default": ((_ref = $('link[rel="shortcut icon"]', d.head)) != null ? _ref.href : void 0) || '',
+    empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
+    haloSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC',
+    haloNSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=',
+    update: function() {
       var clone, favicon, href, l;
       l = unread.replies.length;
       if (g.dead) {
         if (l > 0) {
-          href = fav.deadHalo;
+          href = Favicon.headHalo;
         } else {
-          href = fav.dead;
+          href = Favicon.dead;
         }
       } else {
         if (l > 0) {
-          href = fav.halo;
+          href = Favicon.halo;
         } else {
-          href = fav["default"];
+          href = Favicon["default"];
         }
       }
       favicon = $('link[rel="shortcut icon"]', d.head);
@@ -1961,18 +1969,10 @@
     callbacks: [],
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url='].join('\n')
   };
-  fav = {
-    dead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC',
-    deadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII=',
-    "default": ((_ref = $('link[rel="shortcut icon"]', d.head)) != null ? _ref.href : void 0) || '',
-    empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    haloSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC',
-    haloNSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
-  };
   main = {
     init: function() {
       var callback, navtopr, pathname, temp, tzOffset, _i, _len, _ref;
-      fav.halo = /ws/.test(fav["default"]) ? fav.haloSFW : fav.haloNSFW;
+      Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {

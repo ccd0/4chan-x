@@ -1096,9 +1096,9 @@ watcher =
     for input in inputs
       id = input.name
       if id of watchedBoard
-        src = fav.default
+        src = Favicon.default
       else
-        src = fav.empty
+        src = Favicon.empty
       favicon = $.el 'img',
         src: src
         className: 'favicon'
@@ -1127,9 +1127,9 @@ watcher =
   toggle: (thread) ->
     favicon = $ 'img.favicon', thread
     id = favicon.nextSibling.name
-    if favicon.src == fav.empty
+    if favicon.src == Favicon.empty
       watcher.watch thread
-    else # favicon.src == fav.default
+    else # favicon.src == Favicon.default
       watcher.unwatch g.BOARD, id
 
   unwatch: (board, id) ->
@@ -1139,7 +1139,7 @@ watcher =
 
     if input = $ "input[name=\"#{id}\"]"
       favicon = input.previousSibling
-      favicon.src = fav.empty
+      favicon.src = Favicon.empty
 
     watched = $.getValue 'watched', {}
     delete watched[board][id]
@@ -1147,9 +1147,9 @@ watcher =
 
   watch: (thread) ->
     favicon = $ 'img.favicon', thread
-    return if favicon.src is fav.default
+    return if favicon.src is Favicon.default
 
-    favicon.src = fav.default
+    favicon.src = Favicon.default
     id = favicon.nextSibling.name
     tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
     props =
@@ -1255,7 +1255,7 @@ unread =
     node: (root) ->
       unread.replies = unread.replies.concat $$ 'td[id]', root
       unread.updateTitle()
-      unread.updateFavicon()
+      Favicon.update()
 
     scroll: (e) ->
       height = d.body.clientHeight
@@ -1268,27 +1268,38 @@ unread =
       unread.replies = unread.replies[i..]
       unread.updateTitle()
       if unread.replies.length is 0
-        unread.updateFavicon()
+        Favicon.update()
 
   updateTitle: ->
     d.title = d.title.replace /\d+/, unread.replies.length
 
-  updateFavicon: ->
+Favicon =
+  dead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC'
+  deadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII='
+  default: $('link[rel="shortcut icon"]', d.head)?.href or '' #no favicon in `post successful` page
+  empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
+  haloSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC'
+  haloNSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
+
+  update: ->
     l = unread.replies.length
     if g.dead
       if l > 0
-        href = fav.deadHalo
+        href = Favicon.headHalo
       else
-        href = fav.dead
+        href = Favicon.dead
     else
       if l > 0
-        href = fav.halo
+        href = Favicon.halo
       else
-        href = fav.default
+        href = Favicon.default
+
+    #XXX `favicon.href = href` doesn't work
     favicon = $ 'link[rel="shortcut icon"]', d.head
     clone = favicon.cloneNode true
     clone.href = href
     $.replace favicon, clone
+
 
 redirect = ->
   switch g.BOARD
@@ -1496,17 +1507,10 @@ g =
     'http://iqdb.org/?url='
     'http://tineye.com/search?url='
   ].join '\n'
-fav =
-  dead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAAAD/AAA9+90tAAAAAXRSTlMAQObYZgAAADtJREFUCB0FwUERxEAIALDszMG730PNSkBEBSECoU0AEPe0mly5NWprRUcDQAdn68qtkVsj3/84z++CD5u7CsnoBJoaAAAAAElFTkSuQmCC'
-  deadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVR4XrWSAQoAIAgD/f+njSApsTqjGoTQ5oGWPJMOOs60CzsWwIwz1I4PUIYh+WYEMGQ6I/txw91kP4oA9BdwhKp1My4xQq6e8Q9ANgDJjOErewFiNesV2uGSfGv1/HYAAAAASUVORK5CYII='
-  default: $('link[rel="shortcut icon"]', d.head)?.href or '' #no favicon in `post successful` page
-  empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
-  haloSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC'
-  haloNSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII='
 
 main =
   init: ->
-    fav.halo = if /ws/.test fav.default then fav.haloSFW else fav.haloNSFW
+    Favicon.halo = if /ws/.test Favicon.default then Favicon.haloSFW else Favicon.haloNSFW
     pathname = location.pathname.substring(1).split('/')
     [g.BOARD, temp] = pathname
     if temp is 'res'
