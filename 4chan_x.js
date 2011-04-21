@@ -930,18 +930,7 @@
         }
       },
       load: function(e) {
-        var dialog;
-        Recaptcha.reload();
-        try {
-          return e.target.contentWindow.postMessage('', '*');
-        } catch (err) {
-          dialog = $('#qr');
-          if (g.REPLY && $.config('Persistent QR')) {
-            return qr.refresh(dialog);
-          } else {
-            return $.remove(dialog);
-          }
-        }
+        return e.target.contentWindow.postMessage('', '*');
       },
       messageIframe: function(e) {
         var message, _ref;

@@ -699,16 +699,7 @@ qr =
         $.removeClass dialog, 'auto'
 
     load: (e) ->
-      Recaptcha.reload()
-      try
-        e.target.contentWindow.postMessage '', '*'
-      catch err
-        # fucking chrome
-        dialog = $ '#qr'
-        if g.REPLY and $.config 'Persistent QR'
-          qr.refresh dialog
-        else
-          $.remove dialog
+      e.target.contentWindow.postMessage '', '*'
 
     messageIframe: (e) ->
       message = $('table font b')?.firstChild.textContent or ''
