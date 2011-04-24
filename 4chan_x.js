@@ -895,8 +895,34 @@
   };
   qr = {
     /*
-      lol chrome - http://code.google.com/p/chromium/issues/detail?id=20773
-      we can't access other frames, so no error checking until I make a workaround
+        In order to get qr error notifications in chrome, there are two issues we
+        have to work around:
+
+
+        http://code.google.com/p/chromium/issues/detail?id=20773
+        Let content scripts see other frames (instead of them being undefined)
+
+        We can't directly pass messages between the top window and the iframe, so
+        we have to break out of the sandbox and evaulate code in the global context.
+
+
+        http://code.google.com/p/chromium/issues/detail?id=61856
+        Support @run-at for user scripts
+
+        http://www.chromium.org/developers/design-documents/user-scripts
+
+          In Chromium/Google Chrome, Greasemonkey scripts are injected by default at
+          a new point called "document-idle". This is different than Greasemonkey,
+          which always injects at document-end.
+
+          ...
+
+          However, if the page loads quickly, scripts may not be run until after
+          window.onload has occurred -- much later than with Greasemonkey.
+
+        We can't force the script to run at document-end, so we can't rely on the
+        load event to tell us when the hidden iframe is ready to receive our ping;
+        instead, we have to emit our own event.
       */
     init: function() {
       var iframe;
