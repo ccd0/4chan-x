@@ -230,6 +230,14 @@
     return object;
   };
   $.extend($, {
+    globalEval: function(code) {
+      var script;
+      script = $.el('script', {
+        textContent: "(" + code + ")()"
+      });
+      $.append(d.head, script);
+      return $.remove(script);
+    },
     get: function(url, cb) {
       var r;
       r = new XMLHttpRequest();
@@ -931,8 +939,9 @@
         name: 'iframe'
       });
       $.append(d.body, iframe);
-      $.bind(iframe, 'load', qr.cb.load);
-      $.bind(window, 'message', qr.cb.messageTop);
+      $.globalEval(qr.eval.load);
+      $.globalEval(qr.eval.messageTop);
+      $.bind(window, 'message2', qr.cb.messageTop);
       return $('#recaptcha_response_field').id = '';
     },
     autohide: {
@@ -943,6 +952,35 @@
       unset: function() {
         var _ref;
         return (_ref = $('#qr input[title=autohide]:checked')) != null ? _ref.click() : void 0;
+      }
+    },
+    eval: {
+      load: function() {
+        var load;
+        load = function(e) {
+          return e.target.contentWindow.postMessage('', '*');
+        };
+        return document.querySelector('iframe[name=iframe]').addEventListener('load', load, true);
+      },
+      messageTop: function() {
+        var message;
+        message = function(e) {
+          var e2;
+          e2 = document.createEvent('MessageEvent');
+          e2.initMessageEvent('message2', true, true, e.data, e.origin, '', null, null);
+          return window.dispatchEvent(e2);
+        };
+        return window.addEventListener('message', message, true);
+      },
+      messageIframe: function() {
+        var messageIframe;
+        messageIframe = function(e) {
+          var message, _ref;
+          message = ((_ref = document.querySelector('table font b')) != null ? _ref.firstChild.textContent : void 0) || '';
+          e.source.postMessage(message, '*');
+          return window.location = 'about:blank';
+        };
+        return window.addEventListener('message', messageIframe, true);
       }
     },
     cb: {
@@ -957,12 +995,6 @@
       },
       load: function(e) {
         return e.target.contentWindow.postMessage('', '*');
-      },
-      messageIframe: function(e) {
-        var message, _ref;
-        message = ((_ref = $('table font b')) != null ? _ref.firstChild.textContent : void 0) || '';
-        e.source.postMessage(message, '*');
-        return window.location = 'about:blank';
       },
       messageTop: function(e) {
         var data, dialog, error;
@@ -1134,17 +1166,19 @@
       return qr.autohide.set();
     },
     sys: function() {
-      var board, html, id, recaptcha, thread, _, _ref, _ref2;
+      var board, c, id, recaptcha, thread, _, _ref, _ref2;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
       }
-      $.bind(window, 'message', qr.cb.messageIframe);
-      html = $('b').innerHTML;
-      _ref = html.match(/<!-- thread:(\d+),no:(\d+) -->/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-      if (thread === '0') {
-        _ref2 = $('meta', d).content.match(/4chan.org\/(\w+)\//), _ = _ref2[0], board = _ref2[1];
-        return window.location = "http://boards.4chan.org/" + board + "/res/" + id + "#watch";
+      $.globalEval(qr.eval.messageIframe);
+      c = $('b').lastChild;
+      if (c.nodeType === 8) {
+        _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
+        if (thread === '0') {
+          _ref2 = $('meta', d).content.match(/4chan.org\/(\w+)\//), _ = _ref2[0], board = _ref2[1];
+          return window.location = "http://boards.4chan.org/" + board + "/res/" + id + "#watch";
+        }
       }
     }
   };

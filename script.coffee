@@ -137,6 +137,11 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  globalEval: (code) ->
+    script = $.el 'script',
+      textContent: "(#{code})()"
+    $.append d.head, script
+    $.remove script
   get: (url, cb) ->
     r = new XMLHttpRequest()
     r.onload = cb
@@ -705,8 +710,9 @@ qr =
     iframe = $.el 'iframe',
       name: 'iframe'
     $.append d.body, iframe
-    $.bind iframe, 'load', qr.cb.load
-    $.bind window, 'message', qr.cb.messageTop
+    $.globalEval qr.eval.load
+    $.globalEval qr.eval.messageTop
+    $.bind window, 'message2', qr.cb.messageTop
 
     #hack - nuke id so it doesn't grab focus when reloading
     $('#recaptcha_response_field').id = ''
@@ -717,6 +723,23 @@ qr =
     unset: ->
       $('#qr input[title=autohide]:checked')?.click()
 
+  eval:
+    load: ->
+      load = (e) -> e.target.contentWindow.postMessage '', '*'
+      document.querySelector('iframe[name=iframe]').addEventListener('load', load, true)
+    messageTop: ->
+      message = (e) ->
+        e2 = document.createEvent 'MessageEvent'
+        # XXX using e.source for source arg results in security error in Firefox
+        e2.initMessageEvent 'message2', true, true, e.data, e.origin, '', null, null
+        window.dispatchEvent e2
+      window.addEventListener 'message', message, true
+    messageIframe: ->
+      messageIframe = (e) ->
+        message = document.querySelector('table font b')?.firstChild.textContent or ''
+        e.source.postMessage message, '*'
+        window.location = 'about:blank'
+      window.addEventListener 'message', messageIframe, true
   cb:
     autohide: (e) ->
       dialog = $ '#qr'
@@ -727,11 +750,6 @@ qr =
 
     load: (e) ->
       e.target.contentWindow.postMessage '', '*'
-
-    messageIframe: (e) ->
-      message = $('table font b')?.firstChild.textContent or ''
-      e.source.postMessage message, '*'
-      window.location = 'about:blank'
 
     messageTop: (e) ->
       {data} = e
@@ -883,13 +901,14 @@ qr =
       $.bind recaptcha, 'keydown', Recaptcha.listener
       return
 
-    $.bind window, 'message', qr.cb.messageIframe
+    $.globalEval qr.eval.messageIframe
 
-    html = $('b').innerHTML
-    [_, thread, id] = html.match(/<!-- thread:(\d+),no:(\d+) -->/)
-    if thread is '0'
-      [_, board] = $('meta', d).content.match(/4chan.org\/(\w+)\//)
-      window.location = "http://boards.4chan.org/#{board}/res/#{id}#watch"
+    c = $('b').lastChild
+    if c.nodeType is 8 #comment node
+      [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
+      if thread is '0'
+        [_, board] = $('meta', d).content.match(/4chan.org\/(\w+)\//)
+        window.location = "http://boards.4chan.org/#{board}/res/#{id}#watch"
 
 threadHiding =
   init: ->
