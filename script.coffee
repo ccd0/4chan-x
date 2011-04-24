@@ -901,14 +901,15 @@ qr =
       $.bind recaptcha, 'keydown', Recaptcha.listener
       return
 
-    $.globalEval qr.eval.messageIframe
-
     c = $('b').lastChild
     if c.nodeType is 8 #comment node
       [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
       if thread is '0'
         [_, board] = $('meta', d).content.match(/4chan.org\/(\w+)\//)
         window.location = "http://boards.4chan.org/#{board}/res/#{id}#watch"
+        return
+
+    $.globalEval qr.eval.messageIframe
 
 threadHiding =
   init: ->
