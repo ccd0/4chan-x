@@ -877,7 +877,7 @@ qr =
 
 threadHiding =
   init: ->
-    node = $ 'form[name=delform] > *'
+    node = $ 'form[name=delform] > *:not([id])'
     threadHiding.thread node
 
     hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}

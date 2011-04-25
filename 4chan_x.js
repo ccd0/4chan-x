@@ -1141,7 +1141,7 @@
   threadHiding = {
     init: function() {
       var a, hiddenThreads, node, op, thread, _i, _len, _ref, _results;
-      node = $('form[name=delform] > *');
+      node = $('form[name=delform] > *:not([id])');
       threadHiding.thread(node);
       hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
       _ref = $$('div.thread');
