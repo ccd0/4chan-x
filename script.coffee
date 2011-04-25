@@ -1084,7 +1084,7 @@ updater =
 
   update: ->
     updater.request?.abort()
-    url = location.href #+ '?' + Date.now() # fool the cache
+    url = location.href + '?' + Date.now() # fool the cache
     cb = updater.cb.update
     updater.request = $.get url, cb
 
