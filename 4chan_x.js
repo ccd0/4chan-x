@@ -2022,7 +2022,7 @@
       }
       if (navtopr = $('#navtopr')) {
         options.init();
-      } else if ($.config('404 Redirect') && d.title === '4chan - 404') {
+      } else if ($.config('404 Redirect') && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
         redirect();
       } else {
         return;

@@ -1555,7 +1555,7 @@ main =
       return
     if navtopr = $ '#navtopr'
       options.init()
-    else if $.config('404 Redirect') and d.title is '4chan - 404'
+    else if $.config('404 Redirect') and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
       redirect()
     else
       return
