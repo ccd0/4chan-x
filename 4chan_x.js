@@ -902,36 +902,6 @@
     }
   };
   qr = {
-    /*
-        In order to get qr error notifications in chrome, there are two issues we
-        have to work around:
-    
-    
-        http://code.google.com/p/chromium/issues/detail?id=20773
-        Let content scripts see other frames (instead of them being undefined)
-    
-        We can't directly pass messages between the top window and the iframe, so
-        we have to break out of the sandbox and evaulate code in the global context.
-    
-    
-        http://code.google.com/p/chromium/issues/detail?id=61856
-        Support @run-at for user scripts
-    
-        http://www.chromium.org/developers/design-documents/user-scripts
-    
-          In Chromium/Google Chrome, Greasemonkey scripts are injected by default at
-          a new point called "document-idle". This is different than Greasemonkey,
-          which always injects at document-end.
-    
-          ...
-    
-          However, if the page loads quickly, scripts may not be run until after
-          window.onload has occurred -- much later than with Greasemonkey.
-    
-        We can't force the script to run at document-end, so we can't rely on the
-        load event to tell us when the hidden iframe is ready to receive our ping;
-        instead, we have to emit our own event.
-      */
     init: function() {
       var iframe;
       g.callbacks.push(qr.cb.node);
@@ -939,9 +909,7 @@
         name: 'iframe'
       });
       $.append(d.body, iframe);
-      $.globalEval(qr.eval.load);
-      $.globalEval(qr.eval.messageTop);
-      $.bind(window, 'message2', qr.cb.messageTop);
+      $.bind(window, 'message', qr.cb.message);
       return $('#recaptcha_response_field').id = '';
     },
     autohide: {
@@ -954,35 +922,6 @@
         return (_ref = $('#qr input[title=autohide]:checked')) != null ? _ref.click() : void 0;
       }
     },
-    eval: {
-      load: function() {
-        var load;
-        load = function(e) {
-          return e.target.contentWindow.postMessage('', '*');
-        };
-        return document.querySelector('iframe[name=iframe]').addEventListener('load', load, true);
-      },
-      messageTop: function() {
-        var message;
-        message = function(e) {
-          var e2;
-          e2 = document.createEvent('MessageEvent');
-          e2.initMessageEvent('message2', true, true, e.data, e.origin, '', null, null);
-          return window.dispatchEvent(e2);
-        };
-        return window.addEventListener('message', message, true);
-      },
-      messageIframe: function() {
-        var messageIframe;
-        messageIframe = function(e) {
-          var message, _ref;
-          message = ((_ref = document.querySelector('table font b')) != null ? _ref.firstChild.textContent : void 0) || '';
-          e.source.postMessage(message, '*');
-          return window.location = 'about:blank';
-        };
-        return window.addEventListener('message', messageIframe, true);
-      }
-    },
     cb: {
       autohide: function(e) {
         var dialog;
@@ -993,10 +932,7 @@
           return $.removeClass(dialog, 'auto');
         }
       },
-      load: function(e) {
-        return e.target.contentWindow.postMessage('', '*');
-      },
-      messageTop: function(e) {
+      message: function(e) {
         var data, dialog, error;
         data = e.data;
         dialog = $('#qr');
@@ -1180,7 +1116,18 @@
           return;
         }
       }
-      return $.globalEval(qr.eval.messageIframe);
+      /*
+            http://code.google.com/p/chromium/issues/detail?id=20773
+            Let content scripts see other frames (instead of them being undefined)
+      
+            To access the parent, we have to break out of the sandbox and evaluate
+            in the global context.
+          */
+      return $.globalEval(function() {
+        var data, _ref3;
+        data = ((_ref3 = document.querySelector('table font b')) != null ? _ref3.firstChild.textContent : void 0) || '';
+        return parent.postMessage(data, '*');
+      });
     }
   };
   threadHiding = {

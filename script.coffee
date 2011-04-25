@@ -674,45 +674,12 @@ options =
       g.hiddenReplies = {}
 
 qr =
-  ###
-    In order to get qr error notifications in chrome, there are two issues we
-    have to work around:
-
-
-    http://code.google.com/p/chromium/issues/detail?id=20773
-    Let content scripts see other frames (instead of them being undefined)
-
-    We can't directly pass messages between the top window and the iframe, so
-    we have to break out of the sandbox and evaulate code in the global context.
-
-
-    http://code.google.com/p/chromium/issues/detail?id=61856
-    Support @run-at for user scripts
-
-    http://www.chromium.org/developers/design-documents/user-scripts
-
-      In Chromium/Google Chrome, Greasemonkey scripts are injected by default at
-      a new point called "document-idle". This is different than Greasemonkey,
-      which always injects at document-end.
-
-      ...
-
-      However, if the page loads quickly, scripts may not be run until after
-      window.onload has occurred -- much later than with Greasemonkey.
-
-    We can't force the script to run at document-end, so we can't rely on the
-    load event to tell us when the hidden iframe is ready to receive our ping;
-    instead, we have to emit our own event.
-  ###
-
   init: ->
     g.callbacks.push qr.cb.node
     iframe = $.el 'iframe',
       name: 'iframe'
     $.append d.body, iframe
-    $.globalEval qr.eval.load
-    $.globalEval qr.eval.messageTop
-    $.bind window, 'message2', qr.cb.messageTop
+    $.bind window, 'message', qr.cb.message
 
     #hack - nuke id so it doesn't grab focus when reloading
     $('#recaptcha_response_field').id = ''
@@ -723,23 +690,6 @@ qr =
     unset: ->
       $('#qr input[title=autohide]:checked')?.click()
 
-  eval:
-    load: ->
-      load = (e) -> e.target.contentWindow.postMessage '', '*'
-      document.querySelector('iframe[name=iframe]').addEventListener('load', load, true)
-    messageTop: ->
-      message = (e) ->
-        e2 = document.createEvent 'MessageEvent'
-        # XXX using e.source for source arg results in security error in Firefox
-        e2.initMessageEvent 'message2', true, true, e.data, e.origin, '', null, null
-        window.dispatchEvent e2
-      window.addEventListener 'message', message, true
-    messageIframe: ->
-      messageIframe = (e) ->
-        message = document.querySelector('table font b')?.firstChild.textContent or ''
-        e.source.postMessage message, '*'
-        window.location = 'about:blank'
-      window.addEventListener 'message', messageIframe, true
   cb:
     autohide: (e) ->
       dialog = $ '#qr'
@@ -748,10 +698,7 @@ qr =
       else
         $.removeClass dialog, 'auto'
 
-    load: (e) ->
-      e.target.contentWindow.postMessage '', '*'
-
-    messageTop: (e) ->
+    message: (e) ->
       {data} = e
       dialog = $ '#qr'
       if data # error message
@@ -909,7 +856,16 @@ qr =
         window.location = "http://boards.4chan.org/#{board}/res/#{id}#watch"
         return
 
-    $.globalEval qr.eval.messageIframe
+    ###
+      http://code.google.com/p/chromium/issues/detail?id=20773
+      Let content scripts see other frames (instead of them being undefined)
+
+      To access the parent, we have to break out of the sandbox and evaluate
+      in the global context.
+    ###
+    $.globalEval ->
+      data = document.querySelector('table font b')?.firstChild.textContent or ''
+      parent.postMessage data, '*'
 
 threadHiding =
   init: ->
