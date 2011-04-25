@@ -1567,8 +1567,6 @@ main =
 
     $.bind $('form[name=post]'), 'submit', qr.cb.submit
 
-    threading.init()
-
     #major features
     if $.config 'Image Expansion'
       imgExpand.init()
@@ -1623,6 +1621,8 @@ main =
         watcher.watch()
 
     else #not reply
+      threading.init()
+
       if $.config 'Thread Hiding'
         threadHiding.init()
 

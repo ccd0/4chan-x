@@ -2046,7 +2046,6 @@
       }
       Recaptcha.init();
       $.bind($('form[name=post]'), 'submit', qr.cb.submit);
-      threading.init();
       if ($.config('Image Expansion')) {
         imgExpand.init();
       }
@@ -2100,6 +2099,7 @@
           watcher.watch();
         }
       } else {
+        threading.init();
         if ($.config('Thread Hiding')) {
           threadHiding.init();
         }
