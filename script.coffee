@@ -877,6 +877,7 @@ qr =
 
 threadHiding =
   init: ->
+    # don't thread image controls
     node = $ 'form[name=delform] > *:not([id])'
     threadHiding.thread node
 
