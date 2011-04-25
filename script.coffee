@@ -715,6 +715,7 @@ qr =
             $.remove dialog
 
       Recaptcha.reload()
+      $('iframe[name=iframe]').src = 'about:blank'
 
     node: (root) ->
       quotes = $$ 'a.quotejs:not(:first-child)', root

@@ -952,7 +952,8 @@
             }
           }
         }
-        return Recaptcha.reload();
+        Recaptcha.reload();
+        return $('iframe[name=iframe]').src = 'about:blank';
       },
       node: function(root) {
         var quote, quotes, _i, _len, _results;
