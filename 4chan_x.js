@@ -1936,8 +1936,9 @@
         case 'full':
           return img.removeAttribute('style');
         case 'fit width':
-          if (iw > cw) {
-            img.style.width = '100%';
+          ratio = cw / iw;
+          if (ratio < 1) {
+            img.style.width = Math.floor(ratio * iw);
             return img.style.margin = '0px';
           }
           break;

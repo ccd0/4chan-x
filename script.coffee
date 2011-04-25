@@ -1472,13 +1472,14 @@ imgExpand =
       when 'full'
         img.removeAttribute 'style'
       when 'fit width'
-        if iw > cw
-          img.style.width = '100%'
+        ratio = cw/iw
+        if ratio < 1
+          # y'know, this width is constant between resizes
+          img.style.width = Math.floor ratio * iw
           img.style.margin = '0px'
       when 'fit screen'
         ratio = Math.min cw/iw, ch/ih
         if ratio < 1
-          #XXX maybe needs + 'px' ?
           img.style.width = Math.floor ratio * iw
           img.style.margin = '0px'
 
