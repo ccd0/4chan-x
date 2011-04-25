@@ -383,7 +383,7 @@ replyHiding =
 
         reply = td.nextSibling
         id = reply.id
-        if id of g.hiddenReply
+        if id of g.hiddenReplies
           replyHiding.hide reply
 
     show: (e) ->
@@ -409,15 +409,15 @@ replyHiding =
       $.before table, div
 
     id = reply.id
-    g.hiddenReply[id] = Date.now()
-    $.setValue "hiddenReply/#{g.BOARD}/", g.hiddenReply
+    g.hiddenReplies[id] = Date.now()
+    $.setValue "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   show: (table) ->
     $.show table
 
     id = $('td[id]', table).id
-    delete g.hiddenReply[id]
-    $.setValue "hiddenReply/#{g.BOARD}/", g.hiddenReply
+    delete g.hiddenReplies[id]
+    $.setValue "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
 keybinds =
   init: ->
@@ -651,8 +651,8 @@ options =
     html += "<div><a name=flavors>Flavors</a></div>"
     html += "<div><textarea style=\"display: none;\" name=flavors>#{$.config('flavors').join '\n'}</textarea></div>"
 
-    hiddenThread = $.getValue "hiddenThread/#{g.BOARD}/", {}
-    hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length
+    hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
+    hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
     html += "<div><input type=\"button\" value=\"hidden: #{hiddenNum}\"></div>"
 
     html += "<hr>"
@@ -675,8 +675,8 @@ options =
     clearHidden: (e) ->
       #'hidden' might be misleading; it's the number of IDs we're *looking* for,
       # not the number of posts actually hidden on the page.
-      $.deleteValue "hiddenReply/#{g.BOARD}/"
-      $.deleteValue "hiddenThread/#{g.BOARD}/"
+      $.deleteValue "hiddenReplies/#{g.BOARD}/"
+      $.deleteValue "hiddenThreads/#{g.BOARD}/"
       @value = "hidden: 0"
       g.hiddenReplies = {}
 
@@ -907,7 +907,7 @@ threading =
 
 threadHiding =
   init: ->
-    hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
+    hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
     for thread in $$ 'div.thread'
       op = thread.firstChild
       a = $.el 'a',
@@ -937,9 +937,9 @@ threadHiding =
 
     id = thread.firstChild.id
 
-    hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
+    hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
     hiddenThreads[id] = Date.now()
-    $.setValue "hiddenThread/#{g.BOARD}/", hiddenThreads
+    $.setValue "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
   hideHide: (thread) ->
     if $.config 'Show Stubs'
@@ -974,9 +974,9 @@ threadHiding =
 
     id = thread.firstChild.id
 
-    hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
+    hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
     delete hiddenThreads[id]
-    $.setValue "hiddenThread/#{g.BOARD}/", hiddenThreads
+    $.setValue "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
 updater =
   init: ->
@@ -1526,32 +1526,30 @@ main =
       g.THREAD_ID = pathname[2]
     else
       g.PAGENUM = parseInt(temp) || 0
-    g.hiddenReply = $.getValue "hiddenReply/#{g.BOARD}/", {}
+    g.hiddenReplies = $.getValue "hiddenReplies/#{g.BOARD}/", {}
     tzOffset = (new Date()).getTimezoneOffset() / 60
     # GMT -8 is given as +480; would GMT +8 be -480 ?
     g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5
     if $.isDST() then g.chanOffset -= 1
 
-    ###
-    lastChecked = Number GM_getValue('lastChecked', '0')
+    lastChecked = $.getValue 'lastChecked', 0
     now = Date.now()
     DAY = 1000 * 60 * 60 * 24
     if lastChecked < now - 1*DAY
       cutoff = now - 7*DAY
-      while g.hiddenThreads.length
-        if g.hiddenThreads[0].timestamp > cutoff
-          break
-        g.hiddenThreads.shift()
+      hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
 
-      while g.hiddenReplies.length
-        if g.hiddenReplies[0].timestamp > cutoff
-          break
-        g.hiddenReplies.shift()
+      for id, timestamp of hiddenThreads
+        if timestamp < cutoff
+          delete hiddenThreads[id]
 
-      GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
-      GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
-      GM_setValue('lastChecked', now.toString())
-    ###
+      for id, timestamp of g.hiddenReplies
+        if timestamp < cutoff
+          delete g.hiddenReplies[id]
+
+      $.setValue "hiddenThreads/#{g.BOARD}/", hiddenThreads
+      $.setValue "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+      $.setValue 'lastChecked', now
 
     $.addStyle main.css
 

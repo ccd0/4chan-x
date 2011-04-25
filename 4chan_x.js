@@ -561,7 +561,7 @@
           $.replace(td.firstChild, a);
           reply = td.nextSibling;
           id = reply.id;
-          _results.push(id in g.hiddenReply ? replyHiding.hide(reply) : void 0);
+          _results.push(id in g.hiddenReplies ? replyHiding.hide(reply) : void 0);
         }
         return _results;
       },
@@ -589,15 +589,15 @@
         $.before(table, div);
       }
       id = reply.id;
-      g.hiddenReply[id] = Date.now();
-      return $.setValue("hiddenReply/" + g.BOARD + "/", g.hiddenReply);
+      g.hiddenReplies[id] = Date.now();
+      return $.setValue("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
     show: function(table) {
       var id;
       $.show(table);
       id = $('td[id]', table).id;
-      delete g.hiddenReply[id];
-      return $.setValue("hiddenReply/" + g.BOARD + "/", g.hiddenReply);
+      delete g.hiddenReplies[id];
+      return $.setValue("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     }
   };
   keybinds = {
@@ -860,7 +860,7 @@
       }
     },
     dialog: function() {
-      var checked, conf, dialog, hiddenNum, hiddenThread, html, input, name, title, _i, _len, _ref;
+      var checked, conf, dialog, hiddenNum, hiddenThreads, html, input, name, title, _i, _len, _ref;
       html = "<div class=move>Options <a name=close>X</a></div>";
       conf = config.main.checkbox;
       for (name in conf) {
@@ -870,8 +870,8 @@
       }
       html += "<div><a name=flavors>Flavors</a></div>";
       html += "<div><textarea style=\"display: none;\" name=flavors>" + ($.config('flavors').join('\n')) + "</textarea></div>";
-      hiddenThread = $.getValue("hiddenThread/" + g.BOARD + "/", {});
-      hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length;
+      hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
+      hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
       html += "<div><input type=\"button\" value=\"hidden: " + hiddenNum + "\"></div>";
       html += "<hr>";
       html += "<div><a href=\"http://chat.now.im/x/aeos\">support throd</a></div>";
@@ -901,8 +901,8 @@
     },
     cb: {
       clearHidden: function(e) {
-        $.deleteValue("hiddenReply/" + g.BOARD + "/");
-        $.deleteValue("hiddenThread/" + g.BOARD + "/");
+        $.deleteValue("hiddenReplies/" + g.BOARD + "/");
+        $.deleteValue("hiddenThreads/" + g.BOARD + "/");
         this.value = "hidden: 0";
         return g.hiddenReplies = {};
       }
@@ -1174,7 +1174,7 @@
   threadHiding = {
     init: function() {
       var a, hiddenThreads, op, thread, _i, _len, _ref, _results;
-      hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
+      hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       _ref = $$('div.thread');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1212,9 +1212,9 @@
       var hiddenThreads, id;
       threadHiding.hideHide(thread);
       id = thread.firstChild.id;
-      hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
+      hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenThreads[id] = Date.now();
-      return $.setValue("hiddenThread/" + g.BOARD + "/", hiddenThreads);
+      return $.setValue("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
     hideHide: function(thread) {
       var a, div, name, num, span, text, trip, _ref;
@@ -1250,9 +1250,9 @@
       $.show(thread);
       $.show(thread.nextSibling);
       id = thread.firstChild.id;
-      hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
+      hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       delete hiddenThreads[id];
-      return $.setValue("hiddenThread/" + g.BOARD + "/", hiddenThreads);
+      return $.setValue("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     }
   };
   updater = {
@@ -1993,7 +1993,7 @@
   };
   main = {
     init: function() {
-      var callback, navtopr, pathname, temp, tzOffset, _i, _len, _ref2;
+      var DAY, callback, cutoff, hiddenThreads, id, lastChecked, navtopr, now, pathname, temp, timestamp, tzOffset, _i, _len, _ref2, _ref3;
       Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
@@ -2003,32 +2003,35 @@
       } else {
         g.PAGENUM = parseInt(temp) || 0;
       }
-      g.hiddenReply = $.getValue("hiddenReply/" + g.BOARD + "/", {});
+      g.hiddenReplies = $.getValue("hiddenReplies/" + g.BOARD + "/", {});
       tzOffset = (new Date()).getTimezoneOffset() / 60;
       g.chanOffset = 5 - tzOffset;
       if ($.isDST()) {
         g.chanOffset -= 1;
       }
-      /*
-          lastChecked = Number GM_getValue('lastChecked', '0')
-          now = Date.now()
-          DAY = 1000 * 60 * 60 * 24
-          if lastChecked < now - 1*DAY
-            cutoff = now - 7*DAY
-            while g.hiddenThreads.length
-              if g.hiddenThreads[0].timestamp > cutoff
-                break
-              g.hiddenThreads.shift()
-      
-            while g.hiddenReplies.length
-              if g.hiddenReplies[0].timestamp > cutoff
-                break
-              g.hiddenReplies.shift()
-      
-            GM_setValue("hiddenThreads/#{g.BOARD}/", JSON.stringify(g.hiddenThreads))
-            GM_setValue("hiddenReplies/#{g.BOARD}/", JSON.stringify(g.hiddenReplies))
-            GM_setValue('lastChecked', now.toString())
-          */
+      lastChecked = $.getValue('lastChecked', 0);
+      now = Date.now();
+      DAY = 1000 * 60 * 60 * 24;
+      if (lastChecked < now - 1 * DAY) {
+        cutoff = now - 7 * DAY;
+        hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
+        for (id in hiddenThreads) {
+          timestamp = hiddenThreads[id];
+          if (timestamp < cutoff) {
+            delete hiddenThreads[id];
+          }
+        }
+        _ref2 = g.hiddenReplies;
+        for (id in _ref2) {
+          timestamp = _ref2[id];
+          if (timestamp < cutoff) {
+            delete g.hiddenReplies[id];
+          }
+        }
+        $.setValue("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
+        $.setValue("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
+        $.setValue('lastChecked', now);
+      }
       $.addStyle(main.css);
       if (location.hostname === 'sys.4chan.org') {
         qr.sys();
@@ -2110,9 +2113,9 @@
           expandComment.init();
         }
       }
-      _ref2 = g.callbacks;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        callback = _ref2[_i];
+      _ref3 = g.callbacks;
+      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+        callback = _ref3[_i];
         callback();
       }
       return $.bind(d.body, 'DOMNodeInserted', nodeInserted);
