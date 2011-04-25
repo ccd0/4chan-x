@@ -1034,8 +1034,7 @@ updater =
           input.value = 404
         s = d.title.match(/.+- /)[0]
         s += '404'
-        # TODO
-        #updateFavicon()
+        Favicon.update()
         return
 
       br = $ 'br[clear]'

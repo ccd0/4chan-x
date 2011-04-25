@@ -1319,6 +1319,7 @@
           }
           s = d.title.match(/.+- /)[0];
           s += '404';
+          Favicon.update();
           return;
         }
         br = $('br[clear]');
