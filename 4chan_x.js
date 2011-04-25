@@ -827,7 +827,7 @@
         window.scrollTo(0, 0);
         return;
       }
-      if (i === 10) {
+      if (i === nav.threads.length) {
         window.location = "" + (g.PAGENUM + 1) + "#p0";
         return;
       }

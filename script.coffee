@@ -615,7 +615,7 @@ nav =
     if i is -1
       window.scrollTo 0, 0
       return
-    if i is 10
+    if i is nav.threads.length
       window.location = "#{g.PAGENUM + 1}#p0"
       return
 
