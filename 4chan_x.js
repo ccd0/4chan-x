@@ -94,7 +94,7 @@
         'Unread Count': [true, 'Show unread post count in tab title']
       },
       textarea: {
-        flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url=']
+        flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url='].join('\n')
       }
     },
     updater: {
@@ -869,7 +869,7 @@
         html += "<div><label title=\"" + title + "\">" + name + "<input name=\"" + name + "\" " + checked + " type=checkbox></label></div>";
       }
       html += "<div><a name=flavors>Flavors</a></div>";
-      html += "<div><textarea style=\"display: none;\" name=flavors>" + ($.config('flavors').join('\n')) + "</textarea></div>";
+      html += "<div><textarea style=\"display: none;\" name=flavors>" + ($.config('flavors')) + "</textarea></div>";
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
       html += "<div><input type=\"button\" value=\"hidden: " + hiddenNum + "\"></div>";
@@ -1518,7 +1518,7 @@
     cb: {
       node: function(root) {
         var i, link, names, prefix, prefixes, span, suffix, _i, _len, _ref, _results;
-        prefixes = $.config('flavors');
+        prefixes = $.config('flavors').split('\n');
         names = (function() {
           var _i, _len, _results;
           _results = [];

@@ -40,7 +40,7 @@ config =
         'http://regex.info/exif.cgi?url='
         'http://iqdb.org/?url='
         'http://tineye.com/search?url='
-      ]
+      ].join '\n'
   updater:
     checkbox:
       'Verbose':     [true,  'Show countdown timer, new post count']
@@ -649,7 +649,7 @@ options =
       checked = if $.config name then "checked" else ""
       html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
     html += "<div><a name=flavors>Flavors</a></div>"
-    html += "<div><textarea style=\"display: none;\" name=flavors>#{$.config('flavors').join '\n'}</textarea></div>"
+    html += "<div><textarea style=\"display: none;\" name=flavors>#{$.config 'flavors'}</textarea></div>"
 
     hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
@@ -1195,7 +1195,7 @@ sauce =
     g.callbacks.push sauce.cb.node
   cb:
     node: (root) ->
-      prefixes = $.config 'flavors'
+      prefixes = $.config('flavors').split '\n'
       names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
       for span in $$ 'span.filesize', root
         suffix = $('a', span).href
