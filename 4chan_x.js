@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, redirect, replyHiding, sauce, threadHiding, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, redirect, replyHiding, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -1138,11 +1138,42 @@
       });
     }
   };
+  threading = {
+    init: function() {
+      var node;
+      node = $('form[name=delform] > *:not([id])');
+      return threading.thread(node);
+    },
+    thread: function(node) {
+      var div, op;
+      op = $.el('div', {
+        className: 'op'
+      });
+      $.before(node, op);
+      while (node.nodeName !== 'BLOCKQUOTE') {
+        $.append(op, node);
+        node = op.nextSibling;
+      }
+      $.append(op, node);
+      op.id = $('input[name]', op).name;
+      node = op;
+      div = $.el('div', {
+        className: 'thread'
+      });
+      $.before(node, div);
+      while (node.nodeName !== 'HR') {
+        $.append(div, node);
+        node = div.nextSibling;
+      }
+      node = node.nextElementSibling;
+      if (node.nodeName === 'SPAN') {
+        return threading.thread(node);
+      }
+    }
+  };
   threadHiding = {
     init: function() {
-      var a, hiddenThreads, node, op, thread, _i, _len, _ref, _results;
-      node = $('form[name=delform] > *:not([id])');
-      threadHiding.thread(node);
+      var a, hiddenThreads, op, thread, _i, _len, _ref, _results;
       hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
       _ref = $$('div.thread');
       _results = [];
@@ -1222,32 +1253,6 @@
       hiddenThreads = $.getValue("hiddenThread/" + g.BOARD + "/", {});
       delete hiddenThreads[id];
       return $.setValue("hiddenThread/" + g.BOARD + "/", hiddenThreads);
-    },
-    thread: function(node) {
-      var div, op;
-      op = $.el('div', {
-        className: 'op'
-      });
-      $.before(node, op);
-      while (node.nodeName !== 'BLOCKQUOTE') {
-        $.append(op, node);
-        node = op.nextSibling;
-      }
-      $.append(op, node);
-      op.id = $('input[name]', op).name;
-      node = op;
-      div = $.el('div', {
-        className: 'thread'
-      });
-      $.before(node, div);
-      while (node.nodeName !== 'HR') {
-        $.append(div, node);
-        node = div.nextSibling;
-      }
-      node = node.nextElementSibling;
-      if (node.nodeName === 'SPAN') {
-        return threadHiding.thread(node);
-      }
     }
   };
   updater = {
@@ -2038,6 +2043,7 @@
       }
       Recaptcha.init();
       $.bind($('form[name=post]'), 'submit', qr.cb.submit);
+      threading.init();
       if ($.config('Image Expansion')) {
         imgExpand.init();
       }

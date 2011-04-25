@@ -875,12 +875,38 @@ qr =
       data = document.querySelector('table font b')?.firstChild.textContent or ''
       parent.postMessage data, '*'
 
-threadHiding =
+threading =
   init: ->
     # don't thread image controls
     node = $ 'form[name=delform] > *:not([id])'
-    threadHiding.thread node
+    threading.thread node
 
+  thread: (node) ->
+    op = $.el 'div',
+      className: 'op'
+    $.before node, op
+    while node.nodeName isnt 'BLOCKQUOTE'
+      $.append op, node
+      node = op.nextSibling
+    $.append op, node #add the blockquote
+    op.id = $('input[name]', op).name
+
+    node = op
+
+    div = $.el 'div',
+      className: 'thread'
+    $.before node, div
+
+    while node.nodeName isnt 'HR'
+      $.append div, node
+      node = div.nextSibling
+
+    node = node.nextElementSibling #skip text node
+    if node.nodeName is 'SPAN'
+      threading.thread node
+
+threadHiding =
+  init: ->
     hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
     for thread in $$ 'div.thread'
       op = thread.firstChild
@@ -951,30 +977,6 @@ threadHiding =
     hiddenThreads = $.getValue "hiddenThread/#{g.BOARD}/", {}
     delete hiddenThreads[id]
     $.setValue "hiddenThread/#{g.BOARD}/", hiddenThreads
-
-  thread: (node) ->
-    op = $.el 'div',
-      className: 'op'
-    $.before node, op
-    while node.nodeName isnt 'BLOCKQUOTE'
-      $.append op, node
-      node = op.nextSibling
-    $.append op, node #add the blockquote
-    op.id = $('input[name]', op).name
-
-    node = op
-
-    div = $.el 'div',
-      className: 'thread'
-    $.before node, div
-
-    while node.nodeName isnt 'HR'
-      $.append div, node
-      node = div.nextSibling
-
-    node = node.nextElementSibling #skip text node
-    if node.nodeName is 'SPAN'
-      threadHiding.thread node
 
 updater =
   init: ->
@@ -1566,6 +1568,8 @@ main =
     Recaptcha.init()
 
     $.bind $('form[name=post]'), 'submit', qr.cb.submit
+
+    threading.init()
 
     #major features
     if $.config 'Image Expansion'
