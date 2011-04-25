@@ -92,6 +92,9 @@
         'Thread Updater': [true, 'Update threads'],
         'Thread Watcher': [true, 'Bookmark threads'],
         'Unread Count': [true, 'Show unread post count in tab title']
+      },
+      textarea: {
+        flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url=']
       }
     },
     updater: {
@@ -106,7 +109,11 @@
   (function(parent, obj) {
     var key, val, _results;
     if (obj.length) {
-      return _config[parent] = obj[0];
+      if (typeof obj[0] === 'boolean') {
+        return _config[parent] = obj[0];
+      } else {
+        return _config[parent] = obj;
+      }
     } else if (typeof obj === 'object') {
       _results = [];
       for (key in obj) {
@@ -862,7 +869,7 @@
         html += "<div><label title=\"" + title + "\">" + name + "<input name=\"" + name + "\" " + checked + " type=checkbox></label></div>";
       }
       html += "<div><a name=flavors>Flavors</a></div>";
-      html += "<div><textarea style=\"display: none;\" name=flavors>" + ($.getValue('flavors', g.flavors)) + "</textarea></div>";
+      html += "<div><textarea style=\"display: none;\" name=flavors>" + ($.config('flavors').join('\n')) + "</textarea></div>";
       hiddenThread = $.getValue("hiddenThread/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length;
       html += "<div><input type=\"button\" value=\"hidden: " + hiddenNum + "\"></div>";
@@ -1506,7 +1513,7 @@
     cb: {
       node: function(root) {
         var i, link, names, prefix, prefixes, span, suffix, _i, _len, _ref, _results;
-        prefixes = $.getValue('flavors', g.flavors).split('\n');
+        prefixes = $.config('flavors');
         names = (function() {
           var _i, _len, _results;
           _results = [];
@@ -1977,8 +1984,7 @@
   g = {
     cache: {},
     requests: {},
-    callbacks: [],
-    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url='].join('\n')
+    callbacks: []
   };
   main = {
     init: function() {

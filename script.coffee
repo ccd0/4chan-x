@@ -4,9 +4,6 @@
 # (floating) qr no-quote button?
 # updater cache hacks
 
-# XXX
-# flavors saving is broken
-
 # XXX chrome can't into `{log} = console`
 if console?
   log = (arg) ->
@@ -38,17 +35,27 @@ config =
       'Thread Updater':    [true,  'Update threads']
       'Thread Watcher':    [true,  'Bookmark threads']
       'Unread Count':      [true,  'Show unread post count in tab title']
+    textarea:
+      flavors: [
+        'http://regex.info/exif.cgi?url='
+        'http://iqdb.org/?url='
+        'http://tineye.com/search?url='
+      ]
   updater:
     checkbox:
       'Verbose':     [true,  'Show countdown timer, new post count']
       'Auto Update': [false, 'Automatically fetch new posts']
     'Interval': 30
 
+# FIXME this is fucking horrible
 # create 'global' options, no namespacing
 _config = {}
 ((parent, obj) ->
   if obj.length #array
-    _config[parent] = obj[0]
+    if typeof obj[0] is 'boolean'
+      _config[parent] = obj[0]
+    else
+      _config[parent] = obj
   else if typeof obj is 'object'
     for key, val of obj
       arguments.callee key, val
@@ -642,7 +649,7 @@ options =
       checked = if $.config name then "checked" else ""
       html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
     html += "<div><a name=flavors>Flavors</a></div>"
-    html += "<div><textarea style=\"display: none;\" name=flavors>#{$.getValue 'flavors', g.flavors}</textarea></div>"
+    html += "<div><textarea style=\"display: none;\" name=flavors>#{$.config('flavors').join '\n'}</textarea></div>"
 
     hiddenThread = $.getValue "hiddenThread/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReply).length + Object.keys(hiddenThread).length
@@ -1185,7 +1192,7 @@ sauce =
     g.callbacks.push sauce.cb.node
   cb:
     node: (root) ->
-      prefixes = $.getValue('flavors', g.flavors).split '\n'
+      prefixes = $.config 'flavors'
       names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
       for span in $$ 'span.filesize', root
         suffix = $('a', span).href
@@ -1505,11 +1512,6 @@ g =
   cache: {}
   requests: {}
   callbacks: []
-  flavors: [
-    'http://regex.info/exif.cgi?url='
-    'http://iqdb.org/?url='
-    'http://tineye.com/search?url='
-  ].join '\n'
 
 main =
   init: ->
