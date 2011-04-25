@@ -1412,8 +1412,7 @@ imgExpand =
         $.bind thumb.parentNode, 'click', imgExpand.cb.toggle
         if imgExpand.on then imgExpand.expand thumb.parentNode
     toggle: (e) ->
-      #TODO middle click (chrome)
-      return if e.shiftKey or e.altKey or e.ctrlKey
+      return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
       e.preventDefault()
       imgExpand.toggle e.target
     all: (e) ->

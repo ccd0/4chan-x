@@ -1859,7 +1859,7 @@
         return _results;
       },
       toggle: function(e) {
-        if (e.shiftKey || e.altKey || e.ctrlKey) {
+        if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) {
           return;
         }
         e.preventDefault();
