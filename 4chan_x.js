@@ -1238,7 +1238,7 @@
         node = div.nextSibling;
       }
       node = node.nextElementSibling;
-      if (node.nodeName !== 'CENTER') {
+      if (node.nodeName === 'SPAN') {
         return threadHiding.thread(node);
       }
     }

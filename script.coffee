@@ -965,7 +965,7 @@ threadHiding =
       node = div.nextSibling
 
     node = node.nextElementSibling #skip text node
-    unless node.nodeName is 'CENTER'
+    if node.nodeName is 'SPAN'
       threadHiding.thread node
 
 updater =
