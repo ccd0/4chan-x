@@ -824,7 +824,11 @@
         i += delta;
       }
       if (i === -1) {
-        window.scrollTo(0, 0);
+        if (g.PAGENUM === 0) {
+          window.scrollTo(0, 0);
+        } else {
+          window.location = "" + (g.PAGENUM - 1) + "#p0";
+        }
         return;
       }
       if (delta === +1) {

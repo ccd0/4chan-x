@@ -613,7 +613,10 @@ nav =
       i += delta
 
     if i is -1
-      window.scrollTo 0, 0
+      if g.PAGENUM is 0
+        window.scrollTo 0, 0
+      else
+        window.location = "#{g.PAGENUM - 1}#p0"
       return
     if delta is +1
       # if we're at the last thread, or we're at the bottom of the page.
