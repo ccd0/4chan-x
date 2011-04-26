@@ -440,6 +440,8 @@ keybinds =
       else
         if kc is 27
           key = '<Esc>'
+        else if 48 <= kc <= 57 #0-9
+          key = String.fromCharCode kc
       keybinds.key = key
 
     keypress: (e) ->
@@ -471,6 +473,8 @@ keybinds =
   normal: (e) ->
     thread = nav.getThread()
     switch keybinds.key
+      when '0'
+        window.location = "/#{g.BOARD}/#0"
       when 'I'
         keybinds.qr thread
       when 'J'

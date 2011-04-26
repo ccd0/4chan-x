@@ -624,6 +624,8 @@
         } else {
           if (kc === 27) {
             key = '<Esc>';
+          } else if ((48 <= kc && kc <= 57)) {
+            key = String.fromCharCode(kc);
           }
         }
         return keybinds.key = key;
@@ -659,6 +661,8 @@
       var thread;
       thread = nav.getThread();
       switch (keybinds.key) {
+        case '0':
+          return window.location = "/" + g.BOARD + "/#0";
         case 'I':
           return keybinds.qr(thread);
         case 'J':
