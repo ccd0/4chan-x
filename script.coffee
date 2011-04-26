@@ -1426,7 +1426,7 @@ imgExpand =
     node: (root) ->
       for thumb in $$ 'img[md5]', root
         $.bind thumb.parentNode, 'click', imgExpand.cb.toggle
-        if imgExpand.on then imgExpand.expand thumb.parentNode
+        if imgExpand.on then imgExpand.toggle thumb
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
       e.preventDefault()

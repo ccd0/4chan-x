@@ -1872,7 +1872,7 @@
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           thumb = _ref2[_i];
           $.bind(thumb.parentNode, 'click', imgExpand.cb.toggle);
-          _results.push(imgExpand.on ? imgExpand.expand(thumb.parentNode) : void 0);
+          _results.push(imgExpand.on ? imgExpand.toggle(thumb) : void 0);
         }
         return _results;
       },
