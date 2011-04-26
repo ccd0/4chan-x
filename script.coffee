@@ -615,9 +615,12 @@ nav =
     if i is -1
       window.scrollTo 0, 0
       return
-    if i is nav.threads.length
-      window.location = "#{g.PAGENUM + 1}#p0"
-      return
+    if delta is +1
+      # if we're at the last thread, or we're at the bottom of the page.
+      # kind of hackish, what we really need to do is make nav.getThread smarter.
+      if i is nav.threads.length or (innerHeight + pageYOffset == d.body.scrollHeight)
+        window.location = "#{g.PAGENUM + 1}#p0"
+        return
 
     {top} = nav.threads[i].getBoundingClientRect()
     window.scrollBy 0, top

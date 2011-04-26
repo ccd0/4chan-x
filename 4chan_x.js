@@ -827,9 +827,11 @@
         window.scrollTo(0, 0);
         return;
       }
-      if (i === nav.threads.length) {
-        window.location = "" + (g.PAGENUM + 1) + "#p0";
-        return;
+      if (delta === +1) {
+        if (i === nav.threads.length || (innerHeight + pageYOffset === d.body.scrollHeight)) {
+          window.location = "" + (g.PAGENUM + 1) + "#p0";
+          return;
+        }
       }
       top = nav.threads[i].getBoundingClientRect().top;
       return window.scrollBy(0, top);
