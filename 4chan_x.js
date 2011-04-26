@@ -1915,14 +1915,6 @@
         return _results;
       }
     },
-    foo: function() {
-      var bodyWidth, formLeft;
-      formLeft = $('form[name=delform]').getBoundingClientRect().left;
-      bodyWidth = d.body.clientWidth;
-      imgExpand.cw = bodyWidth - formLeft;
-      imgExpand.ch = d.body.clientHeight;
-      return imgExpand.type = $('#imageType').value;
-    },
     toggle: function(img) {
       var thumb;
       thumb = img.parentNode.firstChild;
@@ -1947,25 +1939,30 @@
       a.appendChild(img);
       return imgExpand.resize(img);
     },
+    foo: function() {
+      imgExpand.formRight = $('form[name=delform]').getBoundingClientRect().right;
+      imgExpand.maxHeight = d.body.clientHeight;
+      return imgExpand.type = $('#imageType').value;
+    },
     resize: function(img) {
-      var ch, cw, ih, iw, ratio, type, _, _ref2;
-      cw = imgExpand.cw, ch = imgExpand.ch, type = imgExpand.type;
-      _ref2 = $.x("preceding::span[@class][1]/text()[2]", img).textContent.match(/(\d+)x(\d+)/), _ = _ref2[0], iw = _ref2[1], ih = _ref2[2];
-      iw = Number(iw);
-      ih = Number(ih);
-      cw = cw - img.getBoundingClientRect().left;
+      var formRight, imgHeight, imgWidth, maxHeight, maxWidth, ratio, type, _, _ref2;
+      formRight = imgExpand.formRight, maxHeight = imgExpand.maxHeight, type = imgExpand.type;
+      _ref2 = $.x("preceding::span[@class][1]/text()[2]", img).textContent.match(/(\d+)x(\d+)/), _ = _ref2[0], imgWidth = _ref2[1], imgHeight = _ref2[2];
+      imgWidth = Number(imgWidth);
+      imgHeight = Number(imgHeight);
+      maxWidth = formRight - img.getBoundingClientRect().left;
       switch (type) {
         case 'full':
           return img.removeAttribute('style');
         case 'fit width':
-          if (iw > cw) {
-            return img.style.width = cw;
+          if (imgWidth > maxWidth) {
+            return img.style.width = maxWidth;
           }
           break;
         case 'fit screen':
-          ratio = Math.min(cw / iw, ch / ih);
+          ratio = Math.min(maxWidth / imgWidth, maxHeight / imgHeight);
           if (ratio < 1) {
-            return img.style.width = Math.floor(ratio * iw);
+            return img.style.width = Math.floor(ratio * imgWidth);
           }
       }
     },

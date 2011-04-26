@@ -1448,13 +1448,6 @@ imgExpand =
       for img in $$ 'img[md5] + img'
         imgExpand.resize img
 
-  foo: ->
-    formLeft  = $('form[name=delform]').getBoundingClientRect().left
-    bodyWidth = d.body.clientWidth
-    imgExpand.cw = bodyWidth - formLeft
-    imgExpand.ch = d.body.clientHeight
-    imgExpand.type = $('#imageType').value
-
   toggle: (img) ->
     thumb = img.parentNode.firstChild
     imgExpand.foo()
@@ -1476,26 +1469,32 @@ imgExpand =
 
     imgExpand.resize img
 
-  resize: (img) ->
-    {cw, ch, type} = imgExpand
-    [_, iw, ih] =
-      $.x("preceding::span[@class][1]/text()[2]", img)
-      .textContent.match(/(\d+)x(\d+)/)
-    iw = Number iw
-    ih = Number ih
+  foo: ->
+    imgExpand.formRight = $('form[name=delform]').getBoundingClientRect().right
+    imgExpand.maxHeight = d.body.clientHeight
+    imgExpand.type = $('#imageType').value
 
-    cw = cw - img.getBoundingClientRect().left
+  resize: (img) ->
+    {formRight, maxHeight, type} = imgExpand
+    [_, imgWidth, imgHeight] = $
+      .x("preceding::span[@class][1]/text()[2]", img)
+      .textContent.match(/(\d+)x(\d+)/)
+    imgWidth  = Number imgWidth
+    imgHeight = Number imgHeight
+
+    # from image's left bound to form's right bound
+    maxWidth = formRight - img.getBoundingClientRect().left
 
     switch type
       when 'full'
         img.removeAttribute 'style'
       when 'fit width'
-        if iw > cw
-          img.style.width = cw
+        if imgWidth > maxWidth
+          img.style.width = maxWidth
       when 'fit screen'
-        ratio = Math.min cw/iw, ch/ih
+        ratio = Math.min maxWidth/imgWidth, maxHeight/imgHeight
         if ratio < 1
-          img.style.width = Math.floor ratio * iw
+          img.style.width = Math.floor ratio * imgWidth
 
   dialog: ->
     controls = $.el 'div',
