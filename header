@@ -2,12 +2,11 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        2.0.0
+// @version        2.0.1
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
-// @include        file://*
 // @updateURL      http://userscripts.org/scripts/source/51412.meta.js
 // ==/UserScript==
 
