@@ -1,3 +1,18 @@
+2.0.0
+- [chrome] qr error notifications
+- x-browser auto-watch
+- image expansion w/o horizontal scrollbars
+- removed reply nav
+- floating thread nav
+- fix /b/ thread nav
+- ignore middle clicks on images
+- smarter redirect
+- remove all GM_ functions
+- [chrome] fix slow scrolling w/ unread post count in titlebar
+- keybind: x: hide thread
+- qr: remove `auto`
+- rewrite / reorganize code
+
 1.27.8
 - fix qr image posting
 - fix thread hiding
