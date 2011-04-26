@@ -827,13 +827,13 @@
         if (g.PAGENUM === 0) {
           window.scrollTo(0, 0);
         } else {
-          window.location = "" + (g.PAGENUM - 1) + "#p0";
+          window.location = "" + (g.PAGENUM - 1) + "#0";
         }
         return;
       }
       if (delta === +1) {
         if (i === nav.threads.length || (innerHeight + pageYOffset === d.body.scrollHeight)) {
-          window.location = "" + (g.PAGENUM + 1) + "#p0";
+          window.location = "" + (g.PAGENUM + 1) + "#0";
           return;
         }
       }
