@@ -1884,17 +1884,15 @@
         return imgExpand.toggle(e.target);
       },
       all: function(e) {
-        var ch, cw, imageType, thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
+        var thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
         thumbs = $$('img[md5]');
         imgExpand.on = e.target.checked;
-        cw = d.body.clientWidth;
-        ch = d.body.clientHeight;
-        imageType = $("#imageType").value;
+        imgExpand.foo();
         if (imgExpand.on) {
           _results = [];
           for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
             thumb = thumbs[_i];
-            _results.push(!thumb.style.display ? imgExpand.expand(thumb, cw, ch, imageType) : void 0);
+            _results.push(!thumb.style.display ? imgExpand.expand(thumb) : void 0);
           }
           return _results;
         } else {
@@ -1907,36 +1905,40 @@
         }
       },
       typeChange: function(e) {
-        var ch, cw, imageType, img, _i, _len, _ref2, _results;
-        cw = d.body.clientWidth;
-        ch = d.body.clientHeight;
-        imageType = e.target.value;
+        var img, _i, _len, _ref2, _results;
+        imgExpand.foo();
         _ref2 = $$('img[md5] + img');
         _results = [];
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           img = _ref2[_i];
-          _results.push(imgExpand.resize(cw, ch, imageType, img));
+          _results.push(imgExpand.resize(img));
         }
         return _results;
       }
     },
+    foo: function() {
+      var bodyWidth, formLeft;
+      formLeft = $('form[name=delform]').getBoundingClientRect().left;
+      bodyWidth = d.body.clientWidth;
+      imgExpand.cw = bodyWidth - formLeft;
+      imgExpand.ch = d.body.clientHeight;
+      return imgExpand.type = $('#imageType').value;
+    },
     toggle: function(img) {
-      var ch, cw, imageType, thumb;
+      var thumb;
       thumb = img.parentNode.firstChild;
-      cw = d.body.clientWidth;
-      ch = d.body.clientHeight;
-      imageType = $("#imageType").value;
+      imgExpand.foo();
       if (thumb.style.display) {
         return imgExpand.contract(thumb);
       } else {
-        return imgExpand.expand(thumb, cw, ch, imageType);
+        return imgExpand.expand(thumb);
       }
     },
     contract: function(thumb) {
       $.show(thumb);
       return $.remove(thumb.nextSibling);
     },
-    expand: function(thumb, cw, ch, imageType) {
+    expand: function(thumb) {
       var a, img;
       $.hide(thumb);
       a = thumb.parentNode;
@@ -1944,28 +1946,27 @@
         src: a.href
       });
       a.appendChild(img);
-      return imgExpand.resize(cw, ch, imageType, img);
+      return imgExpand.resize(img);
     },
-    resize: function(cw, ch, imageType, img) {
-      var ih, iw, ratio, _, _ref2;
+    resize: function(img) {
+      var ch, cw, ih, iw, ratio, type, _, _ref2;
+      cw = imgExpand.cw, ch = imgExpand.ch, type = imgExpand.type;
       _ref2 = $.x("preceding::span[@class][1]/text()[2]", img).textContent.match(/(\d+)x(\d+)/), _ = _ref2[0], iw = _ref2[1], ih = _ref2[2];
       iw = Number(iw);
       ih = Number(ih);
-      switch (imageType) {
+      cw = cw - img.getBoundingClientRect().left;
+      switch (type) {
         case 'full':
           return img.removeAttribute('style');
         case 'fit width':
-          ratio = cw / iw;
-          if (ratio < 1) {
-            img.style.width = Math.floor(ratio * iw);
-            return img.style.margin = '0px';
+          if (iw > cw) {
+            return img.style.width = cw;
           }
           break;
         case 'fit screen':
           ratio = Math.min(cw / iw, ch / ih);
           if (ratio < 1) {
-            img.style.width = Math.floor(ratio * iw);
-            return img.style.margin = '0px';
+            return img.style.width = Math.floor(ratio * iw);
           }
       }
     },
@@ -2155,6 +2156,8 @@
       form[name=delform] a img {\
         border: 0px;\
         float: left;\
+      }\
+      form[name=delform] a img:first-child {\
         margin: 0px 20px;\
       }\
       iframe {\

@@ -1434,68 +1434,68 @@ imgExpand =
     all: (e) ->
       thumbs = $$ 'img[md5]'
       imgExpand.on = e.target.checked
-      cw = d.body.clientWidth
-      ch = d.body.clientHeight
-      imageType = $("#imageType").value
+      imgExpand.foo()
       if imgExpand.on #expand
         for thumb in thumbs
           unless thumb.style.display #thumbnail hidden, image already expanded
-            imgExpand.expand thumb, cw, ch, imageType
+            imgExpand.expand thumb
       else #contract
         for thumb in thumbs
           if thumb.style.display #thumbnail hidden - unhide it
             imgExpand.contract thumb
     typeChange: (e) ->
-      cw = d.body.clientWidth
-      ch = d.body.clientHeight
-      imageType = e.target.value
+      imgExpand.foo()
       for img in $$ 'img[md5] + img'
-        imgExpand.resize cw, ch, imageType, img
+        imgExpand.resize img
+
+  foo: ->
+    formLeft  = $('form[name=delform]').getBoundingClientRect().left
+    bodyWidth = d.body.clientWidth
+    imgExpand.cw = bodyWidth - formLeft
+    imgExpand.ch = d.body.clientHeight
+    imgExpand.type = $('#imageType').value
 
   toggle: (img) ->
     thumb = img.parentNode.firstChild
-    cw = d.body.clientWidth
-    ch = d.body.clientHeight
-    imageType = $("#imageType").value
+    imgExpand.foo()
     if thumb.style.display
       imgExpand.contract thumb
     else
-      imgExpand.expand thumb, cw, ch, imageType
+      imgExpand.expand thumb
 
   contract: (thumb) ->
     $.show thumb
     $.remove thumb.nextSibling
 
-  expand: (thumb, cw, ch, imageType) ->
+  expand: (thumb) ->
     $.hide thumb
     a = thumb.parentNode
     img = $.el 'img',
       src: a.href
     a.appendChild img
 
-    imgExpand.resize cw, ch, imageType, img
+    imgExpand.resize img
 
-  resize: (cw, ch, imageType, img) ->
+  resize: (img) ->
+    {cw, ch, type} = imgExpand
     [_, iw, ih] =
       $.x("preceding::span[@class][1]/text()[2]", img)
       .textContent.match(/(\d+)x(\d+)/)
     iw = Number iw
     ih = Number ih
 
-    switch imageType
+    cw = cw - img.getBoundingClientRect().left
+
+    switch type
       when 'full'
         img.removeAttribute 'style'
       when 'fit width'
-        ratio = cw/iw
-        if ratio < 1
-          # y'know, this width is constant between resizes
-          img.style.width = Math.floor ratio * iw
-          img.style.margin = '0px'
+        if iw > cw
+          img.style.width = cw
       when 'fit screen'
         ratio = Math.min cw/iw, ch/ih
         if ratio < 1
           img.style.width = Math.floor ratio * iw
-          img.style.margin = '0px'
 
   dialog: ->
     controls = $.el 'div',
@@ -1673,6 +1673,8 @@ main =
       form[name=delform] a img {
         border: 0px;
         float: left;
+      }
+      form[name=delform] a img:first-child {
         margin: 0px 20px;
       }
       iframe {
