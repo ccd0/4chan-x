@@ -1752,12 +1752,16 @@ main =
       #watcher {
         position: absolute;
       }
+      #watcher > div {
+        padding-right: 5px;
+        padding-left: 5px;
+      }
       #watcher > div.move {
         text-decoration: underline;
-        padding: 5px 5px 0 5px;
+        padding-top: 5px;
       }
       #watcher > div:last-child {
-        padding: 0 5px 5px 5px;
+        padding-bottom: 5px;
       }
 
       body.noselect {
