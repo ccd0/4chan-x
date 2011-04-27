@@ -1944,17 +1944,23 @@
       return imgExpand.resize(img);
     },
     foo: function() {
-      imgExpand.formRight = $('form[name=delform]').getBoundingClientRect().right;
+      var borderLeftWidth, borderRightWidth, crap, formWidth, left, paddingLeft, paddingRight, table, td, _ref2;
+      formWidth = $('form[name=delform]').getBoundingClientRect().width;
+      td = $('td.reply');
+      table = td.parentNode.parentNode.parentNode;
+      left = td.getBoundingClientRect().left - table.getBoundingClientRect().left;
+      _ref2 = getComputedStyle(td), paddingLeft = _ref2.paddingLeft, paddingRight = _ref2.paddingRight, borderLeftWidth = _ref2.borderLeftWidth, borderRightWidth = _ref2.borderRightWidth;
+      crap = parseInt(paddingLeft) + parseInt(paddingRight) + parseInt(borderLeftWidth) + parseInt(borderRightWidth);
+      imgExpand.maxWidth = formWidth - left - crap;
       imgExpand.maxHeight = d.body.clientHeight;
       return imgExpand.type = $('#imageType').value;
     },
     resize: function(img) {
-      var formRight, imgHeight, imgWidth, maxHeight, maxWidth, ratio, type, _, _ref2;
-      formRight = imgExpand.formRight, maxHeight = imgExpand.maxHeight, type = imgExpand.type;
+      var imgHeight, imgWidth, maxHeight, maxWidth, ratio, type, _, _ref2;
+      maxWidth = imgExpand.maxWidth, maxHeight = imgExpand.maxHeight, type = imgExpand.type;
       _ref2 = $.x("preceding::span[@class][1]/text()[2]", img).textContent.match(/(\d+)x(\d+)/), _ = _ref2[0], imgWidth = _ref2[1], imgHeight = _ref2[2];
       imgWidth = Number(imgWidth);
       imgHeight = Number(imgHeight);
-      maxWidth = formRight - img.getBoundingClientRect().left;
       switch (type) {
         case 'full':
           return img.removeAttribute('style');

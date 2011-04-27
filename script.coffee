@@ -1474,20 +1474,26 @@ imgExpand =
     imgExpand.resize img
 
   foo: ->
-    imgExpand.formRight = $('form[name=delform]').getBoundingClientRect().right
+    formWidth = $('form[name=delform]').getBoundingClientRect().width
+    td = $('td.reply')
+    table = td.parentNode.parentNode.parentNode
+    left = td.getBoundingClientRect().left - table.getBoundingClientRect().left
+
+    #XXX not sure I'm doing this right -_-;
+    {paddingLeft, paddingRight, borderLeftWidth, borderRightWidth} = getComputedStyle(td)
+    crap = parseInt(paddingLeft) + parseInt(paddingRight) + parseInt(borderLeftWidth) + parseInt(borderRightWidth)
+
+    imgExpand.maxWidth = formWidth - left - crap
     imgExpand.maxHeight = d.body.clientHeight
     imgExpand.type = $('#imageType').value
 
   resize: (img) ->
-    {formRight, maxHeight, type} = imgExpand
+    {maxWidth, maxHeight, type} = imgExpand
     [_, imgWidth, imgHeight] = $
       .x("preceding::span[@class][1]/text()[2]", img)
       .textContent.match(/(\d+)x(\d+)/)
     imgWidth  = Number imgWidth
     imgHeight = Number imgHeight
-
-    # from image's left bound to form's right bound
-    maxWidth = formRight - img.getBoundingClientRect().left
 
     switch type
       when 'full'
