@@ -98,6 +98,7 @@ ui =
     el
   move: (e) ->
     ui.el = el = e.target.parentNode
+    document.body.className = 'noselect'
     #distance from pointer to el edge is constant; calculate it here.
     # XXX opera reports el.offsetLeft / el.offsetTop as 0
     rect = el.getBoundingClientRect()
@@ -129,6 +130,7 @@ ui =
     {id} = el
     localStorage["#{id}Left"] = el.style.left
     localStorage["#{id}Top"]  = el.style.top
+    document.body.className = ''
 
 #convenience
 d = document
@@ -1720,6 +1722,7 @@ main =
         text-align: right;
       }
       #qr > form > div, /* ad */
+      #qr #recaptcha_table td:nth-of-type(3), /* captcha logos */
       #qr td.rules {
         display: none;
       }
@@ -1750,12 +1753,24 @@ main =
       #watcher {
         position: absolute;
       }
+      #watcher > div {
+        padding-right: 5px;
+        padding-left: 5px;
+      }
       #watcher > div.move {
         text-decoration: underline;
-        padding: 5px 5px 0 5px;
+        padding-top: 5px;
       }
       #watcher > div:last-child {
-        padding: 0 5px 5px 5px;
+        padding-bottom: 5px;
+      }
+
+      body.noselect {
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -o-user-select: none;
+        user-select: none;
       }
     '
 

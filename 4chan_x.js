@@ -60,7 +60,7 @@
 (function() {
   var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, redirect, replyHiding, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
-  if (typeof console !== "undefined" && console !== null) {
+  if (typeof console != "undefined" && console !== null) {
     log = function(arg) {
       return console.log(arg);
     };
@@ -179,6 +179,7 @@
     move: function(e) {
       var el, rect;
       ui.el = el = e.target.parentNode;
+      document.body.className = 'noselect';
       rect = el.getBoundingClientRect();
       ui.dx = e.clientX - rect.left;
       ui.dy = e.clientY - rect.top;
@@ -216,7 +217,8 @@
       el = ui.el;
       id = el.id;
       localStorage["" + id + "Left"] = el.style.left;
-      return localStorage["" + id + "Top"] = el.style.top;
+      localStorage["" + id + "Top"] = el.style.top;
+      return document.body.className = '';
     }
   };
   d = document;
@@ -1141,8 +1143,8 @@
             in the global context.
           */
       return $.globalEval(function() {
-        var data, _ref3;
-        data = ((_ref3 = document.querySelector('table font b')) != null ? _ref3.firstChild.textContent : void 0) || '';
+        var data, _ref;
+        data = ((_ref = document.querySelector('table font b')) != null ? _ref.firstChild.textContent : void 0) || '';
         return parent.postMessage(data, '*');
       });
     }
@@ -1543,17 +1545,17 @@
           span = _ref[_i];
           suffix = $('a', span).href;
           _results.push((function() {
-            var _len2, _results2;
-            _results2 = [];
-            for (i = 0, _len2 = prefixes.length; i < _len2; i++) {
+            var _len, _results;
+            _results = [];
+            for (i = 0, _len = prefixes.length; i < _len; i++) {
               prefix = prefixes[i];
               link = $.el('a', {
                 textContent: names[i],
                 href: prefix + suffix
               });
-              _results2.push($.append(span, $.tn(' '), link));
+              _results.push($.append(span, $.tn(' '), link));
             }
-            return _results2;
+            return _results;
           })());
         }
         return _results;
@@ -1739,10 +1741,10 @@
   };
   Recaptcha = {
     init: function() {
-      var el, recaptcha, _i, _len, _ref2;
-      _ref2 = $$('#recaptcha_table a');
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        el = _ref2[_i];
+      var el, recaptcha, _i, _len, _ref;
+      _ref = $$('#recaptcha_table a');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
         el.tabIndex = 1;
       }
       recaptcha = $('#recaptcha_response_field');
@@ -1758,13 +1760,13 @@
     }
   };
   nodeInserted = function(e) {
-    var callback, dialog, target, _i, _len, _ref2, _results;
+    var callback, dialog, target, _i, _len, _ref, _results;
     target = e.target;
     if (target.nodeName === 'TABLE') {
-      _ref2 = g.callbacks;
+      _ref = g.callbacks;
       _results = [];
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        callback = _ref2[_i];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
         _results.push(callback(target));
       }
       return _results;
@@ -1869,11 +1871,11 @@
     },
     cb: {
       node: function(root) {
-        var thumb, _i, _len, _ref2, _results;
-        _ref2 = $$('img[md5]', root);
+        var thumb, _i, _len, _ref, _results;
+        _ref = $$('img[md5]', root);
         _results = [];
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          thumb = _ref2[_i];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          thumb = _ref[_i];
           $.bind(thumb.parentNode, 'click', imgExpand.cb.toggle);
           _results.push(imgExpand.on ? imgExpand.toggle(thumb) : void 0);
         }
@@ -1908,12 +1910,12 @@
         }
       },
       typeChange: function(e) {
-        var img, _i, _len, _ref2, _results;
+        var img, _i, _len, _ref, _results;
         imgExpand.foo();
-        _ref2 = $$('img[md5] + img');
+        _ref = $$('img[md5] + img');
         _results = [];
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          img = _ref2[_i];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          img = _ref[_i];
           _results.push(imgExpand.resize(img));
         }
         return _results;
@@ -1944,21 +1946,21 @@
       return imgExpand.resize(img);
     },
     foo: function() {
-      var borderLeftWidth, borderRightWidth, crap, formWidth, left, paddingLeft, paddingRight, table, td, _ref2;
+      var borderLeftWidth, borderRightWidth, crap, formWidth, left, paddingLeft, paddingRight, table, td, _ref;
       formWidth = $('form[name=delform]').getBoundingClientRect().width;
       td = $('td.reply');
       table = td.parentNode.parentNode.parentNode;
       left = td.getBoundingClientRect().left - table.getBoundingClientRect().left;
-      _ref2 = getComputedStyle(td), paddingLeft = _ref2.paddingLeft, paddingRight = _ref2.paddingRight, borderLeftWidth = _ref2.borderLeftWidth, borderRightWidth = _ref2.borderRightWidth;
+      _ref = getComputedStyle(td), paddingLeft = _ref.paddingLeft, paddingRight = _ref.paddingRight, borderLeftWidth = _ref.borderLeftWidth, borderRightWidth = _ref.borderRightWidth;
       crap = parseInt(paddingLeft) + parseInt(paddingRight) + parseInt(borderLeftWidth) + parseInt(borderRightWidth);
       imgExpand.maxWidth = formWidth - left - crap;
       imgExpand.maxHeight = d.body.clientHeight;
       return imgExpand.type = $('#imageType').value;
     },
     resize: function(img) {
-      var imgHeight, imgWidth, maxHeight, maxWidth, ratio, type, _, _ref2;
+      var imgHeight, imgWidth, maxHeight, maxWidth, ratio, type, _, _ref;
       maxWidth = imgExpand.maxWidth, maxHeight = imgExpand.maxHeight, type = imgExpand.type;
-      _ref2 = $.x("preceding::span[@class][1]/text()[2]", img).textContent.match(/(\d+)x(\d+)/), _ = _ref2[0], imgWidth = _ref2[1], imgHeight = _ref2[2];
+      _ref = $.x("preceding::span[@class][1]/text()[2]", img).textContent.match(/(\d+)x(\d+)/), _ = _ref[0], imgWidth = _ref[1], imgHeight = _ref[2];
       imgWidth = Number(imgWidth);
       imgHeight = Number(imgHeight);
       switch (type) {
@@ -1977,15 +1979,15 @@
       }
     },
     dialog: function() {
-      var controls, delform, imageType, option, _i, _len, _ref2;
+      var controls, delform, imageType, option, _i, _len, _ref;
       controls = $.el('div', {
         id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
       });
       imageType = $.getValue('imageType', 'full');
-      _ref2 = $$('option', controls);
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        option = _ref2[_i];
+      _ref = $$('option', controls);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        option = _ref[_i];
         if (option.textContent === imageType) {
           option.selected = true;
           break;
@@ -2006,7 +2008,7 @@
   };
   main = {
     init: function() {
-      var DAY, callback, cutoff, hiddenThreads, id, lastChecked, navtopr, now, pathname, temp, timestamp, tzOffset, _i, _len, _ref2, _ref3;
+      var DAY, callback, cutoff, hiddenThreads, id, lastChecked, navtopr, now, pathname, temp, timestamp, tzOffset, _i, _len, _ref, _ref2;
       Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
@@ -2034,9 +2036,9 @@
             delete hiddenThreads[id];
           }
         }
-        _ref2 = g.hiddenReplies;
-        for (id in _ref2) {
-          timestamp = _ref2[id];
+        _ref = g.hiddenReplies;
+        for (id in _ref) {
+          timestamp = _ref[id];
           if (timestamp < cutoff) {
             delete g.hiddenReplies[id];
           }
@@ -2126,9 +2128,9 @@
           expandComment.init();
         }
       }
-      _ref3 = g.callbacks;
-      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        callback = _ref3[_i];
+      _ref2 = g.callbacks;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        callback = _ref2[_i];
         callback();
       }
       return $.bind(d.body, 'DOMNodeInserted', nodeInserted);
@@ -2200,6 +2202,7 @@
         text-align: right;\
       }\
       #qr > form > div, /* ad */\
+      #qr #recaptcha_table td:nth-of-type(3), /* captcha logos */\
       #qr td.rules {\
         display: none;\
       }\
@@ -2230,12 +2233,24 @@
       #watcher {\
         position: absolute;\
       }\
+      #watcher > div {\
+        padding-right: 5px;\
+        padding-left: 5px;\
+      }\
       #watcher > div.move {\
         text-decoration: underline;\
-        padding: 5px 5px 0 5px;\
+        padding-top: 5px;\
       }\
       #watcher > div:last-child {\
-        padding: 0 5px 5px 5px;\
+        padding-bottom: 5px;\
+      }\
+\
+      body.noselect {\
+        -webkit-user-select: none;\
+        -khtml-user-select: none;\
+        -moz-user-select: none;\
+        -o-user-select: none;\
+        user-select: none;\
       }\
     '
   };
