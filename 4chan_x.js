@@ -179,6 +179,7 @@
     move: function(e) {
       var el, rect;
       ui.el = el = e.target.parentNode;
+      document.body.className = 'noselect';
       rect = el.getBoundingClientRect();
       ui.dx = e.clientX - rect.left;
       ui.dy = e.clientY - rect.top;
@@ -216,7 +217,8 @@
       el = ui.el;
       id = el.id;
       localStorage["" + id + "Left"] = el.style.left;
-      return localStorage["" + id + "Top"] = el.style.top;
+      localStorage["" + id + "Top"] = el.style.top;
+      return document.body.className = '';
     }
   };
   d = document;
@@ -2236,6 +2238,14 @@
       }\
       #watcher > div:last-child {\
         padding: 0 5px 5px 5px;\
+      }\
+\
+      body.noselect {\
+        -webkit-user-select: none;\
+        -khtml-user-select: none;\
+        -moz-user-select: none;\
+        -o-user-select: none;\
+        user-select: none;\
       }\
     '
   };
