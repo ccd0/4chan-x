@@ -2202,6 +2202,7 @@
         text-align: right;\
       }\
       #qr > form > div, /* ad */\
+      #qr #recaptcha_table td:nth-of-type(3), /* captcha logos */\
       #qr td.rules {\
         display: none;\
       }\
