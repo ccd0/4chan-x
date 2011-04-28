@@ -1326,7 +1326,7 @@
         }
       },
       update: function(e) {
-        var arr, body, br, count, id, input, replies, reply, s, timer, _i, _len, _ref, _ref2, _results;
+        var arr, body, br, count, id, input, replies, reply, timer, _i, _len, _ref, _ref2, _results;
         count = $('#count');
         timer = $('#timer');
         if (this.status === 404) {
@@ -1340,8 +1340,7 @@
             input.disabled = true;
             input.value = 404;
           }
-          s = d.title.match(/.+- /)[0];
-          s += '404';
+          d.title = d.title.match(/.+- /)[0] + 404;
           Favicon.update();
           return;
         }
