@@ -1319,12 +1319,9 @@ Favicon =
       else
         href = Favicon.default
 
-    #XXX `favicon.href = href` doesn't work
     favicon = $ 'link[rel="shortcut icon"]', d.head
-    clone = favicon.cloneNode true
-    clone.href = href
-    clone.setAttribute 'type', 'image/x-icon'
-    $.replace favicon, clone
+    favicon.setAttribute 'type', 'image/x-icon'
+    favicon.href = href
 
 
 redirect = ->

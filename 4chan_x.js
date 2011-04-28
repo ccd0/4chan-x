@@ -1675,7 +1675,7 @@
     haloSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVR4XrWRQQoAIQwD+6L97j7Ih9WTQQxhDqJQCk4Mranuvqod6LgwawSqSuUmWSPw/UNlJlnDAmA2ARjABLYj8ZyCzJHHqOg+GdAKZmKPIQUzuYrxicHqEgHzP9g7M0+hj45sAnRWxtPj3zSPAAAAAElFTkSuQmCC',
     haloNSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAABmzDP///8AAABet0i+AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=',
     update: function() {
-      var clone, favicon, href, l;
+      var favicon, href, l;
       l = unread.replies.length;
       if (g.dead) {
         if (l > 0) {
@@ -1691,10 +1691,8 @@
         }
       }
       favicon = $('link[rel="shortcut icon"]', d.head);
-      clone = favicon.cloneNode(true);
-      clone.href = href;
-      clone.setAttribute('type', 'image/x-icon');
-      return $.replace(favicon, clone);
+      favicon.setAttribute('type', 'image/x-icon');
+      return favicon.href = href;
     }
   };
   redirect = function() {
