@@ -1055,6 +1055,7 @@ updater =
           input.disabled = true
           input.value = 404
         d.title = d.title.match(/.+- /)[0] + 404
+        g.dead = true
         Favicon.update()
         return
 
@@ -1309,7 +1310,7 @@ Favicon =
     l = unread.replies.length
     if g.dead
       if l > 0
-        href = Favicon.headHalo
+        href = Favicon.deadHalo
       else
         href = Favicon.dead
     else
@@ -1318,10 +1319,11 @@ Favicon =
       else
         href = Favicon.default
 
-    #XXX `favicon.href = href` doesn't work
+    #XXX `favicon.href = href` doesn't work on Firefox
     favicon = $ 'link[rel="shortcut icon"]', d.head
     clone = favicon.cloneNode true
     clone.href = href
+    clone.setAttribute 'type', 'image/x-icon'
     $.replace favicon, clone
 
 

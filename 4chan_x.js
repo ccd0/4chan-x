@@ -1341,6 +1341,7 @@
             input.value = 404;
           }
           d.title = d.title.match(/.+- /)[0] + 404;
+          g.dead = true;
           Favicon.update();
           return;
         }
@@ -1678,7 +1679,7 @@
       l = unread.replies.length;
       if (g.dead) {
         if (l > 0) {
-          href = Favicon.headHalo;
+          href = Favicon.deadHalo;
         } else {
           href = Favicon.dead;
         }
@@ -1692,6 +1693,7 @@
       favicon = $('link[rel="shortcut icon"]', d.head);
       clone = favicon.cloneNode(true);
       clone.href = href;
+      clone.setAttribute('type', 'image/x-icon');
       return $.replace(favicon, clone);
     }
   };
