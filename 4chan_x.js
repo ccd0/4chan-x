@@ -1341,6 +1341,7 @@
             input.value = 404;
           }
           d.title = d.title.match(/.+- /)[0] + 404;
+          g.dead = true;
           Favicon.update();
           return;
         }
