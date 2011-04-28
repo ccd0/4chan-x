@@ -1054,8 +1054,7 @@ updater =
         for input in $$ 'input[type=submit]'
           input.disabled = true
           input.value = 404
-        s = d.title.match(/.+- /)[0]
-        s += '404'
+        d.title = d.title.match(/.+- /)[0] + 404
         Favicon.update()
         return
 
@@ -1245,8 +1244,8 @@ localize =
 
 titlePost =
   init: ->
-    tc = $('span.filetitle').textContent or $('blockquote').textContent
-    d.title = "/#{g.BOARD}/ - #{tc}"
+    if tc = $('span.filetitle').textContent or $('blockquote').textContent
+      d.title = "/#{g.BOARD}/ - #{tc}"
 
 quickReport =
   init: ->
