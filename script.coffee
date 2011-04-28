@@ -1319,9 +1319,12 @@ Favicon =
       else
         href = Favicon.default
 
+    #XXX `favicon.href = href` doesn't work on Firefox
     favicon = $ 'link[rel="shortcut icon"]', d.head
-    favicon.setAttribute 'type', 'image/x-icon'
-    favicon.href = href
+    clone = favicon.cloneNode true
+    clone.href = href
+    clone.setAttribute 'type', 'image/x-icon'
+    $.replace favicon, clone
 
 
 redirect = ->
