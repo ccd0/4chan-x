@@ -1692,6 +1692,7 @@
       favicon = $('link[rel="shortcut icon"]', d.head);
       clone = favicon.cloneNode(true);
       clone.href = href;
+      clone.setAttribute('type', 'image/x-icon');
       return $.replace(favicon, clone);
     }
   };

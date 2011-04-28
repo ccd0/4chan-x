@@ -1322,6 +1322,7 @@ Favicon =
     favicon = $ 'link[rel="shortcut icon"]', d.head
     clone = favicon.cloneNode true
     clone.href = href
+    clone.setAttribute 'type', 'image/x-icon'
     $.replace favicon, clone
 
 
