@@ -1590,8 +1590,9 @@
   titlePost = {
     init: function() {
       var tc;
-      tc = $('span.filetitle').textContent || $('blockquote').textContent;
-      return d.title = "/" + g.BOARD + "/ - " + tc;
+      if (tc = $('span.filetitle').textContent || $('blockquote').textContent) {
+        return d.title = "/" + g.BOARD + "/ - " + tc;
+      }
     }
   };
   quickReport = {

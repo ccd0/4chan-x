@@ -1245,8 +1245,8 @@ localize =
 
 titlePost =
   init: ->
-    tc = $('span.filetitle').textContent or $('blockquote').textContent
-    d.title = "/#{g.BOARD}/ - #{tc}"
+    if tc = $('span.filetitle').textContent or $('blockquote').textContent
+      d.title = "/#{g.BOARD}/ - #{tc}"
 
 quickReport =
   init: ->
