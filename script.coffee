@@ -1310,7 +1310,7 @@ Favicon =
     l = unread.replies.length
     if g.dead
       if l > 0
-        href = Favicon.headHalo
+        href = Favicon.deadHalo
       else
         href = Favicon.dead
     else
