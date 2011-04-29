@@ -1298,7 +1298,7 @@
       updNow = $('input[type=button]', dialog);
       $.bind(verbose, 'click', updater.cb.verbose);
       $.bind(autoUpT, 'click', updater.cb.autoUpdate);
-      $.bind(updNow, 'click', updater.update);
+      $.bind(updNow, 'click', updater.updateNow);
       $.append(d.body, dialog);
       updater.cb.verbose.call(verbose);
       return updater.cb.autoUpdate.call(autoUpT);
@@ -1386,6 +1386,10 @@
       if (n === 0) {
         return updater.update();
       }
+    },
+    updateNow: function() {
+      $('#timer').textContent = 0;
+      return updater.update();
     },
     update: function() {
       var cb, url, _ref;
