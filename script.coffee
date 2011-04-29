@@ -1019,7 +1019,7 @@ updater =
     updNow  = $ 'input[type=button]', dialog
     $.bind verbose, 'click', updater.cb.verbose
     $.bind autoUpT, 'click', updater.cb.autoUpdate
-    $.bind updNow,  'click', updater.update
+    $.bind updNow,  'click', updater.updateNow
 
     $.append d.body, dialog
 
@@ -1096,6 +1096,10 @@ updater =
 
     if n == 0
       updater.update()
+
+  updateNow: ->
+    $('#timer').textContent = 0
+    updater.update()
 
   update: ->
     updater.request?.abort()
