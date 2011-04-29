@@ -1177,7 +1177,7 @@
         node = div.nextSibling;
       }
       node = node.nextElementSibling;
-      if (node.nodeName === 'SPAN') {
+      if (node.nodeName === 'SPAN' || 'IMG') {
         return threading.thread(node);
       }
     }

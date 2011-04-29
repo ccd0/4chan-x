@@ -914,7 +914,7 @@ threading =
       node = div.nextSibling
 
     node = node.nextElementSibling #skip text node
-    if node.nodeName is 'SPAN'
+    if node.nodeName is 'SPAN' or 'IMG'
       threading.thread node
 
 threadHiding =
