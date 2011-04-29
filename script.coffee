@@ -914,7 +914,8 @@ threading =
       node = div.nextSibling
 
     node = node.nextElementSibling #skip text node
-    if node.nodeName is 'SPAN'
+    #{N,}SFW
+    unless node.align or node.nodeName is 'CENTER'
       threading.thread node
 
 threadHiding =

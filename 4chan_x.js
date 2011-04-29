@@ -1177,7 +1177,7 @@
         node = div.nextSibling;
       }
       node = node.nextElementSibling;
-      if (node.nodeName === 'SPAN') {
+      if (!(node.align || node.nodeName === 'CENTER')) {
         return threading.thread(node);
       }
     }
