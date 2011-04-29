@@ -1085,14 +1085,14 @@ updater =
     timer = $ '#timer'
     n = Number timer.textContent
     n += 1
-    timer.textContent = n
 
     if n == 10
-      updater.r.abort()
       count = $ '#count'
-      counte.textContent = 'retry'
+      count.textContent = 'retry'
       count.className = ''
       n = 0
+
+    timer.textContent = n
 
     if n == 0
       updater.update()
