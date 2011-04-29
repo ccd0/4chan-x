@@ -1178,7 +1178,9 @@
       }
       node = node.nextElementSibling;
       if (node.nodeName === 'SPAN' || node.nodeName === 'IMG') {
-        return threading.thread(node);
+        if (!(node.align || node.nodeName === 'CENTER')) {
+          return threading.thread(node);
+        }
       }
     }
   };

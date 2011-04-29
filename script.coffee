@@ -914,8 +914,11 @@ threading =
       node = div.nextSibling
 
     node = node.nextElementSibling #skip text node
+    #span.fileseze, img[alt="File deleted."]
     if node.nodeName is 'SPAN' or node.nodeName is 'IMG'
-      threading.thread node
+      #{N,}SFW
+      unless node.align or node.nodeName is 'CENTER'
+        threading.thread node
 
 threadHiding =
   init: ->
