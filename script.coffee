@@ -1521,22 +1521,25 @@ imgExpand =
     td = $('td.reply')
     table = td.parentNode.parentNode.parentNode
     left = td.getBoundingClientRect().left - table.getBoundingClientRect().left
+    crap = td.getBoundingClientRect().width - parseInt(getComputedStyle(td).width)
 
-    #XXX not sure I'm doing this right -_-;
-    {paddingLeft, paddingRight, borderLeftWidth, borderRightWidth} = getComputedStyle(td)
-    crap = parseInt(paddingLeft) + parseInt(paddingRight) + parseInt(borderLeftWidth) + parseInt(borderRightWidth)
-
-    imgExpand.maxWidth = formWidth - left - crap
+    imgExpand.maxWidthOP    = formWidth
+    imgExpand.maxWidthReply = formWidth - left - crap
     imgExpand.maxHeight = d.body.clientHeight
     imgExpand.type = $('#imageType').value
 
   resize: (img) ->
-    {maxWidth, maxHeight, type} = imgExpand
+    {maxWidthOP, maxWidthReply, maxHeight, type} = imgExpand
     [_, imgWidth, imgHeight] = $
       .x("preceding::span[@class][1]/text()[2]", img)
       .textContent.match(/(\d+)x(\d+)/)
     imgWidth  = Number imgWidth
     imgHeight = Number imgHeight
+
+    if img.parentNode.parentNode.nodeName == 'TD'
+      maxWidth = maxWidthReply
+    else
+      maxWidth = maxWidthOP
 
     switch type
       when 'full'
