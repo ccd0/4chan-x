@@ -1540,7 +1540,6 @@ g =
 
 main =
   init: ->
-    Favicon.halo = if /ws/.test Favicon.default then Favicon.haloSFW else Favicon.haloNSFW
     pathname = location.pathname.substring(1).split('/')
     [g.BOARD, temp] = pathname
     if temp is 'res'
@@ -1548,6 +1547,18 @@ main =
       g.THREAD_ID = pathname[2]
     else
       g.PAGENUM = parseInt(temp) || 0
+
+    if location.hostname is 'sys.4chan.org'
+      qr.sys()
+      return
+    if navtopr = $ '#navtopr'
+      options.init()
+    else if $.config('404 Redirect') and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
+      redirect()
+    else
+      return
+
+    Favicon.halo = if /ws/.test Favicon.default then Favicon.haloSFW else Favicon.haloNSFW
     g.hiddenReplies = $.getValue "hiddenReplies/#{g.BOARD}/", {}
     tzOffset = (new Date()).getTimezoneOffset() / 60
     # GMT -8 is given as +480; would GMT +8 be -480 ?
@@ -1574,16 +1585,6 @@ main =
       $.setValue 'lastChecked', now
 
     $.addStyle main.css
-
-    if location.hostname is 'sys.4chan.org'
-      qr.sys()
-      return
-    if navtopr = $ '#navtopr'
-      options.init()
-    else if $.config('404 Redirect') and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
-      redirect()
-    else
-      return
 
     Recaptcha.init()
 

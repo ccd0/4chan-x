@@ -2014,7 +2014,6 @@
   main = {
     init: function() {
       var DAY, callback, cutoff, hiddenThreads, id, lastChecked, navtopr, now, pathname, temp, timestamp, tzOffset, _i, _len, _ref2, _ref3;
-      Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2023,6 +2022,18 @@
       } else {
         g.PAGENUM = parseInt(temp) || 0;
       }
+      if (location.hostname === 'sys.4chan.org') {
+        qr.sys();
+        return;
+      }
+      if (navtopr = $('#navtopr')) {
+        options.init();
+      } else if ($.config('404 Redirect') && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
+        redirect();
+      } else {
+        return;
+      }
+      Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
       g.hiddenReplies = $.getValue("hiddenReplies/" + g.BOARD + "/", {});
       tzOffset = (new Date()).getTimezoneOffset() / 60;
       g.chanOffset = 5 - tzOffset;
@@ -2053,17 +2064,6 @@
         $.setValue('lastChecked', now);
       }
       $.addStyle(main.css);
-      if (location.hostname === 'sys.4chan.org') {
-        qr.sys();
-        return;
-      }
-      if (navtopr = $('#navtopr')) {
-        options.init();
-      } else if ($.config('404 Redirect') && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
-        redirect();
-      } else {
-        return;
-      }
       Recaptcha.init();
       $.bind($('form[name=post]'), 'submit', qr.cb.submit);
       if ($.config('Image Expansion')) {
