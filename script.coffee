@@ -992,7 +992,7 @@ threadHiding =
 
 updater =
   init: ->
-    html  = "<div class=move><span id=count></span> <span id=timer></span></div>"
+    html  = "<div class=move><span id=count></span> <span id=timer>-#{$.config 'Interval'}</span></div>"
     conf = config.updater.checkbox
     for name of conf
       title = conf[name][1]
@@ -1028,19 +1028,20 @@ updater =
 
   cb:
     verbose: (e) ->
-      if @checked
-        $.show $ '#count'
-        $('#timer').textContent = if t = updater.timer then t else 'Thread Updater'
-      else
-        $.hide $ '#count'
-        $('#timer').textContent = 'Thread Updater'
-    autoUpdate: (e) ->
+      count = $ '#count'
       timer = $ '#timer'
       if @checked
-        timer.textContent = '-' + $.config 'Interval'
+        count.textContent = '+0'
+        $.show timer
+      else
+        $.extend count,
+          className: ''
+          textContent: 'Thread Updater'
+        $.hide timer
+    autoUpdate: (e) ->
+      if @checked
         updater.intervalID = window.setInterval updater.timeout, 1000
       else
-        timer.textContent = 'Thread Updater'
         window.clearInterval updater.intervalID
     update: (e) ->
       count = $ '#count'
@@ -1069,8 +1070,8 @@ updater =
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
+      timer.textContent = '-' + $.config 'Interval'
       if $.config 'Verbose'
-        timer.textContent = '-' + $.config 'Interval'
         count.textContent = '+' + arr.length
         if arr.length is 0
           count.className = ''

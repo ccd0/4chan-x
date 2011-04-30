@@ -1269,7 +1269,7 @@
   updater = {
     init: function() {
       var autoUpT, checked, conf, dialog, html, input, interva, name, title, updNow, verbose, _i, _len, _ref;
-      html = "<div class=move><span id=count></span> <span id=timer></span></div>";
+      html = "<div class=move><span id=count></span> <span id=timer>-" + ($.config('Interval')) + "</span></div>";
       conf = config.updater.checkbox;
       for (name in conf) {
         title = conf[name][1];
@@ -1305,23 +1305,24 @@
     },
     cb: {
       verbose: function(e) {
-        var t;
+        var count, timer;
+        count = $('#count');
+        timer = $('#timer');
         if (this.checked) {
-          $.show($('#count'));
-          return $('#timer').textContent = (t = updater.timer) ? t : 'Thread Updater';
+          count.textContent = '+0';
+          return $.show(timer);
         } else {
-          $.hide($('#count'));
-          return $('#timer').textContent = 'Thread Updater';
+          $.extend(count, {
+            className: '',
+            textContent: 'Thread Updater'
+          });
+          return $.hide(timer);
         }
       },
       autoUpdate: function(e) {
-        var timer;
-        timer = $('#timer');
         if (this.checked) {
-          timer.textContent = '-' + $.config('Interval');
           return updater.intervalID = window.setInterval(updater.timeout, 1000);
         } else {
-          timer.textContent = 'Thread Updater';
           return window.clearInterval(updater.intervalID);
         }
       },
@@ -1355,8 +1356,8 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
+        timer.textContent = '-' + $.config('Interval');
         if ($.config('Verbose')) {
-          timer.textContent = '-' + $.config('Interval');
           count.textContent = '+' + arr.length;
           if (arr.length === 0) {
             count.className = '';
