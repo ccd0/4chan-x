@@ -92,11 +92,11 @@ ui =
     top  = localStorage["#{id}Top"]  ? top
     if left then el.style.left = left else el.style.right  = '0px'
     if top  then el.style.top  = top  else el.style.bottom = '0px'
-    el.querySelector('div.move').addEventListener 'mousedown', ui.move, true
+    el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, true
     el.querySelector('div.move a[name=close]')?.addEventListener 'click',
       (-> el.parentNode.removeChild(el)), true
     el
-  move: (e) ->
+  dragstart: (e) ->
     ui.el = el = e.target.parentNode
     document.body.className = 'noselect'
     #distance from pointer to el edge is constant; calculate it here.
@@ -107,9 +107,9 @@ ui =
     #factor out el from document dimensions
     ui.width  = document.body.clientWidth  - el.offsetWidth
     ui.height = document.body.clientHeight - el.offsetHeight
-    document.addEventListener 'mousemove', ui.moveMove, true
-    document.addEventListener 'mouseup',   ui.moveEnd, true
-  moveMove: (e) ->
+    document.addEventListener 'mousemove', ui.drag, true
+    document.addEventListener 'mouseup',   ui.dragend, true
+  drag: (e) ->
     {el} = ui
     left = e.clientX - ui.dx
     if left < 20 then left = '0px'
@@ -123,9 +123,9 @@ ui =
     bottom = if top then '' else '0px'
     el.style.top  = top
     el.style.bottom = bottom
-  moveEnd: ->
-    document.removeEventListener 'mousemove', ui.moveMove, true
-    document.removeEventListener 'mouseup',   ui.moveEnd, true
+  dragend: ->
+    document.removeEventListener 'mousemove', ui.drag, true
+    document.removeEventListener 'mouseup',   ui.dragend, true
     {el} = ui #{id} = {el} = ui doesn't work
     {id} = el
     localStorage["#{id}Left"] = el.style.left

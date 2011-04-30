@@ -168,7 +168,7 @@
       } else {
         el.style.bottom = '0px';
       }
-      el.querySelector('div.move').addEventListener('mousedown', ui.move, true);
+      el.querySelector('div.move').addEventListener('mousedown', ui.dragstart, true);
       if ((_ref3 = el.querySelector('div.move a[name=close]')) != null) {
         _ref3.addEventListener('click', (function() {
           return el.parentNode.removeChild(el);
@@ -176,7 +176,7 @@
       }
       return el;
     },
-    move: function(e) {
+    dragstart: function(e) {
       var el, rect;
       ui.el = el = e.target.parentNode;
       document.body.className = 'noselect';
@@ -185,10 +185,10 @@
       ui.dy = e.clientY - rect.top;
       ui.width = document.body.clientWidth - el.offsetWidth;
       ui.height = document.body.clientHeight - el.offsetHeight;
-      document.addEventListener('mousemove', ui.moveMove, true);
-      return document.addEventListener('mouseup', ui.moveEnd, true);
+      document.addEventListener('mousemove', ui.drag, true);
+      return document.addEventListener('mouseup', ui.dragend, true);
     },
-    moveMove: function(e) {
+    drag: function(e) {
       var bottom, el, left, right, top;
       el = ui.el;
       left = e.clientX - ui.dx;
@@ -210,10 +210,10 @@
       el.style.top = top;
       return el.style.bottom = bottom;
     },
-    moveEnd: function() {
+    dragend: function() {
       var el, id;
-      document.removeEventListener('mousemove', ui.moveMove, true);
-      document.removeEventListener('mouseup', ui.moveEnd, true);
+      document.removeEventListener('mousemove', ui.drag, true);
+      document.removeEventListener('mouseup', ui.dragend, true);
       el = ui.el;
       id = el.id;
       localStorage["" + id + "Left"] = el.style.left;
