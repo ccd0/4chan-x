@@ -1,3 +1,23 @@
+2.2.0
+- mayhem:
+  - don't select text when moving dialogs
+  - fix thread watcher's padding
+  - remove captcha logos from quick reply
+  - post in title - show default title when no subject/comment
+  - update tab title on 404
+  - chrome - fix favicons
+  - fix 404 favicon
+  - fix updater retrying
+  - set timer to 0 on manual update
+  - fix threading when op's file is deleted
+
+- fix navigating past hidden threads
+- fix updater option - verbose
+- only navigate to pages that exist
+- use Greasemonkey api (sigh)
+- rewrite, reenable cooldown
+- better image resize algorithm
+
 2.1.0
 - added back the 0 keybind - go to board's front page
 
