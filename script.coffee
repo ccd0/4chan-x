@@ -743,12 +743,13 @@ qr =
           textContent: data
         $.append dialog, error
         qr.autohide.unset()
-      else
+      else # success
         if dialog
           if $.config 'Persistent QR'
             qr.refresh dialog
           else
             $.remove dialog
+        qr.cooldown true
 
       Recaptcha.reload()
       $('iframe[name=iframe]').src = 'about:blank'
@@ -766,9 +767,9 @@ qr =
         if span = @nextSibling
           $.remove span
 
-      if g.seconds = $.getValue 'seconds'
+      # check if we've posted on this board in another tab
+      if qr.cooldown()
         e.preventDefault()
-        qr.cooldownStart()
         alert 'Stop posting so often!'
 
         if isQR
@@ -781,7 +782,7 @@ qr =
 
       recaptcha = $('input[name=recaptcha_response_field]', this)
       if recaptcha.value
-        g.sage = $('input[name=email]', form).value == 'sage'
+        qr.sage = $('input[name=email]', form).value == 'sage'
         if isQR
           qr.autohide.set()
       else
@@ -825,26 +826,42 @@ qr =
     f = $('input[type=file]', dialog).parentNode
     f.innerHTML = f.innerHTML
 
-  cooldown: ->
+  cooldown: (restart) ->
+    now = Date.now()
+
+    if restart
+      duration = if qr.sage then 60 else 30
+      qr.cooldownStart duration
+      $.setValue "#{g.BOARD}/cooldown", now + duration * 1000
+      return
+
+    end = $.getValue "#{g.BOARD}/cooldown", 0
+    if now < end
+      duration = Math.ceil (end - now) / 1000
+      qr.cooldownStart duration
+      return true
+
+  cooldownStart: (duration) ->
     submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
     for submit in submits
-      if g.seconds == 0
+      submit.value = duration
+      submit.disabled = true
+    qr.cooldownIntervalID = window.setInterval qr.cooldownCB, 1000
+    qr.duration = duration
+
+  cooldownCB: ->
+    qr.duration = qr.duration - 1
+
+    submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
+    for submit in submits
+      if qr.duration == 0
         submit.disabled = false
         submit.value = 'Submit'
       else
-        submit.value = g.seconds = g.seconds - 1
-        $.setValue 'seconds', g.seconds
+        submit.value = qr.duration
 
-    if g.seconds != 0
-      window.setTimeout qr.cooldown, 1000
-
-  cooldownStart: ->
-    $.setValue 'seconds', g.seconds
-    submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
-    for submit in submits
-      submit.value = g.seconds
-      submit.disabled = true
-    window.setTimeout qr.cooldown, 1000
+    if qr.duration == 0
+      clearInterval qr.cooldownIntervalID
 
   dialog: (link) ->
     html = "<div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>"
@@ -1607,6 +1624,8 @@ main =
     Recaptcha.init()
 
     $.bind $('form[name=post]'), 'submit', qr.cb.submit
+
+    qr.cooldown()
 
     #major features
     if $.config 'Image Expansion'

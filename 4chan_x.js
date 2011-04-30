@@ -998,6 +998,7 @@
               $.remove(dialog);
             }
           }
+          qr.cooldown(true);
         }
         Recaptcha.reload();
         return $('iframe[name=iframe]').src = 'about:blank';
@@ -1021,9 +1022,8 @@
             $.remove(span);
           }
         }
-        if (g.seconds = $.getValue('seconds')) {
+        if (qr.cooldown()) {
           e.preventDefault();
-          qr.cooldownStart();
           alert('Stop posting so often!');
           if (isQR) {
             span = $.el('span', {
@@ -1036,7 +1036,7 @@
         }
         recaptcha = $('input[name=recaptcha_response_field]', this);
         if (recaptcha.value) {
-          g.sage = $('input[name=email]', form).value === 'sage';
+          qr.sage = $('input[name=email]', form).value === 'sage';
           if (isQR) {
             return qr.autohide.set();
           }
@@ -1085,33 +1085,49 @@
       f = $('input[type=file]', dialog).parentNode;
       return f.innerHTML = f.innerHTML;
     },
-    cooldown: function() {
+    cooldown: function(restart) {
+      var duration, end, now;
+      now = Date.now();
+      if (restart) {
+        duration = qr.sage ? 60 : 30;
+        qr.cooldownStart(duration);
+        $.setValue("" + g.BOARD + "/cooldown", now + duration * 1000);
+        return;
+      }
+      end = $.getValue("" + g.BOARD + "/cooldown", 0);
+      if (now < end) {
+        duration = Math.ceil((end - now) / 1000);
+        qr.cooldownStart(duration);
+        return true;
+      }
+    },
+    cooldownStart: function(duration) {
       var submit, submits, _i, _len;
       submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];
-        if (g.seconds === 0) {
+        submit.value = duration;
+        submit.disabled = true;
+      }
+      qr.cooldownIntervalID = window.setInterval(qr.cooldownCB, 1000);
+      return qr.duration = duration;
+    },
+    cooldownCB: function() {
+      var submit, submits, _i, _len;
+      qr.duration = qr.duration - 1;
+      submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
+      for (_i = 0, _len = submits.length; _i < _len; _i++) {
+        submit = submits[_i];
+        if (qr.duration === 0) {
           submit.disabled = false;
           submit.value = 'Submit';
         } else {
-          submit.value = g.seconds = g.seconds - 1;
-          $.setValue('seconds', g.seconds);
+          submit.value = qr.duration;
         }
       }
-      if (g.seconds !== 0) {
-        return window.setTimeout(qr.cooldown, 1000);
+      if (qr.duration === 0) {
+        return clearInterval(qr.cooldownIntervalID);
       }
-    },
-    cooldownStart: function() {
-      var submit, submits, _i, _len;
-      $.setValue('seconds', g.seconds);
-      submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
-      for (_i = 0, _len = submits.length; _i < _len; _i++) {
-        submit = submits[_i];
-        submit.value = g.seconds;
-        submit.disabled = true;
-      }
-      return window.setTimeout(qr.cooldown, 1000);
     },
     dialog: function(link) {
       var clone, dialog, el, html, resto, script, xpath, _i, _len, _ref;
@@ -2096,6 +2112,7 @@
       $.addStyle(main.css);
       Recaptcha.init();
       $.bind($('form[name=post]'), 'submit', qr.cb.submit);
+      qr.cooldown();
       if ($.config('Image Expansion')) {
         imgExpand.init();
       }
