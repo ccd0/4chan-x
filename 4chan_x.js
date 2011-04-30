@@ -2013,7 +2013,7 @@
   };
   main = {
     init: function() {
-      var DAY, callback, cutoff, hiddenThreads, id, lastChecked, navtopr, now, pathname, temp, timestamp, tzOffset, _i, _len, _ref2, _ref3;
+      var DAY, callback, cutoff, hiddenThreads, id, lastChecked, now, pathname, temp, timestamp, tzOffset, _i, _len, _ref2, _ref3;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2026,11 +2026,11 @@
         qr.sys();
         return;
       }
-      if (navtopr = $('#navtopr')) {
-        options.init();
-      } else if ($.config('404 Redirect') && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
+      if ($.config('404 Redirect') && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
         redirect();
-      } else {
+        return;
+      }
+      if (!$('#navtopr')) {
         return;
       }
       Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
@@ -2138,7 +2138,8 @@
         callback = _ref3[_i];
         callback();
       }
-      return $.bind(d.body, 'DOMNodeInserted', nodeInserted);
+      $.bind(d.body, 'DOMNodeInserted', nodeInserted);
+      return options.init();
     },
     css: '\
       /* dialog styling */\

@@ -1551,11 +1551,10 @@ main =
     if location.hostname is 'sys.4chan.org'
       qr.sys()
       return
-    if navtopr = $ '#navtopr'
-      options.init()
-    else if $.config('404 Redirect') and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
+    if $.config('404 Redirect') and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
       redirect()
-    else
+      return
+    if not $ '#navtopr'
       return
 
     Favicon.halo = if /ws/.test Favicon.default then Favicon.haloSFW else Favicon.haloNSFW
@@ -1660,6 +1659,7 @@ main =
 
     callback() for callback in g.callbacks
     $.bind d.body, 'DOMNodeInserted', nodeInserted
+    options.init()
 
   css: '
       /* dialog styling */
