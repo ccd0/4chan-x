@@ -588,8 +588,6 @@ nav =
     $.append span, prev, $.tn(' '), next
     $.append d.body, span
 
-    nav.threads = $$ 'div.thread'
-
   prev: ->
     nav.scroll -1
 
@@ -599,6 +597,7 @@ nav =
   threads: []
 
   getThread: (full) ->
+    nav.threads = $$ 'div.thread:not([style])'
     for thread, i in nav.threads
       rect = thread.getBoundingClientRect()
       {bottom} = rect

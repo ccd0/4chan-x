@@ -795,8 +795,7 @@
       $.bind(prev, 'click', nav.prev);
       $.bind(next, 'click', nav.next);
       $.append(span, prev, $.tn(' '), next);
-      $.append(d.body, span);
-      return nav.threads = $$('div.thread');
+      return $.append(d.body, span);
     },
     prev: function() {
       return nav.scroll(-1);
@@ -807,6 +806,7 @@
     threads: [],
     getThread: function(full) {
       var bottom, i, rect, thread, _len, _ref;
+      nav.threads = $$('div.thread:not([style])');
       _ref = nav.threads;
       for (i = 0, _len = _ref.length; i < _len; i++) {
         thread = _ref[i];
