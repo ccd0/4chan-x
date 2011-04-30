@@ -262,23 +262,6 @@
         return $.setValue(this.name, this.value);
       }
     },
-    deleteValue: function(name) {
-      name = NAMESPACE + name;
-      return delete localStorage[name];
-    },
-    getValue: function(name, defaultValue) {
-      var value;
-      name = NAMESPACE + name;
-      if (value = localStorage[name]) {
-        return JSON.parse(value);
-      } else {
-        return defaultValue;
-      }
-    },
-    setValue: function(name, value) {
-      name = NAMESPACE + name;
-      return localStorage[name] = JSON.stringify(value);
-    },
     addStyle: function(css) {
       var style;
       style = document.createElement('style');
@@ -398,6 +381,50 @@
       }
     }
   });
+  if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
+    $.extend($, {
+      deleteValue: function(name) {
+        return GM_deleteValue(name);
+      },
+      getValue: function(name, defaultValue) {
+        var value;
+        if (value = GM_getValue(name)) {
+          return JSON.parse(value);
+        } else {
+          return defaultValue;
+        }
+      },
+      openInTab: function(url) {
+        return GM_openInTab(url);
+      },
+      setValue: function(name, value) {
+        return GM_setValue(name, JSON.stringify(value));
+      }
+    });
+  } else {
+    $.extend($, {
+      deleteValue: function(name) {
+        name = NAMESPACE + name;
+        return delete localStorage[name];
+      },
+      getValue: function(name, defaultValue) {
+        var value;
+        name = NAMESPACE + name;
+        if (value = localStorage[name]) {
+          return JSON.parse(value);
+        } else {
+          return defaultValue;
+        }
+      },
+      openInTab: function(url) {
+        return window.open(url, "_blank");
+      },
+      setValue: function(name, value) {
+        name = NAMESPACE + name;
+        return localStorage[name] = JSON.stringify(value);
+      }
+    });
+  }
   $$ = function(selector, root) {
     var node, result, _i, _len, _results;
     if (root == null) {
@@ -722,7 +749,7 @@
       id = thread.firstChild.id;
       url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
       if (tab) {
-        return window.open(url, "_blank");
+        return $.openInTab(url);
       } else {
         return location.href = url;
       }

@@ -162,18 +162,6 @@ $.extend $,
       $.setValue @name, @checked
     value: ->
       $.setValue @name, @value
-  deleteValue: (name) ->
-    name = NAMESPACE + name
-    delete localStorage[name]
-  getValue: (name, defaultValue) ->
-    name = NAMESPACE + name
-    if value = localStorage[name]
-      JSON.parse value
-    else
-      defaultValue
-  setValue: (name, value) ->
-    name = NAMESPACE + name
-    localStorage[name] = JSON.stringify value
   addStyle: (css) ->
     style = document.createElement 'style'
     style.type = 'text/css'
@@ -266,6 +254,36 @@ $.extend $,
 
       #after first sunday
       return false
+
+if GM_deleteValue?
+  $.extend $,
+    deleteValue: (name) ->
+      GM_deleteValue name
+    getValue: (name, defaultValue) ->
+      if value = GM_getValue name
+        JSON.parse value
+      else
+        defaultValue
+    openInTab: (url) ->
+      GM_openInTab url
+    setValue: (name, value) ->
+      GM_setValue name, JSON.stringify value
+else
+  $.extend $,
+    deleteValue: (name) ->
+      name = NAMESPACE + name
+      delete localStorage[name]
+    getValue: (name, defaultValue) ->
+      name = NAMESPACE + name
+      if value = localStorage[name]
+        JSON.parse value
+      else
+        defaultValue
+    openInTab: (url) ->
+      window.open url, "_blank"
+    setValue: (name, value) ->
+      name = NAMESPACE + name
+      localStorage[name] = JSON.stringify value
 
 $$ = (selector, root=d.body) ->
   result = root.querySelectorAll selector
@@ -527,7 +545,7 @@ keybinds =
     id = thread.firstChild.id
     url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab
-      window.open url, "_blank"
+      $.openInTab url
     else
       location.href = url
 
