@@ -468,7 +468,7 @@
         innerHTML: xhr.responseText
       });
       if (threadID === replyID) {
-        bq = $('blockqoute', body);
+        bq = $('blockquote', body);
       } else {
         _ref = $$('td[id]', body);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {

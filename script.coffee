@@ -309,7 +309,7 @@ expandComment =
       innerHTML: xhr.responseText
 
     if threadID is replyID
-      bq = $ 'blockqoute', body
+      bq = $ 'blockquote', body
     else
       #css selectors don't like ids starting with numbers,
       # getElementById only works for root document.
