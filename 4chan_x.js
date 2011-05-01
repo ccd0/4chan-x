@@ -1999,10 +1999,11 @@
     foo: function() {
       var crap, formWidth, left, table, td;
       formWidth = $('form[name=delform]').getBoundingClientRect().width;
-      td = $('td.reply');
-      table = td.parentNode.parentNode.parentNode;
-      left = td.getBoundingClientRect().left - table.getBoundingClientRect().left;
-      crap = td.getBoundingClientRect().width - parseInt(getComputedStyle(td).width);
+      if (td = $('td.reply')) {
+        table = td.parentNode.parentNode.parentNode;
+        left = td.getBoundingClientRect().left - table.getBoundingClientRect().left;
+        crap = td.getBoundingClientRect().width - parseInt(getComputedStyle(td).width);
+      }
       imgExpand.maxWidthOP = formWidth;
       imgExpand.maxWidthReply = formWidth - left - crap;
       imgExpand.maxHeight = d.body.clientHeight;
