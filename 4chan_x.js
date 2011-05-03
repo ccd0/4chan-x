@@ -72,6 +72,7 @@
         'Anonymize': [false, 'Make everybody anonymous'],
         'Auto Watch': [true, 'Automatically watch threads that you start'],
         'Comment Expansion': [true, 'Expand too long comments'],
+        'Cooldown': [false, 'Prevent \'flood detected\' errors (buggy)'],
         'Image Auto-Gif': [false, 'Animate gif thumbnails'],
         'Image Expansion': [true, 'Expand images'],
         'Image Hover': [false, 'Show full image on mouseover'],
@@ -1000,7 +1001,9 @@
               $.remove(dialog);
             }
           }
-          qr.cooldown(true);
+          if ($.config('Cooldown')) {
+            qr.cooldown(true);
+          }
         }
         Recaptcha.reload();
         return $('iframe[name=iframe]').src = 'about:blank';
@@ -1024,17 +1027,19 @@
             $.remove(span);
           }
         }
-        if (qr.cooldown()) {
-          e.preventDefault();
-          alert('Stop posting so often!');
-          if (isQR) {
-            span = $.el('span', {
-              className: 'error',
-              textContent: 'Stop posting so often!'
-            });
-            $.append(this.parentNode, span);
+        if ($.config('Cooldown')) {
+          if (qr.cooldown()) {
+            e.preventDefault();
+            alert('Stop posting so often!');
+            if (isQR) {
+              span = $.el('span', {
+                className: 'error',
+                textContent: 'Stop posting so often!'
+              });
+              $.append(this.parentNode, span);
+            }
+            return;
           }
-          return;
         }
         recaptcha = $('input[name=recaptcha_response_field]', this);
         if (recaptcha.value) {
@@ -2125,7 +2130,9 @@
       $.addStyle(main.css);
       Recaptcha.init();
       $.bind($('form[name=post]'), 'submit', qr.cb.submit);
-      qr.cooldown();
+      if ($.config('Cooldown')) {
+        qr.cooldown();
+      }
       if ($.config('Image Expansion')) {
         imgExpand.init();
       }

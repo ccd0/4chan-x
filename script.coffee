@@ -16,6 +16,7 @@ config =
       'Anonymize':         [false, 'Make everybody anonymous']
       'Auto Watch':        [true,  'Automatically watch threads that you start']
       'Comment Expansion': [true,  'Expand too long comments']
+      'Cooldown':          [false, 'Prevent \'flood detected\' errors (buggy)']
       'Image Auto-Gif':    [false, 'Animate gif thumbnails']
       'Image Expansion':   [true,  'Expand images']
       'Image Hover':       [false, 'Show full image on mouseover']
@@ -754,7 +755,8 @@ qr =
             qr.refresh dialog
           else
             $.remove dialog
-        qr.cooldown true
+        if $.config 'Cooldown'
+          qr.cooldown true
 
       Recaptcha.reload()
       $('iframe[name=iframe]').src = 'about:blank'
@@ -772,18 +774,19 @@ qr =
         if span = @nextSibling
           $.remove span
 
-      # check if we've posted on this board in another tab
-      if qr.cooldown()
-        e.preventDefault()
-        alert 'Stop posting so often!'
+      if $.config 'Cooldown'
+        # check if we've posted on this board in another tab
+        if qr.cooldown()
+          e.preventDefault()
+          alert 'Stop posting so often!'
 
-        if isQR
-          span = $.el 'span',
-            className: 'error'
-            textContent: 'Stop posting so often!'
-          $.append @parentNode, span
+          if isQR
+            span = $.el 'span',
+              className: 'error'
+              textContent: 'Stop posting so often!'
+            $.append @parentNode, span
 
-        return
+          return
 
       recaptcha = $('input[name=recaptcha_response_field]', this)
       if recaptcha.value
@@ -1639,9 +1642,10 @@ main =
 
     $.bind $('form[name=post]'), 'submit', qr.cb.submit
 
-    qr.cooldown()
-
     #major features
+    if $.config 'Cooldown'
+      qr.cooldown()
+
     if $.config 'Image Expansion'
       imgExpand.init()
 
