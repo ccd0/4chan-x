@@ -1,3 +1,11 @@
+2.2.1
+- mayhem:
+  fix op image expansion bug
+  fix op comment expansion
+
+- fix /b/ackwash multiple links bug
+- make cooldown timer optional, disabled by default
+
 2.2.0
 - mayhem:
   - don't select text when moving dialogs
