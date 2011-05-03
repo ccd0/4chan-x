@@ -930,7 +930,10 @@ threading =
   init: ->
     # don't thread image controls
     node = $ 'form[name=delform] > *:not([id])'
+    # don't confuse other scripts *cough*/b/ackwash*cough*
+    $.bind   d.body, threading.preventDefault
     threading.thread node
+    $.unbind d.body, threading.preventDefault
 
   thread: (node) ->
     op = $.el 'div',
@@ -956,6 +959,9 @@ threading =
     #{N,}SFW
     unless node.align or node.nodeName is 'CENTER'
       threading.thread node
+
+  preventDefault: (e) ->
+    e.preventDefault()
 
 threadHiding =
   init: ->

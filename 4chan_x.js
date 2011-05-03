@@ -1200,7 +1200,9 @@
     init: function() {
       var node;
       node = $('form[name=delform] > *:not([id])');
-      return threading.thread(node);
+      $.bind(d.body, threading.preventDefault);
+      threading.thread(node);
+      return $.unbind(d.body, threading.preventDefault);
     },
     thread: function(node) {
       var div, op;
@@ -1227,6 +1229,9 @@
       if (!(node.align || node.nodeName === 'CENTER')) {
         return threading.thread(node);
       }
+    },
+    preventDefault: function(e) {
+      return e.preventDefault();
     }
   };
   threadHiding = {
