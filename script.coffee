@@ -1184,6 +1184,15 @@ watcher =
       $.bind favicon, 'click', watcher.cb.toggle
       $.before input, favicon
 
+  list: (watched) ->
+    div = $ '#watcher > div:not(.move)'
+    while div
+      $.remove div
+      div = $ '#watcher > div:not(.move)'
+    for board of watched
+      for id, props of watched[board]
+        watcher.addLink props, $ '#watcher'
+
   addLink: (props, dialog) ->
     dialog or= $ '#watcher'
     div = $.el 'div'
@@ -1212,10 +1221,6 @@ watcher =
       watcher.unwatch g.BOARD, id
 
   unwatch: (board, id) ->
-    href = "/#{board}/res/#{id}"
-    div = $("#watcher a[href=\"#{href}\"]").parentNode
-    $.remove div
-
     if input = $ "input[name=\"#{id}\"]"
       favicon = input.previousSibling
       favicon.src = Favicon.empty
@@ -1223,6 +1228,8 @@ watcher =
     watched = $.getValue 'watched', {}
     delete watched[board][id]
     $.setValue 'watched', watched
+
+    watcher.list watched
 
   watch: (thread) ->
     favicon = $ 'img.favicon', thread
@@ -1240,7 +1247,7 @@ watcher =
     watched[g.BOARD][id] = props
     $.setValue 'watched', watched
 
-    watcher.addLink props
+    watcher.list watched
 
 anonymize =
   init: ->

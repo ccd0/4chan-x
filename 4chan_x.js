@@ -1496,6 +1496,28 @@
       }
       return _results;
     },
+    list: function(watched) {
+      var board, div, id, props, _results;
+      div = $('#watcher > div:not(.move)');
+      while (div) {
+        $.remove(div);
+        div = $('#watcher > div:not(.move)');
+      }
+      _results = [];
+      for (board in watched) {
+        _results.push((function() {
+          var _ref, _results;
+          _ref = watched[board];
+          _results = [];
+          for (id in _ref) {
+            props = _ref[id];
+            _results.push(watcher.addLink(props, $('#watcher')));
+          }
+          return _results;
+        })());
+      }
+      return _results;
+    },
     addLink: function(props, dialog) {
       var div, link, x;
       dialog || (dialog = $('#watcher'));
@@ -1529,17 +1551,15 @@
       }
     },
     unwatch: function(board, id) {
-      var div, favicon, href, input, watched;
-      href = "/" + board + "/res/" + id;
-      div = $("#watcher a[href=\"" + href + "\"]").parentNode;
-      $.remove(div);
+      var favicon, input, watched;
       if (input = $("input[name=\"" + id + "\"]")) {
         favicon = input.previousSibling;
         favicon.src = Favicon.empty;
       }
       watched = $.getValue('watched', {});
       delete watched[board][id];
-      return $.setValue('watched', watched);
+      $.setValue('watched', watched);
+      return watcher.list(watched);
     },
     watch: function(thread) {
       var favicon, id, props, tc, watched, _name;
@@ -1558,7 +1578,7 @@
       watched[_name = g.BOARD] || (watched[_name] = {});
       watched[g.BOARD][id] = props;
       $.setValue('watched', watched);
-      return watcher.addLink(props);
+      return watcher.list(watched);
     }
   };
   anonymize = {
