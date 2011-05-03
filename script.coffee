@@ -934,6 +934,7 @@ threading =
     # don't thread image controls
     node = $ 'form[name=delform] > *:not([id])'
     # don't confuse other scripts *cough*/b/ackwash*cough*
+    # gotta have a named function to unbind.
     $.bind   d, 'DOMNodeInserted', threading.stopPropagation
     threading.thread node
     $.unbind d, 'DOMNodeInserted', threading.stopPropagation
