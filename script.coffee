@@ -1165,9 +1165,7 @@ watcher =
 
     #populate watcher
     watched = $.getValue 'watched', {}
-    for board of watched
-      for id, props of watched[board]
-        watcher.addLink props, dialog
+    watcher.list watched
 
     #add watch buttons
     watchedBoard = watched[g.BOARD] or {}
@@ -1194,7 +1192,6 @@ watcher =
         watcher.addLink props, $ '#watcher'
 
   addLink: (props, dialog) ->
-    dialog or= $ '#watcher'
     div = $.el 'div'
     x = $.el 'a',
       textContent: 'X'

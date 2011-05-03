@@ -1461,7 +1461,7 @@
   };
   watcher = {
     init: function() {
-      var board, dialog, favicon, html, id, input, inputs, props, src, watched, watchedBoard, _i, _len, _ref, _results;
+      var dialog, favicon, html, id, input, inputs, src, watched, watchedBoard, _i, _len, _results;
       html = '<div class=move>Thread Watcher</div>';
       dialog = ui.dialog('watcher', {
         top: '50px',
@@ -1469,13 +1469,7 @@
       }, html);
       $.append(d.body, dialog);
       watched = $.getValue('watched', {});
-      for (board in watched) {
-        _ref = watched[board];
-        for (id in _ref) {
-          props = _ref[id];
-          watcher.addLink(props, dialog);
-        }
-      }
+      watcher.list(watched);
       watchedBoard = watched[g.BOARD] || {};
       inputs = $$('form > input[value=delete], div.thread > input[value=delete]');
       _results = [];
@@ -1520,7 +1514,6 @@
     },
     addLink: function(props, dialog) {
       var div, link, x;
-      dialog || (dialog = $('#watcher'));
       div = $.el('div');
       x = $.el('a', {
         textContent: 'X'
