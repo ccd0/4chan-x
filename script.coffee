@@ -98,7 +98,10 @@ ui =
     el
   dragstart: (e) ->
     ui.el = el = e.target.parentNode
-    document.body.className = 'noselect'
+    d = document
+    d.body.className = 'noselect'
+    d.addEventListener 'mousemove', ui.drag, true
+    d.addEventListener 'mouseup',   ui.dragend, true
     #distance from pointer to el edge is constant; calculate it here.
     # XXX opera reports el.offsetLeft / el.offsetTop as 0
     rect = el.getBoundingClientRect()
@@ -107,8 +110,6 @@ ui =
     #factor out el from document dimensions
     ui.width  = document.body.clientWidth  - el.offsetWidth
     ui.height = document.body.clientHeight - el.offsetHeight
-    document.addEventListener 'mousemove', ui.drag, true
-    document.addEventListener 'mouseup',   ui.dragend, true
   drag: (e) ->
     {el} = ui
     left = e.clientX - ui.dx
@@ -124,13 +125,17 @@ ui =
     el.style.top  = top
     el.style.bottom = bottom
   dragend: ->
-    document.removeEventListener 'mousemove', ui.drag, true
-    document.removeEventListener 'mouseup',   ui.dragend, true
-    {el} = ui #{id} = {el} = ui doesn't work
+    #{id} = {el} = ui
+    #equivalent to
+    #{id} = ui; {el} = ui
+    {el} = ui
     {id} = el
     localStorage["#{id}Left"] = el.style.left
     localStorage["#{id}Top"]  = el.style.top
-    document.body.className = ''
+    d = document
+    d.body.className = ''
+    d.removeEventListener 'mousemove', ui.drag, true
+    d.removeEventListener 'mouseup',   ui.dragend, true
 
 #convenience
 d = document

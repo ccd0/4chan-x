@@ -177,16 +177,17 @@
       return el;
     },
     dragstart: function(e) {
-      var el, rect;
+      var d, el, rect;
       ui.el = el = e.target.parentNode;
-      document.body.className = 'noselect';
+      d = document;
+      d.body.className = 'noselect';
+      d.addEventListener('mousemove', ui.drag, true);
+      d.addEventListener('mouseup', ui.dragend, true);
       rect = el.getBoundingClientRect();
       ui.dx = e.clientX - rect.left;
       ui.dy = e.clientY - rect.top;
       ui.width = document.body.clientWidth - el.offsetWidth;
-      ui.height = document.body.clientHeight - el.offsetHeight;
-      document.addEventListener('mousemove', ui.drag, true);
-      return document.addEventListener('mouseup', ui.dragend, true);
+      return ui.height = document.body.clientHeight - el.offsetHeight;
     },
     drag: function(e) {
       var bottom, el, left, right, top;
@@ -211,14 +212,15 @@
       return el.style.bottom = bottom;
     },
     dragend: function() {
-      var el, id;
-      document.removeEventListener('mousemove', ui.drag, true);
-      document.removeEventListener('mouseup', ui.dragend, true);
+      var d, el, id;
       el = ui.el;
       id = el.id;
       localStorage["" + id + "Left"] = el.style.left;
       localStorage["" + id + "Top"] = el.style.top;
-      return document.body.className = '';
+      d = document;
+      d.body.className = '';
+      d.removeEventListener('mousemove', ui.drag, true);
+      return d.removeEventListener('mouseup', ui.dragend, true);
     }
   };
   d = document;
