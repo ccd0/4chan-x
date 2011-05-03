@@ -934,9 +934,9 @@ threading =
     # don't thread image controls
     node = $ 'form[name=delform] > *:not([id])'
     # don't confuse other scripts *cough*/b/ackwash*cough*
-    $.bind   d.body, threading.preventDefault
+    $.bind   d, 'DOMNodeInserted', threading.stopPropagation
     threading.thread node
-    $.unbind d.body, threading.preventDefault
+    $.unbind d, 'DOMNodeInserted', threading.stopPropagation
 
   thread: (node) ->
     op = $.el 'div',
@@ -963,8 +963,8 @@ threading =
     unless node.align or node.nodeName is 'CENTER'
       threading.thread node
 
-  preventDefault: (e) ->
-    e.preventDefault()
+  stopPropagation: (e) ->
+    e.stopPropagation()
 
 threadHiding =
   init: ->

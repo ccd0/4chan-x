@@ -1205,9 +1205,9 @@
     init: function() {
       var node;
       node = $('form[name=delform] > *:not([id])');
-      $.bind(d.body, threading.preventDefault);
+      $.bind(d, 'DOMNodeInserted', threading.stopPropagation);
       threading.thread(node);
-      return $.unbind(d.body, threading.preventDefault);
+      return $.unbind(d, 'DOMNodeInserted', threading.stopPropagation);
     },
     thread: function(node) {
       var div, op;
@@ -1235,8 +1235,8 @@
         return threading.thread(node);
       }
     },
-    preventDefault: function(e) {
-      return e.preventDefault();
+    stopPropagation: function(e) {
+      return e.stopPropagation();
     }
   };
   threadHiding = {
