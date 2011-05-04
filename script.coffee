@@ -877,10 +877,10 @@ qr =
   dialog: (link) ->
     html = "
       <div class=move>Quick Reply <input type=checkbox id=autohide> <a name=close title=close>X</a></div>
-      <form>
+      <form name=post action=http://sys.4chan.org/jp/post method=POST enctype=multipart/form-data>
         <input type=hidden name=MAX_FILE_SIZE value=3145728>
           <div><input class=inputtext type=text name=name placeholder=Name></div>
-          <div><input class=inputtext type=text name=email placeholder=E-mail> <label> [<input type=checkbox name=spoiler>Spoiler Image?]</label></div>
+          <div><input class=inputtext type=text name=email placeholder=E-mail> <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label></div>
           <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
           <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
           <div id=qr_captcha></div>
