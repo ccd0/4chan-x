@@ -876,24 +876,25 @@ qr =
 
   dialog: (link) ->
     html = "
-      <div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>
+      <div class=move>Quick Reply <input type=checkbox id=autohide> <a name=close title=close>X</a></div>
       <form>
-          <div><input name=name placeholder=name></div>
-          <div><input name=email placeholder=email> <label><input type=checkbox>Spoiler Image?</label></div>
-          <div><input name=sub placeholder=subject> <input value=submit type=submit></div>
-          <div><textarea name=com placeholder=comment></textarea></div>
+        <input type=hidden name=MAX_FILE_SIZE value=3145728>
+          <div><input class=inputtext type=text name=name placeholder=Name></div>
+          <div><input class=inputtext type=text name=email placeholder=E-mail> <label> [<input type=checkbox name=spoiler>Spoiler Image?]</label></div>
+          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
+          <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
           <div id=qr_captcha></div>
-          <div><input name=upfile type=file></div>
-          <div><input name=pwd type=password maxlength=8 placeholder=password></div>
+          <div><input type=file name=upfile></div>
+          <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
       </form>
       "
     dialog = ui.dialog 'qr', top: '0px', left: '0px', html
-    el = $ 'input[title=autohide]', dialog
+    el = $ '#autohide', dialog
     $.bind el, 'click', qr.cb.autohide
 
     clone = $('#recaptcha_widget_div').cloneNode(true)
     $.append $('#qr_captcha', dialog), clone
-    $('input[name=recaptcha_response_field]', clone).placeholder = 'verification'
+    $('input[name=recaptcha_response_field]', clone).placeholder = 'Verification'
 
     $.append d.body, dialog
     return
