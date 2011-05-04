@@ -1141,17 +1141,25 @@
       }
     },
     dialog: function(link) {
-      var clone, dialog, el, html, resto, script, xpath, _i, _len, _ref;
-      html = "      <div class=move>Quick Reply <input type=checkbox id=autohide> <a name=close title=close>X</a></div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data>        <input type=hidden name=MAX_FILE_SIZE value=3145728>          <div><input class=inputtext type=text name=name placeholder=Name></div>          <div><input class=inputtext type=text name=email placeholder=E-mail> <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label></div>          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>          <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>          <div id=qr_captcha></div>          <div><input type=file name=upfile></div>          <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      ";
+      var clone, dialog, el, html, resto, script, spoiler, xpath, _i, _len, _ref;
+      html = "      <div class=move>Quick Reply <input type=checkbox id=autohide> <a name=close title=close>X</a></div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data>        <input type=hidden name=MAX_FILE_SIZE>        <div><input class=inputtext type=text name=name placeholder=Name></div>        <div><input class=inputtext type=text name=email placeholder=E-mail></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div id=qr_captcha></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      ";
       dialog = ui.dialog('qr', {
         top: '0px',
         left: '0px'
       }, html);
       el = $('#autohide', dialog);
       $.bind(el, 'click', qr.cb.autohide);
+      $('input[name="MAX_FILE_SIZE"]', dialog).value = $('.postarea input[name="MAX_FILE_SIZE"]').value;
+      if ($('.postarea label')) {
+        spoiler = $.el('label', {
+          innerHTML: " [<input type=checkbox name=spoiler>Spoiler Image?]"
+        });
+        $.append($('div:nth-of-type(2)', dialog), spoiler);
+      }
       clone = $('#recaptcha_widget_div').cloneNode(true);
       $.append($('#qr_captcha', dialog), clone);
       $('input[name=recaptcha_response_field]', clone).placeholder = 'Verification';
+      $('input[name=recaptcha_response_field]', clone).className = 'inputtext';
       $.append(d.body, dialog);
       return;
       clone = $('form[name=post]').cloneNode(true);
@@ -2299,31 +2307,35 @@
       #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */\
         display: none;\
       }\
-      #qr form {\
-        margin: 0px;\
+      #qr form, #qr #com_submit, #qr input[type="file"] {\
+        margin: 0;\
       }\
       #qr textarea {\
-        width: 300px;\
+        width: 302px;\
         height: 80px;\
       }\
       #qr *:not(input):not(textarea) {\
-        padding: 0px !important;\
+        padding: 0 !important;\
       }\
       #qr.auto:not(:hover) form {\
         display: none;\
       }\
       #qr span.error {\
         position: absolute;\
-        bottom: 0;\
+        top: 0;\
         left: 0;\
       }\
       /* qr reCAPTCHA */\
       #qr_captcha input {\
-        margin-top: 3px;\
+        border: 1px solid #AAA !important;\
+        margin-top: 2px;\
         padding: 2px 4px 3px;\
       }\
       #qr tr {\
         height: auto;\
+      }\
+      #qr .recaptchatable #recaptcha_image {\
+        border: 1px solid #AAA !important;\
       }\
       #qr #recaptcha_reload, #qr #recaptcha_switch_audio, #qr #recaptcha_whatsthis {\
         height: 0;\
