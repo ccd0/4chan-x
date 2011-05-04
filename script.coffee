@@ -1230,6 +1230,8 @@ watcher =
 
   watch: (thread) ->
     favicon = $ 'img.favicon', thread
+
+    #this happens if we try to auto-watch an already watched thread.
     return if favicon.src is Favicon.default
 
     favicon.src = Favicon.default
