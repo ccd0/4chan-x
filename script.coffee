@@ -1183,7 +1183,7 @@ watcher =
       $.before input, favicon
 
   refresh: (watched) ->
-    while div = $ '#watcher > div:not(.move)'
+    for div in $$ '#watcher > div:not(.move)'
       $.remove div
     for board of watched
       for id, props of watched[board]

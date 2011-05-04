@@ -1491,18 +1491,20 @@
       return _results;
     },
     refresh: function(watched) {
-      var board, div, id, props, _results;
-      while (div = $('#watcher > div:not(.move)')) {
+      var board, div, id, props, _i, _len, _ref, _results;
+      _ref = $$('#watcher > div:not(.move)');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        div = _ref[_i];
         $.remove(div);
       }
       _results = [];
       for (board in watched) {
         _results.push((function() {
-          var _ref, _results2;
-          _ref = watched[board];
+          var _ref2, _results2;
+          _ref2 = watched[board];
           _results2 = [];
-          for (id in _ref) {
-            props = _ref[id];
+          for (id in _ref2) {
+            props = _ref2[id];
             _results2.push(watcher.addLink(props, $('#watcher')));
           }
           return _results2;
