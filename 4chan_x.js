@@ -2,11 +2,12 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        2.2.1
+// @version        2.2.2
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
+// @include        file://*
 // @updateURL      http://userscripts.org/scripts/source/51412.meta.js
 // ==/UserScript==
 
@@ -387,10 +388,12 @@
   if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
     $.extend($, {
       deleteValue: function(name) {
+        name = NAMESPACE + name;
         return GM_deleteValue(name);
       },
       getValue: function(name, defaultValue) {
         var value;
+        name = NAMESPACE + name;
         if (value = GM_getValue(name)) {
           return JSON.parse(value);
         } else {
@@ -401,6 +404,7 @@
         return GM_openInTab(url);
       },
       setValue: function(name, value) {
+        name = NAMESPACE + name;
         return GM_setValue(name, JSON.stringify(value));
       }
     });
@@ -1138,13 +1142,18 @@
     },
     dialog: function(link) {
       var clone, dialog, el, html, resto, script, xpath, _i, _len, _ref;
-      html = "<div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>";
+      html = "      <div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>      <form>          <div><input name=name placeholder=name></div>          <div><input name=email placeholder=email> <label><input type=checkbox>Spoiler Image?</label></div>          <div><input name=sub placeholder=subject> <input value=submit type=submit></div>          <div><textarea name=com placeholder=comment></textarea></div>          <div id=qr_captcha></div>          <div><input name=upfile type=file></div>          <div><input name=pwd type=password maxlength=8 placeholder=password></div>      </form>      ";
       dialog = ui.dialog('qr', {
         top: '0px',
         left: '0px'
       }, html);
       el = $('input[title=autohide]', dialog);
       $.bind(el, 'click', qr.cb.autohide);
+      clone = $('#recaptcha_widget_div').cloneNode(true);
+      $.append($('#qr_captcha', dialog), clone);
+      $('input[name=recaptcha_response_field]', clone).placeholder = 'verification';
+      $.append(d.body, dialog);
+      return;
       clone = $('form[name=post]').cloneNode(true);
       _ref = $$('script', clone);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2287,10 +2296,18 @@
       #qr > div.move {\
         text-align: right;\
       }\
-      #qr > form > div, /* ad */\
-      #qr #recaptcha_table td:nth-of-type(3), /* captcha logos */\
-      #qr td.rules {\
+      #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */\
         display: none;\
+      }\
+      #qr textarea {\
+        width: 300px;\
+        height: 100px;\
+      }\
+      #qr form {\
+        margin: 0px;\
+      }\
+      #qr * {\
+        padding: 0px !important;\
       }\
       #qr.auto:not(:hover) form {\
         display: none;\
