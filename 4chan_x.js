@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        2.2.0
+// @version        2.2.2
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -73,6 +73,7 @@
         'Anonymize': [false, 'Make everybody anonymous'],
         'Auto Watch': [true, 'Automatically watch threads that you start'],
         'Comment Expansion': [true, 'Expand too long comments'],
+        'Cooldown': [false, 'Prevent \'flood detected\' errors (buggy)'],
         'Image Auto-Gif': [false, 'Animate gif thumbnails'],
         'Image Expansion': [true, 'Expand images'],
         'Image Hover': [false, 'Show full image on mouseover'],
@@ -387,10 +388,12 @@
   if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
     $.extend($, {
       deleteValue: function(name) {
+        name = NAMESPACE + name;
         return GM_deleteValue(name);
       },
       getValue: function(name, defaultValue) {
         var value;
+        name = NAMESPACE + name;
         if (value = GM_getValue(name)) {
           return JSON.parse(value);
         } else {
@@ -401,6 +404,7 @@
         return GM_openInTab(url);
       },
       setValue: function(name, value) {
+        name = NAMESPACE + name;
         return GM_setValue(name, JSON.stringify(value));
       }
     });
@@ -1001,7 +1005,9 @@
               $.remove(dialog);
             }
           }
-          qr.cooldown(true);
+          if ($.config('Cooldown')) {
+            qr.cooldown(true);
+          }
         }
         Recaptcha.reload();
         return $('iframe[name=iframe]').src = 'about:blank';
@@ -1025,17 +1031,19 @@
             $.remove(span);
           }
         }
-        if (qr.cooldown()) {
-          e.preventDefault();
-          alert('Stop posting so often!');
-          if (isQR) {
-            span = $.el('span', {
-              className: 'error',
-              textContent: 'Stop posting so often!'
-            });
-            $.append(this.parentNode, span);
+        if ($.config('Cooldown')) {
+          if (qr.cooldown()) {
+            e.preventDefault();
+            alert('Stop posting so often!');
+            if (isQR) {
+              span = $.el('span', {
+                className: 'error',
+                textContent: 'Stop posting so often!'
+              });
+              $.append(this.parentNode, span);
+            }
+            return;
           }
-          return;
         }
         recaptcha = $('input[name=recaptcha_response_field]', this);
         if (recaptcha.value) {
@@ -1201,7 +1209,9 @@
     init: function() {
       var node;
       node = $('form[name=delform] > *:not([id])');
-      return threading.thread(node);
+      $.bind(d, 'DOMNodeInserted', threading.stopPropagation);
+      threading.thread(node);
+      return $.unbind(d, 'DOMNodeInserted', threading.stopPropagation);
     },
     thread: function(node) {
       var div, op;
@@ -1228,6 +1238,9 @@
       if (!(node.align || node.nodeName === 'CENTER')) {
         return threading.thread(node);
       }
+    },
+    stopPropagation: function(e) {
+      return e.stopPropagation();
     }
   };
   threadHiding = {
@@ -2121,7 +2134,9 @@
       $.addStyle(main.css);
       Recaptcha.init();
       $.bind($('form[name=post]'), 'submit', qr.cb.submit);
-      qr.cooldown();
+      if ($.config('Cooldown')) {
+        qr.cooldown();
+      }
       if ($.config('Image Expansion')) {
         imgExpand.init();
       }
