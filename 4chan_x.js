@@ -387,10 +387,12 @@
   if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
     $.extend($, {
       deleteValue: function(name) {
+        name = NAMESPACE + name;
         return GM_deleteValue(name);
       },
       getValue: function(name, defaultValue) {
         var value;
+        name = NAMESPACE + name;
         if (value = GM_getValue(name)) {
           return JSON.parse(value);
         } else {
@@ -401,6 +403,7 @@
         return GM_openInTab(url);
       },
       setValue: function(name, value) {
+        name = NAMESPACE + name;
         return GM_setValue(name, JSON.stringify(value));
       }
     });

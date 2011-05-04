@@ -264,8 +264,10 @@ $.extend $,
 if GM_deleteValue?
   $.extend $,
     deleteValue: (name) ->
+      name = NAMESPACE + name
       GM_deleteValue name
     getValue: (name, defaultValue) ->
+      name = NAMESPACE + name
       if value = GM_getValue name
         JSON.parse value
       else
@@ -273,6 +275,7 @@ if GM_deleteValue?
     openInTab: (url) ->
       GM_openInTab url
     setValue: (name, value) ->
+      name = NAMESPACE + name
       GM_setValue name, JSON.stringify value
 else
   $.extend $,
