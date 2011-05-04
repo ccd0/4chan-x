@@ -1165,7 +1165,7 @@ watcher =
 
     #populate watcher
     watched = $.getValue 'watched', {}
-    watcher.list watched
+    watcher.refresh watched
 
     #add watch buttons
     watchedBoard = watched[g.BOARD] or {}
@@ -1182,11 +1182,9 @@ watcher =
       $.bind favicon, 'click', watcher.cb.toggle
       $.before input, favicon
 
-  list: (watched) ->
-    div = $ '#watcher > div:not(.move)'
-    while div
+  refresh: (watched) ->
+    while div = $ '#watcher > div:not(.move)'
       $.remove div
-      div = $ '#watcher > div:not(.move)'
     for board of watched
       for id, props of watched[board]
         watcher.addLink props, $ '#watcher'
@@ -1226,7 +1224,7 @@ watcher =
     delete watched[board][id]
     $.setValue 'watched', watched
 
-    watcher.list watched
+    watcher.refresh watched
 
   watch: (thread) ->
     favicon = $ 'img.favicon', thread
@@ -1244,7 +1242,7 @@ watcher =
     watched[g.BOARD][id] = props
     $.setValue 'watched', watched
 
-    watcher.list watched
+    watcher.refresh watched
 
 anonymize =
   init: ->

@@ -1469,7 +1469,7 @@
       }, html);
       $.append(d.body, dialog);
       watched = $.getValue('watched', {});
-      watcher.list(watched);
+      watcher.refresh(watched);
       watchedBoard = watched[g.BOARD] || {};
       inputs = $$('form > input[value=delete], div.thread > input[value=delete]');
       _results = [];
@@ -1490,12 +1490,10 @@
       }
       return _results;
     },
-    list: function(watched) {
+    refresh: function(watched) {
       var board, div, id, props, _results;
-      div = $('#watcher > div:not(.move)');
-      while (div) {
+      while (div = $('#watcher > div:not(.move)')) {
         $.remove(div);
-        div = $('#watcher > div:not(.move)');
       }
       _results = [];
       for (board in watched) {
@@ -1552,7 +1550,7 @@
       watched = $.getValue('watched', {});
       delete watched[board][id];
       $.setValue('watched', watched);
-      return watcher.list(watched);
+      return watcher.refresh(watched);
     },
     watch: function(thread) {
       var favicon, id, props, tc, watched, _name;
@@ -1571,7 +1569,7 @@
       watched[_name = g.BOARD] || (watched[_name] = {});
       watched[g.BOARD][id] = props;
       $.setValue('watched', watched);
-      return watcher.list(watched);
+      return watcher.refresh(watched);
     }
   };
   anonymize = {
