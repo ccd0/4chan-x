@@ -1813,14 +1813,14 @@ main =
       #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */
         display: none;
       }
-      #qr textarea {
-        width: 300px;
-        height: 100px;
-      }
       #qr form {
         margin: 0px;
       }
-      #qr * {
+      #qr textarea {
+        width: 300px;
+        height: 80px;
+      }
+      #qr *:not(input):not(textarea) {
         padding: 0px !important;
       }
       #qr.auto:not(:hover) form {
@@ -1830,6 +1830,30 @@ main =
         position: absolute;
         bottom: 0;
         left: 0;
+      }
+      /* qr reCAPTCHA */
+      #qr_captcha input {
+        margin-top: 3px;
+        padding: 2px 4px 3px;
+      }
+      #qr tr {
+        height: auto;
+      }
+      #qr #recaptcha_reload, #qr #recaptcha_switch_audio, #qr #recaptcha_whatsthis {
+        height: 0;
+        width: 0;
+        padding: 9px 6px !important;
+        margin-left: -16px;
+        position: relative;
+      }
+      #qr_captcha #recaptcha_reload {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAcUlEQVQY02P4z4AKGYKhNJQKYzgIZjxn+I8kwdCGrAkuwRAOZrUwhKBL7GP4ziCPYg8jROI/wzQ0B1yBSXiiCKeBjAMbhab+P0gExFCHu3o3QxzIwSC/MCC5+hPDezDdjOzB/ww/wYw9DCGoPt+CHjQAYxCCmpNUoxoAAAAASUVORK5CYII=) no-repeat center;
+}
+      #qr_captcha #recaptcha_switch_audio {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAVUlEQVQYV42NMQ6AMAwDPbTQjQEE//8OPCqkhgZXMJBTJMc3BCjBJrlA6uNL1Np6MTordq+N+cLAotHKlxhk/4lMjMu43M9z4CKRmSoJEarqxDOTHidPWTEdrdlTpwAAAABJRU5ErkJggg==) no-repeat center;
+      }
+      #qr_captcha #recaptcha_whatsthis {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAk0lEQVQYV3WMsQ3CMBBFf0ECmYDJqIkFk0TpkcgEUCeegWzADoi0yQbm3cUFBeifrX/vWZZ2f+K4UlDURCKtcua4VfpK64oJDg/a66zFe1hFpN7AHWvnIprY8nPSk9zpVxcTLYukmXZynEWp3peXLpxV9CrF1L6OtDGL2kTB1QBmPTj2pIEUJkwdNehNBpphxOZ3PgIeQ0jaC7S6AAAAAElFTkSuQmCC) no-repeat center;
       }
 
       #updater {
