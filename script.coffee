@@ -1821,6 +1821,9 @@ main =
       #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */
         display: none;
       }
+      #qr form {
+        width: 302px;
+      }
       #qr form, #qr #com_submit, #qr input[type="file"] {
         margin: 0;
       }
@@ -1854,7 +1857,7 @@ main =
       #qr #recaptcha_reload, #qr #recaptcha_switch_audio, #qr #recaptcha_whatsthis {
         height: 0;
         width: 0;
-        padding: 9px 6px !important;
+        padding: 10px 6px !important;
         margin-left: -16px;
         position: relative;
       }
