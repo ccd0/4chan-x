@@ -1178,7 +1178,10 @@ watcher =
     #populate watcher, display watch buttons
     watcher.refresh $.getValue 'watched', {}
 
-    setInterval (-> watcher.refresh($.getValue 'watched', {}) ), 1000
+    setInterval (->
+      if Date.now() > $.getValue 'watcher.lastUpdated', 0
+        watcher.refresh($.getValue 'watched', {})
+    ), 1000
 
   refresh: (watched) ->
     for div in $$ '#watcher > div:not(.move)'
@@ -1193,6 +1196,7 @@ watcher =
         favicon.src = Favicon.default
       else
         favicon.src = Favicon.empty
+    $.setValue 'watcher.lastUpdated', Date.now()
 
   addLink: (props, dialog) ->
     div = $.el 'div'

@@ -1482,11 +1482,13 @@
       }
       watcher.refresh($.getValue('watched', {}));
       return setInterval((function() {
-        return watcher.refresh($.getValue('watched', {}));
+        if (Date.now() > $.getValue('watcher.lastUpdated', 0)) {
+          return watcher.refresh($.getValue('watched', {}));
+        }
       }), 1000);
     },
     refresh: function(watched) {
-      var board, div, favicon, id, props, watchedBoard, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
+      var board, div, favicon, id, props, watchedBoard, _i, _j, _len, _len2, _ref, _ref2, _ref3;
       _ref = $$('#watcher > div:not(.move)');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         div = _ref[_i];
@@ -1501,13 +1503,16 @@
       }
       watchedBoard = watched[g.BOARD] || {};
       _ref3 = $$('img.favicon');
-      _results = [];
       for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
         favicon = _ref3[_j];
         id = favicon.nextSibling.name;
-        _results.push(id in watchedBoard ? favicon.src = Favicon["default"] : favicon.src = Favicon.empty);
+        if (id in watchedBoard) {
+          favicon.src = Favicon["default"];
+        } else {
+          favicon.src = Favicon.empty;
+        }
       }
-      return _results;
+      return $.setValue('watcher.lastUpdated', Date.now());
     },
     addLink: function(props, dialog) {
       var div, link, x;
