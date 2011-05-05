@@ -1464,7 +1464,7 @@
   };
   watcher = {
     init: function() {
-      var dialog, favicon, html, input, inputs, watched, _i, _len;
+      var dialog, favicon, html, input, inputs, _i, _len;
       html = '<div class=move>Thread Watcher</div>';
       dialog = ui.dialog('watcher', {
         top: '50px',
@@ -1480,8 +1480,10 @@
         $.bind(favicon, 'click', watcher.cb.toggle);
         $.before(input, favicon);
       }
-      watched = $.getValue('watched', {});
-      return watcher.refresh(watched);
+      watcher.refresh($.getValue('watched', {}));
+      return setInterval((function() {
+        return watcher.refresh($.getValue('watched', {}));
+      }), 1000);
     },
     refresh: function(watched) {
       var board, div, favicon, id, props, watchedBoard, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;

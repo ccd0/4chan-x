@@ -1176,8 +1176,9 @@ watcher =
       $.before input, favicon
 
     #populate watcher, display watch buttons
-    watched = $.getValue 'watched', {}
-    watcher.refresh watched
+    watcher.refresh $.getValue 'watched', {}
+
+    setInterval (-> watcher.refresh($.getValue 'watched', {}) ), 1000
 
   refresh: (watched) ->
     for div in $$ '#watcher > div:not(.move)'
