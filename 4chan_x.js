@@ -1464,56 +1464,56 @@
   };
   watcher = {
     init: function() {
-      var dialog, favicon, html, id, input, inputs, src, watched, watchedBoard, _i, _len, _results;
+      var dialog, favicon, html, input, inputs, _i, _len;
       html = '<div class=move>Thread Watcher</div>';
       dialog = ui.dialog('watcher', {
         top: '50px',
         left: '0px'
       }, html);
       $.append(d.body, dialog);
-      watched = $.getValue('watched', {});
-      watcher.refresh(watched);
-      watchedBoard = watched[g.BOARD] || {};
       inputs = $$('form > input[value=delete], div.thread > input[value=delete]');
-      _results = [];
       for (_i = 0, _len = inputs.length; _i < _len; _i++) {
         input = inputs[_i];
-        id = input.name;
-        if (id in watchedBoard) {
-          src = Favicon["default"];
-        } else {
-          src = Favicon.empty;
-        }
         favicon = $.el('img', {
-          src: src,
           className: 'favicon'
         });
         $.bind(favicon, 'click', watcher.cb.toggle);
-        _results.push($.before(input, favicon));
+        $.before(input, favicon);
       }
-      return _results;
+      watcher.refresh($.getValue('watched', {}));
+      return setInterval((function() {
+        if (watcher.lastUpdated < $.getValue('watcher.lastUpdated', 0)) {
+          return watcher.refresh($.getValue('watched', {}));
+        }
+      }), 1000);
     },
     refresh: function(watched) {
-      var board, div, id, props, _i, _len, _ref, _results;
+      var board, div, favicon, id, props, watchedBoard, _i, _j, _len, _len2, _ref, _ref2, _ref3;
       _ref = $$('#watcher > div:not(.move)');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         div = _ref[_i];
         $.remove(div);
       }
-      _results = [];
       for (board in watched) {
-        _results.push((function() {
-          var _ref2, _results2;
-          _ref2 = watched[board];
-          _results2 = [];
-          for (id in _ref2) {
-            props = _ref2[id];
-            _results2.push(watcher.addLink(props, $('#watcher')));
-          }
-          return _results2;
-        })());
+        _ref2 = watched[board];
+        for (id in _ref2) {
+          props = _ref2[id];
+          watcher.addLink(props, $('#watcher'));
+        }
       }
-      return _results;
+      watchedBoard = watched[g.BOARD] || {};
+      _ref3 = $$('img.favicon');
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        favicon = _ref3[_j];
+        id = favicon.nextSibling.name;
+        if (id in watchedBoard) {
+          favicon.src = Favicon["default"];
+        } else {
+          favicon.src = Favicon.empty;
+        }
+      }
+      $.setValue('watcher.lastUpdated', Date.now());
+      return watcher.lastUpdated = Date.now();
     },
     addLink: function(props, dialog) {
       var div, link, x;
@@ -1541,30 +1541,20 @@
       favicon = $('img.favicon', thread);
       id = favicon.nextSibling.name;
       if (favicon.src === Favicon.empty) {
-        return watcher.watch(thread);
+        return watcher.watch(thread, id);
       } else {
         return watcher.unwatch(g.BOARD, id);
       }
     },
     unwatch: function(board, id) {
-      var favicon, input, watched;
-      if (input = $("input[name=\"" + id + "\"]")) {
-        favicon = input.previousSibling;
-        favicon.src = Favicon.empty;
-      }
+      var watched;
       watched = $.getValue('watched', {});
       delete watched[board][id];
       $.setValue('watched', watched);
       return watcher.refresh(watched);
     },
-    watch: function(thread) {
-      var favicon, id, props, tc, watched, _name;
-      favicon = $('img.favicon', thread);
-      if (favicon.src === Favicon["default"]) {
-        return;
-      }
-      favicon.src = Favicon["default"];
-      id = favicon.nextSibling.name;
+    watch: function(thread, id) {
+      var props, tc, watched, _name;
       tc = $('span.filetitle', thread).textContent || $('blockquote', thread).textContent;
       props = {
         textContent: "/" + g.BOARD + "/ - " + tc.slice(0, 25),
