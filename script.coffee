@@ -1167,24 +1167,17 @@ watcher =
     dialog = ui.dialog 'watcher', top: '50px', left: '0px', html
     $.append d.body, dialog
 
-    #populate watcher
-    watched = $.getValue 'watched', {}
-    watcher.refresh watched
-
     #add watch buttons
-    watchedBoard = watched[g.BOARD] or {}
     inputs = $$ 'form > input[value=delete], div.thread > input[value=delete]'
     for input in inputs
-      id = input.name
-      if id of watchedBoard
-        src = Favicon.default
-      else
-        src = Favicon.empty
       favicon = $.el 'img',
-        src: src
         className: 'favicon'
       $.bind favicon, 'click', watcher.cb.toggle
       $.before input, favicon
+
+    #populate watcher, display watch buttons
+    watched = $.getValue 'watched', {}
+    watcher.refresh watched
 
   refresh: (watched) ->
     for div in $$ '#watcher > div:not(.move)'
@@ -1192,6 +1185,13 @@ watcher =
     for board of watched
       for id, props of watched[board]
         watcher.addLink props, $ '#watcher'
+    watchedBoard = watched[g.BOARD] or {}
+    for favicon in $$ 'img.favicon'
+      id = favicon.nextSibling.name
+      if id of watchedBoard
+        favicon.src = Favicon.default
+      else
+        favicon.src = Favicon.empty
 
   addLink: (props, dialog) ->
     div = $.el 'div'
@@ -1215,29 +1215,18 @@ watcher =
     favicon = $ 'img.favicon', thread
     id = favicon.nextSibling.name
     if favicon.src == Favicon.empty
-      watcher.watch thread
+      watcher.watch thread, id
     else # favicon.src == Favicon.default
       watcher.unwatch g.BOARD, id
 
   unwatch: (board, id) ->
-    if input = $ "input[name=\"#{id}\"]"
-      favicon = input.previousSibling
-      favicon.src = Favicon.empty
-
     watched = $.getValue 'watched', {}
     delete watched[board][id]
     $.setValue 'watched', watched
 
     watcher.refresh watched
 
-  watch: (thread) ->
-    favicon = $ 'img.favicon', thread
-
-    #this happens if we try to auto-watch an already watched thread.
-    return if favicon.src is Favicon.default
-
-    favicon.src = Favicon.default
-    id = favicon.nextSibling.name
+  watch: (thread, id) ->
     tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
     props =
       textContent: "/#{g.BOARD}/ - #{tc[...25]}"
