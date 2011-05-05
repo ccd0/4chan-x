@@ -1019,7 +1019,7 @@
         return _results;
       },
       submit: function(e) {
-        var form, isQR, recaptcha;
+        var form, isQR;
         form = e.target;
         isQR = form.parentNode.id === 'qr';
         if (isQR) {
@@ -1035,19 +1035,9 @@
             return;
           }
         }
-        recaptcha = $('input[name=recaptcha_response_field]', this);
-        if (recaptcha.value) {
-          qr.sage = $('input[name=email]', form).value === 'sage';
-          if (isQR) {
-            return qr.autohide.set();
-          }
-        } else {
-          e.preventDefault();
-          alert('You forgot to type in the verification.');
-          recaptcha.focus();
-          if (isQR) {
-            return $('#error').textContent = 'You forgot to type in the verification.';
-          }
+        qr.sage = $('input[name=email]', form).value === 'sage';
+        if (isQR) {
+          return qr.autohide.set();
         }
       },
       quote: function(e) {
@@ -1147,7 +1137,8 @@
       $.append($('#qr_captcha', dialog), clone);
       $.extend($('input[name=recaptcha_response_field]', clone), {
         placeholder: 'Verification',
-        className: 'inputtext'
+        className: 'inputtext',
+        required: true
       });
       form = dialog.lastElementChild;
       $.bind(form, 'submit', qr.cb.submit);

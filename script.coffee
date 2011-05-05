@@ -784,18 +784,9 @@ qr =
 
           return
 
-      recaptcha = $('input[name=recaptcha_response_field]', this)
-      if recaptcha.value
-        qr.sage = $('input[name=email]', form).value == 'sage'
-        if isQR
-          qr.autohide.set()
-      else
-        e.preventDefault()
-        alert 'You forgot to type in the verification.'
-        recaptcha.focus()
-
-        if isQR
-          $('#error').textContent = 'You forgot to type in the verification.'
+      qr.sage = $('input[name=email]', form).value == 'sage'
+      if isQR
+        qr.autohide.set()
 
     quote: (e) ->
       e.preventDefault()
@@ -897,6 +888,7 @@ qr =
     $.extend $('input[name=recaptcha_response_field]', clone),
       placeholder: 'Verification'
       className: 'inputtext'
+      required: true
 
     form = dialog.lastElementChild
     $.bind form, 'submit', qr.cb.submit
