@@ -747,10 +747,7 @@ qr =
       {data} = e
       dialog = $ '#qr'
       if data # error message
-        error = $.el 'span',
-          className: 'error'
-          textContent: data
-        $.append dialog, error
+        $('#error').textContent = data
         qr.autohide.unset()
       else # success
         if dialog
@@ -774,8 +771,7 @@ qr =
       isQR = form.parentNode.id == 'qr'
 
       if isQR
-        if span = @nextSibling
-          $.remove span
+        $('#error').textContent = ''
 
       if $.config 'Cooldown'
         # check if we've posted on this board in another tab
@@ -784,10 +780,7 @@ qr =
           alert 'Stop posting so often!'
 
           if isQR
-            span = $.el 'span',
-              className: 'error'
-              textContent: 'Stop posting so often!'
-            $.append @parentNode, span
+            $('#error').textContent = 'Stop posting so often!'
 
           return
 
@@ -802,10 +795,7 @@ qr =
         recaptcha.focus()
 
         if isQR
-          span = $.el 'span',
-            className: 'error'
-            textContent: 'You forgot to type in the verification.'
-          $.append @parentNode, span
+          $('#error').textContent = 'You forgot to type in the verification.'
 
     quote: (e) ->
       e.preventDefault()
@@ -879,7 +869,7 @@ qr =
     MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
     THREAD_ID = g.THREAD_ID or link.pathname.split('/').pop()
     html = "
-      <div class=move>Quick Reply <input type=checkbox id=autohide title=autohide> <a name=close title=close>X</a></div>
+      <div class=move><span id=error class=error></span><input type=checkbox id=autohide title=autohide> <a name=close title=close>X</a></div>
       <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe>
         <input type=hidden name=MAX_FILE_SIZE value=#{MAX_FILE_SIZE}>
         <input type=hidden name=resto value=#{THREAD_ID}>
@@ -908,7 +898,7 @@ qr =
       placeholder: 'Verification'
       className: 'inputtext'
 
-    form = dialog.lastChild
+    form = dialog.lastElementChild
     $.bind form, 'submit', qr.cb.submit
     $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', Recaptcha.listener
 
@@ -1821,11 +1811,6 @@ main =
       }
       #qr.auto:not(:hover) form {
         display: none;
-      }
-      #qr span.error {
-        position: absolute;
-        top: 0;
-        left: 0;
       }
       /* qr reCAPTCHA */
       #qr_captcha input {

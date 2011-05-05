@@ -987,15 +987,11 @@
         }
       },
       message: function(e) {
-        var data, dialog, error;
+        var data, dialog;
         data = e.data;
         dialog = $('#qr');
         if (data) {
-          error = $.el('span', {
-            className: 'error',
-            textContent: data
-          });
-          $.append(dialog, error);
+          $('#error').textContent = data;
           qr.autohide.unset();
         } else {
           if (dialog) {
@@ -1023,24 +1019,18 @@
         return _results;
       },
       submit: function(e) {
-        var form, isQR, recaptcha, span;
+        var form, isQR, recaptcha;
         form = e.target;
         isQR = form.parentNode.id === 'qr';
         if (isQR) {
-          if (span = this.nextSibling) {
-            $.remove(span);
-          }
+          $('#error').textContent = '';
         }
         if ($.config('Cooldown')) {
           if (qr.cooldown()) {
             e.preventDefault();
             alert('Stop posting so often!');
             if (isQR) {
-              span = $.el('span', {
-                className: 'error',
-                textContent: 'Stop posting so often!'
-              });
-              $.append(this.parentNode, span);
+              $('#error').textContent = 'Stop posting so often!';
             }
             return;
           }
@@ -1056,11 +1046,7 @@
           alert('You forgot to type in the verification.');
           recaptcha.focus();
           if (isQR) {
-            span = $.el('span', {
-              className: 'error',
-              textContent: 'You forgot to type in the verification.'
-            });
-            return $.append(this.parentNode, span);
+            return $('#error').textContent = 'You forgot to type in the verification.';
           }
         }
       },
@@ -1144,7 +1130,7 @@
       var MAX_FILE_SIZE, THREAD_ID, clone, dialog, el, form, html, spoiler;
       MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value;
       THREAD_ID = g.THREAD_ID || link.pathname.split('/').pop();
-      html = "      <div class=move>Quick Reply <input type=checkbox id=autohide title=autohide> <a name=close title=close>X</a></div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <div><input class=inputtext type=text name=name placeholder=Name></div>        <div><input class=inputtext type=text name=email placeholder=E-mail></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div id=qr_captcha></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      ";
+      html = "      <div class=move><span id=error class=error></span><input type=checkbox id=autohide title=autohide> <a name=close title=close>X</a></div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <div><input class=inputtext type=text name=name placeholder=Name></div>        <div><input class=inputtext type=text name=email placeholder=E-mail></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div id=qr_captcha></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      ";
       dialog = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -1163,7 +1149,7 @@
         placeholder: 'Verification',
         className: 'inputtext'
       });
-      form = dialog.lastChild;
+      form = dialog.lastElementChild;
       $.bind(form, 'submit', qr.cb.submit);
       $.bind($('input[name=recaptcha_response_field]', clone), 'keydown', Recaptcha.listener);
       $.append(d.body, dialog);
@@ -2306,11 +2292,6 @@
       }\
       #qr.auto:not(:hover) form {\
         display: none;\
-      }\
-      #qr span.error {\
-        position: absolute;\
-        top: 0;\
-        left: 0;\
       }\
       /* qr reCAPTCHA */\
       #qr_captcha input {\
