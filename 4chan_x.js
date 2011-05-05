@@ -2188,7 +2188,7 @@
           unread.init();
         }
         if ($.config('Auto Watch') && location.hash === '#watch') {
-          watcher.watch();
+          watcher.watch($('body > form'), $('form > input[value=delete]').name);
         }
       } else {
         threading.init();

@@ -1699,7 +1699,7 @@ main =
         unread.init()
 
       if $.config('Auto Watch') and location.hash is '#watch'
-        watcher.watch()
+        watcher.watch($('body > form'), $('form > input[value=delete]').name)
 
     else #not reply
       threading.init()
