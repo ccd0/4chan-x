@@ -876,24 +876,33 @@ qr =
 
   dialog: (link) ->
     html = "
-      <div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>
-      <form>
-          <div><input name=name placeholder=name></div>
-          <div><input name=email placeholder=email> <label><input type=checkbox>Spoiler Image?</label></div>
-          <div><input name=sub placeholder=subject> <input value=submit type=submit></div>
-          <div><textarea name=com placeholder=comment></textarea></div>
-          <div id=qr_captcha></div>
-          <div><input name=upfile type=file></div>
-          <div><input name=pwd type=password maxlength=8 placeholder=password></div>
+      <div class=move>Quick Reply <input type=checkbox id=autohide> <a name=close title=close>X</a></div>
+      <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data>
+        <input type=hidden name=MAX_FILE_SIZE>
+        <div><input class=inputtext type=text name=name placeholder=Name></div>
+        <div><input class=inputtext type=text name=email placeholder=E-mail></div>
+        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
+        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
+        <div id=qr_captcha></div>
+        <div><input type=file name=upfile></div>
+        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
       </form>
       "
     dialog = ui.dialog 'qr', top: '0px', left: '0px', html
-    el = $ 'input[title=autohide]', dialog
+    el = $ '#autohide', dialog
     $.bind el, 'click', qr.cb.autohide
+
+    $('input[name="MAX_FILE_SIZE"]', dialog).value = $('.postarea input[name="MAX_FILE_SIZE"]').value
+
+    if $ '.postarea label'
+      spoiler = $.el 'label',
+        innerHTML: " [<input type=checkbox name=spoiler>Spoiler Image?]"
+      $.append $('div:nth-of-type(2)', dialog), spoiler
 
     clone = $('#recaptcha_widget_div').cloneNode(true)
     $.append $('#qr_captcha', dialog), clone
-    $('input[name=recaptcha_response_field]', clone).placeholder = 'verification'
+    $('input[name=recaptcha_response_field]', clone).placeholder = 'Verification'
+    $('input[name=recaptcha_response_field]', clone).className = 'inputtext'
 
     $.append d.body, dialog
     return
@@ -1187,9 +1196,7 @@ watcher =
 
     #populate watcher
     watched = $.getValue 'watched', {}
-    for board of watched
-      for id, props of watched[board]
-        watcher.addLink props, dialog
+    watcher.refresh watched
 
     #add watch buttons
     watchedBoard = watched[g.BOARD] or {}
@@ -1206,8 +1213,14 @@ watcher =
       $.bind favicon, 'click', watcher.cb.toggle
       $.before input, favicon
 
+  refresh: (watched) ->
+    for div in $$ '#watcher > div:not(.move)'
+      $.remove div
+    for board of watched
+      for id, props of watched[board]
+        watcher.addLink props, $ '#watcher'
+
   addLink: (props, dialog) ->
-    dialog or= $ '#watcher'
     div = $.el 'div'
     x = $.el 'a',
       textContent: 'X'
@@ -1234,10 +1247,6 @@ watcher =
       watcher.unwatch g.BOARD, id
 
   unwatch: (board, id) ->
-    href = "/#{board}/res/#{id}"
-    div = $("#watcher a[href=\"#{href}\"]").parentNode
-    $.remove div
-
     if input = $ "input[name=\"#{id}\"]"
       favicon = input.previousSibling
       favicon.src = Favicon.empty
@@ -1245,6 +1254,8 @@ watcher =
     watched = $.getValue 'watched', {}
     delete watched[board][id]
     $.setValue 'watched', watched
+
+    watcher.refresh watched
 
   watch: (thread) ->
     favicon = $ 'img.favicon', thread
@@ -1264,7 +1275,7 @@ watcher =
     watched[g.BOARD][id] = props
     $.setValue 'watched', watched
 
-    watcher.addLink props
+    watcher.refresh watched
 
 anonymize =
   init: ->
@@ -1810,23 +1821,54 @@ main =
       #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */
         display: none;
       }
-      #qr textarea {
-        width: 300px;
-        height: 100px;
-      }
       #qr form {
-        margin: 0px;
+        width: 302px;
       }
-      #qr * {
-        padding: 0px !important;
+      #qr form, #qr #com_submit, #qr input[type="file"] {
+        margin: 0;
+      }
+      #qr textarea {
+        width: 302px;
+        height: 80px;
+      }
+      #qr *:not(input):not(textarea) {
+        padding: 0 !important;
       }
       #qr.auto:not(:hover) form {
         display: none;
       }
       #qr span.error {
         position: absolute;
-        bottom: 0;
+        top: 0;
         left: 0;
+      }
+      /* qr reCAPTCHA */
+      #qr_captcha input {
+        border: 1px solid #AAA !important;
+        margin-top: 2px;
+        padding: 2px 4px 3px;
+      }
+      #qr tr {
+        height: auto;
+      }
+      #qr .recaptchatable #recaptcha_image {
+        border: 1px solid #AAA !important;
+      }
+      #qr #recaptcha_reload, #qr #recaptcha_switch_audio, #qr #recaptcha_whatsthis {
+        height: 0;
+        width: 0;
+        padding: 10px 6px !important;
+        margin-left: -16px;
+        position: relative;
+      }
+      #recaptcha_reload {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAcUlEQVQY02P4z4AKGYKhNJQKYzgIZjxn+I8kwdCGrAkuwRAOZrUwhKBL7GP4ziCPYg8jROI/wzQ0B1yBSXiiCKeBjAMbhab+P0gExFCHu3o3QxzIwSC/MCC5+hPDezDdjOzB/ww/wYw9DCGoPt+CHjQAYxCCmpNUoxoAAAAASUVORK5CYII=) no-repeat center;
+}
+      #recaptcha_switch_audio {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAVUlEQVQYV42NMQ6AMAwDPbTQjQEE//8OPCqkhgZXMJBTJMc3BCjBJrlA6uNL1Np6MTordq+N+cLAotHKlxhk/4lMjMu43M9z4CKRmSoJEarqxDOTHidPWTEdrdlTpwAAAABJRU5ErkJggg==) no-repeat center;
+      }
+      #recaptcha_whatsthis {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAk0lEQVQYV3WMsQ3CMBBFf0ECmYDJqIkFk0TpkcgEUCeegWzADoi0yQbm3cUFBeifrX/vWZZ2f+K4UlDURCKtcua4VfpK64oJDg/a66zFe1hFpN7AHWvnIprY8nPSk9zpVxcTLYukmXZynEWp3peXLpxV9CrF1L6OtDGL2kTB1QBmPTj2pIEUJkwdNehNBpphxOZ3PgIeQ0jaC7S6AAAAAElFTkSuQmCC) no-repeat center;
       }
 
       #updater {
