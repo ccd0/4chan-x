@@ -1782,7 +1782,6 @@
       case '3':
       case 'adv':
       case 'an':
-      case 'c':
       case 'ck':
       case 'co':
       case 'fa':
