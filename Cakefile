@@ -18,6 +18,6 @@ build = ->
 
 task 'dev', ->
   build()
-  fs.watchFile INFILE, (curr, prev) ->
+  fs.watchFile INFILE, interval: 250, (curr, prev) ->
     if curr.mtime > prev.mtime
       build()
