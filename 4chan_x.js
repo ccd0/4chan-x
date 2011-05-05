@@ -1464,7 +1464,7 @@
   };
   watcher = {
     init: function() {
-      var board, dialog, favicon, html, id, input, inputs, props, src, watched, watchedBoard, _i, _len, _ref, _results;
+      var dialog, favicon, html, id, input, inputs, src, watched, watchedBoard, _i, _len, _results;
       html = '<div class=move>Thread Watcher</div>';
       dialog = ui.dialog('watcher', {
         top: '50px',
@@ -1472,13 +1472,7 @@
       }, html);
       $.append(d.body, dialog);
       watched = $.getValue('watched', {});
-      for (board in watched) {
-        _ref = watched[board];
-        for (id in _ref) {
-          props = _ref[id];
-          watcher.addLink(props, dialog);
-        }
-      }
+      watcher.refresh(watched);
       watchedBoard = watched[g.BOARD] || {};
       inputs = $$('form > input[value=delete], div.thread > input[value=delete]');
       _results = [];
@@ -1499,9 +1493,30 @@
       }
       return _results;
     },
+    refresh: function(watched) {
+      var board, div, id, props, _i, _len, _ref, _results;
+      _ref = $$('#watcher > div:not(.move)');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        div = _ref[_i];
+        $.remove(div);
+      }
+      _results = [];
+      for (board in watched) {
+        _results.push((function() {
+          var _ref2, _results2;
+          _ref2 = watched[board];
+          _results2 = [];
+          for (id in _ref2) {
+            props = _ref2[id];
+            _results2.push(watcher.addLink(props, $('#watcher')));
+          }
+          return _results2;
+        })());
+      }
+      return _results;
+    },
     addLink: function(props, dialog) {
       var div, link, x;
-      dialog || (dialog = $('#watcher'));
       div = $.el('div');
       x = $.el('a', {
         textContent: 'X'
@@ -1532,17 +1547,15 @@
       }
     },
     unwatch: function(board, id) {
-      var div, favicon, href, input, watched;
-      href = "/" + board + "/res/" + id;
-      div = $("#watcher a[href=\"" + href + "\"]").parentNode;
-      $.remove(div);
+      var favicon, input, watched;
       if (input = $("input[name=\"" + id + "\"]")) {
         favicon = input.previousSibling;
         favicon.src = Favicon.empty;
       }
       watched = $.getValue('watched', {});
       delete watched[board][id];
-      return $.setValue('watched', watched);
+      $.setValue('watched', watched);
+      return watcher.refresh(watched);
     },
     watch: function(thread) {
       var favicon, id, props, tc, watched, _name;
@@ -1561,7 +1574,7 @@
       watched[_name = g.BOARD] || (watched[_name] = {});
       watched[g.BOARD][id] = props;
       $.setValue('watched', watched);
-      return watcher.addLink(props);
+      return watcher.refresh(watched);
     }
   };
   anonymize = {
