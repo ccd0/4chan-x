@@ -1179,7 +1179,7 @@ watcher =
     watcher.refresh $.getValue 'watched', {}
 
     setInterval (->
-      if Date.now() > $.getValue 'watcher.lastUpdated', 0
+      if watcher.lastUpdated < $.getValue 'watcher.lastUpdated', 0
         watcher.refresh($.getValue 'watched', {})
     ), 1000
 
@@ -1197,6 +1197,7 @@ watcher =
       else
         favicon.src = Favicon.empty
     $.setValue 'watcher.lastUpdated', Date.now()
+    watcher.lastUpdated = Date.now()
 
   addLink: (props, dialog) ->
     div = $.el 'div'

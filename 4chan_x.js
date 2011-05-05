@@ -1482,7 +1482,7 @@
       }
       watcher.refresh($.getValue('watched', {}));
       return setInterval((function() {
-        if (Date.now() > $.getValue('watcher.lastUpdated', 0)) {
+        if (watcher.lastUpdated < $.getValue('watcher.lastUpdated', 0)) {
           return watcher.refresh($.getValue('watched', {}));
         }
       }), 1000);
@@ -1512,7 +1512,8 @@
           favicon.src = Favicon.empty;
         }
       }
-      return $.setValue('watcher.lastUpdated', Date.now());
+      $.setValue('watcher.lastUpdated', Date.now());
+      return watcher.lastUpdated = Date.now();
     },
     addLink: function(props, dialog) {
       var div, link, x;
