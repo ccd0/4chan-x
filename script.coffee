@@ -1812,6 +1812,13 @@ main =
       #qr.auto:not(:hover) form {
         display: none;
       }
+      /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
+      #qr input:-webkit-input-placeholder {
+        color: grey;
+      }
+      #qr input:-moz-placeholder {
+        color: grey;
+      }
       /* qr reCAPTCHA */
       #qr_captcha input {
         border: 1px solid #AAA !important;
@@ -1833,7 +1840,7 @@ main =
       }
       #recaptcha_reload {
         background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAcUlEQVQY02P4z4AKGYKhNJQKYzgIZjxn+I8kwdCGrAkuwRAOZrUwhKBL7GP4ziCPYg8jROI/wzQ0B1yBSXiiCKeBjAMbhab+P0gExFCHu3o3QxzIwSC/MCC5+hPDezDdjOzB/ww/wYw9DCGoPt+CHjQAYxCCmpNUoxoAAAAASUVORK5CYII=) no-repeat center;
-}
+      }
       #recaptcha_switch_audio {
         background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAVUlEQVQYV42NMQ6AMAwDPbTQjQEE//8OPCqkhgZXMJBTJMc3BCjBJrlA6uNL1Np6MTordq+N+cLAotHKlxhk/4lMjMu43M9z4CKRmSoJEarqxDOTHidPWTEdrdlTpwAAAABJRU5ErkJggg==) no-repeat center;
       }
