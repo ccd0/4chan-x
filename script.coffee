@@ -875,10 +875,14 @@ qr =
       clearInterval qr.cooldownIntervalID
 
   dialog: (link) ->
+    #maybe should be global
+    MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
+    THREAD_ID = g.THREAD_ID or link.pathname.split('/').pop()
     html = "
-      <div class=move>Quick Reply <input type=checkbox id=autohide> <a name=close title=close>X</a></div>
-      <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data>
-        <input type=hidden name=MAX_FILE_SIZE>
+      <div class=move>Quick Reply <input type=checkbox id=autohide title=autohide> <a name=close title=close>X</a></div>
+      <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe>
+        <input type=hidden name=MAX_FILE_SIZE value=#{MAX_FILE_SIZE}>
+        <input type=hidden name=resto value=#{THREAD_ID}>
         <div><input class=inputtext type=text name=name placeholder=Name></div>
         <div><input class=inputtext type=text name=email placeholder=E-mail></div>
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
@@ -892,42 +896,23 @@ qr =
     el = $ '#autohide', dialog
     $.bind el, 'click', qr.cb.autohide
 
-    $('input[name="MAX_FILE_SIZE"]', dialog).value = $('.postarea input[name="MAX_FILE_SIZE"]').value
-
     if $ '.postarea label'
       spoiler = $.el 'label',
         innerHTML: " [<input type=checkbox name=spoiler>Spoiler Image?]"
-      $.append $('div:nth-of-type(2)', dialog), spoiler
+      $.after $('input[name=email]', dialog), spoiler
 
+    # TODO try w/o cloning
     clone = $('#recaptcha_widget_div').cloneNode(true)
     $.append $('#qr_captcha', dialog), clone
-    $('input[name=recaptcha_response_field]', clone).placeholder = 'Verification'
-    $('input[name=recaptcha_response_field]', clone).className = 'inputtext'
+    $.extend $('input[name=recaptcha_response_field]', clone),
+      placeholder: 'Verification'
+      className: 'inputtext'
 
-    $.append d.body, dialog
-    return
-
-    clone = $('form[name=post]').cloneNode(true)
-    for script in $$ 'script', clone
-      $.remove script
-    clone.target = 'iframe'
-    $.bind clone, 'submit', qr.cb.submit
+    form = dialog.lastChild
+    $.bind form, 'submit', qr.cb.submit
     $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', Recaptcha.listener
 
-    if not g.REPLY
-      #figure out which thread we're replying to
-      xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
-      resto = $.el 'input',
-        type: 'hidden'
-        name: 'resto'
-        value: $.x(xpath, link).name
-
-      # place resto before table to let userstyles know we're responding to a thread
-      $.before clone.lastChild, resto
-
-    $.append dialog, clone
     $.append d.body, dialog
-    dialog.style.width = dialog.offsetWidth # lock
 
     dialog
 
