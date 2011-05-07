@@ -27,6 +27,7 @@ config =
       'Post in Title':     [true,  'Show the op\'s post in the tab title']
       'Quick Reply':       [true,  'Reply without leaving the page']
       'Quick Report':      [true,  'Add quick report buttons']
+      'Quote Preview':     [true,  'Show quote content on hover']
       'Reply Hiding':      [true,  'Hide single replies']
       'Sauce':             [true,  'Add sauce to images']
       'Show Stubs':        [true,  'Of hidden threads / replies']
@@ -1317,6 +1318,35 @@ titlePost =
     if tc = $('span.filetitle').textContent or $('blockquote').textContent
       d.title = "/#{g.BOARD}/ - #{tc}"
 
+quotePreview =
+  init: ->
+    preview = $.el 'div', id: 'qp', className: 'reply'
+    $.hide preview
+    $.append d.body, preview
+    quotes = $$ 'a.quotelink'
+    for quote in quotes
+      $.bind quote, 'mouseover', quotePreview.mouseover
+  mouseover: (e) ->
+    {target, clientX, clientY} = e
+    preview = $ '#qp'
+    id = target.textContent
+    id = id.replace ">>", ''
+    preview.innerHTML = d.getElementById(id).innerHTML
+    $.show preview
+    $.bind target, 'mousemove', quotePreview.mousemove
+    $.bind target, 'mouseout',  quotePreview.mouseout
+  mousemove: (e) ->
+    {clientX, clientY} = e
+    preview = $ '#qp'
+    preview.style.left = clientX + 45
+    preview.style.top  = clientY - 120
+  mouseout: (e) ->
+    {target} = e
+    preview = $ '#qp'
+    $.hide preview
+    $.unbind target, 'mousemove', quotePreview.mousemove
+    $.unbind target, 'mouseout',  quotePreview.mouseout
+
 quickReport =
   init: ->
     g.callbacks.push quickReport.cb.node
@@ -1434,11 +1464,8 @@ imageHover =
   init: ->
     img = $.el 'img', id: 'iHover'
     $.hide img
-    d.body.appendChild img
+    $.append d.body, img
     g.callbacks.push imageHover.cb.node
-  offset:
-    x: 45
-    y: -120
   cb:
     node: (root) ->
       thumbs = $$ 'img[md5]', root
@@ -1458,7 +1485,7 @@ imageHover =
       img = $ '#iHover'
       imgHeight = img.offsetHeight
 
-      top = clientY + imageHover.offset.y
+      top = clientY - 120
       bot = top + imgHeight
       img.style.top =
         if imageHover.winHeight < imgHeight or top < 0
@@ -1467,7 +1494,7 @@ imageHover =
           imageHover.winHeight - imgHeight + 'px'
         else
           top + 'px'
-      img.style.left = clientX + imageHover.offset.x
+      img.style.left = clientX + 45
     mouseout: (e) ->
       {target} = e
       img = $ '#iHover'
@@ -1688,6 +1715,9 @@ main =
     if $.config 'Quick Report'
       quickReport.init()
 
+    if $.config 'Quote Preview'
+      quotePreview.init()
+
     if $.config 'Thread Watcher'
       watcher.init()
 
@@ -1770,7 +1800,7 @@ main =
         display: none;
       }
 
-      #iHover {
+      #qp, #iHover {
         position: fixed;
       }
 
