@@ -1,3 +1,11 @@
+2.3.0
+- mayhem:
+  refresh watcher list on un/watch
+  auto refresh watcher list
+  update no-ip.org archive
+  fix auto-watch
+- flavor comments
+
 2.2.2
 - hopefully fix upgrading issues
 

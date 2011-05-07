@@ -15,6 +15,7 @@ config =
       '404 Redirect':      [true,  'Redirect dead threads']
       'Anonymize':         [false, 'Make everybody anonymous']
       'Auto Watch':        [true,  'Automatically watch threads that you start']
+      'Auto Watch Reply':  [false, 'Automatically watch threads that you reply to']
       'Comment Expansion': [true,  'Expand too long comments']
       'Cooldown':          [false, 'Prevent \'flood detected\' errors (buggy)']
       'Image Auto-Gif':    [false, 'Animate gif thumbnails']
@@ -41,6 +42,7 @@ config =
         'http://regex.info/exif.cgi?url='
         'http://iqdb.org/?url='
         'http://tineye.com/search?url='
+        '#http://saucenao.com/search.php?db=999&url='
       ].join '\n'
   updater:
     checkbox:
@@ -98,9 +100,10 @@ ui =
       (-> el.parentNode.removeChild(el)), true
     el
   dragstart: (e) ->
+    #prevent text selection
+    e.preventDefault()
     ui.el = el = e.target.parentNode
     d = document
-    d.body.className = 'noselect'
     d.addEventListener 'mousemove', ui.drag, true
     d.addEventListener 'mouseup',   ui.dragend, true
     #distance from pointer to el edge is constant; calculate it here.
@@ -112,6 +115,7 @@ ui =
     ui.width  = document.body.clientWidth  - el.offsetWidth
     ui.height = document.body.clientHeight - el.offsetHeight
   drag: (e) ->
+    e.preventDefault()
     {el} = ui
     left = e.clientX - ui.dx
     if left < 20 then left = '0px'
@@ -134,7 +138,6 @@ ui =
     localStorage["#{id}Left"] = el.style.left
     localStorage["#{id}Top"]  = el.style.top
     d = document
-    d.body.className = ''
     d.removeEventListener 'mousemove', ui.drag, true
     d.removeEventListener 'mouseup',   ui.dragend, true
 
@@ -770,6 +773,15 @@ qr =
       form = e.target
       isQR = form.parentNode.id == 'qr'
 
+      if $.config('Auto Watch Reply') and $.config('Thread Watcher')
+        if g.REPLY and $('img.favicon').src is Favicon.empty
+          watcher.watch null, g.THREAD_ID
+        else
+          id = $('input[name=resto]').value
+          op = d.getElementById id
+          if $('img.favicon', op).src is Favicon.empty
+            watcher.watch op, id
+
       if isQR
         $('#error').textContent = ''
 
@@ -834,7 +846,7 @@ qr =
       return true
 
   cooldownStart: (duration) ->
-    submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
+    submits = $$ '#com_submit'
     for submit in submits
       submit.value = duration
       submit.disabled = true
@@ -844,7 +856,7 @@ qr =
   cooldownCB: ->
     qr.duration = qr.duration - 1
 
-    submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
+    submits = $$ '#com_submit'
     for submit in submits
       if qr.duration == 0
         submit.disabled = false
@@ -1161,41 +1173,46 @@ watcher =
     dialog = ui.dialog 'watcher', top: '50px', left: '0px', html
     $.append d.body, dialog
 
-    #populate watcher
-    watched = $.getValue 'watched', {}
-    watcher.refresh watched
-
     #add watch buttons
-    watchedBoard = watched[g.BOARD] or {}
     inputs = $$ 'form > input[value=delete], div.thread > input[value=delete]'
     for input in inputs
-      id = input.name
-      if id of watchedBoard
-        src = Favicon.default
-      else
-        src = Favicon.empty
       favicon = $.el 'img',
-        src: src
         className: 'favicon'
       $.bind favicon, 'click', watcher.cb.toggle
       $.before input, favicon
 
+    #populate watcher, display watch buttons
+    watcher.refresh $.getValue 'watched', {}
+
+    setInterval (->
+      if watcher.lastUpdated < $.getValue 'watcher.lastUpdated', 0
+        watcher.refresh $.getValue 'watched', {}
+    ), 1000
+
   refresh: (watched) ->
-    for div in $$ '#watcher > div:not(.move)'
+    dialog = $ '#watcher'
+    for div in $$ 'div:not(.move)', dialog
       $.remove div
     for board of watched
       for id, props of watched[board]
-        watcher.addLink props, $ '#watcher'
+        div = $.el 'div'
+        x = $.el 'a',
+          textContent: 'X'
+        $.bind x, 'click', watcher.cb.x
+        link = $.el 'a', props
 
-  addLink: (props, dialog) ->
-    div = $.el 'div'
-    x = $.el 'a',
-      textContent: 'X'
-    $.bind x, 'click', watcher.cb.x
-    link = $.el 'a', props
+        $.append div, x, $.tn(' '), link
+        $.append dialog, div
 
-    $.append div, x, $.tn(' '), link
-    $.append dialog, div
+    watchedBoard = watched[g.BOARD] or {}
+    for favicon in $$ 'img.favicon'
+      id = favicon.nextSibling.name
+      if id of watchedBoard
+        favicon.src = Favicon.default
+      else
+        favicon.src = Favicon.empty
+    $.setValue 'watcher.lastUpdated', Date.now()
+    watcher.lastUpdated = Date.now()
 
   cb:
     toggle: (e) ->
@@ -1209,29 +1226,18 @@ watcher =
     favicon = $ 'img.favicon', thread
     id = favicon.nextSibling.name
     if favicon.src == Favicon.empty
-      watcher.watch thread
+      watcher.watch thread, id
     else # favicon.src == Favicon.default
       watcher.unwatch g.BOARD, id
 
   unwatch: (board, id) ->
-    if input = $ "input[name=\"#{id}\"]"
-      favicon = input.previousSibling
-      favicon.src = Favicon.empty
-
     watched = $.getValue 'watched', {}
     delete watched[board][id]
     $.setValue 'watched', watched
 
     watcher.refresh watched
 
-  watch: (thread) ->
-    favicon = $ 'img.favicon', thread
-
-    #this happens if we try to auto-watch an already watched thread.
-    return if favicon.src is Favicon.default
-
-    favicon.src = Favicon.default
-    id = favicon.nextSibling.name
+  watch: (thread, id) ->
     tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
     props =
       textContent: "/#{g.BOARD}/ - #{tc[...25]}"
@@ -1263,7 +1269,7 @@ sauce =
     g.callbacks.push sauce.cb.node
   cb:
     node: (root) ->
-      prefixes = $.config('flavors').split '\n'
+      prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
       names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
       for span in $$ 'span.filesize', root
         suffix = $('a', span).href
@@ -1312,7 +1318,7 @@ quickReport =
       arr = $$ 'span[id^=no]', root
       for el in arr
         a = $.el 'a',
-          textContent: '[ ! ]'
+          innerHTML: '[&nbsp;!&nbsp;]'
         $.bind a, 'click', quickReport.cb.report
         $.after el, a
         $.after el, $.tn(' ')
@@ -1389,7 +1395,7 @@ redirect = ->
       url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
     when 'jp', 'm', 'tg'
       url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when '3', 'adv', 'an', 'c', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
+    when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
       url = "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
     else
       url = "http://boards.4chan.org/#{g.BOARD}"
@@ -1697,8 +1703,9 @@ main =
       if $.config 'Unread Count'
         unread.init()
 
-      if $.config('Auto Watch') and location.hash is '#watch'
-        watcher.watch()
+      if $.config('Auto Watch') and $.config('Thread Watcher') and
+        location.hash is '#watch' and $('img.favicon').src is Favicon.empty
+          watcher.watch null, g.THREAD_ID
 
     else #not reply
       threading.init()
@@ -1868,14 +1875,6 @@ main =
       }
       #watcher > div:last-child {
         padding-bottom: 5px;
-      }
-
-      body.noselect {
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -o-user-select: none;
-        user-select: none;
       }
     '
 

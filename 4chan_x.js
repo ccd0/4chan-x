@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        2.2.2
+// @version        2.3.0
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -72,6 +72,7 @@
         '404 Redirect': [true, 'Redirect dead threads'],
         'Anonymize': [false, 'Make everybody anonymous'],
         'Auto Watch': [true, 'Automatically watch threads that you start'],
+        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Cooldown': [false, 'Prevent \'flood detected\' errors (buggy)'],
         'Image Auto-Gif': [false, 'Animate gif thumbnails'],
@@ -95,7 +96,7 @@
         'Unread Count': [true, 'Show unread post count in tab title']
       },
       textarea: {
-        flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url='].join('\n')
+        flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url='].join('\n')
       }
     },
     updater: {
@@ -180,9 +181,9 @@
     },
     dragstart: function(e) {
       var d, el, rect;
+      e.preventDefault();
       ui.el = el = e.target.parentNode;
       d = document;
-      d.body.className = 'noselect';
       d.addEventListener('mousemove', ui.drag, true);
       d.addEventListener('mouseup', ui.dragend, true);
       rect = el.getBoundingClientRect();
@@ -193,6 +194,7 @@
     },
     drag: function(e) {
       var bottom, el, left, right, top;
+      e.preventDefault();
       el = ui.el;
       left = e.clientX - ui.dx;
       if (left < 20) {
@@ -220,7 +222,6 @@
       localStorage["" + id + "Left"] = el.style.left;
       localStorage["" + id + "Top"] = el.style.top;
       d = document;
-      d.body.className = '';
       d.removeEventListener('mousemove', ui.drag, true);
       return d.removeEventListener('mouseup', ui.dragend, true);
     }
@@ -1019,9 +1020,20 @@
         return _results;
       },
       submit: function(e) {
-        var form, isQR;
+        var form, id, isQR, op;
         form = e.target;
         isQR = form.parentNode.id === 'qr';
+        if ($.config('Auto Watch Reply') && $.config('Thread Watcher')) {
+          if (g.REPLY && $('img.favicon').src === Favicon.empty) {
+            watcher.watch(null, g.THREAD_ID);
+          } else {
+            id = $('input[name=resto]').value;
+            op = d.getElementById(id);
+            if ($('img.favicon', op).src === Favicon.empty) {
+              watcher.watch(op, id);
+            }
+          }
+        }
         if (isQR) {
           $('#error').textContent = '';
         }
@@ -1090,7 +1102,7 @@
     },
     cooldownStart: function(duration) {
       var submit, submits, _i, _len;
-      submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
+      submits = $$('#com_submit');
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];
         submit.value = duration;
@@ -1102,7 +1114,7 @@
     cooldownCB: function() {
       var submit, submits, _i, _len;
       qr.duration = qr.duration - 1;
-      submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
+      submits = $$('#com_submit');
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];
         if (qr.duration === 0) {
@@ -1439,67 +1451,64 @@
   };
   watcher = {
     init: function() {
-      var dialog, favicon, html, id, input, inputs, src, watched, watchedBoard, _i, _len, _results;
+      var dialog, favicon, html, input, inputs, _i, _len;
       html = '<div class=move>Thread Watcher</div>';
       dialog = ui.dialog('watcher', {
         top: '50px',
         left: '0px'
       }, html);
       $.append(d.body, dialog);
-      watched = $.getValue('watched', {});
-      watcher.refresh(watched);
-      watchedBoard = watched[g.BOARD] || {};
       inputs = $$('form > input[value=delete], div.thread > input[value=delete]');
-      _results = [];
       for (_i = 0, _len = inputs.length; _i < _len; _i++) {
         input = inputs[_i];
-        id = input.name;
-        if (id in watchedBoard) {
-          src = Favicon["default"];
-        } else {
-          src = Favicon.empty;
-        }
         favicon = $.el('img', {
-          src: src,
           className: 'favicon'
         });
         $.bind(favicon, 'click', watcher.cb.toggle);
-        _results.push($.before(input, favicon));
+        $.before(input, favicon);
       }
-      return _results;
+      watcher.refresh($.getValue('watched', {}));
+      return setInterval((function() {
+        if (watcher.lastUpdated < $.getValue('watcher.lastUpdated', 0)) {
+          return watcher.refresh($.getValue('watched', {}));
+        }
+      }), 1000);
     },
     refresh: function(watched) {
-      var board, div, id, props, _i, _len, _ref, _results;
-      _ref = $$('#watcher > div:not(.move)');
+      var board, dialog, div, favicon, id, link, props, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+      dialog = $('#watcher');
+      _ref = $$('div:not(.move)', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         div = _ref[_i];
         $.remove(div);
       }
-      _results = [];
       for (board in watched) {
-        _results.push((function() {
-          var _ref2, _results2;
-          _ref2 = watched[board];
-          _results2 = [];
-          for (id in _ref2) {
-            props = _ref2[id];
-            _results2.push(watcher.addLink(props, $('#watcher')));
-          }
-          return _results2;
-        })());
+        _ref2 = watched[board];
+        for (id in _ref2) {
+          props = _ref2[id];
+          div = $.el('div');
+          x = $.el('a', {
+            textContent: 'X'
+          });
+          $.bind(x, 'click', watcher.cb.x);
+          link = $.el('a', props);
+          $.append(div, x, $.tn(' '), link);
+          $.append(dialog, div);
+        }
       }
-      return _results;
-    },
-    addLink: function(props, dialog) {
-      var div, link, x;
-      div = $.el('div');
-      x = $.el('a', {
-        textContent: 'X'
-      });
-      $.bind(x, 'click', watcher.cb.x);
-      link = $.el('a', props);
-      $.append(div, x, $.tn(' '), link);
-      return $.append(dialog, div);
+      watchedBoard = watched[g.BOARD] || {};
+      _ref3 = $$('img.favicon');
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        favicon = _ref3[_j];
+        id = favicon.nextSibling.name;
+        if (id in watchedBoard) {
+          favicon.src = Favicon["default"];
+        } else {
+          favicon.src = Favicon.empty;
+        }
+      }
+      $.setValue('watcher.lastUpdated', Date.now());
+      return watcher.lastUpdated = Date.now();
     },
     cb: {
       toggle: function(e) {
@@ -1516,30 +1525,20 @@
       favicon = $('img.favicon', thread);
       id = favicon.nextSibling.name;
       if (favicon.src === Favicon.empty) {
-        return watcher.watch(thread);
+        return watcher.watch(thread, id);
       } else {
         return watcher.unwatch(g.BOARD, id);
       }
     },
     unwatch: function(board, id) {
-      var favicon, input, watched;
-      if (input = $("input[name=\"" + id + "\"]")) {
-        favicon = input.previousSibling;
-        favicon.src = Favicon.empty;
-      }
+      var watched;
       watched = $.getValue('watched', {});
       delete watched[board][id];
       $.setValue('watched', watched);
       return watcher.refresh(watched);
     },
-    watch: function(thread) {
-      var favicon, id, props, tc, watched, _name;
-      favicon = $('img.favicon', thread);
-      if (favicon.src === Favicon["default"]) {
-        return;
-      }
-      favicon.src = Favicon["default"];
-      id = favicon.nextSibling.name;
+    watch: function(thread, id) {
+      var props, tc, watched, _name;
       tc = $('span.filetitle', thread).textContent || $('blockquote', thread).textContent;
       props = {
         textContent: "/" + g.BOARD + "/ - " + tc.slice(0, 25),
@@ -1580,8 +1579,19 @@
     },
     cb: {
       node: function(root) {
-        var i, link, names, prefix, prefixes, span, suffix, _i, _len, _ref, _results;
-        prefixes = $.config('flavors').split('\n');
+        var i, link, names, prefix, prefixes, s, span, suffix, _i, _len, _ref, _results;
+        prefixes = (function() {
+          var _i, _len, _ref, _results;
+          _ref = $.config('flavors').split('\n');
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            s = _ref[_i];
+            if (s[0] !== '#') {
+              _results.push(s);
+            }
+          }
+          return _results;
+        })();
         names = (function() {
           var _i, _len, _results;
           _results = [];
@@ -1659,7 +1669,7 @@
         for (_i = 0, _len = arr.length; _i < _len; _i++) {
           el = arr[_i];
           a = $.el('a', {
-            textContent: '[ ! ]'
+            innerHTML: '[&nbsp;!&nbsp;]'
           });
           $.bind(a, 'click', quickReport.cb.report);
           $.after(el, a);
@@ -1767,7 +1777,6 @@
       case '3':
       case 'adv':
       case 'an':
-      case 'c':
       case 'ck':
       case 'co':
       case 'fa':
@@ -2173,8 +2182,8 @@
         if ($.config('Unread Count')) {
           unread.init();
         }
-        if ($.config('Auto Watch') && location.hash === '#watch') {
-          watcher.watch();
+        if ($.config('Auto Watch') && $.config('Thread Watcher') && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
+          watcher.watch(null, g.THREAD_ID);
         }
       } else {
         threading.init();
@@ -2348,14 +2357,6 @@
       }\
       #watcher > div:last-child {\
         padding-bottom: 5px;\
-      }\
-\
-      body.noselect {\
-        -webkit-user-select: none;\
-        -khtml-user-select: none;\
-        -moz-user-select: none;\
-        -o-user-select: none;\
-        user-select: none;\
       }\
     '
   };
