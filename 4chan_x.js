@@ -1023,12 +1023,22 @@
         return _results;
       },
       submit: function(e) {
-        var form, isQR, recaptcha, span, value;
+        var form, isQR, recaptcha, span, thread, threads, value, _i, _len;
         form = e.target;
         isQR = form.parentNode.id === 'qr';
         if ($.config('Watch on Reply') && $.config('Thread Watcher')) {
-          value = g.THREAD_ID || $('input[name=resto]').value;
-          watcher.watch(null, value);
+          if (g.REPLY && $('img.favicon').src === Favicon.empty) {
+            watcher.watch(null, g.THREAD_ID);
+          } else {
+            value = $('input[name=resto]').value;
+            threads = $$('div.op');
+            for (_i = 0, _len = threads.length; _i < _len; _i++) {
+              thread = threads[_i];
+              if (thread.id === value && $('img.favicon', thread).src === Favicon.empty) {
+                watcher.watch(thread, value);
+              }
+            }
+          }
         }
         if (isQR) {
           if (span = this.nextSibling) {

@@ -776,8 +776,14 @@ qr =
       isQR = form.parentNode.id == 'qr'
 
       if $.config('Watch on Reply') and $.config('Thread Watcher')
-        value = g.THREAD_ID or $('input[name=resto]').value
-        watcher.watch null, value
+        if g.REPLY and $('img.favicon').src is Favicon.empty
+          watcher.watch null, g.THREAD_ID
+        else
+          value = $('input[name=resto]').value
+          threads = $$ 'div.op'
+          for thread in threads
+            if thread.id is value and $('img.favicon', thread).src is Favicon.empty
+              watcher.watch thread, value
 
       if isQR
         if span = @nextSibling
