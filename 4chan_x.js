@@ -91,7 +91,8 @@
         'Thread Navigation': [true, 'Navigate to previous / next thread'],
         'Thread Updater': [true, 'Update threads'],
         'Thread Watcher': [true, 'Bookmark threads'],
-        'Unread Count': [true, 'Show unread post count in tab title']
+        'Unread Count': [true, 'Show unread post count in tab title'],
+        'Watch on Reply': [false, 'Automatically watch threads you reply to']
       },
       textarea: {
         flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url='].join('\n')
@@ -1022,9 +1023,13 @@
         return _results;
       },
       submit: function(e) {
-        var form, isQR, recaptcha, span;
+        var form, isQR, recaptcha, span, value;
         form = e.target;
         isQR = form.parentNode.id === 'qr';
+        if ($.config('Watch on Reply') && $.config('Thread Watcher')) {
+          value = g.THREAD_ID || $('input[name=resto]').value;
+          watcher.watch(null, value);
+        }
         if (isQR) {
           if (span = this.nextSibling) {
             $.remove(span);
@@ -1113,7 +1118,7 @@
     },
     cooldownStart: function(duration) {
       var submit, submits, _i, _len;
-      submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
+      submits = $$('#com_submit');
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];
         submit.value = duration;

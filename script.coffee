@@ -36,6 +36,7 @@ config =
       'Thread Updater':    [true,  'Update threads']
       'Thread Watcher':    [true,  'Bookmark threads']
       'Unread Count':      [true,  'Show unread post count in tab title']
+      'Watch on Reply':    [false, 'Automatically watch threads you reply to']
     textarea:
       flavors: [
         'http://regex.info/exif.cgi?url='
@@ -774,6 +775,10 @@ qr =
       form = e.target
       isQR = form.parentNode.id == 'qr'
 
+      if $.config('Watch on Reply') and $.config('Thread Watcher')
+        value = g.THREAD_ID or $('input[name=resto]').value
+        watcher.watch null, value
+
       if isQR
         if span = @nextSibling
           $.remove span
@@ -854,7 +859,7 @@ qr =
       return true
 
   cooldownStart: (duration) ->
-    submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
+    submits = $$ '#com_submit'
     for submit in submits
       submit.value = duration
       submit.disabled = true
