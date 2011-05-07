@@ -15,6 +15,7 @@ config =
       '404 Redirect':      [true,  'Redirect dead threads']
       'Anonymize':         [false, 'Make everybody anonymous']
       'Auto Watch':        [true,  'Automatically watch threads that you start']
+      'Auto Watch Reply':  [false, 'Automatically watch threads that you reply to']
       'Comment Expansion': [true,  'Expand too long comments']
       'Cooldown':          [false, 'Prevent \'flood detected\' errors (buggy)']
       'Image Auto-Gif':    [false, 'Animate gif thumbnails']
@@ -36,7 +37,6 @@ config =
       'Thread Updater':    [true,  'Update threads']
       'Thread Watcher':    [true,  'Bookmark threads']
       'Unread Count':      [true,  'Show unread post count in tab title']
-      'Watch on Reply':    [false, 'Automatically watch threads you reply to']
     textarea:
       flavors: [
         'http://regex.info/exif.cgi?url='
@@ -776,15 +776,14 @@ qr =
       form = e.target
       isQR = form.parentNode.id == 'qr'
 
-      if $.config('Watch on Reply') and $.config('Thread Watcher')
+      if $.config('Auto Watch Reply') and $.config('Thread Watcher')
         if g.REPLY and $('img.favicon').src is Favicon.empty
           watcher.watch null, g.THREAD_ID
         else
-          value = $('input[name=resto]').value
-          threads = $$ 'div.op'
-          for thread in threads
-            if thread.id is value and $('img.favicon', thread).src is Favicon.empty
-              watcher.watch thread, value
+          id = $('input[name=resto]').value
+          op = d.getElementById id
+          if $('img.favicon', op).src is Favicon.empty
+            watcher.watch op, id
 
       if isQR
         if span = @nextSibling

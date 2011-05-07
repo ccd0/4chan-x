@@ -71,6 +71,7 @@
         '404 Redirect': [true, 'Redirect dead threads'],
         'Anonymize': [false, 'Make everybody anonymous'],
         'Auto Watch': [true, 'Automatically watch threads that you start'],
+        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Cooldown': [false, 'Prevent \'flood detected\' errors (buggy)'],
         'Image Auto-Gif': [false, 'Animate gif thumbnails'],
@@ -91,8 +92,7 @@
         'Thread Navigation': [true, 'Navigate to previous / next thread'],
         'Thread Updater': [true, 'Update threads'],
         'Thread Watcher': [true, 'Bookmark threads'],
-        'Unread Count': [true, 'Show unread post count in tab title'],
-        'Watch on Reply': [false, 'Automatically watch threads you reply to']
+        'Unread Count': [true, 'Show unread post count in tab title']
       },
       textarea: {
         flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url='].join('\n')
@@ -1023,20 +1023,17 @@
         return _results;
       },
       submit: function(e) {
-        var form, isQR, recaptcha, span, thread, threads, value, _i, _len;
+        var form, id, isQR, op, recaptcha, span;
         form = e.target;
         isQR = form.parentNode.id === 'qr';
-        if ($.config('Watch on Reply') && $.config('Thread Watcher')) {
+        if ($.config('Auto Watch Reply') && $.config('Thread Watcher')) {
           if (g.REPLY && $('img.favicon').src === Favicon.empty) {
             watcher.watch(null, g.THREAD_ID);
           } else {
-            value = $('input[name=resto]').value;
-            threads = $$('div.op');
-            for (_i = 0, _len = threads.length; _i < _len; _i++) {
-              thread = threads[_i];
-              if (thread.id === value && $('img.favicon', thread).src === Favicon.empty) {
-                watcher.watch(thread, value);
-              }
+            id = $('input[name=resto]').value;
+            op = d.getElementById(id);
+            if ($('img.favicon', op).src === Favicon.empty) {
+              watcher.watch(op, id);
             }
           }
         }
