@@ -7,7 +7,6 @@
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
-// @include        file://*
 // @updateURL      http://userscripts.org/scripts/source/51412.meta.js
 // ==/UserScript==
 
