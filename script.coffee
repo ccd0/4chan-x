@@ -1697,8 +1697,9 @@ main =
       if $.config 'Unread Count'
         unread.init()
 
-      if $.config('Auto Watch') and location.hash is '#watch'
-        watcher.watch($('body > form'), $('form > input[value=delete]').name)
+      if $.config('Auto Watch') and $.config('Thread Watcher') and
+        location.hash is '#watch' and $('img.favicon').src is Favicon.empty
+          watcher.watch null, g.THREAD_ID
 
     else #not reply
       threading.init()

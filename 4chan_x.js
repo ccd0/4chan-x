@@ -2184,8 +2184,8 @@
         if ($.config('Unread Count')) {
           unread.init();
         }
-        if ($.config('Auto Watch') && location.hash === '#watch') {
-          watcher.watch($('body > form'), $('form > input[value=delete]').name);
+        if ($.config('Auto Watch') && $.config('Thread Watcher') && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
+          watcher.watch(null, g.THREAD_ID);
         }
       } else {
         threading.init();
