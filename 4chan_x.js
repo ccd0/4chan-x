@@ -1130,7 +1130,7 @@
     cooldownCB: function() {
       var submit, submits, _i, _len;
       qr.duration = qr.duration - 1;
-      submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
+      submits = $$('#com_submit');
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];
         if (qr.duration === 0) {

@@ -869,7 +869,7 @@ qr =
   cooldownCB: ->
     qr.duration = qr.duration - 1
 
-    submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
+    submits = $$ '#com_submit'
     for submit in submits
       if qr.duration == 0
         submit.disabled = false
