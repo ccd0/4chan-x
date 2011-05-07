@@ -1180,15 +1180,24 @@ watcher =
 
     setInterval (->
       if watcher.lastUpdated < $.getValue 'watcher.lastUpdated', 0
-        watcher.refresh($.getValue 'watched', {})
+        watcher.refresh $.getValue 'watched', {}
     ), 1000
 
   refresh: (watched) ->
-    for div in $$ '#watcher > div:not(.move)'
+    dialog = $ '#watcher'
+    for div in $$ 'div:not(.move)', dialog
       $.remove div
     for board of watched
       for id, props of watched[board]
-        watcher.addLink props, $ '#watcher'
+        div = $.el 'div'
+        x = $.el 'a',
+          textContent: 'X'
+        $.bind x, 'click', watcher.cb.x
+        link = $.el 'a', props
+
+        $.append div, x, $.tn(' '), link
+        $.append dialog, div
+
     watchedBoard = watched[g.BOARD] or {}
     for favicon in $$ 'img.favicon'
       id = favicon.nextSibling.name
@@ -1198,16 +1207,6 @@ watcher =
         favicon.src = Favicon.empty
     $.setValue 'watcher.lastUpdated', Date.now()
     watcher.lastUpdated = Date.now()
-
-  addLink: (props, dialog) ->
-    div = $.el 'div'
-    x = $.el 'a',
-      textContent: 'X'
-    $.bind x, 'click', watcher.cb.x
-    link = $.el 'a', props
-
-    $.append div, x, $.tn(' '), link
-    $.append dialog, div
 
   cb:
     toggle: (e) ->

@@ -1488,8 +1488,9 @@
       }), 1000);
     },
     refresh: function(watched) {
-      var board, div, favicon, id, props, watchedBoard, _i, _j, _len, _len2, _ref, _ref2, _ref3;
-      _ref = $$('#watcher > div:not(.move)');
+      var board, dialog, div, favicon, id, link, props, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+      dialog = $('#watcher');
+      _ref = $$('div:not(.move)', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         div = _ref[_i];
         $.remove(div);
@@ -1498,7 +1499,14 @@
         _ref2 = watched[board];
         for (id in _ref2) {
           props = _ref2[id];
-          watcher.addLink(props, $('#watcher'));
+          div = $.el('div');
+          x = $.el('a', {
+            textContent: 'X'
+          });
+          $.bind(x, 'click', watcher.cb.x);
+          link = $.el('a', props);
+          $.append(div, x, $.tn(' '), link);
+          $.append(dialog, div);
         }
       }
       watchedBoard = watched[g.BOARD] || {};
@@ -1514,17 +1522,6 @@
       }
       $.setValue('watcher.lastUpdated', Date.now());
       return watcher.lastUpdated = Date.now();
-    },
-    addLink: function(props, dialog) {
-      var div, link, x;
-      div = $.el('div');
-      x = $.el('a', {
-        textContent: 'X'
-      });
-      $.bind(x, 'click', watcher.cb.x);
-      link = $.el('a', props);
-      $.append(div, x, $.tn(' '), link);
-      return $.append(dialog, div);
     },
     cb: {
       toggle: function(e) {
