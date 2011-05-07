@@ -94,7 +94,7 @@
         'Unread Count': [true, 'Show unread post count in tab title']
       },
       textarea: {
-        flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url='].join('\n')
+        flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url='].join('\n')
       }
     },
     updater: {
@@ -1592,8 +1592,19 @@
     },
     cb: {
       node: function(root) {
-        var i, link, names, prefix, prefixes, span, suffix, _i, _len, _ref, _results;
-        prefixes = $.config('flavors').split('\n');
+        var i, link, names, prefix, prefixes, s, span, suffix, _i, _len, _ref, _results;
+        prefixes = (function() {
+          var _i, _len, _ref, _results;
+          _ref = $.config('flavors').split('\n');
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            s = _ref[_i];
+            if (s[0] !== '#') {
+              _results.push(s);
+            }
+          }
+          return _results;
+        })();
         names = (function() {
           var _i, _len, _results;
           _results = [];

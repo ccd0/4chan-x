@@ -41,6 +41,7 @@ config =
         'http://regex.info/exif.cgi?url='
         'http://iqdb.org/?url='
         'http://tineye.com/search?url='
+        '#http://saucenao.com/search.php?db=999&url='
       ].join '\n'
   updater:
     checkbox:
@@ -1263,7 +1264,7 @@ sauce =
     g.callbacks.push sauce.cb.node
   cb:
     node: (root) ->
-      prefixes = $.config('flavors').split '\n'
+      prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
       names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
       for span in $$ 'span.filesize', root
         suffix = $('a', span).href
