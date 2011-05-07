@@ -1697,7 +1697,7 @@
         for (_i = 0, _len = arr.length; _i < _len; _i++) {
           el = arr[_i];
           a = $.el('a', {
-            textContent: '[ ! ]'
+            innerHTML: '[&nbsp;!&nbsp;]'
           });
           $.bind(a, 'click', quickReport.cb.report);
           $.after(el, a);

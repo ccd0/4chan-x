@@ -1325,7 +1325,7 @@ quickReport =
       arr = $$ 'span[id^=no]', root
       for el in arr
         a = $.el 'a',
-          textContent: '[ ! ]'
+          innerHTML: '[&nbsp;!&nbsp;]'
         $.bind a, 'click', quickReport.cb.report
         $.after el, a
         $.after el, $.tn(' ')
