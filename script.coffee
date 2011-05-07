@@ -36,6 +36,7 @@ config =
       'Thread Updater':    [true,  'Update threads']
       'Thread Watcher':    [true,  'Bookmark threads']
       'Unread Count':      [true,  'Show unread post count in tab title']
+      'Watch on Reply':    [false, 'Automatically watch threads you reply to']
     textarea:
       flavors: [
         'http://regex.info/exif.cgi?url='
@@ -775,6 +776,16 @@ qr =
       form = e.target
       isQR = form.parentNode.id == 'qr'
 
+      if $.config('Watch on Reply') and $.config('Thread Watcher')
+        if g.REPLY and $('img.favicon').src is Favicon.empty
+          watcher.watch null, g.THREAD_ID
+        else
+          value = $('input[name=resto]').value
+          threads = $$ 'div.op'
+          for thread in threads
+            if thread.id is value and $('img.favicon', thread).src is Favicon.empty
+              watcher.watch thread, value
+
       if isQR
         if span = @nextSibling
           $.remove span
@@ -855,7 +866,7 @@ qr =
       return true
 
   cooldownStart: (duration) ->
-    submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
+    submits = $$ '#com_submit'
     for submit in submits
       submit.value = duration
       submit.disabled = true
@@ -865,7 +876,7 @@ qr =
   cooldownCB: ->
     qr.duration = qr.duration - 1
 
-    submits = $$ '#qr input[type=submit], form[name=post] input[type=submit]'
+    submits = $$ '#com_submit'
     for submit in submits
       if qr.duration == 0
         submit.disabled = false
@@ -1314,7 +1325,7 @@ quickReport =
       arr = $$ 'span[id^=no]', root
       for el in arr
         a = $.el 'a',
-          textContent: '[ ! ]'
+          innerHTML: '[&nbsp;!&nbsp;]'
         $.bind a, 'click', quickReport.cb.report
         $.after el, a
         $.after el, $.tn(' ')

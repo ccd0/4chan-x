@@ -91,7 +91,8 @@
         'Thread Navigation': [true, 'Navigate to previous / next thread'],
         'Thread Updater': [true, 'Update threads'],
         'Thread Watcher': [true, 'Bookmark threads'],
-        'Unread Count': [true, 'Show unread post count in tab title']
+        'Unread Count': [true, 'Show unread post count in tab title'],
+        'Watch on Reply': [false, 'Automatically watch threads you reply to']
       },
       textarea: {
         flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url='].join('\n')
@@ -1022,9 +1023,23 @@
         return _results;
       },
       submit: function(e) {
-        var form, isQR, recaptcha, span;
+        var form, isQR, recaptcha, span, thread, threads, value, _i, _len;
         form = e.target;
         isQR = form.parentNode.id === 'qr';
+        if ($.config('Watch on Reply') && $.config('Thread Watcher')) {
+          if (g.REPLY && $('img.favicon').src === Favicon.empty) {
+            watcher.watch(null, g.THREAD_ID);
+          } else {
+            value = $('input[name=resto]').value;
+            threads = $$('div.op');
+            for (_i = 0, _len = threads.length; _i < _len; _i++) {
+              thread = threads[_i];
+              if (thread.id === value && $('img.favicon', thread).src === Favicon.empty) {
+                watcher.watch(thread, value);
+              }
+            }
+          }
+        }
         if (isQR) {
           if (span = this.nextSibling) {
             $.remove(span);
@@ -1113,7 +1128,7 @@
     },
     cooldownStart: function(duration) {
       var submit, submits, _i, _len;
-      submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
+      submits = $$('#com_submit');
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];
         submit.value = duration;
@@ -1125,7 +1140,7 @@
     cooldownCB: function() {
       var submit, submits, _i, _len;
       qr.duration = qr.duration - 1;
-      submits = $$('#qr input[type=submit], form[name=post] input[type=submit]');
+      submits = $$('#com_submit');
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];
         if (qr.duration === 0) {
@@ -1682,7 +1697,7 @@
         for (_i = 0, _len = arr.length; _i < _len; _i++) {
           el = arr[_i];
           a = $.el('a', {
-            textContent: '[ ! ]'
+            innerHTML: '[&nbsp;!&nbsp;]'
           });
           $.bind(a, 'click', quickReport.cb.report);
           $.after(el, a);
