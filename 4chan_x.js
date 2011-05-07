@@ -179,9 +179,9 @@
     },
     dragstart: function(e) {
       var d, el, rect;
+      e.preventDefault();
       ui.el = el = e.target.parentNode;
       d = document;
-      d.body.className = 'noselect';
       d.addEventListener('mousemove', ui.drag, true);
       d.addEventListener('mouseup', ui.dragend, true);
       rect = el.getBoundingClientRect();
@@ -192,6 +192,7 @@
     },
     drag: function(e) {
       var bottom, el, left, right, top;
+      e.preventDefault();
       el = ui.el;
       left = e.clientX - ui.dx;
       if (left < 20) {
@@ -219,7 +220,6 @@
       localStorage["" + id + "Left"] = el.style.left;
       localStorage["" + id + "Top"] = el.style.top;
       d = document;
-      d.body.className = '';
       d.removeEventListener('mousemove', ui.drag, true);
       return d.removeEventListener('mouseup', ui.dragend, true);
     }
@@ -2329,14 +2329,6 @@
       }\
       #watcher > div:last-child {\
         padding-bottom: 5px;\
-      }\
-\
-      body.noselect {\
-        -webkit-user-select: none;\
-        -khtml-user-select: none;\
-        -moz-user-select: none;\
-        -o-user-select: none;\
-        user-select: none;\
       }\
     '
   };
