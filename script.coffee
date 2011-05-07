@@ -1390,7 +1390,7 @@ redirect = ->
       url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
     when 'jp', 'm', 'tg'
       url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when '3', 'adv', 'an', 'c', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
+    when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
       url = "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
     else
       url = "http://boards.4chan.org/#{g.BOARD}"
@@ -1699,7 +1699,7 @@ main =
         unread.init()
 
       if $.config('Auto Watch') and location.hash is '#watch'
-        watcher.watch()
+        watcher.watch($('body > form'), $('form > input[value=delete]').name)
 
     else #not reply
       threading.init()
