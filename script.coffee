@@ -888,6 +888,7 @@ qr =
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
       </form>
+      <div id=error class=error></div>
       "
     dialog = ui.dialog 'qr', top: '0px', left: '0px', html
 
@@ -908,8 +909,7 @@ qr =
       className: 'inputtext'
       required: true
 
-    form = dialog.lastElementChild
-    $.bind form, 'submit', qr.cb.submit
+    $.bind $('form', dialog), 'submit', qr.cb.submit
     $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', Recaptcha.listener
 
     $.append d.body, dialog
