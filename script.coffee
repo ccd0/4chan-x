@@ -95,7 +95,7 @@ ui =
     top  = localStorage["#{id}Top"]  ? top
     if left then el.style.left = left else el.style.right  = '0px'
     if top  then el.style.top  = top  else el.style.bottom = '0px'
-    el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, true
+    el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
     el.querySelector('div.move a[name=close]')?.addEventListener 'click',
       (-> el.parentNode.removeChild(el)), true
     el
@@ -872,11 +872,15 @@ qr =
     MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
     THREAD_ID = g.THREAD_ID or link.pathname.split('/').pop()
     html = "
-      <div class=move><span id=error class=error></span><input type=checkbox id=autohide title=autohide> <a name=close title=close>X</a></div>
-      <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe>
+      <div class=move>
+        <input class=inputtext type=text name=name placeholder=Name form=qr_form>
+        Quick Reply
+        <input type=checkbox id=autohide title=autohide>
+        <a name=close title=close>X</a>
+      </div>
+      <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
         <input type=hidden name=MAX_FILE_SIZE value=#{MAX_FILE_SIZE}>
         <input type=hidden name=resto value=#{THREAD_ID}>
-        <div><input class=inputtext type=text name=name placeholder=Name></div>
         <div><input class=inputtext type=text name=email placeholder=E-mail></div>
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
@@ -886,6 +890,8 @@ qr =
       </form>
       "
     dialog = ui.dialog 'qr', top: '0px', left: '0px', html
+
+    $.bind $('input[name=name]', dialog), 'mousedown', (e) -> e.stopPropagation()
     el = $ '#autohide', dialog
     $.bind el, 'click', qr.cb.autohide
 
@@ -1792,10 +1798,13 @@ main =
       #qr > div.move {
         text-align: right;
       }
+      #qr > div.move > input[name=name] {
+        float: left;
+      }
       #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */
         display: none;
       }
-      #qr form {
+      #qr {
         width: 302px;
       }
       #qr form, #qr #com_submit, #qr input[type="file"] {
