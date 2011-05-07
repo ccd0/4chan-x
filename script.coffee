@@ -100,9 +100,10 @@ ui =
       (-> el.parentNode.removeChild(el)), true
     el
   dragstart: (e) ->
+    #prevent text selection
+    e.preventDefault()
     ui.el = el = e.target.parentNode
     d = document
-    d.body.className = 'noselect'
     d.addEventListener 'mousemove', ui.drag, true
     d.addEventListener 'mouseup',   ui.dragend, true
     #distance from pointer to el edge is constant; calculate it here.
@@ -114,6 +115,7 @@ ui =
     ui.width  = document.body.clientWidth  - el.offsetWidth
     ui.height = document.body.clientHeight - el.offsetHeight
   drag: (e) ->
+    e.preventDefault()
     {el} = ui
     left = e.clientX - ui.dx
     if left < 20 then left = '0px'
@@ -136,7 +138,6 @@ ui =
     localStorage["#{id}Left"] = el.style.left
     localStorage["#{id}Top"]  = el.style.top
     d = document
-    d.body.className = ''
     d.removeEventListener 'mousemove', ui.drag, true
     d.removeEventListener 'mouseup',   ui.dragend, true
 
@@ -1840,14 +1841,6 @@ main =
       }
       #watcher > div:last-child {
         padding-bottom: 5px;
-      }
-
-      body.noselect {
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -o-user-select: none;
-        user-select: none;
       }
     '
 
