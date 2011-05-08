@@ -1321,7 +1321,9 @@ titlePost =
 quotePreview =
   init: ->
     g.callbacks.push quotePreview.node
-    preview = $.el 'div', id: 'qp', className: 'reply'
+    preview = $.el 'div',
+      id: 'qp',
+      className: 'reply'
     $.hide preview
     $.append d.body, preview
   node: (root) ->
@@ -1331,7 +1333,7 @@ quotePreview =
       $.bind quote, 'mousemove', quotePreview.mousemove
       $.bind quote, 'mouseout',  quotePreview.mouseout
   mouseover: (e) ->
-    {target, clientX, clientY} = e
+    {target} = e
     preview = $ '#qp'
     id = target.textContent.replace ">>", ''
     preview.innerHTML = d.getElementById(id).innerHTML
@@ -1473,7 +1475,7 @@ imageHover =
         $.bind thumb, 'mousemove', imageHover.cb.mousemove
         $.bind thumb, 'mouseout',  imageHover.cb.mouseout
     mouseover: (e) ->
-      {target, clientX, clientY} = e
+      {target} = e
       img = $ '#iHover'
       img.src = target.parentNode.href
       $.show img

@@ -1679,8 +1679,8 @@
       return _results;
     },
     mouseover: function(e) {
-      var clientX, clientY, id, preview, target;
-      target = e.target, clientX = e.clientX, clientY = e.clientY;
+      var id, preview, target;
+      target = e.target;
       preview = $('#qp');
       id = target.textContent.replace(">>", '');
       preview.innerHTML = d.getElementById(id).innerHTML;
@@ -1905,8 +1905,8 @@
         return _results;
       },
       mouseover: function(e) {
-        var clientX, clientY, img, target;
-        target = e.target, clientX = e.clientX, clientY = e.clientY;
+        var img, target;
+        target = e.target;
         img = $('#iHover');
         img.src = target.parentNode.href;
         $.show(img);
