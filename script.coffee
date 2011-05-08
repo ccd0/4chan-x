@@ -150,11 +150,11 @@ ui =
     bot = top + height
     el.style.top =
       if ui.winHeight < height or top < 0
-        '0px'
+        0
       else if bot > ui.winHeight
-        ui.winHeight - height + 'px'
+        ui.winHeight - height
       else
-        top + 'px'
+        top
     el.style.left = clientX + 45
   hoverend: (e) ->
     $.hide ui.el
@@ -889,9 +889,11 @@ qr =
     MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
     THREAD_ID = g.THREAD_ID or link.pathname.split('/').pop()
     name = $('input[name=name]').value
+    mail = $('input[name=email]').value
+    pass = $('input[name=pwd]').value
     html = "
       <div class=move>
-        <input class=inputtext type=text name=name placeholder=Name form=qr_form value=#{name}>
+        <input class=inputtext type=text name=name placeholder=Name form=qr_form value='#{name}'>
         Quick Reply
         <input type=checkbox id=autohide title=autohide>
         <a name=close title=close>X</a>
@@ -899,12 +901,12 @@ qr =
       <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
         <input type=hidden name=MAX_FILE_SIZE value=#{MAX_FILE_SIZE}>
         <input type=hidden name=resto value=#{THREAD_ID}>
-        <div><input class=inputtext type=text name=email placeholder=E-mail></div>
+        <div><input class=inputtext type=text name=email placeholder=E-mail value='#{mail}'></div>
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div id=qr_captcha></div>
         <div><input type=file name=upfile></div>
-        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
+        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='#{pass}'><input type=hidden name=mode value=regist></div>
       </form>
       <div id=error class=error></div>
       "
@@ -1364,6 +1366,7 @@ quotePreview =
         g.requests[threadID] = $.get @href, (-> quotePreview.parse this, id, threadID)
     $.show qp
     ui.el = qp
+    ui.winHeight = d.body.clientHeight
   parse: (req, id, threadID) ->
     qp = $ '#qp'
     return unless qp.innerHTML is "Loading #{id}..."
@@ -1514,7 +1517,6 @@ imageHover =
       $.show el
       ui.el = el
       ui.winHeight = d.body.clientHeight
-      ui.winWidth  = d.body.clientWidth
 
 imgPreloading =
   init: ->

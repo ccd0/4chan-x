@@ -232,7 +232,7 @@
       height = el.offsetHeight;
       top = clientY - 120;
       bot = top + height;
-      el.style.top = ui.winHeight < height || top < 0 ? '0px' : bot > ui.winHeight ? ui.winHeight - height + 'px' : top + 'px';
+      el.style.top = ui.winHeight < height || top < 0 ? 0 : bot > ui.winHeight ? ui.winHeight - height : top;
       return el.style.left = clientX + 45;
     },
     hoverend: function(e) {
@@ -1135,11 +1135,13 @@
       }
     },
     dialog: function(link) {
-      var MAX_FILE_SIZE, THREAD_ID, clone, dialog, el, html, name, spoiler;
+      var MAX_FILE_SIZE, THREAD_ID, clone, dialog, el, html, mail, name, pass, spoiler;
       MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value;
       THREAD_ID = g.THREAD_ID || link.pathname.split('/').pop();
       name = $('input[name=name]').value;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form value=" + name + ">        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <div><input class=inputtext type=text name=email placeholder=E-mail></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div id=qr_captcha></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
+      mail = $('input[name=email]').value;
+      pass = $('input[name=pwd]').value;
+      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form value='" + name + "'>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <div><input class=inputtext type=text name=email placeholder=E-mail value='" + mail + "'></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div id=qr_captcha></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='" + pass + "'><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
       dialog = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -1712,7 +1714,8 @@
         }
       }
       $.show(qp);
-      return ui.el = qp;
+      ui.el = qp;
+      return ui.winHeight = d.body.clientHeight;
     },
     parse: function(req, id, threadID) {
       var body, html, qp, reply, _i, _len, _ref;
@@ -1951,8 +1954,7 @@
         el.src = this.parentNode.href;
         $.show(el);
         ui.el = el;
-        ui.winHeight = d.body.clientHeight;
-        return ui.winWidth = d.body.clientWidth;
+        return ui.winHeight = d.body.clientHeight;
       }
     }
   };
