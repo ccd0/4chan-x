@@ -234,6 +234,9 @@
       bot = top + height;
       el.style.top = ui.winHeight < height || top < 0 ? '0px' : bot > ui.winHeight ? ui.winHeight - height + 'px' : top + 'px';
       return el.style.left = clientX + 45;
+    },
+    hoverend: function(e) {
+      return $.hide(ui.el);
     }
   };
   d = document;
@@ -1684,7 +1687,7 @@
         quote = _ref[_i];
         $.bind(quote, 'mouseover', quotePreview.mouseover);
         $.bind(quote, 'mousemove', ui.hover);
-        _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
+        _results.push($.bind(quote, 'mouseout', ui.hoverend));
       }
       return _results;
     },
@@ -1709,9 +1712,6 @@
       }
       $.show(qp);
       return ui.el = qp;
-    },
-    mouseout: function(e) {
-      return $.hide(ui.el);
     },
     get: function(id, threadID, innerHTML) {
       var body, html, reply, _i, _len, _ref;
@@ -1930,24 +1930,19 @@
           thumb = _ref2[_i];
           $.bind(thumb, 'mouseover', imageHover.cb.mouseover);
           $.bind(thumb, 'mousemove', ui.hover);
-          _results.push($.bind(thumb, 'mouseout', imageHover.cb.mouseout));
+          _results.push($.bind(thumb, 'mouseout', ui.hoverend));
         }
         return _results;
       },
       mouseover: function(e) {
         var el;
         el = $('#iHover');
+        el.src = null;
         el.src = this.parentNode.href;
         $.show(el);
         ui.el = el;
         ui.winHeight = d.body.clientHeight;
         return ui.winWidth = d.body.clientWidth;
-      },
-      mouseout: function(e) {
-        var el;
-        el = ui.el;
-        $.hide(el);
-        return el.src = null;
       }
     }
   };

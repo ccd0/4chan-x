@@ -156,6 +156,8 @@ ui =
       else
         top + 'px'
     el.style.left = clientX + 45
+  hoverend: (e) ->
+    $.hide ui.el
 
 #convenience
 d = document
@@ -1345,7 +1347,7 @@ quotePreview =
     for quote in $$ 'a.quotelink', root
       $.bind quote, 'mouseover', quotePreview.mouseover
       $.bind quote, 'mousemove', ui.hover
-      $.bind quote, 'mouseout',  quotePreview.mouseout
+      $.bind quote, 'mouseout',  ui.hoverend
   mouseover: (e) ->
     id = @textContent.replace ">>", ''
     qp = $ '#qp'
@@ -1364,8 +1366,6 @@ quotePreview =
         )
     $.show qp
     ui.el = qp
-  mouseout: (e) ->
-    $.hide ui.el
   get: (id, threadID, innerHTML) ->
     body = $.el 'body', {innerHTML}
 
@@ -1501,18 +1501,15 @@ imageHover =
       for thumb in $$ 'img[md5]', root
         $.bind thumb, 'mouseover', imageHover.cb.mouseover
         $.bind thumb, 'mousemove', ui.hover
-        $.bind thumb, 'mouseout',  imageHover.cb.mouseout
+        $.bind thumb, 'mouseout',  ui.hoverend
     mouseover: (e) ->
       el = $ '#iHover'
+      el.src = null
       el.src = @parentNode.href
       $.show el
       ui.el = el
       ui.winHeight = d.body.clientHeight
       ui.winWidth  = d.body.clientWidth
-    mouseout: (e) ->
-      {el} = ui
-      $.hide el
-      el.src = null
 
 imgPreloading =
   init: ->
