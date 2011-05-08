@@ -1993,13 +1993,14 @@
     },
     cb: {
       node: function(root) {
-        var thumb, _i, _len, _ref2, _results;
+        var a, thumb, _i, _len, _ref2, _results;
         _ref2 = $$('img[md5]', root);
         _results = [];
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           thumb = _ref2[_i];
-          $.bind(thumb.parentNode, 'click', imgExpand.cb.toggle);
-          _results.push(imgExpand.on ? imgExpand.toggle(thumb) : void 0);
+          a = thumb.parentNode;
+          $.bind(a, 'click', imgExpand.cb.toggle);
+          _results.push(imgExpand.on ? imgExpand.toggle(a) : void 0);
         }
         return _results;
       },
@@ -2043,9 +2044,9 @@
         return _results;
       }
     },
-    toggle: function(img) {
+    toggle: function(a) {
       var thumb;
-      thumb = img.parentNode.firstChild;
+      thumb = a.firstChild;
       imgExpand.foo();
       if (thumb.style.display) {
         return imgExpand.contract(thumb);

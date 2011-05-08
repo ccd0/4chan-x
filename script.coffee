@@ -1539,8 +1539,9 @@ imgExpand =
   cb:
     node: (root) ->
       for thumb in $$ 'img[md5]', root
-        $.bind thumb.parentNode, 'click', imgExpand.cb.toggle
-        if imgExpand.on then imgExpand.toggle thumb
+        a = thumb.parentNode
+        $.bind a, 'click', imgExpand.cb.toggle
+        if imgExpand.on then imgExpand.toggle a
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
       e.preventDefault()
@@ -1562,8 +1563,8 @@ imgExpand =
       for img in $$ 'img[md5] + img'
         imgExpand.resize img
 
-  toggle: (img) ->
-    thumb = img.parentNode.firstChild
+  toggle: (a) ->
+    thumb = a.firstChild
     imgExpand.foo()
     if thumb.style.display
       imgExpand.contract thumb
