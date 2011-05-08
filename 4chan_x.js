@@ -2340,8 +2340,7 @@
       #qr > div.move > input[name=name] {\
         float: left;\
       }\
-      #qr_form > div {\
-        float: left;\
+      #qr_form {\
         clear: both;\
       }\
       #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */\
