@@ -1491,7 +1491,7 @@ imageHover =
       ui.winWidth  = d.body.clientWidth
     mouseout: (e) ->
       {el} = ui
-      $.hide img
+      $.hide el
       el.src = null
 
 imgPreloading =

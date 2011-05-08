@@ -1918,7 +1918,7 @@
       mouseout: function(e) {
         var el;
         el = ui.el;
-        $.hide(img);
+        $.hide(el);
         return el.src = null;
       }
     }
