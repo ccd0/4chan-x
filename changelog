@@ -1,3 +1,7 @@
+2.4.2
+- fix nodeInserted (work on new posts)
+- qr: remember name
+
 2.4.1
 - fix image expansion bug
 
