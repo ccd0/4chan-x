@@ -7,7 +7,6 @@
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
-// @include        file://*
 // @updateURL      http://userscripts.org/scripts/source/51412.meta.js
 // ==/UserScript==
 
@@ -1664,13 +1663,17 @@
   };
   quotePreview = {
     init: function() {
-      var preview, quote, quotes, _i, _len, _results;
+      var preview;
+      g.callbacks.push(quotePreview.node);
       preview = $.el('div', {
         id: 'qp',
         className: 'reply'
       });
       $.hide(preview);
-      $.append(d.body, preview);
+      return $.append(d.body, preview);
+    },
+    node: function() {
+      var quote, quotes, _i, _len, _results;
       quotes = $$('a.quotelink');
       _results = [];
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {

@@ -1320,9 +1320,11 @@ titlePost =
 
 quotePreview =
   init: ->
+    g.callbacks.push quotePreview.node
     preview = $.el 'div', id: 'qp', className: 'reply'
     $.hide preview
     $.append d.body, preview
+  node: ->
     quotes = $$ 'a.quotelink'
     for quote in quotes
       $.bind quote, 'mouseover', quotePreview.mouseover
