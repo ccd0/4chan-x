@@ -2291,6 +2291,7 @@
       #qr textarea {\
         width: 302px;\
         height: 80px;\
+        margin: 0px;\
       }\
       #qr *:not(input):not(textarea) {\
         padding: 0 !important;\
