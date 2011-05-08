@@ -1836,9 +1836,6 @@ main =
       #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */
         display: none;
       }
-      #qr {
-        width: 302px;
-      }
       #qr form, #qr #com_submit, #qr input[type="file"] {
         margin: 0;
       }
@@ -1849,8 +1846,9 @@ main =
       #qr *:not(input):not(textarea) {
         padding: 0 !important;
       }
-      #qr.auto:not(:hover) form {
-        display: none;
+      #qr.auto:not(:hover) > form {
+        height: 0px;
+        overflow: hidden;
       }
       /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
       #qr input:-webkit-input-placeholder {
