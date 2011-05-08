@@ -888,9 +888,10 @@ qr =
     #maybe should be global
     MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
     THREAD_ID = g.THREAD_ID or link.pathname.split('/').pop()
+    name = $('input[name=name]').value
     html = "
       <div class=move>
-        <input class=inputtext type=text name=name placeholder=Name form=qr_form>
+        <input class=inputtext type=text name=name placeholder=Name form=qr_form value=#{name}>
         Quick Reply
         <input type=checkbox id=autohide title=autohide>
         <a name=close title=close>X</a>
