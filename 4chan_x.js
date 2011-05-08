@@ -1671,7 +1671,7 @@
       g.callbacks.push(quotePreview.node);
       preview = $.el('div', {
         id: 'qp',
-        className: 'reply'
+        className: 'replyhl'
       });
       $.hide(preview);
       return $.append(d.body, preview);
@@ -1689,15 +1689,41 @@
       return _results;
     },
     mouseover: function(e) {
-      var el, id;
+      var el, id, qp;
       id = this.textContent.replace(">>", '');
-      el = $('#qp');
-      el.innerHTML = d.getElementById(id).innerHTML;
-      $.show(el);
-      return ui.el = el;
+      qp = $('#qp');
+      if (el = d.getElementById(id)) {
+        qp.innerHTML = el.innerHTML;
+      } else {
+        qp.innerHTML = 'Loading...';
+        quotePreview.get(this, id);
+      }
+      $.show(qp);
+      return ui.el = qp;
     },
     mouseout: function(e) {
       return $.hide(ui.el);
+    },
+    get: function(link, id) {
+      return $.get(link.href, (function() {
+        return quotePreview.get2(link, id, this);
+      }));
+    },
+    get2: function(link, id, xhr) {
+      var body, reply, _i, _len, _ref, _results;
+      body = $.el('body', {
+        innerHTML: xhr.responseText
+      });
+      _ref = $$('td.reply', body);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        reply = _ref[_i];
+        if (reply.id === id) {
+          ui.el.innerHTML = reply.innerHTML;
+          break;
+        }
+      }
+      return _results;
     }
   };
   quickReport = {
@@ -2389,6 +2415,13 @@
       }\
       #watcher > div:last-child {\
         padding-bottom: 5px;\
+      }\
+\
+      #qp {\
+        border: 1px solid;\
+      }\
+      #qp input {\
+        display: none;\
       }\
     '
   };

@@ -1337,8 +1337,8 @@ quotePreview =
   init: ->
     g.callbacks.push quotePreview.node
     preview = $.el 'div',
-      id: 'qp',
-      className: 'reply'
+      id: 'qp'
+      className: 'replyhl'
     $.hide preview
     $.append d.body, preview
   node: (root) ->
@@ -1348,12 +1348,26 @@ quotePreview =
       $.bind quote, 'mouseout',  quotePreview.mouseout
   mouseover: (e) ->
     id = @textContent.replace ">>", ''
-    el = $ '#qp'
-    el.innerHTML = d.getElementById(id).innerHTML
-    $.show el
-    ui.el = el
+    qp = $ '#qp'
+    if el = d.getElementById id
+      qp.innerHTML = el.innerHTML
+    else
+      qp.innerHTML = 'Loading...'
+      quotePreview.get this, id
+    $.show qp
+    ui.el = qp
   mouseout: (e) ->
     $.hide ui.el
+  get: (link, id) ->
+    $.get link.href, (-> quotePreview.get2 link, id, this)
+  get2: (link, id, xhr) ->
+    body = $.el 'body',
+      innerHTML: xhr.responseText
+
+    for reply in $$ 'td.reply', body
+      if reply.id == id
+        ui.el.innerHTML = reply.innerHTML
+        break
 
 quickReport =
   init: ->
@@ -1905,6 +1919,13 @@ main =
       }
       #watcher > div:last-child {
         padding-bottom: 5px;
+      }
+
+      #qp {
+        border: 1px solid;
+      }
+      #qp input {
+        display: none;
       }
     '
 
