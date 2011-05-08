@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, redirect, replyHiding, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, quotePreview, redirect, replyHiding, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -84,6 +84,7 @@
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
         'Quick Reply': [true, 'Reply without leaving the page'],
         'Quick Report': [true, 'Add quick report buttons'],
+        'Quote Preview': [true, 'Show quote content on hover'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Sauce': [true, 'Add sauce to images'],
         'Show Stubs': [true, 'Of hidden threads / replies'],
@@ -1207,18 +1208,20 @@
       }
       $.append(op, node);
       op.id = $('input[name]', op).name;
-      node = op;
-      div = $.el('div', {
-        className: 'thread'
-      });
-      $.before(node, div);
-      while (node.nodeName !== 'HR') {
-        $.append(div, node);
-        node = div.nextSibling;
-      }
-      node = node.nextElementSibling;
-      if (!(node.align || node.nodeName === 'CENTER')) {
-        return threading.thread(node);
+      if (!g.REPLY) {
+        node = op;
+        div = $.el('div', {
+          className: 'thread'
+        });
+        $.before(node, div);
+        while (node.nodeName !== 'HR') {
+          $.append(div, node);
+          node = div.nextSibling;
+        }
+        node = node.nextElementSibling;
+        if (!(node.align || node.nodeName === 'CENTER')) {
+          return threading.thread(node);
+        }
       }
     },
     stopPropagation: function(e) {
@@ -1653,6 +1656,53 @@
       }
     }
   };
+  quotePreview = {
+    init: function() {
+      var preview;
+      g.callbacks.push(quotePreview.node);
+      preview = $.el('div', {
+        id: 'qp',
+        className: 'reply'
+      });
+      $.hide(preview);
+      return $.append(d.body, preview);
+    },
+    node: function() {
+      var quote, quotes, _i, _len, _results;
+      quotes = $$('a.quotelink');
+      _results = [];
+      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+        quote = quotes[_i];
+        _results.push($.bind(quote, 'mouseover', quotePreview.mouseover));
+      }
+      return _results;
+    },
+    mouseover: function(e) {
+      var clientX, clientY, id, preview, target;
+      target = e.target, clientX = e.clientX, clientY = e.clientY;
+      preview = $('#qp');
+      id = target.textContent.replace(">>", '');
+      preview.innerHTML = d.getElementById(id).innerHTML;
+      $.show(preview);
+      $.bind(target, 'mousemove', quotePreview.mousemove);
+      return $.bind(target, 'mouseout', quotePreview.mouseout);
+    },
+    mousemove: function(e) {
+      var clientX, clientY, preview;
+      clientX = e.clientX, clientY = e.clientY;
+      preview = $('#qp');
+      preview.style.left = clientX + 45;
+      return preview.style.top = clientY - 120;
+    },
+    mouseout: function(e) {
+      var preview, target;
+      target = e.target;
+      preview = $('#qp');
+      $.hide(preview);
+      $.unbind(target, 'mousemove', quotePreview.mousemove);
+      return $.unbind(target, 'mouseout', quotePreview.mouseout);
+    }
+  };
   quickReport = {
     init: function() {
       return g.callbacks.push(quickReport.cb.node);
@@ -1841,12 +1891,8 @@
         id: 'iHover'
       });
       $.hide(img);
-      d.body.appendChild(img);
+      $.append(d.body, img);
       return g.callbacks.push(imageHover.cb.node);
-    },
-    offset: {
-      x: 45,
-      y: -120
     },
     cb: {
       node: function(root) {
@@ -1875,10 +1921,10 @@
         clientX = e.clientX, clientY = e.clientY;
         img = $('#iHover');
         imgHeight = img.offsetHeight;
-        top = clientY + imageHover.offset.y;
+        top = clientY - 120;
         bot = top + imgHeight;
         img.style.top = imageHover.winHeight < imgHeight || top < 0 ? '0px' : bot > imageHover.winHeight ? imageHover.winHeight - imgHeight + 'px' : top + 'px';
-        return img.style.left = clientX + imageHover.offset.x;
+        return img.style.left = clientX + 45;
       },
       mouseout: function(e) {
         var img, target;
@@ -2156,12 +2202,16 @@
       if ($.config('Quick Report')) {
         quickReport.init();
       }
+      if ($.config('Quote Preview')) {
+        quotePreview.init();
+      }
       if ($.config('Thread Watcher')) {
         watcher.init();
       }
       if ($.config('Keybinds')) {
         keybinds.init();
       }
+      threading.init();
       if (g.REPLY) {
         if ($.config('Thread Updater')) {
           updater.init();
@@ -2182,7 +2232,6 @@
           watcher.watch(null, g.THREAD_ID);
         }
       } else {
-        threading.init();
         if ($.config('Thread Hiding')) {
           threadHiding.init();
         }
@@ -2241,7 +2290,7 @@
         display: none;\
       }\
 \
-      #iHover {\
+      #qp, #iHover {\
         position: fixed;\
       }\
 \
