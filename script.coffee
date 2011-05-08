@@ -1487,12 +1487,13 @@ Recaptcha =
     window.location = 'javascript:Recaptcha.reload()'
 
 nodeInserted = (e) ->
-  if @nodeName is 'TABLE'
+  {target} = e
+  if target.nodeName is 'TABLE'
     for callback in g.callbacks
-      callback this
-  else if @id is 'recaptcha_challenge_field' and dialog = $ '#qr'
-    $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + @value
-    $('#recaptcha_challenge_field', dialog).value = @value
+      callback target
+  else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
+    $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+    $('#recaptcha_challenge_field', dialog).value = target.value
 
 imageHover =
   init: ->
