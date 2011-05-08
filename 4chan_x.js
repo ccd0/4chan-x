@@ -1699,7 +1699,7 @@
         qp.innerHTML = el.innerHTML;
       } else {
         threadID = this.pathname.split('/').pop();
-        if (req = g.requests[threadID] && req.readyState === 4) {
+        if ((req = g.requests[threadID]) && req.readyState === 4) {
           quotePreview.parse(req, id, threadID);
         } else {
           qp.innerHTML = "Loading " + id + "...";

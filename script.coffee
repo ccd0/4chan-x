@@ -1355,7 +1355,7 @@ quotePreview =
       qp.innerHTML = el.innerHTML
     else
       threadID = @pathname.split('/').pop()
-      if req = g.requests[threadID] and req.readyState is 4
+      if (req = g.requests[threadID]) and req.readyState is 4
         quotePreview.parse req, id, threadID
       else
         qp.innerHTML = "Loading #{id}..."
