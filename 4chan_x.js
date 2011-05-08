@@ -2340,8 +2340,7 @@
       #qr > div.move > input[name=name] {\
         float: left;\
       }\
-      #qr_form > div {\
-        float: left;\
+      #qr_form {\
         clear: both;\
       }\
       #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */\
@@ -2363,7 +2362,7 @@
         overflow: hidden;\
       }\
       /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */\
-      #qr input:-webkit-input-placeholder {\
+      #qr input::-webkit-input-placeholder {\
         color: grey;\
       }\
       #qr input:-moz-placeholder {\
