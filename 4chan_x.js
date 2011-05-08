@@ -1702,7 +1702,7 @@
         if (html = g.cache[threadID]) {
           quotePreview.get(id, threadID, html);
         } else {
-          qp.innerHTML = 'Loading...';
+          qp.innerHTML = "Loading " + id + "...";
           $.get(this.href, (function() {
             html = this.responseText;
             g.cache[threadID] = html;
@@ -1714,7 +1714,11 @@
       return ui.el = qp;
     },
     get: function(id, threadID, innerHTML) {
-      var body, html, reply, _i, _len, _ref;
+      var body, html, qp, reply, _i, _len, _ref;
+      qp = $('#qp');
+      if (qp.innerHTML !== ("Loading " + id + "...")) {
+        return;
+      }
       body = $.el('body', {
         innerHTML: innerHTML
       });
@@ -1730,7 +1734,7 @@
           }
         }
       }
-      return ui.el.innerHTML = html;
+      return qp.innerHTML = html;
     }
   };
   quickReport = {

@@ -1358,7 +1358,7 @@ quotePreview =
       if html = g.cache[threadID]
         quotePreview.get id, threadID, html
       else
-        qp.innerHTML = 'Loading...'
+        qp.innerHTML = "Loading #{id}..."
         $.get @href, (->
           html = @responseText
           g.cache[threadID] = html
@@ -1367,8 +1367,9 @@ quotePreview =
     $.show qp
     ui.el = qp
   get: (id, threadID, innerHTML) ->
+    qp = $ '#qp'
+    return unless qp.innerHTML is "Loading #{id}..."
     body = $.el 'body', {innerHTML}
-
     if id == threadID #OP
       html = $('blockquote', body).innerHTML
     else
@@ -1376,8 +1377,7 @@ quotePreview =
         if reply.id == id
           html = reply.innerHTML
           break
-
-    ui.el.innerHTML =  html
+    qp.innerHTML = html
 
 quickReport =
   init: ->
