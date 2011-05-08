@@ -1378,7 +1378,8 @@ quotePreview =
     body = $.el 'body',
       innerHTML: req.responseText
     if id == threadID #OP
-      html = $('blockquote', body).innerHTML
+      threading.thread $ 'form[name=delform] > *:not([id])', body
+      html = $('.op', body).innerHTML
     else
       for reply in $$ 'td.reply', body
         if reply.id == id
