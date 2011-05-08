@@ -141,6 +141,21 @@ ui =
     d = document
     d.removeEventListener 'mousemove', ui.drag, true
     d.removeEventListener 'mouseup',   ui.dragend, true
+  hover: (e) ->
+    {clientX, clientY} = e
+    {el} = ui
+    height = el.offsetHeight
+
+    top = clientY - 120
+    bot = top + height
+    el.style.top =
+      if ui.winHeight < height or top < 0
+        '0px'
+      else if bot > ui.winHeight
+        ui.winHeight - height + 'px'
+      else
+        top + 'px'
+    el.style.left = clientX + 45
 
 #convenience
 d = document
@@ -1329,21 +1344,17 @@ quotePreview =
   node: (root) ->
     for quote in $$ 'a.quotelink', root
       $.bind quote, 'mouseover', quotePreview.mouseover
-      $.bind quote, 'mousemove', quotePreview.mousemove
+      $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  quotePreview.mouseout
   mouseover: (e) ->
     {target} = e
     id = target.textContent.replace ">>", ''
-    preview = $ '#qp'
-    preview.innerHTML = d.getElementById(id).innerHTML
-    $.show preview
-  mousemove: (e) ->
-    {clientX, clientY} = e
-    preview = $ '#qp'
-    preview.style.left = clientX + 45
-    preview.style.top  = clientY - 120
+    el = $ '#qp'
+    el.innerHTML = d.getElementById(id).innerHTML
+    $.show el
+    ui.el = el
   mouseout: (e) ->
-    $.hide $ '#qr'
+    $.hide ui.el
 
 quickReport =
   init: ->
@@ -1468,34 +1479,20 @@ imageHover =
     node: (root) ->
       for thumb in $$ 'img[md5]', root
         $.bind thumb, 'mouseover', imageHover.cb.mouseover
-        $.bind thumb, 'mousemove', imageHover.cb.mousemove
+        $.bind thumb, 'mousemove', ui.hover
         $.bind thumb, 'mouseout',  imageHover.cb.mouseout
     mouseover: (e) ->
       {target} = e
-      img = $ '#iHover'
-      img.src = target.parentNode.href
-      $.show img
-      imageHover.winHeight = d.body.clientHeight
-      imageHover.winWidth  = d.body.clientWidth
-    mousemove: (e) ->
-      {clientX, clientY} = e
-      img = $ '#iHover'
-      imgHeight = img.offsetHeight
-
-      top = clientY - 120
-      bot = top + imgHeight
-      img.style.top =
-        if imageHover.winHeight < imgHeight or top < 0
-          '0px'
-        else if bot > imageHover.winHeight
-          imageHover.winHeight - imgHeight + 'px'
-        else
-          top + 'px'
-      img.style.left = clientX + 45
+      el = $ '#iHover'
+      el.src = target.parentNode.href
+      $.show el
+      ui.el = el
+      ui.winHeight = d.body.clientHeight
+      ui.winWidth  = d.body.clientWidth
     mouseout: (e) ->
-      img = $ '#iHover'
+      {el} = ui
       $.hide img
-      img.src = null
+      el.src = null
 
 imgPreloading =
   init: ->

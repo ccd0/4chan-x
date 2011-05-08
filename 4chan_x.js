@@ -224,6 +224,16 @@
       d = document;
       d.removeEventListener('mousemove', ui.drag, true);
       return d.removeEventListener('mouseup', ui.dragend, true);
+    },
+    hover: function(e) {
+      var bot, clientX, clientY, el, height, top;
+      clientX = e.clientX, clientY = e.clientY;
+      el = ui.el;
+      height = el.offsetHeight;
+      top = clientY - 120;
+      bot = top + height;
+      el.style.top = ui.winHeight < height || top < 0 ? '0px' : bot > ui.winHeight ? ui.winHeight - height + 'px' : top + 'px';
+      return el.style.left = clientX + 45;
     }
   };
   d = document;
@@ -1673,28 +1683,22 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         $.bind(quote, 'mouseover', quotePreview.mouseover);
-        $.bind(quote, 'mousemove', quotePreview.mousemove);
+        $.bind(quote, 'mousemove', ui.hover);
         _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
       }
       return _results;
     },
     mouseover: function(e) {
-      var id, preview, target;
+      var el, id, target;
       target = e.target;
       id = target.textContent.replace(">>", '');
-      preview = $('#qp');
-      preview.innerHTML = d.getElementById(id).innerHTML;
-      return $.show(preview);
-    },
-    mousemove: function(e) {
-      var clientX, clientY, preview;
-      clientX = e.clientX, clientY = e.clientY;
-      preview = $('#qp');
-      preview.style.left = clientX + 45;
-      return preview.style.top = clientY - 120;
+      el = $('#qp');
+      el.innerHTML = d.getElementById(id).innerHTML;
+      $.show(el);
+      return ui.el = el;
     },
     mouseout: function(e) {
-      return $.hide($('#qr'));
+      return $.hide(ui.el);
     }
   };
   quickReport = {
@@ -1896,35 +1900,26 @@
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           thumb = _ref2[_i];
           $.bind(thumb, 'mouseover', imageHover.cb.mouseover);
-          $.bind(thumb, 'mousemove', imageHover.cb.mousemove);
+          $.bind(thumb, 'mousemove', ui.hover);
           _results.push($.bind(thumb, 'mouseout', imageHover.cb.mouseout));
         }
         return _results;
       },
       mouseover: function(e) {
-        var img, target;
+        var el, target;
         target = e.target;
-        img = $('#iHover');
-        img.src = target.parentNode.href;
-        $.show(img);
-        imageHover.winHeight = d.body.clientHeight;
-        return imageHover.winWidth = d.body.clientWidth;
-      },
-      mousemove: function(e) {
-        var bot, clientX, clientY, img, imgHeight, top;
-        clientX = e.clientX, clientY = e.clientY;
-        img = $('#iHover');
-        imgHeight = img.offsetHeight;
-        top = clientY - 120;
-        bot = top + imgHeight;
-        img.style.top = imageHover.winHeight < imgHeight || top < 0 ? '0px' : bot > imageHover.winHeight ? imageHover.winHeight - imgHeight + 'px' : top + 'px';
-        return img.style.left = clientX + 45;
+        el = $('#iHover');
+        el.src = target.parentNode.href;
+        $.show(el);
+        ui.el = el;
+        ui.winHeight = d.body.clientHeight;
+        return ui.winWidth = d.body.clientWidth;
       },
       mouseout: function(e) {
-        var img;
-        img = $('#iHover');
+        var el;
+        el = ui.el;
         $.hide(img);
-        return img.src = null;
+        return el.src = null;
       }
     }
   };
