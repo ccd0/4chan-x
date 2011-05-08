@@ -1206,20 +1206,21 @@
       }
       $.append(op, node);
       op.id = $('input[name]', op).name;
-      if (!g.REPLY) {
-        node = op;
-        div = $.el('div', {
-          className: 'thread'
-        });
-        $.before(node, div);
-        while (node.nodeName !== 'HR') {
-          $.append(div, node);
-          node = div.nextSibling;
-        }
-        node = node.nextElementSibling;
-        if (!(node.align || node.nodeName === 'CENTER')) {
-          return threading.thread(node);
-        }
+      if (g.REPLY) {
+        return;
+      }
+      node = op;
+      div = $.el('div', {
+        className: 'thread'
+      });
+      $.before(node, div);
+      while (node.nodeName !== 'HR') {
+        $.append(div, node);
+        node = div.nextSibling;
+      }
+      node = node.nextElementSibling;
+      if (!(node.align || node.nodeName === 'CENTER')) {
+        return threading.thread(node);
       }
     },
     stopPropagation: function(e) {

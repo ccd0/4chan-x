@@ -964,21 +964,22 @@ threading =
     $.append op, node #add the blockquote
     op.id = $('input[name]', op).name
 
-    unless g.REPLY
-      node = op
+    return if g.REPLY
 
-      div = $.el 'div',
-        className: 'thread'
-      $.before node, div
+    node = op
 
-      while node.nodeName isnt 'HR'
-        $.append div, node
-        node = div.nextSibling
+    div = $.el 'div',
+      className: 'thread'
+    $.before node, div
 
-      node = node.nextElementSibling #skip text node
-      #{N,}SFW
-      unless node.align or node.nodeName is 'CENTER'
-        threading.thread node
+    while node.nodeName isnt 'HR'
+      $.append div, node
+      node = div.nextSibling
+
+    node = node.nextElementSibling #skip text node
+    #{N,}SFW
+    unless node.align or node.nodeName is 'CENTER'
+      threading.thread node
 
   stopPropagation: (e) ->
     e.stopPropagation()
