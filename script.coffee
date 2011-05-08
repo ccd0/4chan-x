@@ -299,7 +299,7 @@ else
 
 $$ = (selector, root=d.body) ->
   result = root.querySelectorAll selector
-  node for node in result
+  Array::slice.call result
 
 #funks
 expandComment =

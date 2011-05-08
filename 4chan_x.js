@@ -433,17 +433,12 @@
     });
   }
   $$ = function(selector, root) {
-    var node, result, _i, _len, _results;
+    var result;
     if (root == null) {
       root = d.body;
     }
     result = root.querySelectorAll(selector);
-    _results = [];
-    for (_i = 0, _len = result.length; _i < _len; _i++) {
-      node = result[_i];
-      _results.push(node);
-    }
-    return _results;
+    return Array.prototype.slice.call(result);
   };
   expandComment = {
     init: function() {
