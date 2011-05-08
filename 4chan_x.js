@@ -1666,9 +1666,9 @@
       $.hide(preview);
       return $.append(d.body, preview);
     },
-    node: function() {
+    node: function(root) {
       var quote, quotes, _i, _len, _results;
-      quotes = $$('a.quotelink');
+      quotes = $$('a.quotelink', root);
       _results = [];
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
