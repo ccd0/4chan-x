@@ -7,7 +7,6 @@
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
-// @include        file://*
 // @updateURL      http://userscripts.org/scripts/source/51412.meta.js
 // ==/UserScript==
 
@@ -2282,9 +2281,6 @@
       #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */\
         display: none;\
       }\
-      #qr {\
-        width: 302px;\
-      }\
       #qr form, #qr #com_submit, #qr input[type="file"] {\
         margin: 0;\
       }\
@@ -2295,8 +2291,9 @@
       #qr *:not(input):not(textarea) {\
         padding: 0 !important;\
       }\
-      #qr.auto:not(:hover) form {\
-        display: none;\
+      #qr.auto:not(:hover) > form {\
+        height: 0px;\
+        overflow: hidden;\
       }\
       /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */\
       #qr input:-webkit-input-placeholder {\
