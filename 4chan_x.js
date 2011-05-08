@@ -1667,11 +1667,11 @@
       return $.append(d.body, preview);
     },
     node: function(root) {
-      var quote, quotes, _i, _len, _results;
-      quotes = $$('a.quotelink', root);
+      var quote, _i, _len, _ref, _results;
+      _ref = $$('a.quotelink', root);
       _results = [];
-      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-        quote = quotes[_i];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
         $.bind(quote, 'mouseover', quotePreview.mouseover);
         $.bind(quote, 'mousemove', quotePreview.mousemove);
         _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
@@ -1681,8 +1681,8 @@
     mouseover: function(e) {
       var id, preview, target;
       target = e.target;
-      preview = $('#qp');
       id = target.textContent.replace(">>", '');
+      preview = $('#qp');
       preview.innerHTML = d.getElementById(id).innerHTML;
       return $.show(preview);
     },
@@ -1694,10 +1694,7 @@
       return preview.style.top = clientY - 120;
     },
     mouseout: function(e) {
-      var preview, target;
-      target = e.target;
-      preview = $('#qp');
-      return $.hide(preview);
+      return $.hide($('#qr'));
     }
   };
   quickReport = {
@@ -1893,11 +1890,11 @@
     },
     cb: {
       node: function(root) {
-        var thumb, thumbs, _i, _len, _results;
-        thumbs = $$('img[md5]', root);
+        var thumb, _i, _len, _ref2, _results;
+        _ref2 = $$('img[md5]', root);
         _results = [];
-        for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-          thumb = thumbs[_i];
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          thumb = _ref2[_i];
           $.bind(thumb, 'mouseover', imageHover.cb.mouseover);
           $.bind(thumb, 'mousemove', imageHover.cb.mousemove);
           _results.push($.bind(thumb, 'mouseout', imageHover.cb.mouseout));
@@ -1924,8 +1921,7 @@
         return img.style.left = clientX + 45;
       },
       mouseout: function(e) {
-        var img, target;
-        target = e.target;
+        var img;
         img = $('#iHover');
         $.hide(img);
         return img.src = null;

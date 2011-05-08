@@ -1327,15 +1327,14 @@ quotePreview =
     $.hide preview
     $.append d.body, preview
   node: (root) ->
-    quotes = $$ 'a.quotelink', root
-    for quote in quotes
+    for quote in $$ 'a.quotelink', root
       $.bind quote, 'mouseover', quotePreview.mouseover
       $.bind quote, 'mousemove', quotePreview.mousemove
       $.bind quote, 'mouseout',  quotePreview.mouseout
   mouseover: (e) ->
     {target} = e
-    preview = $ '#qp'
     id = target.textContent.replace ">>", ''
+    preview = $ '#qp'
     preview.innerHTML = d.getElementById(id).innerHTML
     $.show preview
   mousemove: (e) ->
@@ -1344,9 +1343,7 @@ quotePreview =
     preview.style.left = clientX + 45
     preview.style.top  = clientY - 120
   mouseout: (e) ->
-    {target} = e
-    preview = $ '#qp'
-    $.hide preview
+    $.hide $ '#qr'
 
 quickReport =
   init: ->
@@ -1469,8 +1466,7 @@ imageHover =
     g.callbacks.push imageHover.cb.node
   cb:
     node: (root) ->
-      thumbs = $$ 'img[md5]', root
-      for thumb in thumbs
+      for thumb in $$ 'img[md5]', root
         $.bind thumb, 'mouseover', imageHover.cb.mouseover
         $.bind thumb, 'mousemove', imageHover.cb.mousemove
         $.bind thumb, 'mouseout',  imageHover.cb.mouseout
@@ -1497,7 +1493,6 @@ imageHover =
           top + 'px'
       img.style.left = clientX + 45
     mouseout: (e) ->
-      {target} = e
       img = $ '#iHover'
       $.hide img
       img.src = null
