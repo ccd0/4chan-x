@@ -150,11 +150,11 @@ ui =
     bot = top + height
     el.style.top =
       if ui.winHeight < height or top < 0
-        '0px'
+        0
       else if bot > ui.winHeight
-        ui.winHeight - height + 'px'
+        ui.winHeight - height
       else
-        top + 'px'
+        top
     el.style.left = clientX + 45
   hoverend: (e) ->
     $.hide ui.el
@@ -1366,6 +1366,7 @@ quotePreview =
         g.requests[threadID] = $.get @href, (-> quotePreview.parse this, id, threadID)
     $.show qp
     ui.el = qp
+    ui.winHeight = d.body.clientHeight
   parse: (req, id, threadID) ->
     qp = $ '#qp'
     return unless qp.innerHTML is "Loading #{id}..."
@@ -1516,7 +1517,6 @@ imageHover =
       $.show el
       ui.el = el
       ui.winHeight = d.body.clientHeight
-      ui.winWidth  = d.body.clientWidth
 
 imgPreloading =
   init: ->
