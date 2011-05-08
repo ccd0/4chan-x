@@ -1354,14 +1354,13 @@ quotePreview =
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
     else
+      qp.innerHTML = "Loading #{id}..."
       threadID = @pathname.split('/').pop()
-      if (req = g.requests[threadID]) and req.readyState is 4
-        quotePreview.parse req, id, threadID
+      if req = g.requests[threadID]
+        if req.readyState is 4
+          quotePreview.parse req, id, threadID
       else
-        qp.innerHTML = "Loading #{id}..."
-        if not req
-          g.requests[threadID] = $.get @href,
-            (-> quotePreview.parse this, id, threadID)
+        g.requests[threadID] = $.get @href, (-> quotePreview.parse this, id, threadID)
     $.show qp
     ui.el = qp
   parse: (req, id, threadID) ->

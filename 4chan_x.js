@@ -1698,16 +1698,16 @@
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
       } else {
+        qp.innerHTML = "Loading " + id + "...";
         threadID = this.pathname.split('/').pop();
-        if ((req = g.requests[threadID]) && req.readyState === 4) {
-          quotePreview.parse(req, id, threadID);
-        } else {
-          qp.innerHTML = "Loading " + id + "...";
-          if (!req) {
-            g.requests[threadID] = $.get(this.href, (function() {
-              return quotePreview.parse(this, id, threadID);
-            }));
+        if (req = g.requests[threadID]) {
+          if (req.readyState === 4) {
+            quotePreview.parse(req, id, threadID);
           }
+        } else {
+          g.requests[threadID] = $.get(this.href, (function() {
+            return quotePreview.parse(this, id, threadID);
+          }));
         }
       }
       $.show(qp);
