@@ -1,3 +1,11 @@
+2.4.0
+- mayhem:
+  auto watch reply
+  fix report button splitting over two lines
+  start merging /b/ackwash
+- quote previews
+- qr remix
+
 2.3.0
 - mayhem:
   refresh watcher list on un/watch
