@@ -1693,7 +1693,7 @@
     },
     mouseover: function(e) {
       var el, id, qp, req, threadID;
-      id = this.textContent.replace(">>", '');
+      id = this.textContent.slice(2);
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;

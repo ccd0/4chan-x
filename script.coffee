@@ -1349,7 +1349,7 @@ quotePreview =
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  ui.hoverend
   mouseover: (e) ->
-    id = @textContent.replace ">>", ''
+    id = @textContent[2..]
     qp = $ '#qp'
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
