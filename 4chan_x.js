@@ -1240,18 +1240,20 @@
       }
       $.append(op, node);
       op.id = $('input[name]', op).name;
-      node = op;
-      div = $.el('div', {
-        className: 'thread'
-      });
-      $.before(node, div);
-      while (node.nodeName !== 'HR') {
-        $.append(div, node);
-        node = div.nextSibling;
-      }
-      node = node.nextElementSibling;
-      if (!(node.align || node.nodeName === 'CENTER')) {
-        return threading.thread(node);
+      if (!g.REPLY) {
+        node = op;
+        div = $.el('div', {
+          className: 'thread'
+        });
+        $.before(node, div);
+        while (node.nodeName !== 'HR') {
+          $.append(div, node);
+          node = div.nextSibling;
+        }
+        node = node.nextElementSibling;
+        if (!(node.align || node.nodeName === 'CENTER')) {
+          return threading.thread(node);
+        }
       }
     },
     stopPropagation: function(e) {
@@ -1707,8 +1709,7 @@
       var clientX, clientY, id, preview, target;
       target = e.target, clientX = e.clientX, clientY = e.clientY;
       preview = $('#qp');
-      id = target.textContent;
-      id = id.replace(">>", '');
+      id = target.textContent.replace(">>", '');
       preview.innerHTML = d.getElementById(id).innerHTML;
       $.show(preview);
       $.bind(target, 'mousemove', quotePreview.mousemove);
@@ -2238,6 +2239,7 @@
       if ($.config('Keybinds')) {
         keybinds.init();
       }
+      threading.init();
       if (g.REPLY) {
         if ($.config('Thread Updater')) {
           updater.init();
@@ -2258,7 +2260,6 @@
           watcher.watch(null, g.THREAD_ID);
         }
       } else {
-        threading.init();
         if ($.config('Thread Hiding')) {
           threadHiding.init();
         }

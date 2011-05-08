@@ -966,20 +966,21 @@ threading =
     $.append op, node #add the blockquote
     op.id = $('input[name]', op).name
 
-    node = op
+    unless g.REPLY
+      node = op
 
-    div = $.el 'div',
-      className: 'thread'
-    $.before node, div
+      div = $.el 'div',
+        className: 'thread'
+      $.before node, div
 
-    while node.nodeName isnt 'HR'
-      $.append div, node
-      node = div.nextSibling
+      while node.nodeName isnt 'HR'
+        $.append div, node
+        node = div.nextSibling
 
-    node = node.nextElementSibling #skip text node
-    #{N,}SFW
-    unless node.align or node.nodeName is 'CENTER'
-      threading.thread node
+      node = node.nextElementSibling #skip text node
+      #{N,}SFW
+      unless node.align or node.nodeName is 'CENTER'
+        threading.thread node
 
   stopPropagation: (e) ->
     e.stopPropagation()
@@ -1329,8 +1330,7 @@ quotePreview =
   mouseover: (e) ->
     {target, clientX, clientY} = e
     preview = $ '#qp'
-    id = target.textContent
-    id = id.replace ">>", ''
+    id = target.textContent.replace ">>", ''
     preview.innerHTML = d.getElementById(id).innerHTML
     $.show preview
     $.bind target, 'mousemove', quotePreview.mousemove
@@ -1724,6 +1724,8 @@ main =
     if $.config 'Keybinds'
       keybinds.init()
 
+    threading.init()
+
     if g.REPLY
       if $.config 'Thread Updater'
         updater.init()
@@ -1745,8 +1747,6 @@ main =
           watcher.watch null, g.THREAD_ID
 
     else #not reply
-      threading.init()
-
       if $.config 'Thread Hiding'
         threadHiding.init()
 
