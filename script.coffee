@@ -103,7 +103,7 @@ ui =
   dragstart: (e) ->
     #prevent text selection
     e.preventDefault()
-    ui.el = el = e.target.parentNode
+    ui.el = el = @parentNode
     d = document
     d.addEventListener 'mousemove', ui.drag, true
     d.addEventListener 'mouseup',   ui.dragend, true
@@ -325,7 +325,7 @@ expandComment =
   cb:
     expand: (e) ->
       e.preventDefault()
-      a = e.target
+      a = this
       a.textContent = 'Loading...'
       href = a.getAttribute 'href'
       [_, threadID, replyID] = href.match /(\d+)#(\d+)/
@@ -357,7 +357,7 @@ expandThread =
 
   cb:
     toggle: (e) ->
-      thread = e.target.parentNode
+      thread = @parentNode
       expandThread.toggle thread
 
     load: (xhr, thread, a) ->
@@ -417,7 +417,7 @@ replyHiding =
 
   cb:
     hide: (e) ->
-      reply = e.target.parentNode.nextSibling
+      reply = @parentNode.nextSibling
       replyHiding.hide reply
 
     node: (root) ->
@@ -434,7 +434,7 @@ replyHiding =
           replyHiding.hide reply
 
     show: (e) ->
-      div = e.target.parentNode
+      div = @parentNode
       table = div.nextSibling
       replyHiding.show table
 
@@ -785,7 +785,7 @@ qr =
         $.bind quote, 'click', qr.cb.quote
 
     submit: (e) ->
-      form = e.target
+      form = this
       isQR = form.parentNode.id == 'qr'
 
       if $.config('Auto Watch Reply') and $.config('Thread Watcher')
@@ -817,7 +817,7 @@ qr =
 
     quote: (e) ->
       e.preventDefault()
-      qr.quote e.target
+      qr.quote this
 
   quote: (link) ->
     if dialog = $ '#qr'
@@ -1014,10 +1014,10 @@ threadHiding =
 
   cb:
     hide: (e) ->
-      thread = e.target.parentNode.parentNode
+      thread = @parentNode.parentNode
       threadHiding.hide thread
     show: (e) ->
-      thread = e.target.parentNode.parentNode
+      thread = @parentNode.parentNode
       threadHiding.show thread
 
   toggle: (thread) ->
@@ -1239,9 +1239,9 @@ watcher =
 
   cb:
     toggle: (e) ->
-      watcher.toggle e.target.parentNode
+      watcher.toggle @parentNode
     x: (e) ->
-      [board, _, id] = e.target.nextElementSibling
+      [board, _, id] = @nextElementSibling
         .getAttribute('href').substring(1).split('/')
       watcher.unwatch board, id
 
@@ -1347,8 +1347,7 @@ quotePreview =
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  quotePreview.mouseout
   mouseover: (e) ->
-    {target} = e
-    id = target.textContent.replace ">>", ''
+    id = @textContent.replace ">>", ''
     el = $ '#qp'
     el.innerHTML = d.getElementById(id).innerHTML
     $.show el
@@ -1369,8 +1368,7 @@ quickReport =
         $.after el, a
         $.after el, $.tn(' ')
     report: (e) ->
-      {target} = e
-      quickReport.report target
+      quickReport.report this
   report: (target) ->
     input = $.x('preceding-sibling::input[1]', target)
     input.click()
@@ -1461,13 +1459,12 @@ Recaptcha =
     window.location = 'javascript:Recaptcha.reload()'
 
 nodeInserted = (e) ->
-  {target} = e
-  if target.nodeName is 'TABLE'
+  if @nodeName is 'TABLE'
     for callback in g.callbacks
-      callback target
-  else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
-    $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('#recaptcha_challenge_field', dialog).value = target.value
+      callback this
+  else if @id is 'recaptcha_challenge_field' and dialog = $ '#qr'
+    $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + @value
+    $('#recaptcha_challenge_field', dialog).value = @value
 
 imageHover =
   init: ->
@@ -1482,9 +1479,8 @@ imageHover =
         $.bind thumb, 'mousemove', ui.hover
         $.bind thumb, 'mouseout',  imageHover.cb.mouseout
     mouseover: (e) ->
-      {target} = e
       el = $ '#iHover'
-      el.src = target.parentNode.href
+      el.src = @parentNode.href
       $.show el
       ui.el = el
       ui.winHeight = d.body.clientHeight
@@ -1524,10 +1520,10 @@ imgExpand =
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
       e.preventDefault()
-      imgExpand.toggle e.target
+      imgExpand.toggle this
     all: (e) ->
       thumbs = $$ 'img[md5]'
-      imgExpand.on = e.target.checked
+      imgExpand.on = @checked
       imgExpand.foo()
       if imgExpand.on #expand
         for thumb in thumbs

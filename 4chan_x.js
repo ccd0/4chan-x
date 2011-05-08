@@ -182,7 +182,7 @@
     dragstart: function(e) {
       var d, el, rect;
       e.preventDefault();
-      ui.el = el = e.target.parentNode;
+      ui.el = el = this.parentNode;
       d = document;
       d.addEventListener('mousemove', ui.drag, true);
       d.addEventListener('mouseup', ui.dragend, true);
@@ -464,7 +464,7 @@
       expand: function(e) {
         var a, href, replyID, threadID, _, _ref;
         e.preventDefault();
-        a = e.target;
+        a = this;
         a.textContent = 'Loading...';
         href = a.getAttribute('href');
         _ref = href.match(/(\d+)#(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
@@ -512,7 +512,7 @@
     cb: {
       toggle: function(e) {
         var thread;
-        thread = e.target.parentNode;
+        thread = this.parentNode;
         return expandThread.toggle(thread);
       },
       load: function(xhr, thread, a) {
@@ -584,7 +584,7 @@
     cb: {
       hide: function(e) {
         var reply;
-        reply = e.target.parentNode.nextSibling;
+        reply = this.parentNode.nextSibling;
         return replyHiding.hide(reply);
       },
       node: function(root) {
@@ -606,7 +606,7 @@
       },
       show: function(e) {
         var div, table;
-        div = e.target.parentNode;
+        div = this.parentNode;
         table = div.nextSibling;
         replyHiding.show(table);
         return $.remove(div);
@@ -1024,7 +1024,7 @@
       },
       submit: function(e) {
         var form, id, isQR, op;
-        form = e.target;
+        form = this;
         isQR = form.parentNode.id === 'qr';
         if ($.config('Auto Watch Reply') && $.config('Thread Watcher')) {
           if (g.REPLY && $('img.favicon').src === Favicon.empty) {
@@ -1057,7 +1057,7 @@
       },
       quote: function(e) {
         e.preventDefault();
-        return qr.quote(e.target);
+        return qr.quote(this);
       }
     },
     quote: function(link) {
@@ -1258,12 +1258,12 @@
     cb: {
       hide: function(e) {
         var thread;
-        thread = e.target.parentNode.parentNode;
+        thread = this.parentNode.parentNode;
         return threadHiding.hide(thread);
       },
       show: function(e) {
         var thread;
-        thread = e.target.parentNode.parentNode;
+        thread = this.parentNode.parentNode;
         return threadHiding.show(thread);
       }
     },
@@ -1520,11 +1520,11 @@
     },
     cb: {
       toggle: function(e) {
-        return watcher.toggle(e.target.parentNode);
+        return watcher.toggle(this.parentNode);
       },
       x: function(e) {
         var board, id, _, _ref;
-        _ref = e.target.nextElementSibling.getAttribute('href').substring(1).split('/'), board = _ref[0], _ = _ref[1], id = _ref[2];
+        _ref = this.nextElementSibling.getAttribute('href').substring(1).split('/'), board = _ref[0], _ = _ref[1], id = _ref[2];
         return watcher.unwatch(board, id);
       }
     },
@@ -1689,9 +1689,8 @@
       return _results;
     },
     mouseover: function(e) {
-      var el, id, target;
-      target = e.target;
-      id = target.textContent.replace(">>", '');
+      var el, id;
+      id = this.textContent.replace(">>", '');
       el = $('#qp');
       el.innerHTML = d.getElementById(id).innerHTML;
       $.show(el);
@@ -1722,9 +1721,7 @@
         return _results;
       },
       report: function(e) {
-        var target;
-        target = e.target;
-        return quickReport.report(target);
+        return quickReport.report(this);
       }
     },
     report: function(target) {
@@ -1867,19 +1864,18 @@
     }
   };
   nodeInserted = function(e) {
-    var callback, dialog, target, _i, _len, _ref2, _results;
-    target = e.target;
-    if (target.nodeName === 'TABLE') {
+    var callback, dialog, _i, _len, _ref2, _results;
+    if (this.nodeName === 'TABLE') {
       _ref2 = g.callbacks;
       _results = [];
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         callback = _ref2[_i];
-        _results.push(callback(target));
+        _results.push(callback(this));
       }
       return _results;
-    } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
-      $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('#recaptcha_challenge_field', dialog).value = target.value;
+    } else if (this.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
+      $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + this.value;
+      return $('#recaptcha_challenge_field', dialog).value = this.value;
     }
   };
   imageHover = {
@@ -1906,10 +1902,9 @@
         return _results;
       },
       mouseover: function(e) {
-        var el, target;
-        target = e.target;
+        var el;
         el = $('#iHover');
-        el.src = target.parentNode.href;
+        el.src = this.parentNode.href;
         $.show(el);
         ui.el = el;
         ui.winHeight = d.body.clientHeight;
@@ -1977,12 +1972,12 @@
           return;
         }
         e.preventDefault();
-        return imgExpand.toggle(e.target);
+        return imgExpand.toggle(this);
       },
       all: function(e) {
         var thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
         thumbs = $$('img[md5]');
-        imgExpand.on = e.target.checked;
+        imgExpand.on = this.checked;
         imgExpand.foo();
         if (imgExpand.on) {
           _results = [];
