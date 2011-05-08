@@ -1731,7 +1731,7 @@
         innerHTML: req.responseText
       });
       if (id === threadID) {
-        threading.thread($('form[name=delform] > *:not([id])', body));
+        threading.thread($('form[name=delform] > *', body));
         html = $('.op', body).innerHTML;
       } else {
         _ref = $$('td.reply', body);
