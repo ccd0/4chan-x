@@ -299,8 +299,7 @@ else
       localStorage[name] = JSON.stringify value
 
 $$ = (selector, root=d.body) ->
-  result = root.querySelectorAll selector
-  Array::slice.call result
+  Array::slice.call root.querySelectorAll selector
 
 #funks
 expandComment =

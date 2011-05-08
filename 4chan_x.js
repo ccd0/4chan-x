@@ -434,12 +434,10 @@
     });
   }
   $$ = function(selector, root) {
-    var result;
     if (root == null) {
       root = d.body;
     }
-    result = root.querySelectorAll(selector);
-    return Array.prototype.slice.call(result);
+    return Array.prototype.slice.call(root.querySelectorAll(selector));
   };
   expandComment = {
     init: function() {
