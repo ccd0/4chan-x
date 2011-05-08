@@ -1328,14 +1328,14 @@ quotePreview =
     quotes = $$ 'a.quotelink'
     for quote in quotes
       $.bind quote, 'mouseover', quotePreview.mouseover
+      $.bind quote, 'mousemove', quotePreview.mousemove
+      $.bind quote, 'mouseout',  quotePreview.mouseout
   mouseover: (e) ->
     {target, clientX, clientY} = e
     preview = $ '#qp'
     id = target.textContent.replace ">>", ''
     preview.innerHTML = d.getElementById(id).innerHTML
     $.show preview
-    $.bind target, 'mousemove', quotePreview.mousemove
-    $.bind target, 'mouseout',  quotePreview.mouseout
   mousemove: (e) ->
     {clientX, clientY} = e
     preview = $ '#qp'
@@ -1345,8 +1345,6 @@ quotePreview =
     {target} = e
     preview = $ '#qp'
     $.hide preview
-    $.unbind target, 'mousemove', quotePreview.mousemove
-    $.unbind target, 'mouseout',  quotePreview.mouseout
 
 quickReport =
   init: ->
@@ -1472,6 +1470,8 @@ imageHover =
       thumbs = $$ 'img[md5]', root
       for thumb in thumbs
         $.bind thumb, 'mouseover', imageHover.cb.mouseover
+        $.bind thumb, 'mousemove', imageHover.cb.mousemove
+        $.bind thumb, 'mouseout',  imageHover.cb.mouseout
     mouseover: (e) ->
       {target, clientX, clientY} = e
       img = $ '#iHover'
@@ -1479,8 +1479,6 @@ imageHover =
       $.show img
       imageHover.winHeight = d.body.clientHeight
       imageHover.winWidth  = d.body.clientWidth
-      $.bind target, 'mousemove', imageHover.cb.mousemove
-      $.bind target, 'mouseout',  imageHover.cb.mouseout
     mousemove: (e) ->
       {clientX, clientY} = e
       img = $ '#iHover'
@@ -1501,8 +1499,6 @@ imageHover =
       img = $ '#iHover'
       $.hide img
       img.src = null
-      $.unbind target, 'mousemove', imageHover.cb.mousemove
-      $.unbind target, 'mouseout',  imageHover.cb.mouseout
 
 imgPreloading =
   init: ->

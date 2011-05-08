@@ -1672,7 +1672,9 @@
       _results = [];
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
-        _results.push($.bind(quote, 'mouseover', quotePreview.mouseover));
+        $.bind(quote, 'mouseover', quotePreview.mouseover);
+        $.bind(quote, 'mousemove', quotePreview.mousemove);
+        _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
       }
       return _results;
     },
@@ -1682,9 +1684,7 @@
       preview = $('#qp');
       id = target.textContent.replace(">>", '');
       preview.innerHTML = d.getElementById(id).innerHTML;
-      $.show(preview);
-      $.bind(target, 'mousemove', quotePreview.mousemove);
-      return $.bind(target, 'mouseout', quotePreview.mouseout);
+      return $.show(preview);
     },
     mousemove: function(e) {
       var clientX, clientY, preview;
@@ -1697,9 +1697,7 @@
       var preview, target;
       target = e.target;
       preview = $('#qp');
-      $.hide(preview);
-      $.unbind(target, 'mousemove', quotePreview.mousemove);
-      return $.unbind(target, 'mouseout', quotePreview.mouseout);
+      return $.hide(preview);
     }
   };
   quickReport = {
@@ -1900,7 +1898,9 @@
         _results = [];
         for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
           thumb = thumbs[_i];
-          _results.push($.bind(thumb, 'mouseover', imageHover.cb.mouseover));
+          $.bind(thumb, 'mouseover', imageHover.cb.mouseover);
+          $.bind(thumb, 'mousemove', imageHover.cb.mousemove);
+          _results.push($.bind(thumb, 'mouseout', imageHover.cb.mouseout));
         }
         return _results;
       },
@@ -1911,9 +1911,7 @@
         img.src = target.parentNode.href;
         $.show(img);
         imageHover.winHeight = d.body.clientHeight;
-        imageHover.winWidth = d.body.clientWidth;
-        $.bind(target, 'mousemove', imageHover.cb.mousemove);
-        return $.bind(target, 'mouseout', imageHover.cb.mouseout);
+        return imageHover.winWidth = d.body.clientWidth;
       },
       mousemove: function(e) {
         var bot, clientX, clientY, img, imgHeight, top;
@@ -1930,9 +1928,7 @@
         target = e.target;
         img = $('#iHover');
         $.hide(img);
-        img.src = null;
-        $.unbind(target, 'mousemove', imageHover.cb.mousemove);
-        return $.unbind(target, 'mouseout', imageHover.cb.mouseout);
+        return img.src = null;
       }
     }
   };
