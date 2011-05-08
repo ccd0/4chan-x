@@ -1352,22 +1352,32 @@ quotePreview =
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
     else
-      qp.innerHTML = 'Loading...'
-      quotePreview.get this, id
+      threadID = @pathname.split('/').pop()
+      if html = g.cache[threadID]
+        quotePreview.get id, threadID, html
+      else
+        qp.innerHTML = 'Loading...'
+        $.get @href, (->
+          html = @responseText
+          g.cache[threadID] = html
+          quotePreview.get id, threadID, html
+        )
     $.show qp
     ui.el = qp
   mouseout: (e) ->
     $.hide ui.el
-  get: (link, id) ->
-    $.get link.href, (-> quotePreview.get2 link, id, this)
-  get2: (link, id, xhr) ->
-    body = $.el 'body',
-      innerHTML: xhr.responseText
+  get: (id, threadID, innerHTML) ->
+    body = $.el 'body', {innerHTML}
 
-    for reply in $$ 'td.reply', body
-      if reply.id == id
-        ui.el.innerHTML = reply.innerHTML
-        break
+    if id == threadID #OP
+      html = $('blockquote', body).innerHTML
+    else
+      for reply in $$ 'td.reply', body
+        if reply.id == id
+          html = reply.innerHTML
+          break
+
+    ui.el.innerHTML =  html
 
 quickReport =
   init: ->

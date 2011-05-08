@@ -1689,14 +1689,23 @@
       return _results;
     },
     mouseover: function(e) {
-      var el, id, qp;
+      var el, html, id, qp, threadID;
       id = this.textContent.replace(">>", '');
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
       } else {
-        qp.innerHTML = 'Loading...';
-        quotePreview.get(this, id);
+        threadID = this.pathname.split('/').pop();
+        if (html = g.cache[threadID]) {
+          quotePreview.get(id, threadID, html);
+        } else {
+          qp.innerHTML = 'Loading...';
+          $.get(this.href, (function() {
+            html = this.responseText;
+            g.cache[threadID] = html;
+            return quotePreview.get(id, threadID, html);
+          }));
+        }
       }
       $.show(qp);
       return ui.el = qp;
@@ -1704,26 +1713,24 @@
     mouseout: function(e) {
       return $.hide(ui.el);
     },
-    get: function(link, id) {
-      return $.get(link.href, (function() {
-        return quotePreview.get2(link, id, this);
-      }));
-    },
-    get2: function(link, id, xhr) {
-      var body, reply, _i, _len, _ref, _results;
+    get: function(id, threadID, innerHTML) {
+      var body, html, reply, _i, _len, _ref;
       body = $.el('body', {
-        innerHTML: xhr.responseText
+        innerHTML: innerHTML
       });
-      _ref = $$('td.reply', body);
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        reply = _ref[_i];
-        if (reply.id === id) {
-          ui.el.innerHTML = reply.innerHTML;
-          break;
+      if (id === threadID) {
+        html = $('blockquote', body).innerHTML;
+      } else {
+        _ref = $$('td.reply', body);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          reply = _ref[_i];
+          if (reply.id === id) {
+            html = reply.innerHTML;
+            break;
+          }
         }
       }
-      return _results;
+      return ui.el.innerHTML = html;
     }
   };
   quickReport = {
