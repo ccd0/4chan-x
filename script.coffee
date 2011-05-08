@@ -28,7 +28,7 @@ config =
       'Post in Title':     [true,  'Show the op\'s post in the tab title']
       'Quick Reply':       [true,  'Reply without leaving the page']
       'Quick Report':      [true,  'Add quick report buttons']
-      'Quote Preview':     [true,  'Show quote content on hover']
+      'Quote Preview':     [false, 'Show quote content on hover']
       'Reply Hiding':      [true,  'Hide single replies']
       'Sauce':             [true,  'Add sauce to images']
       'Show Stubs':        [true,  'Of hidden threads / replies']
