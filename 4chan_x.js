@@ -1692,35 +1692,39 @@
       return _results;
     },
     mouseover: function(e) {
-      var el, html, id, qp, threadID;
+      var el, id, qp, req, threadID;
       id = this.textContent.replace(">>", '');
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
       } else {
         threadID = this.pathname.split('/').pop();
-        if (html = g.cache[threadID]) {
-          quotePreview.get(id, threadID, html);
+        if (req = g.requests[threadID] && req.readyState === 4) {
+          quotePreview.parse(req, id, threadID);
         } else {
           qp.innerHTML = "Loading " + id + "...";
-          $.get(this.href, (function() {
-            html = this.responseText;
-            g.cache[threadID] = html;
-            return quotePreview.get(id, threadID, html);
-          }));
+          if (!req) {
+            g.requests[threadID] = $.get(this.href, (function() {
+              return quotePreview.parse(this, id, threadID);
+            }));
+          }
         }
       }
       $.show(qp);
       return ui.el = qp;
     },
-    get: function(id, threadID, innerHTML) {
+    parse: function(req, id, threadID) {
       var body, html, qp, reply, _i, _len, _ref;
       qp = $('#qp');
       if (qp.innerHTML !== ("Loading " + id + "...")) {
         return;
       }
+      if (req.status !== 200) {
+        qp.innerHTML = "" + req.status + " " + req.statusText;
+        return;
+      }
       body = $.el('body', {
-        innerHTML: innerHTML
+        innerHTML: req.responseText
       });
       if (id === threadID) {
         html = $('blockquote', body).innerHTML;

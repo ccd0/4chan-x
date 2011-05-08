@@ -1355,21 +1355,25 @@ quotePreview =
       qp.innerHTML = el.innerHTML
     else
       threadID = @pathname.split('/').pop()
-      if html = g.cache[threadID]
-        quotePreview.get id, threadID, html
+      if req = g.requests[threadID] and req.readyState is 4
+        quotePreview.parse req, id, threadID
       else
         qp.innerHTML = "Loading #{id}..."
-        $.get @href, (->
-          html = @responseText
-          g.cache[threadID] = html
-          quotePreview.get id, threadID, html
-        )
+        if not req
+          g.requests[threadID] = $.get @href,
+            (-> quotePreview.parse this, id, threadID)
     $.show qp
     ui.el = qp
-  get: (id, threadID, innerHTML) ->
+  parse: (req, id, threadID) ->
     qp = $ '#qp'
     return unless qp.innerHTML is "Loading #{id}..."
-    body = $.el 'body', {innerHTML}
+
+    if req.status isnt 200
+      qp.innerHTML = "#{req.status} #{req.statusText}"
+      return
+
+    body = $.el 'body',
+      innerHTML: req.responseText
     if id == threadID #OP
       html = $('blockquote', body).innerHTML
     else
