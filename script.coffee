@@ -15,6 +15,7 @@ config =
       '404 Redirect':      [true,  'Redirect dead threads']
       'Anonymize':         [false, 'Make everybody anonymous']
       'Auto Watch':        [true,  'Automatically watch threads that you start']
+      'Auto Watch Reply':  [false, 'Automatically watch threads that you reply to']
       'Comment Expansion': [true,  'Expand too long comments']
       'Cooldown':          [false, 'Prevent \'flood detected\' errors (buggy)']
       'Image Auto-Gif':    [false, 'Animate gif thumbnails']
@@ -37,7 +38,6 @@ config =
       'Thread Updater':    [true,  'Update threads']
       'Thread Watcher':    [true,  'Bookmark threads']
       'Unread Count':      [true,  'Show unread post count in tab title']
-      'Watch on Reply':    [false, 'Automatically watch threads you reply to']
     textarea:
       flavors: [
         'http://regex.info/exif.cgi?url='
@@ -96,7 +96,7 @@ ui =
     top  = localStorage["#{id}Top"]  ? top
     if left then el.style.left = left else el.style.right  = '0px'
     if top  then el.style.top  = top  else el.style.bottom = '0px'
-    el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, true
+    el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
     el.querySelector('div.move a[name=close]')?.addEventListener 'click',
       (-> el.parentNode.removeChild(el)), true
     el
@@ -751,10 +751,7 @@ qr =
       {data} = e
       dialog = $ '#qr'
       if data # error message
-        error = $.el 'span',
-          className: 'error'
-          textContent: data
-        $.append dialog, error
+        $('#error').textContent = data
         qr.autohide.unset()
       else # success
         if dialog
@@ -777,19 +774,17 @@ qr =
       form = e.target
       isQR = form.parentNode.id == 'qr'
 
-      if $.config('Watch on Reply') and $.config('Thread Watcher')
+      if $.config('Auto Watch Reply') and $.config('Thread Watcher')
         if g.REPLY and $('img.favicon').src is Favicon.empty
           watcher.watch null, g.THREAD_ID
         else
-          value = $('input[name=resto]').value
-          threads = $$ 'div.op'
-          for thread in threads
-            if thread.id is value and $('img.favicon', thread).src is Favicon.empty
-              watcher.watch thread, value
+          id = $('input[name=resto]').value
+          op = d.getElementById id
+          if $('img.favicon', op).src is Favicon.empty
+            watcher.watch op, id
 
       if isQR
-        if span = @nextSibling
-          $.remove span
+        $('#error').textContent = ''
 
       if $.config 'Cooldown'
         # check if we've posted on this board in another tab
@@ -798,28 +793,13 @@ qr =
           alert 'Stop posting so often!'
 
           if isQR
-            span = $.el 'span',
-              className: 'error'
-              textContent: 'Stop posting so often!'
-            $.append @parentNode, span
+            $('#error').textContent = 'Stop posting so often!'
 
           return
 
-      recaptcha = $('input[name=recaptcha_response_field]', this)
-      if recaptcha.value
-        qr.sage = $('input[name=email]', form).value == 'sage'
-        if isQR
-          qr.autohide.set()
-      else
-        e.preventDefault()
-        alert 'You forgot to type in the verification.'
-        recaptcha.focus()
-
-        if isQR
-          span = $.el 'span',
-            className: 'error'
-            textContent: 'You forgot to type in the verification.'
-          $.append @parentNode, span
+      qr.sage = $('input[name=email]', form).value == 'sage'
+      if isQR
+        qr.autohide.set()
 
     quote: (e) ->
       e.preventDefault()
@@ -889,32 +869,51 @@ qr =
       clearInterval qr.cooldownIntervalID
 
   dialog: (link) ->
-    html = "<div class=move>Quick Reply <input type=checkbox title=autohide> <a name=close title=close>X</a></div>"
+    #maybe should be global
+    MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
+    THREAD_ID = g.THREAD_ID or link.pathname.split('/').pop()
+    html = "
+      <div class=move>
+        <input class=inputtext type=text name=name placeholder=Name form=qr_form>
+        Quick Reply
+        <input type=checkbox id=autohide title=autohide>
+        <a name=close title=close>X</a>
+      </div>
+      <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
+        <input type=hidden name=MAX_FILE_SIZE value=#{MAX_FILE_SIZE}>
+        <input type=hidden name=resto value=#{THREAD_ID}>
+        <div><input class=inputtext type=text name=email placeholder=E-mail></div>
+        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
+        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
+        <div id=qr_captcha></div>
+        <div><input type=file name=upfile></div>
+        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
+      </form>
+      <div id=error class=error></div>
+      "
     dialog = ui.dialog 'qr', top: '0px', left: '0px', html
-    el = $ 'input[title=autohide]', dialog
+
+    $.bind $('input[name=name]', dialog), 'mousedown', (e) -> e.stopPropagation()
+    el = $ '#autohide', dialog
     $.bind el, 'click', qr.cb.autohide
 
-    clone = $('form[name=post]').cloneNode(true)
-    for script in $$ 'script', clone
-      $.remove script
-    clone.target = 'iframe'
-    $.bind clone, 'submit', qr.cb.submit
+    if $ '.postarea label'
+      spoiler = $.el 'label',
+        innerHTML: " [<input type=checkbox name=spoiler>Spoiler Image?]"
+      $.after $('input[name=email]', dialog), spoiler
+
+    # TODO try w/o cloning
+    clone = $('#recaptcha_widget_div').cloneNode(true)
+    $.append $('#qr_captcha', dialog), clone
+    $.extend $('input[name=recaptcha_response_field]', clone),
+      placeholder: 'Verification'
+      className: 'inputtext'
+      required: true
+
+    $.bind $('form', dialog), 'submit', qr.cb.submit
     $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', Recaptcha.listener
 
-    if not g.REPLY
-      #figure out which thread we're replying to
-      xpath = 'preceding::span[@class="postername"][1]/preceding::input[1]'
-      resto = $.el 'input',
-        type: 'hidden'
-        name: 'resto'
-        value: $.x(xpath, link).name
-
-      # place resto before table to let userstyles know we're responding to a thread
-      $.before clone.lastChild, resto
-
-    $.append dialog, clone
     $.append d.body, dialog
-    dialog.style.width = dialog.offsetWidth # lock
 
     dialog
 
@@ -1829,18 +1828,62 @@ main =
       #qr > div.move {
         text-align: right;
       }
-      #qr > form > div, /* ad */
-      #qr #recaptcha_table td:nth-of-type(3), /* captcha logos */
-      #qr td.rules {
+      #qr > div.move > input[name=name] {
+        float: left;
+      }
+      #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */
         display: none;
+      }
+      #qr {
+        width: 302px;
+      }
+      #qr form, #qr #com_submit, #qr input[type="file"] {
+        margin: 0;
+      }
+      #qr textarea {
+        width: 302px;
+        height: 80px;
+      }
+      #qr *:not(input):not(textarea) {
+        padding: 0 !important;
       }
       #qr.auto:not(:hover) form {
         display: none;
       }
-      #qr span.error {
-        position: absolute;
-        bottom: 0;
-        left: 0;
+      /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
+      #qr input:-webkit-input-placeholder {
+        color: grey;
+      }
+      #qr input:-moz-placeholder {
+        color: grey;
+      }
+      /* qr reCAPTCHA */
+      #qr_captcha input {
+        border: 1px solid #AAA !important;
+        margin-top: 2px;
+        padding: 2px 4px 3px;
+      }
+      #qr tr {
+        height: auto;
+      }
+      #qr .recaptchatable #recaptcha_image {
+        border: 1px solid #AAA !important;
+      }
+      #qr #recaptcha_reload, #qr #recaptcha_switch_audio, #qr #recaptcha_whatsthis {
+        height: 0;
+        width: 0;
+        padding: 10px 6px !important;
+        margin-left: -16px;
+        position: relative;
+      }
+      #recaptcha_reload {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAcUlEQVQY02P4z4AKGYKhNJQKYzgIZjxn+I8kwdCGrAkuwRAOZrUwhKBL7GP4ziCPYg8jROI/wzQ0B1yBSXiiCKeBjAMbhab+P0gExFCHu3o3QxzIwSC/MCC5+hPDezDdjOzB/ww/wYw9DCGoPt+CHjQAYxCCmpNUoxoAAAAASUVORK5CYII=) no-repeat center;
+      }
+      #recaptcha_switch_audio {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAVUlEQVQYV42NMQ6AMAwDPbTQjQEE//8OPCqkhgZXMJBTJMc3BCjBJrlA6uNL1Np6MTordq+N+cLAotHKlxhk/4lMjMu43M9z4CKRmSoJEarqxDOTHidPWTEdrdlTpwAAAABJRU5ErkJggg==) no-repeat center;
+      }
+      #recaptcha_whatsthis {
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAk0lEQVQYV3WMsQ3CMBBFf0ECmYDJqIkFk0TpkcgEUCeegWzADoi0yQbm3cUFBeifrX/vWZZ2f+K4UlDURCKtcua4VfpK64oJDg/a66zFe1hFpN7AHWvnIprY8nPSk9zpVxcTLYukmXZynEWp3peXLpxV9CrF1L6OtDGL2kTB1QBmPTj2pIEUJkwdNehNBpphxOZ3PgIeQ0jaC7S6AAAAAElFTkSuQmCC) no-repeat center;
       }
 
       #updater {
