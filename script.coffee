@@ -974,7 +974,7 @@ threading =
     threading.thread node
     $.unbind d, 'DOMNodeInserted', threading.stopPropagation
 
-  thread: (node) ->
+  op: (node) ->
     op = $.el 'div',
       className: 'op'
     $.before node, op
@@ -983,10 +983,12 @@ threading =
       node = op.nextSibling
     $.append op, node #add the blockquote
     op.id = $('input[name]', op).name
+    op
+
+  thread: (node) ->
+    node = thread.op node
 
     return if g.REPLY
-
-    node = op
 
     div = $.el 'div',
       className: 'thread'
