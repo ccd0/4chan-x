@@ -741,7 +741,7 @@
       } else {
         root = $('td.replyhl', thread) || thread;
         thumb = $('img[md5]', root);
-        return imgExpand.toggle(thumb);
+        return imgExpand.toggle(thumb.parentNode);
       }
     },
     qr: function(thread, quote) {
@@ -1210,8 +1210,8 @@
       threading.thread(node);
       return $.unbind(d, 'DOMNodeInserted', threading.stopPropagation);
     },
-    thread: function(node) {
-      var div, op;
+    op: function(node) {
+      var op;
       op = $.el('div', {
         className: 'op'
       });
@@ -1222,10 +1222,14 @@
       }
       $.append(op, node);
       op.id = $('input[name]', op).name;
+      return op;
+    },
+    thread: function(node) {
+      var div;
+      node = thread.op(node);
       if (g.REPLY) {
         return;
       }
-      node = op;
       div = $.el('div', {
         className: 'thread'
       });
@@ -1718,7 +1722,7 @@
       return ui.winHeight = d.body.clientHeight;
     },
     parse: function(req, id, threadID) {
-      var body, html, qp, reply, _i, _len, _ref;
+      var body, html, op, qp, reply, _i, _len, _ref;
       qp = $('#qp');
       if (qp.innerHTML !== ("Loading " + id + "...")) {
         return;
@@ -1731,8 +1735,8 @@
         innerHTML: req.responseText
       });
       if (id === threadID) {
-        threading.thread($('form[name=delform] > *', body));
-        html = $('.op', body).innerHTML;
+        op = threading.op($('form[name=delform] > *', body));
+        html = op.innerHTML;
       } else {
         _ref = $$('td.reply', body);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
