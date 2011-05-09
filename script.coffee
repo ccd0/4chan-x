@@ -557,7 +557,7 @@ keybinds =
     else
       root = $('td.replyhl', thread) or thread
       thumb = $ 'img[md5]', root
-      imgExpand.toggle thumb
+      imgExpand.toggle thumb.parentNode
 
   qr: (thread, quote) ->
     unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
