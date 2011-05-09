@@ -1525,7 +1525,6 @@
           favicon.src = Favicon.empty;
         }
       }
-      $.setValue('watcher.lastUpdated', Date.now());
       return watcher.lastUpdated = Date.now();
     },
     cb: {
@@ -1553,7 +1552,8 @@
       watched = $.getValue('watched', {});
       delete watched[board][id];
       $.setValue('watched', watched);
-      return watcher.refresh(watched);
+      watcher.refresh(watched);
+      return $.setValue('watcher.lastUpdated', Date.now());
     },
     watch: function(thread, id) {
       var props, tc, watched, _name;
@@ -1566,7 +1566,8 @@
       watched[_name = g.BOARD] || (watched[_name] = {});
       watched[g.BOARD][id] = props;
       $.setValue('watched', watched);
-      return watcher.refresh(watched);
+      watcher.refresh(watched);
+      return $.setValue('watcher.lastUpdated', Date.now());
     }
   };
   anonymize = {

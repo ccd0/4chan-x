@@ -1241,7 +1241,6 @@ watcher =
         favicon.src = Favicon.default
       else
         favicon.src = Favicon.empty
-    $.setValue 'watcher.lastUpdated', Date.now()
     watcher.lastUpdated = Date.now()
 
   cb:
@@ -1266,6 +1265,7 @@ watcher =
     $.setValue 'watched', watched
 
     watcher.refresh watched
+    $.setValue 'watcher.lastUpdated', Date.now()
 
   watch: (thread, id) ->
     tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
@@ -1279,6 +1279,7 @@ watcher =
     $.setValue 'watched', watched
 
     watcher.refresh watched
+    $.setValue 'watcher.lastUpdated', Date.now()
 
 anonymize =
   init: ->
