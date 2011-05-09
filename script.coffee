@@ -1353,7 +1353,12 @@ quoteBacklink =
           className: 'backlink'
           textContent: '>>'+id
         unless el.className is 'op'
-          $.before $('br, blockquote', el), link
+          nogood = 0
+          for backlink in $$ 'a.backlink', el
+            if backlink.textContent is '>>'+id
+              nogood = 1
+          unless nogood
+            $.before $('br, blockquote', el), link
 
 quotePreview =
   init: ->

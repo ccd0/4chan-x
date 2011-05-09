@@ -1681,16 +1681,35 @@
       return g.callbacks.push(quoteBacklink.node);
     },
     node: function(root) {
-      var el, id, link, quote, _i, _len, _ref, _results;
+      var backlink, el, id, link, nogood, quote, _i, _len, _ref, _results;
       _ref = $$('a.quotelink', root);
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        _results.push((el = d.getElementById(quote.textContent.slice(2))) ? (id = quote.parentNode.parentNode.parentNode.id, link = $.el('a', {
-          href: '#' + id,
-          className: 'backlink',
-          textContent: '>>' + id
-        }), el.className !== 'op' ? $.before($('br, blockquote', el), link) : void 0) : void 0);
+        _results.push((function() {
+          var _j, _len2, _ref2;
+          if (el = d.getElementById(quote.textContent.slice(2))) {
+            id = quote.parentNode.parentNode.parentNode.id;
+            link = $.el('a', {
+              href: '#' + id,
+              className: 'backlink',
+              textContent: '>>' + id
+            });
+            if (el.className !== 'op') {
+              nogood = 0;
+              _ref2 = $$('a.backlink', el);
+              for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+                backlink = _ref2[_j];
+                if (backlink.textContent === '>>' + id) {
+                  nogood = 1;
+                }
+              }
+              if (!nogood) {
+                return $.before($('br, blockquote', el), link);
+              }
+            }
+          }
+        })());
       }
       return _results;
     }
