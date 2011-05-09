@@ -1731,7 +1731,8 @@
         innerHTML: req.responseText
       });
       if (id === threadID) {
-        html = $('blockquote', body).innerHTML;
+        threading.thread($('form[name=delform] > *', body));
+        html = $('.op', body).innerHTML;
       } else {
         _ref = $$('td.reply', body);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
