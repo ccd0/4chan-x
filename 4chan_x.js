@@ -1706,6 +1706,11 @@
                   className: 'backlink',
                   textContent: '>>' + id
                 });
+                if ($.config('Quote Preview')) {
+                  $.bind(link, 'mouseover', quotePreview.mouseover);
+                  $.bind(link, 'mousemove', ui.hover);
+                  $.bind(link, 'mouseout', ui.hoverend);
+                }
                 return $.before($('br, blockquote', el), link);
               }
             }
@@ -1728,7 +1733,7 @@
     },
     node: function(root) {
       var quote, _i, _len, _ref, _results;
-      _ref = $$('a.quotelink, a.backlink', root);
+      _ref = $$('a.quotelink', root);
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];

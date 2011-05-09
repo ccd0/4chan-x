@@ -1359,6 +1359,10 @@ quoteBacklink =
               href: '#'+id
               className: 'backlink'
               textContent: '>>'+id
+            if $.config 'Quote Preview'
+              $.bind link, 'mouseover', quotePreview.mouseover
+              $.bind link, 'mousemove', ui.hover
+              $.bind link, 'mouseout',  ui.hoverend
             $.before $('br, blockquote', el), link
 
 quotePreview =
@@ -1370,7 +1374,7 @@ quotePreview =
     $.hide preview
     $.append d.body, preview
   node: (root) ->
-    for quote in $$ 'a.quotelink, a.backlink', root
+    for quote in $$ 'a.quotelink', root
       $.bind quote, 'mouseover', quotePreview.mouseover
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  ui.hoverend
