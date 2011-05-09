@@ -1690,11 +1690,6 @@
           var _j, _len2, _ref2;
           if (el = d.getElementById(quote.textContent.slice(2))) {
             id = quote.parentNode.parentNode.parentNode.id;
-            link = $.el('a', {
-              href: '#' + id,
-              className: 'backlink',
-              textContent: '>>' + id
-            });
             if (el.className !== 'op') {
               nogood = 0;
               _ref2 = $$('a.backlink', el);
@@ -1706,6 +1701,11 @@
                 }
               }
               if (!nogood) {
+                link = $.el('a', {
+                  href: '#' + id,
+                  className: 'backlink',
+                  textContent: '>>' + id
+                });
                 return $.before($('br, blockquote', el), link);
               }
             }

@@ -1348,10 +1348,6 @@ quoteBacklink =
     for quote in $$ 'a.quotelink', root
       if el = d.getElementById quote.textContent[2..]
         id = quote.parentNode.parentNode.parentNode.id
-        link = $.el 'a'
-          href: '#'+id
-          className: 'backlink'
-          textContent: '>>'+id
         unless el.className is 'op'
           nogood = 0
           for backlink in $$ 'a.backlink', el
@@ -1359,6 +1355,10 @@ quoteBacklink =
               nogood = 1
               break
           unless nogood
+            link = $.el 'a'
+              href: '#'+id
+              className: 'backlink'
+              textContent: '>>'+id
             $.before $('br, blockquote', el), link
 
 quotePreview =
