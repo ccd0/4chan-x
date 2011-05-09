@@ -1380,8 +1380,8 @@ quotePreview =
     body = $.el 'body',
       innerHTML: req.responseText
     if id == threadID #OP
-      threading.thread $ 'form[name=delform] > *', body
-      html = $('.op', body).innerHTML
+      op = threading.op $ 'form[name=delform] > *', body
+      html = op.innerHTML
     else
       for reply in $$ 'td.reply', body
         if reply.id == id
