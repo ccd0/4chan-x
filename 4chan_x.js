@@ -1718,7 +1718,8 @@
         }
       }
       $.show(qp);
-      return ui.el = qp;
+      ui.el = qp;
+      return ui.winHeight = d.body.clientHeight;
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
@@ -1958,8 +1959,7 @@
         el.src = this.parentNode.href;
         $.show(el);
         ui.el = el;
-        ui.winHeight = d.body.clientHeight;
-        return ui.winWidth = d.body.clientWidth;
+        return ui.winHeight = d.body.clientHeight;
       }
     }
   };

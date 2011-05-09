@@ -1368,6 +1368,7 @@ quotePreview =
         g.requests[threadID] = $.get @href, (-> quotePreview.parse this, id, threadID)
     $.show qp
     ui.el = qp
+    ui.winHeight = d.body.clientHeight
   parse: (req, id, threadID) ->
     qp = $ '#qp'
     return unless qp.innerHTML is "Loading #{id}..."
@@ -1519,7 +1520,6 @@ imageHover =
       $.show el
       ui.el = el
       ui.winHeight = d.body.clientHeight
-      ui.winWidth  = d.body.clientWidth
 
 imgPreloading =
   init: ->
