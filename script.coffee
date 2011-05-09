@@ -986,7 +986,7 @@ threading =
     op
 
   thread: (node) ->
-    node = thread.op node
+    node = threading.op node
 
     return if g.REPLY
 

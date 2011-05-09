@@ -1226,7 +1226,7 @@
     },
     thread: function(node) {
       var div;
-      node = thread.op(node);
+      node = threading.op(node);
       if (g.REPLY) {
         return;
       }
