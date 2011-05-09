@@ -232,7 +232,7 @@
       height = el.offsetHeight;
       top = clientY - 120;
       bot = top + height;
-      el.style.top = ui.winHeight < height || top < 0 ? 0 : bot > ui.winHeight ? ui.winHeight - height : top;
+      el.style.top = ui.winHeight < height || top < 0 ? '0px' : bot > ui.winHeight ? ui.winHeight - height + 'px' : top + 'px';
       return el.style.left = clientX + 45;
     },
     hoverend: function(e) {
@@ -1718,8 +1718,7 @@
         }
       }
       $.show(qp);
-      ui.el = qp;
-      return ui.winHeight = d.body.clientHeight;
+      return ui.el = qp;
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
@@ -1959,7 +1958,8 @@
         el.src = this.parentNode.href;
         $.show(el);
         ui.el = el;
-        return ui.winHeight = d.body.clientHeight;
+        ui.winHeight = d.body.clientHeight;
+        return ui.winWidth = d.body.clientWidth;
       }
     }
   };
