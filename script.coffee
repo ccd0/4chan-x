@@ -1346,24 +1346,24 @@ quoteBacklink =
     g.callbacks.push quoteBacklink.node
   node: (root) ->
     for quote in $$ 'a.quotelink', root
-      if el = d.getElementById quote.textContent[2..]
+      el = d.getElementById(quote.textContent[2..])
+      if el and el.className isnt 'op'
+        good = 1
         id = quote.parentNode.parentNode.parentNode.id
-        unless el.className is 'op'
-          nogood = 0
-          for backlink in $$ 'a.backlink', el
-            if backlink.textContent is '>>'+id
-              nogood = 1
-              break
-          unless nogood
-            link = $.el 'a'
-              href: '#'+id
-              className: 'backlink'
-              textContent: '>>'+id
-            if $.config 'Quote Preview'
-              $.bind link, 'mouseover', quotePreview.mouseover
-              $.bind link, 'mousemove', ui.hover
-              $.bind link, 'mouseout',  ui.hoverend
-            $.before $('br, blockquote', el), link
+        for backlink in $$ 'a.backlink', el
+          if backlink.textContent is '>>'+id
+            good = 0
+            break
+        if good
+          link = $.el 'a',
+            href: '#'+id
+            className: 'backlink'
+            textContent: '>>'+id
+          if $.config 'Quote Preview'
+            $.bind link, 'mouseover', quotePreview.mouseover
+            $.bind link, 'mousemove', ui.hover
+            $.bind link, 'mouseout',  ui.hoverend
+          $.before $('br, blockquote', el), link
 
 quotePreview =
   init: ->
