@@ -1702,6 +1702,7 @@
                 backlink = _ref2[_j];
                 if (backlink.textContent === '>>' + id) {
                   nogood = 1;
+                  break;
                 }
               }
               if (!nogood) {

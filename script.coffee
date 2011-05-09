@@ -1357,6 +1357,7 @@ quoteBacklink =
           for backlink in $$ 'a.backlink', el
             if backlink.textContent is '>>'+id
               nogood = 1
+              break
           unless nogood
             $.before $('br, blockquote', el), link
 
