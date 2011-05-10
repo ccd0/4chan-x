@@ -603,21 +603,20 @@
         return replyHiding.hide(reply);
       },
       node: function(root) {
-        var a, id, reply, td, tds, _i, _len, _results;
-        tds = $$('td.doubledash', root);
-        _results = [];
-        for (_i = 0, _len = tds.length; _i < _len; _i++) {
-          td = tds[_i];
-          a = $.el('a', {
-            textContent: '[ - ]'
-          });
-          $.bind(a, 'click', replyHiding.cb.hide);
-          $.replace(td.firstChild, a);
-          reply = td.nextSibling;
-          id = reply.id;
-          _results.push(id in g.hiddenReplies ? replyHiding.hide(reply) : void 0);
+        var a, dd, id, reply;
+        if (!(dd = $('td.doubldash', root))) {
+          return;
         }
-        return _results;
+        a = $.el('a', {
+          textContent: '[ - ]'
+        });
+        $.bind(a, 'click', replyHiding.cb.hide);
+        $.replace(dd, a);
+        reply = dd.nextSibling;
+        id = reply.id;
+        if (id in g.hiddenReplies) {
+          return replyHiding.hide(reply);
+        }
       },
       show: function(e) {
         var div, table;
@@ -1028,14 +1027,9 @@
         return $('iframe[name=iframe]').src = 'about:blank';
       },
       node: function(root) {
-        var quote, quotes, _i, _len, _results;
-        quotes = $$('a.quotejs:not(:first-child)', root);
-        _results = [];
-        for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-          quote = quotes[_i];
-          _results.push($.bind(quote, 'click', qr.cb.quote));
-        }
-        return _results;
+        var quote;
+        quote = $('a.quotejs:not(:first-child)', root);
+        return $.bind(quote, 'click', qr.cb.quote);
       },
       submit: function(e) {
         var form, id, isQR, op;
@@ -1588,19 +1582,16 @@
     },
     cb: {
       node: function(root) {
-        var name, names, trip, _i, _j, _len, _len2, _ref, _results;
-        names = $$('span.postername, span.commentpostername', root);
-        for (_i = 0, _len = names.length; _i < _len; _i++) {
-          name = names[_i];
-          name.innerHTML = 'Anonymous';
+        var name, trip;
+        name = $$('span.postername, span.commentpostername', root);
+        name.innerHTML = 'Anonymous';
+        if (trip = $('span.postertrip', root)) {
+          if (trip.parentNode.nodeName === 'A') {
+            return $.remove(trip.parentNode);
+          } else {
+            return $.remove(trip);
+          }
         }
-        _ref = $$('span.postertrip', root);
-        _results = [];
-        for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
-          trip = _ref[_j];
-          _results.push(trip.parentNode.nodeName === 'A' ? $.remove(trip.parentNode) : $.remove(trip));
-        }
-        return _results;
       }
     }
   };
@@ -1610,7 +1601,7 @@
     },
     cb: {
       node: function(root) {
-        var i, link, names, prefix, prefixes, s, span, suffix, _i, _len, _ref, _results;
+        var i, link, names, prefix, prefixes, s, span, suffix, _len, _results;
         prefixes = (function() {
           var _i, _len, _ref, _results;
           _ref = $.config('flavors').split('\n');
@@ -1632,26 +1623,19 @@
           }
           return _results;
         })();
-        _ref = $$('span.filesize', root);
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          span = _ref[_i];
+        if (span = $('span.filesize', root)) {
           suffix = $('a', span).href;
-          _results.push((function() {
-            var _len2, _results2;
-            _results2 = [];
-            for (i = 0, _len2 = prefixes.length; i < _len2; i++) {
-              prefix = prefixes[i];
-              link = $.el('a', {
-                textContent: names[i],
-                href: prefix + suffix
-              });
-              _results2.push($.append(span, $.tn(' '), link));
-            }
-            return _results2;
-          })());
+          _results = [];
+          for (i = 0, _len = prefixes.length; i < _len; i++) {
+            prefix = prefixes[i];
+            link = $.el('a', {
+              textContent: names[i],
+              href: prefix + suffix
+            });
+            _results.push($.append(span, $.tn(' '), link));
+          }
+          return _results;
         }
-        return _results;
       }
     }
   };
@@ -1694,7 +1678,7 @@
     },
     node: function(root) {
       var el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
-      id = $('td[id]', root).id;
+      id = root.id || $('td[id]', root).id;
       quotes = {};
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1804,19 +1788,14 @@
     },
     cb: {
       node: function(root) {
-        var a, arr, el, _i, _len, _results;
-        arr = $$('span[id^=no]', root);
-        _results = [];
-        for (_i = 0, _len = arr.length; _i < _len; _i++) {
-          el = arr[_i];
-          a = $.el('a', {
-            innerHTML: '[&nbsp;!&nbsp;]'
-          });
-          $.bind(a, 'click', quickReport.cb.report);
-          $.after(el, a);
-          _results.push($.after(el, $.tn(' ')));
-        }
-        return _results;
+        var a, span;
+        span = $('span[id^=no]', root);
+        a = $.el('a', {
+          innerHTML: '[&nbsp;!&nbsp;]'
+        });
+        $.bind(a, 'click', quickReport.cb.report);
+        $.after(span, a);
+        return $.after(span, $.tn(' '));
       },
       report: function(e) {
         return quickReport.report(this);
@@ -1839,7 +1818,7 @@
     },
     cb: {
       node: function(root) {
-        unread.replies = unread.replies.concat($$('td[id]', root));
+        unread.replies.push(root);
         unread.updateTitle();
         return Favicon.update();
       },
@@ -1989,16 +1968,13 @@
     },
     cb: {
       node: function(root) {
-        var thumb, _i, _len, _ref2, _results;
-        _ref2 = $$('img[md5]', root);
-        _results = [];
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          thumb = _ref2[_i];
-          $.bind(thumb, 'mouseover', imageHover.cb.mouseover);
-          $.bind(thumb, 'mousemove', ui.hover);
-          _results.push($.bind(thumb, 'mouseout', ui.hoverend));
+        var thumb;
+        if (!(thumb = $('img[md5]', root))) {
+          return;
         }
-        return _results;
+        $.bind(thumb, 'mouseover', imageHover.cb.mouseover);
+        $.bind(thumb, 'mousemove', ui.hover);
+        return $.bind(thumb, 'mouseout', ui.hoverend);
       },
       mouseover: function(e) {
         var el;
@@ -2050,16 +2026,15 @@
     },
     cb: {
       node: function(root) {
-        var a, thumb, _i, _len, _ref2, _results;
-        _ref2 = $$('img[md5]', root);
-        _results = [];
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          thumb = _ref2[_i];
-          a = thumb.parentNode;
-          $.bind(a, 'click', imgExpand.cb.toggle);
-          _results.push(imgExpand.on ? imgExpand.toggle(a) : void 0);
+        var a, thumb;
+        if (!(thumb = $('img[md5]', root))) {
+          return;
         }
-        return _results;
+        a = thumb.parentNode;
+        $.bind(a, 'click', imgExpand.cb.toggle);
+        if (imgExpand.on) {
+          return imgExpand.toggle(a);
+        }
       },
       toggle: function(e) {
         if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) {
@@ -2194,7 +2169,7 @@
   };
   main = {
     init: function() {
-      var DAY, callback, cutoff, hiddenThreads, id, lastChecked, now, pathname, temp, timestamp, tzOffset, _i, _len, _ref2, _ref3;
+      var DAY, callback, cutoff, hiddenThreads, id, lastChecked, now, op, pathname, reply, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2323,10 +2298,24 @@
           expandComment.init();
         }
       }
-      _ref3 = g.callbacks;
+      _ref3 = $$('div.op');
       for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        callback = _ref3[_i];
-        callback();
+        op = _ref3[_i];
+        _ref4 = g.callbacks;
+        for (_j = 0, _len2 = _ref4.length; _j < _len2; _j++) {
+          callback = _ref4[_j];
+          callback(op);
+        }
+      }
+      _ref5 = $$('td[id]');
+      for (_k = 0, _len3 = _ref5.length; _k < _len3; _k++) {
+        reply = _ref5[_k];
+        table = reply.parentNode.parentNode.parentNode;
+        _ref6 = g.callbacks;
+        for (_l = 0, _len4 = _ref6.length; _l < _len4; _l++) {
+          callback = _ref6[_l];
+          callback(table);
+        }
       }
       $.bind(d.body, 'DOMNodeInserted', nodeInserted);
       return options.init();

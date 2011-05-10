@@ -429,17 +429,16 @@ replyHiding =
       replyHiding.hide reply
 
     node: (root) ->
-      tds = $$('td.doubledash', root)
-      for td in tds
-        a = $.el 'a',
-          textContent: '[ - ]'
-        $.bind a, 'click', replyHiding.cb.hide
-        $.replace td.firstChild, a
+      return unless dd = $ 'td.doubldash', root
+      a = $.el 'a',
+        textContent: '[ - ]'
+      $.bind a, 'click', replyHiding.cb.hide
+      $.replace dd, a
 
-        reply = td.nextSibling
-        id = reply.id
-        if id of g.hiddenReplies
-          replyHiding.hide reply
+      reply = dd.nextSibling
+      id = reply.id
+      if id of g.hiddenReplies
+        replyHiding.hide reply
 
     show: (e) ->
       div = @parentNode
@@ -788,9 +787,8 @@ qr =
       $('iframe[name=iframe]').src = 'about:blank'
 
     node: (root) ->
-      quotes = $$ 'a.quotejs:not(:first-child)', root
-      for quote in quotes
-        $.bind quote, 'click', qr.cb.quote
+      quote = $ 'a.quotejs:not(:first-child)', root
+      $.bind quote, 'click', qr.cb.quote
 
     submit: (e) ->
       form = this
@@ -1292,10 +1290,9 @@ anonymize =
     g.callbacks.push anonymize.cb.node
   cb:
     node: (root) ->
-      names = $$ 'span.postername, span.commentpostername', root
-      for name in names
-        name.innerHTML = 'Anonymous'
-      for trip in $$ 'span.postertrip', root
+      name = $$ 'span.postername, span.commentpostername', root
+      name.innerHTML = 'Anonymous'
+      if trip = $ 'span.postertrip', root
         if trip.parentNode.nodeName is 'A'
           $.remove trip.parentNode
         else
@@ -1308,7 +1305,7 @@ sauce =
     node: (root) ->
       prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
       names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
-      for span in $$ 'span.filesize', root
+      if span = $ 'span.filesize', root
         suffix = $('a', span).href
         for prefix, i in prefixes
           link = $.el 'a',
@@ -1351,7 +1348,8 @@ quoteBacklink =
   init: ->
     g.callbacks.push quoteBacklink.node
   node: (root) ->
-    {id} = $ 'td[id]', root
+    #better coffee-script way of doing this?
+    id = root.id or $('td[id]', root).id
     quotes = {}
     for quote in $$ 'a.quotelink', root
       qid = quote.textContent[2..] #FIXME cross-board links
@@ -1423,13 +1421,12 @@ quickReport =
     g.callbacks.push quickReport.cb.node
   cb:
     node: (root) ->
-      arr = $$ 'span[id^=no]', root
-      for el in arr
-        a = $.el 'a',
-          innerHTML: '[&nbsp;!&nbsp;]'
-        $.bind a, 'click', quickReport.cb.report
-        $.after el, a
-        $.after el, $.tn(' ')
+      span = $ 'span[id^=no]', root
+      a = $.el 'a',
+        innerHTML: '[&nbsp;!&nbsp;]'
+      $.bind a, 'click', quickReport.cb.report
+      $.after span, a
+      $.after span, $.tn(' ')
     report: (e) ->
       quickReport.report this
   report: (target) ->
@@ -1447,7 +1444,7 @@ unread =
 
   cb:
     node: (root) ->
-      unread.replies = unread.replies.concat $$ 'td[id]', root
+      unread.replies.push root
       unread.updateTitle()
       Favicon.update()
 
@@ -1538,10 +1535,10 @@ imageHover =
     g.callbacks.push imageHover.cb.node
   cb:
     node: (root) ->
-      for thumb in $$ 'img[md5]', root
-        $.bind thumb, 'mouseover', imageHover.cb.mouseover
-        $.bind thumb, 'mousemove', ui.hover
-        $.bind thumb, 'mouseout',  ui.hoverend
+      return unless thumb = $ 'img[md5]', root
+      $.bind thumb, 'mouseover', imageHover.cb.mouseover
+      $.bind thumb, 'mousemove', ui.hover
+      $.bind thumb, 'mouseout',  ui.hoverend
     mouseover: (e) ->
       el = $ '#iHover'
       el.src = null
@@ -1574,10 +1571,10 @@ imgExpand =
 
   cb:
     node: (root) ->
-      for thumb in $$ 'img[md5]', root
-        a = thumb.parentNode
-        $.bind a, 'click', imgExpand.cb.toggle
-        if imgExpand.on then imgExpand.toggle a
+      return unless thumb = $ 'img[md5]', root
+      a = thumb.parentNode
+      $.bind a, 'click', imgExpand.cb.toggle
+      if imgExpand.on then imgExpand.toggle a
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
       e.preventDefault()
@@ -1810,7 +1807,13 @@ main =
       if $.config 'Comment Expansion'
         expandComment.init()
 
-    callback() for callback in g.callbacks
+    for op in $$ 'div.op'
+      for callback in g.callbacks
+        callback op
+    for reply in $$ 'td[id]'
+      table = reply.parentNode.parentNode.parentNode
+      for callback in g.callbacks
+        callback table
     $.bind d.body, 'DOMNodeInserted', nodeInserted
     options.init()
 
