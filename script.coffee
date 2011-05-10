@@ -28,6 +28,7 @@ config =
       'Post in Title':     [true,  'Show the op\'s post in the tab title']
       'Quick Reply':       [true,  'Reply without leaving the page']
       'Quick Report':      [true,  'Add quick report buttons']
+      'Quote Backlinks':   [false, 'Add quote backlinks']
       'Quote Preview':     [false, 'Show quote content on hover']
       'Reply Hiding':      [true,  'Hide single replies']
       'Sauce':             [true,  'Add sauce to images']
@@ -1346,6 +1347,30 @@ titlePost =
     if tc = $('span.filetitle').textContent or $('blockquote').textContent
       d.title = "/#{g.BOARD}/ - #{tc}"
 
+quoteBacklink =
+  init: ->
+    g.callbacks.push quoteBacklink.node
+  node: (root) ->
+    for quote in $$ 'a.quotelink', root
+      el = d.getElementById(quote.textContent[2..])
+      if el and el.className isnt 'op'
+        good = 1
+        id = quote.parentNode.parentNode.parentNode.id
+        for backlink in $$ 'a.backlink', el
+          if backlink.textContent is '>>'+id
+            good = 0
+            break
+        if good
+          link = $.el 'a',
+            href: '#'+id
+            className: 'backlink'
+            textContent: '>>'+id
+          if $.config 'Quote Preview'
+            $.bind link, 'mouseover', quotePreview.mouseover
+            $.bind link, 'mousemove', ui.hover
+            $.bind link, 'mouseout',  ui.hoverend
+          $.before $('br, blockquote', el), link
+
 quotePreview =
   init: ->
     g.callbacks.push quotePreview.node
@@ -1739,6 +1764,9 @@ main =
 
     if $.config 'Quick Report'
       quickReport.init()
+
+    if $.config 'Quote Backlinks'
+      quoteBacklink.init()
 
     if $.config 'Quote Preview'
       quotePreview.init()

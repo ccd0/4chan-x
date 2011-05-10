@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, quotePreview, redirect, replyHiding, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, quoteBacklink, quotePreview, redirect, replyHiding, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -84,6 +84,7 @@
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
         'Quick Reply': [true, 'Reply without leaving the page'],
         'Quick Report': [true, 'Add quick report buttons'],
+        'Quote Backlinks': [false, 'Add quote backlinks'],
         'Quote Preview': [false, 'Show quote content on hover'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Sauce': [true, 'Add sauce to images'],
@@ -1687,6 +1688,49 @@
       }
     }
   };
+  quoteBacklink = {
+    init: function() {
+      return g.callbacks.push(quoteBacklink.node);
+    },
+    node: function(root) {
+      var backlink, el, good, id, link, quote, _i, _len, _ref, _results;
+      _ref = $$('a.quotelink', root);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        el = d.getElementById(quote.textContent.slice(2));
+        _results.push((function() {
+          var _j, _len2, _ref2;
+          if (el && el.className !== 'op') {
+            good = 1;
+            id = quote.parentNode.parentNode.parentNode.id;
+            _ref2 = $$('a.backlink', el);
+            for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+              backlink = _ref2[_j];
+              if (backlink.textContent === '>>' + id) {
+                good = 0;
+                break;
+              }
+            }
+            if (good) {
+              link = $.el('a', {
+                href: '#' + id,
+                className: 'backlink',
+                textContent: '>>' + id
+              });
+              if ($.config('Quote Preview')) {
+                $.bind(link, 'mouseover', quotePreview.mouseover);
+                $.bind(link, 'mousemove', ui.hover);
+                $.bind(link, 'mouseout', ui.hoverend);
+              }
+              return $.before($('br, blockquote', el), link);
+            }
+          }
+        })());
+      }
+      return _results;
+    }
+  };
   quotePreview = {
     init: function() {
       var preview;
@@ -2240,6 +2284,9 @@
       }
       if ($.config('Quick Report')) {
         quickReport.init();
+      }
+      if ($.config('Quote Backlinks')) {
+        quoteBacklink.init();
       }
       if ($.config('Quote Preview')) {
         quotePreview.init();
