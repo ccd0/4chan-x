@@ -1698,8 +1698,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        el = d.getElementById(quote.textContent.slice(2));
-        if (!el || el.className === 'op') {
+        if (!(el = d.getElementById(quote.textContent.slice(2)))) {
           continue;
         }
         good = 1;

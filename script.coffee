@@ -1352,8 +1352,7 @@ quoteBacklink =
     g.callbacks.push quoteBacklink.node
   node: (root) ->
     for quote in $$ 'a.quotelink', root
-      el = d.getElementById(quote.textContent[2..])
-      continue if not el or el.className is 'op'
+      continue unless el = d.getElementById(quote.textContent[2..])
       good = 1
       id = quote.parentNode.parentNode.parentNode.id
       for backlink in $$ 'a.backlink', el
