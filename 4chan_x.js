@@ -1705,7 +1705,7 @@
           $.bind(link, 'mousemove', ui.hover);
           $.bind(link, 'mouseout', ui.hoverend);
         }
-        _results.push($.before($('br, blockquote', el), link));
+        _results.push($.before($('.op > blockquote, td > br, td > blockquote', el.parentNode), link));
       }
       return _results;
     }
