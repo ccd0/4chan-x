@@ -315,6 +315,11 @@ else
       name = NAMESPACE + name
       localStorage[name] = JSON.stringify value
 
+# XXX opera cannot into Object.keys
+if not Object.keys
+  Object.keys = (o) ->
+    key for key in o
+
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 

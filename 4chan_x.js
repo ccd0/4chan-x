@@ -446,6 +446,17 @@
       }
     });
   }
+  if (!Object.keys) {
+    Object.keys = function(o) {
+      var key, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = o.length; _i < _len; _i++) {
+        key = o[_i];
+        _results.push(key);
+      }
+      return _results;
+    };
+  }
   $$ = function(selector, root) {
     if (root == null) {
       root = d.body;
