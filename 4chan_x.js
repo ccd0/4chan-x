@@ -1683,7 +1683,10 @@
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        qid = quote.textContent.match(/\d+/)[0];
+        if (!(qid = quote.textContent.match(/\d+/))) {
+          continue;
+        }
+        qid = qid[0];
         quotes[qid] = quote;
       }
       _results = [];
@@ -1732,7 +1735,10 @@
     },
     mouseover: function(e) {
       var el, id, qp, req, threadID;
-      id = this.textContent.match(/\d+/)[0];
+      if (!(id = this.textContent.match(/\d+/))) {
+        return;
+      }
+      id = id[0];
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;

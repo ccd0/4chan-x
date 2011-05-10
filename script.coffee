@@ -1352,7 +1352,8 @@ quoteBacklink =
     id = root.id or $('td[id]', root).id
     quotes = {}
     for quote in $$ 'a.quotelink', root
-      qid = quote.textContent.match(/\d+/)[0]
+      continue unless qid = quote.textContent.match /\d+/
+      [qid] = qid
       #duplicate quotes get overwritten
       quotes[qid] = quote
     for qid, quote of quotes
@@ -1381,7 +1382,8 @@ quotePreview =
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  ui.hoverend
   mouseover: (e) ->
-    id = @textContent.match(/\d+/)[0]
+    return unless id = @textContent.match /\d+/
+    [id] = id
     qp = $ '#qp'
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
