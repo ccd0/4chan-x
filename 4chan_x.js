@@ -604,14 +604,14 @@
       },
       node: function(root) {
         var a, dd, id, reply;
-        if (!(dd = $('td.doubldash', root))) {
+        if (!(dd = $('td.doubledash', root))) {
           return;
         }
         a = $.el('a', {
           textContent: '[ - ]'
         });
         $.bind(a, 'click', replyHiding.cb.hide);
-        $.replace(dd, a);
+        $.replace(dd.firstChild, a);
         reply = dd.nextSibling;
         id = reply.id;
         if (id in g.hiddenReplies) {

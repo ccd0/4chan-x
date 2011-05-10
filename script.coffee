@@ -429,11 +429,11 @@ replyHiding =
       replyHiding.hide reply
 
     node: (root) ->
-      return unless dd = $ 'td.doubldash', root
+      return unless dd = $ 'td.doubledash', root
       a = $.el 'a',
         textContent: '[ - ]'
       $.bind a, 'click', replyHiding.cb.hide
-      $.replace dd, a
+      $.replace dd.firstChild, a
 
       reply = dd.nextSibling
       id = reply.id
