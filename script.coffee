@@ -1352,7 +1352,7 @@ quoteBacklink =
     g.callbacks.push quoteBacklink.node
   node: (root) ->
     for quote in $$ 'a.quotelink', root
-      continue unless el = d.getElementById(quote.textContent[2..])
+      continue unless el = d.getElementById quote.textContent[2..]
       good = 1
       id = quote.parentNode.parentNode.parentNode.id
       for backlink in $$ 'a.backlink', el
