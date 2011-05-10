@@ -1352,14 +1352,13 @@ quoteBacklink =
     g.callbacks.push quoteBacklink.node
   node: (root) ->
     {id} = $ 'td[id]', root
+    quotes = {}
     for quote in $$ 'a.quotelink', root
-      continue unless el = d.getElementById quote.textContent[2..]
-      good = 1
-      for backlink in $$ 'a.backlink', el
-        if backlink.textContent is '>>'+id
-          good = 0
-          break
-      continue if not good
+      qid = quote.textContent[2..] #FIXME cross-board links
+      #duplicate quotes get overwritten
+      quotes[qid] = quote
+    for qid, quote of quotes
+      continue unless el = d.getElementById qid
       link = $.el 'a',
         href: '#'+id
         className: 'backlink'
