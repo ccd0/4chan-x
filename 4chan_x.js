@@ -1693,40 +1693,39 @@
       return g.callbacks.push(quoteBacklink.node);
     },
     node: function(root) {
-      var backlink, el, good, id, link, quote, _i, _len, _ref, _results;
+      var backlink, el, good, id, link, quote, _i, _j, _len, _len2, _ref, _ref2, _results;
       _ref = $$('a.quotelink', root);
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         el = d.getElementById(quote.textContent.slice(2));
-        _results.push((function() {
-          var _j, _len2, _ref2;
-          if (el && el.className !== 'op') {
-            good = 1;
-            id = quote.parentNode.parentNode.parentNode.id;
-            _ref2 = $$('a.backlink', el);
-            for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-              backlink = _ref2[_j];
-              if (backlink.textContent === '>>' + id) {
-                good = 0;
-                break;
-              }
-            }
-            if (good) {
-              link = $.el('a', {
-                href: '#' + id,
-                className: 'backlink',
-                textContent: '>>' + id
-              });
-              if ($.config('Quote Preview')) {
-                $.bind(link, 'mouseover', quotePreview.mouseover);
-                $.bind(link, 'mousemove', ui.hover);
-                $.bind(link, 'mouseout', ui.hoverend);
-              }
-              return $.before($('br, blockquote', el), link);
-            }
+        if (!el || el.className === 'op') {
+          continue;
+        }
+        good = 1;
+        id = quote.parentNode.parentNode.parentNode.id;
+        _ref2 = $$('a.backlink', el);
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          backlink = _ref2[_j];
+          if (backlink.textContent === '>>' + id) {
+            good = 0;
+            break;
           }
-        })());
+        }
+        if (!good) {
+          continue;
+        }
+        link = $.el('a', {
+          href: '#' + id,
+          className: 'backlink',
+          textContent: '>>' + id
+        });
+        if ($.config('Quote Preview')) {
+          $.bind(link, 'mouseover', quotePreview.mouseover);
+          $.bind(link, 'mousemove', ui.hover);
+          $.bind(link, 'mouseout', ui.hoverend);
+        }
+        _results.push($.before($('br, blockquote', el), link));
       }
       return _results;
     }

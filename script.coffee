@@ -1353,23 +1353,23 @@ quoteBacklink =
   node: (root) ->
     for quote in $$ 'a.quotelink', root
       el = d.getElementById(quote.textContent[2..])
-      if el and el.className isnt 'op'
-        good = 1
-        id = quote.parentNode.parentNode.parentNode.id
-        for backlink in $$ 'a.backlink', el
-          if backlink.textContent is '>>'+id
-            good = 0
-            break
-        if good
-          link = $.el 'a',
-            href: '#'+id
-            className: 'backlink'
-            textContent: '>>'+id
-          if $.config 'Quote Preview'
-            $.bind link, 'mouseover', quotePreview.mouseover
-            $.bind link, 'mousemove', ui.hover
-            $.bind link, 'mouseout',  ui.hoverend
-          $.before $('br, blockquote', el), link
+      continue if not el or el.className is 'op'
+      good = 1
+      id = quote.parentNode.parentNode.parentNode.id
+      for backlink in $$ 'a.backlink', el
+        if backlink.textContent is '>>'+id
+          good = 0
+          break
+      continue if not good
+      link = $.el 'a',
+        href: '#'+id
+        className: 'backlink'
+        textContent: '>>'+id
+      if $.config 'Quote Preview'
+        $.bind link, 'mouseover', quotePreview.mouseover
+        $.bind link, 'mousemove', ui.hover
+        $.bind link, 'mouseout',  ui.hoverend
+      $.before $('br, blockquote', el), link
 
 quotePreview =
   init: ->
