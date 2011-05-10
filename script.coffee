@@ -1366,7 +1366,7 @@ quoteBacklink =
         $.bind link, 'mouseover', quotePreview.mouseover
         $.bind link, 'mousemove', ui.hover
         $.bind link, 'mouseout',  ui.hoverend
-      $.before $('.op > blockquote, td > br, td > blockquote', el), link
+      $.before $('td > br, blockquote', el), link
 
 quotePreview =
   init: ->
