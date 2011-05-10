@@ -1,3 +1,12 @@
+2.6.0
+- mayhem:
+  start backlinks
+  fix watcher refresh false positive
+- backlinks
+- cross-board previews
+- fix menu for opera
+- slightly bigger qr textarea
+
 2.5.0
 - mayhem:
   qp: better cross-thread op quoting
