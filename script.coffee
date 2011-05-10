@@ -1897,7 +1897,7 @@ main =
       }
       #qr textarea {
         width: 302px;
-        height: 80px;
+        height: 100px;
         margin: 0px;
       }
       #qr *:not(input):not(textarea) {
