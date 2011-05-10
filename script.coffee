@@ -1351,10 +1351,10 @@ quoteBacklink =
   init: ->
     g.callbacks.push quoteBacklink.node
   node: (root) ->
+    {id} = $ 'td[id]', root
     for quote in $$ 'a.quotelink', root
       continue unless el = d.getElementById quote.textContent[2..]
       good = 1
-      id = quote.parentNode.parentNode.parentNode.id
       for backlink in $$ 'a.backlink', el
         if backlink.textContent is '>>'+id
           good = 0
