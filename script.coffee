@@ -430,7 +430,7 @@ replyHiding =
 
     node: (root) ->
       return unless dd = $ 'td.doubledash', root
-      $.addClass dd, 'replyhider'
+      dd.className = 'replyhider'
       a = $.el 'a',
         textContent: '[ - ]'
       $.bind a, 'click', replyHiding.cb.hide

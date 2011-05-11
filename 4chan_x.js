@@ -607,7 +607,7 @@
         if (!(dd = $('td.doubledash', root))) {
           return;
         }
-        $.addClass(dd, 'replyhider');
+        dd.className = 'replyhider';
         a = $.el('a', {
           textContent: '[ - ]'
         });
