@@ -1798,6 +1798,7 @@
         var a, span;
         span = $('span[id^=no]', root);
         a = $.el('a', {
+          className: 'quickreport',
           innerHTML: '[&nbsp;!&nbsp;]'
         });
         $.bind(a, 'click', quickReport.cb.report);

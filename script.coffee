@@ -1426,6 +1426,7 @@ quickReport =
     node: (root) ->
       span = $ 'span[id^=no]', root
       a = $.el 'a',
+        className: 'quickreport'
         innerHTML: '[&nbsp;!&nbsp;]'
       $.bind a, 'click', quickReport.cb.report
       $.after span, a
