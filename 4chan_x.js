@@ -1582,9 +1582,12 @@
     },
     cb: {
       node: function(root) {
-        var name, trip;
-        name = $$('span.postername, span.commentpostername', root);
-        name.innerHTML = 'Anonymous';
+        var name, trip, _i, _len, _ref;
+        _ref = $$('span.postername, span.commentpostername', root);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          name = _ref[_i];
+          name.textContent = 'Anonymous';
+        }
         if (trip = $('span.postertrip', root)) {
           if (trip.parentNode.nodeName === 'A') {
             return $.remove(trip.parentNode);

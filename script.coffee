@@ -1290,8 +1290,8 @@ anonymize =
     g.callbacks.push anonymize.cb.node
   cb:
     node: (root) ->
-      name = $$ 'span.postername, span.commentpostername', root
-      name.innerHTML = 'Anonymous'
+      for name in $$ 'span.postername, span.commentpostername', root
+        name.textContent = 'Anonymous'
       if trip = $ 'span.postertrip', root
         if trip.parentNode.nodeName is 'A'
           $.remove trip.parentNode
