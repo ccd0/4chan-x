@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quickReport, quoteBacklink, quotePreview, redirect, replyHiding, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -83,10 +83,10 @@
         'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
         'Quick Reply': [true, 'Reply without leaving the page'],
-        'Quick Report': [true, 'Add quick report buttons'],
         'Quote Backlinks': [false, 'Add quote backlinks'],
         'Quote Preview': [false, 'Show quote content on hover'],
         'Reply Hiding': [true, 'Hide single replies'],
+        'Report Button': [true, 'Add Report Button buttons'],
         'Sauce': [true, 'Add sauce to images'],
         'Show Stubs': [true, 'Of hidden threads / replies'],
         'Thread Expansion': [true, 'View all replies'],
@@ -1789,24 +1789,24 @@
       return qp.innerHTML = html;
     }
   };
-  quickReport = {
+  reportButton = {
     init: function() {
-      return g.callbacks.push(quickReport.cb.node);
+      return g.callbacks.push(reportButton.cb.node);
     },
     cb: {
       node: function(root) {
         var a, span;
         span = $('span[id^=no]', root);
         a = $.el('a', {
-          className: 'quickreport',
+          className: 'reportbutton',
           innerHTML: '[&nbsp;!&nbsp;]'
         });
-        $.bind(a, 'click', quickReport.cb.report);
+        $.bind(a, 'click', reportButton.cb.report);
         $.after(span, a);
         return $.after(span, $.tn(' '));
       },
       report: function(e) {
-        return quickReport.report(this);
+        return reportButton.report(this);
       }
     },
     report: function(target) {
@@ -2257,8 +2257,8 @@
       if ($.config('Quick Reply')) {
         qr.init();
       }
-      if ($.config('Quick Report')) {
-        quickReport.init();
+      if ($.config('Report Button')) {
+        reportButton.init();
       }
       if ($.config('Quote Backlinks')) {
         quoteBacklink.init();
