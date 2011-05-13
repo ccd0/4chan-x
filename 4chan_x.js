@@ -1678,9 +1678,10 @@
       return g.callbacks.push(quoteBacklink.node);
     },
     node: function(root) {
-      var el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
+      var el, id, link, qid, quote, quotes, tid, _i, _len, _ref, _results;
       id = root.id || $('td[id]', root).id;
       quotes = {};
+      tid = g.THREAD_ID;
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
@@ -1688,6 +1689,9 @@
           continue;
         }
         qid = qid[0];
+        if (qid === tid) {
+          continue;
+        }
         quotes[qid] = quote;
       }
       _results = [];

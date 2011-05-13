@@ -1352,9 +1352,12 @@ quoteBacklink =
     #better coffee-script way of doing this?
     id = root.id or $('td[id]', root).id
     quotes = {}
+    tid = g.THREAD_ID
     for quote in $$ 'a.quotelink', root
       continue unless qid = quote.textContent.match /\d+/
       [qid] = qid
+      #don't backlink the op
+      continue if qid == tid
       #duplicate quotes get overwritten
       quotes[qid] = quote
     for qid, quote of quotes
