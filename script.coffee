@@ -1842,6 +1842,9 @@ main =
       .error {
         color: red;
       }
+      td.replyhider {
+        vertical-align: top;
+      }
 
       div.thread.stub > *:not(.block) {
         display: none;
