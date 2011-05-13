@@ -1584,8 +1584,8 @@
     cb: {
       node: function(root) {
         var name, trip;
-        name = $$('span.postername, span.commentpostername', root);
-        name.innerHTML = 'Anonymous';
+        name = $('span.commentpostername, span.postername', root);
+        name.textContent = 'Anonymous';
         if (trip = $('span.postertrip', root)) {
           if (trip.parentNode.nodeName === 'A') {
             return $.remove(trip.parentNode);
