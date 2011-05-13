@@ -27,10 +27,10 @@ config =
       'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
       'Post in Title':     [true,  'Show the op\'s post in the tab title']
       'Quick Reply':       [true,  'Reply without leaving the page']
-      'Quick Report':      [true,  'Add quick report buttons']
       'Quote Backlinks':   [false, 'Add quote backlinks']
       'Quote Preview':     [false, 'Show quote content on hover']
       'Reply Hiding':      [true,  'Hide single replies']
+      'Report Button':     [true,  'Add Report Button buttons']
       'Sauce':             [true,  'Add sauce to images']
       'Show Stubs':        [true,  'Of hidden threads / replies']
       'Thread Expansion':  [true,  'View all replies']
@@ -430,6 +430,7 @@ replyHiding =
 
     node: (root) ->
       return unless dd = $ 'td.doubledash', root
+      dd.className = 'replyhider'
       a = $.el 'a',
         textContent: '[ - ]'
       $.bind a, 'click', replyHiding.cb.hide
@@ -1418,19 +1419,20 @@ quotePreview =
           break
     qp.innerHTML = html
 
-quickReport =
+reportButton =
   init: ->
-    g.callbacks.push quickReport.cb.node
+    g.callbacks.push reportButton.cb.node
   cb:
     node: (root) ->
       span = $ 'span[id^=no]', root
       a = $.el 'a',
+        className: 'reportbutton'
         innerHTML: '[&nbsp;!&nbsp;]'
-      $.bind a, 'click', quickReport.cb.report
+      $.bind a, 'click', reportButton.cb.report
       $.after span, a
       $.after span, $.tn(' ')
     report: (e) ->
-      quickReport.report this
+      reportButton.report this
   report: (target) ->
     input = $.x('preceding-sibling::input[1]', target)
     input.click()
@@ -1759,8 +1761,8 @@ main =
     if $.config 'Quick Reply'
       qr.init()
 
-    if $.config 'Quick Report'
-      quickReport.init()
+    if $.config 'Report Button'
+      reportButton.init()
 
     if $.config 'Quote Backlinks'
       quoteBacklink.init()
