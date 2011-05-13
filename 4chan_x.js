@@ -86,7 +86,7 @@
         'Quote Backlinks': [false, 'Add quote backlinks'],
         'Quote Preview': [false, 'Show quote content on hover'],
         'Reply Hiding': [true, 'Hide single replies'],
-        'Report Button': [true, 'Add Report Button buttons'],
+        'Report Button': [true, 'Add report buttons'],
         'Sauce': [true, 'Add sauce to images'],
         'Show Stubs': [true, 'Of hidden threads / replies'],
         'Thread Expansion': [true, 'View all replies'],
