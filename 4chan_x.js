@@ -136,31 +136,7 @@
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
-      if (typeof position === 'object') {
-        left = position.left, top = position.top;
-      } else {
-        switch (position) {
-          case 'topleft':
-            left = '0px';
-            top = '0px';
-            break;
-          case 'topright':
-            left = null;
-            top = '0px';
-            break;
-          case 'bottomleft':
-            left = '0px';
-            top = null;
-            break;
-          case 'bottomright':
-            left = null;
-            top = null;
-            break;
-          case 'center':
-            left = '50%';
-            top = '25%';
-        }
-      }
+      left = position.left, top = position.top;
       left = (_ref = localStorage["" + id + "Left"]) != null ? _ref : left;
       top = (_ref2 = localStorage["" + id + "Top"]) != null ? _ref2 : top;
       if (left) {

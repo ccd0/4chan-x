@@ -75,25 +75,7 @@ ui =
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
-    if typeof position is 'object'
-      {left, top} = position
-    else
-      switch position
-        when 'topleft'
-          left = '0px'
-          top  = '0px'
-        when 'topright'
-          left = null
-          top  = '0px'
-        when 'bottomleft'
-          left = '0px'
-          top  = null
-        when 'bottomright'
-          left = null
-          top  = null
-        when 'center'
-          left = '50%'
-          top  = '25%'
+    {left, top} = position
     left = localStorage["#{id}Left"] ? left
     top  = localStorage["#{id}Top"]  ? top
     if left then el.style.left = left else el.style.right  = '0px'
