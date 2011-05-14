@@ -329,22 +329,26 @@ $$ = (selector, root=d.body) ->
 expandComment =
   init: ->
     for a in $$ 'span.abbr a'
-      $.bind a, 'click', expandComment.cb.expand
-
-  cb:
-    expand: (e) ->
-      e.preventDefault()
+      $.bind a, 'click', expandComment.expand
+  expand: (e) ->
+    e.preventDefault()
+    [_, threadID, replyID] = @href.match /(\d+)#(\d+)/
+    @textContent = "Loading #{replyID}..."
+    if req = g.requests[threadID]
+      if req.readyState is 4
+        expandComment.parse req, this, threadID, replyID
+    else
       a = this
-      a.textContent = 'Loading...'
-      href = a.getAttribute 'href'
-      [_, threadID, replyID] = href.match /(\d+)#(\d+)/
-      g.cache[threadID] = $.get href, (->
-        expandComment.load this, a, threadID, replyID)
-  load: (xhr, a, threadID, replyID) ->
-    body = $.el 'body',
-      innerHTML: xhr.responseText
+      g.requests[threadID] = $.get @href, (-> expandComment.parse this, a, threadID, replyID)
+  parse: (req, a, threadID, replyID) ->
+    if req.status isnt 200
+      a.textContent = "#{req.status} #{req.statusText}"
+      return
 
-    if threadID is replyID
+    body = $.el 'body',
+      innerHTML: req.responseText
+
+    if threadID is replyID #OP
       bq = $ 'blockquote', body
     else
       #css selectors don't like ids starting with numbers,

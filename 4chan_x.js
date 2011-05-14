@@ -472,27 +472,34 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        _results.push($.bind(a, 'click', expandComment.cb.expand));
+        _results.push($.bind(a, 'click', expandComment.expand));
       }
       return _results;
     },
-    cb: {
-      expand: function(e) {
-        var a, href, replyID, threadID, _, _ref;
-        e.preventDefault();
+    expand: function(e) {
+      var a, replyID, req, threadID, _, _ref;
+      e.preventDefault();
+      _ref = this.href.match(/(\d+)#(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
+      this.textContent = "Loading " + replyID + "...";
+      if (req = g.requests[threadID]) {
+        if (req.readyState === 4) {
+          return expandComment.parse(req, this, threadID, replyID);
+        }
+      } else {
         a = this;
-        a.textContent = 'Loading...';
-        href = a.getAttribute('href');
-        _ref = href.match(/(\d+)#(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
-        return g.cache[threadID] = $.get(href, (function() {
-          return expandComment.load(this, a, threadID, replyID);
+        return g.requests[threadID] = $.get(this.href, (function() {
+          return expandComment.parse(this, a, threadID, replyID);
         }));
       }
     },
-    load: function(xhr, a, threadID, replyID) {
+    parse: function(req, a, threadID, replyID) {
       var body, bq, reply, _i, _len, _ref;
+      if (req.status !== 200) {
+        a.textContent = "" + req.status + " " + req.statusText;
+        return;
+      }
       body = $.el('body', {
-        innerHTML: xhr.responseText
+        innerHTML: req.responseText
       });
       if (threadID === replyID) {
         bq = $('blockquote', body);
