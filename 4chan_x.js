@@ -1661,6 +1661,9 @@
     },
     node: function(root) {
       var el, id, link, qid, quote, quotes, tid, _i, _len, _ref, _results;
+      if (root.className === 'inline') {
+        return;
+      }
       id = root.id || $('td[id]', root).id;
       quotes = {};
       tid = g.THREAD_ID;
@@ -1691,6 +1694,9 @@
           $.bind(link, 'mousemove', ui.hover);
           $.bind(link, 'mouseout', ui.hoverend);
         }
+        if ($.config('Quote Inline')) {
+          $.bind(link, 'click', quoteInline.toggle);
+        }
         _results.push($.before($('td > br, blockquote', el), link));
       }
       return _results;
@@ -1702,7 +1708,7 @@
     },
     node: function(root) {
       var quote, _i, _len, _ref, _results;
-      _ref = $$('a.quotelink', root);
+      _ref = $$('a.quotelink, a.backlink', root);
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
@@ -1712,18 +1718,22 @@
       return _results;
     },
     toggle: function(e) {
-      var el, id, inline, next, req, td, threadID;
+      var el, id, inline, req, root, td, threadID;
       e.preventDefault();
       if (!(id = this.hash.slice(1))) {
         return;
       }
-      if ((next = this.parentNode.nextSibling) && (next.nodeName === 'TABLE')) {
-        $.rm(next);
+      root = $.x('ancestor::td[1]', this);
+      if (td = $("#i" + id, root)) {
+        $.rm($.x('ancestor::table[1]', td));
+        if (this.className === 'backlink') {
+          $.show($.x('ancestor::table[1]', d.getElementById(id)));
+        }
         return;
       }
       inline = $.el('table', {
         className: 'inline',
-        innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
+        innerHTML: "<tbody><tr><td class=reply id=i" + id + "></td></tr></tbody>"
       });
       td = $('td', inline);
       if (el = d.getElementById(id)) {
@@ -1741,7 +1751,13 @@
           }));
         }
       }
-      return $.after(this.parentNode, inline);
+      if (this.className === 'backlink') {
+        root = $('table, blockquote', root);
+        $.before(root, inline);
+        return $.hide($.x('ancestor::table[1]', el));
+      } else {
+        return $.after(this.parentNode, inline);
+      }
     },
     parse: function(req, id, threadID, oldInline) {
       var body, html, inline, op, reply, td, _i, _len, _ref;
@@ -1787,7 +1803,7 @@
     },
     node: function(root) {
       var quote, _i, _len, _ref, _results;
-      _ref = $$('a.quotelink', root);
+      _ref = $$('a.quotelink, a.backlink', root);
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];

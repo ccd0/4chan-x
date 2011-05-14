@@ -1332,6 +1332,7 @@ quoteBacklink =
   init: ->
     g.callbacks.push quoteBacklink.node
   node: (root) ->
+    return if root.className is 'inline'
     #better coffee-script way of doing this?
     id = root.id or $('td[id]', root).id
     quotes = {}
@@ -1352,24 +1353,29 @@ quoteBacklink =
         $.bind link, 'mouseover', quotePreview.mouseover
         $.bind link, 'mousemove', ui.hover
         $.bind link, 'mouseout',  ui.hoverend
+      if $.config 'Quote Inline'
+        $.bind link, 'click', quoteInline.toggle
       $.before $('td > br, blockquote', el), link
 
 quoteInline =
   init: ->
     g.callbacks.push quoteInline.node
   node: (root) ->
-    for quote in $$ 'a.quotelink', root
+    for quote in $$ 'a.quotelink, a.backlink', root
       quote.removeAttribute 'onclick'
       $.bind quote, 'click', quoteInline.toggle
   toggle: (e) ->
     e.preventDefault()
     return unless id = @hash[1..]
-    if (next = @parentNode.nextSibling) and (next.nodeName is 'TABLE')
-      $.rm next
+    root = $.x 'ancestor::td[1]', this
+    if td = $ "#i#{id}", root
+      $.rm $.x 'ancestor::table[1]', td
+      if @className is 'backlink'
+        $.show $.x 'ancestor::table[1]', d.getElementById id
       return
     inline = $.el 'table',
       className: 'inline'
-      innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
+      innerHTML: "<tbody><tr><td class=reply id=i#{id}></td></tr></tbody>"
     td = $ 'td', inline
     if el = d.getElementById id
       td.innerHTML = el.innerHTML
@@ -1384,7 +1390,12 @@ quoteInline =
       else
         #FIXME need an array of callbacks
         g.requests[threadID] = $.get @href, (-> quoteInline.parse this, id, threadID, inline)
-    $.after @parentNode, inline
+    if @className is 'backlink'
+      root = $ 'table, blockquote', root
+      $.before root, inline
+      $.hide $.x 'ancestor::table[1]', el
+    else
+      $.after @parentNode, inline
   parse: (req, id, threadID, oldInline) ->
     if req.status isnt 200
       oldInline.innerHTML = "#{req.status} #{req.statusText}"
@@ -1418,7 +1429,7 @@ quotePreview =
     $.hide preview
     $.append d.body, preview
   node: (root) ->
-    for quote in $$ 'a.quotelink', root
+    for quote in $$ 'a.quotelink, a.backlink', root
       $.bind quote, 'mouseover', quotePreview.mouseover
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  ui.hoverend
