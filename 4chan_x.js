@@ -1604,6 +1604,9 @@
     cb: {
       node: function(root) {
         var i, link, names, prefix, prefixes, s, span, suffix, _len, _results;
+        if (root.className === 'inline') {
+          return;
+        }
         prefixes = (function() {
           var _i, _len, _ref, _results;
           _ref = $.config('flavors').split('\n');
@@ -1880,14 +1883,16 @@
     cb: {
       node: function(root) {
         var a, span;
-        span = $('span[id^=no]', root);
-        a = $.el('a', {
-          className: 'reportbutton',
-          innerHTML: '[&nbsp;!&nbsp;]'
-        });
-        $.bind(a, 'click', reportButton.cb.report);
-        $.after(span, a);
-        return $.after(span, $.tn(' '));
+        if (!(a = $('a.reportbutton', root))) {
+          span = $('span[id^=no]', root);
+          a = $.el('a', {
+            className: 'reportbutton',
+            innerHTML: '[&nbsp;!&nbsp;]'
+          });
+          $.after(span, a);
+          $.after(span, $.tn(' '));
+        }
+        return $.bind(a, 'click', reportButton.cb.report);
       },
       report: function(e) {
         return reportButton.report(this);
@@ -1910,6 +1915,9 @@
     },
     cb: {
       node: function(root) {
+        if (root.className === 'inline') {
+          return;
+        }
         unread.replies.push(root);
         unread.updateTitle();
         return Favicon.update();

@@ -1305,6 +1305,7 @@ sauce =
     g.callbacks.push sauce.cb.node
   cb:
     node: (root) ->
+      return if root.className is 'inline'
       prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
       names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
       if span = $ 'span.filesize', root
@@ -1484,13 +1485,14 @@ reportButton =
     g.callbacks.push reportButton.cb.node
   cb:
     node: (root) ->
-      span = $ 'span[id^=no]', root
-      a = $.el 'a',
-        className: 'reportbutton'
-        innerHTML: '[&nbsp;!&nbsp;]'
+      if not a = $ 'a.reportbutton', root
+        span = $ 'span[id^=no]', root
+        a = $.el 'a',
+          className: 'reportbutton'
+          innerHTML: '[&nbsp;!&nbsp;]'
+        $.after span, a
+        $.after span, $.tn(' ')
       $.bind a, 'click', reportButton.cb.report
-      $.after span, a
-      $.after span, $.tn(' ')
     report: (e) ->
       reportButton.report this
   report: (target) ->
@@ -1508,6 +1510,7 @@ unread =
 
   cb:
     node: (root) ->
+      return if root.className is 'inline'
       unread.replies.push root
       unread.updateTitle()
       Favicon.update()
