@@ -537,32 +537,22 @@
         var thread;
         thread = this.parentNode;
         return expandThread.toggle(thread);
-      },
-      load: function(xhr, thread, a) {
-        var html, id;
-        if (xhr.status === 404) {
-          a.textContent.replace('X Loading...', '404');
-          return $.unbind(a, 'click', expandThread.cb.toggle);
-        } else {
-          html = xhr.responseText;
-          id = thread.firstChild.id;
-          g.cache[id] = html;
-          return expandThread.expand(html, thread, a);
-        }
       }
     },
     toggle: function(thread) {
-      var a, html, id, num, prev, table, _results;
-      id = thread.firstChild.id;
+      var a, num, prev, req, table, threadID, _results;
+      threadID = thread.firstChild.id;
       a = $('a.omittedposts', thread);
       switch (a.textContent[0]) {
         case '+':
           a.textContent = a.textContent.replace('+', 'X Loading...');
-          if (html = g.cache[id]) {
-            return expandThread.expand(html, thread, a);
+          if (req = g.requests[threadID]) {
+            if (req.readyState === 4) {
+              return expandThread.parse(req, thread, a);
+            }
           } else {
-            return g.requests[id] = $.get("res/" + id, (function() {
-              return expandThread.cb.load(this, thread, a);
+            return g.requests[threadID] = $.get("res/" + threadID, (function() {
+              return expandThread.parse(this, thread, a);
             }));
           }
           break;
@@ -580,15 +570,20 @@
           return _results;
       }
     },
-    expand: function(html, thread, a) {
+    parse: function(req, thread, a) {
       var body, br, next, table, tables, _i, _len, _results;
+      if (req.status !== 200) {
+        a.textContent = "" + req.status + " " + req.statusText;
+        $.unbind(a, 'click', expandThread.cb.toggle);
+        return;
+      }
       a.textContent = a.textContent.replace('X Loading...', '-');
       while ((next = a.nextSibling) && !next.clear) {
         $.rm(next);
       }
       br = next;
       body = $.el('body', {
-        innerHTML: html
+        innerHTML: req.responseText
       });
       tables = $$('form[name=delform] table', body);
       tables.pop();

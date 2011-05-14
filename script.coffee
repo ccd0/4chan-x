@@ -373,28 +373,18 @@ expandThread =
       thread = @parentNode
       expandThread.toggle thread
 
-    load: (xhr, thread, a) ->
-      if xhr.status is 404
-        a.textContent.replace 'X Loading...', '404'
-        $.unbind a, 'click', expandThread.cb.toggle
-      else
-        html = xhr.responseText
-        id = thread.firstChild.id
-        g.cache[id] = html
-        expandThread.expand html, thread, a
-
   toggle: (thread) ->
-    id = thread.firstChild.id
+    threadID = thread.firstChild.id
     a = $ 'a.omittedposts', thread
 
     switch a.textContent[0]
       when '+'
         a.textContent = a.textContent.replace '+', 'X Loading...'
-        if html = g.cache[id]
-          expandThread.expand html, thread, a
+        if req = g.requests[threadID]
+          if req.readyState is 4
+            expandThread.parse req, thread, a
         else
-          g.requests[id] =
-            $.get "res/#{id}", (-> expandThread.cb.load this, thread, a)
+          g.requests[threadID] = $.get "res/#{threadID}", (-> expandThread.parse this, thread, a)
 
       when 'X'
         a.textContent = a.textContent.replace 'X Loading...', '+'
@@ -408,7 +398,12 @@ expandThread =
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
           $.rm prev
 
-  expand: (html, thread, a) ->
+  parse: (req, thread, a) ->
+    if req.status isnt 200
+      a.textContent = "#{req.status} #{req.statusText}"
+      $.unbind a, 'click', expandThread.cb.toggle
+      return
+
     a.textContent = a.textContent.replace 'X Loading...', '-'
 
     # eat everything, then replace with fresh full posts
@@ -417,7 +412,7 @@ expandThread =
     br = next
 
     body = $.el 'body',
-      innerHTML: html
+      innerHTML: req.responseText
 
     tables = $$ 'form[name=delform] table', body
     tables.pop()
