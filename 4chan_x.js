@@ -1746,16 +1746,15 @@
     },
     parse: function(req, id, threadID, oldInline) {
       var body, html, inline, op, reply, td, _i, _len, _ref;
+      if (req.status !== 200) {
+        oldInline.innerHTML = "" + req.status + " " + req.statusText;
+        return;
+      }
       inline = $.el('table', {
         className: 'inline',
         innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
       });
       td = $('td', inline);
-      if (req.status !== 200) {
-        td.innerHTML = "" + req.status + " " + req.statusText;
-        $.replace(oldInline, inline);
-        return;
-      }
       body = $.el('body', {
         innerHTML: req.responseText
       });

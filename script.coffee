@@ -1387,16 +1387,15 @@ quoteInline =
         g.requests[threadID] = $.get @href, (-> quoteInline.parse this, id, threadID, inline)
     $.after @parentNode, inline
   parse: (req, id, threadID, oldInline) ->
+    if req.status isnt 200
+      oldInline.innerHTML = "#{req.status} #{req.statusText}"
+      return
+
     #this is fucking stupid
     inline = $.el 'table',
       className: 'inline'
       innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
     td = $ 'td', inline
-
-    if req.status isnt 200
-      td.innerHTML = "#{req.status} #{req.statusText}"
-      $.replace oldInline, inline
-      return
 
     body = $.el 'body',
       innerHTML: req.responseText
