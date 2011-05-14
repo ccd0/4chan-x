@@ -707,7 +707,6 @@ options =
 
   dialog: ->
     html = "<div class=move>Options <a name=close>X</a></div>"
-
     conf = config.main.checkbox
     for name of conf
       title = conf[name][1]
@@ -729,8 +728,6 @@ options =
     dialog = ui.dialog 'options', top: '25%', left: '50%', html
     for input in $$ 'input[type=checkbox]', dialog
       $.bind input, 'click', $.cb.checked
-
-
     $.bind $('input[type=button]', dialog), 'click', options.cb.clearHidden
     $.bind $('a[name=flavors]', dialog), 'click', options.flavors
     $.bind $('textarea', dialog), 'change', $.cb.value
