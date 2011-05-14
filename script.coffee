@@ -1337,8 +1337,7 @@ quoteBacklink =
     quotes = {}
     tid = g.THREAD_ID
     for quote in $$ 'a.quotelink', root
-      continue unless qid = quote.textContent.match /\d+/
-      [qid] = qid
+      continue unless qid = quote.hash[1..]
       #don't backlink the op
       continue if qid == tid
       #duplicate quotes get overwritten
@@ -1424,8 +1423,7 @@ quotePreview =
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  ui.hoverend
   mouseover: (e) ->
-    return unless id = @textContent.match /\d+/
-    [id] = id
+    return unless id = @hash[1..]
     qp = $ '#qp'
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML

@@ -1667,10 +1667,9 @@
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!(qid = quote.textContent.match(/\d+/))) {
+        if (!(qid = quote.hash.slice(1))) {
           continue;
         }
-        qid = qid[0];
         if (qid === tid) {
           continue;
         }
@@ -1800,10 +1799,9 @@
     },
     mouseover: function(e) {
       var el, id, qp, req, threadID;
-      if (!(id = this.textContent.match(/\d+/))) {
+      if (!(id = this.hash.slice(1))) {
         return;
       }
-      id = id[0];
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
