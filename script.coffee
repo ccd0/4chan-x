@@ -178,7 +178,7 @@ $.extend $,
     script = $.el 'script',
       textContent: "(#{code})()"
     $.append d.head, script
-    $.remove script
+    $.rm script
   get: (url, cb) ->
     r = new XMLHttpRequest()
     r.onload = cb
@@ -214,7 +214,7 @@ $.extend $,
     el.className += ' ' + className
   removeClass: (el, className) ->
     el.className = el.className.replace ' ' + className, ''
-  remove: (el) ->
+  rm: (el) ->
     el.parentNode.removeChild el
   append: (parent, children...) ->
     for child in children
@@ -401,14 +401,14 @@ expandThread =
         num = if g.BOARD is 'b' then 3 else 5
         table = $.x "following::br[@clear][1]/preceding::table[#{num}]", a
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
-          $.remove prev
+          $.rm prev
 
   expand: (html, thread, a) ->
     a.textContent = a.textContent.replace 'X Loading...', '-'
 
     # eat everything, then replace with fresh full posts
     while (next = a.nextSibling) and not next.clear #br[clear]
-      $.remove next
+      $.rm next
     br = next
 
     body = $.el 'body',
@@ -446,7 +446,7 @@ replyHiding =
       table = div.nextSibling
       replyHiding.show table
 
-      $.remove div
+      $.rm div
 
   hide: (reply) ->
     table = reply.parentNode.parentNode.parentNode
@@ -506,7 +506,7 @@ keybinds =
     switch keybinds.key
       when '<Esc>'
         e.preventDefault()
-        $.remove $ '#qr'
+        $.rm $ '#qr'
       when '^s'
         ta = d.activeElement
         return unless ta.nodeName is 'TEXTAREA'
@@ -701,7 +701,7 @@ options =
 
   toggle: ->
     if dialog = $ '#options'
-      $.remove dialog
+      $.rm dialog
     else
       options.dialog()
 
@@ -780,7 +780,7 @@ qr =
           if $.config 'Persistent QR'
             qr.refresh dialog
           else
-            $.remove dialog
+            $.rm dialog
         if $.config 'Cooldown'
           qr.cooldown true
 
@@ -1073,7 +1073,7 @@ threadHiding =
       $.hide thread.nextSibling
 
   show: (thread) ->
-    $.remove $ 'div.block', thread
+    $.rm $ 'div.block', thread
     $.removeClass thread, 'stub'
     $.show thread
     $.show thread.nextSibling
@@ -1227,7 +1227,7 @@ watcher =
   refresh: (watched) ->
     dialog = $ '#watcher'
     for div in $$ 'div:not(.move)', dialog
-      $.remove div
+      $.rm div
     for board of watched
       for id, props of watched[board]
         div = $.el 'div'
@@ -1295,9 +1295,9 @@ anonymize =
       name.textContent = 'Anonymous'
       if trip = $ 'span.postertrip', root
         if trip.parentNode.nodeName is 'A'
-          $.remove trip.parentNode
+          $.rm trip.parentNode
         else
-          $.remove trip
+          $.rm trip
 
 sauce =
   init: ->
@@ -1613,7 +1613,7 @@ imgExpand =
 
   contract: (thumb) ->
     $.show thumb
-    $.remove thumb.nextSibling
+    $.rm thumb.nextSibling
 
   expand: (thumb) ->
     $.hide thumb

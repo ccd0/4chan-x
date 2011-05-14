@@ -263,7 +263,7 @@
         textContent: "(" + code + ")()"
       });
       $.append(d.head, script);
-      return $.remove(script);
+      return $.rm(script);
     },
     get: function(url, cb) {
       var r;
@@ -322,7 +322,7 @@
     removeClass: function(el, className) {
       return el.className = el.className.replace(' ' + className, '');
     },
-    remove: function(el) {
+    rm: function(el) {
       return el.parentNode.removeChild(el);
     },
     append: function() {
@@ -567,7 +567,7 @@
           table = $.x("following::br[@clear][1]/preceding::table[" + num + "]", a);
           _results = [];
           while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
-            _results.push($.remove(prev));
+            _results.push($.rm(prev));
           }
           return _results;
       }
@@ -576,7 +576,7 @@
       var body, br, next, table, tables, _i, _len, _results;
       a.textContent = a.textContent.replace('X Loading...', '-');
       while ((next = a.nextSibling) && !next.clear) {
-        $.remove(next);
+        $.rm(next);
       }
       br = next;
       body = $.el('body', {
@@ -624,7 +624,7 @@
         div = this.parentNode;
         table = div.nextSibling;
         replyHiding.show(table);
-        return $.remove(div);
+        return $.rm(div);
       }
     },
     hide: function(reply) {
@@ -694,7 +694,7 @@
       switch (keybinds.key) {
         case '<Esc>':
           e.preventDefault();
-          return $.remove($('#qr'));
+          return $.rm($('#qr'));
         case '^s':
           ta = d.activeElement;
           if (ta.nodeName !== 'TEXTAREA') {
@@ -920,7 +920,7 @@
     toggle: function() {
       var dialog;
       if (dialog = $('#options')) {
-        return $.remove(dialog);
+        return $.rm(dialog);
       } else {
         return options.dialog();
       }
@@ -1017,7 +1017,7 @@
             if ($.config('Persistent QR')) {
               qr.refresh(dialog);
             } else {
-              $.remove(dialog);
+              $.rm(dialog);
             }
           }
           if ($.config('Cooldown')) {
@@ -1328,7 +1328,7 @@
     },
     show: function(thread) {
       var hiddenThreads, id;
-      $.remove($('div.block', thread));
+      $.rm($('div.block', thread));
       $.removeClass(thread, 'stub');
       $.show(thread);
       $.show(thread.nextSibling);
@@ -1505,7 +1505,7 @@
       _ref = $$('div:not(.move)', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         div = _ref[_i];
-        $.remove(div);
+        $.rm(div);
       }
       for (board in watched) {
         _ref2 = watched[board];
@@ -1588,9 +1588,9 @@
         name.textContent = 'Anonymous';
         if (trip = $('span.postertrip', root)) {
           if (trip.parentNode.nodeName === 'A') {
-            return $.remove(trip.parentNode);
+            return $.rm(trip.parentNode);
           } else {
-            return $.remove(trip);
+            return $.rm(trip);
           }
         }
       }
@@ -2100,7 +2100,7 @@
     },
     contract: function(thumb) {
       $.show(thumb);
-      return $.remove(thumb.nextSibling);
+      return $.rm(thumb.nextSibling);
     },
     expand: function(thumb) {
       var a, img;
