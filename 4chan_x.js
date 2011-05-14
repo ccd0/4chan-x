@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        2.6.0
+// @version        2.7.0
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -84,6 +84,7 @@
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
         'Quick Reply': [true, 'Reply without leaving the page'],
         'Quote Backlinks': [false, 'Add quote backlinks'],
+        'Quote Inline': [false, 'Show quoted post inline on quote click'],
         'Quote Preview': [false, 'Show quote content on hover'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Report Button': [true, 'Add report buttons'],
@@ -135,31 +136,7 @@
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
-      if (typeof position === 'object') {
-        left = position.left, top = position.top;
-      } else {
-        switch (position) {
-          case 'topleft':
-            left = '0px';
-            top = '0px';
-            break;
-          case 'topright':
-            left = null;
-            top = '0px';
-            break;
-          case 'bottomleft':
-            left = '0px';
-            top = null;
-            break;
-          case 'bottomright':
-            left = null;
-            top = null;
-            break;
-          case 'center':
-            left = '50%';
-            top = '25%';
-        }
-      }
+      left = position.left, top = position.top;
       left = (_ref = localStorage["" + id + "Left"]) != null ? _ref : left;
       top = (_ref2 = localStorage["" + id + "Top"]) != null ? _ref2 : top;
       if (left) {
@@ -263,7 +240,7 @@
         textContent: "(" + code + ")()"
       });
       $.append(d.head, script);
-      return $.remove(script);
+      return $.rm(script);
     },
     get: function(url, cb) {
       var r;
@@ -322,7 +299,7 @@
     removeClass: function(el, className) {
       return el.className = el.className.replace(' ' + className, '');
     },
-    remove: function(el) {
+    rm: function(el) {
       return el.parentNode.removeChild(el);
     },
     append: function() {
@@ -471,27 +448,34 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        _results.push($.bind(a, 'click', expandComment.cb.expand));
+        _results.push($.bind(a, 'click', expandComment.expand));
       }
       return _results;
     },
-    cb: {
-      expand: function(e) {
-        var a, href, replyID, threadID, _, _ref;
-        e.preventDefault();
+    expand: function(e) {
+      var a, replyID, req, threadID, _, _ref;
+      e.preventDefault();
+      _ref = this.href.match(/(\d+)#(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
+      this.textContent = "Loading " + replyID + "...";
+      if (req = g.requests[threadID]) {
+        if (req.readyState === 4) {
+          return expandComment.parse(req, this, threadID, replyID);
+        }
+      } else {
         a = this;
-        a.textContent = 'Loading...';
-        href = a.getAttribute('href');
-        _ref = href.match(/(\d+)#(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
-        return g.cache[threadID] = $.get(href, (function() {
-          return expandComment.load(this, a, threadID, replyID);
+        return g.requests[threadID] = $.get(this.href, (function() {
+          return expandComment.parse(this, a, threadID, replyID);
         }));
       }
     },
-    load: function(xhr, a, threadID, replyID) {
+    parse: function(req, a, threadID, replyID) {
       var body, bq, reply, _i, _len, _ref;
+      if (req.status !== 200) {
+        a.textContent = "" + req.status + " " + req.statusText;
+        return;
+      }
       body = $.el('body', {
-        innerHTML: xhr.responseText
+        innerHTML: req.responseText
       });
       if (threadID === replyID) {
         bq = $('blockquote', body);
@@ -529,32 +513,22 @@
         var thread;
         thread = this.parentNode;
         return expandThread.toggle(thread);
-      },
-      load: function(xhr, thread, a) {
-        var html, id;
-        if (xhr.status === 404) {
-          a.textContent.replace('X Loading...', '404');
-          return $.unbind(a, 'click', expandThread.cb.toggle);
-        } else {
-          html = xhr.responseText;
-          id = thread.firstChild.id;
-          g.cache[id] = html;
-          return expandThread.expand(html, thread, a);
-        }
       }
     },
     toggle: function(thread) {
-      var a, html, id, num, prev, table, _results;
-      id = thread.firstChild.id;
+      var a, num, prev, req, table, threadID, _results;
+      threadID = thread.firstChild.id;
       a = $('a.omittedposts', thread);
       switch (a.textContent[0]) {
         case '+':
           a.textContent = a.textContent.replace('+', 'X Loading...');
-          if (html = g.cache[id]) {
-            return expandThread.expand(html, thread, a);
+          if (req = g.requests[threadID]) {
+            if (req.readyState === 4) {
+              return expandThread.parse(req, thread, a);
+            }
           } else {
-            return g.requests[id] = $.get("res/" + id, (function() {
-              return expandThread.cb.load(this, thread, a);
+            return g.requests[threadID] = $.get("res/" + threadID, (function() {
+              return expandThread.parse(this, thread, a);
             }));
           }
           break;
@@ -567,20 +541,25 @@
           table = $.x("following::br[@clear][1]/preceding::table[" + num + "]", a);
           _results = [];
           while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
-            _results.push($.remove(prev));
+            _results.push($.rm(prev));
           }
           return _results;
       }
     },
-    expand: function(html, thread, a) {
+    parse: function(req, thread, a) {
       var body, br, next, table, tables, _i, _len, _results;
+      if (req.status !== 200) {
+        a.textContent = "" + req.status + " " + req.statusText;
+        $.unbind(a, 'click', expandThread.cb.toggle);
+        return;
+      }
       a.textContent = a.textContent.replace('X Loading...', '-');
       while ((next = a.nextSibling) && !next.clear) {
-        $.remove(next);
+        $.rm(next);
       }
       br = next;
       body = $.el('body', {
-        innerHTML: html
+        innerHTML: req.responseText
       });
       tables = $$('form[name=delform] table', body);
       tables.pop();
@@ -624,7 +603,7 @@
         div = this.parentNode;
         table = div.nextSibling;
         replyHiding.show(table);
-        return $.remove(div);
+        return $.rm(div);
       }
     },
     hide: function(reply) {
@@ -694,7 +673,7 @@
       switch (keybinds.key) {
         case '<Esc>':
           e.preventDefault();
-          return $.remove($('#qr'));
+          return $.rm($('#qr'));
         case '^s':
           ta = d.activeElement;
           if (ta.nodeName !== 'TEXTAREA') {
@@ -920,7 +899,7 @@
     toggle: function() {
       var dialog;
       if (dialog = $('#options')) {
-        return $.remove(dialog);
+        return $.rm(dialog);
       } else {
         return options.dialog();
       }
@@ -1012,7 +991,7 @@
             if ($.config('Persistent QR')) {
               qr.refresh(dialog);
             } else {
-              $.remove(dialog);
+              $.rm(dialog);
             }
           }
           if ($.config('Cooldown')) {
@@ -1139,7 +1118,7 @@
     dialog: function(link) {
       var MAX_FILE_SIZE, THREAD_ID, clone, dialog, el, html, mail, name, pass, spoiler;
       MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value;
-      THREAD_ID = g.THREAD_ID || link.pathname.split('/').pop();
+      THREAD_ID = g.THREAD_ID || $.x('preceding::div[@class="op"][1]', link).id;
       name = $('input[name=name]').value;
       mail = $('input[name=email]').value;
       pass = $('input[name=pwd]').value;
@@ -1323,7 +1302,7 @@
     },
     show: function(thread) {
       var hiddenThreads, id;
-      $.remove($('div.block', thread));
+      $.rm($('div.block', thread));
       $.removeClass(thread, 'stub');
       $.show(thread);
       $.show(thread.nextSibling);
@@ -1500,7 +1479,7 @@
       _ref = $$('div:not(.move)', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         div = _ref[_i];
-        $.remove(div);
+        $.rm(div);
       }
       for (board in watched) {
         _ref2 = watched[board];
@@ -1583,9 +1562,9 @@
         name.textContent = 'Anonymous';
         if (trip = $('span.postertrip', root)) {
           if (trip.parentNode.nodeName === 'A') {
-            return $.remove(trip.parentNode);
+            return $.rm(trip.parentNode);
           } else {
-            return $.remove(trip);
+            return $.rm(trip);
           }
         }
       }
@@ -1598,6 +1577,9 @@
     cb: {
       node: function(root) {
         var i, link, names, prefix, prefixes, s, span, suffix, _len, _results;
+        if (root.className === 'inline') {
+          return;
+        }
         prefixes = (function() {
           var _i, _len, _ref, _results;
           _ref = $.config('flavors').split('\n');
@@ -1674,16 +1656,18 @@
     },
     node: function(root) {
       var el, id, link, qid, quote, quotes, tid, _i, _len, _ref, _results;
+      if (root.className === 'inline') {
+        return;
+      }
       id = root.id || $('td[id]', root).id;
       quotes = {};
       tid = g.THREAD_ID;
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!(qid = quote.textContent.match(/\d+/))) {
+        if (!(qid = quote.hash.slice(1))) {
           continue;
         }
-        qid = qid[0];
         if (qid === tid) {
           continue;
         }
@@ -1705,9 +1689,100 @@
           $.bind(link, 'mousemove', ui.hover);
           $.bind(link, 'mouseout', ui.hoverend);
         }
+        if ($.config('Quote Inline')) {
+          $.bind(link, 'click', quoteInline.toggle);
+        }
         _results.push($.before($('td > br, blockquote', el), link));
       }
       return _results;
+    }
+  };
+  quoteInline = {
+    init: function() {
+      return g.callbacks.push(quoteInline.node);
+    },
+    node: function(root) {
+      var quote, _i, _len, _ref, _results;
+      _ref = $$('a.quotelink, a.backlink', root);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        quote.removeAttribute('onclick');
+        _results.push($.bind(quote, 'click', quoteInline.toggle));
+      }
+      return _results;
+    },
+    toggle: function(e) {
+      var el, id, inline, req, root, td, threadID;
+      e.preventDefault();
+      if (!(id = this.hash.slice(1))) {
+        return;
+      }
+      root = $.x('ancestor::td[1]', this);
+      if (td = $("#i" + id, root)) {
+        $.rm($.x('ancestor::table[1]', td));
+        if (this.className === 'backlink') {
+          $.show($.x('ancestor::table[1]', d.getElementById(id)));
+        }
+        return;
+      }
+      inline = $.el('table', {
+        className: 'inline',
+        innerHTML: "<tbody><tr><td class=reply id=i" + id + "></td></tr></tbody>"
+      });
+      td = $('td', inline);
+      if (el = d.getElementById(id)) {
+        td.innerHTML = el.innerHTML;
+      } else {
+        td.innerHTML = "Loading " + id + "...";
+        threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
+        if (req = g.requests[threadID]) {
+          if (req.readyState === 4) {
+            quoteInline.parse(req, id, threadID, inline);
+          }
+        } else {
+          g.requests[threadID] = $.get(this.href, (function() {
+            return quoteInline.parse(this, id, threadID, inline);
+          }));
+        }
+      }
+      if (this.className === 'backlink') {
+        root = $('table, blockquote', root);
+        $.before(root, inline);
+        return $.hide($.x('ancestor::table[1]', el));
+      } else {
+        return $.after(this.parentNode, inline);
+      }
+    },
+    parse: function(req, id, threadID, oldInline) {
+      var body, html, inline, op, reply, td, _i, _len, _ref;
+      if (req.status !== 200) {
+        oldInline.innerHTML = "" + req.status + " " + req.statusText;
+        return;
+      }
+      inline = $.el('table', {
+        className: 'inline',
+        innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
+      });
+      td = $('td', inline);
+      body = $.el('body', {
+        innerHTML: req.responseText
+      });
+      if (id === threadID) {
+        op = threading.op($('form[name=delform] > *', body));
+        html = op.innerHTML;
+      } else {
+        _ref = $$('td.reply', body);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          reply = _ref[_i];
+          if (reply.id === id) {
+            html = reply.innerHTML;
+            break;
+          }
+        }
+      }
+      td.innerHTML = html;
+      return $.replace(oldInline, inline);
     }
   };
   quotePreview = {
@@ -1723,7 +1798,7 @@
     },
     node: function(root) {
       var quote, _i, _len, _ref, _results;
-      _ref = $$('a.quotelink', root);
+      _ref = $$('a.quotelink, a.backlink', root);
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
@@ -1735,10 +1810,9 @@
     },
     mouseover: function(e) {
       var el, id, qp, req, threadID;
-      if (!(id = this.textContent.match(/\d+/))) {
+      if (!(id = this.hash.slice(1))) {
         return;
       }
-      id = id[0];
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
@@ -1795,14 +1869,16 @@
     cb: {
       node: function(root) {
         var a, span;
-        span = $('span[id^=no]', root);
-        a = $.el('a', {
-          className: 'reportbutton',
-          innerHTML: '[&nbsp;!&nbsp;]'
-        });
-        $.bind(a, 'click', reportButton.cb.report);
-        $.after(span, a);
-        return $.after(span, $.tn(' '));
+        if (!(a = $('a.reportbutton', root))) {
+          span = $('span[id^=no]', root);
+          a = $.el('a', {
+            className: 'reportbutton',
+            innerHTML: '[&nbsp;!&nbsp;]'
+          });
+          $.after(span, a);
+          $.after(span, $.tn(' '));
+        }
+        return $.bind(a, 'click', reportButton.cb.report);
       },
       report: function(e) {
         return reportButton.report(this);
@@ -1825,6 +1901,9 @@
     },
     cb: {
       node: function(root) {
+        if (root.className === 'inline') {
+          return;
+        }
         unread.replies.push(root);
         unread.updateTitle();
         return Favicon.update();
@@ -2095,7 +2174,7 @@
     },
     contract: function(thumb) {
       $.show(thumb);
-      return $.remove(thumb.nextSibling);
+      return $.rm(thumb.nextSibling);
     },
     expand: function(thumb) {
       var a, img;
@@ -2170,7 +2249,6 @@
   };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {
-    cache: {},
     requests: {},
     callbacks: []
   };
@@ -2261,6 +2339,9 @@
       }
       if ($.config('Quote Backlinks')) {
         quoteBacklink.init();
+      }
+      if ($.config('Quote Inline')) {
+        quoteInline.init();
       }
       if ($.config('Quote Preview')) {
         quotePreview.init();
@@ -2369,6 +2450,11 @@
 \
       #qp, #iHover {\
         position: fixed;\
+      }\
+\
+      #iHover {\
+        width: auto;\
+        max-height: 100%;\
       }\
 \
       #navlinks {\

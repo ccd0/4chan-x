@@ -1,3 +1,13 @@
+2.7.0
+- mayhem:
+  add class to reply hider and report buttons
+  fix anonymizer
+- inline quoting
+- don't break on >>>/board/ links (links w/o an id)
+- remove op backlinking
+- fix qr on expanded posts
+- image hover: fit height
+
 2.6.0
 - mayhem:
   start backlinks

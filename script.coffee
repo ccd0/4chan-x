@@ -28,6 +28,7 @@ config =
       'Post in Title':     [true,  'Show the op\'s post in the tab title']
       'Quick Reply':       [true,  'Reply without leaving the page']
       'Quote Backlinks':   [false, 'Add quote backlinks']
+      'Quote Inline':      [false, 'Show quoted post inline on quote click']
       'Quote Preview':     [false, 'Show quote content on hover']
       'Reply Hiding':      [true,  'Hide single replies']
       'Report Button':     [true,  'Add report buttons']
@@ -53,7 +54,7 @@ config =
     'Interval': 30
 
 # FIXME this is fucking horrible
-# create 'global' options, no namespacing
+# flatten the config
 _config = {}
 ((parent, obj) ->
   if obj.length #array
@@ -74,25 +75,7 @@ ui =
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
-    if typeof position is 'object'
-      {left, top} = position
-    else
-      switch position
-        when 'topleft'
-          left = '0px'
-          top  = '0px'
-        when 'topright'
-          left = null
-          top  = '0px'
-        when 'bottomleft'
-          left = '0px'
-          top  = null
-        when 'bottomright'
-          left = null
-          top  = null
-        when 'center'
-          left = '50%'
-          top  = '25%'
+    {left, top} = position
     left = localStorage["#{id}Left"] ? left
     top  = localStorage["#{id}Top"]  ? top
     if left then el.style.left = left else el.style.right  = '0px'
@@ -178,7 +161,7 @@ $.extend $,
     script = $.el 'script',
       textContent: "(#{code})()"
     $.append d.head, script
-    $.remove script
+    $.rm script
   get: (url, cb) ->
     r = new XMLHttpRequest()
     r.onload = cb
@@ -214,7 +197,7 @@ $.extend $,
     el.className += ' ' + className
   removeClass: (el, className) ->
     el.className = el.className.replace ' ' + className, ''
-  remove: (el) ->
+  rm: (el) ->
     el.parentNode.removeChild el
   append: (parent, children...) ->
     for child in children
@@ -328,22 +311,26 @@ $$ = (selector, root=d.body) ->
 expandComment =
   init: ->
     for a in $$ 'span.abbr a'
-      $.bind a, 'click', expandComment.cb.expand
-
-  cb:
-    expand: (e) ->
-      e.preventDefault()
+      $.bind a, 'click', expandComment.expand
+  expand: (e) ->
+    e.preventDefault()
+    [_, threadID, replyID] = @href.match /(\d+)#(\d+)/
+    @textContent = "Loading #{replyID}..."
+    if req = g.requests[threadID]
+      if req.readyState is 4
+        expandComment.parse req, this, threadID, replyID
+    else
       a = this
-      a.textContent = 'Loading...'
-      href = a.getAttribute 'href'
-      [_, threadID, replyID] = href.match /(\d+)#(\d+)/
-      g.cache[threadID] = $.get href, (->
-        expandComment.load this, a, threadID, replyID)
-  load: (xhr, a, threadID, replyID) ->
-    body = $.el 'body',
-      innerHTML: xhr.responseText
+      g.requests[threadID] = $.get @href, (-> expandComment.parse this, a, threadID, replyID)
+  parse: (req, a, threadID, replyID) ->
+    if req.status isnt 200
+      a.textContent = "#{req.status} #{req.statusText}"
+      return
 
-    if threadID is replyID
+    body = $.el 'body',
+      innerHTML: req.responseText
+
+    if threadID is replyID #OP
       bq = $ 'blockquote', body
     else
       #css selectors don't like ids starting with numbers,
@@ -368,28 +355,18 @@ expandThread =
       thread = @parentNode
       expandThread.toggle thread
 
-    load: (xhr, thread, a) ->
-      if xhr.status is 404
-        a.textContent.replace 'X Loading...', '404'
-        $.unbind a, 'click', expandThread.cb.toggle
-      else
-        html = xhr.responseText
-        id = thread.firstChild.id
-        g.cache[id] = html
-        expandThread.expand html, thread, a
-
   toggle: (thread) ->
-    id = thread.firstChild.id
+    threadID = thread.firstChild.id
     a = $ 'a.omittedposts', thread
 
     switch a.textContent[0]
       when '+'
         a.textContent = a.textContent.replace '+', 'X Loading...'
-        if html = g.cache[id]
-          expandThread.expand html, thread, a
+        if req = g.requests[threadID]
+          if req.readyState is 4
+            expandThread.parse req, thread, a
         else
-          g.requests[id] =
-            $.get "res/#{id}", (-> expandThread.cb.load this, thread, a)
+          g.requests[threadID] = $.get "res/#{threadID}", (-> expandThread.parse this, thread, a)
 
       when 'X'
         a.textContent = a.textContent.replace 'X Loading...', '+'
@@ -401,18 +378,23 @@ expandThread =
         num = if g.BOARD is 'b' then 3 else 5
         table = $.x "following::br[@clear][1]/preceding::table[#{num}]", a
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
-          $.remove prev
+          $.rm prev
 
-  expand: (html, thread, a) ->
+  parse: (req, thread, a) ->
+    if req.status isnt 200
+      a.textContent = "#{req.status} #{req.statusText}"
+      $.unbind a, 'click', expandThread.cb.toggle
+      return
+
     a.textContent = a.textContent.replace 'X Loading...', '-'
 
     # eat everything, then replace with fresh full posts
     while (next = a.nextSibling) and not next.clear #br[clear]
-      $.remove next
+      $.rm next
     br = next
 
     body = $.el 'body',
-      innerHTML: html
+      innerHTML: req.responseText
 
     tables = $$ 'form[name=delform] table', body
     tables.pop()
@@ -446,7 +428,7 @@ replyHiding =
       table = div.nextSibling
       replyHiding.show table
 
-      $.remove div
+      $.rm div
 
   hide: (reply) ->
     table = reply.parentNode.parentNode.parentNode
@@ -506,7 +488,7 @@ keybinds =
     switch keybinds.key
       when '<Esc>'
         e.preventDefault()
-        $.remove $ '#qr'
+        $.rm $ '#qr'
       when '^s'
         ta = d.activeElement
         return unless ta.nodeName is 'TEXTAREA'
@@ -701,7 +683,7 @@ options =
 
   toggle: ->
     if dialog = $ '#options'
-      $.remove dialog
+      $.rm dialog
     else
       options.dialog()
 
@@ -782,7 +764,7 @@ qr =
           if $.config 'Persistent QR'
             qr.refresh dialog
           else
-            $.remove dialog
+            $.rm dialog
         if $.config 'Cooldown'
           qr.cooldown true
 
@@ -894,7 +876,7 @@ qr =
   dialog: (link) ->
     #maybe should be global
     MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
-    THREAD_ID = g.THREAD_ID or link.pathname.split('/').pop()
+    THREAD_ID = g.THREAD_ID or $.x('preceding::div[@class="op"][1]', link).id
     name = $('input[name=name]').value
     mail = $('input[name=email]').value
     pass = $('input[name=pwd]').value
@@ -1075,7 +1057,7 @@ threadHiding =
       $.hide thread.nextSibling
 
   show: (thread) ->
-    $.remove $ 'div.block', thread
+    $.rm $ 'div.block', thread
     $.removeClass thread, 'stub'
     $.show thread
     $.show thread.nextSibling
@@ -1229,7 +1211,7 @@ watcher =
   refresh: (watched) ->
     dialog = $ '#watcher'
     for div in $$ 'div:not(.move)', dialog
-      $.remove div
+      $.rm div
     for board of watched
       for id, props of watched[board]
         div = $.el 'div'
@@ -1297,15 +1279,16 @@ anonymize =
       name.textContent = 'Anonymous'
       if trip = $ 'span.postertrip', root
         if trip.parentNode.nodeName is 'A'
-          $.remove trip.parentNode
+          $.rm trip.parentNode
         else
-          $.remove trip
+          $.rm trip
 
 sauce =
   init: ->
     g.callbacks.push sauce.cb.node
   cb:
     node: (root) ->
+      return if root.className is 'inline'
       prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
       names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
       if span = $ 'span.filesize', root
@@ -1351,13 +1334,13 @@ quoteBacklink =
   init: ->
     g.callbacks.push quoteBacklink.node
   node: (root) ->
+    return if root.className is 'inline'
     #better coffee-script way of doing this?
     id = root.id or $('td[id]', root).id
     quotes = {}
     tid = g.THREAD_ID
     for quote in $$ 'a.quotelink', root
-      continue unless qid = quote.textContent.match /\d+/
-      [qid] = qid
+      continue unless qid = quote.hash[1..]
       #don't backlink the op
       continue if qid == tid
       #duplicate quotes get overwritten
@@ -1372,7 +1355,72 @@ quoteBacklink =
         $.bind link, 'mouseover', quotePreview.mouseover
         $.bind link, 'mousemove', ui.hover
         $.bind link, 'mouseout',  ui.hoverend
+      if $.config 'Quote Inline'
+        $.bind link, 'click', quoteInline.toggle
       $.before $('td > br, blockquote', el), link
+
+quoteInline =
+  init: ->
+    g.callbacks.push quoteInline.node
+  node: (root) ->
+    for quote in $$ 'a.quotelink, a.backlink', root
+      quote.removeAttribute 'onclick'
+      $.bind quote, 'click', quoteInline.toggle
+  toggle: (e) ->
+    e.preventDefault()
+    return unless id = @hash[1..]
+    root = $.x 'ancestor::td[1]', this
+    if td = $ "#i#{id}", root
+      $.rm $.x 'ancestor::table[1]', td
+      if @className is 'backlink'
+        $.show $.x 'ancestor::table[1]', d.getElementById id
+      return
+    inline = $.el 'table',
+      className: 'inline'
+      innerHTML: "<tbody><tr><td class=reply id=i#{id}></td></tr></tbody>"
+    td = $ 'td', inline
+    if el = d.getElementById id
+      td.innerHTML = el.innerHTML
+    else
+      td.innerHTML = "Loading #{id}..."
+      # or ... is for index page new posts.
+      # FIXME x-thread quotes
+      threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', this).id
+      if req = g.requests[threadID]
+        if req.readyState is 4
+          quoteInline.parse req, id, threadID, inline
+      else
+        #FIXME need an array of callbacks
+        g.requests[threadID] = $.get @href, (-> quoteInline.parse this, id, threadID, inline)
+    if @className is 'backlink'
+      root = $ 'table, blockquote', root
+      $.before root, inline
+      $.hide $.x 'ancestor::table[1]', el
+    else
+      $.after @parentNode, inline
+  parse: (req, id, threadID, oldInline) ->
+    if req.status isnt 200
+      oldInline.innerHTML = "#{req.status} #{req.statusText}"
+      return
+
+    #this is fucking stupid
+    inline = $.el 'table',
+      className: 'inline'
+      innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
+    td = $ 'td', inline
+
+    body = $.el 'body',
+      innerHTML: req.responseText
+    if id == threadID #OP
+      op = threading.op $ 'form[name=delform] > *', body
+      html = op.innerHTML
+    else
+      for reply in $$ 'td.reply', body
+        if reply.id == id
+          html = reply.innerHTML
+          break
+    td.innerHTML = html
+    $.replace oldInline, inline
 
 quotePreview =
   init: ->
@@ -1383,13 +1431,12 @@ quotePreview =
     $.hide preview
     $.append d.body, preview
   node: (root) ->
-    for quote in $$ 'a.quotelink', root
+    for quote in $$ 'a.quotelink, a.backlink', root
       $.bind quote, 'mouseover', quotePreview.mouseover
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  ui.hoverend
   mouseover: (e) ->
-    return unless id = @textContent.match /\d+/
-    [id] = id
+    return unless id = @hash[1..]
     qp = $ '#qp'
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
@@ -1429,13 +1476,14 @@ reportButton =
     g.callbacks.push reportButton.cb.node
   cb:
     node: (root) ->
-      span = $ 'span[id^=no]', root
-      a = $.el 'a',
-        className: 'reportbutton'
-        innerHTML: '[&nbsp;!&nbsp;]'
+      if not a = $ 'a.reportbutton', root
+        span = $ 'span[id^=no]', root
+        a = $.el 'a',
+          className: 'reportbutton'
+          innerHTML: '[&nbsp;!&nbsp;]'
+        $.after span, a
+        $.after span, $.tn(' ')
       $.bind a, 'click', reportButton.cb.report
-      $.after span, a
-      $.after span, $.tn(' ')
     report: (e) ->
       reportButton.report this
   report: (target) ->
@@ -1453,6 +1501,7 @@ unread =
 
   cb:
     node: (root) ->
+      return if root.className is 'inline'
       unread.replies.push root
       unread.updateTitle()
       Favicon.update()
@@ -1615,7 +1664,7 @@ imgExpand =
 
   contract: (thumb) ->
     $.show thumb
-    $.remove thumb.nextSibling
+    $.rm thumb.nextSibling
 
   expand: (thumb) ->
     $.hide thumb
@@ -1683,7 +1732,6 @@ imgExpand =
 #main
 NAMESPACE = 'AEOS.4chan_x.'
 g =
-  cache: {}
   requests: {}
   callbacks: []
 
@@ -1771,6 +1819,9 @@ main =
 
     if $.config 'Quote Backlinks'
       quoteBacklink.init()
+
+    if $.config 'Quote Inline'
+      quoteInline.init()
 
     if $.config 'Quote Preview'
       quotePreview.init()
@@ -1868,6 +1919,11 @@ main =
 
       #qp, #iHover {
         position: fixed;
+      }
+
+      #iHover {
+        width: auto;
+        max-height: 100%;
       }
 
       #navlinks {
