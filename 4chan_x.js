@@ -2265,7 +2265,6 @@
   };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {
-    cache: {},
     requests: {},
     callbacks: []
   };
