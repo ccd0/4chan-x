@@ -28,6 +28,7 @@ config =
       'Post in Title':     [true,  'Show the op\'s post in the tab title']
       'Quick Reply':       [true,  'Reply without leaving the page']
       'Quote Backlinks':   [false, 'Add quote backlinks']
+      'Quote Inline':      [false, 'Show quoted post inline on quote click']
       'Quote Preview':     [false, 'Show quote content on hover']
       'Reply Hiding':      [true,  'Hide single replies']
       'Report Button':     [true,  'Add report buttons']
@@ -1372,6 +1373,62 @@ quoteBacklink =
         $.bind link, 'mouseout',  ui.hoverend
       $.before $('td > br, blockquote', el), link
 
+quoteInline =
+  init: ->
+    g.callbacks.push quoteInline.node
+  node: (root) ->
+    for quote in $$ 'a.quotelink', root
+      quote.removeAttribute 'onclick'
+      $.bind quote, 'click', quoteInline.toggle
+  toggle: (e) ->
+    e.preventDefault()
+    return unless id = @hash[1..]
+    if (next = @parentNode.nextSibling) and (next.nodeName is 'TABLE')
+      $.rm next
+      return
+    inline = $.el 'table',
+      className: 'inline'
+      innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
+    td = $ 'td', inline
+    if el = d.getElementById id
+      td.innerHTML = el.innerHTML
+    else
+      td.innerHTML = "Loading #{id}..."
+      # or ... is for index page new posts.
+      # FIXME x-thread quotes
+      threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', this).id
+      if req = g.requests[threadID]
+        if req.readyState is 4
+          quoteInline.parse req, id, threadID, inline
+      else
+        #FIXME need an array of callbacks
+        g.requests[threadID] = $.get @href, (-> quoteInline.parse this, id, threadID, inline)
+    $.after @parentNode, inline
+  parse: (req, id, threadID, oldInline) ->
+    #this is fucking stupid
+    inline = $.el 'table',
+      className: 'inline'
+      innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
+    td = $ 'td', inline
+
+    if req.status isnt 200
+      td.innerHTML = "#{req.status} #{req.statusText}"
+      $.replace oldInline, inline
+      return
+
+    body = $.el 'body',
+      innerHTML: req.responseText
+    if id == threadID #OP
+      op = threading.op $ 'form[name=delform] > *', body
+      html = op.innerHTML
+    else
+      for reply in $$ 'td.reply', body
+        if reply.id == id
+          html = reply.innerHTML
+          break
+    td.innerHTML = html
+    $.replace oldInline, inline
+
 quotePreview =
   init: ->
     g.callbacks.push quotePreview.node
@@ -1769,6 +1826,9 @@ main =
 
     if $.config 'Quote Backlinks'
       quoteBacklink.init()
+
+    if $.config 'Quote Inline'
+      quoteInline.init()
 
     if $.config 'Quote Preview'
       quotePreview.init()

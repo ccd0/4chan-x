@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -84,6 +84,7 @@
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
         'Quick Reply': [true, 'Reply without leaving the page'],
         'Quote Backlinks': [false, 'Add quote backlinks'],
+        'Quote Inline': [false, 'Show quoted post inline on quote click'],
         'Quote Preview': [false, 'Show quote content on hover'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Report Button': [true, 'Add report buttons'],
@@ -1715,6 +1716,85 @@
       return _results;
     }
   };
+  quoteInline = {
+    init: function() {
+      return g.callbacks.push(quoteInline.node);
+    },
+    node: function(root) {
+      var quote, _i, _len, _ref, _results;
+      _ref = $$('a.quotelink', root);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        quote.removeAttribute('onclick');
+        _results.push($.bind(quote, 'click', quoteInline.toggle));
+      }
+      return _results;
+    },
+    toggle: function(e) {
+      var el, id, inline, next, req, td, threadID;
+      e.preventDefault();
+      if (!(id = this.hash.slice(1))) {
+        return;
+      }
+      if ((next = this.parentNode.nextSibling) && (next.nodeName === 'TABLE')) {
+        $.rm(next);
+        return;
+      }
+      inline = $.el('table', {
+        className: 'inline',
+        innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
+      });
+      td = $('td', inline);
+      if (el = d.getElementById(id)) {
+        td.innerHTML = el.innerHTML;
+      } else {
+        td.innerHTML = "Loading " + id + "...";
+        threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
+        if (req = g.requests[threadID]) {
+          if (req.readyState === 4) {
+            quoteInline.parse(req, id, threadID, inline);
+          }
+        } else {
+          g.requests[threadID] = $.get(this.href, (function() {
+            return quoteInline.parse(this, id, threadID, inline);
+          }));
+        }
+      }
+      return $.after(this.parentNode, inline);
+    },
+    parse: function(req, id, threadID, oldInline) {
+      var body, html, inline, op, reply, td, _i, _len, _ref;
+      inline = $.el('table', {
+        className: 'inline',
+        innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
+      });
+      td = $('td', inline);
+      if (req.status !== 200) {
+        td.innerHTML = "" + req.status + " " + req.statusText;
+        $.replace(oldInline, inline);
+        return;
+      }
+      body = $.el('body', {
+        innerHTML: req.responseText
+      });
+      if (id === threadID) {
+        op = threading.op($('form[name=delform] > *', body));
+        html = op.innerHTML;
+      } else {
+        _ref = $$('td.reply', body);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          reply = _ref[_i];
+          if (reply.id === id) {
+            html = reply.innerHTML;
+            break;
+          }
+        }
+      }
+      td.innerHTML = html;
+      return $.replace(oldInline, inline);
+    }
+  };
   quotePreview = {
     init: function() {
       var preview;
@@ -2266,6 +2346,9 @@
       }
       if ($.config('Quote Backlinks')) {
         quoteBacklink.init();
+      }
+      if ($.config('Quote Inline')) {
+        quoteInline.init();
       }
       if ($.config('Quote Preview')) {
         quotePreview.init();
