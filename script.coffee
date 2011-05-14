@@ -54,7 +54,7 @@ config =
     'Interval': 30
 
 # FIXME this is fucking horrible
-# create 'global' options, no namespacing
+# flatten the config
 _config = {}
 ((parent, obj) ->
   if obj.length #array
