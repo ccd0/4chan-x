@@ -892,7 +892,7 @@ qr =
   dialog: (link) ->
     #maybe should be global
     MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
-    THREAD_ID = g.THREAD_ID or link.pathname.split('/').pop()
+    THREAD_ID = g.THREAD_ID or $.x('preceding::div[@class="op"][1]', link).id
     name = $('input[name=name]').value
     mail = $('input[name=email]').value
     pass = $('input[name=pwd]').value
