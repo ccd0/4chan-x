@@ -1908,6 +1908,11 @@ main =
         position: fixed;
       }
 
+      #iHover {
+        width: auto;
+        max-height: 100%;
+      }
+
       #navlinks {
         position: fixed;
         top: 25px;
