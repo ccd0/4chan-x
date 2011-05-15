@@ -100,10 +100,10 @@
       misc: {
         '404 Redirect': [true, 'Redirect dead threads'],
         'Anonymize': [false, 'Make everybody anonymous'],
-        'Comment Expansion': [true, 'Expand too long comments'],
         'Keybinds': [false, 'Binds actions to keys'],
         'Localize Time': [true, 'Show times based on your timezone'],
         'Report Button': [true, 'Add report buttons'],
+        'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Thread Navigation': [true, 'Navigate to previous / next thread']
       },
