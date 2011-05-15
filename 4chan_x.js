@@ -2458,7 +2458,6 @@
       }\
 \
       #iHover {\
-        width: auto;\
         max-height: 100%;\
       }\
 \
