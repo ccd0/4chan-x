@@ -703,11 +703,11 @@ options =
       <div class=column><ul id=misc><li>Enhancing</li></ul></div>
       <br clear=left>
       <hr>
-      <div>
+      <div id=floaty>
         <div><input type=button value='hidden: #{hiddenNum}'></div>
         <div><a name=flavors>Sauce flavors</a></div>
       </div>
-      <div>
+      <div id=credits>
         <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif></a></div>
         <div>Support: <a href=https://github.com/aeosynth/4chan-x/issues>GitHub</a> | <a href=http://chat.now.im/x/aeos>support throd</a> | <a href=http://userscripts.org/scripts/show/51412>uso</a></div>
       </div>
@@ -1960,7 +1960,7 @@ main =
         position: fixed;
         padding: 5px;
       }
-      #options .move, #options > div:nth-last-of-type(2) {
+      #options .move, #credits {
         text-align: right;
       }
       .column {
@@ -1975,7 +1975,7 @@ main =
       #options li:first-child {
         text-decoration: underline;
       }
-      #options > div:nth-last-of-type(3) {
+      #floaty {
         float: left;
       }
       #options textarea {
