@@ -67,35 +67,45 @@
   }
   config = {
     main: {
-      checkbox: {
-        '404 Redirect': [true, 'Redirect dead threads'],
-        'Anonymize': [false, 'Make everybody anonymous'],
+      monitor: {
+        'Thread Updater': [true, 'Update threads'],
+        'Unread Count': [true, 'Show unread post count in tab title'],
+        'Thread Watcher': [true, 'Bookmark threads'],
         'Auto Watch': [true, 'Automatically watch threads that you start'],
-        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to'],
-        'Comment Expansion': [true, 'Expand too long comments'],
-        'Cooldown': [false, 'Prevent \'flood detected\' errors (buggy)'],
+        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to']
+      },
+      img: {
         'Image Auto-Gif': [false, 'Animate gif thumbnails'],
         'Image Expansion': [true, 'Expand images'],
         'Image Hover': [false, 'Show full image on mouseover'],
         'Image Preloading': [false, 'Preload Images'],
-        'Keybinds': [false, 'Binds actions to keys'],
-        'Localize Time': [true, 'Show times based on your timezone'],
-        'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
-        'Post in Title': [true, 'Show the op\'s post in the tab title'],
+        'Sauce': [true, 'Add sauce to images']
+      },
+      post: {
+        'Cooldown': [false, 'Prevent \'flood detected\' errors (buggy)'],
         'Quick Reply': [true, 'Reply without leaving the page'],
+        'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+      },
+      quote: {
         'Quote Backlinks': [false, 'Add quote backlinks'],
         'Quote Inline': [false, 'Show quoted post inline on quote click'],
-        'Quote Preview': [false, 'Show quote content on hover'],
+        'Quote Preview': [false, 'Show quote content on hover']
+      },
+      filter: {
         'Reply Hiding': [true, 'Hide single replies'],
-        'Report Button': [true, 'Add report buttons'],
-        'Sauce': [true, 'Add sauce to images'],
-        'Show Stubs': [true, 'Of hidden threads / replies'],
-        'Thread Expansion': [true, 'View all replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
-        'Thread Navigation': [true, 'Navigate to previous / next thread'],
-        'Thread Updater': [true, 'Update threads'],
-        'Thread Watcher': [true, 'Bookmark threads'],
-        'Unread Count': [true, 'Show unread post count in tab title']
+        'Show Stubs': [true, 'Of hidden threads / replies']
+      },
+      misc: {
+        '404 Redirect': [true, 'Redirect dead threads'],
+        'Anonymize': [false, 'Make everybody anonymous'],
+        'Comment Expansion': [true, 'Expand too long comments'],
+        'Keybinds': [false, 'Binds actions to keys'],
+        'Localize Time': [true, 'Show times based on your timezone'],
+        'Post in Title': [true, 'Show the op\'s post in the tab title'],
+        'Report Button': [true, 'Add report buttons'],
+        'Thread Expansion': [true, 'View all replies'],
+        'Thread Navigation': [true, 'Navigate to previous / next thread']
       },
       textarea: {
         flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url='].join('\n')
@@ -175,18 +185,18 @@
       e.preventDefault();
       el = ui.el;
       left = e.clientX - ui.dx;
-      if (left < 20) {
+      if (left < 10) {
         left = '0px';
-      } else if (ui.width - left < 20) {
+      } else if (ui.width - left < 10) {
         left = '';
       }
       right = left ? '' : '0px';
       el.style.left = left;
       el.style.right = right;
       top = e.clientY - ui.dy;
-      if (top < 20) {
+      if (top < 10) {
         top = '0px';
-      } else if (ui.height - top < 20) {
+      } else if (ui.height - top < 10) {
         top = '';
       }
       bottom = top ? '' : '0px';
@@ -905,21 +915,20 @@
       }
     },
     dialog: function() {
-      var checked, conf, dialog, hiddenNum, hiddenThreads, html, input, name, title, _i, _len, _ref;
-      html = "<div class=move>Options <a name=close>X</a></div>";
-      conf = config.main.checkbox;
-      for (name in conf) {
-        title = conf[name][1];
-        checked = $.config(name) ? "checked" : "";
-        html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' " + checked + " type=checkbox></label></div>";
-      }
+      var dialog, hiddenNum, hiddenThreads, html, input, _i, _len, _ref;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
-      html += "      <div><a name=flavors>Flavors</a></div>      <div><textarea style='display: none;' name=flavors>" + ($.config('flavors')) + "</textarea></div>      <div><input type=button value='hidden: " + hiddenNum + "'></div>      <hr>      <div><a href=http://chat.now.im/x/aeos>support throd</a></div>      <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif></a></div>    ";
+      html = "      <div class=move>Options <a name=close>X</a></div>      <hr>      <div class=column><ul id=monitor><li>Monitoring</li></ul><ul id=img><li>Imaging</li></ul></div>      <div class=column><ul id=post><li>Posting</li></ul><ul id=quote><li>Quoting</li></ul><ul id=filter><li>Filtering</li></ul></div>      <div class=column><ul id=misc><li>Enhancing</li></ul></div>      <br clear=left>      <hr>      <div>        <div><a name=flavors>Flavors</a></div>        <div><textarea style='display: none;' name=flavors>" + ($.config('flavors')) + "</textarea></div>        <div><input type=button value='hidden: " + hiddenNum + "'></div>      </div>      <div>        <div><a href=http://chat.now.im/x/aeos>support throd</a></div>        <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif></a></div>      </div>    ";
       dialog = ui.dialog('options', {
         top: '25%',
-        left: '50%'
+        left: '25%'
       }, html);
+      options.append(config.main.monitor, $('#monitor', dialog));
+      options.append(config.main.img, $('#img', dialog));
+      options.append(config.main.post, $('#post', dialog));
+      options.append(config.main.quote, $('#quote', dialog));
+      options.append(config.main.filter, $('#filter', dialog));
+      options.append(config.main.misc, $('#misc', dialog));
       _ref = $$('input[type=checkbox]', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
@@ -929,6 +938,19 @@
       $.bind($('a[name=flavors]', dialog), 'click', options.flavors);
       $.bind($('textarea', dialog), 'change', $.cb.value);
       return $.append(d.body, dialog);
+    },
+    append: function(conf, id) {
+      var checked, li, name, title, _results;
+      _results = [];
+      for (name in conf) {
+        title = conf[name][1];
+        checked = $.config(name) ? "checked" : "";
+        li = $.el('li', {
+          innerHTML: "<label title='" + title + "'><input name='" + name + "' " + checked + " type=checkbox>" + name + "</label>"
+        });
+        _results.push($.append(id, li));
+      }
+      return _results;
     },
     flavors: function() {
       var ta;
@@ -2469,11 +2491,28 @@
       #options {\
         position: fixed;\
         padding: 5px;\
+      }\
+      #options .move, #options > div:last-child {\
         text-align: right;\
+      }\
+      .column {\
+        float: left;\
+        margin: 0 10px;\
+      }\
+      #options ul {\
+        list-style: none;\
+        margin: 0;\
+        padding: 0;\
+      }\
+      #options li:first-child {\
+        text-decoration: underline;\
+      }\
+      #options > div:nth-last-of-type(2) {\
+        float: left;\
       }\
       #options textarea {\
         height: 100px;\
-        width: 500px;\
+        width: 450px;\
       }\
 \
       #qr {\
