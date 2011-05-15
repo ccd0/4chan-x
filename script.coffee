@@ -11,35 +11,40 @@ if console?
 
 config =
   main:
-    checkbox:
-      '404 Redirect':      [true,  'Redirect dead threads']
-      'Anonymize':         [false, 'Make everybody anonymous']
+    monitor:
+      'Thread Updater':    [true,  'Update threads']
+      'Unread Count':      [true,  'Show unread post count in tab title']
+      'Post in Title':     [true,  'Show the op\'s post in the tab title']
+      'Thread Watcher':    [true,  'Bookmark threads']
       'Auto Watch':        [true,  'Automatically watch threads that you start']
       'Auto Watch Reply':  [false, 'Automatically watch threads that you reply to']
-      'Comment Expansion': [true,  'Expand too long comments']
-      'Cooldown':          [false, 'Prevent \'flood detected\' errors (buggy)']
+    img:
       'Image Auto-Gif':    [false, 'Animate gif thumbnails']
       'Image Expansion':   [true,  'Expand images']
       'Image Hover':       [false, 'Show full image on mouseover']
       'Image Preloading':  [false, 'Preload Images']
-      'Keybinds':          [false, 'Binds actions to keys']
-      'Localize Time':     [true,  'Show times based on your timezone']
-      'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
-      'Post in Title':     [true,  'Show the op\'s post in the tab title']
+      'Sauce':             [true,  'Add sauce to images']
+    post:
+      'Cooldown':          [false, 'Prevent \'flood detected\' errors (buggy)']
       'Quick Reply':       [true,  'Reply without leaving the page']
+      'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+    quote:
       'Quote Backlinks':   [false, 'Add quote backlinks']
       'Quote Inline':      [false, 'Show quoted post inline on quote click']
       'Quote Preview':     [false, 'Show quote content on hover']
+    filter:
       'Reply Hiding':      [true,  'Hide single replies']
-      'Report Button':     [true,  'Add report buttons']
-      'Sauce':             [true,  'Add sauce to images']
-      'Show Stubs':        [true,  'Of hidden threads / replies']
-      'Thread Expansion':  [true,  'View all replies']
       'Thread Hiding':     [true,  'Hide entire threads']
+      'Show Stubs':        [true,  'Of hidden threads / replies']
+    misc:
+      '404 Redirect':      [true,  'Redirect dead threads']
+      'Anonymize':         [false, 'Make everybody anonymous']
+      'Keybinds':          [false, 'Binds actions to keys']
+      'Localize Time':     [true,  'Show times based on your timezone']
+      'Report Button':     [true,  'Add report buttons']
+      'Comment Expansion': [true,  'Expand too long comments']
+      'Thread Expansion':  [true,  'View all replies']
       'Thread Navigation': [true,  'Navigate to previous / next thread']
-      'Thread Updater':    [true,  'Update threads']
-      'Thread Watcher':    [true,  'Bookmark threads']
-      'Unread Count':      [true,  'Show unread post count in tab title']
     textarea:
       flavors: [
         'http://regex.info/exif.cgi?url='
@@ -103,14 +108,14 @@ ui =
     e.preventDefault()
     {el} = ui
     left = e.clientX - ui.dx
-    if left < 20 then left = '0px'
-    else if ui.width - left < 20 then left = ''
+    if left < 10 then left = '0px'
+    else if ui.width - left < 10 then left = ''
     right = if left then '' else '0px'
     el.style.left  = left
     el.style.right = right
     top = e.clientY - ui.dy
-    if top < 20 then top = '0px'
-    else if ui.height - top < 20 then top = ''
+    if top < 10 then top = '0px'
+    else if ui.height - top < 10 then top = ''
     bottom = if top then '' else '0px'
     el.style.top  = top
     el.style.bottom = bottom
@@ -688,30 +693,48 @@ options =
       options.dialog()
 
   dialog: ->
-    html  = "<div class=move>Options <a name=close>X</a></div>"
-    conf = config.main.checkbox
-    for name of conf
-      title = conf[name][1]
-      checked = if $.config name then "checked" else ""
-      html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
-    html += "<div><a name=flavors>Flavors</a></div>"
-    html += "<div><textarea style=\"display: none;\" name=flavors>#{$.config 'flavors'}</textarea></div>"
-
     hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
-    html += "<div><input type=\"button\" value=\"hidden: #{hiddenNum}\"></div>"
+    html = "
+      <div class=move>Options <a name=close>X</a></div>
+      <hr>
+      <div class=column><ul id=monitor><li>Monitoring</li></ul><ul id=img><li>Imaging</li></ul></div>
+      <div class=column><ul id=post><li>Posting</li></ul><ul id=quote><li>Quoting</li></ul><ul id=filter><li>Filtering</li></ul></div>
+      <div class=column><ul id=misc><li>Enhancing</li></ul></div>
+      <br clear=left>
+      <hr>
+      <div id=floaty>
+        <div><input type=button value='hidden: #{hiddenNum}'></div>
+        <div><a name=flavors>Sauce flavors</a></div>
+      </div>
+      <div id=credits>
+        <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif></a></div>
+        <div>Support: <a href=https://github.com/aeosynth/4chan-x/issues>GitHub</a> | <a href=http://chat.now.im/x/aeos>support throd</a> | <a href=http://userscripts.org/scripts/show/51412>uso</a></div>
+      </div>
+      <div><textarea style='display: none;' name=flavors>#{$.config 'flavors'}</textarea></div>
+    "
 
-    html += "<hr>"
-    html += "<div><a href=\"http://chat.now.im/x/aeos\">support throd</a></div>"
-    html += '<div><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img alt="Donate" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"/></a></div>'
-
-    dialog = ui.dialog 'options', top: '25%', left: '50%', html
+    dialog = ui.dialog 'options', top: '25%', left: '25%', html
+    options.append config.main.monitor, $('#monitor', dialog)
+    options.append config.main.img, $('#img', dialog)
+    options.append config.main.post, $('#post', dialog)
+    options.append config.main.quote, $('#quote', dialog)
+    options.append config.main.filter, $('#filter', dialog)
+    options.append config.main.misc, $('#misc', dialog)
     for input in $$ 'input[type=checkbox]', dialog
       $.bind input, 'click', $.cb.checked
     $.bind $('input[type=button]', dialog), 'click', options.cb.clearHidden
     $.bind $('a[name=flavors]', dialog), 'click', options.flavors
     $.bind $('textarea', dialog), 'change', $.cb.value
     $.append d.body, dialog
+
+  append: (conf, id) ->
+    for name of conf
+      title = conf[name][1]
+      checked = if $.config name then "checked" else ""
+      li = $.el 'li',
+        innerHTML: "<label title='#{title}'><input name='#{name}' #{checked} type=checkbox>#{name}</label>"
+      $.append id, li
 
   flavors: ->
     ta = $ '#options textarea'
@@ -1929,11 +1952,28 @@ main =
       #options {
         position: fixed;
         padding: 5px;
+      }
+      #options .move, #credits {
         text-align: right;
+      }
+      .column {
+        float: left;
+        margin: 0 10px;
+      }
+      #options ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      #options li:first-child {
+        text-decoration: underline;
+      }
+      #floaty {
+        float: left;
       }
       #options textarea {
         height: 100px;
-        width: 500px;
+        width: 100%;
       }
 
       #qr {
