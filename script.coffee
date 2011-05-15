@@ -1396,17 +1396,12 @@ quoteInline =
       $.hide $.x 'ancestor::table[1]', el
     else
       $.after @parentNode, inline
-  parse: (req, id, threadID, oldInline) ->
+  parse: (req, id, threadID, inline) ->
     if req.status isnt 200
-      oldInline.innerHTML = "#{req.status} #{req.statusText}"
+      inline.innerHTML = "#{req.status} #{req.statusText}"
       return
 
-    #this is fucking stupid
-    inline = $.el 'table',
-      className: 'inline'
-      innerHTML: '<tbody><tr><td class=reply></td></tr></tbody>'
-    td = $ 'td', inline
-
+    clone = inline.cloneNode true
     body = $.el 'body',
       innerHTML: req.responseText
     if id == threadID #OP
@@ -1417,8 +1412,8 @@ quoteInline =
         if reply.id == id
           html = reply.innerHTML
           break
-    td.innerHTML = html
-    $.replace oldInline, inline
+    $('td', clone).innerHTML = html
+    $.replace inline, clone
 
 quotePreview =
   init: ->
