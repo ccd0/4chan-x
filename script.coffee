@@ -1958,7 +1958,7 @@ main =
         display: none;
       }
       #qr form, #qr #com_submit, #qr input[type="file"] {
-        margin: 0;
+        margin: 0px;
       }
       #qr textarea {
         width: 302px;
@@ -1966,7 +1966,7 @@ main =
         margin: 0px;
       }
       #qr *:not(input):not(textarea) {
-        padding: 0 !important;
+        padding: 0px !important;
       }
       #qr.auto:not(:hover) > form {
         height: 0px;
@@ -1992,9 +1992,9 @@ main =
         border: 1px solid #AAA !important;
       }
       #qr #recaptcha_reload, #qr #recaptcha_switch_audio, #qr #recaptcha_whatsthis {
-        height: 0;
-        width: 0;
-        padding: 19px 12px 0 0 !important;
+        height: 0px;
+        width: 0px;
+        padding: 19px 12px 0px 0px !important;
         margin-left: -16px;
         position: relative;
       }
