@@ -2532,7 +2532,7 @@
       #qr #recaptcha_reload, #qr #recaptcha_switch_audio, #qr #recaptcha_whatsthis {\
         height: 0;\
         width: 0;\
-        padding: 10px 6px !important;\
+        padding: 19px 12px 0 0 !important;\
         margin-left: -16px;\
         position: relative;\
       }\
