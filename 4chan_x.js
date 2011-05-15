@@ -2500,7 +2500,7 @@
       }\
       #qr textarea {\
         width: 302px;\
-        height: 100px;\
+        height: 120px;\
         margin: 0px;\
       }\
       #qr *:not(input):not(textarea) {\
