@@ -93,7 +93,7 @@
         'Quote Inline': [false, 'Show quoted post inline on quote click'],
         'Quote Preview': [false, 'Show quote content on hover']
       },
-      filter: {
+      hide: {
         'Reply Hiding': [true, 'Hide single replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
@@ -919,7 +919,7 @@
       var dialog, hiddenNum, hiddenThreads, html, input, _i, _len, _ref;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
-      html = "      <div class=move>Options <a name=close>X</a></div>      <hr>      <div class=column><ul id=monitor><li>Monitoring</li></ul><ul id=img><li>Imaging</li></ul></div>      <div class=column><ul id=post><li>Posting</li></ul><ul id=quote><li>Quoting</li></ul><ul id=filter><li>Filtering</li></ul></div>      <div class=column><ul id=misc><li>Enhancing</li></ul></div>      <br clear=left>      <hr>      <div id=floaty>        <div><input type=button value='hidden: " + hiddenNum + "'></div>        <div><a name=flavors>Sauce flavors</a></div>      </div>      <div id=credits>        <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif></a></div>        <div>Support: <a href=https://github.com/aeosynth/4chan-x/issues>GitHub</a> | <a href=http://chat.now.im/x/aeos>support throd</a> | <a href=http://userscripts.org/scripts/show/51412>uso</a></div>      </div>      <div><textarea style='display: none;' name=flavors>" + ($.config('flavors')) + "</textarea></div>    ";
+      html = "      <div class=move>Options <a name=close>X</a></div>      <hr>      <div class=column><ul id=monitor><li>Monitoring</li></ul><ul id=img><li>Imaging</li></ul></div>      <div class=column><ul id=post><li>Posting</li></ul><ul id=quote><li>Quoting</li></ul><ul id=hide><li>Hiding</li></ul></div>      <div class=column><ul id=misc><li>Enhancing</li></ul></div>      <br clear=left>      <hr>      <div id=floaty>        <div><input type=button value='hidden: " + hiddenNum + "'></div>        <div><a name=flavors>Sauce flavors</a></div>      </div>      <div id=credits>        <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif></a></div>        <div>Support: <a href=https://github.com/aeosynth/4chan-x/issues>GitHub</a> | <a href=http://chat.now.im/x/aeos>support throd</a> | <a href=http://userscripts.org/scripts/show/51412>uso</a></div>      </div>      <div><textarea style='display: none;' name=flavors>" + ($.config('flavors')) + "</textarea></div>    ";
       dialog = ui.dialog('options', {
         top: '25%',
         left: '25%'
@@ -928,7 +928,7 @@
       options.append(config.main.img, $('#img', dialog));
       options.append(config.main.post, $('#post', dialog));
       options.append(config.main.quote, $('#quote', dialog));
-      options.append(config.main.filter, $('#filter', dialog));
+      options.append(config.main.hide, $('#hide', dialog));
       options.append(config.main.misc, $('#misc', dialog));
       _ref = $$('input[type=checkbox]', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

@@ -32,7 +32,7 @@ config =
       'Quote Backlinks':   [false, 'Add quote backlinks']
       'Quote Inline':      [false, 'Show quoted post inline on quote click']
       'Quote Preview':     [false, 'Show quote content on hover']
-    filter:
+    hide:
       'Reply Hiding':      [true,  'Hide single replies']
       'Thread Hiding':     [true,  'Hide entire threads']
       'Show Stubs':        [true,  'Of hidden threads / replies']
@@ -699,7 +699,7 @@ options =
       <div class=move>Options <a name=close>X</a></div>
       <hr>
       <div class=column><ul id=monitor><li>Monitoring</li></ul><ul id=img><li>Imaging</li></ul></div>
-      <div class=column><ul id=post><li>Posting</li></ul><ul id=quote><li>Quoting</li></ul><ul id=filter><li>Filtering</li></ul></div>
+      <div class=column><ul id=post><li>Posting</li></ul><ul id=quote><li>Quoting</li></ul><ul id=hide><li>Hiding</li></ul></div>
       <div class=column><ul id=misc><li>Enhancing</li></ul></div>
       <br clear=left>
       <hr>
@@ -719,7 +719,7 @@ options =
     options.append config.main.img, $('#img', dialog)
     options.append config.main.post, $('#post', dialog)
     options.append config.main.quote, $('#quote', dialog)
-    options.append config.main.filter, $('#filter', dialog)
+    options.append config.main.hide, $('#hide', dialog)
     options.append config.main.misc, $('#misc', dialog)
     for input in $$ 'input[type=checkbox]', dialog
       $.bind input, 'click', $.cb.checked
