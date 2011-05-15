@@ -1961,7 +1961,6 @@
       favicon = $('link[rel="shortcut icon"]', d.head);
       clone = favicon.cloneNode(true);
       clone.href = href;
-      clone.setAttribute('type', 'image/x-icon');
       return $.replace(favicon, clone);
     }
   };
@@ -2277,6 +2276,7 @@
         return;
       }
       Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
+      $('link[rel="shortcut icon"]', d.head).setAttribute('type', 'image/x-icon');
       g.hiddenReplies = $.getValue("hiddenReplies/" + g.BOARD + "/", {});
       tzOffset = (new Date()).getTimezoneOffset() / 60;
       g.chanOffset = 5 - tzOffset;
