@@ -14,6 +14,7 @@ config =
     monitor:
       'Thread Updater':    [true,  'Update threads']
       'Unread Count':      [true,  'Show unread post count in tab title']
+      'Post in Title':     [true,  'Show the op\'s post in the tab title']
       'Thread Watcher':    [true,  'Bookmark threads']
       'Auto Watch':        [true,  'Automatically watch threads that you start']
       'Auto Watch Reply':  [false, 'Automatically watch threads that you reply to']
@@ -41,7 +42,6 @@ config =
       'Comment Expansion': [true,  'Expand too long comments']
       'Keybinds':          [false, 'Binds actions to keys']
       'Localize Time':     [true,  'Show times based on your timezone']
-      'Post in Title':     [true,  'Show the op\'s post in the tab title']
       'Report Button':     [true,  'Add report buttons']
       'Thread Expansion':  [true,  'View all replies']
       'Thread Navigation': [true,  'Navigate to previous / next thread']
@@ -704,14 +704,14 @@ options =
       <br clear=left>
       <hr>
       <div>
-        <div><a name=flavors>Flavors</a></div>
-        <div><textarea style='display: none;' name=flavors>#{$.config 'flavors'}</textarea></div>
         <div><input type=button value='hidden: #{hiddenNum}'></div>
+        <div><a name=flavors>Sauce flavors</a></div>
       </div>
       <div>
-        <div><a href=http://chat.now.im/x/aeos>support throd</a></div>
         <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif></a></div>
+        <div>Support: <a href=https://github.com/aeosynth/4chan-x/issues>GitHub</a> | <a href=http://chat.now.im/x/aeos>support throd</a> | <a href=http://userscripts.org/scripts/show/51412>uso</a></div>
       </div>
+      <div><textarea style='display: none;' name=flavors>#{$.config 'flavors'}</textarea></div>
     "
 
     dialog = ui.dialog 'options', top: '25%', left: '25%', html
@@ -1960,7 +1960,7 @@ main =
         position: fixed;
         padding: 5px;
       }
-      #options .move, #options > div:last-child {
+      #options .move, #options > div:nth-last-of-type(2) {
         text-align: right;
       }
       .column {
@@ -1975,12 +1975,12 @@ main =
       #options li:first-child {
         text-decoration: underline;
       }
-      #options > div:nth-last-of-type(2) {
+      #options > div:nth-last-of-type(3) {
         float: left;
       }
       #options textarea {
         height: 100px;
-        width: 450px;
+        width: 100%;
       }
 
       #qr {
