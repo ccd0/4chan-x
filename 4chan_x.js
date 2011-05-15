@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        2.6.0
+// @version        2.7.0
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -1681,7 +1681,7 @@
       var el, id, link, qid, quote, quotes, tid, _i, _len, _ref, _results;
       id = root.id || $('td[id]', root).id;
       quotes = {};
-      tid = g.THREAD_ID;
+      tid = g.THREAD_ID || root.parentNode.firstChild.id;
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
