@@ -1938,7 +1938,7 @@ main =
         text-align: right;
       }
       #options textarea {
-        height: 120px;
+        height: 100px;
         width: 500px;
       }
 
