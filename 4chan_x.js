@@ -1667,7 +1667,7 @@
       }
       id = root.id || $('td[id]', root).id;
       quotes = {};
-      tid = g.THREAD_ID;
+      tid = g.THREAD_ID || root.parentNode.firstChild.id;
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
