@@ -45,6 +45,7 @@
 
 /* CONTRIBUTORS
  *
+ * Zixaphir - fix qr textarea - captcha-image gap
  * Mayhem - various features / fixes
  * Ongpot - sfw favicon
  * thisisanon - nsfw + 404 favicons
