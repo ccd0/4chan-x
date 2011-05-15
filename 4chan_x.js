@@ -2477,7 +2477,7 @@
         text-align: right;\
       }\
       #options textarea {\
-        height: 100px;\
+        height: 120px;\
         width: 500px;\
       }\
 \
