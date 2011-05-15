@@ -709,7 +709,7 @@ options =
       </div>
       <div id=credits>
         <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif></a></div>
-        <div>Support: <a href=https://github.com/aeosynth/4chan-x/issues>GitHub</a> | <a href=http://chat.now.im/x/aeos>support throd</a> | <a href=http://userscripts.org/scripts/show/51412>uso</a></div>
+        <div><a href=http://chat.now.im/x/aeos>support throd</a> | <a href=https://github.com/aeosynth/4chan-x/issues>github</a> | <a href=http://userscripts.org/scripts/show/51412>uso</a></div>
       </div>
       <div><textarea style='display: none;' name=flavors>#{$.config 'flavors'}</textarea></div>
     "
