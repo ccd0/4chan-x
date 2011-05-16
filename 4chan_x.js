@@ -2516,10 +2516,11 @@
         float: left;\
       }\
       #qr_form {\
-        clear: both;\
+        clear: left;\
+        margin: 0px;\
       }\
       #qr textarea {\
-        width: 302px;\
+        width: 100%;\
         height: 120px;\
         margin: 0px;\
       }\
