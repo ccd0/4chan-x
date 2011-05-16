@@ -2518,9 +2518,6 @@
       #qr_form {\
         clear: both;\
       }\
-      #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */\
-        display: none;\
-      }\
       #qr form, #qr #com_submit, #qr input[type="file"] {\
         margin: 0px;\
       }\
