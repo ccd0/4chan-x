@@ -898,6 +898,8 @@ qr =
     #maybe should be global
     MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
     THREAD_ID = g.THREAD_ID or $.x('preceding::div[@class="op"][1]', link).id
+    challenge = $('input[name=recaptcha_challenge_field]').value
+    src = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
     name = $('input[name=name]').value
     mail = $('input[name=email]').value
     pass = $('input[name=pwd]').value
@@ -911,10 +913,12 @@ qr =
       <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
         <input type=hidden name=MAX_FILE_SIZE value=#{MAX_FILE_SIZE}>
         <input type=hidden name=resto value=#{THREAD_ID}>
+        <input type=hidden name=recaptcha_challenge_field value=#{challenge}>
         <div><input class=inputtext type=text name=email placeholder=E-mail value='#{mail}'></div>
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
-        <div id=qr_captcha></div>
+        <div><a href='javascript:Recaptcha.reload();'><img src=#{src}></a></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='#{pass}'><input type=hidden name=mode value=regist></div>
       </form>
@@ -931,16 +935,8 @@ qr =
         innerHTML: " [<input type=checkbox name=spoiler>Spoiler Image?]"
       $.after $('input[name=email]', dialog), spoiler
 
-    # TODO try w/o cloning
-    clone = $('#recaptcha_widget_div').cloneNode(true)
-    $.append $('#qr_captcha', dialog), clone
-    $.extend $('input[name=recaptcha_response_field]', clone),
-      placeholder: 'Verification'
-      className: 'inputtext'
-      required: true
-
     $.bind $('form', dialog), 'submit', qr.cb.submit
-    $.bind $('input[name=recaptcha_response_field]', clone), 'keydown', Recaptcha.listener
+    $.bind $('input[name=recaptcha_response_field]', dialog), 'keydown', Recaptcha.listener
 
     $.append d.body, dialog
 
@@ -1596,8 +1592,8 @@ nodeInserted = (e) ->
     for callback in g.callbacks
       callback target
   else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
-    $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('#recaptcha_challenge_field', dialog).value = target.value
+    $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+    $('input[name=recaptcha_challenge_field]', dialog).value = target.value
 
 imageHover =
   init: ->
@@ -1988,9 +1984,6 @@ main =
       #qr_form {
         clear: both;
       }
-      #qr #recaptcha_table td:nth-of-type(3) {/* captcha logos */
-        display: none;
-      }
       #qr form, #qr #com_submit, #qr input[type="file"] {
         margin: 0px;
       }
@@ -2014,32 +2007,8 @@ main =
         color: grey;
       }
       /* qr reCAPTCHA */
-      #qr_captcha input {
-        border: 1px solid #AAA !important;
-        margin-top: 2px;
-        padding: 2px 4px 3px;
-      }
-      #qr tr {
-        height: auto;
-      }
-      #qr .recaptchatable #recaptcha_image {
-        border: 1px solid #AAA !important;
-      }
-      #qr #recaptcha_reload, #qr #recaptcha_switch_audio, #qr #recaptcha_whatsthis {
-        height: 0px;
-        width: 0px;
-        padding: 19px 12px 0px 0px !important;
-        margin-left: -16px;
-        position: relative;
-      }
-      #recaptcha_reload {
-        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAcUlEQVQY02P4z4AKGYKhNJQKYzgIZjxn+I8kwdCGrAkuwRAOZrUwhKBL7GP4ziCPYg8jROI/wzQ0B1yBSXiiCKeBjAMbhab+P0gExFCHu3o3QxzIwSC/MCC5+hPDezDdjOzB/ww/wYw9DCGoPt+CHjQAYxCCmpNUoxoAAAAASUVORK5CYII=) no-repeat center;
-      }
-      #recaptcha_switch_audio {
-        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAVUlEQVQYV42NMQ6AMAwDPbTQjQEE//8OPCqkhgZXMJBTJMc3BCjBJrlA6uNL1Np6MTordq+N+cLAotHKlxhk/4lMjMu43M9z4CKRmSoJEarqxDOTHidPWTEdrdlTpwAAAABJRU5ErkJggg==) no-repeat center;
-      }
-      #recaptcha_whatsthis {
-        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAk0lEQVQYV3WMsQ3CMBBFf0ECmYDJqIkFk0TpkcgEUCeegWzADoi0yQbm3cUFBeifrX/vWZZ2f+K4UlDURCKtcua4VfpK64oJDg/a66zFe1hFpN7AHWvnIprY8nPSk9zpVxcTLYukmXZynEWp3peXLpxV9CrF1L6OtDGL2kTB1QBmPTj2pIEUJkwdNehNBpphxOZ3PgIeQ0jaC7S6AAAAAElFTkSuQmCC) no-repeat center;
+      #qr img {
+        border: 1px solid #AAA;
       }
 
       #updater {
