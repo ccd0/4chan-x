@@ -2518,16 +2518,10 @@
       #qr_form {\
         clear: both;\
       }\
-      #qr form, #qr #com_submit, #qr input[type="file"] {\
-        margin: 0px;\
-      }\
       #qr textarea {\
         width: 302px;\
         height: 120px;\
         margin: 0px;\
-      }\
-      #qr *:not(input):not(textarea) {\
-        padding: 0px !important;\
       }\
       #qr.auto:not(:hover) > form {\
         height: 0px;\
@@ -2543,6 +2537,7 @@
       /* qr reCAPTCHA */\
       #qr img {\
         border: 1px solid #AAA;\
+        margin: 0px;\
       }\
 \
       #updater {\
