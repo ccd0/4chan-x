@@ -1139,7 +1139,7 @@
       }
     },
     dialog: function(link) {
-      var MAX_FILE_SIZE, THREAD_ID, challenge, dialog, el, html, mail, name, pass, spoiler, src;
+      var MAX_FILE_SIZE, THREAD_ID, challenge, dialog, html, mail, name, pass, spoiler, src;
       MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value;
       THREAD_ID = g.THREAD_ID || link.pathname.split('/').pop();
       challenge = $('input[name=recaptcha_challenge_field]').value;
@@ -1155,8 +1155,7 @@
       $.bind($('input[name=name]', dialog), 'mousedown', function(e) {
         return e.stopPropagation();
       });
-      el = $('#autohide', dialog);
-      $.bind(el, 'click', qr.cb.autohide);
+      $.bind($('#autohide', dialog), 'click', qr.cb.autohide);
       if ($('.postarea label')) {
         spoiler = $.el('label', {
           innerHTML: " [<input type=checkbox name=spoiler>Spoiler Image?]"

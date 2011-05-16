@@ -928,8 +928,7 @@ qr =
     dialog = ui.dialog 'qr', top: '0px', left: '0px', html
 
     $.bind $('input[name=name]', dialog), 'mousedown', (e) -> e.stopPropagation()
-    el = $ '#autohide', dialog
-    $.bind el, 'click', qr.cb.autohide
+    $.bind $('#autohide', dialog), 'click', qr.cb.autohide
 
     if $ '.postarea label'
       spoiler = $.el 'label',
