@@ -917,7 +917,12 @@ qr =
         <div><input class=inputtext type=text name=email placeholder=E-mail value='#{mail}'></div>
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
-        <div><img src=#{src}></div>
+        <div id=qr_imgs>
+          <img id=qr_captcha src=#{src}>
+          <a class=qr_captcha_btn id=recaptcha_reload_btn><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAV0lEQVQIHQXBsQ1BYQCAwa8SjUT5drCD5A+dSYwgLKLUkfdqsyhN4twFsCC89jWFuFQV8qzrXCFj/QV+0hmwk97APRmAhnxUx8fUItRmWzdCqzrMCCeAP9/FYYPdCEDBAAAAAElFTkSuQmCC></a>
+          <a class=qr_captcha_btn id=recaptcha_switch_audio_btn><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAKUlEQVQIW2P4jwQYkEgIxYDEYYByGKAALAzngCFWDkQZigHoRqNaCgMAATNfoU8QoIgAAAAASUVORK5CYII=></a>
+          <a class=qr_captcha_btn id=recaptcha_whatsthis_btn><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAVklEQVQIHQXBUQ2CYACAwe+ZFNrjhwbOEPhiBDYC6caggdXOuwAgHKPGgdiqaiNH/XyqQ0ZPq7WG1DQ9vCqp8q2SpXpXLXLWza06xV73aidcc80XAoA/ZKNLsPc/segAAAAASUVORK5CYII=>
+        </div></a>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='#{pass}'><input type=hidden name=mode value=regist></div>
@@ -2010,32 +2015,24 @@ main =
         color: grey;
       }
       /* qr reCAPTCHA */
-      #qr_captcha input {
-        border: 1px solid #AAA !important;
-        margin-top: 2px;
-        padding: 2px 4px 3px;
+      #qr_captcha {
+        border: 1px solid #AAA;
       }
-      #qr tr {
-        height: auto;
-      }
-      #qr .recaptchatable #recaptcha_image {
-        border: 1px solid #AAA !important;
-      }
-      #qr #recaptcha_reload, #qr #recaptcha_switch_audio, #qr #recaptcha_whatsthis {
-        height: 0px;
-        width: 0px;
-        padding: 19px 12px 0px 0px !important;
-        margin-left: -16px;
+      #qr_imgs {
         position: relative;
       }
-      #recaptcha_reload {
-        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAcUlEQVQY02P4z4AKGYKhNJQKYzgIZjxn+I8kwdCGrAkuwRAOZrUwhKBL7GP4ziCPYg8jROI/wzQ0B1yBSXiiCKeBjAMbhab+P0gExFCHu3o3QxzIwSC/MCC5+hPDezDdjOzB/ww/wYw9DCGoPt+CHjQAYxCCmpNUoxoAAAAASUVORK5CYII=) no-repeat center;
+      .qr_captcha_btn {
+        position: absolute;
+        right: 1px;
       }
-      #recaptcha_switch_audio {
-        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAVUlEQVQYV42NMQ6AMAwDPbTQjQEE//8OPCqkhgZXMJBTJMc3BCjBJrlA6uNL1Np6MTordq+N+cLAotHKlxhk/4lMjMu43M9z4CKRmSoJEarqxDOTHidPWTEdrdlTpwAAAABJRU5ErkJggg==) no-repeat center;
+      a.qr_captcha_btn#recaptcha_reload_btn {
+        top: 1px;
       }
-      #recaptcha_whatsthis {
-        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAk0lEQVQYV3WMsQ3CMBBFf0ECmYDJqIkFk0TpkcgEUCeegWzADoi0yQbm3cUFBeifrX/vWZZ2f+K4UlDURCKtcua4VfpK64oJDg/a66zFe1hFpN7AHWvnIprY8nPSk9zpVxcTLYukmXZynEWp3peXLpxV9CrF1L6OtDGL2kTB1QBmPTj2pIEUJkwdNehNBpphxOZ3PgIeQ0jaC7S6AAAAAElFTkSuQmCC) no-repeat center;
+      a.qr_captcha_btn#recaptcha_switch_audio_btn {
+        top: 21px;
+      }
+      a.qr_captcha_btn#recaptcha_whatsthis_btn {
+        bottom: 3px;
       }
 
       #updater {
