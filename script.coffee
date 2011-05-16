@@ -897,6 +897,7 @@ qr =
   dialog: (link) ->
     #maybe should be global
     MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
+    #FIXME inlined quotes
     THREAD_ID = g.THREAD_ID or link.pathname.split('/').pop()
     challenge = $('input[name=recaptcha_challenge_field]').value
     src = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
