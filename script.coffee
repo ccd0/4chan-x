@@ -918,7 +918,7 @@ qr =
         <div><input class=inputtext type=text name=email placeholder=E-mail value='#{mail}'></div>
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
-        <div><a href='javascript:Recaptcha.reload();'><img src=#{src}></a></div>
+        <div><img src=#{src}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='#{pass}'><input type=hidden name=mode value=regist></div>
@@ -929,6 +929,7 @@ qr =
 
     $.bind $('input[name=name]', dialog), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('#autohide', dialog), 'click', qr.cb.autohide
+    $.bind $('img', dialog), 'click', Recaptcha.reload
 
     if $ '.postarea label'
       spoiler = $.el 'label',
@@ -2005,6 +2006,7 @@ main =
       #qr img {
         border: 1px solid #AAA;
         margin: 0px;
+        cursor: pointer;
       }
 
       #updater {

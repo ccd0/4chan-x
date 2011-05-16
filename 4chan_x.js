@@ -1147,7 +1147,7 @@
       name = $('input[name=name]').value;
       mail = $('input[name=email]').value;
       pass = $('input[name=pwd]').value;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form value='" + name + "'>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail value='" + mail + "'></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><a href='javascript:Recaptcha.reload();'><img src=" + src + "></a></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='" + pass + "'><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
+      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form value='" + name + "'>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail value='" + mail + "'></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=" + src + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='" + pass + "'><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
       dialog = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -1156,6 +1156,7 @@
         return e.stopPropagation();
       });
       $.bind($('#autohide', dialog), 'click', qr.cb.autohide);
+      $.bind($('img', dialog), 'click', Recaptcha.reload);
       if ($('.postarea label')) {
         spoiler = $.el('label', {
           innerHTML: " [<input type=checkbox name=spoiler>Spoiler Image?]"
@@ -2538,6 +2539,7 @@
       #qr img {\
         border: 1px solid #AAA;\
         margin: 0px;\
+        cursor: pointer;\
       }\
 \
       #updater {\
