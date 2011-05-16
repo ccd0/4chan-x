@@ -1,3 +1,11 @@
+2.8.0
+- mayhem:
+  redesigned options
+  don't backlink op on index pages
+  base64 donate button
+- fix qr replying to wrong thread
+- small tweaks
+
 2.7.0
 - mayhem:
   add class to reply hider and report buttons
