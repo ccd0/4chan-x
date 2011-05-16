@@ -1147,7 +1147,7 @@
       name = $('input[name=name]').value;
       mail = $('input[name=email]').value;
       pass = $('input[name=pwd]').value;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form value='" + name + "'>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail value='" + mail + "'></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div id=qr_imgs>          <img id=qr_captcha src=" + src + ">          <a class=qr_captcha_btn id=recaptcha_reload_btn><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAV0lEQVQIHQXBsQ1BYQCAwa8SjUT5drCD5A+dSYwgLKLUkfdqsyhN4twFsCC89jWFuFQV8qzrXCFj/QV+0hmwk97APRmAhnxUx8fUItRmWzdCqzrMCCeAP9/FYYPdCEDBAAAAAElFTkSuQmCC></a>          <a class=qr_captcha_btn id=recaptcha_switch_audio_btn><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAKUlEQVQIW2P4jwQYkEgIxYDEYYByGKAALAzngCFWDkQZigHoRqNaCgMAATNfoU8QoIgAAAAASUVORK5CYII=></a>          <a class=qr_captcha_btn id=recaptcha_whatsthis_btn><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAVklEQVQIHQXBUQ2CYACAwe+ZFNrjhwbOEPhiBDYC6caggdXOuwAgHKPGgdiqaiNH/XyqQ0ZPq7WG1DQ9vCqp8q2SpXpXLXLWza06xV73aidcc80XAoA/ZKNLsPc/segAAAAASUVORK5CYII=>        </div></a>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='" + pass + "'><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
+      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form value='" + name + "'>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail value='" + mail + "'></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><a href='javascript:Recaptcha.reload();'><img src=" + src + "></a></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='" + pass + "'><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
       dialog = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -2051,8 +2051,8 @@
       }
       return _results;
     } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
-      $('#recaptcha_image img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('#recaptcha_challenge_field', dialog).value = target.value;
+      $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+      return $('input[name=recaptcha_challenge_field]', dialog).value = target.value;
     }
   };
   imageHover = {
@@ -2544,24 +2544,8 @@
         color: grey;\
       }\
       /* qr reCAPTCHA */\
-      #qr_captcha {\
+      #qr img {\
         border: 1px solid #AAA;\
-      }\
-      #qr_imgs {\
-        position: relative;\
-      }\
-      .qr_captcha_btn {\
-        position: absolute;\
-        right: 1px;\
-      }\
-      a.qr_captcha_btn#recaptcha_reload_btn {\
-        top: 1px;\
-      }\
-      a.qr_captcha_btn#recaptcha_switch_audio_btn {\
-        top: 21px;\
-      }\
-      a.qr_captcha_btn#recaptcha_whatsthis_btn {\
-        bottom: 3px;\
       }\
 \
       #updater {\
