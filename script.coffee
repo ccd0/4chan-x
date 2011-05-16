@@ -921,8 +921,8 @@ qr =
           <img id=qr_captcha src=#{src}>
           <a class=qr_captcha_btn id=recaptcha_reload_btn><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAV0lEQVQIHQXBsQ1BYQCAwa8SjUT5drCD5A+dSYwgLKLUkfdqsyhN4twFsCC89jWFuFQV8qzrXCFj/QV+0hmwk97APRmAhnxUx8fUItRmWzdCqzrMCCeAP9/FYYPdCEDBAAAAAElFTkSuQmCC></a>
           <a class=qr_captcha_btn id=recaptcha_switch_audio_btn><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAKUlEQVQIW2P4jwQYkEgIxYDEYYByGKAALAzngCFWDkQZigHoRqNaCgMAATNfoU8QoIgAAAAASUVORK5CYII=></a>
-          <a class=qr_captcha_btn id=recaptcha_whatsthis_btn><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAVklEQVQIHQXBUQ2CYACAwe+ZFNrjhwbOEPhiBDYC6caggdXOuwAgHKPGgdiqaiNH/XyqQ0ZPq7WG1DQ9vCqp8q2SpXpXLXLWza06xV73aidcc80XAoA/ZKNLsPc/segAAAAASUVORK5CYII=>
-        </div></a>
+          <a class=qr_captcha_btn id=recaptcha_whatsthis_btn><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAVklEQVQIHQXBUQ2CYACAwe+ZFNrjhwbOEPhiBDYC6caggdXOuwAgHKPGgdiqaiNH/XyqQ0ZPq7WG1DQ9vCqp8q2SpXpXLXLWza06xV73aidcc80XAoA/ZKNLsPc/segAAAAASUVORK5CYII=></a>
+        </div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='#{pass}'><input type=hidden name=mode value=regist></div>
