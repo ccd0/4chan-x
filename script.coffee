@@ -1637,8 +1637,8 @@ imgExpand =
   init: ->
     g.callbacks.push imgExpand.cb.node
     imgExpand.dialog()
-    #FIXME add a resize listener
-    $.addStyle "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
+    $.bind window, 'resize', imgExpand.resize
+    imgExpand.resize()
 
   cb:
     node: (root) ->
@@ -1710,6 +1710,11 @@ imgExpand =
 
     delform = $ 'form[name=delform]'
     $.prepend delform, controls
+
+  resize: (e) ->
+    $.rm style if style = $ 'style[media=chan]', d.head
+    style = $.addStyle "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
+    style.media = 'chan'
 
 #main
 NAMESPACE = 'AEOS.4chan_x.'

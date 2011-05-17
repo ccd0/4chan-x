@@ -2122,7 +2122,8 @@
     init: function() {
       g.callbacks.push(imgExpand.cb.node);
       imgExpand.dialog();
-      return $.addStyle("body.fitheight img[md5] + img { max-height: " + d.body.clientHeight + "px }");
+      $.bind(window, 'resize', imgExpand.resize);
+      return imgExpand.resize();
     },
     cb: {
       node: function(root) {
@@ -2225,6 +2226,14 @@
       $.bind($('input', controls), 'click', imgExpand.cb.all);
       delform = $('form[name=delform]');
       return $.prepend(delform, controls);
+    },
+    resize: function(e) {
+      var style;
+      if (style = $('style[media=chan]', d.head)) {
+        $.rm(style);
+      }
+      style = $.addStyle("body.fitheight img[md5] + img { max-height: " + d.body.clientHeight + "px }");
+      return style.media = 'chan';
     }
   };
   NAMESPACE = 'AEOS.4chan_x.';
