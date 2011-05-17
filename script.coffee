@@ -1411,8 +1411,7 @@ quoteInline =
         #FIXME need an array of callbacks
         g.requests[threadID] = $.get @href, (-> quoteInline.parse this, id, threadID, inline)
     if @className is 'backlink'
-      root = $ 'table, blockquote', root
-      $.before root, inline
+      $.after $('td > br:first-of-type, td > a:last-of-type', @parentNode), inline
       $.hide $.x 'ancestor::table[1]', el
     else
       $.after @parentNode, inline

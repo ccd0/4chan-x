@@ -1765,8 +1765,7 @@
         }
       }
       if (this.className === 'backlink') {
-        root = $('table, blockquote', root);
-        $.before(root, inline);
+        $.after($('td > br:first-of-type, td > a:last-of-type', this.parentNode), inline);
         return $.hide($.x('ancestor::table[1]', el));
       } else {
         return $.after(this.parentNode, inline);
