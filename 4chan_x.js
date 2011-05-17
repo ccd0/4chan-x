@@ -1738,7 +1738,11 @@
       }
       root = $.x('ancestor::td[1]', this);
       if (td = $("#i" + id, root)) {
-        return $.rm(td);
+        $.rm($.x('ancestor::table[1]', td));
+        if (this.className === 'backlink') {
+          $.show($.x('ancestor::table[1]', d.getElementById(id)));
+        }
+        return;
       }
       inline = $.el('table', {
         className: 'inline',
@@ -1761,7 +1765,8 @@
         }
       }
       if (this.className === 'backlink') {
-        return $.after($('td > br:first-of-type, td > a:last-of-type', this.parentNode), inline);
+        $.after($('td > br:first-of-type, td > a:last-of-type', this.parentNode), inline);
+        return $.hide($.x('ancestor::table[1]', el));
       } else {
         return $.after(this.parentNode, inline);
       }

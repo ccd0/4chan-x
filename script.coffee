@@ -1389,7 +1389,10 @@ quoteInline =
     return unless id = @hash[1..]
     root = $.x 'ancestor::td[1]', this
     if td = $ "#i#{id}", root
-      return $.rm td
+      $.rm $.x 'ancestor::table[1]', td
+      if @className is 'backlink'
+        $.show $.x 'ancestor::table[1]', d.getElementById id
+      return
     inline = $.el 'table',
       className: 'inline'
       innerHTML: "<tbody><tr><td class=reply id=i#{id}></td></tr></tbody>"
@@ -1409,6 +1412,7 @@ quoteInline =
         g.requests[threadID] = $.get @href, (-> quoteInline.parse this, id, threadID, inline)
     if @className is 'backlink'
       $.after $('td > br:first-of-type, td > a:last-of-type', @parentNode), inline
+      $.hide $.x 'ancestor::table[1]', el
     else
       $.after @parentNode, inline
   parse: (req, id, threadID, inline) ->
