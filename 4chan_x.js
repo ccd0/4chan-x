@@ -2448,6 +2448,9 @@
         display: none;\
       }\
 \
+      img[md5] + img {\
+        float: left;\
+      }\
       iframe {\
         display: none;\
       }\
