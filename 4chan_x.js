@@ -2172,6 +2172,9 @@
           case 'fit width':
             klass = 'fitwidth';
             break;
+          case 'fit height':
+            klass = 'fitheight';
+            break;
           case 'fit screen':
             klass = 'fitwidth fitheight';
         }
@@ -2204,7 +2207,7 @@
       var controls, delform, imageType, option, select, _i, _len, _ref2;
       controls = $.el('div', {
         id: 'imgControls',
-        innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
+        innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
       });
       imageType = $.getValue('imageType', 'full');
       _ref2 = $$('option', controls);
