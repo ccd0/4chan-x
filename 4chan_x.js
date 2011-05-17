@@ -2146,7 +2146,6 @@
         var thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
         thumbs = $$('img[md5]');
         imgExpand.on = this.checked;
-        imgExpand.foo();
         if (imgExpand.on) {
           _results = [];
           for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
@@ -2164,21 +2163,23 @@
         }
       },
       typeChange: function(e) {
-        var img, _i, _len, _ref2, _results;
-        imgExpand.foo();
-        _ref2 = $$('img[md5] + img');
-        _results = [];
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          img = _ref2[_i];
-          _results.push(imgExpand.resize(img));
+        var klass;
+        switch (this.value) {
+          case 'full':
+            klass = '';
+            break;
+          case 'fit width':
+            klass = 'fitwidth';
+            break;
+          case 'fit screen':
+            klass = 'fitwidth fitheight';
         }
-        return _results;
+        return d.body.className = klass;
       }
     },
     toggle: function(a) {
       var thumb;
       thumb = a.firstChild;
-      imgExpand.foo();
       if (thumb.style.display) {
         return imgExpand.contract(thumb);
       } else {
@@ -2196,50 +2197,10 @@
       img = $.el('img', {
         src: a.href
       });
-      a.appendChild(img);
-      return imgExpand.resize(img);
-    },
-    foo: function() {
-      var crap, formWidth, left, table, td;
-      formWidth = $('form[name=delform]').getBoundingClientRect().width;
-      if (td = $('td.reply')) {
-        table = td.parentNode.parentNode.parentNode;
-        left = td.getBoundingClientRect().left - table.getBoundingClientRect().left;
-        crap = td.getBoundingClientRect().width - parseInt(getComputedStyle(td).width);
-      }
-      imgExpand.maxWidthOP = formWidth;
-      imgExpand.maxWidthReply = formWidth - left - crap;
-      imgExpand.maxHeight = d.body.clientHeight;
-      return imgExpand.type = $('#imageType').value;
-    },
-    resize: function(img) {
-      var imgHeight, imgWidth, maxHeight, maxWidth, maxWidthOP, maxWidthReply, ratio, type, _, _ref2;
-      maxWidthOP = imgExpand.maxWidthOP, maxWidthReply = imgExpand.maxWidthReply, maxHeight = imgExpand.maxHeight, type = imgExpand.type;
-      _ref2 = $.x("preceding::span[@class][1]/text()[2]", img).textContent.match(/(\d+)x(\d+)/), _ = _ref2[0], imgWidth = _ref2[1], imgHeight = _ref2[2];
-      imgWidth = Number(imgWidth);
-      imgHeight = Number(imgHeight);
-      if (img.parentNode.parentNode.nodeName === 'TD') {
-        maxWidth = maxWidthReply;
-      } else {
-        maxWidth = maxWidthOP;
-      }
-      switch (type) {
-        case 'full':
-          return img.removeAttribute('style');
-        case 'fit width':
-          if (imgWidth > maxWidth) {
-            return img.style.width = maxWidth;
-          }
-          break;
-        case 'fit screen':
-          ratio = Math.min(maxWidth / imgWidth, maxHeight / imgHeight);
-          if (ratio < 1) {
-            return img.style.width = Math.floor(ratio * imgWidth);
-          }
-      }
+      return a.appendChild(img);
     },
     dialog: function() {
-      var controls, delform, imageType, option, _i, _len, _ref2;
+      var controls, delform, imageType, option, select, _i, _len, _ref2;
       controls = $.el('div', {
         id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
@@ -2253,8 +2214,10 @@
           break;
         }
       }
-      $.bind($('select', controls), 'change', $.cb.value);
-      $.bind($('select', controls), 'change', imgExpand.cb.typeChange);
+      select = $('select', controls);
+      imgExpand.cb.typeChange.call(select);
+      $.bind(select, 'change', $.cb.value);
+      $.bind(select, 'change', imgExpand.cb.typeChange);
       $.bind($('input', controls), 'click', imgExpand.cb.all);
       delform = $('form[name=delform]');
       return $.prepend(delform, controls);
@@ -2451,6 +2414,14 @@
       img[md5] + img {\
         float: left;\
       }\
+      body.fitwidth img[md5] + img {\
+        max-width: 100%;\
+      }\
+      body.fitheight img[md5] + img {\
+        /* FIXME max height = height of thread. we want height of viewport */\
+        max-height: 100%;\
+      }\
+\
       iframe {\
         display: none;\
       }\
