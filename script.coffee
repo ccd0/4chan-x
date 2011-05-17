@@ -1637,6 +1637,8 @@ imgExpand =
   init: ->
     g.callbacks.push imgExpand.cb.node
     imgExpand.dialog()
+    #FIXME add a resize listener
+    $.addStyle "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
 
   cb:
     node: (root) ->
@@ -1887,10 +1889,7 @@ main =
       }
       body.fitwidth img[md5] + img {
         max-width: 100%;
-      }
-      body.fitheight img[md5] + img {
-        /* FIXME max height = height of thread. we want height of viewport */
-        max-height: 100%;
+        width: -moz-calc(100%); /* hack so only firefox sees this */
       }
 
       iframe {
