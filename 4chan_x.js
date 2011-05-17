@@ -2430,15 +2430,12 @@
       div.dialog > div.move {\
         cursor: move;\
       }\
-      label, a {\
+      label, a, .favicon, #qr img {\
         cursor: pointer;\
       }\
 \
       .new {\
         background: lime;\
-      }\
-      .favicon {\
-        cursor: pointer;\
       }\
       .error {\
         color: red;\
@@ -2451,13 +2448,6 @@
         display: none;\
       }\
 \
-      form[name=delform] a img {\
-        border: 0px;\
-        float: left;\
-      }\
-      form[name=delform] a img:first-child {\
-        margin: 0px 20px;\
-      }\
       iframe {\
         display: none;\
       }\
@@ -2475,7 +2465,7 @@
         top: 25px;\
         right: 5px;\
       }\
-      #navlinks > a {\
+      #navlinks {\
         font-size: 16px;\
       }\
 \
@@ -2512,20 +2502,21 @@
       #qr > div.move {\
         text-align: right;\
       }\
-      #qr > div.move > input[name=name] {\
+      #qr input[name=name] {\
         float: left;\
       }\
       #qr_form {\
         clear: left;\
-        margin: 0px;\
+      }\
+      #qr_form, #qr #com_submit, #qr input[name=upfile] {\
+        margin: 0;\
       }\
       #qr textarea {\
         width: 100%;\
         height: 120px;\
-        margin: 0px;\
       }\
       #qr.auto:not(:hover) > form {\
-        height: 0px;\
+        height: 0;\
         overflow: hidden;\
       }\
       /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */\
@@ -2538,8 +2529,6 @@
       /* qr reCAPTCHA */\
       #qr img {\
         border: 1px solid #AAA;\
-        margin: 0px;\
-        cursor: pointer;\
       }\
 \
       #updater {\
