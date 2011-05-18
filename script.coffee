@@ -1306,7 +1306,7 @@ sauce =
     g.callbacks.push sauce.cb.node
   cb:
     node: (root) ->
-      return if root.className is 'inline' and root.className isnt 'crossquote'
+      return if root.className is 'inline'
       prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
       names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
       if span = $ 'span.filesize', root

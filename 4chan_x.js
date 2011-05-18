@@ -1595,7 +1595,7 @@
     cb: {
       node: function(root) {
         var i, link, names, prefix, prefixes, s, span, suffix, _len, _results;
-        if (root.className === 'inline' && root.className !== 'crossquote') {
+        if (root.className === 'inline') {
           return;
         }
         prefixes = (function() {
