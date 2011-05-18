@@ -1403,7 +1403,7 @@ quoteInline =
       else
         $.after @parentNode, inline
     else
-      inline = $.el 'div',
+      inline = $.el 'td',
         className: 'reply inline'
         innerHTML: "Loading #{id}..."
       $.after @parentNode, inline

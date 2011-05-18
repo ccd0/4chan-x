@@ -1756,7 +1756,7 @@
           return $.after(this.parentNode, inline);
         }
       } else {
-        inline = $.el('div', {
+        inline = $.el('td', {
           className: 'reply inline',
           innerHTML: "Loading " + id + "..."
         });
