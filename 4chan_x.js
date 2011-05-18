@@ -1141,7 +1141,7 @@
     dialog: function(link) {
       var MAX_FILE_SIZE, THREAD_ID, challenge, dialog, html, mail, name, pass, spoiler, src;
       MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value;
-      THREAD_ID = g.THREAD_ID || link.pathname.split('/').pop();
+      THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       challenge = $('input[name=recaptcha_challenge_field]').value;
       src = "http://www.google.com/recaptcha/api/image?c=" + challenge;
       name = $('input[name=name]').value;
