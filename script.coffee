@@ -1352,7 +1352,7 @@ quoteBacklink =
   init: ->
     g.callbacks.push quoteBacklink.node
   node: (root) ->
-    return if root.className is 'inline'
+    return if root.className
     #better coffee-script way of doing this?
     id = root.id or $('td[id]', root).id
     quotes = {}

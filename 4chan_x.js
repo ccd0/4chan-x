@@ -1674,7 +1674,7 @@
     },
     node: function(root) {
       var el, id, link, qid, quote, quotes, tid, _i, _len, _ref, _results;
-      if (root.className === 'inline') {
+      if (root.className) {
         return;
       }
       id = root.id || $('td[id]', root).id;
