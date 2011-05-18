@@ -1731,14 +1731,14 @@
       return _results;
     },
     toggle: function(e) {
-      var el, id, inline, req, root, td, threadID;
+      var el, id, inline, req, root, table, threadID;
       e.preventDefault();
       if (!(id = this.hash.slice(1))) {
         return;
       }
       root = $.x('ancestor::td[1]', this);
-      if (td = $("#i" + id, root)) {
-        $.rm($.x('ancestor::table[1]', td));
+      if (table = $("#i" + id, root)) {
+        $.rm(table);
         if (this.className === 'backlink') {
           $.show($.x('ancestor::table[1]', d.getElementById(id)));
         }
@@ -1755,6 +1755,7 @@
       } else {
         inline = $.el('td', {
           className: 'reply inline',
+          id: "i" + id,
           innerHTML: "Loading " + id + "..."
         });
         $.after(this.parentNode, inline);
@@ -1799,7 +1800,8 @@
     table: function(id, html) {
       return $.el('table', {
         className: 'inline',
-        innerHTML: "<tbody><tr><td class=reply id=i" + id + ">" + html + "</td></tr></tbody>"
+        id: "i" + id,
+        innerHTML: "<tbody><tr><td class=reply>" + html + "</td></tr></tbody>"
       });
     }
   };
@@ -1919,7 +1921,7 @@
     },
     cb: {
       node: function(root) {
-        if (root.className === 'inline') {
+        if (root.className) {
           return;
         }
         unread.replies.push(root);

@@ -1388,8 +1388,8 @@ quoteInline =
     e.preventDefault()
     return unless id = @hash[1..]
     root = $.x 'ancestor::td[1]', this
-    if td = $ "#i#{id}", root
-      $.rm $.x 'ancestor::table[1]', td
+    if table = $ "#i#{id}", root
+      $.rm table
       if @className is 'backlink'
         $.show $.x 'ancestor::table[1]', d.getElementById id
       return
@@ -1403,6 +1403,7 @@ quoteInline =
     else
       inline = $.el 'td',
         className: 'reply inline'
+        id: "i#{id}"
         innerHTML: "Loading #{id}..."
       $.after @parentNode, inline
       # or ... is for index page new posts.
@@ -1434,7 +1435,8 @@ quoteInline =
   table: (id, html) ->
     $.el 'table',
       className: 'inline'
-      innerHTML: "<tbody><tr><td class=reply id=i#{id}>#{html}</td></tr></tbody>"
+      id: "i#{id}"
+      innerHTML: "<tbody><tr><td class=reply>#{html}</td></tr></tbody>"
 
 quotePreview =
   init: ->
@@ -1515,7 +1517,7 @@ unread =
 
   cb:
     node: (root) ->
-      return if root.className is 'inline'
+      return if root.className
       unread.replies.push root
       unread.updateTitle()
       Favicon.update()
