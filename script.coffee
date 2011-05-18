@@ -1352,7 +1352,7 @@ quoteBacklink =
   init: ->
     g.callbacks.push quoteBacklink.node
   node: (root) ->
-    return if root.className is 'inline'
+    return if root.className
     #better coffee-script way of doing this?
     id = root.id or $('td[id]', root).id
     quotes = {}
@@ -1388,21 +1388,25 @@ quoteInline =
     e.preventDefault()
     return unless id = @hash[1..]
     root = $.x 'ancestor::td[1]', this
-    if td = $ "#i#{id}", root
-      $.rm $.x 'ancestor::table[1]', td
+    if table = $ "#i#{id}", root
+      $.rm table
       if @className is 'backlink'
         $.show $.x 'ancestor::table[1]', d.getElementById id
       return
-    inline = $.el 'table',
-      className: 'inline'
-      innerHTML: "<tbody><tr><td class=reply id=i#{id}></td></tr></tbody>"
-    td = $ 'td', inline
     if el = d.getElementById id
-      td.innerHTML = el.innerHTML
+      inline = quoteInline.table id, el.innerHTML
+      if @className is 'backlink'
+        $.after $('td > br:first-of-type, td > a:last-of-type', @parentNode), inline
+        $.hide $.x 'ancestor::table[1]', el
+      else
+        $.after @parentNode, inline
     else
-      td.innerHTML = "Loading #{id}..."
+      inline = $.el 'td',
+        className: 'reply inline'
+        id: "i#{id}"
+        innerHTML: "Loading #{id}..."
+      $.after @parentNode, inline
       # or ... is for index page new posts.
-      # FIXME x-thread quotes
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', this).id
       if req = g.requests[threadID]
         if req.readyState is 4
@@ -1410,17 +1414,11 @@ quoteInline =
       else
         #FIXME need an array of callbacks
         g.requests[threadID] = $.get @href, (-> quoteInline.parse this, id, threadID, inline)
-    if @className is 'backlink'
-      $.after $('td > br:first-of-type, td > a:last-of-type', @parentNode), inline
-      $.hide $.x 'ancestor::table[1]', el
-    else
-      $.after @parentNode, inline
   parse: (req, id, threadID, inline) ->
     if req.status isnt 200
       inline.innerHTML = "#{req.status} #{req.statusText}"
       return
 
-    clone = inline.cloneNode true
     body = $.el 'body',
       innerHTML: req.responseText
     if id == threadID #OP
@@ -1431,8 +1429,14 @@ quoteInline =
         if reply.id == id
           html = reply.innerHTML
           break
-    $('td', clone).innerHTML = html
-    $.replace inline, clone
+    newInline = quoteInline.table id, html
+    $.addClass newInline, 'crossquote'
+    $.replace inline, newInline
+  table: (id, html) ->
+    $.el 'table',
+      className: 'inline'
+      id: "i#{id}"
+      innerHTML: "<tbody><tr><td class=reply>#{html}</td></tr></tbody>"
 
 quotePreview =
   init: ->
@@ -1513,7 +1517,7 @@ unread =
 
   cb:
     node: (root) ->
-      return if root.className is 'inline'
+      return if root.className
       unread.replies.push root
       unread.updateTitle()
       Favicon.update()
