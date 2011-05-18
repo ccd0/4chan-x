@@ -901,9 +901,10 @@ qr =
     THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
     challenge = $('input[name=recaptcha_challenge_field]').value
     src = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
-    name = $('input[name=name]').value
-    mail = $('input[name=email]').value
-    pass = $('input[name=pwd]').value
+    c = d.cookie
+    name = if m = c.match(/4chan_name=([^;]+)/)  then unescape m[1] else ''
+    mail = if m = c.match(/4chan_email=([^;]+)/) then unescape m[1] else ''
+    pass = if m = c.match(/4chan_pass=([^;]+)/)  then unescape m[1] else $('input[name=pwd]').value
     html = "
       <div class=move>
         <input class=inputtext type=text name=name placeholder=Name form=qr_form value='#{name}'>
