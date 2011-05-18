@@ -1798,9 +1798,8 @@
       newInline = $.el('table', {
         innerHTML: "<tbody><tr><td class=reply id=i" + id + ">" + html + "</td></tr></tbody>"
       });
-      sauce.cb.node(newInline);
-      newInline.className = 'inline';
-      return $.replace(inline, newInline);
+      $.replace(inline, newInline);
+      return newInline.className = 'inline';
     }
   };
   quotePreview = {

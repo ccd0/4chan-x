@@ -1432,9 +1432,8 @@ quoteInline =
           break
     newInline = $.el 'table',
       innerHTML: "<tbody><tr><td class=reply id=i#{id}>#{html}</td></tr></tbody>"
-    sauce.cb.node newInline
-    newInline.className = 'inline'
     $.replace inline, newInline
+    newInline.className = 'inline'
 
 quotePreview =
   init: ->
