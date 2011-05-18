@@ -1306,7 +1306,7 @@ sauce =
     g.callbacks.push sauce.cb.node
   cb:
     node: (root) ->
-      return if root.className is 'inline'
+      return if root.className is 'inline' and root.className isnt 'crossquote'
       prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
       names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
       if span = $ 'span.filesize', root
@@ -1394,9 +1394,7 @@ quoteInline =
         $.show $.x 'ancestor::table[1]', d.getElementById id
       return
     if el = d.getElementById id
-      inline = $.el 'table',
-        className: 'inline'
-        innerHTML: "<tbody><tr><td class=reply id=i#{id}>#{el.innerHTML}</td></tr></tbody>"
+      inline = quoteInline.table id, el.innerHTML
       if @className is 'backlink'
         $.after $('td > br:first-of-type, td > a:last-of-type', @parentNode), inline
         $.hide $.x 'ancestor::table[1]', el
@@ -1430,10 +1428,13 @@ quoteInline =
         if reply.id == id
           html = reply.innerHTML
           break
-    newInline = $.el 'table',
-      innerHTML: "<tbody><tr><td class=reply id=i#{id}>#{html}</td></tr></tbody>"
+    newInline = quoteInline.table id, html
+    $.addClass newInline, 'crossquote'
     $.replace inline, newInline
-    newInline.className = 'inline'
+  table: (id, html) ->
+    $.el 'table',
+      className: 'inline'
+      innerHTML: "<tbody><tr><td class=reply id=i#{id}>#{html}</td></tr></tbody>"
 
 quotePreview =
   init: ->

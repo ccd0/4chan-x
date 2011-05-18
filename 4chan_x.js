@@ -1595,7 +1595,7 @@
     cb: {
       node: function(root) {
         var i, link, names, prefix, prefixes, s, span, suffix, _len, _results;
-        if (root.className === 'inline') {
+        if (root.className === 'inline' && root.className !== 'crossquote') {
           return;
         }
         prefixes = (function() {
@@ -1745,10 +1745,7 @@
         return;
       }
       if (el = d.getElementById(id)) {
-        inline = $.el('table', {
-          className: 'inline',
-          innerHTML: "<tbody><tr><td class=reply id=i" + id + ">" + el.innerHTML + "</td></tr></tbody>"
-        });
+        inline = quoteInline.table(id, el.innerHTML);
         if (this.className === 'backlink') {
           $.after($('td > br:first-of-type, td > a:last-of-type', this.parentNode), inline);
           return $.hide($.x('ancestor::table[1]', el));
@@ -1795,11 +1792,15 @@
           }
         }
       }
-      newInline = $.el('table', {
+      newInline = quoteInline.table(id, html);
+      $.addClass(newInline, 'crossquote');
+      return $.replace(inline, newInline);
+    },
+    table: function(id, html) {
+      return $.el('table', {
+        className: 'inline',
         innerHTML: "<tbody><tr><td class=reply id=i" + id + ">" + html + "</td></tr></tbody>"
       });
-      $.replace(inline, newInline);
-      return newInline.className = 'inline';
     }
   };
   quotePreview = {
