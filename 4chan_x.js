@@ -1744,40 +1744,41 @@
         }
         return;
       }
-      inline = $.el('table', {
-        className: 'inline',
-        innerHTML: "<tbody><tr><td class=reply id=i" + id + "></td></tr></tbody>"
-      });
-      td = $('td', inline);
       if (el = d.getElementById(id)) {
-        td.innerHTML = el.innerHTML;
+        inline = $.el('table', {
+          className: 'inline',
+          innerHTML: "<tbody><tr><td class=reply id=i" + id + ">" + el.innerHTML + "</td></tr></tbody>"
+        });
+        if (this.className === 'backlink') {
+          $.after($('td > br:first-of-type, td > a:last-of-type', this.parentNode), inline);
+          return $.hide($.x('ancestor::table[1]', el));
+        } else {
+          return $.after(this.parentNode, inline);
+        }
       } else {
-        td.innerHTML = "Loading " + id + "...";
+        inline = $.el('div', {
+          className: 'reply inline',
+          innerHTML: "Loading " + id + "..."
+        });
+        $.after(this.parentNode, inline);
         threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
         if (req = g.requests[threadID]) {
           if (req.readyState === 4) {
-            quoteInline.parse(req, id, threadID, inline);
+            return quoteInline.parse(req, id, threadID, inline);
           }
         } else {
-          g.requests[threadID] = $.get(this.href, (function() {
+          return g.requests[threadID] = $.get(this.href, (function() {
             return quoteInline.parse(this, id, threadID, inline);
           }));
         }
       }
-      if (this.className === 'backlink') {
-        $.after($('td > br:first-of-type, td > a:last-of-type', this.parentNode), inline);
-        return $.hide($.x('ancestor::table[1]', el));
-      } else {
-        return $.after(this.parentNode, inline);
-      }
     },
     parse: function(req, id, threadID, inline) {
-      var body, clone, html, op, reply, _i, _len, _ref;
+      var body, html, newInline, op, reply, _i, _len, _ref;
       if (req.status !== 200) {
         inline.innerHTML = "" + req.status + " " + req.statusText;
         return;
       }
-      clone = inline.cloneNode(true);
       body = $.el('body', {
         innerHTML: req.responseText
       });
@@ -1794,8 +1795,11 @@
           }
         }
       }
-      $('td', clone).innerHTML = html;
-      return $.replace(inline, clone);
+      newInline = $.el('table', {
+        className: 'inline',
+        innerHTML: "<tbody><tr><td class=reply id=i" + id + ">" + html + "</td></tr></tbody>"
+      });
+      return $.replace(inline, newInline);
     }
   };
   quotePreview = {

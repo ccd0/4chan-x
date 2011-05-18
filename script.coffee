@@ -1393,16 +1393,21 @@ quoteInline =
       if @className is 'backlink'
         $.show $.x 'ancestor::table[1]', d.getElementById id
       return
-    inline = $.el 'table',
-      className: 'inline'
-      innerHTML: "<tbody><tr><td class=reply id=i#{id}></td></tr></tbody>"
-    td = $ 'td', inline
     if el = d.getElementById id
-      td.innerHTML = el.innerHTML
+      inline = $.el 'table',
+        className: 'inline'
+        innerHTML: "<tbody><tr><td class=reply id=i#{id}>#{el.innerHTML}</td></tr></tbody>"
+      if @className is 'backlink'
+        $.after $('td > br:first-of-type, td > a:last-of-type', @parentNode), inline
+        $.hide $.x 'ancestor::table[1]', el
+      else
+        $.after @parentNode, inline
     else
-      td.innerHTML = "Loading #{id}..."
+      inline = $.el 'div',
+        className: 'reply inline'
+        innerHTML: "Loading #{id}..."
+      $.after @parentNode, inline
       # or ... is for index page new posts.
-      # FIXME x-thread quotes
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', this).id
       if req = g.requests[threadID]
         if req.readyState is 4
@@ -1410,17 +1415,11 @@ quoteInline =
       else
         #FIXME need an array of callbacks
         g.requests[threadID] = $.get @href, (-> quoteInline.parse this, id, threadID, inline)
-    if @className is 'backlink'
-      $.after $('td > br:first-of-type, td > a:last-of-type', @parentNode), inline
-      $.hide $.x 'ancestor::table[1]', el
-    else
-      $.after @parentNode, inline
   parse: (req, id, threadID, inline) ->
     if req.status isnt 200
       inline.innerHTML = "#{req.status} #{req.statusText}"
       return
 
-    clone = inline.cloneNode true
     body = $.el 'body',
       innerHTML: req.responseText
     if id == threadID #OP
@@ -1431,8 +1430,10 @@ quoteInline =
         if reply.id == id
           html = reply.innerHTML
           break
-    $('td', clone).innerHTML = html
-    $.replace inline, clone
+    newInline = $.el 'table',
+      className: 'inline'
+      innerHTML: "<tbody><tr><td class=reply id=i#{id}>#{html}</td></tr></tbody>"
+    $.replace inline, newInline
 
 quotePreview =
   init: ->
