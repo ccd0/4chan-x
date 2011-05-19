@@ -32,6 +32,7 @@ config =
       'Quote Backlinks':   [false, 'Add quote backlinks']
       'Quote Inline':      [false, 'Show quoted post inline on quote click']
       'Quote Preview':     [false, 'Show quote content on hover']
+      'Indicate OP quote': [true,  'Add \'(OP)\' to OP quotes']
     hide:
       'Reply Hiding':      [true,  'Hide single replies']
       'Thread Hiding':     [true,  'Hide entire threads']
@@ -733,7 +734,7 @@ options =
       title = conf[name][1]
       checked = if $.config name then "checked" else ""
       li = $.el 'li',
-        innerHTML: "<label title='#{title}'><input name='#{name}' #{checked} type=checkbox>#{name}</label>"
+        innerHTML: "<label title=\"#{title}\"><input name='#{name}' #{checked} type=checkbox>#{name}</label>"
       $.append id, li
 
   flavors: ->
@@ -1494,6 +1495,16 @@ quotePreview =
           break
     qp.innerHTML = html
 
+quoteOP =
+  init: ->
+    g.callbacks.push quoteOP.node
+  node: (root) ->
+    return if root.className is 'inline'
+    tid = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', this).id
+    for quote in $$ 'a.quotelink', root
+      if quote.hash[1..] is tid
+        quote.textContent += ' (OP)'
+
 reportButton =
   init: ->
     g.callbacks.push reportButton.cb.node
@@ -1824,6 +1835,9 @@ main =
 
     if $.config 'Quote Preview'
       quotePreview.init()
+
+    if $.config 'Indicate OP quote'
+      quoteOP.init()
 
     if $.config 'Thread Watcher'
       watcher.init()
