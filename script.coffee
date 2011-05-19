@@ -1894,7 +1894,7 @@ main =
       img[md5] + img {
         float: left;
       }
-      body.fitwidth img[md5] + img {
+      body.fitwidth table img[md5] + img {
         max-width: 100%;
         width: -moz-calc(100%); /* hack so only firefox sees this */
       }
