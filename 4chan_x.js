@@ -1850,9 +1850,10 @@
           }));
         }
       }
-      $.show(qp);
       ui.el = qp;
-      return ui.winHeight = d.body.clientHeight;
+      ui.winHeight = d.body.clientHeight;
+      $.show(qp);
+      return ui.hover(e);
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
@@ -2087,9 +2088,10 @@
         el = $('#iHover');
         el.src = null;
         el.src = this.parentNode.href;
-        $.show(el);
         ui.el = el;
-        return ui.winHeight = d.body.clientHeight;
+        ui.winHeight = d.body.clientHeight;
+        $.show(el);
+        return ui.hover(e);
       }
     }
   };

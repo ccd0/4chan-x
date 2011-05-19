@@ -1465,9 +1465,10 @@ quotePreview =
           quotePreview.parse req, id, threadID
       else
         g.requests[threadID] = $.get @href, (-> quotePreview.parse this, id, threadID)
-    $.show qp
     ui.el = qp
     ui.winHeight = d.body.clientHeight
+    $.show qp
+    ui.hover e
   parse: (req, id, threadID) ->
     qp = $ '#qp'
     return unless qp.innerHTML is "Loading #{id}..."
@@ -1616,9 +1617,10 @@ imageHover =
       el = $ '#iHover'
       el.src = null
       el.src = @parentNode.href
-      $.show el
       ui.el = el
       ui.winHeight = d.body.clientHeight
+      $.show el
+      ui.hover e
 
 imgPreloading =
   init: ->
