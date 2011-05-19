@@ -1707,6 +1707,7 @@
           $.bind(link, 'mouseover', quotePreview.mouseover);
           $.bind(link, 'mousemove', ui.hover);
           $.bind(link, 'mouseout', ui.hoverend);
+          $.bind(link, 'mouseout', quotePreview.mouseout);
         }
         if ($.config('Quote Inline')) {
           $.bind(link, 'click', quoteInline.toggle);
@@ -1825,9 +1826,13 @@
         quote = _ref[_i];
         $.bind(quote, 'mouseover', quotePreview.mouseover);
         $.bind(quote, 'mousemove', ui.hover);
-        _results.push($.bind(quote, 'mouseout', ui.hoverend));
+        $.bind(quote, 'mouseout', ui.hoverend);
+        _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
       }
       return _results;
+    },
+    mouseout: function() {
+      return $.removeClass(d.getElementById(this.hash.slice(1)), 'qphl');
     },
     mouseover: function(e) {
       var el, id, qp, req, threadID;
@@ -1837,10 +1842,7 @@
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
-        if (el.className === 'reply') {
-          el.className = 'replyhl';
-          this.setAttribute('onmouseout', "document.getElementById(" + id + ").className='reply'; this.removeAttribute('onmouseout');");
-        }
+        $.addClass(el, 'qphl');
       } else {
         qp.innerHTML = "Loading " + id + "...";
         threadID = this.pathname.split('/').pop();
@@ -2460,12 +2462,10 @@
       }\
 \
       #navlinks {\
+        font-size: 16px;\
         position: fixed;\
         top: 25px;\
         right: 5px;\
-      }\
-      #navlinks {\
-        font-size: 16px;\
       }\
 \
       #options {\
@@ -2565,6 +2565,9 @@
       }\
       #qp input {\
         display: none;\
+      }\
+      .qphl {\
+        outline: 2px solid rgba(216, 94, 49, .7);\
       }\
     '
   };
