@@ -1891,7 +1891,7 @@
     },
     node: function(root) {
       var quote, tid, _i, _len, _ref, _results;
-      if (root.className) {
+      if (root.className === 'inline') {
         return;
       }
       tid = g.THREAD_ID || root.parentNode.firstChild.id;
