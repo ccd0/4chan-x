@@ -1494,6 +1494,7 @@ quoteOP =
   init: ->
     g.callbacks.push quoteOP.node
   node: (root) ->
+    return if root.className
     tid = g.THREAD_ID or root.parentNode.firstChild.id
     for quote in $$ 'a.quotelink', root
       if quote.hash[1..] is tid

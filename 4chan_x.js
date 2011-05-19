@@ -1891,6 +1891,9 @@
     },
     node: function(root) {
       var quote, tid, _i, _len, _ref, _results;
+      if (root.className) {
+        return;
+      }
       tid = g.THREAD_ID || root.parentNode.firstChild.id;
       _ref = $$('a.quotelink', root);
       _results = [];
