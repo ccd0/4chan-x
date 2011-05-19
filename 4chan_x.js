@@ -2434,8 +2434,10 @@
       img[md5] + img {\
         float: left;\
       }\
-      body.fitwidth table img[md5] + img {\
+      body.fitwidth img[md5] + img {\
         max-width: 100%;\
+      }\
+      body.fitwidth table img[md5] + img {\
         width: -moz-calc(100%); /* hack so only firefox sees this */\
       }\
 \
