@@ -1900,7 +1900,7 @@
       if (root.className === 'inline') {
         return;
       }
-      tid = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', this).id;
+      tid = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', root).id;
       _ref = $$('a.quotelink', root);
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
