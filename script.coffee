@@ -1374,6 +1374,7 @@ quoteBacklink =
         $.bind link, 'mouseover', quotePreview.mouseover
         $.bind link, 'mousemove', ui.hover
         $.bind link, 'mouseout',  ui.hoverend
+        $.bind link, 'mouseout',  quotePreview.mouseout
       if $.config 'Quote Inline'
         $.bind link, 'click', quoteInline.toggle
       $.before $('td > br, blockquote', el), link
@@ -1452,11 +1453,15 @@ quotePreview =
       $.bind quote, 'mouseover', quotePreview.mouseover
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  ui.hoverend
+      $.bind quote, 'mouseout',  quotePreview.mouseout
+  mouseout: ->
+    $.removeClass d.getElementById(@hash[1..]), 'qphl'
   mouseover: (e) ->
     return unless id = @hash[1..]
     qp = $ '#qp'
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
+      $.addClass el, 'qphl'
     else
       qp.innerHTML = "Loading #{id}..."
       threadID = @pathname.split('/').pop()
@@ -1920,12 +1925,10 @@ main =
       }
 
       #navlinks {
+        font-size: 16px;
         position: fixed;
         top: 25px;
         right: 5px;
-      }
-      #navlinks {
-        font-size: 16px;
       }
 
       #options {
@@ -2025,6 +2028,9 @@ main =
       }
       #qp input {
         display: none;
+      }
+      .qphl {
+        outline: 2px solid rgba(216, 94, 49, .7);
       }
     '
 
