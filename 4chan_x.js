@@ -1837,6 +1837,10 @@
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
+        if (el.className === 'reply') {
+          el.className = 'replyhl';
+          this.setAttribute('onmouseout', "document.getElementById(" + id + ").className='reply'; this.removeAttribute('onmouseout');");
+        }
       } else {
         qp.innerHTML = "Loading " + id + "...";
         threadID = this.pathname.split('/').pop();

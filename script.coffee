@@ -1457,6 +1457,9 @@ quotePreview =
     qp = $ '#qp'
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
+      if el.className is 'reply'
+        el.className = 'replyhl'
+        @setAttribute 'onmouseout', "document.getElementById(#{id}).className='reply'; this.removeAttribute('onmouseout');"
     else
       qp.innerHTML = "Loading #{id}..."
       threadID = @pathname.split('/').pop()
