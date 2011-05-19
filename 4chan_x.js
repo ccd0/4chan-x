@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -91,7 +91,8 @@
       quote: {
         'Quote Backlinks': [false, 'Add quote backlinks'],
         'Quote Inline': [false, 'Show quoted post inline on quote click'],
-        'Quote Preview': [false, 'Show quote content on hover']
+        'Quote Preview': [false, 'Show quote content on hover'],
+        'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
       },
       hide: {
         'Reply Hiding': [true, 'Hide single replies'],
@@ -947,7 +948,7 @@
         title = conf[name][1];
         checked = $.config(name) ? "checked" : "";
         li = $.el('li', {
-          innerHTML: "<label title='" + title + "'><input name='" + name + "' " + checked + " type=checkbox>" + name + "</label>"
+          innerHTML: "<label title=\"" + title + "\"><input name='" + name + "' " + checked + " type=checkbox>" + name + "</label>"
         });
         _results.push($.append(id, li));
       }
@@ -1884,6 +1885,22 @@
       return qp.innerHTML = html;
     }
   };
+  quoteOP = {
+    init: function() {
+      return g.callbacks.push(quoteOP.node);
+    },
+    node: function(root) {
+      var quote, tid, _i, _len, _ref, _results;
+      tid = g.THREAD_ID || root.parentNode.firstChild.id;
+      _ref = $$('a.quotelink', root);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        _results.push(quote.hash.slice(1) === tid ? quote.textContent += ' (OP)' : void 0);
+      }
+      return _results;
+    }
+  };
   reportButton = {
     init: function() {
       return g.callbacks.push(reportButton.cb.node);
@@ -2344,6 +2361,9 @@
       }
       if ($.config('Quote Preview')) {
         quotePreview.init();
+      }
+      if ($.config('Indicate OP quote')) {
+        quoteOP.init();
       }
       if ($.config('Thread Watcher')) {
         watcher.init();
