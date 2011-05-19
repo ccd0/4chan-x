@@ -1641,6 +1641,8 @@ imgExpand =
   init: ->
     g.callbacks.push imgExpand.cb.node
     imgExpand.dialog()
+    $.bind window, 'resize', imgExpand.resize
+    imgExpand.resize()
 
   cb:
     node: (root) ->
@@ -1655,7 +1657,6 @@ imgExpand =
     all: (e) ->
       thumbs = $$ 'img[md5]'
       imgExpand.on = @checked
-      imgExpand.foo()
       if imgExpand.on #expand
         for thumb in thumbs
           unless thumb.style.display #thumbnail hidden, image already expanded
@@ -1665,13 +1666,19 @@ imgExpand =
           if thumb.style.display #thumbnail hidden - unhide it
             imgExpand.contract thumb
     typeChange: (e) ->
-      imgExpand.foo()
-      for img in $$ 'img[md5] + img'
-        imgExpand.resize img
+      switch @value
+        when 'full'
+          klass = ''
+        when 'fit width'
+          klass = 'fitwidth'
+        when 'fit height'
+          klass = 'fitheight'
+        when 'fit screen'
+          klass = 'fitwidth fitheight'
+      d.body.className = klass
 
   toggle: (a) ->
     thumb = a.firstChild
-    imgExpand.foo()
     if thumb.style.display
       imgExpand.contract thumb
     else
@@ -1688,61 +1695,30 @@ imgExpand =
       src: a.href
     a.appendChild img
 
-    imgExpand.resize img
-
-  foo: ->
-    formWidth = $('form[name=delform]').getBoundingClientRect().width
-    if td = $('td.reply')
-      table = td.parentNode.parentNode.parentNode
-      left = td.getBoundingClientRect().left - table.getBoundingClientRect().left
-      crap = td.getBoundingClientRect().width - parseInt(getComputedStyle(td).width)
-
-    imgExpand.maxWidthOP    = formWidth
-    imgExpand.maxWidthReply = formWidth - left - crap
-    imgExpand.maxHeight = d.body.clientHeight
-    imgExpand.type = $('#imageType').value
-
-  resize: (img) ->
-    {maxWidthOP, maxWidthReply, maxHeight, type} = imgExpand
-    [_, imgWidth, imgHeight] = $
-      .x("preceding::span[@class][1]/text()[2]", img)
-      .textContent.match(/(\d+)x(\d+)/)
-    imgWidth  = Number imgWidth
-    imgHeight = Number imgHeight
-
-    if img.parentNode.parentNode.nodeName == 'TD'
-      maxWidth = maxWidthReply
-    else
-      maxWidth = maxWidthOP
-
-    switch type
-      when 'full'
-        img.removeAttribute 'style'
-      when 'fit width'
-        if imgWidth > maxWidth
-          img.style.width = maxWidth
-      when 'fit screen'
-        ratio = Math.min maxWidth/imgWidth, maxHeight/imgHeight
-        if ratio < 1
-          img.style.width = Math.floor ratio * imgWidth
-
   dialog: ->
     controls = $.el 'div',
       id: 'imgControls'
       innerHTML:
-        "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit screen</option></select>
+        "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>
         <label>Expand Images<input type=checkbox id=imageExpand></label>"
     imageType = $.getValue 'imageType', 'full'
     for option in $$ 'option', controls
       if option.textContent is imageType
         option.selected = true
         break
-    $.bind $('select', controls), 'change', $.cb.value
-    $.bind $('select', controls), 'change', imgExpand.cb.typeChange
+    select = $ 'select', controls
+    imgExpand.cb.typeChange.call select
+    $.bind select, 'change', $.cb.value
+    $.bind select, 'change', imgExpand.cb.typeChange
     $.bind $('input',  controls), 'click',  imgExpand.cb.all
 
     delform = $ 'form[name=delform]'
     $.prepend delform, controls
+
+  resize: (e) ->
+    $.rm style if style = $ 'style[media=chan]', d.head
+    style = $.addStyle "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
+    style.media = 'chan'
 
 #main
 NAMESPACE = 'AEOS.4chan_x.'
@@ -1922,6 +1898,11 @@ main =
       img[md5] + img {
         float: left;
       }
+      body.fitwidth table img[md5] + img {
+        max-width: 100%;
+        width: -moz-calc(100%); /* hack so only firefox sees this */
+      }
+
       iframe {
         display: none;
       }
