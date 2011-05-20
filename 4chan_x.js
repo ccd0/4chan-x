@@ -2237,12 +2237,17 @@
       return $.rm(thumb.nextSibling);
     },
     expand: function(thumb) {
-      var a, img;
+      var a, filesize, img, max, _, _ref2;
       $.hide(thumb);
       a = thumb.parentNode;
       img = $.el('img', {
         src: a.href
       });
+      if (a.parentNode.className !== 'op') {
+        filesize = $.x('preceding::span[@class="filesize"][1]', a);
+        _ref2 = filesize.textContent.match(/(\d+)x/), _ = _ref2[0], max = _ref2[1];
+        img.setAttribute('style', "max-width: -moz-calc(" + max + "px);");
+      }
       return a.appendChild(img);
     },
     dialog: function() {
