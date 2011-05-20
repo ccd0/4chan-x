@@ -42,6 +42,7 @@ config =
       'Anonymize':         [false, 'Make everybody anonymous']
       'Keybinds':          [false, 'Binds actions to keys']
       'Localize Time':     [true,  'Show times based on your timezone']
+      'Localized am/pm':   [false, 'Change localized time to the 12-hour clock convention']
       'Report Button':     [true,  'Add report buttons']
       'Comment Expansion': [true,  'Expand too long comments']
       'Thread Expansion':  [true,  'View all replies']
@@ -1329,6 +1330,10 @@ localize =
         year = "20#{year}"
         month -= 1 #months start at 0
         hour = g.chanOffset + Number hour
+        meridiem = ''
+        if $.config 'Localized am/pm'
+          meridiem = if hour < 12 then ' a.m.' else ' p.m.'
+          hour = hour % 12 or 12
         date = new Date year, month, day, hour
         year = date.getFullYear() - 2000
         month = $.zeroPad date.getMonth() + 1
@@ -1343,7 +1348,7 @@ localize =
           'Fri'
           'Sat'
         ][date.getDay()]
-        s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec} "
+        s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec}#{meridiem} "
 
 titlePost =
   init: ->
