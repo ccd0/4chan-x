@@ -1333,7 +1333,7 @@ localize =
         meridiem = ''
         if $.config 'Localized am/pm'
           meridiem = if hour < 12 then ' a.m.' else ' p.m.'
-          hour = if hour is 0 then 12 else if hour > 12 then hour - 12
+          hour = hour % 12 or 12
         date = new Date year, month, day, hour
         year = date.getFullYear() - 2000
         month = $.zeroPad date.getMonth() + 1

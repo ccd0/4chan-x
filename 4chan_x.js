@@ -1654,7 +1654,7 @@
           meridiem = '';
           if ($.config('Localized am/pm')) {
             meridiem = hour < 12 ? ' a.m.' : ' p.m.';
-            hour = hour === 0 ? 12 : hour > 12 ? hour - 12 : void 0;
+            hour = hour % 12 || 12;
           }
           date = new Date(year, month, day, hour);
           year = date.getFullYear() - 2000;
