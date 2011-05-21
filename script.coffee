@@ -1716,6 +1716,10 @@ imgExpand =
     a = thumb.parentNode
     img = $.el 'img',
       src: a.href
+    unless a.parentNode.className is 'op'
+      filesize = $.x 'preceding::span[@class="filesize"][1]', a
+      [_, max] = filesize.textContent.match /(\d+)x/
+      img.setAttribute 'style', "max-width: -moz-calc(#{max}px);"
     a.appendChild img
 
   dialog: ->
