@@ -821,6 +821,8 @@ qr =
 
           if isQR
             $('#error').textContent = 'Stop posting so often!'
+          else
+            alert 'Stop posting so often!'
 
           return
 
