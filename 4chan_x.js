@@ -1748,6 +1748,7 @@
       root = $.x('ancestor::td[1]', this);
       if (table = $("#i" + id, root)) {
         $.rm(table);
+        $.removeClass(this, 'inlined');
         if (this.className === 'backlink') {
           $.show($.x('ancestor::table[1]', d.getElementById(id)));
         }
@@ -1757,10 +1758,11 @@
         inline = quoteInline.table(id, el.innerHTML);
         if (this.className === 'backlink') {
           $.after($('td > br:first-of-type, td > a:last-of-type', this.parentNode), inline);
-          return $.hide($.x('ancestor::table[1]', el));
+          $.hide($.x('ancestor::table[1]', el));
         } else {
-          return $.after(this.parentNode, inline);
+          $.after(this.parentNode, inline);
         }
+        return $.addClass(this, 'inlined');
       } else {
         inline = $.el('td', {
           className: 'reply inline',
@@ -2602,6 +2604,9 @@
       }\
       .qphl {\
         outline: 2px solid rgba(216, 94, 49, .7);\
+      }\
+      .inlined {\
+        opacity: .5;\
       }\
     '
   };
