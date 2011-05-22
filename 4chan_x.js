@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -72,6 +72,7 @@
         'Thread Updater': [true, 'Update threads'],
         'Unread Count': [true, 'Show unread post count in tab title'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
+        'Thread Stats': [true, 'Display reply and image count'],
         'Thread Watcher': [true, 'Bookmark threads'],
         'Auto Watch': [true, 'Automatically watch threads that you start'],
         'Auto Watch Reply': [false, 'Automatically watch threads that you reply to']
@@ -1967,6 +1968,33 @@
       return input.click();
     }
   };
+  threadStats = {
+    init: function() {
+      var html;
+      html = "<div class=move>Replies: <span id=rcount>0</span> Images: <span id=icount>1</span></div>";
+      $.append(d.body, ui.dialog('stats', {
+        bottom: '0px',
+        left: '0px'
+      }, html));
+      threadStats.replies = 0;
+      threadStats.images = 1;
+      return g.callbacks.push(threadStats.node);
+    },
+    node: function(root) {
+      if (root.className) {
+        return;
+      }
+      threadStats.replies++;
+      if ($('img[md5]', root)) {
+        threadStats.images++;
+        if (threadStats.images > 151) {
+          $('#icount').className = 'error';
+        }
+      }
+      $('#rcount').textContent = threadStats.replies;
+      return $('#icount').textContent = threadStats.images;
+    }
+  };
   unread = {
     init: function() {
       unread.replies = [];
@@ -2425,6 +2453,9 @@
         if ($.config('Post in Title')) {
           titlePost.init();
         }
+        if ($.config('Thread Stats')) {
+          threadStats.init();
+        }
         if ($.config('Unread Count')) {
           unread.init();
         }
@@ -2597,6 +2628,10 @@
       }\
       #updater:not(:hover) > div:not(.move) {\
         display: none;\
+      }\
+\
+      #stats {\
+        position: fixed;\
       }\
 \
       #watcher {\

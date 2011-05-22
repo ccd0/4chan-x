@@ -15,6 +15,7 @@ config =
       'Thread Updater':    [true,  'Update threads']
       'Unread Count':      [true,  'Show unread post count in tab title']
       'Post in Title':     [true,  'Show the op\'s post in the tab title']
+      'Thread Stats':      [true,  'Display reply and image count']
       'Thread Watcher':    [true,  'Bookmark threads']
       'Auto Watch':        [true,  'Automatically watch threads that you start']
       'Auto Watch Reply':  [false, 'Automatically watch threads that you reply to']
@@ -1544,6 +1545,23 @@ reportButton =
     $('input[value="Report"]').click()
     input.click()
 
+threadStats =
+  init: ->
+    html = "<div class=move>Replies: <span id=rcount>0</span> Images: <span id=icount>1</span></div>"
+    $.append d.body, (ui.dialog 'stats', bottom: '0px', left: '0px', html)
+    threadStats.replies = 0
+    threadStats.images = 1
+    g.callbacks.push threadStats.node
+  node: (root) ->
+      return if root.className
+      threadStats.replies++
+      if $ 'img[md5]', root
+        threadStats.images++
+        if threadStats.images > 151
+          $('#icount').className = 'error'
+      $('#rcount').textContent = threadStats.replies
+      $('#icount').textContent = threadStats.images
+
 unread =
   init: ->
     unread.replies = []
@@ -1881,6 +1899,9 @@ main =
       if $.config 'Post in Title'
         titlePost.init()
 
+      if $.config 'Thread Stats'
+        threadStats.init()
+
       if $.config 'Unread Count'
         unread.init()
 
@@ -2041,6 +2062,10 @@ main =
       }
       #updater:not(:hover) > div:not(.move) {
         display: none;
+      }
+
+      #stats {
+        position: fixed;
       }
 
       #watcher {
