@@ -1413,7 +1413,6 @@ quoteInline =
         $.hide $.x 'ancestor::table[1]', el
       else
         $.after @parentNode, inline
-      $.addClass @, 'inlined'
     else
       inline = $.el 'td',
         className: 'reply inline'
@@ -1428,6 +1427,7 @@ quoteInline =
       else
         #FIXME need an array of callbacks
         g.requests[threadID] = $.get @href, (-> quoteInline.parse @, id, threadID, inline)
+    $.addClass @, 'inlined'
   parse: (req, id, threadID, inline) ->
     if req.status isnt 200
       inline.innerHTML = "#{req.status} #{req.statusText}"
