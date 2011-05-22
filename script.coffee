@@ -325,10 +325,10 @@ expandComment =
     @textContent = "Loading #{replyID}..."
     if req = g.requests[threadID]
       if req.readyState is 4
-        expandComment.parse req, this, threadID, replyID
+        expandComment.parse req, @, threadID, replyID
     else
-      a = this
-      g.requests[threadID] = $.get @href, (-> expandComment.parse this, a, threadID, replyID)
+      a = @
+      g.requests[threadID] = $.get @href, (-> expandComment.parse @, a, threadID, replyID)
   parse: (req, a, threadID, replyID) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
@@ -373,7 +373,7 @@ expandThread =
           if req.readyState is 4
             expandThread.parse req, thread, a
         else
-          g.requests[threadID] = $.get "res/#{threadID}", (-> expandThread.parse this, thread, a)
+          g.requests[threadID] = $.get "res/#{threadID}", (-> expandThread.parse @, thread, a)
 
       when 'X'
         a.textContent = a.textContent.replace 'X Loading...', '+'
@@ -799,7 +799,7 @@ qr =
       $.bind quote, 'click', qr.cb.quote
 
     submit: (e) ->
-      form = this
+      form = @
       isQR = form.parentNode.id == 'qr'
 
       if $.config('Auto Watch Reply') and $.config('Thread Watcher')
@@ -831,7 +831,7 @@ qr =
 
     quote: (e) ->
       e.preventDefault()
-      qr.quote this
+      qr.quote @
 
   quote: (link) ->
     if dialog = $ '#qr'
@@ -1395,7 +1395,7 @@ quoteInline =
   toggle: (e) ->
     e.preventDefault()
     return unless id = @hash[1..]
-    root = $.x 'ancestor::td[1]', this
+    root = $.x 'ancestor::td[1]', @
     if table = $ "#i#{id}", root
       $.rm table
       $.removeClass @, 'inlined'
@@ -1417,13 +1417,13 @@ quoteInline =
         innerHTML: "Loading #{id}..."
       $.after @parentNode, inline
       # or ... is for index page new posts.
-      threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', this).id
+      threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
       if req = g.requests[threadID]
         if req.readyState is 4
           quoteInline.parse req, id, threadID, inline
       else
         #FIXME need an array of callbacks
-        g.requests[threadID] = $.get @href, (-> quoteInline.parse this, id, threadID, inline)
+        g.requests[threadID] = $.get @href, (-> quoteInline.parse @, id, threadID, inline)
   parse: (req, id, threadID, inline) ->
     if req.status isnt 200
       inline.innerHTML = "#{req.status} #{req.statusText}"
@@ -1477,7 +1477,7 @@ quotePreview =
         if req.readyState is 4
           quotePreview.parse req, id, threadID
       else
-        g.requests[threadID] = $.get @href, (-> quotePreview.parse this, id, threadID)
+        g.requests[threadID] = $.get @href, (-> quotePreview.parse @, id, threadID)
     ui.el = qp
     ui.winHeight = d.body.clientHeight
     $.show qp
@@ -1526,7 +1526,7 @@ reportButton =
         $.after span, $.tn(' ')
       $.bind a, 'click', reportButton.cb.report
     report: (e) ->
-      reportButton.report this
+      reportButton.report @
   report: (target) ->
     input = $.x('preceding-sibling::input[1]', target)
     input.click()
@@ -1678,7 +1678,7 @@ imgExpand =
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
       e.preventDefault()
-      imgExpand.toggle this
+      imgExpand.toggle @
     all: (e) ->
       thumbs = $$ 'img[md5]'
       imgExpand.on = @checked
