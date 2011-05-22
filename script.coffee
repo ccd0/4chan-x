@@ -1398,6 +1398,7 @@ quoteInline =
     root = $.x 'ancestor::td[1]', this
     if table = $ "#i#{id}", root
       $.rm table
+      $.removeClass @, 'inlined'
       if @className is 'backlink'
         $.show $.x 'ancestor::table[1]', d.getElementById id
       return
@@ -1408,6 +1409,7 @@ quoteInline =
         $.hide $.x 'ancestor::table[1]', el
       else
         $.after @parentNode, inline
+      $.addClass @, 'inlined'
     else
       inline = $.el 'td',
         className: 'reply inline'
@@ -2054,6 +2056,9 @@ main =
       }
       .qphl {
         outline: 2px solid rgba(216, 94, 49, .7);
+      }
+      .inlined {
+        opacity: .5;
       }
     '
 
