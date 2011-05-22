@@ -1869,8 +1869,7 @@
       }
       ui.el = qp;
       ui.winHeight = d.body.clientHeight;
-      $.show(qp);
-      return ui.hover(e);
+      return $.show(qp);
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
@@ -2126,8 +2125,7 @@
         el.src = this.parentNode.href;
         ui.el = el;
         ui.winHeight = d.body.clientHeight;
-        $.show(el);
-        return ui.hover(e);
+        return $.show(el);
       }
     }
   };

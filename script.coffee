@@ -1483,7 +1483,6 @@ quotePreview =
     ui.el = qp
     ui.winHeight = d.body.clientHeight
     $.show qp
-    ui.hover e
   parse: (req, id, threadID) ->
     qp = $ '#qp'
     return unless qp.innerHTML is "Loading #{id}..."
@@ -1645,7 +1644,6 @@ imageHover =
       ui.el = el
       ui.winHeight = d.body.clientHeight
       $.show el
-      ui.hover e
 
 imgPreloading =
   init: ->
