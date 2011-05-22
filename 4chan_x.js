@@ -1846,7 +1846,7 @@
       return $.removeClass(d.getElementById(this.hash.slice(1)), 'qphl');
     },
     mouseover: function(e) {
-      var el, id, qp, req, threadID;
+      var el, id, qp, quote, replyID, req, threadID, _i, _len, _ref;
       if (!(id = this.hash.slice(1))) {
         return;
       }
@@ -1854,6 +1854,16 @@
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
         $.addClass(el, 'qphl');
+        if (this.className === 'backlink') {
+          replyID = this.parentNode.id;
+          _ref = $$('a.quotelink', qp);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            quote = _ref[_i];
+            if (quote.hash.slice(1) === replyID) {
+              quote.className = 'backlink';
+            }
+          }
+        }
       } else {
         qp.innerHTML = "Loading " + id + "...";
         threadID = this.pathname.split('/').pop();

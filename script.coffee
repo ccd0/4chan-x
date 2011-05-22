@@ -1472,6 +1472,11 @@ quotePreview =
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl'
+      if @className is 'backlink'
+        replyID = @parentNode.id
+        for quote in $$ 'a.quotelink', qp
+          if quote.hash[1..] is replyID
+            quote.className = 'backlink'
     else
       qp.innerHTML = "Loading #{id}..."
       threadID = @pathname.split('/').pop()
