@@ -1394,10 +1394,11 @@ quoteInline =
     g.callbacks.push quoteInline.node
   node: (root) ->
     for quote in $$ 'a.quotelink, a.backlink', root
+      continue unless quote.hash
       quote.removeAttribute 'onclick'
       $.bind quote, 'click', quoteInline.toggle
   toggle: (e) ->
-    return unless id = @hash[1..]
+    id = @hash[1..]
     e.preventDefault()
     root = $.x 'ancestor::td[1]', @
     if table = $ "#i#{id}", root
@@ -1462,6 +1463,7 @@ quotePreview =
     $.append d.body, preview
   node: (root) ->
     for quote in $$ 'a.quotelink, a.backlink', root
+      continue unless quote.hash
       $.bind quote, 'mouseover', quotePreview.mouseover
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  ui.hoverend
@@ -1470,7 +1472,7 @@ quotePreview =
     return unless el = d.getElementById @hash[1..]
     $.removeClass el, 'qphl'
   mouseover: (e) ->
-    return unless id = @hash[1..]
+    id = @hash[1..]
     qp = $ '#qp'
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML

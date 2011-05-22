@@ -1738,6 +1738,9 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
+        if (!quote.hash) {
+          continue;
+        }
         quote.removeAttribute('onclick');
         _results.push($.bind(quote, 'click', quoteInline.toggle));
       }
@@ -1745,9 +1748,7 @@
     },
     toggle: function(e) {
       var el, id, inline, req, root, table, threadID;
-      if (!(id = this.hash.slice(1))) {
-        return;
-      }
+      id = this.hash.slice(1);
       e.preventDefault();
       root = $.x('ancestor::td[1]', this);
       if (table = $("#i" + id, root)) {
@@ -1837,6 +1838,9 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
+        if (!quote.hash) {
+          continue;
+        }
         $.bind(quote, 'mouseover', quotePreview.mouseover);
         $.bind(quote, 'mousemove', ui.hover);
         $.bind(quote, 'mouseout', ui.hoverend);
@@ -1853,9 +1857,7 @@
     },
     mouseover: function(e) {
       var el, id, qp, quote, replyID, req, threadID, _i, _len, _ref;
-      if (!(id = this.hash.slice(1))) {
-        return;
-      }
+      id = this.hash.slice(1);
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
