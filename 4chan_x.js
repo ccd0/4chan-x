@@ -1766,7 +1766,6 @@
         } else {
           $.after(this.parentNode, inline);
         }
-        return $.addClass(this, 'inlined');
       } else {
         inline = $.el('td', {
           className: 'reply inline',
@@ -1777,14 +1776,15 @@
         threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
         if (req = g.requests[threadID]) {
           if (req.readyState === 4) {
-            return quoteInline.parse(req, id, threadID, inline);
+            quoteInline.parse(req, id, threadID, inline);
           }
         } else {
-          return g.requests[threadID] = $.get(this.href, (function() {
+          g.requests[threadID] = $.get(this.href, (function() {
             return quoteInline.parse(this, id, threadID, inline);
           }));
         }
       }
+      return $.addClass(this, 'inlined');
     },
     parse: function(req, id, threadID, inline) {
       var body, html, newInline, op, reply, _i, _len, _ref;
