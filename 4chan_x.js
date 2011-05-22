@@ -720,6 +720,8 @@
           return keybinds.img(thread, true);
         case 'O':
           return keybinds.open(thread);
+        case 'e':
+          return expandThread.toggle(thread);
         case 'i':
           return keybinds.qr(thread, true);
         case 'm':

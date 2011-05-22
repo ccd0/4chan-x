@@ -529,6 +529,8 @@ keybinds =
         keybinds.img thread, true
       when 'O'
         keybinds.open thread
+      when 'e'
+        expandThread.toggle thread
       when 'i'
         keybinds.qr thread, true
       when 'm'
