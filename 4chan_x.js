@@ -1843,7 +1843,11 @@
       return _results;
     },
     mouseout: function() {
-      return $.removeClass(d.getElementById(this.hash.slice(1)), 'qphl');
+      var el;
+      if (!(el = d.getElementById(this.hash.slice(1)))) {
+        return;
+      }
+      return $.removeClass(el, 'qphl');
     },
     mouseover: function(e) {
       var el, id, qp, quote, replyID, req, threadID, _i, _len, _ref;
