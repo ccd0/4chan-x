@@ -1651,16 +1651,17 @@
           year = "20" + year;
           month -= 1;
           hour = g.chanOffset + Number(hour);
+          date = new Date(year, month, day, hour);
+          year = date.getFullYear() - 2000;
+          month = $.zeroPad(date.getMonth() + 1);
+          day = $.zeroPad(date.getDate());
+          hour = date.getHours();
           meridiem = '';
           if ($.config('Localized am/pm')) {
             meridiem = hour < 12 ? ' a.m.' : ' p.m.';
             hour = hour % 12 || 12;
           }
-          date = new Date(year, month, day, hour);
-          year = date.getFullYear() - 2000;
-          month = $.zeroPad(date.getMonth() + 1);
-          day = $.zeroPad(date.getDate());
-          hour = $.zeroPad(date.getHours());
+          hour = $.zeroPad(hour);
           dotw = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
           _results.push(s.textContent = " " + month + "/" + day + "/" + year + "(" + dotw + ")" + hour + ":" + min_sec + meridiem + " ");
         }
