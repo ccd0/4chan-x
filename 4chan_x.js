@@ -1745,10 +1745,10 @@
     },
     toggle: function(e) {
       var el, id, inline, req, root, table, threadID;
-      e.preventDefault();
       if (!(id = this.hash.slice(1))) {
         return;
       }
+      e.preventDefault();
       root = $.x('ancestor::td[1]', this);
       if (table = $("#i" + id, root)) {
         $.rm(table);

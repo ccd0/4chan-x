@@ -1397,8 +1397,8 @@ quoteInline =
       quote.removeAttribute 'onclick'
       $.bind quote, 'click', quoteInline.toggle
   toggle: (e) ->
-    e.preventDefault()
     return unless id = @hash[1..]
+    e.preventDefault()
     root = $.x 'ancestor::td[1]', @
     if table = $ "#i#{id}", root
       $.rm table
