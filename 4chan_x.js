@@ -1987,7 +1987,7 @@
       threadStats.replies++;
       if ($('img[md5]', root)) {
         threadStats.images++;
-        if (threadStats.images > 151) {
+        if (threadStats.images > 150) {
           $('#icount').className = 'error';
         }
       }
