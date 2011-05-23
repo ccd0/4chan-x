@@ -1547,21 +1547,21 @@ reportButton =
 
 threadStats =
   init: ->
-    threadStats.replies = 0
+    threadStats.posts = 1
     threadStats.images = if $ '.op img[md5]' then 1 else 0
-    html = "<div class=move>Replies: <span id=rcount>#{threadStats.replies}</span> Images: <span id=icount>#{threadStats.images}</span></div>"
+    html = "<div class=move>Posts: <span id=rcount>#{threadStats.posts}</span> Images: <span id=icount>#{threadStats.images}</span></div>"
     dialog = ui.dialog 'stats', bottom: '0px', left: '0px', html
     dialog.className = 'dialog'
     $.append d.body, dialog
     g.callbacks.push threadStats.node
   node: (root) ->
       return if root.className
-      threadStats.replies++
+      threadStats.posts++
       if $ 'img[md5]', root
         threadStats.images++
         if threadStats.images > 150
           $('#icount').className = 'error'
-      $('#rcount').textContent = threadStats.replies
+      $('#rcount').textContent = threadStats.posts
       $('#icount').textContent = threadStats.images
 
 unread =
