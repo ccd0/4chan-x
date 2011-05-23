@@ -1180,19 +1180,10 @@
       return qr.autohide.set();
     },
     sys: function() {
-      var board, c, id, recaptcha, thread, _, _ref, _ref2;
+      var c, id, recaptcha, thread, _, _ref;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
-      }
-      c = $('b').lastChild;
-      if (c.nodeType === 8) {
-        _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-        if (thread === '0') {
-          _ref2 = $('meta', d).content.match(/4chan.org\/(\w+)\//), _ = _ref2[0], board = _ref2[1];
-          window.location = "http://boards.4chan.org/" + board + "/res/" + id + "#watch";
-          return;
-        }
       }
       /*
             http://code.google.com/p/chromium/issues/detail?id=20773
@@ -1201,11 +1192,20 @@
             To access the parent, we have to break out of the sandbox and evaluate
             in the global context.
           */
-      return $.globalEval(function() {
-        var data, _ref3;
-        data = ((_ref3 = document.querySelector('table font b')) != null ? _ref3.firstChild.textContent : void 0) || '';
+      $.globalEval(function() {
+        var data, _ref;
+        data = ((_ref = document.querySelector('table font b')) != null ? _ref.firstChild.textContent : void 0) || '';
         return parent.postMessage(data, '*');
       });
+      c = $('b').lastChild;
+      if (c.nodeType === 8) {
+        _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
+        if (thread === '0') {
+          return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
+        } else {
+          return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + id;
+        }
+      }
     }
   };
   threading = {
