@@ -1973,7 +1973,7 @@
       var dialog, html;
       threadStats.posts = 1;
       threadStats.images = $('.op img[md5]') ? 1 : 0;
-      html = "<div class=move><span id=rcount>" + threadStats.posts + "</span> / <span id=icount>" + threadStats.images + "</span></div>";
+      html = "<div class=move><span id=postcount>" + threadStats.posts + "</span> / <span id=imagecount>" + threadStats.images + "</span></div>";
       dialog = ui.dialog('stats', {
         bottom: '0px',
         left: '0px'
@@ -1993,8 +1993,8 @@
           $('#icount').className = 'error';
         }
       }
-      $('#rcount').textContent = threadStats.posts;
-      return $('#icount').textContent = threadStats.images;
+      $('#postcount').textContent = threadStats.posts;
+      return $('#imagecount').textContent = threadStats.images;
     }
   };
   unread = {

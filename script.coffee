@@ -1549,7 +1549,7 @@ threadStats =
   init: ->
     threadStats.posts = 1
     threadStats.images = if $ '.op img[md5]' then 1 else 0
-    html = "<div class=move><span id=rcount>#{threadStats.posts}</span> / <span id=icount>#{threadStats.images}</span></div>"
+    html = "<div class=move><span id=postcount>#{threadStats.posts}</span> / <span id=imagecount>#{threadStats.images}</span></div>"
     dialog = ui.dialog 'stats', bottom: '0px', left: '0px', html
     dialog.className = 'dialog'
     $.append d.body, dialog
@@ -1561,8 +1561,8 @@ threadStats =
       threadStats.images++
       if threadStats.images > 150
         $('#icount').className = 'error'
-    $('#rcount').textContent = threadStats.posts
-    $('#icount').textContent = threadStats.images
+    $('#postcount').textContent = threadStats.posts
+    $('#imagecount').textContent = threadStats.images
 
 unread =
   init: ->
