@@ -1971,13 +1971,14 @@
   threadStats = {
     init: function() {
       var html;
-      html = "<div class=move>Replies: <span id=rcount>0</span> Images: <span id=icount>1</span></div>";
+      html = "<div class=move>Replies: <span id=rcount>0</span> Images: <span id=icount></span></div>";
       $.append(d.body, ui.dialog('stats', {
         bottom: '0px',
         left: '0px'
       }, html));
       threadStats.replies = 0;
       threadStats.images = $('.op img[md5]') ? 1 : 0;
+      $('#icount').textContent = threadStats.images;
       return g.callbacks.push(threadStats.node);
     },
     node: function(root) {

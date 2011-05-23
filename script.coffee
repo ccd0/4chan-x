@@ -1547,10 +1547,11 @@ reportButton =
 
 threadStats =
   init: ->
-    html = "<div class=move>Replies: <span id=rcount>0</span> Images: <span id=icount>1</span></div>"
+    html = "<div class=move>Replies: <span id=rcount>0</span> Images: <span id=icount></span></div>"
     $.append d.body, (ui.dialog 'stats', bottom: '0px', left: '0px', html)
     threadStats.replies = 0
     threadStats.images = if $ '.op img[md5]' then 1 else 0
+    $('#icount').textContent = threadStats.images
     g.callbacks.push threadStats.node
   node: (root) ->
       return if root.className
