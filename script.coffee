@@ -959,16 +959,6 @@ qr =
       $.bind recaptcha, 'keydown', Recaptcha.listener
       return
 
-    c = $('b').lastChild
-    if c.nodeType is 8 #comment node
-      [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
-      if thread is '0'
-        window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
-        return
-      else
-        window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{id}"
-
-
     ###
       http://code.google.com/p/chromium/issues/detail?id=20773
       Let content scripts see other frames (instead of them being undefined)
@@ -979,6 +969,14 @@ qr =
     $.globalEval ->
       data = document.querySelector('table font b')?.firstChild.textContent or ''
       parent.postMessage data, '*'
+
+    c = $('b').lastChild
+    if c.nodeType is 8 #comment node
+      [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
+      if thread is '0'
+        window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
+      else
+        window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{id}"
 
 threading =
   init: ->

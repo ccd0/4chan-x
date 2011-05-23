@@ -1185,16 +1185,6 @@
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
       }
-      c = $('b').lastChild;
-      if (c.nodeType === 8) {
-        _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-        if (thread === '0') {
-          window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
-          return;
-        } else {
-          window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + id;
-        }
-      }
       /*
             http://code.google.com/p/chromium/issues/detail?id=20773
             Let content scripts see other frames (instead of them being undefined)
@@ -1202,11 +1192,20 @@
             To access the parent, we have to break out of the sandbox and evaluate
             in the global context.
           */
-      return $.globalEval(function() {
-        var data, _ref2;
-        data = ((_ref2 = document.querySelector('table font b')) != null ? _ref2.firstChild.textContent : void 0) || '';
+      $.globalEval(function() {
+        var data, _ref;
+        data = ((_ref = document.querySelector('table font b')) != null ? _ref.firstChild.textContent : void 0) || '';
         return parent.postMessage(data, '*');
       });
+      c = $('b').lastChild;
+      if (c.nodeType === 8) {
+        _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
+        if (thread === '0') {
+          return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
+        } else {
+          return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + id;
+        }
+      }
     }
   };
   threading = {
