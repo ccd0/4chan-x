@@ -1970,14 +1970,16 @@
   };
   threadStats = {
     init: function() {
-      var html;
+      var dialog, html;
       threadStats.replies = 0;
       threadStats.images = $('.op img[md5]') ? 1 : 0;
       html = "<div class=move>Replies: <span id=rcount>" + threadStats.replies + "</span> Images: <span id=icount>" + threadStats.images + "</span></div>";
-      $.append(d.body, ui.dialog('stats', {
+      dialog = ui.dialog('stats', {
         bottom: '0px',
         left: '0px'
-      }, html));
+      }, html);
+      dialog.className = 'dialog';
+      $.append(d.body, dialog);
       return g.callbacks.push(threadStats.node);
     },
     node: function(root) {
@@ -2631,6 +2633,7 @@
       }\
 \
       #stats {\
+        border: none;\
         position: fixed;\
       }\
 \

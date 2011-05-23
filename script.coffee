@@ -1550,7 +1550,9 @@ threadStats =
     threadStats.replies = 0
     threadStats.images = if $ '.op img[md5]' then 1 else 0
     html = "<div class=move>Replies: <span id=rcount>#{threadStats.replies}</span> Images: <span id=icount>#{threadStats.images}</span></div>"
-    $.append d.body, (ui.dialog 'stats', bottom: '0px', left: '0px', html)
+    dialog = ui.dialog 'stats', bottom: '0px', left: '0px', html
+    dialog.className = 'dialog'
+    $.append d.body, dialog
     g.callbacks.push threadStats.node
   node: (root) ->
       return if root.className
@@ -2065,6 +2067,7 @@ main =
       }
 
       #stats {
+        border: none;
         position: fixed;
       }
 
