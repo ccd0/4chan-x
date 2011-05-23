@@ -1971,13 +1971,13 @@
   threadStats = {
     init: function() {
       var html;
-      html = "<div class=move>Replies: <span id=rcount>0</span> Images: <span id=icount>1</span></div>";
+      threadStats.replies = 0;
+      threadStats.images = $('.op img[md5]') ? 1 : 0;
+      html = "<div class=move>Replies: <span id=rcount>" + threadStats.replies + "</span> Images: <span id=icount>" + threadStats.images + "</span></div>";
       $.append(d.body, ui.dialog('stats', {
         bottom: '0px',
         left: '0px'
       }, html));
-      threadStats.replies = 0;
-      threadStats.images = $('.op img[md5]') ? 1 : 0;
       return g.callbacks.push(threadStats.node);
     },
     node: function(root) {
