@@ -1555,14 +1555,14 @@ threadStats =
     $.append d.body, dialog
     g.callbacks.push threadStats.node
   node: (root) ->
-      return if root.className
-      threadStats.posts++
-      if $ 'img[md5]', root
-        threadStats.images++
-        if threadStats.images > 150
-          $('#icount').className = 'error'
-      $('#rcount').textContent = threadStats.posts
-      $('#icount').textContent = threadStats.images
+    return if root.className
+    threadStats.posts++
+    if $ 'img[md5]', root
+      threadStats.images++
+      if threadStats.images > 150
+        $('#icount').className = 'error'
+    $('#rcount').textContent = threadStats.posts
+    $('#icount').textContent = threadStats.images
 
 unread =
   init: ->
