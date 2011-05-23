@@ -1977,7 +1977,7 @@
         left: '0px'
       }, html));
       threadStats.replies = 0;
-      threadStats.images = 1;
+      threadStats.images = $('.op img[md5]') ? 1 : 0;
       return g.callbacks.push(threadStats.node);
     },
     node: function(root) {
