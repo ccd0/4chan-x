@@ -963,9 +963,11 @@ qr =
     if c.nodeType is 8 #comment node
       [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
       if thread is '0'
-        [_, board] = $('meta', d).content.match(/4chan.org\/(\w+)\//)
-        window.location = "http://boards.4chan.org/#{board}/res/#{id}#watch"
+        window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
         return
+      else
+        window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{id}"
+
 
     ###
       http://code.google.com/p/chromium/issues/detail?id=20773

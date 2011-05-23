@@ -1180,7 +1180,7 @@
       return qr.autohide.set();
     },
     sys: function() {
-      var board, c, id, recaptcha, thread, _, _ref, _ref2;
+      var c, id, recaptcha, thread, _, _ref;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
@@ -1189,9 +1189,10 @@
       if (c.nodeType === 8) {
         _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
         if (thread === '0') {
-          _ref2 = $('meta', d).content.match(/4chan.org\/(\w+)\//), _ = _ref2[0], board = _ref2[1];
-          window.location = "http://boards.4chan.org/" + board + "/res/" + id + "#watch";
+          window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
           return;
+        } else {
+          window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + id;
         }
       }
       /*
@@ -1202,8 +1203,8 @@
             in the global context.
           */
       return $.globalEval(function() {
-        var data, _ref3;
-        data = ((_ref3 = document.querySelector('table font b')) != null ? _ref3.firstChild.textContent : void 0) || '';
+        var data, _ref2;
+        data = ((_ref2 = document.querySelector('table font b')) != null ? _ref2.firstChild.textContent : void 0) || '';
         return parent.postMessage(data, '*');
       });
     }
