@@ -1141,14 +1141,14 @@
         }
       }
       if (!qr.duration) {
-        return clearInterval(qr.cooldownIntervalID);
+        return window.clearInterval(qr.cooldownIntervalID);
       }
     },
     dialog: function(link) {
       var MAX_FILE_SIZE, THREAD_ID, c, challenge, dialog, html, m, mail, name, pass, spoiler, src, submitDisabled, submitValue;
       MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value;
       submitValue = $('#com_submit').value;
-      submitDisabled = $('#com_submit').disabled ? 'disabled' : void 0;
+      submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       challenge = $('input[name=recaptcha_challenge_field]').value;
       src = "http://www.google.com/recaptcha/api/image?c=" + challenge;
@@ -1407,7 +1407,7 @@
           count.textContent = 404;
           count.className = 'error';
           timer.textContent = '';
-          clearInterval(updater.intervalID);
+          window.clearInterval(updater.intervalID);
           _ref = $$('input[type=submit]');
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             input = _ref[_i];

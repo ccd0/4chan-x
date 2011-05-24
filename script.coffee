@@ -897,14 +897,14 @@ qr =
         submit.disabled = false
         submit.value = 'Submit'
 
-    clearInterval qr.cooldownIntervalID unless qr.duration
+    window.clearInterval qr.cooldownIntervalID unless qr.duration
 
 
   dialog: (link) ->
     #maybe should be global
     MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
     submitValue = $('#com_submit').value
-    submitDisabled = if $('#com_submit').disabled then 'disabled'
+    submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
     #FIXME inlined cross-thread quotes
     THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
     challenge = $('input[name=recaptcha_challenge_field]').value
@@ -1156,7 +1156,7 @@ updater =
         count.textContent = 404
         count.className = 'error'
         timer.textContent = ''
-        clearInterval updater.intervalID
+        window.clearInterval updater.intervalID
         for input in $$ 'input[type=submit]'
           input.disabled = true
           input.value = 404
