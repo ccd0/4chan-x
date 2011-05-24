@@ -26,7 +26,7 @@ config =
       'Image Preloading':  [false, 'Preload Images']
       'Sauce':             [true,  'Add sauce to images']
     post:
-      'Cooldown':          [true,  'Prevent \'flood detected\' errors (buggy)']
+      'Cooldown':          [true,  'Prevent \'flood detected\' errors']
       'Quick Reply':       [true,  'Reply without leaving the page']
       'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
     quote:
@@ -896,11 +896,15 @@ qr =
       else
         submit.disabled = false
         submit.value = 'Submit'
-        window.clearInterval qr.cooldownIntervalID
+
+    clearInterval qr.cooldownIntervalID unless qr.duration
+
 
   dialog: (link) ->
     #maybe should be global
     MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
+    submitValue = $('#com_submit').value
+    submitDisabled = if $('#com_submit').disabled then 'disabled'
     #FIXME inlined cross-thread quotes
     THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
     challenge = $('input[name=recaptcha_challenge_field]').value
@@ -921,7 +925,7 @@ qr =
         <input type=hidden name=resto value=#{THREAD_ID}>
         <input type=hidden name=recaptcha_challenge_field value=#{challenge}>
         <div><input class=inputtext type=text name=email placeholder=E-mail value='#{mail}'></div>
-        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>
+        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=#{src}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>

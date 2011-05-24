@@ -85,7 +85,7 @@
         'Sauce': [true, 'Add sauce to images']
       },
       post: {
-        'Cooldown': [true, 'Prevent \'flood detected\' errors (buggy)'],
+        'Cooldown': [true, 'Prevent \'flood detected\' errors'],
         'Quick Reply': [true, 'Reply without leaving the page'],
         'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.']
       },
@@ -1128,19 +1128,27 @@
       return qr.duration = duration;
     },
     cooldownCB: function() {
-      var submit, submits, _i, _len, _results;
+      var submit, submits, _i, _len;
       qr.duration--;
       submits = $$('#com_submit');
-      _results = [];
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];
-        _results.push(qr.duration ? submit.value = qr.duration : (submit.disabled = false, submit.value = 'Submit', window.clearInterval(qr.cooldownIntervalID)));
+        if (qr.duration) {
+          submit.value = qr.duration;
+        } else {
+          submit.disabled = false;
+          submit.value = 'Submit';
+        }
       }
-      return _results;
+      if (!qr.duration) {
+        return clearInterval(qr.cooldownIntervalID);
+      }
     },
     dialog: function(link) {
-      var MAX_FILE_SIZE, THREAD_ID, c, challenge, dialog, html, m, mail, name, pass, spoiler, src;
+      var MAX_FILE_SIZE, THREAD_ID, c, challenge, dialog, html, m, mail, name, pass, spoiler, src, submitDisabled, submitValue;
       MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value;
+      submitValue = $('#com_submit').value;
+      submitDisabled = $('#com_submit').disabled ? 'disabled' : void 0;
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       challenge = $('input[name=recaptcha_challenge_field]').value;
       src = "http://www.google.com/recaptcha/api/image?c=" + challenge;
@@ -1148,7 +1156,7 @@
       name = (m = c.match(/4chan_name=([^;]+)/)) ? unescape(m[1]) : '';
       mail = (m = c.match(/4chan_email=([^;]+)/)) ? unescape(m[1]) : '';
       pass = (m = c.match(/4chan_pass=([^;]+)/)) ? unescape(m[1]) : $('input[name=pwd]').value;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form value='" + name + "'>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail value='" + mail + "'></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=Submit id=com_submit></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=" + src + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='" + pass + "'><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
+      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form value='" + name + "'>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail value='" + mail + "'></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=" + src + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value='" + pass + "'><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
       dialog = ui.dialog('qr', {
         top: '0px',
         left: '0px'
