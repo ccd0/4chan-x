@@ -26,7 +26,7 @@ config =
       'Image Preloading':  [false, 'Preload Images']
       'Sauce':             [true,  'Add sauce to images']
     post:
-      'Cooldown':          [false, 'Prevent \'flood detected\' errors (buggy)']
+      'Cooldown':          [true,  'Prevent \'flood detected\' errors (buggy)']
       'Quick Reply':       [true,  'Reply without leaving the page']
       'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
     quote:
@@ -887,18 +887,16 @@ qr =
     qr.duration = duration
 
   cooldownCB: ->
-    qr.duration = qr.duration - 1
+    qr.duration--
 
     submits = $$ '#com_submit'
     for submit in submits
-      if qr.duration == 0
+      if qr.duration
+        submit.value = qr.duration
+      else
         submit.disabled = false
         submit.value = 'Submit'
-      else
-        submit.value = qr.duration
-
-    if qr.duration == 0
-      clearInterval qr.cooldownIntervalID
+        window.clearInterval qr.cooldownIntervalID
 
   dialog: (link) ->
     #maybe should be global

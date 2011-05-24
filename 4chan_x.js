@@ -85,7 +85,7 @@
         'Sauce': [true, 'Add sauce to images']
       },
       post: {
-        'Cooldown': [false, 'Prevent \'flood detected\' errors (buggy)'],
+        'Cooldown': [true, 'Prevent \'flood detected\' errors (buggy)'],
         'Quick Reply': [true, 'Reply without leaving the page'],
         'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.']
       },
@@ -1128,21 +1128,15 @@
       return qr.duration = duration;
     },
     cooldownCB: function() {
-      var submit, submits, _i, _len;
-      qr.duration = qr.duration - 1;
+      var submit, submits, _i, _len, _results;
+      qr.duration--;
       submits = $$('#com_submit');
+      _results = [];
       for (_i = 0, _len = submits.length; _i < _len; _i++) {
         submit = submits[_i];
-        if (qr.duration === 0) {
-          submit.disabled = false;
-          submit.value = 'Submit';
-        } else {
-          submit.value = qr.duration;
-        }
+        _results.push(qr.duration ? submit.value = qr.duration : (submit.disabled = false, submit.value = 'Submit', window.clearInterval(qr.cooldownIntervalID)));
       }
-      if (qr.duration === 0) {
-        return clearInterval(qr.cooldownIntervalID);
-      }
+      return _results;
     },
     dialog: function(link) {
       var MAX_FILE_SIZE, THREAD_ID, c, challenge, dialog, html, m, mail, name, pass, spoiler, src;
