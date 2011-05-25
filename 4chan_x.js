@@ -1962,7 +1962,7 @@
     },
     report: function(target) {
       var input;
-      input = $.x('preceding-sibling::input[1]', target);
+      input = $('input', target.parentNode);
       input.click();
       $('input[value="Report"]').click();
       return input.click();
@@ -2294,7 +2294,7 @@
         src: a.href
       });
       if (a.parentNode.className !== 'op') {
-        filesize = $.x('preceding::span[@class="filesize"][1]', a);
+        filesize = $('span.filesize', a.parentNode);
         _ref2 = filesize.textContent.match(/(\d+)x/), _ = _ref2[0], max = _ref2[1];
         img.setAttribute('style', "max-width: -moz-calc(" + max + "px);");
       }

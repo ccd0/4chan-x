@@ -1540,7 +1540,7 @@ reportButton =
     report: (e) ->
       reportButton.report @
   report: (target) ->
-    input = $.x('preceding-sibling::input[1]', target)
+    input = $ 'input', target.parentNode
     input.click()
     $('input[value="Report"]').click()
     input.click()
@@ -1749,7 +1749,7 @@ imgExpand =
     img = $.el 'img',
       src: a.href
     unless a.parentNode.className is 'op'
-      filesize = $.x 'preceding::span[@class="filesize"][1]', a
+      filesize = $ 'span.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
       img.setAttribute 'style', "max-width: -moz-calc(#{max}px);"
     a.appendChild img
