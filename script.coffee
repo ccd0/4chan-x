@@ -176,6 +176,16 @@ $.extend $,
     r.open 'get', url, true
     r.send()
     r
+  cache: (url, cb) ->
+    if req = $.cache.requests[url]
+      if req.readyState is 4
+        cb.call req
+      else
+        req.callbacks.push cb
+    else
+      req = $.get url, (-> cb.call @ for cb in @callbacks)
+      req.callbacks = [cb]
+      $.cache.requests[url] = req
   cb:
     checked: ->
       $.setValue @name, @checked
@@ -274,6 +284,8 @@ $.extend $,
       #after first sunday
       return false
 
+$.cache.requests = {}
+
 if GM_deleteValue?
   $.extend $,
     deleteValue: (name) ->
@@ -324,12 +336,8 @@ expandComment =
     e.preventDefault()
     [_, threadID, replyID] = @href.match /(\d+)#(\d+)/
     @textContent = "Loading #{replyID}..."
-    if req = g.requests[threadID]
-      if req.readyState is 4
-        expandComment.parse req, @, threadID, replyID
-    else
-      a = @
-      g.requests[threadID] = $.get @href, (-> expandComment.parse @, a, threadID, replyID)
+    a = @
+    $.cache @href, (-> expandComment.parse @, a, threadID, replyID)
   parse: (req, a, threadID, replyID) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
@@ -370,15 +378,11 @@ expandThread =
     switch a.textContent[0]
       when '+'
         a.textContent = a.textContent.replace '+', 'X Loading...'
-        if req = g.requests[threadID]
-          if req.readyState is 4
-            expandThread.parse req, thread, a
-        else
-          g.requests[threadID] = $.get "res/#{threadID}", (-> expandThread.parse @, thread, a)
+        $.cache "res/#{threadID}", (-> expandThread.parse @, thread, a)
 
       when 'X'
         a.textContent = a.textContent.replace 'X Loading...', '+'
-        g.requests[id].abort()
+        $.cache["res/#{threadID}"].abort()
 
       when '-'
         a.textContent = a.textContent.replace '-', '+'
@@ -1425,12 +1429,7 @@ quoteInline =
       $.after @parentNode, inline
       # or ... is for index page new posts.
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
-      if req = g.requests[threadID]
-        if req.readyState is 4
-          quoteInline.parse req, id, threadID, inline
-      else
-        #FIXME need an array of callbacks
-        g.requests[threadID] = $.get @href, (-> quoteInline.parse @, id, threadID, inline)
+      $.cache @href, (-> quoteInline.parse @, id, threadID, inline)
     $.addClass @, 'inlined'
   parse: (req, id, threadID, inline) ->
     if req.status isnt 200
@@ -1488,11 +1487,7 @@ quotePreview =
     else
       qp.innerHTML = "Loading #{id}..."
       threadID = @pathname.split('/').pop()
-      if req = g.requests[threadID]
-        if req.readyState is 4
-          quotePreview.parse req, id, threadID
-      else
-        g.requests[threadID] = $.get @href, (-> quotePreview.parse @, id, threadID)
+      $.cache @href, (-> quotePreview.parse @, id, threadID)
     ui.el = qp
     ui.winHeight = d.body.clientHeight
     $.show qp
@@ -1784,7 +1779,6 @@ imgExpand =
 #main
 NAMESPACE = 'AEOS.4chan_x.'
 g =
-  requests: {}
   callbacks: []
 
 main =

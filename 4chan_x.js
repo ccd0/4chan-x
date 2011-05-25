@@ -264,6 +264,29 @@
       r.send();
       return r;
     },
+    cache: function(url, cb) {
+      var req;
+      if (req = $.cache.requests[url]) {
+        if (req.readyState === 4) {
+          return cb.call(req);
+        } else {
+          return req.callbacks.push(cb);
+        }
+      } else {
+        req = $.get(url, (function() {
+          var cb, _i, _len, _ref, _results;
+          _ref = this.callbacks;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            cb = _ref[_i];
+            _results.push(cb.call(this));
+          }
+          return _results;
+        }));
+        req.callbacks = [cb];
+        return $.cache.requests[url] = req;
+      }
+    },
     cb: {
       checked: function() {
         return $.setValue(this.name, this.checked);
@@ -391,6 +414,7 @@
       }
     }
   });
+  $.cache.requests = {};
   if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
     $.extend($, {
       deleteValue: function(name) {
@@ -467,20 +491,14 @@
       return _results;
     },
     expand: function(e) {
-      var a, replyID, req, threadID, _, _ref;
+      var a, replyID, threadID, _, _ref;
       e.preventDefault();
       _ref = this.href.match(/(\d+)#(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
       this.textContent = "Loading " + replyID + "...";
-      if (req = g.requests[threadID]) {
-        if (req.readyState === 4) {
-          return expandComment.parse(req, this, threadID, replyID);
-        }
-      } else {
-        a = this;
-        return g.requests[threadID] = $.get(this.href, (function() {
-          return expandComment.parse(this, a, threadID, replyID);
-        }));
-      }
+      a = this;
+      return $.cache(this.href, (function() {
+        return expandComment.parse(this, a, threadID, replyID);
+      }));
     },
     parse: function(req, a, threadID, replyID) {
       var body, bq, reply, _i, _len, _ref;
@@ -530,25 +548,18 @@
       }
     },
     toggle: function(thread) {
-      var a, num, prev, req, table, threadID, _results;
+      var a, num, prev, table, threadID, _results;
       threadID = thread.firstChild.id;
       a = $('a.omittedposts', thread);
       switch (a.textContent[0]) {
         case '+':
           a.textContent = a.textContent.replace('+', 'X Loading...');
-          if (req = g.requests[threadID]) {
-            if (req.readyState === 4) {
-              return expandThread.parse(req, thread, a);
-            }
-          } else {
-            return g.requests[threadID] = $.get("res/" + threadID, (function() {
-              return expandThread.parse(this, thread, a);
-            }));
-          }
-          break;
+          return $.cache("res/" + threadID, (function() {
+            return expandThread.parse(this, thread, a);
+          }));
         case 'X':
           a.textContent = a.textContent.replace('X Loading...', '+');
-          return g.requests[id].abort();
+          return $.cache["res/" + threadID].abort();
         case '-':
           a.textContent = a.textContent.replace('-', '+');
           num = g.BOARD === 'b' ? 3 : 5;
@@ -1750,7 +1761,7 @@
       return _results;
     },
     toggle: function(e) {
-      var el, id, inline, req, root, table, threadID;
+      var el, id, inline, root, table, threadID;
       id = this.hash.slice(1);
       e.preventDefault();
       root = $.x('ancestor::td[1]', this);
@@ -1778,15 +1789,9 @@
         });
         $.after(this.parentNode, inline);
         threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
-        if (req = g.requests[threadID]) {
-          if (req.readyState === 4) {
-            quoteInline.parse(req, id, threadID, inline);
-          }
-        } else {
-          g.requests[threadID] = $.get(this.href, (function() {
-            return quoteInline.parse(this, id, threadID, inline);
-          }));
-        }
+        $.cache(this.href, (function() {
+          return quoteInline.parse(this, id, threadID, inline);
+        }));
       }
       return $.addClass(this, 'inlined');
     },
@@ -1859,7 +1864,7 @@
       return $.removeClass(el, 'qphl');
     },
     mouseover: function(e) {
-      var el, id, qp, quote, replyID, req, threadID, _i, _len, _ref;
+      var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
       id = this.hash.slice(1);
       qp = $('#qp');
       if (el = d.getElementById(id)) {
@@ -1878,15 +1883,9 @@
       } else {
         qp.innerHTML = "Loading " + id + "...";
         threadID = this.pathname.split('/').pop();
-        if (req = g.requests[threadID]) {
-          if (req.readyState === 4) {
-            quotePreview.parse(req, id, threadID);
-          }
-        } else {
-          g.requests[threadID] = $.get(this.href, (function() {
-            return quotePreview.parse(this, id, threadID);
-          }));
-        }
+        $.cache(this.href, (function() {
+          return quotePreview.parse(this, id, threadID);
+        }));
       }
       ui.el = qp;
       ui.winHeight = d.body.clientHeight;
@@ -2336,7 +2335,6 @@
   };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {
-    requests: {},
     callbacks: []
   };
   main = {
