@@ -1485,10 +1485,10 @@ quotePreview =
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl'
       if @className is 'backlink'
-        replyID = @parentNode.id
+        replyID = $.x('ancestor::*[@id][1]', @)?.id.match(/\d+/)[0]
         for quote in $$ 'a.quotelink', qp
           if quote.hash[1..] is replyID
-            quote.className = 'backlink'
+            quote.className = 'forwardlink'
     else
       qp.innerHTML = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
