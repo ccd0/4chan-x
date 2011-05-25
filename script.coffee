@@ -1065,7 +1065,7 @@ threadHiding =
       num += $$('table', thread).length
       text = if num is 1 then "1 reply" else "#{num} replies"
       name = $('span.postername', thread).textContent
-      trip = $('span.postername + span.postertrip', thread)?.textContent || ''
+      trip = $('span.postername + span.postertrip', thread)?.textContent or ''
 
       a = $.el 'a',
         textContent: "[ + ] #{name}#{trip} (#{text})"
@@ -1793,7 +1793,7 @@ main =
       g.REPLY = temp
       g.THREAD_ID = pathname[2]
     else
-      g.PAGENUM = parseInt(temp) || 0
+      g.PAGENUM = parseInt(temp) or 0
 
     if location.hostname is 'sys.4chan.org'
       qr.sys()
