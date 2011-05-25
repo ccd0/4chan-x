@@ -225,9 +225,10 @@
       top = clientY - 120;
       bot = top + height;
       el.style.top = ui.winHeight < height || top < 0 ? '0px' : bot > ui.winHeight ? ui.winHeight - height + 'px' : top + 'px';
-      return el.style.left = clientX + 45;
+      return el.style.left = clientX + 45 + 'px';
     },
     hoverend: function(e) {
+      ui.el.style.top = 'auto';
       return $.hide(ui.el);
     }
   };

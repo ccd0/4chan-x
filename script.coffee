@@ -147,8 +147,9 @@ ui =
         ui.winHeight - height + 'px'
       else
         top + 'px'
-    el.style.left = clientX + 45
+    el.style.left = clientX + 45 + 'px'
   hoverend: (e) ->
+    ui.el.style.top = 'auto'
     $.hide ui.el
 
 #convenience
