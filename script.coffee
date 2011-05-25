@@ -30,9 +30,9 @@ config =
       'Quick Reply':       [true,  'Reply without leaving the page']
       'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
     quote:
-      'Quote Backlinks':   [false, 'Add quote backlinks']
-      'Quote Inline':      [false, 'Show quoted post inline on quote click']
-      'Quote Preview':     [false, 'Show quote content on hover']
+      'Quote Backlinks':   [true,  'Add quote backlinks']
+      'Quote Inline':      [true,  'Show quoted post inline on quote click']
+      'Quote Preview':     [true,  'Show quote content on hover']
       'Indicate OP quote': [true,  'Add \'(OP)\' to OP quotes']
     hide:
       'Reply Hiding':      [true,  'Hide single replies']
@@ -993,11 +993,7 @@ threading =
   init: ->
     # don't thread image controls
     node = $ 'form[name=delform] > *:not([id])'
-    # don't confuse other scripts *cough*/b/ackwash*cough*
-    # gotta have a named function to unbind.
-    $.bind   d, 'DOMNodeInserted', threading.stopPropagation
     threading.thread node
-    $.unbind d, 'DOMNodeInserted', threading.stopPropagation
 
   op: (node) ->
     op = $.el 'div',
@@ -1027,9 +1023,6 @@ threading =
     #{N,}SFW
     unless node.align or node.nodeName is 'CENTER'
       threading.thread node
-
-  stopPropagation: (e) ->
-    e.stopPropagation()
 
 threadHiding =
   init: ->

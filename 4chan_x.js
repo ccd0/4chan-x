@@ -90,9 +90,9 @@
         'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.']
       },
       quote: {
-        'Quote Backlinks': [false, 'Add quote backlinks'],
-        'Quote Inline': [false, 'Show quoted post inline on quote click'],
-        'Quote Preview': [false, 'Show quote content on hover'],
+        'Quote Backlinks': [true, 'Add quote backlinks'],
+        'Quote Inline': [true, 'Show quoted post inline on quote click'],
+        'Quote Preview': [true, 'Show quote content on hover'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
       },
       hide: {
@@ -1229,9 +1229,7 @@
     init: function() {
       var node;
       node = $('form[name=delform] > *:not([id])');
-      $.bind(d, 'DOMNodeInserted', threading.stopPropagation);
-      threading.thread(node);
-      return $.unbind(d, 'DOMNodeInserted', threading.stopPropagation);
+      return threading.thread(node);
     },
     op: function(node) {
       var op;
@@ -1265,9 +1263,6 @@
       if (!(node.align || node.nodeName === 'CENTER')) {
         return threading.thread(node);
       }
-    },
-    stopPropagation: function(e) {
-      return e.stopPropagation();
     }
   };
   threadHiding = {
