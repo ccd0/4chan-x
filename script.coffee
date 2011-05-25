@@ -336,8 +336,10 @@ expandComment =
     e.preventDefault()
     [_, threadID, replyID] = @href.match /(\d+)#(\d+)/
     @textContent = "Loading #{replyID}..."
+    threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
+    url = "http://boards.4chan.org/#{g.BOARD}/res/#{threadID}"
     a = @
-    $.cache @href, (-> expandComment.parse @, a, threadID, replyID)
+    $.cache url, (-> expandComment.parse @, a, threadID, replyID)
   parse: (req, a, threadID, replyID) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
@@ -373,16 +375,18 @@ expandThread =
 
   toggle: (thread) ->
     threadID = thread.firstChild.id
+    url = "http://boards.4chan.org/#{g.BOARD}/res/#{threadID}"
     a = $ 'a.omittedposts', thread
 
     switch a.textContent[0]
       when '+'
         a.textContent = a.textContent.replace '+', 'X Loading...'
-        $.cache "res/#{threadID}", (-> expandThread.parse @, thread, a)
+        $.cache url, (-> expandThread.parse @, thread, a)
 
       when 'X'
         a.textContent = a.textContent.replace 'X Loading...', '+'
-        $.cache["res/#{threadID}"].abort()
+        #FIXME this will kill all callbacks
+        $.cache[url].abort()
 
       when '-'
         a.textContent = a.textContent.replace '-', '+'
@@ -1429,7 +1433,8 @@ quoteInline =
       $.after @parentNode, inline
       # or ... is for index page new posts.
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
-      $.cache @href, (-> quoteInline.parse @, id, threadID, inline)
+      url = "http://boards.4chan.org/#{g.BOARD}/res/#{threadID}"
+      $.cache url, (-> quoteInline.parse @, id, threadID, inline)
     $.addClass @, 'inlined'
   parse: (req, id, threadID, inline) ->
     if req.status isnt 200
@@ -1486,8 +1491,9 @@ quotePreview =
             quote.className = 'backlink'
     else
       qp.innerHTML = "Loading #{id}..."
-      threadID = @pathname.split('/').pop()
-      $.cache @href, (-> quotePreview.parse @, id, threadID)
+      threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
+      url = "http://boards.4chan.org/#{g.BOARD}/res/#{threadID}"
+      $.cache url, (-> quotePreview.parse @, id, threadID)
     ui.el = qp
     ui.winHeight = d.body.clientHeight
     $.show qp

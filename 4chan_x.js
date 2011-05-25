@@ -491,12 +491,14 @@
       return _results;
     },
     expand: function(e) {
-      var a, replyID, threadID, _, _ref;
+      var a, replyID, threadID, url, _, _ref;
       e.preventDefault();
       _ref = this.href.match(/(\d+)#(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
       this.textContent = "Loading " + replyID + "...";
+      threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
+      url = "http://boards.4chan.org/" + g.BOARD + "/res/" + threadID;
       a = this;
-      return $.cache(this.href, (function() {
+      return $.cache(url, (function() {
         return expandComment.parse(this, a, threadID, replyID);
       }));
     },
@@ -548,18 +550,19 @@
       }
     },
     toggle: function(thread) {
-      var a, num, prev, table, threadID, _results;
+      var a, num, prev, table, threadID, url, _results;
       threadID = thread.firstChild.id;
+      url = "http://boards.4chan.org/" + g.BOARD + "/res/" + threadID;
       a = $('a.omittedposts', thread);
       switch (a.textContent[0]) {
         case '+':
           a.textContent = a.textContent.replace('+', 'X Loading...');
-          return $.cache("res/" + threadID, (function() {
+          return $.cache(url, (function() {
             return expandThread.parse(this, thread, a);
           }));
         case 'X':
           a.textContent = a.textContent.replace('X Loading...', '+');
-          return $.cache["res/" + threadID].abort();
+          return $.cache[url].abort();
         case '-':
           a.textContent = a.textContent.replace('-', '+');
           num = g.BOARD === 'b' ? 3 : 5;
@@ -1761,7 +1764,7 @@
       return _results;
     },
     toggle: function(e) {
-      var el, id, inline, root, table, threadID;
+      var el, id, inline, root, table, threadID, url;
       id = this.hash.slice(1);
       e.preventDefault();
       root = $.x('ancestor::td[1]', this);
@@ -1789,7 +1792,8 @@
         });
         $.after(this.parentNode, inline);
         threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
-        $.cache(this.href, (function() {
+        url = "http://boards.4chan.org/" + g.BOARD + "/res/" + threadID;
+        $.cache(url, (function() {
           return quoteInline.parse(this, id, threadID, inline);
         }));
       }
@@ -1864,7 +1868,7 @@
       return $.removeClass(el, 'qphl');
     },
     mouseover: function(e) {
-      var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
+      var el, id, qp, quote, replyID, threadID, url, _i, _len, _ref;
       id = this.hash.slice(1);
       qp = $('#qp');
       if (el = d.getElementById(id)) {
@@ -1882,8 +1886,9 @@
         }
       } else {
         qp.innerHTML = "Loading " + id + "...";
-        threadID = this.pathname.split('/').pop();
-        $.cache(this.href, (function() {
+        threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
+        url = "http://boards.4chan.org/" + g.BOARD + "/res/" + threadID;
+        $.cache(url, (function() {
           return quotePreview.parse(this, id, threadID);
         }));
       }
