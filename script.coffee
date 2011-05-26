@@ -338,9 +338,8 @@ expandComment =
     [_, threadID, replyID] = @href.match /(\d+)#(\d+)/
     @textContent = "Loading #{replyID}..."
     threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
-    url = "http://boards.4chan.org/#{g.BOARD}/res/#{threadID}"
     a = @
-    $.cache url, (-> expandComment.parse @, a, threadID, replyID)
+    $.cache @pathname, (-> expandComment.parse @, a, threadID, replyID)
   parse: (req, a, threadID, replyID) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
@@ -376,18 +375,18 @@ expandThread =
 
   toggle: (thread) ->
     threadID = thread.firstChild.id
-    url = "http://boards.4chan.org/#{g.BOARD}/res/#{threadID}"
+    pathname = "/#{g.BOARD}/res/#{threadID}"
     a = $ 'a.omittedposts', thread
 
     switch a.textContent[0]
       when '+'
         a.textContent = a.textContent.replace '+', 'X Loading...'
-        $.cache url, (-> expandThread.parse @, thread, a)
+        $.cache pathname, (-> expandThread.parse @, pathname, thread, a)
 
       when 'X'
         a.textContent = a.textContent.replace 'X Loading...', '+'
         #FIXME this will kill all callbacks
-        $.cache[url].abort()
+        $.cache[pathname].abort()
 
       when '-'
         a.textContent = a.textContent.replace '-', '+'
@@ -397,7 +396,7 @@ expandThread =
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
           $.rm prev
 
-  parse: (req, thread, a) ->
+  parse: (req, pathname, thread, a) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
       $.unbind a, 'click', expandThread.cb.toggle
@@ -413,6 +412,9 @@ expandThread =
     body = $.el 'body',
       innerHTML: req.responseText
 
+    for quote in $$ 'a.quotelink', body
+      if quote.getAttribute('href') is quote.hash
+        quote.pathname = pathname
     tables = $$ 'form[name=delform] table', body
     tables.pop()
     for table in tables
@@ -1426,11 +1428,11 @@ quoteInline =
         innerHTML: "Loading #{id}..."
       $.after @parentNode, inline
       # or ... is for index page new posts.
-      threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
-      url = "http://boards.4chan.org/#{g.BOARD}/res/#{threadID}"
-      $.cache url, (-> quoteInline.parse @, id, threadID, inline)
+      {pathname} = @
+      threadID = pathname.split('/').pop()
+      $.cache pathname, (-> quoteInline.parse @, pathname, id, threadID, inline)
     $.addClass @, 'inlined'
-  parse: (req, id, threadID, inline) ->
+  parse: (req, pathname, id, threadID, inline) ->
     if req.status isnt 200
       inline.innerHTML = "#{req.status} #{req.statusText}"
       return
@@ -1446,6 +1448,9 @@ quoteInline =
           html = reply.innerHTML
           break
     newInline = quoteInline.table id, html
+    for quote in $$ 'a.quotelink', newInline
+      if quote.getAttribute('href') is quote.hash
+        quote.pathname = pathname
     $.addClass newInline, 'crossquote'
     $.replace inline, newInline
   table: (id, html) ->
@@ -1486,8 +1491,7 @@ quotePreview =
     else
       qp.innerHTML = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
-      url = "http://boards.4chan.org/#{g.BOARD}/res/#{threadID}"
-      $.cache url, (-> quotePreview.parse @, id, threadID)
+      $.cache @pathname, (-> quotePreview.parse @, id, threadID)
     ui.el = qp
     ui.winHeight = d.body.clientHeight
     $.show qp
