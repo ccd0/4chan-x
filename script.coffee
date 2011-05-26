@@ -1333,6 +1333,7 @@ sauce =
 localize =
   init: ->
     g.callbacks.push (root) ->
+      return if root.className is 'inline'
       for span in $$ 'span[id^=no]', root
         s = span.previousSibling
         [_, month, day, year, hour, min_sec] =
