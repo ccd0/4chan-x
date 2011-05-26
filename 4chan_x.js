@@ -1664,6 +1664,9 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var date, day, dotw, hour, meridiem, min_sec, month, s, span, year, _, _i, _len, _ref, _ref2, _results;
+        if (root.className === 'inline') {
+          return;
+        }
         _ref = $$('span[id^=no]', root);
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
