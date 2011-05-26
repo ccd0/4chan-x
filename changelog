@@ -1,3 +1,26 @@
+2.9.0
+- mayhem:
+  better placement of inlined backquotes
+  fix qr in expanded threads
+  inline quote fixes
+  fetch name, mail and pass in cookies at each qr opening
+  highlight quoted post during quote preview
+  add ' (OP)' to op quotes
+  am/pm localized time
+  give visual feedback on which quote has been inlined
+  fix paypal link
+  cooldown: alert only when posting from normal post form
+  fix cooldown
+  thread stats
+  auto noko
+  fix jumping hover dialogs
+- forwardlinks
+- rewrite image expansion/fitting
+- image expansion option: fit height
+- keybind: e - toggle thread expansion
+- fix bug where x-board links on chrome are unclickable
+- fix x-board / x-thread quoting
+
 2.8.1
 - tab over captcha
 
