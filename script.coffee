@@ -1342,33 +1342,32 @@ localize =
   init: ->
     g.callbacks.push (root) ->
       return if root.className is 'inline'
-      for span in $$ 'span[id^=no]', root
-        s = span.previousSibling
-        [_, month, day, year, hour, min_sec] =
-          s.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/
-        year = "20#{year}"
-        month -= 1 #months start at 0
-        hour = g.chanOffset + Number hour
-        date = new Date year, month, day, hour
-        year = date.getFullYear() - 2000
-        month = $.zeroPad date.getMonth() + 1
-        day   = $.zeroPad date.getDate()
-        hour = date.getHours()
-        meridiem = ''
-        if $.config 'Localized am/pm'
-          meridiem = if hour < 12 then ' a.m.' else ' p.m.'
-          hour = hour % 12 or 12
-        hour = $.zeroPad hour
-        dotw = [
-          'Sun'
-          'Mon'
-          'Tue'
-          'Wed'
-          'Thu'
-          'Fri'
-          'Sat'
-        ][date.getDay()]
-        s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec}#{meridiem} "
+      s = $('span[id^=no]', root).previousSibling
+      [_, month, day, year, hour, min_sec] =
+        s.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/
+      year = "20#{year}"
+      month -= 1 #months start at 0
+      hour = g.chanOffset + Number hour
+      date = new Date year, month, day, hour
+      year = date.getFullYear() - 2000
+      month = $.zeroPad date.getMonth() + 1
+      day   = $.zeroPad date.getDate()
+      hour = date.getHours()
+      meridiem = ''
+      if $.config 'Localized am/pm'
+        meridiem = if hour < 12 then ' a.m.' else ' p.m.'
+        hour = hour % 12 or 12
+      hour = $.zeroPad hour
+      dotw = [
+        'Sun'
+        'Mon'
+        'Tue'
+        'Wed'
+        'Thu'
+        'Fri'
+        'Sat'
+      ][date.getDay()]
+      s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec}#{meridiem} "
 
 titlePost =
   init: ->

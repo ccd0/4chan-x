@@ -1670,34 +1670,28 @@
   localize = {
     init: function() {
       return g.callbacks.push(function(root) {
-        var date, day, dotw, hour, meridiem, min_sec, month, s, span, year, _, _i, _len, _ref, _ref2, _results;
+        var date, day, dotw, hour, meridiem, min_sec, month, s, year, _, _ref;
         if (root.className === 'inline') {
           return;
         }
-        _ref = $$('span[id^=no]', root);
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          span = _ref[_i];
-          s = span.previousSibling;
-          _ref2 = s.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/), _ = _ref2[0], month = _ref2[1], day = _ref2[2], year = _ref2[3], hour = _ref2[4], min_sec = _ref2[5];
-          year = "20" + year;
-          month -= 1;
-          hour = g.chanOffset + Number(hour);
-          date = new Date(year, month, day, hour);
-          year = date.getFullYear() - 2000;
-          month = $.zeroPad(date.getMonth() + 1);
-          day = $.zeroPad(date.getDate());
-          hour = date.getHours();
-          meridiem = '';
-          if ($.config('Localized am/pm')) {
-            meridiem = hour < 12 ? ' a.m.' : ' p.m.';
-            hour = hour % 12 || 12;
-          }
-          hour = $.zeroPad(hour);
-          dotw = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
-          _results.push(s.textContent = " " + month + "/" + day + "/" + year + "(" + dotw + ")" + hour + ":" + min_sec + meridiem + " ");
+        s = $('span[id^=no]', root).previousSibling;
+        _ref = s.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min_sec = _ref[5];
+        year = "20" + year;
+        month -= 1;
+        hour = g.chanOffset + Number(hour);
+        date = new Date(year, month, day, hour);
+        year = date.getFullYear() - 2000;
+        month = $.zeroPad(date.getMonth() + 1);
+        day = $.zeroPad(date.getDate());
+        hour = date.getHours();
+        meridiem = '';
+        if ($.config('Localized am/pm')) {
+          meridiem = hour < 12 ? ' a.m.' : ' p.m.';
+          hour = hour % 12 || 12;
         }
-        return _results;
+        hour = $.zeroPad(hour);
+        dotw = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
+        return s.textContent = " " + month + "/" + day + "/" + year + "(" + dotw + ")" + hour + ":" + min_sec + meridiem + " ";
       });
     }
   };
