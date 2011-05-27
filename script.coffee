@@ -1381,7 +1381,9 @@ quoteBacklink =
     g.callbacks.push quoteBacklink.node
   node: (root) ->
     return if root.className
-    #better coffee-script way of doing this?
+    container = $.el 'span',
+      className: 'container'
+    $.before $('br, blockquote', root), container
     id = root.id or $('td[id]', root).id
     quotes = {}
     tid = g.THREAD_ID or root.parentNode.firstChild.id
@@ -1404,7 +1406,7 @@ quoteBacklink =
         $.bind link, 'mouseout',  quotePreview.mouseout
       if $.config 'Quote Inline'
         $.bind link, 'click', quoteInline.toggle
-      $.before $('td > br, blockquote', el), link
+      $.append $('.container', el), link
 
 quoteInline =
   init: ->

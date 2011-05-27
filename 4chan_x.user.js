@@ -1711,10 +1711,14 @@
       return g.callbacks.push(quoteBacklink.node);
     },
     node: function(root) {
-      var el, id, link, qid, quote, quotes, tid, _i, _len, _ref, _results;
+      var container, el, id, link, qid, quote, quotes, tid, _i, _len, _ref, _results;
       if (root.className) {
         return;
       }
+      container = $.el('span', {
+        className: 'container'
+      });
+      $.before($('br, blockquote', root), container);
       id = root.id || $('td[id]', root).id;
       quotes = {};
       tid = g.THREAD_ID || root.parentNode.firstChild.id;
@@ -1749,7 +1753,7 @@
         if ($.config('Quote Inline')) {
           $.bind(link, 'click', quoteInline.toggle);
         }
-        _results.push($.before($('td > br, blockquote', el), link));
+        _results.push($.append($('.container', el), link));
       }
       return _results;
     }
