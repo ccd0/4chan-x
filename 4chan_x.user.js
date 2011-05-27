@@ -1670,7 +1670,7 @@
   localize = {
     init: function() {
       return g.callbacks.push(function(root) {
-        var date, day, dotw, hour, meridiem, min_sec, month, s, year, _, _ref;
+        var date, day, dotw, hour, meridiem, min_sec, month, s, time, year, _, _ref;
         if (root.className === 'inline') {
           return;
         }
@@ -1691,7 +1691,10 @@
         }
         hour = $.zeroPad(hour);
         dotw = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
-        return s.textContent = " " + month + "/" + day + "/" + year + "(" + dotw + ")" + hour + ":" + min_sec + meridiem + " ";
+        time = $.el('time', {
+          textContent: " " + month + "/" + day + "/" + year + "(" + dotw + ")" + hour + ":" + min_sec + meridiem + " "
+        });
+        return $.replace(s, time);
       });
     }
   };

@@ -1367,7 +1367,9 @@ localize =
         'Fri'
         'Sat'
       ][date.getDay()]
-      s.textContent = " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec}#{meridiem} "
+      time = $.el 'time',
+        textContent: " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec}#{meridiem} "
+      $.replace s, time
 
 titlePost =
   init: ->
