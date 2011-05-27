@@ -1417,8 +1417,8 @@ quoteInline =
       quote.removeAttribute 'onclick'
       $.bind quote, 'click', quoteInline.toggle
   toggle: (e) ->
-    id = @hash[1..]
     e.preventDefault()
+    id = @hash[1..]
     root = $.x 'ancestor::td[1]', @
     if table = $ "#i#{id}", root
       $.rm table
@@ -1429,7 +1429,7 @@ quoteInline =
     if el = d.getElementById id
       inline = quoteInline.table id, el.innerHTML
       if @className is 'backlink'
-        $.after $('td > br:first-of-type, td > a:last-of-type', @parentNode), inline
+        $.after @parentNode, inline
         $.hide $.x 'ancestor::table[1]', el
       else
         $.after @parentNode, inline
@@ -1439,7 +1439,6 @@ quoteInline =
         id: "i#{id}"
         innerHTML: "Loading #{id}..."
       $.after @parentNode, inline
-      # or ... is for index page new posts.
       {pathname} = @
       threadID = pathname.split('/').pop()
       $.cache pathname, (-> quoteInline.parse @, pathname, id, threadID, inline)

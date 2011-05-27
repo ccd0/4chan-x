@@ -1778,8 +1778,8 @@
     },
     toggle: function(e) {
       var el, id, inline, pathname, root, table, threadID;
-      id = this.hash.slice(1);
       e.preventDefault();
+      id = this.hash.slice(1);
       root = $.x('ancestor::td[1]', this);
       if (table = $("#i" + id, root)) {
         $.rm(table);
@@ -1792,7 +1792,7 @@
       if (el = d.getElementById(id)) {
         inline = quoteInline.table(id, el.innerHTML);
         if (this.className === 'backlink') {
-          $.after($('td > br:first-of-type, td > a:last-of-type', this.parentNode), inline);
+          $.after(this.parentNode, inline);
           $.hide($.x('ancestor::table[1]', el));
         } else {
           $.after(this.parentNode, inline);
