@@ -4,7 +4,7 @@ fs    = require 'fs'
 
 HEADER  = fs.readFileSync 'header', 'utf8'
 INFILE  = 'script.coffee'
-OUTFILE = '4chan_x.js'
+OUTFILE = '4chan_x.user.js'
 
 build = ->
   fs.readFile INFILE, 'utf8', (err, code) ->
@@ -15,6 +15,9 @@ build = ->
       log e
     fs.writeFile OUTFILE, code, (err) ->
       throw err if err
+
+task 'build', ->
+  build()
 
 task 'dev', ->
   build()
