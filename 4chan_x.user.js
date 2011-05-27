@@ -218,14 +218,21 @@
       return d.removeEventListener('mouseup', ui.dragend, true);
     },
     hover: function(e) {
-      var bot, clientX, clientY, el, height, top;
+      var bot, clientHeight, clientWidth, clientX, clientY, el, height, top, _ref;
       clientX = e.clientX, clientY = e.clientY;
       el = ui.el;
+      _ref = d.body, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
       height = el.offsetHeight;
       top = clientY - 120;
       bot = top + height;
-      el.style.top = ui.winHeight < height || top < 0 ? '0px' : bot > ui.winHeight ? ui.winHeight - height + 'px' : top + 'px';
-      return el.style.left = clientX + 45 + 'px';
+      el.style.top = clientHeight < height || top < 0 ? '0px' : bot > clientHeight ? clientHeight - height + 'px' : top + 'px';
+      if (clientX < clientWidth - 400) {
+        el.style.left = clientX + 45 + 'px';
+        return el.style.right = '';
+      } else {
+        el.style.left = '';
+        return el.style.right = clientWidth - clientX + 45 + 'px';
+      }
     },
     hoverend: function(e) {
       ui.el.style.top = 'auto';
@@ -1904,7 +1911,6 @@
         }));
       }
       ui.el = qp;
-      ui.winHeight = d.body.clientHeight;
       return $.show(qp);
     },
     parse: function(req, id, threadID) {
@@ -2189,7 +2195,6 @@
         el.src = null;
         el.src = this.parentNode.href;
         ui.el = el;
-        ui.winHeight = d.body.clientHeight;
         return $.show(el);
       }
     }

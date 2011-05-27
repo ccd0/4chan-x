@@ -136,18 +136,26 @@ ui =
   hover: (e) ->
     {clientX, clientY} = e
     {el} = ui
+    {clientHeight, clientWidth} = d.body
     height = el.offsetHeight
 
     top = clientY - 120
     bot = top + height
     el.style.top =
-      if ui.winHeight < height or top < 0
+      if clientHeight < height or top < 0
         '0px'
-      else if bot > ui.winHeight
-        ui.winHeight - height + 'px'
+      else if bot > clientHeight
+        clientHeight - height + 'px'
       else
         top + 'px'
-    el.style.left = clientX + 45 + 'px'
+
+    if clientX < clientWidth - 400
+      el.style.left = clientX + 45 + 'px'
+      el.style.right = ''
+    else
+      el.style.left = ''
+      el.style.right = clientWidth - clientX + 45 + 'px'
+
   hoverend: (e) ->
     ui.el.style.top = 'auto'
     $.hide ui.el
@@ -1494,7 +1502,6 @@ quotePreview =
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
     ui.el = qp
-    ui.winHeight = d.body.clientHeight
     $.show qp
   parse: (req, id, threadID) ->
     qp = $ '#qp'
@@ -1674,7 +1681,6 @@ imageHover =
       el.src = null
       el.src = @parentNode.href
       ui.el = el
-      ui.winHeight = d.body.clientHeight
       $.show el
 
 imgPreloading =
