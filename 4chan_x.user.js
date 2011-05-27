@@ -2360,7 +2360,7 @@
   };
   main = {
     init: function() {
-      var DAY, callback, cutoff, hiddenThreads, id, lastChecked, now, op, pathname, reply, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var DAY, callback, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, reply, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2412,8 +2412,10 @@
         $.setValue('lastChecked', now);
       }
       $.addStyle(main.css);
-      Recaptcha.init();
-      $.bind($('form[name=post]'), 'submit', qr.cb.submit);
+      if (form = $('form[name=post]')) {
+        Recaptcha.init();
+        $.bind(form, 'submit', qr.cb.submit);
+      }
       if ($.config('Cooldown')) {
         qr.cooldown();
       }
@@ -2438,7 +2440,7 @@
       if ($.config('Reply Hiding')) {
         replyHiding.init();
       }
-      if ($.config('Quick Reply')) {
+      if (form && $.config('Quick Reply')) {
         qr.init();
       }
       if ($.config('Report Button')) {

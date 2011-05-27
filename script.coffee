@@ -1840,9 +1840,9 @@ main =
 
     $.addStyle main.css
 
-    Recaptcha.init()
-
-    $.bind $('form[name=post]'), 'submit', qr.cb.submit
+    if form = $ 'form[name=post]'
+      Recaptcha.init()
+      $.bind form, 'submit', qr.cb.submit
 
     #major features
     if $.config 'Cooldown'
@@ -1869,7 +1869,7 @@ main =
     if $.config 'Reply Hiding'
       replyHiding.init()
 
-    if $.config 'Quick Reply'
+    if form and $.config 'Quick Reply'
       qr.init()
 
     if $.config 'Report Button'
