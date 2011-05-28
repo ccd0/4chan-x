@@ -92,6 +92,7 @@
       quote: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
         'OP Backlinks': [false, 'Add backlinks to the OP'],
+        'Quote Hilighting': [true, 'Highlight the previewed post'],
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
         'Quote Preview': [true, 'Show quote content on hover'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
@@ -1898,7 +1899,9 @@
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
-        $.addClass(el, 'qphl');
+        if ($.config('Quote Hilighting')) {
+          $.addClass(el, 'qphl');
+        }
         if (this.className === 'backlink') {
           replyID = (_ref = $.x('ancestor::*[@id][1]', this)) != null ? _ref.id.match(/\d+/)[0] : void 0;
           _ref2 = $$('a.quotelink', qp);

@@ -32,6 +32,7 @@ config =
     quote:
       'Quote Backlinks':   [true,  'Add quote backlinks']
       'OP Backlinks':      [false, 'Add backlinks to the OP']
+      'Quote Hilighting':  [true,  'Highlight the previewed post']
       'Quote Inline':      [true,  'Show quoted post inline on quote click']
       'Quote Preview':     [true,  'Show quote content on hover']
       'Indicate OP quote': [true,  'Add \'(OP)\' to OP quotes']
@@ -1498,7 +1499,7 @@ quotePreview =
     qp = $ '#qp'
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
-      $.addClass el, 'qphl'
+      $.addClass el, 'qphl' if $.config 'Quote Hilighting'
       if @className is 'backlink'
         replyID = $.x('ancestor::*[@id][1]', @)?.id.match(/\d+/)[0]
         for quote in $$ 'a.quotelink', qp
