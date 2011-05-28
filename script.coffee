@@ -1387,7 +1387,7 @@ quoteBacklink =
     return if /inline/.test root.className
     container = $.el 'span',
       className: 'container'
-    $.before $('br, blockquote', root), container
+    $.after $('span[id^=no]', root), container
     id = root.id or $('td[id]', root).id
     quotes = {}
     tid = g.THREAD_ID or root.parentNode.firstChild.id
@@ -1879,9 +1879,6 @@ main =
     if form and $.config 'Quick Reply'
       qr.init()
 
-    if $.config 'Report Button'
-      reportButton.init()
-
     if $.config 'Quote Backlinks'
       quoteBacklink.init()
 
@@ -1893,6 +1890,9 @@ main =
 
     if $.config 'Indicate OP quote'
       quoteOP.init()
+
+    if $.config 'Report Button'
+      reportButton.init()
 
     if $.config 'Thread Watcher'
       watcher.init()
