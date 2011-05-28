@@ -1686,7 +1686,7 @@
         hour = date.getHours();
         meridiem = '';
         if ($.config('Localized am/pm')) {
-          meridiem = hour < 12 ? ' a.m.' : ' p.m.';
+          meridiem = hour < 12 ? 'AM' : 'PM';
           hour = hour % 12 || 12;
         }
         hour = $.zeroPad(hour);

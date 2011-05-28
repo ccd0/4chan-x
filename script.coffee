@@ -1355,7 +1355,7 @@ localize =
       hour = date.getHours()
       meridiem = ''
       if $.config 'Localized am/pm'
-        meridiem = if hour < 12 then ' a.m.' else ' p.m.'
+        meridiem = if hour < 12 then 'AM' else 'PM'
         hour = hour % 12 or 12
       hour = $.zeroPad hour
       dotw = [
