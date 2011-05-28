@@ -92,7 +92,7 @@
       quote: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
         'OP Backlinks': [false, 'Add backlinks to the OP'],
-        'Quote Hilighting': [true, 'Highlight the previewed post'],
+        'Quote Highlighting': [true, 'Highlight the previewed post'],
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
         'Quote Preview': [true, 'Show quote content on hover'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
