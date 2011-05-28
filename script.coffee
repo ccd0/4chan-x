@@ -1538,7 +1538,7 @@ quoteOP =
     tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
     for quote in $$ 'a.quotelink', root
       if quote.hash[1..] is tid
-        quote.textContent += ' (OP)'
+        quote.innerHTML += '&nbsp;(OP)'
 
 reportButton =
   init: ->

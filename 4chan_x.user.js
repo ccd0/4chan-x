@@ -1962,7 +1962,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        _results.push(quote.hash.slice(1) === tid ? quote.textContent += ' (OP)' : void 0);
+        _results.push(quote.hash.slice(1) === tid ? quote.innerHTML += '&nbsp;(OP)' : void 0);
       }
       return _results;
     }
