@@ -2014,7 +2014,7 @@
       if ($('img[md5]', root)) {
         threadStats.images++;
         if (threadStats.images > 150) {
-          $('#icount').className = 'error';
+          $('#imagecount').className = 'error';
         }
       }
       $('#postcount').textContent = threadStats.posts;
