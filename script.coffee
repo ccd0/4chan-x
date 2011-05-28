@@ -1412,7 +1412,8 @@ quoteBacklink =
         $.bind link, 'mouseout',  quotePreview.mouseout
       if $.config 'Quote Inline'
         $.bind link, 'click', quoteInline.toggle
-      $.append $('.container', el), link
+      $.append container = $('.container', el), $.tn(' ')
+      $.append container, link
 
 quoteInline =
   init: ->

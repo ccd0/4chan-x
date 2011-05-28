@@ -1759,7 +1759,8 @@
         if ($.config('Quote Inline')) {
           $.bind(link, 'click', quoteInline.toggle);
         }
-        _results.push($.append($('.container', el), link));
+        $.append(container = $('.container', el), $.tn(' '));
+        _results.push($.append(container, link));
       }
       return _results;
     }
