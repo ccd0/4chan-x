@@ -31,6 +31,7 @@ config =
       'Persistent QR':     [false, 'Quick reply won\'t disappear after posting. Only in replies.']
     quote:
       'Quote Backlinks':   [true,  'Add quote backlinks']
+      'OP Backlinks':      [false, 'Add backlinks to the OP']
       'Quote Inline':      [true,  'Show quoted post inline on quote click']
       'Quote Preview':     [true,  'Show quote content on hover']
       'Indicate OP quote': [true,  'Add \'(OP)\' to OP quotes']
@@ -1380,17 +1381,18 @@ quoteBacklink =
   init: ->
     g.callbacks.push quoteBacklink.node
   node: (root) ->
-    return if root.className
+    return if /inline/.test root.className
     container = $.el 'span',
       className: 'container'
     $.before $('br, blockquote', root), container
     id = root.id or $('td[id]', root).id
     quotes = {}
     tid = g.THREAD_ID or root.parentNode.firstChild.id
+    opbl = $.config 'OP Backlinks'
     for quote in $$ 'a.quotelink', root
       continue unless qid = quote.hash[1..]
       #don't backlink the op
-      continue if qid == tid
+      continue if !opbl and qid is tid
       #duplicate quotes get overwritten
       quotes[qid] = quote
     for qid, quote of quotes

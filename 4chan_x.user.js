@@ -91,6 +91,7 @@
       },
       quote: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
+        'OP Backlinks': [false, 'Add backlinks to the OP'],
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
         'Quote Preview': [true, 'Show quote content on hover'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
@@ -1711,8 +1712,8 @@
       return g.callbacks.push(quoteBacklink.node);
     },
     node: function(root) {
-      var container, el, id, link, qid, quote, quotes, tid, _i, _len, _ref, _results;
-      if (root.className) {
+      var container, el, id, link, opbl, qid, quote, quotes, tid, _i, _len, _ref, _results;
+      if (/inline/.test(root.className)) {
         return;
       }
       container = $.el('span', {
@@ -1722,13 +1723,14 @@
       id = root.id || $('td[id]', root).id;
       quotes = {};
       tid = g.THREAD_ID || root.parentNode.firstChild.id;
+      opbl = $.config('OP Backlinks');
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (!(qid = quote.hash.slice(1))) {
           continue;
         }
-        if (qid === tid) {
+        if (!opbl && qid === tid) {
           continue;
         }
         quotes[qid] = quote;
