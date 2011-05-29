@@ -1899,7 +1899,7 @@
       qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
-        if ($.config('Quote Hilighting')) {
+        if ($.config('Quote Highlighting')) {
           $.addClass(el, 'qphl');
         }
         if (this.className === 'backlink') {
