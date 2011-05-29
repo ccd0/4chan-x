@@ -1395,9 +1395,9 @@ quoteBacklink =
     for qid, quote of quotes
       continue unless el = d.getElementById qid
       link = $.el 'a',
-        href: '#'+id
         className: 'backlink'
         textContent: '>>'+id
+      link.setAttribute 'data-href', '#'+id
       if $.config 'Quote Preview'
         $.bind link, 'mouseover', quotePreview.mouseover
         $.bind link, 'mousemove', ui.hover
@@ -1480,14 +1480,21 @@ quotePreview =
   node: (root) ->
     for quote in $$ 'a.quotelink, a.backlink', root
       continue unless quote.hash
+      # XXX this needs a globalEval (wtf?) on firefox 6.0a2 / scriptish
+      # quote.dataset.href = quote.href
+      quote.setAttribute 'data-href', quote.href
+      quote.removeAttribute 'href'
       $.bind quote, 'mouseover', quotePreview.mouseover
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  ui.hoverend
       $.bind quote, 'mouseout',  quotePreview.mouseout
-  mouseout: ->
-    return unless el = d.getElementById @hash[1..]
-    $.removeClass el, 'qphl'
+  mouseout: (e) ->
+    id = @hash[1..]
+    @.removeAttribute 'href'
+    if el = d.getElementById id
+      $.removeClass el, 'qphl'
   mouseover: (e) ->
+    @href = @dataset.href
     id = @hash[1..]
     qp = $ '#qp'
     if el = d.getElementById id
@@ -1954,6 +1961,9 @@ main =
         cursor: pointer;
       }
 
+      .backlink, .quotelink {
+        text-decoration: underline;
+      }
       .new {
         background: lime;
       }
