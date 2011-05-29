@@ -1480,7 +1480,7 @@ quotePreview =
   node: (root) ->
     for quote in $$ 'a.quotelink, a.backlink', root
       continue unless quote.hash
-      # XXX this needs a globalEval (wtf?) on firefox 6.0a2 / scriptish
+      # XXX dataset requires firefox 6.0+
       # quote.dataset.href = quote.href
       quote.setAttribute 'data-href', quote.href
       quote.removeAttribute 'href'
@@ -1493,7 +1493,7 @@ quotePreview =
     @.removeAttribute 'href'
     $.removeClass el, 'qphl' if el = d.getElementById id
   mouseover: (e) ->
-    @href = @dataset.href
+    @href = @getAttribute 'data-href'
     id = @hash[1..]
     qp = $ '#qp'
     if el = d.getElementById id
@@ -1689,7 +1689,7 @@ imageHover =
       $.bind thumb, 'mouseout', imageHover.cb.mouseout
     mouseover: (e) ->
       a = @parentNode
-      a.href = a.dataset.href
+      a.href = a.getAttribute 'data-href'
       el = $ '#iHover'
       el.src = null
       el.src = @parentNode.href
