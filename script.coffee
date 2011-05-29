@@ -1681,15 +1681,24 @@ imageHover =
   cb:
     node: (root) ->
       return unless thumb = $ 'img[md5]', root
+      a = thumb.parentNode
+      a.setAttribute 'data-href', a.href
+      a.removeAttribute 'href'
       $.bind thumb, 'mouseover', imageHover.cb.mouseover
       $.bind thumb, 'mousemove', ui.hover
       $.bind thumb, 'mouseout',  ui.hoverend
+      $.bind thumb, 'mouseout', imageHover.cb.mouseout
     mouseover: (e) ->
+      a = @parentNode
+      a.href = a.dataset.href
       el = $ '#iHover'
       el.src = null
       el.src = @parentNode.href
       ui.el = el
       $.show el
+    mouseout: (e) ->
+      a = @parentNode
+      a.removeAttribute 'href'
 
 imgPreloading =
   init: ->
