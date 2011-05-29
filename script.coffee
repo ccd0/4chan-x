@@ -1492,7 +1492,7 @@ quotePreview =
     qp = $ '#qp'
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
-      $.addClass el, 'qphl' if $.config 'Quote Hilighting'
+      $.addClass el, 'qphl' if $.config 'Quote Highlighting'
       if @className is 'backlink'
         replyID = $.x('ancestor::*[@id][1]', @)?.id.match(/\d+/)[0]
         for quote in $$ 'a.quotelink', qp
