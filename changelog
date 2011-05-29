@@ -1,3 +1,14 @@
+2.10.0
+mayhem:
+  space between backlinks (to prevent them from spilling out of the page)
+  thread stats: fix wrong selector id when image limit reached
+  fix localized time + inlined quotes
+- fix edge hovering (flip to left of mouse @ right screen edge)
+- work on closed threads (some stickies)
+- op backlinking option
+- quote highlighting option
+- (maybe) work on fx3
+
 2.9.0
 - mayhem:
   better placement of inlined backquotes
