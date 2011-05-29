@@ -1,9 +1,3 @@
-# TODO
-# option to skip post form directly to contents on first page,
-# like what happens when using thread nav to go to next page
-# (floating) qr no-quote button?
-# updater cache hacks
-
 # XXX chrome can't into `{log} = console`
 if console?
   log = (arg) ->
@@ -63,7 +57,6 @@ config =
       'Auto Update': [false, 'Automatically fetch new posts']
     'Interval': 30
 
-# FIXME this is fucking horrible
 # flatten the config
 _config = {}
 ((parent, obj) ->
