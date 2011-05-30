@@ -1716,7 +1716,7 @@
       return g.callbacks.push(quoteBacklink.node);
     },
     node: function(root) {
-      var container, el, id, link, opbl, qid, quote, quotes, tid, _i, _len, _ref, _results;
+      var container, el, id, link, opbl, qid, quote, quotes, tid, _i, _len, _ref, _ref2, _results;
       if (/inline/.test(root.className)) {
         return;
       }
@@ -1731,7 +1731,7 @@
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        qid = quote.hash.slice(1) || quote.getAttribute('data-href').match(/\d+$/)[0];
+        qid = ((_ref2 = quote.hash) != null ? _ref2.slice(1) : void 0) || quote.getAttribute('data-href').match(/\d+$/)[0];
         if (!qid) {
           continue;
         }
@@ -1963,7 +1963,7 @@
       return g.callbacks.push(quoteOP.node);
     },
     node: function(root) {
-      var qid, quote, tid, _i, _len, _ref, _results;
+      var qid, quote, tid, _i, _len, _ref, _ref2, _results;
       if (root.className === 'inline') {
         return;
       }
@@ -1972,7 +1972,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        qid = quote.hash.slice(1) || quote.getAttribute('data-href').match(/\d+/)[0];
+        qid = ((_ref2 = quote.hash) != null ? _ref2.slice(1) : void 0) || quote.getAttribute('data-href').match(/\d+/)[0];
         _results.push(qid === tid ? quote.innerHTML += '&nbsp;(OP)' : void 0);
       }
       return _results;
