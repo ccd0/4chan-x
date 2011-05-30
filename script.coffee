@@ -1387,7 +1387,8 @@ quoteBacklink =
     tid = g.THREAD_ID or root.parentNode.firstChild.id
     opbl = $.config 'OP Backlinks'
     for quote in $$ 'a.quotelink', root
-      continue unless qid = quote.hash[1..]
+      qid = quote.hash[1..] or quote.getAttribute('data-href').match(/\d+$/)[0]
+      continue unless qid
       #don't backlink the op
       continue if !opbl and qid is tid
       #duplicate quotes get overwritten
@@ -1412,7 +1413,7 @@ quoteInline =
     g.callbacks.push quoteInline.node
   node: (root) ->
     for quote in $$ 'a.quotelink, a.backlink', root
-      continue unless quote.hash
+      continue unless quote.hash or quote.getAttribute 'data-href'
       quote.removeAttribute 'onclick'
       $.bind quote, 'click', quoteInline.toggle
   toggle: (e) ->
@@ -1479,11 +1480,12 @@ quotePreview =
     $.append d.body, preview
   node: (root) ->
     for quote in $$ 'a.quotelink, a.backlink', root
-      continue unless quote.hash
-      # XXX dataset requires firefox 6.0+
-      # quote.dataset.href = quote.href
-      quote.setAttribute 'data-href', quote.href
-      quote.removeAttribute 'href'
+      continue unless quote.hash or quote.getAttribute 'data-href'
+      if quote.href
+        # XXX dataset requires firefox 6.0+
+        # quote.dataset.href = quote.href
+        quote.setAttribute 'data-href', quote.href
+        quote.removeAttribute 'href'
       $.bind quote, 'mouseover', quotePreview.mouseover
       $.bind quote, 'mousemove', ui.hover
       $.bind quote, 'mouseout',  ui.hoverend
@@ -1502,7 +1504,7 @@ quotePreview =
       if @className is 'backlink'
         replyID = $.x('ancestor::*[@id][1]', @)?.id.match(/\d+/)[0]
         for quote in $$ 'a.quotelink', qp
-          if quote.hash[1..] is replyID
+          if quote.getAttribute('data-href').match(/\d+$/)[0] is replyID
             quote.className = 'forwardlink'
     else
       qp.innerHTML = "Loading #{id}..."
@@ -1537,7 +1539,8 @@ quoteOP =
     return if root.className is 'inline'
     tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
     for quote in $$ 'a.quotelink', root
-      if quote.hash[1..] is tid
+      qid = quote.hash[1..] or quote.getAttribute('data-href').match(/\d+/)[0]
+      if qid is tid
         quote.innerHTML += '&nbsp;(OP)'
 
 reportButton =
@@ -1969,7 +1972,7 @@ main =
         cursor: pointer;
       }
 
-      .backlink, .quotelink {
+      .backlink, .quotelink, .forwardlink {
         text-decoration: underline;
       }
       .new {

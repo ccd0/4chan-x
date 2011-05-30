@@ -1731,7 +1731,8 @@
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!(qid = quote.hash.slice(1))) {
+        qid = quote.hash.slice(1) || quote.getAttribute('data-href').match(/\d+$/)[0];
+        if (!qid) {
           continue;
         }
         if (!opbl && qid === tid) {
@@ -1774,7 +1775,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!quote.hash) {
+        if (!(quote.hash || quote.getAttribute('data-href'))) {
           continue;
         }
         quote.removeAttribute('onclick');
@@ -1876,11 +1877,13 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!quote.hash) {
+        if (!(quote.hash || quote.getAttribute('data-href'))) {
           continue;
         }
-        quote.setAttribute('data-href', quote.href);
-        quote.removeAttribute('href');
+        if (quote.href) {
+          quote.setAttribute('data-href', quote.href);
+          quote.removeAttribute('href');
+        }
         $.bind(quote, 'mouseover', quotePreview.mouseover);
         $.bind(quote, 'mousemove', ui.hover);
         $.bind(quote, 'mouseout', ui.hoverend);
@@ -1911,7 +1914,7 @@
           _ref2 = $$('a.quotelink', qp);
           for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
             quote = _ref2[_i];
-            if (quote.hash.slice(1) === replyID) {
+            if (quote.getAttribute('data-href').match(/\d+$/)[0] === replyID) {
               quote.className = 'forwardlink';
             }
           }
@@ -1960,7 +1963,7 @@
       return g.callbacks.push(quoteOP.node);
     },
     node: function(root) {
-      var quote, tid, _i, _len, _ref, _results;
+      var qid, quote, tid, _i, _len, _ref, _results;
       if (root.className === 'inline') {
         return;
       }
@@ -1969,7 +1972,8 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        _results.push(quote.hash.slice(1) === tid ? quote.innerHTML += '&nbsp;(OP)' : void 0);
+        qid = quote.hash.slice(1) || quote.getAttribute('data-href').match(/\d+/)[0];
+        _results.push(qid === tid ? quote.innerHTML += '&nbsp;(OP)' : void 0);
       }
       return _results;
     }
@@ -2559,7 +2563,7 @@
         cursor: pointer;\
       }\
 \
-      .backlink, .quotelink {\
+      .backlink, .quotelink, .forwardlink {\
         text-decoration: underline;\
       }\
       .new {\
