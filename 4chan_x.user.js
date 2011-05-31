@@ -2194,32 +2194,21 @@
     },
     cb: {
       node: function(root) {
-        var a, thumb;
+        var thumb;
         if (!(thumb = $('img[md5]', root))) {
           return;
         }
-        a = thumb.parentNode;
-        a.setAttribute('data-href', a.href);
-        a.removeAttribute('href');
         $.bind(thumb, 'mouseover', imageHover.cb.mouseover);
         $.bind(thumb, 'mousemove', ui.hover);
-        $.bind(thumb, 'mouseout', ui.hoverend);
-        return $.bind(thumb, 'mouseout', imageHover.cb.mouseout);
+        return $.bind(thumb, 'mouseout', ui.hoverend);
       },
       mouseover: function(e) {
-        var a, el;
-        a = this.parentNode;
-        a.href = a.dataset.href;
+        var el;
         el = $('#iHover');
         el.src = null;
         el.src = this.parentNode.href;
         ui.el = el;
         return $.show(el);
-      },
-      mouseout: function(e) {
-        var a;
-        a = this.parentNode;
-        return a.removeAttribute('href');
       }
     }
   };
