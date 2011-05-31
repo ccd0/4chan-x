@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        2.11.1
+// @version        2.11.0
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -1898,7 +1898,7 @@
     },
     mouseover: function(e) {
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _ref2;
-      this.href = this.getAttribute('data-href');
+      this.href = this.dataset.href;
       id = this.hash.slice(1);
       qp = $('#qp');
       if (el = d.getElementById(id)) {
@@ -2209,7 +2209,7 @@
       mouseover: function(e) {
         var a, el;
         a = this.parentNode;
-        a.href = a.getAttribute('data-href');
+        a.href = a.dataset.href;
         el = $('#iHover');
         el.src = null;
         el.src = this.parentNode.href;

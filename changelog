@@ -1,6 +1,3 @@
-2.11.1
-- work on firefox < 6.0
-
 2.11.0
 mayhem:
   - fix quote highlighting
