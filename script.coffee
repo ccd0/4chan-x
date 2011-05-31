@@ -1491,7 +1491,8 @@ quotePreview =
   mouseout: (e) ->
     id = @hash[1..]
     @.removeAttribute 'href'
-    $.removeClass el, 'qphl' if el = d.getElementById id
+    if el = d.getElementById id
+      $.removeClass el, 'qphl'
   mouseover: (e) ->
     @href = @dataset.href
     id = @hash[1..]
