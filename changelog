@@ -1,3 +1,7 @@
+2.12.0
+- revert the status bar blocking changes
+- add a 5px padding-bottom to #qp
+
 2.11.4
 - fix another quoting bug
 
