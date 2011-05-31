@@ -2685,6 +2685,7 @@
 \
       #qp {\
         border: 1px solid;\
+        padding-bottom: 5px;\
       }\
       #qp input {\
         display: none;\
