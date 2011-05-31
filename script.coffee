@@ -1387,7 +1387,7 @@ quoteBacklink =
     tid = g.THREAD_ID or root.parentNode.firstChild.id
     opbl = $.config 'OP Backlinks'
     for quote in $$ 'a.quotelink', root
-      qid = quote.hash?[1..] or quote.getAttribute('data-href').match(/\d+$/)[0]
+      qid = quote.hash[1..] or quote.getAttribute('data-href').match(/\d+$/)[0]
       continue unless qid
       #don't backlink the op
       continue if !opbl and qid is tid
@@ -1539,7 +1539,7 @@ quoteOP =
     return if root.className is 'inline'
     tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
     for quote in $$ 'a.quotelink', root
-      qid = quote.hash?[1..] or quote.getAttribute('data-href').match(/\d+/)[0]
+      qid = quote.hash[1..] or quote.getAttribute('data-href').match(/\d+/)[0]
       if qid is tid
         quote.innerHTML += '&nbsp;(OP)'
 
