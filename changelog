@@ -1,8 +1,3 @@
-2.11.0
-mayhem:
-  - fix quote highlighting
-- block status bar when hovering quotes / images (may break image leeching)
-
 2.10.0
 mayhem:
   space between backlinks (to prevent them from spilling out of the page)
