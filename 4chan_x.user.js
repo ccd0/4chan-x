@@ -1746,10 +1746,10 @@
           continue;
         }
         link = $.el('a', {
+          href: '#' + id,
           className: 'backlink',
           textContent: '>>' + id
         });
-        link.setAttribute('data-href', '#' + id);
         if ($.config('Quote Preview')) {
           $.bind(link, 'mouseover', quotePreview.mouseover);
           $.bind(link, 'mousemove', ui.hover);
@@ -1879,8 +1879,6 @@
         if (!quote.hash) {
           continue;
         }
-        quote.setAttribute('data-href', quote.href);
-        quote.removeAttribute('href');
         $.bind(quote, 'mouseover', quotePreview.mouseover);
         $.bind(quote, 'mousemove', ui.hover);
         $.bind(quote, 'mouseout', ui.hoverend);
@@ -1888,17 +1886,15 @@
       }
       return _results;
     },
-    mouseout: function(e) {
-      var el, id;
-      id = this.hash.slice(1);
-      this.removeAttribute('href');
-      if (el = d.getElementById(id)) {
-        return $.removeClass(el, 'qphl');
+    mouseout: function() {
+      var el;
+      if (!(el = d.getElementById(this.hash.slice(1)))) {
+        return;
       }
+      return $.removeClass(el, 'qphl');
     },
     mouseover: function(e) {
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _ref2;
-      this.href = this.dataset.href;
       id = this.hash.slice(1);
       qp = $('#qp');
       if (el = d.getElementById(id)) {
@@ -2548,9 +2544,6 @@
         cursor: pointer;\
       }\
 \
-      .backlink, .quotelink {\
-        text-decoration: underline;\
-      }\
       .new {\
         background: lime;\
       }\
