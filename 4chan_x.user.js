@@ -1972,7 +1972,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        qid = ((_ref2 = quote.hash) != null ? _ref2.slice(1) : void 0) || quote.getAttribute('data-href').match(/\d+$/)[0];
+        qid = ((_ref2 = quote.hash) != null ? _ref2.slice(1) : void 0) || quote.getAttribute('data-href').match(/\d+/)[0];
         _results.push(qid === tid ? quote.innerHTML += '&nbsp;(OP)' : void 0);
       }
       return _results;
