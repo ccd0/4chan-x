@@ -1494,7 +1494,7 @@ quotePreview =
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl' if $.config 'Quote Highlighting'
       if @className is 'backlink'
-        replyID = $.x('ancestor::*[@id][1]', @)?.id.match(/\d+/)[0]
+        replyID = $.x('ancestor::*[@id][1]', @).id.match(/\d+/)[0]
         for quote in $$ 'a.quotelink', qp
           if quote.hash[1..] is replyID
             quote.className = 'forwardlink'

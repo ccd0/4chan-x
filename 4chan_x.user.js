@@ -1894,7 +1894,7 @@
       return $.removeClass(el, 'qphl');
     },
     mouseover: function(e) {
-      var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _ref2;
+      var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
       id = this.hash.slice(1);
       qp = $('#qp');
       if (el = d.getElementById(id)) {
@@ -1903,10 +1903,10 @@
           $.addClass(el, 'qphl');
         }
         if (this.className === 'backlink') {
-          replyID = (_ref = $.x('ancestor::*[@id][1]', this)) != null ? _ref.id.match(/\d+/)[0] : void 0;
-          _ref2 = $$('a.quotelink', qp);
-          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-            quote = _ref2[_i];
+          replyID = $.x('ancestor::*[@id][1]', this).id.match(/\d+/)[0];
+          _ref = $$('a.quotelink', qp);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            quote = _ref[_i];
             if (quote.hash.slice(1) === replyID) {
               quote.className = 'forwardlink';
             }
