@@ -1485,8 +1485,7 @@ quotePreview =
       $.bind quote, 'mouseout',  ui.hoverend
       $.bind quote, 'mouseout',  quotePreview.mouseout
   mouseout: ->
-    return unless el = d.getElementById @hash[1..]
-    $.removeClass el, 'qphl'
+    $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
   mouseover: (e) ->
     id = @hash[1..]
     qp = $ '#qp'

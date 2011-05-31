@@ -1888,10 +1888,9 @@
     },
     mouseout: function() {
       var el;
-      if (!(el = d.getElementById(this.hash.slice(1)))) {
-        return;
+      if (el = d.getElementById(this.hash.slice(1))) {
+        return $.removeClass(el, 'qphl');
       }
-      return $.removeClass(el, 'qphl');
     },
     mouseover: function(e) {
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
