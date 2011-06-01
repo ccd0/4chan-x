@@ -540,7 +540,7 @@ keybinds =
     thread = nav.getThread()
     switch keybinds.key
       when '0'
-        window.location = "/#{g.BOARD}/#0"
+        window.location = "/#{g.BOARD}/0#0"
       when 'I'
         keybinds.qr thread
       when 'J'
