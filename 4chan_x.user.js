@@ -743,7 +743,7 @@
       thread = nav.getThread();
       switch (keybinds.key) {
         case '0':
-          return window.location = "/" + g.BOARD + "/#0";
+          return window.location = "/" + g.BOARD + "/0#0";
         case 'I':
           return keybinds.qr(thread);
         case 'J':
