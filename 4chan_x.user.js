@@ -1783,12 +1783,10 @@
       return _results;
     },
     toggle: function(e) {
-      var el, id, inline, link, pathname, root, table, threadID;
+      var el, id, inline, pathname, root, table, threadID;
       e.preventDefault();
       id = this.hash.slice(1);
-      root = $.x('ancestor::td[1]', this);
-      link = this.parentNode.nodeName === 'FONT' ? this.parentNode : this.nextSibling;
-      if (table = $("#i" + id, root)) {
+      if (table = $("#i" + id, $.x('ancestor::td[1]', this))) {
         $.rm(table);
         $.removeClass(this, 'inlined');
         if (this.className === 'backlink') {
@@ -1796,13 +1794,14 @@
         }
         return;
       }
+      root = this.parentNode.nodeName === 'FONT' ? this.parentNode : this.nextSibling;
       if (el = d.getElementById(id)) {
         inline = quoteInline.table(id, el.innerHTML);
         if (this.className === 'backlink') {
           $.after(this.parentNode, inline);
           $.hide($.x('ancestor::table[1]', el));
         } else {
-          $.after(link, inline);
+          $.after(root, inline);
         }
       } else {
         inline = $.el('td', {
@@ -1810,7 +1809,7 @@
           id: "i" + id,
           innerHTML: "Loading " + id + "..."
         });
-        $.after(link, inline);
+        $.after(root, inline);
         pathname = this.pathname;
         threadID = pathname.split('/').pop();
         $.cache(pathname, (function() {

@@ -1418,27 +1418,26 @@ quoteInline =
   toggle: (e) ->
     e.preventDefault()
     id = @hash[1..]
-    root = $.x 'ancestor::td[1]', @
-    link = if @parentNode.nodeName is 'FONT' then @parentNode else @nextSibling
-    if table = $ "#i#{id}", root
+    if table = $ "#i#{id}", $.x 'ancestor::td[1]', @
       $.rm table
       $.removeClass @, 'inlined'
       if @className is 'backlink'
         $.show $.x 'ancestor::table[1]', d.getElementById id
       return
+    root = if @parentNode.nodeName is 'FONT' then @parentNode else @nextSibling
     if el = d.getElementById id
       inline = quoteInline.table id, el.innerHTML
       if @className is 'backlink'
         $.after @parentNode, inline
         $.hide $.x 'ancestor::table[1]', el
       else
-        $.after link, inline
+        $.after root, inline
     else
       inline = $.el 'td',
         className: 'reply inline'
         id: "i#{id}"
         innerHTML: "Loading #{id}..."
-      $.after link, inline
+      $.after root, inline
       {pathname} = @
       threadID = pathname.split('/').pop()
       $.cache pathname, (-> quoteInline.parse @, pathname, id, threadID, inline)
