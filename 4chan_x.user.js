@@ -562,14 +562,14 @@
       }
     },
     toggle: function(thread) {
-      var a, backlink, num, pathname, prev, table, threadID, _i, _len, _ref, _results;
+      var a, backlink, num, pathname, prev, table, threadID, _i, _len, _ref, _ref2, _results;
       threadID = thread.firstChild.id;
       pathname = "/" + g.BOARD + "/res/" + threadID;
       a = $('a.omittedposts', thread);
       switch (a.textContent[0]) {
         case '+':
-          if ($.config('OP Backlinks')) {
-            $('.op .container', thread).innerHTML = '';
+          if ((_ref = $('.op .container', thread)) != null) {
+            _ref.innerHTML = '';
           }
           a.textContent = a.textContent.replace('+', 'X Loading...');
           return $.cache(pathname, (function() {
@@ -585,15 +585,13 @@
           while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
             $.rm(prev);
           }
-          if ($.config('OP Backlinks')) {
-            _ref = $$('.op a.backlink');
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              backlink = _ref[_i];
-              _results.push(!d.getElementById(backlink.hash.slice(1)) ? $.rm(backlink) : void 0);
-            }
-            return _results;
+          _ref2 = $$('.op a.backlink');
+          _results = [];
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            backlink = _ref2[_i];
+            _results.push(!d.getElementById(backlink.hash.slice(1)) ? $.rm(backlink) : void 0);
           }
+          return _results;
       }
     },
     parse: function(req, pathname, thread, a) {
