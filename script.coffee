@@ -1419,6 +1419,7 @@ quoteInline =
     e.preventDefault()
     id = @hash[1..]
     root = $.x 'ancestor::td[1]', @
+    link = if @parentNode.nodeName is 'FONT' then @parentNode else @nextSibling
     if table = $ "#i#{id}", root
       $.rm table
       $.removeClass @, 'inlined'
@@ -1431,13 +1432,13 @@ quoteInline =
         $.after @parentNode, inline
         $.hide $.x 'ancestor::table[1]', el
       else
-        $.after @parentNode, inline
+        $.after link, inline
     else
       inline = $.el 'td',
         className: 'reply inline'
         id: "i#{id}"
         innerHTML: "Loading #{id}..."
-      $.after @parentNode, inline
+      $.after link, inline
       {pathname} = @
       threadID = pathname.split('/').pop()
       $.cache pathname, (-> quoteInline.parse @, pathname, id, threadID, inline)

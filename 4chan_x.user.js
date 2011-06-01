@@ -1783,10 +1783,11 @@
       return _results;
     },
     toggle: function(e) {
-      var el, id, inline, pathname, root, table, threadID;
+      var el, id, inline, link, pathname, root, table, threadID;
       e.preventDefault();
       id = this.hash.slice(1);
       root = $.x('ancestor::td[1]', this);
+      link = this.parentNode.nodeName === 'FONT' ? this.parentNode : this.nextSibling;
       if (table = $("#i" + id, root)) {
         $.rm(table);
         $.removeClass(this, 'inlined');
@@ -1801,7 +1802,7 @@
           $.after(this.parentNode, inline);
           $.hide($.x('ancestor::table[1]', el));
         } else {
-          $.after(this.parentNode, inline);
+          $.after(link, inline);
         }
       } else {
         inline = $.el('td', {
@@ -1809,7 +1810,7 @@
           id: "i" + id,
           innerHTML: "Loading " + id + "..."
         });
-        $.after(this.parentNode, inline);
+        $.after(link, inline);
         pathname = this.pathname;
         threadID = pathname.split('/').pop();
         $.cache(pathname, (function() {
