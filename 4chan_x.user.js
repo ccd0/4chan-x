@@ -1901,7 +1901,7 @@
         if ($.config('Quote Highlighting')) {
           $.addClass(el, 'qphl');
         }
-        if (this.className === 'backlink') {
+        if (/backlink/.test(this.className)) {
           replyID = $.x('ancestor::*[@id][1]', this).id.match(/\d+/)[0];
           _ref = $$('a.quotelink', qp);
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
