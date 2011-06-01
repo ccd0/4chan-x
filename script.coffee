@@ -386,6 +386,7 @@ expandThread =
 
     switch a.textContent[0]
       when '+'
+        $('.op .container', thread).innerHTML = '' if $.config 'OP Backlinks'
         a.textContent = a.textContent.replace '+', 'X Loading...'
         $.cache pathname, (-> expandThread.parse @, pathname, thread, a)
 
@@ -401,6 +402,10 @@ expandThread =
         table = $.x "following::br[@clear][1]/preceding::table[#{num}]", a
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
           $.rm prev
+        if $.config 'OP Backlinks'
+          for backlink in $$ '.op a.backlink'
+            $.rm backlink if !d.getElementById backlink.hash[1..]
+
 
   parse: (req, pathname, thread, a) ->
     if req.status isnt 200
