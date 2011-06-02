@@ -200,6 +200,7 @@ $.extend $,
     style.type = 'text/css'
     style.textContent = css
     $.append d.head, style
+    style
   config: (name) ->
     $.getValue name, _config[name]
   zeroPad: (n) ->

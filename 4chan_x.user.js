@@ -310,7 +310,8 @@
       style = document.createElement('style');
       style.type = 'text/css';
       style.textContent = css;
-      return $.append(d.head, style);
+      $.append(d.head, style);
+      return style;
     },
     config: function(name) {
       return $.getValue(name, _config[name]);
