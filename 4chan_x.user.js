@@ -1530,13 +1530,14 @@
         $.bind(favicon, 'click', watcher.cb.toggle);
         $.before(input, favicon);
       }
-      watcher.refresh($.getValue('watched', {}));
+      watcher.refresh();
       return $.bind(window, 'storage', (function() {
-        return watcher.refresh($.getValue('watched', {}));
+        return watcher.refresh();
       }));
     },
-    refresh: function(watched) {
-      var board, dialog, div, favicon, id, link, props, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
+    refresh: function() {
+      var board, dialog, div, favicon, id, link, props, watched, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
+      watched = $.getValue('watched', {});
       dialog = $('#watcher');
       _ref = $$('div:not(.move)', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1592,7 +1593,7 @@
       watched = $.getValue('watched', {});
       delete watched[board][id];
       $.setValue('watched', watched);
-      return watcher.refresh(watched);
+      return watcher.refresh();
     },
     watch: function(thread, id) {
       var props, tc, watched, _name;
@@ -1605,7 +1606,7 @@
       watched[_name = g.BOARD] || (watched[_name] = {});
       watched[g.BOARD][id] = props;
       $.setValue('watched', watched);
-      return watcher.refresh(watched);
+      return watcher.refresh();
     }
   };
   anonymize = {

@@ -1243,11 +1243,12 @@ watcher =
       $.before input, favicon
 
     #populate watcher, display watch buttons
-    watcher.refresh $.getValue 'watched', {}
+    watcher.refresh()
 
-    $.bind window, 'storage', (-> watcher.refresh $.getValue 'watched', {})
+    $.bind window, 'storage', (-> watcher.refresh() )
 
-  refresh: (watched) ->
+  refresh: ->
+    watched = $.getValue 'watched', {}
     dialog = $ '#watcher'
     for div in $$ 'div:not(.move)', dialog
       $.rm div
@@ -1290,7 +1291,7 @@ watcher =
     watched = $.getValue 'watched', {}
     delete watched[board][id]
     $.setValue 'watched', watched
-    watcher.refresh watched
+    watcher.refresh()
 
   watch: (thread, id) ->
     tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
@@ -1302,7 +1303,7 @@ watcher =
     watched[g.BOARD] or= {}
     watched[g.BOARD][id] = props
     $.setValue 'watched', watched
-    watcher.refresh watched
+    watcher.refresh()
 
 anonymize =
   init: ->
