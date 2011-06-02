@@ -1531,11 +1531,11 @@
         $.before(input, favicon);
       }
       watcher.refresh();
-      return $.bind(window, 'storage', (function(e) {
+      return $.bind(window, 'storage', function(e) {
         if (e.key === 'AEOS.4chan_x.watched') {
           return watcher.refresh();
         }
-      }));
+      });
     },
     refresh: function() {
       var board, dialog, div, favicon, id, link, props, watched, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;

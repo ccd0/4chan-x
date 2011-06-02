@@ -1245,7 +1245,7 @@ watcher =
     #populate watcher, display watch buttons
     watcher.refresh()
 
-    $.bind window, 'storage', ((e) -> watcher.refresh() if e.key is 'AEOS.4chan_x.watched')
+    $.bind window, 'storage', (e) -> watcher.refresh() if e.key is 'AEOS.4chan_x.watched'
 
   refresh: ->
     watched = $.getValue 'watched', {}
