@@ -809,7 +809,7 @@ qr =
         qr.autohide.unset()
       else # success
         if dialog
-          if $.config 'Persistent QR'
+          if $.config 'Persistent QR' and g.REPLY
             qr.refresh dialog
           else
             $.rm dialog
