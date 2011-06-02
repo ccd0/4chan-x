@@ -2364,11 +2364,11 @@
     },
     resize: function(e) {
       var style;
-      if (style = $('style[media=chan]', d.head)) {
+      if (style = $('style.height', d.head)) {
         $.rm(style);
       }
       style = $.addStyle("body.fitheight img[md5] + img { max-height: " + d.body.clientHeight + "px }");
-      return style.media = 'chan';
+      return style.className = 'height';
     }
   };
   NAMESPACE = 'AEOS.4chan_x.';

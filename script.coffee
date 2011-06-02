@@ -1788,9 +1788,9 @@ imgExpand =
     $.prepend delform, controls
 
   resize: (e) ->
-    $.rm style if style = $ 'style[media=chan]', d.head
+    $.rm style if style = $ 'style.height', d.head
     style = $.addStyle "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
-    style.media = 'chan'
+    style.className = 'height'
 
 #main
 NAMESPACE = 'AEOS.4chan_x.'
