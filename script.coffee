@@ -1245,10 +1245,7 @@ watcher =
     #populate watcher, display watch buttons
     watcher.refresh $.getValue 'watched', {}
 
-    setInterval (->
-      if watcher.lastUpdated < $.getValue 'watcher.lastUpdated', 0
-        watcher.refresh $.getValue 'watched', {}
-    ), 1000
+    $.bind window, 'storage', (-> watcher.refresh $.getValue 'watched', {})
 
   refresh: (watched) ->
     dialog = $ '#watcher'
@@ -1272,7 +1269,6 @@ watcher =
         favicon.src = Favicon.default
       else
         favicon.src = Favicon.empty
-    watcher.lastUpdated = Date.now()
 
   cb:
     toggle: (e) ->
@@ -1294,9 +1290,7 @@ watcher =
     watched = $.getValue 'watched', {}
     delete watched[board][id]
     $.setValue 'watched', watched
-
     watcher.refresh watched
-    $.setValue 'watcher.lastUpdated', Date.now()
 
   watch: (thread, id) ->
     tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
@@ -1308,9 +1302,7 @@ watcher =
     watched[g.BOARD] or= {}
     watched[g.BOARD][id] = props
     $.setValue 'watched', watched
-
     watcher.refresh watched
-    $.setValue 'watcher.lastUpdated', Date.now()
 
 anonymize =
   init: ->

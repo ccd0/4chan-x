@@ -1531,14 +1531,12 @@
         $.before(input, favicon);
       }
       watcher.refresh($.getValue('watched', {}));
-      return setInterval((function() {
-        if (watcher.lastUpdated < $.getValue('watcher.lastUpdated', 0)) {
-          return watcher.refresh($.getValue('watched', {}));
-        }
-      }), 1000);
+      return $.bind(window, 'storage', (function() {
+        return watcher.refresh($.getValue('watched', {}));
+      }));
     },
     refresh: function(watched) {
-      var board, dialog, div, favicon, id, link, props, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+      var board, dialog, div, favicon, id, link, props, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
       dialog = $('#watcher');
       _ref = $$('div:not(.move)', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1561,16 +1559,13 @@
       }
       watchedBoard = watched[g.BOARD] || {};
       _ref3 = $$('img.favicon');
+      _results = [];
       for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
         favicon = _ref3[_j];
         id = favicon.nextSibling.name;
-        if (id in watchedBoard) {
-          favicon.src = Favicon["default"];
-        } else {
-          favicon.src = Favicon.empty;
-        }
+        _results.push(id in watchedBoard ? favicon.src = Favicon["default"] : favicon.src = Favicon.empty);
       }
-      return watcher.lastUpdated = Date.now();
+      return _results;
     },
     cb: {
       toggle: function(e) {
@@ -1597,8 +1592,7 @@
       watched = $.getValue('watched', {});
       delete watched[board][id];
       $.setValue('watched', watched);
-      watcher.refresh(watched);
-      return $.setValue('watcher.lastUpdated', Date.now());
+      return watcher.refresh(watched);
     },
     watch: function(thread, id) {
       var props, tc, watched, _name;
@@ -1611,8 +1605,7 @@
       watched[_name = g.BOARD] || (watched[_name] = {});
       watched[g.BOARD][id] = props;
       $.setValue('watched', watched);
-      watcher.refresh(watched);
-      return $.setValue('watcher.lastUpdated', Date.now());
+      return watcher.refresh(watched);
     }
   };
   anonymize = {
