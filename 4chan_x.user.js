@@ -1531,8 +1531,10 @@
         $.before(input, favicon);
       }
       watcher.refresh();
-      return $.bind(window, 'storage', (function() {
-        return watcher.refresh();
+      return $.bind(window, 'storage', (function(e) {
+        if (e.key === 'AEOS.4chan_x.watched') {
+          return watcher.refresh();
+        }
       }));
     },
     refresh: function() {
