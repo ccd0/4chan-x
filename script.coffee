@@ -1245,14 +1245,12 @@ watcher =
       $.before input, favicon
 
     #populate watcher, display watch buttons
-    watcher.refresh $.getValue 'watched', {}
+    watcher.refresh()
 
-    setInterval (->
-      if watcher.lastUpdated < $.getValue 'watcher.lastUpdated', 0
-        watcher.refresh $.getValue 'watched', {}
-    ), 1000
+    $.bind window, 'storage', (e) -> watcher.refresh() if e.key is 'AEOS.4chan_x.watched'
 
-  refresh: (watched) ->
+  refresh: ->
+    watched = $.getValue 'watched', {}
     dialog = $ '#watcher'
     for div in $$ 'div:not(.move)', dialog
       $.rm div
@@ -1274,7 +1272,6 @@ watcher =
         favicon.src = Favicon.default
       else
         favicon.src = Favicon.empty
-    watcher.lastUpdated = Date.now()
 
   cb:
     toggle: (e) ->
@@ -1296,9 +1293,7 @@ watcher =
     watched = $.getValue 'watched', {}
     delete watched[board][id]
     $.setValue 'watched', watched
-
-    watcher.refresh watched
-    $.setValue 'watcher.lastUpdated', Date.now()
+    watcher.refresh()
 
   watch: (thread, id) ->
     tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
@@ -1310,9 +1305,7 @@ watcher =
     watched[g.BOARD] or= {}
     watched[g.BOARD][id] = props
     $.setValue 'watched', watched
-
-    watcher.refresh watched
-    $.setValue 'watcher.lastUpdated', Date.now()
+    watcher.refresh()
 
 anonymize =
   init: ->
