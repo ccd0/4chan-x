@@ -778,6 +778,32 @@ options =
       @value = "hidden: 0"
       g.hiddenReplies = {}
 
+cooldown =
+  init: ->
+    if 0 < duration = Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
+      cooldown.start duration
+    $.bind window, 'storage', (e) -> if e.key is "AEOS.4chan_x.#{g.BOARD}/cooldown"
+      cooldown.start Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
+
+  start: (duration) ->
+    for submit in $$ '#com_submit'
+      submit.value = duration
+      submit.disabled = true
+    cooldown.interval = window.setInterval cooldown.cb, 1000
+    cooldown.duration = duration
+
+  cb: ->
+    cooldown.duration--
+
+    for submit in $$ '#com_submit'
+      if cooldown.duration
+        submit.value = cooldown.duration
+      else
+        submit.disabled = false
+        submit.value = 'Submit'
+
+    window.clearInterval cooldown.interval unless cooldown.duration
+
 qr =
   init: ->
     g.callbacks.push qr.cb.node
@@ -816,7 +842,9 @@ qr =
           else
             $.rm dialog
         if $.config 'Cooldown'
-          qr.cooldown true
+          duration = if qr.sage then 60 else 30
+          $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
+          cooldown.start duration
 
       Recaptcha.reload()
       $('iframe[name=iframe]').src = 'about:blank'
@@ -840,18 +868,6 @@ qr =
 
       if isQR
         $('#error').textContent = ''
-
-      if $.config 'Cooldown'
-        # check if we've posted on this board in another tab
-        if qr.cooldown()
-          e.preventDefault()
-
-          if isQR
-            $('#error').textContent = 'Stop posting so often!'
-          else
-            alert 'Stop posting so often!'
-
-          return
 
       qr.sage = $('input[name=email]', form).value == 'sage'
       if isQR
@@ -886,43 +902,6 @@ qr =
     # XXX file.value = '' doesn't work in opera
     f = $('input[type=file]', dialog).parentNode
     f.innerHTML = f.innerHTML
-
-  cooldown: (restart) ->
-    now = Date.now()
-
-    if restart
-      duration = if qr.sage then 60 else 30
-      qr.cooldownStart duration
-      $.setValue "#{g.BOARD}/cooldown", now + duration * 1000
-      return
-
-    end = $.getValue "#{g.BOARD}/cooldown", 0
-    if now < end
-      duration = Math.ceil (end - now) / 1000
-      qr.cooldownStart duration
-      return true
-
-  cooldownStart: (duration) ->
-    submits = $$ '#com_submit'
-    for submit in submits
-      submit.value = duration
-      submit.disabled = true
-    qr.cooldownIntervalID = window.setInterval qr.cooldownCB, 1000
-    qr.duration = duration
-
-  cooldownCB: ->
-    qr.duration--
-
-    submits = $$ '#com_submit'
-    for submit in submits
-      if qr.duration
-        submit.value = qr.duration
-      else
-        submit.disabled = false
-        submit.value = 'Submit'
-
-    window.clearInterval qr.cooldownIntervalID unless qr.duration
-
 
   dialog: (link) ->
     #maybe should be global
@@ -1847,7 +1826,7 @@ main =
 
     #major features
     if $.config 'Cooldown'
-      qr.cooldown()
+      cooldown.init()
 
     if $.config 'Image Expansion'
       imgExpand.init()

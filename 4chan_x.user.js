@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, cooldown, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -1019,6 +1019,47 @@
       }
     }
   };
+  cooldown = {
+    init: function() {
+      var duration;
+      if (0 < (duration = Math.ceil(($.getValue(g.BOARD + '/cooldown', 0) - Date.now()) / 1000))) {
+        cooldown.start(duration);
+      }
+      return $.bind(window, 'storage', function(e) {
+        if (e.key === ("AEOS.4chan_x." + g.BOARD + "/cooldown")) {
+          return cooldown.start(Math.ceil(($.getValue(g.BOARD + '/cooldown', 0) - Date.now()) / 1000));
+        }
+      });
+    },
+    start: function(duration) {
+      var submit, _i, _len, _ref;
+      _ref = $$('#com_submit');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        submit = _ref[_i];
+        submit.value = duration;
+        submit.disabled = true;
+      }
+      cooldown.interval = window.setInterval(cooldown.cb, 1000);
+      return cooldown.duration = duration;
+    },
+    cb: function() {
+      var submit, _i, _len, _ref;
+      cooldown.duration--;
+      _ref = $$('#com_submit');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        submit = _ref[_i];
+        if (cooldown.duration) {
+          submit.value = cooldown.duration;
+        } else {
+          submit.disabled = false;
+          submit.value = 'Submit';
+        }
+      }
+      if (!cooldown.duration) {
+        return window.clearInterval(cooldown.interval);
+      }
+    }
+  };
   qr = {
     init: function() {
       var iframe;
@@ -1051,7 +1092,7 @@
         }
       },
       message: function(e) {
-        var data, dialog;
+        var data, dialog, duration;
         data = e.data;
         dialog = $('#qr');
         if (data) {
@@ -1066,7 +1107,9 @@
             }
           }
           if ($.config('Cooldown')) {
-            qr.cooldown(true);
+            duration = qr.sage ? 60 : 30;
+            $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
+            cooldown.start(duration);
           }
         }
         Recaptcha.reload();
@@ -1094,17 +1137,6 @@
         }
         if (isQR) {
           $('#error').textContent = '';
-        }
-        if ($.config('Cooldown')) {
-          if (qr.cooldown()) {
-            e.preventDefault();
-            if (isQR) {
-              $('#error').textContent = 'Stop posting so often!';
-            } else {
-              alert('Stop posting so often!');
-            }
-            return;
-          }
         }
         qr.sage = $('input[name=email]', form).value === 'sage';
         if (isQR) {
@@ -1142,50 +1174,6 @@
       $('input[name=recaptcha_response_field]', dialog).value = '';
       f = $('input[type=file]', dialog).parentNode;
       return f.innerHTML = f.innerHTML;
-    },
-    cooldown: function(restart) {
-      var duration, end, now;
-      now = Date.now();
-      if (restart) {
-        duration = qr.sage ? 60 : 30;
-        qr.cooldownStart(duration);
-        $.setValue("" + g.BOARD + "/cooldown", now + duration * 1000);
-        return;
-      }
-      end = $.getValue("" + g.BOARD + "/cooldown", 0);
-      if (now < end) {
-        duration = Math.ceil((end - now) / 1000);
-        qr.cooldownStart(duration);
-        return true;
-      }
-    },
-    cooldownStart: function(duration) {
-      var submit, submits, _i, _len;
-      submits = $$('#com_submit');
-      for (_i = 0, _len = submits.length; _i < _len; _i++) {
-        submit = submits[_i];
-        submit.value = duration;
-        submit.disabled = true;
-      }
-      qr.cooldownIntervalID = window.setInterval(qr.cooldownCB, 1000);
-      return qr.duration = duration;
-    },
-    cooldownCB: function() {
-      var submit, submits, _i, _len;
-      qr.duration--;
-      submits = $$('#com_submit');
-      for (_i = 0, _len = submits.length; _i < _len; _i++) {
-        submit = submits[_i];
-        if (qr.duration) {
-          submit.value = qr.duration;
-        } else {
-          submit.disabled = false;
-          submit.value = 'Submit';
-        }
-      }
-      if (!qr.duration) {
-        return window.clearInterval(qr.cooldownIntervalID);
-      }
     },
     dialog: function(link) {
       var MAX_FILE_SIZE, THREAD_ID, c, challenge, dialog, html, m, mail, name, pass, spoiler, src, submitDisabled, submitValue;
@@ -2435,7 +2423,7 @@
         $.bind(form, 'submit', qr.cb.submit);
       }
       if ($.config('Cooldown')) {
-        qr.cooldown();
+        cooldown.init();
       }
       if ($.config('Image Expansion')) {
         imgExpand.init();
