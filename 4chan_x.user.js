@@ -1021,26 +1021,25 @@
   };
   cooldown = {
     init: function() {
-      var duration;
-      if (0 < (duration = Math.ceil(($.getValue(g.BOARD + '/cooldown', 0) - Date.now()) / 1000))) {
-        cooldown.start(duration);
+      if (Date.now() < $.getValue(g.BOARD + '/cooldown', 0)) {
+        cooldown.start();
       }
       return $.bind(window, 'storage', function(e) {
         if (e.key === ("AEOS.4chan_x." + g.BOARD + "/cooldown")) {
-          return cooldown.start(Math.ceil(($.getValue(g.BOARD + '/cooldown', 0) - Date.now()) / 1000));
+          return cooldown.start();
         }
       });
     },
-    start: function(duration) {
+    start: function() {
       var submit, _i, _len, _ref;
+      cooldown.duration = Math.ceil(($.getValue(g.BOARD + '/cooldown', 0) - Date.now()) / 1000);
       _ref = $$('#com_submit');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         submit = _ref[_i];
-        submit.value = duration;
+        submit.value = cooldown.duration;
         submit.disabled = true;
       }
-      cooldown.interval = window.setInterval(cooldown.cb, 1000);
-      return cooldown.duration = duration;
+      return cooldown.interval = window.setInterval(cooldown.cb, 1000);
     },
     cb: function() {
       var submit, _i, _len, _ref;
@@ -1107,9 +1106,9 @@
             }
           }
           if ($.config('Cooldown')) {
-            duration = qr.sage ? 60 : 30;
-            $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
-            cooldown.start(duration);
+            duration = qr.sage ? 60000 : 30000;
+            $.setValue(g.BOARD + '/cooldown', Date.now() + duration);
+            cooldown.start();
           }
         }
         Recaptcha.reload();

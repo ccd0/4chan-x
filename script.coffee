@@ -780,17 +780,15 @@ options =
 
 cooldown =
   init: ->
-    if 0 < duration = Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
-      cooldown.start duration
-    $.bind window, 'storage', (e) -> if e.key is "AEOS.4chan_x.#{g.BOARD}/cooldown"
-      cooldown.start Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
+    cooldown.start() if Date.now() < $.getValue g.BOARD+'/cooldown', 0
+    $.bind window, 'storage', (e) -> cooldown.start() if e.key is "AEOS.4chan_x.#{g.BOARD}/cooldown"
 
-  start: (duration) ->
+  start: ->
+    cooldown.duration = Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
     for submit in $$ '#com_submit'
-      submit.value = duration
+      submit.value = cooldown.duration
       submit.disabled = true
     cooldown.interval = window.setInterval cooldown.cb, 1000
-    cooldown.duration = duration
 
   cb: ->
     cooldown.duration--
@@ -842,9 +840,9 @@ qr =
           else
             $.rm dialog
         if $.config 'Cooldown'
-          duration = if qr.sage then 60 else 30
-          $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
-          cooldown.start duration
+          duration = if qr.sage then 60000 else 30000
+          $.setValue g.BOARD+'/cooldown', Date.now() + duration
+          cooldown.start()
 
       Recaptcha.reload()
       $('iframe[name=iframe]').src = 'about:blank'
