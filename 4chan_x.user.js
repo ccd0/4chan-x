@@ -446,6 +446,7 @@
       },
       setValue: function(name, value) {
         name = NAMESPACE + name;
+        localStorage[name] = JSON.stringify(value);
         return GM_setValue(name, JSON.stringify(value));
       }
     });

@@ -306,6 +306,8 @@ if GM_deleteValue?
       GM_openInTab url
     setValue: (name, value) ->
       name = NAMESPACE + name
+      # for `storage` events
+      localStorage[name] = JSON.stringify value
       GM_setValue name, JSON.stringify value
 else
   $.extend $,
