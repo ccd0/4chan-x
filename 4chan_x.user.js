@@ -1792,14 +1792,18 @@
       return _results;
     },
     toggle: function(e) {
-      var el, id, inline, pathname, root, table, threadID;
+      var el, id, inline, inlined, pathname, root, table, threadID, _i, _len, _ref;
       e.preventDefault();
       id = this.hash.slice(1);
       if (table = $("#i" + id, $.x('ancestor::td[1]', this))) {
         $.rm(table);
         $.removeClass(this, 'inlined');
         if (this.className === 'backlink') {
-          $.show($.x('ancestor::table[1]', d.getElementById(id)));
+          _ref = $$('input', table);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            inlined = _ref[_i];
+            $.show($.x('ancestor::table[1]', d.getElementById(inlined.name)));
+          }
         }
         return;
       }

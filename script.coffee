@@ -1427,7 +1427,8 @@ quoteInline =
       $.rm table
       $.removeClass @, 'inlined'
       if @className is 'backlink'
-        $.show $.x 'ancestor::table[1]', d.getElementById id
+        for inlined in $$ 'input', table
+          $.show $.x 'ancestor::table[1]', d.getElementById inlined.name
       return
     root = if @parentNode.nodeName is 'FONT' then @parentNode else @nextSibling
     if el = d.getElementById id
