@@ -840,8 +840,8 @@ qr =
           else
             $.rm dialog
         if $.config 'Cooldown'
-          duration = if qr.sage then 60000 else 30000
-          $.setValue g.BOARD+'/cooldown', Date.now() + duration
+          duration = if qr.sage then 60 else 30
+          $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
           cooldown.start()
 
       Recaptcha.reload()

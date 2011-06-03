@@ -1106,8 +1106,8 @@
             }
           }
           if ($.config('Cooldown')) {
-            duration = qr.sage ? 60000 : 30000;
-            $.setValue(g.BOARD + '/cooldown', Date.now() + duration);
+            duration = qr.sage ? 60 : 30;
+            $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
             cooldown.start();
           }
         }
