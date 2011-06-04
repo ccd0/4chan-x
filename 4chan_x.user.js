@@ -1053,7 +1053,6 @@
           submit.disabled = false;
           submit.value = 'Submit';
           if ((_ref2 = $('#auto')) != null ? _ref2.checked : void 0) {
-            $('#auto').checked = false;
             $('#qr_form').submit();
           }
         }

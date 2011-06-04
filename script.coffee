@@ -800,7 +800,6 @@ cooldown =
         submit.disabled = false
         submit.value = 'Submit'
         if $('#auto')?.checked
-          $('#auto').checked = false
           $('#qr_form').submit()
 
     window.clearInterval cooldown.interval unless cooldown.duration
