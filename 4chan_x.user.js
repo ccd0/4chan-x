@@ -1052,7 +1052,7 @@
         } else {
           submit.disabled = false;
           submit.value = 'Submit';
-          if ($('#auto').checked) {
+          if ($('#auto') && $('#auto').checked) {
             $('#auto').checked = false;
             $('#qr_form').submit();
           }
