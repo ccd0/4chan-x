@@ -1198,7 +1198,6 @@
         return e.stopPropagation();
       });
       $.bind($('#autohide', dialog), 'click', qr.cb.autohide);
-      $.bind($('#auto', dialog), 'click', qr.autohide.set);
       $.bind($('img', dialog), 'click', Recaptcha.reload);
       if ($('.postarea label')) {
         spoiler = $.el('label', {
