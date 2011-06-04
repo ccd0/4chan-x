@@ -799,6 +799,9 @@ cooldown =
       else
         submit.disabled = false
         submit.value = 'Submit'
+        if $('#auto') and $('#auto').checked
+          $('#auto').checked = false
+          $('#qr_form').submit()
 
     window.clearInterval cooldown.interval unless cooldown.duration
 
@@ -835,7 +838,7 @@ qr =
         qr.autohide.unset()
       else # success
         if dialog
-          if $.config 'Persistent QR' and g.REPLY
+          if $.config('Persistent QR') and g.REPLY
             qr.refresh dialog
           else
             $.rm dialog
@@ -926,7 +929,7 @@ qr =
         <input type=hidden name=resto value=#{THREAD_ID}>
         <input type=hidden name=recaptcha_challenge_field value=#{challenge}>
         <div><input class=inputtext type=text name=email placeholder=E-mail value=\"#{mail}\"></div>
-        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}></div>
+        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=#{src}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
@@ -939,6 +942,7 @@ qr =
 
     $.bind $('input[name=name]', dialog), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('#autohide', dialog), 'click', qr.cb.autohide
+    $.bind $('#auto', dialog), 'click', qr.autohide.set
     $.bind $('img', dialog), 'click', Recaptcha.reload
 
     if $ '.postarea label'
