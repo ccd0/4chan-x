@@ -1103,7 +1103,7 @@
           qr.autohide.unset();
         } else {
           if (dialog) {
-            if ($.config('Persistent QR') && g.REPLY) {
+            if (g.REPLY && $.config('Persistent QR')) {
               qr.refresh(dialog);
             } else {
               $.rm(dialog);
