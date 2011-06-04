@@ -799,7 +799,9 @@ cooldown =
       else
         submit.disabled = false
         submit.value = 'Submit'
-        $('#qr_form').submit() if $('#auto').checked
+        if $('#auto').checked
+          $('#auto').checked = false
+          $('#qr_form').submit()
 
     window.clearInterval cooldown.interval unless cooldown.duration
 
@@ -836,7 +838,7 @@ qr =
         qr.autohide.unset()
       else # success
         if dialog
-          if $.config 'Persistent QR' and g.REPLY
+          if $.config('Persistent QR') and g.REPLY
             qr.refresh dialog
           else
             $.rm dialog

@@ -1053,6 +1053,7 @@
           submit.disabled = false;
           submit.value = 'Submit';
           if ($('#auto').checked) {
+            $('#auto').checked = false;
             $('#qr_form').submit();
           }
         }
@@ -1102,7 +1103,7 @@
           qr.autohide.unset();
         } else {
           if (dialog) {
-            if ($.config('Persistent QR' && g.REPLY)) {
+            if ($.config('Persistent QR') && g.REPLY) {
               qr.refresh(dialog);
             } else {
               $.rm(dialog);
