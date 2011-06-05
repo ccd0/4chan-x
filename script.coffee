@@ -38,8 +38,7 @@ config =
       '404 Redirect':       [true,  'Redirect dead threads']
       'Anonymize':          [false, 'Make everybody anonymous']
       'Keybinds':           [false, 'Binds actions to keys']
-      'Localize Time':      [true,  'Show times based on your timezone']
-      'Localized am/pm':    [false, 'Change localized time to the 12-hour clock convention']
+      'Time Formatting':    [false, 'Arbitrarily formatted timestamps, using your local time']
       'Report Button':      [true,  'Add report buttons']
       'Comment Expansion':  [true,  'Expand too long comments']
       'Thread Expansion':   [true,  'View all replies']
@@ -1314,6 +1313,11 @@ sauce =
             href: prefix + suffix
           $.append span, $.tn(' '), link
 
+time: ->
+  init: ->
+    g.callbacks.push (root) ->
+      return
+
 localize =
   init: ->
     g.callbacks.push (root) ->
@@ -1833,8 +1837,8 @@ main =
     if $.config 'Image Auto-Gif'
       imgGif.init()
 
-    if $.config 'Localize Time'
-      localize.init()
+    if $.config 'Time Formatting'
+      time.init()
 
     if $.config 'Sauce'
       sauce.init()
