@@ -1671,6 +1671,7 @@
           case 'A':
           case 'D':
           case 'H':
+          case 'a':
           case 'd':
           case 'i':
           case 'm':

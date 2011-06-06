@@ -1317,7 +1317,7 @@ time =
     code = format.replace /%(.)/g, (s, c) ->
       switch c
         when '%' then '%'
-        when 'A', 'D', 'H', 'd', 'i', 'm', 'y' then "' + time.#{c}() + '"
+        when 'A', 'D', 'H', 'a', 'd', 'i', 'm', 'y' then "' + time.#{c}() + '"
         else s
     time.funk = Function 'time', "return '#{code}'"
 
