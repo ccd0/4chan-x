@@ -740,7 +740,7 @@ options =
       <div id=time style='display: none;'>
         <div><input name=time value=#{$.config 'time'}></div>
         <table>
-          <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>source</a></caption>
+          <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
           <tbody>
             <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>
             <tr><td>%a</td><td>weekday, abbreviated</td><td>Fri</td></tr>
