@@ -1695,7 +1695,7 @@
         hour = g.chanOffset + Number(hour);
         time.date = new Date(year, month, day, hour, min);
         timeEl = $.el('time', {
-          textContent: time.funk(time)
+          textContent: ' ' + time.funk(time) + ' '
         });
         return $.replace(s, timeEl);
       });

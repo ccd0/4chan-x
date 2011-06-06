@@ -1333,7 +1333,7 @@ time =
       #XXX /b/ will have seconds cut off
 
       timeEl = $.el 'time',
-        textContent: time.funk time
+        textContent: ' ' + time.funk(time) + ' '
       $.replace s, timeEl
 
   zeroPad: (n) -> if n < 10 then '0' + n else n
