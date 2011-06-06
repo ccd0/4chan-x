@@ -114,7 +114,7 @@
       }
     },
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url='].join('\n'),
-    time: '%m/%d/%y(%D)%H:%i',
+    time: '%m/%d/%y(%a)%H:%M',
     updater: {
       checkbox: {
         'Verbose': [true, 'Show countdown timer, new post count'],
@@ -1675,13 +1675,13 @@
         switch (c) {
           case '%':
             return '%';
-          case 'A':
-          case 'D':
-          case 'H':
           case 'a':
           case 'd':
-          case 'i':
+          case 'H':
           case 'm':
+          case 'M':
+          case 'p':
+          case 'P':
           case 'y':
             return "' + time." + c + "() + '";
             break;
@@ -1714,34 +1714,34 @@
         return n;
       }
     },
-    A: function() {
+    a: function() {
+      return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][this.date.getDay()];
+    },
+    d: function() {
+      return this.zeroPad(this.date.getDate());
+    },
+    H: function() {
+      return this.zeroPad(this.date.getHours());
+    },
+    m: function() {
+      return this.zeroPad(this.date.getMonth() + 1);
+    },
+    M: function() {
+      return this.zeroPad(this.date.getMinutes());
+    },
+    p: function() {
       if (this.date.getHours() < 12) {
         return 'AM';
       } else {
         return 'PM';
       }
     },
-    D: function() {
-      return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][this.date.getDay()];
-    },
-    H: function() {
-      return this.zeroPad(this.date.getHours());
-    },
-    a: function() {
+    P: function() {
       if (this.date.getHours < 12) {
         return 'am';
       } else {
         return 'pm';
       }
-    },
-    d: function() {
-      return this.zeroPad(this.date.getDate());
-    },
-    i: function() {
-      return this.zeroPad(this.date.getMinutes());
-    },
-    m: function() {
-      return this.zeroPad(this.date.getMonth() + 1);
     },
     y: function() {
       return this.date.getFullYear() - 2000;

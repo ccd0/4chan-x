@@ -49,7 +49,7 @@ config =
     'http://tineye.com/search?url='
     '#http://saucenao.com/search.php?db=999&url='
   ].join '\n'
-  time: '%m/%d/%y(%D)%H:%i'
+  time: '%m/%d/%y(%a)%H:%M'
   updater:
     checkbox:
       'Verbose':     [true,  'Show countdown timer, new post count']
@@ -1322,7 +1322,7 @@ time =
     code = $.config('time').replace /%(.)/g, (s, c) ->
       switch c
         when '%' then '%'
-        when 'A', 'D', 'H', 'a', 'd', 'i', 'm', 'y' then "' + time.#{c}() + '"
+        when 'a', 'd', 'H', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
         else s
     time.funk = Function 'time', "return '#{code}'"
 
@@ -1342,8 +1342,7 @@ time =
       $.replace s, timeEl
 
   zeroPad: (n) -> if n < 10 then '0' + n else n
-  A: -> if @date.getHours() < 12 then 'AM' else 'PM'
-  D: -> [
+  a: -> [
     'Sun'
     'Mon'
     'Tue'
@@ -1352,11 +1351,12 @@ time =
     'Fri'
     'Sat'
   ][@date.getDay()]
-  H: -> @zeroPad @date.getHours()
-  a: -> if @date.getHours < 12 then 'am' else 'pm'
   d: -> @zeroPad @date.getDate()
-  i: -> @zeroPad @date.getMinutes()
+  H: -> @zeroPad @date.getHours()
   m: -> @zeroPad @date.getMonth() + 1
+  M: -> @zeroPad @date.getMinutes()
+  p: -> if @date.getHours() < 12 then 'AM' else 'PM'
+  P: -> if @date.getHours < 12 then 'am' else 'pm'
   y: -> @date.getFullYear() - 2000
 
 titlePost =
