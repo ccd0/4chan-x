@@ -43,13 +43,12 @@ config =
       'Comment Expansion':  [true,  'Expand too long comments']
       'Thread Expansion':   [true,  'View all replies']
       'Thread Navigation':  [true,  'Navigate to previous / next thread']
-    textarea:
-      flavors: [
-        'http://regex.info/exif.cgi?url='
-        'http://iqdb.org/?url='
-        'http://tineye.com/search?url='
-        '#http://saucenao.com/search.php?db=999&url='
-      ].join '\n'
+  flavors: [
+    'http://regex.info/exif.cgi?url='
+    'http://iqdb.org/?url='
+    'http://tineye.com/search?url='
+    '#http://saucenao.com/search.php?db=999&url='
+  ].join '\n'
   updater:
     checkbox:
       'Verbose':     [true,  'Show countdown timer, new post count']
@@ -724,10 +723,8 @@ options =
     html = "
       <div class=move>Options <a name=close>X</a></div>
       <hr>
-      <div class=column><ul id=monitor><li>Monitoring</li></ul><ul id=img><li>Imaging</li></ul></div>
-      <div class=column><ul id=post><li>Posting</li></ul><ul id=quote><li>Quoting</li></ul><ul id=hide><li>Hiding</li></ul></div>
-      <div class=column><ul id=misc><li>Enhancing</li></ul></div>
-      <br clear=left>
+      <div id=main>
+      </div>
       <hr>
       <div id=floaty>
         <div><input type=button value='hidden: #{hiddenNum}'></div>
@@ -741,26 +738,23 @@ options =
     "
 
     dialog = ui.dialog 'options', top: '25%', left: '25%', html
-    options.append config.main.monitor, $('#monitor', dialog)
-    options.append config.main.img, $('#img', dialog)
-    options.append config.main.post, $('#post', dialog)
-    options.append config.main.quote, $('#quote', dialog)
-    options.append config.main.hide, $('#hide', dialog)
-    options.append config.main.misc, $('#misc', dialog)
+    main = $('#main', dialog)
+    for key, obj of config.main
+      ul = $.el 'ul',
+        textContent: key
+      for key, arr of obj
+        checked = if $.config key then "checked" else ""
+        description = arr[1]
+        li = $.el 'li',
+          innerHTML: "<label><input type=checkbox name='#{key}' #{checked}>#{key}</label><span class=description>#{description}</span>"
+        $.append ul, li
+      $.append main, ul
     for input in $$ 'input[type=checkbox]', dialog
       $.bind input, 'click', $.cb.checked
     $.bind $('input[type=button]', dialog), 'click', options.cb.clearHidden
     $.bind $('a[name=flavors]', dialog), 'click', options.flavors
     $.bind $('textarea', dialog), 'change', $.cb.value
     $.append d.body, dialog
-
-  append: (conf, id) ->
-    for name of conf
-      title = conf[name][1]
-      checked = if $.config name then "checked" else ""
-      li = $.el 'li',
-        innerHTML: "<label title=\"#{title}\"><input name='#{name}' #{checked} type=checkbox>#{name}</label>"
-      $.append id, li
 
   flavors: ->
     ta = $ '#options textarea'
@@ -1989,17 +1983,9 @@ main =
       #options .move, #credits {
         text-align: right;
       }
-      .column {
-        float: left;
-        margin: 0 10px;
-      }
       #options ul {
         list-style: none;
-        margin: 0;
         padding: 0;
-      }
-      #options li:first-child {
-        text-decoration: underline;
       }
       #floaty {
         float: left;
@@ -2007,6 +1993,10 @@ main =
       #options textarea {
         height: 100px;
         width: 100%;
+      }
+      #options #main {
+        overflow: auto;
+        height: 500px;
       }
 
       #qr {
