@@ -1324,13 +1324,13 @@ time =
     g.callbacks.push (root) ->
       return if root.className is 'inline'
       s = $('span[id^=no]', root).previousSibling
-      [_, month, day, year, hour, min_sec] =
-        s.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\S+)/
+      [_, month, day, year, hour, min] =
+        s.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
       year = "20#{year}"
       month -= 1 #months start at 0
       hour = g.chanOffset + Number hour
-      time.date = new Date year, month, day, hour
-      #XXX min_sec unused
+      time.date = new Date year, month, day, hour, min
+      #XXX /b/ will have seconds cut off
 
       timeEl = $.el 'time',
         textContent: time.funk time
