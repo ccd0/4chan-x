@@ -738,7 +738,7 @@ options =
       </div>
       <div><textarea style='display: none;' name=flavors>#{$.config 'flavors'}</textarea></div>
       <div id=time style='display: none;'>
-        <div><input name=time value=#{$.config 'time'}></div>
+        <div><input name=time value=#{$.config 'time'}> <span id=timePreview></span></div>
         <table>
           <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
           <tbody>
@@ -772,7 +772,9 @@ options =
     $.bind $('a[name=flavors]', dialog), 'click', options.flavors
     $.bind $('a[name=time]', dialog), 'click', options.time
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
+    $.bind $('input[name=time]', dialog), 'keyup', options.cb.time
     $.append d.body, dialog
+    options.cb.time.call $('input[name=time]', dialog)
 
   flavors: ->
     ta = $ '#options textarea[name=flavors]'
@@ -790,6 +792,11 @@ options =
       $.deleteValue "hiddenThreads/#{g.BOARD}/"
       @value = "hidden: 0"
       g.hiddenReplies = {}
+    time: (e) ->
+      $.setValue 'time', @value
+      time.foo()
+      time.date = new Date()
+      $('#timePreview').textContent = time.funk time
 
 cooldown =
   init: ->
@@ -1329,13 +1336,7 @@ sauce =
 
 time =
   init: ->
-    code = $.config('time').replace /%(.)/g, (s, c) ->
-      switch c
-        when '%' then '%'
-        when 'a', 'd', 'H', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
-        else s
-    time.funk = Function 'time', "return '#{code}'"
-
+    time.foo()
     g.callbacks.push (root) ->
       return if root.className is 'inline'
       s = $('span[id^=no]', root).previousSibling
@@ -1350,6 +1351,14 @@ time =
       timeEl = $.el 'time',
         textContent: ' ' + time.funk(time) + ' '
       $.replace s, timeEl
+
+  foo: ->
+    code = $.config('time').replace /%(.)/g, (s, c) ->
+      switch c
+        when '%' then '%'
+        when 'a', 'd', 'H', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
+        else s
+    time.funk = Function 'time', "return '#{code}'"
 
   zeroPad: (n) -> if n < 10 then '0' + n else n
   a: -> [
