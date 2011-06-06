@@ -739,8 +739,18 @@ options =
       <div><textarea style='display: none;' name=flavors>#{$.config 'flavors'}</textarea></div>
       <div id=time style='display: none;'>
         <div><input name=time value=#{$.config 'time'}></div>
-        <ul>
-        </ul>
+        <table>
+          <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>source</a></caption>
+          <tbody>
+            <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>
+            <tr><td>%a</td><td>weekday, abbreviated</td><td>Fri</td></tr>
+            <tr><td>%d</td><td>day of the month (dd), zero padded</td><td>03</td></tr>
+            <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>
+            <tr><td>%m</td><td>mm month</td><td>06</td></tr>
+            <tr><td>%M</td><td>MM minutes</td><td>54</td></tr>
+            <tr><td>%y</td><td>yy two digit year</td><td>00-99</td></tr>
+          </tbody>
+        </table>
       </div>
     "
 
