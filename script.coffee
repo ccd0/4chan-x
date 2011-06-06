@@ -202,8 +202,6 @@ $.extend $,
     style
   config: (name) ->
     $.getValue name, _config[name]
-  zeroPad: (n) ->
-    if n < 10 then '0' + n else n
   x: (path, root=d.body) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
       singleNodeValue
@@ -1313,13 +1311,16 @@ sauce =
             href: prefix + suffix
           $.append span, $.tn(' '), link
 
-time: ->
+time =
   init: ->
-    g.callbacks.push (root) ->
-      return
+    format = '%m/%d/%y(%D)%H:%i'
+    code = format.replace /%(.)/g, (s, c) ->
+      switch c
+        when '%' then '%'
+        when 'A', 'D', 'H', 'd', 'i', 'm', 'y' then "' + time.#{c}() + '"
+        else s
+    time.funk = Function 'time', "return '#{code}'"
 
-localize =
-  init: ->
     g.callbacks.push (root) ->
       return if root.className is 'inline'
       s = $('span[id^=no]', root).previousSibling
@@ -1328,28 +1329,30 @@ localize =
       year = "20#{year}"
       month -= 1 #months start at 0
       hour = g.chanOffset + Number hour
-      date = new Date year, month, day, hour
-      year = date.getFullYear() - 2000
-      month = $.zeroPad date.getMonth() + 1
-      day   = $.zeroPad date.getDate()
-      hour = date.getHours()
-      meridiem = ''
-      if $.config 'Localized am/pm'
-        meridiem = if hour < 12 then 'AM' else 'PM'
-        hour = hour % 12 or 12
-      hour = $.zeroPad hour
-      dotw = [
-        'Sun'
-        'Mon'
-        'Tue'
-        'Wed'
-        'Thu'
-        'Fri'
-        'Sat'
-      ][date.getDay()]
-      time = $.el 'time',
-        textContent: " #{month}/#{day}/#{year}(#{dotw})#{hour}:#{min_sec}#{meridiem} "
-      $.replace s, time
+      time.date = new Date year, month, day, hour
+      #XXX min_sec unused
+
+      timeEl = $.el 'time',
+        textContent: time.funk time
+      $.replace s, timeEl
+
+  zeroPad: (n) -> if n < 10 then '0' + n else n
+  A: -> if @date.getHours() < 12 then 'AM' else 'PM'
+  D: -> [
+    'Sun'
+    'Mon'
+    'Tue'
+    'Wed'
+    'Thu'
+    'Fri'
+    'Sat'
+  ][@date.getDay()]
+  H: -> @zeroPad @date.getHours()
+  a: -> if @date.getHours < 12 then 'am' else 'pm'
+  d: -> @zeroPad @date.getDate()
+  i: -> @zeroPad @date.getMinutes()
+  m: -> @zeroPad @date.getMonth() + 1
+  y: -> @date.getFullYear() - 2000
 
 titlePost =
   init: ->

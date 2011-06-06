@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, cooldown, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, localize, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, cooldown, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threadStats, threading, time, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -314,13 +314,6 @@
     },
     config: function(name) {
       return $.getValue(name, _config[name]);
-    },
-    zeroPad: function(n) {
-      if (n < 10) {
-        return '0' + n;
-      } else {
-        return n;
-      }
     },
     x: function(path, root) {
       if (root == null) {
@@ -1667,19 +1660,30 @@
       }
     }
   };
-  ({
-    time: function() {
-      return {
-        init: function() {
-          return g.callbacks.push(function(root) {});
-        }
-      };
-    }
-  });
-  localize = {
+  time = {
     init: function() {
+      var code, format;
+      format = '%m/%d/%y(%D)%H:%i';
+      code = format.replace(/%(.)/g, function(s, c) {
+        switch (c) {
+          case '%':
+            return '%';
+          case 'A':
+          case 'D':
+          case 'H':
+          case 'd':
+          case 'i':
+          case 'm':
+          case 'y':
+            return "' + time." + c + "() + '";
+            break;
+          default:
+            return s;
+        }
+      });
+      time.funk = Function('time', "return '" + code + "'");
       return g.callbacks.push(function(root) {
-        var date, day, dotw, hour, meridiem, min_sec, month, s, time, year, _, _ref;
+        var day, hour, min_sec, month, s, timeEl, year, _, _ref;
         if (root.className === 'inline') {
           return;
         }
@@ -1688,23 +1692,51 @@
         year = "20" + year;
         month -= 1;
         hour = g.chanOffset + Number(hour);
-        date = new Date(year, month, day, hour);
-        year = date.getFullYear() - 2000;
-        month = $.zeroPad(date.getMonth() + 1);
-        day = $.zeroPad(date.getDate());
-        hour = date.getHours();
-        meridiem = '';
-        if ($.config('Localized am/pm')) {
-          meridiem = hour < 12 ? 'AM' : 'PM';
-          hour = hour % 12 || 12;
-        }
-        hour = $.zeroPad(hour);
-        dotw = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
-        time = $.el('time', {
-          textContent: " " + month + "/" + day + "/" + year + "(" + dotw + ")" + hour + ":" + min_sec + meridiem + " "
+        time.date = new Date(year, month, day, hour);
+        timeEl = $.el('time', {
+          textContent: time.funk(time)
         });
-        return $.replace(s, time);
+        return $.replace(s, timeEl);
       });
+    },
+    zeroPad: function(n) {
+      if (n < 10) {
+        return '0' + n;
+      } else {
+        return n;
+      }
+    },
+    A: function() {
+      if (this.date.getHours() < 12) {
+        return 'AM';
+      } else {
+        return 'PM';
+      }
+    },
+    D: function() {
+      return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][this.date.getDay()];
+    },
+    H: function() {
+      return this.zeroPad(this.date.getHours());
+    },
+    a: function() {
+      if (this.date.getHours < 12) {
+        return 'am';
+      } else {
+        return 'pm';
+      }
+    },
+    d: function() {
+      return this.zeroPad(this.date.getDate());
+    },
+    i: function() {
+      return this.zeroPad(this.date.getMinutes());
+    },
+    m: function() {
+      return this.zeroPad(this.date.getMonth() + 1);
+    },
+    y: function() {
+      return this.date.getFullYear() - 2000;
     }
   };
   titlePost = {
