@@ -1353,9 +1353,8 @@ time =
       $.replace s, timeEl
 
   foo: ->
-    code = $.config('time').replace /%(.)/g, (s, c) ->
+    code = $.config('time').replace /%([A-Za-z])/g, (s, c) ->
       switch c
-        when '%' then '%'
         when 'a', 'd', 'H', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
         else s
     time.funk = Function 'time', "return '#{code}'"

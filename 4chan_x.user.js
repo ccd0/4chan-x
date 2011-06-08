@@ -1698,10 +1698,8 @@
     },
     foo: function() {
       var code;
-      code = $.config('time').replace(/%(.)/g, function(s, c) {
+      code = $.config('time').replace(/%([A-Za-z])/g, function(s, c) {
         switch (c) {
-          case '%':
-            return '%';
           case 'a':
           case 'd':
           case 'H':
