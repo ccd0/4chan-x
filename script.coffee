@@ -747,8 +747,8 @@ options =
             <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>
             <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>
             <tr><td>%I</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>
-            <tr><td>%m</td><td>month</td><td>06</td></tr>
-            <tr><td>%M</td><td>minutes</td><td>54</td></tr>
+            <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>
+            <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>
             <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>
             <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>
             <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>
