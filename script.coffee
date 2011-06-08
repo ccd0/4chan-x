@@ -746,6 +746,7 @@ options =
             <tr><td>%a</td><td>weekday, abbreviated</td><td>Fri</td></tr>
             <tr><td>%d</td><td>day of the month (dd), zero padded</td><td>03</td></tr>
             <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>
+            <tr><td>%I</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>
             <tr><td>%m</td><td>mm month</td><td>06</td></tr>
             <tr><td>%M</td><td>MM minutes</td><td>54</td></tr>
             <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td>
@@ -1373,6 +1374,7 @@ time =
   ][@date.getDay()]
   d: -> @zeroPad @date.getDate()
   H: -> @zeroPad @date.getHours()
+  I: -> @zeroPad @date.getHours() % 12 or 12
   m: -> @zeroPad @date.getMonth() + 1
   M: -> @zeroPad @date.getMinutes()
   p: -> if @date.getHours() < 12 then 'AM' else 'PM'
