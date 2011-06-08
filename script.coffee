@@ -744,6 +744,8 @@ options =
           <tbody>
             <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>
             <tr><td>%a</td><td>weekday, abbreviated</td><td>Fri</td></tr>
+            <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>
+            <tr><td>%B</td><td>month, full length</td><td>June</td></tr>
             <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>
             <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>
             <tr><td>%I</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>
@@ -1358,10 +1360,23 @@ time =
   foo: ->
     code = $.config('time').replace /%([A-Za-z])/g, (s, c) ->
       switch c
-        when 'a', 'd', 'H', 'I', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
+        when 'a', 'b', 'B', 'd', 'H', 'I', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
         else s
     time.funk = Function 'time', "return '#{code}'"
-
+  month: [
+    'January'
+    'February'
+    'March'
+    'April'
+    'May'
+    'June'
+    'July'
+    'August'
+    'September'
+    'October'
+    'November'
+    'December'
+  ]
   zeroPad: (n) -> if n < 10 then '0' + n else n
   a: -> [
     'Sun'
@@ -1372,6 +1387,8 @@ time =
     'Fri'
     'Sat'
   ][@date.getDay()]
+  b: -> @month[@date.getMonth()][...3]
+  B: -> @month[@date.getMonth()]
   d: -> @zeroPad @date.getDate()
   H: -> @zeroPad @date.getHours()
   I: -> @zeroPad @date.getHours() % 12 or 12
