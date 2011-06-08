@@ -749,8 +749,8 @@ options =
             <tr><td>%I</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>
             <tr><td>%m</td><td>mm month</td><td>06</td></tr>
             <tr><td>%M</td><td>MM minutes</td><td>54</td></tr>
-            <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td>
-            <tr><td>%P</td><td>lower case am or pm</td><td>PM</td>
+            <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>
+            <tr><td>%P</td><td>lower case am or pm</td><td>PM</td></tr>
             <tr><td>%y</td><td>yy two digit year</td><td>00-99</td></tr>
           </tbody>
         </table>
