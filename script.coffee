@@ -1358,7 +1358,7 @@ time =
   foo: ->
     code = $.config('time').replace /%([A-Za-z])/g, (s, c) ->
       switch c
-        when 'a', 'd', 'H', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
+        when 'a', 'd', 'H', 'I', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
         else s
     time.funk = Function 'time', "return '#{code}'"
 

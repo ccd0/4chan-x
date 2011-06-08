@@ -1703,6 +1703,7 @@
           case 'a':
           case 'd':
           case 'H':
+          case 'I':
           case 'm':
           case 'M':
           case 'p':
