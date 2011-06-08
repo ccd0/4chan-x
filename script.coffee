@@ -738,7 +738,7 @@ options =
       </div>
       <div><textarea style='display: none;' name=flavors>#{$.config 'flavors'}</textarea></div>
       <div id=time style='display: none;'>
-        <div><input name=time value=#{$.config 'time'}> <span id=timePreview></span></div>
+        <div><input name=time value='#{$.config 'time'}'> <span id=timePreview></span></div>
         <table>
           <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
           <tbody>
