@@ -2048,6 +2048,7 @@ main =
       #options {
         position: fixed;
         padding: 5px;
+        width: 500px;
       }
       #options .move, #credits {
         text-align: right;
