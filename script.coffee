@@ -742,7 +742,8 @@ options =
           <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
           <tbody>
             <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>
-            <tr><td>%a</td><td>weekday, abbreviated</td><td>Fri</td></tr>
+            <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>
+            <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>
             <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>
             <tr><td>%B</td><td>month, full length</td><td>June</td></tr>
             <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>
@@ -1360,9 +1361,18 @@ time =
   foo: ->
     code = $.config('time').replace /%([A-Za-z])/g, (s, c) ->
       switch c
-        when 'a', 'b', 'B', 'd', 'H', 'I', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
+        when 'a', 'A', 'b', 'B', 'd', 'H', 'I', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
         else s
     time.funk = Function 'time', "return '#{code}'"
+  day: [
+    'Sunday'
+    'Monday'
+    'Tuesday'
+    'Wednesday'
+    'Thursday'
+    'Friday'
+    'Saturday'
+  ]
   month: [
     'January'
     'February'
@@ -1378,15 +1388,8 @@ time =
     'December'
   ]
   zeroPad: (n) -> if n < 10 then '0' + n else n
-  a: -> [
-    'Sun'
-    'Mon'
-    'Tue'
-    'Wed'
-    'Thu'
-    'Fri'
-    'Sat'
-  ][@date.getDay()]
+  a: -> @day[@date.getDay()][...3]
+  A: -> @day[@date.getDay()]
   b: -> @month[@date.getMonth()][...3]
   B: -> @month[@date.getMonth()]
   d: -> @zeroPad @date.getDate()
