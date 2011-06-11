@@ -1103,28 +1103,28 @@
       },
       message: function(e) {
         var data, dialog, duration;
+        Recaptcha.reload();
+        $('iframe[name=iframe]').src = 'about:blank';
         data = e.data;
         dialog = $('#qr');
         if (data) {
           $('input[name=recaptcha_response_field]', dialog).value = '';
           $('#error').textContent = data;
           qr.autohide.unset();
-        } else {
-          if (dialog) {
-            if (g.REPLY && $.config('Persistent QR')) {
-              qr.refresh(dialog);
-            } else {
-              $.rm(dialog);
-            }
-          }
-          if ($.config('Cooldown')) {
-            duration = qr.sage ? 60 : 30;
-            $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
-            cooldown.start();
+          return;
+        }
+        if (dialog) {
+          if (g.REPLY && $.config('Persistent QR')) {
+            qr.refresh(dialog);
+          } else {
+            $.rm(dialog);
           }
         }
-        Recaptcha.reload();
-        return $('iframe[name=iframe]').src = 'about:blank';
+        if ($.config('Cooldown')) {
+          duration = qr.sage ? 60 : 30;
+          $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
+          return cooldown.start();
+        }
       },
       node: function(root) {
         var quote;

@@ -854,25 +854,26 @@ qr =
         $.removeClass dialog, 'auto'
 
     message: (e) ->
+      Recaptcha.reload()
+      $('iframe[name=iframe]').src = 'about:blank'
+
       {data} = e
       dialog = $ '#qr'
       if data # error message
         $('input[name=recaptcha_response_field]', dialog).value = ''
         $('#error').textContent = data
         qr.autohide.unset()
-      else # success
-        if dialog
-          if g.REPLY and $.config 'Persistent QR'
-            qr.refresh dialog
-          else
-            $.rm dialog
-        if $.config 'Cooldown'
-          duration = if qr.sage then 60 else 30
-          $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
-          cooldown.start()
+        return
 
-      Recaptcha.reload()
-      $('iframe[name=iframe]').src = 'about:blank'
+      if dialog
+        if g.REPLY and $.config 'Persistent QR'
+          qr.refresh dialog
+        else
+          $.rm dialog
+      if $.config 'Cooldown'
+        duration = if qr.sage then 60 else 30
+        $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
+        cooldown.start()
 
     node: (root) ->
       quote = $ 'a.quotejs:not(:first-child)', root
