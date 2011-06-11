@@ -736,8 +736,8 @@ options =
         <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAAaCAYAAAA67jspAAAEsUlEQVRo3u2a/W9TVRjH9yf0T+hPRhONMzNm2gB1S8SOIBshKpCwDsWXDdYSYGQbWwtMBBnddC8yda2L8mKDbWQbyuJW2ND5tg7IIFk2OlARNKaLmhj9wft4nudwTntv77p1PeGn2+ST7Xk5z3Pv95x7etvbgoIlvKCnCCwWpyDfFxUa3QYwewrgzxsA//1jYcbfdwFunQX42rM84UnoS9UA81MA/yYtcuGvOYAJ39KFJ7FvRtis3bbIh7uji4tOYv/Yz7aPGQsV/Da+sOgk9uRBto1ctVDJT/3mokPkMTYjYwC/f2OhmqF1kLG6tdGtoP16QRnBj4NQUPSKDnvZTvAFOiCZGFLaK1ewPx7ffesZ9+tXOZx5BLSxl0G7M6QM74GjUmSnu5GwrawhX3mNX2mvXIh/FeYTf6z9/vWdaALUOLV3n3WA9uV60G6eBu2XASU43Q0k7sj5D6UvcTksRY9fOpExBnOR5Ew0a22MYx7WM4tnq1Ne00z9I5EPTGumH68yLlaC1r+Cr3LaTgZLQRtaC9r4dtB+jipBbCPJ6bDO791/iPyB7jbpC/Z1yokQYJ5ZPV/rUV1u5MzxrHXQJ+LGmLtuP/mNNe0uDyTiJ9VocaWFa8s0Tgn++bMpfqgH7VY4L+IXeuWBG2O+tw5z4dhftIOhdrJtK6vp/0i4Cwo37OJiMTu9HoIxzHHv8ZPtrNxLOcnrJ2UdjAe6WqWN8cT3feD1taQmjvXHuiIP644M9si65dWNeeugTb/LxH5Oapu2wkv0jFaBdiPEtpgTyyLQeYSvoN3NGTGv7wBf4SwHbburlm89g10yJxJ+m5/06w1kB0PH7k1gLSSv9el8Zj2QeKxHiit82IMmaUud9OGEoC/xXS/ZWN84bllMNGToKgUH3F+MnGOXwLdshU6zS3KuLyfcu/dxUTvezIjZXTv4Hh7rJriQO3Q5IwPv3BNmj66e70jLgj2SU73kE/UFogaC42m78vnJFv1FnkAKnuN5a7PvsTuSRoAvysw1lYJ/Vpyd82sAxtmlOdkE2tWWRSms2M5XbXifzh9o3csFXl1NNsbpZDfXmua5PTsXrGf0YQ26KrZ5yOc7yIXz1u+SY7AebVXd9br+eDyYb2Qp54qgNhB7YXEdpeCfPgoQLVKGWCHCnj/1BLTVu6Q/1u4k/1zoSX7CpW7KEbk2x0u6PGM9M5/Rdq7fSHbI/4z0YR/0TR5fkdFf5GAserhUqR4EaiwFDz9I94kqiAUcGR940gk1l+jynRUv8jetss3g97rAXlLJV3dVha4exo090n1iXPnGDYScXJYrcuQd0GtrIXpoFflELh4H+m2OrXxSuoqVaUKEH0p9+JGiKyD6hoMd/PMZ+D2rYe79woz8+Y8eBu+ra8D2FD9Re8kWyjXWa6srzeqLtRbTWKyD4xHMmex8XOagT/QJNa2S/d3uddJvHKMM3SdNFPyTB9Q3seCgtsYvsEh0vHWxUI/pt4Uo+MDTABerLFSCmmb9TnxkE8CE30IFqOWSnvrgg+PpoEU+oIY5Pdc8x+4UZk8D3B62yAXUDLVb9tP7YXZZTHUA3BkD+GPGwgzUBjUa3qTw9ykWSn4I9D+H+C08gjS7eAAAAABJRU5ErkJggg==></a></div>
         <div><a href=http://chat.now.im/x/aeos>support throd</a> | <a href=https://github.com/aeosynth/4chan-x/issues>github</a> | <a href=http://userscripts.org/scripts/show/51412>uso</a></div>
       </div>
-      <div><textarea style='display: none;' name=flavors>#{$.config 'flavors'}</textarea></div>
-      <div id=time style='display: none;'>
+      <div style='display: none;' id=flavors><textarea name=flavors>#{$.config 'flavors'}</textarea></div>
+      <div style='display: none;' id=time>
         <div><input name=time value='#{$.config 'time'}'> <span id=timePreview></span></div>
         <table>
           <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
@@ -782,12 +782,28 @@ options =
     options.cb.time.call $('input[name=time]', dialog)
 
   flavors: ->
-    ta = $ '#options textarea[name=flavors]'
-    if ta.style.display then $.show ta else $.hide ta
+    main    = $ '#main'
+    flavors = $ '#flavors'
+    timeDiv = $ '#time'
+    if flavors.style.display #hidden
+      $.show flavors
+      $.hide main
+      $.hide timeDiv
+    else
+      $.hide flavors
+      $.show main
 
   time: ->
-    div = $ '#time'
-    if div.style.display then $.show div else $.hide div
+    main    = $ '#main'
+    flavors = $ '#flavors'
+    timeDiv = $ '#time'
+    if timeDiv.style.display #hidden
+      $.show timeDiv
+      $.hide main
+      $.hide flavors
+    else
+      $.hide timeDiv
+      $.show main
 
   cb:
     clearHidden: (e) ->
