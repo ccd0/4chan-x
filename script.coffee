@@ -5,6 +5,17 @@ if console?
 
 config =
   main:
+    Posting:
+      'Cooldown':           [true,  'Prevent \'flood detected\' errors']
+      'Quick Reply':        [true,  'Reply without leaving the page']
+      'Persistent QR':      [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+    Quoting:
+      'Quote Backlinks':    [true,  'Add quote backlinks']
+      'OP Backlinks':       [false, 'Add backlinks to the OP']
+      'Quote Highlighting': [true,  'Highlight the previewed post']
+      'Quote Inline':       [true,  'Show quoted post inline on quote click']
+      'Quote Preview':      [true,  'Show quote content on hover']
+      'Indicate OP quote':  [true,  'Add \'(OP)\' to OP quotes']
     Monitoring:
       'Thread Updater':     [true,  'Update threads']
       'Unread Count':       [true,  'Show unread post count in tab title']
@@ -19,17 +30,6 @@ config =
       'Image Hover':        [false, 'Show full image on mouseover']
       'Image Preloading':   [false, 'Preload Images']
       'Sauce':              [true,  'Add sauce to images']
-    Posting:
-      'Cooldown':           [true,  'Prevent \'flood detected\' errors']
-      'Quick Reply':        [true,  'Reply without leaving the page']
-      'Persistent QR':      [false, 'Quick reply won\'t disappear after posting. Only in replies.']
-    Quoting:
-      'Quote Backlinks':    [true,  'Add quote backlinks']
-      'OP Backlinks':       [false, 'Add backlinks to the OP']
-      'Quote Highlighting': [true,  'Highlight the previewed post']
-      'Quote Inline':       [true,  'Show quoted post inline on quote click']
-      'Quote Preview':      [true,  'Show quote content on hover']
-      'Indicate OP quote':  [true,  'Add \'(OP)\' to OP quotes']
     Hiding:
       'Reply Hiding':       [true,  'Hide single replies']
       'Thread Hiding':      [true,  'Hide entire threads']
@@ -38,7 +38,7 @@ config =
       '404 Redirect':       [true,  'Redirect dead threads']
       'Anonymize':          [false, 'Make everybody anonymous']
       'Keybinds':           [false, 'Binds actions to keys']
-      'Time Formatting':    [false, 'Arbitrarily formatted timestamps, using your local time']
+      'Time Formatting':    [true,  'Arbitrarily formatted timestamps, using your local time']
       'Report Button':      [true,  'Add report buttons']
       'Comment Expansion':  [true,  'Expand too long comments']
       'Thread Expansion':   [true,  'View all replies']
@@ -1745,8 +1745,7 @@ imgExpand =
       return unless thumb = $ 'img[md5]', root
       a = thumb.parentNode
       $.bind a, 'click', imgExpand.cb.toggle
-      return if root.className is 'inline'
-      if imgExpand.on then imgExpand.toggle a
+      if imgExpand.on and root.className isnt 'inline' then imgExpand.toggle a
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
       e.preventDefault()
