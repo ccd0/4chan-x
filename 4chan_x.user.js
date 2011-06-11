@@ -68,7 +68,7 @@
   }
   config = {
     main: {
-      monitor: {
+      Monitoring: {
         'Thread Updater': [true, 'Update threads'],
         'Unread Count': [true, 'Show unread post count in tab title'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
@@ -77,19 +77,19 @@
         'Auto Watch': [true, 'Automatically watch threads that you start'],
         'Auto Watch Reply': [false, 'Automatically watch threads that you reply to']
       },
-      img: {
+      Imaging: {
         'Image Auto-Gif': [false, 'Animate gif thumbnails'],
         'Image Expansion': [true, 'Expand images'],
         'Image Hover': [false, 'Show full image on mouseover'],
         'Image Preloading': [false, 'Preload Images'],
         'Sauce': [true, 'Add sauce to images']
       },
-      post: {
+      Posting: {
         'Cooldown': [true, 'Prevent \'flood detected\' errors'],
         'Quick Reply': [true, 'Reply without leaving the page'],
         'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.']
       },
-      quote: {
+      Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
         'OP Backlinks': [false, 'Add backlinks to the OP'],
         'Quote Highlighting': [true, 'Highlight the previewed post'],
@@ -97,12 +97,12 @@
         'Quote Preview': [true, 'Show quote content on hover'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
       },
-      hide: {
+      Hiding: {
         'Reply Hiding': [true, 'Hide single replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
       },
-      misc: {
+      Enhancing: {
         '404 Redirect': [true, 'Redirect dead threads'],
         'Anonymize': [false, 'Make everybody anonymous'],
         'Keybinds': [false, 'Binds actions to keys'],
@@ -958,7 +958,7 @@
       var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
-      html = "      <div class=move>Options <a name=close>X</a></div>      <hr>      <div id=floaty>        <div><input type=button value='hidden: " + hiddenNum + "'></div>        <div><a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a></div>      </div>      <div id=credits>        <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAAaCAYAAAA67jspAAAEsUlEQVRo3u2a/W9TVRjH9yf0T+hPRhONMzNm2gB1S8SOIBshKpCwDsWXDdYSYGQbWwtMBBnddC8yda2L8mKDbWQbyuJW2ND5tg7IIFk2OlARNKaLmhj9wft4nudwTntv77p1PeGn2+ST7Xk5z3Pv95x7etvbgoIlvKCnCCwWpyDfFxUa3QYwewrgzxsA//1jYcbfdwFunQX42rM84UnoS9UA81MA/yYtcuGvOYAJ39KFJ7FvRtis3bbIh7uji4tOYv/Yz7aPGQsV/Da+sOgk9uRBto1ctVDJT/3mokPkMTYjYwC/f2OhmqF1kLG6tdGtoP16QRnBj4NQUPSKDnvZTvAFOiCZGFLaK1ewPx7ffesZ9+tXOZx5BLSxl0G7M6QM74GjUmSnu5GwrawhX3mNX2mvXIh/FeYTf6z9/vWdaALUOLV3n3WA9uV60G6eBu2XASU43Q0k7sj5D6UvcTksRY9fOpExBnOR5Ew0a22MYx7WM4tnq1Ne00z9I5EPTGumH68yLlaC1r+Cr3LaTgZLQRtaC9r4dtB+jipBbCPJ6bDO791/iPyB7jbpC/Z1yokQYJ5ZPV/rUV1u5MzxrHXQJ+LGmLtuP/mNNe0uDyTiJ9VocaWFa8s0Tgn++bMpfqgH7VY4L+IXeuWBG2O+tw5z4dhftIOhdrJtK6vp/0i4Cwo37OJiMTu9HoIxzHHv8ZPtrNxLOcnrJ2UdjAe6WqWN8cT3feD1taQmjvXHuiIP644M9si65dWNeeugTb/LxH5Oapu2wkv0jFaBdiPEtpgTyyLQeYSvoN3NGTGv7wBf4SwHbburlm89g10yJxJ+m5/06w1kB0PH7k1gLSSv9el8Zj2QeKxHiit82IMmaUud9OGEoC/xXS/ZWN84bllMNGToKgUH3F+MnGOXwLdshU6zS3KuLyfcu/dxUTvezIjZXTv4Hh7rJriQO3Q5IwPv3BNmj66e70jLgj2SU73kE/UFogaC42m78vnJFv1FnkAKnuN5a7PvsTuSRoAvysw1lYJ/Vpyd82sAxtmlOdkE2tWWRSms2M5XbXifzh9o3csFXl1NNsbpZDfXmua5PTsXrGf0YQ26KrZ5yOc7yIXz1u+SY7AebVXd9br+eDyYb2Qp54qgNhB7YXEdpeCfPgoQLVKGWCHCnj/1BLTVu6Q/1u4k/1zoSX7CpW7KEbk2x0u6PGM9M5/Rdq7fSHbI/4z0YR/0TR5fkdFf5GAserhUqR4EaiwFDz9I94kqiAUcGR940gk1l+jynRUv8jetss3g97rAXlLJV3dVha4exo090n1iXPnGDYScXJYrcuQd0GtrIXpoFflELh4H+m2OrXxSuoqVaUKEH0p9+JGiKyD6hoMd/PMZ+D2rYe79woz8+Y8eBu+ra8D2FD9Re8kWyjXWa6srzeqLtRbTWKyD4xHMmex8XOagT/QJNa2S/d3uddJvHKMM3SdNFPyTB9Q3seCgtsYvsEh0vHWxUI/pt4Uo+MDTABerLFSCmmb9TnxkE8CE30IFqOWSnvrgg+PpoEU+oIY5Pdc8x+4UZk8D3B62yAXUDLVb9tP7YXZZTHUA3BkD+GPGwgzUBjUa3qTw9ykWSn4I9D+H+C08gjS7eAAAAABJRU5ErkJggg==></a></div>        <div><a href=http://chat.now.im/x/aeos>support throd</a> | <a href=https://github.com/aeosynth/4chan-x/issues>github</a> | <a href=http://userscripts.org/scripts/show/51412>uso</a></div>      </div>      <hr>      <div id=main>      </div>      <div style='display: none;' id=flavors><textarea name=flavors>" + ($.config('flavors')) + "</textarea></div>      <div style='display: none;' id=time>        <div><input name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>        <table>          <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>          <tbody>            <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>            <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>            <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>            <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>            <tr><td>%B</td><td>month, full length</td><td>June</td></tr>            <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>            <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>            <tr><td>%I</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>            <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>            <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>            <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>            <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>            <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>          </tbody>        </table>      </div>    ";
+      html = "      <div class=move>Options <a name=close>X</a></div>      <hr>      <div id=floaty>        <div><input type=button value='hidden: " + hiddenNum + "'></div>        <div><a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a></div>      </div>      <div id=credits>        <div><a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted><img alt=Donate src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAAaCAYAAAA67jspAAAEsUlEQVRo3u2a/W9TVRjH9yf0T+hPRhONMzNm2gB1S8SOIBshKpCwDsWXDdYSYGQbWwtMBBnddC8yda2L8mKDbWQbyuJW2ND5tg7IIFk2OlARNKaLmhj9wft4nudwTntv77p1PeGn2+ST7Xk5z3Pv95x7etvbgoIlvKCnCCwWpyDfFxUa3QYwewrgzxsA//1jYcbfdwFunQX42rM84UnoS9UA81MA/yYtcuGvOYAJ39KFJ7FvRtis3bbIh7uji4tOYv/Yz7aPGQsV/Da+sOgk9uRBto1ctVDJT/3mokPkMTYjYwC/f2OhmqF1kLG6tdGtoP16QRnBj4NQUPSKDnvZTvAFOiCZGFLaK1ewPx7ffesZ9+tXOZx5BLSxl0G7M6QM74GjUmSnu5GwrawhX3mNX2mvXIh/FeYTf6z9/vWdaALUOLV3n3WA9uV60G6eBu2XASU43Q0k7sj5D6UvcTksRY9fOpExBnOR5Ew0a22MYx7WM4tnq1Ne00z9I5EPTGumH68yLlaC1r+Cr3LaTgZLQRtaC9r4dtB+jipBbCPJ6bDO791/iPyB7jbpC/Z1yokQYJ5ZPV/rUV1u5MzxrHXQJ+LGmLtuP/mNNe0uDyTiJ9VocaWFa8s0Tgn++bMpfqgH7VY4L+IXeuWBG2O+tw5z4dhftIOhdrJtK6vp/0i4Cwo37OJiMTu9HoIxzHHv8ZPtrNxLOcnrJ2UdjAe6WqWN8cT3feD1taQmjvXHuiIP644M9si65dWNeeugTb/LxH5Oapu2wkv0jFaBdiPEtpgTyyLQeYSvoN3NGTGv7wBf4SwHbburlm89g10yJxJ+m5/06w1kB0PH7k1gLSSv9el8Zj2QeKxHiit82IMmaUud9OGEoC/xXS/ZWN84bllMNGToKgUH3F+MnGOXwLdshU6zS3KuLyfcu/dxUTvezIjZXTv4Hh7rJriQO3Q5IwPv3BNmj66e70jLgj2SU73kE/UFogaC42m78vnJFv1FnkAKnuN5a7PvsTuSRoAvysw1lYJ/Vpyd82sAxtmlOdkE2tWWRSms2M5XbXifzh9o3csFXl1NNsbpZDfXmua5PTsXrGf0YQ26KrZ5yOc7yIXz1u+SY7AebVXd9br+eDyYb2Qp54qgNhB7YXEdpeCfPgoQLVKGWCHCnj/1BLTVu6Q/1u4k/1zoSX7CpW7KEbk2x0u6PGM9M5/Rdq7fSHbI/4z0YR/0TR5fkdFf5GAserhUqR4EaiwFDz9I94kqiAUcGR940gk1l+jynRUv8jetss3g97rAXlLJV3dVha4exo090n1iXPnGDYScXJYrcuQd0GtrIXpoFflELh4H+m2OrXxSuoqVaUKEH0p9+JGiKyD6hoMd/PMZ+D2rYe79woz8+Y8eBu+ra8D2FD9Re8kWyjXWa6srzeqLtRbTWKyD4xHMmex8XOagT/QJNa2S/d3uddJvHKMM3SdNFPyTB9Q3seCgtsYvsEh0vHWxUI/pt4Uo+MDTABerLFSCmmb9TnxkE8CE30IFqOWSnvrgg+PpoEU+oIY5Pdc8x+4UZk8D3B62yAXUDLVb9tP7YXZZTHUA3BkD+GPGwgzUBjUa3qTw9ykWSn4I9D+H+C08gjS7eAAAAABJRU5ErkJggg==></a></div>        <div><a href=http://chat.now.im/x/aeos>support throd</a> | <a href=https://github.com/aeosynth/4chan-x/issues>github</a> | <a href=http://userscripts.org/scripts/show/51412>uso</a></div>      </div>      <hr>      <div id=main>      </div>      <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>      <div style='display: none;' id=time>        <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>        <table>          <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>          <tbody>            <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>            <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>            <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>            <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>            <tr><td>%B</td><td>month, full length</td><td>June</td></tr>            <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>            <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>            <tr><td>%I</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>            <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>            <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>            <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>            <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>            <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>          </tbody>        </table>      </div>    ";
       dialog = ui.dialog('options', {
         top: '25%',
         left: '25%'
@@ -975,7 +975,7 @@
           checked = $.config(key) ? "checked" : "";
           description = arr[1];
           li = $.el('li', {
-            innerHTML: "<label><input type=checkbox name='" + key + "' " + checked + ">" + key + "</label><span class=description>" + description + "</span>"
+            innerHTML: "<label><input type=checkbox name='" + key + "' " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
           });
           $.append(ul, li);
         }
@@ -2663,7 +2663,7 @@
       #options {\
         position: fixed;\
         padding: 5px;\
-        width: 500px;\
+        min-width: 500px;\
       }\
       #options .move, #credits {\
         text-align: right;\
@@ -2681,7 +2681,7 @@
       }\
       #options #main {\
         overflow: auto;\
-        height: 500px;\
+        height: 450px;\
       }\
 \
       #qr {\
