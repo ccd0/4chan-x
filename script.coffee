@@ -2001,7 +2001,7 @@ main =
         display: none;
       }
 
-      img[md5] + img {
+      .filesize + br + a {
         float: left;
       }
       body.fitwidth img[md5] + img {
