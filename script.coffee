@@ -857,6 +857,7 @@ qr =
       {data} = e
       dialog = $ '#qr'
       if data # error message
+        $('input[name=recaptcha_response_field]', dialog).value = ''
         $('#error').textContent = data
         qr.autohide.unset()
       else # success
