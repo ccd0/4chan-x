@@ -2324,6 +2324,9 @@
         }
         a = thumb.parentNode;
         $.bind(a, 'click', imgExpand.cb.toggle);
+        if (root.className === 'inline') {
+          return;
+        }
         if (imgExpand.on) {
           return imgExpand.toggle(a);
         }
