@@ -1106,6 +1106,7 @@
         data = e.data;
         dialog = $('#qr');
         if (data) {
+          $('input[name=recaptcha_response_field]', dialog).value = '';
           $('#error').textContent = data;
           qr.autohide.unset();
         } else {
