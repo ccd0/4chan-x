@@ -82,7 +82,7 @@ ui =
     top  = localStorage["#{id}Top"]  ? top
     if left then el.style.left = left else el.style.right  = '0px'
     if top  then el.style.top  = top  else el.style.bottom = '0px'
-    el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
+    el.querySelector('div.move')?.addEventListener 'mousedown', ui.dragstart, false
     el.querySelector('div.move a[name=close]')?.addEventListener 'click',
       (-> el.parentNode.removeChild(el)), true
     el
@@ -722,7 +722,7 @@ options =
     hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
     html = "
-      <div class=move>
+      <div>
         <div id=floaty>
           <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a>
         </div>
