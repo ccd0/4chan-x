@@ -783,7 +783,11 @@ options =
     $.bind link, 'click', options.tab for link in $$ '#floaty a', dialog
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.cb.time
+
+    $.append d.body, $.el 'div', className: 'overlay'
+
     $.append d.body, dialog
+
     options.cb.time.call $('input[name=time]', dialog)
 
     dialog.addEventListener 'mousedown', ((e) -> e.stopPropagation()), false
@@ -791,6 +795,7 @@ options =
 
   rm: ->
     $.rm $ '#options'
+    $.rm $ '.overlay'
     window.removeEventListener 'mousedown', options.rm, false
 
   tab: ->
@@ -2148,6 +2153,14 @@ main =
       }
       .inlined {
         opacity: .5;
+      }
+      .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-color: rgba(0,0,0,.5);
       }
     '
 
