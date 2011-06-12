@@ -1812,7 +1812,7 @@ imgExpand =
     unless a.parentNode.className is 'op'
       filesize = $ 'span.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
-      img.setAttribute 'style', "max-width: -moz-calc(#{max}px);"
+      img.style.maxWidth = "-moz-calc(#{max}px)"
     a.appendChild img
 
   dialog: ->

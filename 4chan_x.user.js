@@ -2419,7 +2419,7 @@
       if (a.parentNode.className !== 'op') {
         filesize = $('span.filesize', a.parentNode);
         _ref2 = filesize.textContent.match(/(\d+)x/), _ = _ref2[0], max = _ref2[1];
-        img.setAttribute('style', "max-width: -moz-calc(" + max + "px);");
+        img.style.maxWidth = "-moz-calc(" + max + "px)";
       }
       return a.appendChild(img);
     },
