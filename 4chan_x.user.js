@@ -960,12 +960,11 @@
       var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
-      html = "      <div id=floaty>        <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a>      </div>      <div id=credits>        <a href=http://chat.now.im/x/aeos>support throd</a> |        <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |        <a href=http://userscripts.org/scripts/show/51412>uso</a> |        <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>      </div>      <hr>      <div id=main>      </div>      <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>      <div style='display: none;' id=time>        <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>        <table>          <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>          <tbody>            <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>            <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>            <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>            <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>            <tr><td>%B</td><td>month, full length</td><td>June</td></tr>            <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>            <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>            <tr><td>%I</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>            <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>            <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>            <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>            <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>            <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>          </tbody>        </table>      </div>    ";
-      dialog = $.el('div', {
-        id: 'options',
-        className: 'reply dialog',
-        innerHTML: html
-      });
+      html = "      <div>        <div id=floaty>          <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a>        </div>        <div id=credits>          <a href=http://chat.now.im/x/aeos>support throd</a> |          <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |          <a href=http://userscripts.org/scripts/show/51412>uso</a> |          <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>        </div>      </div>      <hr>      <div id=main>      </div>      <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>      <div style='display: none;' id=time>        <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>        <table>          <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>          <tbody>            <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>            <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>            <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>            <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>            <tr><td>%B</td><td>month, full length</td><td>June</td></tr>            <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>            <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>            <tr><td>%I</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>            <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>            <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>            <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>            <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>            <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>          </tbody>        </table>      </div>    ";
+      dialog = ui.dialog('options', {
+        top: '25%',
+        left: '25%'
+      }, html);
       main = $('#main', dialog);
       _ref = config.main;
       for (key in _ref) {
@@ -2683,34 +2682,25 @@
       #options {\
         position: fixed;\
         padding: 5px;\
-        max-height: 70%;\
-        width: 50%;\
-        top: 15%;\
-        left: 25%;\
-        overflow: auto;\
+        min-width: 500px;\
       }\
-      #floaty {\
-        float: left;\
-      }\
-      #credits {\
+      #options .move, #credits {\
         text-align: right;\
       }\
       #options ul {\
         list-style: none;\
         padding: 0;\
       }\
-      #options textarea {\
-        height: 200px;\
-        width: 100%;\
-        resize: none;\
+      #floaty {\
+        float: left;\
       }\
-      .overlay {\
-        position: fixed;\
+      #options textarea {\
+        height: 100px;\
         width: 100%;\
-        height: 100%;\
-        top: 0;\
-        left: 0;\
-        background-color: rgba(0,0,0,.5);\
+      }\
+      #options #main {\
+        overflow: auto;\
+        height: 450px;\
       }\
 \
       #qr {\
@@ -2795,6 +2785,14 @@
       }\
       .inlined {\
         opacity: .5;\
+      }\
+      .overlay {\
+        position: fixed;\
+        width: 100%;\
+        height: 100%;\
+        top: 0;\
+        left: 0;\
+        background-color: rgba(0,0,0,.5);\
       }\
     '
   };
