@@ -46,6 +46,7 @@ config =
   flavors: [
     'http://regex.info/exif.cgi?url='
     'http://iqdb.org/?url='
+    'http://www.google.com/searchbyimage?image_url='
     'http://tineye.com/search?url='
     '#http://saucenao.com/search.php?db=999&url='
   ].join '\n'
