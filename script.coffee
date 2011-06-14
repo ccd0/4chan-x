@@ -786,14 +786,14 @@ options =
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.cb.time
 
-    $.append d.body, $.el 'div', className: 'overlay'
+    overlay = $.el 'div', className: 'overlay'
+    $.append d.body, overlay
 
     $.append d.body, dialog
 
     options.cb.time.call $('input[name=time]', dialog)
 
-    dialog.addEventListener 'mousedown', ((e) -> e.stopPropagation()), false
-    window.addEventListener 'mousedown', options.rm, false
+    $.bind overlay, 'click', options.rm
 
   rm: ->
     $.rm $ '#options'
