@@ -800,7 +800,6 @@ options =
   rm: ->
     $.rm $ '#options'
     $.rm $ '.overlay'
-    window.removeEventListener 'mousedown', options.rm, false
 
   tab: ->
     content = $$ '#main, #flavors, #time'

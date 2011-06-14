@@ -1019,8 +1019,7 @@
     },
     rm: function() {
       $.rm($('#options'));
-      $.rm($('.overlay'));
-      return window.removeEventListener('mousedown', options.rm, false);
+      return $.rm($('.overlay'));
     },
     tab: function() {
       var content, div, _i, _len, _results;
