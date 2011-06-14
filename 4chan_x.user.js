@@ -1880,12 +1880,10 @@
       if (table = $("#i" + id, $.x('ancestor::td[1]', this))) {
         $.rm(table);
         $.removeClass(this, 'inlined');
-        if (this.className === 'backlink') {
-          _ref = $$('input', table);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            inlined = _ref[_i];
-            $.show($.x('ancestor::table[1]', d.getElementById(inlined.name)));
-          }
+        _ref = $$('input', table);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          inlined = _ref[_i];
+          $.show($.x('ancestor::table[1]', d.getElementById(inlined.name)));
         }
         return;
       }

@@ -1475,9 +1475,8 @@ quoteInline =
     if table = $ "#i#{id}", $.x 'ancestor::td[1]', @
       $.rm table
       $.removeClass @, 'inlined'
-      if @className is 'backlink'
-        for inlined in $$ 'input', table
-          $.show $.x 'ancestor::table[1]', d.getElementById inlined.name
+      for inlined in $$ 'input', table
+        $.show $.x 'ancestor::table[1]', d.getElementById inlined.name
       return
     root = if @parentNode.nodeName is 'FONT' then @parentNode else @nextSibling
     if el = d.getElementById id
