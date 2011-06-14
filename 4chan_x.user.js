@@ -169,7 +169,7 @@
       if ((_ref4 = el.querySelector('div.move a[name=close]')) != null) {
         _ref4.addEventListener('click', (function() {
           return el.parentNode.removeChild(el);
-        }), true);
+        }), false);
       }
       return el;
     },
@@ -178,8 +178,8 @@
       e.preventDefault();
       ui.el = el = this.parentNode;
       d = document;
-      d.addEventListener('mousemove', ui.drag, true);
-      d.addEventListener('mouseup', ui.dragend, true);
+      d.addEventListener('mousemove', ui.drag, false);
+      d.addEventListener('mouseup', ui.dragend, false);
       rect = el.getBoundingClientRect();
       ui.dx = e.clientX - rect.left;
       ui.dy = e.clientY - rect.top;
@@ -216,8 +216,8 @@
       localStorage["" + id + "Left"] = el.style.left;
       localStorage["" + id + "Top"] = el.style.top;
       d = document;
-      d.removeEventListener('mousemove', ui.drag, true);
-      return d.removeEventListener('mouseup', ui.dragend, true);
+      d.removeEventListener('mousemove', ui.drag, false);
+      return d.removeEventListener('mouseup', ui.dragend, false);
     },
     hover: function(e) {
       var bot, clientHeight, clientWidth, clientX, clientY, el, height, top, _ref;
@@ -371,10 +371,10 @@
       return el;
     },
     bind: function(el, eventType, handler) {
-      return el.addEventListener(eventType, handler, true);
+      return el.addEventListener(eventType, handler, false);
     },
     unbind: function(el, eventType, handler) {
-      return el.removeEventListener(eventType, handler, true);
+      return el.removeEventListener(eventType, handler, false);
     },
     isDST: function() {
       /*

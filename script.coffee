@@ -84,15 +84,15 @@ ui =
     if top  then el.style.top  = top  else el.style.bottom = '0px'
     el.querySelector('div.move')?.addEventListener 'mousedown', ui.dragstart, false
     el.querySelector('div.move a[name=close]')?.addEventListener 'click',
-      (-> el.parentNode.removeChild(el)), true
+      (-> el.parentNode.removeChild(el)), false
     el
   dragstart: (e) ->
     #prevent text selection
     e.preventDefault()
     ui.el = el = @parentNode
     d = document
-    d.addEventListener 'mousemove', ui.drag, true
-    d.addEventListener 'mouseup',   ui.dragend, true
+    d.addEventListener 'mousemove', ui.drag, false
+    d.addEventListener 'mouseup',   ui.dragend, false
     #distance from pointer to el edge is constant; calculate it here.
     # XXX opera reports el.offsetLeft / el.offsetTop as 0
     rect = el.getBoundingClientRect()
@@ -125,8 +125,8 @@ ui =
     localStorage["#{id}Left"] = el.style.left
     localStorage["#{id}Top"]  = el.style.top
     d = document
-    d.removeEventListener 'mousemove', ui.drag, true
-    d.removeEventListener 'mouseup',   ui.dragend, true
+    d.removeEventListener 'mousemove', ui.drag, false
+    d.removeEventListener 'mouseup',   ui.dragend, false
   hover: (e) ->
     {clientX, clientY} = e
     {el} = ui
@@ -233,9 +233,9 @@ $.extend $,
     $.extend el, properties if properties
     el
   bind: (el, eventType, handler) ->
-    el.addEventListener eventType, handler, true
+    el.addEventListener eventType, handler, false
   unbind: (el, eventType, handler) ->
-    el.removeEventListener eventType, handler, true
+    el.removeEventListener eventType, handler, false
   isDST: ->
     # XXX this should check for DST in NY
     ###
