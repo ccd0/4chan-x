@@ -745,6 +745,11 @@
       var thread;
       thread = nav.getThread();
       switch (keybinds.key) {
+        case '<Esc>':
+          if ($('#options')) {
+            return options.rm();
+          }
+          break;
         case '0':
           return window.location = "/" + g.BOARD + "/0#0";
         case 'I':

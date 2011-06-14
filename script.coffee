@@ -539,6 +539,8 @@ keybinds =
   normal: (e) ->
     thread = nav.getThread()
     switch keybinds.key
+      when '<Esc>'
+        options.rm() if $ '#options'
       when '0'
         window.location = "/#{g.BOARD}/0#0"
       when 'I'
