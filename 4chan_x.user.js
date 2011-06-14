@@ -169,7 +169,7 @@
       if ((_ref4 = el.querySelector('div.move a[name=close]')) != null) {
         _ref4.addEventListener('click', (function() {
           return el.parentNode.removeChild(el);
-        }), true);
+        }), false);
       }
       return el;
     },
@@ -178,8 +178,8 @@
       e.preventDefault();
       ui.el = el = this.parentNode;
       d = document;
-      d.addEventListener('mousemove', ui.drag, true);
-      d.addEventListener('mouseup', ui.dragend, true);
+      d.addEventListener('mousemove', ui.drag, false);
+      d.addEventListener('mouseup', ui.dragend, false);
       rect = el.getBoundingClientRect();
       ui.dx = e.clientX - rect.left;
       ui.dy = e.clientY - rect.top;
@@ -216,8 +216,8 @@
       localStorage["" + id + "Left"] = el.style.left;
       localStorage["" + id + "Top"] = el.style.top;
       d = document;
-      d.removeEventListener('mousemove', ui.drag, true);
-      return d.removeEventListener('mouseup', ui.dragend, true);
+      d.removeEventListener('mousemove', ui.drag, false);
+      return d.removeEventListener('mouseup', ui.dragend, false);
     },
     hover: function(e) {
       var bot, clientHeight, clientWidth, clientX, clientY, el, height, top, _ref;
@@ -371,10 +371,10 @@
       return el;
     },
     bind: function(el, eventType, handler) {
-      return el.addEventListener(eventType, handler, true);
+      return el.addEventListener(eventType, handler, false);
     },
     unbind: function(el, eventType, handler) {
-      return el.removeEventListener(eventType, handler, true);
+      return el.removeEventListener(eventType, handler, false);
     },
     isDST: function() {
       /*
@@ -745,6 +745,11 @@
       var thread;
       thread = nav.getThread();
       switch (keybinds.key) {
+        case '<Esc>':
+          if ($('#options')) {
+            return options.rm();
+          }
+          break;
         case '0':
           return window.location = "/" + g.BOARD + "/0#0";
         case 'I':
@@ -957,7 +962,7 @@
       }
     },
     dialog: function() {
-      var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+      var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
       html = "      <div>        <div id=floaty>          <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a>        </div>        <div id=credits>          <a href=http://chat.now.im/x/aeos>support throd</a> |          <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |          <a href=http://userscripts.org/scripts/show/51412>uso</a> |          <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>        </div>      </div>      <hr>      <div id=main>      </div>      <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>      <div style='display: none;' id=time>        <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>        <table>          <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>          <tbody>            <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>            <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>            <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>            <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>            <tr><td>%B</td><td>month, full length</td><td>June</td></tr>            <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>            <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>            <tr><td>%I</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>            <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>            <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>            <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>            <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>            <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>          </tbody>        </table>      </div>    ";
@@ -1004,20 +1009,17 @@
       }
       $.bind($('textarea[name=flavors]', dialog), 'change', $.cb.value);
       $.bind($('input[name=time]', dialog), 'keyup', options.cb.time);
-      $.append(d.body, $.el('div', {
+      overlay = $.el('div', {
         className: 'overlay'
-      }));
+      });
+      $.append(d.body, overlay);
       $.append(d.body, dialog);
       options.cb.time.call($('input[name=time]', dialog));
-      dialog.addEventListener('mousedown', (function(e) {
-        return e.stopPropagation();
-      }), false);
-      return window.addEventListener('mousedown', options.rm, false);
+      return $.bind(overlay, 'click', options.rm);
     },
     rm: function() {
       $.rm($('#options'));
-      $.rm($('.overlay'));
-      return window.removeEventListener('mousedown', options.rm, false);
+      return $.rm($('.overlay'));
     },
     tab: function() {
       var content, div, _i, _len, _results;
