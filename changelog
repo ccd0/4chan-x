@@ -1,3 +1,12 @@
+2.13.0
+- mayhem:
+  - fix various bugs
+  - keybinds: 0: actually refresh page 0
+  - auto posting
+  - add google sauce
+- arbitrary time formatting
+- various fixes
+
 2.12.0
 - revert the status bar blocking changes
 - add a 5px padding-bottom to #qp
