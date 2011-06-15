@@ -2085,7 +2085,7 @@ main =
       }
       #options #main {
         overflow: auto;
-        height: 450px;
+        height: 400px;
       }
       .overlay {
         position: fixed;
