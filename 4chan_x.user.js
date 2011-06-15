@@ -1732,13 +1732,13 @@
           case 'p':
           case 'P':
           case 'y':
-            return "' + time." + c + "() + '";
+            return "' + Time." + c + "() + '";
             break;
           default:
             return s;
         }
       });
-      return Time.funk = Function('time', "return '" + code + "'");
+      return Time.funk = Function('Time', "return '" + code + "'");
     },
     day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
