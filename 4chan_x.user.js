@@ -1007,11 +1007,8 @@
       $.append(overlay, dialog);
       $.append(d.body, overlay);
       options.cb.time.call($('input[name=time]', dialog));
-      $.bind(overlay, 'click', function() {
+      return $.bind(overlay, 'click', function() {
         return $.rm(overlay);
-      });
-      return $.bind(dialog.firstElementChild, 'click', function(e) {
-        return e.stopPropagation();
       });
     },
     tab: function() {
