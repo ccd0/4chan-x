@@ -2242,8 +2242,9 @@
         el = _ref2[_i];
         el.tabIndex = 1;
       }
-      recaptcha = $('#recaptcha_response_field');
-      return $.bind(recaptcha, 'keydown', Recaptcha.listener);
+      if (recaptcha = $('#recaptcha_response_field')) {
+        return $.bind(recaptcha, 'keydown', Recaptcha.listener);
+      }
     },
     listener: function(e) {
       if (e.keyCode === 8 && this.value === '') {

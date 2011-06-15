@@ -1701,8 +1701,8 @@ Recaptcha =
     #hack to tab from comment straight to recaptcha
     for el in $$ '#recaptcha_table a'
       el.tabIndex = 1
-    recaptcha = $ '#recaptcha_response_field'
-    $.bind recaptcha, 'keydown', Recaptcha.listener
+    if recaptcha = $ '#recaptcha_response_field' #NoScript
+      $.bind recaptcha, 'keydown', Recaptcha.listener
   listener: (e) ->
     if e.keyCode is 8 and @value is ''
       Recaptcha.reload()
