@@ -1202,6 +1202,7 @@
       var f;
       $('textarea', dialog).value = '';
       $('input[name=recaptcha_response_field]', dialog).value = '';
+      $('input[name=spoiler]', dialog).checked = false;
       f = $('input[type=file]', dialog).parentNode;
       return f.innerHTML = f.innerHTML;
     },
