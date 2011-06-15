@@ -742,12 +742,12 @@
       }
     },
     normal: function(e) {
-      var thread;
+      var o, thread;
       thread = nav.getThread();
       switch (keybinds.key) {
         case '<Esc>':
-          if ($('#options')) {
-            return options.rm();
+          if (o = $('#overlay')) {
+            return $.rm(o);
           }
           break;
         case '0':

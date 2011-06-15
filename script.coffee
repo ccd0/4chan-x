@@ -541,7 +541,7 @@ keybinds =
     thread = nav.getThread()
     switch keybinds.key
       when '<Esc>'
-        options.rm() if $ '#options'
+        $.rm o if o = $ '#overlay'
       when '0'
         window.location = "/#{g.BOARD}/0#0"
       when 'I'
