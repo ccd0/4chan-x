@@ -820,9 +820,9 @@ options =
       g.hiddenReplies = {}
     time: (e) ->
       $.setValue 'time', @value
-      time.foo()
-      time.date = new Date()
-      $('#timePreview').textContent = time.funk time
+      Time.foo()
+      Time.date = new Date()
+      $('#timePreview').textContent = Time.funk Time
 
 cooldown =
   init: ->
@@ -1362,9 +1362,9 @@ sauce =
             href: prefix + suffix
           $.append span, $.tn(' '), link
 
-time =
+Time =
   init: ->
-    time.foo()
+    Time.foo()
     g.callbacks.push (root) ->
       return if root.className is 'inline'
       s = $('span[id^=no]', root).previousSibling
@@ -1373,11 +1373,11 @@ time =
       year = "20#{year}"
       month -= 1 #months start at 0
       hour = g.chanOffset + Number hour
-      time.date = new Date year, month, day, hour, min
+      Time.date = new Date year, month, day, hour, min
       #XXX /b/ will have seconds cut off
 
       timeEl = $.el 'time',
-        textContent: ' ' + time.funk(time) + ' '
+        textContent: ' ' + Time.funk(Time) + ' '
       $.replace s, timeEl
 
   foo: ->
@@ -1385,7 +1385,7 @@ time =
       switch c
         when 'a', 'A', 'b', 'B', 'd', 'H', 'I', 'm', 'M', 'p', 'P', 'y' then "' + time.#{c}() + '"
         else s
-    time.funk = Function 'time', "return '#{code}'"
+    Time.funk = Function 'time', "return '#{code}'"
   day: [
     'Sunday'
     'Monday'
@@ -1909,7 +1909,7 @@ main =
       imgGif.init()
 
     if $.config 'Time Formatting'
-      time.init()
+      Time.init()
 
     if $.config 'Sauce'
       sauce.init()

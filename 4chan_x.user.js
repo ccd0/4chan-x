@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, anonymize, config, cooldown, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threadStats, threading, time, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, config, cooldown, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -1040,9 +1040,9 @@
       },
       time: function(e) {
         $.setValue('time', this.value);
-        time.foo();
-        time.date = new Date();
-        return $('#timePreview').textContent = time.funk(time);
+        Time.foo();
+        Time.date = new Date();
+        return $('#timePreview').textContent = Time.funk(Time);
       }
     }
   };
@@ -1696,9 +1696,9 @@
       }
     }
   };
-  time = {
+  Time = {
     init: function() {
-      time.foo();
+      Time.foo();
       return g.callbacks.push(function(root) {
         var day, hour, min, month, s, timeEl, year, _, _ref;
         if (root.className === 'inline') {
@@ -1709,9 +1709,9 @@
         year = "20" + year;
         month -= 1;
         hour = g.chanOffset + Number(hour);
-        time.date = new Date(year, month, day, hour, min);
+        Time.date = new Date(year, month, day, hour, min);
         timeEl = $.el('time', {
-          textContent: ' ' + time.funk(time) + ' '
+          textContent: ' ' + Time.funk(Time) + ' '
         });
         return $.replace(s, timeEl);
       });
@@ -1738,7 +1738,7 @@
             return s;
         }
       });
-      return time.funk = Function('time', "return '" + code + "'");
+      return Time.funk = Function('time', "return '" + code + "'");
     },
     day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -2527,7 +2527,7 @@
         imgGif.init();
       }
       if ($.config('Time Formatting')) {
-        time.init();
+        Time.init();
       }
       if ($.config('Sauce')) {
         sauce.init();
