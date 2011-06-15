@@ -783,11 +783,13 @@ options =
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.cb.time
 
-    $.append d.body, dialog
+    overlay = $.el 'div', id: 'overlay'
+    $.append overlay, dialog
+    $.append d.body, overlay
 
     options.cb.time.call $('input[name=time]', dialog)
 
-    $.bind dialog, 'click', -> $.rm dialog
+    $.bind overlay, 'click', -> $.rm overlay
     $.bind dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
 
   tab: ->
@@ -2037,12 +2039,17 @@ main =
         right: 5px;
       }
 
-      #options {
+      #overlay {
         position: fixed;
         top: 0;
         right: 0;
         bottom: 0;
         left: 0;
+        background: rgba(0,0,0,.5);
+      }
+      #options {
+        height: 100%;
+        width: 100%;
         display: -webkit-box;
         display: -moz-box;
         display: box;
@@ -2052,9 +2059,8 @@ main =
         -webkit-box-pack: center;
         -moz-box-pack: center;
         box-pack: center;
-        background: rgba(0,0,0,.5);
       }
-      #options > div {
+      #options .dialog {
         padding: 5px;
         min-width: 500px;
       }

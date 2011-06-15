@@ -954,7 +954,7 @@
       return $.replace(home, a);
     },
     dialog: function() {
-      var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+      var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
       html = "      <div class='reply dialog'>        <div id=floaty>          <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a>        </div>        <div id=credits>          <a href=http://chat.now.im/x/aeos>support throd</a> |          <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |          <a href=http://userscripts.org/scripts/show/51412>uso</a> |          <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>        </div>        <hr>        <div id=main>        </div>        <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>        <div style='display: none;' id=time>          <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>          <table>            <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>            <tbody>              <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>              <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>              <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>              <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>              <tr><td>%B</td><td>month, full length</td><td>June</td></tr>              <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>              <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>              <tr><td>%I</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>              <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>              <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>              <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>              <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>              <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>            </tbody>          </table>        </div>      </div>    ";
@@ -1001,10 +1001,14 @@
       }
       $.bind($('textarea[name=flavors]', dialog), 'change', $.cb.value);
       $.bind($('input[name=time]', dialog), 'keyup', options.cb.time);
-      $.append(d.body, dialog);
+      overlay = $.el('div', {
+        id: 'overlay'
+      });
+      $.append(overlay, dialog);
+      $.append(d.body, overlay);
       options.cb.time.call($('input[name=time]', dialog));
-      $.bind(dialog, 'click', function() {
-        return $.rm(dialog);
+      $.bind(overlay, 'click', function() {
+        return $.rm(overlay);
       });
       return $.bind(dialog.firstElementChild, 'click', function(e) {
         return e.stopPropagation();
@@ -2668,12 +2672,17 @@
         right: 5px;\
       }\
 \
-      #options {\
+      #overlay {\
         position: fixed;\
         top: 0;\
         right: 0;\
         bottom: 0;\
         left: 0;\
+        background: rgba(0,0,0,.5);\
+      }\
+      #options {\
+        height: 100%;\
+        width: 100%;\
         display: -webkit-box;\
         display: -moz-box;\
         display: box;\
@@ -2683,9 +2692,8 @@
         -webkit-box-pack: center;\
         -moz-box-pack: center;\
         box-pack: center;\
-        background: rgba(0,0,0,.5);\
       }\
-      #options > div {\
+      #options .dialog {\
         padding: 5px;\
         min-width: 500px;\
       }\
