@@ -944,22 +944,14 @@
       a = $.el('a', {
         textContent: '4chan X'
       });
-      $.bind(a, 'click', options.toggle);
+      $.bind(a, 'click', options.dialog);
       $.replace(home, a);
       home = $('#navbotr a');
       a = $.el('a', {
         textContent: '4chan X'
       });
-      $.bind(a, 'click', options.toggle);
+      $.bind(a, 'click', options.dialog);
       return $.replace(home, a);
-    },
-    toggle: function() {
-      var dialog;
-      if (dialog = $('#options')) {
-        return $.rm(dialog);
-      } else {
-        return options.dialog();
-      }
     },
     dialog: function() {
       var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
@@ -1011,7 +1003,9 @@
       $.bind($('input[name=time]', dialog), 'keyup', options.cb.time);
       $.append(d.body, dialog);
       options.cb.time.call($('input[name=time]', dialog));
-      $.bind(dialog, 'click', options.toggle);
+      $.bind(dialog, 'click', function() {
+        return $.rm(dialog);
+      });
       return $.bind(dialog.firstElementChild, 'click', function(e) {
         return e.stopPropagation();
       });
