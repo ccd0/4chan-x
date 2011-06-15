@@ -790,6 +790,7 @@ options =
     options.cb.time.call $('input[name=time]', dialog)
 
     $.bind overlay, 'click', -> $.rm overlay
+    $.bind dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
 
   tab: ->
     content = $$ '#main, #flavors, #time'
