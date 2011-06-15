@@ -2054,7 +2054,7 @@ main =
         padding: 5px;
         min-width: 500px;
       }
-      #options .move, #credits {
+      #credits {
         text-align: right;
       }
       #options ul {
@@ -2071,6 +2071,14 @@ main =
       #options #main {
         overflow: auto;
         height: 450px;
+      }
+      .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-color: rgba(0,0,0,.5);
       }
 
       #qr {
@@ -2155,14 +2163,6 @@ main =
       }
       .inlined {
         opacity: .5;
-      }
-      .overlay {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        background-color: rgba(0,0,0,.5);
       }
     '
 
