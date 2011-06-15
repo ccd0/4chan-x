@@ -1700,7 +1700,7 @@
     init: function() {
       Time.foo();
       return g.callbacks.push(function(root) {
-        var day, hour, min, month, s, timeEl, year, _, _ref;
+        var day, hour, min, month, s, time, year, _, _ref;
         if (root.className === 'inline') {
           return;
         }
@@ -1710,10 +1710,10 @@
         month -= 1;
         hour = g.chanOffset + Number(hour);
         Time.date = new Date(year, month, day, hour, min);
-        timeEl = $.el('time', {
+        time = $.el('time', {
           textContent: ' ' + Time.funk(Time) + ' '
         });
-        return $.replace(s, timeEl);
+        return $.replace(s, time);
       });
     },
     foo: function() {

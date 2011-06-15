@@ -1376,9 +1376,9 @@ Time =
       Time.date = new Date year, month, day, hour, min
       #XXX /b/ will have seconds cut off
 
-      timeEl = $.el 'time',
+      time = $.el 'time',
         textContent: ' ' + Time.funk(Time) + ' '
-      $.replace s, timeEl
+      $.replace s, time
 
   foo: ->
     code = $.config('time').replace /%([A-Za-z])/g, (s, c) ->
