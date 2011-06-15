@@ -707,19 +707,13 @@ options =
     home = $ '#navtopr a'
     a = $.el 'a',
       textContent: '4chan X'
-    $.bind a, 'click', options.toggle
+    $.bind a, 'click', options.dialog
     $.replace home, a
     home = $ '#navbotr a'
     a = $.el 'a',
       textContent: '4chan X'
-    $.bind a, 'click', options.toggle
+    $.bind a, 'click', options.dialog
     $.replace home, a
-
-  toggle: ->
-    if dialog = $ '#options'
-      $.rm dialog
-    else
-      options.dialog()
 
   dialog: ->
     hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
@@ -793,7 +787,7 @@ options =
 
     options.cb.time.call $('input[name=time]', dialog)
 
-    $.bind dialog, 'click', options.toggle
+    $.bind dialog, 'click', -> $.rm dialog
     $.bind dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
 
   tab: ->
