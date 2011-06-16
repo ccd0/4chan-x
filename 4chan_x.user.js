@@ -912,6 +912,14 @@
     },
     scroll: function(delta) {
       var i, rect, thread, top, _ref;
+      if (g.REPLY) {
+        if (delta === -1) {
+          window.scrollTo(0, 0);
+        } else {
+          window.scrollTo(0, d.body.scrollHeight);
+        }
+        return;
+      }
       _ref = nav.getThread(true), thread = _ref[0], i = _ref[1], rect = _ref[2];
       top = rect.top;
       if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
@@ -2574,6 +2582,9 @@
       if ($.config('Keybinds')) {
         keybinds.init();
       }
+      if ($.config('Thread Navigation')) {
+        nav.init();
+      }
       threading.init();
       if (g.REPLY) {
         if ($.config('Thread Updater')) {
@@ -2600,9 +2611,6 @@
       } else {
         if ($.config('Thread Hiding')) {
           threadHiding.init();
-        }
-        if ($.config('Thread Navigation')) {
-          nav.init();
         }
         if ($.config('Thread Expansion')) {
           expandThread.init();

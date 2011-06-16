@@ -675,6 +675,13 @@ nav =
     return null
 
   scroll: (delta) ->
+    if g.REPLY
+      if delta is -1
+        window.scrollTo 0,0
+      else
+        window.scrollTo 0, d.body.scrollHeight
+      return
+
     [thread, i, rect] = nav.getThread true
     {top} = rect
 
@@ -1947,6 +1954,9 @@ main =
     if $.config 'Keybinds'
       keybinds.init()
 
+    if $.config 'Thread Navigation'
+      nav.init()
+
     threading.init()
 
     if g.REPLY
@@ -1975,9 +1985,6 @@ main =
     else #not reply
       if $.config 'Thread Hiding'
         threadHiding.init()
-
-      if $.config 'Thread Navigation'
-        nav.init()
 
       if $.config 'Thread Expansion'
         expandThread.init()
