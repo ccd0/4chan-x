@@ -1052,7 +1052,7 @@
         cooldown.start();
       }
       return $.bind(window, 'storage', function(e) {
-        if (e.key === ("AEOS.4chan_x." + g.BOARD + "/cooldown")) {
+        if (e.key === ("" + NAMESPACE + g.BOARD + "/cooldown")) {
           return cooldown.start();
         }
       });

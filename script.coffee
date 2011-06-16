@@ -824,7 +824,7 @@ options =
 cooldown =
   init: ->
     cooldown.start() if Date.now() < $.getValue g.BOARD+'/cooldown', 0
-    $.bind window, 'storage', (e) -> cooldown.start() if e.key is "AEOS.4chan_x.#{g.BOARD}/cooldown"
+    $.bind window, 'storage', (e) -> cooldown.start() if e.key is "#{NAMESPACE}#{g.BOARD}/cooldown"
 
   start: ->
     cooldown.duration = Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
