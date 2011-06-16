@@ -1069,23 +1069,27 @@
       return cooldown.interval = window.setInterval(cooldown.cb, 1000);
     },
     cb: function() {
-      var submit, _i, _len, _ref, _ref2;
+      var submit, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results, _results2;
       cooldown.duration--;
-      _ref = $$('#com_submit');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        submit = _ref[_i];
-        if (cooldown.duration) {
-          submit.value = cooldown.duration;
-        } else {
+      if (cooldown.duration) {
+        _ref = $$('#com_submit');
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          submit = _ref[_i];
+          _results.push(submit.value = cooldown.duration);
+        }
+        return _results;
+      } else {
+        window.clearInterval(cooldown.interval);
+        _ref2 = $$('#com_submit');
+        _results2 = [];
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          submit = _ref2[_j];
           submit.disabled = false;
           submit.value = 'Submit';
-          if ((_ref2 = $('#auto')) != null ? _ref2.checked : void 0) {
-            $('#qr_form').submit();
-          }
+          _results2.push(((_ref3 = $('#auto')) != null ? _ref3.checked : void 0) ? $('#qr_form').submit() : void 0);
         }
-      }
-      if (!cooldown.duration) {
-        return window.clearInterval(cooldown.interval);
+        return _results2;
       }
     }
   };
