@@ -1557,7 +1557,7 @@
       }
       watcher.refresh();
       return $.bind(window, 'storage', function(e) {
-        if (e.key === 'AEOS.4chan_x.watched') {
+        if (e.key === ("" + NAMESPACE + "watched")) {
           return watcher.refresh();
         }
       });
