@@ -2661,6 +2661,10 @@
 \
       .filesize + br + a {\
         float: left;\
+        pointer-events: none;\
+      }\
+      img[md5], img[md5] + img {\
+        pointer-events: all;\
       }\
       body.fitwidth img[md5] + img {\
         max-width: 100%;\
