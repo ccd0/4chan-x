@@ -1705,22 +1705,23 @@
   Time = {
     init: function() {
       Time.foo();
-      return g.callbacks.push(function(root) {
-        var day, hour, min, month, s, time, year, _, _ref;
-        if (root.className === 'inline') {
-          return;
-        }
-        s = $('span[id^=no]', root).previousSibling;
-        _ref = s.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
-        year = "20" + year;
-        month -= 1;
-        hour = g.chanOffset + Number(hour);
-        Time.date = new Date(year, month, day, hour, min);
-        time = $.el('time', {
-          textContent: ' ' + Time.funk(Time) + ' '
-        });
-        return $.replace(s, time);
+      return g.callbacks.push(Time.node);
+    },
+    node: function(root) {
+      var day, hour, min, month, s, time, year, _, _ref;
+      if (root.className === 'inline') {
+        return;
+      }
+      s = $('span[id^=no]', root).previousSibling;
+      _ref = s.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
+      year = "20" + year;
+      month -= 1;
+      hour = g.chanOffset + Number(hour);
+      Time.date = new Date(year, month, day, hour, min);
+      time = $.el('time', {
+        textContent: ' ' + Time.funk(Time) + ' '
       });
+      return $.replace(s, time);
     },
     foo: function() {
       var code;
