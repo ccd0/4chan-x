@@ -836,12 +836,13 @@ cooldown =
   cb: ->
     cooldown.duration--
 
+    submits = $$ '#com_submit'
     if cooldown.duration
-      for submit in $$ '#com_submit'
+      for submit in submits
         submit.value = cooldown.duration
     else
       window.clearInterval cooldown.interval
-      for submit in $$ '#com_submit'
+      for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
         $('#qr_form').submit() if $('#auto')?.checked
