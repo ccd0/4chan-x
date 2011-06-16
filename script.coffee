@@ -936,7 +936,7 @@ qr =
   refresh: (dialog) ->
     $('textarea', dialog).value = ''
     $('input[name=recaptcha_response_field]', dialog).value = ''
-    $('input[name=spoiler]', dialog).checked = false
+    $('input[name=spoiler]', dialog)?.checked = false
     # XXX file.value = '' doesn't work in opera
     f = $('input[type=file]', dialog).parentNode
     f.innerHTML = f.innerHTML

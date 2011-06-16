@@ -1192,10 +1192,12 @@
       return ta.value += text;
     },
     refresh: function(dialog) {
-      var f;
+      var f, _ref;
       $('textarea', dialog).value = '';
       $('input[name=recaptcha_response_field]', dialog).value = '';
-      $('input[name=spoiler]', dialog).checked = false;
+      if ((_ref = $('input[name=spoiler]', dialog)) != null) {
+        _ref.checked = false;
+      }
       f = $('input[type=file]', dialog).parentNode;
       return f.innerHTML = f.innerHTML;
     },
