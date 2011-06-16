@@ -783,6 +783,13 @@ options =
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.cb.time
 
+    ###
+    https://bugzilla.mozilla.org/show_bug.cgi?id=579776
+    position:fixed and position:absolute shouldn't turn display:-moz-box into display:block
+
+    to harmonize, position:fixed and display:-moz-box have to be set on different elements -
+    #overlay and #options, respectively.
+    ###
     overlay = $.el 'div', id: 'overlay'
     $.append overlay, dialog
     $.append d.body, overlay
