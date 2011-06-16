@@ -2047,7 +2047,8 @@
           }
         }
       }
-      return qp.innerHTML = html;
+      qp.innerHTML = html;
+      return Time.node(qp);
     }
   };
   quoteOP = {

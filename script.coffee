@@ -1575,6 +1575,7 @@ quotePreview =
           html = reply.innerHTML
           break
     qp.innerHTML = html
+    Time.node qp
 
 quoteOP =
   init: ->
