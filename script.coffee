@@ -42,7 +42,8 @@ config =
       'Report Button':      [true,  'Add report buttons']
       'Comment Expansion':  [true,  'Expand too long comments']
       'Thread Expansion':   [true,  'View all replies']
-      'Thread Navigation':  [true,  'Navigate to previous / next thread']
+      'Index Navigation':   [true,  'Navigate to previous / next thread']
+      'Reply Navigation':   [false, 'Navigate to top / bottom of thread']
   flavors: [
     'http://regex.info/exif.cgi?url='
     'http://iqdb.org/?url='
@@ -1954,9 +1955,6 @@ main =
     if $.config 'Keybinds'
       keybinds.init()
 
-    if $.config 'Thread Navigation'
-      nav.init()
-
     threading.init()
 
     if g.REPLY
@@ -1982,7 +1980,13 @@ main =
         location.hash is '#watch' and $('img.favicon').src is Favicon.empty
           watcher.watch null, g.THREAD_ID
 
+      if $.config 'Reply Navigation'
+        nav.init()
+
     else #not reply
+      if $.config 'Index Navigation'
+        nav.init()
+
       if $.config 'Thread Hiding'
         threadHiding.init()
 
