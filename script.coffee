@@ -42,7 +42,8 @@ config =
       'Report Button':      [true,  'Add report buttons']
       'Comment Expansion':  [true,  'Expand too long comments']
       'Thread Expansion':   [true,  'View all replies']
-      'Thread Navigation':  [true,  'Navigate to previous / next thread']
+      'Index Navigation':   [true,  'Navigate to previous / next thread']
+      'Reply Navigation':   [false, 'Navigate to top / bottom of thread']
   flavors: [
     'http://regex.info/exif.cgi?url='
     'http://iqdb.org/?url='
@@ -675,6 +676,13 @@ nav =
     return null
 
   scroll: (delta) ->
+    if g.REPLY
+      if delta is -1
+        window.scrollTo 0,0
+      else
+        window.scrollTo 0, d.body.scrollHeight
+      return
+
     [thread, i, rect] = nav.getThread true
     {top} = rect
 
@@ -1972,12 +1980,15 @@ main =
         location.hash is '#watch' and $('img.favicon').src is Favicon.empty
           watcher.watch null, g.THREAD_ID
 
+      if $.config 'Reply Navigation'
+        nav.init()
+
     else #not reply
+      if $.config 'Index Navigation'
+        nav.init()
+
       if $.config 'Thread Hiding'
         threadHiding.init()
-
-      if $.config 'Thread Navigation'
-        nav.init()
 
       if $.config 'Thread Expansion'
         expandThread.init()

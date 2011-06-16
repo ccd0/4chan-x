@@ -110,7 +110,8 @@
         'Report Button': [true, 'Add report buttons'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
-        'Thread Navigation': [true, 'Navigate to previous / next thread']
+        'Index Navigation': [true, 'Navigate to previous / next thread'],
+        'Reply Navigation': [false, 'Navigate to top / bottom of thread']
       }
     },
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', 'http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url='].join('\n'),
@@ -912,6 +913,14 @@
     },
     scroll: function(delta) {
       var i, rect, thread, top, _ref;
+      if (g.REPLY) {
+        if (delta === -1) {
+          window.scrollTo(0, 0);
+        } else {
+          window.scrollTo(0, d.body.scrollHeight);
+        }
+        return;
+      }
       _ref = nav.getThread(true), thread = _ref[0], i = _ref[1], rect = _ref[2];
       top = rect.top;
       if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
@@ -2597,12 +2606,15 @@
         if ($.config('Auto Watch') && $.config('Thread Watcher') && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
           watcher.watch(null, g.THREAD_ID);
         }
+        if ($.config('Reply Navigation')) {
+          nav.init();
+        }
       } else {
+        if ($.config('Index Navigation')) {
+          nav.init();
+        }
         if ($.config('Thread Hiding')) {
           threadHiding.init();
-        }
-        if ($.config('Thread Navigation')) {
-          nav.init();
         }
         if ($.config('Thread Expansion')) {
           expandThread.init();
