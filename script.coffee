@@ -1874,7 +1874,6 @@ firstRun =
     $.setValue 'firstrun', true
     $.rm $ 'style.firstrun', d.head
     $.rm $ '#overlay'
-    option.dialog()
 
 #main
 NAMESPACE = 'AEOS.4chan_x.'

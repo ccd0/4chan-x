@@ -2495,8 +2495,7 @@
     click: function() {
       $.setValue('firstrun', true);
       $.rm($('style.firstrun', d.head));
-      $.rm($('#overlay'));
-      return option.dialog();
+      return $.rm($('#overlay'));
     }
   };
   NAMESPACE = 'AEOS.4chan_x.';
