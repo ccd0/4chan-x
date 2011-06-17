@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, config, cooldown, d, expandComment, expandThread, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, config, cooldown, d, expandComment, expandThread, firstRun, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -2473,6 +2473,32 @@
       return style.className = 'height';
     }
   };
+  firstRun = {
+    init: function() {
+      var a, aa, css, dialog, style, _i, _len, _results;
+      css = "      #navtopr, #navbotr {        font-size: 3em;        position: relative;        z-index: 99999;      }    ";
+      style = $.addStyle(css);
+      style.className = 'firstrun';
+      dialog = $.el('div', {
+        id: 'overlay',
+        innerHTML: "<div id=options><div class='reply dialog'>Click the <strong>4chan X</strong> link for options.<br>There is another link at the bottom of the page.</div></div>"
+      });
+      $.append(d.body, dialog);
+      aa = $$('#navtopr a, navbotr a');
+      _results = [];
+      for (_i = 0, _len = aa.length; _i < _len; _i++) {
+        a = aa[_i];
+        _results.push($.bind(a, 'click', firstRun.click));
+      }
+      return _results;
+    },
+    click: function() {
+      $.setValue('firstrun', true);
+      $.rm($('style.firstrun', d.head));
+      $.rm($('#overlay'));
+      return option.dialog();
+    }
+  };
   NAMESPACE = 'AEOS.4chan_x.';
   g = {
     callbacks: []
@@ -2643,7 +2669,10 @@
         }
       }
       $.bind(d.body, 'DOMNodeInserted', nodeInserted);
-      return options.init();
+      options.init();
+      if (!$.config('firstrun')) {
+        return firstRun.init();
+      }
     },
     css: '\
       /* dialog styling */\

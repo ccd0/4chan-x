@@ -1849,6 +1849,33 @@ imgExpand =
     style = $.addStyle "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
     style.className = 'height'
 
+firstRun =
+  init: ->
+    css = "
+      #navtopr, #navbotr {
+        font-size: 3em;
+        position: relative;
+        z-index: 99999;
+      }
+    "
+    style = $.addStyle css
+    style.className = 'firstrun'
+
+    dialog = $.el 'div',
+      id: 'overlay'
+      innerHTML: "<div id=options><div class='reply dialog'>Click the <strong>4chan X</strong> link for options.<br>There is another link at the bottom of the page.</div></div>"
+    $.append d.body, dialog
+
+    aa = $$ '#navtopr a, navbotr a'
+    for a in aa
+      $.bind a, 'click', firstRun.click
+
+  click: ->
+    $.setValue 'firstrun', true
+    $.rm $ 'style.firstrun', d.head
+    $.rm $ '#overlay'
+    option.dialog()
+
 #main
 NAMESPACE = 'AEOS.4chan_x.'
 g =
@@ -2005,6 +2032,9 @@ main =
         callback table
     $.bind d.body, 'DOMNodeInserted', nodeInserted
     options.init()
+
+    unless $.config 'firstrun'
+      firstRun.init()
 
   css: '
       /* dialog styling */
