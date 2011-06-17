@@ -1180,7 +1180,7 @@
         if (isQR) {
           $('#error').textContent = '';
         }
-        qr.sage = $('input[name=email]', form).value === 'sage';
+        qr.sage = /sage/i.test($('input[name=email]', form).value);
         if (isQR) {
           return qr.autohide.set();
         }
