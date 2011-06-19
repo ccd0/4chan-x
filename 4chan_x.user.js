@@ -576,7 +576,7 @@
           return $.cache[pathname].abort();
         case '-':
           a.textContent = a.textContent.replace('-', '+');
-          num = g.BOARD === 'b' ? 3 : 5;
+          num = g.BOARD === 'b' ? 3 : g.BOARD === 't' ? 1 : 5;
           table = $.x("following::br[@clear][1]/preceding::table[" + num + "]", a);
           while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
             $.rm(prev);

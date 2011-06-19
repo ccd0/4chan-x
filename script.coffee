@@ -400,7 +400,7 @@ expandThread =
       when '-'
         a.textContent = a.textContent.replace '-', '+'
         #goddamit moot
-        num = if g.BOARD is 'b' then 3 else 5
+        num = if g.BOARD is 'b' then 3 else if g.BOARD is 't' then 1 else 5
         table = $.x "following::br[@clear][1]/preceding::table[#{num}]", a
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
           $.rm prev
