@@ -1467,7 +1467,9 @@ quoteBacklink =
         if $.config 'Quote Inline'
           $.bind link, 'click', quoteInline.toggle
         unless container = $ '.container', el
-          container = $.after $('span[id^=no]', el), $.el 'span', className: 'container'
+          container = $.el 'span', className: 'container'
+          root = $('.reportbutton', el) or $('span[id^=no]', el)
+          $.after root, container
         $.append container, $.tn(' '), link
 
 quoteInline =

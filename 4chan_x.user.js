@@ -1869,9 +1869,11 @@
             $.bind(link, 'click', quoteInline.toggle);
           }
           if (!(container = $('.container', el))) {
-            container = $.after($('span[id^=no]', el), $.el('span', {
+            container = $.el('span', {
               className: 'container'
-            }));
+            });
+            root = $('.reportbutton', el) || $('span[id^=no]', el);
+            $.after(root, container);
           }
           _results.push($.append(container, $.tn(' '), link));
         }
