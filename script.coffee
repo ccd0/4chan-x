@@ -1442,7 +1442,6 @@ quoteBacklink =
   init: ->
     g.callbacks.push (root) ->
       return if /inline/.test root.className
-      $.after $('span[id^=no]', root), $.el 'span', className: 'container'
       # op or reply
       id = root.id or $('td[id]', root).id
       quotes = {}
@@ -1467,7 +1466,9 @@ quoteBacklink =
           $.bind link, 'mouseout',  quotePreview.mouseout
         if $.config 'Quote Inline'
           $.bind link, 'click', quoteInline.toggle
-        $.append $('.container', el), $.tn(' '), link
+        unless container = $ '.container', el
+          container = $.after $('span[id^=no]', el), $.el 'span', className: 'container'
+        $.append container, $.tn(' '), link
 
 quoteInline =
   init: ->

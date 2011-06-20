@@ -1830,13 +1830,10 @@
   quoteBacklink = {
     init: function() {
       return g.callbacks.push(function(root) {
-        var el, id, link, opbl, qid, quote, quotes, _i, _len, _ref, _results;
+        var container, el, id, link, opbl, qid, quote, quotes, _i, _len, _ref, _results;
         if (/inline/.test(root.className)) {
           return;
         }
-        $.after($('span[id^=no]', root), $.el('span', {
-          className: 'container'
-        }));
         id = root.id || $('td[id]', root).id;
         quotes = {};
         opbl = !$.config('OP Backlinks');
@@ -1871,7 +1868,12 @@
           if ($.config('Quote Inline')) {
             $.bind(link, 'click', quoteInline.toggle);
           }
-          _results.push($.append($('.container', el), $.tn(' '), link));
+          if (!(container = $('.container', el))) {
+            container = $.after($('span[id^=no]', el), $.el('span', {
+              className: 'container'
+            }));
+          }
+          _results.push($.append(container, $.tn(' '), link));
         }
         return _results;
       });
