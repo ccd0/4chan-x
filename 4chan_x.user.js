@@ -2507,7 +2507,8 @@
     close: function() {
       $.setValue('firstrun', true);
       $.rm($('style.firstrun', d.head));
-      return $.rm($('#overlay'));
+      $.rm($('#overlay'));
+      return $.unbind(window, 'click', firstRun.close);
     }
   };
   NAMESPACE = 'AEOS.4chan_x.';

@@ -1931,6 +1931,7 @@ firstRun =
     $.setValue 'firstrun', true
     $.rm $ 'style.firstrun', d.head
     $.rm $ '#overlay'
+    $.unbind window, 'click', firstRun.close
 
 #main
 NAMESPACE = 'AEOS.4chan_x.'
