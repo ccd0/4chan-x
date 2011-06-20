@@ -1823,7 +1823,7 @@
       return g.callbacks.push(quoteBacklink.node);
     },
     node: function(root) {
-      var container, el, id, link, opbl, qid, quote, quotes, tid, _i, _len, _ref, _results;
+      var container, el, id, link, opbl, qid, quote, quotes, _i, _len, _ref, _results;
       if (/inline/.test(root.className)) {
         return;
       }
@@ -1833,15 +1833,11 @@
       $.after($('span[id^=no]', root), container);
       id = root.id || $('td[id]', root).id;
       quotes = {};
-      tid = g.THREAD_ID || root.parentNode.firstChild.id;
       opbl = $.config('OP Backlinks');
       _ref = $$('a.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (!(qid = quote.hash.slice(1))) {
-          continue;
-        }
-        if (!opbl && qid === tid) {
           continue;
         }
         quotes[qid] = quote;
@@ -1850,6 +1846,9 @@
       for (qid in quotes) {
         quote = quotes[qid];
         if (!(el = d.getElementById(qid))) {
+          continue;
+        }
+        if (!opbl && el.className === 'op') {
           continue;
         }
         link = $.el('a', {

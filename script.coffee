@@ -1445,16 +1445,15 @@ quoteBacklink =
     $.after $('span[id^=no]', root), container
     id = root.id or $('td[id]', root).id
     quotes = {}
-    tid = g.THREAD_ID or root.parentNode.firstChild.id
     opbl = $.config 'OP Backlinks'
     for quote in $$ 'a.quotelink', root
       continue unless qid = quote.hash[1..]
-      #don't backlink the op
-      continue if !opbl and qid is tid
       #duplicate quotes get overwritten
       quotes[qid] = quote
     for qid, quote of quotes
       continue unless el = d.getElementById qid
+      #don't backlink the op
+      continue if !opbl and el.className is 'op'
       link = $.el 'a',
         href: '#'+id
         className: 'backlink'
