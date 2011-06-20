@@ -1457,9 +1457,9 @@ quoteBacklink =
         #don't backlink the op
         continue if opbl and el.className is 'op'
         link = $.el 'a',
-          href: '#'+id
+          href: "##{id}"
           className: 'backlink'
-          textContent: '>>'+id
+          textContent: ">>#{id}"
         if $.config 'Quote Preview'
           $.bind link, 'mouseover', quotePreview.mouseover
           $.bind link, 'mousemove', ui.hover
