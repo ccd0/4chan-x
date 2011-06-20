@@ -2499,7 +2499,7 @@
       dialog = $.el('div', {
         id: 'overlay',
         className: 'firstrun',
-        innerHTML: "        <div id=options>          <div class='reply dialog'>            <p>Click the <strong>4chan X</strong> buttons for options.</p>            <p>The buttons are at the top and bottom of the page.</p>          </div>        </div>"
+        innerHTML: "        <div id=options>          <div class='reply dialog'>            <p>Click the <strong>4chan X</strong> buttons for options; they are at the top and bottom of the page.</p>            <p>If you don't see the buttons, try disabling your userstyles.</p>          </div>        </div>"
       });
       $.append(d.body, dialog);
       return $.bind(window, 'click', firstRun.close);
