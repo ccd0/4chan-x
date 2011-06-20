@@ -1440,36 +1440,34 @@ titlePost =
 
 quoteBacklink =
   init: ->
-    g.callbacks.push quoteBacklink.node
-
-  node: (root) ->
-    return if /inline/.test root.className
-    $.after $('span[id^=no]', root), $.el 'span', className: 'container'
-    # op or reply
-    id = root.id or $('td[id]', root).id
-    quotes = {}
-    opbl = $.config 'OP Backlinks'
-    for quote in $$ 'a.quotelink', root
-      #don't process >>>/b/
-      continue unless qid = quote.hash[1..]
-      #duplicate quotes get overwritten
-      quotes[qid] = quote
-    for qid, quote of quotes
-      continue unless el = d.getElementById qid
-      #don't backlink the op
-      continue if !opbl and el.className is 'op'
-      link = $.el 'a',
-        href: '#'+id
-        className: 'backlink'
-        textContent: '>>'+id
-      if $.config 'Quote Preview'
-        $.bind link, 'mouseover', quotePreview.mouseover
-        $.bind link, 'mousemove', ui.hover
-        $.bind link, 'mouseout',  ui.hoverend
-        $.bind link, 'mouseout',  quotePreview.mouseout
-      if $.config 'Quote Inline'
-        $.bind link, 'click', quoteInline.toggle
-      $.append $('.container', el), $.tn(' '), link
+    g.callbacks.push (root) ->
+      return if /inline/.test root.className
+      $.after $('span[id^=no]', root), $.el 'span', className: 'container'
+      # op or reply
+      id = root.id or $('td[id]', root).id
+      quotes = {}
+      opbl = $.config 'OP Backlinks'
+      for quote in $$ 'a.quotelink', root
+        #don't process >>>/b/
+        continue unless qid = quote.hash[1..]
+        #duplicate quotes get overwritten
+        quotes[qid] = quote
+      for qid, quote of quotes
+        continue unless el = d.getElementById qid
+        #don't backlink the op
+        continue if !opbl and el.className is 'op'
+        link = $.el 'a',
+          href: '#'+id
+          className: 'backlink'
+          textContent: '>>'+id
+        if $.config 'Quote Preview'
+          $.bind link, 'mouseover', quotePreview.mouseover
+          $.bind link, 'mousemove', ui.hover
+          $.bind link, 'mouseout',  ui.hoverend
+          $.bind link, 'mouseout',  quotePreview.mouseout
+        if $.config 'Quote Inline'
+          $.bind link, 'click', quoteInline.toggle
+        $.append $('.container', el), $.tn(' '), link
 
 quoteInline =
   init: ->

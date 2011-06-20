@@ -1829,53 +1829,52 @@
   };
   quoteBacklink = {
     init: function() {
-      return g.callbacks.push(quoteBacklink.node);
-    },
-    node: function(root) {
-      var el, id, link, opbl, qid, quote, quotes, _i, _len, _ref, _results;
-      if (/inline/.test(root.className)) {
-        return;
-      }
-      $.after($('span[id^=no]', root), $.el('span', {
-        className: 'container'
-      }));
-      id = root.id || $('td[id]', root).id;
-      quotes = {};
-      opbl = $.config('OP Backlinks');
-      _ref = $$('a.quotelink', root);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        if (!(qid = quote.hash.slice(1))) {
-          continue;
+      return g.callbacks.push(function(root) {
+        var el, id, link, opbl, qid, quote, quotes, _i, _len, _ref, _results;
+        if (/inline/.test(root.className)) {
+          return;
         }
-        quotes[qid] = quote;
-      }
-      _results = [];
-      for (qid in quotes) {
-        quote = quotes[qid];
-        if (!(el = d.getElementById(qid))) {
-          continue;
+        $.after($('span[id^=no]', root), $.el('span', {
+          className: 'container'
+        }));
+        id = root.id || $('td[id]', root).id;
+        quotes = {};
+        opbl = $.config('OP Backlinks');
+        _ref = $$('a.quotelink', root);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          if (!(qid = quote.hash.slice(1))) {
+            continue;
+          }
+          quotes[qid] = quote;
         }
-        if (!opbl && el.className === 'op') {
-          continue;
+        _results = [];
+        for (qid in quotes) {
+          quote = quotes[qid];
+          if (!(el = d.getElementById(qid))) {
+            continue;
+          }
+          if (!opbl && el.className === 'op') {
+            continue;
+          }
+          link = $.el('a', {
+            href: '#' + id,
+            className: 'backlink',
+            textContent: '>>' + id
+          });
+          if ($.config('Quote Preview')) {
+            $.bind(link, 'mouseover', quotePreview.mouseover);
+            $.bind(link, 'mousemove', ui.hover);
+            $.bind(link, 'mouseout', ui.hoverend);
+            $.bind(link, 'mouseout', quotePreview.mouseout);
+          }
+          if ($.config('Quote Inline')) {
+            $.bind(link, 'click', quoteInline.toggle);
+          }
+          _results.push($.append($('.container', el), $.tn(' '), link));
         }
-        link = $.el('a', {
-          href: '#' + id,
-          className: 'backlink',
-          textContent: '>>' + id
-        });
-        if ($.config('Quote Preview')) {
-          $.bind(link, 'mouseover', quotePreview.mouseover);
-          $.bind(link, 'mousemove', ui.hover);
-          $.bind(link, 'mouseout', ui.hoverend);
-          $.bind(link, 'mouseout', quotePreview.mouseout);
-        }
-        if ($.config('Quote Inline')) {
-          $.bind(link, 'click', quoteInline.toggle);
-        }
-        _results.push($.append($('.container', el), $.tn(' '), link));
-      }
-      return _results;
+        return _results;
+      });
     }
   };
   quoteInline = {
