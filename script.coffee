@@ -1440,19 +1440,17 @@ titlePost =
 
 quoteBacklink =
   init: ->
-    for span in $$('span[id^=no]')
-      $.after span, $.el 'span', className: 'container'
     g.callbacks.push quoteBacklink.node
+
   node: (root) ->
     return if /inline/.test root.className
-    unless $ '.container', root
-      container = $.el 'span',
-        className: 'container'
-      $.after $('span[id^=no]', root), container
+    $.after $('span[id^=no]', root), $.el 'span', className: 'container'
+    # op or reply
     id = root.id or $('td[id]', root).id
     quotes = {}
     opbl = $.config 'OP Backlinks'
     for quote in $$ 'a.quotelink', root
+      #don't process >>>/b/
       continue unless qid = quote.hash[1..]
       #duplicate quotes get overwritten
       quotes[qid] = quote
