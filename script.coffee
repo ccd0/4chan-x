@@ -1441,7 +1441,7 @@ titlePost =
 quoteBacklink =
   init: ->
     g.callbacks.push (root) ->
-      return if $ '.container', root
+      return if /inline/.test root.className
       $.after $('span[id^=no]', root), $.el 'span', className: 'container'
       # op or reply
       id = root.id or $('td[id]', root).id
