@@ -1446,7 +1446,7 @@ quoteBacklink =
       # op or reply
       id = root.id or $('td[id]', root).id
       quotes = {}
-      opbl = $.config 'OP Backlinks'
+      opbl = ! $.config 'OP Backlinks'
       for quote in $$ 'a.quotelink', root
         #don't process >>>/b/
         continue unless qid = quote.hash[1..]
@@ -1455,7 +1455,7 @@ quoteBacklink =
       for qid, quote of quotes
         continue unless el = d.getElementById qid
         #don't backlink the op
-        continue if !opbl and el.className is 'op'
+        continue if opbl and el.className is 'op'
         link = $.el 'a',
           href: '#'+id
           className: 'backlink'

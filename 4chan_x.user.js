@@ -1839,7 +1839,7 @@
         }));
         id = root.id || $('td[id]', root).id;
         quotes = {};
-        opbl = $.config('OP Backlinks');
+        opbl = !$.config('OP Backlinks');
         _ref = $$('a.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
@@ -1854,7 +1854,7 @@
           if (!(el = d.getElementById(qid))) {
             continue;
           }
-          if (!opbl && el.className === 'op') {
+          if (opbl && el.className === 'op') {
             continue;
           }
           link = $.el('a', {
