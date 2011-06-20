@@ -1820,6 +1820,14 @@
   };
   quoteBacklink = {
     init: function() {
+      var span, _i, _len, _ref;
+      _ref = $$('span[id^=no]');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        span = _ref[_i];
+        $.after(span, $.el('span', {
+          className: 'container'
+        }));
+      }
       return g.callbacks.push(quoteBacklink.node);
     },
     node: function(root) {
@@ -1827,10 +1835,12 @@
       if (/inline/.test(root.className)) {
         return;
       }
-      container = $.el('span', {
-        className: 'container'
-      });
-      $.after($('span[id^=no]', root), container);
+      if (!$('.container', root)) {
+        container = $.el('span', {
+          className: 'container'
+        });
+        $.after($('span[id^=no]', root), container);
+      }
       id = root.id || $('td[id]', root).id;
       quotes = {};
       opbl = $.config('OP Backlinks');

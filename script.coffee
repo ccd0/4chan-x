@@ -1437,12 +1437,15 @@ titlePost =
 
 quoteBacklink =
   init: ->
+    for span in $$('span[id^=no]')
+      $.after span, $.el 'span', className: 'container'
     g.callbacks.push quoteBacklink.node
   node: (root) ->
     return if /inline/.test root.className
-    container = $.el 'span',
-      className: 'container'
-    $.after $('span[id^=no]', root), container
+    unless $ '.container', root
+      container = $.el 'span',
+        className: 'container'
+      $.after $('span[id^=no]', root), container
     id = root.id or $('td[id]', root).id
     quotes = {}
     opbl = $.config 'OP Backlinks'
