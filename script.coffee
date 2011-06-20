@@ -1853,9 +1853,57 @@ firstRun =
   init: ->
     css = "
       #navtopr, #navbotr {
-        font-size: 3em;
         position: relative;
-        z-index: 99999;
+      }
+      #navtopr::before {
+        content: '';
+        height: 50px;
+        width: 100px;
+        background: red;
+        -webkit-transform: rotate(-45deg);
+        -moz-transform: rotate(-45deg);
+        -o-transform: rotate(-45deg);
+        -webkit-transform-origin: 100% 200%;
+        -moz-transform-origin: 100% 200%;
+        -o-transform-origin: 100% 200%;
+        position: absolute;
+        top: 100%;
+        right: 100%;
+        z-index: 999;
+      }
+      #navtopr::after {
+        content: '';
+        border-top: 100px solid red;
+        border-left: 100px solid transparent;
+        position: absolute;
+        top: 100%;
+        right: 100%;
+        z-index: 999;
+      }
+      #navbotr::before {
+        content: '';
+        height: 50px;
+        width: 100px;
+        background: red;
+        -webkit-transform: rotate(45deg);
+        -moz-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
+        -webkit-transform-origin: 100% -100%;
+        -moz-transform-origin: 100% -100%;
+        -o-transform-origin: 100% -100%;
+        position: absolute;
+        bottom: 100%;
+        right: 100%;
+        z-index: 999;
+      }
+      #navbotr::after {
+        content: '';
+        border-bottom: 100px solid red;
+        border-left: 100px solid transparent;
+        position: absolute;
+        bottom: 100%;
+        right: 100%;
+        z-index: 999;
       }
     "
     style = $.addStyle css
@@ -1863,14 +1911,13 @@ firstRun =
 
     dialog = $.el 'div',
       id: 'overlay'
-      innerHTML: "<div id=options><div class='reply dialog'>Click the <strong>4chan X</strong> link for options.<br>There is another link at the bottom of the page.</div></div>"
+      className: 'firstrun'
+      innerHTML: "<div id=options><div class='reply dialog'>Click the <strong>4chan X</strong> links for options.<br>There is one on top of and the other at the bottom of the page.</div></div>"
     $.append d.body, dialog
 
-    aa = $$ '#navtopr a, navbotr a'
-    for a in aa
-      $.bind a, 'click', firstRun.click
+    $.bind dialog, 'click', firstRun.close
 
-  click: ->
+  close: ->
     $.setValue 'firstrun', true
     $.rm $ 'style.firstrun', d.head
     $.rm $ '#overlay'
