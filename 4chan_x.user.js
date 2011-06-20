@@ -2484,17 +2484,16 @@
   };
   firstRun = {
     init: function() {
-      var css, dialog, style;
-      css = "      #navtopr, #navbotr {        position: relative;      }      #navtopr::before {        content: '';        height: 50px;        width: 100px;        background: red;        -webkit-transform: rotate(-45deg);        -moz-transform: rotate(-45deg);        -o-transform: rotate(-45deg);        -webkit-transform-origin: 100% 200%;        -moz-transform-origin: 100% 200%;        -o-transform-origin: 100% 200%;        position: absolute;        top: 100%;        right: 100%;        z-index: 999;      }      #navtopr::after {        content: '';        border-top: 100px solid red;        border-left: 100px solid transparent;        position: absolute;        top: 100%;        right: 100%;        z-index: 999;      }      #navbotr::before {        content: '';        height: 50px;        width: 100px;        background: red;        -webkit-transform: rotate(45deg);        -moz-transform: rotate(45deg);        -o-transform: rotate(45deg);        -webkit-transform-origin: 100% -100%;        -moz-transform-origin: 100% -100%;        -o-transform-origin: 100% -100%;        position: absolute;        bottom: 100%;        right: 100%;        z-index: 999;      }      #navbotr::after {        content: '';        border-bottom: 100px solid red;        border-left: 100px solid transparent;        position: absolute;        bottom: 100%;        right: 100%;        z-index: 999;      }    ";
-      style = $.addStyle(css);
+      var dialog, style;
+      style = $.addStyle("      #navtopr, #navbotr {        position: relative;      }      #navtopr::before {        content: '';        height: 50px;        width: 100px;        background: red;        -webkit-transform: rotate(-45deg);        -moz-transform: rotate(-45deg);        -o-transform: rotate(-45deg);        -webkit-transform-origin: 100% 200%;        -moz-transform-origin: 100% 200%;        -o-transform-origin: 100% 200%;        position: absolute;        top: 100%;        right: 100%;        z-index: 999;      }      #navtopr::after {        content: '';        border-top: 100px solid red;        border-left: 100px solid transparent;        position: absolute;        top: 100%;        right: 100%;        z-index: 999;      }      #navbotr::before {        content: '';        height: 50px;        width: 100px;        background: red;        -webkit-transform: rotate(45deg);        -moz-transform: rotate(45deg);        -o-transform: rotate(45deg);        -webkit-transform-origin: 100% -100%;        -moz-transform-origin: 100% -100%;        -o-transform-origin: 100% -100%;        position: absolute;        bottom: 100%;        right: 100%;        z-index: 999;      }      #navbotr::after {        content: '';        border-bottom: 100px solid red;        border-left: 100px solid transparent;        position: absolute;        bottom: 100%;        right: 100%;        z-index: 999;      }    ");
       style.className = 'firstrun';
       dialog = $.el('div', {
         id: 'overlay',
         className: 'firstrun',
-        innerHTML: "<div id=options><div class='reply dialog'>Click the <strong>4chan X</strong> links for options.<br>There is one on top of and the other at the bottom of the page.</div></div>"
+        innerHTML: "        <div id=options>          <div class='reply dialog'>            <p>Click the <strong>4chan X</strong> buttons for options.</p>            <p>The buttons are at the top and bottom of the page.</p>          </div>        </div>"
       });
       $.append(d.body, dialog);
-      return $.bind(dialog, 'click', firstRun.close);
+      return $.bind(window, 'click', firstRun.close);
     },
     close: function() {
       $.setValue('firstrun', true);

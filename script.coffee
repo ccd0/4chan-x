@@ -1853,7 +1853,7 @@ imgExpand =
 
 firstRun =
   init: ->
-    css = "
+    style = $.addStyle "
       #navtopr, #navbotr {
         position: relative;
       }
@@ -1908,16 +1908,21 @@ firstRun =
         z-index: 999;
       }
     "
-    style = $.addStyle css
     style.className = 'firstrun'
 
     dialog = $.el 'div',
       id: 'overlay'
       className: 'firstrun'
-      innerHTML: "<div id=options><div class='reply dialog'>Click the <strong>4chan X</strong> links for options.<br>There is one on top of and the other at the bottom of the page.</div></div>"
+      innerHTML: "
+        <div id=options>
+          <div class='reply dialog'>
+            <p>Click the <strong>4chan X</strong> buttons for options.</p>
+            <p>The buttons are at the top and bottom of the page.</p>
+          </div>
+        </div>"
     $.append d.body, dialog
 
-    $.bind dialog, 'click', firstRun.close
+    $.bind window, 'click', firstRun.close
 
   close: ->
     $.setValue 'firstrun', true
