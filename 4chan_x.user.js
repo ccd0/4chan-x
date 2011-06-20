@@ -1809,7 +1809,7 @@
       }
     },
     P: function() {
-      if (this.date.getHours < 12) {
+      if (this.date.getHours() < 12) {
         return 'am';
       } else {
         return 'pm';

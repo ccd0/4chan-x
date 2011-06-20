@@ -1430,7 +1430,7 @@ Time =
   m: -> @zeroPad @date.getMonth() + 1
   M: -> @zeroPad @date.getMinutes()
   p: -> if @date.getHours() < 12 then 'AM' else 'PM'
-  P: -> if @date.getHours < 12 then 'am' else 'pm'
+  P: -> if @date.getHours() < 12 then 'am' else 'pm'
   y: -> @date.getFullYear() - 2000
 
 titlePost =
