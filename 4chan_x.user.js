@@ -1831,7 +1831,7 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var el, id, link, opbl, qid, quote, quotes, _i, _len, _ref, _results;
-        if (/inline/.test(root.className)) {
+        if ($('.container', root)) {
           return;
         }
         $.after($('span[id^=no]', root), $.el('span', {
