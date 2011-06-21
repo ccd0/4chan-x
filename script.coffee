@@ -2017,6 +2017,9 @@ main =
     if form and $.config 'Quick Reply'
       qr.init()
 
+    if $.config 'Report Button'
+      reportButton.init()
+
     if $.config 'Quote Backlinks'
       quoteBacklink.init()
 
@@ -2028,9 +2031,6 @@ main =
 
     if $.config 'Indicate OP quote'
       quoteOP.init()
-
-    if $.config 'Report Button'
-      reportButton.init()
 
     if $.config 'Thread Watcher'
       watcher.init()
