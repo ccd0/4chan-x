@@ -330,9 +330,6 @@ if not Object.keys
   Object.keys = (o) ->
     key for key in o
 
-# upgrade your firefox god damn it!
-if not d.head then d.head = $('head', d)
-
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 

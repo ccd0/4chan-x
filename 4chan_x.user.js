@@ -479,9 +479,6 @@
       return _results;
     };
   }
-  if (!d.head) {
-    d.head = $('head', d);
-  }
   $$ = function(selector, root) {
     if (root == null) {
       root = d.body;
