@@ -1,3 +1,8 @@
+- aeosynth:
+  - keep options dialog at constant size
+  - drop firefox 3.6 support (again...)
+  - comment out tineye
+
 2.14.0
 - mayhem:
   - firstrun dialog
