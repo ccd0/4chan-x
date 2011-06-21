@@ -1,3 +1,17 @@
+2.14.0
+- mayhem:
+  - firstrun dialog
+  - fix backlinking future posts
+  - fix op non-backlinking
+  - fix thread expansion on /t/
+  - fix sage cooldown
+  - fix extra link area around images
+  - fix persistent qr
+- aeosynth:
+  - reply navigation
+  - fix time formatting of xhr posts
+  - fix %P time formatting
+
 2.13.0
 - mayhem:
   - fix various bugs
