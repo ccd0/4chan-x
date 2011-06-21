@@ -2674,7 +2674,7 @@
       }
       $.bind(d.body, 'DOMNodeInserted', nodeInserted);
       options.init();
-      if (!$.config('firstrun')) {
+      if (!$.getValue('firstrun')) {
         return firstRun.init();
       }
     },

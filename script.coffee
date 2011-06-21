@@ -2089,7 +2089,7 @@ main =
     $.bind d.body, 'DOMNodeInserted', nodeInserted
     options.init()
 
-    unless $.config 'firstrun'
+    unless $.getValue 'firstrun'
       firstRun.init()
 
   css: '
