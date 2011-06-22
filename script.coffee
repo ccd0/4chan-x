@@ -1717,8 +1717,11 @@ Recaptcha =
     if recaptcha = $ '#recaptcha_response_field' #NoScript
       $.bind recaptcha, 'keydown', Recaptcha.listener
   listener: (e) ->
-    if e.keyCode is 8 and @value is ''
+    if e.keyCode is 8 and @value is '' # backspace to reload
       Recaptcha.reload()
+    if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
+      $('#auto').checked = true
+      qr.autohide.set()
   reload: ->
     window.location = 'javascript:Recaptcha.reload()'
 

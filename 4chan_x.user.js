@@ -2272,7 +2272,11 @@
     },
     listener: function(e) {
       if (e.keyCode === 8 && this.value === '') {
-        return Recaptcha.reload();
+        Recaptcha.reload();
+      }
+      if (e.keyCode === 13 && cooldown.duration) {
+        $('#auto').checked = true;
+        return qr.autohide.set();
       }
     },
     reload: function() {
