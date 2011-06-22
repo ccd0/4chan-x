@@ -3,6 +3,7 @@
   - drop firefox 3.6 support (again...)
   - comment out tineye
   - trying to post during cooldown will enable auto-post
+  - fix errors w/ noscript
 
 2.14.0
 - mayhem:
