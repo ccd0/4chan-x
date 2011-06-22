@@ -2260,15 +2260,13 @@
   };
   Recaptcha = {
     init: function() {
-      var el, recaptcha, _i, _len, _ref2;
+      var el, _i, _len, _ref2;
       _ref2 = $$('#recaptcha_table a');
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         el = _ref2[_i];
         el.tabIndex = 1;
       }
-      if (recaptcha = $('#recaptcha_response_field')) {
-        return $.bind(recaptcha, 'keydown', Recaptcha.listener);
-      }
+      return $.bind($('#recaptcha_response_field'), 'keydown', Recaptcha.listener);
     },
     listener: function(e) {
       if (e.keyCode === 8 && this.value === '') {
@@ -2510,7 +2508,7 @@
   };
   main = {
     init: function() {
-      var DAY, callback, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, reply, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var DAY, callback, canPost, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, reply, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2562,7 +2560,8 @@
         $.setValue('lastChecked', now);
       }
       $.addStyle(main.css);
-      if (form = $('form[name=post]')) {
+      if ((form = $('form[name=post]')) && $('#recaptcha_response_field')) {
+        canPost = true;
         Recaptcha.init();
         $.bind(form, 'submit', qr.cb.submit);
       }
@@ -2590,7 +2589,7 @@
       if ($.config('Reply Hiding')) {
         replyHiding.init();
       }
-      if (form && $.config('Quick Reply')) {
+      if (canPost && $.config('Quick Reply')) {
         qr.init();
       }
       if ($.config('Report Button')) {

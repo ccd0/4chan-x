@@ -1714,8 +1714,7 @@ Recaptcha =
     #hack to tab from comment straight to recaptcha
     for el in $$ '#recaptcha_table a'
       el.tabIndex = 1
-    if recaptcha = $ '#recaptcha_response_field' #NoScript
-      $.bind recaptcha, 'keydown', Recaptcha.listener
+    $.bind $('#recaptcha_response_field'), 'keydown', Recaptcha.listener
   listener: (e) ->
     if e.keyCode is 8 and @value is '' # backspace to reload
       Recaptcha.reload()
@@ -1989,7 +1988,8 @@ main =
 
     $.addStyle main.css
 
-    if form = $ 'form[name=post]'
+    if (form = $ 'form[name=post]') and $ '#recaptcha_response_field'
+      canPost = true
       Recaptcha.init()
       $.bind form, 'submit', qr.cb.submit
 
@@ -2018,7 +2018,7 @@ main =
     if $.config 'Reply Hiding'
       replyHiding.init()
 
-    if form and $.config 'Quick Reply'
+    if canPost and $.config 'Quick Reply'
       qr.init()
 
     if $.config 'Report Button'
