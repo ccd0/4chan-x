@@ -2,6 +2,7 @@
   - keep options dialog at constant size
   - drop firefox 3.6 support (again...)
   - comment out tineye
+  - trying to post during cooldown will enable auto-post
 
 2.14.0
 - mayhem:
