@@ -541,7 +541,7 @@ keybinds =
         $.rm $ '#qr'
       when keybinds.spoiler
         ta = d.activeElement
-        return unless ta.nodeName is 'TEXTAREA'
+        return unless d.activeElement.nodeName is 'TEXTAREA'
 
         e.preventDefault()
 
@@ -803,7 +803,7 @@ options =
                 <tr><td>Expand thread</td><td><input type=text name=expandThread value='e'></td></tr>
                 <tr><td>Watch thread</td><td><input type=text name=watch value='w'></td></tr>
                 <tr><td>Hide thread</td><td><input type=text name=hide value='x'></td></tr>
-                <tr><td>Expand selected images</td><td><input type=text name=expandImages value='m'></td></tr>
+                <tr><td>Expand selected image</td><td><input type=text name=expandImages value='m'></td></tr>
                 <tr><td>Expand all images</td><td><input type=text name=expandAllImages value='M'></td></tr>
                 <tr><td>Update now</td><td><input type=text name=update value='u'></td></tr>
               </tbody>
