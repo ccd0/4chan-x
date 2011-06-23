@@ -694,6 +694,7 @@
     init: function() {
       var key;
       keybinds.close = (key = $.getValue('key/close')) ? key : '<Esc>';
+      keybinds.spoiler = (key = $.getValue('key/spoiler')) ? key : '^s';
       keybinds.zero = (key = $.getValue('key/zero')) ? key : '0';
       keybinds.openQR = (key = $.getValue('key/openQR')) ? key : 'i';
       keybinds.openEmptyQR = (key = $.getValue('key/openEmptyQR')) ? key : 'I';
@@ -729,6 +730,9 @@
           if (e.ctrlKey) {
             key = '^' + key;
           }
+          if (e.altKey) {
+            key = 'alt+' + key;
+          }
         } else {
           if (kc === 27) {
             key = '<Esc>';
@@ -748,7 +752,7 @@
         case keybinds.close:
           e.preventDefault();
           return $.rm($('#qr'));
-        case '^s':
+        case keybinds.spoiler:
           ta = d.activeElement;
           if (ta.nodeName !== 'TEXTAREA') {
             return;
@@ -770,6 +774,7 @@
       thread = nav.getThread();
       switch (keybinds.key) {
         case keybinds.close:
+          e.preventDefault();
           if (o = $('#overlay')) {
             return $.rm(o);
           }
@@ -1089,6 +1094,9 @@
           }
           if (e.ctrlKey) {
             key = '^' + key;
+          }
+          if (e.altKey) {
+            key = 'alt+' + key;
           }
         } else {
           if (kc === 27) {

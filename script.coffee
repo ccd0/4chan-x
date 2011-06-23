@@ -490,6 +490,7 @@ replyHiding =
 keybinds =
   init: ->
     keybinds.close           = if key = $.getValue 'key/close' then key           else '<Esc>'
+    keybinds.spoiler         = if key = $.getValue 'key/spoiler' then key         else '^s'
     keybinds.zero            = if key = $.getValue 'key/zero' then key            else '0'
     keybinds.openQR          = if key = $.getValue 'key/openQR' then key          else 'i'
     keybinds.openEmptyQR     = if key = $.getValue 'key/openEmptyQR' then key     else 'I'
@@ -522,6 +523,7 @@ keybinds =
         if !e.shiftKey
           key = key.toLowerCase()
         if e.ctrlKey then key = '^' + key
+        if e.altKey  then key = 'alt+' + key
       else
         if kc is 27
           key = '<Esc>'
@@ -537,7 +539,7 @@ keybinds =
       when keybinds.close
         e.preventDefault()
         $.rm $ '#qr'
-      when '^s'
+      when keybinds.spoiler
         ta = d.activeElement
         return unless ta.nodeName is 'TEXTAREA'
 
@@ -559,6 +561,7 @@ keybinds =
     thread = nav.getThread()
     switch keybinds.key
       when keybinds.close
+        e.preventDefault()
         $.rm o if o = $ '#overlay'
       when keybinds.zero
         window.location = "/#{g.BOARD}/0#0"
@@ -880,6 +883,7 @@ options =
         if !e.shiftKey
           key = key.toLowerCase()
         if e.ctrlKey then key = '^' + key
+        if e.altKey  then key = 'alt+' + key
       else
         if kc is 27
           key = '<Esc>'
