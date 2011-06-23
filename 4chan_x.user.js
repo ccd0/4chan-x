@@ -1067,11 +1067,11 @@
       });
     },
     tab: function() {
-      var content, div, _i, _len, _results;
-      content = $$('#main, #flavors, #time, #keybinds');
+      var div, _i, _len, _ref, _results;
+      _ref = $('#content').children;
       _results = [];
-      for (_i = 0, _len = content.length; _i < _len; _i++) {
-        div = content[_i];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        div = _ref[_i];
         _results.push(div.id === this.name ? $.show(div) : $.hide(div));
       }
       return _results;

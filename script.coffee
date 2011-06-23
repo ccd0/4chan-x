@@ -860,8 +860,7 @@ options =
     $.bind dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
 
   tab: ->
-    content = $$ '#main, #flavors, #time, #keybinds'
-    for div in content
+    for div in $('#content').children
       if div.id is @name
         $.show div
       else
