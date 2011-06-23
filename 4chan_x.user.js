@@ -693,23 +693,23 @@
   keybinds = {
     init: function() {
       var key;
-      keybinds.close = (key = $.getValue('key/close')) ? key : '<Esc>';
-      keybinds.spoiler = (key = $.getValue('key/spoiler')) ? key : '^s';
-      keybinds.zero = (key = $.getValue('key/zero')) ? key : '0';
-      keybinds.openQR = (key = $.getValue('key/openQR')) ? key : 'i';
-      keybinds.openEmptyQR = (key = $.getValue('key/openEmptyQR')) ? key : 'I';
-      keybinds.nextReply = (key = $.getValue('key/nextReply')) ? key : 'J';
-      keybinds.previousReply = (key = $.getValue('key/previousReply')) ? key : 'K';
-      keybinds.nextThread = (key = $.getValue('key/nextThread')) ? key : 'n';
-      keybinds.previousThread = (key = $.getValue('key/previousThread')) ? key : 'p';
-      keybinds.openThreadTab = (key = $.getValue('key/openThreadTab')) ? key : 'o';
-      keybinds.openThread = (key = $.getValue('key/openThread')) ? key : 'O';
-      keybinds.expandThread = (key = $.getValue('key/expandThread')) ? key : 'e';
-      keybinds.watch = (key = $.getValue('key/watch')) ? key : 'w';
-      keybinds.hide = (key = $.getValue('key/hide')) ? key : 'x';
-      keybinds.expandImages = (key = $.getValue('key/expandImages')) ? key : 'm';
-      keybinds.expandAllImages = (key = $.getValue('key/expandAllImages')) ? key : 'M';
-      keybinds.update = (key = $.getValue('key/update')) ? key : 'u';
+      keybinds.close = (key = $.getValue('key/close', 0)).length ? key : '<Esc>';
+      keybinds.spoiler = (key = $.getValue('key/spoiler', 0)).length ? key : '^s';
+      keybinds.zero = (key = $.getValue('key/zero', 0)).length ? key : '0';
+      keybinds.openQR = (key = $.getValue('key/openQR', 0)).length ? key : 'i';
+      keybinds.openEmptyQR = (key = $.getValue('key/openEmptyQR', 0)).length ? key : 'I';
+      keybinds.nextReply = (key = $.getValue('key/nextReply', 0)).length ? key : 'J';
+      keybinds.previousReply = (key = $.getValue('key/previousReply', 0)).length ? key : 'K';
+      keybinds.nextThread = (key = $.getValue('key/nextThread', 0)).length ? key : 'n';
+      keybinds.previousThread = (key = $.getValue('key/previousThread', 0)).length ? key : 'p';
+      keybinds.openThreadTab = (key = $.getValue('key/openThreadTab', 0)).length ? key : 'o';
+      keybinds.openThread = (key = $.getValue('key/openThread', 0)).length ? key : 'O';
+      keybinds.expandThread = (key = $.getValue('key/expandThread', 0)).length ? key : 'e';
+      keybinds.watch = (key = $.getValue('key/watch', 0)).length ? key : 'w';
+      keybinds.hide = (key = $.getValue('key/hide', 0)).length ? key : 'x';
+      keybinds.expandImages = (key = $.getValue('key/expandImages', 0)).length ? key : 'm';
+      keybinds.expandAllImages = (key = $.getValue('key/expandAllImages', 0)).length ? key : 'M';
+      keybinds.update = (key = $.getValue('key/update', 0)).length ? key : 'u';
       $.bind(d, 'keydown', keybinds.cb.keydown);
       return $.bind(d, 'keypress', keybinds.cb.keypress);
     },
@@ -1042,7 +1042,7 @@
       for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
         input = _ref4[_k];
         $.bind(input, 'keydown', options.cb.keybind);
-        if (key = $.getValue("key/" + input.name, 0)) {
+        if ((key = $.getValue("key/" + input.name, 0)).length >= 0) {
           input.value = key;
         }
       }
@@ -1103,6 +1103,9 @@
             key = '<Esc>';
           } else if ((48 <= kc && kc <= 57)) {
             key = String.fromCharCode(kc);
+          }
+          if (kc === 8) {
+            key = '';
           } else {
             key = this.value;
           }

@@ -489,23 +489,23 @@ replyHiding =
 
 keybinds =
   init: ->
-    keybinds.close           = if key = $.getValue 'key/close' then key           else '<Esc>'
-    keybinds.spoiler         = if key = $.getValue 'key/spoiler' then key         else '^s'
-    keybinds.zero            = if key = $.getValue 'key/zero' then key            else '0'
-    keybinds.openQR          = if key = $.getValue 'key/openQR' then key          else 'i'
-    keybinds.openEmptyQR     = if key = $.getValue 'key/openEmptyQR' then key     else 'I'
-    keybinds.nextReply       = if key = $.getValue 'key/nextReply' then key       else 'J'
-    keybinds.previousReply   = if key = $.getValue 'key/previousReply' then key   else 'K'
-    keybinds.nextThread      = if key = $.getValue 'key/nextThread' then key      else 'n'
-    keybinds.previousThread  = if key = $.getValue 'key/previousThread' then key  else 'p'
-    keybinds.openThreadTab   = if key = $.getValue 'key/openThreadTab' then key   else 'o'
-    keybinds.openThread      = if key = $.getValue 'key/openThread' then key      else 'O'
-    keybinds.expandThread    = if key = $.getValue 'key/expandThread' then key    else 'e'
-    keybinds.watch           = if key = $.getValue 'key/watch' then key           else 'w'
-    keybinds.hide            = if key = $.getValue 'key/hide' then key            else 'x'
-    keybinds.expandImages    = if key = $.getValue 'key/expandImages' then key    else 'm'
-    keybinds.expandAllImages = if key = $.getValue 'key/expandAllImages' then key else 'M'
-    keybinds.update          = if key = $.getValue 'key/update' then key          else 'u'
+    keybinds.close           = if (key = $.getValue 'key/close', 0).length then key           else '<Esc>'
+    keybinds.spoiler         = if (key = $.getValue 'key/spoiler', 0).length then key         else '^s'
+    keybinds.zero            = if (key = $.getValue 'key/zero', 0).length then key            else '0'
+    keybinds.openQR          = if (key = $.getValue 'key/openQR', 0).length then key          else 'i'
+    keybinds.openEmptyQR     = if (key = $.getValue 'key/openEmptyQR', 0).length then key     else 'I'
+    keybinds.nextReply       = if (key = $.getValue 'key/nextReply', 0).length then key       else 'J'
+    keybinds.previousReply   = if (key = $.getValue 'key/previousReply', 0).length then key   else 'K'
+    keybinds.nextThread      = if (key = $.getValue 'key/nextThread', 0).length then key      else 'n'
+    keybinds.previousThread  = if (key = $.getValue 'key/previousThread', 0).length then key  else 'p'
+    keybinds.openThreadTab   = if (key = $.getValue 'key/openThreadTab', 0).length then key   else 'o'
+    keybinds.openThread      = if (key = $.getValue 'key/openThread', 0).length then key      else 'O'
+    keybinds.expandThread    = if (key = $.getValue 'key/expandThread', 0).length then key    else 'e'
+    keybinds.watch           = if (key = $.getValue 'key/watch', 0).length then key           else 'w'
+    keybinds.hide            = if (key = $.getValue 'key/hide', 0).length then key            else 'x'
+    keybinds.expandImages    = if (key = $.getValue 'key/expandImages', 0).length then key    else 'm'
+    keybinds.expandAllImages = if (key = $.getValue 'key/expandAllImages', 0).length then key else 'M'
+    keybinds.update          = if (key = $.getValue 'key/update', 0).length then key          else 'u'
 
     $.bind d, 'keydown',  keybinds.cb.keydown
     $.bind d, 'keypress', keybinds.cb.keypress
@@ -840,7 +840,7 @@ options =
     $.bind $('input[name=time]', dialog), 'keyup', options.cb.time
     for input in $$ '#keybinds input', dialog
       $.bind input, 'keydown', options.cb.keybind
-      if key = $.getValue "key/#{input.name}", 0
+      if (key = $.getValue "key/#{input.name}", 0).length >= 0
         input.value = key
 
     ###
@@ -888,6 +888,8 @@ options =
           key = '<Esc>'
         else if 48 <= kc <= 57 #0-9
           key = String.fromCharCode kc
+        if kc is 8
+          key = ''
         else
           key = @value
       @value = key
