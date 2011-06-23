@@ -537,13 +537,10 @@ keybinds =
   insert: (e) ->
     switch keybinds.key
       when keybinds.close
-        e.preventDefault()
         $.rm $ '#qr'
       when keybinds.spoiler
         ta = d.activeElement
         return unless ta.nodeName is 'TEXTAREA'
-
-        e.preventDefault()
 
         value    = ta.value
         selStart = ta.selectionStart
@@ -556,12 +553,14 @@ keybinds =
         ta.value = valStart + valMid + valEnd
         range = valStart.length + valMid.length
         ta.setSelectionRange range, range
+      else
+        return
+    e.preventDefault()
 
   normal: (e) ->
     thread = nav.getThread()
     switch keybinds.key
       when keybinds.close
-        e.preventDefault()
         $.rm o if o = $ '#overlay'
       when keybinds.zero
         window.location = "/#{g.BOARD}/0#0"
@@ -593,6 +592,9 @@ keybinds =
         watcher.toggle thread
       when keybinds.hide
         threadHiding.toggle thread
+      else
+        return
+    e.preventDefault()
 
   img: (thread, all) ->
     if all

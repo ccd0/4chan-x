@@ -750,14 +750,13 @@
       var range, selEnd, selStart, ta, valEnd, valMid, valStart, value;
       switch (keybinds.key) {
         case keybinds.close:
-          e.preventDefault();
-          return $.rm($('#qr'));
+          $.rm($('#qr'));
+          break;
         case keybinds.spoiler:
           ta = d.activeElement;
           if (ta.nodeName !== 'TEXTAREA') {
             return;
           }
-          e.preventDefault();
           value = ta.value;
           selStart = ta.selectionStart;
           selEnd = ta.selectionEnd;
@@ -766,50 +765,71 @@
           valEnd = '[/spoiler]' + value.slice(selEnd);
           ta.value = valStart + valMid + valEnd;
           range = valStart.length + valMid.length;
-          return ta.setSelectionRange(range, range);
+          ta.setSelectionRange(range, range);
+          break;
+        default:
+          return;
       }
+      return e.preventDefault();
     },
     normal: function(e) {
       var o, thread;
       thread = nav.getThread();
       switch (keybinds.key) {
         case keybinds.close:
-          e.preventDefault();
           if (o = $('#overlay')) {
-            return $.rm(o);
+            $.rm(o);
           }
           break;
         case keybinds.zero:
-          return window.location = "/" + g.BOARD + "/0#0";
+          window.location = "/" + g.BOARD + "/0#0";
+          break;
         case keybinds.openEmptyQR:
-          return keybinds.qr(thread);
+          keybinds.qr(thread);
+          break;
         case keybinds.nextReply:
-          return keybinds.hl.next(thread);
+          keybinds.hl.next(thread);
+          break;
         case keybinds.previousReply:
-          return keybinds.hl.prev(thread);
+          keybinds.hl.prev(thread);
+          break;
         case keybinds.expandAllImages:
-          return keybinds.img(thread, true);
+          keybinds.img(thread, true);
+          break;
         case keybinds.openThread:
-          return keybinds.open(thread);
+          keybinds.open(thread);
+          break;
         case keybinds.expandThread:
-          return expandThread.toggle(thread);
+          expandThread.toggle(thread);
+          break;
         case keybinds.openQR:
-          return keybinds.qr(thread, true);
+          keybinds.qr(thread, true);
+          break;
         case keybinds.expandImages:
-          return keybinds.img(thread);
+          keybinds.img(thread);
+          break;
         case keybinds.nextThread:
-          return nav.next();
+          nav.next();
+          break;
         case keybinds.openThreadTab:
-          return keybinds.open(thread, true);
+          keybinds.open(thread, true);
+          break;
         case keybinds.previousThread:
-          return nav.prev();
+          nav.prev();
+          break;
         case keybinds.update:
-          return updater.update();
+          updater.update();
+          break;
         case keybinds.watch:
-          return watcher.toggle(thread);
+          watcher.toggle(thread);
+          break;
         case keybinds.hide:
-          return threadHiding.toggle(thread);
+          threadHiding.toggle(thread);
+          break;
+        default:
+          return;
       }
+      return e.preventDefault();
     },
     img: function(thread, all) {
       var root, thumb;
