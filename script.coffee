@@ -1514,7 +1514,7 @@ quoteBacklink =
         continue unless qid = quote.hash[1..]
         #duplicate quotes get overwritten
         quotes[qid] = quote
-      for qid, quote of quotes
+      for qid of quotes
         continue unless el = d.getElementById qid
         #don't backlink the op
         continue if opbl and el.className is 'op'

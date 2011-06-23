@@ -1893,7 +1893,6 @@
         }
         _results = [];
         for (qid in quotes) {
-          quote = quotes[qid];
           if (!(el = d.getElementById(qid))) {
             continue;
           }
