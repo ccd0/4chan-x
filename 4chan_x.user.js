@@ -754,7 +754,7 @@
           return $.rm($('#qr'));
         case keybinds.spoiler:
           ta = d.activeElement;
-          if (d.activeElement.nodeName !== 'TEXTAREA') {
+          if (ta.nodeName !== 'TEXTAREA') {
             return;
           }
           e.preventDefault();
