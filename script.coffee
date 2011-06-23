@@ -888,7 +888,7 @@ options =
           key = '<Esc>'
         else if 48 <= kc <= 57 #0-9
           key = String.fromCharCode kc
-        if kc is 8
+        else if kc is 8
           key = ''
         else
           key = @value

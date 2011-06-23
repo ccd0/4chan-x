@@ -1103,8 +1103,7 @@
             key = '<Esc>';
           } else if ((48 <= kc && kc <= 57)) {
             key = String.fromCharCode(kc);
-          }
-          if (kc === 8) {
+          } else if (kc === 8) {
             key = '';
           } else {
             key = this.value;
