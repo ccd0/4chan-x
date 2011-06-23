@@ -692,6 +692,23 @@
   };
   keybinds = {
     init: function() {
+      var key;
+      keybinds.close = (key = $.getValue('key/close')) ? key : '<Esc>';
+      keybinds.zero = (key = $.getValue('key/zero')) ? key : '0';
+      keybinds.openQR = (key = $.getValue('key/openQR')) ? key : 'i';
+      keybinds.openEmptyQR = (key = $.getValue('key/openEmptyQR')) ? key : 'I';
+      keybinds.nextReply = (key = $.getValue('key/nextReply')) ? key : 'J';
+      keybinds.previousReply = (key = $.getValue('key/previousReply')) ? key : 'K';
+      keybinds.nextThread = (key = $.getValue('key/nextThread')) ? key : 'n';
+      keybinds.previousThread = (key = $.getValue('key/previousThread')) ? key : 'p';
+      keybinds.openThreadTab = (key = $.getValue('key/openThreadTab')) ? key : 'o';
+      keybinds.openThread = (key = $.getValue('key/openThread')) ? key : 'O';
+      keybinds.expandThread = (key = $.getValue('key/expandThread')) ? key : 'e';
+      keybinds.watch = (key = $.getValue('key/watch')) ? key : 'w';
+      keybinds.hide = (key = $.getValue('key/hide')) ? key : 'x';
+      keybinds.expandImages = (key = $.getValue('key/expandImages')) ? key : 'm';
+      keybinds.expandAllImages = (key = $.getValue('key/expandAllImages')) ? key : 'M';
+      keybinds.update = (key = $.getValue('key/update')) ? key : 'u';
       $.bind(d, 'keydown', keybinds.cb.keydown);
       return $.bind(d, 'keypress', keybinds.cb.keypress);
     },
@@ -728,7 +745,7 @@
     insert: function(e) {
       var range, selEnd, selStart, ta, valEnd, valMid, valStart, value;
       switch (keybinds.key) {
-        case '<Esc>':
+        case keybinds.close:
           e.preventDefault();
           return $.rm($('#qr'));
         case '^s':
@@ -752,40 +769,40 @@
       var o, thread;
       thread = nav.getThread();
       switch (keybinds.key) {
-        case '<Esc>':
+        case keybinds.close:
           if (o = $('#overlay')) {
             return $.rm(o);
           }
           break;
-        case '0':
+        case keybinds.zero:
           return window.location = "/" + g.BOARD + "/0#0";
-        case 'I':
+        case keybinds.openEmptyQR:
           return keybinds.qr(thread);
-        case 'J':
+        case keybinds.nextReply:
           return keybinds.hl.next(thread);
-        case 'K':
+        case keybinds.previousReply:
           return keybinds.hl.prev(thread);
-        case 'M':
+        case keybinds.expandAllImages:
           return keybinds.img(thread, true);
-        case 'O':
+        case keybinds.openThread:
           return keybinds.open(thread);
-        case 'e':
+        case keybinds.expandThread:
           return expandThread.toggle(thread);
-        case 'i':
+        case keybinds.openQR:
           return keybinds.qr(thread, true);
-        case 'm':
+        case keybinds.expandImages:
           return keybinds.img(thread);
-        case 'n':
+        case keybinds.nextThread:
           return nav.next();
-        case 'o':
+        case keybinds.openThreadTab:
           return keybinds.open(thread, true);
-        case 'p':
+        case keybinds.previousThread:
           return nav.prev();
-        case 'u':
+        case keybinds.update:
           return updater.update();
-        case 'w':
+        case keybinds.watch:
           return watcher.toggle(thread);
-        case 'x':
+        case keybinds.hide:
           return threadHiding.toggle(thread);
       }
     },
@@ -969,10 +986,10 @@
       return $.replace(home, a);
     },
     dialog: function() {
-      var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+      var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
-      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=http://userscripts.org/scripts/show/51412>uso</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>          <div style='display: none;' id=time>            <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
+      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=http://userscripts.org/scripts/show/51412>uso</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>          <div style='display: none;' id=time>            <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>              </tbody>            </table>          </div>          <div style='display: none;' id=keybinds>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close value='<Esc>'></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler value='^s'></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero value='0'></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value='i'></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR value='I'></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply value='J'></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply value='K'></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread value='n'></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread value='p'></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread value='O'></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab value='o'></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread value='e'></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch value='w'></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide value='x'></td></tr>                <tr><td>Expand selected images</td><td><input type=text name=expandImages value='m'></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages value='M'></td></tr>                <tr><td>Update now</td><td><input type=text name=update value='u'></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
       dialog = $.el('div', {
         id: 'options',
         innerHTML: html
@@ -1016,6 +1033,14 @@
       }
       $.bind($('textarea[name=flavors]', dialog), 'change', $.cb.value);
       $.bind($('input[name=time]', dialog), 'keyup', options.cb.time);
+      _ref4 = $$('#keybinds input', dialog);
+      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
+        input = _ref4[_k];
+        $.bind(input, 'keydown', options.cb.keybind);
+        if (key = $.getValue("key/" + input.name, 0)) {
+          input.value = key;
+        }
+      }
       /*
           https://bugzilla.mozilla.org/show_bug.cgi?id=579776
           position:fixed and position:absolute shouldn't turn display:-moz-box into display:block
@@ -1038,7 +1063,7 @@
     },
     tab: function() {
       var content, div, _i, _len, _results;
-      content = $$('#main, #flavors, #time');
+      content = $$('#main, #flavors, #time, #keybinds');
       _results = [];
       for (_i = 0, _len = content.length; _i < _len; _i++) {
         div = content[_i];
@@ -1052,6 +1077,30 @@
         $.deleteValue("hiddenThreads/" + g.BOARD + "/");
         this.value = "hidden: 0";
         return g.hiddenReplies = {};
+      },
+      keybind: function(e) {
+        var kc, key;
+        e.preventDefault();
+        kc = e.keyCode;
+        if ((65 <= kc && kc <= 90)) {
+          key = String.fromCharCode(kc);
+          if (!e.shiftKey) {
+            key = key.toLowerCase();
+          }
+          if (e.ctrlKey) {
+            key = '^' + key;
+          }
+        } else {
+          if (kc === 27) {
+            key = '<Esc>';
+          } else if ((48 <= kc && kc <= 57)) {
+            key = String.fromCharCode(kc);
+          } else {
+            key = this.value;
+          }
+        }
+        this.value = key;
+        return $.setValue("key/" + this.name, key);
       },
       time: function(e) {
         $.setValue('time', this.value);

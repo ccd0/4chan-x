@@ -489,6 +489,23 @@ replyHiding =
 
 keybinds =
   init: ->
+    keybinds.close           = if key = $.getValue 'key/close' then key           else '<Esc>'
+    keybinds.zero            = if key = $.getValue 'key/zero' then key            else '0'
+    keybinds.openQR          = if key = $.getValue 'key/openQR' then key          else 'i'
+    keybinds.openEmptyQR     = if key = $.getValue 'key/openEmptyQR' then key     else 'I'
+    keybinds.nextReply       = if key = $.getValue 'key/nextReply' then key       else 'J'
+    keybinds.previousReply   = if key = $.getValue 'key/previousReply' then key   else 'K'
+    keybinds.nextThread      = if key = $.getValue 'key/nextThread' then key      else 'n'
+    keybinds.previousThread  = if key = $.getValue 'key/previousThread' then key  else 'p'
+    keybinds.openThreadTab   = if key = $.getValue 'key/openThreadTab' then key   else 'o'
+    keybinds.openThread      = if key = $.getValue 'key/openThread' then key      else 'O'
+    keybinds.expandThread    = if key = $.getValue 'key/expandThread' then key    else 'e'
+    keybinds.watch           = if key = $.getValue 'key/watch' then key           else 'w'
+    keybinds.hide            = if key = $.getValue 'key/hide' then key            else 'x'
+    keybinds.expandImages    = if key = $.getValue 'key/expandImages' then key    else 'm'
+    keybinds.expandAllImages = if key = $.getValue 'key/expandAllImages' then key else 'M'
+    keybinds.update          = if key = $.getValue 'key/update' then key          else 'u'
+
     $.bind d, 'keydown',  keybinds.cb.keydown
     $.bind d, 'keypress', keybinds.cb.keypress
 
@@ -517,7 +534,7 @@ keybinds =
 
   insert: (e) ->
     switch keybinds.key
-      when '<Esc>'
+      when keybinds.close
         e.preventDefault()
         $.rm $ '#qr'
       when '^s'
@@ -541,37 +558,37 @@ keybinds =
   normal: (e) ->
     thread = nav.getThread()
     switch keybinds.key
-      when '<Esc>'
+      when keybinds.close
         $.rm o if o = $ '#overlay'
-      when '0'
+      when keybinds.zero
         window.location = "/#{g.BOARD}/0#0"
-      when 'I'
+      when keybinds.openEmptyQR
         keybinds.qr thread
-      when 'J'
+      when keybinds.nextReply
         keybinds.hl.next thread
-      when 'K'
+      when keybinds.previousReply
         keybinds.hl.prev thread
-      when 'M'
+      when keybinds.expandAllImages
         keybinds.img thread, true
-      when 'O'
+      when keybinds.openThread
         keybinds.open thread
-      when 'e'
+      when keybinds.expandThread
         expandThread.toggle thread
-      when 'i'
+      when keybinds.openQR
         keybinds.qr thread, true
-      when 'm'
+      when keybinds.expandImages
         keybinds.img thread
-      when 'n'
+      when keybinds.nextThread
         nav.next()
-      when 'o'
+      when keybinds.openThreadTab
         keybinds.open thread, true
-      when 'p'
+      when keybinds.previousThread
         nav.prev()
-      when 'u'
+      when keybinds.update
         updater.update()
-      when 'w'
+      when keybinds.watch
         watcher.toggle thread
-      when 'x'
+      when keybinds.hide
         threadHiding.toggle thread
 
   img: (thread, all) ->
@@ -730,7 +747,7 @@ options =
       <div class='reply dialog'>
         <div id=optionsbar>
           <div id=floaty>
-            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a>
+            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>
           </div>
           <div id=credits>
             <a href=http://chat.now.im/x/aeos>support throd</a> |
@@ -765,6 +782,30 @@ options =
               </tbody>
             </table>
           </div>
+          <div style='display: none;' id=keybinds>
+            <table>
+              <tbody>
+                <tr><th>Actions</th><th>Keybinds</th></tr>
+                <tr><td>Close Options or QR</td><td><input type=text name=close value='<Esc>'></td></tr>
+                <tr><td>Quick spoiler</td><td><input type=text name=spoiler value='^s'></td></tr>
+                <tr><td>Jump to page 0</td><td><input type=text name=zero value='0'></td></tr>
+                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value='i'></td></tr>
+                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR value='I'></td></tr>
+                <tr><td>Select next reply</td><td><input type=text name=nextReply value='J'></td></tr>
+                <tr><td>Select previous reply</td><td><input type=text name=previousReply value='K'></td></tr>
+                <tr><td>See next thread</td><td><input type=text name=nextThread value='n'></td></tr>
+                <tr><td>See previous thread</td><td><input type=text name=previousThread value='p'></td></tr>
+                <tr><td>Open thread in current tab</td><td><input type=text name=openThread value='O'></td></tr>
+                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab value='o'></td></tr>
+                <tr><td>Expand thread</td><td><input type=text name=expandThread value='e'></td></tr>
+                <tr><td>Watch thread</td><td><input type=text name=watch value='w'></td></tr>
+                <tr><td>Hide thread</td><td><input type=text name=hide value='x'></td></tr>
+                <tr><td>Expand selected images</td><td><input type=text name=expandImages value='m'></td></tr>
+                <tr><td>Expand all images</td><td><input type=text name=expandAllImages value='M'></td></tr>
+                <tr><td>Update now</td><td><input type=text name=update value='u'></td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     "
@@ -794,6 +835,10 @@ options =
     $.bind link, 'click', options.tab for link in $$ '#floaty a', dialog
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.cb.time
+    for input in $$ '#keybinds input', dialog
+      $.bind input, 'keydown', options.cb.keybind
+      if key = $.getValue "key/#{input.name}", 0
+        input.value = key
 
     ###
     https://bugzilla.mozilla.org/show_bug.cgi?id=579776
@@ -812,7 +857,7 @@ options =
     $.bind dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
 
   tab: ->
-    content = $$ '#main, #flavors, #time'
+    content = $$ '#main, #flavors, #time, #keybinds'
     for div in content
       if div.id is @name
         $.show div
@@ -827,6 +872,23 @@ options =
       $.deleteValue "hiddenThreads/#{g.BOARD}/"
       @value = "hidden: 0"
       g.hiddenReplies = {}
+    keybind: (e) ->
+      e.preventDefault()
+      kc = e.keyCode
+      if 65 <= kc <= 90 #A-Z
+        key = String.fromCharCode kc
+        if !e.shiftKey
+          key = key.toLowerCase()
+        if e.ctrlKey then key = '^' + key
+      else
+        if kc is 27
+          key = '<Esc>'
+        else if 48 <= kc <= 57 #0-9
+          key = String.fromCharCode kc
+        else
+          key = @value
+      @value = key
+      $.setValue "key/#{@name}", key
     time: (e) ->
       $.setValue 'time', @value
       Time.foo()
