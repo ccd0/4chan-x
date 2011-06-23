@@ -541,7 +541,7 @@ keybinds =
         $.rm $ '#qr'
       when keybinds.spoiler
         ta = d.activeElement
-        return unless d.activeElement.nodeName is 'TEXTAREA'
+        return unless ta.nodeName is 'TEXTAREA'
 
         e.preventDefault()
 
