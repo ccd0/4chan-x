@@ -490,7 +490,7 @@ replyHiding =
 keybinds =
   init: ->
     keybinds.close           = if (key = $.getValue 'key/close', 0).length then key           else '<Esc>'
-    keybinds.spoiler         = if (key = $.getValue 'key/spoiler', 0).length then key         else '^s'
+    keybinds.spoiler         = if (key = $.getValue 'key/spoiler', 0).length then key         else 'ctrl+s'
     keybinds.zero            = if (key = $.getValue 'key/zero', 0).length then key            else '0'
     keybinds.openQR          = if (key = $.getValue 'key/openQR', 0).length then key          else 'i'
     keybinds.openEmptyQR     = if (key = $.getValue 'key/openEmptyQR', 0).length then key     else 'I'
@@ -522,7 +522,7 @@ keybinds =
         key = String.fromCharCode kc
         if !e.shiftKey
           key = key.toLowerCase()
-        if e.ctrlKey then key = '^' + key
+        if e.ctrlKey then key = 'ctrl+' + key
         if e.altKey  then key = 'alt+' + key
       else
         if kc is 27
@@ -792,7 +792,7 @@ options =
               <tbody>
                 <tr><th>Actions</th><th>Keybinds</th></tr>
                 <tr><td>Close Options or QR</td><td><input type=text name=close value='<Esc>'></td></tr>
-                <tr><td>Quick spoiler</td><td><input type=text name=spoiler value='^s'></td></tr>
+                <tr><td>Quick spoiler</td><td><input type=text name=spoiler value='ctrl+s'></td></tr>
                 <tr><td>Jump to page 0</td><td><input type=text name=zero value='0'></td></tr>
                 <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value='i'></td></tr>
                 <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR value='I'></td></tr>
@@ -883,7 +883,7 @@ options =
         key = String.fromCharCode kc
         if !e.shiftKey
           key = key.toLowerCase()
-        if e.ctrlKey then key = '^' + key
+        if e.ctrlKey then key = 'ctrl+' + key
         if e.altKey  then key = 'alt+' + key
       else
         if kc is 27
