@@ -1,3 +1,5 @@
+- mayhem:
+  - custom hotkey binding
 - aeosynth:
   - keep options dialog at constant size
   - drop firefox 3.6 support (again...)
