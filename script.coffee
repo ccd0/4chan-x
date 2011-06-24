@@ -905,6 +905,7 @@ options =
       g.hiddenReplies = {}
     keybind: (e) ->
       e.preventDefault()
+      e.stopPropagation()
       kc = e.keyCode
       if 65 <= kc <= 90 #A-Z
         key = String.fromCharCode kc
@@ -923,6 +924,7 @@ options =
           key = 'ctrl+' + key if e.ctrlKey
         @value = key
         $.setValue "key/#{@name}", key
+        keybinds[@name] = key
     time: (e) ->
       $.setValue 'time', @value
       Time.foo()

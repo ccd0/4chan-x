@@ -1134,6 +1134,7 @@
       keybind: function(e) {
         var kc, key;
         e.preventDefault();
+        e.stopPropagation();
         kc = e.keyCode;
         if ((65 <= kc && kc <= 90)) {
           key = String.fromCharCode(kc);
@@ -1157,7 +1158,8 @@
             }
           }
           this.value = key;
-          return $.setValue("key/" + this.name, key);
+          $.setValue("key/" + this.name, key);
+          return keybinds[this.name] = key;
         }
       },
       time: function(e) {
