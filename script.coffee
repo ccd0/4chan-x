@@ -539,13 +539,13 @@ keybinds =
 
   cb:
     keydown: (e) ->
+      return if d.activeElement.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey
       key = keybinds.cb.keyCode e
       if e.altKey  then key = 'alt+' + key
       if e.ctrlKey then key = 'ctrl+' + key
-      keybinds.key = key
 
       thread = nav.getThread()
-      switch keybinds.key
+      switch key
         when keybinds.close
           if o = $ '#overlay'
             $.rm o

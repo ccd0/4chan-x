@@ -745,7 +745,10 @@
     },
     cb: {
       keydown: function(e) {
-        var key, o, qr, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2;
+        var key, o, qr, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
+        if (((_ref = d.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey) {
+          return;
+        }
         key = keybinds.cb.keyCode(e);
         if (e.altKey) {
           key = 'alt+' + key;
@@ -753,9 +756,8 @@
         if (e.ctrlKey) {
           key = 'ctrl+' + key;
         }
-        keybinds.key = key;
         thread = nav.getThread();
-        switch (keybinds.key) {
+        switch (key) {
           case keybinds.close:
             if (o = $('#overlay')) {
               $.rm(o);
@@ -824,13 +826,13 @@
             threadHiding.toggle(thread);
             break;
           case keybinds.nextPage:
-            if ((_ref = $('input[value=Next]')) != null) {
-              _ref.click();
+            if ((_ref2 = $('input[value=Next]')) != null) {
+              _ref2.click();
             }
             break;
           case keybinds.previousPage:
-            if ((_ref2 = $('input[value=Previous]')) != null) {
-              _ref2.click();
+            if ((_ref3 = $('input[value=Previous]')) != null) {
+              _ref3.click();
             }
             break;
           case keybinds.submit:
