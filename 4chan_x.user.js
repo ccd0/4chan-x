@@ -692,7 +692,12 @@
   };
   keybinds = {
     init: function() {
-      var key;
+      var key, node, _i, _len, _ref;
+      _ref = $$('[accesskey]');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i];
+        node.removeAttribute('accesskey');
+      }
       keybinds.close = (key = $.getValue('key/close', 0)).length ? key : 'Esc';
       keybinds.spoiler = (key = $.getValue('key/spoiler', 0)).length ? key : 'ctrl+s';
       keybinds.zero = (key = $.getValue('key/zero', 0)).length ? key : '0';
@@ -1087,7 +1092,6 @@
       keybind: function(e) {
         var kc, key;
         e.preventDefault();
-        e.stopPropagation();
         kc = e.keyCode;
         if ((65 <= kc && kc <= 90)) {
           key = String.fromCharCode(kc);

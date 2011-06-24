@@ -489,6 +489,9 @@ replyHiding =
 
 keybinds =
   init: ->
+    for node in $$ '[accesskey]'
+      node.removeAttribute 'accesskey'
+
     keybinds.close           = if (key = $.getValue 'key/close', 0).length then key           else 'Esc'
     keybinds.spoiler         = if (key = $.getValue 'key/spoiler', 0).length then key         else 'ctrl+s'
     keybinds.zero            = if (key = $.getValue 'key/zero', 0).length then key            else '0'
@@ -866,7 +869,6 @@ options =
       g.hiddenReplies = {}
     keybind: (e) ->
       e.preventDefault()
-      e.stopPropagation()
       kc = e.keyCode
       if 65 <= kc <= 90 #A-Z
         key = String.fromCharCode kc
