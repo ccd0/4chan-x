@@ -693,7 +693,7 @@
   keybinds = {
     init: function() {
       var key;
-      keybinds.close = (key = $.getValue('key/close', 0)).length ? key : '<Esc>';
+      keybinds.close = (key = $.getValue('key/close', 0)).length ? key : 'Esc';
       keybinds.spoiler = (key = $.getValue('key/spoiler', 0)).length ? key : 'ctrl+s';
       keybinds.zero = (key = $.getValue('key/zero', 0)).length ? key : '0';
       keybinds.openQR = (key = $.getValue('key/openQR', 0)).length ? key : 'i';
@@ -715,12 +715,7 @@
     },
     cb: {
       keydown: function(e) {
-        var kc, key, _ref;
-        if ((_ref = d.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') {
-          keybinds.mode = keybinds.insert;
-        } else {
-          keybinds.mode = keybinds.normal;
-        }
+        var kc, key, o, qr, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value;
         kc = e.keyCode;
         if ((65 <= kc && kc <= 90)) {
           key = String.fromCharCode(kc);
@@ -735,101 +730,89 @@
           }
         } else {
           if (kc === 27) {
-            key = '<Esc>';
+            key = 'Esc';
           } else if ((48 <= kc && kc <= 57)) {
             key = String.fromCharCode(kc);
           }
         }
-        return keybinds.key = key;
+        keybinds.key = key;
+        thread = nav.getThread();
+        switch (keybinds.key) {
+          case keybinds.close:
+            if (o = $('#overlay')) {
+              $.rm(o);
+            } else if (qr = $('#qr')) {
+              $.rm(qr);
+            }
+            break;
+          case keybinds.spoiler:
+            ta = d.activeElement;
+            if (ta.nodeName !== 'TEXTAREA') {
+              return;
+            }
+            value = ta.value;
+            selStart = ta.selectionStart;
+            selEnd = ta.selectionEnd;
+            valStart = value.slice(0, selStart) + '[spoiler]';
+            valMid = value.slice(selStart, selEnd);
+            valEnd = '[/spoiler]' + value.slice(selEnd);
+            ta.value = valStart + valMid + valEnd;
+            range = valStart.length + valMid.length;
+            ta.setSelectionRange(range, range);
+            break;
+          case keybinds.zero:
+            window.location = "/" + g.BOARD + "/0#0";
+            break;
+          case keybinds.openEmptyQR:
+            keybinds.qr(thread);
+            break;
+          case keybinds.nextReply:
+            keybinds.hl.next(thread);
+            break;
+          case keybinds.previousReply:
+            keybinds.hl.prev(thread);
+            break;
+          case keybinds.expandAllImages:
+            keybinds.img(thread, true);
+            break;
+          case keybinds.openThread:
+            keybinds.open(thread);
+            break;
+          case keybinds.expandThread:
+            expandThread.toggle(thread);
+            break;
+          case keybinds.openQR:
+            keybinds.qr(thread, true);
+            break;
+          case keybinds.expandImages:
+            keybinds.img(thread);
+            break;
+          case keybinds.nextThread:
+            nav.next();
+            break;
+          case keybinds.openThreadTab:
+            keybinds.open(thread, true);
+            break;
+          case keybinds.previousThread:
+            nav.prev();
+            break;
+          case keybinds.update:
+            updater.update();
+            break;
+          case keybinds.watch:
+            watcher.toggle(thread);
+            break;
+          case keybinds.hide:
+            threadHiding.toggle(thread);
+            break;
+          default:
+            return;
+        }
+        return e.preventDefault();
       },
       keypress: function(e) {
         return keybinds.mode(e);
       }
-    },
-    insert: function(e) {
-      var range, selEnd, selStart, ta, valEnd, valMid, valStart, value;
-      switch (keybinds.key) {
-        case keybinds.close:
-          $.rm($('#qr'));
-          break;
-        case keybinds.spoiler:
-          ta = d.activeElement;
-          if (ta.nodeName !== 'TEXTAREA') {
-            return;
-          }
-          value = ta.value;
-          selStart = ta.selectionStart;
-          selEnd = ta.selectionEnd;
-          valStart = value.slice(0, selStart) + '[spoiler]';
-          valMid = value.slice(selStart, selEnd);
-          valEnd = '[/spoiler]' + value.slice(selEnd);
-          ta.value = valStart + valMid + valEnd;
-          range = valStart.length + valMid.length;
-          ta.setSelectionRange(range, range);
-          break;
-        default:
-          return;
-      }
-      return e.preventDefault();
-    },
-    normal: function(e) {
-      var o, thread;
-      thread = nav.getThread();
-      switch (keybinds.key) {
-        case keybinds.close:
-          if (o = $('#overlay')) {
-            $.rm(o);
-          }
-          break;
-        case keybinds.zero:
-          window.location = "/" + g.BOARD + "/0#0";
-          break;
-        case keybinds.openEmptyQR:
-          keybinds.qr(thread);
-          break;
-        case keybinds.nextReply:
-          keybinds.hl.next(thread);
-          break;
-        case keybinds.previousReply:
-          keybinds.hl.prev(thread);
-          break;
-        case keybinds.expandAllImages:
-          keybinds.img(thread, true);
-          break;
-        case keybinds.openThread:
-          keybinds.open(thread);
-          break;
-        case keybinds.expandThread:
-          expandThread.toggle(thread);
-          break;
-        case keybinds.openQR:
-          keybinds.qr(thread, true);
-          break;
-        case keybinds.expandImages:
-          keybinds.img(thread);
-          break;
-        case keybinds.nextThread:
-          nav.next();
-          break;
-        case keybinds.openThreadTab:
-          keybinds.open(thread, true);
-          break;
-        case keybinds.previousThread:
-          nav.prev();
-          break;
-        case keybinds.update:
-          updater.update();
-          break;
-        case keybinds.watch:
-          watcher.toggle(thread);
-          break;
-        case keybinds.hide:
-          threadHiding.toggle(thread);
-          break;
-        default:
-          return;
-      }
-      return e.preventDefault();
     },
     img: function(thread, all) {
       var root, thumb;
@@ -1014,7 +997,7 @@
       var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
-      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=http://userscripts.org/scripts/show/51412>uso</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>          <div style='display: none;' id=time>            <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>              </tbody>            </table>          </div>          <div style='display: none;' id=keybinds>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close value='<Esc>'></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler value='ctrl+s'></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero value='0'></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value='i'></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR value='I'></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply value='J'></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply value='K'></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread value='n'></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread value='p'></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread value='O'></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab value='o'></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread value='e'></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch value='w'></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide value='x'></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages value='m'></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages value='M'></td></tr>                <tr><td>Update now</td><td><input type=text name=update value='u'></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
+      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=http://userscripts.org/scripts/show/51412>uso</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>          <div style='display: none;' id=time>            <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>              </tbody>            </table>          </div>          <div style='display: none;' id=keybinds>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close value='Esc'></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler value='ctrl+s'></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero value='0'></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value='i'></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR value='I'></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply value='J'></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply value='K'></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread value='n'></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread value='p'></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread value='O'></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab value='o'></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread value='e'></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch value='w'></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide value='x'></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages value='m'></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages value='M'></td></tr>                <tr><td>Update now</td><td><input type=text name=update value='u'></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
       dialog = $.el('div', {
         id: 'options',
         innerHTML: html
@@ -1120,7 +1103,7 @@
           }
         } else {
           if (kc === 27) {
-            key = '<Esc>';
+            key = 'Esc';
           } else if ((48 <= kc && kc <= 57)) {
             key = String.fromCharCode(kc);
           } else if (kc === 8) {

@@ -489,7 +489,7 @@ replyHiding =
 
 keybinds =
   init: ->
-    keybinds.close           = if (key = $.getValue 'key/close', 0).length then key           else '<Esc>'
+    keybinds.close           = if (key = $.getValue 'key/close', 0).length then key           else 'Esc'
     keybinds.spoiler         = if (key = $.getValue 'key/spoiler', 0).length then key         else 'ctrl+s'
     keybinds.zero            = if (key = $.getValue 'key/zero', 0).length then key            else '0'
     keybinds.openQR          = if (key = $.getValue 'key/openQR', 0).length then key          else 'i'
@@ -512,11 +512,6 @@ keybinds =
 
   cb:
     keydown: (e) ->
-      if d.activeElement.nodeName in ['TEXTAREA', 'INPUT']
-        keybinds.mode = keybinds.insert
-      else
-        keybinds.mode = keybinds.normal
-
       kc = e.keyCode
       if 65 <= kc <= 90 #A-Z
         key = String.fromCharCode kc
@@ -526,75 +521,69 @@ keybinds =
         if e.altKey  then key = 'alt+' + key
       else
         if kc is 27
-          key = '<Esc>'
+          key = 'Esc'
         else if 48 <= kc <= 57 #0-9
           key = String.fromCharCode kc
       keybinds.key = key
 
+      thread = nav.getThread()
+      switch keybinds.key
+        when keybinds.close
+          if o = $ '#overlay'
+            $.rm o
+          else if qr = $ '#qr'
+            $.rm qr
+        when keybinds.spoiler
+          ta = d.activeElement
+          return unless ta.nodeName is 'TEXTAREA'
+
+          value    = ta.value
+          selStart = ta.selectionStart
+          selEnd   = ta.selectionEnd
+
+          valStart = value[0...selStart] + '[spoiler]'
+          valMid   = value[selStart...selEnd]
+          valEnd   = '[/spoiler]' + value[selEnd..]
+
+          ta.value = valStart + valMid + valEnd
+          range = valStart.length + valMid.length
+          ta.setSelectionRange range, range
+        when keybinds.zero
+          window.location = "/#{g.BOARD}/0#0"
+        when keybinds.openEmptyQR
+          keybinds.qr thread
+        when keybinds.nextReply
+          keybinds.hl.next thread
+        when keybinds.previousReply
+          keybinds.hl.prev thread
+        when keybinds.expandAllImages
+          keybinds.img thread, true
+        when keybinds.openThread
+          keybinds.open thread
+        when keybinds.expandThread
+          expandThread.toggle thread
+        when keybinds.openQR
+          keybinds.qr thread, true
+        when keybinds.expandImages
+          keybinds.img thread
+        when keybinds.nextThread
+          nav.next()
+        when keybinds.openThreadTab
+          keybinds.open thread, true
+        when keybinds.previousThread
+          nav.prev()
+        when keybinds.update
+          updater.update()
+        when keybinds.watch
+          watcher.toggle thread
+        when keybinds.hide
+          threadHiding.toggle thread
+        else
+          return
+      e.preventDefault()
+
     keypress: (e) ->
       keybinds.mode e
-
-  insert: (e) ->
-    switch keybinds.key
-      when keybinds.close
-        $.rm $ '#qr'
-      when keybinds.spoiler
-        ta = d.activeElement
-        return unless ta.nodeName is 'TEXTAREA'
-
-        value    = ta.value
-        selStart = ta.selectionStart
-        selEnd   = ta.selectionEnd
-
-        valStart = value[0...selStart] + '[spoiler]'
-        valMid   = value[selStart...selEnd]
-        valEnd   = '[/spoiler]' + value[selEnd..]
-
-        ta.value = valStart + valMid + valEnd
-        range = valStart.length + valMid.length
-        ta.setSelectionRange range, range
-      else
-        return
-    e.preventDefault()
-
-  normal: (e) ->
-    thread = nav.getThread()
-    switch keybinds.key
-      when keybinds.close
-        $.rm o if o = $ '#overlay'
-      when keybinds.zero
-        window.location = "/#{g.BOARD}/0#0"
-      when keybinds.openEmptyQR
-        keybinds.qr thread
-      when keybinds.nextReply
-        keybinds.hl.next thread
-      when keybinds.previousReply
-        keybinds.hl.prev thread
-      when keybinds.expandAllImages
-        keybinds.img thread, true
-      when keybinds.openThread
-        keybinds.open thread
-      when keybinds.expandThread
-        expandThread.toggle thread
-      when keybinds.openQR
-        keybinds.qr thread, true
-      when keybinds.expandImages
-        keybinds.img thread
-      when keybinds.nextThread
-        nav.next()
-      when keybinds.openThreadTab
-        keybinds.open thread, true
-      when keybinds.previousThread
-        nav.prev()
-      when keybinds.update
-        updater.update()
-      when keybinds.watch
-        watcher.toggle thread
-      when keybinds.hide
-        threadHiding.toggle thread
-      else
-        return
-    e.preventDefault()
 
   img: (thread, all) ->
     if all
@@ -791,7 +780,7 @@ options =
             <table>
               <tbody>
                 <tr><th>Actions</th><th>Keybinds</th></tr>
-                <tr><td>Close Options or QR</td><td><input type=text name=close value='<Esc>'></td></tr>
+                <tr><td>Close Options or QR</td><td><input type=text name=close value='Esc'></td></tr>
                 <tr><td>Quick spoiler</td><td><input type=text name=spoiler value='ctrl+s'></td></tr>
                 <tr><td>Jump to page 0</td><td><input type=text name=zero value='0'></td></tr>
                 <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value='i'></td></tr>
@@ -887,7 +876,7 @@ options =
         if e.altKey  then key = 'alt+' + key
       else
         if kc is 27
-          key = '<Esc>'
+          key = 'Esc'
         else if 48 <= kc <= 57 #0-9
           key = String.fromCharCode kc
         else if kc is 8
