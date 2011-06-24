@@ -496,6 +496,7 @@ keybinds =
     keybinds.spoiler         = if (key = $.getValue 'key/spoiler', 0).length >= 0 then key         else 'ctrl+s'
     keybinds.openQR          = if (key = $.getValue 'key/openQR', 0).length >= 0 then key          else 'i'
     keybinds.openEmptyQR     = if (key = $.getValue 'key/openEmptyQR', 0).length >= 0 then key     else 'I'
+    keybinds.submit          = if (key = $.getValue 'key/submit', 0).length >= 0 then key          else 'alt+s'
     keybinds.nextReply       = if (key = $.getValue 'key/nextReply', 0).length >= 0 then key       else 'J'
     keybinds.previousReply   = if (key = $.getValue 'key/previousReply', 0).length >= 0 then key   else 'K'
     keybinds.nextThread      = if (key = $.getValue 'key/nextThread', 0).length >= 0 then key      else 'n'
@@ -586,6 +587,11 @@ keybinds =
           $('input[value=Next]')?.click()
         when keybinds.previousPage
           $('input[value=Previous]')?.click()
+        when keybinds.submit
+          if qr = $('#qr_form')
+            qr.submit()
+          else
+            $('.postarea form').submit()
         else
           return
       e.preventDefault()
@@ -792,6 +798,7 @@ options =
                 <tr><td>Quick spoiler</td><td><input type=text name=spoiler value=ctrl+s></td></tr>
                 <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value=i></td></tr>
                 <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR value=I></td></tr>
+                <tr><td>Submit post</td><td><input type=text name=submit value=alt+s></td></tr>
                 <tr><td>Select next reply</td><td><input type=text name=nextReply value=J></td></tr>
                 <tr><td>Select previous reply</td><td><input type=text name=previousReply value=K></td></tr>
                 <tr><td>See next thread</td><td><input type=text name=nextThread value=n></td></tr>
