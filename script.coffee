@@ -514,26 +514,26 @@ keybinds =
     for node in $$ '[accesskey]'
       node.removeAttribute 'accesskey'
 
-    keybinds.close           = if (key = $.getValue 'key/close', 0).length >= 0 then key           else 'Esc'
-    keybinds.spoiler         = if (key = $.getValue 'key/spoiler', 0).length >= 0 then key         else 'ctrl+s'
-    keybinds.openQR          = if (key = $.getValue 'key/openQR', 0).length >= 0 then key          else 'i'
-    keybinds.openEmptyQR     = if (key = $.getValue 'key/openEmptyQR', 0).length >= 0 then key     else 'I'
-    keybinds.submit          = if (key = $.getValue 'key/submit', 0).length >= 0 then key          else 'alt+s'
-    keybinds.nextReply       = if (key = $.getValue 'key/nextReply', 0).length >= 0 then key       else 'J'
-    keybinds.previousReply   = if (key = $.getValue 'key/previousReply', 0).length >= 0 then key   else 'K'
-    keybinds.nextThread      = if (key = $.getValue 'key/nextThread', 0).length >= 0 then key      else 'n'
-    keybinds.previousThread  = if (key = $.getValue 'key/previousThread', 0).length >= 0 then key  else 'p'
-    keybinds.nextPage        = if (key = $.getValue 'key/nextPage', 0).length >= 0 then key        else 'alt+x'
-    keybinds.previousPage    = if (key = $.getValue 'key/previousPage', 0).length >= 0 then key    else 'alt+z'
-    keybinds.zero            = if (key = $.getValue 'key/zero', 0).length >= 0 then key            else '0'
-    keybinds.openThreadTab   = if (key = $.getValue 'key/openThreadTab', 0).length >= 0 then key   else 'o'
-    keybinds.openThread      = if (key = $.getValue 'key/openThread', 0).length >= 0 then key      else 'O'
-    keybinds.expandThread    = if (key = $.getValue 'key/expandThread', 0).length >= 0 then key    else 'e'
-    keybinds.watch           = if (key = $.getValue 'key/watch', 0).length >= 0 then key           else 'w'
-    keybinds.hide            = if (key = $.getValue 'key/hide', 0).length >= 0 then key            else 'x'
-    keybinds.expandImages    = if (key = $.getValue 'key/expandImages', 0).length >= 0 then key    else 'm'
-    keybinds.expandAllImages = if (key = $.getValue 'key/expandAllImages', 0).length >= 0 then key else 'M'
-    keybinds.update          = if (key = $.getValue 'key/update', 0).length >= 0 then key          else 'u'
+    keybinds.close           = $.getValue 'key/close', config.hotkeys.close
+    keybinds.spoiler         = $.getValue 'key/spoiler', config.hotkeys.spoiler
+    keybinds.openQR          = $.getValue 'key/openQR', config.hotkeys.openQR
+    keybinds.openEmptyQR     = $.getValue 'key/openEmptyQR', config.hotkeys.openEmptyQR
+    keybinds.submit          = $.getValue 'key/submit', config.hotkeys.submit
+    keybinds.nextReply       = $.getValue 'key/nextReply', config.hotkeys.nextReply
+    keybinds.previousReply   = $.getValue 'key/previousReply', config.hotkeys.previousReply
+    keybinds.nextThread      = $.getValue 'key/nextThread', config.hotkeys.nextThread
+    keybinds.previousThread  = $.getValue 'key/previousThread', config.hotkeys.previousThread
+    keybinds.nextPage        = $.getValue 'key/nextPage', config.hotkeys.nextPage
+    keybinds.previousPage    = $.getValue 'key/previousPage', config.hotkeys.previousPage
+    keybinds.zero            = $.getValue 'key/zero', config.hotkeys.zero
+    keybinds.openThreadTab   = $.getValue 'key/openThreadTab', config.hotkeys.openThreadTab
+    keybinds.openThread      = $.getValue 'key/openThread', config.hotkeys.openThread
+    keybinds.expandThread    = $.getValue 'key/expandThread', config.hotkeys.expandThread
+    keybinds.watch           = $.getValue 'key/watch', config.hotkeys.watch
+    keybinds.hide            = $.getValue 'key/hide', config.hotkeys.hide
+    keybinds.expandImages    = $.getValue 'key/expandImages', config.hotkeys.expandImages
+    keybinds.expandAllImages = $.getValue 'key/expandAllImages', config.hotkeys.expandAllImages
+    keybinds.update          = $.getValue 'key/update', config.hotkeys.update
 
     $.bind d, 'keydown',  keybinds.cb.keydown
 
@@ -818,26 +818,26 @@ options =
             <table>
               <tbody>
                 <tr><th>Actions</th><th>Keybinds</th></tr>
-                <tr><td>Close Options or QR</td><td><input type=text name=close value=Esc></td></tr>
-                <tr><td>Quick spoiler</td><td><input type=text name=spoiler value=ctrl+s></td></tr>
-                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value=i></td></tr>
-                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR value=I></td></tr>
-                <tr><td>Submit post</td><td><input type=text name=submit value=alt+s></td></tr>
-                <tr><td>Select next reply</td><td><input type=text name=nextReply value=J></td></tr>
-                <tr><td>Select previous reply</td><td><input type=text name=previousReply value=K></td></tr>
-                <tr><td>See next thread</td><td><input type=text name=nextThread value=n></td></tr>
-                <tr><td>See previous thread</td><td><input type=text name=previousThread value=p></td></tr>
-                <tr><td>Jump to the next page</td><td><input type=text name=nextPage value=alt+x></td></tr>
-                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage value=alt+z></td></tr>
-                <tr><td>Jump to page 0</td><td><input type=text name=zero value=0></td></tr>
-                <tr><td>Open thread in current tab</td><td><input type=text name=openThread value=O></td></tr>
-                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab value=o></td></tr>
-                <tr><td>Expand thread</td><td><input type=text name=expandThread value=e></td></tr>
-                <tr><td>Watch thread</td><td><input type=text name=watch value=w></td></tr>
-                <tr><td>Hide thread</td><td><input type=text name=hide value=x></td></tr>
-                <tr><td>Expand selected image</td><td><input type=text name=expandImages value=m></td></tr>
-                <tr><td>Expand all images</td><td><input type=text name=expandAllImages value=M></td></tr>
-                <tr><td>Update now</td><td><input type=text name=update value=u></td></tr>
+                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>
+                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>
+                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>
+                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>
+                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>
+                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>
+                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>
+                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>
+                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>
+                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>
+                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>
+                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>
+                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>
+                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>
+                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>
+                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>
+                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>
+                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>
+                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>
+                <tr><td>Update now</td><td><input type=text name=update></td></tr>
               </tbody>
             </table>
           </div>
@@ -871,9 +871,8 @@ options =
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.cb.time
     for input in $$ '#keybinds input', dialog
+      input.value = $.getValue "key/#{input.name}", config.hotkeys[input.name]
       $.bind input, 'keydown', options.cb.keybind
-      if (key = $.getValue "key/#{input.name}", 0).length >= 0
-        input.value = key
 
     ###
     https://bugzilla.mozilla.org/show_bug.cgi?id=579776
