@@ -896,7 +896,7 @@ options =
       else if kc is 8
         key = ''
 
-      if key.length >= 0
+      if key?
         if key
           key = 'alt+' + key  if e.altKey
           key = 'ctrl+' + key if e.ctrlKey

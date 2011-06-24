@@ -1125,7 +1125,7 @@
         } else if (kc === 8) {
           key = '';
         }
-        if (key.length >= 0) {
+        if (key != null) {
           if (key) {
             if (e.altKey) {
               key = 'alt+' + key;
