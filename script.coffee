@@ -52,6 +52,27 @@ config =
     '#http://saucenao.com/search.php?db=999&url='
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
+  hotkeys:
+    close:           'Esc'
+    spoiler:         'ctrl+s'
+    openQR:          'i'
+    openEmptyQR:     'I'
+    submit:          'alt+s'
+    nextReply:       'J'
+    previousReply:   'K'
+    nextThread:      'n'
+    previousThread:  'p'
+    nextPage:        'alt+x'
+    previousPage:    'alt+z'
+    zero:            '0'
+    openThreadTab:   'o'
+    openThread:      'O'
+    expandThread:    'e'
+    watch:           'w'
+    hide:            'x'
+    expandImages:    'm'
+    expandAllImages: 'M'
+    update:          'u'
   updater:
     checkbox:
       'Verbose':     [true,  'Show countdown timer, new post count']
