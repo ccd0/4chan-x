@@ -740,23 +740,12 @@
       keybinds.expandImages = (key = $.getValue('key/expandImages', 0)).length >= 0 ? key : 'm';
       keybinds.expandAllImages = (key = $.getValue('key/expandAllImages', 0)).length >= 0 ? key : 'M';
       keybinds.update = (key = $.getValue('key/update', 0)).length >= 0 ? key : 'u';
-      $.bind(d, 'keydown', keybinds.cb.keydown);
-      return $.bind(d, 'keypress', keybinds.cb.keypress);
+      return $.bind(d, 'keydown', keybinds.cb.keydown);
     },
     cb: {
       keydown: function(e) {
-        var kc, key, o, qr, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2;
-        kc = e.keyCode;
-        if ((65 <= kc && kc <= 90)) {
-          key = String.fromCharCode(kc);
-          if (!e.shiftKey) {
-            key = key.toLowerCase();
-          }
-        } else if ((48 <= kc && kc <= 57)) {
-          key = String.fromCharCode(kc);
-        } else if (kc === 27) {
-          key = 'Esc';
-        }
+        var key, o, qr, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2;
+        key = keybinds.cb.keyCode(e);
         if (e.altKey) {
           key = 'alt+' + key;
         }
@@ -855,8 +844,22 @@
         }
         return e.preventDefault();
       },
-      keypress: function(e) {
-        return keybinds.mode(e);
+      keyCode: function(e, options) {
+        var kc, key;
+        kc = e.keyCode;
+        if ((65 <= kc && kc <= 90)) {
+          key = String.fromCharCode(kc);
+          if (!e.shiftKey) {
+            key = key.toLowerCase();
+          }
+        } else if ((48 <= kc && kc <= 57)) {
+          key = String.fromCharCode(kc);
+        } else if (kc === 27) {
+          key = 'Esc';
+        } else if (options && kc === 8) {
+          key = '';
+        }
+        return key;
       }
     },
     img: function(thread, all) {
@@ -1132,22 +1135,10 @@
         return g.hiddenReplies = {};
       },
       keybind: function(e) {
-        var kc, key;
+        var key;
         e.preventDefault();
         e.stopPropagation();
-        kc = e.keyCode;
-        if ((65 <= kc && kc <= 90)) {
-          key = String.fromCharCode(kc);
-          if (!e.shiftKey) {
-            key = key.toLowerCase();
-          }
-        } else if ((48 <= kc && kc <= 57)) {
-          key = String.fromCharCode(kc);
-        } else if (kc === 27) {
-          key = 'Esc';
-        } else if (kc === 8) {
-          key = '';
-        }
+        key = keybinds.cb.keyCode(e, true);
         if (key != null) {
           if (key) {
             if (e.altKey) {

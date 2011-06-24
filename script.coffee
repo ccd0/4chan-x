@@ -535,19 +535,10 @@ keybinds =
     keybinds.update          = if (key = $.getValue 'key/update', 0).length >= 0 then key          else 'u'
 
     $.bind d, 'keydown',  keybinds.cb.keydown
-    $.bind d, 'keypress', keybinds.cb.keypress
 
   cb:
     keydown: (e) ->
-      kc = e.keyCode
-      if 65 <= kc <= 90 #A-Z
-        key = String.fromCharCode kc
-        if !e.shiftKey
-          key = key.toLowerCase()
-      else if 48 <= kc <= 57 #0-9
-        key = String.fromCharCode kc
-      else if kc is 27
-        key = 'Esc'
+      key = keybinds.cb.keyCode e
       if e.altKey  then key = 'alt+' + key
       if e.ctrlKey then key = 'ctrl+' + key
       keybinds.key = key
@@ -617,8 +608,19 @@ keybinds =
           return
       e.preventDefault()
 
-    keypress: (e) ->
-      keybinds.mode e
+    keyCode: (e, options) ->
+      kc = e.keyCode
+      if 65 <= kc <= 90 #A-Z
+        key = String.fromCharCode kc
+        if !e.shiftKey
+          key = key.toLowerCase()
+      else if 48 <= kc <= 57 #0-9
+        key = String.fromCharCode kc
+      else if kc is 27
+        key = 'Esc'
+      else if options and kc is 8
+        key = ''
+      key
 
   img: (thread, all) ->
     if all
@@ -906,17 +908,7 @@ options =
     keybind: (e) ->
       e.preventDefault()
       e.stopPropagation()
-      kc = e.keyCode
-      if 65 <= kc <= 90 #A-Z
-        key = String.fromCharCode kc
-        if !e.shiftKey
-          key = key.toLowerCase()
-      else if 48 <= kc <= 57 #0-9
-        key = String.fromCharCode kc
-      else if kc is 27
-        key = 'Esc'
-      else if kc is 8
-        key = ''
+      key = keybinds.cb.keyCode e, true
 
       if key?
         if key
