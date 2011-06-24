@@ -1469,7 +1469,7 @@ revealSpoilers =
     g.callbacks.push revealSpoilers.cb.node
   cb:
     node: (root) ->
-      return if root.className is 'inline' or not img = $('img[alt^=Spoiler]', root)
+      return if root.className is 'inline' or not img = $ 'img[alt^=Spoiler]', root
       img.removeAttribute 'height'
       img.removeAttribute 'width'
       [_, board, nb] = img.parentNode.href.match /(\w+)\/src\/(\d+)/
