@@ -788,25 +788,25 @@ options =
             <table>
               <tbody>
                 <tr><th>Actions</th><th>Keybinds</th></tr>
-                <tr><td>Close Options or QR</td><td><input type=text name=close value='Esc'></td></tr>
-                <tr><td>Quick spoiler</td><td><input type=text name=spoiler value='ctrl+s'></td></tr>
-                <tr><td>Jump to page 0</td><td><input type=text name=zero value='0'></td></tr>
-                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value='i'></td></tr>
-                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR value='I'></td></tr>
-                <tr><td>Select next reply</td><td><input type=text name=nextReply value='J'></td></tr>
-                <tr><td>Select previous reply</td><td><input type=text name=previousReply value='K'></td></tr>
-                <tr><td>See next thread</td><td><input type=text name=nextThread value='n'></td></tr>
-                <tr><td>See previous thread</td><td><input type=text name=previousThread value='p'></td></tr>
-                <tr><td>Jump next page</td><td><input type=text name=nextPage value='alt+x'></td></tr>
-                <tr><td>Jump previous page</td><td><input type=text name=previousPage value='alt+z'></td></tr>
-                <tr><td>Open thread in current tab</td><td><input type=text name=openThread value='O'></td></tr>
-                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab value='o'></td></tr>
-                <tr><td>Expand thread</td><td><input type=text name=expandThread value='e'></td></tr>
-                <tr><td>Watch thread</td><td><input type=text name=watch value='w'></td></tr>
-                <tr><td>Hide thread</td><td><input type=text name=hide value='x'></td></tr>
-                <tr><td>Expand selected image</td><td><input type=text name=expandImages value='m'></td></tr>
-                <tr><td>Expand all images</td><td><input type=text name=expandAllImages value='M'></td></tr>
-                <tr><td>Update now</td><td><input type=text name=update value='u'></td></tr>
+                <tr><td>Close Options or QR</td><td><input type=text name=close value=Esc></td></tr>
+                <tr><td>Quick spoiler</td><td><input type=text name=spoiler value=ctrl+s></td></tr>
+                <tr><td>Jump to page 0</td><td><input type=text name=zero value=0></td></tr>
+                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value=i></td></tr>
+                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR value=I></td></tr>
+                <tr><td>Select next reply</td><td><input type=text name=nextReply value=J></td></tr>
+                <tr><td>Select previous reply</td><td><input type=text name=previousReply value=K></td></tr>
+                <tr><td>See next thread</td><td><input type=text name=nextThread value=n></td></tr>
+                <tr><td>See previous thread</td><td><input type=text name=previousThread value=p></td></tr>
+                <tr><td>Jump next page</td><td><input type=text name=nextPage value=alt+x></td></tr>
+                <tr><td>Jump previous page</td><td><input type=text name=previousPage value=alt+z></td></tr>
+                <tr><td>Open thread in current tab</td><td><input type=text name=openThread value=O></td></tr>
+                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab value=o></td></tr>
+                <tr><td>Expand thread</td><td><input type=text name=expandThread value=e></td></tr>
+                <tr><td>Watch thread</td><td><input type=text name=watch value=w></td></tr>
+                <tr><td>Hide thread</td><td><input type=text name=hide value=x></td></tr>
+                <tr><td>Expand selected image</td><td><input type=text name=expandImages value=m></td></tr>
+                <tr><td>Expand all images</td><td><input type=text name=expandAllImages value=M></td></tr>
+                <tr><td>Update now</td><td><input type=text name=update value=u></td></tr>
               </tbody>
             </table>
           </div>
