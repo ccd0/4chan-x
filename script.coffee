@@ -501,6 +501,8 @@ keybinds =
     keybinds.previousReply   = if (key = $.getValue 'key/previousReply', 0).length then key   else 'K'
     keybinds.nextThread      = if (key = $.getValue 'key/nextThread', 0).length then key      else 'n'
     keybinds.previousThread  = if (key = $.getValue 'key/previousThread', 0).length then key  else 'p'
+    keybinds.nextPage        = if (key = $.getValue 'key/nextPage', 0).length then key        else 'alt+x'
+    keybinds.previousPage    = if (key = $.getValue 'key/previousPage', 0).length then key    else 'alt+z'
     keybinds.openThreadTab   = if (key = $.getValue 'key/openThreadTab', 0).length then key   else 'o'
     keybinds.openThread      = if (key = $.getValue 'key/openThread', 0).length then key      else 'O'
     keybinds.expandThread    = if (key = $.getValue 'key/expandThread', 0).length then key    else 'e'
@@ -580,6 +582,10 @@ keybinds =
           watcher.toggle thread
         when keybinds.hide
           threadHiding.toggle thread
+        when keybinds.nextPage
+          $('input[value=Next]')?.click()
+        when keybinds.previousPage
+          $('input[value=Previous]')?.click()
         else
           return
       e.preventDefault()
@@ -791,6 +797,8 @@ options =
                 <tr><td>Select previous reply</td><td><input type=text name=previousReply value='K'></td></tr>
                 <tr><td>See next thread</td><td><input type=text name=nextThread value='n'></td></tr>
                 <tr><td>See previous thread</td><td><input type=text name=previousThread value='p'></td></tr>
+                <tr><td>Jump next page</td><td><input type=text name=nextPage value='alt+x'></td></tr>
+                <tr><td>Jump previous page</td><td><input type=text name=previousPage value='alt+z'></td></tr>
                 <tr><td>Open thread in current tab</td><td><input type=text name=openThread value='O'></td></tr>
                 <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab value='o'></td></tr>
                 <tr><td>Expand thread</td><td><input type=text name=expandThread value='e'></td></tr>
