@@ -492,25 +492,25 @@ keybinds =
     for node in $$ '[accesskey]'
       node.removeAttribute 'accesskey'
 
-    keybinds.close           = if (key = $.getValue 'key/close', 0).length then key           else 'Esc'
-    keybinds.spoiler         = if (key = $.getValue 'key/spoiler', 0).length then key         else 'ctrl+s'
-    keybinds.zero            = if (key = $.getValue 'key/zero', 0).length then key            else '0'
-    keybinds.openQR          = if (key = $.getValue 'key/openQR', 0).length then key          else 'i'
-    keybinds.openEmptyQR     = if (key = $.getValue 'key/openEmptyQR', 0).length then key     else 'I'
-    keybinds.nextReply       = if (key = $.getValue 'key/nextReply', 0).length then key       else 'J'
-    keybinds.previousReply   = if (key = $.getValue 'key/previousReply', 0).length then key   else 'K'
-    keybinds.nextThread      = if (key = $.getValue 'key/nextThread', 0).length then key      else 'n'
-    keybinds.previousThread  = if (key = $.getValue 'key/previousThread', 0).length then key  else 'p'
-    keybinds.nextPage        = if (key = $.getValue 'key/nextPage', 0).length then key        else 'alt+x'
-    keybinds.previousPage    = if (key = $.getValue 'key/previousPage', 0).length then key    else 'alt+z'
-    keybinds.openThreadTab   = if (key = $.getValue 'key/openThreadTab', 0).length then key   else 'o'
-    keybinds.openThread      = if (key = $.getValue 'key/openThread', 0).length then key      else 'O'
-    keybinds.expandThread    = if (key = $.getValue 'key/expandThread', 0).length then key    else 'e'
-    keybinds.watch           = if (key = $.getValue 'key/watch', 0).length then key           else 'w'
-    keybinds.hide            = if (key = $.getValue 'key/hide', 0).length then key            else 'x'
-    keybinds.expandImages    = if (key = $.getValue 'key/expandImages', 0).length then key    else 'm'
-    keybinds.expandAllImages = if (key = $.getValue 'key/expandAllImages', 0).length then key else 'M'
-    keybinds.update          = if (key = $.getValue 'key/update', 0).length then key          else 'u'
+    keybinds.close           = if (key = $.getValue 'key/close', 0).length >= 0 then key           else 'Esc'
+    keybinds.spoiler         = if (key = $.getValue 'key/spoiler', 0).length >= 0 then key         else 'ctrl+s'
+    keybinds.openQR          = if (key = $.getValue 'key/openQR', 0).length >= 0 then key          else 'i'
+    keybinds.openEmptyQR     = if (key = $.getValue 'key/openEmptyQR', 0).length >= 0 then key     else 'I'
+    keybinds.nextReply       = if (key = $.getValue 'key/nextReply', 0).length >= 0 then key       else 'J'
+    keybinds.previousReply   = if (key = $.getValue 'key/previousReply', 0).length >= 0 then key   else 'K'
+    keybinds.nextThread      = if (key = $.getValue 'key/nextThread', 0).length >= 0 then key      else 'n'
+    keybinds.previousThread  = if (key = $.getValue 'key/previousThread', 0).length >= 0 then key  else 'p'
+    keybinds.nextPage        = if (key = $.getValue 'key/nextPage', 0).length >= 0 then key        else 'alt+x'
+    keybinds.previousPage    = if (key = $.getValue 'key/previousPage', 0).length >= 0 then key    else 'alt+z'
+    keybinds.zero            = if (key = $.getValue 'key/zero', 0).length >= 0 then key            else '0'
+    keybinds.openThreadTab   = if (key = $.getValue 'key/openThreadTab', 0).length >= 0 then key   else 'o'
+    keybinds.openThread      = if (key = $.getValue 'key/openThread', 0).length >= 0 then key      else 'O'
+    keybinds.expandThread    = if (key = $.getValue 'key/expandThread', 0).length >= 0 then key    else 'e'
+    keybinds.watch           = if (key = $.getValue 'key/watch', 0).length >= 0 then key           else 'w'
+    keybinds.hide            = if (key = $.getValue 'key/hide', 0).length >= 0 then key            else 'x'
+    keybinds.expandImages    = if (key = $.getValue 'key/expandImages', 0).length >= 0 then key    else 'm'
+    keybinds.expandAllImages = if (key = $.getValue 'key/expandAllImages', 0).length >= 0 then key else 'M'
+    keybinds.update          = if (key = $.getValue 'key/update', 0).length >= 0 then key          else 'u'
 
     $.bind d, 'keydown',  keybinds.cb.keydown
     $.bind d, 'keypress', keybinds.cb.keypress
@@ -790,15 +790,15 @@ options =
                 <tr><th>Actions</th><th>Keybinds</th></tr>
                 <tr><td>Close Options or QR</td><td><input type=text name=close value=Esc></td></tr>
                 <tr><td>Quick spoiler</td><td><input type=text name=spoiler value=ctrl+s></td></tr>
-                <tr><td>Jump to page 0</td><td><input type=text name=zero value=0></td></tr>
                 <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR value=i></td></tr>
                 <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR value=I></td></tr>
                 <tr><td>Select next reply</td><td><input type=text name=nextReply value=J></td></tr>
                 <tr><td>Select previous reply</td><td><input type=text name=previousReply value=K></td></tr>
                 <tr><td>See next thread</td><td><input type=text name=nextThread value=n></td></tr>
                 <tr><td>See previous thread</td><td><input type=text name=previousThread value=p></td></tr>
-                <tr><td>Jump next page</td><td><input type=text name=nextPage value=alt+x></td></tr>
-                <tr><td>Jump previous page</td><td><input type=text name=previousPage value=alt+z></td></tr>
+                <tr><td>Jump to the next page</td><td><input type=text name=nextPage value=alt+x></td></tr>
+                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage value=alt+z></td></tr>
+                <tr><td>Jump to page 0</td><td><input type=text name=zero value=0></td></tr>
                 <tr><td>Open thread in current tab</td><td><input type=text name=openThread value=O></td></tr>
                 <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab value=o></td></tr>
                 <tr><td>Expand thread</td><td><input type=text name=expandThread value=e></td></tr>
