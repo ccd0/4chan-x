@@ -30,6 +30,7 @@ config =
       'Image Hover':        [false, 'Show full image on mouseover']
       'Image Preloading':   [false, 'Preload Images']
       'Sauce':              [true,  'Add sauce to images']
+      'Reveal Spoilers':    [false, 'Replace spoiler thumbnails by the original thumbnail']
     Hiding:
       'Reply Hiding':       [true,  'Hide single replies']
       'Thread Hiding':      [true,  'Hide entire threads']
@@ -1463,6 +1464,17 @@ sauce =
             href: prefix + suffix
           $.append span, $.tn(' '), link
 
+revealSpoilers =
+  init: ->
+    g.callbacks.push revealSpoilers.cb.node
+  cb:
+    node: (root) ->
+      return if root.className is 'inline' or not img = $('img[alt^=Spoiler]', root)
+      img.removeAttribute 'height'
+      img.removeAttribute 'width'
+      [_, board, nb] = img.parentNode.href.match /(\w+)\/src\/(\d+)/
+      img.src = "http://0.thumbs.4chan.org/#{board}/thumb/#{nb}s.jpg"
+
 Time =
   init: ->
     Time.foo()
@@ -2098,6 +2110,9 @@ main =
 
     if $.config 'Sauce'
       sauce.init()
+
+    if $.config 'Reveal Spoilers'
+      revealSpoilers.init()
 
     if $.config 'Anonymize'
       anonymize.init()

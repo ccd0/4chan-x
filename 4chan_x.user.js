@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, config, cooldown, d, expandComment, expandThread, firstRun, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, config, cooldown, d, expandComment, expandThread, firstRun, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   if (typeof console !== "undefined" && console !== null) {
     log = function(arg) {
@@ -95,7 +95,8 @@
         'Image Expansion': [true, 'Expand images'],
         'Image Hover': [false, 'Show full image on mouseover'],
         'Image Preloading': [false, 'Preload Images'],
-        'Sauce': [true, 'Add sauce to images']
+        'Sauce': [true, 'Add sauce to images'],
+        'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail']
       },
       Hiding: {
         'Reply Hiding': [true, 'Hide single replies'],
@@ -1817,6 +1818,23 @@
       }
     }
   };
+  revealSpoilers = {
+    init: function() {
+      return g.callbacks.push(revealSpoilers.cb.node);
+    },
+    cb: {
+      node: function(root) {
+        var board, img, nb, _, _ref;
+        if (root.className === 'inline' || !(img = $('img[alt^=Spoiler]', root))) {
+          return;
+        }
+        img.removeAttribute('height');
+        img.removeAttribute('width');
+        _ref = img.parentNode.href.match(/(\w+)\/src\/(\d+)/), _ = _ref[0], board = _ref[1], nb = _ref[2];
+        return img.src = "http://0.thumbs.4chan.org/" + board + "/thumb/" + nb + "s.jpg";
+      }
+    }
+  };
   Time = {
     init: function() {
       Time.foo();
@@ -2678,6 +2696,9 @@
       }
       if ($.config('Sauce')) {
         sauce.init();
+      }
+      if ($.config('Reveal Spoilers')) {
+        revealSpoilers.init();
       }
       if ($.config('Anonymize')) {
         anonymize.init();
