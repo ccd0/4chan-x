@@ -517,13 +517,12 @@ keybinds =
         key = String.fromCharCode kc
         if !e.shiftKey
           key = key.toLowerCase()
-        if e.ctrlKey then key = 'ctrl+' + key
-        if e.altKey  then key = 'alt+' + key
-      else
-        if kc is 27
-          key = 'Esc'
-        else if 48 <= kc <= 57 #0-9
-          key = String.fromCharCode kc
+      else if 48 <= kc <= 57 #0-9
+        key = String.fromCharCode kc
+      else if kc is 27
+        key = 'Esc'
+      if e.altKey  then key = 'alt+' + key
+      if e.ctrlKey then key = 'ctrl+' + key
       keybinds.key = key
 
       thread = nav.getThread()
@@ -867,24 +866,25 @@ options =
       g.hiddenReplies = {}
     keybind: (e) ->
       e.preventDefault()
+      e.stopPropagation()
       kc = e.keyCode
       if 65 <= kc <= 90 #A-Z
         key = String.fromCharCode kc
         if !e.shiftKey
           key = key.toLowerCase()
-        if e.ctrlKey then key = 'ctrl+' + key
-        if e.altKey  then key = 'alt+' + key
-      else
-        if kc is 27
-          key = 'Esc'
-        else if 48 <= kc <= 57 #0-9
-          key = String.fromCharCode kc
-        else if kc is 8
-          key = ''
-        else
-          key = @value
-      @value = key
-      $.setValue "key/#{@name}", key
+      else if 48 <= kc <= 57 #0-9
+        key = String.fromCharCode kc
+      else if kc is 27
+        key = 'Esc'
+      else if kc is 8
+        key = ''
+
+      if key.length >= 0
+        if key
+          key = 'alt+' + key  if e.altKey
+          key = 'ctrl+' + key if e.ctrlKey
+        @value = key
+        $.setValue "key/#{@name}", key
     time: (e) ->
       $.setValue 'time', @value
       Time.foo()

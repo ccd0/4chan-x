@@ -722,18 +722,16 @@
           if (!e.shiftKey) {
             key = key.toLowerCase();
           }
-          if (e.ctrlKey) {
-            key = 'ctrl+' + key;
-          }
-          if (e.altKey) {
-            key = 'alt+' + key;
-          }
-        } else {
-          if (kc === 27) {
-            key = 'Esc';
-          } else if ((48 <= kc && kc <= 57)) {
-            key = String.fromCharCode(kc);
-          }
+        } else if ((48 <= kc && kc <= 57)) {
+          key = String.fromCharCode(kc);
+        } else if (kc === 27) {
+          key = 'Esc';
+        }
+        if (e.altKey) {
+          key = 'alt+' + key;
+        }
+        if (e.ctrlKey) {
+          key = 'ctrl+' + key;
         }
         keybinds.key = key;
         thread = nav.getThread();
@@ -1089,31 +1087,32 @@
       keybind: function(e) {
         var kc, key;
         e.preventDefault();
+        e.stopPropagation();
         kc = e.keyCode;
         if ((65 <= kc && kc <= 90)) {
           key = String.fromCharCode(kc);
           if (!e.shiftKey) {
             key = key.toLowerCase();
           }
-          if (e.ctrlKey) {
-            key = 'ctrl+' + key;
-          }
-          if (e.altKey) {
-            key = 'alt+' + key;
-          }
-        } else {
-          if (kc === 27) {
-            key = 'Esc';
-          } else if ((48 <= kc && kc <= 57)) {
-            key = String.fromCharCode(kc);
-          } else if (kc === 8) {
-            key = '';
-          } else {
-            key = this.value;
-          }
+        } else if ((48 <= kc && kc <= 57)) {
+          key = String.fromCharCode(kc);
+        } else if (kc === 27) {
+          key = 'Esc';
+        } else if (kc === 8) {
+          key = '';
         }
-        this.value = key;
-        return $.setValue("key/" + this.name, key);
+        if (key.length >= 0) {
+          if (key) {
+            if (e.altKey) {
+              key = 'alt+' + key;
+            }
+            if (e.ctrlKey) {
+              key = 'ctrl+' + key;
+            }
+          }
+          this.value = key;
+          return $.setValue("key/" + this.name, key);
+        }
       },
       time: function(e) {
         $.setValue('time', this.value);
