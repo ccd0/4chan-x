@@ -1366,7 +1366,7 @@
       return qr.autohide.set();
     },
     sys: function() {
-      var c, id, otoNoko, recaptcha, thread, _, _ref;
+      var c, id, otoNoko, otoNokoPattern, otoWatchPattern, recaptcha, thread, _, _ref;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
@@ -1386,9 +1386,11 @@
       c = $('b').lastChild;
       if (c.nodeType === 8) {
         _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-        otoNoko = /AEOS.4chan_x.auto_noko=true/.test(d.cookie);
+        otoNokoPattern = new RegExp("" + NAMESPACE + "auto_noko=true");
+        otoWatchPattern = new RegExp("" + NAMESPACE + "auto_watch=true");
+        otoNoko = otoNokoPattern.test(d.cookie);
         if (thread === '0') {
-          if (/AEOS.4chan_x.auto_watch=true/.test(d.cookie)) {
+          if (otoWatchPattern.test(d.cookie)) {
             return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
           } else if (otoNoko) {
             return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
@@ -2928,7 +2930,8 @@
         height: 120px;\
       }\
       #qr.auto:not(:hover) > form {\
-        display: none;\
+        height: 0;\
+        overflow: hidden;\
       }\
       /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */\
       #qr input::-webkit-input-placeholder {\
