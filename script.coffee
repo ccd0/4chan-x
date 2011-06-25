@@ -1129,7 +1129,7 @@ qr =
       [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
       if thread is '0'
         window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
-      else if /AEOS.4chan_x.auto_noko=true/.test d.cookie
+      else if d.cookie.indexOf("#{NAMESPACE}auto_noko") > -1
         window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{id}"
 
 threading =
