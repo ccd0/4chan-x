@@ -1366,7 +1366,7 @@
       return qr.autohide.set();
     },
     sys: function() {
-      var c, id, recaptcha, thread, _, _ref;
+      var c, id, otoNoko, recaptcha, thread, _, _ref;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
@@ -1386,9 +1386,14 @@
       c = $('b').lastChild;
       if (c.nodeType === 8) {
         _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
+        otoNoko = /AEOS.4chan_x.auto_noko=true/.test(d.cookie);
         if (thread === '0') {
-          return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
-        } else if (/AEOS.4chan_x.auto_noko=true/.test(d.cookie)) {
+          if (/AEOS.4chan_x.auto_watch=true/.test(d.cookie)) {
+            return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
+          } else if (otoNoko) {
+            return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
+          }
+        } else if (otoNoko) {
           return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + id;
         }
       }
@@ -2684,9 +2689,9 @@
         $.bind(form, 'submit', qr.cb.submit);
       }
       if ($.config('Auto Noko')) {
-        document.cookie = "" + NAMESPACE + "auto_noko=true;path=/;domain=.4chan.org";
+        d.cookie = "" + NAMESPACE + "auto_noko=true;path=/;domain=.4chan.org";
       } else {
-        document.cookie = "" + NAMESPACE + "auto_noko=false;path=/;domain=.4chan.org";
+        d.cookie = "" + NAMESPACE + "auto_noko=false;path=/;domain=.4chan.org";
       }
       if ($.config('Cooldown')) {
         cooldown.init();
@@ -2740,6 +2745,14 @@
         keybinds.init();
       }
       threading.init();
+      if ($.config('Auto Watch') && $.config('Thread Watcher')) {
+        d.cookie = "" + NAMESPACE + "auto_watch=true;path=/;domain=.4chan.org";
+        if (g.REPLY && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
+          watcher.watch(null, g.THREAD_ID);
+        }
+      } else {
+        d.cookie = "" + NAMESPACE + "auto_watch=false;path=/;domain=.4chan.org";
+      }
       if (g.REPLY) {
         if ($.config('Thread Updater')) {
           updater.init();
@@ -2758,9 +2771,6 @@
         }
         if ($.config('Unread Count')) {
           unread.init();
-        }
-        if ($.config('Auto Watch') && $.config('Thread Watcher') && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
-          watcher.watch(null, g.THREAD_ID);
         }
         if ($.config('Reply Navigation')) {
           nav.init();
