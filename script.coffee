@@ -2103,9 +2103,9 @@ main =
 
     #major features
     if $.config 'Auto Noko'
-      d.cookie = "#{NAMESPACE}auto_noko=true;path=/;domain=.4chan.org"
+      document.cookie = "#{NAMESPACE}auto_noko;path=/;domain=.4chan.org"
     else
-      d.cookie = "#{NAMESPACE}auto_noko=false;path=/;domain=.4chan.org"
+      document.cookie = "path=/;domain=.4chan.org"
 
     if $.config 'Cooldown'
       cooldown.init()
@@ -2329,7 +2329,8 @@ main =
         height: 120px;
       }
       #qr.auto:not(:hover) > form {
-        display: none;
+        height: 0;
+        overflow: hidden;
       }
       /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
       #qr input::-webkit-input-placeholder {
