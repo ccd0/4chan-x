@@ -1127,9 +1127,13 @@ qr =
     c = $('b').lastChild
     if c.nodeType is 8 #comment node
       [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
+      otoNoko = /AEOS.4chan_x.auto_noko=true/.test d.cookie
       if thread is '0'
-        window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
-      else if d.cookie.indexOf("#{NAMESPACE}auto_noko") > -1
+        if /AEOS.4chan_x.auto_watch=true/.test d.cookie
+          window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
+        else if otoNoko
+          window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
+      else if otoNoko
         window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{id}"
 
 threading =
@@ -2154,6 +2158,13 @@ main =
 
     threading.init()
 
+    if $.config('Auto Watch') and $.config('Thread Watcher')
+      d.cookie = "#{NAMESPACE}auto_watch=true;path=/;domain=.4chan.org"
+      if g.REPLY and location.hash is '#watch' and $('img.favicon').src is Favicon.empty
+        watcher.watch null, g.THREAD_ID
+    else
+      d.cookie = "#{NAMESPACE}auto_watch=false;path=/;domain=.4chan.org"
+
     if g.REPLY
       if $.config 'Thread Updater'
         updater.init()
@@ -2172,10 +2183,6 @@ main =
 
       if $.config 'Unread Count'
         unread.init()
-
-      if $.config('Auto Watch') and $.config('Thread Watcher') and
-        location.hash is '#watch' and $('img.favicon').src is Favicon.empty
-          watcher.watch null, g.THREAD_ID
 
       if $.config 'Reply Navigation'
         nav.init()
@@ -2320,8 +2327,7 @@ main =
         height: 120px;
       }
       #qr.auto:not(:hover) > form {
-        height: 0;
-        overflow: hidden;
+        display: none;
       }
       /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
       #qr input::-webkit-input-placeholder {
