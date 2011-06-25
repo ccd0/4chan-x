@@ -514,32 +514,32 @@ keybinds =
     for node in $$ '[accesskey]'
       node.removeAttribute 'accesskey'
 
-    keybinds.close           = $.getValue 'key/close', config.hotkeys.close
-    keybinds.spoiler         = $.getValue 'key/spoiler', config.hotkeys.spoiler
-    keybinds.openQR          = $.getValue 'key/openQR', config.hotkeys.openQR
-    keybinds.openEmptyQR     = $.getValue 'key/openEmptyQR', config.hotkeys.openEmptyQR
-    keybinds.submit          = $.getValue 'key/submit', config.hotkeys.submit
-    keybinds.nextReply       = $.getValue 'key/nextReply', config.hotkeys.nextReply
-    keybinds.previousReply   = $.getValue 'key/previousReply', config.hotkeys.previousReply
-    keybinds.nextThread      = $.getValue 'key/nextThread', config.hotkeys.nextThread
-    keybinds.previousThread  = $.getValue 'key/previousThread', config.hotkeys.previousThread
-    keybinds.nextPage        = $.getValue 'key/nextPage', config.hotkeys.nextPage
-    keybinds.previousPage    = $.getValue 'key/previousPage', config.hotkeys.previousPage
-    keybinds.zero            = $.getValue 'key/zero', config.hotkeys.zero
-    keybinds.openThreadTab   = $.getValue 'key/openThreadTab', config.hotkeys.openThreadTab
-    keybinds.openThread      = $.getValue 'key/openThread', config.hotkeys.openThread
-    keybinds.expandThread    = $.getValue 'key/expandThread', config.hotkeys.expandThread
-    keybinds.watch           = $.getValue 'key/watch', config.hotkeys.watch
-    keybinds.hide            = $.getValue 'key/hide', config.hotkeys.hide
-    keybinds.expandImages    = $.getValue 'key/expandImages', config.hotkeys.expandImages
+    keybinds.close           = $.getValue 'key/close',           config.hotkeys.close
+    keybinds.spoiler         = $.getValue 'key/spoiler',         config.hotkeys.spoiler
+    keybinds.openQR          = $.getValue 'key/openQR',          config.hotkeys.openQR
+    keybinds.openEmptyQR     = $.getValue 'key/openEmptyQR',     config.hotkeys.openEmptyQR
+    keybinds.submit          = $.getValue 'key/submit',          config.hotkeys.submit
+    keybinds.nextReply       = $.getValue 'key/nextReply',       config.hotkeys.nextReply
+    keybinds.previousReply   = $.getValue 'key/previousReply',   config.hotkeys.previousReply
+    keybinds.nextThread      = $.getValue 'key/nextThread',      config.hotkeys.nextThread
+    keybinds.previousThread  = $.getValue 'key/previousThread',  config.hotkeys.previousThread
+    keybinds.nextPage        = $.getValue 'key/nextPage',        config.hotkeys.nextPage
+    keybinds.previousPage    = $.getValue 'key/previousPage',    config.hotkeys.previousPage
+    keybinds.zero            = $.getValue 'key/zero',            config.hotkeys.zero
+    keybinds.openThreadTab   = $.getValue 'key/openThreadTab',   config.hotkeys.openThreadTab
+    keybinds.openThread      = $.getValue 'key/openThread',      config.hotkeys.openThread
+    keybinds.expandThread    = $.getValue 'key/expandThread',    config.hotkeys.expandThread
+    keybinds.watch           = $.getValue 'key/watch',           config.hotkeys.watch
+    keybinds.hide            = $.getValue 'key/hide',            config.hotkeys.hide
+    keybinds.expandImages    = $.getValue 'key/expandImages',    config.hotkeys.expandImages
     keybinds.expandAllImages = $.getValue 'key/expandAllImages', config.hotkeys.expandAllImages
-    keybinds.update          = $.getValue 'key/update', config.hotkeys.update
+    keybinds.update          = $.getValue 'key/update',          config.hotkeys.update
 
     $.bind d, 'keydown',  keybinds.cb.keydown
 
   cb:
     keydown: (e) ->
-      return if d.activeElement.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey
+      return if d.activeElement.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not e.keyCode is 27
       key = keybinds.cb.keyCode e
       if e.altKey  then key = 'alt+' + key
       if e.ctrlKey then key = 'ctrl+' + key
