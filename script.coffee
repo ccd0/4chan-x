@@ -2258,27 +2258,20 @@ main =
       }
 
       #overlay {
+        display: table;
         position: fixed;
         top: 0;
-        right: 0;
-        bottom: 0;
         left: 0;
+        height: 100%;
+        width: 100%;
         background: rgba(0,0,0,.5);
       }
       #options {
-        height: 100%;
-        width: 100%;
-        display: -webkit-box;
-        display: -moz-box;
-        display: box;
-        -webkit-box-align: center;
-        -moz-box-align: center;
-        box-align: center;
-        -webkit-box-pack: center;
-        -moz-box-pack: center;
-        box-pack: center;
+        display: table-cell;
+        vertical-align: middle;
       }
       #options .dialog {
+        margin: auto;
         padding: 5px;
         width: 500px;
       }
