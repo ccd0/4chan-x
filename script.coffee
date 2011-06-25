@@ -2327,7 +2327,8 @@ main =
         height: 120px;
       }
       #qr.auto:not(:hover) > form {
-        display: none;
+        height: 0;
+        overflow: hidden;
       }
       /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
       #qr input::-webkit-input-placeholder {
