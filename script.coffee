@@ -2103,9 +2103,9 @@ main =
 
     #major features
     if $.config 'Auto Noko'
-      document.cookie = "#{NAMESPACE}auto_noko;path=/;domain=.4chan.org"
+      document.cookie = "#{NAMESPACE}auto_noko=true;path=/;domain=.4chan.org"
     else
-      document.cookie = "path=/;domain=.4chan.org"
+      document.cookie = "#{NAMESPACE}auto_noko=false;path=/;domain=.4chan.org"
 
     if $.config 'Cooldown'
       cooldown.init()
