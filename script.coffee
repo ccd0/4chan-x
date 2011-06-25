@@ -2291,11 +2291,9 @@ main =
       #floaty {
         float: left;
       }
-      #options #main {
-        overflow: auto;
-      }
       #content > * {
         height: 500px;
+        overflow: auto;
       }
       #content textarea {
         margin: 0;

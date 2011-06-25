@@ -1388,7 +1388,7 @@
         _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
         if (thread === '0') {
           return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
-        } else if (/AEOS.4chan_x.auto_noko=true/.test(d.cookie)) {
+        } else if (d.cookie.indexOf("" + NAMESPACE + "auto_noko") > -1) {
           return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + id;
         }
       }
@@ -2889,11 +2889,9 @@
       #floaty {\
         float: left;\
       }\
-      #options #main {\
-        overflow: auto;\
-      }\
       #content > * {\
         height: 500px;\
+        overflow: auto;\
       }\
       #content textarea {\
         margin: 0;\
