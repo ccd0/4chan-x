@@ -1,6 +1,8 @@
 - mayhem:
   - custom hotkey binding
   - image spoiler revealer
+  - optional auto noko
+  - fix options centering on Opera
 - aeosynth:
   - keep options dialog at constant size
   - drop firefox 3.6 support (again...)
