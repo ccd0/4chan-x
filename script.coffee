@@ -1127,9 +1127,11 @@ qr =
     c = $('b').lastChild
     if c.nodeType is 8 #comment node
       [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
-      otoNoko = /AEOS.4chan_x.auto_noko=true/.test d.cookie
+      otoNokoPattern  = new RegExp "#{NAMESPACE}auto_noko=true"
+      otoWatchPattern = new RegExp "#{NAMESPACE}auto_watch=true"
+      otoNoko = otoNokoPattern.test d.cookie
       if thread is '0'
-        if /AEOS.4chan_x.auto_watch=true/.test d.cookie
+        if otoWatchPattern.test d.cookie
           window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
         else if otoNoko
           window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
