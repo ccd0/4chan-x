@@ -746,7 +746,7 @@
     cb: {
       keydown: function(e) {
         var key, o, qr, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
-        if (((_ref = d.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !e.keyCode === 27) {
+        if (((_ref = d.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
           return;
         }
         key = keybinds.cb.keyCode(e);
