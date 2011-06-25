@@ -69,6 +69,7 @@
   config = {
     main: {
       Posting: {
+        'Auto Noko': [true, 'Always redirect to your post'],
         'Cooldown': [true, 'Prevent \'flood detected\' errors'],
         'Quick Reply': [true, 'Reply without leaving the page'],
         'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.']
@@ -1387,7 +1388,7 @@
         _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
         if (thread === '0') {
           return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
-        } else {
+        } else if (/AEOS.4chan_x.auto_noko=true/.test(d.cookie)) {
           return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + id;
         }
       }
@@ -2681,6 +2682,11 @@
         canPost = true;
         Recaptcha.init();
         $.bind(form, 'submit', qr.cb.submit);
+      }
+      if ($.config('Auto Noko')) {
+        document.cookie = "" + NAMESPACE + "auto_noko=true;path=/;domain=.4chan.org";
+      } else {
+        document.cookie = "" + NAMESPACE + "auto_noko=false;path=/;domain=.4chan.org";
       }
       if ($.config('Cooldown')) {
         cooldown.init();
