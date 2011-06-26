@@ -4,6 +4,7 @@
   - optional auto noko
   - fix options centering on Opera
   - fix append '#watch' only when auto watch is enabled
+  - fix cooldown with the normal post form
 - aeosynth:
   - keep options dialog at constant size
   - drop firefox 3.6 support (again...)

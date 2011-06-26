@@ -1144,14 +1144,33 @@
   };
   cooldown = {
     init: function() {
+      var input, time, _, _ref;
+      if (location.search) {
+        _ref = location.search.match(/cooldown=(\d+)/), _ = _ref[0], time = _ref[1];
+        if ($.getValue(g.BOARD + '/cooldown', 0 < time)) {
+          $.setValue(g.BOARD + '/cooldown', time);
+        }
+      }
       if (Date.now() < $.getValue(g.BOARD + '/cooldown', 0)) {
         cooldown.start();
       }
-      return $.bind(window, 'storage', function(e) {
+      $.bind(window, 'storage', function(e) {
         if (e.key === ("" + NAMESPACE + g.BOARD + "/cooldown")) {
           return cooldown.start();
         }
       });
+      input = $('.postarea input[name=email]');
+      if (/sage/i.test(input.value)) {
+        $('.postarea form').action = "http://sys.4chan.org/" + g.BOARD + "/post?sage";
+      }
+      return $.bind(input, 'keyup', cooldown.sage);
+    },
+    sage: function() {
+      if (/sage/i.test(this.value)) {
+        return $('.postarea form').action = "http://sys.4chan.org/" + g.BOARD + "/post?sage";
+      } else {
+        return $('.postarea form').action = "http://sys.4chan.org/" + g.BOARD + "/post";
+      }
     },
     start: function() {
       var submit, _i, _len, _ref;
@@ -1345,7 +1364,7 @@
       return qr.autohide.set();
     },
     sys: function() {
-      var c, id, otoNoko, otoNokoPattern, otoWatchPattern, recaptcha, thread, _, _ref;
+      var c, duration, id, noko, otoNoko, otoWatch, recaptcha, thread, _, _ref;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
@@ -1365,17 +1384,30 @@
       c = $('b').lastChild;
       if (c.nodeType === 8) {
         _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-        otoNokoPattern = new RegExp("" + NAMESPACE + "auto_noko=true");
-        otoWatchPattern = new RegExp("" + NAMESPACE + "auto_watch=true");
-        otoNoko = otoNokoPattern.test(d.cookie);
+        otoNoko = new RegExp("" + NAMESPACE + "auto_noko=true");
+        otoWatch = new RegExp("" + NAMESPACE + "auto_watch=true");
+        cooldown = new RegExp("" + NAMESPACE + "cooldown=true");
+        noko = otoNoko.test(d.cookie);
         if (thread === '0') {
-          if (otoWatchPattern.test(d.cookie)) {
+          if (otoWatch.test(d.cookie)) {
             return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
-          } else if (otoNoko) {
+          } else if (noko) {
             return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
           }
-        } else if (otoNoko) {
+        } else if (cooldown.test(d.cookie)) {
+          duration = Date.now() + 30000;
+          if (/sage/.test(location.search)) {
+            duration += 30000;
+          }
+          if (noko) {
+            return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "?cooldown=" + duration + "#" + id;
+          } else {
+            return window.location = "http://boards.4chan.org/" + g.BOARD + "?cooldown=" + duration;
+          }
+        } else if (noko) {
           return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + id;
+        } else {
+          return window.location = "http://boards.4chan.org/" + g.BOARD;
         }
       }
     }
@@ -2676,6 +2708,9 @@
       }
       if ($.config('Cooldown')) {
         cooldown.init();
+        d.cookie = "" + NAMESPACE + "cooldown=true;path=/;domain=.4chan.org";
+      } else {
+        d.cookie = "" + NAMESPACE + "cooldown=false;path=/;domain=.4chan.org";
       }
       if ($.config('Image Expansion')) {
         imgExpand.init();

@@ -911,8 +911,22 @@ options =
 
 cooldown =
   init: ->
+    if location.search
+      [_, time] = location.search.match /cooldown=(\d+)/
+      $.setValue g.BOARD+'/cooldown', time if $.getValue g.BOARD+'/cooldown', 0 < time
     cooldown.start() if Date.now() < $.getValue g.BOARD+'/cooldown', 0
     $.bind window, 'storage', (e) -> cooldown.start() if e.key is "#{NAMESPACE}#{g.BOARD}/cooldown"
+
+    input = $('.postarea input[name=email]')
+    if /sage/i.test input.value
+      $('.postarea form').action = "http://sys.4chan.org/#{g.BOARD}/post?sage"
+    $.bind input, 'keyup', cooldown.sage
+
+  sage: ->
+    if /sage/i.test @value
+      $('.postarea form').action = "http://sys.4chan.org/#{g.BOARD}/post?sage"
+    else
+      $('.postarea form').action = "http://sys.4chan.org/#{g.BOARD}/post"
 
   start: ->
     cooldown.duration = Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
@@ -1112,16 +1126,26 @@ qr =
     c = $('b').lastChild
     if c.nodeType is 8 #comment node
       [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
-      otoNokoPattern  = new RegExp "#{NAMESPACE}auto_noko=true"
-      otoWatchPattern = new RegExp "#{NAMESPACE}auto_watch=true"
-      otoNoko = otoNokoPattern.test d.cookie
+      otoNoko  = new RegExp "#{NAMESPACE}auto_noko=true"
+      otoWatch = new RegExp "#{NAMESPACE}auto_watch=true"
+      cooldown = new RegExp "#{NAMESPACE}cooldown=true"
+      noko = otoNoko.test d.cookie
       if thread is '0'
-        if otoWatchPattern.test d.cookie
+        if otoWatch.test d.cookie
           window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
-        else if otoNoko
+        else if noko
           window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
-      else if otoNoko
+      else if cooldown.test d.cookie
+        duration = Date.now() + 30000
+        duration += 30000 if /sage/.test location.search
+        if noko
+          window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}?cooldown=#{duration}##{id}"
+        else
+          window.location = "http://boards.4chan.org/#{g.BOARD}?cooldown=#{duration}"
+      else if noko
         window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{id}"
+      else
+        window.location = "http://boards.4chan.org/#{g.BOARD}"
 
 threading =
   init: ->
@@ -2094,6 +2118,9 @@ main =
 
     if $.config 'Cooldown'
       cooldown.init()
+      d.cookie = "#{NAMESPACE}cooldown=true;path=/;domain=.4chan.org"
+    else
+      d.cookie = "#{NAMESPACE}cooldown=false;path=/;domain=.4chan.org"
 
     if $.config 'Image Expansion'
       imgExpand.init()
