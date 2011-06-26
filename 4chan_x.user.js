@@ -910,6 +910,9 @@
           rect = td.getBoundingClientRect();
           if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
             next = $.x('following::td[@class="reply"]', td);
+            if ($.x('ancestor::div[@class="thread"]/div', next) !== thread) {
+              return;
+            }
             rect = next.getBoundingClientRect();
             if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
               next.className = 'replyhl';
