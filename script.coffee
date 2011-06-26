@@ -926,22 +926,27 @@ options =
 
 cooldown =
   init: ->
-    if location.search
+    if /cooldown/.test location.search
       [_, time] = location.search.match /cooldown=(\d+)/
       $.setValue g.BOARD+'/cooldown', time if $.getValue(g.BOARD+'/cooldown', 0) < time
     cooldown.start() if Date.now() < $.getValue g.BOARD+'/cooldown', 0
     $.bind window, 'storage', (e) -> cooldown.start() if e.key is "#{NAMESPACE}#{g.BOARD}/cooldown"
 
-    input = $('.postarea input[name=email]')
-    if /sage/i.test input.value
-      $('.postarea form').action += "?sage"
-    $.bind input, 'keyup', cooldown.sage
+    if g.REPLY
+      form = $('.postarea form')
+      form.action += '?cooldown'
+      input = $('.postarea input[name=email]')
+      if /sage/i.test input.value
+        form.action += '?sage'
+      $.bind input, 'keyup', cooldown.sage
 
   sage: ->
+    form = $('.postarea form')
     if /sage/i.test @value
-      $('.postarea form').action = "http://sys.4chan.org/#{g.BOARD}/post?sage"
+      unless /sage/.test form.action
+        form.action += '?sage'
     else
-      $('.postarea form').action = "http://sys.4chan.org/#{g.BOARD}/post"
+      form.action = form.action.replace '?sage', ''
 
   start: ->
     cooldown.duration = Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
@@ -1141,16 +1146,14 @@ qr =
     c = $('b').lastChild
     if c.nodeType is 8 #comment node
       [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
-      otoNoko  = new RegExp "#{NAMESPACE}auto_noko=true"
-      otoWatch = new RegExp "#{NAMESPACE}auto_watch=true"
-      cooldown = new RegExp "#{NAMESPACE}cooldown=true"
-      noko = otoNoko.test d.cookie
+
+      noko = /auto_noko/.test location.search
       if thread is '0'
-        if otoWatch.test d.cookie
+        if /auto_watch/.test location.search
           window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
         else if noko
           window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
-      else if cooldown.test d.cookie
+      else if /cooldown/.test location.search
         duration = Date.now() + 30000
         duration += 30000 if /sage/.test location.search
         if noko
@@ -2127,15 +2130,10 @@ main =
 
     #major features
     if $.config 'Auto Noko'
-      d.cookie = "#{NAMESPACE}auto_noko=true;path=/;domain=.4chan.org"
-    else
-      d.cookie = "#{NAMESPACE}auto_noko=false;path=/;domain=.4chan.org"
+      $('.postarea form').action += '?auto_noko'
 
     if $.config 'Cooldown'
       cooldown.init()
-      d.cookie = "#{NAMESPACE}cooldown=true;path=/;domain=.4chan.org"
-    else
-      d.cookie = "#{NAMESPACE}cooldown=false;path=/;domain=.4chan.org"
 
     if $.config 'Image Expansion'
       imgExpand.init()
@@ -2187,13 +2185,6 @@ main =
 
     threading.init()
 
-    if $.config('Auto Watch') and $.config('Thread Watcher')
-      d.cookie = "#{NAMESPACE}auto_watch=true;path=/;domain=.4chan.org"
-      if g.REPLY and location.hash is '#watch' and $('img.favicon').src is Favicon.empty
-        watcher.watch null, g.THREAD_ID
-    else
-      d.cookie = "#{NAMESPACE}auto_watch=false;path=/;domain=.4chan.org"
-
     if g.REPLY
       if $.config 'Thread Updater'
         updater.init()
@@ -2216,6 +2207,10 @@ main =
       if $.config 'Reply Navigation'
         nav.init()
 
+      if $.config('Auto Watch') and $.config('Thread Watcher') and
+        location.hash is '#watch' and $('img.favicon').src is Favicon.empty
+          watcher.watch null, g.THREAD_ID
+
     else #not reply
       if $.config 'Index Navigation'
         nav.init()
@@ -2228,6 +2223,9 @@ main =
 
       if $.config 'Comment Expansion'
         expandComment.init()
+
+      if $.config('Auto Watch')
+        $('.postarea form').action += '?auto_watch'
 
     for op in $$ 'div.op'
       for callback in g.callbacks

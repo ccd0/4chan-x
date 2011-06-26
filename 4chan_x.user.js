@@ -1165,8 +1165,8 @@
   };
   cooldown = {
     init: function() {
-      var input, time, _, _ref;
-      if (location.search) {
+      var form, input, time, _, _ref;
+      if (/cooldown/.test(location.search)) {
         _ref = location.search.match(/cooldown=(\d+)/), _ = _ref[0], time = _ref[1];
         if ($.getValue(g.BOARD + '/cooldown', 0) < time) {
           $.setValue(g.BOARD + '/cooldown', time);
@@ -1180,17 +1180,25 @@
           return cooldown.start();
         }
       });
-      input = $('.postarea input[name=email]');
-      if (/sage/i.test(input.value)) {
-        $('.postarea form').action += "?sage";
+      if (g.REPLY) {
+        form = $('.postarea form');
+        form.action += '?cooldown';
+        input = $('.postarea input[name=email]');
+        if (/sage/i.test(input.value)) {
+          form.action += '?sage';
+        }
+        return $.bind(input, 'keyup', cooldown.sage);
       }
-      return $.bind(input, 'keyup', cooldown.sage);
     },
     sage: function() {
+      var form;
+      form = $('.postarea form');
       if (/sage/i.test(this.value)) {
-        return $('.postarea form').action = "http://sys.4chan.org/" + g.BOARD + "/post?sage";
+        if (!/sage/.test(form.action)) {
+          return form.action += '?sage';
+        }
       } else {
-        return $('.postarea form').action = "http://sys.4chan.org/" + g.BOARD + "/post";
+        return form.action = form.action.replace('?sage', '');
       }
     },
     start: function() {
@@ -1385,7 +1393,7 @@
       return qr.autohide.set();
     },
     sys: function() {
-      var c, duration, id, noko, otoNoko, otoWatch, recaptcha, thread, _, _ref;
+      var c, duration, id, noko, recaptcha, thread, _, _ref;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
@@ -1405,17 +1413,14 @@
       c = $('b').lastChild;
       if (c.nodeType === 8) {
         _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-        otoNoko = new RegExp("" + NAMESPACE + "auto_noko=true");
-        otoWatch = new RegExp("" + NAMESPACE + "auto_watch=true");
-        cooldown = new RegExp("" + NAMESPACE + "cooldown=true");
-        noko = otoNoko.test(d.cookie);
+        noko = /auto_noko/.test(location.search);
         if (thread === '0') {
-          if (otoWatch.test(d.cookie)) {
+          if (/auto_watch/.test(location.search)) {
             return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
           } else if (noko) {
             return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
           }
-        } else if (cooldown.test(d.cookie)) {
+        } else if (/cooldown/.test(location.search)) {
           duration = Date.now() + 30000;
           if (/sage/.test(location.search)) {
             duration += 30000;
@@ -2723,15 +2728,10 @@
         $.bind(form, 'submit', qr.cb.submit);
       }
       if ($.config('Auto Noko')) {
-        d.cookie = "" + NAMESPACE + "auto_noko=true;path=/;domain=.4chan.org";
-      } else {
-        d.cookie = "" + NAMESPACE + "auto_noko=false;path=/;domain=.4chan.org";
+        $('.postarea form').action += '?auto_noko';
       }
       if ($.config('Cooldown')) {
         cooldown.init();
-        d.cookie = "" + NAMESPACE + "cooldown=true;path=/;domain=.4chan.org";
-      } else {
-        d.cookie = "" + NAMESPACE + "cooldown=false;path=/;domain=.4chan.org";
       }
       if ($.config('Image Expansion')) {
         imgExpand.init();
@@ -2782,14 +2782,6 @@
         keybinds.init();
       }
       threading.init();
-      if ($.config('Auto Watch') && $.config('Thread Watcher')) {
-        d.cookie = "" + NAMESPACE + "auto_watch=true;path=/;domain=.4chan.org";
-        if (g.REPLY && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
-          watcher.watch(null, g.THREAD_ID);
-        }
-      } else {
-        d.cookie = "" + NAMESPACE + "auto_watch=false;path=/;domain=.4chan.org";
-      }
       if (g.REPLY) {
         if ($.config('Thread Updater')) {
           updater.init();
@@ -2812,6 +2804,9 @@
         if ($.config('Reply Navigation')) {
           nav.init();
         }
+        if ($.config('Auto Watch') && $.config('Thread Watcher') && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
+          watcher.watch(null, g.THREAD_ID);
+        }
       } else {
         if ($.config('Index Navigation')) {
           nav.init();
@@ -2824,6 +2819,9 @@
         }
         if ($.config('Comment Expansion')) {
           expandComment.init();
+        }
+        if ($.config('Auto Watch')) {
+          $('.postarea form').action += '?auto_watch';
         }
       }
       _ref3 = $$('div.op');
