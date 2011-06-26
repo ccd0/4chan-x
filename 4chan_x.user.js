@@ -1048,7 +1048,7 @@
       return $.replace(home, a);
     },
     dialog: function() {
-      var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+      var arr, checked, description, dialog, hiddenNum, hiddenThreads, hidingul, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
       html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=http://userscripts.org/scripts/show/51412>uso</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>          <div style='display: none;' id=time>            <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>              </tbody>            </table>          </div>          <div style='display: none;' id=keybinds>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>                <tr><td>Update now</td><td><input type=text name=update></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
@@ -1063,6 +1063,9 @@
         ul = $.el('ul', {
           textContent: key
         });
+        if (key === 'Hiding') {
+          hidingul = ul;
+        }
         for (key in obj) {
           arr = obj[key];
           checked = $.config(key) ? "checked" : "";
@@ -1074,14 +1077,10 @@
         }
         $.append(main, ul);
       }
-      ul = $.el('ul', {
-        textContent: 'Other'
-      });
       li = $.el('li', {
         innerHTML: "<input type=button value='hidden: " + hiddenNum + "'> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `show stubs` disabled."
       });
-      $.append(ul, li);
-      $.append(main, ul);
+      $.append(hidingul, li);
       _ref2 = $$('input[type=checkbox]', dialog);
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         input = _ref2[_i];

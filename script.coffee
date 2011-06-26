@@ -852,6 +852,7 @@ options =
     for key, obj of config.main
       ul = $.el 'ul',
         textContent: key
+      hidingul = ul if key is 'Hiding'
       for key, arr of obj
         checked = if $.config key then "checked" else ""
         description = arr[1]
@@ -859,12 +860,9 @@ options =
           innerHTML: "<label><input type=checkbox name='#{key}' #{checked}>#{key}</label><span class=description>: #{description}</span>"
         $.append ul, li
       $.append main, ul
-    ul = $.el 'ul',
-      textContent: 'Other'
     li = $.el 'li',
       innerHTML: "<input type=button value='hidden: #{hiddenNum}'> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `show stubs` disabled."
-    $.append ul, li
-    $.append main, ul
+    $.append hidingul, li
 
     for input in $$ 'input[type=checkbox]', dialog
       $.bind input, 'click', $.cb.checked
