@@ -913,13 +913,13 @@ cooldown =
   init: ->
     if location.search
       [_, time] = location.search.match /cooldown=(\d+)/
-      $.setValue g.BOARD+'/cooldown', time if $.getValue g.BOARD+'/cooldown', 0 < time
+      $.setValue g.BOARD+'/cooldown', time if $.getValue(g.BOARD+'/cooldown', 0) < time
     cooldown.start() if Date.now() < $.getValue g.BOARD+'/cooldown', 0
     $.bind window, 'storage', (e) -> cooldown.start() if e.key is "#{NAMESPACE}#{g.BOARD}/cooldown"
 
     input = $('.postarea input[name=email]')
     if /sage/i.test input.value
-      $('.postarea form').action = "http://sys.4chan.org/#{g.BOARD}/post?sage"
+      $('.postarea form').action += "?sage"
     $.bind input, 'keyup', cooldown.sage
 
   sage: ->

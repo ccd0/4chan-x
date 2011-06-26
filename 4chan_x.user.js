@@ -1147,7 +1147,7 @@
       var input, time, _, _ref;
       if (location.search) {
         _ref = location.search.match(/cooldown=(\d+)/), _ = _ref[0], time = _ref[1];
-        if ($.getValue(g.BOARD + '/cooldown', 0 < time)) {
+        if ($.getValue(g.BOARD + '/cooldown', 0) < time) {
           $.setValue(g.BOARD + '/cooldown', time);
         }
       }
@@ -1161,7 +1161,7 @@
       });
       input = $('.postarea input[name=email]');
       if (/sage/i.test(input.value)) {
-        $('.postarea form').action = "http://sys.4chan.org/" + g.BOARD + "/post?sage";
+        $('.postarea form').action += "?sage";
       }
       return $.bind(input, 'keyup', cooldown.sage);
     },
