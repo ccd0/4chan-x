@@ -72,7 +72,7 @@ config =
     expandThread:    'e'
     watch:           'w'
     hide:            'x'
-    expandImage:     'm'
+    expandImages:    'm'
     expandAllImages: 'M'
     update:          'u'
   updater:
@@ -532,7 +532,7 @@ keybinds =
     keybinds.expandThread    = $.getValue 'key/expandThread',    config.hotkeys.expandThread
     keybinds.watch           = $.getValue 'key/watch',           config.hotkeys.watch
     keybinds.hide            = $.getValue 'key/hide',            config.hotkeys.hide
-    keybinds.expandImage     = $.getValue 'key/expandImage',     config.hotkeys.expandImage
+    keybinds.expandImages    = $.getValue 'key/expandImages',    config.hotkeys.expandImages
     keybinds.expandAllImages = $.getValue 'key/expandAllImages', config.hotkeys.expandAllImages
     keybinds.update          = $.getValue 'key/update',          config.hotkeys.update
 
@@ -567,45 +567,45 @@ keybinds =
           ta.value = valStart + valMid + valEnd
           range = valStart.length + valMid.length
           ta.setSelectionRange range, range
-        when keybinds.openQR
-          keybinds.qr thread, true
+        when keybinds.zero
+          window.location = "/#{g.BOARD}/0#0"
         when keybinds.openEmptyQR
           keybinds.qr thread
+        when keybinds.nextReply
+          keybinds.hl.next thread
+        when keybinds.previousReply
+          keybinds.hl.prev thread
+        when keybinds.expandAllImages
+          keybinds.img thread, true
+        when keybinds.openThread
+          keybinds.open thread
+        when keybinds.expandThread
+          expandThread.toggle thread
+        when keybinds.openQR
+          keybinds.qr thread, true
+        when keybinds.expandImages
+          keybinds.img thread
+        when keybinds.nextThread
+          nav.next()
+        when keybinds.openThreadTab
+          keybinds.open thread, true
+        when keybinds.previousThread
+          nav.prev()
+        when keybinds.update
+          updater.update()
+        when keybinds.watch
+          watcher.toggle thread
+        when keybinds.hide
+          threadHiding.toggle thread
+        when keybinds.nextPage
+          $('input[value=Next]')?.click()
+        when keybinds.previousPage
+          $('input[value=Previous]')?.click()
         when keybinds.submit
           if qr = $('#qr_form')
             qr.submit()
           else
             $('.postarea form').submit()
-        when keybinds.nextReply
-          keybinds.hl.next thread
-        when keybinds.previousReply
-          keybinds.hl.prev thread
-        when keybinds.nextThread
-          nav.next()
-        when keybinds.previousThread
-          nav.prev()
-        when keybinds.nextPage
-          $('input[value=Next]')?.click()
-        when keybinds.previousPage
-          $('input[value=Previous]')?.click()
-        when keybinds.zero
-          window.location = "/#{g.BOARD}/0#0"
-        when keybinds.openThreadTab
-          keybinds.open thread, true
-        when keybinds.openThread
-          keybinds.open thread
-        when keybinds.expandThread
-          expandThread.toggle thread
-        when keybinds.watch
-          watcher.toggle thread
-        when keybinds.hide
-          threadHiding.toggle thread
-        when keybinds.expandImage
-          keybinds.img thread
-        when keybinds.expandAllImages
-          keybinds.img thread, true
-        when keybinds.update
-          updater.update()
         else
           return
       e.preventDefault()
@@ -633,8 +633,8 @@ keybinds =
       imgExpand.toggle thumb.parentNode
 
   qr: (thread, quote) ->
-    unless qrLink = $ '.replyhl .quotejs + a', thread
-      qrLink = $ '.op .quotejs + a', thread
+    unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
+      qrLink = $ "span[id^=nothread] a:not(:first-child)", thread
 
     if quote
       qr.quote qrLink
@@ -654,26 +654,41 @@ keybinds =
   hl:
     next: (thread) ->
       if td = $ 'td.replyhl', thread
-        if next = $.x 'following::td[@class="reply"]', td
-          td.className = 'reply'
-          next.className = 'replyhl'
-          location.hash = "##{next.id}"
-      else
-        td = $ 'td.reply', thread
-        td.className = 'replyhl'
-        window.location.hash = "##{td.id}"
+        td.className = 'reply'
+        rect = td.getBoundingClientRect()
+        if rect.top > 0 and rect.bottom < d.body.clientHeight #you're fully visible
+          next = $.x 'following::td[@class="reply"]', td
+          rect = next.getBoundingClientRect()
+          if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the next
+            next.className = 'replyhl'
+          return
+
+      replies = $$ 'td.reply', thread
+      for reply in replies
+        top = reply.getBoundingClientRect().top
+        if top > 0
+          reply.className = 'replyhl'
+          return
 
     prev: (thread) ->
       if td = $ 'td.replyhl', thread
-        if prev = $.x 'preceding::td[@class="reply"]', td
-          td.className = 'reply'
-          prev.className = 'replyhl'
-          location.hash = "##{prev.id}"
-      else
-        replies = $$ 'td.reply', thread
-        replies.reverse()
-        replies[0].className = 'replyhl'
-        window.location.hash = "##{replies[0].id}"
+        td.className = 'reply'
+        rect = td.getBoundingClientRect()
+        if rect.top > 0 and rect.bottom < d.body.clientHeight #you're fully visible
+          prev = $.x 'preceding::td[@class="reply"][1]', td
+          rect = prev.getBoundingClientRect()
+          if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the prev
+            prev.className = 'replyhl'
+          return
+
+      replies = $$ 'td.reply', thread
+      replies.reverse()
+      height = d.body.clientHeight
+      for reply in replies
+        bot = reply.getBoundingClientRect().bottom
+        if bot < height
+          reply.className = 'replyhl'
+          return
 
 nav =
   # ◀ ▶
@@ -821,7 +836,7 @@ options =
                 <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>
                 <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>
                 <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>
-                <tr><td>Expand selected image</td><td><input type=text name=expandImage></td></tr>
+                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>
                 <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>
                 <tr><td>Update now</td><td><input type=text name=update></td></tr>
               </tbody>

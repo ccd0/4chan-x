@@ -136,7 +136,7 @@
       expandThread: 'e',
       watch: 'w',
       hide: 'x',
-      expandImage: 'm',
+      expandImages: 'm',
       expandAllImages: 'M',
       update: 'u'
     },
@@ -739,7 +739,7 @@
       keybinds.expandThread = $.getValue('key/expandThread', config.hotkeys.expandThread);
       keybinds.watch = $.getValue('key/watch', config.hotkeys.watch);
       keybinds.hide = $.getValue('key/hide', config.hotkeys.hide);
-      keybinds.expandImage = $.getValue('key/expandImage', config.hotkeys.expandImage);
+      keybinds.expandImages = $.getValue('key/expandImages', config.hotkeys.expandImages);
       keybinds.expandAllImages = $.getValue('key/expandAllImages', config.hotkeys.expandAllImages);
       keybinds.update = $.getValue('key/update', config.hotkeys.update);
       return $.bind(d, 'keydown', keybinds.cb.keydown);
@@ -781,18 +781,11 @@
             range = valStart.length + valMid.length;
             ta.setSelectionRange(range, range);
             break;
-          case keybinds.openQR:
-            keybinds.qr(thread, true);
+          case keybinds.zero:
+            window.location = "/" + g.BOARD + "/0#0";
             break;
           case keybinds.openEmptyQR:
             keybinds.qr(thread);
-            break;
-          case keybinds.submit:
-            if (qr = $('#qr_form')) {
-              qr.submit();
-            } else {
-              $('.postarea form').submit();
-            }
             break;
           case keybinds.nextReply:
             keybinds.hl.next(thread);
@@ -800,11 +793,38 @@
           case keybinds.previousReply:
             keybinds.hl.prev(thread);
             break;
+          case keybinds.expandAllImages:
+            keybinds.img(thread, true);
+            break;
+          case keybinds.openThread:
+            keybinds.open(thread);
+            break;
+          case keybinds.expandThread:
+            expandThread.toggle(thread);
+            break;
+          case keybinds.openQR:
+            keybinds.qr(thread, true);
+            break;
+          case keybinds.expandImages:
+            keybinds.img(thread);
+            break;
           case keybinds.nextThread:
             nav.next();
             break;
+          case keybinds.openThreadTab:
+            keybinds.open(thread, true);
+            break;
           case keybinds.previousThread:
             nav.prev();
+            break;
+          case keybinds.update:
+            updater.update();
+            break;
+          case keybinds.watch:
+            watcher.toggle(thread);
+            break;
+          case keybinds.hide:
+            threadHiding.toggle(thread);
             break;
           case keybinds.nextPage:
             if ((_ref2 = $('input[value=Next]')) != null) {
@@ -816,32 +836,12 @@
               _ref3.click();
             }
             break;
-          case keybinds.zero:
-            window.location = "/" + g.BOARD + "/0#0";
-            break;
-          case keybinds.openThreadTab:
-            keybinds.open(thread, true);
-            break;
-          case keybinds.openThread:
-            keybinds.open(thread);
-            break;
-          case keybinds.expandThread:
-            expandThread.toggle(thread);
-            break;
-          case keybinds.watch:
-            watcher.toggle(thread);
-            break;
-          case keybinds.hide:
-            threadHiding.toggle(thread);
-            break;
-          case keybinds.expandImage:
-            keybinds.img(thread);
-            break;
-          case keybinds.expandAllImages:
-            keybinds.img(thread, true);
-            break;
-          case keybinds.update:
-            updater.update();
+          case keybinds.submit:
+            if (qr = $('#qr_form')) {
+              qr.submit();
+            } else {
+              $('.postarea form').submit();
+            }
             break;
           default:
             return;
@@ -878,8 +878,8 @@
     },
     qr: function(thread, quote) {
       var qrLink;
-      if (!(qrLink = $('.replyhl .quotejs + a', thread))) {
-        qrLink = $('.op .quotejs + a', thread);
+      if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)', thread))) {
+        qrLink = $("span[id^=nothread] a:not(:first-child)", thread);
       }
       if (quote) {
         return qr.quote(qrLink);
@@ -902,32 +902,53 @@
     },
     hl: {
       next: function(thread) {
-        var next, td;
+        var next, rect, replies, reply, td, top, _i, _len;
         if (td = $('td.replyhl', thread)) {
-          if (next = $.x('following::td[@class="reply"]', td)) {
-            td.className = 'reply';
-            next.className = 'replyhl';
-            return location.hash = "#" + next.id;
+          td.className = 'reply';
+          rect = td.getBoundingClientRect();
+          if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+            next = $.x('following::td[@class="reply"]', td);
+            rect = next.getBoundingClientRect();
+            if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+              next.className = 'replyhl';
+            }
+            return;
           }
-        } else {
-          td = $('td.reply', thread);
-          td.className = 'replyhl';
-          return window.location.hash = "#" + td.id;
+        }
+        replies = $$('td.reply', thread);
+        for (_i = 0, _len = replies.length; _i < _len; _i++) {
+          reply = replies[_i];
+          top = reply.getBoundingClientRect().top;
+          if (top > 0) {
+            reply.className = 'replyhl';
+            return;
+          }
         }
       },
       prev: function(thread) {
-        var prev, replies, td;
+        var bot, height, prev, rect, replies, reply, td, _i, _len;
         if (td = $('td.replyhl', thread)) {
-          if (prev = $.x('preceding::td[@class="reply"]', td)) {
-            td.className = 'reply';
-            prev.className = 'replyhl';
-            return location.hash = "#" + prev.id;
+          td.className = 'reply';
+          rect = td.getBoundingClientRect();
+          if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+            prev = $.x('preceding::td[@class="reply"][1]', td);
+            rect = prev.getBoundingClientRect();
+            if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
+              prev.className = 'replyhl';
+            }
+            return;
           }
-        } else {
-          replies = $$('td.reply', thread);
-          replies.reverse();
-          replies[0].className = 'replyhl';
-          return window.location.hash = "#" + replies[0].id;
+        }
+        replies = $$('td.reply', thread);
+        replies.reverse();
+        height = d.body.clientHeight;
+        for (_i = 0, _len = replies.length; _i < _len; _i++) {
+          reply = replies[_i];
+          bot = reply.getBoundingClientRect().bottom;
+          if (bot < height) {
+            reply.className = 'replyhl';
+            return;
+          }
         }
       }
     }
@@ -1028,7 +1049,7 @@
       var arr, checked, description, dialog, hiddenNum, hiddenThreads, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
-      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=http://userscripts.org/scripts/show/51412>uso</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>          <div style='display: none;' id=time>            <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>              </tbody>            </table>          </div>          <div style='display: none;' id=keybinds>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImage></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>                <tr><td>Update now</td><td><input type=text name=update></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
+      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=http://userscripts.org/scripts/show/51412>uso</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea style='display: none;' name=flavors id=flavors>" + ($.config('flavors')) + "</textarea>          <div style='display: none;' id=time>            <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>              </tbody>            </table>          </div>          <div style='display: none;' id=keybinds>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>                <tr><td>Update now</td><td><input type=text name=update></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
       dialog = $.el('div', {
         id: 'options',
         innerHTML: html
