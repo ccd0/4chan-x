@@ -2,6 +2,7 @@
   - custom hotkey binding
   - image spoiler revealer
   - optional auto noko
+  - add a class for reply stubs
   - fix options centering on Opera
   - fix append '#watch' only when auto watch is enabled
   - fix cooldown with the normal post form

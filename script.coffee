@@ -495,7 +495,8 @@ replyHiding =
         textContent: "[ + ] #{name} #{trip}"
       $.bind a, 'click', replyHiding.cb.show
 
-      div = $.el 'div'
+      div = $.el 'div',
+        className: 'stub'
       $.append div, a
       $.before table, div
 
