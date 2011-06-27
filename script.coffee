@@ -659,7 +659,7 @@ keybinds =
         rect = td.getBoundingClientRect()
         if rect.top > 0 and rect.bottom < d.body.clientHeight #you're fully visible
           next = $.x 'following::td[@class="reply"]', td
-          return if $.x('ancestor::div[@class="thread"]/div', next) isnt thread
+          return if $.x('ancestor::div[@class="thread"]', next) isnt thread
           rect = next.getBoundingClientRect()
           if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the next
             next.className = 'replyhl'
