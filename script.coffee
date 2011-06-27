@@ -235,9 +235,9 @@ $.extend $,
   replace: (root, el) ->
     root.parentNode.replaceChild el, root
   hide: (el) ->
-    el.style.display = 'none'
+    el.hidden = true
   show: (el) ->
-    el.style.display = ''
+    el.hidden = false
   addClass: (el, className) ->
     el.className += ' ' + className
   removeClass: (el, className) ->
@@ -717,7 +717,7 @@ nav =
   threads: []
 
   getThread: (full) ->
-    nav.threads = $$ 'div.thread:not([style])'
+    nav.threads = $$ 'div.thread:not([hidden])'
     for thread, i in nav.threads
       rect = thread.getBoundingClientRect()
       {bottom} = rect
@@ -795,8 +795,8 @@ options =
         <div id=content>
           <div id=main>
           </div>
-          <textarea style='display: none;' name=flavors id=flavors>#{$.config 'flavors'}</textarea>
-          <div style='display: none;' id=time>
+          <textarea name=flavors id=flavors hidden>#{$.config 'flavors'}</textarea>
+          <div id=time hidden>
             <div><input type=text name=time value='#{$.config 'time'}'> <span id=timePreview></span></div>
             <table>
               <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
@@ -817,7 +817,7 @@ options =
               </tbody>
             </table>
           </div>
-          <div style='display: none;' id=keybinds>
+          <div id=keybinds hidden>
             <table>
               <tbody>
                 <tr><th>Actions</th><th>Keybinds</th></tr>
@@ -876,11 +876,10 @@ options =
       $.bind input, 'keydown', options.cb.keybind
 
     ###
-    https://bugzilla.mozilla.org/show_bug.cgi?id=579776
-    position:fixed and position:absolute shouldn't turn display:-moz-box into display:block
+    Two parent divs are necessary to center on all browsers.
 
-    to harmonize, position:fixed and display:-moz-box have to be set on different elements -
-    #overlay and #options, respectively.
+    Only one when Firefox and Opera will support flexboxes correctly.
+    https://bugzilla.mozilla.org/show_bug.cgi?id=579776
     ###
     overlay = $.el 'div', id: 'overlay'
     $.append overlay, dialog
@@ -1222,7 +1221,7 @@ threadHiding =
       threadHiding.show thread
 
   toggle: (thread) ->
-    if thread.className.indexOf('stub') != -1 or thread.style.display is 'none'
+    if thread.className.indexOf('stub') != -1 or thread.hidden
       threadHiding.show thread
     else
       threadHiding.hide thread
@@ -1926,11 +1925,11 @@ imgExpand =
       imgExpand.on = @checked
       if imgExpand.on #expand
         for thumb in thumbs
-          unless thumb.style.display #thumbnail hidden, image already expanded
+          unless thumb.hidden #thumbnail hidden, image already expanded
             imgExpand.expand thumb
       else #contract
         for thumb in thumbs
-          if thumb.style.display #thumbnail hidden - unhide it
+          if thumb.hidden #thumbnail hidden - unhide it
             imgExpand.contract thumb
     typeChange: (e) ->
       switch @value
@@ -1946,7 +1945,7 @@ imgExpand =
 
   toggle: (a) ->
     thumb = a.firstChild
-    if thumb.style.display
+    if thumb.hidden
       imgExpand.contract thumb
     else
       imgExpand.expand thumb
