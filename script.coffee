@@ -1020,9 +1020,6 @@ qr =
       $.bind quote, 'click', qr.cb.quote
 
     submit: (e) ->
-      form = @
-      isQR = form.parentNode.id == 'qr'
-
       if $.config('Auto Watch Reply') and $.config('Thread Watcher')
         if g.REPLY and $('img.favicon').src is Favicon.empty
           watcher.watch null, g.THREAD_ID
@@ -1032,12 +1029,10 @@ qr =
           if $('img.favicon', op).src is Favicon.empty
             watcher.watch op, id
 
-      if isQR
+      if @id is 'qr_form' #Quick Replying
         $('#error').textContent = ''
-
-      qr.sage = /sage/i.test $('input[name=email]', form).value
-      if isQR
         qr.autohide.set()
+        qr.sage = /sage/i.test $('input[name=email]', @).value
 
     quote: (e) ->
       e.preventDefault()

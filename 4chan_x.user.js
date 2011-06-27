@@ -1301,9 +1301,7 @@
         return $.bind(quote, 'click', qr.cb.quote);
       },
       submit: function(e) {
-        var form, id, isQR, op;
-        form = this;
-        isQR = form.parentNode.id === 'qr';
+        var id, op;
         if ($.config('Auto Watch Reply') && $.config('Thread Watcher')) {
           if (g.REPLY && $('img.favicon').src === Favicon.empty) {
             watcher.watch(null, g.THREAD_ID);
@@ -1315,12 +1313,10 @@
             }
           }
         }
-        if (isQR) {
+        if (this.id === 'qr_form') {
           $('#error').textContent = '';
-        }
-        qr.sage = /sage/i.test($('input[name=email]', form).value);
-        if (isQR) {
-          return qr.autohide.set();
+          qr.autohide.set();
+          return qr.sage = /sage/i.test($('input[name=email]', this).value);
         }
       },
       quote: function(e) {
