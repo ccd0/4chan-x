@@ -2416,6 +2416,10 @@ main =
       .inlined {
         opacity: .5;
       }
+
+      [hidden] {
+        display: none;
+      }
     '
 
 main.init()
