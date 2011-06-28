@@ -1301,7 +1301,7 @@
         return $.bind(quote, 'click', qr.cb.quote);
       },
       submit: function(e) {
-        var id, op;
+        var id, inputfile, isQR, op;
         if ($.config('Auto Watch Reply') && $.config('Thread Watcher')) {
           if (g.REPLY && $('img.favicon').src === Favicon.empty) {
             watcher.watch(null, g.THREAD_ID);
@@ -1313,7 +1313,16 @@
             }
           }
         }
-        if (this.id === 'qr_form') {
+        isQR = this.id === 'qr_form';
+        inputfile = $('input[type=file]', this);
+        if (inputfile.value && inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value) {
+          e.preventDefault();
+          if (isQR) {
+            return $('#error').textContent = 'Error: File too large.';
+          } else {
+            return alert('Error: File too large.');
+          }
+        } else if (isQR) {
           $('#error').textContent = '';
           qr.autohide.set();
           return qr.sage = /sage/i.test($('input[name=email]', this).value);
@@ -1355,8 +1364,7 @@
       return f.innerHTML = f.innerHTML;
     },
     dialog: function(link) {
-      var MAX_FILE_SIZE, THREAD_ID, c, challenge, dialog, html, m, mail, name, pass, spoiler, src, submitDisabled, submitValue;
-      MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value;
+      var THREAD_ID, c, challenge, dialog, html, m, mail, name, pass, spoiler, src, submitDisabled, submitValue;
       submitValue = $('#com_submit').value;
       submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
@@ -1366,7 +1374,7 @@
       name = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       mail = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       pass = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form value=\"" + name + "\">        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=MAX_FILE_SIZE value=" + MAX_FILE_SIZE + ">        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail value=\"" + mail + "\"></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=" + src + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value=\"" + pass + "\"><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
+      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form value=\"" + name + "\">        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail value=\"" + mail + "\"></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=" + src + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value=\"" + pass + "\"><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
       dialog = ui.dialog('qr', {
         top: '0px',
         left: '0px'

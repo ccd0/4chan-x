@@ -1029,7 +1029,17 @@ qr =
           if $('img.favicon', op).src is Favicon.empty
             watcher.watch op, id
 
-      if @id is 'qr_form' #Quick Replying
+      isQR = @id is 'qr_form'
+
+      inputfile = $('input[type=file]', @)
+      if inputfile.value and inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value
+        e.preventDefault()
+        if isQR
+          $('#error').textContent = 'Error: File too large.'
+        else
+          alert 'Error: File too large.'
+
+      else if isQR
         $('#error').textContent = ''
         qr.autohide.set()
         qr.sage = /sage/i.test $('input[name=email]', @).value
@@ -1066,8 +1076,6 @@ qr =
     f.innerHTML = f.innerHTML
 
   dialog: (link) ->
-    #maybe should be global
-    MAX_FILE_SIZE = $('input[name="MAX_FILE_SIZE"]').value
     submitValue = $('#com_submit').value
     submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
     #FIXME inlined cross-thread quotes
@@ -1086,7 +1094,6 @@ qr =
         <a name=close title=close>X</a>
       </div>
       <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
-        <input type=hidden name=MAX_FILE_SIZE value=#{MAX_FILE_SIZE}>
         <input type=hidden name=resto value=#{THREAD_ID}>
         <input type=hidden name=recaptcha_challenge_field value=#{challenge}>
         <div><input class=inputtext type=text name=email placeholder=E-mail value=\"#{mail}\"></div>

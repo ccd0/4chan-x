@@ -1,3 +1,6 @@
+- mayhem:
+  - prevent upload of too large files
+
 2.15.0
 - mayhem:
   - custom hotkey binding
