@@ -2886,7 +2886,7 @@
         width: -moz-calc(100%); /* hack so only firefox sees this */\
       }\
 \
-      iframe {\
+      iframe[name=iframe] {\
         display: none;\
       }\
 \
