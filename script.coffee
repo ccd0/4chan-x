@@ -1076,8 +1076,8 @@ qr =
     f.innerHTML = f.innerHTML
 
   dialog: (link) ->
-    submitValue = $('#com_submit').value
-    submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
+    #copy submit button state and value
+    submitHTML = $('#com_submit').outerHTML
     #FIXME inlined cross-thread quotes
     THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
     challenge = $('input[name=recaptcha_challenge_field]').value
@@ -1097,7 +1097,7 @@ qr =
         <input type=hidden name=resto value=#{THREAD_ID}>
         <input type=hidden name=recaptcha_challenge_field value=#{challenge}>
         <div><input class=inputtext type=text name=email placeholder=E-mail value=\"#{mail}\"></div>
-        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
+        <div><input class=inputtext type=text name=sub placeholder=Subject>#{submitHTML}<label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=#{src}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
