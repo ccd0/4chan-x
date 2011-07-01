@@ -98,24 +98,21 @@ _config = {}
 
 ui =
   dialog: (id, position, html) ->
-    el = document.createElement 'div'
+    el = d.createElement 'div'
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
     {left, top} = position
     left = localStorage["#{id}Left"] ? left
     top  = localStorage["#{id}Top"]  ? top
-    if left then el.style.left = left else el.style.right  = '0px'
-    if top  then el.style.top  = top  else el.style.bottom = '0px'
-    el.querySelector('div.move')?.addEventListener 'mousedown', ui.dragstart, false
-    el.querySelector('div.move a[name=close]')?.addEventListener 'click',
-      (-> el.parentNode.removeChild(el)), false
+    if left then el.style.left = left else el.style.right  = 0
+    if top  then el.style.top  = top  else el.style.bottom = 0
+    el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection
     e.preventDefault()
     ui.el = el = @parentNode
-    d = document
     d.addEventListener 'mousemove', ui.drag, false
     d.addEventListener 'mouseup',   ui.dragend, false
     #distance from pointer to el edge is constant; calculate it here.
@@ -124,23 +121,24 @@ ui =
     ui.dx = e.clientX - rect.left
     ui.dy = e.clientY - rect.top
     #factor out el from document dimensions
-    ui.width  = document.body.clientWidth  - el.offsetWidth
-    ui.height = document.body.clientHeight - el.offsetHeight
+    ui.width  = d.body.clientWidth  - el.offsetWidth
+    ui.height = d.body.clientHeight - el.offsetHeight
   drag: (e) ->
-    e.preventDefault()
     {el} = ui
     left = e.clientX - ui.dx
-    if left < 10 then left = '0px'
-    else if ui.width - left < 10 then left = ''
-    right = if left then '' else '0px'
-    el.style.left  = left
-    el.style.right = right
+    if left < 10 then left = '0'
+    else if ui.width - left < 10 then left = null
+    right = if left then null else 0
     top = e.clientY - ui.dy
-    if top < 10 then top = '0px'
-    else if ui.height - top < 10 then top = ''
-    bottom = if top then '' else '0px'
-    el.style.top  = top
+    if top < 10 then top = '0'
+    else if ui.height - top < 10 then top = null
+    bottom = if top then null else 0
+    #using null instead of '' is 4% faster
+    #these 4 statements are 40% faster than 1 style.cssText
+    el.style.top    = top
+    el.style.right  = right
     el.style.bottom = bottom
+    el.style.left   = left
   dragend: ->
     #{id} = {el} = ui
     #equivalent to
@@ -149,7 +147,6 @@ ui =
     {id} = el
     localStorage["#{id}Left"] = el.style.left
     localStorage["#{id}Top"]  = el.style.top
-    d = document
     d.removeEventListener 'mousemove', ui.drag, false
     d.removeEventListener 'mouseup',   ui.dragend, false
   hover: (e) ->
@@ -159,21 +156,20 @@ ui =
     height = el.offsetHeight
 
     top = clientY - 120
-    bot = top + height
     el.style.top =
       if clientHeight < height or top < 0
-        '0px'
-      else if bot > clientHeight
-        clientHeight - height + 'px'
+        0
+      else if top + height > clientHeight
+        clientHeight - height
       else
-        top + 'px'
+        top
 
     if clientX < clientWidth - 400
-      el.style.left = clientX + 45 + 'px'
-      el.style.right = ''
+      el.style.left  = clientX + 45
+      el.style.right = null
     else
-      el.style.left = ''
-      el.style.right = clientWidth - clientX + 45 + 'px'
+      el.style.left  = null
+      el.style.right = clientWidth - clientX + 45
 
   hoverend: (e) ->
     ui.el.style.top = 'auto'
@@ -1109,6 +1105,7 @@ qr =
     dialog = ui.dialog 'qr', top: '0px', left: '0px', html
 
     $.bind $('input[name=name]', dialog), 'mousedown', (e) -> e.stopPropagation()
+    $.bind $('a[name=close]', dialog), 'click', -> $.rm dialog
     $.bind $('#autohide', dialog), 'click', qr.cb.autohide
     $.bind $('img', dialog), 'click', Recaptcha.reload
 

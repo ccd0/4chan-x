@@ -170,8 +170,8 @@
   })(null, config);
   ui = {
     dialog: function(id, position, html) {
-      var el, left, top, _ref, _ref2, _ref3, _ref4;
-      el = document.createElement('div');
+      var el, left, top, _ref, _ref2;
+      el = d.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
@@ -181,84 +181,73 @@
       if (left) {
         el.style.left = left;
       } else {
-        el.style.right = '0px';
+        el.style.right = 0;
       }
       if (top) {
         el.style.top = top;
       } else {
-        el.style.bottom = '0px';
+        el.style.bottom = 0;
       }
-      if ((_ref3 = el.querySelector('div.move')) != null) {
-        _ref3.addEventListener('mousedown', ui.dragstart, false);
-      }
-      if ((_ref4 = el.querySelector('div.move a[name=close]')) != null) {
-        _ref4.addEventListener('click', (function() {
-          return el.parentNode.removeChild(el);
-        }), false);
-      }
+      el.querySelector('div.move').addEventListener('mousedown', ui.dragstart, false);
       return el;
     },
     dragstart: function(e) {
-      var d, el, rect;
+      var el, rect;
       e.preventDefault();
       ui.el = el = this.parentNode;
-      d = document;
       d.addEventListener('mousemove', ui.drag, false);
       d.addEventListener('mouseup', ui.dragend, false);
       rect = el.getBoundingClientRect();
       ui.dx = e.clientX - rect.left;
       ui.dy = e.clientY - rect.top;
-      ui.width = document.body.clientWidth - el.offsetWidth;
-      return ui.height = document.body.clientHeight - el.offsetHeight;
+      ui.width = d.body.clientWidth - el.offsetWidth;
+      return ui.height = d.body.clientHeight - el.offsetHeight;
     },
     drag: function(e) {
       var bottom, el, left, right, top;
-      e.preventDefault();
       el = ui.el;
       left = e.clientX - ui.dx;
       if (left < 10) {
-        left = '0px';
+        left = '0';
       } else if (ui.width - left < 10) {
-        left = '';
+        left = null;
       }
-      right = left ? '' : '0px';
-      el.style.left = left;
-      el.style.right = right;
+      right = left ? null : 0;
       top = e.clientY - ui.dy;
       if (top < 10) {
-        top = '0px';
+        top = '0';
       } else if (ui.height - top < 10) {
-        top = '';
+        top = null;
       }
-      bottom = top ? '' : '0px';
+      bottom = top ? null : 0;
       el.style.top = top;
-      return el.style.bottom = bottom;
+      el.style.right = right;
+      el.style.bottom = bottom;
+      return el.style.left = left;
     },
     dragend: function() {
-      var d, el, id;
+      var el, id;
       el = ui.el;
       id = el.id;
       localStorage["" + id + "Left"] = el.style.left;
       localStorage["" + id + "Top"] = el.style.top;
-      d = document;
       d.removeEventListener('mousemove', ui.drag, false);
       return d.removeEventListener('mouseup', ui.dragend, false);
     },
     hover: function(e) {
-      var bot, clientHeight, clientWidth, clientX, clientY, el, height, top, _ref;
+      var clientHeight, clientWidth, clientX, clientY, el, height, top, _ref;
       clientX = e.clientX, clientY = e.clientY;
       el = ui.el;
       _ref = d.body, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
       height = el.offsetHeight;
       top = clientY - 120;
-      bot = top + height;
-      el.style.top = clientHeight < height || top < 0 ? '0px' : bot > clientHeight ? clientHeight - height + 'px' : top + 'px';
+      el.style.top = clientHeight < height || top < 0 ? 0 : top + height > clientHeight ? clientHeight - height : top;
       if (clientX < clientWidth - 400) {
-        el.style.left = clientX + 45 + 'px';
-        return el.style.right = '';
+        el.style.left = clientX + 45;
+        return el.style.right = null;
       } else {
-        el.style.left = '';
-        return el.style.right = clientWidth - clientX + 45 + 'px';
+        el.style.left = null;
+        return el.style.right = clientWidth - clientX + 45;
       }
     },
     hoverend: function(e) {
@@ -1380,6 +1369,9 @@
       }, html);
       $.bind($('input[name=name]', dialog), 'mousedown', function(e) {
         return e.stopPropagation();
+      });
+      $.bind($('a[name=close]', dialog), 'click', function() {
+        return $.rm(dialog);
       });
       $.bind($('#autohide', dialog), 'click', qr.cb.autohide);
       $.bind($('img', dialog), 'click', Recaptcha.reload);
