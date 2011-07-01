@@ -1073,8 +1073,8 @@ qr =
     f.innerHTML = f.innerHTML
 
   dialog: (link) ->
-    #copy submit button state and value
-    submitHTML = $('#com_submit').outerHTML
+    submitValue = $('#com_submit').value
+    submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
     #FIXME inlined cross-thread quotes
     THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
     challenge = $('input[name=recaptcha_challenge_field]').value
@@ -1094,7 +1094,7 @@ qr =
         <input type=hidden name=resto value=#{THREAD_ID}>
         <input type=hidden name=recaptcha_challenge_field value=#{challenge}>
         <div><input class=inputtext type=text name=email placeholder=E-mail value=\"#{mail}\"></div>
-        <div><input class=inputtext type=text name=sub placeholder=Subject>#{submitHTML}<label><input type=checkbox id=auto>auto</label></div>
+        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=#{src}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
@@ -2122,8 +2122,7 @@ main =
 
     $.addStyle main.css
 
-    if (form = $ 'form[name=post]') and $ '#recaptcha_response_field'
-      canPost = true
+    if (form = $ 'form[name=post]') and canPost = !!$ '#recaptcha_response_field'
       Recaptcha.init()
       $.bind form, 'submit', qr.cb.submit
 
