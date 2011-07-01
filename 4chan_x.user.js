@@ -1233,7 +1233,8 @@
       var iframe;
       g.callbacks.push(qr.cb.node);
       iframe = $.el('iframe', {
-        name: 'iframe'
+        name: 'iframe',
+        hidden: true
       });
       $.append(d.body, iframe);
       $.bind(window, 'message', qr.cb.message);
@@ -2883,10 +2884,6 @@
       body.fitwidth img[md5] + img {\
         max-width: 100%;\
         width: -moz-calc(100%); /* hack so only firefox sees this */\
-      }\
-\
-      iframe[name=iframe] {\
-        display: none;\
       }\
 \
       #qp, #iHover {\
