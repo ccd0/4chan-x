@@ -2729,8 +2729,7 @@
         $.setValue('lastChecked', now);
       }
       $.addStyle(main.css);
-      if ((form = $('form[name=post]')) && $('#recaptcha_response_field')) {
-        canPost = true;
+      if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
         Recaptcha.init();
         $.bind(form, 'submit', qr.cb.submit);
       }

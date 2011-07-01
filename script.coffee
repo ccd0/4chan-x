@@ -2124,8 +2124,7 @@ main =
 
     $.addStyle main.css
 
-    if (form = $ 'form[name=post]') and $ '#recaptcha_response_field'
-      canPost = true
+    if (form = $ 'form[name=post]') and canPost = !!$ '#recaptcha_response_field'
       Recaptcha.init()
       $.bind form, 'submit', qr.cb.submit
 
