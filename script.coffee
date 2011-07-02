@@ -2320,7 +2320,7 @@ main =
         float: left;
       }
       #content > * {
-        height: 500px;
+        height: 450px;
         overflow: auto;
       }
       #content textarea {

@@ -1,5 +1,6 @@
 - mayhem:
   - prevent upload of too large files
+  - fix options height for netbooks
 
 2.15.0
 - mayhem:
