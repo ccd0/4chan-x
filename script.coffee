@@ -1833,7 +1833,7 @@ Favicon =
 
 redirect = ->
   switch g.BOARD
-    when 'a', 'g', 'lit', 'sci', 'tv'
+    when 'g', 'lit', 'sci', 'tv'
       url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
     when 'jp', 'm', 'tg'
       url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"

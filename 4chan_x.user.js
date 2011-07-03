@@ -2380,7 +2380,6 @@
   redirect = function() {
     var url;
     switch (g.BOARD) {
-      case 'a':
       case 'g':
       case 'lit':
       case 'sci':

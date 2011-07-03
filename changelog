@@ -1,6 +1,7 @@
 - mayhem:
   - prevent upload of too large files
   - fix options height for netbooks
+  - /a/ is not archived anymore
 
 2.15.0
 - mayhem:
