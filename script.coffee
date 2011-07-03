@@ -1835,7 +1835,7 @@ redirect = ->
   switch g.BOARD
     when 'g', 'lit', 'sci', 'tv'
       url = "http://green-oval.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when 'jp', 'm', 'tg'
+    when 'a', 'jp', 'm', 'tg'
       url = "http://archive.easymodo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
     when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
       url = "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"

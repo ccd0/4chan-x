@@ -2386,6 +2386,7 @@
       case 'tv':
         url = "http://green-oval.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
+      case 'a':
       case 'jp':
       case 'm':
       case 'tg':
