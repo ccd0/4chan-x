@@ -140,9 +140,9 @@ ui =
     el.style.bottom = bottom
     el.style.left   = left
   dragend: ->
-    #{id} = {el} = ui
-    #equivalent to
-    #{id} = ui; {el} = ui
+    #$ coffee -bpe '{a} = {b} = c'
+    #var a, b;
+    #a = (b = c.b, c).a;
     {el} = ui
     {id} = el
     localStorage["#{id}Left"] = el.style.left
