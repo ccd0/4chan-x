@@ -143,7 +143,7 @@
     updater: {
       checkbox: {
         'Verbose': [true, 'Show countdown timer, new post count'],
-        'Auto Update': [false, 'Automatically fetch new posts']
+        'Auto Update': [true, 'Automatically fetch new posts']
       },
       'Interval': 30
     }
