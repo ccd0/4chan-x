@@ -3022,6 +3022,7 @@
         opacity: .5;\
       }\
 \
+      /* Firefox bug: hidden tables are not hidden */\
       [hidden] {\
         display: none;\
       }\
