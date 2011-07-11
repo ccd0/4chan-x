@@ -61,11 +61,6 @@
 (function() {
   var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, config, cooldown, d, expandComment, expandThread, firstRun, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
-  if (typeof console !== "undefined" && console !== null) {
-    log = function(arg) {
-      return console.log(arg);
-    };
-  }
   config = {
     main: {
       Posting: {
@@ -168,6 +163,27 @@
       return _config[parent] = obj;
     }
   })(null, config);
+  if (typeof console !== "undefined" && console !== null) {
+    log = function(arg) {
+      return console.log(arg);
+    };
+  }
+  if (!Object.keys) {
+    Object.keys = function(o) {
+      var key, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = o.length; _i < _len; _i++) {
+        key = o[_i];
+        _results.push(key);
+      }
+      return _results;
+    };
+  }
+  NAMESPACE = 'AEOS.4chan_x.';
+  d = document;
+  g = {
+    callbacks: []
+  };
   ui = {
     dialog: function(id, position, html) {
       var el, left, top, _ref, _ref2;
@@ -255,8 +271,6 @@
       return $.hide(ui.el);
     }
   };
-  d = document;
-  g = null;
   $ = function(selector, root) {
     if (root == null) {
       root = d.body;
@@ -480,17 +494,6 @@
         return localStorage[name] = JSON.stringify(value);
       }
     });
-  }
-  if (!Object.keys) {
-    Object.keys = function(o) {
-      var key, _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = o.length; _i < _len; _i++) {
-        key = o[_i];
-        _results.push(key);
-      }
-      return _results;
-    };
   }
   $$ = function(selector, root) {
     if (root == null) {
@@ -2663,10 +2666,6 @@
       $.rm($('#overlay'));
       return $.unbind(window, 'click', firstRun.close);
     }
-  };
-  NAMESPACE = 'AEOS.4chan_x.';
-  g = {
-    callbacks: []
   };
   main = {
     init: function() {

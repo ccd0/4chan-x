@@ -1,8 +1,3 @@
-# XXX chrome can't into `{log} = console`
-if console?
-  log = (arg) ->
-    console.log arg
-
 config =
   main:
     Posting:
@@ -96,6 +91,21 @@ _config = {}
     _config[parent] = obj
 ) null, config
 
+# XXX chrome can't into `{log} = console`
+if console?
+  log = (arg) ->
+    console.log arg
+
+# XXX opera cannot into Object.keys
+if not Object.keys
+  Object.keys = (o) ->
+    key for key in o
+
+NAMESPACE = 'AEOS.4chan_x.'
+d = document
+g =
+  callbacks: []
+
 ui =
   dialog: (id, position, html) ->
     el = d.createElement 'div'
@@ -175,11 +185,6 @@ ui =
     ui.el.style.top = 'auto'
     $.hide ui.el
 
-#convenience
-d = document
-g = null #globals
-
-#utility
 $ = (selector, root=d.body) ->
   root.querySelector selector
 
@@ -344,15 +349,9 @@ else
       name = NAMESPACE + name
       localStorage[name] = JSON.stringify value
 
-# XXX opera cannot into Object.keys
-if not Object.keys
-  Object.keys = (o) ->
-    key for key in o
-
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
-#funks
 expandComment =
   init: ->
     for a in $$ 'span.abbr a'
@@ -2068,11 +2067,6 @@ firstRun =
     $.rm $ 'style.firstrun', d.head
     $.rm $ '#overlay'
     $.unbind window, 'click', firstRun.close
-
-#main
-NAMESPACE = 'AEOS.4chan_x.'
-g =
-  callbacks: []
 
 main =
   init: ->
