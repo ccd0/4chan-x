@@ -335,9 +335,10 @@
     },
     addStyle: function(css) {
       var style;
-      style = document.createElement('style');
-      style.type = 'text/css';
-      style.textContent = css;
+      style = $.el('style', {
+        type: 'text/css',
+        textContent: css
+      });
       $.append(d.head, style);
       return style;
     },

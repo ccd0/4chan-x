@@ -221,9 +221,9 @@ $.extend $,
     value: ->
       $.setValue @name, @value
   addStyle: (css) ->
-    style = document.createElement 'style'
-    style.type = 'text/css'
-    style.textContent = css
+    style = $.el 'style',
+      type: 'text/css'
+      textContent: css
     $.append d.head, style
     style
   config: (name) ->
