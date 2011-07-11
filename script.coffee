@@ -1874,14 +1874,14 @@ imageHover =
 imgPreloading =
   init: ->
     g.callbacks.push (root) ->
-      thumb = $ 'img[md5]', root
+      return unless thumb = $ 'img[md5]', root
       src = thumb.parentNode.href
       el = $.el 'img', { src }
 
 imgGif =
   init: ->
     g.callbacks.push (root) ->
-      thumb = $ 'img[md5]', root
+      return unless thumb = $ 'img[md5]', root
       src = thumb.parentNode.href
       if /gif$/.test src
         thumb.src = src

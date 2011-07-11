@@ -2478,7 +2478,9 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var el, src, thumb;
-        thumb = $('img[md5]', root);
+        if (!(thumb = $('img[md5]', root))) {
+          return;
+        }
         src = thumb.parentNode.href;
         return el = $.el('img', {
           src: src
@@ -2490,7 +2492,9 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var src, thumb;
-        thumb = $('img[md5]', root);
+        if (!(thumb = $('img[md5]', root))) {
+          return;
+        }
         src = thumb.parentNode.href;
         if (/gif$/.test(src)) {
           return thumb.src = src;
