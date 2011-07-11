@@ -1877,19 +1877,17 @@ imageHover =
 imgPreloading =
   init: ->
     g.callbacks.push (root) ->
-      thumbs = $$ 'img[md5]', root
-      for thumb in thumbs
-        parent = thumb.parentNode
-        el = $.el 'img', src: parent.href
+      thumb = $ 'img[md5]', root
+      src = thumb.parentNode.href
+      el = $.el 'img', { src }
 
 imgGif =
   init: ->
     g.callbacks.push (root) ->
-      thumbs = $$ 'img[md5]', root
-      for thumb in thumbs
-        src = thumb.parentNode.href
-        if /gif$/.test src
-          thumb.src = src
+      thumb = $ 'img[md5]', root
+      src = thumb.parentNode.href
+      if /gif$/.test src
+        thumb.src = src
 
 imgExpand =
   init: ->
