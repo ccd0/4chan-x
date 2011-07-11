@@ -452,14 +452,7 @@ expandThread =
 
 replyHiding =
   init: ->
-    g.callbacks.push replyHiding.cb.node
-
-  cb:
-    hide: (e) ->
-      reply = @parentNode.nextSibling
-      replyHiding.hide reply
-
-    node: (root) ->
+    g.callbacks.push (root) ->
       return unless dd = $ 'td.doubledash', root
       dd.className = 'replyhider'
       a = $.el 'a',
@@ -471,6 +464,11 @@ replyHiding =
       id = reply.id
       if id of g.hiddenReplies
         replyHiding.hide reply
+
+  cb:
+    hide: (e) ->
+      reply = @parentNode.nextSibling
+      replyHiding.hide reply
 
     show: (e) ->
       div = @parentNode
@@ -1468,9 +1466,7 @@ watcher =
 
 anonymize =
   init: ->
-    g.callbacks.push anonymize.cb.node
-  cb:
-    node: (root) ->
+    g.callbacks.push (root) ->
       name = $ 'span.commentpostername, span.postername', root
       name.textContent = 'Anonymous'
       if trip = $ 'span.postertrip', root
@@ -1481,9 +1477,7 @@ anonymize =
 
 sauce =
   init: ->
-    g.callbacks.push sauce.cb.node
-  cb:
-    node: (root) ->
+    g.callbacks.push (root) ->
       return if root.className is 'inline'
       prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
       names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
@@ -1497,9 +1491,7 @@ sauce =
 
 revealSpoilers =
   init: ->
-    g.callbacks.push revealSpoilers.cb.node
-  cb:
-    node: (root) ->
+    g.callbacks.push (root) ->
       return if root.className is 'inline' or not img = $ 'img[alt^=Spoiler]', root
       img.removeAttribute 'height'
       img.removeAttribute 'width'
@@ -1608,12 +1600,11 @@ quoteBacklink =
 
 quoteInline =
   init: ->
-    g.callbacks.push quoteInline.node
-  node: (root) ->
-    for quote in $$ 'a.quotelink, a.backlink', root
-      continue unless quote.hash
-      quote.removeAttribute 'onclick'
-      $.bind quote, 'click', quoteInline.toggle
+    g.callbacks.push (root) ->
+      for quote in $$ 'a.quotelink, a.backlink', root
+        continue unless quote.hash
+        quote.removeAttribute 'onclick'
+        $.bind quote, 'click', quoteInline.toggle
   toggle: (e) ->
     e.preventDefault()
     id = @hash[1..]
@@ -1725,19 +1716,16 @@ quotePreview =
 
 quoteOP =
   init: ->
-    g.callbacks.push quoteOP.node
-  node: (root) ->
-    return if root.className is 'inline'
-    tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
-    for quote in $$ 'a.quotelink', root
-      if quote.hash[1..] is tid
-        quote.innerHTML += '&nbsp;(OP)'
+    g.callbacks.push (root) ->
+      return if root.className is 'inline'
+      tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
+      for quote in $$ 'a.quotelink', root
+        if quote.hash[1..] is tid
+          quote.innerHTML += '&nbsp;(OP)'
 
 reportButton =
   init: ->
-    g.callbacks.push reportButton.cb.node
-  cb:
-    node: (root) ->
+    g.callbacks.push (root) ->
       if not a = $ 'a.reportbutton', root
         span = $ 'span[id^=no]', root
         a = $.el 'a',
@@ -1746,6 +1734,7 @@ reportButton =
         $.after span, a
         $.after span, $.tn(' ')
       $.bind a, 'click', reportButton.cb.report
+  cb:
     report: (e) ->
       reportButton.report @
   report: (target) ->

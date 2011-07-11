@@ -646,15 +646,7 @@
   };
   replyHiding = {
     init: function() {
-      return g.callbacks.push(replyHiding.cb.node);
-    },
-    cb: {
-      hide: function(e) {
-        var reply;
-        reply = this.parentNode.nextSibling;
-        return replyHiding.hide(reply);
-      },
-      node: function(root) {
+      return g.callbacks.push(function(root) {
         var a, dd, id, reply;
         if (!(dd = $('td.doubledash', root))) {
           return;
@@ -670,6 +662,13 @@
         if (id in g.hiddenReplies) {
           return replyHiding.hide(reply);
         }
+      });
+    },
+    cb: {
+      hide: function(e) {
+        var reply;
+        reply = this.parentNode.nextSibling;
+        return replyHiding.hide(reply);
       },
       show: function(e) {
         var div, table;
@@ -1802,10 +1801,7 @@
   };
   anonymize = {
     init: function() {
-      return g.callbacks.push(anonymize.cb.node);
-    },
-    cb: {
-      node: function(root) {
+      return g.callbacks.push(function(root) {
         var name, trip;
         name = $('span.commentpostername, span.postername', root);
         name.textContent = 'Anonymous';
@@ -1816,15 +1812,12 @@
             return $.rm(trip);
           }
         }
-      }
+      });
     }
   };
   sauce = {
     init: function() {
-      return g.callbacks.push(sauce.cb.node);
-    },
-    cb: {
-      node: function(root) {
+      return g.callbacks.push(function(root) {
         var i, link, names, prefix, prefixes, s, span, suffix, _len, _results;
         if (root.className === 'inline') {
           return;
@@ -1863,15 +1856,12 @@
           }
           return _results;
         }
-      }
+      });
     }
   };
   revealSpoilers = {
     init: function() {
-      return g.callbacks.push(revealSpoilers.cb.node);
-    },
-    cb: {
-      node: function(root) {
+      return g.callbacks.push(function(root) {
         var board, img, nb, _, _ref;
         if (root.className === 'inline' || !(img = $('img[alt^=Spoiler]', root))) {
           return;
@@ -1880,7 +1870,7 @@
         img.removeAttribute('width');
         _ref = img.parentNode.href.match(/(\w+)\/src\/(\d+)/), _ = _ref[0], board = _ref[1], nb = _ref[2];
         return img.src = "http://0.thumbs.4chan.org/" + board + "/thumb/" + nb + "s.jpg";
-      }
+      });
     }
   };
   Time = {
@@ -2045,21 +2035,20 @@
   };
   quoteInline = {
     init: function() {
-      return g.callbacks.push(quoteInline.node);
-    },
-    node: function(root) {
-      var quote, _i, _len, _ref, _results;
-      _ref = $$('a.quotelink, a.backlink', root);
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        if (!quote.hash) {
-          continue;
+      return g.callbacks.push(function(root) {
+        var quote, _i, _len, _ref, _results;
+        _ref = $$('a.quotelink, a.backlink', root);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          if (!quote.hash) {
+            continue;
+          }
+          quote.removeAttribute('onclick');
+          _results.push($.bind(quote, 'click', quoteInline.toggle));
         }
-        quote.removeAttribute('onclick');
-        _results.push($.bind(quote, 'click', quoteInline.toggle));
-      }
-      return _results;
+        return _results;
+      });
     },
     toggle: function(e) {
       var el, id, inline, inlined, pathname, root, table, threadID, _i, _len, _ref;
@@ -2234,29 +2223,25 @@
   };
   quoteOP = {
     init: function() {
-      return g.callbacks.push(quoteOP.node);
-    },
-    node: function(root) {
-      var quote, tid, _i, _len, _ref, _results;
-      if (root.className === 'inline') {
-        return;
-      }
-      tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
-      _ref = $$('a.quotelink', root);
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        _results.push(quote.hash.slice(1) === tid ? quote.innerHTML += '&nbsp;(OP)' : void 0);
-      }
-      return _results;
+      return g.callbacks.push(function(root) {
+        var quote, tid, _i, _len, _ref, _results;
+        if (root.className === 'inline') {
+          return;
+        }
+        tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
+        _ref = $$('a.quotelink', root);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          _results.push(quote.hash.slice(1) === tid ? quote.innerHTML += '&nbsp;(OP)' : void 0);
+        }
+        return _results;
+      });
     }
   };
   reportButton = {
     init: function() {
-      return g.callbacks.push(reportButton.cb.node);
-    },
-    cb: {
-      node: function(root) {
+      return g.callbacks.push(function(root) {
         var a, span;
         if (!(a = $('a.reportbutton', root))) {
           span = $('span[id^=no]', root);
@@ -2268,7 +2253,9 @@
           $.after(span, $.tn(' '));
         }
         return $.bind(a, 'click', reportButton.cb.report);
-      },
+      });
+    },
+    cb: {
       report: function(e) {
         return reportButton.report(this);
       }
