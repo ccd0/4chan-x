@@ -1080,19 +1080,19 @@
         input = _ref2[_i];
         $.bind(input, 'click', $.cb.checked);
       }
-      $.bind($('input[type=button]', dialog), 'click', options.cb.clearHidden);
+      $.bind($('input[type=button]', dialog), 'click', options.clearHidden);
       _ref3 = $$('#floaty a', dialog);
       for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
         link = _ref3[_j];
         $.bind(link, 'click', options.tab);
       }
       $.bind($('textarea[name=flavors]', dialog), 'change', $.cb.value);
-      $.bind($('input[name=time]', dialog), 'keyup', options.cb.time);
+      $.bind($('input[name=time]', dialog), 'keyup', options.time);
       _ref4 = $$('#keybinds input', dialog);
       for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
         input = _ref4[_k];
         input.value = $.getValue("key/" + input.name, config.hotkeys[input.name]);
-        $.bind(input, 'keydown', options.cb.keybind);
+        $.bind(input, 'keydown', options.keybind);
       }
       /*
           Two parent divs are necessary to center on all browsers.
@@ -1105,7 +1105,7 @@
       });
       $.append(overlay, dialog);
       $.append(d.body, overlay);
-      options.cb.time.call($('input[name=time]', dialog));
+      options.time.call($('input[name=time]', dialog));
       $.bind(overlay, 'click', function() {
         return $.rm(overlay);
       });
@@ -1123,38 +1123,36 @@
       }
       return _results;
     },
-    cb: {
-      clearHidden: function(e) {
-        $.deleteValue("hiddenReplies/" + g.BOARD + "/");
-        $.deleteValue("hiddenThreads/" + g.BOARD + "/");
-        this.value = "hidden: 0";
-        return g.hiddenReplies = {};
-      },
-      keybind: function(e) {
-        var key;
-        e.preventDefault();
-        e.stopPropagation();
-        key = keybinds.cb.keyCode(e, true);
-        if (key != null) {
-          if (key) {
-            if (e.altKey) {
-              key = 'alt+' + key;
-            }
-            if (e.ctrlKey) {
-              key = 'ctrl+' + key;
-            }
+    clearHidden: function(e) {
+      $.deleteValue("hiddenReplies/" + g.BOARD + "/");
+      $.deleteValue("hiddenThreads/" + g.BOARD + "/");
+      this.value = "hidden: 0";
+      return g.hiddenReplies = {};
+    },
+    keybind: function(e) {
+      var key;
+      e.preventDefault();
+      e.stopPropagation();
+      key = keybinds.cb.keyCode(e, true);
+      if (key != null) {
+        if (key) {
+          if (e.altKey) {
+            key = 'alt+' + key;
           }
-          this.value = key;
-          $.setValue("key/" + this.name, key);
-          return keybinds[this.name] = key;
+          if (e.ctrlKey) {
+            key = 'ctrl+' + key;
+          }
         }
-      },
-      time: function(e) {
-        $.setValue('time', this.value);
-        Time.foo();
-        Time.date = new Date();
-        return $('#timePreview').textContent = Time.funk(Time);
+        this.value = key;
+        $.setValue("key/" + this.name, key);
+        return keybinds[this.name] = key;
       }
+    },
+    time: function(e) {
+      $.setValue('time', this.value);
+      Time.foo();
+      Time.date = new Date();
+      return $('#timePreview').textContent = Time.funk(Time);
     }
   };
   cooldown = {
@@ -2301,37 +2299,35 @@
     init: function() {
       unread.replies = [];
       d.title = '(0) ' + d.title;
-      $.bind(window, 'scroll', unread.cb.scroll);
-      return g.callbacks.push(unread.cb.node);
+      $.bind(window, 'scroll', unread.scroll);
+      return g.callbacks.push(unread.node);
     },
-    cb: {
-      node: function(root) {
-        if (root.className) {
-          return;
+    node: function(root) {
+      if (root.className) {
+        return;
+      }
+      unread.replies.push(root);
+      unread.updateTitle();
+      return Favicon.update();
+    },
+    scroll: function(e) {
+      var bottom, height, i, reply, _len, _ref;
+      height = d.body.clientHeight;
+      _ref = unread.replies;
+      for (i = 0, _len = _ref.length; i < _len; i++) {
+        reply = _ref[i];
+        bottom = reply.getBoundingClientRect().bottom;
+        if (bottom > height) {
+          break;
         }
-        unread.replies.push(root);
-        unread.updateTitle();
+      }
+      if (i === 0) {
+        return;
+      }
+      unread.replies = unread.replies.slice(i);
+      unread.updateTitle();
+      if (unread.replies.length === 0) {
         return Favicon.update();
-      },
-      scroll: function(e) {
-        var bottom, height, i, reply, _len, _ref;
-        height = d.body.clientHeight;
-        _ref = unread.replies;
-        for (i = 0, _len = _ref.length; i < _len; i++) {
-          reply = _ref[i];
-          bottom = reply.getBoundingClientRect().bottom;
-          if (bottom > height) {
-            break;
-          }
-        }
-        if (i === 0) {
-          return;
-        }
-        unread.replies = unread.replies.slice(i);
-        unread.updateTitle();
-        if (unread.replies.length === 0) {
-          return Favicon.update();
-        }
       }
     },
     updateTitle: function() {
@@ -2457,26 +2453,24 @@
       });
       $.hide(img);
       $.append(d.body, img);
-      return g.callbacks.push(imageHover.cb.node);
+      return g.callbacks.push(imageHover.node);
     },
-    cb: {
-      node: function(root) {
-        var thumb;
-        if (!(thumb = $('img[md5]', root))) {
-          return;
-        }
-        $.bind(thumb, 'mouseover', imageHover.cb.mouseover);
-        $.bind(thumb, 'mousemove', ui.hover);
-        return $.bind(thumb, 'mouseout', ui.hoverend);
-      },
-      mouseover: function(e) {
-        var el;
-        el = $('#iHover');
-        el.src = null;
-        el.src = this.parentNode.href;
-        ui.el = el;
-        return $.show(el);
+    node: function(root) {
+      var thumb;
+      if (!(thumb = $('img[md5]', root))) {
+        return;
       }
+      $.bind(thumb, 'mouseover', imageHover.mouseover);
+      $.bind(thumb, 'mousemove', ui.hover);
+      return $.bind(thumb, 'mouseout', ui.hoverend);
+    },
+    mouseover: function(e) {
+      var el;
+      el = $('#iHover');
+      el.src = null;
+      el.src = this.parentNode.href;
+      ui.el = el;
+      return $.show(el);
     }
   };
   imgPreloading = {
@@ -2505,23 +2499,23 @@
   };
   imgExpand = {
     init: function() {
-      g.callbacks.push(imgExpand.cb.node);
+      g.callbacks.push(imgExpand.node);
       imgExpand.dialog();
       $.bind(window, 'resize', imgExpand.resize);
       return imgExpand.resize();
     },
+    node: function(root) {
+      var a, thumb;
+      if (!(thumb = $('img[md5]', root))) {
+        return;
+      }
+      a = thumb.parentNode;
+      $.bind(a, 'click', imgExpand.cb.toggle);
+      if (imgExpand.on && root.className !== 'inline') {
+        return imgExpand.toggle(a);
+      }
+    },
     cb: {
-      node: function(root) {
-        var a, thumb;
-        if (!(thumb = $('img[md5]', root))) {
-          return;
-        }
-        a = thumb.parentNode;
-        $.bind(a, 'click', imgExpand.cb.toggle);
-        if (imgExpand.on && root.className !== 'inline') {
-          return imgExpand.toggle(a);
-        }
-      },
       toggle: function(e) {
         if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) {
           return;

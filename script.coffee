@@ -860,13 +860,13 @@ options =
 
     for input in $$ 'input[type=checkbox]', dialog
       $.bind input, 'click', $.cb.checked
-    $.bind $('input[type=button]', dialog), 'click', options.cb.clearHidden
+    $.bind $('input[type=button]', dialog), 'click', options.clearHidden
     $.bind link, 'click', options.tab for link in $$ '#floaty a', dialog
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
-    $.bind $('input[name=time]', dialog), 'keyup', options.cb.time
+    $.bind $('input[name=time]', dialog), 'keyup', options.time
     for input in $$ '#keybinds input', dialog
       input.value = $.getValue "key/#{input.name}", config.hotkeys[input.name]
-      $.bind input, 'keydown', options.cb.keybind
+      $.bind input, 'keydown', options.keybind
 
     ###
     Two parent divs are necessary to center on all browsers.
@@ -878,7 +878,7 @@ options =
     $.append overlay, dialog
     $.append d.body, overlay
 
-    options.cb.time.call $('input[name=time]', dialog)
+    options.time.call $('input[name=time]', dialog)
 
     $.bind overlay, 'click', -> $.rm overlay
     $.bind dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
@@ -890,31 +890,30 @@ options =
       else
         $.hide div
 
-  cb:
-    clearHidden: (e) ->
-      #'hidden' might be misleading; it's the number of IDs we're *looking* for,
-      # not the number of posts actually hidden on the page.
-      $.deleteValue "hiddenReplies/#{g.BOARD}/"
-      $.deleteValue "hiddenThreads/#{g.BOARD}/"
-      @value = "hidden: 0"
-      g.hiddenReplies = {}
-    keybind: (e) ->
-      e.preventDefault()
-      e.stopPropagation()
-      key = keybinds.cb.keyCode e, true
+  clearHidden: (e) ->
+    #'hidden' might be misleading; it's the number of IDs we're *looking* for,
+    # not the number of posts actually hidden on the page.
+    $.deleteValue "hiddenReplies/#{g.BOARD}/"
+    $.deleteValue "hiddenThreads/#{g.BOARD}/"
+    @value = "hidden: 0"
+    g.hiddenReplies = {}
+  keybind: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    key = keybinds.cb.keyCode e, true
 
-      if key?
-        if key
-          key = 'alt+' + key  if e.altKey
-          key = 'ctrl+' + key if e.ctrlKey
-        @value = key
-        $.setValue "key/#{@name}", key
-        keybinds[@name] = key
-    time: (e) ->
-      $.setValue 'time', @value
-      Time.foo()
-      Time.date = new Date()
-      $('#timePreview').textContent = Time.funk Time
+    if key?
+      if key
+        key = 'alt+' + key  if e.altKey
+        key = 'ctrl+' + key if e.ctrlKey
+      @value = key
+      $.setValue "key/#{@name}", key
+      keybinds[@name] = key
+  time: (e) ->
+    $.setValue 'time', @value
+    Time.foo()
+    Time.date = new Date()
+    $('#timePreview').textContent = Time.funk Time
 
 cooldown =
   init: ->
@@ -1766,28 +1765,27 @@ unread =
   init: ->
     unread.replies = []
     d.title = '(0) ' + d.title
-    $.bind window, 'scroll', unread.cb.scroll
-    g.callbacks.push unread.cb.node
+    $.bind window, 'scroll', unread.scroll
+    g.callbacks.push unread.node
 
-  cb:
-    node: (root) ->
-      return if root.className
-      unread.replies.push root
-      unread.updateTitle()
+  node: (root) ->
+    return if root.className
+    unread.replies.push root
+    unread.updateTitle()
+    Favicon.update()
+
+  scroll: (e) ->
+    height = d.body.clientHeight
+    for reply, i in unread.replies
+      {bottom} = reply.getBoundingClientRect()
+      if bottom > height #post is not completely read
+        break
+    return if i is 0
+
+    unread.replies = unread.replies[i..]
+    unread.updateTitle()
+    if unread.replies.length is 0
       Favicon.update()
-
-    scroll: (e) ->
-      height = d.body.clientHeight
-      for reply, i in unread.replies
-        {bottom} = reply.getBoundingClientRect()
-        if bottom > height #post is not completely read
-          break
-      return if i is 0
-
-      unread.replies = unread.replies[i..]
-      unread.updateTitle()
-      if unread.replies.length is 0
-        Favicon.update()
 
   updateTitle: ->
     d.title = d.title.replace /\d+/, unread.replies.length
@@ -1860,19 +1858,18 @@ imageHover =
     img = $.el 'img', id: 'iHover'
     $.hide img
     $.append d.body, img
-    g.callbacks.push imageHover.cb.node
-  cb:
-    node: (root) ->
-      return unless thumb = $ 'img[md5]', root
-      $.bind thumb, 'mouseover', imageHover.cb.mouseover
-      $.bind thumb, 'mousemove', ui.hover
-      $.bind thumb, 'mouseout',  ui.hoverend
-    mouseover: (e) ->
-      el = $ '#iHover'
-      el.src = null
-      el.src = @parentNode.href
-      ui.el = el
-      $.show el
+    g.callbacks.push imageHover.node
+  node: (root) ->
+    return unless thumb = $ 'img[md5]', root
+    $.bind thumb, 'mouseover', imageHover.mouseover
+    $.bind thumb, 'mousemove', ui.hover
+    $.bind thumb, 'mouseout',  ui.hoverend
+  mouseover: (e) ->
+    el = $ '#iHover'
+    el.src = null
+    el.src = @parentNode.href
+    ui.el = el
+    $.show el
 
 imgPreloading =
   init: ->
@@ -1891,17 +1888,17 @@ imgGif =
 
 imgExpand =
   init: ->
-    g.callbacks.push imgExpand.cb.node
+    g.callbacks.push imgExpand.node
     imgExpand.dialog()
     $.bind window, 'resize', imgExpand.resize
     imgExpand.resize()
 
+  node: (root) ->
+    return unless thumb = $ 'img[md5]', root
+    a = thumb.parentNode
+    $.bind a, 'click', imgExpand.cb.toggle
+    if imgExpand.on and root.className isnt 'inline' then imgExpand.toggle a
   cb:
-    node: (root) ->
-      return unless thumb = $ 'img[md5]', root
-      a = thumb.parentNode
-      $.bind a, 'click', imgExpand.cb.toggle
-      if imgExpand.on and root.className isnt 'inline' then imgExpand.toggle a
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
       e.preventDefault()
