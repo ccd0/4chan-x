@@ -267,8 +267,7 @@
       }
     },
     hoverend: function(e) {
-      ui.el.style.top = 'auto';
-      return $.hide(ui.el);
+      return ui.el.style.top = 'auto';
     }
   };
   $ = function(selector, root) {
@@ -2136,7 +2135,6 @@
         id: 'qp',
         className: 'replyhl'
       });
-      $.hide(preview);
       return $.append(d.body, preview);
     },
     node: function(root) {
@@ -2187,8 +2185,7 @@
           return quotePreview.parse(this, id, threadID);
         }));
       }
-      ui.el = qp;
-      return $.show(qp);
+      return ui.el = qp;
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
@@ -2452,7 +2449,6 @@
       img = $.el('img', {
         id: 'iHover'
       });
-      $.hide(img);
       $.append(d.body, img);
       return g.callbacks.push(imageHover.node);
     },
@@ -2470,8 +2466,7 @@
       el = $('#iHover');
       el.src = null;
       el.src = this.parentNode.href;
-      ui.el = el;
-      return $.show(el);
+      return ui.el = el;
     }
   };
   imgPreloading = {

@@ -183,7 +183,6 @@ ui =
 
   hoverend: (e) ->
     ui.el.style.top = 'auto'
-    $.hide ui.el
 
 $ = (selector, root=d.body) ->
   root.querySelector selector
@@ -1664,7 +1663,6 @@ quotePreview =
     preview = $.el 'div',
       id: 'qp'
       className: 'replyhl'
-    $.hide preview
     $.append d.body, preview
   node: (root) ->
     for quote in $$ 'a.quotelink, a.backlink', root
@@ -1691,7 +1689,6 @@ quotePreview =
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
     ui.el = qp
-    $.show qp
   parse: (req, id, threadID) ->
     qp = $ '#qp'
     return unless qp.innerHTML is "Loading #{id}..."
@@ -1856,7 +1853,6 @@ nodeInserted = (e) ->
 imageHover =
   init: ->
     img = $.el 'img', id: 'iHover'
-    $.hide img
     $.append d.body, img
     g.callbacks.push imageHover.node
   node: (root) ->
@@ -1869,7 +1865,6 @@ imageHover =
     el.src = null
     el.src = @parentNode.href
     ui.el = el
-    $.show el
 
 imgPreloading =
   init: ->
