@@ -113,8 +113,8 @@ ui =
     el.innerHTML = html
     el.id = id
     {left, top} = position
-    left = localStorage["#{id}Left"] ? left
-    top  = localStorage["#{id}Top"]  ? top
+    left = localStorage["#{NAMESPACE}#{id}Left"] ? left
+    top  = localStorage["#{NAMESPACE}#{id}Top"]  ? top
     if left then el.style.left = left else el.style.right  = 0
     if top  then el.style.top  = top  else el.style.bottom = 0
     el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
@@ -155,8 +155,8 @@ ui =
     #a = (b = c.b, c).a;
     {el} = ui
     {id} = el
-    localStorage["#{id}Left"] = el.style.left
-    localStorage["#{id}Top"]  = el.style.top
+    localStorage["#{NAMESPACE}#{id}Left"] = el.style.left
+    localStorage["#{NAMESPACE}#{id}Top"]  = el.style.top
     d.removeEventListener 'mousemove', ui.drag, false
     d.removeEventListener 'mouseup',   ui.dragend, false
   hover: (e) ->

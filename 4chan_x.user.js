@@ -192,8 +192,8 @@
       el.innerHTML = html;
       el.id = id;
       left = position.left, top = position.top;
-      left = (_ref = localStorage["" + id + "Left"]) != null ? _ref : left;
-      top = (_ref2 = localStorage["" + id + "Top"]) != null ? _ref2 : top;
+      left = (_ref = localStorage["" + NAMESPACE + id + "Left"]) != null ? _ref : left;
+      top = (_ref2 = localStorage["" + NAMESPACE + id + "Top"]) != null ? _ref2 : top;
       if (left) {
         el.style.left = left;
       } else {
@@ -245,8 +245,8 @@
       var el, id;
       el = ui.el;
       id = el.id;
-      localStorage["" + id + "Left"] = el.style.left;
-      localStorage["" + id + "Top"] = el.style.top;
+      localStorage["" + NAMESPACE + id + "Left"] = el.style.left;
+      localStorage["" + NAMESPACE + id + "Top"] = el.style.top;
       d.removeEventListener('mousemove', ui.drag, false);
       return d.removeEventListener('mouseup', ui.dragend, false);
     },
