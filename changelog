@@ -1,3 +1,6 @@
+- mayhem:
+  - Fix Auto Watch Reply and prevent upload of too large files when auto posting
+
 2.15.1
 - mayhem:
   - prevent upload of too large files
