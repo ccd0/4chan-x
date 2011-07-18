@@ -1222,7 +1222,7 @@
           submit = submits[_j];
           submit.disabled = false;
           submit.value = 'Submit';
-          _results2.push(((_ref = $('#auto')) != null ? _ref.checked : void 0) ? $('#qr #com_submit').click() : void 0);
+          _results2.push(((_ref = $('#auto')) != null ? _ref.checked : void 0) ? $('#qr_form').submit() : void 0);
         }
         return _results2;
       }

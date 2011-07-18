@@ -957,7 +957,7 @@ cooldown =
       for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
-        $('#qr #com_submit').click() if $('#auto')?.checked
+        $('#qr_form').submit() if $('#auto')?.checked
 
 qr =
   init: ->
