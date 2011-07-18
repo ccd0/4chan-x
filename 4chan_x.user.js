@@ -2275,8 +2275,8 @@
         left: '0px'
       }, html);
       dialog.className = 'dialog';
-      threadStats.postcountID = $('#postcount', dialog);
-      threadStats.imagecountID = $('#imagecount', dialog);
+      threadStats.postcountEl = $('#postcount', dialog);
+      threadStats.imagecountEl = $('#imagecount', dialog);
       $.append(d.body, dialog);
       return g.callbacks.push(threadStats.node);
     },
@@ -2284,11 +2284,11 @@
       if (root.className) {
         return;
       }
-      threadStats.postcountID.textContent = ++threadStats.posts;
+      threadStats.postcountEl.textContent = ++threadStats.posts;
       if ($('img[md5]', root)) {
-        threadStats.imagecountID.textContent = ++threadStats.images;
+        threadStats.imagecountEl.textContent = ++threadStats.images;
         if (threadStats.images > 150) {
-          return threadStats.imagecountID.className = 'error';
+          return threadStats.imagecountEl.className = 'error';
         }
       }
     }
