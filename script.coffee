@@ -1941,7 +1941,7 @@ imgExpand =
       filesize = $ 'span.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
       img.style.maxWidth = "-moz-calc(#{max}px)"
-    a.appendChild img
+    $.append a, img
 
   dialog: ->
     controls = $.el 'div',

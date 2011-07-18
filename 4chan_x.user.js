@@ -2586,7 +2586,7 @@
         _ref2 = filesize.textContent.match(/(\d+)x/), _ = _ref2[0], max = _ref2[1];
         img.style.maxWidth = "-moz-calc(" + max + "px)";
       }
-      return a.appendChild(img);
+      return $.append(a, img);
     },
     dialog: function() {
       var controls, delform, imageType, option, select, _i, _len, _ref2;
