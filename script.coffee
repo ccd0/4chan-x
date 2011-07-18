@@ -1746,17 +1746,17 @@ threadStats =
     html = "<div class=move><span id=postcount>#{threadStats.posts}</span> / <span id=imagecount>#{threadStats.images}</span></div>"
     dialog = ui.dialog 'stats', bottom: '0px', left: '0px', html
     dialog.className = 'dialog'
+    threadStats.postcountID  = $ '#postcount',  dialog
+    threadStats.imagecountID = $ '#imagecount', dialog
     $.append d.body, dialog
     g.callbacks.push threadStats.node
   node: (root) ->
     return if root.className
-    threadStats.posts++
+    threadStats.postcountID.textContent = ++threadStats.posts
     if $ 'img[md5]', root
-      threadStats.images++
+      threadStats.imagecountID.textContent = ++threadStats.images
       if threadStats.images > 150
-        $('#imagecount').className = 'error'
-    $('#postcount').textContent = threadStats.posts
-    $('#imagecount').textContent = threadStats.images
+        threadStats.imagecountID.className = 'error'
 
 unread =
   init: ->

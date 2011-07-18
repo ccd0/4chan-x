@@ -1,5 +1,6 @@
 - mayhem:
   - Fix Auto Watch Reply and prevent upload of too large files when auto posting
+  - Thread Stats performance fix, especially on long threads
 
 2.15.1
 - mayhem:

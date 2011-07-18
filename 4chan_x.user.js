@@ -2275,6 +2275,8 @@
         left: '0px'
       }, html);
       dialog.className = 'dialog';
+      threadStats.postcountID = $('#postcount', dialog);
+      threadStats.imagecountID = $('#imagecount', dialog);
       $.append(d.body, dialog);
       return g.callbacks.push(threadStats.node);
     },
@@ -2282,15 +2284,13 @@
       if (root.className) {
         return;
       }
-      threadStats.posts++;
+      threadStats.postcountID.textContent = ++threadStats.posts;
       if ($('img[md5]', root)) {
-        threadStats.images++;
+        threadStats.imagecountID.textContent = ++threadStats.images;
         if (threadStats.images > 150) {
-          $('#imagecount').className = 'error';
+          return threadStats.imagecountID.className = 'error';
         }
       }
-      $('#postcount').textContent = threadStats.posts;
-      return $('#imagecount').textContent = threadStats.images;
     }
   };
   unread = {
