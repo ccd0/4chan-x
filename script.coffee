@@ -1824,6 +1824,7 @@ Recaptcha =
     #hack to tab from comment straight to recaptcha
     for el in $$ '#recaptcha_table a'
       el.tabIndex = 1
+    $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', Recaptcha.reloaded
     $.bind $('#recaptcha_response_field'), 'keydown', Recaptcha.listener
   listener: (e) ->
     if e.keyCode is 8 and @value is '' # backspace to reload
@@ -1833,15 +1834,17 @@ Recaptcha =
       qr.autohide.set()
   reload: ->
     window.location = 'javascript:Recaptcha.reload()'
+  reloaded: (e) ->
+    {target} = e
+    if dialog = $ '#qr'
+      $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+      $('input[name=recaptcha_challenge_field]', dialog).value = target.value
 
 nodeInserted = (e) ->
   {target} = e
   if target.nodeName is 'TABLE'
     for callback in g.callbacks
       callback target
-  else if target.id is 'recaptcha_challenge_field' and dialog = $ '#qr'
-    $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('input[name=recaptcha_challenge_field]', dialog).value = target.value
 
 imageHover =
   init: ->

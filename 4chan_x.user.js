@@ -2405,6 +2405,7 @@
         el = _ref2[_i];
         el.tabIndex = 1;
       }
+      $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', Recaptcha.reloaded);
       return $.bind($('#recaptcha_response_field'), 'keydown', Recaptcha.listener);
     },
     listener: function(e) {
@@ -2418,10 +2419,18 @@
     },
     reload: function() {
       return window.location = 'javascript:Recaptcha.reload()';
+    },
+    reloaded: function(e) {
+      var dialog, target;
+      target = e.target;
+      if (dialog = $('#qr')) {
+        $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+        return $('input[name=recaptcha_challenge_field]', dialog).value = target.value;
+      }
     }
   };
   nodeInserted = function(e) {
-    var callback, dialog, target, _i, _len, _ref2, _results;
+    var callback, target, _i, _len, _ref2, _results;
     target = e.target;
     if (target.nodeName === 'TABLE') {
       _ref2 = g.callbacks;
@@ -2431,9 +2440,6 @@
         _results.push(callback(target));
       }
       return _results;
-    } else if (target.id === 'recaptcha_challenge_field' && (dialog = $('#qr'))) {
-      $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('input[name=recaptcha_challenge_field]', dialog).value = target.value;
     }
   };
   imageHover = {
