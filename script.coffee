@@ -1475,15 +1475,15 @@ anonymize =
 
 sauce =
   init: ->
+    sauce.prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
+    sauce.names = (prefix.match(/(\w+)\./)[1] for prefix in sauce.prefixes)
     g.callbacks.push (root) ->
       return if root.className is 'inline'
-      prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
-      names = (prefix.match(/(\w+)\./)[1] for prefix in prefixes)
       if span = $ 'span.filesize', root
         suffix = $('a', span).href
-        for prefix, i in prefixes
+        for prefix, i in sauce.prefixes
           link = $.el 'a',
-            textContent: names[i]
+            textContent: sauce.names[i]
             href: prefix + suffix
           $.append span, $.tn(' '), link
 

@@ -1815,39 +1815,42 @@
   };
   sauce = {
     init: function() {
+      var prefix, s;
+      sauce.prefixes = (function() {
+        var _i, _len, _ref, _results;
+        _ref = $.config('flavors').split('\n');
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          s = _ref[_i];
+          if (s[0] !== '#') {
+            _results.push(s);
+          }
+        }
+        return _results;
+      })();
+      sauce.names = (function() {
+        var _i, _len, _ref, _results;
+        _ref = sauce.prefixes;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          prefix = _ref[_i];
+          _results.push(prefix.match(/(\w+)\./)[1]);
+        }
+        return _results;
+      })();
       return g.callbacks.push(function(root) {
-        var i, link, names, prefix, prefixes, s, span, suffix, _len, _results;
+        var i, link, prefix, span, suffix, _len, _ref, _results;
         if (root.className === 'inline') {
           return;
         }
-        prefixes = (function() {
-          var _i, _len, _ref, _results;
-          _ref = $.config('flavors').split('\n');
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            s = _ref[_i];
-            if (s[0] !== '#') {
-              _results.push(s);
-            }
-          }
-          return _results;
-        })();
-        names = (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = prefixes.length; _i < _len; _i++) {
-            prefix = prefixes[_i];
-            _results.push(prefix.match(/(\w+)\./)[1]);
-          }
-          return _results;
-        })();
         if (span = $('span.filesize', root)) {
           suffix = $('a', span).href;
+          _ref = sauce.prefixes;
           _results = [];
-          for (i = 0, _len = prefixes.length; i < _len; i++) {
-            prefix = prefixes[i];
+          for (i = 0, _len = _ref.length; i < _len; i++) {
+            prefix = _ref[i];
             link = $.el('a', {
-              textContent: names[i],
+              textContent: sauce.names[i],
               href: prefix + suffix
             });
             _results.push($.append(span, $.tn(' '), link));
