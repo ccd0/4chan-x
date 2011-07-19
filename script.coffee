@@ -1268,34 +1268,36 @@ threadHiding =
 
 updater =
   init: ->
-    html  = "<div class=move><span id=count></span> <span id=timer>-#{$.config 'Interval'}</span></div>"
+    interval = $.config 'Interval'
+    html = "<div class=move><span id=count></span> <span id=timer>-#{interval}</span></div>"
     conf = config.updater.checkbox
     for name of conf
       title = conf[name][1]
-      checked = if $.config name then "checked" else ""
-      html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
+      checked = if $.config name then 'checked' else ''
+      html += "<div><label title='#{title}'>#{name}<input name='#{name}' type=checkbox #{checked}></label></div>"
 
-    name = 'Auto Update This'
-    title = 'Controls whether *this* thread auotmatically updates or not'
     checked = if $.config 'Auto Update' then 'checked' else ''
-    html += "<div><label title=\"#{title}\">#{name}<input name=\"#{name}\" #{checked} type=checkbox></label></div>"
+    html += "
+      <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
+      <div><label>Interval (s)<input name=Interval value=#{interval} type=text></label></div>
+      <div><input value='Update Now' type=button></div>"
 
-    html += "<div><label>Interval (s)<input name=Interval value=#{$.config 'Interval'} type=text></label></div>"
-    html += "<div><input value=\"Update Now\" type=button></div>"
-
-    dialog = ui.dialog 'updater', bottom: '0px', right: '0px', html
+    dialog = ui.dialog 'updater', bottom: '0', right: '0', html
 
     for input in $$ 'input[type=checkbox]', dialog
       $.bind input, 'click', $.cb.checked
-    $.bind $('input[type=text]', dialog), 'change', $.cb.value
 
-    verbose = $ 'input[name=\"Verbose\"]',          dialog
-    autoUpT = $ 'input[name=\"Auto Update This\"]', dialog
-    interva = $ 'input[name=\"Interval\"]', dialog
-    updNow  = $ 'input[type=button]', dialog
-    $.bind verbose, 'click', updater.cb.verbose
-    $.bind autoUpT, 'click', updater.cb.autoUpdate
-    $.bind updNow,  'click', updater.updateNow
+    verbose = $ 'input[name=Verbose]',  dialog
+    autoUpT = $ 'input[name$=This]',    dialog
+    interva = $ 'input[name=Interval]', dialog
+    updNow  = $ 'input[type=button]',   dialog
+    $.bind verbose, 'click',  updater.cb.verbose
+    $.bind autoUpT, 'click',  updater.cb.autoUpdate
+    $.bind interva, 'change', $.cb.value
+    $.bind updNow,  'click',  updater.updateNow
+
+    updater.count = $ '#count', dialog
+    updater.timer = $ '#timer', dialog
 
     $.append d.body, dialog
 
@@ -1304,13 +1306,11 @@ updater =
 
   cb:
     verbose: (e) ->
-      count = $ '#count'
-      timer = $ '#timer'
       if @checked
-        count.textContent = '+0'
-        $.show timer
+        updater.count.textContent = '+0'
+        $.show updater.timer
       else
-        $.extend count,
+        $.extend updater.count,
           className: ''
           textContent: 'Thread Updater'
         $.hide timer
@@ -1320,15 +1320,12 @@ updater =
       else
         window.clearInterval updater.intervalID
     update: (e) ->
-      count = $ '#count'
-      timer = $ '#timer'
-
       if @status is 404
-        count.textContent = 404
-        count.className = 'error'
-        timer.textContent = ''
+        updater.timer.textContent = ''
+        updater.count.textContent = 404
+        updater.count.className = 'error'
         window.clearInterval updater.intervalID
-        for input in $$ 'input[type=submit]'
+        for input in $$ '#com_submit'
           input.disabled = true
           input.value = 404
         d.title = d.title.match(/.+- /)[0] + 404
@@ -1346,36 +1343,34 @@ updater =
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      timer.textContent = '-' + $.config 'Interval'
+      updater.timer.textContent = '-' + $.config 'Interval'
       if $.config 'Verbose'
-        count.textContent = '+' + arr.length
+        updater.count.textContent = '+' + arr.length
         if arr.length is 0
-          count.className = ''
+          updater.count.className = ''
         else
-          count.className = 'new'
+          updater.count.className = 'new'
 
       #XXX add replies in correct order so /b/acklinks resolve
       while reply = arr.pop()
         $.before br, reply
 
   timeout: ->
-    timer = $ '#timer'
-    n = Number timer.textContent
-    n += 1
+    n = Number updater.timer.textContent
+    ++n
 
-    if n == 10
-      count = $ '#count'
-      count.textContent = 'retry'
-      count.className = ''
+    if n is 10
+      updater.count.textContent = 'retry'
+      updater.count.className = ''
       n = 0
 
-    timer.textContent = n
+    updater.timer.textContent = n
 
-    if n == 0
+    if n is 0
       updater.update()
 
   updateNow: ->
-    $('#timer').textContent = 0
+    updater.timer.textContent = 0
     updater.update()
 
   update: ->
