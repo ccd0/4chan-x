@@ -1313,7 +1313,7 @@ updater =
         $.extend updater.count,
           className: ''
           textContent: 'Thread Updater'
-        $.hide timer
+        $.hide updater.timer
     autoUpdate: (e) ->
       if @checked
         updater.intervalID = window.setInterval updater.timeout, 1000

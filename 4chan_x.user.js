@@ -1607,7 +1607,7 @@
             className: '',
             textContent: 'Thread Updater'
           });
-          return $.hide(timer);
+          return $.hide(updater.timer);
         }
       },
       autoUpdate: function(e) {
