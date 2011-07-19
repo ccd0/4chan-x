@@ -2200,8 +2200,7 @@ main =
     for op in $$ 'div.op'
       for callback in g.callbacks
         callback op
-    for reply in $$ 'td[id]'
-      table = reply.parentNode.parentNode.parentNode
+    for table in $$ 'a + table'
       for callback in g.callbacks
         callback table
     $.bind d.body, 'DOMNodeInserted', nodeInserted

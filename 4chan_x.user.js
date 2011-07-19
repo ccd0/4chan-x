@@ -2644,7 +2644,7 @@
   };
   main = {
     init: function() {
-      var DAY, callback, canPost, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, reply, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var DAY, callback, canPost, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2806,10 +2806,9 @@
           callback(op);
         }
       }
-      _ref5 = $$('td[id]');
+      _ref5 = $$('a + table');
       for (_k = 0, _len3 = _ref5.length; _k < _len3; _k++) {
-        reply = _ref5[_k];
-        table = reply.parentNode.parentNode.parentNode;
+        table = _ref5[_k];
         _ref6 = g.callbacks;
         for (_l = 0, _len4 = _ref6.length; _l < _len4; _l++) {
           callback = _ref6[_l];
