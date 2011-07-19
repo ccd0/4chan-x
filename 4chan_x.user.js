@@ -2006,7 +2006,6 @@
           if ($.config('Quote Preview')) {
             $.bind(link, 'mouseover', quotePreview.mouseover);
             $.bind(link, 'mousemove', ui.hover);
-            $.bind(link, 'mouseout', ui.hoverend);
             $.bind(link, 'mouseout', quotePreview.mouseout);
           }
           if ($.config('Quote Inline')) {
@@ -2142,7 +2141,6 @@
         }
         $.bind(quote, 'mouseover', quotePreview.mouseover);
         $.bind(quote, 'mousemove', ui.hover);
-        $.bind(quote, 'mouseout', ui.hoverend);
         _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
       }
       return _results;
@@ -2150,8 +2148,9 @@
     mouseout: function() {
       var el;
       if (el = d.getElementById(this.hash.slice(1))) {
-        return $.removeClass(el, 'qphl');
+        $.removeClass(el, 'qphl');
       }
+      return ui.hoverend();
     },
     mouseover: function(e) {
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref;

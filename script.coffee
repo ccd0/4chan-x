@@ -1580,7 +1580,6 @@ quoteBacklink =
         if $.config 'Quote Preview'
           $.bind link, 'mouseover', quotePreview.mouseover
           $.bind link, 'mousemove', ui.hover
-          $.bind link, 'mouseout',  ui.hoverend
           $.bind link, 'mouseout',  quotePreview.mouseout
         if $.config 'Quote Inline'
           $.bind link, 'click', quoteInline.toggle
@@ -1663,10 +1662,10 @@ quotePreview =
       continue unless quote.hash
       $.bind quote, 'mouseover', quotePreview.mouseover
       $.bind quote, 'mousemove', ui.hover
-      $.bind quote, 'mouseout',  ui.hoverend
       $.bind quote, 'mouseout',  quotePreview.mouseout
   mouseout: ->
     $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
+    ui.hoverend()
   mouseover: (e) ->
     id = @hash[1..]
     qp = $ '#qp'
