@@ -1,6 +1,8 @@
 github
 - mayhem:
   - Thread Stats performance fix, especially on long threads
+- aeosynth:
+  - fix an upgrading problem (1.x -> 2.x)
 
 2.15.1
 - mayhem:
