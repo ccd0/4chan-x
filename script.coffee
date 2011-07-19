@@ -184,6 +184,11 @@ ui =
   hoverend: (e) ->
     ui.el.style.top = '999%'
 
+###
+loosely follows the jquery api:
+http://api.jquery.com/
+not chainable
+###
 $ = (selector, root=d.body) ->
   root.querySelector selector
 

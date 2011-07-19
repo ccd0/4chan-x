@@ -270,6 +270,11 @@
       return ui.el.style.top = '999%';
     }
   };
+  /*
+  loosely follows the jquery api:
+  http://api.jquery.com/
+  not chainable
+  */
   $ = function(selector, root) {
     if (root == null) {
       root = d.body;
