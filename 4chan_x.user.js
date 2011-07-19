@@ -335,7 +335,6 @@
     addStyle: function(css) {
       var style;
       style = $.el('style', {
-        type: 'text/css',
         textContent: css
       });
       $.append(d.head, style);
