@@ -182,7 +182,7 @@ ui =
       el.style.right = clientWidth - clientX + 45
 
   hoverend: (e) ->
-    ui.el.style.top = 'auto'
+    ui.el.style.top = '999%'
 
 $ = (selector, root=d.body) ->
   root.querySelector selector

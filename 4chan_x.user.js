@@ -267,7 +267,7 @@
       }
     },
     hoverend: function(e) {
-      return ui.el.style.top = 'auto';
+      return ui.el.style.top = '999%';
     }
   };
   $ = function(selector, root) {
