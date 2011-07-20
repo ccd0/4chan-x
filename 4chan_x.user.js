@@ -1210,7 +1210,7 @@
       return cooldown.interval = window.setInterval(cooldown.cb, 1000);
     },
     cb: function() {
-      var submit, submits, _i, _j, _len, _len2, _ref, _results;
+      var submit, submits, _i, _j, _len, _len2, _results;
       cooldown.duration--;
       submits = $$('#com_submit');
       if (cooldown.duration) {
@@ -1227,7 +1227,7 @@
           submit.disabled = false;
           submit.value = 'Submit';
         }
-        if ((_ref = $('#auto', qr.el)) != null ? _ref.checked : void 0) {
+        if (qr.el && $('#auto', qr.el).checked) {
           return qr.submit.call($('form', qr.el));
         }
       }
