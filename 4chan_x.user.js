@@ -2449,11 +2449,10 @@
   };
   imageHover = {
     init: function() {
-      var img;
-      img = $.el('img', {
+      imageHover.img = $.el('img', {
         id: 'iHover'
       });
-      $.append(d.body, img);
+      $.append(d.body, imageHover.img);
       return g.callbacks.push(imageHover.node);
     },
     node: function(root) {
@@ -2466,11 +2465,12 @@
       return $.bind(thumb, 'mouseout', ui.hoverend);
     },
     mouseover: function(e) {
-      var el;
-      el = $('#iHover');
-      el.src = null;
-      el.src = this.parentNode.href;
-      return ui.el = el;
+      /*
+            img.src = null doesn't work on Chrome
+            http://code.google.com/p/chromium/issues/detail?id=36142
+          */      imageHover.img.src = null;
+      imageHover.img.src = this.parentNode.href;
+      return ui.el = imageHover.img;
     }
   };
   imgPreloading = {

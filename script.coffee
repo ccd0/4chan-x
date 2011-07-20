@@ -1850,8 +1850,8 @@ nodeInserted = (e) ->
 
 imageHover =
   init: ->
-    img = $.el 'img', id: 'iHover'
-    $.append d.body, img
+    imageHover.img = $.el 'img', id: 'iHover'
+    $.append d.body, imageHover.img
     g.callbacks.push imageHover.node
   node: (root) ->
     return unless thumb = $ 'img[md5]', root
@@ -1859,10 +1859,13 @@ imageHover =
     $.bind thumb, 'mousemove', ui.hover
     $.bind thumb, 'mouseout',  ui.hoverend
   mouseover: (e) ->
-    el = $ '#iHover'
-    el.src = null
-    el.src = @parentNode.href
-    ui.el = el
+    ###
+      img.src = null doesn't work on Chrome
+      http://code.google.com/p/chromium/issues/detail?id=36142
+    ###
+    imageHover.img.src = null
+    imageHover.img.src = @parentNode.href
+    ui.el = imageHover.img
 
 imgPreloading =
   init: ->
