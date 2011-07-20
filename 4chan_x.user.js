@@ -268,7 +268,7 @@
       }
     },
     hoverend: function(e) {
-      return ui.el.style.top = '999%';
+      return ui.el.parentNode.removeChild(ui.el);
     }
   };
   /*
@@ -2122,40 +2122,31 @@
   };
   quotePreview = {
     init: function() {
-      var preview;
-      g.callbacks.push(quotePreview.node);
-      preview = $.el('div', {
+      return g.callbacks.push(function(root) {
+        var quote, _i, _len, _ref, _results;
+        _ref = $$('a.quotelink, a.backlink', root);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          if (!quote.hash) {
+            continue;
+          }
+          $.bind(quote, 'mouseover', quotePreview.mouseover);
+          $.bind(quote, 'mousemove', ui.hover);
+          _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
+        }
+        return _results;
+      });
+    },
+    mouseover: function(e) {
+      var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _results;
+      qp = $.el('div', {
         id: 'qp',
         className: 'replyhl'
       });
-      return $.append(d.body, preview);
-    },
-    node: function(root) {
-      var quote, _i, _len, _ref, _results;
-      _ref = $$('a.quotelink, a.backlink', root);
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        if (!quote.hash) {
-          continue;
-        }
-        $.bind(quote, 'mouseover', quotePreview.mouseover);
-        $.bind(quote, 'mousemove', ui.hover);
-        _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
-      }
-      return _results;
-    },
-    mouseout: function() {
-      var el;
-      if (el = d.getElementById(this.hash.slice(1))) {
-        $.removeClass(el, 'qphl');
-      }
-      return ui.hoverend();
-    },
-    mouseover: function(e) {
-      var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
+      $.append(d.body, qp);
+      ui.el = qp;
       id = this.hash.slice(1);
-      qp = $('#qp');
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
         if ($.config('Quote Highlighting')) {
@@ -2164,21 +2155,27 @@
         if (/backlink/.test(this.className)) {
           replyID = $.x('ancestor::*[@id][1]', this).id.match(/\d+/)[0];
           _ref = $$('a.quotelink', qp);
+          _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             quote = _ref[_i];
-            if (quote.hash.slice(1) === replyID) {
-              quote.className = 'forwardlink';
-            }
+            _results.push(quote.hash.slice(1) === replyID ? quote.className = 'forwardlink' : void 0);
           }
+          return _results;
         }
       } else {
         qp.innerHTML = "Loading " + id + "...";
         threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
-        $.cache(this.pathname, (function() {
+        return $.cache(this.pathname, (function() {
           return quotePreview.parse(this, id, threadID);
         }));
       }
-      return ui.el = qp;
+    },
+    mouseout: function() {
+      var el;
+      if (el = d.getElementById(this.hash.slice(1))) {
+        $.removeClass(el, 'qphl');
+      }
+      return ui.hoverend();
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
@@ -2452,7 +2449,7 @@
         }
         $.bind(thumb, 'mouseover', imgHover.mouseover);
         $.bind(thumb, 'mousemove', ui.hover);
-        return $.bind(thumb, 'mouseout', imgHover.mouseout);
+        return $.bind(thumb, 'mouseout', ui.hoverend);
       });
     },
     mouseover: function(e) {
@@ -2463,9 +2460,6 @@
       });
       ui.el = img;
       return $.append(d.body, img);
-    },
-    mouseout: function(e) {
-      return $.rm(ui.el);
     }
   };
   imgPreloading = {

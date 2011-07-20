@@ -182,7 +182,7 @@ ui =
       el.style.right = clientWidth - clientX + 45
 
   hoverend: (e) ->
-    ui.el.style.top = '999%'
+    ui.el.parentNode.removeChild ui.el
 
 ###
 loosely follows the jquery api:
@@ -1651,23 +1651,20 @@ quoteInline =
 
 quotePreview =
   init: ->
-    g.callbacks.push quotePreview.node
-    preview = $.el 'div',
+    g.callbacks.push (root) ->
+      for quote in $$ 'a.quotelink, a.backlink', root
+        continue unless quote.hash
+        $.bind quote, 'mouseover', quotePreview.mouseover
+        $.bind quote, 'mousemove', ui.hover
+        $.bind quote, 'mouseout',  quotePreview.mouseout
+  mouseover: (e) ->
+    qp = $.el 'div',
       id: 'qp'
       className: 'replyhl'
-    $.append d.body, preview
-  node: (root) ->
-    for quote in $$ 'a.quotelink, a.backlink', root
-      continue unless quote.hash
-      $.bind quote, 'mouseover', quotePreview.mouseover
-      $.bind quote, 'mousemove', ui.hover
-      $.bind quote, 'mouseout',  quotePreview.mouseout
-  mouseout: ->
-    $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
-    ui.hoverend()
-  mouseover: (e) ->
+    $.append d.body, qp
+    ui.el = qp
+
     id = @hash[1..]
-    qp = $ '#qp'
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl' if $.config 'Quote Highlighting'
@@ -1680,7 +1677,9 @@ quotePreview =
       qp.innerHTML = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
-    ui.el = qp
+  mouseout: ->
+    $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
+    ui.hoverend()
   parse: (req, id, threadID) ->
     qp = $ '#qp'
     return unless qp.innerHTML is "Loading #{id}..."
@@ -1851,15 +1850,13 @@ imgHover =
       return unless thumb = $ 'img[md5]', root
       $.bind thumb, 'mouseover', imgHover.mouseover
       $.bind thumb, 'mousemove', ui.hover
-      $.bind thumb, 'mouseout',  imgHover.mouseout
+      $.bind thumb, 'mouseout',  ui.hoverend
   mouseover: (e) ->
     img = $.el 'img'
       id: 'iHover'
       src: @parentNode.href
     ui.el = img
     $.append d.body, img
-  mouseout: (e) ->
-    $.rm ui.el
 
 imgPreloading =
   init: ->
