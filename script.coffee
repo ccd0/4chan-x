@@ -1854,8 +1854,7 @@ imageHover =
     $.bind thumb, 'mouseout',  ui.hoverend
   mouseover: (e) ->
     ###
-      http://code.google.com/p/chromium/issues/detail?id=36142
-      img.src = null doesn't work on Chrome, use it anyway for other browsers
+    `img.src = null` doesn't actually null the previous image on chrom.
     ###
     imageHover.img.src = null
     imageHover.img.src = @parentNode.href
