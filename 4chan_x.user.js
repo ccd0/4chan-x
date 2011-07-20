@@ -2812,7 +2812,7 @@
           callback(table);
         }
       }
-      $.bind(d.body, 'DOMNodeInserted', nodeInserted);
+      $.bind($('form[name=delform]'), 'DOMNodeInserted', nodeInserted);
       options.init();
       if (!$.getValue('firstrun')) {
         return firstRun.init();

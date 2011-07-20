@@ -2201,7 +2201,7 @@ main =
     for table in $$ 'a + table'
       for callback in g.callbacks
         callback table
-    $.bind d.body, 'DOMNodeInserted', nodeInserted
+    $.bind $('form[name=delform]'), 'DOMNodeInserted', nodeInserted
     options.init()
 
     unless $.getValue 'firstrun'
