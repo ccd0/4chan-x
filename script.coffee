@@ -1888,7 +1888,8 @@ imgExpand =
     g.callbacks.push imgExpand.node
     imgExpand.dialog()
     $.bind window, 'resize', imgExpand.resize
-    imgExpand.style = $.addStyle "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
+    imgExpand.style = $.addStyle ''
+    imgExpand.resize()
 
   node: (root) ->
     return unless thumb = $ 'img[md5]', root
