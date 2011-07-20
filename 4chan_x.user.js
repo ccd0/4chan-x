@@ -63,6 +63,39 @@
   var __slice = Array.prototype.slice;
   config = {
     main: {
+      Enhancing: {
+        '404 Redirect': [true, 'Redirect dead threads'],
+        'Anonymize': [false, 'Make everybody anonymous'],
+        'Keybinds': [false, 'Binds actions to keys'],
+        'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
+        'Report Button': [true, 'Add report buttons'],
+        'Comment Expansion': [true, 'Expand too long comments'],
+        'Thread Expansion': [true, 'View all replies'],
+        'Index Navigation': [true, 'Navigate to previous / next thread'],
+        'Reply Navigation': [false, 'Navigate to top / bottom of thread']
+      },
+      Hiding: {
+        'Reply Hiding': [true, 'Hide single replies'],
+        'Thread Hiding': [true, 'Hide entire threads'],
+        'Show Stubs': [true, 'Of hidden threads / replies']
+      },
+      Imaging: {
+        'Image Auto-Gif': [false, 'Animate gif thumbnails'],
+        'Image Expansion': [true, 'Expand images'],
+        'Image Hover': [false, 'Show full image on mouseover'],
+        'Image Preloading': [false, 'Preload Images'],
+        'Sauce': [true, 'Add sauce to images'],
+        'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail']
+      },
+      Monitoring: {
+        'Thread Updater': [true, 'Update threads'],
+        'Unread Count': [true, 'Show unread post count in tab title'],
+        'Post in Title': [true, 'Show the op\'s post in the tab title'],
+        'Thread Stats': [true, 'Display reply and image count'],
+        'Thread Watcher': [true, 'Bookmark threads'],
+        'Auto Watch': [true, 'Automatically watch threads that you start'],
+        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to']
+      },
       Posting: {
         'Auto Noko': [true, 'Always redirect to your post'],
         'Cooldown': [true, 'Prevent \'flood detected\' errors'],
@@ -76,39 +109,6 @@
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
         'Quote Preview': [true, 'Show quote content on hover'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
-      },
-      Monitoring: {
-        'Thread Updater': [true, 'Update threads'],
-        'Unread Count': [true, 'Show unread post count in tab title'],
-        'Post in Title': [true, 'Show the op\'s post in the tab title'],
-        'Thread Stats': [true, 'Display reply and image count'],
-        'Thread Watcher': [true, 'Bookmark threads'],
-        'Auto Watch': [true, 'Automatically watch threads that you start'],
-        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to']
-      },
-      Imaging: {
-        'Image Auto-Gif': [false, 'Animate gif thumbnails'],
-        'Image Expansion': [true, 'Expand images'],
-        'Image Hover': [false, 'Show full image on mouseover'],
-        'Image Preloading': [false, 'Preload Images'],
-        'Sauce': [true, 'Add sauce to images'],
-        'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail']
-      },
-      Hiding: {
-        'Reply Hiding': [true, 'Hide single replies'],
-        'Thread Hiding': [true, 'Hide entire threads'],
-        'Show Stubs': [true, 'Of hidden threads / replies']
-      },
-      Enhancing: {
-        '404 Redirect': [true, 'Redirect dead threads'],
-        'Anonymize': [false, 'Make everybody anonymous'],
-        'Keybinds': [false, 'Binds actions to keys'],
-        'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
-        'Report Button': [true, 'Add report buttons'],
-        'Comment Expansion': [true, 'Expand too long comments'],
-        'Thread Expansion': [true, 'View all replies'],
-        'Index Navigation': [true, 'Navigate to previous / next thread'],
-        'Reply Navigation': [false, 'Navigate to top / bottom of thread']
       }
     },
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url='].join('\n'),
@@ -2460,8 +2460,7 @@
     },
     mouseover: function(e) {
       /*
-            http://code.google.com/p/chromium/issues/detail?id=36142
-            img.src = null doesn't work on Chrome, use it anyway for other browsers
+          `img.src = null` doesn't actually null the previous image on chrom.
           */      imageHover.img.src = null;
       imageHover.img.src = this.parentNode.href;
       return ui.el = imageHover.img;
