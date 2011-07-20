@@ -1076,8 +1076,8 @@ qr =
     submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
     #FIXME inlined cross-thread quotes
     THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
+    spoiler = if $('.postarea label') then '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
     challenge = $('input[name=recaptcha_challenge_field]').value
-    src = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
     html = "
       <div class=move>
         <input class=inputtext type=text name=name placeholder=Name form=qr_form>
@@ -1088,10 +1088,10 @@ qr =
       <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
         <input type=hidden name=resto value=#{THREAD_ID}>
         <input type=hidden name=recaptcha_challenge_field value=#{challenge}>
-        <div><input class=inputtext type=text name=email placeholder=E-mail></div>
+        <div><input class=inputtext type=text name=email placeholder=E-mail>#{spoiler}</div>
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
-        <div><img src=#{src}></div>
+        <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
@@ -1102,17 +1102,11 @@ qr =
 
     qr.refresh dialog
 
-    $.bind $('input[name=name]', dialog), 'mousedown', (e) -> e.stopPropagation()
-    $.bind $('a[name=close]', dialog), 'click', -> $.rm dialog
-    $.bind $('#autohide', dialog), 'click', qr.cb.autohide
-    $.bind $('img', dialog), 'click', Recaptcha.reload
-
-    if $ '.postarea label'
-      spoiler = $.el 'label',
-        innerHTML: " [<input type=checkbox name=spoiler>Spoiler Image?]"
-      $.after $('input[name=email]', dialog), spoiler
-
-    $.bind $('form', dialog), 'submit', qr.submit
+    $.bind $('input[name=name]',                     dialog), 'mousedown', (e) -> e.stopPropagation()
+    $.bind $('#autohide',                            dialog), 'click', qr.cb.autohide
+    $.bind $('a[name=close]',                        dialog), 'click', -> $.rm dialog
+    $.bind $('form',                                 dialog), 'submit', qr.submit
+    $.bind $('img',                                  dialog), 'click', Recaptcha.reload
     $.bind $('input[name=recaptcha_response_field]', dialog), 'keydown', Recaptcha.listener
 
     $.append d.body, dialog

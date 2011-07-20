@@ -1361,13 +1361,13 @@
       return $('input[name=pwd]', dialog).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
     },
     dialog: function(link) {
-      var THREAD_ID, challenge, dialog, html, spoiler, src, submitDisabled, submitValue;
+      var THREAD_ID, challenge, dialog, html, spoiler, submitDisabled, submitValue;
       submitValue = $('#com_submit').value;
       submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
+      spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       challenge = $('input[name=recaptcha_challenge_field]').value;
-      src = "http://www.google.com/recaptcha/api/image?c=" + challenge;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail></div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=" + src + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
+      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
       dialog = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -1376,18 +1376,12 @@
       $.bind($('input[name=name]', dialog), 'mousedown', function(e) {
         return e.stopPropagation();
       });
+      $.bind($('#autohide', dialog), 'click', qr.cb.autohide);
       $.bind($('a[name=close]', dialog), 'click', function() {
         return $.rm(dialog);
       });
-      $.bind($('#autohide', dialog), 'click', qr.cb.autohide);
-      $.bind($('img', dialog), 'click', Recaptcha.reload);
-      if ($('.postarea label')) {
-        spoiler = $.el('label', {
-          innerHTML: " [<input type=checkbox name=spoiler>Spoiler Image?]"
-        });
-        $.after($('input[name=email]', dialog), spoiler);
-      }
       $.bind($('form', dialog), 'submit', qr.submit);
+      $.bind($('img', dialog), 'click', Recaptcha.reload);
       $.bind($('input[name=recaptcha_response_field]', dialog), 'keydown', Recaptcha.listener);
       $.append(d.body, dialog);
       return dialog;
