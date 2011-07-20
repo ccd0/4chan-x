@@ -1847,14 +1847,11 @@ nodeInserted = (e) ->
 
 imgHover =
   init: ->
-    imgHover.el = $.el 'div', id: 'iHover'
-    $.append d.body, imgHover.el
-    g.callbacks.push imgHover.node
-  node: (root) ->
-    return unless thumb = $ 'img[md5]', root
-    $.bind thumb, 'mouseover', imgHover.mouseover
-    $.bind thumb, 'mousemove', ui.hover
-    $.bind thumb, 'mouseout',  imgHover.mouseout
+    g.callbacks.push (root) ->
+      return unless thumb = $ 'img[md5]', root
+      $.bind thumb, 'mouseover', imgHover.mouseover
+      $.bind thumb, 'mousemove', ui.hover
+      $.bind thumb, 'mouseout',  imgHover.mouseout
   mouseover: (e) ->
     ###
     http://code.google.com/p/chromium/issues/detail?id=36142
@@ -1862,11 +1859,14 @@ imgHover =
 
     instead of manipulating src, we manipulate the entire img
     ###
-    img = $.el 'img', src: @parentNode.href
-    $.append imgHover.el, img
-    ui.el = imgHover.el
+    img = $.el 'img'
+      id: 'iHover'
+      src: @parentNode.href
+    imgHover.img = img
+    ui.el = img
+    $.append d.body, img
   mouseout: (e) ->
-    $.rm imgHover.el.firstChild
+    $.rm imgHover.img
 
 imgPreloading =
   init: ->

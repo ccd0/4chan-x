@@ -2445,20 +2445,15 @@
   };
   imgHover = {
     init: function() {
-      imgHover.el = $.el('div', {
-        id: 'iHover'
+      return g.callbacks.push(function(root) {
+        var thumb;
+        if (!(thumb = $('img[md5]', root))) {
+          return;
+        }
+        $.bind(thumb, 'mouseover', imgHover.mouseover);
+        $.bind(thumb, 'mousemove', ui.hover);
+        return $.bind(thumb, 'mouseout', imgHover.mouseout);
       });
-      $.append(d.body, imgHover.el);
-      return g.callbacks.push(imgHover.node);
-    },
-    node: function(root) {
-      var thumb;
-      if (!(thumb = $('img[md5]', root))) {
-        return;
-      }
-      $.bind(thumb, 'mouseover', imgHover.mouseover);
-      $.bind(thumb, 'mousemove', ui.hover);
-      return $.bind(thumb, 'mouseout', imgHover.mouseout);
     },
     mouseover: function(e) {
       /*
@@ -2468,13 +2463,15 @@
           instead of manipulating src, we manipulate the entire img
           */      var img;
       img = $.el('img', {
+        id: 'iHover',
         src: this.parentNode.href
       });
-      $.append(imgHover.el, img);
-      return ui.el = imgHover.el;
+      imgHover.img = img;
+      ui.el = img;
+      return $.append(d.body, img);
     },
     mouseout: function(e) {
-      return $.rm(imgHover.el.firstChild);
+      return $.rm(imgHover.img);
     }
   };
   imgPreloading = {
