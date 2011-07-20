@@ -1076,13 +1076,9 @@ qr =
     THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
     challenge = $('input[name=recaptcha_challenge_field]').value
     src = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
-    c = d.cookie
-    name = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
-    mail = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
-    pass = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     html = "
       <div class=move>
-        <input class=inputtext type=text name=name placeholder=Name form=qr_form value=\"#{name}\">
+        <input class=inputtext type=text name=name placeholder=Name form=qr_form>
         Quick Reply
         <input type=checkbox id=autohide title=autohide>
         <a name=close title=close>X</a>
@@ -1090,17 +1086,19 @@ qr =
       <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
         <input type=hidden name=resto value=#{THREAD_ID}>
         <input type=hidden name=recaptcha_challenge_field value=#{challenge}>
-        <div><input class=inputtext type=text name=email placeholder=E-mail value=\"#{mail}\"></div>
+        <div><input class=inputtext type=text name=email placeholder=E-mail></div>
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=#{src}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
         <div><input type=file name=upfile></div>
-        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password value=\"#{pass}\"><input type=hidden name=mode value=regist></div>
+        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
       </form>
       <div id=error class=error></div>
       "
     dialog = ui.dialog 'qr', top: '0px', left: '0px', html
+
+    qr.refresh dialog
 
     $.bind $('input[name=name]', dialog), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('a[name=close]', dialog), 'click', -> $.rm dialog
