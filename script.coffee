@@ -1884,7 +1884,8 @@ imgExpand =
     g.callbacks.push imgExpand.node
     imgExpand.dialog()
     $.bind window, 'resize', imgExpand.resize
-    imgExpand.resize()
+    imgExpand.style = $.addStyle "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
+    imgExpand.style.className = 'height'
 
   node: (root) ->
     return unless thumb = $ 'img[md5]', root
@@ -1956,15 +1957,13 @@ imgExpand =
     imgExpand.cb.typeChange.call select
     $.bind select, 'change', $.cb.value
     $.bind select, 'change', imgExpand.cb.typeChange
-    $.bind $('input',  controls), 'click',  imgExpand.cb.all
+    $.bind $('input', controls), 'click', imgExpand.cb.all
 
     delform = $ 'form[name=delform]'
     $.prepend delform, controls
 
   resize: (e) ->
-    $.rm style if style = $ 'style.height', d.head
-    style = $.addStyle "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
-    style.className = 'height'
+    imgExpand.style.innerHTML = "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
 
 firstRun =
   init: ->

@@ -2506,7 +2506,8 @@
       g.callbacks.push(imgExpand.node);
       imgExpand.dialog();
       $.bind(window, 'resize', imgExpand.resize);
-      return imgExpand.resize();
+      imgExpand.style = $.addStyle("body.fitheight img[md5] + img { max-height: " + d.body.clientHeight + "px }");
+      return imgExpand.style.className = 'height';
     },
     node: function(root) {
       var a, thumb;
@@ -2616,12 +2617,7 @@
       return $.prepend(delform, controls);
     },
     resize: function(e) {
-      var style;
-      if (style = $('style.height', d.head)) {
-        $.rm(style);
-      }
-      style = $.addStyle("body.fitheight img[md5] + img { max-height: " + d.body.clientHeight + "px }");
-      return style.className = 'height';
+      return imgExpand.style.innerHTML = "body.fitheight img[md5] + img { max-height: " + d.body.clientHeight + "px }";
     }
   };
   firstRun = {
