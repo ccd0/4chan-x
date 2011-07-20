@@ -960,7 +960,8 @@ cooldown =
       for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
-        $('#qr_form').submit() if $('#auto')?.checked
+      if $('#auto')?.checked
+        qr.submit.call $ '#qr_form'
 
 qr =
   init: ->
@@ -1032,7 +1033,7 @@ qr =
 
     inputfile = $('input[type=file]', @)
     if inputfile.value and inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value
-      e.preventDefault()
+      e.preventDefault() if e
       if isQR
         $('#error').textContent = 'Error: File too large.'
       else

@@ -1209,7 +1209,7 @@
       return cooldown.interval = window.setInterval(cooldown.cb, 1000);
     },
     cb: function() {
-      var submit, submits, _i, _j, _len, _len2, _ref, _results, _results2;
+      var submit, submits, _i, _j, _len, _len2, _ref, _results;
       cooldown.duration--;
       submits = $$('#com_submit');
       if (cooldown.duration) {
@@ -1221,14 +1221,14 @@
         return _results;
       } else {
         window.clearInterval(cooldown.interval);
-        _results2 = [];
         for (_j = 0, _len2 = submits.length; _j < _len2; _j++) {
           submit = submits[_j];
           submit.disabled = false;
           submit.value = 'Submit';
-          _results2.push(((_ref = $('#auto')) != null ? _ref.checked : void 0) ? $('#qr_form').submit() : void 0);
         }
-        return _results2;
+        if ((_ref = $('#auto')) != null ? _ref.checked : void 0) {
+          return qr.submit.call($('#qr_form'));
+        }
       }
     }
   };
@@ -1315,7 +1315,9 @@
       isQR = this.id === 'qr_form';
       inputfile = $('input[type=file]', this);
       if (inputfile.value && inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value) {
-        e.preventDefault();
+        if (e) {
+          e.preventDefault();
+        }
         if (isQR) {
           return $('#error').textContent = 'Error: File too large.';
         } else {
