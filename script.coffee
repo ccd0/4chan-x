@@ -1853,12 +1853,6 @@ imgHover =
       $.bind thumb, 'mousemove', ui.hover
       $.bind thumb, 'mouseout',  imgHover.mouseout
   mouseover: (e) ->
-    ###
-    http://code.google.com/p/chromium/issues/detail?id=36142
-    manipulating img src via javascript will generate a massive memory leak
-
-    instead of manipulating src, we manipulate the entire img
-    ###
     img = $.el 'img'
       id: 'iHover'
       src: @parentNode.href

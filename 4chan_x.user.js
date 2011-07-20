@@ -2456,12 +2456,7 @@
       });
     },
     mouseover: function(e) {
-      /*
-          http://code.google.com/p/chromium/issues/detail?id=36142
-          manipulating img src via javascript will generate a massive memory leak
-      
-          instead of manipulating src, we manipulate the entire img
-          */      var img;
+      var img;
       img = $.el('img', {
         id: 'iHover',
         src: this.parentNode.href
