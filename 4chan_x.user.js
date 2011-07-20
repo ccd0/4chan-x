@@ -2055,7 +2055,7 @@
         }
         return;
       }
-      root = this.parentNode.nodeName === 'FONT' ? this.parentNode : this.nextSibling;
+      root = this.parentNode.nodeName === 'FONT' ? this.parentNode : this.nextSibling ? this.nextSibling : this;
       if (el = d.getElementById(id)) {
         inline = quoteInline.table(id, el.innerHTML);
         if (this.className === 'backlink') {

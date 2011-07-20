@@ -1606,7 +1606,7 @@ quoteInline =
       for inlined in $$ 'input', table
         $.show $.x 'ancestor::table[1]', d.getElementById inlined.name
       return
-    root = if @parentNode.nodeName is 'FONT' then @parentNode else @nextSibling
+    root = if @parentNode.nodeName is 'FONT' then @parentNode else if @nextSibling then @nextSibling else @
     if el = d.getElementById id
       inline = quoteInline.table id, el.innerHTML
       if @className is 'backlink'
