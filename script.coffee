@@ -547,8 +547,8 @@ keybinds =
         when keybinds.close
           if o = $ '#overlay'
             $.rm o
-          else if qr = $ '#qr'
-            $.rm qr
+          else if qr.el
+            qr.close()
         when keybinds.spoiler
           ta = d.activeElement
           return unless ta.nodeName is 'TEXTAREA'
@@ -599,8 +599,8 @@ keybinds =
         when keybinds.previousPage
           $('input[value=Previous]')?.click()
         when keybinds.submit
-          if qr = $('#qr_form')
-            qr.submit()
+          if qr.el
+            qr.submit.call $ 'form', qr.el
           else
             $('.postarea form').submit()
         else
@@ -636,9 +636,9 @@ keybinds =
     if quote
       qr.quote qrLink
     else
-      unless $ '#qr'
+      unless qr.el
         qr.dialog qrLink
-      $('#qr textarea').focus()
+      $('textarea', qr.el).focus()
 
   open: (thread, tab) ->
     id = thread.firstChild.id
@@ -961,8 +961,8 @@ cooldown =
       for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
-      if $('#auto')?.checked
-        qr.submit.call $ '#qr_form'
+      if $('#auto', qr.el)?.checked
+        qr.submit.call $ 'form', qr.el
 
 qr =
   init: ->
@@ -978,35 +978,33 @@ qr =
 
   autohide:
     set: ->
-      $('#qr input[title=autohide]:not(:checked)')?.click()
+      $('input[title=autohide]:not(:checked)', qr.el)?.click()
     unset: ->
-      $('#qr input[title=autohide]:checked')?.click()
+      $('input[title=autohide]:checked', qr.el)?.click()
 
   cb:
     autohide: (e) ->
-      dialog = $ '#qr'
       if @checked
-        $.addClass dialog, 'auto'
+        $.addClass qr.el, 'auto'
       else
-        $.removeClass dialog, 'auto'
+        $.removeClass qr.el, 'auto'
 
     message: (e) ->
       Recaptcha.reload()
       $('iframe[name=iframe]').src = 'about:blank'
 
       {data} = e
-      dialog = $ '#qr'
       if data # error message
-        $('input[name=recaptcha_response_field]', dialog).value = ''
-        $('#error').textContent = data
+        $('input[name=recaptcha_response_field]', qr.el).value = ''
+        $('#error', qr.el).textContent = data
         qr.autohide.unset()
         return
 
-      if dialog
+      if qr.el
         if g.REPLY and $.config 'Persistent QR'
-          qr.refresh dialog
+          qr.refresh()
         else
-          $.rm dialog
+          qr.close()
       if $.config 'Cooldown'
         duration = if qr.sage then 60 else 30
         $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
@@ -1025,7 +1023,7 @@ qr =
       if g.REPLY and $('img.favicon').src is Favicon.empty
         watcher.watch null, g.THREAD_ID
       else
-        id = $('input[name=resto]').value
+        id = $('input[name=resto]', qr.el).value
         op = d.getElementById id
         if $('img.favicon', op).src is Favicon.empty
           watcher.watch op, id
@@ -1036,21 +1034,21 @@ qr =
     if inputfile.value and inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value
       e.preventDefault() if e
       if isQR
-        $('#error').textContent = 'Error: File too large.'
+        $('#error', qr.el).textContent = 'Error: File too large.'
       else
         alert 'Error: File too large.'
 
     else if isQR
       if !e then @submit()
-      $('#error').textContent = ''
+      $('#error', qr.el).textContent = ''
       qr.autohide.set()
       qr.sage = /sage/i.test $('input[name=email]', @).value
 
   quote: (link) ->
-    if dialog = $ '#qr'
+    if qr.el
       qr.autohide.unset()
     else
-      dialog = qr.dialog link
+      qr.dialog link
 
     id = link.textContent
     text = ">>#{id}\n"
@@ -1061,16 +1059,16 @@ qr =
       if selectionID == id
         text += ">#{s}\n"
 
-    ta = $ 'textarea', dialog
+    ta = $ 'textarea', qr.el
     ta.focus()
     ta.value += text
 
-  refresh: (dialog) ->
-    $('form', dialog).reset()
+  refresh: ->
+    $('form', qr.el).reset()
     c = d.cookie
-    $('input[name=name]',  dialog).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
-    $('input[name=email]', dialog).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
-    $('input[name=pwd]',   dialog).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
+    $('input[name=name]',  qr.el).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
+    $('input[name=email]', qr.el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+    $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
   dialog: (link) ->
     submitValue = $('#com_submit').value
@@ -1099,24 +1097,26 @@ qr =
       </form>
       <div id=error class=error></div>
       "
-    dialog = ui.dialog 'qr', top: '0px', left: '0px', html
+    qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
 
-    qr.refresh dialog
+    qr.refresh
 
-    $.bind $('input[name=name]',                     dialog), 'mousedown', (e) -> e.stopPropagation()
-    $.bind $('#autohide',                            dialog), 'click', qr.cb.autohide
-    $.bind $('a[name=close]',                        dialog), 'click', -> $.rm dialog
-    $.bind $('form',                                 dialog), 'submit', qr.submit
-    $.bind $('img',                                  dialog), 'click', Recaptcha.reload
-    $.bind $('input[name=recaptcha_response_field]', dialog), 'keydown', Recaptcha.listener
+    $.bind $('input[name=name]',                     qr.el), 'mousedown', (e) -> e.stopPropagation()
+    $.bind $('#autohide',                            qr.el), 'click', qr.cb.autohide
+    $.bind $('a[name=close]',                        qr.el), 'click', qr.close
+    $.bind $('form',                                 qr.el), 'submit', qr.submit
+    $.bind $('img',                                  qr.el), 'click', Recaptcha.reload
+    $.bind $('input[name=recaptcha_response_field]', qr.el), 'keydown', Recaptcha.listener
 
-    $.append d.body, dialog
-
-    dialog
+    $.append d.body, qr.el
 
   persist: ->
     $.append d.body, qr.dialog()
     qr.autohide.set()
+
+  close: ->
+    $.rm qr.el
+    qr.el = null
 
   sys: ->
     if recaptcha = $ '#recaptcha_response_field' #post reporting
@@ -1828,15 +1828,15 @@ Recaptcha =
     if e.keyCode is 8 and @value is '' # backspace to reload
       Recaptcha.reload()
     if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
-      $('#auto').checked = true
+      $('#auto', qr.el).checked = true
       qr.autohide.set()
   reload: ->
     window.location = 'javascript:Recaptcha.reload()'
   reloaded: (e) ->
-    return unless dialog = $ '#qr'
+    return unless qr.el
     {target} = e
-    $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('input[name=recaptcha_challenge_field]', dialog).value = target.value
+    $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+    $('input[name=recaptcha_challenge_field]', qr.el).value = target.value
 
 nodeInserted = (e) ->
   {target} = e
