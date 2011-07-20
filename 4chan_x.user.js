@@ -2422,11 +2422,12 @@
     },
     reloaded: function(e) {
       var dialog, target;
-      target = e.target;
-      if (dialog = $('#qr')) {
-        $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-        return $('input[name=recaptcha_challenge_field]', dialog).value = target.value;
+      if (!(dialog = $('#qr'))) {
+        return;
       }
+      target = e.target;
+      $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+      return $('input[name=recaptcha_challenge_field]', dialog).value = target.value;
     }
   };
   nodeInserted = function(e) {

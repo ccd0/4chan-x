@@ -1836,10 +1836,10 @@ Recaptcha =
   reload: ->
     window.location = 'javascript:Recaptcha.reload()'
   reloaded: (e) ->
+    return unless dialog = $ '#qr'
     {target} = e
-    if dialog = $ '#qr'
-      $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-      $('input[name=recaptcha_challenge_field]', dialog).value = target.value
+    $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+    $('input[name=recaptcha_challenge_field]', dialog).value = target.value
 
 nodeInserted = (e) ->
   {target} = e
