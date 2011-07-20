@@ -2460,8 +2460,8 @@
     },
     mouseover: function(e) {
       /*
-            img.src = null doesn't work on Chrome
             http://code.google.com/p/chromium/issues/detail?id=36142
+            img.src = null doesn't work on Chrome, use it anyway for other browsers
           */      imageHover.img.src = null;
       imageHover.img.src = this.parentNode.href;
       return ui.el = imageHover.img;
