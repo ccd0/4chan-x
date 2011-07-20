@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, config, cooldown, d, expandComment, expandThread, firstRun, g, imageHover, imgExpand, imgGif, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, config, cooldown, d, expandComment, expandThread, firstRun, g, imgExpand, imgGif, imgHover, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -2443,29 +2443,29 @@
       return _results;
     }
   };
-  imageHover = {
+  imgHover = {
     init: function() {
-      imageHover.img = $.el('img', {
+      imgHover.img = $.el('img', {
         id: 'iHover'
       });
-      $.append(d.body, imageHover.img);
-      return g.callbacks.push(imageHover.node);
+      $.append(d.body, imgHover.img);
+      return g.callbacks.push(imgHover.node);
     },
     node: function(root) {
       var thumb;
       if (!(thumb = $('img[md5]', root))) {
         return;
       }
-      $.bind(thumb, 'mouseover', imageHover.mouseover);
+      $.bind(thumb, 'mouseover', imgHover.mouseover);
       $.bind(thumb, 'mousemove', ui.hover);
       return $.bind(thumb, 'mouseout', ui.hoverend);
     },
     mouseover: function(e) {
       /*
           `img.src = null` doesn't actually null the previous image on chrom.
-          */      imageHover.img.src = null;
-      imageHover.img.src = this.parentNode.href;
-      return ui.el = imageHover.img;
+          */      imgHover.img.src = null;
+      imgHover.img.src = this.parentNode.href;
+      return ui.el = imgHover.img;
     }
   };
   imgPreloading = {
@@ -2718,7 +2718,7 @@
         anonymize.init();
       }
       if ($.config('Image Hover')) {
-        imageHover.init();
+        imgHover.init();
       }
       if ($.config('Reply Hiding')) {
         replyHiding.init();

@@ -1845,23 +1845,23 @@ nodeInserted = (e) ->
     for callback in g.callbacks
       callback target
 
-imageHover =
+imgHover =
   init: ->
-    imageHover.img = $.el 'img', id: 'iHover'
-    $.append d.body, imageHover.img
-    g.callbacks.push imageHover.node
+    imgHover.img = $.el 'img', id: 'iHover'
+    $.append d.body, imgHover.img
+    g.callbacks.push imgHover.node
   node: (root) ->
     return unless thumb = $ 'img[md5]', root
-    $.bind thumb, 'mouseover', imageHover.mouseover
+    $.bind thumb, 'mouseover', imgHover.mouseover
     $.bind thumb, 'mousemove', ui.hover
     $.bind thumb, 'mouseout',  ui.hoverend
   mouseover: (e) ->
     ###
     `img.src = null` doesn't actually null the previous image on chrom.
     ###
-    imageHover.img.src = null
-    imageHover.img.src = @parentNode.href
-    ui.el = imageHover.img
+    imgHover.img.src = null
+    imgHover.img.src = @parentNode.href
+    ui.el = imgHover.img
 
 imgPreloading =
   init: ->
@@ -2122,7 +2122,7 @@ main =
       anonymize.init()
 
     if $.config 'Image Hover'
-      imageHover.init()
+      imgHover.init()
 
     if $.config 'Reply Hiding'
       replyHiding.init()
