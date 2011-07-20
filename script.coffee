@@ -1486,7 +1486,7 @@ sauce =
 revealSpoilers =
   init: ->
     g.callbacks.push (root) ->
-      return if root.className is 'inline' or not img = $ 'img[alt^=Spoiler]', root
+      return if not img = $('img[alt^=Spoiler]', root) or root.className is 'inline'
       img.removeAttribute 'height'
       img.removeAttribute 'width'
       [_, board, nb] = img.parentNode.href.match /(\w+)\/src\/(\d+)/

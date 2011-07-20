@@ -1859,7 +1859,7 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var board, img, nb, _, _ref;
-        if (root.className === 'inline' || !(img = $('img[alt^=Spoiler]', root))) {
+        if (!(img = $('img[alt^=Spoiler]', root) || root.className === 'inline')) {
           return;
         }
         img.removeAttribute('height');
