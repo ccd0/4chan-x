@@ -2445,10 +2445,10 @@
   };
   imgHover = {
     init: function() {
-      imgHover.img = $.el('img', {
+      imgHover.el = $.el('div', {
         id: 'iHover'
       });
-      $.append(d.body, imgHover.img);
+      $.append(d.body, imgHover.el);
       return g.callbacks.push(imgHover.node);
     },
     node: function(root) {
@@ -2458,14 +2458,23 @@
       }
       $.bind(thumb, 'mouseover', imgHover.mouseover);
       $.bind(thumb, 'mousemove', ui.hover);
-      return $.bind(thumb, 'mouseout', ui.hoverend);
+      return $.bind(thumb, 'mouseout', imgHover.mouseout);
     },
     mouseover: function(e) {
       /*
-          `img.src = null` doesn't actually null the previous image on chrom.
-          */      imgHover.img.src = null;
-      imgHover.img.src = this.parentNode.href;
-      return ui.el = imgHover.img;
+          http://code.google.com/p/chromium/issues/detail?id=36142
+          manipulating img src via javascript will generate a massive memory leak
+      
+          instead of manipulating src, we manipulate the entire img
+          */      var img;
+      img = $.el('img', {
+        src: this.parentNode.href
+      });
+      $.append(imgHover.el, img);
+      return ui.el = imgHover.el;
+    },
+    mouseout: function(e) {
+      return $.rm(imgHover.el.firstChild);
     }
   };
   imgPreloading = {

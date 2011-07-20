@@ -1847,21 +1847,26 @@ nodeInserted = (e) ->
 
 imgHover =
   init: ->
-    imgHover.img = $.el 'img', id: 'iHover'
-    $.append d.body, imgHover.img
+    imgHover.el = $.el 'div', id: 'iHover'
+    $.append d.body, imgHover.el
     g.callbacks.push imgHover.node
   node: (root) ->
     return unless thumb = $ 'img[md5]', root
     $.bind thumb, 'mouseover', imgHover.mouseover
     $.bind thumb, 'mousemove', ui.hover
-    $.bind thumb, 'mouseout',  ui.hoverend
+    $.bind thumb, 'mouseout',  imgHover.mouseout
   mouseover: (e) ->
     ###
-    `img.src = null` doesn't actually null the previous image on chrom.
+    http://code.google.com/p/chromium/issues/detail?id=36142
+    manipulating img src via javascript will generate a massive memory leak
+
+    instead of manipulating src, we manipulate the entire img
     ###
-    imgHover.img.src = null
-    imgHover.img.src = @parentNode.href
-    ui.el = imgHover.img
+    img = $.el 'img', src: @parentNode.href
+    $.append imgHover.el, img
+    ui.el = imgHover.el
+  mouseout: (e) ->
+    $.rm imgHover.el.firstChild
 
 imgPreloading =
   init: ->
