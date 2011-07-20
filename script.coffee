@@ -1014,34 +1014,34 @@ qr =
       quote = $ 'a.quotejs:not(:first-child)', root
       $.bind quote, 'click', qr.cb.quote
 
-    submit: (e) ->
-      if $.config('Auto Watch Reply') and $.config('Thread Watcher')
-        if g.REPLY and $('img.favicon').src is Favicon.empty
-          watcher.watch null, g.THREAD_ID
-        else
-          id = $('input[name=resto]').value
-          op = d.getElementById id
-          if $('img.favicon', op).src is Favicon.empty
-            watcher.watch op, id
-
-      isQR = @id is 'qr_form'
-
-      inputfile = $('input[type=file]', @)
-      if inputfile.value and inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value
-        e.preventDefault()
-        if isQR
-          $('#error').textContent = 'Error: File too large.'
-        else
-          alert 'Error: File too large.'
-
-      else if isQR
-        $('#error').textContent = ''
-        qr.autohide.set()
-        qr.sage = /sage/i.test $('input[name=email]', @).value
-
     quote: (e) ->
       e.preventDefault()
       qr.quote @
+
+  submit: (e) ->
+    if $.config('Auto Watch Reply') and $.config('Thread Watcher')
+      if g.REPLY and $('img.favicon').src is Favicon.empty
+        watcher.watch null, g.THREAD_ID
+      else
+        id = $('input[name=resto]').value
+        op = d.getElementById id
+        if $('img.favicon', op).src is Favicon.empty
+          watcher.watch op, id
+
+    isQR = @id is 'qr_form'
+
+    inputfile = $('input[type=file]', @)
+    if inputfile.value and inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value
+      e.preventDefault()
+      if isQR
+        $('#error').textContent = 'Error: File too large.'
+      else
+        alert 'Error: File too large.'
+
+    else if isQR
+      $('#error').textContent = ''
+      qr.autohide.set()
+      qr.sage = /sage/i.test $('input[name=email]', @).value
 
   quote: (link) ->
     if dialog = $ '#qr'
@@ -1110,7 +1110,7 @@ qr =
         innerHTML: " [<input type=checkbox name=spoiler>Spoiler Image?]"
       $.after $('input[name=email]', dialog), spoiler
 
-    $.bind $('form', dialog), 'submit', qr.cb.submit
+    $.bind $('form', dialog), 'submit', qr.submit
     $.bind $('input[name=recaptcha_response_field]', dialog), 'keydown', Recaptcha.listener
 
     $.append d.body, dialog
@@ -2094,7 +2094,7 @@ main =
 
     if (form = $ 'form[name=post]') and canPost = !!$ '#recaptcha_response_field'
       Recaptcha.init()
-      $.bind form, 'submit', qr.cb.submit
+      $.bind form, 'submit', qr.submit
 
     #major features
     if $.config 'Auto Noko'

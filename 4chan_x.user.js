@@ -1294,37 +1294,37 @@
         quote = $('a.quotejs:not(:first-child)', root);
         return $.bind(quote, 'click', qr.cb.quote);
       },
-      submit: function(e) {
-        var id, inputfile, isQR, op;
-        if ($.config('Auto Watch Reply') && $.config('Thread Watcher')) {
-          if (g.REPLY && $('img.favicon').src === Favicon.empty) {
-            watcher.watch(null, g.THREAD_ID);
-          } else {
-            id = $('input[name=resto]').value;
-            op = d.getElementById(id);
-            if ($('img.favicon', op).src === Favicon.empty) {
-              watcher.watch(op, id);
-            }
-          }
-        }
-        isQR = this.id === 'qr_form';
-        inputfile = $('input[type=file]', this);
-        if (inputfile.value && inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value) {
-          e.preventDefault();
-          if (isQR) {
-            return $('#error').textContent = 'Error: File too large.';
-          } else {
-            return alert('Error: File too large.');
-          }
-        } else if (isQR) {
-          $('#error').textContent = '';
-          qr.autohide.set();
-          return qr.sage = /sage/i.test($('input[name=email]', this).value);
-        }
-      },
       quote: function(e) {
         e.preventDefault();
         return qr.quote(this);
+      }
+    },
+    submit: function(e) {
+      var id, inputfile, isQR, op;
+      if ($.config('Auto Watch Reply') && $.config('Thread Watcher')) {
+        if (g.REPLY && $('img.favicon').src === Favicon.empty) {
+          watcher.watch(null, g.THREAD_ID);
+        } else {
+          id = $('input[name=resto]').value;
+          op = d.getElementById(id);
+          if ($('img.favicon', op).src === Favicon.empty) {
+            watcher.watch(op, id);
+          }
+        }
+      }
+      isQR = this.id === 'qr_form';
+      inputfile = $('input[type=file]', this);
+      if (inputfile.value && inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value) {
+        e.preventDefault();
+        if (isQR) {
+          return $('#error').textContent = 'Error: File too large.';
+        } else {
+          return alert('Error: File too large.');
+        }
+      } else if (isQR) {
+        $('#error').textContent = '';
+        qr.autohide.set();
+        return qr.sage = /sage/i.test($('input[name=email]', this).value);
       }
     },
     quote: function(link) {
@@ -1382,7 +1382,7 @@
         });
         $.after($('input[name=email]', dialog), spoiler);
       }
-      $.bind($('form', dialog), 'submit', qr.cb.submit);
+      $.bind($('form', dialog), 'submit', qr.submit);
       $.bind($('input[name=recaptcha_response_field]', dialog), 'keydown', Recaptcha.listener);
       $.append(d.body, dialog);
       return dialog;
@@ -2696,7 +2696,7 @@
       $.addStyle(main.css);
       if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
         Recaptcha.init();
-        $.bind(form, 'submit', qr.cb.submit);
+        $.bind(form, 'submit', qr.submit);
       }
       if ($.config('Auto Noko')) {
         $('.postarea form').action += '?auto_noko';
