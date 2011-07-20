@@ -103,8 +103,7 @@ if not Object.keys
 
 NAMESPACE = 'AEOS.4chan_x.'
 d = document
-g =
-  callbacks: []
+g = callbacks: []
 
 ui =
   dialog: (id, position, html) ->
@@ -1064,12 +1063,11 @@ qr =
     ta.value += text
 
   refresh: (dialog) ->
-    $('textarea', dialog).value = ''
-    $('input[name=recaptcha_response_field]', dialog).value = ''
-    $('input[name=spoiler]', dialog)?.checked = false
-    # XXX file.value = '' doesn't work in opera
-    f = $('input[type=file]', dialog).parentNode
-    f.innerHTML = f.innerHTML
+    $('form', dialog).reset()
+    c = d.cookie
+    $('input[name=name]',  dialog).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
+    $('input[name=email]', dialog).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+    $('input[name=pwd]',   dialog).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
   dialog: (link) ->
     submitValue = $('#com_submit').value

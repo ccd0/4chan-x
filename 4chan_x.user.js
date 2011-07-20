@@ -1348,14 +1348,12 @@
       return ta.value += text;
     },
     refresh: function(dialog) {
-      var f, _ref;
-      $('textarea', dialog).value = '';
-      $('input[name=recaptcha_response_field]', dialog).value = '';
-      if ((_ref = $('input[name=spoiler]', dialog)) != null) {
-        _ref.checked = false;
-      }
-      f = $('input[type=file]', dialog).parentNode;
-      return f.innerHTML = f.innerHTML;
+      var c, m;
+      $('form', dialog).reset();
+      c = d.cookie;
+      $('input[name=name]', dialog).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
+      $('input[name=email]', dialog).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
+      return $('input[name=pwd]', dialog).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
     },
     dialog: function(link) {
       var THREAD_ID, c, challenge, dialog, html, m, mail, name, pass, spoiler, src, submitDisabled, submitValue;
