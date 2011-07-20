@@ -2466,12 +2466,11 @@
         id: 'iHover',
         src: this.parentNode.href
       });
-      imgHover.img = img;
       ui.el = img;
       return $.append(d.body, img);
     },
     mouseout: function(e) {
-      return $.rm(imgHover.img);
+      return $.rm(ui.el);
     }
   };
   imgPreloading = {

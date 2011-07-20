@@ -1862,11 +1862,10 @@ imgHover =
     img = $.el 'img'
       id: 'iHover'
       src: @parentNode.href
-    imgHover.img = img
     ui.el = img
     $.append d.body, img
   mouseout: (e) ->
-    $.rm imgHover.img
+    $.rm ui.el
 
 imgPreloading =
   init: ->
