@@ -2500,8 +2500,7 @@
       g.callbacks.push(imgExpand.node);
       imgExpand.dialog();
       $.bind(window, 'resize', imgExpand.resize);
-      imgExpand.style = $.addStyle("body.fitheight img[md5] + img { max-height: " + d.body.clientHeight + "px }");
-      return imgExpand.style.className = 'height';
+      return imgExpand.style = $.addStyle("body.fitheight img[md5] + img { max-height: " + d.body.clientHeight + "px }");
     },
     node: function(root) {
       var a, thumb;

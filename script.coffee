@@ -1882,7 +1882,6 @@ imgExpand =
     imgExpand.dialog()
     $.bind window, 'resize', imgExpand.resize
     imgExpand.style = $.addStyle "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
-    imgExpand.style.className = 'height'
 
   node: (root) ->
     return unless thumb = $ 'img[md5]', root
