@@ -743,7 +743,7 @@
     },
     cb: {
       keydown: function(e) {
-        var key, o, qr, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
+        var key, o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
         if (((_ref = d.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
           return;
         }
@@ -759,8 +759,8 @@
           case keybinds.close:
             if (o = $('#overlay')) {
               $.rm(o);
-            } else if (qr = $('#qr')) {
-              $.rm(qr);
+            } else if (qr.el) {
+              qr.close();
             }
             break;
           case keybinds.spoiler:
@@ -834,8 +834,8 @@
             }
             break;
           case keybinds.submit:
-            if (qr = $('#qr_form')) {
-              qr.submit();
+            if (qr.el) {
+              qr.submit.call($('form', qr.el));
             } else {
               $('.postarea form').submit();
             }
@@ -881,10 +881,10 @@
       if (quote) {
         return qr.quote(qrLink);
       } else {
-        if (!$('#qr')) {
+        if (!qr.el) {
           qr.dialog(qrLink);
         }
-        return $('#qr textarea').focus();
+        return $('textarea', qr.el).focus();
       }
     },
     open: function(thread, tab) {
@@ -1226,8 +1226,8 @@
           submit.disabled = false;
           submit.value = 'Submit';
         }
-        if ((_ref = $('#auto')) != null ? _ref.checked : void 0) {
-          return qr.submit.call($('#qr_form'));
+        if ((_ref = $('#auto', qr.el)) != null ? _ref.checked : void 0) {
+          return qr.submit.call($('form', qr.el));
         }
       }
     }
@@ -1247,40 +1247,37 @@
     autohide: {
       set: function() {
         var _ref;
-        return (_ref = $('#qr input[title=autohide]:not(:checked)')) != null ? _ref.click() : void 0;
+        return (_ref = $('input[title=autohide]:not(:checked)', qr.el)) != null ? _ref.click() : void 0;
       },
       unset: function() {
         var _ref;
-        return (_ref = $('#qr input[title=autohide]:checked')) != null ? _ref.click() : void 0;
+        return (_ref = $('input[title=autohide]:checked', qr.el)) != null ? _ref.click() : void 0;
       }
     },
     cb: {
       autohide: function(e) {
-        var dialog;
-        dialog = $('#qr');
         if (this.checked) {
-          return $.addClass(dialog, 'auto');
+          return $.addClass(qr.el, 'auto');
         } else {
-          return $.removeClass(dialog, 'auto');
+          return $.removeClass(qr.el, 'auto');
         }
       },
       message: function(e) {
-        var data, dialog, duration;
+        var data, duration;
         Recaptcha.reload();
         $('iframe[name=iframe]').src = 'about:blank';
         data = e.data;
-        dialog = $('#qr');
         if (data) {
-          $('input[name=recaptcha_response_field]', dialog).value = '';
-          $('#error').textContent = data;
+          $('input[name=recaptcha_response_field]', qr.el).value = '';
+          $('#error', qr.el).textContent = data;
           qr.autohide.unset();
           return;
         }
-        if (dialog) {
+        if (qr.el) {
           if (g.REPLY && $.config('Persistent QR')) {
-            qr.refresh(dialog);
+            qr.refresh();
           } else {
-            $.rm(dialog);
+            qr.close();
           }
         }
         if ($.config('Cooldown')) {
@@ -1305,7 +1302,7 @@
         if (g.REPLY && $('img.favicon').src === Favicon.empty) {
           watcher.watch(null, g.THREAD_ID);
         } else {
-          id = $('input[name=resto]').value;
+          id = $('input[name=resto]', qr.el).value;
           op = d.getElementById(id);
           if ($('img.favicon', op).src === Favicon.empty) {
             watcher.watch(op, id);
@@ -1319,7 +1316,7 @@
           e.preventDefault();
         }
         if (isQR) {
-          return $('#error').textContent = 'Error: File too large.';
+          return $('#error', qr.el).textContent = 'Error: File too large.';
         } else {
           return alert('Error: File too large.');
         }
@@ -1327,17 +1324,17 @@
         if (!e) {
           this.submit();
         }
-        $('#error').textContent = '';
+        $('#error', qr.el).textContent = '';
         qr.autohide.set();
         return qr.sage = /sage/i.test($('input[name=email]', this).value);
       }
     },
     quote: function(link) {
-      var dialog, id, s, selection, selectionID, ta, text, _ref;
-      if (dialog = $('#qr')) {
+      var id, s, selection, selectionID, ta, text, _ref;
+      if (qr.el) {
         qr.autohide.unset();
       } else {
-        dialog = qr.dialog(link);
+        qr.dialog(link);
       }
       id = link.textContent;
       text = ">>" + id + "\n";
@@ -1348,47 +1345,48 @@
           text += ">" + s + "\n";
         }
       }
-      ta = $('textarea', dialog);
+      ta = $('textarea', qr.el);
       ta.focus();
       return ta.value += text;
     },
-    refresh: function(dialog) {
+    refresh: function() {
       var c, m;
-      $('form', dialog).reset();
+      $('form', qr.el).reset();
       c = d.cookie;
-      $('input[name=name]', dialog).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      $('input[name=email]', dialog).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      return $('input[name=pwd]', dialog).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
+      $('input[name=name]', qr.el).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
+      $('input[name=email]', qr.el).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
+      return $('input[name=pwd]', qr.el).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
     },
     dialog: function(link) {
-      var THREAD_ID, challenge, dialog, html, spoiler, submitDisabled, submitValue;
+      var THREAD_ID, challenge, html, spoiler, submitDisabled, submitValue;
       submitValue = $('#com_submit').value;
       submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       challenge = $('input[name=recaptcha_challenge_field]').value;
       html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
-      dialog = ui.dialog('qr', {
+      qr.el = ui.dialog('qr', {
         top: '0px',
         left: '0px'
       }, html);
-      qr.refresh(dialog);
-      $.bind($('input[name=name]', dialog), 'mousedown', function(e) {
+      qr.refresh;
+      $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
         return e.stopPropagation();
       });
-      $.bind($('#autohide', dialog), 'click', qr.cb.autohide);
-      $.bind($('a[name=close]', dialog), 'click', function() {
-        return $.rm(dialog);
-      });
-      $.bind($('form', dialog), 'submit', qr.submit);
-      $.bind($('img', dialog), 'click', Recaptcha.reload);
-      $.bind($('input[name=recaptcha_response_field]', dialog), 'keydown', Recaptcha.listener);
-      $.append(d.body, dialog);
-      return dialog;
+      $.bind($('#autohide', qr.el), 'click', qr.cb.autohide);
+      $.bind($('a[name=close]', qr.el), 'click', qr.close);
+      $.bind($('form', qr.el), 'submit', qr.submit);
+      $.bind($('img', qr.el), 'click', Recaptcha.reload);
+      $.bind($('input[name=recaptcha_response_field]', qr.el), 'keydown', Recaptcha.listener);
+      return $.append(d.body, qr.el);
     },
     persist: function() {
       $.append(d.body, qr.dialog());
       return qr.autohide.set();
+    },
+    close: function() {
+      $.rm(qr.el);
+      return qr.el = null;
     },
     sys: function() {
       var c, duration, id, noko, recaptcha, thread, _, _ref;
@@ -2411,7 +2409,7 @@
         Recaptcha.reload();
       }
       if (e.keyCode === 13 && cooldown.duration) {
-        $('#auto').checked = true;
+        $('#auto', qr.el).checked = true;
         return qr.autohide.set();
       }
     },
@@ -2419,13 +2417,13 @@
       return window.location = 'javascript:Recaptcha.reload()';
     },
     reloaded: function(e) {
-      var dialog, target;
-      if (!(dialog = $('#qr'))) {
+      var target;
+      if (!qr.el) {
         return;
       }
       target = e.target;
-      $('img', dialog).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('input[name=recaptcha_challenge_field]', dialog).value = target.value;
+      $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+      return $('input[name=recaptcha_challenge_field]', qr.el).value = target.value;
     }
   };
   nodeInserted = function(e) {
