@@ -1324,6 +1324,9 @@
           return alert('Error: File too large.');
         }
       } else if (isQR) {
+        if (!e) {
+          this.submit();
+        }
         $('#error').textContent = '';
         qr.autohide.set();
         return qr.sage = /sage/i.test($('input[name=email]', this).value);

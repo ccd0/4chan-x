@@ -1040,6 +1040,7 @@ qr =
         alert 'Error: File too large.'
 
     else if isQR
+      if !e then @submit()
       $('#error').textContent = ''
       qr.autohide.set()
       qr.sage = /sage/i.test $('input[name=email]', @).value
