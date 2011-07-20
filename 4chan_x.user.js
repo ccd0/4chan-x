@@ -89,6 +89,7 @@
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads'],
+        'IRC Updating': [false, 'Scroll updated posts into view'],
         'Unread Count': [true, 'Show unread post count in tab title'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
         'Thread Stats': [true, 'Display reply and image count'],
@@ -1617,7 +1618,7 @@
         }
       },
       update: function(e) {
-        var arr, body, br, id, input, replies, reply, _i, _len, _ref, _ref2, _results;
+        var arr, body, br, id, input, replies, reply, _i, _len, _ref, _ref2;
         if (this.status === 404) {
           updater.timer.textContent = '';
           updater.count.textContent = 404;
@@ -1653,11 +1654,12 @@
             updater.count.className = 'new';
           }
         }
-        _results = [];
         while (reply = arr.pop()) {
-          _results.push($.before(br, reply));
+          $.before(br, reply);
         }
-        return _results;
+        if ($.config('IRC Updating')) {
+          return scrollTo(0, d.body.scrollHeight);
+        }
       }
     },
     timeout: function() {

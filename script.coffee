@@ -23,6 +23,7 @@ config =
       'Reveal Spoilers':    [false, 'Replace spoiler thumbnails by the original thumbnail']
     Monitoring:
       'Thread Updater':     [true,  'Update threads']
+      'IRC Updating':       [false, 'Scroll updated posts into view']
       'Unread Count':       [true,  'Show unread post count in tab title']
       'Post in Title':      [true,  'Show the op\'s post in the tab title']
       'Thread Stats':       [true,  'Display reply and image count']
@@ -1348,9 +1349,11 @@ updater =
         else
           updater.count.className = 'new'
 
-      #XXX add replies in correct order so /b/acklinks resolve
+      #XXX add replies in correct order so backlinks resolve
       while reply = arr.pop()
         $.before br, reply
+      if $.config 'IRC Updating'
+        scrollTo 0, d.body.scrollHeight
 
   timeout: ->
     n = Number updater.timer.textContent
