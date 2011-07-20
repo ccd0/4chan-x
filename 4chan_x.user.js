@@ -1696,14 +1696,14 @@
   };
   watcher = {
     init: function() {
-      var dialog, favicon, html, input, inputs, _i, _len;
+      var favicon, html, input, inputs, _i, _len;
       html = '<div class=move>Thread Watcher</div>';
-      dialog = ui.dialog('watcher', {
+      watcher.dialog = ui.dialog('watcher', {
         top: '50px',
         left: '0px'
       }, html);
-      $.append(d.body, dialog);
-      inputs = $$('form > input[value=delete], div.thread > input[value=delete]');
+      $.append(d.body, watcher.dialog);
+      inputs = $$('.op input');
       for (_i = 0, _len = inputs.length; _i < _len; _i++) {
         input = inputs[_i];
         favicon = $.el('img', {
@@ -1720,10 +1720,9 @@
       });
     },
     refresh: function() {
-      var board, dialog, div, favicon, id, link, props, watched, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
+      var board, div, favicon, id, link, props, watched, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
       watched = $.getValue('watched', {});
-      dialog = $('#watcher');
-      _ref = $$('div:not(.move)', dialog);
+      _ref = $$('div:not(.move)', watcher.dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         div = _ref[_i];
         $.rm(div);
@@ -1739,7 +1738,7 @@
           $.bind(x, 'click', watcher.cb.x);
           link = $.el('a', props);
           $.append(div, x, $.tn(' '), link);
-          $.append(dialog, div);
+          $.append(watcher.dialog, div);
         }
       }
       watchedBoard = watched[g.BOARD] || {};
@@ -2703,6 +2702,7 @@
         Recaptcha.init();
         $.bind(form, 'submit', qr.submit);
       }
+      threading.init();
       if ($.config('Auto Noko')) {
         $('.postarea form').action += '?auto_noko';
       }
@@ -2757,7 +2757,6 @@
       if ($.config('Keybinds')) {
         keybinds.init();
       }
-      threading.init();
       if (g.REPLY) {
         if ($.config('Thread Updater')) {
           updater.init();

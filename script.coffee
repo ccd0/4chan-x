@@ -1385,11 +1385,11 @@ updater =
 watcher =
   init: ->
     html = '<div class=move>Thread Watcher</div>'
-    dialog = ui.dialog 'watcher', top: '50px', left: '0px', html
-    $.append d.body, dialog
+    watcher.dialog = ui.dialog 'watcher', top: '50px', left: '0px', html
+    $.append d.body, watcher.dialog
 
     #add watch buttons
-    inputs = $$ 'form > input[value=delete], div.thread > input[value=delete]'
+    inputs = $$ '.op input'
     for input in inputs
       favicon = $.el 'img',
         className: 'favicon'
@@ -1403,8 +1403,7 @@ watcher =
 
   refresh: ->
     watched = $.getValue 'watched', {}
-    dialog = $ '#watcher'
-    for div in $$ 'div:not(.move)', dialog
+    for div in $$ 'div:not(.move)', watcher.dialog
       $.rm div
     for board of watched
       for id, props of watched[board]
@@ -1415,7 +1414,7 @@ watcher =
         link = $.el 'a', props
 
         $.append div, x, $.tn(' '), link
-        $.append dialog, div
+        $.append watcher.dialog, div
 
     watchedBoard = watched[g.BOARD] or {}
     for favicon in $$ 'img.favicon'
@@ -2099,6 +2098,8 @@ main =
       $.bind form, 'submit', qr.submit
 
     #major features
+    threading.init()
+
     if $.config 'Auto Noko'
       $('.postarea form').action += '?auto_noko'
 
@@ -2152,8 +2153,6 @@ main =
 
     if $.config 'Keybinds'
       keybinds.init()
-
-    threading.init()
 
     if g.REPLY
       if $.config 'Thread Updater'
