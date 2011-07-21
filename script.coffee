@@ -1483,7 +1483,7 @@ sauce =
 revealSpoilers =
   init: ->
     g.callbacks.push (root) ->
-      return if not img = $('img[alt^=Spoiler]', root) or root.className is 'inline'
+      return if not (img = $ 'img[alt^=Spoiler]', root) or root.className is 'inline'
       img.removeAttribute 'height'
       img.removeAttribute 'width'
       [_, board, nb] = img.parentNode.href.match /(\w+)\/src\/(\d+)/
@@ -1602,7 +1602,8 @@ quoteInline =
       $.rm table
       $.removeClass @, 'inlined'
       for inlined in $$ 'input', table
-        $.show $.x 'ancestor::table[1]', d.getElementById inlined.name
+        if hidden = d.getElementById inlined.name
+          $.show $.x 'ancestor::table[1]', hidden
       return
     root = if @parentNode.nodeName is 'FONT' then @parentNode else if @nextSibling then @nextSibling else @
     if el = d.getElementById id
@@ -1623,6 +1624,8 @@ quoteInline =
       $.cache pathname, (-> quoteInline.parse @, pathname, id, threadID, inline)
     $.addClass @, 'inlined'
   parse: (req, pathname, id, threadID, inline) ->
+    return unless inline.parentNode
+
     if req.status isnt 200
       inline.innerHTML = "#{req.status} #{req.statusText}"
       return
@@ -1681,8 +1684,7 @@ quotePreview =
     $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
     ui.hoverend()
   parse: (req, id, threadID) ->
-    qp = $ '#qp'
-    return unless qp.innerHTML is "Loading #{id}..."
+    return unless qp = ui.el or ui.el.innerHTML is "Loading #{id}..."
 
     if req.status isnt 200
       qp.innerHTML = "#{req.status} #{req.statusText}"

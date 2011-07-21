@@ -1853,7 +1853,7 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var board, img, nb, _, _ref;
-        if (!(img = $('img[alt^=Spoiler]', root) || root.className === 'inline')) {
+        if (!(img = $('img[alt^=Spoiler]', root)) || root.className === 'inline') {
           return;
         }
         img.removeAttribute('height');
@@ -2040,7 +2040,7 @@
       });
     },
     toggle: function(e) {
-      var el, id, inline, inlined, pathname, root, table, threadID, _i, _len, _ref;
+      var el, hidden, id, inline, inlined, pathname, root, table, threadID, _i, _len, _ref;
       e.preventDefault();
       id = this.hash.slice(1);
       if (table = $("#i" + id, $.x('ancestor::td[1]', this))) {
@@ -2049,7 +2049,9 @@
         _ref = $$('input', table);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           inlined = _ref[_i];
-          $.show($.x('ancestor::table[1]', d.getElementById(inlined.name)));
+          if (hidden = d.getElementById(inlined.name)) {
+            $.show($.x('ancestor::table[1]', hidden));
+          }
         }
         return;
       }
@@ -2079,6 +2081,9 @@
     },
     parse: function(req, pathname, id, threadID, inline) {
       var body, html, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
+      if (!inline.parentNode) {
+        return;
+      }
       if (req.status !== 200) {
         inline.innerHTML = "" + req.status + " " + req.statusText;
         return;
@@ -2177,8 +2182,7 @@
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
-      qp = $('#qp');
-      if (qp.innerHTML !== ("Loading " + id + "...")) {
+      if (!(qp = ui.el || ui.el.innerHTML === ("Loading " + id + "..."))) {
         return;
       }
       if (req.status !== 200) {
