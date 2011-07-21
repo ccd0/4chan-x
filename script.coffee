@@ -978,9 +978,9 @@ qr =
 
   autohide:
     set: ->
-      $('input[title=autohide]:not(:checked)', qr.el)?.click()
+      $('#autohide:not(:checked)', qr.el)?.click()
     unset: ->
-      $('input[title=autohide]:checked', qr.el)?.click()
+      $('#autohide:checked', qr.el)?.click()
 
   cb:
     autohide: (e) ->

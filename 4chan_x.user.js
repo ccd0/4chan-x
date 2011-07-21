@@ -1248,11 +1248,11 @@
     autohide: {
       set: function() {
         var _ref;
-        return (_ref = $('input[title=autohide]:not(:checked)', qr.el)) != null ? _ref.click() : void 0;
+        return (_ref = $('#autohide:not(:checked)', qr.el)) != null ? _ref.click() : void 0;
       },
       unset: function() {
         var _ref;
-        return (_ref = $('input[title=autohide]:checked', qr.el)) != null ? _ref.click() : void 0;
+        return (_ref = $('#autohide:checked', qr.el)) != null ? _ref.click() : void 0;
       }
     },
     cb: {
