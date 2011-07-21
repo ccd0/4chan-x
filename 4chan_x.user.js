@@ -2143,12 +2143,11 @@
     },
     mouseover: function(e) {
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _results;
-      qp = $.el('div', {
+      qp = ui.el = $.el('div', {
         id: 'qp',
         className: 'replyhl'
       });
       $.append(d.body, qp);
-      ui.el = qp;
       id = this.hash.slice(1);
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;

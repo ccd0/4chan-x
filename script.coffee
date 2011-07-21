@@ -1661,11 +1661,10 @@ quotePreview =
         $.bind quote, 'mousemove', ui.hover
         $.bind quote, 'mouseout',  quotePreview.mouseout
   mouseover: (e) ->
-    qp = $.el 'div',
+    qp = ui.el = $.el 'div',
       id: 'qp'
       className: 'replyhl'
     $.append d.body, qp
-    ui.el = qp
 
     id = @hash[1..]
     if el = d.getElementById id
