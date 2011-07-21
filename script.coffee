@@ -1854,11 +1854,10 @@ imgHover =
       $.bind thumb, 'mousemove', ui.hover
       $.bind thumb, 'mouseout',  ui.hoverend
   mouseover: (e) ->
-    img = $.el 'img'
+    ui.el = $.el 'img'
       id: 'iHover'
       src: @parentNode.href
-    ui.el = img
-    $.append d.body, img
+    $.append d.body, ui.el
 
 imgPreloading =
   init: ->

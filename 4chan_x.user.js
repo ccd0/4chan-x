@@ -2455,13 +2455,11 @@
       });
     },
     mouseover: function(e) {
-      var img;
-      img = $.el('img', {
+      ui.el = $.el('img', {
         id: 'iHover',
         src: this.parentNode.href
       });
-      ui.el = img;
-      return $.append(d.body, img);
+      return $.append(d.body, ui.el);
     }
   };
   imgPreloading = {
