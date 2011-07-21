@@ -745,7 +745,7 @@
     cb: {
       keydown: function(e) {
         var key, o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
-        if (((_ref = d.activeElement.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
+        if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
           return;
         }
         key = keybinds.cb.keyCode(e);
@@ -765,7 +765,7 @@
             }
             break;
           case keybinds.spoiler:
-            ta = d.activeElement;
+            ta = e.target;
             if (ta.nodeName !== 'TEXTAREA') {
               return;
             }
