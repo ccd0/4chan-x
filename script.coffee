@@ -1683,7 +1683,7 @@ quotePreview =
     $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
     ui.hoverend()
   parse: (req, id, threadID) ->
-    return unless qp = ui.el and qp.innerHTML is "Loading #{id}..."
+    return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")
 
     if req.status isnt 200
       qp.innerHTML = "#{req.status} #{req.statusText}"

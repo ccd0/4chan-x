@@ -2181,7 +2181,7 @@
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
-      if (!(qp = ui.el && qp.innerHTML === ("Loading " + id + "..."))) {
+      if (!((qp = ui.el) && (qp.innerHTML === ("Loading " + id + "...")))) {
         return;
       }
       if (req.status !== 200) {
