@@ -1370,7 +1370,7 @@
         top: '0px',
         left: '0px'
       }, html);
-      qr.refresh;
+      qr.refresh();
       $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
         return e.stopPropagation();
       });
