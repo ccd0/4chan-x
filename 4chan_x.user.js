@@ -1382,7 +1382,7 @@
       return $.append(d.body, qr.el);
     },
     persist: function() {
-      $.append(d.body, qr.dialog());
+      qr.dialog();
       return qr.autohide.set();
     },
     close: function() {

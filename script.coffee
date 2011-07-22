@@ -1111,7 +1111,7 @@ qr =
     $.append d.body, qr.el
 
   persist: ->
-    $.append d.body, qr.dialog()
+    qr.dialog()
     qr.autohide.set()
 
   close: ->
