@@ -1563,6 +1563,8 @@
     init: function() {
       var autoUpT, checked, conf, dialog, html, input, interva, name, title, updNow, verbose, _i, _len, _ref;
       updater.interval = $.config('Interval');
+      updater.ircUpd = $.config('IRC Updating');
+      updater.verbose = $.config('Verbose');
       html = "<div class=move><span id=count></span> <span id=timer>-" + updater.interval + "</span></div>";
       conf = config.updater.checkbox;
       for (name in conf) {
@@ -1648,7 +1650,7 @@
           arr.push(reply.parentNode.parentNode.parentNode);
         }
         updater.timer.textContent = '-' + updater.interval;
-        if ($.config('Verbose')) {
+        if (updater.verbose) {
           updater.count.textContent = '+' + arr.length;
           if (arr.length === 0) {
             updater.count.className = '';
@@ -1659,7 +1661,7 @@
         while (reply = arr.pop()) {
           $.before(br, reply);
         }
-        if ($.config('IRC Updating')) {
+        if (updater.ircUpd) {
           return scrollTo(0, d.body.scrollHeight);
         }
       }
@@ -1976,14 +1978,16 @@
   };
   quoteBacklink = {
     init: function() {
+      quoteBacklink.opbl = !$.config('OP Backlinks');
+      quoteBacklink.qp = $.config('Quote Preview');
+      quoteBacklink.qi = $.config('Quote Inline');
       return g.callbacks.push(function(root) {
-        var container, el, id, link, opbl, qid, quote, quotes, _i, _len, _ref, _results;
+        var container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
         if (/inline/.test(root.className)) {
           return;
         }
         id = root.id || $('td[id]', root).id;
         quotes = {};
-        opbl = !$.config('OP Backlinks');
         _ref = $$('a.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
@@ -1997,7 +2001,7 @@
           if (!(el = d.getElementById(qid))) {
             continue;
           }
-          if (opbl && el.className === 'op') {
+          if (quoteBacklink.opbl && el.className === 'op') {
             continue;
           }
           link = $.el('a', {
@@ -2005,12 +2009,12 @@
             className: 'backlink',
             textContent: ">>" + id
           });
-          if ($.config('Quote Preview')) {
+          if (quoteBacklink.qp) {
             $.bind(link, 'mouseover', quotePreview.mouseover);
             $.bind(link, 'mousemove', ui.hover);
             $.bind(link, 'mouseout', quotePreview.mouseout);
           }
-          if ($.config('Quote Inline')) {
+          if (quoteBacklink.qi) {
             $.bind(link, 'click', quoteInline.toggle);
           }
           if (!(container = $('.container', el))) {
@@ -2129,6 +2133,7 @@
   };
   quotePreview = {
     init: function() {
+      quotePreview.hl = $.config('Quote Highlighting');
       return g.callbacks.push(function(root) {
         var quote, _i, _len, _ref, _results;
         _ref = $$('a.quotelink, a.backlink', root);
@@ -2141,7 +2146,7 @@
           $.bind(quote, 'mouseover', quotePreview.mouseover);
           $.bind(quote, 'mousemove', ui.hover);
           $.bind(quote, 'mouseout', quotePreview.mouseout);
-          _results.push($.bind(quote, 'msoueout', ui.hoverend));
+          _results.push($.bind(quote, 'mouseout', ui.hoverend));
         }
         return _results;
       });
@@ -2156,7 +2161,7 @@
       id = this.hash.slice(1);
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
-        if ($.config('Quote Highlighting')) {
+        if (quotePreview.hl) {
           $.addClass(el, 'qphl');
         }
         if (/backlink/.test(this.className)) {

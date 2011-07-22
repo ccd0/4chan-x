@@ -1267,6 +1267,9 @@ threadHiding =
 updater =
   init: ->
     updater.interval = $.config 'Interval'
+    updater.ircUpd   = $.config 'IRC Updating'
+    updater.verbose  = $.config 'Verbose'
+
     html = "<div class=move><span id=count></span> <span id=timer>-#{updater.interval}</span></div>"
     conf = config.updater.checkbox
     for name of conf
@@ -1345,7 +1348,7 @@ updater =
         arr.push reply.parentNode.parentNode.parentNode #table
 
       updater.timer.textContent = '-' + updater.interval
-      if $.config 'Verbose'
+      if updater.verbose
         updater.count.textContent = '+' + arr.length
         if arr.length is 0
           updater.count.className = ''
@@ -1355,7 +1358,7 @@ updater =
       #XXX add replies in correct order so backlinks resolve
       while reply = arr.pop()
         $.before br, reply
-      if $.config 'IRC Updating'
+      if updater.ircUpd
         scrollTo 0, d.body.scrollHeight
 
   timeout: ->
@@ -1560,12 +1563,14 @@ titlePost =
 
 quoteBacklink =
   init: ->
+    quoteBacklink.opbl = ! $.config 'OP Backlinks'
+    quoteBacklink.qp   =   $.config 'Quote Preview'
+    quoteBacklink.qi   =   $.config 'Quote Inline'
     g.callbacks.push (root) ->
       return if /inline/.test root.className
       # op or reply
       id = root.id or $('td[id]', root).id
       quotes = {}
-      opbl = ! $.config 'OP Backlinks'
       for quote in $$ 'a.quotelink', root
         #don't process >>>/b/
         continue unless qid = quote.hash[1..]
@@ -1574,16 +1579,16 @@ quoteBacklink =
       for qid of quotes
         continue unless el = d.getElementById qid
         #don't backlink the op
-        continue if opbl and el.className is 'op'
+        continue if quoteBacklink.opbl and el.className is 'op'
         link = $.el 'a',
           href: "##{id}"
           className: 'backlink'
           textContent: ">>#{id}"
-        if $.config 'Quote Preview'
+        if quoteBacklink.qp
           $.bind link, 'mouseover', quotePreview.mouseover
           $.bind link, 'mousemove', ui.hover
           $.bind link, 'mouseout',  quotePreview.mouseout
-        if $.config 'Quote Inline'
+        if quoteBacklink.qi
           $.bind link, 'click', quoteInline.toggle
         unless container = $ '.container', el
           container = $.el 'span', className: 'container'
@@ -1657,13 +1662,14 @@ quoteInline =
 
 quotePreview =
   init: ->
+    quotePreview.hl = $.config 'Quote Highlighting'
     g.callbacks.push (root) ->
       for quote in $$ 'a.quotelink, a.backlink', root
         continue unless quote.hash
         $.bind quote, 'mouseover', quotePreview.mouseover
         $.bind quote, 'mousemove', ui.hover
         $.bind quote, 'mouseout',  quotePreview.mouseout
-        $.bind quote, 'msoueout',  ui.hoverend
+        $.bind quote, 'mouseout',  ui.hoverend
   mouseover: (e) ->
     qp = ui.el = $.el 'div',
       id: 'qp'
@@ -1673,7 +1679,7 @@ quotePreview =
     id = @hash[1..]
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
-      $.addClass el, 'qphl' if $.config 'Quote Highlighting'
+      $.addClass el, 'qphl' if quotePreview.hl
       if /backlink/.test @className
         replyID = $.x('ancestor::*[@id][1]', @).id.match(/\d+/)[0]
         for quote in $$ 'a.quotelink', qp
