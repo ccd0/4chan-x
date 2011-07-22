@@ -1588,6 +1588,7 @@ quoteBacklink =
           $.bind link, 'mouseover', quotePreview.mouseover
           $.bind link, 'mousemove', ui.hover
           $.bind link, 'mouseout',  quotePreview.mouseout
+          $.bind link, 'mouseout',  ui.hoverend
         if quoteBacklink.qi
           $.bind link, 'click', quoteInline.toggle
         unless container = $ '.container', el
