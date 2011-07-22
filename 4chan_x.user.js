@@ -1561,9 +1561,9 @@
   };
   updater = {
     init: function() {
-      var autoUpT, checked, conf, dialog, html, input, interva, interval, name, title, updNow, verbose, _i, _len, _ref;
-      interval = $.config('Interval');
-      html = "<div class=move><span id=count></span> <span id=timer>-" + interval + "</span></div>";
+      var autoUpT, checked, conf, dialog, html, input, interva, name, title, updNow, verbose, _i, _len, _ref;
+      updater.interval = $.config('Interval');
+      html = "<div class=move><span id=count></span> <span id=timer>-" + updater.interval + "</span></div>";
       conf = config.updater.checkbox;
       for (name in conf) {
         title = conf[name][1];
@@ -1571,7 +1571,7 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = $.config('Auto Update') ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + interval + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
+      html += "      <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + updater.interval + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
       dialog = ui.dialog('updater', {
         bottom: '0',
         right: '0'
@@ -1587,7 +1587,7 @@
       updNow = $('input[type=button]', dialog);
       $.bind(verbose, 'click', updater.cb.verbose);
       $.bind(autoUpT, 'click', updater.cb.autoUpdate);
-      $.bind(interva, 'change', $.cb.value);
+      $.bind(interva, 'change', updater.cb.interval);
       $.bind(updNow, 'click', updater.updateNow);
       updater.count = $('#count', dialog);
       updater.timer = $('#timer', dialog);
@@ -1596,7 +1596,7 @@
       return updater.cb.autoUpdate.call(autoUpT);
     },
     cb: {
-      verbose: function(e) {
+      verbose: function() {
         if (this.checked) {
           updater.count.textContent = '+0';
           return $.show(updater.timer);
@@ -1608,14 +1608,18 @@
           return $.hide(updater.timer);
         }
       },
-      autoUpdate: function(e) {
+      autoUpdate: function() {
         if (this.checked) {
           return updater.intervalID = window.setInterval(updater.timeout, 1000);
         } else {
           return window.clearInterval(updater.intervalID);
         }
       },
-      update: function(e) {
+      interval: function() {
+        updater.interval = this.value = this.value.match(/\d+/)[0];
+        return $.cb.value.call(this);
+      },
+      update: function() {
         var arr, body, br, id, input, replies, reply, _i, _len, _ref, _ref2;
         if (this.status === 404) {
           updater.timer.textContent = '';
@@ -1643,7 +1647,7 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        updater.timer.textContent = '-' + $.config('Interval');
+        updater.timer.textContent = '-' + updater.interval;
         if ($.config('Verbose')) {
           updater.count.textContent = '+' + arr.length;
           if (arr.length === 0) {

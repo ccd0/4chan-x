@@ -1266,8 +1266,8 @@ threadHiding =
 
 updater =
   init: ->
-    interval = $.config 'Interval'
-    html = "<div class=move><span id=count></span> <span id=timer>-#{interval}</span></div>"
+    updater.interval = $.config 'Interval'
+    html = "<div class=move><span id=count></span> <span id=timer>-#{updater.interval}</span></div>"
     conf = config.updater.checkbox
     for name of conf
       title = conf[name][1]
@@ -1277,7 +1277,7 @@ updater =
     checked = if $.config 'Auto Update' then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input name=Interval value=#{interval} type=text></label></div>
+      <div><label>Interval (s)<input name=Interval value=#{updater.interval} type=text></label></div>
       <div><input value='Update Now' type=button></div>"
 
     dialog = ui.dialog 'updater', bottom: '0', right: '0', html
@@ -1291,7 +1291,7 @@ updater =
     updNow  = $ 'input[type=button]',   dialog
     $.bind verbose, 'click',  updater.cb.verbose
     $.bind autoUpT, 'click',  updater.cb.autoUpdate
-    $.bind interva, 'change', $.cb.value
+    $.bind interva, 'change', updater.cb.interval
     $.bind updNow,  'click',  updater.updateNow
 
     updater.count = $ '#count', dialog
@@ -1303,7 +1303,7 @@ updater =
     updater.cb.autoUpdate.call autoUpT
 
   cb:
-    verbose: (e) ->
+    verbose: ->
       if @checked
         updater.count.textContent = '+0'
         $.show updater.timer
@@ -1312,12 +1312,15 @@ updater =
           className: ''
           textContent: 'Thread Updater'
         $.hide updater.timer
-    autoUpdate: (e) ->
+    autoUpdate: ->
       if @checked
         updater.intervalID = window.setInterval updater.timeout, 1000
       else
         window.clearInterval updater.intervalID
-    update: (e) ->
+    interval: ->
+      updater.interval = @value = @value.match(/\d+/)[0]
+      $.cb.value.call @
+    update: ->
       if @status is 404
         updater.timer.textContent = ''
         updater.count.textContent = 404
@@ -1341,7 +1344,7 @@ updater =
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      updater.timer.textContent = '-' + $.config 'Interval'
+      updater.timer.textContent = '-' + updater.interval
       if $.config 'Verbose'
         updater.count.textContent = '+' + arr.length
         if arr.length is 0
