@@ -1308,7 +1308,7 @@ updater =
 
   cb:
     verbose: ->
-      if @checked
+      if updater.verbose = @checked
         updater.count.textContent = '+0'
         $.show updater.timer
       else

@@ -1600,7 +1600,7 @@
     },
     cb: {
       verbose: function() {
-        if (this.checked) {
+        if (updater.verbose = this.checked) {
           updater.count.textContent = '+0';
           return $.show(updater.timer);
         } else {
