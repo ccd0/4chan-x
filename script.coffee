@@ -1292,6 +1292,7 @@ updater =
     $.bind verbose, 'click',  updater.cb.verbose
     $.bind autoUpT, 'click',  updater.cb.autoUpdate
     $.bind interva, 'change', updater.cb.interval
+    $.bind interva, 'change', $.cb.value
     $.bind updNow,  'click',  updater.updateNow
 
     updater.count = $ '#count', dialog
@@ -1319,7 +1320,6 @@ updater =
         window.clearInterval updater.intervalID
     interval: ->
       updater.interval = @value = @value.match(/\d+/)[0]
-      $.cb.value.call @
     update: ->
       if @status is 404
         updater.timer.textContent = ''
@@ -1663,6 +1663,7 @@ quotePreview =
         $.bind quote, 'mouseover', quotePreview.mouseover
         $.bind quote, 'mousemove', ui.hover
         $.bind quote, 'mouseout',  quotePreview.mouseout
+        $.bind quote, 'msoueout',  ui.hoverend
   mouseover: (e) ->
     qp = ui.el = $.el 'div',
       id: 'qp'
@@ -1684,7 +1685,6 @@ quotePreview =
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
   mouseout: ->
     $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
-    ui.hoverend()
   parse: (req, id, threadID) ->
     return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")
 

@@ -1588,6 +1588,7 @@
       $.bind(verbose, 'click', updater.cb.verbose);
       $.bind(autoUpT, 'click', updater.cb.autoUpdate);
       $.bind(interva, 'change', updater.cb.interval);
+      $.bind(interva, 'change', $.cb.value);
       $.bind(updNow, 'click', updater.updateNow);
       updater.count = $('#count', dialog);
       updater.timer = $('#timer', dialog);
@@ -1616,8 +1617,7 @@
         }
       },
       interval: function() {
-        updater.interval = this.value = this.value.match(/\d+/)[0];
-        return $.cb.value.call(this);
+        return updater.interval = this.value = this.value.match(/\d+/)[0];
       },
       update: function() {
         var arr, body, br, id, input, replies, reply, _i, _len, _ref, _ref2;
@@ -2140,7 +2140,8 @@
           }
           $.bind(quote, 'mouseover', quotePreview.mouseover);
           $.bind(quote, 'mousemove', ui.hover);
-          _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
+          $.bind(quote, 'mouseout', quotePreview.mouseout);
+          _results.push($.bind(quote, 'msoueout', ui.hoverend));
         }
         return _results;
       });
@@ -2179,9 +2180,8 @@
     mouseout: function() {
       var el;
       if (el = d.getElementById(this.hash.slice(1))) {
-        $.removeClass(el, 'qphl');
+        return $.removeClass(el, 'qphl');
       }
-      return ui.hoverend();
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
