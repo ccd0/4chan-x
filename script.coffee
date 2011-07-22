@@ -1588,7 +1588,6 @@ quoteBacklink =
           $.bind link, 'mouseover', quotePreview.mouseover
           $.bind link, 'mousemove', ui.hover
           $.bind link, 'mouseout',  quotePreview.mouseout
-          $.bind link, 'mouseout',  ui.hoverend
         if quoteBacklink.qi
           $.bind link, 'click', quoteInline.toggle
         unless container = $ '.container', el
@@ -1670,7 +1669,6 @@ quotePreview =
         $.bind quote, 'mouseover', quotePreview.mouseover
         $.bind quote, 'mousemove', ui.hover
         $.bind quote, 'mouseout',  quotePreview.mouseout
-        $.bind quote, 'mouseout',  ui.hoverend
   mouseover: (e) ->
     qp = ui.el = $.el 'div',
       id: 'qp'
@@ -1692,6 +1690,7 @@ quotePreview =
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
   mouseout: ->
     $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
+    ui.hoverend()
   parse: (req, id, threadID) ->
     return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")
 

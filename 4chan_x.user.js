@@ -2013,7 +2013,6 @@
             $.bind(link, 'mouseover', quotePreview.mouseover);
             $.bind(link, 'mousemove', ui.hover);
             $.bind(link, 'mouseout', quotePreview.mouseout);
-            $.bind(link, 'mouseout', ui.hoverend);
           }
           if (quoteBacklink.qi) {
             $.bind(link, 'click', quoteInline.toggle);
@@ -2146,8 +2145,7 @@
           }
           $.bind(quote, 'mouseover', quotePreview.mouseover);
           $.bind(quote, 'mousemove', ui.hover);
-          $.bind(quote, 'mouseout', quotePreview.mouseout);
-          _results.push($.bind(quote, 'mouseout', ui.hoverend));
+          _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
         }
         return _results;
       });
@@ -2186,8 +2184,9 @@
     mouseout: function() {
       var el;
       if (el = d.getElementById(this.hash.slice(1))) {
-        return $.removeClass(el, 'qphl');
+        $.removeClass(el, 'qphl');
       }
+      return ui.hoverend();
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
