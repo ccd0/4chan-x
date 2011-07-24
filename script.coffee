@@ -982,7 +982,7 @@ qr =
       {data} = e
       if data # error message
         $('input[name=recaptcha_response_field]', qr.el).value = ''
-        $('#error', qr.el).textContent = data
+        $.extend $('#error', qr.el), JSON.parse data
         qr.autohide.unset()
         return
 
@@ -1082,7 +1082,7 @@ qr =
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
       </form>
-      <div id=error class=error></div>
+      <a id=error class=error></a>
       "
     qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
 
@@ -1118,7 +1118,11 @@ qr =
       in the global context.
     ###
     $.globalEval ->
-      data = document.querySelector('table font b')?.firstChild.textContent or ''
+      if node = document.querySelector('table font b')?.firstChild
+        {textContent, href} = node
+        data = JSON.stringify {textContent, href}
+      else
+        data = ''
       parent.postMessage data, '*'
 
     c = $('b').lastChild
@@ -2208,6 +2212,12 @@ main =
       }
       .error {
         color: red;
+      }
+      #error {
+        cursor: default;
+      }
+      #error[href] {
+        cursor: pointer;
       }
       td.replyhider {
         vertical-align: top;

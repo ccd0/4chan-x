@@ -1255,7 +1255,7 @@
         data = e.data;
         if (data) {
           $('input[name=recaptcha_response_field]', qr.el).value = '';
-          $('#error', qr.el).textContent = data;
+          $.extend($('#error', qr.el), JSON.parse(data));
           qr.autohide.unset();
           return;
         }
@@ -1351,7 +1351,7 @@
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       challenge = $('input[name=recaptcha_challenge_field]').value;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      <div id=error class=error></div>      ";
+      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      <a id=error class=error></a>      ";
       qr.el = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -1389,8 +1389,16 @@
             in the global context.
           */
       $.globalEval(function() {
-        var data, _ref;
-        data = ((_ref = document.querySelector('table font b')) != null ? _ref.firstChild.textContent : void 0) || '';
+        var data, href, node, textContent, _ref;
+        if (node = (_ref = document.querySelector('table font b')) != null ? _ref.firstChild : void 0) {
+          textContent = node.textContent, href = node.href;
+          data = JSON.stringify({
+            textContent: textContent,
+            href: href
+          });
+        } else {
+          data = '';
+        }
         return parent.postMessage(data, '*');
       });
       c = $('b').lastChild;
@@ -2821,6 +2829,12 @@
       }\
       .error {\
         color: red;\
+      }\
+      #error {\
+        cursor: default;\
+      }\
+      #error[href] {\
+        cursor: pointer;\
       }\
       td.replyhider {\
         vertical-align: top;\
