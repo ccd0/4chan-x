@@ -71,7 +71,7 @@ config =
     expandImages:    'm'
     expandAllImages: 'M'
     update:          'u'
-    unreadCountTo0:  ')'
+    unreadCountTo0:  'z'
   updater:
     checkbox:
       'Scrolling':    [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
