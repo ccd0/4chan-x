@@ -1561,7 +1561,7 @@
   };
   updater = {
     init: function() {
-      var autoUpT, checkbox, checked, dialog, html, input, interva, name, title, updNow, verbose, _i, _len, _ref;
+      var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
       html = "<div class=move><span id=count></span> <span id=timer>-" + conf['Interval'] + "</span></div>";
       checkbox = config.updater.checkbox;
       for (name in checkbox) {
@@ -1575,29 +1575,34 @@
         bottom: '0',
         right: '0'
       }, html);
-      _ref = $$('input[type=checkbox]', dialog);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        input = _ref[_i];
-        $.bind(input, 'click', $.cb.checked);
-      }
-      verbose = $('input[name=Verbose]', dialog);
-      autoUpT = $('input[name$=This]', dialog);
-      interva = $('input[name=Interval]', dialog);
-      updNow = $('input[type=button]', dialog);
-      $.bind(verbose, 'click', updater.cb.verbose);
-      $.bind(autoUpT, 'click', updater.cb.autoUpdate);
-      $.bind(interva, 'change', updater.cb.interval);
-      $.bind(interva, 'change', $.cb.value);
-      $.bind(updNow, 'click', updater.updateNow);
       updater.count = $('#count', dialog);
       updater.timer = $('#timer', dialog);
-      $.append(d.body, dialog);
-      updater.cb.verbose.call(verbose);
-      return updater.cb.autoUpdate.call(autoUpT);
+      _ref = $$('input', dialog);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
+        if (input.type === 'checkbox') {
+          $.bind(input, 'click', $.cb.checked);
+          $.bind(input, 'click', function() {
+            return conf[this.name] = this.checked;
+          });
+          if (input.name === 'Verbose') {
+            $.bind(input, 'click', updater.cb.verbose);
+            updater.cb.verbose.call(input);
+          } else if (input.name === 'Auto Update This') {
+            $.bind(input, 'click', updater.cb.autoUpdate);
+            updater.cb.autoUpdate.call(input);
+          }
+        } else if (input.name === 'Interval') {
+          $.bind(input, 'change', updater.cb.interval);
+        } else if (input.type === 'button') {
+          $.bind(input, 'click', updater.updateNow);
+        }
+      }
+      return $.append(d.body, dialog);
     },
     cb: {
       verbose: function() {
-        if (conf['Verbose'] = this.checked) {
+        if (conf['Verbose']) {
           updater.count.textContent = '+0';
           return $.show(updater.timer);
         } else {

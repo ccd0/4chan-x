@@ -1,5 +1,9 @@
 github
 - mayhem:
+  - Make updater's settings dynamic
+
+2.16.1
+- mayhem:
   - fix updater's custom settings
 
 2.16.0

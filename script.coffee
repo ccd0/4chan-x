@@ -1283,30 +1283,29 @@ updater =
 
     dialog = ui.dialog 'updater', bottom: '0', right: '0', html
 
-    for input in $$ 'input[type=checkbox]', dialog
-      $.bind input, 'click', $.cb.checked
-
-    verbose = $ 'input[name=Verbose]',  dialog
-    autoUpT = $ 'input[name$=This]',    dialog
-    interva = $ 'input[name=Interval]', dialog
-    updNow  = $ 'input[type=button]',   dialog
-    $.bind verbose, 'click',  updater.cb.verbose
-    $.bind autoUpT, 'click',  updater.cb.autoUpdate
-    $.bind interva, 'change', updater.cb.interval
-    $.bind interva, 'change', $.cb.value
-    $.bind updNow,  'click',  updater.updateNow
-
     updater.count = $ '#count', dialog
     updater.timer = $ '#timer', dialog
 
-    $.append d.body, dialog
+    for input in $$ 'input', dialog
+      if input.type is 'checkbox'
+        $.bind input, 'click', $.cb.checked
+        $.bind input, 'click', -> conf[@name] = @checked
+        if input.name is 'Verbose'
+          $.bind input, 'click', updater.cb.verbose
+          updater.cb.verbose.call input
+        else if input.name is 'Auto Update This'
+          $.bind input, 'click', updater.cb.autoUpdate
+          updater.cb.autoUpdate.call input
+      else if input.name is 'Interval'
+        $.bind input, 'change', updater.cb.interval
+      else if input.type is 'button'
+        $.bind input, 'click', updater.updateNow
 
-    updater.cb.verbose.call    verbose
-    updater.cb.autoUpdate.call autoUpT
+    $.append d.body, dialog
 
   cb:
     verbose: ->
-      if conf['Verbose'] = @checked
+      if conf['Verbose']
         updater.count.textContent = '+0'
         $.show updater.timer
       else
