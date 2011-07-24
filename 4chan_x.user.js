@@ -138,7 +138,7 @@
     updater: {
       checkbox: {
         'Verbose': [true, 'Show countdown timer, new post count'],
-        'IRC Updating': [false, 'Scroll updated posts into view'],
+        'Scrolling': [false, 'Scroll updated posts into view'],
         'Auto Update': [true, 'Automatically fetch new posts']
       },
       'Interval': 30
@@ -1646,7 +1646,7 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        ircScroll = conf['IRC Updating'] && arr.length && (document.height - document.body.clientHeight - window.scrollY < 20);
+        ircScroll = conf['Scrolling'] && arr.length && (document.height - document.body.clientHeight - window.scrollY < 20);
         updater.timer.textContent = '-' + conf['Interval'];
         if (conf['Verbose']) {
           updater.count.textContent = '+' + arr.length;

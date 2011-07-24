@@ -73,7 +73,7 @@ config =
   updater:
     checkbox:
       'Verbose':      [true,  'Show countdown timer, new post count']
-      'IRC Updating': [false, 'Scroll updated posts into view']
+      'Scrolling':    [false, 'Scroll updated posts into view']
       'Auto Update':  [true,  'Automatically fetch new posts']
     'Interval': 30
 
@@ -1345,7 +1345,7 @@ updater =
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      ircScroll = conf['IRC Updating'] && arr.length && (document.height - document.body.clientHeight - window.scrollY < 20)
+      ircScroll = conf['Scrolling'] && arr.length && (document.height - document.body.clientHeight - window.scrollY < 20)
 
       updater.timer.textContent = '-' + conf['Interval']
       if conf['Verbose']
