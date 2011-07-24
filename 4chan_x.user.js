@@ -89,7 +89,6 @@
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads'],
-        'IRC Updating': [false, 'Scroll updated posts into view'],
         'Unread Count': [true, 'Show unread post count in tab title'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
         'Thread Stats': [true, 'Display reply and image count'],
@@ -139,6 +138,7 @@
     updater: {
       checkbox: {
         'Verbose': [true, 'Show countdown timer, new post count'],
+        'IRC Updating': [false, 'Scroll updated posts into view'],
         'Auto Update': [true, 'Automatically fetch new posts']
       },
       'Interval': 30
@@ -1622,7 +1622,7 @@
         return updater.interval = this.value = this.value.match(/\d+/)[0];
       },
       update: function() {
-        var arr, body, br, id, input, replies, reply, _i, _len, _ref, _ref2;
+        var arr, body, br, id, input, length, replies, reply, _i, _len, _ref, _ref2;
         if (this.status === 404) {
           updater.timer.textContent = '';
           updater.count.textContent = 404;
@@ -1649,10 +1649,11 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
+        length = arr.length;
         updater.timer.textContent = '-' + updater.interval;
         if (updater.verbose) {
-          updater.count.textContent = '+' + arr.length;
-          if (arr.length === 0) {
+          updater.count.textContent = '+' + length;
+          if (length === 0) {
             updater.count.className = '';
           } else {
             updater.count.className = 'new';
@@ -1661,7 +1662,7 @@
         while (reply = arr.pop()) {
           $.before(br, reply);
         }
-        if (updater.ircUpd) {
+        if (updater.ircUpd && length) {
           return scrollTo(0, d.body.scrollHeight);
         }
       }
