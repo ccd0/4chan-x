@@ -1566,7 +1566,7 @@
       checkbox = config.updater.checkbox;
       for (name in checkbox) {
         title = checkbox[name][1];
-        checked = checkbox[name] ? 'checked' : '';
+        checked = conf[name] ? 'checked' : '';
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = conf['Auto Update'] ? 'checked' : '';

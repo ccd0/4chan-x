@@ -1272,7 +1272,7 @@ updater =
     {checkbox} = config.updater
     for name of checkbox
       title = checkbox[name][1]
-      checked = if checkbox[name] then 'checked' else ''
+      checked = if conf[name] then 'checked' else ''
       html += "<div><label title='#{title}'>#{name}<input name='#{name}' type=checkbox #{checked}></label></div>"
 
     checked = if conf['Auto Update'] then 'checked' else ''
