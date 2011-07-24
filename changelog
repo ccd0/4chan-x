@@ -5,6 +5,7 @@ github
   - Thread Stats performance fix, especially on long threads
   - Sauce performance improvement
   - fix Quote Inlining for a pattern
+  - other minor performance improvements and bug fixes
 - aeosynth:
   - fix an upgrading problem (1.x -> 2.x)
   - fix minor bugs with auto-posting
