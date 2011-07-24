@@ -352,8 +352,8 @@ else
       localStorage[name] = JSON.stringify value
 
 #load values from localStorage
-for key of conf
-  conf[key] = $.getValue key, conf[key]
+for key, val of conf
+  conf[key] = $.getValue key, val
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector

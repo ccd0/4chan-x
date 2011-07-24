@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -498,7 +498,8 @@
     });
   }
   for (key in conf) {
-    conf[key] = $.getValue(key, conf[key]);
+    val = conf[key];
+    conf[key] = $.getValue(key, val);
   }
   $$ = function(selector, root) {
     if (root == null) {
