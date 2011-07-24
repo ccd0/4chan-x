@@ -731,12 +731,6 @@
           return;
         }
         key = keybinds.cb.keyCode(e);
-        if (e.altKey) {
-          key = 'alt+' + key;
-        }
-        if (e.ctrlKey) {
-          key = 'ctrl+' + key;
-        }
         thread = nav.getThread();
         switch (key) {
           case conf.close:
@@ -833,7 +827,7 @@
         }
         return e.preventDefault();
       },
-      keyCode: function(e, options) {
+      keyCode: function(e) {
         var kc;
         kc = e.keyCode;
         if ((65 <= kc && kc <= 90)) {
@@ -845,8 +839,14 @@
           key = String.fromCharCode(kc);
         } else if (kc === 27) {
           key = 'Esc';
-        } else if (options && kc === 8) {
+        } else {
           key = '';
+        }
+        if (e.altKey) {
+          key = 'alt+' + key;
+        }
+        if (e.ctrlKey) {
+          key = 'ctrl+' + key;
         }
         return key;
       }
@@ -1124,20 +1124,10 @@
     keybind: function(e) {
       e.preventDefault();
       e.stopPropagation();
-      key = keybinds.cb.keyCode(e, true);
-      if (key != null) {
-        if (key) {
-          if (e.altKey) {
-            key = 'alt+' + key;
-          }
-          if (e.ctrlKey) {
-            key = 'ctrl+' + key;
-          }
-        }
-        this.value = key;
-        $.setValue(this.name, key);
-        return conf[this.name] = key;
-      }
+      key = keybinds.cb.keyCode(e);
+      this.value = key;
+      $.setValue(this.name, key);
+      return conf[this.name] = key;
     },
     time: function(e) {
       $.setValue('time', this.value);

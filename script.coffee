@@ -521,8 +521,6 @@ keybinds =
     keydown: (e) ->
       return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
       key = keybinds.cb.keyCode e
-      if e.altKey  then key = 'alt+' + key
-      if e.ctrlKey then key = 'ctrl+' + key
 
       thread = nav.getThread()
       switch key
@@ -593,7 +591,7 @@ keybinds =
           return
       e.preventDefault()
 
-    keyCode: (e, options) ->
+    keyCode: (e) ->
       kc = e.keyCode
       if 65 <= kc <= 90 #A-Z
         key = String.fromCharCode kc
@@ -603,8 +601,10 @@ keybinds =
         key = String.fromCharCode kc
       else if kc is 27
         key = 'Esc'
-      else if options and kc is 8
+      else
         key = ''
+      if e.altKey  then key = 'alt+' + key
+      if e.ctrlKey then key = 'ctrl+' + key
       key
 
   img: (thread, all) ->
@@ -890,15 +890,10 @@ options =
   keybind: (e) ->
     e.preventDefault()
     e.stopPropagation()
-    key = keybinds.cb.keyCode e, true
-
-    if key?
-      if key
-        key = 'alt+' + key  if e.altKey
-        key = 'ctrl+' + key if e.ctrlKey
-      @value = key
-      $.setValue @name, key
-      conf[@name] = key
+    key = keybinds.cb.keyCode e
+    @value = key
+    $.setValue @name, key
+    conf[@name] = key
   time: (e) ->
     $.setValue 'time', @value
     conf['time'] = @value
