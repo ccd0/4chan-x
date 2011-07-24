@@ -730,7 +730,9 @@
         if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
           return;
         }
-        key = keybinds.cb.keyCode(e);
+        if (!(key = keybinds.cb.keyCode(e))) {
+          return;
+        }
         thread = nav.getThread();
         switch (key) {
           case conf.close:
@@ -1126,7 +1128,9 @@
     keybind: function(e) {
       e.preventDefault();
       e.stopPropagation();
-      key = keybinds.cb.keyCode(e);
+      if (!(key = keybinds.cb.keyCode(e))) {
+        return;
+      }
       this.value = key;
       $.setValue(this.name, key);
       return conf[this.name] = key;
