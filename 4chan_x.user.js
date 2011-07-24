@@ -845,9 +845,9 @@
         } else if (kc === 27) {
           key = 'Esc';
         } else if (kc === 8) {
-          key = 'BS';
-        } else {
           key = '';
+        } else {
+          key = null;
         }
         if (key) {
           if (e.altKey) {
@@ -1133,11 +1133,8 @@
     keybind: function(e) {
       e.preventDefault();
       e.stopPropagation();
-      if (!(key = keybinds.cb.keyCode(e))) {
+      if ((key = keybinds.cb.keyCode(e)) == null) {
         return;
-      }
-      if (key === 'BS') {
-        key = '';
       }
       this.value = key;
       $.setValue(this.name, key);

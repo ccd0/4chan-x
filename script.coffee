@@ -603,9 +603,9 @@ keybinds =
       else if kc is 27
         key = 'Esc'
       else if kc is 8
-        key = 'BS'
-      else
         key = ''
+      else
+        key = null
       if key
         if e.altKey  then key = 'alt+' + key
         if e.ctrlKey then key = 'ctrl+' + key
@@ -894,8 +894,7 @@ options =
   keybind: (e) ->
     e.preventDefault()
     e.stopPropagation()
-    return unless key = keybinds.cb.keyCode e
-    if key is 'BS' then key = ''
+    return unless (key = keybinds.cb.keyCode e)?
     @value = key
     $.setValue @name, key
     conf[@name] = key
