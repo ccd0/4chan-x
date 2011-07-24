@@ -848,7 +848,7 @@ options =
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.time
     for input in $$ '#keybinds input', dialog
-      input.value = $.getValue "key/#{input.name}", config.hotkeys[input.name]
+      input.value = conf[input.name]
       $.bind input, 'keydown', options.keybind
 
     ###
@@ -890,8 +890,8 @@ options =
         key = 'alt+' + key  if e.altKey
         key = 'ctrl+' + key if e.ctrlKey
       @value = key
-      $.setValue "key/#{@name}", key
-      keybinds[@name] = key
+      $.setValue @name, key
+      conf[@name] = key
   time: (e) ->
     $.setValue 'time', @value
     Time.foo()

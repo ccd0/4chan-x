@@ -1077,7 +1077,7 @@
       _ref4 = $$('#keybinds input', dialog);
       for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
         input = _ref4[_k];
-        input.value = $.getValue("key/" + input.name, config.hotkeys[input.name]);
+        input.value = conf[input.name];
         $.bind(input, 'keydown', options.keybind);
       }
       /*
@@ -1129,8 +1129,8 @@
           }
         }
         this.value = key;
-        $.setValue("key/" + this.name, key);
-        return keybinds[this.name] = key;
+        $.setValue(this.name, key);
+        return conf[this.name] = key;
       }
     },
     time: function(e) {
