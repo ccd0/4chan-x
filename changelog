@@ -7,6 +7,8 @@ github
   - fix an upgrading problem (1.x -> 2.x)
   - fix minor bugs with auto-posting
   - new IRC Updating feature
+  - enable auto-updating by default
+  - alphabetize option groups
 
 2.15.1
 - mayhem:
