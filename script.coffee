@@ -71,6 +71,7 @@ config =
     expandImages:    'm'
     expandAllImages: 'M'
     update:          'u'
+    UnreadCountTo0:  'r'
   updater:
     checkbox:
       'Scrolling':    [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
@@ -584,6 +585,10 @@ keybinds =
             qr.submit.call $ 'form', qr.el
           else
             $('.postarea form').submit()
+        when conf.UnreadCountTo0
+          unread.replies.length = 0
+          unread.updateTitle()
+          Favicon.update()
         else
           return
       e.preventDefault()
@@ -818,6 +823,7 @@ options =
                 <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>
                 <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>
                 <tr><td>Update now</td><td><input type=text name=update></td></tr>
+                <tr><td>Reset the unread count to 0</td><td><input type=text name=UnreadCountTo0></td></tr>
               </tbody>
             </table>
           </div>
