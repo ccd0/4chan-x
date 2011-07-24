@@ -1348,12 +1348,12 @@ updater =
       replies = $$ 'td[id]', body
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
-      length = arr.length
+      ircScroll = updater.ircUpd && arr.length && (document.height - document.body.clientHeight - window.scrollY - 20 <= 0)
 
       updater.timer.textContent = '-' + updater.interval
       if updater.verbose
-        updater.count.textContent = '+' + length
-        if length is 0
+        updater.count.textContent = '+' + arr.length
+        if arr.length is 0
           updater.count.className = ''
         else
           updater.count.className = 'new'
@@ -1361,7 +1361,7 @@ updater =
       #XXX add replies in correct order so backlinks resolve
       while reply = arr.pop()
         $.before br, reply
-      if updater.ircUpd && length
+      if ircScroll
         scrollTo 0, d.body.scrollHeight
 
   timeout: ->

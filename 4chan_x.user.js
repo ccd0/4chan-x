@@ -1622,7 +1622,7 @@
         return updater.interval = this.value = this.value.match(/\d+/)[0];
       },
       update: function() {
-        var arr, body, br, id, input, length, replies, reply, _i, _len, _ref, _ref2;
+        var arr, body, br, id, input, ircScroll, replies, reply, _i, _len, _ref, _ref2;
         if (this.status === 404) {
           updater.timer.textContent = '';
           updater.count.textContent = 404;
@@ -1649,11 +1649,11 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        length = arr.length;
+        ircScroll = updater.ircUpd && arr.length && (document.height - document.body.clientHeight - window.scrollY - 20 <= 0);
         updater.timer.textContent = '-' + updater.interval;
         if (updater.verbose) {
-          updater.count.textContent = '+' + length;
-          if (length === 0) {
+          updater.count.textContent = '+' + arr.length;
+          if (arr.length === 0) {
             updater.count.className = '';
           } else {
             updater.count.className = 'new';
@@ -1662,7 +1662,7 @@
         while (reply = arr.pop()) {
           $.before(br, reply);
         }
-        if (updater.ircUpd && length) {
+        if (ircScroll) {
           return scrollTo(0, d.body.scrollHeight);
         }
       }
