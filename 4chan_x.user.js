@@ -1594,6 +1594,7 @@
           }
         } else if (input.name === 'Interval') {
           $.bind(input, 'change', updater.cb.interval);
+          $.bind(input, 'change', $.cb.value);
         } else if (input.type === 'button') {
           $.bind(input, 'click', updater.updateNow);
         }
