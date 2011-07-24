@@ -721,26 +721,6 @@
         node = _ref[_i];
         node.removeAttribute('accesskey');
       }
-      keybinds.close = $.getValue('key/close', config.hotkeys.close);
-      keybinds.spoiler = $.getValue('key/spoiler', config.hotkeys.spoiler);
-      keybinds.openQR = $.getValue('key/openQR', config.hotkeys.openQR);
-      keybinds.openEmptyQR = $.getValue('key/openEmptyQR', config.hotkeys.openEmptyQR);
-      keybinds.submit = $.getValue('key/submit', config.hotkeys.submit);
-      keybinds.nextReply = $.getValue('key/nextReply', config.hotkeys.nextReply);
-      keybinds.previousReply = $.getValue('key/previousReply', config.hotkeys.previousReply);
-      keybinds.nextThread = $.getValue('key/nextThread', config.hotkeys.nextThread);
-      keybinds.previousThread = $.getValue('key/previousThread', config.hotkeys.previousThread);
-      keybinds.nextPage = $.getValue('key/nextPage', config.hotkeys.nextPage);
-      keybinds.previousPage = $.getValue('key/previousPage', config.hotkeys.previousPage);
-      keybinds.zero = $.getValue('key/zero', config.hotkeys.zero);
-      keybinds.openThreadTab = $.getValue('key/openThreadTab', config.hotkeys.openThreadTab);
-      keybinds.openThread = $.getValue('key/openThread', config.hotkeys.openThread);
-      keybinds.expandThread = $.getValue('key/expandThread', config.hotkeys.expandThread);
-      keybinds.watch = $.getValue('key/watch', config.hotkeys.watch);
-      keybinds.hide = $.getValue('key/hide', config.hotkeys.hide);
-      keybinds.expandImages = $.getValue('key/expandImages', config.hotkeys.expandImages);
-      keybinds.expandAllImages = $.getValue('key/expandAllImages', config.hotkeys.expandAllImages);
-      keybinds.update = $.getValue('key/update', config.hotkeys.update);
       return $.bind(d, 'keydown', keybinds.cb.keydown);
     },
     cb: {
@@ -758,14 +738,14 @@
         }
         thread = nav.getThread();
         switch (key) {
-          case keybinds.close:
+          case conf.close:
             if (o = $('#overlay')) {
               $.rm(o);
             } else if (qr.el) {
               qr.close();
             }
             break;
-          case keybinds.spoiler:
+          case conf.spoiler:
             ta = e.target;
             if (ta.nodeName !== 'TEXTAREA') {
               return;
@@ -780,62 +760,62 @@
             range = valStart.length + valMid.length;
             ta.setSelectionRange(range, range);
             break;
-          case keybinds.zero:
+          case conf.zero:
             window.location = "/" + g.BOARD + "/0#0";
             break;
-          case keybinds.openEmptyQR:
+          case conf.openEmptyQR:
             keybinds.qr(thread);
             break;
-          case keybinds.nextReply:
+          case conf.nextReply:
             keybinds.hl.next(thread);
             break;
-          case keybinds.previousReply:
+          case conf.previousReply:
             keybinds.hl.prev(thread);
             break;
-          case keybinds.expandAllImages:
+          case conf.expandAllImages:
             keybinds.img(thread, true);
             break;
-          case keybinds.openThread:
+          case conf.openThread:
             keybinds.open(thread);
             break;
-          case keybinds.expandThread:
+          case conf.expandThread:
             expandThread.toggle(thread);
             break;
-          case keybinds.openQR:
+          case conf.openQR:
             keybinds.qr(thread, true);
             break;
-          case keybinds.expandImages:
+          case conf.expandImages:
             keybinds.img(thread);
             break;
-          case keybinds.nextThread:
+          case conf.nextThread:
             nav.next();
             break;
-          case keybinds.openThreadTab:
+          case conf.openThreadTab:
             keybinds.open(thread, true);
             break;
-          case keybinds.previousThread:
+          case conf.previousThread:
             nav.prev();
             break;
-          case keybinds.update:
+          case conf.update:
             updater.update();
             break;
-          case keybinds.watch:
+          case conf.watch:
             watcher.toggle(thread);
             break;
-          case keybinds.hide:
+          case conf.hide:
             threadHiding.toggle(thread);
             break;
-          case keybinds.nextPage:
+          case conf.nextPage:
             if ((_ref2 = $('input[value=Next]')) != null) {
               _ref2.click();
             }
             break;
-          case keybinds.previousPage:
+          case conf.previousPage:
             if ((_ref3 = $('input[value=Previous]')) != null) {
               _ref3.click();
             }
             break;
-          case keybinds.submit:
+          case conf.submit:
             if (qr.el) {
               qr.submit.call($('form', qr.el));
             } else {

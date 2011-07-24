@@ -513,28 +513,6 @@ keybinds =
   init: ->
     for node in $$ '[accesskey]'
       node.removeAttribute 'accesskey'
-
-    keybinds.close           = $.getValue 'key/close',           config.hotkeys.close
-    keybinds.spoiler         = $.getValue 'key/spoiler',         config.hotkeys.spoiler
-    keybinds.openQR          = $.getValue 'key/openQR',          config.hotkeys.openQR
-    keybinds.openEmptyQR     = $.getValue 'key/openEmptyQR',     config.hotkeys.openEmptyQR
-    keybinds.submit          = $.getValue 'key/submit',          config.hotkeys.submit
-    keybinds.nextReply       = $.getValue 'key/nextReply',       config.hotkeys.nextReply
-    keybinds.previousReply   = $.getValue 'key/previousReply',   config.hotkeys.previousReply
-    keybinds.nextThread      = $.getValue 'key/nextThread',      config.hotkeys.nextThread
-    keybinds.previousThread  = $.getValue 'key/previousThread',  config.hotkeys.previousThread
-    keybinds.nextPage        = $.getValue 'key/nextPage',        config.hotkeys.nextPage
-    keybinds.previousPage    = $.getValue 'key/previousPage',    config.hotkeys.previousPage
-    keybinds.zero            = $.getValue 'key/zero',            config.hotkeys.zero
-    keybinds.openThreadTab   = $.getValue 'key/openThreadTab',   config.hotkeys.openThreadTab
-    keybinds.openThread      = $.getValue 'key/openThread',      config.hotkeys.openThread
-    keybinds.expandThread    = $.getValue 'key/expandThread',    config.hotkeys.expandThread
-    keybinds.watch           = $.getValue 'key/watch',           config.hotkeys.watch
-    keybinds.hide            = $.getValue 'key/hide',            config.hotkeys.hide
-    keybinds.expandImages    = $.getValue 'key/expandImages',    config.hotkeys.expandImages
-    keybinds.expandAllImages = $.getValue 'key/expandAllImages', config.hotkeys.expandAllImages
-    keybinds.update          = $.getValue 'key/update',          config.hotkeys.update
-
     $.bind d, 'keydown',  keybinds.cb.keydown
 
   cb:
@@ -546,12 +524,12 @@ keybinds =
 
       thread = nav.getThread()
       switch key
-        when keybinds.close
+        when conf.close
           if o = $ '#overlay'
             $.rm o
           else if qr.el
             qr.close()
-        when keybinds.spoiler
+        when conf.spoiler
           ta = e.target
           return unless ta.nodeName is 'TEXTAREA'
 
@@ -566,41 +544,41 @@ keybinds =
           ta.value = valStart + valMid + valEnd
           range = valStart.length + valMid.length
           ta.setSelectionRange range, range
-        when keybinds.zero
+        when conf.zero
           window.location = "/#{g.BOARD}/0#0"
-        when keybinds.openEmptyQR
+        when conf.openEmptyQR
           keybinds.qr thread
-        when keybinds.nextReply
+        when conf.nextReply
           keybinds.hl.next thread
-        when keybinds.previousReply
+        when conf.previousReply
           keybinds.hl.prev thread
-        when keybinds.expandAllImages
+        when conf.expandAllImages
           keybinds.img thread, true
-        when keybinds.openThread
+        when conf.openThread
           keybinds.open thread
-        when keybinds.expandThread
+        when conf.expandThread
           expandThread.toggle thread
-        when keybinds.openQR
+        when conf.openQR
           keybinds.qr thread, true
-        when keybinds.expandImages
+        when conf.expandImages
           keybinds.img thread
-        when keybinds.nextThread
+        when conf.nextThread
           nav.next()
-        when keybinds.openThreadTab
+        when conf.openThreadTab
           keybinds.open thread, true
-        when keybinds.previousThread
+        when conf.previousThread
           nav.prev()
-        when keybinds.update
+        when conf.update
           updater.update()
-        when keybinds.watch
+        when conf.watch
           watcher.toggle thread
-        when keybinds.hide
+        when conf.hide
           threadHiding.toggle thread
-        when keybinds.nextPage
+        when conf.nextPage
           $('input[value=Next]')?.click()
-        when keybinds.previousPage
+        when conf.previousPage
           $('input[value=Previous]')?.click()
-        when keybinds.submit
+        when conf.submit
           if qr.el
             qr.submit.call $ 'form', qr.el
           else
