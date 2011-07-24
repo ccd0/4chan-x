@@ -1961,9 +1961,6 @@
   };
   quoteBacklink = {
     init: function() {
-      quoteBacklink.opbl = !conf['OP Backlinks'];
-      quoteBacklink.qp = conf['Quote Preview'];
-      quoteBacklink.qi = conf['Quote Inline'];
       return g.callbacks.push(function(root) {
         var container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
         if (/inline/.test(root.className)) {
@@ -1984,7 +1981,7 @@
           if (!(el = d.getElementById(qid))) {
             continue;
           }
-          if (quoteBacklink.opbl && el.className === 'op') {
+          if (!conf['OP Backlinks'] && el.className === 'op') {
             continue;
           }
           link = $.el('a', {
@@ -1992,12 +1989,12 @@
             className: 'backlink',
             textContent: ">>" + id
           });
-          if (quoteBacklink.qp) {
+          if (conf['Quote Preview']) {
             $.bind(link, 'mouseover', quotePreview.mouseover);
             $.bind(link, 'mousemove', ui.hover);
             $.bind(link, 'mouseout', quotePreview.mouseout);
           }
-          if (quoteBacklink.qi) {
+          if (conf['Quote Inline']) {
             $.bind(link, 'click', quoteInline.toggle);
           }
           if (!(container = $('.container', el))) {

@@ -1539,9 +1539,6 @@ titlePost =
 
 quoteBacklink =
   init: ->
-    quoteBacklink.opbl = ! conf['OP Backlinks']
-    quoteBacklink.qp   =   conf['Quote Preview']
-    quoteBacklink.qi   =   conf['Quote Inline']
     g.callbacks.push (root) ->
       return if /inline/.test root.className
       # op or reply
@@ -1555,16 +1552,16 @@ quoteBacklink =
       for qid of quotes
         continue unless el = d.getElementById qid
         #don't backlink the op
-        continue if quoteBacklink.opbl and el.className is 'op'
+        continue if !conf['OP Backlinks'] and el.className is 'op'
         link = $.el 'a',
           href: "##{id}"
           className: 'backlink'
           textContent: ">>#{id}"
-        if quoteBacklink.qp
+        if conf['Quote Preview']
           $.bind link, 'mouseover', quotePreview.mouseover
           $.bind link, 'mousemove', ui.hover
           $.bind link, 'mouseout',  quotePreview.mouseout
-        if quoteBacklink.qi
+        if conf['Quote Inline']
           $.bind link, 'click', quoteInline.toggle
         unless container = $ '.container', el
           container = $.el 'span', className: 'container'
