@@ -688,7 +688,7 @@
       var a, div, id, name, table, trip, _ref;
       table = reply.parentNode.parentNode.parentNode;
       $.hide(table);
-      if ($.config('Show Stubs')) {
+      if (conf['Show Stubs']) {
         name = $('span.commentpostername', reply).textContent;
         trip = ((_ref = $('span.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
@@ -1051,7 +1051,7 @@
       var arr, checked, description, dialog, hiddenNum, hiddenThreads, hidingul, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
-      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=http://userscripts.org/scripts/show/51412>uso</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea name=flavors id=flavors hidden>" + ($.config('flavors')) + "</textarea>          <div id=time hidden>            <div><input type=text name=time value='" + ($.config('time')) + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>              </tbody>            </table>          </div>          <div id=keybinds hidden>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>                <tr><td>Update now</td><td><input type=text name=update></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
+      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=http://userscripts.org/scripts/show/51412>uso</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea name=flavors id=flavors hidden>" + conf['flavors'] + "</textarea>          <div id=time hidden>            <div><input type=text name=time value='" + conf['time'] + "> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>              </tbody>            </table>          </div>          <div id=keybinds hidden>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>                <tr><td>Update now</td><td><input type=text name=update></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
       dialog = $.el('div', {
         id: 'options',
         innerHTML: html
@@ -1068,7 +1068,7 @@
         }
         for (key in obj) {
           arr = obj[key];
-          checked = $.config(key) ? "checked" : "";
+          checked = conf[key] ? "checked" : "";
           description = arr[1];
           li = $.el('li', {
             innerHTML: "<label><input type=checkbox name='" + key + "' " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
@@ -1275,13 +1275,13 @@
           return;
         }
         if (qr.el) {
-          if (g.REPLY && $.config('Persistent QR')) {
+          if (g.REPLY && conf['Persistent QR']) {
             qr.refresh();
           } else {
             qr.close();
           }
         }
-        if ($.config('Cooldown')) {
+        if (conf['Cooldown']) {
           duration = qr.sage ? 60 : 30;
           $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
           return cooldown.start();
@@ -1299,7 +1299,7 @@
     },
     submit: function(e) {
       var id, inputfile, isQR, op;
-      if ($.config('Auto Watch Reply') && $.config('Thread Watcher')) {
+      if (conf['Auto Watch Reply'] && conf['Thread Watcher']) {
         if (g.REPLY && $('img.favicon').src === Favicon.empty) {
           watcher.watch(null, g.THREAD_ID);
         } else {
@@ -1522,7 +1522,7 @@
     },
     hideHide: function(thread) {
       var a, div, name, num, span, text, trip, _ref;
-      if ($.config('Show Stubs')) {
+      if (conf['Show Stubs']) {
         if (span = $('.omittedposts', thread)) {
           num = Number(span.textContent.match(/\d+/)[0]);
         } else {
@@ -1562,17 +1562,17 @@
   updater = {
     init: function() {
       var autoUpT, checked, dialog, html, input, interva, name, title, updNow, verbose, _i, _len, _ref;
-      updater.interval = $.config('Interval');
-      updater.ircUpd = $.config('IRC Updating');
-      updater.verbose = $.config('Verbose');
+      updater.interval = conf['Interval'];
+      updater.ircUpd = conf['IRC Updating'];
+      updater.verbose = conf['Verbose'];
       html = "<div class=move><span id=count></span> <span id=timer>-" + updater.interval + "</span></div>";
       conf = config.updater.checkbox;
       for (name in conf) {
         title = conf[name][1];
-        checked = $.config(name) ? 'checked' : '';
+        checked = conf[name] ? 'checked' : '';
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
-      checked = $.config('Auto Update') ? 'checked' : '';
+      checked = conf['Auto Update'] ? 'checked' : '';
       html += "      <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + updater.interval + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
       dialog = ui.dialog('updater', {
         bottom: '0',
@@ -1813,7 +1813,7 @@
       var prefix, s;
       sauce.prefixes = (function() {
         var _i, _len, _ref, _results;
-        _ref = $.config('flavors').split('\n');
+        _ref = conf['flavors'].split('\n');
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           s = _ref[_i];
@@ -1892,7 +1892,7 @@
     },
     foo: function() {
       var code;
-      code = $.config('time').replace(/%([A-Za-z])/g, function(s, c) {
+      code = conf['time'].replace(/%([A-Za-z])/g, function(s, c) {
         switch (c) {
           case 'a':
           case 'A':
@@ -1978,9 +1978,9 @@
   };
   quoteBacklink = {
     init: function() {
-      quoteBacklink.opbl = !$.config('OP Backlinks');
-      quoteBacklink.qp = $.config('Quote Preview');
-      quoteBacklink.qi = $.config('Quote Inline');
+      quoteBacklink.opbl = !conf['OP Backlinks'];
+      quoteBacklink.qp = conf['Quote Preview'];
+      quoteBacklink.qi = conf['Quote Inline'];
       return g.callbacks.push(function(root) {
         var container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
         if (/inline/.test(root.className)) {
@@ -2133,7 +2133,7 @@
   };
   quotePreview = {
     init: function() {
-      quotePreview.hl = $.config('Quote Highlighting');
+      quotePreview.hl = conf['Quote Highlighting'];
       return g.callbacks.push(function(root) {
         var quote, _i, _len, _ref, _results;
         _ref = $$('a.quotelink, a.backlink', root);
@@ -2652,7 +2652,7 @@
         qr.sys();
         return;
       }
-      if ($.config('404 Redirect') && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
+      if (conf['404 Redirect'] && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
         redirect();
         return;
       }
@@ -2696,99 +2696,99 @@
         $.bind(form, 'submit', qr.submit);
       }
       threading.init();
-      if ($.config('Auto Noko')) {
+      if (conf['Auto Noko']) {
         $('.postarea form').action += '?auto_noko';
       }
-      if ($.config('Cooldown')) {
+      if (conf['Cooldown']) {
         cooldown.init();
       }
-      if ($.config('Image Expansion')) {
+      if (conf['Image Expansion']) {
         imgExpand.init();
       }
-      if ($.config('Image Auto-Gif')) {
+      if (conf['Image Auto-Gif']) {
         imgGif.init();
       }
-      if ($.config('Time Formatting')) {
+      if (conf['Time Formatting']) {
         Time.init();
       }
-      if ($.config('Sauce')) {
+      if (conf['Sauce']) {
         sauce.init();
       }
-      if ($.config('Reveal Spoilers')) {
+      if (conf['Reveal Spoilers']) {
         revealSpoilers.init();
       }
-      if ($.config('Anonymize')) {
+      if (conf['Anonymize']) {
         anonymize.init();
       }
-      if ($.config('Image Hover')) {
+      if (conf['Image Hover']) {
         imgHover.init();
       }
-      if ($.config('Reply Hiding')) {
+      if (conf['Reply Hiding']) {
         replyHiding.init();
       }
-      if (canPost && $.config('Quick Reply')) {
+      if (canPost && conf['Quick Reply']) {
         qr.init();
       }
-      if ($.config('Report Button')) {
+      if (conf['Report Button']) {
         reportButton.init();
       }
-      if ($.config('Quote Backlinks')) {
+      if (conf['Quote Backlinks']) {
         quoteBacklink.init();
       }
-      if ($.config('Quote Inline')) {
+      if (conf['Quote Inline']) {
         quoteInline.init();
       }
-      if ($.config('Quote Preview')) {
+      if (conf['Quote Preview']) {
         quotePreview.init();
       }
-      if ($.config('Indicate OP quote')) {
+      if (conf['Indicate OP quote']) {
         quoteOP.init();
       }
-      if ($.config('Thread Watcher')) {
+      if (conf['Thread Watcher']) {
         watcher.init();
       }
-      if ($.config('Keybinds')) {
+      if (conf['Keybinds']) {
         keybinds.init();
       }
       if (g.REPLY) {
-        if ($.config('Thread Updater')) {
+        if (conf['Thread Updater']) {
           updater.init();
         }
-        if ($.config('Image Preloading')) {
+        if (conf['Image Preloading']) {
           imgPreloading.init();
         }
-        if ($.config('Quick Reply') && $.config('Persistent QR')) {
+        if (conf['Quick Reply'] && conf['Persistent QR']) {
           qr.persist();
         }
-        if ($.config('Post in Title')) {
+        if (conf['Post in Title']) {
           titlePost.init();
         }
-        if ($.config('Thread Stats')) {
+        if (conf['Thread Stats']) {
           threadStats.init();
         }
-        if ($.config('Unread Count')) {
+        if (conf['Unread Count']) {
           unread.init();
         }
-        if ($.config('Reply Navigation')) {
+        if (conf['Reply Navigation']) {
           nav.init();
         }
-        if ($.config('Auto Watch') && $.config('Thread Watcher') && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
+        if (conf['Auto Watch'] && conf['Thread Watcher'] && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
           watcher.watch(null, g.THREAD_ID);
         }
       } else {
-        if ($.config('Index Navigation')) {
+        if (conf['Index Navigation']) {
           nav.init();
         }
-        if ($.config('Thread Hiding')) {
+        if (conf['Thread Hiding']) {
           threadHiding.init();
         }
-        if ($.config('Thread Expansion')) {
+        if (conf['Thread Expansion']) {
           expandThread.init();
         }
-        if ($.config('Comment Expansion')) {
+        if (conf['Comment Expansion']) {
           expandComment.init();
         }
-        if ($.config('Auto Watch')) {
+        if (conf['Auto Watch']) {
           $('.postarea form').action += '?auto_watch';
         }
       }
