@@ -47,6 +47,7 @@ config =
     'http://google.com/searchbyimage?image_url='
     '#http://tineye.com/search?url='
     '#http://saucenao.com/search.php?db=999&url='
+    '#http://imgur.com/upload?url='
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   hotkeys:
