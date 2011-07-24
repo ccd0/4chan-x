@@ -1293,7 +1293,7 @@ updater =
           textContent: 'Thread Updater'
         $.hide updater.timer
     autoUpdate: ->
-      if conf['Auto Update This']
+      if @checked
         updater.intervalID = window.setInterval updater.timeout, 1000
       else
         window.clearInterval updater.intervalID
