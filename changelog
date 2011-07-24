@@ -1,4 +1,6 @@
 github
+
+2.16.0
 - mayhem:
   - Thread Stats performance fix, especially on long threads
   - Sauce performance improvement
@@ -6,7 +8,7 @@ github
 - aeosynth:
   - fix an upgrading problem (1.x -> 2.x)
   - fix minor bugs with auto-posting
-  - new IRC Updating feature
+  - add updater scrolling
   - enable auto-updating by default
   - alphabetize option groups
 
