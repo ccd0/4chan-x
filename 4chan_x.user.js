@@ -726,19 +726,19 @@
     },
     cb: {
       keydown: function(e) {
-        var k, o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
+        var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
         if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
           return;
         }
-        k = keybinds.cb.keyCode(e);
+        key = keybinds.cb.keyCode(e);
         if (e.altKey) {
-          k = 'alt+' + k;
+          key = 'alt+' + key;
         }
         if (e.ctrlKey) {
-          k = 'ctrl+' + k;
+          key = 'ctrl+' + key;
         }
         thread = nav.getThread();
-        switch (k) {
+        switch (key) {
           case conf.close:
             if (o = $('#overlay')) {
               $.rm(o);
@@ -834,21 +834,21 @@
         return e.preventDefault();
       },
       keyCode: function(e, options) {
-        var k, kc;
+        var kc;
         kc = e.keyCode;
         if ((65 <= kc && kc <= 90)) {
-          k = String.fromCharCode(kc);
+          key = String.fromCharCode(kc);
           if (!e.shiftKey) {
-            k = k.toLowerCase();
+            key = key.toLowerCase();
           }
         } else if ((48 <= kc && kc <= 57)) {
-          k = String.fromCharCode(kc);
+          key = String.fromCharCode(kc);
         } else if (kc === 27) {
-          k = 'Esc';
+          key = 'Esc';
         } else if (options && kc === 8) {
-          k = '';
+          key = '';
         }
-        return k;
+        return key;
       }
     },
     img: function(thread, all) {
@@ -1122,22 +1122,21 @@
       return g.hiddenReplies = {};
     },
     keybind: function(e) {
-      var k;
       e.preventDefault();
       e.stopPropagation();
-      k = keybinds.cb.keyCode(e, true);
-      if (k != null) {
-        if (k) {
+      key = keybinds.cb.keyCode(e, true);
+      if (key != null) {
+        if (key) {
           if (e.altKey) {
-            k = 'alt+' + k;
+            key = 'alt+' + key;
           }
           if (e.ctrlKey) {
-            k = 'ctrl+' + k;
+            key = 'ctrl+' + key;
           }
         }
-        this.value = k;
-        $.setValue(this.name, k);
-        return conf[this.name] = k;
+        this.value = key;
+        $.setValue(this.name, key);
+        return conf[this.name] = key;
       }
     },
     time: function(e) {

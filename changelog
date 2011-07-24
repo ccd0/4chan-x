@@ -7,6 +7,7 @@ github
   - fix wrong keybind input in options
   - fix time preview
   - fix backlink inlining removing its container
+  - Fix options key/keybinds key variables.
 
 2.16.1
 - mayhem:
