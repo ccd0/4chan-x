@@ -1,6 +1,7 @@
 github
 - mayhem:
   - Make updater's settings dynamic
+  - fix remember updater's interval settings
 
 2.16.1
 - mayhem:

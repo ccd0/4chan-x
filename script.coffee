@@ -1276,6 +1276,7 @@ updater =
           updater.cb.autoUpdate.call input
       else if input.name is 'Interval'
         $.bind input, 'change', updater.cb.interval
+        $.bind input, 'change', $.cb.value
       else if input.type is 'button'
         $.bind input, 'click', updater.updateNow
 
