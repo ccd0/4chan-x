@@ -1320,7 +1320,7 @@ updater =
       else
         window.clearInterval updater.intervalID
     interval: ->
-      conf['Interval'] = @value = @value.match(/\d+/)[0]
+      conf['Interval'] = @value = parseInt(@value) or conf['Interval']
     update: ->
       if @status is 404
         updater.timer.textContent = ''

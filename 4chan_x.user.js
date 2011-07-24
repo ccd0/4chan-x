@@ -1616,7 +1616,7 @@
         }
       },
       interval: function() {
-        return conf['Interval'] = this.value = this.value.match(/\d+/)[0];
+        return conf['Interval'] = this.value = parseInt(this.value) || conf['Interval'];
       },
       update: function() {
         var arr, body, br, id, input, length, replies, reply, _i, _len, _ref, _ref2;
