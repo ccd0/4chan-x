@@ -733,6 +733,9 @@
         if (!(key = keybinds.cb.keyCode(e))) {
           return;
         }
+        if (key === 'BS') {
+          key = '';
+        }
         thread = nav.getThread();
         switch (key) {
           case conf.close:
@@ -841,6 +844,8 @@
           key = String.fromCharCode(kc);
         } else if (kc === 27) {
           key = 'Esc';
+        } else if (kc === 8) {
+          key = 'BS';
         } else {
           key = '';
         }
@@ -1130,6 +1135,9 @@
       e.stopPropagation();
       if (!(key = keybinds.cb.keyCode(e))) {
         return;
+      }
+      if (key === 'BS') {
+        key = '';
       }
       this.value = key;
       $.setValue(this.name, key);

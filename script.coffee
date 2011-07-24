@@ -521,6 +521,7 @@ keybinds =
     keydown: (e) ->
       return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
       return unless key = keybinds.cb.keyCode e
+      if key is 'BS' then key = ''
 
       thread = nav.getThread()
       switch key
@@ -601,6 +602,8 @@ keybinds =
         key = String.fromCharCode kc
       else if kc is 27
         key = 'Esc'
+      else if kc is 8
+        key = 'BS'
       else
         key = ''
       if key
@@ -892,6 +895,7 @@ options =
     e.preventDefault()
     e.stopPropagation()
     return unless key = keybinds.cb.keyCode e
+    if key is 'BS' then key = ''
     @value = key
     $.setValue @name, key
     conf[@name] = key
