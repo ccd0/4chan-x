@@ -1646,7 +1646,7 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        ircScroll = conf['IRC Updating'] && arr.length && (document.height - document.body.clientHeight - window.scrollY - 20 <= 0);
+        ircScroll = conf['IRC Updating'] && arr.length && (document.height - document.body.clientHeight - window.scrollY < 20);
         updater.timer.textContent = '-' + conf['Interval'];
         if (conf['Verbose']) {
           updater.count.textContent = '+' + arr.length;
