@@ -895,6 +895,7 @@ options =
       conf[@name] = k
   time: (e) ->
     $.setValue 'time', @value
+    conf['time'] = @value
     Time.foo()
     Time.date = new Date()
     $('#timePreview').textContent = Time.funk Time

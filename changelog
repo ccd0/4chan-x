@@ -3,6 +3,7 @@ github
   - Make updater's settings dynamic
   - fix remember updater's interval settings
   - fix wrong keybind input in options
+  - fix time preview
 
 2.16.1
 - mayhem:

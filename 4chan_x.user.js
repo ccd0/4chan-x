@@ -1135,6 +1135,7 @@
     },
     time: function(e) {
       $.setValue('time', this.value);
+      conf['time'] = this.value;
       Time.foo();
       Time.date = new Date();
       return $('#timePreview').textContent = Time.funk(Time);
