@@ -78,18 +78,18 @@ config =
     'Interval': 30
 
 # flatten the config
-_config = {}
+conf = {}
 ((parent, obj) ->
   if obj.length #array
     if typeof obj[0] is 'boolean'
-      _config[parent] = obj[0]
+      conf[parent] = obj[0]
     else
-      _config[parent] = obj
+      conf[parent] = obj
   else if typeof obj is 'object'
     for key, val of obj
       arguments.callee key, val
   else #constant
-    _config[parent] = obj
+    conf[parent] = obj
 ) null, config
 
 # XXX chrome can't into `{log} = console`
@@ -229,8 +229,6 @@ $.extend $,
       textContent: css
     $.append d.head, style
     style
-  config: (name) ->
-    $.getValue name, _config[name]
   x: (path, root=d.body) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
       singleNodeValue
@@ -351,6 +349,10 @@ else
     setValue: (name, value) ->
       name = NAMESPACE + name
       localStorage[name] = JSON.stringify value
+
+#load values from localStorage
+for key, val of conf
+  conf[key] = $.getValue key, conf[key]
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector

@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, config, cooldown, d, expandComment, expandThread, firstRun, g, imgExpand, imgGif, imgHover, imgPreloading, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, watcher, _config, _ref;
+  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -144,14 +144,14 @@
       'Interval': 30
     }
   };
-  _config = {};
+  conf = {};
   (function(parent, obj) {
     var key, val, _results;
     if (obj.length) {
       if (typeof obj[0] === 'boolean') {
-        return _config[parent] = obj[0];
+        return conf[parent] = obj[0];
       } else {
-        return _config[parent] = obj;
+        return conf[parent] = obj;
       }
     } else if (typeof obj === 'object') {
       _results = [];
@@ -161,7 +161,7 @@
       }
       return _results;
     } else {
-      return _config[parent] = obj;
+      return conf[parent] = obj;
     }
   })(null, config);
   if (typeof console !== "undefined" && console !== null) {
@@ -346,9 +346,6 @@
       $.append(d.head, style);
       return style;
     },
-    config: function(name) {
-      return $.getValue(name, _config[name]);
-    },
     x: function(path, root) {
       if (root == null) {
         root = d.body;
@@ -499,6 +496,10 @@
         return localStorage[name] = JSON.stringify(value);
       }
     });
+  }
+  for (key in conf) {
+    val = conf[key];
+    conf[key] = $.getValue(key, conf[key]);
   }
   $$ = function(selector, root) {
     if (root == null) {
@@ -744,7 +745,7 @@
     },
     cb: {
       keydown: function(e) {
-        var key, o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
+        var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
         if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
           return;
         }
@@ -847,7 +848,7 @@
         return e.preventDefault();
       },
       keyCode: function(e, options) {
-        var kc, key;
+        var kc;
         kc = e.keyCode;
         if ((65 <= kc && kc <= 90)) {
           key = String.fromCharCode(kc);
@@ -1135,7 +1136,6 @@
       return g.hiddenReplies = {};
     },
     keybind: function(e) {
-      var key;
       e.preventDefault();
       e.stopPropagation();
       key = keybinds.cb.keyCode(e, true);
@@ -1561,7 +1561,7 @@
   };
   updater = {
     init: function() {
-      var autoUpT, checked, conf, dialog, html, input, interva, name, title, updNow, verbose, _i, _len, _ref;
+      var autoUpT, checked, dialog, html, input, interva, name, title, updNow, verbose, _i, _len, _ref;
       updater.interval = $.config('Interval');
       updater.ircUpd = $.config('IRC Updating');
       updater.verbose = $.config('Verbose');
