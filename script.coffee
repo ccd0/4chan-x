@@ -1592,6 +1592,7 @@ quoteInline =
     if el = d.getElementById id
       inline = quoteInline.table id, el.innerHTML
       if @className is 'backlink'
+        return if $("a.backlink[href='##{id}']", el)
         $.after @parentNode, inline
         $.hide $.x 'ancestor::table[1]', el
       else

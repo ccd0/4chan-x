@@ -2048,6 +2048,9 @@
       if (el = d.getElementById(id)) {
         inline = quoteInline.table(id, el.innerHTML);
         if (this.className === 'backlink') {
+          if ($("a.backlink[href='#" + id + "']", el)) {
+            return;
+          }
           $.after(this.parentNode, inline);
           $.hide($.x('ancestor::table[1]', el));
         } else {
