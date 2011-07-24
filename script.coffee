@@ -1268,21 +1268,17 @@ threadHiding =
 
 updater =
   init: ->
-    updater.interval = conf['Interval']
-    updater.ircUpd   = conf['IRC Updating']
-    updater.verbose  = conf['Verbose']
-
-    html = "<div class=move><span id=count></span> <span id=timer>-#{updater.interval}</span></div>"
-    conf = config.updater.checkbox
-    for name of conf
-      title = conf[name][1]
-      checked = if conf[name] then 'checked' else ''
+    html = "<div class=move><span id=count></span> <span id=timer>-#{conf['Interval']}</span></div>"
+    {checkbox} = config.updater
+    for name of checkbox
+      title = checkbox[name][1]
+      checked = if checkbox[name] then 'checked' else ''
       html += "<div><label title='#{title}'>#{name}<input name='#{name}' type=checkbox #{checked}></label></div>"
 
     checked = if conf['Auto Update'] then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input name=Interval value=#{updater.interval} type=text></label></div>
+      <div><label>Interval (s)<input name=Interval value=#{conf['Interval']} type=text></label></div>
       <div><input value='Update Now' type=button></div>"
 
     dialog = ui.dialog 'updater', bottom: '0', right: '0', html
@@ -1310,7 +1306,7 @@ updater =
 
   cb:
     verbose: ->
-      if updater.verbose = @checked
+      if conf['Verbose'] = @checked
         updater.count.textContent = '+0'
         $.show updater.timer
       else
@@ -1324,7 +1320,7 @@ updater =
       else
         window.clearInterval updater.intervalID
     interval: ->
-      updater.interval = @value = @value.match(/\d+/)[0]
+      conf['Interval'] = @value = @value.match(/\d+/)[0]
     update: ->
       if @status is 404
         updater.timer.textContent = ''
@@ -1349,8 +1345,8 @@ updater =
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      updater.timer.textContent = '-' + updater.interval
-      if updater.verbose
+      updater.timer.textContent = '-' + conf['Interval']
+      if conf['Verbose']
         updater.count.textContent = '+' + arr.length
         if arr.length is 0
           updater.count.className = ''
@@ -1360,7 +1356,7 @@ updater =
       #XXX add replies in correct order so backlinks resolve
       while reply = arr.pop()
         $.before br, reply
-      if updater.ircUpd
+      if conf['IRC Updating']
         scrollTo 0, d.body.scrollHeight
 
   timeout: ->
@@ -1664,7 +1660,6 @@ quoteInline =
 
 quotePreview =
   init: ->
-    quotePreview.hl = conf['Quote Highlighting']
     g.callbacks.push (root) ->
       for quote in $$ 'a.quotelink, a.backlink', root
         continue unless quote.hash
@@ -1680,7 +1675,7 @@ quotePreview =
     id = @hash[1..]
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
-      $.addClass el, 'qphl' if quotePreview.hl
+      $.addClass el, 'qphl' if conf['Quote Highlighting']
       if /backlink/.test @className
         replyID = $.x('ancestor::*[@id][1]', @).id.match(/\d+/)[0]
         for quote in $$ 'a.quotelink', qp
