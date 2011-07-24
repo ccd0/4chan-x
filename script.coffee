@@ -1297,7 +1297,7 @@ updater =
           $.bind input, 'click', updater.cb.autoUpdate
           updater.cb.autoUpdate.call input
       else if input.name is 'Interval'
-        $.bind input, 'change', updater.cb.interval
+        $.bind input, 'change', -> conf['Interval'] = @value = parseInt(@value) or conf['Interval']
         $.bind input, 'change', $.cb.value
       else if input.type is 'button'
         $.bind input, 'click', updater.updateNow
@@ -1315,12 +1315,10 @@ updater =
           textContent: 'Thread Updater'
         $.hide updater.timer
     autoUpdate: ->
-      if @checked
+      if conf['Auto Update This']
         updater.intervalID = window.setInterval updater.timeout, 1000
       else
         window.clearInterval updater.intervalID
-    interval: ->
-      conf['Interval'] = @value = parseInt(@value) or conf['Interval']
     update: ->
       if @status is 404
         updater.timer.textContent = ''
@@ -1345,7 +1343,7 @@ updater =
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      ircScroll = conf['Scrolling'] && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
+      scroll = conf['Scrolling'] && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
 
       updater.timer.textContent = '-' + conf['Interval']
       if conf['Verbose']
@@ -1358,7 +1356,7 @@ updater =
       #XXX add replies in correct order so backlinks resolve
       while reply = arr.pop()
         $.before br, reply
-      if ircScroll
+      if scroll
         scrollTo 0, d.body.scrollHeight
 
   timeout: ->

@@ -1593,7 +1593,9 @@
             updater.cb.autoUpdate.call(input);
           }
         } else if (input.name === 'Interval') {
-          $.bind(input, 'change', updater.cb.interval);
+          $.bind(input, 'change', function() {
+            return conf['Interval'] = this.value = parseInt(this.value) || conf['Interval'];
+          });
           $.bind(input, 'change', $.cb.value);
         } else if (input.type === 'button') {
           $.bind(input, 'click', updater.updateNow);
@@ -1615,17 +1617,14 @@
         }
       },
       autoUpdate: function() {
-        if (this.checked) {
+        if (conf['Auto Update This']) {
           return updater.intervalID = window.setInterval(updater.timeout, 1000);
         } else {
           return window.clearInterval(updater.intervalID);
         }
       },
-      interval: function() {
-        return conf['Interval'] = this.value = parseInt(this.value) || conf['Interval'];
-      },
       update: function() {
-        var arr, body, br, id, input, ircScroll, replies, reply, _i, _len, _ref, _ref2;
+        var arr, body, br, id, input, replies, reply, scroll, _i, _len, _ref, _ref2;
         if (this.status === 404) {
           updater.timer.textContent = '';
           updater.count.textContent = 404;
@@ -1652,7 +1651,7 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        ircScroll = conf['Scrolling'] && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
+        scroll = conf['Scrolling'] && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
         updater.timer.textContent = '-' + conf['Interval'];
         if (conf['Verbose']) {
           updater.count.textContent = '+' + arr.length;
@@ -1665,7 +1664,7 @@
         while (reply = arr.pop()) {
           $.before(br, reply);
         }
-        if (ircScroll) {
+        if (scroll) {
           return scrollTo(0, d.body.scrollHeight);
         }
       }
