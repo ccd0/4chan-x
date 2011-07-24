@@ -1597,7 +1597,7 @@
         }
       },
       autoUpdate: function() {
-        if (conf['Auto Update This']) {
+        if (this.checked) {
           return updater.intervalID = window.setInterval(updater.timeout, 1000);
         } else {
           return window.clearInterval(updater.intervalID);
