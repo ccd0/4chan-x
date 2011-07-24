@@ -1345,7 +1345,7 @@ updater =
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      ircScroll = conf['Scrolling'] && arr.length && (document.height - document.body.clientHeight - window.scrollY < 20)
+      ircScroll = conf['Scrolling'] && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
 
       updater.timer.textContent = '-' + conf['Interval']
       if conf['Verbose']
