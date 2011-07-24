@@ -1348,8 +1348,8 @@ updater =
 
       updater.timer.textContent = '-' + conf['Interval']
       if conf['Verbose']
-        updater.count.textContent = '+' + arr.length
-        if arr.length is 0
+        updater.count.textContent = '+' + length
+        if length is 0
           updater.count.className = ''
         else
           updater.count.className = 'new'

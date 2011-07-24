@@ -1649,8 +1649,8 @@
         length = arr.length;
         updater.timer.textContent = '-' + conf['Interval'];
         if (conf['Verbose']) {
-          updater.count.textContent = '+' + arr.length;
-          if (arr.length === 0) {
+          updater.count.textContent = '+' + length;
+          if (length === 0) {
             updater.count.className = '';
           } else {
             updater.count.className = 'new';
