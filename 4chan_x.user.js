@@ -134,7 +134,7 @@
       expandImages: 'm',
       expandAllImages: 'M',
       update: 'u',
-      UnreadCountTo0: 'r'
+      unreadCountTo0: ')'
     },
     updater: {
       checkbox: {
