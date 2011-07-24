@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        2.16.0
+// @version        2.16.1
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -137,8 +137,8 @@
     },
     updater: {
       checkbox: {
+        'Scrolling': [false, 'Scroll updated posts into view. Only enabled at bottom of page.'],
         'Verbose': [true, 'Show countdown timer, new post count'],
-        'Scrolling': [false, 'Scroll updated posts into view'],
         'Auto Update': [true, 'Automatically fetch new posts']
       },
       'Interval': 30
