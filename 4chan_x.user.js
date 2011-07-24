@@ -137,8 +137,8 @@
     },
     updater: {
       checkbox: {
+        'Scrolling': [false, 'Scroll updated posts into view. Only enabled at bottom of page.'],
         'Verbose': [true, 'Show countdown timer, new post count'],
-        'Scrolling': [false, 'Scroll updated posts into view'],
         'Auto Update': [true, 'Automatically fetch new posts']
       },
       'Interval': 30
