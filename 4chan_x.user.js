@@ -842,11 +842,13 @@
         } else {
           key = '';
         }
-        if (e.altKey) {
-          key = 'alt+' + key;
-        }
-        if (e.ctrlKey) {
-          key = 'ctrl+' + key;
+        if (key) {
+          if (e.altKey) {
+            key = 'alt+' + key;
+          }
+          if (e.ctrlKey) {
+            key = 'ctrl+' + key;
+          }
         }
         return key;
       }

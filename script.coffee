@@ -603,8 +603,9 @@ keybinds =
         key = 'Esc'
       else
         key = ''
-      if e.altKey  then key = 'alt+' + key
-      if e.ctrlKey then key = 'ctrl+' + key
+      if key
+        if e.altKey  then key = 'alt+' + key
+        if e.ctrlKey then key = 'ctrl+' + key
       key
 
   img: (thread, all) ->
