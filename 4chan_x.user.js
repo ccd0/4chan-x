@@ -1561,19 +1561,16 @@
   };
   updater = {
     init: function() {
-      var autoUpT, checked, dialog, html, input, interva, name, title, updNow, verbose, _i, _len, _ref;
-      updater.interval = conf['Interval'];
-      updater.ircUpd = conf['IRC Updating'];
-      updater.verbose = conf['Verbose'];
-      html = "<div class=move><span id=count></span> <span id=timer>-" + updater.interval + "</span></div>";
-      conf = config.updater.checkbox;
-      for (name in conf) {
-        title = conf[name][1];
-        checked = conf[name] ? 'checked' : '';
+      var autoUpT, checkbox, checked, dialog, html, input, interva, name, title, updNow, verbose, _i, _len, _ref;
+      html = "<div class=move><span id=count></span> <span id=timer>-" + conf['Interval'] + "</span></div>";
+      checkbox = config.updater.checkbox;
+      for (name in checkbox) {
+        title = checkbox[name][1];
+        checked = checkbox[name] ? 'checked' : '';
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + updater.interval + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
+      html += "      <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + conf['Interval'] + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
       dialog = ui.dialog('updater', {
         bottom: '0',
         right: '0'
@@ -1600,7 +1597,7 @@
     },
     cb: {
       verbose: function() {
-        if (updater.verbose = this.checked) {
+        if (conf['Verbose'] = this.checked) {
           updater.count.textContent = '+0';
           return $.show(updater.timer);
         } else {
@@ -1619,7 +1616,7 @@
         }
       },
       interval: function() {
-        return updater.interval = this.value = this.value.match(/\d+/)[0];
+        return conf['Interval'] = this.value = parseInt(this.value) || conf['Interval'];
       },
       update: function() {
         var arr, body, br, id, input, ircScroll, replies, reply, _i, _len, _ref, _ref2;
@@ -1649,9 +1646,9 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        ircScroll = updater.ircUpd && arr.length && (document.height - document.body.clientHeight - window.scrollY - 20 <= 0);
-        updater.timer.textContent = '-' + updater.interval;
-        if (updater.verbose) {
+        ircScroll = conf['IRC Updating'] && arr.length && (document.height - document.body.clientHeight - window.scrollY - 20 <= 0);
+        updater.timer.textContent = '-' + conf['Interval'];
+        if (conf['Verbose']) {
           updater.count.textContent = '+' + arr.length;
           if (arr.length === 0) {
             updater.count.className = '';
@@ -2134,7 +2131,6 @@
   };
   quotePreview = {
     init: function() {
-      quotePreview.hl = conf['Quote Highlighting'];
       return g.callbacks.push(function(root) {
         var quote, _i, _len, _ref, _results;
         _ref = $$('a.quotelink, a.backlink', root);
@@ -2161,7 +2157,7 @@
       id = this.hash.slice(1);
       if (el = d.getElementById(id)) {
         qp.innerHTML = el.innerHTML;
-        if (quotePreview.hl) {
+        if (conf['Quote Highlighting']) {
           $.addClass(el, 'qphl');
         }
         if (/backlink/.test(this.className)) {
