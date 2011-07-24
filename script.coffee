@@ -520,8 +520,7 @@ keybinds =
   cb:
     keydown: (e) ->
       return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
-      return unless key = keybinds.cb.keyCode e
-      if key is 'BS' then key = ''
+      return unless (key = keybinds.cb.keyCode e)?
 
       thread = nav.getThread()
       switch key

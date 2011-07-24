@@ -730,11 +730,8 @@
         if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
           return;
         }
-        if (!(key = keybinds.cb.keyCode(e))) {
+        if ((key = keybinds.cb.keyCode(e)) == null) {
           return;
-        }
-        if (key === 'BS') {
-          key = '';
         }
         thread = nav.getThread();
         switch (key) {
