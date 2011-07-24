@@ -519,12 +519,12 @@ keybinds =
   cb:
     keydown: (e) ->
       return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
-      key = keybinds.cb.keyCode e
-      if e.altKey  then key = 'alt+' + key
-      if e.ctrlKey then key = 'ctrl+' + key
+      k = keybinds.cb.keyCode e
+      if e.altKey  then k = 'alt+' + k
+      if e.ctrlKey then k = 'ctrl+' + k
 
       thread = nav.getThread()
-      switch key
+      switch k
         when conf.close
           if o = $ '#overlay'
             $.rm o
@@ -591,16 +591,16 @@ keybinds =
     keyCode: (e, options) ->
       kc = e.keyCode
       if 65 <= kc <= 90 #A-Z
-        key = String.fromCharCode kc
+        k = String.fromCharCode kc
         if !e.shiftKey
-          key = key.toLowerCase()
+          k = k.toLowerCase()
       else if 48 <= kc <= 57 #0-9
-        key = String.fromCharCode kc
+        k = String.fromCharCode kc
       else if kc is 27
-        key = 'Esc'
+        k = 'Esc'
       else if options and kc is 8
-        key = ''
-      key
+        k = ''
+      k
 
   img: (thread, all) ->
     if all
@@ -884,15 +884,15 @@ options =
   keybind: (e) ->
     e.preventDefault()
     e.stopPropagation()
-    key = keybinds.cb.keyCode e, true
+    k = keybinds.cb.keyCode e, true
 
-    if key?
-      if key
-        key = 'alt+' + key  if e.altKey
-        key = 'ctrl+' + key if e.ctrlKey
-      @value = key
-      $.setValue @name, key
-      conf[@name] = key
+    if k?
+      if k
+        k = 'alt+' + k  if e.altKey
+        k = 'ctrl+' + k if e.ctrlKey
+      @value = k
+      $.setValue @name, k
+      conf[@name] = k
   time: (e) ->
     $.setValue 'time', @value
     Time.foo()

@@ -2,6 +2,7 @@ github
 - mayhem:
   - Make updater's settings dynamic
   - fix remember updater's interval settings
+  - fix wrong keybind input in options
 
 2.16.1
 - mayhem:
