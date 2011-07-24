@@ -1324,6 +1324,7 @@
       if (s = selection.toString()) {
         selectionID = (_ref = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
         if (selectionID === id) {
+          s = s.replace(/\n/g, '\n>');
           text += ">" + s + "\n";
         }
       }

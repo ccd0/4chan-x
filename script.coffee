@@ -1039,6 +1039,7 @@ qr =
     if s = selection.toString()
       selectionID = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
       if selectionID == id
+        s = s.replace /\n/g, '\n>'
         text += ">#{s}\n"
 
     ta = $ 'textarea', qr.el
