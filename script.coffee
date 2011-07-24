@@ -78,18 +78,18 @@ config =
     'Interval': 30
 
 # flatten the config
-_config = {}
+conf = {}
 ((parent, obj) ->
   if obj.length #array
     if typeof obj[0] is 'boolean'
-      _config[parent] = obj[0]
+      conf[parent] = obj[0]
     else
-      _config[parent] = obj
+      conf[parent] = obj
   else if typeof obj is 'object'
     for key, val of obj
       arguments.callee key, val
   else #constant
-    _config[parent] = obj
+    conf[parent] = obj
 ) null, config
 
 # XXX chrome can't into `{log} = console`
@@ -229,8 +229,6 @@ $.extend $,
       textContent: css
     $.append d.head, style
     style
-  config: (name) ->
-    $.getValue name, _config[name]
   x: (path, root=d.body) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
       singleNodeValue
@@ -351,6 +349,10 @@ else
     setValue: (name, value) ->
       name = NAMESPACE + name
       localStorage[name] = JSON.stringify value
+
+#load values from localStorage
+for key, val of conf
+  conf[key] = $.getValue key, conf[key]
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
@@ -484,7 +486,7 @@ replyHiding =
     table = reply.parentNode.parentNode.parentNode
     $.hide table
 
-    if $.config 'Show Stubs'
+    if conf['Show Stubs']
       name = $('span.commentpostername', reply).textContent
       trip = $('span.postertrip', reply)?.textContent or ''
       a = $.el 'a',
@@ -791,9 +793,9 @@ options =
         <div id=content>
           <div id=main>
           </div>
-          <textarea name=flavors id=flavors hidden>#{$.config 'flavors'}</textarea>
+          <textarea name=flavors id=flavors hidden>#{conf['flavors']}</textarea>
           <div id=time hidden>
-            <div><input type=text name=time value='#{$.config 'time'}'> <span id=timePreview></span></div>
+            <div><input type=text name=time value='#{conf['time']}> <span id=timePreview></span></div>
             <table>
               <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
               <tbody>
@@ -851,7 +853,7 @@ options =
         textContent: key
       hidingul = ul if key is 'Hiding'
       for key, arr of obj
-        checked = if $.config key then "checked" else ""
+        checked = if conf[key] then "checked" else ""
         description = arr[1]
         li = $.el 'li',
           innerHTML: "<label><input type=checkbox name='#{key}' #{checked}>#{key}</label><span class=description>: #{description}</span>"
@@ -1001,11 +1003,11 @@ qr =
         return
 
       if qr.el
-        if g.REPLY and $.config 'Persistent QR'
+        if g.REPLY and conf['Persistent QR']
           qr.refresh()
         else
           qr.close()
-      if $.config 'Cooldown'
+      if conf['Cooldown']
         duration = if qr.sage then 60 else 30
         $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
         cooldown.start()
@@ -1019,7 +1021,7 @@ qr =
       qr.quote @
 
   submit: (e) ->
-    if $.config('Auto Watch Reply') and $.config('Thread Watcher')
+    if conf['Auto Watch Reply'] and conf['Thread Watcher']
       if g.REPLY and $('img.favicon').src is Favicon.empty
         watcher.watch null, g.THREAD_ID
       else
@@ -1228,7 +1230,7 @@ threadHiding =
     $.setValue "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
   hideHide: (thread) ->
-    if $.config 'Show Stubs'
+    if conf['Show Stubs']
       if span = $ '.omittedposts', thread
         num = Number span.textContent.match(/\d+/)[0]
       else
@@ -1266,18 +1268,18 @@ threadHiding =
 
 updater =
   init: ->
-    updater.interval = $.config 'Interval'
-    updater.ircUpd   = $.config 'IRC Updating'
-    updater.verbose  = $.config 'Verbose'
+    updater.interval = conf['Interval']
+    updater.ircUpd   = conf['IRC Updating']
+    updater.verbose  = conf['Verbose']
 
     html = "<div class=move><span id=count></span> <span id=timer>-#{updater.interval}</span></div>"
     conf = config.updater.checkbox
     for name of conf
       title = conf[name][1]
-      checked = if $.config name then 'checked' else ''
+      checked = if conf[name] then 'checked' else ''
       html += "<div><label title='#{title}'>#{name}<input name='#{name}' type=checkbox #{checked}></label></div>"
 
-    checked = if $.config 'Auto Update' then 'checked' else ''
+    checked = if conf['Auto Update'] then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
       <div><label>Interval (s)<input name=Interval value=#{updater.interval} type=text></label></div>
@@ -1475,7 +1477,7 @@ anonymize =
 
 sauce =
   init: ->
-    sauce.prefixes = (s for s in ($.config('flavors').split '\n') when s[0] != '#')
+    sauce.prefixes = (s for s in (conf['flavors'].split '\n') when s[0] != '#')
     sauce.names = (prefix.match(/(\w+)\./)[1] for prefix in sauce.prefixes)
     g.callbacks.push (root) ->
       return if root.className is 'inline'
@@ -1515,7 +1517,7 @@ Time =
       textContent: ' ' + Time.funk(Time) + ' '
     $.replace s, time
   foo: ->
-    code = $.config('time').replace /%([A-Za-z])/g, (s, c) ->
+    code = conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       switch c
         when 'a', 'A', 'b', 'B', 'd', 'H', 'I', 'm', 'M', 'p', 'P', 'y' then "' + Time.#{c}() + '"
         else s
@@ -1564,9 +1566,9 @@ titlePost =
 
 quoteBacklink =
   init: ->
-    quoteBacklink.opbl = ! $.config 'OP Backlinks'
-    quoteBacklink.qp   =   $.config 'Quote Preview'
-    quoteBacklink.qi   =   $.config 'Quote Inline'
+    quoteBacklink.opbl = ! conf['OP Backlinks']
+    quoteBacklink.qp   =   conf['Quote Preview']
+    quoteBacklink.qi   =   conf['Quote Inline']
     g.callbacks.push (root) ->
       return if /inline/.test root.className
       # op or reply
@@ -1663,7 +1665,7 @@ quoteInline =
 
 quotePreview =
   init: ->
-    quotePreview.hl = $.config 'Quote Highlighting'
+    quotePreview.hl = conf['Quote Highlighting']
     g.callbacks.push (root) ->
       for quote in $$ 'a.quotelink, a.backlink', root
         continue unless quote.hash
@@ -2061,7 +2063,7 @@ main =
     if location.hostname is 'sys.4chan.org'
       qr.sys()
       return
-    if $.config('404 Redirect') and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
+    if conf['404 Redirect'] and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
       redirect()
       return
     if not $ '#navtopr'
@@ -2103,100 +2105,100 @@ main =
     #major features
     threading.init()
 
-    if $.config 'Auto Noko'
+    if conf['Auto Noko']
       $('.postarea form').action += '?auto_noko'
 
-    if $.config 'Cooldown'
+    if conf['Cooldown']
       cooldown.init()
 
-    if $.config 'Image Expansion'
+    if conf['Image Expansion']
       imgExpand.init()
 
-    if $.config 'Image Auto-Gif'
+    if conf['Image Auto-Gif']
       imgGif.init()
 
-    if $.config 'Time Formatting'
+    if conf['Time Formatting']
       Time.init()
 
-    if $.config 'Sauce'
+    if conf['Sauce']
       sauce.init()
 
-    if $.config 'Reveal Spoilers'
+    if conf['Reveal Spoilers']
       revealSpoilers.init()
 
-    if $.config 'Anonymize'
+    if conf['Anonymize']
       anonymize.init()
 
-    if $.config 'Image Hover'
+    if conf['Image Hover']
       imgHover.init()
 
-    if $.config 'Reply Hiding'
+    if conf['Reply Hiding']
       replyHiding.init()
 
-    if canPost and $.config 'Quick Reply'
+    if canPost and conf['Quick Reply']
       qr.init()
 
-    if $.config 'Report Button'
+    if conf['Report Button']
       reportButton.init()
 
-    if $.config 'Quote Backlinks'
+    if conf['Quote Backlinks']
       quoteBacklink.init()
 
-    if $.config 'Quote Inline'
+    if conf['Quote Inline']
       quoteInline.init()
 
-    if $.config 'Quote Preview'
+    if conf['Quote Preview']
       quotePreview.init()
 
-    if $.config 'Indicate OP quote'
+    if conf['Indicate OP quote']
       quoteOP.init()
 
-    if $.config 'Thread Watcher'
+    if conf['Thread Watcher']
       watcher.init()
 
-    if $.config 'Keybinds'
+    if conf['Keybinds']
       keybinds.init()
 
     if g.REPLY
-      if $.config 'Thread Updater'
+      if conf['Thread Updater']
         updater.init()
 
-      if $.config 'Image Preloading'
+      if conf['Image Preloading']
         imgPreloading.init()
 
-      if $.config('Quick Reply') and $.config 'Persistent QR'
+      if conf['Quick Reply'] and conf['Persistent QR']
         qr.persist()
 
-      if $.config 'Post in Title'
+      if conf['Post in Title']
         titlePost.init()
 
-      if $.config 'Thread Stats'
+      if conf['Thread Stats']
         threadStats.init()
 
-      if $.config 'Unread Count'
+      if conf['Unread Count']
         unread.init()
 
-      if $.config 'Reply Navigation'
+      if conf['Reply Navigation']
         nav.init()
 
-      if $.config('Auto Watch') and $.config('Thread Watcher') and
+      if conf['Auto Watch'] and conf['Thread Watcher'] and
         location.hash is '#watch' and $('img.favicon').src is Favicon.empty
           watcher.watch null, g.THREAD_ID
 
     else #not reply
-      if $.config 'Index Navigation'
+      if conf['Index Navigation']
         nav.init()
 
-      if $.config 'Thread Hiding'
+      if conf['Thread Hiding']
         threadHiding.init()
 
-      if $.config 'Thread Expansion'
+      if conf['Thread Expansion']
         expandThread.init()
 
-      if $.config 'Comment Expansion'
+      if conf['Comment Expansion']
         expandComment.init()
 
-      if $.config('Auto Watch')
+      if conf['Auto Watch']
         $('.postarea form').action += '?auto_watch'
 
     for op in $$ 'div.op'
