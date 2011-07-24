@@ -23,7 +23,6 @@ config =
       'Reveal Spoilers':    [false, 'Replace spoiler thumbnails by the original thumbnail']
     Monitoring:
       'Thread Updater':     [true,  'Update threads']
-      'IRC Updating':       [false, 'Scroll updated posts into view']
       'Unread Count':       [true,  'Show unread post count in tab title']
       'Post in Title':      [true,  'Show the op\'s post in the tab title']
       'Thread Stats':       [true,  'Display reply and image count']
@@ -73,8 +72,9 @@ config =
     update:          'u'
   updater:
     checkbox:
-      'Verbose':     [true, 'Show countdown timer, new post count']
-      'Auto Update': [true, 'Automatically fetch new posts']
+      'Verbose':      [true,  'Show countdown timer, new post count']
+      'IRC Updating': [false, 'Scroll updated posts into view']
+      'Auto Update':  [true,  'Automatically fetch new posts']
     'Interval': 30
 
 # flatten the config
@@ -1344,6 +1344,7 @@ updater =
       replies = $$ 'td[id]', body
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
+      length = arr.length
 
       updater.timer.textContent = '-' + conf['Interval']
       if conf['Verbose']
@@ -1356,7 +1357,7 @@ updater =
       #XXX add replies in correct order so backlinks resolve
       while reply = arr.pop()
         $.before br, reply
-      if conf['IRC Updating']
+      if conf['IRC Updating'] && length
         scrollTo 0, d.body.scrollHeight
 
   timeout: ->
