@@ -352,7 +352,7 @@ else
       localStorage[name] = JSON.stringify value
 
 #load values from localStorage
-for key, val of conf
+for key of conf
   conf[key] = $.getValue key, conf[key]
 
 $$ = (selector, root=d.body) ->
