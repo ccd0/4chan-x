@@ -795,7 +795,7 @@ options =
           </div>
           <textarea name=flavors id=flavors hidden>#{conf['flavors']}</textarea>
           <div id=time hidden>
-            <div><input type=text name=time value='#{conf['time']}> <span id=timePreview></span></div>
+            <div><input type=text name=time value='#{conf['time']}'> <span id=timePreview></span></div>
             <table>
               <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
               <tbody>
