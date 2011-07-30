@@ -1685,7 +1685,7 @@
       if ((_ref = updater.request) != null) {
         _ref.abort();
       }
-      url = location.href + '?' + Date.now();
+      url = location.origin + location.pathname + '?' + Date.now();
       cb = updater.cb.update;
       return updater.request = $.get(url, cb);
     }
