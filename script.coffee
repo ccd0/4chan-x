@@ -937,10 +937,8 @@ cooldown =
     cooldown.interval = window.setInterval cooldown.cb, 1000
 
   cb: ->
-    cooldown.duration--
-
     submits = $$ '#com_submit'
-    if cooldown.duration
+    if --cooldown.duration
       for submit in submits
         submit.value = cooldown.duration
     else
