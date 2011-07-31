@@ -2184,7 +2184,7 @@ main =
         nav.init()
 
       if conf['Auto Watch'] and conf['Thread Watcher'] and
-        /watch/.test location.search and $('img.favicon').src is Favicon.empty
+        /watch/.test(location.search) and $('img.favicon').src is Favicon.empty
           watcher.watch null, g.THREAD_ID
 
     else #not reply
