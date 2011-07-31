@@ -2790,7 +2790,7 @@
         if (conf['Reply Navigation']) {
           nav.init();
         }
-        if (conf['Auto Watch'] && conf['Thread Watcher'] && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
+        if (conf['Auto Watch'] && conf['Thread Watcher'] && /watch/.test(location.search && $('img.favicon').src === Favicon.empty)) {
           watcher.watch(null, g.THREAD_ID);
         }
       } else {
