@@ -1,6 +1,7 @@
 github
 - aeosynth:
-  - only auto scroll focused tabs (slightly buggy)
+  - only auto scroll focused tabs
+  - quote inlining: only work on unmodified left-click
 
 2.17.1
 - mayhem:
