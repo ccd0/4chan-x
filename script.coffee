@@ -2106,6 +2106,8 @@ main =
       Recaptcha.init()
       $.bind form, 'submit', qr.submit
 
+    # scroll to bottom if post isn't found
+    # thumbnail generation takes time
     if (id = location.hash[1..]) and !$.id id
       scrollTo 0, d.body.scrollHeight
 
