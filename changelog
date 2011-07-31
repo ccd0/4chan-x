@@ -12,6 +12,7 @@ github
 - aeosynth:
   - new imgur upload link commented out in the sauces
   - link to dup file in the QR error
+  - fix bug with hovering elements not disappearing
 
 2.16.1
 - mayhem:
