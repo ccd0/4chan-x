@@ -2043,6 +2043,19 @@
     toggle: function(e) {
       var el, hidden, id, inline, inlined, pathname, root, table, threadID, _i, _len, _ref;
       e.preventDefault();
+      /*
+          https://bugzilla.mozilla.org/show_bug.cgi?id=674955
+          `mouseout` does not fire when element removed
+          RESOLVED INVALID
+      
+          inline a post, then hover over an inlined quote / image, then remove
+          the inlined post by clicking `enter` on the still-focused link - the
+          mouseout event doesn't fire, and the quote preview / image hover remains.
+      
+          we can prevent this sequence by `blur`-ing the clicked links. chrome
+          doesn't focus clicked links anyway.
+          */
+      this.blur();
       id = this.hash.slice(1);
       if (table = $("#i" + id, $.x('ancestor::td[1]', this))) {
         $.rm(table);
