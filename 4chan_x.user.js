@@ -1555,6 +1555,14 @@
   updater = {
     init: function() {
       var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
+      if (conf['Scrolling']) {
+        $.bind(window, 'focus', (function() {
+          return updater.focus = true;
+        }));
+        $.bind(window, 'blur', (function() {
+          return updater.focus = false;
+        }));
+      }
       html = "<div class=move><span id=count></span> <span id=timer>-" + conf['Interval'] + "</span></div>";
       checkbox = config.updater.checkbox;
       for (name in checkbox) {
@@ -1644,7 +1652,7 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        scroll = conf['Scrolling'] && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
+        scroll = updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
         updater.timer.textContent = '-' + conf['Interval'];
         if (conf['Verbose']) {
           updater.count.textContent = '+' + arr.length;

@@ -1255,6 +1255,9 @@ threadHiding =
 
 updater =
   init: ->
+    if conf['Scrolling']
+      $.bind window, 'focus', (-> updater.focus = true)
+      $.bind window, 'blur',  (-> updater.focus = false)
     html = "<div class=move><span id=count></span> <span id=timer>-#{conf['Interval']}</span></div>"
     {checkbox} = config.updater
     for name of checkbox
@@ -1330,7 +1333,7 @@ updater =
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      scroll = conf['Scrolling'] && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
+      scroll = updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
 
       updater.timer.textContent = '-' + conf['Interval']
       if conf['Verbose']
