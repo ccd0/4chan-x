@@ -518,6 +518,7 @@ keybinds =
     $.bind d, 'keydown',  keybinds.keydown
 
   keydown: (e) ->
+    updater.focus = true
     return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
     return unless key = keybinds.keyCode e
 
@@ -1332,7 +1333,7 @@ updater =
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      scroll = updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
+      scroll = conf['Scrolling'] && updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
 
       updater.timer.textContent = '-' + conf['Interval']
       if conf['Verbose']
@@ -1770,6 +1771,7 @@ unread =
     Favicon.update()
 
   scroll: (e) ->
+    updater.focus = true
     height = d.body.clientHeight
     for reply, i in unread.replies
       {bottom} = reply.getBoundingClientRect()

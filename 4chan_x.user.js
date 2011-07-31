@@ -726,6 +726,7 @@
     },
     keydown: function(e) {
       var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
+      updater.focus = true;
       if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
         return;
       }
@@ -1650,7 +1651,7 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        scroll = updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
+        scroll = conf['Scrolling'] && updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
         updater.timer.textContent = '-' + conf['Interval'];
         if (conf['Verbose']) {
           updater.count.textContent = '+' + arr.length;
@@ -2324,6 +2325,7 @@
     },
     scroll: function(e) {
       var bottom, height, i, reply, _len, _ref;
+      updater.focus = true;
       height = d.body.clientHeight;
       _ref = unread.replies;
       for (i = 0, _len = _ref.length; i < _len; i++) {
