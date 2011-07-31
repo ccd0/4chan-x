@@ -282,7 +282,7 @@
     },
     hoverend: function(e) {
       ui.el.parentNode.removeChild(ui.el);
-      return $.unbind(d, 'mousemove', ui.hoverend);
+      return d.removeEventListener('mousemove', ui.hoverend, false);
     }
   };
   /*

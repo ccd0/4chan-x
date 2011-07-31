@@ -198,7 +198,7 @@ ui =
 
   hoverend: (e) ->
     ui.el.parentNode.removeChild ui.el
-    $.unbind d, 'mousemove', ui.hoverend
+    d.removeEventListener 'mousemove', ui.hoverend, false
 
 ###
 loosely follows the jquery api:
