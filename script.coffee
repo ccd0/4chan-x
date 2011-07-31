@@ -200,6 +200,8 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  id: (id) ->
+    d.getElementById id
   globalEval: (code) ->
     script = $.el 'script',
       textContent: "(#{code})()"
@@ -430,7 +432,7 @@ expandThread =
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
           $.rm prev
         for backlink in $$ '.op a.backlink'
-          $.rm backlink if !d.getElementById backlink.hash[1..]
+          $.rm backlink if !$.id backlink.hash[1..]
 
 
   parse: (req, pathname, thread, a) ->
@@ -1008,7 +1010,7 @@ qr =
         watcher.watch null, g.THREAD_ID
       else
         id = $('input[name=resto]', qr.el).value
-        op = d.getElementById id
+        op = $.id id
         if $('img.favicon', op).src is Favicon.empty
           watcher.watch op, id
 
@@ -1565,7 +1567,7 @@ quoteBacklink =
         #duplicate quotes get overwritten
         quotes[qid] = quote
       for qid of quotes
-        continue unless el = d.getElementById qid
+        continue unless el = $.id qid
         #don't backlink the op
         continue if !conf['OP Backlinks'] and el.className is 'op'
         link = $.el 'a',
@@ -1613,11 +1615,11 @@ quoteInline =
       $.rm table
       $.removeClass @, 'inlined'
       for inlined in $$ 'input', table
-        if hidden = d.getElementById inlined.name
+        if hidden = $.id inlined.name
           $.show $.x 'ancestor::table[1]', hidden
       return
     root = if @parentNode.nodeName is 'FONT' then @parentNode else if @nextSibling then @nextSibling else @
-    if el = d.getElementById id
+    if el = $.id id
       inline = quoteInline.table id, el.innerHTML
       if @className is 'backlink'
         return if $("a.backlink[href='##{id}']", el)
@@ -1679,7 +1681,7 @@ quotePreview =
     $.append d.body, qp
 
     id = @hash[1..]
-    if el = d.getElementById id
+    if el = $.id id
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl' if conf['Quote Highlighting']
       if /backlink/.test @className
@@ -1692,7 +1694,7 @@ quotePreview =
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
   mouseout: ->
-    $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
+    $.removeClass el, 'qphl' if el = $.id @hash[1..]
     ui.hoverend()
   parse: (req, id, threadID) ->
     return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")

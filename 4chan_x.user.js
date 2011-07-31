@@ -292,6 +292,9 @@
     return object;
   };
   $.extend($, {
+    id: function(id) {
+      return d.getElementById(id);
+    },
     globalEval: function(code) {
       var script;
       script = $.el('script', {
@@ -614,7 +617,7 @@
           _results = [];
           for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
             backlink = _ref2[_i];
-            _results.push(!d.getElementById(backlink.hash.slice(1)) ? $.rm(backlink) : void 0);
+            _results.push(!$.id(backlink.hash.slice(1)) ? $.rm(backlink) : void 0);
           }
           return _results;
       }
@@ -1287,7 +1290,7 @@
           watcher.watch(null, g.THREAD_ID);
         } else {
           id = $('input[name=resto]', qr.el).value;
-          op = d.getElementById(id);
+          op = $.id(id);
           if ($('img.favicon', op).src === Favicon.empty) {
             watcher.watch(op, id);
           }
@@ -1997,7 +2000,7 @@
         }
         _results = [];
         for (qid in quotes) {
-          if (!(el = d.getElementById(qid))) {
+          if (!(el = $.id(qid))) {
             continue;
           }
           if (!conf['OP Backlinks'] && el.className === 'op') {
@@ -2072,14 +2075,14 @@
         _ref = $$('input', table);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           inlined = _ref[_i];
-          if (hidden = d.getElementById(inlined.name)) {
+          if (hidden = $.id(inlined.name)) {
             $.show($.x('ancestor::table[1]', hidden));
           }
         }
         return;
       }
       root = this.parentNode.nodeName === 'FONT' ? this.parentNode : this.nextSibling ? this.nextSibling : this;
-      if (el = d.getElementById(id)) {
+      if (el = $.id(id)) {
         inline = quoteInline.table(id, el.innerHTML);
         if (this.className === 'backlink') {
           if ($("a.backlink[href='#" + id + "']", el)) {
@@ -2175,7 +2178,7 @@
       });
       $.append(d.body, qp);
       id = this.hash.slice(1);
-      if (el = d.getElementById(id)) {
+      if (el = $.id(id)) {
         qp.innerHTML = el.innerHTML;
         if (conf['Quote Highlighting']) {
           $.addClass(el, 'qphl');
@@ -2200,7 +2203,7 @@
     },
     mouseout: function() {
       var el;
-      if (el = d.getElementById(this.hash.slice(1))) {
+      if (el = $.id(this.hash.slice(1))) {
         $.removeClass(el, 'qphl');
       }
       return ui.hoverend();
