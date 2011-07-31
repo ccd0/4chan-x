@@ -1,6 +1,8 @@
 github
 - mayhem:
   - fix updater when there is a hash in the url
+- aeosynth:
+  - better hovering fix
 
 2.17.0
 - mayhem:
