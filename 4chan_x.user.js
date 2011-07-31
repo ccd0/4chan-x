@@ -1402,9 +1402,9 @@
       c = $('b').lastChild;
       if (c.nodeType === 8) {
         _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-        noko = /auto_noko/.test(location.search);
+        noko = /noko/.test(location.search);
         if (thread === '0') {
-          if (/auto_watch/.test(location.search)) {
+          if (/watch/.test(location.search)) {
             return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
           } else if (noko) {
             return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
@@ -2716,7 +2716,7 @@
       }
       threading.init();
       if (conf['Auto Noko']) {
-        $('.postarea form').action += '?auto_noko';
+        $('.postarea form').action += '?noko';
       }
       if (conf['Cooldown']) {
         cooldown.init();
@@ -2808,7 +2808,7 @@
           expandComment.init();
         }
         if (conf['Auto Watch']) {
-          $('.postarea form').action += '?auto_watch';
+          $('.postarea form').action += '?watch';
         }
       }
       _ref3 = $$('div.op');

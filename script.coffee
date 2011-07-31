@@ -1127,9 +1127,9 @@ qr =
     if c.nodeType is 8 #comment node
       [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
 
-      noko = /auto_noko/.test location.search
+      noko = /noko/.test location.search
       if thread is '0'
-        if /auto_watch/.test location.search
+        if /watch/.test location.search
           window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
         else if noko
           window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
@@ -2105,7 +2105,7 @@ main =
     threading.init()
 
     if conf['Auto Noko']
-      $('.postarea form').action += '?auto_noko'
+      $('.postarea form').action += '?noko'
 
     if conf['Cooldown']
       cooldown.init()
@@ -2198,7 +2198,7 @@ main =
         expandComment.init()
 
       if conf['Auto Watch']
-        $('.postarea form').action += '?auto_watch'
+        $('.postarea form').action += '?watch'
 
     for op in $$ 'div.op'
       for callback in g.callbacks
