@@ -1374,7 +1374,7 @@
       return qr.el = null;
     },
     sys: function() {
-      var c, duration, id, noko, recaptcha, thread, _, _ref;
+      var c, duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
@@ -1402,28 +1402,27 @@
       c = $('b').lastChild;
       if (c.nodeType === 8) {
         _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-        noko = /noko/.test(location.search);
-        if (thread === '0') {
-          if (/watch/.test(location.search)) {
-            return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
-          } else if (noko) {
-            return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
+        search = location.search;
+        cooldown = /cooldown/.test(search);
+        noko = /noko/.test(search);
+        sage = /sage/.test(search);
+        watch = /watch/.test(search);
+        url = "http://boards.4chan.org/" + g.BOARD;
+        if (noko) {
+          url += '/res/';
+          url += thread === 0 ? id : thread;
+          if (watch) {
+            url += '?watch';
           }
-        } else if (/cooldown/.test(location.search)) {
-          duration = Date.now() + 30000;
-          if (/sage/.test(location.search)) {
-            duration += 30000;
-          }
-          if (noko) {
-            return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "?cooldown=" + duration + "#" + id;
-          } else {
-            return window.location = "http://boards.4chan.org/" + g.BOARD + "?cooldown=" + duration;
-          }
-        } else if (noko) {
-          return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + id;
-        } else {
-          return window.location = "http://boards.4chan.org/" + g.BOARD;
         }
+        if (cooldown) {
+          duration = Date.now() + (sage ? 60 : 30) * 1000;
+          url += '?cooldown=' + duration;
+        }
+        if (noko) {
+          url += '#' + id;
+        }
+        return window.location = url;
       }
     }
   };

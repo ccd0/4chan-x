@@ -1127,23 +1127,26 @@ qr =
     if c.nodeType is 8 #comment node
       [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
 
-      noko = /noko/.test location.search
-      if thread is '0'
-        if /watch/.test location.search
-          window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
-        else if noko
-          window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
-      else if /cooldown/.test location.search
-        duration = Date.now() + 30000
-        duration += 30000 if /sage/.test location.search
-        if noko
-          window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}?cooldown=#{duration}##{id}"
-        else
-          window.location = "http://boards.4chan.org/#{g.BOARD}?cooldown=#{duration}"
-      else if noko
-        window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{id}"
-      else
-        window.location = "http://boards.4chan.org/#{g.BOARD}"
+      {search} = location
+      cooldown = /cooldown/.test search
+      noko     = /noko/    .test search
+      sage     = /sage/    .test search
+      watch    = /watch/   .test search
+
+      url = "http://boards.4chan.org/#{g.BOARD}"
+
+      if noko
+        url += '/res/'
+        url += if thread is 0 then id else thread
+        if watch
+          url += '?watch'
+      if cooldown
+        duration = Date.now() + (if sage then 60 else 30) * 1000
+        url += '?cooldown=' + duration
+      if noko
+        url += '#' + id
+
+      window.location = url
 
 threading =
   init: ->
