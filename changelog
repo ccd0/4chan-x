@@ -1,4 +1,6 @@
 github
+- mayhem:
+  - fix updater when there is a hash in the url
 
 2.17.0
 - mayhem:
