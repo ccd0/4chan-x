@@ -722,140 +722,138 @@
         node = _ref[_i];
         node.removeAttribute('accesskey');
       }
-      return $.bind(d, 'keydown', keybinds.cb.keydown);
+      return $.bind(d, 'keydown', keybinds.keydown);
     },
-    cb: {
-      keydown: function(e) {
-        var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
-        if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
-          return;
-        }
-        if (!(key = keybinds.cb.keyCode(e))) {
-          return;
-        }
-        thread = nav.getThread();
-        switch (key) {
-          case conf.close:
-            if (o = $('#overlay')) {
-              $.rm(o);
-            } else if (qr.el) {
-              qr.close();
-            }
-            break;
-          case conf.spoiler:
-            ta = e.target;
-            if (ta.nodeName !== 'TEXTAREA') {
-              return;
-            }
-            value = ta.value;
-            selStart = ta.selectionStart;
-            selEnd = ta.selectionEnd;
-            valStart = value.slice(0, selStart) + '[spoiler]';
-            valMid = value.slice(selStart, selEnd);
-            valEnd = '[/spoiler]' + value.slice(selEnd);
-            ta.value = valStart + valMid + valEnd;
-            range = valStart.length + valMid.length;
-            ta.setSelectionRange(range, range);
-            break;
-          case conf.zero:
-            window.location = "/" + g.BOARD + "/0#0";
-            break;
-          case conf.openEmptyQR:
-            keybinds.qr(thread);
-            break;
-          case conf.nextReply:
-            keybinds.hl.next(thread);
-            break;
-          case conf.previousReply:
-            keybinds.hl.prev(thread);
-            break;
-          case conf.expandAllImages:
-            keybinds.img(thread, true);
-            break;
-          case conf.openThread:
-            keybinds.open(thread);
-            break;
-          case conf.expandThread:
-            expandThread.toggle(thread);
-            break;
-          case conf.openQR:
-            keybinds.qr(thread, true);
-            break;
-          case conf.expandImages:
-            keybinds.img(thread);
-            break;
-          case conf.nextThread:
-            nav.next();
-            break;
-          case conf.openThreadTab:
-            keybinds.open(thread, true);
-            break;
-          case conf.previousThread:
-            nav.prev();
-            break;
-          case conf.update:
-            updater.update();
-            break;
-          case conf.watch:
-            watcher.toggle(thread);
-            break;
-          case conf.hide:
-            threadHiding.toggle(thread);
-            break;
-          case conf.nextPage:
-            if ((_ref2 = $('input[value=Next]')) != null) {
-              _ref2.click();
-            }
-            break;
-          case conf.previousPage:
-            if ((_ref3 = $('input[value=Previous]')) != null) {
-              _ref3.click();
-            }
-            break;
-          case conf.submit:
-            if (qr.el) {
-              qr.submit.call($('form', qr.el));
-            } else {
-              $('.postarea form').submit();
-            }
-            break;
-          case conf.unreadCountTo0:
-            unread.replies.length = 0;
-            unread.updateTitle();
-            Favicon.update();
-            break;
-          default:
-            return;
-        }
-        return e.preventDefault();
-      },
-      keyCode: function(e) {
-        var kc;
-        kc = e.keyCode;
-        if ((65 <= kc && kc <= 90)) {
-          key = String.fromCharCode(kc);
-          if (!e.shiftKey) {
-            key = key.toLowerCase();
-          }
-        } else if ((48 <= kc && kc <= 57)) {
-          key = String.fromCharCode(kc);
-        } else if (kc === 27) {
-          key = 'Esc';
-        } else if (kc === 8) {
-          key = '';
-        } else {
-          key = null;
-        }
-        if (key) {
-          if (e.altKey) {
-            key = 'alt+' + key;
-          }
-          if (e.ctrlKey) {
-            key = 'ctrl+' + key;
-          }
-        }
-        return key;
+    keydown: function(e) {
+      var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
+      if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
+        return;
       }
+      if (!(key = keybinds.keyCode(e))) {
+        return;
+      }
+      thread = nav.getThread();
+      switch (key) {
+        case conf.close:
+          if (o = $('#overlay')) {
+            $.rm(o);
+          } else if (qr.el) {
+            qr.close();
+          }
+          break;
+        case conf.spoiler:
+          ta = e.target;
+          if (ta.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          value = ta.value;
+          selStart = ta.selectionStart;
+          selEnd = ta.selectionEnd;
+          valStart = value.slice(0, selStart) + '[spoiler]';
+          valMid = value.slice(selStart, selEnd);
+          valEnd = '[/spoiler]' + value.slice(selEnd);
+          ta.value = valStart + valMid + valEnd;
+          range = valStart.length + valMid.length;
+          ta.setSelectionRange(range, range);
+          break;
+        case conf.zero:
+          window.location = "/" + g.BOARD + "/0#0";
+          break;
+        case conf.openEmptyQR:
+          keybinds.qr(thread);
+          break;
+        case conf.nextReply:
+          keybinds.hl.next(thread);
+          break;
+        case conf.previousReply:
+          keybinds.hl.prev(thread);
+          break;
+        case conf.expandAllImages:
+          keybinds.img(thread, true);
+          break;
+        case conf.openThread:
+          keybinds.open(thread);
+          break;
+        case conf.expandThread:
+          expandThread.toggle(thread);
+          break;
+        case conf.openQR:
+          keybinds.qr(thread, true);
+          break;
+        case conf.expandImages:
+          keybinds.img(thread);
+          break;
+        case conf.nextThread:
+          nav.next();
+          break;
+        case conf.openThreadTab:
+          keybinds.open(thread, true);
+          break;
+        case conf.previousThread:
+          nav.prev();
+          break;
+        case conf.update:
+          updater.update();
+          break;
+        case conf.watch:
+          watcher.toggle(thread);
+          break;
+        case conf.hide:
+          threadHiding.toggle(thread);
+          break;
+        case conf.nextPage:
+          if ((_ref2 = $('input[value=Next]')) != null) {
+            _ref2.click();
+          }
+          break;
+        case conf.previousPage:
+          if ((_ref3 = $('input[value=Previous]')) != null) {
+            _ref3.click();
+          }
+          break;
+        case conf.submit:
+          if (qr.el) {
+            qr.submit.call($('form', qr.el));
+          } else {
+            $('.postarea form').submit();
+          }
+          break;
+        case conf.unreadCountTo0:
+          unread.replies.length = 0;
+          unread.updateTitle();
+          Favicon.update();
+          break;
+        default:
+          return;
+      }
+      return e.preventDefault();
+    },
+    keyCode: function(e) {
+      var kc;
+      kc = e.keyCode;
+      if ((65 <= kc && kc <= 90)) {
+        key = String.fromCharCode(kc);
+        if (!e.shiftKey) {
+          key = key.toLowerCase();
+        }
+      } else if ((48 <= kc && kc <= 57)) {
+        key = String.fromCharCode(kc);
+      } else if (kc === 27) {
+        key = 'Esc';
+      } else if (kc === 8) {
+        key = '';
+      } else {
+        key = null;
+      }
+      if (key) {
+        if (e.altKey) {
+          key = 'alt+' + key;
+        }
+        if (e.ctrlKey) {
+          key = 'ctrl+' + key;
+        }
+      }
+      return key;
     },
     img: function(thread, all) {
       var root, thumb;
@@ -1130,7 +1128,7 @@
     keybind: function(e) {
       e.preventDefault();
       e.stopPropagation();
-      if ((key = keybinds.cb.keyCode(e)) == null) {
+      if ((key = keybinds.keyCode(e)) == null) {
         return;
       }
       this.value = key;

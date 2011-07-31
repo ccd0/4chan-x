@@ -515,100 +515,99 @@ keybinds =
   init: ->
     for node in $$ '[accesskey]'
       node.removeAttribute 'accesskey'
-    $.bind d, 'keydown',  keybinds.cb.keydown
+    $.bind d, 'keydown',  keybinds.keydown
 
-  cb:
-    keydown: (e) ->
-      return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
-      return unless key = keybinds.cb.keyCode e
+  keydown: (e) ->
+    return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
+    return unless key = keybinds.keyCode e
 
-      thread = nav.getThread()
-      switch key
-        when conf.close
-          if o = $ '#overlay'
-            $.rm o
-          else if qr.el
-            qr.close()
-        when conf.spoiler
-          ta = e.target
-          return unless ta.nodeName is 'TEXTAREA'
+    thread = nav.getThread()
+    switch key
+      when conf.close
+        if o = $ '#overlay'
+          $.rm o
+        else if qr.el
+          qr.close()
+      when conf.spoiler
+        ta = e.target
+        return unless ta.nodeName is 'TEXTAREA'
 
-          value    = ta.value
-          selStart = ta.selectionStart
-          selEnd   = ta.selectionEnd
+        value    = ta.value
+        selStart = ta.selectionStart
+        selEnd   = ta.selectionEnd
 
-          valStart = value[0...selStart] + '[spoiler]'
-          valMid   = value[selStart...selEnd]
-          valEnd   = '[/spoiler]' + value[selEnd..]
+        valStart = value[0...selStart] + '[spoiler]'
+        valMid   = value[selStart...selEnd]
+        valEnd   = '[/spoiler]' + value[selEnd..]
 
-          ta.value = valStart + valMid + valEnd
-          range = valStart.length + valMid.length
-          ta.setSelectionRange range, range
-        when conf.zero
-          window.location = "/#{g.BOARD}/0#0"
-        when conf.openEmptyQR
-          keybinds.qr thread
-        when conf.nextReply
-          keybinds.hl.next thread
-        when conf.previousReply
-          keybinds.hl.prev thread
-        when conf.expandAllImages
-          keybinds.img thread, true
-        when conf.openThread
-          keybinds.open thread
-        when conf.expandThread
-          expandThread.toggle thread
-        when conf.openQR
-          keybinds.qr thread, true
-        when conf.expandImages
-          keybinds.img thread
-        when conf.nextThread
-          nav.next()
-        when conf.openThreadTab
-          keybinds.open thread, true
-        when conf.previousThread
-          nav.prev()
-        when conf.update
-          updater.update()
-        when conf.watch
-          watcher.toggle thread
-        when conf.hide
-          threadHiding.toggle thread
-        when conf.nextPage
-          $('input[value=Next]')?.click()
-        when conf.previousPage
-          $('input[value=Previous]')?.click()
-        when conf.submit
-          if qr.el
-            qr.submit.call $ 'form', qr.el
-          else
-            $('.postarea form').submit()
-        when conf.unreadCountTo0
-          unread.replies.length = 0
-          unread.updateTitle()
-          Favicon.update()
+        ta.value = valStart + valMid + valEnd
+        range = valStart.length + valMid.length
+        ta.setSelectionRange range, range
+      when conf.zero
+        window.location = "/#{g.BOARD}/0#0"
+      when conf.openEmptyQR
+        keybinds.qr thread
+      when conf.nextReply
+        keybinds.hl.next thread
+      when conf.previousReply
+        keybinds.hl.prev thread
+      when conf.expandAllImages
+        keybinds.img thread, true
+      when conf.openThread
+        keybinds.open thread
+      when conf.expandThread
+        expandThread.toggle thread
+      when conf.openQR
+        keybinds.qr thread, true
+      when conf.expandImages
+        keybinds.img thread
+      when conf.nextThread
+        nav.next()
+      when conf.openThreadTab
+        keybinds.open thread, true
+      when conf.previousThread
+        nav.prev()
+      when conf.update
+        updater.update()
+      when conf.watch
+        watcher.toggle thread
+      when conf.hide
+        threadHiding.toggle thread
+      when conf.nextPage
+        $('input[value=Next]')?.click()
+      when conf.previousPage
+        $('input[value=Previous]')?.click()
+      when conf.submit
+        if qr.el
+          qr.submit.call $ 'form', qr.el
         else
-          return
-      e.preventDefault()
-
-    keyCode: (e) ->
-      kc = e.keyCode
-      if 65 <= kc <= 90 #A-Z
-        key = String.fromCharCode kc
-        if !e.shiftKey
-          key = key.toLowerCase()
-      else if 48 <= kc <= 57 #0-9
-        key = String.fromCharCode kc
-      else if kc is 27
-        key = 'Esc'
-      else if kc is 8
-        key = ''
+          $('.postarea form').submit()
+      when conf.unreadCountTo0
+        unread.replies.length = 0
+        unread.updateTitle()
+        Favicon.update()
       else
-        key = null
-      if key
-        if e.altKey  then key = 'alt+' + key
-        if e.ctrlKey then key = 'ctrl+' + key
-      key
+        return
+    e.preventDefault()
+
+  keyCode: (e) ->
+    kc = e.keyCode
+    if 65 <= kc <= 90 #A-Z
+      key = String.fromCharCode kc
+      if !e.shiftKey
+        key = key.toLowerCase()
+    else if 48 <= kc <= 57 #0-9
+      key = String.fromCharCode kc
+    else if kc is 27
+      key = 'Esc'
+    else if kc is 8
+      key = ''
+    else
+      key = null
+    if key
+      if e.altKey  then key = 'alt+' + key
+      if e.ctrlKey then key = 'ctrl+' + key
+    key
 
   img: (thread, all) ->
     if all
@@ -893,7 +892,7 @@ options =
   keybind: (e) ->
     e.preventDefault()
     e.stopPropagation()
-    return unless (key = keybinds.cb.keyCode e)?
+    return unless (key = keybinds.keyCode e)?
     @value = key
     $.setValue @name, key
     conf[@name] = key
