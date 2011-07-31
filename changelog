@@ -2,7 +2,7 @@ github
 - mayhem:
   - Make updater's settings dynamic
   - Multi-line quoting
-  - New Unread Count reset keybind
+  - keybinds: z: reset unread count (useful when page is not scrollable)
   - fix remember updater's interval settings
   - fix wrong keybind input in options
   - fix time preview
