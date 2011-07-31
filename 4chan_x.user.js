@@ -262,14 +262,27 @@
       el.style.top = clientHeight < height || top < 0 ? 0 : top + height > clientHeight ? clientHeight - height : top;
       if (clientX < clientWidth - 400) {
         el.style.left = clientX + 45;
-        return el.style.right = null;
+        el.style.right = null;
       } else {
         el.style.left = null;
-        return el.style.right = clientWidth - clientX + 45;
+        el.style.right = clientWidth - clientX + 45;
       }
+      /*
+          https://bugzilla.mozilla.org/show_bug.cgi?id=674955
+          `mouseout` does not fire when element removed
+          RESOLVED INVALID
+      
+          god damn it mozzarella. when an element is removed (eg from un-inlining),
+          the `mouseout` event doesn't fire. we can't depend on `mouseout`, so we
+          simulate it by binding `mousemove` to the element and to the document. the
+          element binding stops the event from propogating; if the mouse has moved
+          off of the element, the event is not stopped, and mouseout happens.
+          */
+      return e.stopPropagation();
     },
     hoverend: function(e) {
-      return ui.el.parentNode.removeChild(ui.el);
+      ui.el.parentNode.removeChild(ui.el);
+      return $.unbind(d, 'mousemove', ui.hoverend);
     }
   };
   /*
@@ -2004,8 +2017,6 @@
           });
           if (conf['Quote Preview']) {
             $.bind(link, 'mouseover', quotePreview.mouseover);
-            $.bind(link, 'mousemove', ui.hover);
-            $.bind(link, 'mouseout', quotePreview.mouseout);
           }
           if (conf['Quote Inline']) {
             $.bind(link, 'click', quoteInline.toggle);
@@ -2138,15 +2149,15 @@
           if (!quote.hash) {
             continue;
           }
-          $.bind(quote, 'mouseover', quotePreview.mouseover);
-          $.bind(quote, 'mousemove', ui.hover);
-          _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
+          _results.push($.bind(quote, 'mouseover', quotePreview.mouseover));
         }
         return _results;
       });
     },
     mouseover: function(e) {
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _results;
+      $.bind(this, 'mousemove', ui.hover);
+      $.bind(d, 'mousemove', quotePreview.mouseout);
       qp = ui.el = $.el('div', {
         id: 'qp',
         className: 'replyhl'
@@ -2157,6 +2168,7 @@
         qp.innerHTML = el.innerHTML;
         if (conf['Quote Highlighting']) {
           $.addClass(el, 'qphl');
+          quotePreview.hl = el;
         }
         if (/backlink/.test(this.className)) {
           replyID = $.x('ancestor::*[@id][1]', this).id.match(/\d+/)[0];
@@ -2177,10 +2189,12 @@
       }
     },
     mouseout: function() {
-      var el;
-      if (el = d.getElementById(this.hash.slice(1))) {
-        $.removeClass(el, 'qphl');
+      var hl;
+      hl = quotePreview.hl;
+      if (hl) {
+        $.removeClass(hl, 'qphl');
       }
+      $.unbind(d, 'mousemove', quotePreview.mouseout);
       return ui.hoverend();
     },
     parse: function(req, id, threadID) {
@@ -2452,12 +2466,12 @@
         if (!(thumb = $('img[md5]', root))) {
           return;
         }
-        $.bind(thumb, 'mouseover', imgHover.mouseover);
-        $.bind(thumb, 'mousemove', ui.hover);
-        return $.bind(thumb, 'mouseout', ui.hoverend);
+        return $.bind(thumb, 'mouseover', imgHover.mouseover);
       });
     },
     mouseover: function(e) {
+      $.bind(this, 'mousemove', ui.hover);
+      $.bind(d, 'mousemove', ui.hoverend);
       ui.el = $.el('img', {
         id: 'iHover',
         src: this.parentNode.href

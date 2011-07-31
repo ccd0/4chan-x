@@ -183,8 +183,22 @@ ui =
       el.style.left  = null
       el.style.right = clientWidth - clientX + 45
 
+    ###
+    https://bugzilla.mozilla.org/show_bug.cgi?id=674955
+    `mouseout` does not fire when element removed
+    RESOLVED INVALID
+
+    god damn it mozzarella. when an element is removed (eg from un-inlining),
+    the `mouseout` event doesn't fire. we can't depend on `mouseout`, so we
+    simulate it by binding `mousemove` to the element and to the document. the
+    element binding stops the event from propogating; if the mouse has moved
+    off of the element, the event is not stopped, and mouseout happens.
+    ###
+    e.stopPropagation()
+
   hoverend: (e) ->
     ui.el.parentNode.removeChild ui.el
+    $.unbind d, 'mousemove', ui.hoverend
 
 ###
 loosely follows the jquery api:
@@ -1568,8 +1582,6 @@ quoteBacklink =
           textContent: ">>#{id}"
         if conf['Quote Preview']
           $.bind link, 'mouseover', quotePreview.mouseover
-          $.bind link, 'mousemove', ui.hover
-          $.bind link, 'mouseout',  quotePreview.mouseout
         if conf['Quote Inline']
           $.bind link, 'click', quoteInline.toggle
         unless container = $ '.container', el
@@ -1649,9 +1661,9 @@ quotePreview =
       for quote in $$ 'a.quotelink, a.backlink', root
         continue unless quote.hash
         $.bind quote, 'mouseover', quotePreview.mouseover
-        $.bind quote, 'mousemove', ui.hover
-        $.bind quote, 'mouseout',  quotePreview.mouseout
   mouseover: (e) ->
+    $.bind @, 'mousemove', ui.hover
+    $.bind d, 'mousemove', quotePreview.mouseout
     qp = ui.el = $.el 'div',
       id: 'qp'
       className: 'replyhl'
@@ -1660,7 +1672,9 @@ quotePreview =
     id = @hash[1..]
     if el = d.getElementById id
       qp.innerHTML = el.innerHTML
-      $.addClass el, 'qphl' if conf['Quote Highlighting']
+      if conf['Quote Highlighting']
+        $.addClass el, 'qphl'
+        quotePreview.hl = el
       if /backlink/.test @className
         replyID = $.x('ancestor::*[@id][1]', @).id.match(/\d+/)[0]
         for quote in $$ 'a.quotelink', qp
@@ -1671,7 +1685,9 @@ quotePreview =
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
   mouseout: ->
-    $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
+    {hl} = quotePreview
+    $.removeClass hl, 'qphl' if hl
+    $.unbind d, 'mousemove', quotePreview.mouseout
     ui.hoverend()
   parse: (req, id, threadID) ->
     return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")
@@ -1841,9 +1857,9 @@ imgHover =
     g.callbacks.push (root) ->
       return unless thumb = $ 'img[md5]', root
       $.bind thumb, 'mouseover', imgHover.mouseover
-      $.bind thumb, 'mousemove', ui.hover
-      $.bind thumb, 'mouseout',  ui.hoverend
   mouseover: (e) ->
+    $.bind @, 'mousemove', ui.hover
+    $.bind d, 'mousemove', ui.hoverend
     ui.el = $.el 'img'
       id: 'iHover'
       src: @parentNode.href
