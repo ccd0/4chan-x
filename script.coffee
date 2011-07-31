@@ -1589,6 +1589,8 @@ quoteInline =
         quote.removeAttribute 'onclick'
         $.bind quote, 'click', quoteInline.toggle
   toggle: (e) ->
+    return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
+
     e.preventDefault()
     ###
     https://bugzilla.mozilla.org/show_bug.cgi?id=674955

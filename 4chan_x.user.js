@@ -2049,6 +2049,9 @@
     },
     toggle: function(e) {
       var el, hidden, id, inline, inlined, pathname, root, table, threadID, _i, _len, _ref;
+      if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) {
+        return;
+      }
       e.preventDefault();
       /*
           https://bugzilla.mozilla.org/show_bug.cgi?id=674955
