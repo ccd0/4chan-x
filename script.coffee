@@ -2106,6 +2106,9 @@ main =
       Recaptcha.init()
       $.bind form, 'submit', qr.submit
 
+    if (id = location.hash[1..]) and !$.id id
+      scrollTo 0, d.body.scrollHeight
+
     #major features
     threading.init()
 
