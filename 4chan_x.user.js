@@ -1196,7 +1196,7 @@
     cb: function() {
       var submit, submits, _i, _j, _len, _len2, _results;
       submits = $$('#com_submit');
-      if (--cooldown.duration) {
+      if (--cooldown.duration > 0) {
         _results = [];
         for (_i = 0, _len = submits.length; _i < _len; _i++) {
           submit = submits[_i];

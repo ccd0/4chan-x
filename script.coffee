@@ -937,7 +937,7 @@ cooldown =
 
   cb: ->
     submits = $$ '#com_submit'
-    if --cooldown.duration
+    if --cooldown.duration > 0
       for submit in submits
         submit.value = cooldown.duration
     else
