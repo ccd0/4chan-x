@@ -1058,6 +1058,11 @@ qr =
     $('input[name=email]', qr.el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
+  add: ->
+    file  = @parentNode.nextElementSibling.cloneNode true
+    files = $ '#files', qr.el
+    $.append files, file
+
   dialog: (link) ->
     submitValue = $('#com_submit').value
     submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
@@ -1079,9 +1084,10 @@ qr =
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
-        <div><input type=file name=upfile><a>+1</a></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=add>Upload another file</a></div>
+        <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
+        <div id=files></div>
       </form>
       <a id=error class=error></a>
       "
@@ -1094,6 +1100,7 @@ qr =
     $.bind $('#autohide',                            qr.el), 'click', qr.cb.autohide
     $.bind $('a[name=close]',                        qr.el), 'click', qr.close
     $.bind $('form',                                 qr.el), 'submit', qr.submit
+    $.bind $('a[name=add]',                          qr.el), 'click', qr.add
     $.bind $('img',                                  qr.el), 'click', Recaptcha.reload
     $.bind $('input[name=recaptcha_response_field]', qr.el), 'keydown', Recaptcha.listener
 
