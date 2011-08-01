@@ -1125,7 +1125,7 @@ qr =
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=captcha>0</a></div>
         <div><input type=file name=upfile></div>
-        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=add>upload another file</a></div>
+        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=add>attach another file</a></div>
       </form>
       <div id=files></div>
       <a id=error class=error></a>
