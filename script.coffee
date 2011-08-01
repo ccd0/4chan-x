@@ -799,8 +799,10 @@ options =
                 <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>
                 <tr><td>%B</td><td>month, full length</td><td>June</td></tr>
                 <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>
+                <tr><td>%e</td><td>day of the month</td><td>3</td></tr>
                 <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>
                 <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>
+                <tr><td>%k</td><td>hour (24 hour clock)</td><td>13</td></tr>
                 <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>
                 <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>
                 <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>
@@ -1579,8 +1581,10 @@ Time =
   b: -> @month[@date.getMonth()][...3]
   B: -> @month[@date.getMonth()]
   d: -> @zeroPad @date.getDate()
+  e: -> @date.getDate()
   H: -> @zeroPad @date.getHours()
   I: -> @zeroPad @date.getHours() % 12 or 12
+  k: -> @date.getHours()
   m: -> @zeroPad @date.getMonth() + 1
   M: -> @zeroPad @date.getMinutes()
   p: -> if @date.getHours() < 12 then 'AM' else 'PM'
