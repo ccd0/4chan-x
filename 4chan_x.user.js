@@ -2723,10 +2723,10 @@
         Recaptcha.init();
         $.bind(form, 'submit', qr.submit);
       }
+      threading.init();
       if ((id = location.hash.slice(1)) && !$.id(id)) {
         scrollTo(0, d.body.scrollHeight);
       }
-      threading.init();
       if (conf['Auto Noko']) {
         $('.postarea form').action += '?noko';
       }
