@@ -4,6 +4,13 @@ github
 - aeosynth:
   - only auto scroll focused tabs
   - quote inlining: only work on unmodified left-click
+  - select multiple files (one at a time)
+  - captcha caching
+  - qr: optional auto hiding
+  - copy old textarea value
+  - scroll to bottom of page if post isn't found (thumbnail generation takes
+      time)
+  - only scroll focused tabs
 
 2.17.1
 - mayhem:
