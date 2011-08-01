@@ -1412,12 +1412,11 @@
         sage = /sage/.test(search);
         watch = /watch/.test(search);
         url = "http://boards.4chan.org/" + g.BOARD;
-        if (noko) {
+        if (watch && thread === '0') {
+          url += "/res/" + id + "?watch";
+        } else if (noko) {
           url += '/res/';
-          url += thread === 0 ? id : thread;
-          if (watch) {
-            url += '?watch';
-          }
+          url += thread === '0' ? id : thread;
         }
         if (cooldown) {
           duration = Date.now() + (sage ? 60 : 30) * 1000;

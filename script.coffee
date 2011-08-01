@@ -1138,11 +1138,11 @@ qr =
 
       url = "http://boards.4chan.org/#{g.BOARD}"
 
-      if noko
+      if watch and thread is '0'
+        url += "/res/#{id}?watch"
+      else if noko
         url += '/res/'
-        url += if thread is 0 then id else thread
-        if watch
-          url += '?watch'
+        url += if thread is '0' then id else thread
       if cooldown
         duration = Date.now() + (if sage then 60 else 30) * 1000
         url += '?cooldown=' + duration
