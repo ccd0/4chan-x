@@ -2163,7 +2163,7 @@ main =
 
     # scroll to bottom if post isn't found
     # thumbnail generation takes time
-    if (id = location.hash[1..]) and /\d/.test(id[0]) and !$.id(id)
+    if g.REPLY and (id = location.hash[1..]) and /\d/.test(id[0]) and !$.id(id)
       scrollTo 0, d.body.scrollHeight
 
     if conf['Auto Noko']
