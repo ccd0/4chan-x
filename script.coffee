@@ -34,6 +34,7 @@ config =
       'Cooldown':           [true,  'Prevent \'flood detected\' errors']
       'Quick Reply':        [true,  'Reply without leaving the page']
       'Persistent QR':      [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+      'Auto Hide QR':       [true,  'Automatically auto-hide the quick reply when posting']
     Quoting:
       'Quote Backlinks':    [true,  'Add quote backlinks']
       'OP Backlinks':       [false, 'Add backlinks to the OP']
@@ -1027,7 +1028,7 @@ qr =
     else if isQR
       if !e then @submit()
       $('#error', qr.el).textContent = ''
-      qr.autohide.set()
+      qr.autohide.set() if conf['Auto Hide QR']
       qr.sage = /sage/i.test $('input[name=email]', @).value
 
   quote: (link) ->
@@ -1100,7 +1101,7 @@ qr =
 
   persist: ->
     qr.dialog()
-    qr.autohide.set()
+    qr.autohide.set() if conf['Auto Hide QR']
 
   close: ->
     $.rm qr.el
@@ -1846,7 +1847,7 @@ Recaptcha =
       Recaptcha.reload()
     if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
       $('#auto', qr.el).checked = true
-      qr.autohide.set()
+      qr.autohide.set() if conf['Auto Hide QR']
   reload: ->
     window.location = 'javascript:Recaptcha.reload()'
   reloaded: (e) ->
