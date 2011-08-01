@@ -1387,7 +1387,10 @@
     },
     add: function() {
       var file, files;
-      file = this.parentNode.nextElementSibling.cloneNode(true);
+      file = $.el('input', {
+        type: 'file',
+        name: 'upfile'
+      });
       files = $('#files', qr.el);
       return $.append(files, file);
     },
