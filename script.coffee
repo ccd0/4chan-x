@@ -810,6 +810,7 @@ options =
 
                 <tr><th colspan=3>Time</th></tr>
                 <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>
+                <tr><td>%l (lowercase L)</td><td>hour (12 hour clock)</td><td>1</td></tr>
                 <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>01</td></tr>
                 <tr><td>%k</td><td>hour (24 hour clock)</td><td>13</td></tr>
                 <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>
@@ -1592,6 +1593,7 @@ Time =
   H: -> @zeroPad @date.getHours()
   I: -> @zeroPad @date.getHours() % 12 or 12
   k: -> @date.getHours()
+  l: -> @date.getHours() % 12 or 12
   m: -> @zeroPad @date.getMonth() + 1
   M: -> @zeroPad @date.getMinutes()
   p: -> if @date.getHours() < 12 then 'AM' else 'PM'
