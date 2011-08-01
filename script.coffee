@@ -1080,7 +1080,7 @@ qr =
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
-        <div><input type=file name=upfile></div>
+        <div><input type=file name=upfile><a>+1</a></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
       </form>
       <a id=error class=error></a>
