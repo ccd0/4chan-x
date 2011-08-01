@@ -452,9 +452,13 @@ expandThread =
     body = $.el 'body',
       innerHTML: req.responseText
 
-    for quote in $$ 'a.quotelink', body
-      if quote.getAttribute('href') is quote.hash
-        quote.pathname = pathname
+    for reply in $$ 'td[id]', body
+      for quote in $$ 'a.quotelink', reply
+        if quote.getAttribute('href') is quote.hash
+          quote.pathname = pathname
+      link = $ 'a.quotejs', reply
+      link.href = "res/#{thread.firstChild.id}##{reply.id}"
+      link.nextSibling.href = "res/#{thread.firstChild.id}#q#{reply.id}"
     tables = $$ 'form[name=delform] table', body
     tables.pop()
     for table in tables
