@@ -1264,8 +1264,9 @@
         $('iframe[name=iframe]').src = 'about:blank';
         data = e.data;
         if (data) {
+          data = JSON.parse(data);
+          $.extend($('#error', qr.el), data);
           $('input[name=recaptcha_response_field]', qr.el).value = '';
-          $.extend($('#error', qr.el), JSON.parse(data));
           qr.autohide.unset();
           if (data.textContent === 'You seem to have mistyped the verification.') {
             qr.auto();
