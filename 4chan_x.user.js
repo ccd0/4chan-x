@@ -1419,7 +1419,7 @@
         url = "http://boards.4chan.org/" + g.BOARD;
         if (noko) {
           url += '/res/';
-          url += thread === 0 ? id : thread;
+          url += thread === '0' ? id : thread;
           if (watch) {
             url += '?watch';
           }
