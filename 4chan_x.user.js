@@ -3079,6 +3079,10 @@
       [hidden] {\
         display: none;\
       }\
+\
+      #files > input {\
+        display: block;\
+      }\
     '
   };
   main.init();
