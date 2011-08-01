@@ -966,6 +966,7 @@ qr =
 
     #hack - nuke id so it doesn't grab focus when reloading
     $('#recaptcha_response_field').id = ''
+    qr.captcha = []
 
   autohide:
     set: ->
@@ -1012,6 +1013,12 @@ qr =
     quote: (e) ->
       e.preventDefault()
       qr.quote @
+
+  push: ->
+    @nextSibling.textContent = qr.captcha.push
+      challenge: $('input[name=recaptcha_challenge_field]', qr.el).value
+      response: @value
+    Recaptcha.reload()
 
   submit: (e) ->
     if conf['Auto Watch Reply'] and conf['Thread Watcher']
@@ -1092,9 +1099,9 @@ qr =
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=add>Upload another file</a></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=captcha>0</a></div>
         <div><input type=file name=upfile></div>
-        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
+        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=add>upload another file</a></div>
       </form>
       <div id=files></div>
       <a id=error class=error></a>
@@ -1863,6 +1870,7 @@ Recaptcha =
     if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
       $('#auto', qr.el).checked = true
       qr.autohide.set() if conf['Auto Hide QR']
+      qr.push.call this
   reload: ->
     window.location = 'javascript:Recaptcha.reload()'
   reloaded: (e) ->
