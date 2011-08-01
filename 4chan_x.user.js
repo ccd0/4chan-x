@@ -2743,7 +2743,7 @@
         $.bind(form, 'submit', qr.submit);
       }
       threading.init();
-      if ((id = location.hash.slice(1)) && !$.id(id) && !/\D/.test(id)) {
+      if ((id = location.hash.slice(1)) && /\d/.test(id[0]) && !$.id(id)) {
         scrollTo(0, d.body.scrollHeight);
       }
       if (conf['Auto Noko']) {
