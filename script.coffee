@@ -953,7 +953,7 @@ cooldown =
         submit.disabled = false
         submit.value = 'Submit'
       if qr.el and $('#auto', qr.el).checked
-        qr.submit.call $ 'form', qr.el
+        qr.auto()
 
 qr =
   init: ->
@@ -990,6 +990,8 @@ qr =
         $('input[name=recaptcha_response_field]', qr.el).value = ''
         $.extend $('#error', qr.el), JSON.parse data
         qr.autohide.unset()
+        if data.textContent is 'You seem to have mistyped the verification.'
+          qr.auto()
         return
 
       if qr.el
@@ -1014,11 +1016,20 @@ qr =
       e.preventDefault()
       qr.quote @
 
+  auto: ->
+    responseField = $ 'input[name=recaptcha_response_field]', qr.el
+    if !responseField.value and captcha = qr.captcha.shift()
+      $('input[name=recaptcha_challenge_field]', qr.el).value = captcha.challenge
+      responseField.value = captcha.response
+      responseField.nextSibling.textContent = qr.captcha.length
+    qr.submit.call $ 'form', qr.el
+
   push: ->
     @nextSibling.textContent = qr.captcha.push
       challenge: $('input[name=recaptcha_challenge_field]', qr.el).value
       response: @value
     Recaptcha.reload()
+    @value = ''
 
   submit: (e) ->
     if conf['Auto Watch Reply'] and conf['Thread Watcher']
@@ -1067,7 +1078,9 @@ qr =
     ta.value += text
 
   refresh: ->
+    auto = $('#auto', qr.el).checked
     $('form', qr.el).reset()
+    $('#auto', qr.el).checked = auto
     c = d.cookie
     $('input[name=name]',  qr.el).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
     $('input[name=email]', qr.el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''

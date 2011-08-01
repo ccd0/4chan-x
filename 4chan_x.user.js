@@ -1222,7 +1222,7 @@
           submit.value = 'Submit';
         }
         if (qr.el && $('#auto', qr.el).checked) {
-          return qr.submit.call($('form', qr.el));
+          return qr.auto();
         }
       }
     }
@@ -1267,6 +1267,9 @@
           $('input[name=recaptcha_response_field]', qr.el).value = '';
           $.extend($('#error', qr.el), JSON.parse(data));
           qr.autohide.unset();
+          if (data.textContent === 'You seem to have mistyped the verification.') {
+            qr.auto();
+          }
           return;
         }
         if (qr.el) {
@@ -1297,12 +1300,23 @@
         return qr.quote(this);
       }
     },
+    auto: function() {
+      var captcha, responseField;
+      responseField = $('input[name=recaptcha_response_field]', qr.el);
+      if (!responseField.value && (captcha = qr.captcha.shift())) {
+        $('input[name=recaptcha_challenge_field]', qr.el).value = captcha.challenge;
+        responseField.value = captcha.response;
+        responseField.nextSibling.textContent = qr.captcha.length;
+      }
+      return qr.submit.call($('form', qr.el));
+    },
     push: function() {
       this.nextSibling.textContent = qr.captcha.push({
         challenge: $('input[name=recaptcha_challenge_field]', qr.el).value,
         response: this.value
       });
-      return Recaptcha.reload();
+      Recaptcha.reload();
+      return this.value = '';
     },
     submit: function(e) {
       var id, inputfile, isQR, op;
@@ -1361,8 +1375,10 @@
       return ta.value += text;
     },
     refresh: function() {
-      var c, m;
+      var auto, c, m;
+      auto = $('#auto', qr.el).checked;
       $('form', qr.el).reset();
+      $('#auto', qr.el).checked = auto;
       c = d.cookie;
       $('input[name=name]', qr.el).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('input[name=email]', qr.el).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
