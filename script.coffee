@@ -988,8 +988,12 @@ qr =
         return
 
       if qr.el
-        if g.REPLY and conf['Persistent QR']
+        file = $ '#files input', qr.el
+        if g.REPLY and (conf['Persistent QR'] or file)
           qr.refresh()
+          if file
+            oldFile = $ '#qr_form input[type=file]', qr.el
+            $.replace oldFile, file
         else
           qr.close()
       if conf['Cooldown']
@@ -1087,8 +1091,8 @@ qr =
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=add>Upload another file</a></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
-        <div id=files></div>
       </form>
+      <div id=files></div>
       <a id=error class=error></a>
       "
     qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
