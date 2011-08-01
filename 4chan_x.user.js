@@ -100,7 +100,8 @@
         'Auto Noko': [true, 'Always redirect to your post'],
         'Cooldown': [true, 'Prevent \'flood detected\' errors'],
         'Quick Reply': [true, 'Reply without leaving the page'],
-        'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+        'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
+        'Auto Hide QR': [true, 'Automatically auto-hide the quick reply when posting']
       },
       Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
@@ -1312,7 +1313,9 @@
           this.submit();
         }
         $('#error', qr.el).textContent = '';
-        qr.autohide.set();
+        if (conf['Auto Hide QR']) {
+          qr.autohide.set();
+        }
         return qr.sage = /sage/i.test($('input[name=email]', this).value);
       }
     },
@@ -1371,7 +1374,9 @@
     },
     persist: function() {
       qr.dialog();
-      return qr.autohide.set();
+      if (conf['Auto Hide QR']) {
+        return qr.autohide.set();
+      }
     },
     close: function() {
       $.rm(qr.el);
@@ -2442,7 +2447,9 @@
       }
       if (e.keyCode === 13 && cooldown.duration) {
         $('#auto', qr.el).checked = true;
-        return qr.autohide.set();
+        if (conf['Auto Hide QR']) {
+          return qr.autohide.set();
+        }
       }
     },
     reload: function() {
