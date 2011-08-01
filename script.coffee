@@ -1087,6 +1087,7 @@ qr =
     qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
 
     qr.refresh()
+    $('textarea', qr.el).value = $('textarea').value
 
     $.bind $('input[name=name]',                     qr.el), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('#autohide',                            qr.el), 'click', qr.cb.autohide

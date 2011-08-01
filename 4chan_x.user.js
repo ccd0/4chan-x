@@ -1358,6 +1358,7 @@
         left: '0px'
       }, html);
       qr.refresh();
+      $('textarea', qr.el).value = $('textarea').value;
       $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
         return e.stopPropagation();
       });
