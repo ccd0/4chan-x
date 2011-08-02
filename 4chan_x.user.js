@@ -112,7 +112,7 @@
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
       }
     },
-    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://imgur.com/upload?url='].join('\n'),
+    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://imgur.com/upload?url=', '#http://anonym.to/?'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     hotkeys: {
       close: 'Esc',
