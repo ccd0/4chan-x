@@ -12,6 +12,7 @@ github
       time)
   - only scroll focused tabs
   - time: %e, %k, %l
+  - reverted hovering fix
 
 2.17.1
 - mayhem:
