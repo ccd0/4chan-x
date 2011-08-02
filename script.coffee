@@ -1557,9 +1557,10 @@ Time =
     $.replace s, time
   foo: ->
     code = conf['time'].replace /%([A-Za-z])/g, (s, c) ->
-      switch c
-        when 'a', 'A', 'b', 'B', 'd', 'e', 'H', 'I', 'k', 'l', 'm', 'M', 'p', 'P', 'y' then "' + Time.#{c}() + '"
-        else s
+      if c of Time.formatters
+        "' + Time.formatters.#{c}() + '"
+      else
+        s
     Time.funk = Function 'Time', "return '#{code}'"
   day: [
     'Sunday'
@@ -1585,21 +1586,22 @@ Time =
     'December'
   ]
   zeroPad: (n) -> if n < 10 then '0' + n else n
-  a: -> @day[@date.getDay()][...3]
-  A: -> @day[@date.getDay()]
-  b: -> @month[@date.getMonth()][...3]
-  B: -> @month[@date.getMonth()]
-  d: -> @zeroPad @date.getDate()
-  e: -> @date.getDate()
-  H: -> @zeroPad @date.getHours()
-  I: -> @zeroPad @date.getHours() % 12 or 12
-  k: -> @date.getHours()
-  l: -> @date.getHours() % 12 or 12
-  m: -> @zeroPad @date.getMonth() + 1
-  M: -> @zeroPad @date.getMinutes()
-  p: -> if @date.getHours() < 12 then 'AM' else 'PM'
-  P: -> if @date.getHours() < 12 then 'am' else 'pm'
-  y: -> @date.getFullYear() - 2000
+  formatters:
+    a: -> Time.day[Time.date.getDay()][...3]
+    A: -> Time.day[Time.date.getDay()]
+    b: -> Time.month[Time.date.getMonth()][...3]
+    B: -> Time.month[Time.date.getMonth()]
+    d: -> Time.zeroPad Time.date.getDate()
+    e: -> Time.date.getDate()
+    H: -> Time.zeroPad Time.date.getHours()
+    I: -> Time.zeroPad Time.date.getHours() % 12 or 12
+    k: -> Time.date.getHours()
+    l: -> Time.date.getHours() % 12 or 12
+    m: -> Time.zeroPad Time.date.getMonth() + 1
+    M: -> Time.zeroPad Time.date.getMinutes()
+    p: -> if Time.date.getHours() < 12 then 'AM' else 'PM'
+    P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
+    y: -> Time.date.getFullYear() - 2000
 
 titlePost =
   init: ->

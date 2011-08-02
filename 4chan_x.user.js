@@ -1950,26 +1950,10 @@
     foo: function() {
       var code;
       code = conf['time'].replace(/%([A-Za-z])/g, function(s, c) {
-        switch (c) {
-          case 'a':
-          case 'A':
-          case 'b':
-          case 'B':
-          case 'd':
-          case 'e':
-          case 'H':
-          case 'I':
-          case 'k':
-          case 'l':
-          case 'm':
-          case 'M':
-          case 'p':
-          case 'P':
-          case 'y':
-            return "' + Time." + c + "() + '";
-            break;
-          default:
-            return s;
+        if (c in Time.formatters) {
+          return "' + Time.formatters." + c + "() + '";
+        } else {
+          return s;
         }
       });
       return Time.funk = Function('Time', "return '" + code + "'");
@@ -1983,58 +1967,60 @@
         return n;
       }
     },
-    a: function() {
-      return this.day[this.date.getDay()].slice(0, 3);
-    },
-    A: function() {
-      return this.day[this.date.getDay()];
-    },
-    b: function() {
-      return this.month[this.date.getMonth()].slice(0, 3);
-    },
-    B: function() {
-      return this.month[this.date.getMonth()];
-    },
-    d: function() {
-      return this.zeroPad(this.date.getDate());
-    },
-    e: function() {
-      return this.date.getDate();
-    },
-    H: function() {
-      return this.zeroPad(this.date.getHours());
-    },
-    I: function() {
-      return this.zeroPad(this.date.getHours() % 12 || 12);
-    },
-    k: function() {
-      return this.date.getHours();
-    },
-    l: function() {
-      return this.date.getHours() % 12 || 12;
-    },
-    m: function() {
-      return this.zeroPad(this.date.getMonth() + 1);
-    },
-    M: function() {
-      return this.zeroPad(this.date.getMinutes());
-    },
-    p: function() {
-      if (this.date.getHours() < 12) {
-        return 'AM';
-      } else {
-        return 'PM';
+    formatters: {
+      a: function() {
+        return Time.day[Time.date.getDay()].slice(0, 3);
+      },
+      A: function() {
+        return Time.day[Time.date.getDay()];
+      },
+      b: function() {
+        return Time.month[Time.date.getMonth()].slice(0, 3);
+      },
+      B: function() {
+        return Time.month[Time.date.getMonth()];
+      },
+      d: function() {
+        return Time.zeroPad(Time.date.getDate());
+      },
+      e: function() {
+        return Time.date.getDate();
+      },
+      H: function() {
+        return Time.zeroPad(Time.date.getHours());
+      },
+      I: function() {
+        return Time.zeroPad(Time.date.getHours() % 12 || 12);
+      },
+      k: function() {
+        return Time.date.getHours();
+      },
+      l: function() {
+        return Time.date.getHours() % 12 || 12;
+      },
+      m: function() {
+        return Time.zeroPad(Time.date.getMonth() + 1);
+      },
+      M: function() {
+        return Time.zeroPad(Time.date.getMinutes());
+      },
+      p: function() {
+        if (Time.date.getHours() < 12) {
+          return 'AM';
+        } else {
+          return 'PM';
+        }
+      },
+      P: function() {
+        if (Time.date.getHours() < 12) {
+          return 'am';
+        } else {
+          return 'pm';
+        }
+      },
+      y: function() {
+        return Time.date.getFullYear() - 2000;
       }
-    },
-    P: function() {
-      if (this.date.getHours() < 12) {
-        return 'am';
-      } else {
-        return 'pm';
-      }
-    },
-    y: function() {
-      return this.date.getFullYear() - 2000;
     }
   };
   titlePost = {
