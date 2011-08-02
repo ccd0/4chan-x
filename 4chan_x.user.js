@@ -1956,8 +1956,11 @@
           case 'b':
           case 'B':
           case 'd':
+          case 'e':
           case 'H':
           case 'I':
+          case 'k':
+          case 'l':
           case 'm':
           case 'M':
           case 'p':

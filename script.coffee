@@ -1557,7 +1557,7 @@ Time =
   foo: ->
     code = conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       switch c
-        when 'a', 'A', 'b', 'B', 'd', 'H', 'I', 'm', 'M', 'p', 'P', 'y' then "' + Time.#{c}() + '"
+        when 'a', 'A', 'b', 'B', 'd', 'e', 'H', 'I', 'k', 'l', 'm', 'M', 'p', 'P', 'y' then "' + Time.#{c}() + '"
         else s
     Time.funk = Function 'Time', "return '#{code}'"
   day: [
