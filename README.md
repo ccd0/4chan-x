@@ -1,8 +1,8 @@
 # Installing
 
-[master](https://github.com/aeosynth/4chan-x/raw/master/4chan_x.user.js)
+[master](https://github.com/aeosynth/4chan-x/raw/master/4chan_x.user.js) - bleeding edge. exciting new features, exciting new bugs.
 
-[stable](https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js)
+[stable](https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js) - stable. tries to be bug free.
 
 # Building
 
