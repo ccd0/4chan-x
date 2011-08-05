@@ -2362,6 +2362,9 @@ main =
 
       #qr {
         position: fixed;
+        max-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
       }
       #qr > div.move {
         text-align: right;
