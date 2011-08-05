@@ -1387,6 +1387,7 @@
     },
     add: function() {
       var file, files;
+      $('#auto', qr.el).checked = true;
       file = $.el('input', {
         type: 'file',
         name: 'upfile'

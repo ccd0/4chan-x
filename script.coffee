@@ -1098,6 +1098,7 @@ qr =
     $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
   add: ->
+    $('#auto', qr.el).checked = true
     file  = $.el 'input', type: 'file', name: 'upfile'
     files = $ '#files', qr.el
     $.append files, file
