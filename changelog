@@ -1,6 +1,7 @@
 github
 - mayhem:
   - fix post links in expanded threads
+  - fix 4chan X in closed threads
 - aeosynth:
   - only auto scroll focused tabs
   - quote inlining: only work on unmodified left-click

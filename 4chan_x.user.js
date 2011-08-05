@@ -2761,10 +2761,10 @@
       if (g.REPLY && (id = location.hash.slice(1)) && /\d/.test(id[0]) && !$.id(id)) {
         scrollTo(0, d.body.scrollHeight);
       }
-      if (conf['Auto Noko']) {
-        $('.postarea form').action += '?noko';
+      if (conf['Auto Noko'] && form) {
+        form.action += '?noko';
       }
-      if (conf['Cooldown']) {
+      if (conf['Cooldown'] && form) {
         cooldown.init();
       }
       if (conf['Image Expansion']) {
@@ -2822,7 +2822,7 @@
         if (conf['Image Preloading']) {
           imgPreloading.init();
         }
-        if (conf['Quick Reply'] && conf['Persistent QR']) {
+        if (conf['Quick Reply'] && conf['Persistent QR'] && form) {
           qr.persist();
         }
         if (conf['Post in Title']) {

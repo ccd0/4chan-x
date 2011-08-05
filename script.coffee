@@ -2156,10 +2156,10 @@ main =
     if g.REPLY and (id = location.hash[1..]) and /\d/.test(id[0]) and !$.id(id)
       scrollTo 0, d.body.scrollHeight
 
-    if conf['Auto Noko']
-      $('.postarea form').action += '?noko'
+    if conf['Auto Noko'] and form
+      form.action += '?noko'
 
-    if conf['Cooldown']
+    if conf['Cooldown'] and form
       cooldown.init()
 
     if conf['Image Expansion']
@@ -2217,7 +2217,7 @@ main =
       if conf['Image Preloading']
         imgPreloading.init()
 
-      if conf['Quick Reply'] and conf['Persistent QR']
+      if conf['Quick Reply'] and conf['Persistent QR'] and form
         qr.persist()
 
       if conf['Post in Title']
