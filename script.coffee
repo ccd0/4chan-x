@@ -2144,7 +2144,7 @@ main =
 
     $.addStyle main.css
 
-    if (form = $ 'form[name=post]') and canPost = !!$ '#recaptcha_response_field'
+    if form = $ 'form[name=post]'
       Recaptcha.init()
       $.bind form, 'submit', qr.submit
 
@@ -2186,7 +2186,7 @@ main =
     if conf['Reply Hiding']
       replyHiding.init()
 
-    if canPost and conf['Quick Reply']
+    if conf['Quick Reply'] and form
       qr.init()
 
     if conf['Report Button']
