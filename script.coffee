@@ -2144,7 +2144,8 @@ main =
 
     $.addStyle main.css
 
-    if (form = $ 'form[name=post]') and canPost = !!$ '#recaptcha_response_field'
+    #recaptcha may be blocked, eg by noscript
+    if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
       Recaptcha.init()
       $.bind form, 'submit', qr.submit
 
@@ -2156,10 +2157,10 @@ main =
     if g.REPLY and (id = location.hash[1..]) and /\d/.test(id[0]) and !$.id(id)
       scrollTo 0, d.body.scrollHeight
 
-    if conf['Auto Noko'] and form
+    if conf['Auto Noko'] and canPost
       form.action += '?noko'
 
-    if conf['Cooldown'] and form
+    if conf['Cooldown'] and canPost
       cooldown.init()
 
     if conf['Image Expansion']
@@ -2186,7 +2187,7 @@ main =
     if conf['Reply Hiding']
       replyHiding.init()
 
-    if canPost and conf['Quick Reply']
+    if conf['Quick Reply'] and canPost
       qr.init()
 
     if conf['Report Button']
@@ -2217,7 +2218,7 @@ main =
       if conf['Image Preloading']
         imgPreloading.init()
 
-      if conf['Quick Reply'] and conf['Persistent QR'] and form
+      if conf['Quick Reply'] and conf['Persistent QR'] and canPost
         qr.persist()
 
       if conf['Post in Title']

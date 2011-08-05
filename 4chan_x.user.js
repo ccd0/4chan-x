@@ -2761,10 +2761,10 @@
       if (g.REPLY && (id = location.hash.slice(1)) && /\d/.test(id[0]) && !$.id(id)) {
         scrollTo(0, d.body.scrollHeight);
       }
-      if (conf['Auto Noko'] && form) {
+      if (conf['Auto Noko'] && canPost) {
         form.action += '?noko';
       }
-      if (conf['Cooldown'] && form) {
+      if (conf['Cooldown'] && canPost) {
         cooldown.init();
       }
       if (conf['Image Expansion']) {
@@ -2791,7 +2791,7 @@
       if (conf['Reply Hiding']) {
         replyHiding.init();
       }
-      if (canPost && conf['Quick Reply']) {
+      if (conf['Quick Reply'] && canPost) {
         qr.init();
       }
       if (conf['Report Button']) {
@@ -2822,7 +2822,7 @@
         if (conf['Image Preloading']) {
           imgPreloading.init();
         }
-        if (conf['Quick Reply'] && conf['Persistent QR'] && form) {
+        if (conf['Quick Reply'] && conf['Persistent QR'] && canPost) {
           qr.persist();
         }
         if (conf['Post in Title']) {
