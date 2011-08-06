@@ -978,7 +978,7 @@ qr =
     $('#recaptcha_response_field').id = ''
     qr.captcha = []
 
-  add: ->
+  attach: ->
     $('#auto', qr.el).checked = true
     file  = $.el 'input', type: 'file', name: 'upfile'
     files = $ '#files', qr.el
@@ -1036,7 +1036,7 @@ qr =
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=captcha title='captcha cached'>0</a></div>
         <div><input type=file name=upfile></div>
-        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=add>attach another file</a></div>
+        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>
       </form>
       <div id=files></div>
       <a id=error class=error></a>
@@ -1050,7 +1050,7 @@ qr =
     $.bind $('#autohide',                            qr.el), 'click', qr.cb.autohide
     $.bind $('a[name=close]',                        qr.el), 'click', qr.close
     $.bind $('form',                                 qr.el), 'submit', qr.submit
-    $.bind $('a[name=add]',                          qr.el), 'click', qr.add
+    $.bind $('a[name=attach]',                       qr.el), 'click', qr.attach
     $.bind $('img',                                  qr.el), 'click', Recaptcha.reload
     $.bind $('input[name=recaptcha_response_field]', qr.el), 'keydown', Recaptcha.listener
 
