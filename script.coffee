@@ -969,19 +969,20 @@ qr =
   # remove file
   # error handling
   # persistent captcha
+  # code review
   init: ->
     g.callbacks.push qr.node
+    $.bind window, 'message', qr.message
+    $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode
+    qr.captcha = []
+
     iframe = $.el 'iframe',
       name: 'iframe'
       hidden: true
     $.append d.body, iframe
-    $.bind window, 'message', qr.message
 
     #hack - nuke id so it doesn't grab focus when reloading
     $('#recaptcha_response_field').id = ''
-
-    $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode
-    qr.captcha = []
 
   attach: ->
     $('#auto', qr.el).checked = true

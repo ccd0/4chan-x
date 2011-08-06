@@ -1230,16 +1230,16 @@
   qr = {
     init: function() {
       var iframe;
-      g.callbacks.push(qr.node);
       iframe = $.el('iframe', {
         name: 'iframe',
         hidden: true
       });
       $.append(d.body, iframe);
+      g.callbacks.push(qr.node);
       $.bind(window, 'message', qr.message);
-      $('#recaptcha_response_field').id = '';
       $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode);
-      return qr.captcha = [];
+      qr.captcha = [];
+      return $('#recaptcha_response_field').id = '';
     },
     attach: function() {
       var file, files;
