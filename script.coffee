@@ -966,6 +966,9 @@ cooldown =
         qr.auto()
 
 qr =
+  # remove file
+  # error handling
+  # persistent captcha
   init: ->
     g.callbacks.push qr.node
     iframe = $.el 'iframe',
@@ -987,7 +990,7 @@ qr =
   auto: ->
     responseField = $ '#recaptcha_response_field', qr.el
     if !responseField.value and captcha = qr.captcha.shift()
-      $('input[name=recaptcha_challenge_field]', qr.el).value = captcha.challenge
+      $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
       responseField.value = captcha.response
       responseField.nextSibling.textContent = qr.captcha.length
     qr.submit.call $ 'form', qr.el
@@ -1019,7 +1022,7 @@ qr =
     #FIXME inlined cross-thread quotes
     THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
     spoiler = if $('.postarea label') then '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
-    challenge = $('input[name=recaptcha_challenge_field]').value
+    challenge = $('#recaptcha_challenge_field').value
     html = "
       <div class=move>
         <input class=inputtext type=text name=name placeholder=Name form=qr_form>
@@ -1029,7 +1032,7 @@ qr =
       </div>
       <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
         <input type=hidden name=resto value=#{THREAD_ID}>
-        <input type=hidden name=recaptcha_challenge_field value=#{challenge}>
+        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=#{challenge}>
         <div><input class=inputtext type=text name=email placeholder=E-mail>#{spoiler}</div>
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
@@ -1094,7 +1097,7 @@ qr =
 
   push: ->
     @nextSibling.textContent = qr.captcha.push
-      challenge: $('input[name=recaptcha_challenge_field]', qr.el).value
+      challenge: $('#recaptcha_challenge_field', qr.el).value
       response: @value
     Recaptcha.reload()
     @value = ''
@@ -1894,7 +1897,7 @@ Recaptcha =
     return unless qr.el
     {target} = e
     $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('input[name=recaptcha_challenge_field]', qr.el).value = target.value
+    $('#recaptcha_challenge_field', qr.el).value = target.value
 
 nodeInserted = (e) ->
   {target} = e

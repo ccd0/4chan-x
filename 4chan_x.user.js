@@ -1254,7 +1254,7 @@
       var captcha, responseField;
       responseField = $('#recaptcha_response_field', qr.el);
       if (!responseField.value && (captcha = qr.captcha.shift())) {
-        $('input[name=recaptcha_challenge_field]', qr.el).value = captcha.challenge;
+        $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
         responseField.value = captcha.response;
         responseField.nextSibling.textContent = qr.captcha.length;
       }
@@ -1293,8 +1293,8 @@
       submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
-      challenge = $('input[name=recaptcha_challenge_field]').value;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><a name=captcha title='captcha cached'>0</a></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
+      challenge = $('#recaptcha_challenge_field').value;
+      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><a name=captcha title='captcha cached'>0</a></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
       qr.el = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -1358,7 +1358,7 @@
     },
     push: function() {
       this.nextSibling.textContent = qr.captcha.push({
-        challenge: $('input[name=recaptcha_challenge_field]', qr.el).value,
+        challenge: $('#recaptcha_challenge_field', qr.el).value,
         response: this.value
       });
       Recaptcha.reload();
@@ -2496,7 +2496,7 @@
       }
       target = e.target;
       $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('input[name=recaptcha_challenge_field]', qr.el).value = target.value;
+      return $('#recaptcha_challenge_field', qr.el).value = target.value;
     }
   };
   nodeInserted = function(e) {
