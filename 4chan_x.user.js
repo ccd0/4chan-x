@@ -1230,15 +1230,15 @@
   qr = {
     init: function() {
       var iframe;
+      g.callbacks.push(qr.node);
+      $.bind(window, 'message', qr.message);
+      $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode);
+      qr.captcha = [];
       iframe = $.el('iframe', {
         name: 'iframe',
         hidden: true
       });
       $.append(d.body, iframe);
-      g.callbacks.push(qr.node);
-      $.bind(window, 'message', qr.message);
-      $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode);
-      qr.captcha = [];
       return $('#recaptcha_response_field').id = '';
     },
     attach: function() {
@@ -1263,12 +1263,10 @@
     },
     autohide: {
       set: function() {
-        var _ref;
-        return (_ref = $('#autohide:not(:checked)', qr.el)) != null ? _ref.click() : void 0;
+        return $('#autohide').checked = true;
       },
       unset: function() {
-        var _ref;
-        return (_ref = $('#autohide:checked', qr.el)) != null ? _ref.click() : void 0;
+        return $('#autohide').checked = false;
       }
     },
     captchaNode: function(e) {
@@ -1290,13 +1288,6 @@
       }
     },
     cb: {
-      autohide: function(e) {
-        if (this.checked) {
-          return $.addClass(qr.el, 'auto');
-        } else {
-          return $.removeClass(qr.el, 'auto');
-        }
-      },
       quote: function(e) {
         e.preventDefault();
         return qr.quote(this);
@@ -1313,7 +1304,7 @@
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       challenge = $('#recaptcha_challenge_field').value;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><a name=captcha title='captcha cached'>0</a></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
+      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><a name=captcha title='captcha cached'>0</a></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
       qr.el = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -1323,8 +1314,7 @@
       $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
         return e.stopPropagation();
       });
-      $.bind($('#autohide', qr.el), 'click', qr.cb.autohide);
-      $.bind($('a[name=close]', qr.el), 'click', qr.close);
+      $.bind($('#close', qr.el), 'click', qr.close);
       $.bind($('form', qr.el), 'submit', qr.submit);
       $.bind($('a[name=attach]', qr.el), 'click', qr.attach);
       $.bind($('img', qr.el), 'click', Recaptcha.reload);
@@ -3002,7 +2992,10 @@
         width: 100%;\
         height: 120px;\
       }\
-      #qr.auto:not(:hover) > form {\
+      #qr #close, #qr #autohide {\
+        float: right;\
+      }\
+      #qr:not(:hover) > #autohide:checked ~ form {\
         height: 0;\
         overflow: hidden;\
       }\

@@ -1000,9 +1000,9 @@ qr =
 
   autohide:
     set: ->
-      $('#autohide:not(:checked)', qr.el)?.click()
+      $('#autohide').checked = true
     unset: ->
-      $('#autohide:checked', qr.el)?.click()
+      $('#autohide').checked = false
 
   captchaNode: (e) ->
     return unless qr.el
@@ -1017,12 +1017,6 @@ qr =
       qr.push.call this
 
   cb:
-    autohide: (e) ->
-      if @checked
-        $.addClass qr.el, 'auto'
-      else
-        $.removeClass qr.el, 'auto'
-
     quote: (e) ->
       e.preventDefault()
       qr.quote @
@@ -1039,11 +1033,11 @@ qr =
     spoiler = if $('.postarea label') then '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
     challenge = $('#recaptcha_challenge_field').value
     html = "
+      <a id=close title=close>X</a>
+      <input type=checkbox id=autohide title=autohide>
       <div class=move>
         <input class=inputtext type=text name=name placeholder=Name form=qr_form>
         Quick Reply
-        <input type=checkbox id=autohide title=autohide>
-        <a name=close title=close>X</a>
       </div>
       <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
         <input type=hidden name=resto value=#{THREAD_ID}>
@@ -1065,8 +1059,7 @@ qr =
     $('textarea', qr.el).value = $('textarea').value
 
     $.bind $('input[name=name]',          qr.el), 'mousedown', (e) -> e.stopPropagation()
-    $.bind $('#autohide',                 qr.el), 'click', qr.cb.autohide
-    $.bind $('a[name=close]',             qr.el), 'click', qr.close
+    $.bind $('#close',                    qr.el), 'click', qr.close
     $.bind $('form',                      qr.el), 'submit', qr.submit
     $.bind $('a[name=attach]',            qr.el), 'click', qr.attach
     $.bind $('img',                       qr.el), 'click', Recaptcha.reload
@@ -2392,7 +2385,10 @@ main =
         width: 100%;
         height: 120px;
       }
-      #qr.auto:not(:hover) > form {
+      #qr #close, #qr #autohide {
+        float: right;
+      }
+      #qr:not(:hover) > #autohide:checked ~ form {
         height: 0;
         overflow: hidden;
       }
