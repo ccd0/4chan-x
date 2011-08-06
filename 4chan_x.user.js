@@ -1240,6 +1240,26 @@
       $('#recaptcha_response_field').id = '';
       return qr.captcha = [];
     },
+    add: function() {
+      var file, files;
+      $('#auto', qr.el).checked = true;
+      file = $.el('input', {
+        type: 'file',
+        name: 'upfile'
+      });
+      files = $('#files', qr.el);
+      return $.append(files, file);
+    },
+    auto: function() {
+      var captcha, responseField;
+      responseField = $('input[name=recaptcha_response_field]', qr.el);
+      if (!responseField.value && (captcha = qr.captcha.shift())) {
+        $('input[name=recaptcha_challenge_field]', qr.el).value = captcha.challenge;
+        responseField.value = captcha.response;
+        responseField.nextSibling.textContent = qr.captcha.length;
+      }
+      return qr.submit.call($('form', qr.el));
+    },
     autohide: {
       set: function() {
         var _ref;
@@ -1249,6 +1269,48 @@
         var _ref;
         return (_ref = $('#autohide:checked', qr.el)) != null ? _ref.click() : void 0;
       }
+    },
+    cb: {
+      autohide: function(e) {
+        if (this.checked) {
+          return $.addClass(qr.el, 'auto');
+        } else {
+          return $.removeClass(qr.el, 'auto');
+        }
+      },
+      quote: function(e) {
+        e.preventDefault();
+        return qr.quote(this);
+      }
+    },
+    close: function() {
+      $.rm(qr.el);
+      return qr.el = null;
+    },
+    dialog: function(link) {
+      var THREAD_ID, challenge, html, spoiler, submitDisabled, submitValue;
+      submitValue = $('#com_submit').value;
+      submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
+      THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
+      spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
+      challenge = $('input[name=recaptcha_challenge_field]').value;
+      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=captcha title='captcha cached'>0</a></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=add>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
+      qr.el = ui.dialog('qr', {
+        top: '0px',
+        left: '0px'
+      }, html);
+      qr.refresh();
+      $('textarea', qr.el).value = $('textarea').value;
+      $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
+        return e.stopPropagation();
+      });
+      $.bind($('#autohide', qr.el), 'click', qr.cb.autohide);
+      $.bind($('a[name=close]', qr.el), 'click', qr.close);
+      $.bind($('form', qr.el), 'submit', qr.submit);
+      $.bind($('a[name=add]', qr.el), 'click', qr.add);
+      $.bind($('img', qr.el), 'click', Recaptcha.reload);
+      $.bind($('input[name=recaptcha_response_field]', qr.el), 'keydown', Recaptcha.listener);
+      return $.append(d.body, qr.el);
     },
     message: function(e) {
       var data, duration, file, oldFile;
@@ -1288,28 +1350,11 @@
       quote = $('a.quotejs:not(:first-child)', root);
       return $.bind(quote, 'click', qr.cb.quote);
     },
-    cb: {
-      autohide: function(e) {
-        if (this.checked) {
-          return $.addClass(qr.el, 'auto');
-        } else {
-          return $.removeClass(qr.el, 'auto');
-        }
-      },
-      quote: function(e) {
-        e.preventDefault();
-        return qr.quote(this);
+    persist: function() {
+      qr.dialog();
+      if (conf['Auto Hide QR']) {
+        return qr.autohide.set();
       }
-    },
-    auto: function() {
-      var captcha, responseField;
-      responseField = $('input[name=recaptcha_response_field]', qr.el);
-      if (!responseField.value && (captcha = qr.captcha.shift())) {
-        $('input[name=recaptcha_challenge_field]', qr.el).value = captcha.challenge;
-        responseField.value = captcha.response;
-        responseField.nextSibling.textContent = qr.captcha.length;
-      }
-      return qr.submit.call($('form', qr.el));
     },
     push: function() {
       this.nextSibling.textContent = qr.captcha.push({
@@ -1318,6 +1363,37 @@
       });
       Recaptcha.reload();
       return this.value = '';
+    },
+    quote: function(link) {
+      var id, s, selection, selectionID, ta, text, _ref;
+      if (qr.el) {
+        qr.autohide.unset();
+      } else {
+        qr.dialog(link);
+      }
+      id = link.textContent;
+      text = ">>" + id + "\n";
+      selection = window.getSelection();
+      if (s = selection.toString()) {
+        selectionID = (_ref = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
+        if (selectionID === id) {
+          s = s.replace(/\n/g, '\n>');
+          text += ">" + s + "\n";
+        }
+      }
+      ta = $('textarea', qr.el);
+      ta.focus();
+      return ta.value += text;
+    },
+    refresh: function() {
+      var auto, c, m;
+      auto = $('#auto', qr.el).checked;
+      $('form', qr.el).reset();
+      $('#auto', qr.el).checked = auto;
+      c = d.cookie;
+      $('input[name=name]', qr.el).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
+      $('input[name=email]', qr.el).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
+      return $('input[name=pwd]', qr.el).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
     },
     submit: function(e) {
       var id, inputfile, isQR, op;
@@ -1353,82 +1429,6 @@
         }
         return qr.sage = /sage/i.test($('input[name=email]', this).value);
       }
-    },
-    quote: function(link) {
-      var id, s, selection, selectionID, ta, text, _ref;
-      if (qr.el) {
-        qr.autohide.unset();
-      } else {
-        qr.dialog(link);
-      }
-      id = link.textContent;
-      text = ">>" + id + "\n";
-      selection = window.getSelection();
-      if (s = selection.toString()) {
-        selectionID = (_ref = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
-        if (selectionID === id) {
-          s = s.replace(/\n/g, '\n>');
-          text += ">" + s + "\n";
-        }
-      }
-      ta = $('textarea', qr.el);
-      ta.focus();
-      return ta.value += text;
-    },
-    refresh: function() {
-      var auto, c, m;
-      auto = $('#auto', qr.el).checked;
-      $('form', qr.el).reset();
-      $('#auto', qr.el).checked = auto;
-      c = d.cookie;
-      $('input[name=name]', qr.el).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      $('input[name=email]', qr.el).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      return $('input[name=pwd]', qr.el).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
-    },
-    add: function() {
-      var file, files;
-      $('#auto', qr.el).checked = true;
-      file = $.el('input', {
-        type: 'file',
-        name: 'upfile'
-      });
-      files = $('#files', qr.el);
-      return $.append(files, file);
-    },
-    dialog: function(link) {
-      var THREAD_ID, challenge, html, spoiler, submitDisabled, submitValue;
-      submitValue = $('#com_submit').value;
-      submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
-      THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
-      spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
-      challenge = $('input[name=recaptcha_challenge_field]').value;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=captcha title='captcha cached'>0</a></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=add>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
-      qr.el = ui.dialog('qr', {
-        top: '0px',
-        left: '0px'
-      }, html);
-      qr.refresh();
-      $('textarea', qr.el).value = $('textarea').value;
-      $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
-        return e.stopPropagation();
-      });
-      $.bind($('#autohide', qr.el), 'click', qr.cb.autohide);
-      $.bind($('a[name=close]', qr.el), 'click', qr.close);
-      $.bind($('form', qr.el), 'submit', qr.submit);
-      $.bind($('a[name=add]', qr.el), 'click', qr.add);
-      $.bind($('img', qr.el), 'click', Recaptcha.reload);
-      $.bind($('input[name=recaptcha_response_field]', qr.el), 'keydown', Recaptcha.listener);
-      return $.append(d.body, qr.el);
-    },
-    persist: function() {
-      qr.dialog();
-      if (conf['Auto Hide QR']) {
-        return qr.autohide.set();
-      }
-    },
-    close: function() {
-      $.rm(qr.el);
-      return qr.el = null;
     },
     sys: function() {
       var c, duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref;

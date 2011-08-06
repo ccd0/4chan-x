@@ -978,43 +978,25 @@ qr =
     $('#recaptcha_response_field').id = ''
     qr.captcha = []
 
+  add: ->
+    $('#auto', qr.el).checked = true
+    file  = $.el 'input', type: 'file', name: 'upfile'
+    files = $ '#files', qr.el
+    $.append files, file
+
+  auto: ->
+    responseField = $ 'input[name=recaptcha_response_field]', qr.el
+    if !responseField.value and captcha = qr.captcha.shift()
+      $('input[name=recaptcha_challenge_field]', qr.el).value = captcha.challenge
+      responseField.value = captcha.response
+      responseField.nextSibling.textContent = qr.captcha.length
+    qr.submit.call $ 'form', qr.el
+
   autohide:
     set: ->
       $('#autohide:not(:checked)', qr.el)?.click()
     unset: ->
       $('#autohide:checked', qr.el)?.click()
-
-  message: (e) ->
-    Recaptcha.reload()
-    $('iframe[name=iframe]').src = 'about:blank'
-
-    {data} = e
-    if data # error message
-      data = JSON.parse data
-      $.extend $('#error', qr.el), data
-      $('input[name=recaptcha_response_field]', qr.el).value = ''
-      qr.autohide.unset()
-      if data.textContent is 'You seem to have mistyped the verification.'
-        qr.auto()
-      return
-
-    if qr.el
-      file = $ '#files input', qr.el
-      if g.REPLY and (conf['Persistent QR'] or file)
-        qr.refresh()
-        if file
-          oldFile = $ '#qr_form input[type=file]', qr.el
-          $.replace oldFile, file
-      else
-        qr.close()
-    if conf['Cooldown']
-      duration = if qr.sage then 60 else 30
-      $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
-      cooldown.start()
-
-  node: (root) ->
-    quote = $ 'a.quotejs:not(:first-child)', root
-    $.bind quote, 'click', qr.cb.quote
 
   cb:
     autohide: (e) ->
@@ -1027,81 +1009,9 @@ qr =
       e.preventDefault()
       qr.quote @
 
-  auto: ->
-    responseField = $ 'input[name=recaptcha_response_field]', qr.el
-    if !responseField.value and captcha = qr.captcha.shift()
-      $('input[name=recaptcha_challenge_field]', qr.el).value = captcha.challenge
-      responseField.value = captcha.response
-      responseField.nextSibling.textContent = qr.captcha.length
-    qr.submit.call $ 'form', qr.el
-
-  push: ->
-    @nextSibling.textContent = qr.captcha.push
-      challenge: $('input[name=recaptcha_challenge_field]', qr.el).value
-      response: @value
-    Recaptcha.reload()
-    @value = ''
-
-  submit: (e) ->
-    if conf['Auto Watch Reply'] and conf['Thread Watcher']
-      if g.REPLY and $('img.favicon').src is Favicon.empty
-        watcher.watch null, g.THREAD_ID
-      else
-        id = $('input[name=resto]', qr.el).value
-        op = $.id id
-        if $('img.favicon', op).src is Favicon.empty
-          watcher.watch op, id
-
-    isQR = @id is 'qr_form'
-
-    inputfile = $('input[type=file]', @)
-    if inputfile.value and inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value
-      e.preventDefault() if e
-      if isQR
-        $('#error', qr.el).textContent = 'Error: File too large.'
-      else
-        alert 'Error: File too large.'
-
-    else if isQR
-      if !e then @submit()
-      $('#error', qr.el).textContent = ''
-      qr.autohide.set() if conf['Auto Hide QR']
-      qr.sage = /sage/i.test $('input[name=email]', @).value
-
-  quote: (link) ->
-    if qr.el
-      qr.autohide.unset()
-    else
-      qr.dialog link
-
-    id = link.textContent
-    text = ">>#{id}\n"
-
-    selection = window.getSelection()
-    if s = selection.toString()
-      selectionID = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
-      if selectionID == id
-        s = s.replace /\n/g, '\n>'
-        text += ">#{s}\n"
-
-    ta = $ 'textarea', qr.el
-    ta.focus()
-    ta.value += text
-
-  refresh: ->
-    auto = $('#auto', qr.el).checked
-    $('form', qr.el).reset()
-    $('#auto', qr.el).checked = auto
-    c = d.cookie
-    $('input[name=name]',  qr.el).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
-    $('input[name=email]', qr.el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
-    $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
-
-  add: ->
-    $('#auto', qr.el).checked = true
-    file  = $.el 'input', type: 'file', name: 'upfile'
-    files = $ '#files', qr.el
-    $.append files, file
+  close: ->
+    $.rm qr.el
+    qr.el = null
 
   dialog: (link) ->
     submitValue = $('#com_submit').value
@@ -1146,13 +1056,103 @@ qr =
 
     $.append d.body, qr.el
 
+  message: (e) ->
+    Recaptcha.reload()
+    $('iframe[name=iframe]').src = 'about:blank'
+
+    {data} = e
+    if data # error message
+      data = JSON.parse data
+      $.extend $('#error', qr.el), data
+      $('input[name=recaptcha_response_field]', qr.el).value = ''
+      qr.autohide.unset()
+      if data.textContent is 'You seem to have mistyped the verification.'
+        qr.auto()
+      return
+
+    if qr.el
+      file = $ '#files input', qr.el
+      if g.REPLY and (conf['Persistent QR'] or file)
+        qr.refresh()
+        if file
+          oldFile = $ '#qr_form input[type=file]', qr.el
+          $.replace oldFile, file
+      else
+        qr.close()
+    if conf['Cooldown']
+      duration = if qr.sage then 60 else 30
+      $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
+      cooldown.start()
+
+  node: (root) ->
+    quote = $ 'a.quotejs:not(:first-child)', root
+    $.bind quote, 'click', qr.cb.quote
+
   persist: ->
     qr.dialog()
     qr.autohide.set() if conf['Auto Hide QR']
 
-  close: ->
-    $.rm qr.el
-    qr.el = null
+  push: ->
+    @nextSibling.textContent = qr.captcha.push
+      challenge: $('input[name=recaptcha_challenge_field]', qr.el).value
+      response: @value
+    Recaptcha.reload()
+    @value = ''
+
+  quote: (link) ->
+    if qr.el
+      qr.autohide.unset()
+    else
+      qr.dialog link
+
+    id = link.textContent
+    text = ">>#{id}\n"
+
+    selection = window.getSelection()
+    if s = selection.toString()
+      selectionID = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
+      if selectionID == id
+        s = s.replace /\n/g, '\n>'
+        text += ">#{s}\n"
+
+    ta = $ 'textarea', qr.el
+    ta.focus()
+    ta.value += text
+
+  refresh: ->
+    auto = $('#auto', qr.el).checked
+    $('form', qr.el).reset()
+    $('#auto', qr.el).checked = auto
+    c = d.cookie
+    $('input[name=name]',  qr.el).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
+    $('input[name=email]', qr.el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+    $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
+
+  submit: (e) ->
+    if conf['Auto Watch Reply'] and conf['Thread Watcher']
+      if g.REPLY and $('img.favicon').src is Favicon.empty
+        watcher.watch null, g.THREAD_ID
+      else
+        id = $('input[name=resto]', qr.el).value
+        op = $.id id
+        if $('img.favicon', op).src is Favicon.empty
+          watcher.watch op, id
+
+    isQR = @id is 'qr_form'
+
+    inputfile = $('input[type=file]', @)
+    if inputfile.value and inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value
+      e.preventDefault() if e
+      if isQR
+        $('#error', qr.el).textContent = 'Error: File too large.'
+      else
+        alert 'Error: File too large.'
+
+    else if isQR
+      if !e then @submit()
+      $('#error', qr.el).textContent = ''
+      qr.autohide.set() if conf['Auto Hide QR']
+      qr.sage = /sage/i.test $('input[name=email]', @).value
 
   sys: ->
     if recaptcha = $ '#recaptcha_response_field' #post reporting
