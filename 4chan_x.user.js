@@ -1263,10 +1263,10 @@
     },
     autohide: {
       set: function() {
-        return $('#autohide').checked = true;
+        return $('#autohide', qr.el).checked = true;
       },
       unset: function() {
-        return $('#autohide').checked = false;
+        return $('#autohide', qr.el).checked = false;
       }
     },
     captchaNode: function(e) {

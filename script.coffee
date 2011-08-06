@@ -1000,9 +1000,9 @@ qr =
 
   autohide:
     set: ->
-      $('#autohide').checked = true
+      $('#autohide', qr.el).checked = true
     unset: ->
-      $('#autohide').checked = false
+      $('#autohide', qr.el).checked = false
 
   captchaNode: (e) ->
     return unless qr.el
