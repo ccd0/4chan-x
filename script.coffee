@@ -631,7 +631,7 @@ keybinds =
       qrLink = $ "span[id^=nothread] a:not(:first-child)", thread
 
     if quote
-      qr.quote qrLink
+      qr.quote.call qrLink
     else
       unless qr.el
         qr.dialog qrLink
@@ -971,6 +971,7 @@ qr =
   # persistent captcha
   # code review
   # rm Recaptcha
+  # group captcha
   init: ->
     g.callbacks.push qr.node
     $.bind window, 'message', qr.message
@@ -1010,11 +1011,6 @@ qr =
       $('#auto', qr.el).checked = true
       $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
       qr.push.call this
-
-  cb:
-    quote: (e) ->
-      e.preventDefault()
-      qr.quote @
 
   close: ->
     $.rm qr.el
@@ -1093,7 +1089,7 @@ qr =
 
   node: (root) ->
     quote = $ 'a.quotejs:not(:first-child)', root
-    $.bind quote, 'click', qr.cb.quote
+    $.bind quote, 'click', qr.quote
 
   push: ->
     @nextSibling.textContent = qr.captcha.push
@@ -1102,13 +1098,15 @@ qr =
     Recaptcha.reload()
     @value = ''
 
-  quote: (link) ->
+  quote: (e) ->
+    e.preventDefault() if e
+
     if qr.el
       $('#autohide', qr.el).checked = false
     else
-      qr.dialog link
+      qr.dialog @
 
-    id = link.textContent
+    id = @textContent
     text = ">>#{id}\n"
 
     selection = window.getSelection()

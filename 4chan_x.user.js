@@ -883,7 +883,7 @@
         qrLink = $("span[id^=nothread] a:not(:first-child)", thread);
       }
       if (quote) {
-        return qr.quote(qrLink);
+        return qr.quote.call(qrLink);
       } else {
         if (!qr.el) {
           qr.dialog(qrLink);
@@ -1279,12 +1279,6 @@
         return qr.push.call(this);
       }
     },
-    cb: {
-      quote: function(e) {
-        e.preventDefault();
-        return qr.quote(this);
-      }
-    },
     close: function() {
       $.rm(qr.el);
       return qr.el = null;
@@ -1350,7 +1344,7 @@
     node: function(root) {
       var quote;
       quote = $('a.quotejs:not(:first-child)', root);
-      return $.bind(quote, 'click', qr.cb.quote);
+      return $.bind(quote, 'click', qr.quote);
     },
     push: function() {
       this.nextSibling.textContent = qr.captcha.push({
@@ -1360,14 +1354,17 @@
       Recaptcha.reload();
       return this.value = '';
     },
-    quote: function(link) {
+    quote: function(e) {
       var id, s, selection, selectionID, ta, text, _ref;
+      if (e) {
+        e.preventDefault();
+      }
       if (qr.el) {
         $('#autohide', qr.el).checked = false;
       } else {
-        qr.dialog(link);
+        qr.dialog(this);
       }
-      id = link.textContent;
+      id = this.textContent;
       text = ">>" + id + "\n";
       selection = window.getSelection();
       if (s = selection.toString()) {
