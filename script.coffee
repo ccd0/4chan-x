@@ -970,6 +970,7 @@ qr =
   # error handling
   # persistent captcha
   # code review
+  # rm Recaptcha
   init: ->
     g.callbacks.push qr.node
     $.bind window, 'message', qr.message
@@ -1093,10 +1094,6 @@ qr =
   node: (root) ->
     quote = $ 'a.quotejs:not(:first-child)', root
     $.bind quote, 'click', qr.cb.quote
-
-  persist: ->
-    qr.dialog()
-    $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
 
   push: ->
     @nextSibling.textContent = qr.captcha.push
@@ -2215,7 +2212,9 @@ main =
         imgPreloading.init()
 
       if conf['Quick Reply'] and conf['Persistent QR'] and canPost
-        qr.persist()
+        qr.dialog()
+        if conf['Auto Hide QR']
+          $('#autohide', qr.el).checked = true
 
       if conf['Post in Title']
         titlePost.init()

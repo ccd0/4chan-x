@@ -1352,12 +1352,6 @@
       quote = $('a.quotejs:not(:first-child)', root);
       return $.bind(quote, 'click', qr.cb.quote);
     },
-    persist: function() {
-      qr.dialog();
-      if (conf['Auto Hide QR']) {
-        return $('#autohide', qr.el).checked = true;
-      }
-    },
     push: function() {
       this.nextSibling.textContent = qr.captcha.push({
         challenge: $('#recaptcha_challenge_field', qr.el).value,
@@ -2808,7 +2802,10 @@
           imgPreloading.init();
         }
         if (conf['Quick Reply'] && conf['Persistent QR'] && canPost) {
-          qr.persist();
+          qr.dialog();
+          if (conf['Auto Hide QR']) {
+            $('#autohide', qr.el).checked = true;
+          }
         }
         if (conf['Post in Title']) {
           titlePost.init();
