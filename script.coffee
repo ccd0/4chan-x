@@ -979,6 +979,8 @@ qr =
 
     #hack - nuke id so it doesn't grab focus when reloading
     $('#recaptcha_response_field').id = ''
+
+    $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode
     qr.captcha = []
 
   attach: ->
@@ -1000,6 +1002,12 @@ qr =
       $('#autohide:not(:checked)', qr.el)?.click()
     unset: ->
       $('#autohide:checked', qr.el)?.click()
+
+  captchaNode: (e) ->
+    return unless qr.el
+    {target} = e
+    $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+    $('#recaptcha_challenge_field', qr.el).value = target.value
 
   cb:
     autohide: (e) ->
@@ -1882,7 +1890,6 @@ Recaptcha =
     #hack to tab from comment straight to recaptcha
     for el in $$ '#recaptcha_table a'
       el.tabIndex = 1
-    $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', Recaptcha.reloaded
     $.bind $('#recaptcha_response_field'), 'keydown', Recaptcha.listener
   listener: (e) ->
     if e.keyCode is 8 and @value is '' # backspace to reload
@@ -1893,11 +1900,6 @@ Recaptcha =
       qr.push.call this
   reload: ->
     window.location = 'javascript:Recaptcha.reload()'
-  reloaded: (e) ->
-    return unless qr.el
-    {target} = e
-    $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('#recaptcha_challenge_field', qr.el).value = target.value
 
 nodeInserted = (e) ->
   {target} = e

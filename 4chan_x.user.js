@@ -1238,6 +1238,7 @@
       $.append(d.body, iframe);
       $.bind(window, 'message', qr.message);
       $('#recaptcha_response_field').id = '';
+      $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode);
       return qr.captcha = [];
     },
     attach: function() {
@@ -1269,6 +1270,15 @@
         var _ref;
         return (_ref = $('#autohide:checked', qr.el)) != null ? _ref.click() : void 0;
       }
+    },
+    captchaNode: function(e) {
+      var target;
+      if (!qr.el) {
+        return;
+      }
+      target = e.target;
+      $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+      return $('#recaptcha_challenge_field', qr.el).value = target.value;
     },
     cb: {
       autohide: function(e) {
@@ -2471,7 +2481,6 @@
         el = _ref2[_i];
         el.tabIndex = 1;
       }
-      $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', Recaptcha.reloaded);
       return $.bind($('#recaptcha_response_field'), 'keydown', Recaptcha.listener);
     },
     listener: function(e) {
@@ -2488,15 +2497,6 @@
     },
     reload: function() {
       return window.location = 'javascript:Recaptcha.reload()';
-    },
-    reloaded: function(e) {
-      var target;
-      if (!qr.el) {
-        return;
-      }
-      target = e.target;
-      $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('#recaptcha_challenge_field', qr.el).value = target.value;
     }
   };
   nodeInserted = function(e) {
