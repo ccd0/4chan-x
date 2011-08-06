@@ -1009,6 +1009,12 @@ qr =
     $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
     $('#recaptcha_challenge_field', qr.el).value = target.value
 
+  captchaKeydown: (e) ->
+    if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
+      $('#auto', qr.el).checked = true
+      qr.autohide.set() if conf['Auto Hide QR']
+      qr.push.call this
+
   cb:
     autohide: (e) ->
       if @checked
@@ -1064,6 +1070,7 @@ qr =
     $.bind $('a[name=attach]',            qr.el), 'click', qr.attach
     $.bind $('img',                       qr.el), 'click', Recaptcha.reload
     $.bind $('#recaptcha_response_field', qr.el), 'keydown', Recaptcha.listener
+    $.bind $('#recaptcha_response_field', qr.el), 'keydown', qr.captchaKeydown
 
     $.append d.body, qr.el
 
@@ -1894,10 +1901,6 @@ Recaptcha =
   listener: (e) ->
     if e.keyCode is 8 and @value is '' # backspace to reload
       Recaptcha.reload()
-    if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
-      $('#auto', qr.el).checked = true
-      qr.autohide.set() if conf['Auto Hide QR']
-      qr.push.call this
   reload: ->
     window.location = 'javascript:Recaptcha.reload()'
 

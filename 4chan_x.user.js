@@ -1280,6 +1280,15 @@
       $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
       return $('#recaptcha_challenge_field', qr.el).value = target.value;
     },
+    captchaKeydown: function(e) {
+      if (e.keyCode === 13 && cooldown.duration) {
+        $('#auto', qr.el).checked = true;
+        if (conf['Auto Hide QR']) {
+          qr.autohide.set();
+        }
+        return qr.push.call(this);
+      }
+    },
     cb: {
       autohide: function(e) {
         if (this.checked) {
@@ -1320,6 +1329,7 @@
       $.bind($('a[name=attach]', qr.el), 'click', qr.attach);
       $.bind($('img', qr.el), 'click', Recaptcha.reload);
       $.bind($('#recaptcha_response_field', qr.el), 'keydown', Recaptcha.listener);
+      $.bind($('#recaptcha_response_field', qr.el), 'keydown', qr.captchaKeydown);
       return $.append(d.body, qr.el);
     },
     message: function(e) {
@@ -2485,14 +2495,7 @@
     },
     listener: function(e) {
       if (e.keyCode === 8 && this.value === '') {
-        Recaptcha.reload();
-      }
-      if (e.keyCode === 13 && cooldown.duration) {
-        $('#auto', qr.el).checked = true;
-        if (conf['Auto Hide QR']) {
-          qr.autohide.set();
-        }
-        return qr.push.call(this);
+        return Recaptcha.reload();
       }
     },
     reload: function() {
