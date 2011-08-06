@@ -998,12 +998,6 @@ qr =
       responseField.nextSibling.textContent = qr.captcha.length
     qr.submit.call $ 'form', qr.el
 
-  autohide:
-    set: ->
-      $('#autohide', qr.el).checked = true
-    unset: ->
-      $('#autohide', qr.el).checked = false
-
   captchaNode: (e) ->
     return unless qr.el
     {target} = e
@@ -1013,7 +1007,7 @@ qr =
   captchaKeydown: (e) ->
     if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
       $('#auto', qr.el).checked = true
-      qr.autohide.set() if conf['Auto Hide QR']
+      $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
       qr.push.call this
 
   cb:
@@ -1077,7 +1071,7 @@ qr =
       data = JSON.parse data
       $.extend $('#error', qr.el), data
       $('#recaptcha_response_field', qr.el).value = ''
-      qr.autohide.unset()
+      $('#autohide', qr.el).checked = false
       if data.textContent is 'You seem to have mistyped the verification.'
         qr.auto()
       return
@@ -1102,7 +1096,7 @@ qr =
 
   persist: ->
     qr.dialog()
-    qr.autohide.set() if conf['Auto Hide QR']
+    $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
 
   push: ->
     @nextSibling.textContent = qr.captcha.push
@@ -1113,7 +1107,7 @@ qr =
 
   quote: (link) ->
     if qr.el
-      qr.autohide.unset()
+      $('#autohide', qr.el).checked = false
     else
       qr.dialog link
 
@@ -1163,7 +1157,7 @@ qr =
     else if isQR
       if !e then @submit()
       $('#error', qr.el).textContent = ''
-      qr.autohide.set() if conf['Auto Hide QR']
+      $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
       qr.sage = /sage/i.test $('input[name=email]', @).value
 
   sys: ->

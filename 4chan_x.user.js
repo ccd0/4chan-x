@@ -1261,14 +1261,6 @@
       }
       return qr.submit.call($('form', qr.el));
     },
-    autohide: {
-      set: function() {
-        return $('#autohide', qr.el).checked = true;
-      },
-      unset: function() {
-        return $('#autohide', qr.el).checked = false;
-      }
-    },
     captchaNode: function(e) {
       var target;
       if (!qr.el) {
@@ -1282,7 +1274,7 @@
       if (e.keyCode === 13 && cooldown.duration) {
         $('#auto', qr.el).checked = true;
         if (conf['Auto Hide QR']) {
-          qr.autohide.set();
+          $('#autohide', qr.el).checked = true;
         }
         return qr.push.call(this);
       }
@@ -1331,7 +1323,7 @@
         data = JSON.parse(data);
         $.extend($('#error', qr.el), data);
         $('#recaptcha_response_field', qr.el).value = '';
-        qr.autohide.unset();
+        $('#autohide', qr.el).checked = false;
         if (data.textContent === 'You seem to have mistyped the verification.') {
           qr.auto();
         }
@@ -1363,7 +1355,7 @@
     persist: function() {
       qr.dialog();
       if (conf['Auto Hide QR']) {
-        return qr.autohide.set();
+        return $('#autohide', qr.el).checked = true;
       }
     },
     push: function() {
@@ -1377,7 +1369,7 @@
     quote: function(link) {
       var id, s, selection, selectionID, ta, text, _ref;
       if (qr.el) {
-        qr.autohide.unset();
+        $('#autohide', qr.el).checked = false;
       } else {
         qr.dialog(link);
       }
@@ -1435,7 +1427,7 @@
         }
         $('#error', qr.el).textContent = '';
         if (conf['Auto Hide QR']) {
-          qr.autohide.set();
+          $('#autohide', qr.el).checked = true;
         }
         return qr.sage = /sage/i.test($('input[name=email]', this).value);
       }
