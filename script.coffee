@@ -985,7 +985,7 @@ qr =
     $.append files, file
 
   auto: ->
-    responseField = $ 'input[name=recaptcha_response_field]', qr.el
+    responseField = $ '#recaptcha_response_field', qr.el
     if !responseField.value and captcha = qr.captcha.shift()
       $('input[name=recaptcha_challenge_field]', qr.el).value = captcha.challenge
       responseField.value = captcha.response
@@ -1034,7 +1034,7 @@ qr =
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=captcha title='captcha cached'>0</a></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><a name=captcha title='captcha cached'>0</a></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>
       </form>
@@ -1046,13 +1046,13 @@ qr =
     qr.refresh()
     $('textarea', qr.el).value = $('textarea').value
 
-    $.bind $('input[name=name]',                     qr.el), 'mousedown', (e) -> e.stopPropagation()
-    $.bind $('#autohide',                            qr.el), 'click', qr.cb.autohide
-    $.bind $('a[name=close]',                        qr.el), 'click', qr.close
-    $.bind $('form',                                 qr.el), 'submit', qr.submit
-    $.bind $('a[name=attach]',                       qr.el), 'click', qr.attach
-    $.bind $('img',                                  qr.el), 'click', Recaptcha.reload
-    $.bind $('input[name=recaptcha_response_field]', qr.el), 'keydown', Recaptcha.listener
+    $.bind $('input[name=name]',          qr.el), 'mousedown', (e) -> e.stopPropagation()
+    $.bind $('#autohide',                 qr.el), 'click', qr.cb.autohide
+    $.bind $('a[name=close]',             qr.el), 'click', qr.close
+    $.bind $('form',                      qr.el), 'submit', qr.submit
+    $.bind $('a[name=attach]',            qr.el), 'click', qr.attach
+    $.bind $('img',                       qr.el), 'click', Recaptcha.reload
+    $.bind $('#recaptcha_response_field', qr.el), 'keydown', Recaptcha.listener
 
     $.append d.body, qr.el
 
@@ -1064,7 +1064,7 @@ qr =
     if data # error message
       data = JSON.parse data
       $.extend $('#error', qr.el), data
-      $('input[name=recaptcha_response_field]', qr.el).value = ''
+      $('#recaptcha_response_field', qr.el).value = ''
       qr.autohide.unset()
       if data.textContent is 'You seem to have mistyped the verification.'
         qr.auto()
