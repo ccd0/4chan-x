@@ -1230,13 +1230,13 @@
   qr = {
     init: function() {
       var iframe;
-      g.callbacks.push(qr.cb.node);
+      g.callbacks.push(qr.node);
       iframe = $.el('iframe', {
         name: 'iframe',
         hidden: true
       });
       $.append(d.body, iframe);
-      $.bind(window, 'message', qr.cb.message);
+      $.bind(window, 'message', qr.message);
       $('#recaptcha_response_field').id = '';
       return qr.captcha = [];
     },
@@ -1250,6 +1250,44 @@
         return (_ref = $('#autohide:checked', qr.el)) != null ? _ref.click() : void 0;
       }
     },
+    message: function(e) {
+      var data, duration, file, oldFile;
+      Recaptcha.reload();
+      $('iframe[name=iframe]').src = 'about:blank';
+      data = e.data;
+      if (data) {
+        data = JSON.parse(data);
+        $.extend($('#error', qr.el), data);
+        $('input[name=recaptcha_response_field]', qr.el).value = '';
+        qr.autohide.unset();
+        if (data.textContent === 'You seem to have mistyped the verification.') {
+          qr.auto();
+        }
+        return;
+      }
+      if (qr.el) {
+        file = $('#files input', qr.el);
+        if (g.REPLY && (conf['Persistent QR'] || file)) {
+          qr.refresh();
+          if (file) {
+            oldFile = $('#qr_form input[type=file]', qr.el);
+            $.replace(oldFile, file);
+          }
+        } else {
+          qr.close();
+        }
+      }
+      if (conf['Cooldown']) {
+        duration = qr.sage ? 60 : 30;
+        $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
+        return cooldown.start();
+      }
+    },
+    node: function(root) {
+      var quote;
+      quote = $('a.quotejs:not(:first-child)', root);
+      return $.bind(quote, 'click', qr.cb.quote);
+    },
     cb: {
       autohide: function(e) {
         if (this.checked) {
@@ -1257,44 +1295,6 @@
         } else {
           return $.removeClass(qr.el, 'auto');
         }
-      },
-      message: function(e) {
-        var data, duration, file, oldFile;
-        Recaptcha.reload();
-        $('iframe[name=iframe]').src = 'about:blank';
-        data = e.data;
-        if (data) {
-          data = JSON.parse(data);
-          $.extend($('#error', qr.el), data);
-          $('input[name=recaptcha_response_field]', qr.el).value = '';
-          qr.autohide.unset();
-          if (data.textContent === 'You seem to have mistyped the verification.') {
-            qr.auto();
-          }
-          return;
-        }
-        if (qr.el) {
-          file = $('#files input', qr.el);
-          if (g.REPLY && (conf['Persistent QR'] || file)) {
-            qr.refresh();
-            if (file) {
-              oldFile = $('#qr_form input[type=file]', qr.el);
-              $.replace(oldFile, file);
-            }
-          } else {
-            qr.close();
-          }
-        }
-        if (conf['Cooldown']) {
-          duration = qr.sage ? 60 : 30;
-          $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
-          return cooldown.start();
-        }
-      },
-      node: function(root) {
-        var quote;
-        quote = $('a.quotejs:not(:first-child)', root);
-        return $.bind(quote, 'click', qr.cb.quote);
       },
       quote: function(e) {
         e.preventDefault();

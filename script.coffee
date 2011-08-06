@@ -967,12 +967,12 @@ cooldown =
 
 qr =
   init: ->
-    g.callbacks.push qr.cb.node
+    g.callbacks.push qr.node
     iframe = $.el 'iframe',
       name: 'iframe'
       hidden: true
     $.append d.body, iframe
-    $.bind window, 'message', qr.cb.message
+    $.bind window, 'message', qr.message
 
     #hack - nuke id so it doesn't grab focus when reloading
     $('#recaptcha_response_field').id = ''
@@ -984,44 +984,44 @@ qr =
     unset: ->
       $('#autohide:checked', qr.el)?.click()
 
+  message: (e) ->
+    Recaptcha.reload()
+    $('iframe[name=iframe]').src = 'about:blank'
+
+    {data} = e
+    if data # error message
+      data = JSON.parse data
+      $.extend $('#error', qr.el), data
+      $('input[name=recaptcha_response_field]', qr.el).value = ''
+      qr.autohide.unset()
+      if data.textContent is 'You seem to have mistyped the verification.'
+        qr.auto()
+      return
+
+    if qr.el
+      file = $ '#files input', qr.el
+      if g.REPLY and (conf['Persistent QR'] or file)
+        qr.refresh()
+        if file
+          oldFile = $ '#qr_form input[type=file]', qr.el
+          $.replace oldFile, file
+      else
+        qr.close()
+    if conf['Cooldown']
+      duration = if qr.sage then 60 else 30
+      $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
+      cooldown.start()
+
+  node: (root) ->
+    quote = $ 'a.quotejs:not(:first-child)', root
+    $.bind quote, 'click', qr.cb.quote
+
   cb:
     autohide: (e) ->
       if @checked
         $.addClass qr.el, 'auto'
       else
         $.removeClass qr.el, 'auto'
-
-    message: (e) ->
-      Recaptcha.reload()
-      $('iframe[name=iframe]').src = 'about:blank'
-
-      {data} = e
-      if data # error message
-        data = JSON.parse data
-        $.extend $('#error', qr.el), data
-        $('input[name=recaptcha_response_field]', qr.el).value = ''
-        qr.autohide.unset()
-        if data.textContent is 'You seem to have mistyped the verification.'
-          qr.auto()
-        return
-
-      if qr.el
-        file = $ '#files input', qr.el
-        if g.REPLY and (conf['Persistent QR'] or file)
-          qr.refresh()
-          if file
-            oldFile = $ '#qr_form input[type=file]', qr.el
-            $.replace oldFile, file
-        else
-          qr.close()
-      if conf['Cooldown']
-        duration = if qr.sage then 60 else 30
-        $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
-        cooldown.start()
-
-    node: (root) ->
-      quote = $ 'a.quotejs:not(:first-child)', root
-      $.bind quote, 'click', qr.cb.quote
 
     quote: (e) ->
       e.preventDefault()
