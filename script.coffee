@@ -1124,7 +1124,7 @@ qr =
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=captcha>0</a></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off><a name=captcha title='captcha cached'>0</a></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=add>attach another file</a></div>
       </form>
