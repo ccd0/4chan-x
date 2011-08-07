@@ -966,10 +966,10 @@ cooldown =
         qr.autoPost()
 
 qr =
+  # TODO
   # error handling
   # persistent captcha
   # rm Recaptcha
-  # group captcha
   # error too large error should happen on attach
   init: ->
     g.callbacks.push qr.node
@@ -987,10 +987,15 @@ qr =
 
   attach: ->
     $('#auto', qr.el).checked = true
-    files = $ '#files', qr.el
     fileDiv = $.el 'div', innerHTML: '<input type=file name=upfile><a>X</a>'
     $.bind fileDiv.lastChild, 'click', (-> $.rm @parentNode)
-    $.prepend files, file
+    $.prepend qr.files, fileDiv
+
+  attachNext: ->
+    fileDiv = $.rm qr.files.lastChild
+    file = fileDiv.firstChild
+    oldFile = $ '#qr_form input[type=file]', qr.el
+    $.replace oldFile, file
 
   autoPost: ->
     responseField = $ '#recaptcha_response_field', qr.el
@@ -1053,6 +1058,7 @@ qr =
       <a id=error class=error></a>
       "
     qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
+    qr.files = $ '#files', qr.el
 
     qr.refresh()
     $('textarea', qr.el).value = $('textarea').value
@@ -1078,18 +1084,19 @@ qr =
       $('#recaptcha_response_field', qr.el).value = ''
       $('#autohide', qr.el).checked = false
       if data.textContent is 'You seem to have mistyped the verification.'
-        qr.autoPost()
+        if qr.captcha.length
+          qr.autoPost()
+      else if data.textContent is 'Error: Duplicate file entry detected.' and qr.files.childElementCount
+        qr.attachNext()
+        if qr.captcha.length
+          qr.autoPost()
       return
 
     if qr.el
-      fileDiv = $ '#files div:last-child', qr.el
-      if g.REPLY and (conf['Persistent QR'] or fileDiv)
+      if g.REPLY and (conf['Persistent QR'] or qr.files.childElementCount)
         qr.refresh()
-        if fileDiv
-          $.rm fileDiv
-          file = fileDiv.firstChild
-          oldFile = $ '#qr_form input[type=file]', qr.el
-          $.replace oldFile, file
+        if qr.files.childElementCount
+          qr.attachNext()
       else
         qr.close()
     if conf['Cooldown']

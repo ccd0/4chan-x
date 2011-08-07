@@ -1242,16 +1242,22 @@
       return $('#recaptcha_response_field').id = '';
     },
     attach: function() {
-      var fileDiv, files;
+      var fileDiv;
       $('#auto', qr.el).checked = true;
-      files = $('#files', qr.el);
       fileDiv = $.el('div', {
         innerHTML: '<input type=file name=upfile><a>X</a>'
       });
       $.bind(fileDiv.lastChild, 'click', (function() {
         return $.rm(this.parentNode);
       }));
-      return $.prepend(files, file);
+      return $.prepend(qr.files, fileDiv);
+    },
+    attachNext: function() {
+      var file, fileDiv, oldFile;
+      fileDiv = $.rm(qr.files.lastChild);
+      file = fileDiv.firstChild;
+      oldFile = $('#qr_form input[type=file]', qr.el);
+      return $.replace(oldFile, file);
     },
     autoPost: function() {
       var captcha, responseField;
@@ -1307,6 +1313,7 @@
         top: '0px',
         left: '0px'
       }, html);
+      qr.files = $('#files', qr.el);
       qr.refresh();
       $('textarea', qr.el).value = $('textarea').value;
       $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
@@ -1321,7 +1328,7 @@
       return $.append(d.body, qr.el);
     },
     message: function(e) {
-      var data, duration, file, fileDiv, oldFile;
+      var data, duration;
       Recaptcha.reload();
       $('iframe[name=iframe]').src = 'about:blank';
       data = e.data;
@@ -1331,19 +1338,22 @@
         $('#recaptcha_response_field', qr.el).value = '';
         $('#autohide', qr.el).checked = false;
         if (data.textContent === 'You seem to have mistyped the verification.') {
-          qr.autoPost();
+          if (qr.captcha.length) {
+            qr.autoPost();
+          }
+        } else if (data.textContent === 'Error: Duplicate file entry detected.' && qr.files.childElementCount) {
+          qr.attachNext();
+          if (qr.captcha.length) {
+            qr.autoPost();
+          }
         }
         return;
       }
       if (qr.el) {
-        fileDiv = $('#files div:last-child', qr.el);
-        if (g.REPLY && (conf['Persistent QR'] || fileDiv)) {
+        if (g.REPLY && (conf['Persistent QR'] || qr.files.childElementCount)) {
           qr.refresh();
-          if (fileDiv) {
-            $.rm(fileDiv);
-            file = fileDiv.firstChild;
-            oldFile = $('#qr_form input[type=file]', qr.el);
-            $.replace(oldFile, file);
+          if (qr.files.childElementCount) {
+            qr.attachNext();
           }
         } else {
           qr.close();
