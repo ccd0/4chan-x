@@ -967,7 +967,7 @@ cooldown =
 
 qr =
   # TODO
-  # error handling
+  # error handling / logging
   # persistent captcha
   # rm Recaptcha
   # error too large error should happen on attach
@@ -988,6 +988,7 @@ qr =
   attach: ->
     $('#auto', qr.el).checked = true
     fileDiv = $.el 'div', innerHTML: '<input type=file name=upfile><a>X</a>'
+    $.bind fileDiv.firstChild 'change', qr.validateFileSize
     $.bind fileDiv.lastChild, 'click', (-> $.rm @parentNode)
     $.prepend qr.files, fileDiv
 
@@ -1064,6 +1065,7 @@ qr =
     $('textarea', qr.el).value = $('textarea').value
 
     $.bind $('input[name=name]',          qr.el), 'mousedown', (e) -> e.stopPropagation()
+    $.bind $('input[name=upfile]',        qr.el), 'change', qr.validateFileSize
     $.bind $('#close',                    qr.el), 'click', qr.close
     $.bind $('form',                      qr.el), 'submit', qr.submit
     $.bind $('a[name=attach]',            qr.el), 'click', qr.attach
@@ -1152,15 +1154,7 @@ qr =
 
     isQR = @id is 'qr_form'
 
-    inputfile = $('input[type=file]', @)
-    if inputfile.value and inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value
-      e.preventDefault() if e
-      if isQR
-        $('#error', qr.el).textContent = 'Error: File too large.'
-      else
-        alert 'Error: File too large.'
-
-    else if isQR
+    if @id is 'qr_form'
       if !e then @submit()
       $('#error', qr.el).textContent = ''
       $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
@@ -1210,6 +1204,16 @@ qr =
         url += '#' + id
 
       window.location = url
+
+  validateFileSize: (e) ->
+    return unless @files[0].size > $('input[name=MAX_FILE_SIZE]').value
+
+    file = $.el 'input', type: 'file', name: 'upfile'
+    $.bind file, 'change', qr.validateFileSize
+    $.replace @, file
+
+    $('#error', qr.el).textContent = 'Error: File too large.'
+    alert 'Error: File too large.'
 
 threading =
   init: ->

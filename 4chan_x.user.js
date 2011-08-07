@@ -1247,6 +1247,7 @@
       fileDiv = $.el('div', {
         innerHTML: '<input type=file name=upfile><a>X</a>'
       });
+      $.bind(fileDiv.firstChild('change', qr.validateFileSize));
       $.bind(fileDiv.lastChild, 'click', (function() {
         return $.rm(this.parentNode);
       }));
@@ -1319,6 +1320,7 @@
       $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
         return e.stopPropagation();
       });
+      $.bind($('input[name=upfile]', qr.el), 'change', qr.validateFileSize);
       $.bind($('#close', qr.el), 'click', qr.close);
       $.bind($('form', qr.el), 'submit', qr.submit);
       $.bind($('a[name=attach]', qr.el), 'click', qr.attach);
@@ -1406,7 +1408,7 @@
       return $('input[name=pwd]', qr.el).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
     },
     submit: function(e) {
-      var id, inputfile, isQR, op;
+      var id, isQR, op;
       if (conf['Auto Watch Reply'] && conf['Thread Watcher']) {
         if (g.REPLY && $('img.favicon').src === Favicon.empty) {
           watcher.watch(null, g.THREAD_ID);
@@ -1419,17 +1421,7 @@
         }
       }
       isQR = this.id === 'qr_form';
-      inputfile = $('input[type=file]', this);
-      if (inputfile.value && inputfile.files[0].size > $('input[name=MAX_FILE_SIZE]').value) {
-        if (e) {
-          e.preventDefault();
-        }
-        if (isQR) {
-          return $('#error', qr.el).textContent = 'Error: File too large.';
-        } else {
-          return alert('Error: File too large.');
-        }
-      } else if (isQR) {
+      if (this.id === 'qr_form') {
         if (!e) {
           this.submit();
         }
@@ -1490,6 +1482,20 @@
         }
         return window.location = url;
       }
+    },
+    validateFileSize: function(e) {
+      var file;
+      if (!(this.files[0].size > $('input[name=MAX_FILE_SIZE]').value)) {
+        return;
+      }
+      file = $.el('input', {
+        type: 'file',
+        name: 'upfile'
+      });
+      $.bind(file, 'change', qr.validateFileSize);
+      $.replace(this, file);
+      $('#error', qr.el).textContent = 'Error: File too large.';
+      return alert('Error: File too large.');
     }
   };
   threading = {
