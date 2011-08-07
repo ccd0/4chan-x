@@ -966,7 +966,6 @@ cooldown =
         qr.autoPost()
 
 qr =
-  # remove file
   # error handling
   # persistent captcha
   # rm Recaptcha
@@ -1077,7 +1076,7 @@ qr =
 
     if qr.el
       fileDiv = $ '#files div:last-child', qr.el
-      if g.REPLY and (conf['Persistent QR'] or file)
+      if g.REPLY and (conf['Persistent QR'] or fileDiv)
         qr.refresh()
         if fileDiv
           $.rm fileDiv

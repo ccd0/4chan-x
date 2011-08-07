@@ -1327,7 +1327,7 @@
       }
       if (qr.el) {
         fileDiv = $('#files div:last-child', qr.el);
-        if (g.REPLY && (conf['Persistent QR'] || file)) {
+        if (g.REPLY && (conf['Persistent QR'] || fileDiv)) {
           qr.refresh();
           if (fileDiv) {
             $.rm(fileDiv);
