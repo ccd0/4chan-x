@@ -997,7 +997,7 @@ qr =
     if !responseField.value and captcha = qr.captcha.shift()
       $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
       responseField.value = captcha.response
-      responseField.nextSibling.textContent = qr.captcha.length
+      responseField.nextSibling.textContent = qr.captcha.length + ' captcha cached'
     qr.submit.call $ 'form', qr.el
 
   captchaNode: (e) ->
@@ -1037,7 +1037,7 @@ qr =
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><a name=captcha title='captcha cached'>0</a></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field>0 captcha cached</div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>
       </form>
@@ -1092,9 +1092,10 @@ qr =
     $.bind quote, 'click', qr.quote
 
   push: ->
-    @nextSibling.textContent = qr.captcha.push
+    l = qr.captcha.push
       challenge: $('#recaptcha_challenge_field', qr.el).value
       response: @value
+    @nextSibling.textContent = l + ' captcha cached'
     Recaptcha.reload()
     @value = ''
 
