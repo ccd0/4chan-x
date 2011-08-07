@@ -1342,6 +1342,7 @@
             qr.autoPost();
           }
         } else if (data.textContent === 'Error: Duplicate file entry detected.' && qr.files.childElementCount) {
+          $('textarea', qr.el).value += '\n' + data.textContent + ' ' + data.href;
           qr.attachNext();
           if (qr.captcha.length) {
             qr.autoPost();
