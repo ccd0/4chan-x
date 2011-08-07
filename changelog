@@ -1,4 +1,6 @@
 github
+
+11.8.6.0
 - mayhem:
   - fix post links in expanded threads
   - fix 4chan X in closed threads
