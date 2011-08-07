@@ -969,9 +969,10 @@ qr =
   # remove file
   # error handling
   # persistent captcha
-  # code review
   # rm Recaptcha
   # group captcha
+  # error too large error should happen on attach
+  # attaching = persistent qr
   init: ->
     g.callbacks.push qr.node
     $.bind window, 'message', qr.message
@@ -988,8 +989,9 @@ qr =
 
   attach: ->
     $('#auto', qr.el).checked = true
-    file  = $.el 'input', type: 'file', name: 'upfile'
     files = $ '#files', qr.el
+    fileDiv = $.el 'div', innerHTML: '<input type=file name=upfile><a>X</a>'
+    $.bind fileDiv.lastChild, 'click', (-> $.rm @parentNode)
     $.prepend files, file
 
   autoPost: ->
@@ -1074,10 +1076,12 @@ qr =
       return
 
     if qr.el
-      file = $ '#files input', qr.el
+      fileDiv = $ '#files div:last-child', qr.el
       if g.REPLY and (conf['Persistent QR'] or file)
         qr.refresh()
-        if file
+        if fileDiv
+          $.rm fileDiv
+          file = fileDiv.firstChild
           oldFile = $ '#qr_form input[type=file]', qr.el
           $.replace oldFile, file
       else

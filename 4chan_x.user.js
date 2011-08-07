@@ -1242,13 +1242,15 @@
       return $('#recaptcha_response_field').id = '';
     },
     attach: function() {
-      var file, files;
+      var fileDiv, files;
       $('#auto', qr.el).checked = true;
-      file = $.el('input', {
-        type: 'file',
-        name: 'upfile'
-      });
       files = $('#files', qr.el);
+      fileDiv = $.el('div', {
+        innerHTML: '<input type=file name=upfile><a>X</a>'
+      });
+      $.bind(fileDiv.lastChild, 'click', (function() {
+        return $.rm(this.parentNode);
+      }));
       return $.prepend(files, file);
     },
     autoPost: function() {
@@ -1309,7 +1311,7 @@
       return $.append(d.body, qr.el);
     },
     message: function(e) {
-      var data, duration, file, oldFile;
+      var data, duration, file, fileDiv, oldFile;
       Recaptcha.reload();
       $('iframe[name=iframe]').src = 'about:blank';
       data = e.data;
@@ -1324,10 +1326,12 @@
         return;
       }
       if (qr.el) {
-        file = $('#files input', qr.el);
+        fileDiv = $('#files div:last-child', qr.el);
         if (g.REPLY && (conf['Persistent QR'] || file)) {
           qr.refresh();
-          if (file) {
+          if (fileDiv) {
+            $.rm(fileDiv);
+            file = fileDiv.firstChild;
             oldFile = $('#qr_form input[type=file]', qr.el);
             $.replace(oldFile, file);
           }
