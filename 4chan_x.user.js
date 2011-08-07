@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        11.8.4.0
+// @version        11.8.6.0
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -100,7 +100,8 @@
         'Auto Noko': [true, 'Always redirect to your post'],
         'Cooldown': [true, 'Prevent \'flood detected\' errors'],
         'Quick Reply': [true, 'Reply without leaving the page'],
-        'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+        'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
+        'Auto Hide QR': [true, 'Automatically auto-hide the quick reply when posting']
       },
       Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
@@ -111,7 +112,7 @@
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
       }
     },
-    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://imgur.com/upload?url='].join('\n'),
+    flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://imgur.com/upload?url=', '#http://anonym.to/?'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     hotkeys: {
       close: 'Esc',
@@ -292,6 +293,9 @@
     return object;
   };
   $.extend($, {
+    id: function(id) {
+      return d.getElementById(id);
+    },
     globalEval: function(code) {
       var script;
       script = $.el('script', {
@@ -614,13 +618,13 @@
           _results = [];
           for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
             backlink = _ref2[_i];
-            _results.push(!d.getElementById(backlink.hash.slice(1)) ? $.rm(backlink) : void 0);
+            _results.push(!$.id(backlink.hash.slice(1)) ? $.rm(backlink) : void 0);
           }
           return _results;
       }
     },
     parse: function(req, pathname, thread, a) {
-      var body, br, next, quote, table, tables, _i, _j, _len, _len2, _ref, _results;
+      var body, br, link, next, quote, reply, table, tables, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _results;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.unbind(a, 'click', expandThread.cb.toggle);
@@ -634,18 +638,25 @@
       body = $.el('body', {
         innerHTML: req.responseText
       });
-      _ref = $$('a.quotelink', body);
+      _ref = $$('td[id]', body);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        if (quote.getAttribute('href') === quote.hash) {
-          quote.pathname = pathname;
+        reply = _ref[_i];
+        _ref2 = $$('a.quotelink', reply);
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          quote = _ref2[_j];
+          if (quote.getAttribute('href') === quote.hash) {
+            quote.pathname = pathname;
+          }
         }
+        link = $('a.quotejs', reply);
+        link.href = "res/" + thread.firstChild.id + "#" + reply.id;
+        link.nextSibling.href = "res/" + thread.firstChild.id + "#q" + reply.id;
       }
       tables = $$('form[name=delform] table', body);
       tables.pop();
       _results = [];
-      for (_j = 0, _len2 = tables.length; _j < _len2; _j++) {
-        table = tables[_j];
+      for (_k = 0, _len3 = tables.length; _k < _len3; _k++) {
+        table = tables[_k];
         _results.push($.before(br, table));
       }
       return _results;
@@ -722,140 +733,139 @@
         node = _ref[_i];
         node.removeAttribute('accesskey');
       }
-      return $.bind(d, 'keydown', keybinds.cb.keydown);
+      return $.bind(d, 'keydown', keybinds.keydown);
     },
-    cb: {
-      keydown: function(e) {
-        var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
-        if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
-          return;
-        }
-        if (!(key = keybinds.cb.keyCode(e))) {
-          return;
-        }
-        thread = nav.getThread();
-        switch (key) {
-          case conf.close:
-            if (o = $('#overlay')) {
-              $.rm(o);
-            } else if (qr.el) {
-              qr.close();
-            }
-            break;
-          case conf.spoiler:
-            ta = e.target;
-            if (ta.nodeName !== 'TEXTAREA') {
-              return;
-            }
-            value = ta.value;
-            selStart = ta.selectionStart;
-            selEnd = ta.selectionEnd;
-            valStart = value.slice(0, selStart) + '[spoiler]';
-            valMid = value.slice(selStart, selEnd);
-            valEnd = '[/spoiler]' + value.slice(selEnd);
-            ta.value = valStart + valMid + valEnd;
-            range = valStart.length + valMid.length;
-            ta.setSelectionRange(range, range);
-            break;
-          case conf.zero:
-            window.location = "/" + g.BOARD + "/0#0";
-            break;
-          case conf.openEmptyQR:
-            keybinds.qr(thread);
-            break;
-          case conf.nextReply:
-            keybinds.hl.next(thread);
-            break;
-          case conf.previousReply:
-            keybinds.hl.prev(thread);
-            break;
-          case conf.expandAllImages:
-            keybinds.img(thread, true);
-            break;
-          case conf.openThread:
-            keybinds.open(thread);
-            break;
-          case conf.expandThread:
-            expandThread.toggle(thread);
-            break;
-          case conf.openQR:
-            keybinds.qr(thread, true);
-            break;
-          case conf.expandImages:
-            keybinds.img(thread);
-            break;
-          case conf.nextThread:
-            nav.next();
-            break;
-          case conf.openThreadTab:
-            keybinds.open(thread, true);
-            break;
-          case conf.previousThread:
-            nav.prev();
-            break;
-          case conf.update:
-            updater.update();
-            break;
-          case conf.watch:
-            watcher.toggle(thread);
-            break;
-          case conf.hide:
-            threadHiding.toggle(thread);
-            break;
-          case conf.nextPage:
-            if ((_ref2 = $('input[value=Next]')) != null) {
-              _ref2.click();
-            }
-            break;
-          case conf.previousPage:
-            if ((_ref3 = $('input[value=Previous]')) != null) {
-              _ref3.click();
-            }
-            break;
-          case conf.submit:
-            if (qr.el) {
-              qr.submit.call($('form', qr.el));
-            } else {
-              $('.postarea form').submit();
-            }
-            break;
-          case conf.unreadCountTo0:
-            unread.replies.length = 0;
-            unread.updateTitle();
-            Favicon.update();
-            break;
-          default:
-            return;
-        }
-        return e.preventDefault();
-      },
-      keyCode: function(e) {
-        var kc;
-        kc = e.keyCode;
-        if ((65 <= kc && kc <= 90)) {
-          key = String.fromCharCode(kc);
-          if (!e.shiftKey) {
-            key = key.toLowerCase();
-          }
-        } else if ((48 <= kc && kc <= 57)) {
-          key = String.fromCharCode(kc);
-        } else if (kc === 27) {
-          key = 'Esc';
-        } else if (kc === 8) {
-          key = '';
-        } else {
-          key = null;
-        }
-        if (key) {
-          if (e.altKey) {
-            key = 'alt+' + key;
-          }
-          if (e.ctrlKey) {
-            key = 'ctrl+' + key;
-          }
-        }
-        return key;
+    keydown: function(e) {
+      var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
+      updater.focus = true;
+      if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
+        return;
       }
+      if (!(key = keybinds.keyCode(e))) {
+        return;
+      }
+      thread = nav.getThread();
+      switch (key) {
+        case conf.close:
+          if (o = $('#overlay')) {
+            $.rm(o);
+          } else if (qr.el) {
+            qr.close();
+          }
+          break;
+        case conf.spoiler:
+          ta = e.target;
+          if (ta.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          value = ta.value;
+          selStart = ta.selectionStart;
+          selEnd = ta.selectionEnd;
+          valStart = value.slice(0, selStart) + '[spoiler]';
+          valMid = value.slice(selStart, selEnd);
+          valEnd = '[/spoiler]' + value.slice(selEnd);
+          ta.value = valStart + valMid + valEnd;
+          range = valStart.length + valMid.length;
+          ta.setSelectionRange(range, range);
+          break;
+        case conf.zero:
+          window.location = "/" + g.BOARD + "/0#0";
+          break;
+        case conf.openEmptyQR:
+          keybinds.qr(thread);
+          break;
+        case conf.nextReply:
+          keybinds.hl.next(thread);
+          break;
+        case conf.previousReply:
+          keybinds.hl.prev(thread);
+          break;
+        case conf.expandAllImages:
+          keybinds.img(thread, true);
+          break;
+        case conf.openThread:
+          keybinds.open(thread);
+          break;
+        case conf.expandThread:
+          expandThread.toggle(thread);
+          break;
+        case conf.openQR:
+          keybinds.qr(thread, true);
+          break;
+        case conf.expandImages:
+          keybinds.img(thread);
+          break;
+        case conf.nextThread:
+          nav.next();
+          break;
+        case conf.openThreadTab:
+          keybinds.open(thread, true);
+          break;
+        case conf.previousThread:
+          nav.prev();
+          break;
+        case conf.update:
+          updater.update();
+          break;
+        case conf.watch:
+          watcher.toggle(thread);
+          break;
+        case conf.hide:
+          threadHiding.toggle(thread);
+          break;
+        case conf.nextPage:
+          if ((_ref2 = $('input[value=Next]')) != null) {
+            _ref2.click();
+          }
+          break;
+        case conf.previousPage:
+          if ((_ref3 = $('input[value=Previous]')) != null) {
+            _ref3.click();
+          }
+          break;
+        case conf.submit:
+          if (qr.el) {
+            qr.submit.call($('form', qr.el));
+          } else {
+            $('.postarea form').submit();
+          }
+          break;
+        case conf.unreadCountTo0:
+          unread.replies.length = 0;
+          unread.updateTitle();
+          Favicon.update();
+          break;
+        default:
+          return;
+      }
+      return e.preventDefault();
+    },
+    keyCode: function(e) {
+      var kc;
+      kc = e.keyCode;
+      if ((65 <= kc && kc <= 90)) {
+        key = String.fromCharCode(kc);
+        if (!e.shiftKey) {
+          key = key.toLowerCase();
+        }
+      } else if ((48 <= kc && kc <= 57)) {
+        key = String.fromCharCode(kc);
+      } else if (kc === 27) {
+        key = 'Esc';
+      } else if (kc === 8) {
+        key = '';
+      } else {
+        key = null;
+      }
+      if (key) {
+        if (e.altKey) {
+          key = 'alt+' + key;
+        }
+        if (e.ctrlKey) {
+          key = 'ctrl+' + key;
+        }
+      }
+      return key;
     },
     img: function(thread, all) {
       var root, thumb;
@@ -873,7 +883,7 @@
         qrLink = $("span[id^=nothread] a:not(:first-child)", thread);
       }
       if (quote) {
-        return qr.quote(qrLink);
+        return qr.quote.call(qrLink);
       } else {
         if (!qr.el) {
           qr.dialog(qrLink);
@@ -1043,7 +1053,7 @@
       var arr, checked, description, dialog, hiddenNum, hiddenThreads, hidingul, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
       hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
-      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea name=flavors id=flavors hidden>" + conf['flavors'] + "</textarea>          <div id=time hidden>            <div><input type=text name=time value='" + conf['time'] + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>              </tbody>            </table>          </div>          <div id=keybinds hidden>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>                <tr><td>Update now</td><td><input type=text name=update></td></tr>                <tr><td>Reset the unread count to 0</td><td><input type=text name=unreadCountTo0></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
+      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea name=flavors id=flavors hidden>" + conf['flavors'] + "</textarea>          <div id=time hidden>            <div><input type=text name=time value='" + conf['time'] + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><th colspan=3>Year</th></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>                <tr><th colspan=3>Month</th></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><th colspan=3>Day</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%e</td><td>day of the month</td><td>3</td></tr>                <tr><th colspan=3>Time</th></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%l (lowercase L)</td><td>hour (12 hour clock)</td><td>1</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>01</td></tr>                <tr><td>%k</td><td>hour (24 hour clock)</td><td>13</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>              </tbody>            </table>          </div>          <div id=keybinds hidden>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>                <tr><td>Update now</td><td><input type=text name=update></td></tr>                <tr><td>Reset the unread count to 0</td><td><input type=text name=unreadCountTo0></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
       dialog = $.el('div', {
         id: 'options',
         innerHTML: html
@@ -1130,7 +1140,7 @@
     keybind: function(e) {
       e.preventDefault();
       e.stopPropagation();
-      if ((key = keybinds.cb.keyCode(e)) == null) {
+      if ((key = keybinds.keyCode(e)) == null) {
         return;
       }
       this.value = key;
@@ -1197,7 +1207,7 @@
     cb: function() {
       var submit, submits, _i, _j, _len, _len2, _results;
       submits = $$('#com_submit');
-      if (--cooldown.duration) {
+      if (--cooldown.duration > 0) {
         _results = [];
         for (_i = 0, _len = submits.length; _i < _len; _i++) {
           submit = submits[_i];
@@ -1212,7 +1222,7 @@
           submit.value = 'Submit';
         }
         if (qr.el && $('#auto', qr.el).checked) {
-          return qr.submit.call($('form', qr.el));
+          return qr.autoPost();
         }
       }
     }
@@ -1220,66 +1230,180 @@
   qr = {
     init: function() {
       var iframe;
-      g.callbacks.push(qr.cb.node);
+      g.callbacks.push(qr.node);
+      $.bind(window, 'message', qr.message);
+      $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode);
+      qr.captcha = [];
       iframe = $.el('iframe', {
         name: 'iframe',
         hidden: true
       });
       $.append(d.body, iframe);
-      $.bind(window, 'message', qr.cb.message);
       return $('#recaptcha_response_field').id = '';
     },
-    autohide: {
-      set: function() {
-        var _ref;
-        return (_ref = $('#autohide:not(:checked)', qr.el)) != null ? _ref.click() : void 0;
-      },
-      unset: function() {
-        var _ref;
-        return (_ref = $('#autohide:checked', qr.el)) != null ? _ref.click() : void 0;
+    attach: function() {
+      var fileDiv;
+      $('#auto', qr.el).checked = true;
+      fileDiv = $.el('div', {
+        innerHTML: '<input type=file name=upfile><a>X</a>'
+      });
+      $.bind(fileDiv.lastChild, 'click', (function() {
+        return $.rm(this.parentNode);
+      }));
+      return $.prepend(qr.files, fileDiv);
+    },
+    attachNext: function() {
+      var file, fileDiv, oldFile;
+      fileDiv = $.rm(qr.files.lastChild);
+      file = fileDiv.firstChild;
+      oldFile = $('#qr_form input[type=file]', qr.el);
+      return $.replace(oldFile, file);
+    },
+    autoPost: function() {
+      var captcha, responseField;
+      responseField = $('#recaptcha_response_field', qr.el);
+      if (!responseField.value && (captcha = qr.captcha.shift())) {
+        $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
+        responseField.value = captcha.response;
+        responseField.nextSibling.textContent = qr.captcha.length + ' captcha cached';
+      }
+      return qr.submit.call($('form', qr.el));
+    },
+    captchaNode: function(e) {
+      var target;
+      if (!qr.el) {
+        return;
+      }
+      target = e.target;
+      $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
+      return $('#recaptcha_challenge_field', qr.el).value = target.value;
+    },
+    captchaKeydown: function(e) {
+      if (e.keyCode === 13 && cooldown.duration) {
+        $('#auto', qr.el).checked = true;
+        if (conf['Auto Hide QR']) {
+          $('#autohide', qr.el).checked = true;
+        }
+        return qr.captchaPush.call(this);
       }
     },
-    cb: {
-      autohide: function(e) {
-        if (this.checked) {
-          return $.addClass(qr.el, 'auto');
-        } else {
-          return $.removeClass(qr.el, 'auto');
-        }
-      },
-      message: function(e) {
-        var data, duration;
-        Recaptcha.reload();
-        $('iframe[name=iframe]').src = 'about:blank';
-        data = e.data;
-        if (data) {
-          $('input[name=recaptcha_response_field]', qr.el).value = '';
-          $.extend($('#error', qr.el), JSON.parse(data));
-          qr.autohide.unset();
-          return;
-        }
-        if (qr.el) {
-          if (g.REPLY && conf['Persistent QR']) {
-            qr.refresh();
-          } else {
-            qr.close();
+    captchaPush: function() {
+      var l;
+      l = qr.captcha.push({
+        challenge: $('#recaptcha_challenge_field', qr.el).value,
+        response: this.value
+      });
+      this.nextSibling.textContent = l + ' captcha cached';
+      Recaptcha.reload();
+      return this.value = '';
+    },
+    close: function() {
+      $.rm(qr.el);
+      return qr.el = null;
+    },
+    dialog: function(link) {
+      var THREAD_ID, challenge, html, spoiler, submitDisabled, submitValue;
+      submitValue = $('#com_submit').value;
+      submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
+      THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
+      spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
+      challenge = $('#recaptcha_challenge_field').value;
+      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field>0 captcha cached</div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
+      qr.el = ui.dialog('qr', {
+        top: '0px',
+        left: '0px'
+      }, html);
+      qr.files = $('#files', qr.el);
+      qr.refresh();
+      $('textarea', qr.el).value = $('textarea').value;
+      $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
+        return e.stopPropagation();
+      });
+      $.bind($('#close', qr.el), 'click', qr.close);
+      $.bind($('form', qr.el), 'submit', qr.submit);
+      $.bind($('a[name=attach]', qr.el), 'click', qr.attach);
+      $.bind($('img', qr.el), 'click', Recaptcha.reload);
+      $.bind($('#recaptcha_response_field', qr.el), 'keydown', Recaptcha.listener);
+      $.bind($('#recaptcha_response_field', qr.el), 'keydown', qr.captchaKeydown);
+      return $.append(d.body, qr.el);
+    },
+    message: function(e) {
+      var data, duration;
+      Recaptcha.reload();
+      $('iframe[name=iframe]').src = 'about:blank';
+      data = e.data;
+      if (data) {
+        data = JSON.parse(data);
+        $.extend($('#error', qr.el), data);
+        $('#recaptcha_response_field', qr.el).value = '';
+        $('#autohide', qr.el).checked = false;
+        if (data.textContent === 'You seem to have mistyped the verification.') {
+          if (qr.captcha.length) {
+            qr.autoPost();
+          }
+        } else if (data.textContent === 'Error: Duplicate file entry detected.' && qr.files.childElementCount) {
+          $('textarea', qr.el).value += '\n' + data.textContent + ' ' + data.href;
+          qr.attachNext();
+          if (qr.captcha.length) {
+            qr.autoPost();
           }
         }
-        if (conf['Cooldown']) {
-          duration = qr.sage ? 60 : 30;
-          $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
-          return cooldown.start();
-        }
-      },
-      node: function(root) {
-        var quote;
-        quote = $('a.quotejs:not(:first-child)', root);
-        return $.bind(quote, 'click', qr.cb.quote);
-      },
-      quote: function(e) {
-        e.preventDefault();
-        return qr.quote(this);
+        return;
       }
+      if (qr.el) {
+        if (g.REPLY && (conf['Persistent QR'] || qr.files.childElementCount)) {
+          qr.refresh();
+          if (qr.files.childElementCount) {
+            qr.attachNext();
+          }
+        } else {
+          qr.close();
+        }
+      }
+      if (conf['Cooldown']) {
+        duration = qr.sage ? 60 : 30;
+        $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
+        return cooldown.start();
+      }
+    },
+    node: function(root) {
+      var quote;
+      quote = $('a.quotejs:not(:first-child)', root);
+      return $.bind(quote, 'click', qr.quote);
+    },
+    quote: function(e) {
+      var id, s, selection, selectionID, ta, text, _ref;
+      if (e) {
+        e.preventDefault();
+      }
+      if (qr.el) {
+        $('#autohide', qr.el).checked = false;
+      } else {
+        qr.dialog(this);
+      }
+      id = this.textContent;
+      text = ">>" + id + "\n";
+      selection = window.getSelection();
+      if (s = selection.toString()) {
+        selectionID = (_ref = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
+        if (selectionID === id) {
+          s = s.replace(/\n/g, '\n>');
+          text += ">" + s + "\n";
+        }
+      }
+      ta = $('textarea', qr.el);
+      ta.focus();
+      return ta.value += text;
+    },
+    refresh: function() {
+      var auto, c, m;
+      auto = $('#auto', qr.el).checked;
+      $('form', qr.el).reset();
+      $('#auto', qr.el).checked = auto;
+      c = d.cookie;
+      $('input[name=name]', qr.el).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
+      $('input[name=email]', qr.el).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
+      return $('input[name=pwd]', qr.el).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
     },
     submit: function(e) {
       var id, inputfile, isQR, op;
@@ -1288,7 +1412,7 @@
           watcher.watch(null, g.THREAD_ID);
         } else {
           id = $('input[name=resto]', qr.el).value;
-          op = d.getElementById(id);
+          op = $.id(id);
           if ($('img.favicon', op).src === Favicon.empty) {
             watcher.watch(op, id);
           }
@@ -1310,72 +1434,14 @@
           this.submit();
         }
         $('#error', qr.el).textContent = '';
-        qr.autohide.set();
+        if (conf['Auto Hide QR']) {
+          $('#autohide', qr.el).checked = true;
+        }
         return qr.sage = /sage/i.test($('input[name=email]', this).value);
       }
     },
-    quote: function(link) {
-      var id, s, selection, selectionID, ta, text, _ref;
-      if (qr.el) {
-        qr.autohide.unset();
-      } else {
-        qr.dialog(link);
-      }
-      id = link.textContent;
-      text = ">>" + id + "\n";
-      selection = window.getSelection();
-      if (s = selection.toString()) {
-        selectionID = (_ref = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
-        if (selectionID === id) {
-          s = s.replace(/\n/g, '\n>');
-          text += ">" + s + "\n";
-        }
-      }
-      ta = $('textarea', qr.el);
-      ta.focus();
-      return ta.value += text;
-    },
-    refresh: function() {
-      var c, m;
-      $('form', qr.el).reset();
-      c = d.cookie;
-      $('input[name=name]', qr.el).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      $('input[name=email]', qr.el).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      return $('input[name=pwd]', qr.el).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
-    },
-    dialog: function(link) {
-      var THREAD_ID, challenge, html, spoiler, submitDisabled, submitValue;
-      submitValue = $('#com_submit').value;
-      submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
-      THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
-      spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
-      challenge = $('input[name=recaptcha_challenge_field]').value;
-      html = "      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply        <input type=checkbox id=autohide title=autohide>        <a name=close title=close>X</a>      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>      </form>      <a id=error class=error></a>      ";
-      qr.el = ui.dialog('qr', {
-        top: '0px',
-        left: '0px'
-      }, html);
-      qr.refresh();
-      $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
-        return e.stopPropagation();
-      });
-      $.bind($('#autohide', qr.el), 'click', qr.cb.autohide);
-      $.bind($('a[name=close]', qr.el), 'click', qr.close);
-      $.bind($('form', qr.el), 'submit', qr.submit);
-      $.bind($('img', qr.el), 'click', Recaptcha.reload);
-      $.bind($('input[name=recaptcha_response_field]', qr.el), 'keydown', Recaptcha.listener);
-      return $.append(d.body, qr.el);
-    },
-    persist: function() {
-      qr.dialog();
-      return qr.autohide.set();
-    },
-    close: function() {
-      $.rm(qr.el);
-      return qr.el = null;
-    },
     sys: function() {
-      var c, duration, id, noko, recaptcha, thread, _, _ref;
+      var c, duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
@@ -1403,28 +1469,26 @@
       c = $('b').lastChild;
       if (c.nodeType === 8) {
         _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-        noko = /auto_noko/.test(location.search);
-        if (thread === '0') {
-          if (/auto_watch/.test(location.search)) {
-            return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id + "#watch";
-          } else if (noko) {
-            return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
-          }
-        } else if (/cooldown/.test(location.search)) {
-          duration = Date.now() + 30000;
-          if (/sage/.test(location.search)) {
-            duration += 30000;
-          }
-          if (noko) {
-            return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "?cooldown=" + duration + "#" + id;
-          } else {
-            return window.location = "http://boards.4chan.org/" + g.BOARD + "?cooldown=" + duration;
-          }
+        search = location.search;
+        cooldown = /cooldown/.test(search);
+        noko = /noko/.test(search);
+        sage = /sage/.test(search);
+        watch = /watch/.test(search);
+        url = "http://boards.4chan.org/" + g.BOARD;
+        if (watch && thread === '0') {
+          url += "/res/" + id + "?watch";
         } else if (noko) {
-          return window.location = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + id;
-        } else {
-          return window.location = "http://boards.4chan.org/" + g.BOARD;
+          url += '/res/';
+          url += thread === '0' ? id : thread;
         }
+        if (cooldown) {
+          duration = Date.now() + (sage ? 60 : 30) * 1000;
+          url += '?cooldown=' + duration;
+        }
+        if (noko) {
+          url += '#' + id;
+        }
+        return window.location = url;
       }
     }
   };
@@ -1555,6 +1619,14 @@
   updater = {
     init: function() {
       var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
+      if (conf['Scrolling']) {
+        $.bind(window, 'focus', (function() {
+          return updater.focus = true;
+        }));
+        $.bind(window, 'blur', (function() {
+          return updater.focus = false;
+        }));
+      }
       html = "<div class=move><span id=count></span> <span id=timer>-" + conf['Interval'] + "</span></div>";
       checkbox = config.updater.checkbox;
       for (name in checkbox) {
@@ -1644,7 +1716,7 @@
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        scroll = conf['Scrolling'] && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
+        scroll = conf['Scrolling'] && updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
         updater.timer.textContent = '-' + conf['Interval'];
         if (conf['Verbose']) {
           updater.count.textContent = '+' + arr.length;
@@ -1889,23 +1961,10 @@
     foo: function() {
       var code;
       code = conf['time'].replace(/%([A-Za-z])/g, function(s, c) {
-        switch (c) {
-          case 'a':
-          case 'A':
-          case 'b':
-          case 'B':
-          case 'd':
-          case 'H':
-          case 'I':
-          case 'm':
-          case 'M':
-          case 'p':
-          case 'P':
-          case 'y':
-            return "' + Time." + c + "() + '";
-            break;
-          default:
-            return s;
+        if (c in Time.formatters) {
+          return "' + Time.formatters." + c + "() + '";
+        } else {
+          return s;
         }
       });
       return Time.funk = Function('Time', "return '" + code + "'");
@@ -1919,49 +1978,60 @@
         return n;
       }
     },
-    a: function() {
-      return this.day[this.date.getDay()].slice(0, 3);
-    },
-    A: function() {
-      return this.day[this.date.getDay()];
-    },
-    b: function() {
-      return this.month[this.date.getMonth()].slice(0, 3);
-    },
-    B: function() {
-      return this.month[this.date.getMonth()];
-    },
-    d: function() {
-      return this.zeroPad(this.date.getDate());
-    },
-    H: function() {
-      return this.zeroPad(this.date.getHours());
-    },
-    I: function() {
-      return this.zeroPad(this.date.getHours() % 12 || 12);
-    },
-    m: function() {
-      return this.zeroPad(this.date.getMonth() + 1);
-    },
-    M: function() {
-      return this.zeroPad(this.date.getMinutes());
-    },
-    p: function() {
-      if (this.date.getHours() < 12) {
-        return 'AM';
-      } else {
-        return 'PM';
+    formatters: {
+      a: function() {
+        return Time.day[Time.date.getDay()].slice(0, 3);
+      },
+      A: function() {
+        return Time.day[Time.date.getDay()];
+      },
+      b: function() {
+        return Time.month[Time.date.getMonth()].slice(0, 3);
+      },
+      B: function() {
+        return Time.month[Time.date.getMonth()];
+      },
+      d: function() {
+        return Time.zeroPad(Time.date.getDate());
+      },
+      e: function() {
+        return Time.date.getDate();
+      },
+      H: function() {
+        return Time.zeroPad(Time.date.getHours());
+      },
+      I: function() {
+        return Time.zeroPad(Time.date.getHours() % 12 || 12);
+      },
+      k: function() {
+        return Time.date.getHours();
+      },
+      l: function() {
+        return Time.date.getHours() % 12 || 12;
+      },
+      m: function() {
+        return Time.zeroPad(Time.date.getMonth() + 1);
+      },
+      M: function() {
+        return Time.zeroPad(Time.date.getMinutes());
+      },
+      p: function() {
+        if (Time.date.getHours() < 12) {
+          return 'AM';
+        } else {
+          return 'PM';
+        }
+      },
+      P: function() {
+        if (Time.date.getHours() < 12) {
+          return 'am';
+        } else {
+          return 'pm';
+        }
+      },
+      y: function() {
+        return Time.date.getFullYear() - 2000;
       }
-    },
-    P: function() {
-      if (this.date.getHours() < 12) {
-        return 'am';
-      } else {
-        return 'pm';
-      }
-    },
-    y: function() {
-      return this.date.getFullYear() - 2000;
     }
   };
   titlePost = {
@@ -1991,7 +2061,7 @@
         }
         _results = [];
         for (qid in quotes) {
-          if (!(el = d.getElementById(qid))) {
+          if (!(el = $.id(qid))) {
             continue;
           }
           if (!conf['OP Backlinks'] && el.className === 'op') {
@@ -2042,20 +2112,10 @@
     },
     toggle: function(e) {
       var el, hidden, id, inline, inlined, pathname, root, table, threadID, _i, _len, _ref;
+      if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) {
+        return;
+      }
       e.preventDefault();
-      /*
-          https://bugzilla.mozilla.org/show_bug.cgi?id=674955
-          `mouseout` does not fire when element removed
-          RESOLVED INVALID
-      
-          inline a post, then hover over an inlined quote / image, then remove
-          the inlined post by clicking `enter` on the still-focused link - the
-          mouseout event doesn't fire, and the quote preview / image hover remains.
-      
-          we can prevent this sequence by `blur`-ing the clicked links. chrome
-          doesn't focus clicked links anyway.
-          */
-      this.blur();
       id = this.hash.slice(1);
       if (table = $("#i" + id, $.x('ancestor::td[1]', this))) {
         $.rm(table);
@@ -2063,14 +2123,14 @@
         _ref = $$('input', table);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           inlined = _ref[_i];
-          if (hidden = d.getElementById(inlined.name)) {
+          if (hidden = $.id(inlined.name)) {
             $.show($.x('ancestor::table[1]', hidden));
           }
         }
         return;
       }
       root = this.parentNode.nodeName === 'FONT' ? this.parentNode : this.nextSibling ? this.nextSibling : this;
-      if (el = d.getElementById(id)) {
+      if (el = $.id(id)) {
         inline = quoteInline.table(id, el.innerHTML);
         if (this.className === 'backlink') {
           if ($("a.backlink[href='#" + id + "']", el)) {
@@ -2166,7 +2226,7 @@
       });
       $.append(d.body, qp);
       id = this.hash.slice(1);
-      if (el = d.getElementById(id)) {
+      if (el = $.id(id)) {
         qp.innerHTML = el.innerHTML;
         if (conf['Quote Highlighting']) {
           $.addClass(el, 'qphl');
@@ -2191,7 +2251,7 @@
     },
     mouseout: function() {
       var el;
-      if (el = d.getElementById(this.hash.slice(1))) {
+      if (el = $.id(this.hash.slice(1))) {
         $.removeClass(el, 'qphl');
       }
       return ui.hoverend();
@@ -2318,6 +2378,7 @@
     },
     scroll: function(e) {
       var bottom, height, i, reply, _len, _ref;
+      updater.focus = true;
       height = d.body.clientHeight;
       _ref = unread.replies;
       for (i = 0, _len = _ref.length; i < _len; i++) {
@@ -2420,29 +2481,15 @@
         el = _ref2[_i];
         el.tabIndex = 1;
       }
-      $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', Recaptcha.reloaded);
       return $.bind($('#recaptcha_response_field'), 'keydown', Recaptcha.listener);
     },
     listener: function(e) {
       if (e.keyCode === 8 && this.value === '') {
-        Recaptcha.reload();
-      }
-      if (e.keyCode === 13 && cooldown.duration) {
-        $('#auto', qr.el).checked = true;
-        return qr.autohide.set();
+        return Recaptcha.reload();
       }
     },
     reload: function() {
       return window.location = 'javascript:Recaptcha.reload()';
-    },
-    reloaded: function(e) {
-      var target;
-      if (!qr.el) {
-        return;
-      }
-      target = e.target;
-      $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('input[name=recaptcha_challenge_field]', qr.el).value = target.value;
     }
   };
   nodeInserted = function(e) {
@@ -2704,10 +2751,13 @@
         $.bind(form, 'submit', qr.submit);
       }
       threading.init();
-      if (conf['Auto Noko']) {
-        $('.postarea form').action += '?auto_noko';
+      if (g.REPLY && (id = location.hash.slice(1)) && /\d/.test(id[0]) && !$.id(id)) {
+        scrollTo(0, d.body.scrollHeight);
       }
-      if (conf['Cooldown']) {
+      if (conf['Auto Noko'] && canPost) {
+        form.action += '?noko';
+      }
+      if (conf['Cooldown'] && canPost) {
         cooldown.init();
       }
       if (conf['Image Expansion']) {
@@ -2734,7 +2784,7 @@
       if (conf['Reply Hiding']) {
         replyHiding.init();
       }
-      if (canPost && conf['Quick Reply']) {
+      if (conf['Quick Reply'] && canPost) {
         qr.init();
       }
       if (conf['Report Button']) {
@@ -2765,8 +2815,11 @@
         if (conf['Image Preloading']) {
           imgPreloading.init();
         }
-        if (conf['Quick Reply'] && conf['Persistent QR']) {
-          qr.persist();
+        if (conf['Quick Reply'] && conf['Persistent QR'] && canPost) {
+          qr.dialog();
+          if (conf['Auto Hide QR']) {
+            $('#autohide', qr.el).checked = true;
+          }
         }
         if (conf['Post in Title']) {
           titlePost.init();
@@ -2780,7 +2833,7 @@
         if (conf['Reply Navigation']) {
           nav.init();
         }
-        if (conf['Auto Watch'] && conf['Thread Watcher'] && location.hash === '#watch' && $('img.favicon').src === Favicon.empty) {
+        if (conf['Auto Watch'] && conf['Thread Watcher'] && /watch/.test(location.search) && $('img.favicon').src === Favicon.empty) {
           watcher.watch(null, g.THREAD_ID);
         }
       } else {
@@ -2797,7 +2850,7 @@
           expandComment.init();
         }
         if (conf['Auto Watch']) {
-          $('.postarea form').action += '?auto_watch';
+          $('.postarea form').action += '?watch';
         }
       }
       _ref3 = $$('div.op');
@@ -2922,6 +2975,9 @@
 \
       #qr {\
         position: fixed;\
+        max-height: 100%;\
+        overflow-x: hidden;\
+        overflow-y: auto;\
       }\
       #qr > div.move {\
         text-align: right;\
@@ -2939,7 +2995,10 @@
         width: 100%;\
         height: 120px;\
       }\
-      #qr.auto:not(:hover) > form {\
+      #qr #close, #qr #autohide {\
+        float: right;\
+      }\
+      #qr:not(:hover) > #autohide:checked ~ form {\
         height: 0;\
         overflow: hidden;\
       }\
@@ -3007,6 +3066,10 @@
       /* Firefox bug: hidden tables are not hidden */\
       [hidden] {\
         display: none;\
+      }\
+\
+      #files > input {\
+        display: block;\
       }\
     '
   };

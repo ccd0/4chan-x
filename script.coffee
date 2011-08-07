@@ -34,6 +34,7 @@ config =
       'Cooldown':           [true,  'Prevent \'flood detected\' errors']
       'Quick Reply':        [true,  'Reply without leaving the page']
       'Persistent QR':      [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+      'Auto Hide QR':       [true,  'Automatically auto-hide the quick reply when posting']
     Quoting:
       'Quote Backlinks':    [true,  'Add quote backlinks']
       'OP Backlinks':       [false, 'Add backlinks to the OP']
@@ -48,6 +49,7 @@ config =
     '#http://tineye.com/search?url='
     '#http://saucenao.com/search.php?db=999&url='
     '#http://imgur.com/upload?url='
+    '#http://anonym.to/?'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   hotkeys:
@@ -200,6 +202,8 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  id: (id) ->
+    d.getElementById id
   globalEval: (code) ->
     script = $.el 'script',
       textContent: "(#{code})()"
@@ -430,7 +434,7 @@ expandThread =
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
           $.rm prev
         for backlink in $$ '.op a.backlink'
-          $.rm backlink if !d.getElementById backlink.hash[1..]
+          $.rm backlink if !$.id backlink.hash[1..]
 
 
   parse: (req, pathname, thread, a) ->
@@ -449,9 +453,13 @@ expandThread =
     body = $.el 'body',
       innerHTML: req.responseText
 
-    for quote in $$ 'a.quotelink', body
-      if quote.getAttribute('href') is quote.hash
-        quote.pathname = pathname
+    for reply in $$ 'td[id]', body
+      for quote in $$ 'a.quotelink', reply
+        if quote.getAttribute('href') is quote.hash
+          quote.pathname = pathname
+      link = $ 'a.quotejs', reply
+      link.href = "res/#{thread.firstChild.id}##{reply.id}"
+      link.nextSibling.href = "res/#{thread.firstChild.id}#q#{reply.id}"
     tables = $$ 'form[name=delform] table', body
     tables.pop()
     for table in tables
@@ -515,100 +523,100 @@ keybinds =
   init: ->
     for node in $$ '[accesskey]'
       node.removeAttribute 'accesskey'
-    $.bind d, 'keydown',  keybinds.cb.keydown
+    $.bind d, 'keydown',  keybinds.keydown
 
-  cb:
-    keydown: (e) ->
-      return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
-      return unless key = keybinds.cb.keyCode e
+  keydown: (e) ->
+    updater.focus = true
+    return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
+    return unless key = keybinds.keyCode e
 
-      thread = nav.getThread()
-      switch key
-        when conf.close
-          if o = $ '#overlay'
-            $.rm o
-          else if qr.el
-            qr.close()
-        when conf.spoiler
-          ta = e.target
-          return unless ta.nodeName is 'TEXTAREA'
+    thread = nav.getThread()
+    switch key
+      when conf.close
+        if o = $ '#overlay'
+          $.rm o
+        else if qr.el
+          qr.close()
+      when conf.spoiler
+        ta = e.target
+        return unless ta.nodeName is 'TEXTAREA'
 
-          value    = ta.value
-          selStart = ta.selectionStart
-          selEnd   = ta.selectionEnd
+        value    = ta.value
+        selStart = ta.selectionStart
+        selEnd   = ta.selectionEnd
 
-          valStart = value[0...selStart] + '[spoiler]'
-          valMid   = value[selStart...selEnd]
-          valEnd   = '[/spoiler]' + value[selEnd..]
+        valStart = value[0...selStart] + '[spoiler]'
+        valMid   = value[selStart...selEnd]
+        valEnd   = '[/spoiler]' + value[selEnd..]
 
-          ta.value = valStart + valMid + valEnd
-          range = valStart.length + valMid.length
-          ta.setSelectionRange range, range
-        when conf.zero
-          window.location = "/#{g.BOARD}/0#0"
-        when conf.openEmptyQR
-          keybinds.qr thread
-        when conf.nextReply
-          keybinds.hl.next thread
-        when conf.previousReply
-          keybinds.hl.prev thread
-        when conf.expandAllImages
-          keybinds.img thread, true
-        when conf.openThread
-          keybinds.open thread
-        when conf.expandThread
-          expandThread.toggle thread
-        when conf.openQR
-          keybinds.qr thread, true
-        when conf.expandImages
-          keybinds.img thread
-        when conf.nextThread
-          nav.next()
-        when conf.openThreadTab
-          keybinds.open thread, true
-        when conf.previousThread
-          nav.prev()
-        when conf.update
-          updater.update()
-        when conf.watch
-          watcher.toggle thread
-        when conf.hide
-          threadHiding.toggle thread
-        when conf.nextPage
-          $('input[value=Next]')?.click()
-        when conf.previousPage
-          $('input[value=Previous]')?.click()
-        when conf.submit
-          if qr.el
-            qr.submit.call $ 'form', qr.el
-          else
-            $('.postarea form').submit()
-        when conf.unreadCountTo0
-          unread.replies.length = 0
-          unread.updateTitle()
-          Favicon.update()
+        ta.value = valStart + valMid + valEnd
+        range = valStart.length + valMid.length
+        ta.setSelectionRange range, range
+      when conf.zero
+        window.location = "/#{g.BOARD}/0#0"
+      when conf.openEmptyQR
+        keybinds.qr thread
+      when conf.nextReply
+        keybinds.hl.next thread
+      when conf.previousReply
+        keybinds.hl.prev thread
+      when conf.expandAllImages
+        keybinds.img thread, true
+      when conf.openThread
+        keybinds.open thread
+      when conf.expandThread
+        expandThread.toggle thread
+      when conf.openQR
+        keybinds.qr thread, true
+      when conf.expandImages
+        keybinds.img thread
+      when conf.nextThread
+        nav.next()
+      when conf.openThreadTab
+        keybinds.open thread, true
+      when conf.previousThread
+        nav.prev()
+      when conf.update
+        updater.update()
+      when conf.watch
+        watcher.toggle thread
+      when conf.hide
+        threadHiding.toggle thread
+      when conf.nextPage
+        $('input[value=Next]')?.click()
+      when conf.previousPage
+        $('input[value=Previous]')?.click()
+      when conf.submit
+        if qr.el
+          qr.submit.call $ 'form', qr.el
         else
-          return
-      e.preventDefault()
-
-    keyCode: (e) ->
-      kc = e.keyCode
-      if 65 <= kc <= 90 #A-Z
-        key = String.fromCharCode kc
-        if !e.shiftKey
-          key = key.toLowerCase()
-      else if 48 <= kc <= 57 #0-9
-        key = String.fromCharCode kc
-      else if kc is 27
-        key = 'Esc'
-      else if kc is 8
-        key = ''
+          $('.postarea form').submit()
+      when conf.unreadCountTo0
+        unread.replies.length = 0
+        unread.updateTitle()
+        Favicon.update()
       else
-        key = null
-      if key
-        if e.altKey  then key = 'alt+' + key
-        if e.ctrlKey then key = 'ctrl+' + key
-      key
+        return
+    e.preventDefault()
+
+  keyCode: (e) ->
+    kc = e.keyCode
+    if 65 <= kc <= 90 #A-Z
+      key = String.fromCharCode kc
+      if !e.shiftKey
+        key = key.toLowerCase()
+    else if 48 <= kc <= 57 #0-9
+      key = String.fromCharCode kc
+    else if kc is 27
+      key = 'Esc'
+    else if kc is 8
+      key = ''
+    else
+      key = null
+    if key
+      if e.altKey  then key = 'alt+' + key
+      if e.ctrlKey then key = 'ctrl+' + key
+    key
 
   img: (thread, all) ->
     if all
@@ -623,7 +631,7 @@ keybinds =
       qrLink = $ "span[id^=nothread] a:not(:first-child)", thread
 
     if quote
-      qr.quote qrLink
+      qr.quote.call qrLink
     else
       unless qr.el
         qr.dialog qrLink
@@ -786,18 +794,28 @@ options =
               <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
               <tbody>
                 <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>
-                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>
-                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>
+                <tr><th colspan=3>Year</th></tr>
+                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>
+
+                <tr><th colspan=3>Month</th></tr>
                 <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>
                 <tr><td>%B</td><td>month, full length</td><td>June</td></tr>
-                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>
-                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>
-                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>02</td></tr>
                 <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>
+
+                <tr><th colspan=3>Day</th></tr>
+                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>
+                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>
+                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>
+                <tr><td>%e</td><td>day of the month</td><td>3</td></tr>
+
+                <tr><th colspan=3>Time</th></tr>
+                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>
+                <tr><td>%l (lowercase L)</td><td>hour (12 hour clock)</td><td>1</td></tr>
+                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>01</td></tr>
+                <tr><td>%k</td><td>hour (24 hour clock)</td><td>13</td></tr>
                 <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>
                 <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>
                 <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>
-                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>
               </tbody>
             </table>
           </div>
@@ -892,7 +910,7 @@ options =
   keybind: (e) ->
     e.preventDefault()
     e.stopPropagation()
-    return unless (key = keybinds.cb.keyCode e)?
+    return unless (key = keybinds.keyCode e)?
     @value = key
     $.setValue @name, key
     conf[@name] = key
@@ -936,7 +954,7 @@ cooldown =
 
   cb: ->
     submits = $$ '#com_submit'
-    if --cooldown.duration
+    if --cooldown.duration > 0
       for submit in submits
         submit.value = cooldown.duration
     else
@@ -945,61 +963,182 @@ cooldown =
         submit.disabled = false
         submit.value = 'Submit'
       if qr.el and $('#auto', qr.el).checked
-        qr.submit.call $ 'form', qr.el
+        qr.autoPost()
 
 qr =
+  # TODO
+  # error handling
+  # persistent captcha
+  # rm Recaptcha
+  # error too large error should happen on attach
   init: ->
-    g.callbacks.push qr.cb.node
+    g.callbacks.push qr.node
+    $.bind window, 'message', qr.message
+    $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode
+    qr.captcha = []
+
     iframe = $.el 'iframe',
       name: 'iframe'
       hidden: true
     $.append d.body, iframe
-    $.bind window, 'message', qr.cb.message
 
     #hack - nuke id so it doesn't grab focus when reloading
     $('#recaptcha_response_field').id = ''
 
-  autohide:
-    set: ->
-      $('#autohide:not(:checked)', qr.el)?.click()
-    unset: ->
-      $('#autohide:checked', qr.el)?.click()
+  attach: ->
+    $('#auto', qr.el).checked = true
+    fileDiv = $.el 'div', innerHTML: '<input type=file name=upfile><a>X</a>'
+    $.bind fileDiv.lastChild, 'click', (-> $.rm @parentNode)
+    $.prepend qr.files, fileDiv
 
-  cb:
-    autohide: (e) ->
-      if @checked
-        $.addClass qr.el, 'auto'
+  attachNext: ->
+    fileDiv = $.rm qr.files.lastChild
+    file = fileDiv.firstChild
+    oldFile = $ '#qr_form input[type=file]', qr.el
+    $.replace oldFile, file
+
+  autoPost: ->
+    responseField = $ '#recaptcha_response_field', qr.el
+    if !responseField.value and captcha = qr.captcha.shift()
+      $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
+      responseField.value = captcha.response
+      responseField.nextSibling.textContent = qr.captcha.length + ' captcha cached'
+    qr.submit.call $ 'form', qr.el
+
+  captchaNode: (e) ->
+    return unless qr.el
+    {target} = e
+    $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
+    $('#recaptcha_challenge_field', qr.el).value = target.value
+
+  captchaKeydown: (e) ->
+    if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
+      $('#auto', qr.el).checked = true
+      $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
+      qr.captchaPush.call this
+
+  captchaPush: ->
+    l = qr.captcha.push
+      challenge: $('#recaptcha_challenge_field', qr.el).value
+      response: @value
+    @nextSibling.textContent = l + ' captcha cached'
+    Recaptcha.reload()
+    @value = ''
+
+  close: ->
+    $.rm qr.el
+    qr.el = null
+
+  dialog: (link) ->
+    submitValue = $('#com_submit').value
+    submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
+    #FIXME inlined cross-thread quotes
+    THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
+    spoiler = if $('.postarea label') then '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
+    challenge = $('#recaptcha_challenge_field').value
+    html = "
+      <a id=close title=close>X</a>
+      <input type=checkbox id=autohide title=autohide>
+      <div class=move>
+        <input class=inputtext type=text name=name placeholder=Name form=qr_form>
+        Quick Reply
+      </div>
+      <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
+        <input type=hidden name=resto value=#{THREAD_ID}>
+        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=#{challenge}>
+        <div><input class=inputtext type=text name=email placeholder=E-mail>#{spoiler}</div>
+        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
+        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
+        <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field>0 captcha cached</div>
+        <div><input type=file name=upfile></div>
+        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>
+      </form>
+      <div id=files></div>
+      <a id=error class=error></a>
+      "
+    qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
+    qr.files = $ '#files', qr.el
+
+    qr.refresh()
+    $('textarea', qr.el).value = $('textarea').value
+
+    $.bind $('input[name=name]',          qr.el), 'mousedown', (e) -> e.stopPropagation()
+    $.bind $('#close',                    qr.el), 'click', qr.close
+    $.bind $('form',                      qr.el), 'submit', qr.submit
+    $.bind $('a[name=attach]',            qr.el), 'click', qr.attach
+    $.bind $('img',                       qr.el), 'click', Recaptcha.reload
+    $.bind $('#recaptcha_response_field', qr.el), 'keydown', Recaptcha.listener
+    $.bind $('#recaptcha_response_field', qr.el), 'keydown', qr.captchaKeydown
+
+    $.append d.body, qr.el
+
+  message: (e) ->
+    Recaptcha.reload()
+    $('iframe[name=iframe]').src = 'about:blank'
+
+    {data} = e
+    if data # error message
+      data = JSON.parse data
+      $.extend $('#error', qr.el), data
+      $('#recaptcha_response_field', qr.el).value = ''
+      $('#autohide', qr.el).checked = false
+      if data.textContent is 'You seem to have mistyped the verification.'
+        if qr.captcha.length
+          qr.autoPost()
+      else if data.textContent is 'Error: Duplicate file entry detected.' and qr.files.childElementCount
+        $('textarea', qr.el).value += '\n' + data.textContent + ' ' + data.href
+        qr.attachNext()
+        if qr.captcha.length
+          qr.autoPost()
+      return
+
+    if qr.el
+      if g.REPLY and (conf['Persistent QR'] or qr.files.childElementCount)
+        qr.refresh()
+        if qr.files.childElementCount
+          qr.attachNext()
       else
-        $.removeClass qr.el, 'auto'
+        qr.close()
+    if conf['Cooldown']
+      duration = if qr.sage then 60 else 30
+      $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
+      cooldown.start()
 
-    message: (e) ->
-      Recaptcha.reload()
-      $('iframe[name=iframe]').src = 'about:blank'
+  node: (root) ->
+    quote = $ 'a.quotejs:not(:first-child)', root
+    $.bind quote, 'click', qr.quote
 
-      {data} = e
-      if data # error message
-        $('input[name=recaptcha_response_field]', qr.el).value = ''
-        $.extend $('#error', qr.el), JSON.parse data
-        qr.autohide.unset()
-        return
+  quote: (e) ->
+    e.preventDefault() if e
 
-      if qr.el
-        if g.REPLY and conf['Persistent QR']
-          qr.refresh()
-        else
-          qr.close()
-      if conf['Cooldown']
-        duration = if qr.sage then 60 else 30
-        $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
-        cooldown.start()
+    if qr.el
+      $('#autohide', qr.el).checked = false
+    else
+      qr.dialog @
 
-    node: (root) ->
-      quote = $ 'a.quotejs:not(:first-child)', root
-      $.bind quote, 'click', qr.cb.quote
+    id = @textContent
+    text = ">>#{id}\n"
 
-    quote: (e) ->
-      e.preventDefault()
-      qr.quote @
+    selection = window.getSelection()
+    if s = selection.toString()
+      selectionID = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
+      if selectionID == id
+        s = s.replace /\n/g, '\n>'
+        text += ">#{s}\n"
+
+    ta = $ 'textarea', qr.el
+    ta.focus()
+    ta.value += text
+
+  refresh: ->
+    auto = $('#auto', qr.el).checked
+    $('form', qr.el).reset()
+    $('#auto', qr.el).checked = auto
+    c = d.cookie
+    $('input[name=name]',  qr.el).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
+    $('input[name=email]', qr.el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+    $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
   submit: (e) ->
     if conf['Auto Watch Reply'] and conf['Thread Watcher']
@@ -1007,7 +1146,7 @@ qr =
         watcher.watch null, g.THREAD_ID
       else
         id = $('input[name=resto]', qr.el).value
-        op = d.getElementById id
+        op = $.id id
         if $('img.favicon', op).src is Favicon.empty
           watcher.watch op, id
 
@@ -1024,83 +1163,8 @@ qr =
     else if isQR
       if !e then @submit()
       $('#error', qr.el).textContent = ''
-      qr.autohide.set()
+      $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
       qr.sage = /sage/i.test $('input[name=email]', @).value
-
-  quote: (link) ->
-    if qr.el
-      qr.autohide.unset()
-    else
-      qr.dialog link
-
-    id = link.textContent
-    text = ">>#{id}\n"
-
-    selection = window.getSelection()
-    if s = selection.toString()
-      selectionID = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
-      if selectionID == id
-        s = s.replace /\n/g, '\n>'
-        text += ">#{s}\n"
-
-    ta = $ 'textarea', qr.el
-    ta.focus()
-    ta.value += text
-
-  refresh: ->
-    $('form', qr.el).reset()
-    c = d.cookie
-    $('input[name=name]',  qr.el).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
-    $('input[name=email]', qr.el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
-    $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
-
-  dialog: (link) ->
-    submitValue = $('#com_submit').value
-    submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
-    #FIXME inlined cross-thread quotes
-    THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
-    spoiler = if $('.postarea label') then '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
-    challenge = $('input[name=recaptcha_challenge_field]').value
-    html = "
-      <div class=move>
-        <input class=inputtext type=text name=name placeholder=Name form=qr_form>
-        Quick Reply
-        <input type=checkbox id=autohide title=autohide>
-        <a name=close title=close>X</a>
-      </div>
-      <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
-        <input type=hidden name=resto value=#{THREAD_ID}>
-        <input type=hidden name=recaptcha_challenge_field value=#{challenge}>
-        <div><input class=inputtext type=text name=email placeholder=E-mail>#{spoiler}</div>
-        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
-        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
-        <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off></div>
-        <div><input type=file name=upfile></div>
-        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist></div>
-      </form>
-      <a id=error class=error></a>
-      "
-    qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
-
-    qr.refresh()
-
-    $.bind $('input[name=name]',                     qr.el), 'mousedown', (e) -> e.stopPropagation()
-    $.bind $('#autohide',                            qr.el), 'click', qr.cb.autohide
-    $.bind $('a[name=close]',                        qr.el), 'click', qr.close
-    $.bind $('form',                                 qr.el), 'submit', qr.submit
-    $.bind $('img',                                  qr.el), 'click', Recaptcha.reload
-    $.bind $('input[name=recaptcha_response_field]', qr.el), 'keydown', Recaptcha.listener
-
-    $.append d.body, qr.el
-
-  persist: ->
-    qr.dialog()
-    qr.autohide.set()
-
-  close: ->
-    $.rm qr.el
-    qr.el = null
 
   sys: ->
     if recaptcha = $ '#recaptcha_response_field' #post reporting
@@ -1126,23 +1190,26 @@ qr =
     if c.nodeType is 8 #comment node
       [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
 
-      noko = /auto_noko/.test location.search
-      if thread is '0'
-        if /auto_watch/.test location.search
-          window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}#watch"
-        else if noko
-          window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
-      else if /cooldown/.test location.search
-        duration = Date.now() + 30000
-        duration += 30000 if /sage/.test location.search
-        if noko
-          window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}?cooldown=#{duration}##{id}"
-        else
-          window.location = "http://boards.4chan.org/#{g.BOARD}?cooldown=#{duration}"
+      {search} = location
+      cooldown = /cooldown/.test search
+      noko     = /noko/    .test search
+      sage     = /sage/    .test search
+      watch    = /watch/   .test search
+
+      url = "http://boards.4chan.org/#{g.BOARD}"
+
+      if watch and thread is '0'
+        url += "/res/#{id}?watch"
       else if noko
-        window.location = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{id}"
-      else
-        window.location = "http://boards.4chan.org/#{g.BOARD}"
+        url += '/res/'
+        url += if thread is '0' then id else thread
+      if cooldown
+        duration = Date.now() + (if sage then 60 else 30) * 1000
+        url += '?cooldown=' + duration
+      if noko
+        url += '#' + id
+
+      window.location = url
 
 threading =
   init: ->
@@ -1254,6 +1321,9 @@ threadHiding =
 
 updater =
   init: ->
+    if conf['Scrolling']
+      $.bind window, 'focus', (-> updater.focus = true)
+      $.bind window, 'blur',  (-> updater.focus = false)
     html = "<div class=move><span id=count></span> <span id=timer>-#{conf['Interval']}</span></div>"
     {checkbox} = config.updater
     for name of checkbox
@@ -1329,7 +1399,7 @@ updater =
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      scroll = conf['Scrolling'] && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
+      scroll = conf['Scrolling'] && updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
 
       updater.timer.textContent = '-' + conf['Interval']
       if conf['Verbose']
@@ -1499,9 +1569,10 @@ Time =
     $.replace s, time
   foo: ->
     code = conf['time'].replace /%([A-Za-z])/g, (s, c) ->
-      switch c
-        when 'a', 'A', 'b', 'B', 'd', 'H', 'I', 'm', 'M', 'p', 'P', 'y' then "' + Time.#{c}() + '"
-        else s
+      if c of Time.formatters
+        "' + Time.formatters.#{c}() + '"
+      else
+        s
     Time.funk = Function 'Time', "return '#{code}'"
   day: [
     'Sunday'
@@ -1527,18 +1598,22 @@ Time =
     'December'
   ]
   zeroPad: (n) -> if n < 10 then '0' + n else n
-  a: -> @day[@date.getDay()][...3]
-  A: -> @day[@date.getDay()]
-  b: -> @month[@date.getMonth()][...3]
-  B: -> @month[@date.getMonth()]
-  d: -> @zeroPad @date.getDate()
-  H: -> @zeroPad @date.getHours()
-  I: -> @zeroPad @date.getHours() % 12 or 12
-  m: -> @zeroPad @date.getMonth() + 1
-  M: -> @zeroPad @date.getMinutes()
-  p: -> if @date.getHours() < 12 then 'AM' else 'PM'
-  P: -> if @date.getHours() < 12 then 'am' else 'pm'
-  y: -> @date.getFullYear() - 2000
+  formatters:
+    a: -> Time.day[Time.date.getDay()][...3]
+    A: -> Time.day[Time.date.getDay()]
+    b: -> Time.month[Time.date.getMonth()][...3]
+    B: -> Time.month[Time.date.getMonth()]
+    d: -> Time.zeroPad Time.date.getDate()
+    e: -> Time.date.getDate()
+    H: -> Time.zeroPad Time.date.getHours()
+    I: -> Time.zeroPad Time.date.getHours() % 12 or 12
+    k: -> Time.date.getHours()
+    l: -> Time.date.getHours() % 12 or 12
+    m: -> Time.zeroPad Time.date.getMonth() + 1
+    M: -> Time.zeroPad Time.date.getMinutes()
+    p: -> if Time.date.getHours() < 12 then 'AM' else 'PM'
+    P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
+    y: -> Time.date.getFullYear() - 2000
 
 titlePost =
   init: ->
@@ -1558,7 +1633,7 @@ quoteBacklink =
         #duplicate quotes get overwritten
         quotes[qid] = quote
       for qid of quotes
-        continue unless el = d.getElementById qid
+        continue unless el = $.id qid
         #don't backlink the op
         continue if !conf['OP Backlinks'] and el.className is 'op'
         link = $.el 'a',
@@ -1585,30 +1660,19 @@ quoteInline =
         quote.removeAttribute 'onclick'
         $.bind quote, 'click', quoteInline.toggle
   toggle: (e) ->
+    return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
+
     e.preventDefault()
-    ###
-    https://bugzilla.mozilla.org/show_bug.cgi?id=674955
-    `mouseout` does not fire when element removed
-    RESOLVED INVALID
-
-    inline a post, then hover over an inlined quote / image, then remove
-    the inlined post by clicking `enter` on the still-focused link - the
-    mouseout event doesn't fire, and the quote preview / image hover remains.
-
-    we can prevent this sequence by `blur`-ing the clicked links. chrome
-    doesn't focus clicked links anyway.
-    ###
-    @blur()
     id = @hash[1..]
     if table = $ "#i#{id}", $.x 'ancestor::td[1]', @
       $.rm table
       $.removeClass @, 'inlined'
       for inlined in $$ 'input', table
-        if hidden = d.getElementById inlined.name
+        if hidden = $.id inlined.name
           $.show $.x 'ancestor::table[1]', hidden
       return
     root = if @parentNode.nodeName is 'FONT' then @parentNode else if @nextSibling then @nextSibling else @
-    if el = d.getElementById id
+    if el = $.id id
       inline = quoteInline.table id, el.innerHTML
       if @className is 'backlink'
         return if $("a.backlink[href='##{id}']", el)
@@ -1670,7 +1734,7 @@ quotePreview =
     $.append d.body, qp
 
     id = @hash[1..]
-    if el = d.getElementById id
+    if el = $.id id
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl' if conf['Quote Highlighting']
       if /backlink/.test @className
@@ -1683,7 +1747,7 @@ quotePreview =
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
   mouseout: ->
-    $.removeClass el, 'qphl' if el = d.getElementById @hash[1..]
+    $.removeClass el, 'qphl' if el = $.id @hash[1..]
     ui.hoverend()
   parse: (req, id, threadID) ->
     return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")
@@ -1767,6 +1831,7 @@ unread =
     Favicon.update()
 
   scroll: (e) ->
+    updater.focus = true
     height = d.body.clientHeight
     for reply, i in unread.replies
       {bottom} = reply.getBoundingClientRect()
@@ -1826,21 +1891,12 @@ Recaptcha =
     #hack to tab from comment straight to recaptcha
     for el in $$ '#recaptcha_table a'
       el.tabIndex = 1
-    $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', Recaptcha.reloaded
     $.bind $('#recaptcha_response_field'), 'keydown', Recaptcha.listener
   listener: (e) ->
     if e.keyCode is 8 and @value is '' # backspace to reload
       Recaptcha.reload()
-    if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
-      $('#auto', qr.el).checked = true
-      qr.autohide.set()
   reload: ->
     window.location = 'javascript:Recaptcha.reload()'
-  reloaded: (e) ->
-    return unless qr.el
-    {target} = e
-    $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('input[name=recaptcha_challenge_field]', qr.el).value = target.value
 
 nodeInserted = (e) ->
   {target} = e
@@ -2090,17 +2146,23 @@ main =
 
     $.addStyle main.css
 
-    if (form = $ 'form[name=post]') and canPost = !!$ '#recaptcha_response_field'
+    #recaptcha may be blocked, eg by noscript
+    if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
       Recaptcha.init()
       $.bind form, 'submit', qr.submit
 
     #major features
     threading.init()
 
-    if conf['Auto Noko']
-      $('.postarea form').action += '?auto_noko'
+    # scroll to bottom if post isn't found
+    # thumbnail generation takes time
+    if g.REPLY and (id = location.hash[1..]) and /\d/.test(id[0]) and !$.id(id)
+      scrollTo 0, d.body.scrollHeight
 
-    if conf['Cooldown']
+    if conf['Auto Noko'] and canPost
+      form.action += '?noko'
+
+    if conf['Cooldown'] and canPost
       cooldown.init()
 
     if conf['Image Expansion']
@@ -2127,7 +2189,7 @@ main =
     if conf['Reply Hiding']
       replyHiding.init()
 
-    if canPost and conf['Quick Reply']
+    if conf['Quick Reply'] and canPost
       qr.init()
 
     if conf['Report Button']
@@ -2158,8 +2220,10 @@ main =
       if conf['Image Preloading']
         imgPreloading.init()
 
-      if conf['Quick Reply'] and conf['Persistent QR']
-        qr.persist()
+      if conf['Quick Reply'] and conf['Persistent QR'] and canPost
+        qr.dialog()
+        if conf['Auto Hide QR']
+          $('#autohide', qr.el).checked = true
 
       if conf['Post in Title']
         titlePost.init()
@@ -2174,7 +2238,7 @@ main =
         nav.init()
 
       if conf['Auto Watch'] and conf['Thread Watcher'] and
-        location.hash is '#watch' and $('img.favicon').src is Favicon.empty
+        /watch/.test(location.search) and $('img.favicon').src is Favicon.empty
           watcher.watch null, g.THREAD_ID
 
     else #not reply
@@ -2191,7 +2255,7 @@ main =
         expandComment.init()
 
       if conf['Auto Watch']
-        $('.postarea form').action += '?auto_watch'
+        $('.postarea form').action += '?watch'
 
     for op in $$ 'div.op'
       for callback in g.callbacks
@@ -2303,6 +2367,9 @@ main =
 
       #qr {
         position: fixed;
+        max-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
       }
       #qr > div.move {
         text-align: right;
@@ -2320,7 +2387,10 @@ main =
         width: 100%;
         height: 120px;
       }
-      #qr.auto:not(:hover) > form {
+      #qr #close, #qr #autohide {
+        float: right;
+      }
+      #qr:not(:hover) > #autohide:checked ~ form {
         height: 0;
         overflow: hidden;
       }
@@ -2388,6 +2458,10 @@ main =
       /* Firefox bug: hidden tables are not hidden */
       [hidden] {
         display: none;
+      }
+
+      #files > input {
+        display: block;
       }
     '
 
