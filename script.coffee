@@ -963,7 +963,7 @@ cooldown =
         submit.disabled = false
         submit.value = 'Submit'
       if qr.el and $('#auto', qr.el).checked
-        qr.auto()
+        qr.autoPost()
 
 qr =
   # remove file
@@ -992,7 +992,7 @@ qr =
     files = $ '#files', qr.el
     $.append files, file
 
-  auto: ->
+  autoPost: ->
     responseField = $ '#recaptcha_response_field', qr.el
     if !responseField.value and captcha = qr.captcha.shift()
       $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
@@ -1070,7 +1070,7 @@ qr =
       $('#recaptcha_response_field', qr.el).value = ''
       $('#autohide', qr.el).checked = false
       if data.textContent is 'You seem to have mistyped the verification.'
-        qr.auto()
+        qr.autoPost()
       return
 
     if qr.el

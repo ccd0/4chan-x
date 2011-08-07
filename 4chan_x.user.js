@@ -1222,7 +1222,7 @@
           submit.value = 'Submit';
         }
         if (qr.el && $('#auto', qr.el).checked) {
-          return qr.auto();
+          return qr.autoPost();
         }
       }
     }
@@ -1251,7 +1251,7 @@
       files = $('#files', qr.el);
       return $.append(files, file);
     },
-    auto: function() {
+    autoPost: function() {
       var captcha, responseField;
       responseField = $('#recaptcha_response_field', qr.el);
       if (!responseField.value && (captcha = qr.captcha.shift())) {
@@ -1319,7 +1319,7 @@
         $('#recaptcha_response_field', qr.el).value = '';
         $('#autohide', qr.el).checked = false;
         if (data.textContent === 'You seem to have mistyped the verification.') {
-          qr.auto();
+          qr.autoPost();
         }
         return;
       }
