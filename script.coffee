@@ -971,7 +971,6 @@ qr =
   # rm Recaptcha
   # group captcha
   # error too large error should happen on attach
-  # attaching = persistent qr
   init: ->
     g.callbacks.push qr.node
     $.bind window, 'message', qr.message
@@ -1011,7 +1010,15 @@ qr =
     if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
       $('#auto', qr.el).checked = true
       $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
-      qr.push.call this
+      qr.captchaPush.call this
+
+  captchaPush: ->
+    l = qr.captcha.push
+      challenge: $('#recaptcha_challenge_field', qr.el).value
+      response: @value
+    @nextSibling.textContent = l + ' captcha cached'
+    Recaptcha.reload()
+    @value = ''
 
   close: ->
     $.rm qr.el
@@ -1093,14 +1100,6 @@ qr =
   node: (root) ->
     quote = $ 'a.quotejs:not(:first-child)', root
     $.bind quote, 'click', qr.quote
-
-  push: ->
-    l = qr.captcha.push
-      challenge: $('#recaptcha_challenge_field', qr.el).value
-      response: @value
-    @nextSibling.textContent = l + ' captcha cached'
-    Recaptcha.reload()
-    @value = ''
 
   quote: (e) ->
     e.preventDefault() if e

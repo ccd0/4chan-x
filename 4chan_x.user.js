@@ -1278,8 +1278,18 @@
         if (conf['Auto Hide QR']) {
           $('#autohide', qr.el).checked = true;
         }
-        return qr.push.call(this);
+        return qr.captchaPush.call(this);
       }
+    },
+    captchaPush: function() {
+      var l;
+      l = qr.captcha.push({
+        challenge: $('#recaptcha_challenge_field', qr.el).value,
+        response: this.value
+      });
+      this.nextSibling.textContent = l + ' captcha cached';
+      Recaptcha.reload();
+      return this.value = '';
     },
     close: function() {
       $.rm(qr.el);
@@ -1349,16 +1359,6 @@
       var quote;
       quote = $('a.quotejs:not(:first-child)', root);
       return $.bind(quote, 'click', qr.quote);
-    },
-    push: function() {
-      var l;
-      l = qr.captcha.push({
-        challenge: $('#recaptcha_challenge_field', qr.el).value,
-        response: this.value
-      });
-      this.nextSibling.textContent = l + ' captcha cached';
-      Recaptcha.reload();
-      return this.value = '';
     },
     quote: function(e) {
       var id, s, selection, selectionID, ta, text, _ref;
