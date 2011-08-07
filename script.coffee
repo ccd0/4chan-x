@@ -990,7 +990,7 @@ qr =
     $('#auto', qr.el).checked = true
     file  = $.el 'input', type: 'file', name: 'upfile'
     files = $ '#files', qr.el
-    $.append files, file
+    $.prepend files, file
 
   autoPost: ->
     responseField = $ '#recaptcha_response_field', qr.el

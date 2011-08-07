@@ -1249,7 +1249,7 @@
         name: 'upfile'
       });
       files = $('#files', qr.el);
-      return $.append(files, file);
+      return $.prepend(files, file);
     },
     autoPost: function() {
       var captcha, responseField;
