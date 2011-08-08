@@ -417,7 +417,8 @@
              Since 2007, daylight saving time starts on the second Sunday of March
              and ends on the first Sunday of November, with all time changes taking
              place at 2:00 AM (0200) local time.
-          */      var date, month, sunday;
+          */
+      var date, month, sunday;
       date = new Date();
       month = date.getMonth();
       if (month < 2 || 10 < month) {
