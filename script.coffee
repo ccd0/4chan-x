@@ -928,9 +928,7 @@ cooldown =
       $.setValue g.BOARD+'/cooldown', time if $.getValue(g.BOARD+'/cooldown', 0) < time
     cooldown.start() if Date.now() < $.getValue g.BOARD+'/cooldown', 0
     $.bind window, 'storage', (e) -> cooldown.start() if e.key is "#{NAMESPACE}#{g.BOARD}/cooldown"
-
-    form = $('.postarea form')
-    form.action += '?cooldown'
+    $('.postarea form').action += '?cooldown'
 
   start: ->
     cooldown.duration = Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000

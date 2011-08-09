@@ -1158,7 +1158,7 @@
   };
   cooldown = {
     init: function() {
-      var form, match, time, _;
+      var match, time, _;
       if (match = location.search.match(/cooldown=(\d+)/)) {
         _ = match[0], time = match[1];
         if ($.getValue(g.BOARD + '/cooldown', 0) < time) {
@@ -1173,8 +1173,7 @@
           return cooldown.start();
         }
       });
-      form = $('.postarea form');
-      return form.action += '?cooldown';
+      return $('.postarea form').action += '?cooldown';
     },
     start: function() {
       var submit, _i, _len, _ref;
