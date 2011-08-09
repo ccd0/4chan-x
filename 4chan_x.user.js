@@ -1248,7 +1248,7 @@
       fileDiv = $.el('div', {
         innerHTML: '<input type=file name=upfile><a>X</a>'
       });
-      $.bind(fileDiv.firstChild('change', qr.validateFileSize));
+      $.bind(fileDiv.firstChild, 'change', qr.validateFileSize);
       $.bind(fileDiv.lastChild, 'click', (function() {
         return $.rm(this.parentNode);
       }));
