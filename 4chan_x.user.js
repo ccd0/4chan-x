@@ -1158,9 +1158,9 @@
   };
   cooldown = {
     init: function() {
-      var form, input, time, _, _ref;
-      if (/cooldown/.test(location.search)) {
-        _ref = location.search.match(/cooldown=(\d+)/), _ = _ref[0], time = _ref[1];
+      var form, match, time, _;
+      if (match = location.search.match(/cooldown=(\d+)/)) {
+        _ = match[0], time = match[1];
         if ($.getValue(g.BOARD + '/cooldown', 0) < time) {
           $.setValue(g.BOARD + '/cooldown', time);
         }
@@ -1173,26 +1173,8 @@
           return cooldown.start();
         }
       });
-      if (g.REPLY) {
-        form = $('.postarea form');
-        form.action += '?cooldown';
-        input = $('.postarea input[name=email]');
-        if (/sage/i.test(input.value)) {
-          form.action += '?sage';
-        }
-        return $.bind(input, 'keyup', cooldown.sage);
-      }
-    },
-    sage: function() {
-      var form;
       form = $('.postarea form');
-      if (/sage/i.test(this.value)) {
-        if (!/sage/.test(form.action)) {
-          return form.action += '?sage';
-        }
-      } else {
-        return form.action = form.action.replace('?sage', '');
-      }
+      return form.action += '?cooldown';
     },
     start: function() {
       var submit, _i, _len, _ref;

@@ -923,27 +923,14 @@ options =
 
 cooldown =
   init: ->
-    if /cooldown/.test location.search
-      [_, time] = location.search.match /cooldown=(\d+)/
+    if match = location.search.match /cooldown=(\d+)/
+      [_, time] = match
       $.setValue g.BOARD+'/cooldown', time if $.getValue(g.BOARD+'/cooldown', 0) < time
     cooldown.start() if Date.now() < $.getValue g.BOARD+'/cooldown', 0
     $.bind window, 'storage', (e) -> cooldown.start() if e.key is "#{NAMESPACE}#{g.BOARD}/cooldown"
 
-    if g.REPLY
-      form = $('.postarea form')
-      form.action += '?cooldown'
-      input = $('.postarea input[name=email]')
-      if /sage/i.test input.value
-        form.action += '?sage'
-      $.bind input, 'keyup', cooldown.sage
-
-  sage: ->
     form = $('.postarea form')
-    if /sage/i.test @value
-      unless /sage/.test form.action
-        form.action += '?sage'
-    else
-      form.action = form.action.replace '?sage', ''
+    form.action += '?cooldown'
 
   start: ->
     cooldown.duration = Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
