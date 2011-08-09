@@ -1263,12 +1263,13 @@
     },
     autoPost: function() {
       var captcha, responseField;
-      responseField = $('#recaptcha_response_field', qr.el);
-      if (!responseField.value && (captcha = qr.captcha.shift())) {
-        $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
-        responseField.value = captcha.response;
-        responseField.nextSibling.textContent = qr.captcha.length + ' captcha cached';
+      if (!(captcha = qr.captcha.shift())) {
+        return;
       }
+      $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
+      responseField = $('#recaptcha_response_field', qr.el);
+      responseField.value = captcha.response;
+      responseField.nextSibling.textContent = qr.captcha.length + ' captcha cached';
       return qr.submit.call($('form', qr.el));
     },
     captchaNode: function(e) {
@@ -1341,15 +1342,11 @@
         $('#recaptcha_response_field', qr.el).value = '';
         $('#autohide', qr.el).checked = false;
         if (data.textContent === 'You seem to have mistyped the verification.') {
-          if (qr.captcha.length) {
-            qr.autoPost();
-          }
+          setTimeout(qr.autoPost, 1000);
         } else if (data.textContent === 'Error: Duplicate file entry detected.' && qr.files.childElementCount) {
           $('textarea', qr.el).value += '\n' + data.textContent + ' ' + data.href;
           qr.attachNext();
-          if (qr.captcha.length) {
-            qr.autoPost();
-          }
+          setTimeout(qr.autoPost, 1000);
         }
         return;
       }

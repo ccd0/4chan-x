@@ -970,7 +970,6 @@ qr =
   # error handling / logging
   # persistent captcha
   # rm Recaptcha
-  # error too large error should happen on attach
   init: ->
     g.callbacks.push qr.node
     $.bind window, 'message', qr.message
@@ -999,11 +998,11 @@ qr =
     $.replace oldFile, file
 
   autoPost: ->
+    return unless captcha = qr.captcha.shift()
+    $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
     responseField = $ '#recaptcha_response_field', qr.el
-    if !responseField.value and captcha = qr.captcha.shift()
-      $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
-      responseField.value = captcha.response
-      responseField.nextSibling.textContent = qr.captcha.length + ' captcha cached'
+    responseField.value = captcha.response
+    responseField.nextSibling.textContent = qr.captcha.length + ' captcha cached'
     qr.submit.call $ 'form', qr.el
 
   captchaNode: (e) ->
@@ -1086,13 +1085,11 @@ qr =
       $('#recaptcha_response_field', qr.el).value = ''
       $('#autohide', qr.el).checked = false
       if data.textContent is 'You seem to have mistyped the verification.'
-        if qr.captcha.length
-          qr.autoPost()
+        setTimeout qr.autoPost, 1000
       else if data.textContent is 'Error: Duplicate file entry detected.' and qr.files.childElementCount
         $('textarea', qr.el).value += '\n' + data.textContent + ' ' + data.href
         qr.attachNext()
-        if qr.captcha.length
-          qr.autoPost()
+        setTimeout qr.autoPost, 1000
       return
 
     if qr.el
