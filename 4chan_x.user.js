@@ -1263,13 +1263,14 @@
       return $('#recaptcha_challenge_field', qr.el).value = target.value;
     },
     captchaKeydown: function(e) {
-      if (e.keyCode === 13 && cooldown.duration) {
-        $('#auto', qr.el).checked = true;
-        if (conf['Auto Hide QR']) {
-          $('#autohide', qr.el).checked = true;
-        }
-        return qr.captchaPush.call(this);
+      if (e.keyCode !== 13 || (!cooldown.duration || ($('textarea', qr.el).value || $('#qr_form input[type=file]', qr.el).length))) {
+        return;
       }
+      $('#auto', qr.el).checked = true;
+      if (conf['Auto Hide QR']) {
+        $('#autohide', qr.el).checked = true;
+      }
+      return qr.captchaPush.call(this);
     },
     captchaPush: function() {
       var l;

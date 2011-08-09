@@ -997,10 +997,11 @@ qr =
     $('#recaptcha_challenge_field', qr.el).value = target.value
 
   captchaKeydown: (e) ->
-    if e.keyCode is 13 and cooldown.duration # press enter to enable auto-post if cooldown is still running
-      $('#auto', qr.el).checked = true
-      $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
-      qr.captchaPush.call this
+    return if e.keyCode isnt 13 or (!cooldown.duration or
+      ($('textarea', qr.el).value or $('#qr_form input[type=file]', qr.el).length))
+    $('#auto', qr.el).checked = true
+    $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
+    qr.captchaPush.call this
 
   captchaPush: ->
     l = qr.captcha.push
