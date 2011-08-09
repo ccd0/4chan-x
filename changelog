@@ -1,4 +1,12 @@
-github
+master
+
+11.8.9.0
+- aeosynth:
+  - change green oval archive to gentoomen
+  - validate filesize asap
+  - show correct captcha cache length when creating qr
+  - 1s delay when autoposting after errors to not look so automated
+  - cache captcha on blank text / file
 
 11.8.6.0
 - mayhem:
