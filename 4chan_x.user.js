@@ -2423,7 +2423,7 @@
       case 'lit':
       case 'sci':
       case 'tv':
-        url = "http://green-oval.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        url = "http://archive.gentoomen.org/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case 'a':
       case 'jp':
