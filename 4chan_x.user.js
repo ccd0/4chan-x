@@ -1264,7 +1264,7 @@
     },
     captchaKeydown: function(e) {
       var blank;
-      if (e.keyCode !== 13) {
+      if (!(e.keyCode === 13 && this.value)) {
         return;
       }
       blank = !$('textarea', qr.el).value && !$('input[type=file]', qr.el).files.length;

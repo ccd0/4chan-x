@@ -997,7 +997,7 @@ qr =
     $('#recaptcha_challenge_field', qr.el).value = target.value
 
   captchaKeydown: (e) ->
-    return unless e.keyCode is 13 #enter
+    return unless e.keyCode is 13 and @value #enter
 
     blank = !$('textarea', qr.el).value and !$('input[type=file]', qr.el).files.length
     return unless blank or cooldown.duration
