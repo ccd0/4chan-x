@@ -1,5 +1,9 @@
 master
 
+11.8.10.0
+- aeosynth:
+  - fix captcha caching on blank content
+
 11.8.9.0
 - aeosynth:
   - change green oval archive to gentoomen
