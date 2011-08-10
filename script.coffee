@@ -997,8 +997,11 @@ qr =
     $('#recaptcha_challenge_field', qr.el).value = target.value
 
   captchaKeydown: (e) ->
-    return if e.keyCode isnt 13 or (!cooldown.duration or
-      ($('textarea', qr.el).value or $('#qr_form input[type=file]', qr.el).length))
+    return unless e.keyCode is 13 #enter
+
+    blank = !$('textarea', qr.el).value and !$('input[type=file]', qr.el).files.length
+    return unless blank or cooldown.duration
+
     $('#auto', qr.el).checked = true
     $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
     qr.captchaPush.call this

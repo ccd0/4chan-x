@@ -1263,7 +1263,12 @@
       return $('#recaptcha_challenge_field', qr.el).value = target.value;
     },
     captchaKeydown: function(e) {
-      if (e.keyCode !== 13 || (!cooldown.duration || ($('textarea', qr.el).value || $('#qr_form input[type=file]', qr.el).length))) {
+      var blank;
+      if (e.keyCode !== 13) {
+        return;
+      }
+      blank = !$('textarea', qr.el).value && !$('input[type=file]', qr.el).files.length;
+      if (!(blank || cooldown.duration)) {
         return;
       }
       $('#auto', qr.el).checked = true;
