@@ -959,6 +959,7 @@ qr =
   # error handling / logging
   # persistent captcha
   # rm Recaptcha
+  # email reverts
   init: ->
     g.callbacks.push qr.node
     $.bind window, 'message', qr.message
@@ -1026,13 +1027,13 @@ qr =
     $('#auto', qr.el).checked = true
     $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
 
-    captcha = $.get 'captcha', []
-    captcha.push
+    captchas = $.get 'captchas', []
+    captchas.push
       challenge: $('#recaptcha_challenge_field', qr.el).value
       response: @value
       time: qr.captchaTime
-    $.set 'captcha', captcha
-    @nextSibling.textContent = captcha.length + ' captcha cached'
+    $.set 'captchas', captchas
+    @nextSibling.textContent = captchas.length + ' captchas'
     Recaptcha.reload()
     @value = ''
 
@@ -1061,7 +1062,7 @@ qr =
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.get('captcha', []).length} captcha cached</span></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.get('captchas', []).length} captchas</span></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>
       </form>
