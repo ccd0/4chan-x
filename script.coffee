@@ -1011,6 +1011,8 @@ qr =
     responseField.value = captcha.response
     qr.submit.call $ 'form', qr.el
 
+    true
+
   captchaNode: (e) ->
     return unless qr.el
     {target} = e
@@ -1062,7 +1064,7 @@ qr =
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.get('captchas', []).length} captchas</span></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.get('captchas', []).length} captchas</span></div>
         <div><input type=file name=upfile></div>
       </form>
       <div id=files></div>
@@ -1152,6 +1154,12 @@ qr =
     $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
   submit: (e) ->
+    if $('#recaptcha_response_field', qr.el).value is ''
+      e.preventDefault()
+      unless qr.autoPost()
+        alert 'You forgot to type in the verification.'
+      return
+
     if conf['Auto Watch Reply'] and conf['Thread Watcher']
       if g.REPLY and $('img.favicon').src is Favicon.empty
         watcher.watch null, g.THREAD_ID

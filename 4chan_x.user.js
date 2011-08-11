@@ -1268,7 +1268,8 @@
       }
       $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
       responseField.value = captcha.response;
-      return qr.submit.call($('form', qr.el));
+      qr.submit.call($('form', qr.el));
+      return true;
     },
     captchaNode: function(e) {
       var target;
@@ -1315,7 +1316,7 @@
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       challenge = $('#recaptcha_challenge_field').value;
-      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.get('captchas', []).length) + " captchas</span></div>        <div><input type=file name=upfile></div>      </form>      <div id=files></div>      <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8 ><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      <a id=error class=error></a>      ";
+      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.get('captchas', []).length) + " captchas</span></div>        <div><input type=file name=upfile></div>      </form>      <div id=files></div>      <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8 ><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      <a id=error class=error></a>      ";
       qr.el = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -1411,6 +1412,13 @@
     },
     submit: function(e) {
       var id, isQR, op;
+      if ($('#recaptcha_response_field', qr.el).value === '') {
+        e.preventDefault();
+        if (!qr.autoPost()) {
+          alert('You forgot to type in the verification.');
+        }
+        return;
+      }
       if (conf['Auto Watch Reply'] && conf['Thread Watcher']) {
         if (g.REPLY && $('img.favicon').src === Favicon.empty) {
           watcher.watch(null, g.THREAD_ID);
