@@ -928,6 +928,7 @@ options =
     $('#timePreview').textContent = Time.funk Time
 
 cooldown =
+  #TODO merge into qr
   init: ->
     if match = location.search.match /cooldown=(\d+)/
       [_, time] = match
@@ -953,8 +954,8 @@ cooldown =
       for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
-      if qr.el and $('#auto', qr.el).checked
-        qr.autoPost()
+      unless qr.validatePost()
+        qr.submit.call $ 'form', qr.el
 
 qr =
   # TODO
@@ -977,7 +978,6 @@ qr =
     $('#recaptcha_response_field').id = ''
 
   attach: ->
-    $('#auto', qr.el).checked = true
     fileDiv = $.el 'div', innerHTML: '<input type=file name=upfile><a>X</a>'
     $.bind fileDiv.firstChild, 'change', qr.validateFileSize
     $.bind fileDiv.lastChild, 'click', (-> $.rm @parentNode)
@@ -989,15 +989,18 @@ qr =
     oldFile = $ '#qr_form input[type=file]', qr.el
     $.replace oldFile, file
 
-  autoPost: ->
+  validatePost: ->
+    content = $('textarea', qr.el).value or $('input[type=file]', qr.el).files.length
+    return 'Error: No text entered.' unless content
+
+    responseField = $ '#recaptcha_response_field', qr.el
+    return if responseField.value
+
     ###
     captchas expire after 5 hours (couldn't find an official source, so
     anonymous empirically verified). cutoff 5 minutes before then, b/c posting
     takes time.
     ###
-
-    blank = !$('textarea', qr.el).value and !$('input[type=file]', qr.el).files.length
-    return if blank
 
     cutoff = Date.now() - 5*HOUR + 5*MINUTE
     captchas = $.get 'captchas', []
@@ -1006,17 +1009,14 @@ qr =
         break
     $.set 'captchas', captchas
 
-    responseField = $ '#recaptcha_response_field', qr.el
     responseField.nextSibling.textContent = captchas.length + ' captchas'
 
-    unless captcha
-      alert 'You forgot to type in the verification.'
-      responseField.focus()
-      return
+    return 'You forgot to type in the verification.' unless captcha
 
     $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
     responseField.value = captcha.response
-    qr.submit.call $ 'form', qr.el
+
+    false
 
   captchaNode: (e) ->
     return unless qr.el
@@ -1031,10 +1031,7 @@ qr =
     blank = !$('textarea', qr.el).value and !$('input[type=file]', qr.el).files.length
     return unless blank or cooldown.duration
 
-    e.stopPropagation()
-
-    $('#auto', qr.el).checked = true
-    $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
+    e.preventDefault()
 
     captchas = $.get 'captchas', []
     captchas.push
@@ -1069,7 +1066,7 @@ qr =
         <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=#{challenge}>
         <input type=hidden name=mode value=regist>
         <div><input class=inputtext type=text name=email placeholder=E-mail>#{spoiler}</div>
-        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
+        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.get('captchas', []).length} captchas</span></div>
@@ -1153,18 +1150,18 @@ qr =
     ta.value += text
 
   refresh: ->
-    auto = $('#auto', qr.el).checked
     $('form', qr.el).reset()
-    $('#auto', qr.el).checked = auto
     c = d.cookie
     $('input[name=name]',  qr.el).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
     $('input[name=email]', qr.el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
   submit: (e) ->
-    if $('#recaptcha_response_field', qr.el).value is ''
+    if msg = qr.validatePost()
       e.preventDefault()
-      qr.autoPost()
+      alert msg
+      if msg is 'You forgot to type in the verification.'
+        $('#recaptcha_response_field', qr.el).focus()
       return
 
     if conf['Auto Watch Reply'] and conf['Thread Watcher']
@@ -1176,13 +1173,12 @@ qr =
         if $('img.favicon', op).src is Favicon.empty
           watcher.watch op, id
 
-    isQR = @id is 'qr_form'
+    return unless @id is 'qr_form'
 
-    if @id is 'qr_form'
-      if !e then @submit()
-      $('#error', qr.el).textContent = ''
-      $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
-      qr.sage = /sage/i.test $('input[name=email]', @).value
+    if !e then @submit()
+    $('#error', qr.el).textContent = ''
+    $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
+    qr.sage = /sage/i.test $('input[name=email]', @).value
 
   sys: ->
     if recaptcha = $ '#recaptcha_response_field' #post reporting

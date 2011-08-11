@@ -1209,8 +1209,8 @@
           submit.disabled = false;
           submit.value = 'Submit';
         }
-        if (qr.el && $('#auto', qr.el).checked) {
-          return qr.autoPost();
+        if (!qr.validatePost()) {
+          return qr.submit.call($('form', qr.el));
         }
       }
     }
@@ -1231,7 +1231,6 @@
     },
     attach: function() {
       var fileDiv;
-      $('#auto', qr.el).checked = true;
       fileDiv = $.el('div', {
         innerHTML: '<input type=file name=upfile><a>X</a>'
       });
@@ -1248,17 +1247,21 @@
       oldFile = $('#qr_form input[type=file]', qr.el);
       return $.replace(oldFile, file);
     },
-    autoPost: function() {
+    validatePost: function() {
+      var captcha, captchas, content, cutoff, responseField;
+      content = $('textarea', qr.el).value || $('input[type=file]', qr.el).files.length;
+      if (!content) {
+        return 'Error: No text entered.';
+      }
+      responseField = $('#recaptcha_response_field', qr.el);
+      if (responseField.value) {
+        return;
+      }
       /*
           captchas expire after 5 hours (couldn't find an official source, so
           anonymous empirically verified). cutoff 5 minutes before then, b/c posting
           takes time.
           */
-      var blank, captcha, captchas, cutoff, responseField;
-      blank = !$('textarea', qr.el).value && !$('input[type=file]', qr.el).files.length;
-      if (blank) {
-        return;
-      }
       cutoff = Date.now() - 5 * HOUR + 5 * MINUTE;
       captchas = $.get('captchas', []);
       while (captcha = captchas.shift()) {
@@ -1267,16 +1270,13 @@
         }
       }
       $.set('captchas', captchas);
-      responseField = $('#recaptcha_response_field', qr.el);
       responseField.nextSibling.textContent = captchas.length + ' captchas';
       if (!captcha) {
-        alert('You forgot to type in the verification.');
-        responseField.focus();
-        return;
+        return 'You forgot to type in the verification.';
       }
       $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
       responseField.value = captcha.response;
-      return qr.submit.call($('form', qr.el));
+      return false;
     },
     captchaNode: function(e) {
       var target;
@@ -1297,11 +1297,7 @@
       if (!(blank || cooldown.duration)) {
         return;
       }
-      e.stopPropagation();
-      $('#auto', qr.el).checked = true;
-      if (conf['Auto Hide QR']) {
-        $('#autohide', qr.el).checked = true;
-      }
+      e.preventDefault();
       captchas = $.get('captchas', []);
       captchas.push({
         challenge: $('#recaptcha_challenge_field', qr.el).value,
@@ -1324,7 +1320,7 @@
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       challenge = $('#recaptcha_challenge_field').value;
-      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <input type=hidden name=mode value=regist>        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.get('captchas', []).length) + " captchas</span></div>        <div><input type=file name=upfile></div>      </form>      <div id=files></div>      <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8><a name=attach>attach another file</a></div>      <a id=error class=error></a>      ";
+      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <input type=hidden name=mode value=regist>        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.get('captchas', []).length) + " captchas</span></div>        <div><input type=file name=upfile></div>      </form>      <div id=files></div>      <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8><a name=attach>attach another file</a></div>      <a id=error class=error></a>      ";
       qr.el = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -1409,20 +1405,21 @@
       return ta.value += text;
     },
     refresh: function() {
-      var auto, c, m;
-      auto = $('#auto', qr.el).checked;
+      var c, m;
       $('form', qr.el).reset();
-      $('#auto', qr.el).checked = auto;
       c = d.cookie;
       $('input[name=name]', qr.el).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('input[name=email]', qr.el).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       return $('input[name=pwd]', qr.el).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
     },
     submit: function(e) {
-      var id, isQR, op;
-      if ($('#recaptcha_response_field', qr.el).value === '') {
+      var id, msg, op;
+      if (msg = qr.validatePost()) {
         e.preventDefault();
-        qr.autoPost();
+        alert(msg);
+        if (msg === 'You forgot to type in the verification.') {
+          $('#recaptcha_response_field', qr.el).focus();
+        }
         return;
       }
       if (conf['Auto Watch Reply'] && conf['Thread Watcher']) {
@@ -1436,17 +1433,17 @@
           }
         }
       }
-      isQR = this.id === 'qr_form';
-      if (this.id === 'qr_form') {
-        if (!e) {
-          this.submit();
-        }
-        $('#error', qr.el).textContent = '';
-        if (conf['Auto Hide QR']) {
-          $('#autohide', qr.el).checked = true;
-        }
-        return qr.sage = /sage/i.test($('input[name=email]', this).value);
+      if (this.id !== 'qr_form') {
+        return;
       }
+      if (!e) {
+        this.submit();
+      }
+      $('#error', qr.el).textContent = '';
+      if (conf['Auto Hide QR']) {
+        $('#autohide', qr.el).checked = true;
+      }
+      return qr.sage = /sage/i.test($('input[name=email]', this).value);
     },
     sys: function() {
       var c, duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref;
