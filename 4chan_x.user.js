@@ -1252,7 +1252,11 @@
           anonymous empirically verified). cutoff 5 minutes before then, b/c posting
           takes time.
           */
-      var captcha, captchas, cutoff, responseField;
+      var blank, captcha, captchas, cutoff, responseField;
+      blank = !$('textarea', qr.el).value && !$('input[type=file]', qr.el).files.length;
+      if (blank) {
+        return;
+      }
       cutoff = Date.now() - 5 * HOUR + 5 * MINUTE;
       captchas = $.get('captchas', []);
       while (captcha = captchas.shift()) {
@@ -1264,12 +1268,13 @@
       responseField = $('#recaptcha_response_field', qr.el);
       responseField.nextSibling.textContent = captchas.length + ' captchas';
       if (!captcha) {
+        alert('You forgot to type in the verification.');
+        responseField.focus();
         return;
       }
       $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
       responseField.value = captcha.response;
-      qr.submit.call($('form', qr.el));
-      return true;
+      return qr.submit.call($('form', qr.el));
     },
     captchaNode: function(e) {
       var target;
@@ -1290,6 +1295,8 @@
       if (!(blank || cooldown.duration)) {
         return;
       }
+      e.stopPropagation();
+      e.preventDefault();
       $('#auto', qr.el).checked = true;
       if (conf['Auto Hide QR']) {
         $('#autohide', qr.el).checked = true;
@@ -1414,9 +1421,7 @@
       var id, isQR, op;
       if ($('#recaptcha_response_field', qr.el).value === '') {
         e.preventDefault();
-        if (!qr.autoPost()) {
-          alert('You forgot to type in the verification.');
-        }
+        qr.autoPost();
         return;
       }
       if (conf['Auto Watch Reply'] && conf['Thread Watcher']) {

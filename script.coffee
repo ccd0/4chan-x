@@ -994,24 +994,27 @@ qr =
     takes time.
     ###
 
+    blank = !$('textarea', qr.el).value and !$('input[type=file]', qr.el).files.length
+    return if blank
+
     cutoff = Date.now() - 5*HOUR + 5*MINUTE
     captchas = $.get 'captchas', []
-
     while captcha = captchas.shift()
       if captcha.time > cutoff
         break
-
     $.set 'captchas', captchas
+
     responseField = $ '#recaptcha_response_field', qr.el
     responseField.nextSibling.textContent = captchas.length + ' captchas'
 
-    return unless captcha
+    unless captcha
+      alert 'You forgot to type in the verification.'
+      responseField.focus()
+      return
 
     $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
     responseField.value = captcha.response
     qr.submit.call $ 'form', qr.el
-
-    true
 
   captchaNode: (e) ->
     return unless qr.el
@@ -1025,6 +1028,9 @@ qr =
 
     blank = !$('textarea', qr.el).value and !$('input[type=file]', qr.el).files.length
     return unless blank or cooldown.duration
+
+    e.stopPropagation()
+    e.preventDefault()
 
     $('#auto', qr.el).checked = true
     $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
@@ -1156,8 +1162,7 @@ qr =
   submit: (e) ->
     if $('#recaptcha_response_field', qr.el).value is ''
       e.preventDefault()
-      unless qr.autoPost()
-        alert 'You forgot to type in the verification.'
+      qr.autoPost()
       return
 
     if conf['Auto Watch Reply'] and conf['Thread Watcher']
