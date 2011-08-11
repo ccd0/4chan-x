@@ -1296,7 +1296,6 @@
         return;
       }
       e.stopPropagation();
-      e.preventDefault();
       $('#auto', qr.el).checked = true;
       if (conf['Auto Hide QR']) {
         $('#autohide', qr.el).checked = true;

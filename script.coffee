@@ -1030,7 +1030,6 @@ qr =
     return unless blank or cooldown.duration
 
     e.stopPropagation()
-    e.preventDefault()
 
     $('#auto', qr.el).checked = true
     $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
