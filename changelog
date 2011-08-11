@@ -1,3 +1,14 @@
+11.8.11.1
+- aeosynth:
+  fix qr autohiding
+
+11.8.11.0
+- aeosynth:
+  - rm auto post checkbox
+    if (captcha filled or cached) and (text or file)
+      auto post after cooldown
+  - options updated immediately instead of requiring page refresh
+
 11.8.10.1
 - aeosynth:
   - persistent captchas (expiring after 4 hours, 55 minutes)

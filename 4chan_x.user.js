@@ -2,7 +2,7 @@
 // @name           4chan x
 // @namespace      aeosynth
 // @description    Adds various features.
-// @version        11.8.10.1
+// @version        11.8.11.1
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
@@ -1289,7 +1289,7 @@
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       challenge = $('#recaptcha_challenge_field').value;
-      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <input type=hidden name=mode value=regist>        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.get('captchas', []).length) + " captchas</span></div>        <div><input type=file name=upfile></div>      </form>      <div id=files></div>      <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8><a name=attach>attach another file</a></div>      <a id=error class=error></a>      ";
+      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <div class=autohide>        <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>          <input type=hidden name=resto value=" + THREAD_ID + ">          <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">          <input type=hidden name=mode value=regist>          <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "></div>          <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>          <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>          <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.get('captchas', []).length) + " captchas</span></div>          <div><input type=file name=upfile></div>        </form>        <div id=files></div>        <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8><a name=attach>attach another file</a></div>      </div>      <a id=error class=error></a>      ";
       qr.el = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -3016,7 +3016,7 @@
       #qr #close, #qr #autohide {\
         float: right;\
       }\
-      #qr:not(:hover) > #autohide:checked ~ form {\
+      #qr:not(:hover) > #autohide:checked ~ .autohide {\
         height: 0;\
         overflow: hidden;\
       }\
