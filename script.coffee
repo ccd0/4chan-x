@@ -107,6 +107,10 @@ if not Object.keys
     key for key in o
 
 NAMESPACE = 'AEOS.4chan_x.'
+SECOND = 1000
+MINUTE = 60*SECOND
+HOUR   = 60*MINUTE
+DAY    = 24*HOUR
 d = document
 g = callbacks: []
 
@@ -959,7 +963,7 @@ qr =
     g.callbacks.push qr.node
     $.bind window, 'message', qr.message
     $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode
-    qr.captcha = []
+    qr.captchaTime = Date.now()
 
     iframe = $.el 'iframe',
       name: 'iframe'
@@ -983,11 +987,27 @@ qr =
     $.replace oldFile, file
 
   autoPost: ->
-    return unless captcha = qr.captcha.shift()
-    $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
+    ###
+    captchas expire after 5 hours (couldn't find an official source, so
+    anonymous empirically verified). cutoff 5 minutes before then, b/c posting
+    takes time.
+    ###
+
+    cutoff = Date.now() - 5*HOUR + 5*MINUTE
+    captchas = $.getValue 'captchas', []
+
+    while captcha = captchas.shift()
+      if captcha.time > cutoff
+        break
+
+    $.setValue 'captchas', captchas
     responseField = $ '#recaptcha_response_field', qr.el
+    responseField.nextSibling.textContent = captchas.length + ' captchas'
+
+    return unless captcha
+
+    $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
     responseField.value = captcha.response
-    responseField.nextSibling.textContent = qr.captcha.length + ' captcha cached'
     qr.submit.call $ 'form', qr.el
 
   captchaNode: (e) ->
@@ -995,21 +1015,22 @@ qr =
     {target} = e
     $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
     $('#recaptcha_challenge_field', qr.el).value = target.value
+    qr.captchaTime = Date.now()
 
   captchaKeydown: (e) ->
-    return unless e.keyCode is 13 and @value #enter
+    return unless e.keyCode is 13 and @value #enter, captcha filled
 
     blank = !$('textarea', qr.el).value and !$('input[type=file]', qr.el).files.length
     return unless blank or cooldown.duration
 
     $('#auto', qr.el).checked = true
     $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
-    qr.captchaPush.call this
 
-  captchaPush: ->
-    l = qr.captcha.push
+    captcha = $.getValue 'captcha', []
+    l = captcha.push
       challenge: $('#recaptcha_challenge_field', qr.el).value
       response: @value
+      time: qr.captchaTime
     @nextSibling.textContent = l + ' captcha cached'
     Recaptcha.reload()
     @value = ''
@@ -1039,7 +1060,7 @@ qr =
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>#{qr.captcha.length} captcha cached</span></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.getValue('captcha', []).length} captcha cached</span></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>
       </form>
@@ -2117,7 +2138,6 @@ main =
 
     lastChecked = $.getValue 'lastChecked', 0
     now = Date.now()
-    DAY = 1000 * 60 * 60 * 24
     if lastChecked < now - 1*DAY
       cutoff = now - 7*DAY
       hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}

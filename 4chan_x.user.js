@@ -59,7 +59,7 @@
  */
 
 (function() {
-  var $, $$, Favicon, NAMESPACE, Recaptcha, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -183,6 +183,10 @@
     };
   }
   NAMESPACE = 'AEOS.4chan_x.';
+  SECOND = 1000;
+  MINUTE = 60 * SECOND;
+  HOUR = 60 * MINUTE;
+  DAY = 24 * HOUR;
   d = document;
   g = {
     callbacks: []
@@ -1215,7 +1219,7 @@
       g.callbacks.push(qr.node);
       $.bind(window, 'message', qr.message);
       $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode);
-      qr.captcha = [];
+      qr.captchaTime = Date.now();
       iframe = $.el('iframe', {
         name: 'iframe',
         hidden: true
@@ -1243,14 +1247,27 @@
       return $.replace(oldFile, file);
     },
     autoPost: function() {
-      var captcha, responseField;
-      if (!(captcha = qr.captcha.shift())) {
+      /*
+          captchas expire after 5 hours (couldn't find an official source, so
+          anonymous empirically verified). cutoff 5 minutes before then, b/c posting
+          takes time.
+          */
+      var captcha, captchas, cutoff, responseField;
+      cutoff = Date.now() - 5 * HOUR + 5 * MINUTE;
+      captchas = $.getValue('captchas', []);
+      while (captcha = captchas.shift()) {
+        if (captcha.time > cutoff) {
+          break;
+        }
+      }
+      $.setValue('captchas', captchas);
+      responseField = $('#recaptcha_response_field', qr.el);
+      responseField.nextSibling.textContent = captchas.length + ' captchas';
+      if (!captcha) {
         return;
       }
       $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
-      responseField = $('#recaptcha_response_field', qr.el);
       responseField.value = captcha.response;
-      responseField.nextSibling.textContent = qr.captcha.length + ' captcha cached';
       return qr.submit.call($('form', qr.el));
     },
     captchaNode: function(e) {
@@ -1260,10 +1277,11 @@
       }
       target = e.target;
       $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value;
-      return $('#recaptcha_challenge_field', qr.el).value = target.value;
+      $('#recaptcha_challenge_field', qr.el).value = target.value;
+      return qr.captchaTime = Date.now();
     },
     captchaKeydown: function(e) {
-      var blank;
+      var blank, captcha, l;
       if (!(e.keyCode === 13 && this.value)) {
         return;
       }
@@ -1275,13 +1293,11 @@
       if (conf['Auto Hide QR']) {
         $('#autohide', qr.el).checked = true;
       }
-      return qr.captchaPush.call(this);
-    },
-    captchaPush: function() {
-      var l;
-      l = qr.captcha.push({
+      captcha = $.getValue('captcha', []);
+      l = captcha.push({
         challenge: $('#recaptcha_challenge_field', qr.el).value,
-        response: this.value
+        response: this.value,
+        time: qr.captchaTime
       });
       this.nextSibling.textContent = l + ' captcha cached';
       Recaptcha.reload();
@@ -1298,7 +1314,7 @@
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       challenge = $('#recaptcha_challenge_field').value;
-      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>" + qr.captcha.length + " captcha cached</span></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
+      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.getValue('captcha', []).length) + " captcha cached</span></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
       qr.el = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -2685,7 +2701,7 @@
   };
   main = {
     init: function() {
-      var DAY, callback, canPost, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var callback, canPost, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2715,7 +2731,6 @@
       }
       lastChecked = $.getValue('lastChecked', 0);
       now = Date.now();
-      DAY = 1000 * 60 * 60 * 24;
       if (lastChecked < now - 1 * DAY) {
         cutoff = now - 7 * DAY;
         hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
