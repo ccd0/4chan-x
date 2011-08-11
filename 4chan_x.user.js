@@ -308,7 +308,7 @@
       $.append(d.head, script);
       return $.rm(script);
     },
-    get: function(url, cb) {
+    xhr: function(url, cb) {
       var r;
       r = new XMLHttpRequest();
       r.onload = cb;
@@ -325,7 +325,7 @@
           return req.callbacks.push(cb);
         }
       } else {
-        req = $.get(url, (function() {
+        req = $.xhr(url, (function() {
           var cb, _i, _len, _ref, _results;
           _ref = this.callbacks;
           _results = [];
@@ -341,10 +341,10 @@
     },
     cb: {
       checked: function() {
-        return $.setValue(this.name, this.checked);
+        return $.set(this.name, this.checked);
       },
       value: function() {
-        return $.setValue(this.name, this.value);
+        return $.set(this.name, this.value);
       }
     },
     addStyle: function(css) {
@@ -461,11 +461,11 @@
   $.cache.requests = {};
   if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
     $.extend($, {
-      deleteValue: function(name) {
+      "delete": function(name) {
         name = NAMESPACE + name;
         return GM_deleteValue(name);
       },
-      getValue: function(name, defaultValue) {
+      get: function(name, defaultValue) {
         var value;
         name = NAMESPACE + name;
         if (value = GM_getValue(name)) {
@@ -477,7 +477,7 @@
       openInTab: function(url) {
         return GM_openInTab(url);
       },
-      setValue: function(name, value) {
+      set: function(name, value) {
         name = NAMESPACE + name;
         localStorage[name] = JSON.stringify(value);
         return GM_setValue(name, JSON.stringify(value));
@@ -485,11 +485,11 @@
     });
   } else {
     $.extend($, {
-      deleteValue: function(name) {
+      "delete": function(name) {
         name = NAMESPACE + name;
         return delete localStorage[name];
       },
-      getValue: function(name, defaultValue) {
+      get: function(name, defaultValue) {
         var value;
         name = NAMESPACE + name;
         if (value = localStorage[name]) {
@@ -501,7 +501,7 @@
       openInTab: function(url) {
         return window.open(url, "_blank");
       },
-      setValue: function(name, value) {
+      set: function(name, value) {
         name = NAMESPACE + name;
         return localStorage[name] = JSON.stringify(value);
       }
@@ -509,7 +509,7 @@
   }
   for (key in conf) {
     val = conf[key];
-    conf[key] = $.getValue(key, val);
+    conf[key] = $.get(key, val);
   }
   $$ = function(selector, root) {
     if (root == null) {
@@ -720,14 +720,14 @@
       }
       id = reply.id;
       g.hiddenReplies[id] = Date.now();
-      return $.setValue("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
+      return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
     show: function(table) {
       var id;
       $.show(table);
       id = $('td[id]', table).id;
       delete g.hiddenReplies[id];
-      return $.setValue("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
+      return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     }
   };
   keybinds = {
@@ -1056,7 +1056,7 @@
     },
     dialog: function() {
       var arr, checked, description, dialog, hiddenNum, hiddenThreads, hidingul, html, input, key, li, link, main, obj, overlay, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
-      hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
+      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
       html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>          </div>          <div id=credits>            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <div id=main>          </div>          <textarea name=flavors id=flavors hidden>" + conf['flavors'] + "</textarea>          <div id=time hidden>            <div><input type=text name=time value='" + conf['time'] + "'> <span id=timePreview></span></div>            <table>              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>              <tbody>                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>                <tr><th colspan=3>Year</th></tr>                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>                <tr><th colspan=3>Month</th></tr>                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>                <tr><th colspan=3>Day</th></tr>                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>                <tr><td>%e</td><td>day of the month</td><td>3</td></tr>                <tr><th colspan=3>Time</th></tr>                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>                <tr><td>%l (lowercase L)</td><td>hour (12 hour clock)</td><td>1</td></tr>                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>01</td></tr>                <tr><td>%k</td><td>hour (24 hour clock)</td><td>13</td></tr>                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>              </tbody>            </table>          </div>          <div id=keybinds hidden>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>                <tr><td>Update now</td><td><input type=text name=update></td></tr>                <tr><td>Reset the unread count to 0</td><td><input type=text name=unreadCountTo0></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
       dialog = $.el('div', {
@@ -1137,8 +1137,8 @@
       return _results;
     },
     clearHidden: function(e) {
-      $.deleteValue("hiddenReplies/" + g.BOARD + "/");
-      $.deleteValue("hiddenThreads/" + g.BOARD + "/");
+      $["delete"]("hiddenReplies/" + g.BOARD + "/");
+      $["delete"]("hiddenThreads/" + g.BOARD + "/");
       this.value = "hidden: 0";
       return g.hiddenReplies = {};
     },
@@ -1149,11 +1149,11 @@
         return;
       }
       this.value = key;
-      $.setValue(this.name, key);
+      $.set(this.name, key);
       return conf[this.name] = key;
     },
     time: function(e) {
-      $.setValue('time', this.value);
+      $.set('time', this.value);
       conf['time'] = this.value;
       Time.foo();
       Time.date = new Date();
@@ -1165,11 +1165,11 @@
       var match, time, _;
       if (match = location.search.match(/cooldown=(\d+)/)) {
         _ = match[0], time = match[1];
-        if ($.getValue(g.BOARD + '/cooldown', 0) < time) {
-          $.setValue(g.BOARD + '/cooldown', time);
+        if ($.get(g.BOARD + '/cooldown', 0) < time) {
+          $.set(g.BOARD + '/cooldown', time);
         }
       }
-      if (Date.now() < $.getValue(g.BOARD + '/cooldown', 0)) {
+      if (Date.now() < $.get(g.BOARD + '/cooldown', 0)) {
         cooldown.start();
       }
       $.bind(window, 'storage', function(e) {
@@ -1181,7 +1181,7 @@
     },
     start: function() {
       var submit, _i, _len, _ref;
-      cooldown.duration = Math.ceil(($.getValue(g.BOARD + '/cooldown', 0) - Date.now()) / 1000);
+      cooldown.duration = Math.ceil(($.get(g.BOARD + '/cooldown', 0) - Date.now()) / 1000);
       _ref = $$('#com_submit');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         submit = _ref[_i];
@@ -1254,13 +1254,13 @@
           */
       var captcha, captchas, cutoff, responseField;
       cutoff = Date.now() - 5 * HOUR + 5 * MINUTE;
-      captchas = $.getValue('captchas', []);
+      captchas = $.get('captchas', []);
       while (captcha = captchas.shift()) {
         if (captcha.time > cutoff) {
           break;
         }
       }
-      $.setValue('captchas', captchas);
+      $.set('captchas', captchas);
       responseField = $('#recaptcha_response_field', qr.el);
       responseField.nextSibling.textContent = captchas.length + ' captchas';
       if (!captcha) {
@@ -1293,7 +1293,7 @@
       if (conf['Auto Hide QR']) {
         $('#autohide', qr.el).checked = true;
       }
-      captcha = $.getValue('captcha', []);
+      captcha = $.get('captcha', []);
       l = captcha.push({
         challenge: $('#recaptcha_challenge_field', qr.el).value,
         response: this.value,
@@ -1314,7 +1314,7 @@
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       challenge = $('#recaptcha_challenge_field').value;
-      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.getValue('captcha', []).length) + " captcha cached</span></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
+      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>        <input type=hidden name=resto value=" + THREAD_ID + ">        <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">        <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>        <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>        <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>        <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.get('captcha', []).length) + " captcha cached</span></div>        <div><input type=file name=upfile></div>        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>      </form>      <div id=files></div>      <a id=error class=error></a>      ";
       qr.el = ui.dialog('qr', {
         top: '0px',
         left: '0px'
@@ -1365,7 +1365,7 @@
       }
       if (conf['Cooldown']) {
         duration = qr.sage ? 60 : 30;
-        $.setValue(g.BOARD + '/cooldown', Date.now() + duration * 1000);
+        $.set(g.BOARD + '/cooldown', Date.now() + duration * 1000);
         return cooldown.start();
       }
     },
@@ -1542,7 +1542,7 @@
   threadHiding = {
     init: function() {
       var a, hiddenThreads, op, thread, _i, _len, _ref, _results;
-      hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
+      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       _ref = $$('div.thread');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1580,9 +1580,9 @@
       var hiddenThreads, id;
       threadHiding.hideHide(thread);
       id = thread.firstChild.id;
-      hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
+      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       hiddenThreads[id] = Date.now();
-      return $.setValue("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
+      return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
     hideHide: function(thread) {
       var a, div, name, num, span, text, trip, _ref;
@@ -1618,9 +1618,9 @@
       $.show(thread);
       $.show(thread.nextSibling);
       id = thread.firstChild.id;
-      hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
+      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       delete hiddenThreads[id];
-      return $.setValue("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
+      return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     }
   };
   updater = {
@@ -1766,7 +1766,7 @@
       }
       url = location.pathname + '?' + Date.now();
       cb = updater.cb.update;
-      return updater.request = $.get(url, cb);
+      return updater.request = $.xhr(url, cb);
     }
   };
   watcher = {
@@ -1796,7 +1796,7 @@
     },
     refresh: function() {
       var board, div, favicon, id, link, props, watched, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
-      watched = $.getValue('watched', {});
+      watched = $.get('watched', {});
       _ref = $$('div:not(.move)', watcher.dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         div = _ref[_i];
@@ -1848,9 +1848,9 @@
     },
     unwatch: function(board, id) {
       var watched;
-      watched = $.getValue('watched', {});
+      watched = $.get('watched', {});
       delete watched[board][id];
-      $.setValue('watched', watched);
+      $.set('watched', watched);
       return watcher.refresh();
     },
     watch: function(thread, id) {
@@ -1860,10 +1860,10 @@
         textContent: "/" + g.BOARD + "/ - " + tc.slice(0, 25),
         href: "/" + g.BOARD + "/res/" + id
       };
-      watched = $.getValue('watched', {});
+      watched = $.get('watched', {});
       watched[_name = g.BOARD] || (watched[_name] = {});
       watched[g.BOARD][id] = props;
-      $.setValue('watched', watched);
+      $.set('watched', watched);
       return watcher.refresh();
     }
   };
@@ -2658,7 +2658,7 @@
         id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
       });
-      imageType = $.getValue('imageType', 'full');
+      imageType = $.get('imageType', 'full');
       _ref2 = $$('option', controls);
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         option = _ref2[_i];
@@ -2693,7 +2693,7 @@
       return $.bind(window, 'click', firstRun.close);
     },
     close: function() {
-      $.setValue('firstrun', true);
+      $.set('firstrun', true);
       $.rm($('style.firstrun', d.head));
       $.rm($('#overlay'));
       return $.unbind(window, 'click', firstRun.close);
@@ -2723,17 +2723,17 @@
       }
       Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
       $('link[rel="shortcut icon"]', d.head).setAttribute('type', 'image/x-icon');
-      g.hiddenReplies = $.getValue("hiddenReplies/" + g.BOARD + "/", {});
+      g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       tzOffset = (new Date()).getTimezoneOffset() / 60;
       g.chanOffset = 5 - tzOffset;
       if ($.isDST()) {
         g.chanOffset -= 1;
       }
-      lastChecked = $.getValue('lastChecked', 0);
+      lastChecked = $.get('lastChecked', 0);
       now = Date.now();
       if (lastChecked < now - 1 * DAY) {
         cutoff = now - 7 * DAY;
-        hiddenThreads = $.getValue("hiddenThreads/" + g.BOARD + "/", {});
+        hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
         for (id in hiddenThreads) {
           timestamp = hiddenThreads[id];
           if (timestamp < cutoff) {
@@ -2747,9 +2747,9 @@
             delete g.hiddenReplies[id];
           }
         }
-        $.setValue("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
-        $.setValue("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
-        $.setValue('lastChecked', now);
+        $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
+        $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
+        $.set('lastChecked', now);
       }
       $.addStyle(main.css);
       if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
@@ -2879,7 +2879,7 @@
       }
       $.bind($('form[name=delform]'), 'DOMNodeInserted', nodeInserted);
       options.init();
-      if (!$.getValue('firstrun')) {
+      if (!$.get('firstrun')) {
         return firstRun.init();
       }
     },

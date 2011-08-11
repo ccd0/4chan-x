@@ -213,7 +213,7 @@ $.extend $,
       textContent: "(#{code})()"
     $.append d.head, script
     $.rm script
-  get: (url, cb) ->
+  xhr: (url, cb) ->
     r = new XMLHttpRequest()
     r.onload = cb
     r.open 'get', url, true
@@ -226,14 +226,14 @@ $.extend $,
       else
         req.callbacks.push cb
     else
-      req = $.get url, (-> cb.call @ for cb in @callbacks)
+      req = $.xhr url, (-> cb.call @ for cb in @callbacks)
       req.callbacks = [cb]
       $.cache.requests[url] = req
   cb:
     checked: ->
-      $.setValue @name, @checked
+      $.set @name, @checked
     value: ->
-      $.setValue @name, @value
+      $.set @name, @value
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
@@ -327,10 +327,10 @@ $.cache.requests = {}
 
 if GM_deleteValue?
   $.extend $,
-    deleteValue: (name) ->
+    delete: (name) ->
       name = NAMESPACE + name
       GM_deleteValue name
-    getValue: (name, defaultValue) ->
+    get: (name, defaultValue) ->
       name = NAMESPACE + name
       if value = GM_getValue name
         JSON.parse value
@@ -338,17 +338,17 @@ if GM_deleteValue?
         defaultValue
     openInTab: (url) ->
       GM_openInTab url
-    setValue: (name, value) ->
+    set: (name, value) ->
       name = NAMESPACE + name
       # for `storage` events
       localStorage[name] = JSON.stringify value
       GM_setValue name, JSON.stringify value
 else
   $.extend $,
-    deleteValue: (name) ->
+    delete: (name) ->
       name = NAMESPACE + name
       delete localStorage[name]
-    getValue: (name, defaultValue) ->
+    get: (name, defaultValue) ->
       name = NAMESPACE + name
       if value = localStorage[name]
         JSON.parse value
@@ -356,13 +356,13 @@ else
         defaultValue
     openInTab: (url) ->
       window.open url, "_blank"
-    setValue: (name, value) ->
+    set: (name, value) ->
       name = NAMESPACE + name
       localStorage[name] = JSON.stringify value
 
 #load values from localStorage
 for key, val of conf
-  conf[key] = $.getValue key, val
+  conf[key] = $.get key, val
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
@@ -514,14 +514,14 @@ replyHiding =
 
     id = reply.id
     g.hiddenReplies[id] = Date.now()
-    $.setValue "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+    $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   show: (table) ->
     $.show table
 
     id = $('td[id]', table).id
     delete g.hiddenReplies[id]
-    $.setValue "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+    $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
 keybinds =
   init: ->
@@ -773,7 +773,7 @@ options =
     $.replace home, a
 
   dialog: ->
-    hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
     html = "
       <div class='reply dialog'>
@@ -907,8 +907,8 @@ options =
   clearHidden: (e) ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
     # not the number of posts actually hidden on the page.
-    $.deleteValue "hiddenReplies/#{g.BOARD}/"
-    $.deleteValue "hiddenThreads/#{g.BOARD}/"
+    $.delete "hiddenReplies/#{g.BOARD}/"
+    $.delete "hiddenThreads/#{g.BOARD}/"
     @value = "hidden: 0"
     g.hiddenReplies = {}
   keybind: (e) ->
@@ -916,10 +916,10 @@ options =
     e.stopPropagation()
     return unless (key = keybinds.keyCode e)?
     @value = key
-    $.setValue @name, key
+    $.set @name, key
     conf[@name] = key
   time: (e) ->
-    $.setValue 'time', @value
+    $.set 'time', @value
     conf['time'] = @value
     Time.foo()
     Time.date = new Date()
@@ -929,13 +929,13 @@ cooldown =
   init: ->
     if match = location.search.match /cooldown=(\d+)/
       [_, time] = match
-      $.setValue g.BOARD+'/cooldown', time if $.getValue(g.BOARD+'/cooldown', 0) < time
-    cooldown.start() if Date.now() < $.getValue g.BOARD+'/cooldown', 0
+      $.set g.BOARD+'/cooldown', time if $.get(g.BOARD+'/cooldown', 0) < time
+    cooldown.start() if Date.now() < $.get g.BOARD+'/cooldown', 0
     $.bind window, 'storage', (e) -> cooldown.start() if e.key is "#{NAMESPACE}#{g.BOARD}/cooldown"
     $('.postarea form').action += '?cooldown'
 
   start: ->
-    cooldown.duration = Math.ceil ($.getValue(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
+    cooldown.duration = Math.ceil ($.get(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
     for submit in $$ '#com_submit'
       submit.value = cooldown.duration
       submit.disabled = true
@@ -994,13 +994,13 @@ qr =
     ###
 
     cutoff = Date.now() - 5*HOUR + 5*MINUTE
-    captchas = $.getValue 'captchas', []
+    captchas = $.get 'captchas', []
 
     while captcha = captchas.shift()
       if captcha.time > cutoff
         break
 
-    $.setValue 'captchas', captchas
+    $.set 'captchas', captchas
     responseField = $ '#recaptcha_response_field', qr.el
     responseField.nextSibling.textContent = captchas.length + ' captchas'
 
@@ -1026,7 +1026,7 @@ qr =
     $('#auto', qr.el).checked = true
     $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
 
-    captcha = $.getValue 'captcha', []
+    captcha = $.get 'captcha', []
     l = captcha.push
       challenge: $('#recaptcha_challenge_field', qr.el).value
       response: @value
@@ -1060,7 +1060,7 @@ qr =
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.getValue('captcha', []).length} captcha cached</span></div>
+        <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.get('captcha', []).length} captcha cached</span></div>
         <div><input type=file name=upfile></div>
         <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>
       </form>
@@ -1111,7 +1111,7 @@ qr =
         qr.close()
     if conf['Cooldown']
       duration = if qr.sage then 60 else 30
-      $.setValue g.BOARD+'/cooldown', Date.now() + duration * 1000
+      $.set g.BOARD+'/cooldown', Date.now() + duration * 1000
       cooldown.start()
 
   node: (root) ->
@@ -1259,7 +1259,7 @@ threading =
 
 threadHiding =
   init: ->
-    hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     for thread in $$ 'div.thread'
       op = thread.firstChild
       a = $.el 'a',
@@ -1289,9 +1289,9 @@ threadHiding =
 
     id = thread.firstChild.id
 
-    hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     hiddenThreads[id] = Date.now()
-    $.setValue "hiddenThreads/#{g.BOARD}/", hiddenThreads
+    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
   hideHide: (thread) ->
     if conf['Show Stubs']
@@ -1326,9 +1326,9 @@ threadHiding =
 
     id = thread.firstChild.id
 
-    hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     delete hiddenThreads[id]
-    $.setValue "hiddenThreads/#{g.BOARD}/", hiddenThreads
+    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
 updater =
   init: ->
@@ -1448,7 +1448,7 @@ updater =
     updater.request?.abort()
     url = location.pathname + '?' + Date.now() # fool the cache
     cb = updater.cb.update
-    updater.request = $.get url, cb
+    updater.request = $.xhr url, cb
 
 watcher =
   init: ->
@@ -1470,7 +1470,7 @@ watcher =
     $.bind window, 'storage', (e) -> watcher.refresh() if e.key is "#{NAMESPACE}watched"
 
   refresh: ->
-    watched = $.getValue 'watched', {}
+    watched = $.get 'watched', {}
     for div in $$ 'div:not(.move)', watcher.dialog
       $.rm div
     for board of watched
@@ -1509,9 +1509,9 @@ watcher =
       watcher.unwatch g.BOARD, id
 
   unwatch: (board, id) ->
-    watched = $.getValue 'watched', {}
+    watched = $.get 'watched', {}
     delete watched[board][id]
-    $.setValue 'watched', watched
+    $.set 'watched', watched
     watcher.refresh()
 
   watch: (thread, id) ->
@@ -1520,10 +1520,10 @@ watcher =
       textContent: "/#{g.BOARD}/ - #{tc[...25]}"
       href: "/#{g.BOARD}/res/#{id}"
 
-    watched = $.getValue 'watched', {}
+    watched = $.get 'watched', {}
     watched[g.BOARD] or= {}
     watched[g.BOARD][id] = props
-    $.setValue 'watched', watched
+    $.set 'watched', watched
     watcher.refresh()
 
 anonymize =
@@ -2012,7 +2012,7 @@ imgExpand =
       innerHTML:
         "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>
         <label>Expand Images<input type=checkbox id=imageExpand></label>"
-    imageType = $.getValue 'imageType', 'full'
+    imageType = $.get 'imageType', 'full'
     for option in $$ 'option', controls
       if option.textContent is imageType
         option.selected = true
@@ -2104,7 +2104,7 @@ firstRun =
     $.bind window, 'click', firstRun.close
 
   close: ->
-    $.setValue 'firstrun', true
+    $.set 'firstrun', true
     $.rm $ 'style.firstrun', d.head
     $.rm $ '#overlay'
     $.unbind window, 'click', firstRun.close
@@ -2130,17 +2130,17 @@ main =
 
     Favicon.halo = if /ws/.test Favicon.default then Favicon.haloSFW else Favicon.haloNSFW
     $('link[rel="shortcut icon"]', d.head).setAttribute 'type', 'image/x-icon'
-    g.hiddenReplies = $.getValue "hiddenReplies/#{g.BOARD}/", {}
+    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     tzOffset = (new Date()).getTimezoneOffset() / 60
     # GMT -8 is given as +480; would GMT +8 be -480 ?
     g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5
     if $.isDST() then g.chanOffset -= 1
 
-    lastChecked = $.getValue 'lastChecked', 0
+    lastChecked = $.get 'lastChecked', 0
     now = Date.now()
     if lastChecked < now - 1*DAY
       cutoff = now - 7*DAY
-      hiddenThreads = $.getValue "hiddenThreads/#{g.BOARD}/", {}
+      hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
 
       for id, timestamp of hiddenThreads
         if timestamp < cutoff
@@ -2150,9 +2150,9 @@ main =
         if timestamp < cutoff
           delete g.hiddenReplies[id]
 
-      $.setValue "hiddenThreads/#{g.BOARD}/", hiddenThreads
-      $.setValue "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
-      $.setValue 'lastChecked', now
+      $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
+      $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+      $.set 'lastChecked', now
 
     $.addStyle main.css
 
@@ -2276,7 +2276,7 @@ main =
     $.bind $('form[name=delform]'), 'DOMNodeInserted', nodeInserted
     options.init()
 
-    unless $.getValue 'firstrun'
+    unless $.get 'firstrun'
       firstRun.init()
 
   css: '
