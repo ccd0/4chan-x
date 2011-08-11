@@ -1,7 +1,7 @@
 11.8.10.1
 - aeosynth:
   - persistent captchas (expiring after 4 hours, 55 minutes)
-  - captchas load in 'correct' order
+  - files upload in 'correct' order
   - manually submitting will use cached captchas
 
 11.8.10.0
