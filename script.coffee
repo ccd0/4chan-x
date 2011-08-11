@@ -1066,6 +1066,7 @@ qr =
       <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
         <input type=hidden name=resto value=#{THREAD_ID}>
         <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=#{challenge}>
+        <input type=hidden name=mode value=regist>
         <div><input class=inputtext type=text name=email placeholder=E-mail>#{spoiler}</div>
         <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
         <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
@@ -1074,7 +1075,7 @@ qr =
         <div><input type=file name=upfile></div>
       </form>
       <div id=files></div>
-      <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8 ><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>
+      <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8><a name=attach>attach another file</a></div>
       <a id=error class=error></a>
       "
     qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
