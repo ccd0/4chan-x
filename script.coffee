@@ -979,10 +979,10 @@ qr =
     fileDiv = $.el 'div', innerHTML: '<input type=file name=upfile><a>X</a>'
     $.bind fileDiv.firstChild, 'change', qr.validateFileSize
     $.bind fileDiv.lastChild, 'click', (-> $.rm @parentNode)
-    $.prepend qr.files, fileDiv
+    $.append $('#files', qr.el), fileDiv
 
   attachNext: ->
-    fileDiv = $.rm qr.files.lastChild
+    fileDiv = $.rm $('#files div', qr.el)
     file = fileDiv.firstChild
     oldFile = $ '#qr_form input[type=file]', qr.el
     $.replace oldFile, file
@@ -1064,13 +1064,12 @@ qr =
         <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
         <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification required autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.get('captchas', []).length} captchas</span></div>
         <div><input type=file name=upfile></div>
-        <div><input class=inputtext type=password name=pwd maxlength=8 placeholder=Password><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>
       </form>
       <div id=files></div>
+      <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8 ><input type=hidden name=mode value=regist><a name=attach>attach another file</a></div>
       <a id=error class=error></a>
       "
     qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
-    qr.files = $ '#files', qr.el
 
     qr.refresh()
     $('textarea', qr.el).value = $('textarea').value
@@ -1089,6 +1088,7 @@ qr =
   message: (e) ->
     Recaptcha.reload()
     $('iframe[name=iframe]').src = 'about:blank'
+    fileCount = $('#files', qr.el).childElementCount
 
     {data} = e
     if data # error message
@@ -1098,16 +1098,16 @@ qr =
       $('#autohide', qr.el).checked = false
       if data.textContent is 'You seem to have mistyped the verification.'
         setTimeout qr.autoPost, 1000
-      else if data.textContent is 'Error: Duplicate file entry detected.' and qr.files.childElementCount
+      else if data.textContent is 'Error: Duplicate file entry detected.' and fileCount
         $('textarea', qr.el).value += '\n' + data.textContent + ' ' + data.href
         qr.attachNext()
         setTimeout qr.autoPost, 1000
       return
 
     if qr.el
-      if g.REPLY and (conf['Persistent QR'] or qr.files.childElementCount)
+      if g.REPLY and (conf['Persistent QR'] or fileCount)
         qr.refresh()
-        if qr.files.childElementCount
+        if fileCount
           qr.attachNext()
       else
         qr.close()
