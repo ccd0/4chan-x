@@ -1027,11 +1027,12 @@ qr =
     $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
 
     captcha = $.get 'captcha', []
-    l = captcha.push
+    captcha.push
       challenge: $('#recaptcha_challenge_field', qr.el).value
       response: @value
       time: qr.captchaTime
-    @nextSibling.textContent = l + ' captcha cached'
+    $.set 'captcha', captcha
+    @nextSibling.textContent = captcha.length + ' captcha cached'
     Recaptcha.reload()
     @value = ''
 

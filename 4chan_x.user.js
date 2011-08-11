@@ -1281,7 +1281,7 @@
       return qr.captchaTime = Date.now();
     },
     captchaKeydown: function(e) {
-      var blank, captcha, l;
+      var blank, captcha;
       if (!(e.keyCode === 13 && this.value)) {
         return;
       }
@@ -1294,12 +1294,13 @@
         $('#autohide', qr.el).checked = true;
       }
       captcha = $.get('captcha', []);
-      l = captcha.push({
+      captcha.push({
         challenge: $('#recaptcha_challenge_field', qr.el).value,
         response: this.value,
         time: qr.captchaTime
       });
-      this.nextSibling.textContent = l + ' captcha cached';
+      $.set('captcha', captcha);
+      this.nextSibling.textContent = captcha.length + ' captcha cached';
       Recaptcha.reload();
       return this.value = '';
     },
