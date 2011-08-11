@@ -1209,7 +1209,7 @@
           submit.disabled = false;
           submit.value = 'Submit';
         }
-        if (!qr.validatePost()) {
+        if (!qr.postInvalid()) {
           return qr.submit.call($('form', qr.el));
         }
       }
@@ -1246,37 +1246,6 @@
       file = fileDiv.firstChild;
       oldFile = $('#qr_form input[type=file]', qr.el);
       return $.replace(oldFile, file);
-    },
-    validatePost: function() {
-      var captcha, captchas, content, cutoff, responseField;
-      content = $('textarea', qr.el).value || $('input[type=file]', qr.el).files.length;
-      if (!content) {
-        return 'Error: No text entered.';
-      }
-      responseField = $('#recaptcha_response_field', qr.el);
-      if (responseField.value) {
-        return;
-      }
-      /*
-          captchas expire after 5 hours (couldn't find an official source, so
-          anonymous empirically verified). cutoff 5 minutes before then, b/c posting
-          takes time.
-          */
-      cutoff = Date.now() - 5 * HOUR + 5 * MINUTE;
-      captchas = $.get('captchas', []);
-      while (captcha = captchas.shift()) {
-        if (captcha.time > cutoff) {
-          break;
-        }
-      }
-      $.set('captchas', captchas);
-      responseField.nextSibling.textContent = captchas.length + ' captchas';
-      if (!captcha) {
-        return 'You forgot to type in the verification.';
-      }
-      $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
-      responseField.value = captcha.response;
-      return false;
     },
     captchaNode: function(e) {
       var target;
@@ -1380,6 +1349,37 @@
       quote = $('a.quotejs:not(:first-child)', root);
       return $.bind(quote, 'click', qr.quote);
     },
+    postInvalid: function() {
+      var captcha, captchas, content, cutoff, responseField;
+      content = $('textarea', qr.el).value || $('input[type=file]', qr.el).files.length;
+      if (!content) {
+        return 'Error: No text entered.';
+      }
+      responseField = $('#recaptcha_response_field', qr.el);
+      if (responseField.value) {
+        return;
+      }
+      /*
+          captchas expire after 5 hours (couldn't find an official source, so
+          anonymous empirically verified). cutoff 5 minutes before then, b/c posting
+          takes time.
+          */
+      cutoff = Date.now() - 5 * HOUR + 5 * MINUTE;
+      captchas = $.get('captchas', []);
+      while (captcha = captchas.shift()) {
+        if (captcha.time > cutoff) {
+          break;
+        }
+      }
+      $.set('captchas', captchas);
+      responseField.nextSibling.textContent = captchas.length + ' captchas';
+      if (!captcha) {
+        return 'You forgot to type in the verification.';
+      }
+      $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
+      responseField.value = captcha.response;
+      return false;
+    },
     quote: function(e) {
       var id, s, selection, selectionID, ta, text, _ref;
       if (e) {
@@ -1414,7 +1414,7 @@
     },
     submit: function(e) {
       var id, msg, op;
-      if (msg = qr.validatePost()) {
+      if (msg = qr.postInvalid()) {
         e.preventDefault();
         alert(msg);
         if (msg === 'You forgot to type in the verification.') {

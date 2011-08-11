@@ -954,7 +954,7 @@ cooldown =
       for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
-      unless qr.validatePost()
+      unless qr.postInvalid()
         qr.submit.call $ 'form', qr.el
 
 qr =
@@ -988,35 +988,6 @@ qr =
     file = fileDiv.firstChild
     oldFile = $ '#qr_form input[type=file]', qr.el
     $.replace oldFile, file
-
-  validatePost: ->
-    content = $('textarea', qr.el).value or $('input[type=file]', qr.el).files.length
-    return 'Error: No text entered.' unless content
-
-    responseField = $ '#recaptcha_response_field', qr.el
-    return if responseField.value
-
-    ###
-    captchas expire after 5 hours (couldn't find an official source, so
-    anonymous empirically verified). cutoff 5 minutes before then, b/c posting
-    takes time.
-    ###
-
-    cutoff = Date.now() - 5*HOUR + 5*MINUTE
-    captchas = $.get 'captchas', []
-    while captcha = captchas.shift()
-      if captcha.time > cutoff
-        break
-    $.set 'captchas', captchas
-
-    responseField.nextSibling.textContent = captchas.length + ' captchas'
-
-    return 'You forgot to type in the verification.' unless captcha
-
-    $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
-    responseField.value = captcha.response
-
-    false
 
   captchaNode: (e) ->
     return unless qr.el
@@ -1127,6 +1098,35 @@ qr =
     quote = $ 'a.quotejs:not(:first-child)', root
     $.bind quote, 'click', qr.quote
 
+  postInvalid: ->
+    content = $('textarea', qr.el).value or $('input[type=file]', qr.el).files.length
+    return 'Error: No text entered.' unless content
+
+    responseField = $ '#recaptcha_response_field', qr.el
+    return if responseField.value
+
+    ###
+    captchas expire after 5 hours (couldn't find an official source, so
+    anonymous empirically verified). cutoff 5 minutes before then, b/c posting
+    takes time.
+    ###
+
+    cutoff = Date.now() - 5*HOUR + 5*MINUTE
+    captchas = $.get 'captchas', []
+    while captcha = captchas.shift()
+      if captcha.time > cutoff
+        break
+    $.set 'captchas', captchas
+
+    responseField.nextSibling.textContent = captchas.length + ' captchas'
+
+    return 'You forgot to type in the verification.' unless captcha
+
+    $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
+    responseField.value = captcha.response
+
+    false
+
   quote: (e) ->
     e.preventDefault() if e
 
@@ -1157,7 +1157,7 @@ qr =
     $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
   submit: (e) ->
-    if msg = qr.validatePost()
+    if msg = qr.postInvalid()
       e.preventDefault()
       alert msg
       if msg is 'You forgot to type in the verification.'
