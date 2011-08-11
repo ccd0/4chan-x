@@ -341,10 +341,12 @@
     },
     cb: {
       checked: function() {
-        return $.set(this.name, this.checked);
+        $.set(this.name, this.checked);
+        return conf[this.name] = this.checked;
       },
       value: function() {
-        return $.set(this.name, this.value);
+        $.set(this.name, this.value);
+        return conf[this.name] = this.value;
       }
     },
     addStyle: function(css) {

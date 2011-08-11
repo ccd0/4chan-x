@@ -232,8 +232,10 @@ $.extend $,
   cb:
     checked: ->
       $.set @name, @checked
+      conf[@name] = @checked
     value: ->
       $.set @name, @value
+      conf[@name] = @value
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
