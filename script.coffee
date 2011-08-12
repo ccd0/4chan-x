@@ -939,6 +939,7 @@ cooldown =
 
   start: ->
     cooldown.duration = Math.ceil ($.get(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
+    return unless cooldown.duration > 0
     for submit in $$ '#com_submit'
       submit.value = cooldown.duration
       submit.disabled = true
@@ -946,7 +947,7 @@ cooldown =
 
   cb: ->
     submits = $$ '#com_submit'
-    if --cooldown.duration > 0
+    if --cooldown.duration
       setTimeout cooldown.cb, 1000
       for submit in submits
         submit.value = cooldown.duration

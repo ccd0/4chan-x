@@ -1184,6 +1184,9 @@
     start: function() {
       var submit, _i, _len, _ref;
       cooldown.duration = Math.ceil(($.get(g.BOARD + '/cooldown', 0) - Date.now()) / 1000);
+      if (!(cooldown.duration > 0)) {
+        return;
+      }
       _ref = $$('#com_submit');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         submit = _ref[_i];
@@ -1195,7 +1198,7 @@
     cb: function() {
       var submit, submits, _i, _j, _len, _len2, _results;
       submits = $$('#com_submit');
-      if (--cooldown.duration > 0) {
+      if (--cooldown.duration) {
         setTimeout(cooldown.cb, 1000);
         _results = [];
         for (_i = 0, _len = submits.length; _i < _len; _i++) {
