@@ -942,15 +942,15 @@ cooldown =
     for submit in $$ '#com_submit'
       submit.value = cooldown.duration
       submit.disabled = true
-    cooldown.interval = window.setInterval cooldown.cb, 1000
+    setTimeout cooldown.cb, 1000
 
   cb: ->
     submits = $$ '#com_submit'
     if --cooldown.duration > 0
+      setTimeout cooldown.cb, 1000
       for submit in submits
         submit.value = cooldown.duration
     else
-      window.clearInterval cooldown.interval
       for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
@@ -1398,9 +1398,9 @@ updater =
         $.hide updater.timer
     autoUpdate: ->
       if @checked
-        updater.intervalID = window.setInterval updater.timeout, 1000
+        updater.timeoutID = setTimeout updater.timeout, 1000
       else
-        window.clearInterval updater.intervalID
+        clearTimeout updater.timeoutID
     update: ->
       if @status is 404
         updater.timer.textContent = ''
@@ -1454,6 +1454,8 @@ updater =
 
     if n is 0
       updater.update()
+
+    updater.timeoutID = setTimeout updater.timeout, 1000
 
   updateNow: ->
     updater.timer.textContent = 0

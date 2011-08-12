@@ -1190,12 +1190,13 @@
         submit.value = cooldown.duration;
         submit.disabled = true;
       }
-      return cooldown.interval = window.setInterval(cooldown.cb, 1000);
+      return setTimeout(cooldown.cb, 1000);
     },
     cb: function() {
       var submit, submits, _i, _j, _len, _len2, _results;
       submits = $$('#com_submit');
       if (--cooldown.duration > 0) {
+        setTimeout(cooldown.cb, 1000);
         _results = [];
         for (_i = 0, _len = submits.length; _i < _len; _i++) {
           submit = submits[_i];
@@ -1203,7 +1204,6 @@
         }
         return _results;
       } else {
-        window.clearInterval(cooldown.interval);
         for (_j = 0, _len2 = submits.length; _j < _len2; _j++) {
           submit = submits[_j];
           submit.disabled = false;
@@ -1702,9 +1702,9 @@
       },
       autoUpdate: function() {
         if (this.checked) {
-          return updater.intervalID = window.setInterval(updater.timeout, 1000);
+          return updater.timeoutID = setTimeout(updater.timeout, 1000);
         } else {
-          return window.clearInterval(updater.intervalID);
+          return clearTimeout(updater.timeoutID);
         }
       },
       update: function() {
@@ -1764,8 +1764,9 @@
       }
       updater.timer.textContent = n;
       if (n === 0) {
-        return updater.update();
+        updater.update();
       }
+      return updater.timeoutID = setTimeout(updater.timeout, 1000);
     },
     updateNow: function() {
       updater.timer.textContent = 0;
