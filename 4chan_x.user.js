@@ -167,8 +167,8 @@
     }
   })(null, config);
   if (typeof console !== "undefined" && console !== null) {
-    log = function(arg) {
-      return console.log(arg);
+    log = function() {
+      return console.log.apply(console, arguments);
     };
   }
   if (!Object.keys) {

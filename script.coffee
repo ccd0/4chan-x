@@ -98,8 +98,8 @@ conf = {}
 
 # XXX chrome can't into `{log} = console`
 if console?
-  log = (arg) ->
-    console.log arg
+  log = ->
+    console.log arguments...
 
 # XXX opera cannot into Object.keys
 if not Object.keys
