@@ -1,4 +1,4 @@
-**[INSTALL](https://github.com/aeosynth/4chan-x/raw/master/4chan_x.user.js)**
+# **[INSTALL](https://github.com/aeosynth/4chan-x/raw/master/4chan_x.user.js)**
 
 # Building
 
