@@ -1475,29 +1475,30 @@
         return parent.postMessage(data, '*');
       });
       c = $('b').lastChild;
-      if (c.nodeType === 8) {
-        _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-        search = location.search;
-        cooldown = /cooldown/.test(search);
-        noko = /noko/.test(search);
-        sage = /sage/.test(search);
-        watch = /watch/.test(search);
-        url = "http://boards.4chan.org/" + g.BOARD;
-        if (watch && thread === '0') {
-          url += "/res/" + id + "?watch";
-        } else if (noko) {
-          url += '/res/';
-          url += thread === '0' ? id : thread;
-        }
-        if (cooldown) {
-          duration = Date.now() + (sage ? 60 : 30) * 1000;
-          url += '?cooldown=' + duration;
-        }
-        if (noko) {
-          url += '#' + id;
-        }
-        return window.location = url;
+      if (c.nodeType !== 8) {
+        return;
       }
+      _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
+      search = location.search;
+      cooldown = /cooldown/.test(search);
+      noko = /noko/.test(search);
+      sage = /sage/.test(search);
+      watch = /watch/.test(search);
+      url = "http://boards.4chan.org/" + g.BOARD;
+      if (watch && thread === '0') {
+        url += "/res/" + id + "?watch";
+      } else if (noko) {
+        url += '/res/';
+        url += thread === '0' ? id : thread;
+      }
+      if (cooldown) {
+        duration = Date.now() + (sage ? 60 : 30) * 1000;
+        url += '?cooldown=' + duration;
+      }
+      if (noko) {
+        url += '#' + id;
+      }
+      return window.location = url;
     },
     validateFileSize: function(e) {
       var file;

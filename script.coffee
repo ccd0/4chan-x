@@ -1204,29 +1204,31 @@ qr =
       parent.postMessage data, '*'
 
     c = $('b').lastChild
-    if c.nodeType is 8 #comment node
-      [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
 
-      {search} = location
-      cooldown = /cooldown/.test search
-      noko     = /noko/    .test search
-      sage     = /sage/    .test search
-      watch    = /watch/   .test search
+    return unless c.nodeType is 8 #comment node
 
-      url = "http://boards.4chan.org/#{g.BOARD}"
+    [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
 
-      if watch and thread is '0'
-        url += "/res/#{id}?watch"
-      else if noko
-        url += '/res/'
-        url += if thread is '0' then id else thread
-      if cooldown
-        duration = Date.now() + (if sage then 60 else 30) * 1000
-        url += '?cooldown=' + duration
-      if noko
-        url += '#' + id
+    {search} = location
+    cooldown = /cooldown/.test search
+    noko     = /noko/    .test search
+    sage     = /sage/    .test search
+    watch    = /watch/   .test search
 
-      window.location = url
+    url = "http://boards.4chan.org/#{g.BOARD}"
+
+    if watch and thread is '0'
+      url += "/res/#{id}?watch"
+    else if noko
+      url += '/res/'
+      url += if thread is '0' then id else thread
+    if cooldown
+      duration = Date.now() + (if sage then 60 else 30) * 1000
+      url += '?cooldown=' + duration
+    if noko
+      url += '#' + id
+
+    window.location = url
 
   validateFileSize: (e) ->
     return unless @files[0].size > $('input[name=MAX_FILE_SIZE]').value
