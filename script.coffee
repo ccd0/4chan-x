@@ -311,19 +311,19 @@ $.extend $,
       #after second sunday
       return true
 
-    if month is 10
-      # before first sunday
-      if sunday < 1
+    #month is 10
+    # before first sunday
+    if sunday < 1
+      return true
+
+    # during first sunday
+    if sunday < 8 and date.getDay() is 0
+      if date.getHour() < 1
         return true
-
-      # during first sunday
-      if sunday < 8 and date.getDay() is 0
-        if date.getHour() < 1
-          return true
-        return false
-
-      #after first sunday
       return false
+
+    #after first sunday
+    return false
 
 $.cache.requests = {}
 

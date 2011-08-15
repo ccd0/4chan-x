@@ -446,18 +446,16 @@
         }
         return true;
       }
-      if (month === 10) {
-        if (sunday < 1) {
+      if (sunday < 1) {
+        return true;
+      }
+      if (sunday < 8 && date.getDay() === 0) {
+        if (date.getHour() < 1) {
           return true;
-        }
-        if (sunday < 8 && date.getDay() === 0) {
-          if (date.getHour() < 1) {
-            return true;
-          }
-          return false;
         }
         return false;
       }
+      return false;
     }
   });
   $.cache.requests = {};
