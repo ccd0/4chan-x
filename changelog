@@ -1,6 +1,7 @@
 11.8.15
 - aeosynth:
   convert qr from hidden iframes to ajax
+  derp, nevermind. ajaxing reverted, still working on it in dev branch
 
 11.8.11.1
 - aeosynth:
