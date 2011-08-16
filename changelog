@@ -1,3 +1,7 @@
+11.8.15
+- aeosynth:
+  convert qr from hidden iframes to ajax
+
 11.8.11.1
 - aeosynth:
   fix qr autohiding
