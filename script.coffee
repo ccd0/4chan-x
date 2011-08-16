@@ -972,13 +972,10 @@ qr =
     qr.captchaTime = Date.now()
 
     iframe = $.el 'iframe',
+      name: 'iframe'
       hidden: true
-      id: 'iframe'
       src: 'http://sys.4chan.org/post'
-    data = $.el 'span',
-      hidden: true
-      id: 'data'
-    $.append d.body, iframe, data
+    $.append d.body, iframe
 
     #hack - nuke id so it doesn't grab focus when reloading
     $('#recaptcha_response_field').id = ''
@@ -1191,11 +1188,7 @@ qr =
     for el in $$ '[name]', qr.el when el.value
       data[el.name] = el.value
 
-    $('#data').textContent = JSON.stringify data
-
-    $.globalEval ->
-      data = document.getElementById('data').textContent
-      document.getElementById('iframe').contentWindow.postMessage data, '*'
+    $('iframe').contentWindow.postMessage JSON.stringify(data), '*'
 
   foo: ->
     body = $.el 'body',

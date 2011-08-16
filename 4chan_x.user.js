@@ -1218,21 +1218,17 @@
   };
   qr = {
     init: function() {
-      var data, iframe;
+      var iframe;
       g.callbacks.push(qr.node);
       $.bind(window, 'message', qr.message);
       $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode);
       qr.captchaTime = Date.now();
       iframe = $.el('iframe', {
+        name: 'iframe',
         hidden: true,
-        id: 'iframe',
         src: 'http://sys.4chan.org/post'
       });
-      data = $.el('span', {
-        hidden: true,
-        id: 'data'
-      });
-      $.append(d.body, iframe, data);
+      $.append(d.body, iframe);
       return $('#recaptcha_response_field').id = '';
     },
     attach: function() {
@@ -1453,11 +1449,7 @@
           data[el.name] = el.value;
         }
       }
-      $('#data').textContent = JSON.stringify(data);
-      return $.globalEval(function() {
-        data = document.getElementById('data').textContent;
-        return document.getElementById('iframe').contentWindow.postMessage(data, '*');
-      });
+      return $('iframe').contentWindow.postMessage(JSON.stringify(data), '*');
     },
     foo: function() {
       var body, data, href, node, textContent, _ref;
