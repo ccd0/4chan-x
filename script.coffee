@@ -1034,7 +1034,7 @@ qr =
         Quick Reply
       </div>
       <div class=autohide>
-        <form action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
+        <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
           <input type=hidden name=resto value=#{THREAD_ID}>
           <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=#{challenge}>
           <input type=hidden name=mode value=regist>
@@ -1046,7 +1046,7 @@ qr =
           <div><input type=file name=upfile></div>
         </form>
         <div id=files></div>
-        <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8><a id=attach>attach another file</a></div>
+        <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8><a name=attach>attach another file</a></div>
       </div>
       <a id=error class=error></a>
       "
@@ -1059,7 +1059,7 @@ qr =
     $.bind $('input[name=upfile]',        qr.el), 'change', qr.validateFileSize
     $.bind $('#close',                    qr.el), 'click', qr.close
     $.bind $('form',                      qr.el), 'submit', qr.submit
-    $.bind $('#attach',                   qr.el), 'click', qr.attach
+    $.bind $('a[name=attach]',            qr.el), 'click', qr.attach
     $.bind $('img',                       qr.el), 'click', Recaptcha.reload
     $.bind $('#recaptcha_response_field', qr.el), 'keydown', Recaptcha.listener
     $.bind $('#recaptcha_response_field', qr.el), 'keydown', qr.captchaKeydown
