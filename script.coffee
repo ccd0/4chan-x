@@ -1203,9 +1203,9 @@ qr =
         data = ''
       parent.postMessage data, '*'
 
-    c = $('b').lastChild
+    c = $('b')?.lastChild
 
-    return unless c.nodeType is 8 #comment node
+    return unless c and c.nodeType is 8 #comment node
 
     [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
 

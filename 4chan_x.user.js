@@ -1447,7 +1447,7 @@
       return qr.sage = /sage/i.test($('input[name=email]', this).value);
     },
     sys: function() {
-      var c, duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref;
+      var c, duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref, _ref2;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
@@ -1472,11 +1472,11 @@
         }
         return parent.postMessage(data, '*');
       });
-      c = $('b').lastChild;
-      if (c.nodeType !== 8) {
+      c = (_ref = $('b')) != null ? _ref.lastChild : void 0;
+      if (!(c && c.nodeType === 8)) {
         return;
       }
-      _ref = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
+      _ref2 = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref2[0], thread = _ref2[1], id = _ref2[2];
       search = location.search;
       cooldown = /cooldown/.test(search);
       noko = /noko/.test(search);
