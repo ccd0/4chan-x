@@ -1163,18 +1163,7 @@ qr =
   submit: (e) ->
     e.preventDefault()
 
-    data =
-      board: g.BOARD
-
-    for el in $$ '[name]', qr.el when el.value
-      data[el.name] = el.value
-
-    $('iframe').contentWindow.postMessage JSON.stringify(data), '*'
-
-    return
-
     if msg = qr.postInvalid()
-      e.preventDefault()
       alert msg
       if msg is 'You forgot to type in the verification.'
         $('#recaptcha_response_field', qr.el).focus()
@@ -1189,12 +1178,17 @@ qr =
         if $('img.favicon', op).src is Favicon.empty
           watcher.watch op, id
 
-    return unless @id is 'qr_form'
-
-    if !e then @submit()
     $('#error', qr.el).textContent = ''
     $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
     qr.sage = /sage/i.test $('input[name=email]', @).value
+
+    data =
+      board: g.BOARD
+
+    for el in $$ '[name]', qr.el when el.value
+      data[el.name] = el.value
+
+    $('iframe').contentWindow.postMessage JSON.stringify(data), '*'
 
   foo: ->
     body = $.el 'body',
@@ -1205,7 +1199,19 @@ qr =
       data = JSON.stringify {textContent, href}
     else
       data = ''
-    parent.postMessage data, '*'
+    $('#error').textContent = data
+
+    $.globalEval ->
+      data = document.getElementById('error').textContent
+      parent.postMessage data, '*'
+
+    ###
+      http://code.google.com/p/chromium/issues/detail?id=20773
+      Let content scripts see other frames (instead of them being undefined)
+
+      To access the parent, we have to break out of the sandbox and evaluate
+      in the global context.
+    ###
 
   sysMessage: (e) ->
     data = JSON.parse e.data
@@ -1219,28 +1225,13 @@ qr =
     x = $.xhr "http://sys.4chan.org/#{board}/post", qr.foo, formData
 
   sys: ->
-    $.bind window, 'message', qr.sysMessage
-
-    return
-
     if recaptcha = $ '#recaptcha_response_field' #post reporting
       $.bind recaptcha, 'keydown', Recaptcha.listener
       return
 
-    ###
-      http://code.google.com/p/chromium/issues/detail?id=20773
-      Let content scripts see other frames (instead of them being undefined)
-
-      To access the parent, we have to break out of the sandbox and evaluate
-      in the global context.
-    ###
-    $.globalEval ->
-      if node = document.querySelector('table font b')?.firstChild
-        {textContent, href} = node
-        data = JSON.stringify {textContent, href}
-      else
-        data = ''
-      parent.postMessage data, '*'
+    $.bind window, 'message', qr.sysMessage
+    error = $.el 'span', id: 'error'
+    $.append d.body, error
 
     c = $('b')?.lastChild
 
