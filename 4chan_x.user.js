@@ -1416,7 +1416,20 @@
     submit: function(e) {
       var data, el, id, msg, op, _i, _len, _ref;
       e.preventDefault();
+      data = {
+        board: g.BOARD
+      };
+      _ref = $$('[name]', qr.el);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        if (el.value) {
+          data[el.name] = el.value;
+        }
+      }
+      $('iframe').contentWindow.postMessage(JSON.stringify(data), '*');
+      return;
       if (msg = qr.postInvalid()) {
+        e.preventDefault();
         alert(msg);
         if (msg === 'You forgot to type in the verification.') {
           $('#recaptcha_response_field', qr.el).focus();
@@ -1434,22 +1447,17 @@
           }
         }
       }
+      if (this.id !== 'qr_form') {
+        return;
+      }
+      if (!e) {
+        this.submit();
+      }
       $('#error', qr.el).textContent = '';
       if (conf['Auto Hide QR']) {
         $('#autohide', qr.el).checked = true;
       }
-      qr.sage = /sage/i.test($('input[name=email]', this).value);
-      data = {
-        board: g.BOARD
-      };
-      _ref = $$('[name]', qr.el);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        el = _ref[_i];
-        if (el.value) {
-          data[el.name] = el.value;
-        }
-      }
-      return $('iframe').contentWindow.postMessage(JSON.stringify(data), '*');
+      return qr.sage = /sage/i.test($('input[name=email]', this).value);
     },
     foo: function() {
       var body, data, href, node, textContent, _ref;
@@ -1465,18 +1473,7 @@
       } else {
         data = '';
       }
-      $('#error').textContent = data;
-      return $.globalEval(function() {
-        data = document.getElementById('error').textContent;
-        return parent.postMessage(data, '*');
-      });
-      /*
-            http://code.google.com/p/chromium/issues/detail?id=20773
-            Let content scripts see other frames (instead of them being undefined)
-      
-            To access the parent, we have to break out of the sandbox and evaluate
-            in the global context.
-          */
+      return parent.postMessage(data, '*');
     },
     sysMessage: function(e) {
       var board, data, formData, key, val, x;
@@ -1491,16 +1488,33 @@
       return x = $.xhr("http://sys.4chan.org/" + board + "/post", qr.foo, formData);
     },
     sys: function() {
-      var c, duration, error, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref, _ref2;
+      var c, duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref, _ref2;
+      $.bind(window, 'message', qr.sysMessage);
+      return;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
       }
-      $.bind(window, 'message', qr.sysMessage);
-      error = $.el('span', {
-        id: 'error'
+      /*
+            http://code.google.com/p/chromium/issues/detail?id=20773
+            Let content scripts see other frames (instead of them being undefined)
+      
+            To access the parent, we have to break out of the sandbox and evaluate
+            in the global context.
+          */
+      $.globalEval(function() {
+        var data, href, node, textContent, _ref;
+        if (node = (_ref = document.querySelector('table font b')) != null ? _ref.firstChild : void 0) {
+          textContent = node.textContent, href = node.href;
+          data = JSON.stringify({
+            textContent: textContent,
+            href: href
+          });
+        } else {
+          data = '';
+        }
+        return parent.postMessage(data, '*');
       });
-      $.append(d.body, error);
       c = (_ref = $('b')) != null ? _ref.lastChild : void 0;
       if (!(c && c.nodeType === 8)) {
         return;
