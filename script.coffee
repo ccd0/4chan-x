@@ -213,11 +213,12 @@ $.extend $,
       textContent: "(#{code})()"
     $.append d.head, script
     $.rm script
-  xhr: (url, cb) ->
+  xhr: (url, cb, body) ->
+    method = if body then 'post' else 'get'
     r = new XMLHttpRequest()
     r.onload = cb
-    r.open 'get', url, true
-    r.send()
+    r.open method, url, true
+    r.send(body)
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -973,6 +974,7 @@ qr =
     iframe = $.el 'iframe',
       name: 'iframe'
       hidden: true
+      src: 'http://sys.4chan.org/post'
     $.append d.body, iframe
 
     #hack - nuke id so it doesn't grab focus when reloading
@@ -1068,7 +1070,6 @@ qr =
 
   message: (e) ->
     Recaptcha.reload()
-    $('iframe[name=iframe]').src = 'about:blank'
     fileCount = $('#files', qr.el).childElementCount
 
     {data} = e
@@ -1160,6 +1161,18 @@ qr =
     $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
   submit: (e) ->
+    e.preventDefault()
+
+    data =
+      board: g.BOARD
+
+    for el in $$ '[name]', qr.el when el.value
+      data[el.name] = el.value
+
+    $('iframe').contentWindow.postMessage JSON.stringify(data), '*'
+
+    return
+
     if msg = qr.postInvalid()
       e.preventDefault()
       alert msg
@@ -1183,7 +1196,33 @@ qr =
     $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
     qr.sage = /sage/i.test $('input[name=email]', @).value
 
+  foo: ->
+    body = $.el 'body',
+      innerHTML: @responseText
+
+    if node = $('table font b', body)?.firstChild
+      {textContent, href} = node
+      data = JSON.stringify {textContent, href}
+    else
+      data = ''
+    parent.postMessage data, '*'
+
+  sysMessage: (e) ->
+    data = JSON.parse e.data
+    {board} = data
+    delete data.board
+
+    formData = new FormData()
+    for key, val of data
+      formData.append key, val
+
+    x = $.xhr "http://sys.4chan.org/#{board}/post", qr.foo, formData
+
   sys: ->
+    $.bind window, 'message', qr.sysMessage
+
+    return
+
     if recaptcha = $ '#recaptcha_response_field' #post reporting
       $.bind recaptcha, 'keydown', Recaptcha.listener
       return

@@ -308,12 +308,13 @@
       $.append(d.head, script);
       return $.rm(script);
     },
-    xhr: function(url, cb) {
-      var r;
+    xhr: function(url, cb, body) {
+      var method, r;
+      method = body ? 'post' : 'get';
       r = new XMLHttpRequest();
       r.onload = cb;
-      r.open('get', url, true);
-      r.send();
+      r.open(method, url, true);
+      r.send(body);
       return r;
     },
     cache: function(url, cb) {
@@ -1225,7 +1226,8 @@
       qr.captchaTime = Date.now();
       iframe = $.el('iframe', {
         name: 'iframe',
-        hidden: true
+        hidden: true,
+        src: 'http://sys.4chan.org/post'
       });
       $.append(d.body, iframe);
       return $('#recaptcha_response_field').id = '';
@@ -1312,7 +1314,6 @@
     message: function(e) {
       var data, duration, fileCount;
       Recaptcha.reload();
-      $('iframe[name=iframe]').src = 'about:blank';
       fileCount = $('#files', qr.el).childElementCount;
       data = e.data;
       if (data) {
@@ -1414,7 +1415,20 @@
       return $('input[name=pwd]', qr.el).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
     },
     submit: function(e) {
-      var id, msg, op;
+      var data, el, id, msg, op, _i, _len, _ref;
+      e.preventDefault();
+      data = {
+        board: g.BOARD
+      };
+      _ref = $$('[name]', qr.el);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        if (el.value) {
+          data[el.name] = el.value;
+        }
+      }
+      $('iframe').contentWindow.postMessage(JSON.stringify(data), '*');
+      return;
       if (msg = qr.postInvalid()) {
         e.preventDefault();
         alert(msg);
@@ -1446,8 +1460,38 @@
       }
       return qr.sage = /sage/i.test($('input[name=email]', this).value);
     },
+    foo: function() {
+      var body, data, href, node, textContent, _ref;
+      body = $.el('body', {
+        innerHTML: this.responseText
+      });
+      if (node = (_ref = $('table font b', body)) != null ? _ref.firstChild : void 0) {
+        textContent = node.textContent, href = node.href;
+        data = JSON.stringify({
+          textContent: textContent,
+          href: href
+        });
+      } else {
+        data = '';
+      }
+      return parent.postMessage(data, '*');
+    },
+    sysMessage: function(e) {
+      var board, data, formData, key, val, x;
+      data = JSON.parse(e.data);
+      board = data.board;
+      delete data.board;
+      formData = new FormData();
+      for (key in data) {
+        val = data[key];
+        formData.append(key, val);
+      }
+      return x = $.xhr("http://sys.4chan.org/" + board + "/post", qr.foo, formData);
+    },
     sys: function() {
       var c, duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref, _ref2;
+      $.bind(window, 'message', qr.sysMessage);
+      return;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
