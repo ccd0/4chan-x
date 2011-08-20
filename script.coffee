@@ -1648,8 +1648,14 @@ Time =
 
 titlePost =
   init: ->
-    if tc = $('span.filetitle').textContent or $('blockquote').textContent
-      d.title = "/#{g.BOARD}/ - #{tc}"
+    el = $ 'span.filetitle'
+    if not el.textContent
+      el = $ 'blockquote'
+      if not el.textContent
+        return
+    span = $.el 'span',
+      innerHTML: el.innerHTML.replace /<br>/g, '\n'
+    d.title = "/#{g.BOARD}/ - #{span.textContent}"
 
 quoteBacklink =
   init: ->

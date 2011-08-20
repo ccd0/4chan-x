@@ -2057,10 +2057,18 @@
   };
   titlePost = {
     init: function() {
-      var tc;
-      if (tc = $('span.filetitle').textContent || $('blockquote').textContent) {
-        return d.title = "/" + g.BOARD + "/ - " + tc;
+      var el, span;
+      el = $('span.filetitle');
+      if (!el.textContent) {
+        el = $('blockquote');
+        if (!el.textContent) {
+          return;
+        }
       }
+      span = $.el('span', {
+        innerHTML: el.innerHTML.replace(/<br>/g, '\n')
+      });
+      return d.title = "/" + g.BOARD + "/ - " + span.textContent;
     }
   };
   quoteBacklink = {
