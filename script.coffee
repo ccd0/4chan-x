@@ -1535,9 +1535,15 @@ watcher =
     watcher.refresh()
 
   watch: (thread, id) ->
-    tc = $('span.filetitle', thread).textContent or $('blockquote', thread).textContent
+    el = $ 'span.filetitle'
+    if not el.textContent
+      el = $ 'blockquote'
+      if not el.textContent
+        return
+    span = $.el 'span',
+      innerHTML: el.innerHTML.replace /<br>/g, ' '
     props =
-      textContent: "/#{g.BOARD}/ - #{tc[...25]}"
+      textContent: "/#{g.BOARD}/ - #{span.textContent[...25]}"
       href: "/#{g.BOARD}/res/#{id}"
 
     watched = $.get 'watched', {}
@@ -1654,7 +1660,7 @@ titlePost =
       if not el.textContent
         return
     span = $.el 'span',
-      innerHTML: el.innerHTML.replace /<br>/g, '\n'
+      innerHTML: el.innerHTML.replace /<br>/g, ' '
     d.title = "/#{g.BOARD}/ - #{span.textContent}"
 
 quoteBacklink =

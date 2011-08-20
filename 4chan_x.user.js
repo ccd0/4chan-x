@@ -1868,10 +1868,19 @@
       return watcher.refresh();
     },
     watch: function(thread, id) {
-      var props, tc, watched, _name;
-      tc = $('span.filetitle', thread).textContent || $('blockquote', thread).textContent;
+      var el, props, span, watched, _name;
+      el = $('span.filetitle');
+      if (!el.textContent) {
+        el = $('blockquote');
+        if (!el.textContent) {
+          return;
+        }
+      }
+      span = $.el('span', {
+        innerHTML: el.innerHTML.replace(/<br>/g, ' ')
+      });
       props = {
-        textContent: "/" + g.BOARD + "/ - " + tc.slice(0, 25),
+        textContent: "/" + g.BOARD + "/ - " + span.textContent.slice(0, 25),
         href: "/" + g.BOARD + "/res/" + id
       };
       watched = $.get('watched', {});
@@ -2066,7 +2075,7 @@
         }
       }
       span = $.el('span', {
-        innerHTML: el.innerHTML.replace(/<br>/g, '\n')
+        innerHTML: el.innerHTML.replace(/<br>/g, ' ')
       });
       return d.title = "/" + g.BOARD + "/ - " + span.textContent;
     }
