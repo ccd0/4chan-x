@@ -296,6 +296,13 @@
     return object;
   };
   $.extend($, {
+    innerText: function(el) {
+      var span;
+      span = $.el('span', {
+        innerHTML: el.innerHTML.replace(/<br>/g, ' ')
+      });
+      return span.textContent;
+    },
     id: function(id) {
       return d.getElementById(id);
     },
@@ -1868,7 +1875,7 @@
       return watcher.refresh();
     },
     watch: function(thread, id) {
-      var el, props, span, watched, _name;
+      var el, props, watched, _name;
       el = $('span.filetitle');
       if (!el.textContent) {
         el = $('blockquote');
@@ -1876,11 +1883,8 @@
           return;
         }
       }
-      span = $.el('span', {
-        innerHTML: el.innerHTML.replace(/<br>/g, ' ')
-      });
       props = {
-        textContent: "/" + g.BOARD + "/ - " + span.textContent.slice(0, 25),
+        textContent: "/" + g.BOARD + "/ - " + ($.innerText(el).slice(0, 25)),
         href: "/" + g.BOARD + "/res/" + id
       };
       watched = $.get('watched', {});
@@ -2066,7 +2070,7 @@
   };
   titlePost = {
     init: function() {
-      var el, span;
+      var el;
       el = $('span.filetitle');
       if (!el.textContent) {
         el = $('blockquote');
@@ -2074,10 +2078,7 @@
           return;
         }
       }
-      span = $.el('span', {
-        innerHTML: el.innerHTML.replace(/<br>/g, ' ')
-      });
-      return d.title = "/" + g.BOARD + "/ - " + span.textContent;
+      return d.title = "/" + g.BOARD + "/ - " + ($.innerText(el));
     }
   };
   quoteBacklink = {

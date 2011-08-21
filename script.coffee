@@ -206,6 +206,9 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  innerText: (el) ->
+    span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
+    span.textContent
   id: (id) ->
     d.getElementById id
   globalEval: (code) ->
@@ -1540,10 +1543,8 @@ watcher =
       el = $ 'blockquote'
       if not el.textContent
         return
-    span = $.el 'span',
-      innerHTML: el.innerHTML.replace /<br>/g, ' '
     props =
-      textContent: "/#{g.BOARD}/ - #{span.textContent[...25]}"
+      textContent: "/#{g.BOARD}/ - #{$.innerText(el)[...25]}"
       href: "/#{g.BOARD}/res/#{id}"
 
     watched = $.get 'watched', {}
@@ -1659,9 +1660,7 @@ titlePost =
       el = $ 'blockquote'
       if not el.textContent
         return
-    span = $.el 'span',
-      innerHTML: el.innerHTML.replace /<br>/g, ' '
-    d.title = "/#{g.BOARD}/ - #{span.textContent}"
+    d.title = "/#{g.BOARD}/ - #{$.innerText el}"
 
 quoteBacklink =
   init: ->
