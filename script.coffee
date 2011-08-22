@@ -81,6 +81,16 @@ config =
       'Auto Update':  [true,  'Automatically fetch new posts']
     'Interval': 30
 
+# XXX chrome can't into `{log} = console`
+if console?
+  log = ->
+    console.log arguments...
+
+# XXX opera cannot into Object.keys
+if not Object.keys
+  Object.keys = (o) ->
+    key for key in o
+
 # flatten the config
 conf = {}
 ((parent, obj) ->
@@ -95,16 +105,6 @@ conf = {}
   else #constant
     conf[parent] = obj
 ) null, config
-
-# XXX chrome can't into `{log} = console`
-if console?
-  log = ->
-    console.log arguments...
-
-# XXX opera cannot into Object.keys
-if not Object.keys
-  Object.keys = (o) ->
-    key for key in o
 
 NAMESPACE = 'AEOS.4chan_x.'
 SECOND = 1000

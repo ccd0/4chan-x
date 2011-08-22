@@ -145,6 +145,22 @@
       'Interval': 30
     }
   };
+  if (typeof console !== "undefined" && console !== null) {
+    log = function() {
+      return console.log.apply(console, arguments);
+    };
+  }
+  if (!Object.keys) {
+    Object.keys = function(o) {
+      var key, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = o.length; _i < _len; _i++) {
+        key = o[_i];
+        _results.push(key);
+      }
+      return _results;
+    };
+  }
   conf = {};
   (function(parent, obj) {
     var key, val, _results;
@@ -165,22 +181,6 @@
       return conf[parent] = obj;
     }
   })(null, config);
-  if (typeof console !== "undefined" && console !== null) {
-    log = function() {
-      return console.log.apply(console, arguments);
-    };
-  }
-  if (!Object.keys) {
-    Object.keys = function(o) {
-      var key, _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = o.length; _i < _len; _i++) {
-        key = o[_i];
-        _results.push(key);
-      }
-      return _results;
-    };
-  }
   NAMESPACE = 'AEOS.4chan_x.';
   SECOND = 1000;
   MINUTE = 60 * SECOND;
