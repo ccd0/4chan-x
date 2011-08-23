@@ -1875,18 +1875,19 @@
       return watcher.refresh();
     },
     watch: function(thread, id) {
-      var el, props, watched, _name;
+      var el, watched, _name;
       el = $('span.filetitle', thread);
+      props.href = "/" + g.BOARD + "/res/" + id;
       if (!el.textContent) {
         el = $('blockquote', thread);
-        if (!el.textContent) {
-          return;
+        if (el.textContent) {
+          props.textContent = "/" + g.BOARD + "/ - " + ($.innerText(el).slice(0, 25));
+        } else {
+          props.textContent = d.title;
         }
+      } else {
+        props.textContent = "/" + g.BOARD + "/ - " + ($.innerText(el).slice(0, 25));
       }
-      props = {
-        textContent: "/" + g.BOARD + "/ - " + ($.innerText(el).slice(0, 25)),
-        href: "/" + g.BOARD + "/res/" + id
-      };
       watched = $.get('watched', {});
       watched[_name = g.BOARD] || (watched[_name] = {});
       watched[g.BOARD][id] = props;
