@@ -958,7 +958,7 @@ cooldown =
       for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
-      unless qr.postInvalid()
+      if qr.el and $('#auto', qr.el).checked or not qr.postInvalid()
         qr.submit.call $ 'form', qr.el
 
 qr =
@@ -1042,7 +1042,7 @@ qr =
           <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=#{challenge}>
           <input type=hidden name=mode value=regist>
           <div><input class=inputtext type=text name=email placeholder=E-mail>#{spoiler}</div>
-          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}></div>
+          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
           <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
           <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
           <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.get('captchas', []).length} captchas</span></div>
@@ -1539,7 +1539,8 @@ watcher =
 
   watch: (thread, id) ->
     el = $ 'span.filetitle', thread
-    props.href = "/#{g.BOARD}/res/#{id}"
+    props =
+      href: "/#{g.BOARD}/res/#{id}"
     if not el.textContent
       el = $ 'blockquote', thread
       if el.textContent
