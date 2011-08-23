@@ -938,7 +938,7 @@ cooldown =
       $.set g.BOARD+'/cooldown', time if $.get(g.BOARD+'/cooldown', 0) < time
     cooldown.start() if Date.now() < $.get g.BOARD+'/cooldown', 0
     $.bind window, 'storage', (e) -> cooldown.start() if e.key is "#{NAMESPACE}#{g.BOARD}/cooldown"
-    $('.postarea form').action += '?cooldown'
+    $('.postarea form').action += '?cooldown' if g.REPLY
 
   start: ->
     cooldown.duration = Math.ceil ($.get(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
@@ -958,7 +958,7 @@ cooldown =
       for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
-      unless qr.postInvalid()
+      if qr.el and $('#auto', qr.el).checked or not qr.postInvalid()
         qr.submit.call $ 'form', qr.el
 
 qr =
@@ -1042,7 +1042,7 @@ qr =
           <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=#{challenge}>
           <input type=hidden name=mode value=regist>
           <div><input class=inputtext type=text name=email placeholder=E-mail>#{spoiler}</div>
-          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}></div>
+          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
           <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
           <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
           <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.get('captchas', []).length} captchas</span></div>
@@ -1538,14 +1538,17 @@ watcher =
     watcher.refresh()
 
   watch: (thread, id) ->
-    el = $ 'span.filetitle'
-    if not el.textContent
-      el = $ 'blockquote'
-      if not el.textContent
-        return
+    el = $ 'span.filetitle', thread
     props =
-      textContent: "/#{g.BOARD}/ - #{$.innerText(el)[...25]}"
       href: "/#{g.BOARD}/res/#{id}"
+    if not el.textContent
+      el = $ 'blockquote', thread
+      if el.textContent
+        props.textContent = "/#{g.BOARD}/ - #{$.innerText(el)[...25]}"
+      else
+        props.textContent = d.title
+    else
+      props.textContent = "/#{g.BOARD}/ - #{$.innerText(el)[...25]}"
 
     watched = $.get 'watched', {}
     watched[g.BOARD] or= {}
@@ -1788,6 +1791,7 @@ quotePreview =
       qp.innerHTML = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
+      ui.hover()
   mouseout: ->
     $.removeClass el, 'qphl' if el = $.id @hash[1..]
     ui.hoverend()
