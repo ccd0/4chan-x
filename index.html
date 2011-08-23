@@ -2,26 +2,80 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>4chan x</title>
+    <title>4chan X</title>
+    <script type="text/javascript">
+      window.onload = function() {
+        var s = document.createElement('script'); s.async = true;
+        s.src = 'https://apis.google.com/js/plusone.js';
+        document.head.appendChild(s);
+      };
+    </script>
+    <style>
+    body {
+      font-family: Georgia, "Bitstream Charter", serif;
+      margin: auto;
+      text-align: justify;
+      width: 500px;
+    }
+    h1, h2, h3, h4 {
+      color: #DDD;
+      font-weight: 700;
+      text-transform: capitalize;
+      margin: 0;
+      opacity: .8;
+      overflow: hidden;
+      text-align: center;
+    }
+    h1 {
+      font-size: 110px;
+      text-shadow: 0 2px 2px #888;
+    }
+    h2 {
+      font-size: 100px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 2px #888;
+    }
+    h3 > * {
+      float: left;
+      width: 33%;
+    }
+    h4 > * {
+      float: left;
+      width: 50%;
+    }
+    a {
+      color: #FA0;
+      text-decoration: none;
+      opacity: .75;
+      -webkit-transition: opacity .2s;
+      -moz-transition: opacity .2s;
+      -o-transition: opacity .2s;
+    }
+    a:hover {
+      opacity: 1;
+    }
+    hr {
+      border: 1px #DDD solid
+    }
+    </style>
   </head>
   <body>
-    <a href="https://github.com/aeosynth/4chan-x"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/7afbc8b248c68eb468279e8c17986ad46549fb71/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub"></a>
-    <h1>4chan x <g:plusone></g:plusone></h1>
-    <p><strong><a href="https://github.com/aeosynth/4chan-x/raw/master/4chan_x.user.js">INSTALL</a></strong></p>
-    <p><a href="https://raw.github.com/aeosynth/4chan-x/master/changelog">changelog</a></p>
-    <p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img alt=Donate src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"></a></p>
-    <p>only the current version of browsers are supported. specifically, firefox 3.x is not supported. deal with it.</p>
-    <p>firefox: if you get a security error involving localStorage (check your error console with ctrl+shift+j), go to <code>about:config</code> and enable <code>dom.storage.enabled</code>.</p>
-    <p>For youtube embedding / linkification, check out <a href="http://userscripts.org/scripts/show/107707">YouLink</a>, which works on the entire web, not just 4chon.</p>
-    <p>for exhentai sauce, check out <a href="http://userscripts.org/scripts/show/108810">ExSauce</a>.</p>
-    <p><a href="http://chat.now.im/x/aeos">anonymous support throd</a></p>
-    <p><a href="https://github.com/aeosynth/4chan-x/issues">github issues tracker</a></p>
-    <script type="text/javascript">
-      (function() {
-        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-        po.src = 'https://apis.google.com/js/plusone.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-      })();
-    </script>
+    <h1>4chan x</h1>
+    <h2><a href="https://github.com/aeosynth/4chan-x/raw/master/4chan_x.user.js">install</a></h2>
+    <h3>
+      <a href="https://raw.github.com/aeosynth/4chan-x/master/changelog">changelog</a>
+      <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted">donate</a>
+      <div><g:plusone></g:plusone></div>
+    </h3>
+    <h4>
+      <a href="http://chat.now.im/x/aeos">anonymous support throd</a>
+      <a href="https://github.com/aeosynth/4chan-x/issues">GitHub issues tracker</a>
+    </h4>
+    <hr>
+    <p>The latest stable releases of Firefox, Chrome and Opera are supported.</p>
+    <p>Firefox: if you get a security error involving localStorage (check your error console with ctrl+shift+j), go to <code>about:config</code> and enable <code>dom.storage.enabled</code>.</p>
+    <hr>
+    <p>For linkification / youtube embedding , check out <a href="http://userscripts.org/scripts/show/107707">YouLink</a>, which works on the entire web, not just 4chan.</p>
+    <p>For exhentai sauce, check out <a href="http://userscripts.org/scripts/show/108810">ExSauce</a>.</p>
   </body>
 </html>
