@@ -1183,7 +1183,9 @@
           return cooldown.start();
         }
       });
-      return $('.postarea form').action += '?cooldown';
+      if (g.REPLY) {
+        return $('.postarea form').action += '?cooldown';
+      }
     },
     start: function() {
       var submit, _i, _len, _ref;
