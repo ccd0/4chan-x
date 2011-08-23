@@ -226,7 +226,7 @@
       return ui.height = d.body.clientHeight - el.offsetHeight;
     },
     drag: function(e) {
-      var bottom, el, left, right, top;
+      var bottom, el, left, right, style, top;
       el = ui.el;
       left = e.clientX - ui.dx;
       if (left < 10) {
@@ -242,10 +242,11 @@
         top = null;
       }
       bottom = top ? null : 0;
-      el.style.top = top;
-      el.style.right = right;
-      el.style.bottom = bottom;
-      return el.style.left = left;
+      style = el.style;
+      style.top = top;
+      style.right = right;
+      style.bottom = bottom;
+      return style.left = left;
     },
     dragend: function() {
       var el, id;
@@ -257,19 +258,20 @@
       return d.removeEventListener('mouseup', ui.dragend, false);
     },
     hover: function(e) {
-      var clientHeight, clientWidth, clientX, clientY, el, height, top, _ref;
+      var clientHeight, clientWidth, clientX, clientY, el, height, style, top, _ref;
       clientX = e.clientX, clientY = e.clientY;
       el = ui.el;
+      style = el.style;
       _ref = d.body, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
       height = el.offsetHeight;
       top = clientY - 120;
-      el.style.top = clientHeight < height || top < 0 ? 0 : top + height > clientHeight ? clientHeight - height : top;
+      style.top = clientHeight < height || top < 0 ? 0 : top + height > clientHeight ? clientHeight - height : top;
       if (clientX < clientWidth - 400) {
-        el.style.left = clientX + 45;
-        return el.style.right = null;
+        style.left = clientX + 45;
+        return style.right = null;
       } else {
-        el.style.left = null;
-        return el.style.right = clientWidth - clientX + 45;
+        style.left = null;
+        return style.right = clientWidth - clientX + 45;
       }
     },
     hoverend: function(e) {

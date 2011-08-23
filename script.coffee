@@ -153,10 +153,11 @@ ui =
     bottom = if top then null else 0
     #using null instead of '' is 4% faster
     #these 4 statements are 40% faster than 1 style.cssText
-    el.style.top    = top
-    el.style.right  = right
-    el.style.bottom = bottom
-    el.style.left   = left
+    {style} = el
+    style.top    = top
+    style.right  = right
+    style.bottom = bottom
+    style.left   = left
   dragend: ->
     #$ coffee -bpe '{a} = {b} = c'
     #var a, b;
@@ -170,11 +171,12 @@ ui =
   hover: (e) ->
     {clientX, clientY} = e
     {el} = ui
+    {style} = el
     {clientHeight, clientWidth} = d.body
     height = el.offsetHeight
 
     top = clientY - 120
-    el.style.top =
+    style.top =
       if clientHeight < height or top < 0
         0
       else if top + height > clientHeight
@@ -183,11 +185,11 @@ ui =
         top
 
     if clientX < clientWidth - 400
-      el.style.left  = clientX + 45
-      el.style.right = null
+      style.left  = clientX + 45
+      style.right = null
     else
-      el.style.left  = null
-      el.style.right = clientWidth - clientX + 45
+      style.left  = null
+      style.right = clientWidth - clientX + 45
 
   hoverend: (e) ->
     ui.el.parentNode.removeChild ui.el
