@@ -2284,9 +2284,10 @@
       } else {
         qp.innerHTML = "Loading " + id + "...";
         threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
-        return $.cache(this.pathname, (function() {
+        $.cache(this.pathname, (function() {
           return quotePreview.parse(this, id, threadID);
         }));
+        return ui.hover();
       }
     },
     mouseout: function() {
