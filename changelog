@@ -1,3 +1,10 @@
+GitHub
+- mayhem:
+  bring back auto posting
+  don't start the cooldown on thread creation
+- aeosynth:
+  show linebreaks as spaces in title & watcher
+
 11.8.15
 - aeosynth:
   convert qr from hidden iframes to ajax
