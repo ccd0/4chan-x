@@ -1538,9 +1538,9 @@ watcher =
     watcher.refresh()
 
   watch: (thread, id) ->
-    el = $ 'span.filetitle'
+    el = $ 'span.filetitle', thread
     if not el.textContent
-      el = $ 'blockquote'
+      el = $ 'blockquote', thread
       if not el.textContent
         return
     props =

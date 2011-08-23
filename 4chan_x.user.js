@@ -1876,9 +1876,9 @@
     },
     watch: function(thread, id) {
       var el, props, watched, _name;
-      el = $('span.filetitle');
+      el = $('span.filetitle', thread);
       if (!el.textContent) {
-        el = $('blockquote');
+        el = $('blockquote', thread);
         if (!el.textContent) {
           return;
         }
