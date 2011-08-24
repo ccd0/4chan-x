@@ -1604,8 +1604,8 @@ revealSpoilers =
       return if not (img = $ 'img[alt^=Spoiler]', root) or root.className is 'inline'
       img.removeAttribute 'height'
       img.removeAttribute 'width'
-      [_, board, nb] = img.parentNode.href.match /(\w+)\/src\/(\d+)/
-      img.src = "http://0.thumbs.4chan.org/#{board}/thumb/#{nb}s.jpg"
+      [_, board, imgID] = img.parentNode.href.match /(\w+)\/src\/(\d+)/
+      img.src = "http://0.thumbs.4chan.org/#{board}/thumb/#{imgID}s.jpg"
 
 Time =
   init: ->

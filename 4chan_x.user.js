@@ -1988,14 +1988,14 @@
   revealSpoilers = {
     init: function() {
       return g.callbacks.push(function(root) {
-        var board, img, nb, _, _ref;
+        var board, img, imgID, _, _ref;
         if (!(img = $('img[alt^=Spoiler]', root)) || root.className === 'inline') {
           return;
         }
         img.removeAttribute('height');
         img.removeAttribute('width');
-        _ref = img.parentNode.href.match(/(\w+)\/src\/(\d+)/), _ = _ref[0], board = _ref[1], nb = _ref[2];
-        return img.src = "http://0.thumbs.4chan.org/" + board + "/thumb/" + nb + "s.jpg";
+        _ref = img.parentNode.href.match(/(\w+)\/src\/(\d+)/), _ = _ref[0], board = _ref[1], imgID = _ref[2];
+        return img.src = "http://0.thumbs.4chan.org/" + board + "/thumb/" + imgID + "s.jpg";
       });
     }
   };
