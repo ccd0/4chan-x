@@ -1881,19 +1881,13 @@
     watch: function(thread, id) {
       var el, props, watched, _name;
       el = $('span.filetitle', thread);
-      props = {
-        href: "/" + g.BOARD + "/res/" + id
-      };
       if (!el.textContent) {
         el = $('blockquote', thread);
-        if (el.textContent) {
-          props.textContent = "/" + g.BOARD + "/ - " + ($.innerText(el).slice(0, 25));
-        } else {
-          props.textContent = d.title;
-        }
-      } else {
-        props.textContent = "/" + g.BOARD + "/ - " + ($.innerText(el).slice(0, 25));
       }
+      props = {
+        href: "/" + g.BOARD + "/res/" + id,
+        textContent: el.textContent ? "/" + g.BOARD + "/ - " + ($.innerText(el).slice(0, 25)) : d.title
+      };
       watched = $.get('watched', {});
       watched[_name = g.BOARD] || (watched[_name] = {});
       watched[g.BOARD][id] = props;

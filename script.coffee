@@ -1541,16 +1541,11 @@ watcher =
 
   watch: (thread, id) ->
     el = $ 'span.filetitle', thread
-    props =
-      href: "/#{g.BOARD}/res/#{id}"
     if not el.textContent
       el = $ 'blockquote', thread
-      if el.textContent
-        props.textContent = "/#{g.BOARD}/ - #{$.innerText(el)[...25]}"
-      else
-        props.textContent = d.title
-    else
-      props.textContent = "/#{g.BOARD}/ - #{$.innerText(el)[...25]}"
+    props =
+      href: "/#{g.BOARD}/res/#{id}"
+      textContent: if el.textContent then "/#{g.BOARD}/ - #{$.innerText(el)[...25]}" else d.title
 
     watched = $.get 'watched', {}
     watched[g.BOARD] or= {}
