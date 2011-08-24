@@ -960,7 +960,7 @@ cooldown =
       for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
-      if qr.el and $('#auto', qr.el).checked or not qr.postInvalid()
+      if qr.el and $('#auto', qr.el).checked and not qr.postInvalid()
         qr.submit.call $ 'form', qr.el
 
 qr =

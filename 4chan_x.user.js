@@ -1220,7 +1220,7 @@
           submit.disabled = false;
           submit.value = 'Submit';
         }
-        if (qr.el && $('#auto', qr.el).checked || !qr.postInvalid()) {
+        if (qr.el && $('#auto', qr.el).checked && !qr.postInvalid()) {
           return qr.submit.call($('form', qr.el));
         }
       }
