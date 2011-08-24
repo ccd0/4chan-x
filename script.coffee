@@ -1001,28 +1001,26 @@ qr =
 
   captchaNode: (e) ->
     return unless qr.el
-    {target} = e
-    $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + target.value
-    $('#recaptcha_challenge_field', qr.el).value = target.value
+    val = e.target.value
+    $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + val
+    qr.challenge = val
     qr.captchaTime = Date.now()
 
   captchaKeydown: (e) ->
     return unless e.keyCode is 13 and @value #enter, captcha filled
 
-    blank = !$('textarea', qr.el).value and !$('input[type=file]', qr.el).files.length
-    return unless blank or cooldown.duration
-
-    e.preventDefault()
-
     captchas = $.get 'captchas', []
     captchas.push
-      challenge: $('#recaptcha_challenge_field', qr.el).value
+      challenge: qr.challenge
       response: @value
       time: qr.captchaTime
     $.set 'captchas', captchas
-    @nextSibling.textContent = captchas.length + ' captchas'
+    $('#captchas', qr.el).textContent = captchas.length + ' captchas'
     Recaptcha.reload()
     @value = ''
+
+    if !$('textarea', qr.el).value and !$('input[type=file]', qr.el).files.length
+      e.preventDefault()
 
   close: ->
     $.rm qr.el
@@ -1038,7 +1036,7 @@ qr =
     #FIXME inlined cross-thread quotes
     THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
     spoiler = if $('.postarea label') then '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
-    challenge = $('#recaptcha_challenge_field').value
+    qr.challenge = $('#recaptcha_challenge_field').value
 
     html = "
       <a id=close title=close>X</a>
@@ -1050,13 +1048,13 @@ qr =
       <div class=autohide>
         <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
           <input type=hidden name=resto value=#{THREAD_ID}>
-          <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=#{challenge}>
+          <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field>
           <input type=hidden name=mode value=regist>
           <div><input class=inputtext type=text name=email value='#{email}' placeholder=E-mail>#{spoiler}</div>
           <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
           <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
-          <div><img src=http://www.google.com/recaptcha/api/image?c=#{challenge}></div>
-          <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>#{$.get('captchas', []).length} captchas</span></div>
+          <div><img src=http://www.google.com/recaptcha/api/image?c=#{qr.challenge}></div>
+          <div><input class=inputtext type=text autocomplete=off placeholder=Verification id=dummy><input type=hidden name=recaptcha_response_field id=recaptcha_response_field><span id=captchas>#{$.get('captchas', []).length} captchas</span></div>
           <div><input type=file name=upfile></div>
         </form>
         <div id=files></div>
@@ -1066,14 +1064,14 @@ qr =
       "
     qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
 
-    $.bind $('input[name=name]',          qr.el), 'mousedown', (e) -> e.stopPropagation()
-    $.bind $('input[name=upfile]',        qr.el), 'change', qr.validateFileSize
-    $.bind $('#close',                    qr.el), 'click', qr.close
-    $.bind $('form',                      qr.el), 'submit', qr.submit
-    $.bind $('#attach',                   qr.el), 'click', qr.attach
-    $.bind $('img',                       qr.el), 'click', Recaptcha.reload
-    $.bind $('#recaptcha_response_field', qr.el), 'keydown', Recaptcha.listener
-    $.bind $('#recaptcha_response_field', qr.el), 'keydown', qr.captchaKeydown
+    $.bind $('input[name=name]',   qr.el), 'mousedown', (e) -> e.stopPropagation()
+    $.bind $('input[name=upfile]', qr.el), 'change', qr.validateFileSize
+    $.bind $('#close',             qr.el), 'click', qr.close
+    $.bind $('form',               qr.el), 'submit', qr.submit
+    $.bind $('#attach',            qr.el), 'click', qr.attach
+    $.bind $('img',                qr.el), 'click', Recaptcha.reload
+    $.bind $('#dummy',             qr.el), 'keydown', Recaptcha.listener
+    $.bind $('#dummy',             qr.el), 'keydown', qr.captchaKeydown
 
     $.append d.body, qr.el
 
@@ -1116,9 +1114,6 @@ qr =
     content = $('textarea', qr.el).value or $('input[type=file]', qr.el).files.length
     return 'Error: No text entered.' unless content
 
-    responseField = $ '#recaptcha_response_field', qr.el
-    return if responseField.value
-
     ###
     captchas expire after 5 hours (couldn't find an official source, so
     anonymous empirically verified). cutoff 5 minutes before then, b/c posting
@@ -1132,12 +1127,12 @@ qr =
         break
     $.set 'captchas', captchas
 
-    responseField.nextSibling.textContent = captchas.length + ' captchas'
+    $('#captchas', qr.el).textContent = captchas.length + ' captchas'
 
     return 'You forgot to type in the verification.' unless captcha
 
     $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
-    responseField.value = captcha.response
+    $('#recaptcha_response_field',  qr.el).value = captcha.response
 
     false
 
@@ -1177,7 +1172,7 @@ qr =
       e.preventDefault()
       alert msg
       if msg is 'You forgot to type in the verification.'
-        $('#recaptcha_response_field', qr.el).focus()
+        $('#dummy', qr.el).focus()
       return
 
     if conf['Auto Watch Reply'] and conf['Thread Watcher']
