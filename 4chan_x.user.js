@@ -1323,7 +1323,6 @@
     },
     message: function(e) {
       var data, duration, fileCount;
-      Recaptcha.reload();
       $('iframe[name=iframe]').src = 'about:blank';
       fileCount = $('#files', qr.el).childElementCount;
       data = e.data;
@@ -1363,7 +1362,7 @@
       return $.bind(quote, 'click', qr.quote);
     },
     postInvalid: function() {
-      var captcha, captchas, content, cutoff;
+      var captcha, captchas, content, cutoff, dummy, response;
       content = $('textarea', qr.el).value || $('input[type=file]', qr.el).files.length;
       if (!content) {
         return 'Error: No text entered.';
@@ -1382,7 +1381,16 @@
       $.set('captchas', captchas);
       $('#captchas', qr.el).textContent = captchas.length + ' captchas';
       if (!captcha) {
-        return 'You forgot to type in the verification.';
+        dummy = $('#dummy', qr.el);
+        if (!(response = dummy.value)) {
+          return 'You forgot to type in the verification';
+        }
+        captcha = {
+          challenge: qr.challenge,
+          response: response
+        };
+        dummy.value = '';
+        Recaptcha.reload();
       }
       $('#recaptcha_challenge_field', qr.el).value = captcha.challenge;
       $('#recaptcha_response_field', qr.el).value = captcha.response;

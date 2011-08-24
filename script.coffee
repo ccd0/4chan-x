@@ -1076,7 +1076,6 @@ qr =
     $.append d.body, qr.el
 
   message: (e) ->
-    Recaptcha.reload()
     $('iframe[name=iframe]').src = 'about:blank'
     fileCount = $('#files', qr.el).childElementCount
 
@@ -1128,7 +1127,14 @@ qr =
 
     $('#captchas', qr.el).textContent = captchas.length + ' captchas'
 
-    return 'You forgot to type in the verification.' unless captcha
+    unless captcha
+      dummy = $ '#dummy', qr.el
+      return 'You forgot to type in the verification' unless response = dummy.value
+      captcha =
+        challenge: qr.challenge
+        response: response
+      dummy.value = ''
+      Recaptcha.reload()
 
     $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
     $('#recaptcha_response_field',  qr.el).value = captcha.response
