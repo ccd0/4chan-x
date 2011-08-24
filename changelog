@@ -1,4 +1,6 @@
 master
+- aeosynth:
+  updater: scroll background tabs
 
 2.18.0
 - mayhem:
