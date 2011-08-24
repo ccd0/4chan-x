@@ -1297,21 +1297,21 @@
       return qr.el = null;
     },
     dialog: function(link) {
-      var THREAD_ID, c, challenge, html, m, spoiler, submitDisabled, submitValue;
+      var THREAD_ID, c, challenge, email, html, m, name, pwd, spoiler, submitDisabled, submitValue;
+      c = d.cookie;
+      name = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
+      email = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
+      pwd = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
       submitValue = $('#com_submit').value;
       submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       challenge = $('#recaptcha_challenge_field').value;
-      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name placeholder=Name form=qr_form>        Quick Reply      </div>      <div class=autohide>        <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>          <input type=hidden name=resto value=" + THREAD_ID + ">          <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">          <input type=hidden name=mode value=regist>          <div><input class=inputtext type=text name=email placeholder=E-mail>" + spoiler + "</div>          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>          <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>          <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>          <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.get('captchas', []).length) + " captchas</span></div>          <div><input type=file name=upfile></div>        </form>        <div id=files></div>        <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8><a id=attach>attach another file</a></div>      </div>      <a id=error class=error></a>      ";
+      html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name value='" + name + "' placeholder=Name form=qr_form>        Quick Reply      </div>      <div class=autohide>        <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>          <input type=hidden name=resto value=" + THREAD_ID + ">          <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field value=" + challenge + ">          <input type=hidden name=mode value=regist>          <div><input class=inputtext type=text name=email value='" + email + "' placeholder=E-mail>" + spoiler + "</div>          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>          <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>          <div><img src=http://www.google.com/recaptcha/api/image?c=" + challenge + "></div>          <div><input class=inputtext type=text name=recaptcha_response_field placeholder=Verification autocomplete=off id=recaptcha_response_field><span class=captcha>" + ($.get('captchas', []).length) + " captchas</span></div>          <div><input type=file name=upfile></div>        </form>        <div id=files></div>        <div><input class=inputtext type=password name=pwd value='" + pwd + "' placeholder=Password form=qr_form maxlength=8><a id=attach>attach another file</a></div>      </div>      <a id=error class=error></a>      ";
       qr.el = ui.dialog('qr', {
         top: '0px',
         left: '0px'
       }, html);
-      c = d.cookie;
-      $('input[name=name]', qr.el).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      $('input[name=email]', qr.el).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      $('input[name=pwd]', qr.el).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
       $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
         return e.stopPropagation();
       });
