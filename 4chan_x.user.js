@@ -1435,6 +1435,7 @@
       $('[name=sub]', qr.el).value = '';
       $('[name=com]', qr.el).value = '';
       $('[name=recaptcha_response_field]', qr.el).value = '';
+      $('[name=spoiler]', qr.el).checked = false;
       oldFile = $('[type=file]', qr.el);
       newFile = $.el('input', {
         type: 'file',

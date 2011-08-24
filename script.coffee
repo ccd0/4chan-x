@@ -1176,6 +1176,7 @@ qr =
     $('[name=sub]', qr.el).value = ''
     $('[name=com]', qr.el).value = ''
     $('[name=recaptcha_response_field]', qr.el).value = ''
+    $('[name=spoiler]', qr.el).checked = false
     # XXX opera doesn't allow resetting file inputs w/ file.value = ''
     oldFile = $ '[type=file]', qr.el
     newFile = $.el 'input', type: 'file', name: 'upfile', accept: qr.acceptFiles
