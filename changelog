@@ -1,5 +1,8 @@
 GitHub
+
+2.18.0
 - mayhem:
+  back to normal versioning
   bring back auto posting
   don't start the cooldown on thread creation
   limit the file upload dialog to the accepted file types (qr)
