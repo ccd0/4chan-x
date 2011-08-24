@@ -996,7 +996,7 @@ qr =
     $.replace oldFile, file
 
   autoPost: ->
-    if qr.el and $('#auto', qr.el).checked and not qr.postInvalid()
+    if qr.el and $('#auto', qr.el).checked
       qr.submit.call $ 'form', qr.el
 
   captchaNode: (e) ->
@@ -1173,8 +1173,9 @@ qr =
     $.replace oldFile, newFile
 
   submit: (e) ->
+    #XXX `e` won't exist if we're here from `qr.submit.call form`.
     if msg = qr.postInvalid()
-      e.preventDefault()
+      e.preventDefault?()
       alert msg
       if msg is 'You forgot to type in the verification.'
         $('#dummy', qr.el).focus()

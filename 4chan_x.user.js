@@ -1257,7 +1257,7 @@
       return $.replace(oldFile, file);
     },
     autoPost: function() {
-      if (qr.el && $('#auto', qr.el).checked && !qr.postInvalid()) {
+      if (qr.el && $('#auto', qr.el).checked) {
         return qr.submit.call($('form', qr.el));
       }
     },
@@ -1435,7 +1435,9 @@
     submit: function(e) {
       var id, msg, op;
       if (msg = qr.postInvalid()) {
-        e.preventDefault();
+        if (typeof e.preventDefault === "function") {
+          e.preventDefault();
+        }
         alert(msg);
         if (msg === 'You forgot to type in the verification.') {
           $('#dummy', qr.el).focus();
