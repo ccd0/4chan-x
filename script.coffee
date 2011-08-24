@@ -960,8 +960,7 @@ cooldown =
       for submit in submits
         submit.disabled = false
         submit.value = 'Submit'
-      if qr.el and $('#auto', qr.el).checked and not qr.postInvalid()
-        qr.submit.call $ 'form', qr.el
+      qr.autoPost()
 
 qr =
   # TODO
@@ -994,6 +993,10 @@ qr =
     file = fileDiv.firstChild
     oldFile = $ '#qr_form input[type=file]', qr.el
     $.replace oldFile, file
+
+  autoPost: ->
+    if qr.el and $('#auto', qr.el).checked and not qr.postInvalid()
+      qr.submit.call $ 'form', qr.el
 
   captchaNode: (e) ->
     return unless qr.el

@@ -1220,9 +1220,7 @@
           submit.disabled = false;
           submit.value = 'Submit';
         }
-        if (qr.el && $('#auto', qr.el).checked && !qr.postInvalid()) {
-          return qr.submit.call($('form', qr.el));
-        }
+        return qr.autoPost();
       }
     }
   };
@@ -1257,6 +1255,11 @@
       file = fileDiv.firstChild;
       oldFile = $('#qr_form input[type=file]', qr.el);
       return $.replace(oldFile, file);
+    },
+    autoPost: function() {
+      if (qr.el && $('#auto', qr.el).checked && !qr.postInvalid()) {
+        return qr.submit.call($('form', qr.el));
+      }
     },
     captchaNode: function(e) {
       var target;
