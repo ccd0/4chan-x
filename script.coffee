@@ -976,7 +976,7 @@ qr =
     qr.captchaTime = Date.now()
 
     qr.spoiler = if $('.postarea label') then '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
-    qr.acceptFiles = $('.rules').textContent.match(/: (.+) /)[1].replace /[A-Z]{3}/g, (type) ->
+    qr.acceptFiles = $('.rules').textContent.match(/: (.+) /)[1].replace /\w+/g, (type) ->
       switch type
         when 'JPG'
           'image/JPEG'
