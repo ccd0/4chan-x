@@ -975,6 +975,7 @@ qr =
     $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode
     qr.captchaTime = Date.now()
 
+    qr.spoiler = if $('.postarea label') then '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
     qr.acceptFiles = $('.rules').textContent.match(/:(.+)/)[1].replace /[A-Z]{3}/g, (type) ->
       switch type
         when 'JPG'
@@ -1044,7 +1045,6 @@ qr =
     submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
     #FIXME inlined cross-thread quotes
     THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
-    spoiler = if $('.postarea label') then '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
     qr.challenge = $('#recaptcha_challenge_field').value
 
     html = "
@@ -1059,7 +1059,7 @@ qr =
           <input type=hidden name=resto value=#{THREAD_ID}>
           <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field>
           <input type=hidden name=mode value=regist>
-          <div><input class=inputtext type=text name=email value='#{email}' placeholder=E-mail>#{spoiler}</div>
+          <div><input class=inputtext type=text name=email value='#{email}' placeholder=E-mail>#{qr.spoiler}</div>
           <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
           <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
           <div><img src=http://www.google.com/recaptcha/api/image?c=#{qr.challenge}></div>
