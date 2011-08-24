@@ -1060,8 +1060,8 @@ qr =
       "
     qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
 
-    qr.refresh()
-    $('textarea', qr.el).value = $('textarea').value
+    for el in $$ 'form[name=post] [name]'
+      $("[name=#{el.name}]", qr.el).value = el.value
 
     $.bind $('input[name=name]',          qr.el), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('input[name=upfile]',        qr.el), 'change', qr.validateFileSize
@@ -1161,11 +1161,13 @@ qr =
     ta.value += text
 
   refresh: ->
-    $('form', qr.el).reset()
-    c = d.cookie
-    $('input[name=name]',  qr.el).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
-    $('input[name=email]', qr.el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
-    $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
+    $('[name=sub]', qr.el).value = ''
+    $('[name=com]', qr.el).value = ''
+    $('[name=recaptcha_response_field]', qr.el).value = ''
+    # XXX opera doesn't allow resetting file inputs w/ file.value = ''
+    oldFile = $ '[type=file]', qr.el
+    newFile = $.el 'input', type: 'file', name: 'upfile'
+    $.replace oldFile, newFile
 
   submit: (e) ->
     if msg = qr.postInvalid()

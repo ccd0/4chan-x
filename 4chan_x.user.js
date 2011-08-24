@@ -1297,7 +1297,7 @@
       return qr.el = null;
     },
     dialog: function(link) {
-      var THREAD_ID, challenge, html, spoiler, submitDisabled, submitValue;
+      var THREAD_ID, challenge, el, html, spoiler, submitDisabled, submitValue, _i, _len, _ref;
       submitValue = $('#com_submit').value;
       submitDisabled = $('#com_submit').disabled ? 'disabled' : '';
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
@@ -1308,8 +1308,11 @@
         top: '0px',
         left: '0px'
       }, html);
-      qr.refresh();
-      $('textarea', qr.el).value = $('textarea').value;
+      _ref = $$('form[name=post] [name]');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        el = _ref[_i];
+        $("[name=" + el.name + "]", qr.el).value = el.value;
+      }
       $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
         return e.stopPropagation();
       });
@@ -1419,12 +1422,16 @@
       return ta.value += text;
     },
     refresh: function() {
-      var c, m;
-      $('form', qr.el).reset();
-      c = d.cookie;
-      $('input[name=name]', qr.el).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      $('input[name=email]', qr.el).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      return $('input[name=pwd]', qr.el).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
+      var newFile, oldFile;
+      $('[name=sub]', qr.el).value = '';
+      $('[name=com]', qr.el).value = '';
+      $('[name=recaptcha_response_field]', qr.el).value = '';
+      oldFile = $('[type=file]', qr.el);
+      newFile = $.el('input', {
+        type: 'file',
+        name: 'upfile'
+      });
+      return $.replace(oldFile, newFile);
     },
     submit: function(e) {
       var id, msg, op;
