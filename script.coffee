@@ -1060,8 +1060,10 @@ qr =
       "
     qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
 
-    for el in $$ 'form[name=post] [name]'
-      $("[name=#{el.name}]", qr.el).value = el.value
+    c = d.cookie
+    $('input[name=name]',  qr.el).value = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
+    $('input[name=email]', qr.el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+    $('input[name=pwd]',   qr.el).value = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
     $.bind $('input[name=name]',          qr.el), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('input[name=upfile]',        qr.el), 'change', qr.validateFileSize
