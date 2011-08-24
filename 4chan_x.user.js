@@ -140,6 +140,7 @@
     updater: {
       checkbox: {
         'Scrolling': [false, 'Scroll updated posts into view. Only enabled at bottom of page.'],
+        'Scroll BG': [false, 'Scroll background tabs'],
         'Verbose': [true, 'Show countdown timer, new post count'],
         'Auto Update': [true, 'Automatically fetch new posts']
       },
@@ -1678,12 +1679,16 @@
     init: function() {
       var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
       if (conf['Scrolling']) {
-        $.bind(window, 'focus', (function() {
-          return updater.focus = true;
-        }));
-        $.bind(window, 'blur', (function() {
-          return updater.focus = false;
-        }));
+        if (conf['Scroll BG']) {
+          updater.focus = true;
+        } else {
+          $.bind(window, 'focus', (function() {
+            return updater.focus = true;
+          }));
+          $.bind(window, 'blur', (function() {
+            return updater.focus = false;
+          }));
+        }
       }
       html = "<div class=move><span id=count></span> <span id=timer>-" + conf['Interval'] + "</span></div>";
       checkbox = config.updater.checkbox;
