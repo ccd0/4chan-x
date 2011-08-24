@@ -1232,7 +1232,7 @@
       $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode);
       qr.captchaTime = Date.now();
       qr.spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
-      qr.acceptFiles = $('.rules').textContent.match(/:(.+)/)[1].replace(/[A-Z]{3}/g, function(type) {
+      qr.acceptFiles = $('.rules').textContent.match(/: (.+) /)[1].replace(/[A-Z]{3}/g, function(type) {
         switch (type) {
           case 'JPG':
             return 'image/JPEG';
