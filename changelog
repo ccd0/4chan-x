@@ -2,6 +2,7 @@ GitHub
 - mayhem:
   bring back auto posting
   don't start the cooldown on thread creation
+  limit the file upload dialog to the accepted file types (qr)
 - aeosynth:
   show linebreaks as spaces in title & watcher
   auto posting fixes

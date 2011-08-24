@@ -975,6 +975,15 @@ qr =
     $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode
     qr.captchaTime = Date.now()
 
+    qr.acceptFiles = $('.rules').textContent.match(/:(.+)/)[1].replace /[A-Z]{3}/g, (type) ->
+      switch type
+        when 'JPG'
+          'image/JPEG'
+        when 'PDF'
+          'application/' + type
+        else
+          'image/' + type
+
     iframe = $.el 'iframe',
       name: 'iframe'
       hidden: true
@@ -984,7 +993,7 @@ qr =
     $('#recaptcha_response_field').id = ''
 
   attach: ->
-    fileDiv = $.el 'div', innerHTML: '<input type=file name=upfile><a>X</a>'
+    fileDiv = $.el 'div', innerHTML: "<input type=file name=upfile accept='#{qr.acceptFiles}'><a>X</a>"
     $.bind fileDiv.firstChild, 'change', qr.validateFileSize
     $.bind fileDiv.lastChild, 'click', (-> $.rm @parentNode)
     $.append $('#files', qr.el), fileDiv
@@ -1055,7 +1064,7 @@ qr =
           <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
           <div><img src=http://www.google.com/recaptcha/api/image?c=#{qr.challenge}></div>
           <div><input class=inputtext type=text autocomplete=off placeholder=Verification id=dummy><input type=hidden name=recaptcha_response_field id=recaptcha_response_field><span id=captchas>#{$.get('captchas', []).length} captchas</span></div>
-          <div><input type=file name=upfile></div>
+          <div><input type=file name=upfile accept='#{qr.acceptFiles}'></div>
         </form>
         <div id=files></div>
         <div><input class=inputtext type=password name=pwd value='#{pwd}' placeholder=Password form=qr_form maxlength=8><a id=attach>attach another file</a></div>
@@ -1169,7 +1178,7 @@ qr =
     $('[name=recaptcha_response_field]', qr.el).value = ''
     # XXX opera doesn't allow resetting file inputs w/ file.value = ''
     oldFile = $ '[type=file]', qr.el
-    newFile = $.el 'input', type: 'file', name: 'upfile'
+    newFile = $.el 'input', type: 'file', name: 'upfile', accept: qr.acceptFiles
     $.replace oldFile, newFile
 
   submit: (e) ->
@@ -1247,7 +1256,7 @@ qr =
   validateFileSize: (e) ->
     return unless @files[0].size > $('input[name=MAX_FILE_SIZE]').value
 
-    file = $.el 'input', type: 'file', name: 'upfile'
+    file = $.el 'input', type: 'file', name: 'upfile', accept: qr.acceptFiles
     $.bind file, 'change', qr.validateFileSize
     $.replace @, file
 
