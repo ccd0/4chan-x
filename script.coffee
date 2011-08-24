@@ -1115,9 +1115,8 @@ qr =
     return 'Error: No text entered.' unless content
 
     ###
-    captchas expire after 5 hours (couldn't find an official source, so
-    anonymous empirically verified). cutoff 5 minutes before then, b/c posting
-    takes time.
+    captchas expire after 5 hours (emperically verified). cutoff 5 minutes
+    before then, b/c posting takes time.
     ###
 
     cutoff = Date.now() - 5*HOUR + 5*MINUTE
