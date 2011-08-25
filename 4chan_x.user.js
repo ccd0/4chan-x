@@ -2795,6 +2795,13 @@
       $.addStyle(main.css);
       if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
         Recaptcha.init();
+        if (g.REPLY && conf['Auto Watch Reply'] && conf['Thread Watcher']) {
+          $.bind(form, 'submit', function() {
+            if ($('img.favicon').src === Favicon.empty) {
+              return watcher.watch(null, g.THREAD_ID);
+            }
+          });
+        }
       }
       threading.init();
       if (g.REPLY && (id = location.hash.slice(1)) && /\d/.test(id[0]) && !$.id(id)) {

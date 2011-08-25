@@ -2205,6 +2205,9 @@ main =
     #recaptcha may be blocked, eg by noscript
     if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
       Recaptcha.init()
+      if g.REPLY and conf['Auto Watch Reply'] and conf['Thread Watcher']
+        $.bind form, 'submit', -> if $('img.favicon').src is Favicon.empty
+            watcher.watch null, g.THREAD_ID
 
     #major features
     threading.init()
