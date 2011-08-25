@@ -1887,7 +1887,7 @@
       var props, watched, _name;
       props = {
         href: "/" + g.BOARD + "/res/" + id,
-        textContent: getTitle(thread).slice(0, 25)
+        textContent: getTitle(thread).slice(0, 30)
       };
       watched = $.get('watched', {});
       watched[_name = g.BOARD] || (watched[_name] = {});
