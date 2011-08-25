@@ -1426,6 +1426,9 @@
     },
     submit: function(e) {
       var id, msg, op;
+      if (this.id !== 'qr_form') {
+        return;
+      }
       if (msg = qr.postInvalid()) {
         if (typeof e.preventDefault === "function") {
           e.preventDefault();
@@ -1446,9 +1449,6 @@
             watcher.watch(op, id);
           }
         }
-      }
-      if (this.id !== 'qr_form') {
-        return;
       }
       if (!e) {
         this.submit();

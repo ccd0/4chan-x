@@ -1176,6 +1176,8 @@ qr =
     $.replace oldFile, newFile
 
   submit: (e) ->
+    return unless @id is 'qr_form'
+
     #XXX `e` won't exist if we're here from `qr.submit.call form`.
     if msg = qr.postInvalid()
       e.preventDefault?()
@@ -1192,8 +1194,6 @@ qr =
         op = $.id id
         if $('img.favicon', op).src is Favicon.empty
           watcher.watch op, id
-
-    return unless @id is 'qr_form'
 
     if !e then @submit()
     $('#error', qr.el).textContent = ''
