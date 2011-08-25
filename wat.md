@@ -1,5 +1,5 @@
 ---
-title: oh god
+layout: default
 ---
 
 # what is this
