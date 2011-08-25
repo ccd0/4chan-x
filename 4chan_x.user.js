@@ -1433,12 +1433,14 @@
       return ta.value += text;
     },
     refresh: function() {
-      var newFile, oldFile;
+      var newFile, oldFile, _ref;
       $('[name=sub]', qr.el).value = '';
       $('[name=com]', qr.el).value = '';
       $('[name=recaptcha_response_field]', qr.el).value = '';
       if (!conf['Remember Spoiler']) {
-        $('[name=spoiler]', qr.el).checked = false;
+        if ((_ref = $('[name=spoiler]', qr.el)) != null) {
+          _ref.checked = false;
+        }
       }
       oldFile = $('[type=file]', qr.el);
       newFile = $.el('input', {
