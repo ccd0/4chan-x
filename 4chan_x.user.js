@@ -1898,10 +1898,13 @@
       el = $('span.filetitle', thread);
       if (!el.textContent) {
         el = $('blockquote', thread);
+        if (!el.textContent) {
+          el = $('span.postername', thread);
+        }
       }
       props = {
         href: "/" + g.BOARD + "/res/" + id,
-        textContent: el.textContent ? "/" + g.BOARD + "/ - " + ($.innerText(el).slice(0, 25)) : d.title
+        textContent: "/" + g.BOARD + "/ - " + ($.innerText(el).slice(0, 25))
       };
       watched = $.get('watched', {});
       watched[_name = g.BOARD] || (watched[_name] = {});

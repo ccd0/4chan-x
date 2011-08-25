@@ -1561,9 +1561,11 @@ watcher =
     el = $ 'span.filetitle', thread
     if not el.textContent
       el = $ 'blockquote', thread
+      if not el.textContent
+        el = $ 'span.postername', thread
     props =
       href: "/#{g.BOARD}/res/#{id}"
-      textContent: if el.textContent then "/#{g.BOARD}/ - #{$.innerText(el)[...25]}" else d.title
+      textContent: "/#{g.BOARD}/ - #{$.innerText(el)[...25]}"
 
     watched = $.get 'watched', {}
     watched[g.BOARD] or= {}
