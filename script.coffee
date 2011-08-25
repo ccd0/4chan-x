@@ -210,9 +210,6 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
-  innerText: (el) ->
-    span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
-    span.textContent
   id: (id) ->
     d.getElementById id
   globalEval: (code) ->
@@ -1558,14 +1555,9 @@ watcher =
     watcher.refresh()
 
   watch: (thread, id) ->
-    el = $ 'span.filetitle', thread
-    if not el.textContent
-      el = $ 'blockquote', thread
-      if not el.textContent
-        el = $ 'span.postername', thread
     props =
       href: "/#{g.BOARD}/res/#{id}"
-      textContent: "/#{g.BOARD}/ - #{$.innerText(el)[...25]}"
+      textContent: getTitle thread
 
     watched = $.get 'watched', {}
     watched[g.BOARD] or= {}
@@ -1673,14 +1665,18 @@ Time =
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
     y: -> Time.date.getFullYear() - 2000
 
+getTitle = (thread) ->
+  el = $ 'span.filetitle', thread
+  if not el.textContent
+    el = $ 'blockquote', thread
+    if not el.textContent
+      el = $ 'span.postername', thread
+  span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
+  "/#{g.BOARD}/ - #{span.textContent}"
+
 titlePost =
   init: ->
-    el = $ 'span.filetitle'
-    if not el.textContent
-      el = $ 'blockquote'
-      if not el.textContent
-        return
-    d.title = "/#{g.BOARD}/ - #{$.innerText el}"
+    d.title = getTitle()
 
 quoteBacklink =
   init: ->

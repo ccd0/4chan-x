@@ -58,7 +58,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -300,13 +300,6 @@
     return object;
   };
   $.extend($, {
-    innerText: function(el) {
-      var span;
-      span = $.el('span', {
-        innerHTML: el.innerHTML.replace(/<br>/g, ' ')
-      });
-      return span.textContent;
-    },
     id: function(id) {
       return d.getElementById(id);
     },
@@ -1894,17 +1887,10 @@
       return watcher.refresh();
     },
     watch: function(thread, id) {
-      var el, props, watched, _name;
-      el = $('span.filetitle', thread);
-      if (!el.textContent) {
-        el = $('blockquote', thread);
-        if (!el.textContent) {
-          el = $('span.postername', thread);
-        }
-      }
+      var props, watched, _name;
       props = {
         href: "/" + g.BOARD + "/res/" + id,
-        textContent: "/" + g.BOARD + "/ - " + ($.innerText(el).slice(0, 25))
+        textContent: getTitle(thread)
       };
       watched = $.get('watched', {});
       watched[_name = g.BOARD] || (watched[_name] = {});
@@ -2087,17 +2073,23 @@
       }
     }
   };
+  getTitle = function(thread) {
+    var el, span;
+    el = $('span.filetitle', thread);
+    if (!el.textContent) {
+      el = $('blockquote', thread);
+      if (!el.textContent) {
+        el = $('span.postername', thread);
+      }
+    }
+    span = $.el('span', {
+      innerHTML: el.innerHTML.replace(/<br>/g, ' ')
+    });
+    return "/" + g.BOARD + "/ - " + span.textContent;
+  };
   titlePost = {
     init: function() {
-      var el;
-      el = $('span.filetitle');
-      if (!el.textContent) {
-        el = $('blockquote');
-        if (!el.textContent) {
-          return;
-        }
-      }
-      return d.title = "/" + g.BOARD + "/ - " + ($.innerText(el));
+      return d.title = getTitle();
     }
   };
   quoteBacklink = {
