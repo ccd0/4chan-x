@@ -788,7 +788,7 @@ options =
       <div class='reply dialog'>
         <div id=optionsbar>
           <div id=floaty>
-            <a name=main>main</a> | <a name=flavors>sauce</a> | <a name=time>time</a> | <a name=keybinds>keybinds</a>
+            <label for=main_tab>main</label> | <label for=flavors_tab>sauce</label> | <label for=time_tab>time</label> | <label for=keybinds_tab>keybinds</label>
           </div>
           <div id=credits>
             <a href=http://aeosynth.github.com/4chan-x/>4chan X</a> |
@@ -799,10 +799,12 @@ options =
         </div>
         <hr>
         <div id=content>
-          <div id=main>
-          </div>
-          <textarea name=flavors id=flavors hidden>#{conf['flavors']}</textarea>
-          <div id=time hidden>
+          <input type=radio name=tab hidden id=main_tab checked>
+          <div id=main></div>
+          <input type=radio name=tab hidden id=flavors_tab>
+          <textarea name=flavors id=flavors>#{conf['flavors']}</textarea>
+          <input type=radio name=tab hidden id=time_tab>
+          <div id=time>
             <div><input type=text name=time value='#{conf['time']}'> <span id=timePreview></span></div>
             <table>
               <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
@@ -833,7 +835,8 @@ options =
               </tbody>
             </table>
           </div>
-          <div id=keybinds hidden>
+          <input type=radio name=tab hidden id=keybinds_tab>
+          <div id=keybinds>
             <table>
               <tbody>
                 <tr><th>Actions</th><th>Keybinds</th></tr>
@@ -879,12 +882,12 @@ options =
         $.append ul, li
       $.append main, ul
     li = $.el 'li',
-      innerHTML: "<input type=button value='hidden: #{hiddenNum}'> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `show stubs` disabled."
+      innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `show stubs` disabled."
     $.append hidingul, li
 
-    for input in $$ 'input[type=checkbox]', dialog
+    for input in $$ '#main input', dialog
       $.bind input, 'click', $.cb.checked
-    $.bind $('input[type=button]', dialog), 'click', options.clearHidden
+    $.bind $('button', dialog), 'click', options.clearHidden
     $.bind link, 'click', options.tab for link in $$ '#floaty a', dialog
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.time
@@ -907,19 +910,12 @@ options =
     $.bind overlay, 'click', -> $.rm overlay
     $.bind dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
 
-  tab: ->
-    for div in $('#content').children
-      if div.id is @name
-        $.show div
-      else
-        $.hide div
-
   clearHidden: (e) ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
     # not the number of posts actually hidden on the page.
     $.delete "hiddenReplies/#{g.BOARD}/"
     $.delete "hiddenThreads/#{g.BOARD}/"
-    @value = "hidden: 0"
+    @textContent = "hidden: 0"
     g.hiddenReplies = {}
   keybind: (e) ->
     e.preventDefault()
@@ -2419,8 +2415,14 @@ main =
         list-style: none;
         padding: 0;
       }
+      #options label {
+        text-decoration: underline;
+      }
       #floaty {
         float: left;
+      }
+      #options [name=tab]:not(:checked) + * {
+        display: none;
       }
       #content > * {
         height: 450px;
