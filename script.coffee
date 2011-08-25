@@ -1176,8 +1176,6 @@ qr =
     $.replace oldFile, newFile
 
   submit: (e) ->
-    return unless @id is 'qr_form'
-
     #XXX `e` won't exist if we're here from `qr.submit.call form`.
     if msg = qr.postInvalid()
       e.preventDefault?()
@@ -2207,7 +2205,6 @@ main =
     #recaptcha may be blocked, eg by noscript
     if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
       Recaptcha.init()
-      $.bind form, 'submit', qr.submit
 
     #major features
     threading.init()

@@ -1426,9 +1426,6 @@
     },
     submit: function(e) {
       var id, msg, op;
-      if (this.id !== 'qr_form') {
-        return;
-      }
       if (msg = qr.postInvalid()) {
         if (typeof e.preventDefault === "function") {
           e.preventDefault();
@@ -2798,7 +2795,6 @@
       $.addStyle(main.css);
       if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
         Recaptcha.init();
-        $.bind(form, 'submit', qr.submit);
       }
       threading.init();
       if (g.REPLY && (id = location.hash.slice(1)) && /\d/.test(id[0]) && !$.id(id)) {
