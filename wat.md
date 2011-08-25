@@ -4,11 +4,14 @@ layout: default
 
 # 4chan x
 ## [install](https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js)
-### [changelog](https://raw.github.com/aeosynth/4chan-x/master/changelog) [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted) <div><g:plusone></g:plusone></div>
+### [changelog](https://raw.github.com/aeosynth/4chan-x/master/changelog)
+  [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
+  <div><g:plusone></g:plusone></div>
 
-<hr>
+***
 
 The latest stable releases of **Firefox**, **Chrome** and **Opera** are supported.
+
 **Firefox**: If you don't have either
 [Scriptish](https://addons.mozilla.org/firefox/addon/scriptish/) or
 [Greasemonkey](https://addons.mozilla.org/firefox/addon/greasemonkey/) installed,
@@ -20,7 +23,7 @@ install Scriptish (it can auto-update scripts), restart Firefox, and then instal
 already, select a folder with: Ctrl + F12 (Preferences) &gt; Advanced &gt;
 Content &gt; Javacript Options &gt; User Javascript Folder.
 
-<hr>
+***
 
 **Bug reports**: before making one,
 
@@ -37,7 +40,7 @@ Content &gt; Javacript Options &gt; User Javascript Folder.
 
 #### [anonymous support throd](http://chat.now.im/x/aeos) [GitHub issues tracker](https://github.com/aeosynth/4chan-x/issues)
 
-<hr>
+***
 
 For css tweaks, see [4chan X CSS defaults](http://userstyles.org/styles/48538/4chan-4chan-x-css-defaults).
 For a complete userstyle, check out [AppChan](http://userstyles.org/styles/46162).
