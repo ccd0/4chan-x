@@ -8,8 +8,10 @@ layout: default
 
 <hr>
 
-The latest stable releases of **Firefox**, **Chrome** and **Opera** are supported.</p>
-**Firefox**: If you don't have either [Scriptish](https://addons.mozilla.org/firefox/addon/scriptish/) or [Greasemonkey](https://addons.mozilla.org/firefox/addon/greasemonkey/) installed,
+The latest stable releases of **Firefox**, **Chrome** and **Opera** are supported.
+**Firefox**: If you don't have either
+[Scriptish](https://addons.mozilla.org/firefox/addon/scriptish/) or
+[Greasemonkey](https://addons.mozilla.org/firefox/addon/greasemonkey/) installed,
 install Scriptish (it can auto-update scripts), restart Firefox, and then install 4chan X.
 
 **Chrome**: Install 4chan X, that's it.
@@ -24,11 +26,14 @@ Content &gt; Javacript Options &gt; User Javascript Folder.
 
 - Update your browser / 4chan X to the latest stable.
 - Disable your other extensions / scripts.
-- If your issue persists, report console errors, if any. Open your console with: Ctrl + Shift + J on **Firefox** / **Chrome**, Ctrl + Shift + I on **Opera**.
+- If your issue persists, report console errors, if any.  Open your console with:
+  Ctrl + Shift + J on **Firefox** / **Chrome**, Ctrl + Shift + I on **Opera**.
 
-**Firefox**: If you get an error stating <code>localStorage is null</code>, go to <code>about:config</code> and enable <code>dom.storage.enabled</code>.
+**Firefox**: If you get an error stating `localStorage is null`, go to `about:config` and enable `dom.storage.enabled`.
 
-**Chrome**: Some userstyles, notably AppChan, break text input due to a <a href="https://bugs.webkit.org/show_bug.cgi?id=66216">WebKit bug</a>. <a href="http://code.google.com/p/chromium/issues/detail?id=89647">[89647]</a>
+**Chrome**: Some userstyles, notably AppChan, break text input due to a
+[WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=66216).
+([Chrome issue](http://code.google.com/p/chromium/issues/detail?id=89647).
 
 #### [anonymous support throd](http://chat.now.im/x/aeos) [GitHub issues tracker](https://github.com/aeosynth/4chan-x/issues)
 
