@@ -36,7 +36,7 @@ Content &gt; Javacript Options &gt; User Javascript Folder.
 
 **Chrome**: Some userstyles, notably AppChan, break text input due to a
 [WebKit bug](https://bugs.webkit.org/show_bug.cgi?id=66216).
-([Chrome issue](http://code.google.com/p/chromium/issues/detail?id=89647).
+([Chrome issue](http://code.google.com/p/chromium/issues/detail?id=89647)).
 
 #### [anonymous support throd](http://chat.now.im/x/aeos) [GitHub issues tracker](https://github.com/aeosynth/4chan-x/issues)
 
