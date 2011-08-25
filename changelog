@@ -1,4 +1,6 @@
 master
+
+2.18.2
 - aeosynth:
   fix long thread watcher titles
   fix normal form errors with an open empty QR
