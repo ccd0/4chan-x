@@ -879,16 +879,14 @@ options =
         description = arr[1]
         li = $.el 'li',
           innerHTML: "<label><input type=checkbox name='#{key}' #{checked}>#{key}</label><span class=description>: #{description}</span>"
+        $.bind $('input', li), 'click', $.cb.checked
         $.append ul, li
       $.append main, ul
     li = $.el 'li',
       innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `show stubs` disabled."
     $.append hidingul, li
+    $.bind $('button', li), 'click', options.clearHidden
 
-    for input in $$ '#main input', dialog
-      $.bind input, 'click', $.cb.checked
-    $.bind $('button', dialog), 'click', options.clearHidden
-    $.bind link, 'click', options.tab for link in $$ '#floaty a', dialog
     $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.time
     for input in $$ '#keybinds input', dialog
