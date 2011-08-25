@@ -1,4 +1,7 @@
 master
+- aeosynth:
+  fix long thread watcher titles
+  fix normal form errors with an open empty QR
 
 2.18.1
 - mayhem:
