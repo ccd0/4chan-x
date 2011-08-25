@@ -6,7 +6,7 @@ layout: default
 ## [install](https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js)
 ### [changelog](https://raw.github.com/aeosynth/4chan-x/master/changelog)
   [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
-  <div><g:plusone></g:plusone></div>
+  {{ <div><g:plusone></g:plusone></div> }}
 
 ***
 
