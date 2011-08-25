@@ -1557,7 +1557,7 @@ watcher =
   watch: (thread, id) ->
     props =
       href: "/#{g.BOARD}/res/#{id}"
-      textContent: getTitle thread
+      textContent: getTitle(thread)[...25]
 
     watched = $.get 'watched', {}
     watched[g.BOARD] or= {}
