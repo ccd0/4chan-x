@@ -30,7 +30,21 @@
     }
     h1 {
       font-size: 110px;
+      position: relative;
       text-shadow: 0 2px 2px #888;
+    }
+    h1::after {
+      content: "2.18.0";
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      padding: 4px;
+      background: rgba(255, 255, 255, .7);
+      border: 2px solid rgba(204, 204, 204, 0.7);
+      border-radius: 9px;
+      color: black;
+      font-size: 13px;
+      text-shadow: none;
     }
     h2 {
       font-size: 100px;
