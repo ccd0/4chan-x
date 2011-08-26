@@ -1693,6 +1693,7 @@
       }, html);
       updater.count = $('#count', dialog);
       updater.timer = $('#timer', dialog);
+      updater.br = $('br[clear]');
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
@@ -1740,7 +1741,7 @@
         }
       },
       update: function() {
-        var arr, body, br, id, input, replies, reply, scroll, _i, _len, _ref, _ref2;
+        var arr, body, id, input, replies, reply, scroll, _i, _len, _ref, _ref2;
         if (this.status === 404) {
           updater.timer.textContent = '';
           updater.count.textContent = 404;
@@ -1757,13 +1758,12 @@
           Favicon.update();
           return;
         }
-        br = $('br[clear]');
-        id = Number(((_ref2 = $('td[id]', br.previousElementSibling)) != null ? _ref2.id : void 0) || 0);
+        id = Number(((_ref2 = $('td[id]', updater.br.previousElementSibling)) != null ? _ref2.id : void 0) || 0);
         arr = [];
         body = $.el('body', {
           innerHTML: this.responseText
         });
-        replies = $$('td[id]', body);
+        replies = $$('.reply', body);
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
@@ -1778,7 +1778,7 @@
           }
         }
         while (reply = arr.pop()) {
-          $.before(br, reply);
+          $.before(updater.br, reply);
         }
         if (scroll) {
           return scrollTo(0, d.body.scrollHeight);

@@ -1397,6 +1397,7 @@ updater =
 
     updater.count = $ '#count', dialog
     updater.timer = $ '#timer', dialog
+    updater.br    = $ 'br[clear]'
 
     for input in $$ 'input', dialog
       if input.type is 'checkbox'
@@ -1445,13 +1446,12 @@ updater =
         Favicon.update()
         return
 
-      br = $ 'br[clear]'
-      id = Number $('td[id]', br.previousElementSibling)?.id or 0
+      id = Number $('td[id]', updater.br.previousElementSibling)?.id or 0
 
       arr = []
       body = $.el 'body',
         innerHTML: @responseText
-      replies = $$ 'td[id]', body
+      replies = $$ '.reply', body
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
@@ -1467,7 +1467,7 @@ updater =
 
       #XXX add replies in correct order so backlinks resolve
       while reply = arr.pop()
-        $.before br, reply
+        $.before updater.br, reply
       if scroll
         scrollTo 0, d.body.scrollHeight
 
