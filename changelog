@@ -1,6 +1,7 @@
 master
 - mayhem
   fix quote features in expanded comments
+  fix scrolling onto a quote not showing the preview
 
 2.18.2
 - aeosynth:
