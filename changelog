@@ -1,4 +1,6 @@
 master
+- mayhem
+  fix quote features in expanded comments
 
 2.18.2
 - aeosynth:
