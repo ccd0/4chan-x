@@ -1811,7 +1811,7 @@ quotePreview =
       qp.innerHTML = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
-      ui.hover()
+      ui.hover e
   mouseout: ->
     $.removeClass el, 'qphl' if el = $.id @hash[1..]
     ui.hoverend()

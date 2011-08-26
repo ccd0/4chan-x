@@ -2309,7 +2309,7 @@
         $.cache(this.pathname, (function() {
           return quotePreview.parse(this, id, threadID);
         }));
-        return ui.hover();
+        return ui.hover(e);
       }
     },
     mouseout: function() {
