@@ -543,7 +543,7 @@
       }));
     },
     parse: function(req, a, threadID, replyID) {
-      var body, bq, reply, _i, _len, _ref;
+      var body, bq, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
@@ -561,6 +561,21 @@
             bq = $('blockquote', reply);
             break;
           }
+        }
+      }
+      _ref2 = $$('a.quotelink', bq);
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        quote = _ref2[_j];
+        if (quote.getAttribute('href') === quote.hash) {
+          quote.pathname = "/" + g.BOARD + "/res/" + threadID;
+        }
+        if (conf['Quote Preview']) {
+          $.bind(quote, 'mouseover', quotePreview.mouseover);
+          $.bind(quote, 'mousemove', ui.hover);
+          $.bind(quote, 'mouseout', quotePreview.mouseout);
+        }
+        if (conf['Quote Inline']) {
+          $.bind(quote, 'click', quoteInline.toggle);
         }
       }
       return $.replace(a.parentNode.parentNode, bq);
