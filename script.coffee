@@ -794,7 +794,7 @@ options =
       <div class='reply dialog'>
         <div id=optionsbar>
           <div id=floaty>
-            <label for=main_tab>main</label> | <label for=flavors_tab>sauce</label> | <label for=time_tab>time</label> | <label for=keybinds_tab>keybinds</label>
+            <label for=main_tab>main</label> | <label for=flavors_tab>sauce</label> | <label for=rice_tab>rice</label> | <label for=keybinds_tab>keybinds</label>
           </div>
           <div id=credits>
             <a href=http://aeosynth.github.com/4chan-x/>4chan X</a> |
@@ -809,37 +809,18 @@ options =
           <div id=main></div>
           <input type=radio name=tab hidden id=flavors_tab>
           <textarea name=flavors id=flavors>#{conf['flavors']}</textarea>
-          <input type=radio name=tab hidden id=time_tab>
-          <div id=time>
-            <div><input type=text name=time value='#{conf['time']}'> <span id=timePreview></span></div>
-            <table>
-              <caption>Format specifiers <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>(source)</a></caption>
-              <tbody>
-                <tr><th>Specifier</th><th>Description</th><th>Values/Example</th></tr>
-                <tr><th colspan=3>Year</th></tr>
-                <tr><td>%y</td><td>two digit year</td><td>00-99</td></tr>
-
-                <tr><th colspan=3>Month</th></tr>
-                <tr><td>%b</td><td>month, abbreviated</td><td>Jun</td></tr>
-                <tr><td>%B</td><td>month, full length</td><td>June</td></tr>
-                <tr><td>%m</td><td>month, zero padded</td><td>06</td></tr>
-
-                <tr><th colspan=3>Day</th></tr>
-                <tr><td>%a</td><td>weekday, abbreviated</td><td>Sat</td></tr>
-                <tr><td>%A</td><td>weekday, full</td><td>Saturday</td></tr>
-                <tr><td>%d</td><td>day of the month, zero padded</td><td>03</td></tr>
-                <tr><td>%e</td><td>day of the month</td><td>3</td></tr>
-
-                <tr><th colspan=3>Time</th></tr>
-                <tr><td>%H</td><td>hour (24 hour clock) zero padded</td><td>13</td></tr>
-                <tr><td>%l (lowercase L)</td><td>hour (12 hour clock)</td><td>1</td></tr>
-                <tr><td>%I (uppercase i)</td><td>hour (12 hour clock) zero padded</td><td>01</td></tr>
-                <tr><td>%k</td><td>hour (24 hour clock)</td><td>13</td></tr>
-                <tr><td>%M</td><td>minutes, zero padded</td><td>54</td></tr>
-                <tr><td>%p</td><td>upper case AM or PM</td><td>PM</td></tr>
-                <tr><td>%P</td><td>lower case am or pm</td><td>pm</td></tr>
-              </tbody>
-            </table>
+          <input type=radio name=tab hidden id=rice_tab>
+          <div id=rice>
+            <div><input type=text name=time value='#{conf['time']}'> : <span id=timePreview></span></div>
+            <div>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:
+              <ul>
+                <li>Day: %a, %A, %d, %e</li>
+                <li>Month: %m, %b, %B</li>
+                <li>Year: %y, %Y</li>
+                <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i)</li>
+                <li>Month: %M, %p, %P</li>
+              </ul>
+            </div>
           </div>
           <input type=radio name=tab hidden id=keybinds_tab>
           <div id=keybinds>
@@ -1672,6 +1653,7 @@ Time =
     p: -> if Time.date.getHours() < 12 then 'AM' else 'PM'
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
     y: -> Time.date.getFullYear() - 2000
+    Y: -> Time.date.getFullYear()
 
 getTitle = (thread) ->
   el = $ 'span.filetitle', thread
