@@ -1176,7 +1176,7 @@ qr =
 
   refresh: ->
     $('[name=sub]', qr.el).value = ''
-    $('[name=email]', qr.el).value = if d.cookie.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+    $('[name=email]', qr.el).value = if m = d.cookie.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('[name=com]', qr.el).value = ''
     $('[name=recaptcha_response_field]', qr.el).value = ''
     $('[name=spoiler]', qr.el)?.checked = false unless conf['Remember Spoiler']
