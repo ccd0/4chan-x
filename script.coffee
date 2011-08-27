@@ -893,7 +893,7 @@ options =
     $.append hidingul, li
     $.bind $('button', li), 'click', options.clearHidden
 
-    $.bind $('textarea[name=flavors]', dialog), 'change', $.cb.value
+    $.bind $('#flavors', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.time
     for input in $$ '#keybinds input', dialog
       input.value = conf[input.name]
@@ -1855,15 +1855,12 @@ reportButton =
           innerHTML: '[&nbsp;!&nbsp;]'
         $.after span, a
         $.after span, $.tn(' ')
-      $.bind a, 'click', reportButton.cb.report
-  cb:
-    report: (e) ->
-      reportButton.report @
-  report: (target) ->
-    input = $ 'input', target.parentNode
-    input.click()
-    $('input[value="Report"]').click()
-    input.click()
+      $.bind a, 'click', reportButton.report
+  report: ->
+    url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{@parentNode.id}"
+    id  = "#{NAMESPACE}popup"
+    set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
+    window.open url, id, set
 
 threadStats =
   init: ->
