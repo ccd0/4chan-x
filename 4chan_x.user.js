@@ -1424,6 +1424,7 @@
     refresh: function() {
       var newFile, oldFile, _ref;
       $('[name=sub]', qr.el).value = '';
+      $('[name=email]', qr.el).value = d.cookie.match(/4chan_email=([^;]+)/) ? decodeURIComponent(m[1]) : '';
       $('[name=com]', qr.el).value = '';
       $('[name=recaptcha_response_field]', qr.el).value = '';
       if (!conf['Remember Spoiler']) {
