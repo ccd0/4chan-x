@@ -1,6 +1,7 @@
 master
 - mayhem
   fix updater refreshing 404'd threads
+  distinguishable unread favicons on white backgrounds
 
 2.18.3
 - mayhem
