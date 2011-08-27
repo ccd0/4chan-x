@@ -2385,7 +2385,7 @@
     },
     report: function() {
       var id, set, url;
-      url = "http://sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + this.parentNode.id;
+      url = "http://sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + this.previousElementSibling.childNodes[1].textContent;
       id = "" + NAMESPACE + "popup";
       set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
       return window.open(url, id, set);
