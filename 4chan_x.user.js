@@ -1747,7 +1747,7 @@
           updater.timer.textContent = '';
           updater.count.textContent = 404;
           updater.count.className = 'error';
-          window.clearInterval(updater.intervalID);
+          clearTimeout(updater.timeoutID);
           _ref = $$('#com_submit');
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             input = _ref[_i];

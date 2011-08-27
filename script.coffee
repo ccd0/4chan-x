@@ -1438,7 +1438,7 @@ updater =
         updater.timer.textContent = ''
         updater.count.textContent = 404
         updater.count.className = 'error'
-        window.clearInterval updater.intervalID
+        clearTimeout updater.timeoutID
         for input in $$ '#com_submit'
           input.disabled = true
           input.value = 404
