@@ -6,7 +6,6 @@
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
-// @updateURL      https://github.com/aeosynth/4chan-x/raw/master/4chan_x.user.js
 // ==/UserScript==
 
 /* LICENSE
