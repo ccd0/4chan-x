@@ -3073,7 +3073,7 @@
       }\
       #qr textarea {\
         width: 100%;\
-        height: 186px;\
+        height: 125px;\
       }\
       #qr #close, #qr #autohide {\
         float: right;\
