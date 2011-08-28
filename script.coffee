@@ -2448,7 +2448,7 @@ main =
       }
       #qr textarea {
         width: 100%;
-        height: 120px;
+        height: 125px;
       }
       #qr #close, #qr #autohide {
         float: right;
