@@ -379,10 +379,10 @@
       return el.hidden = false;
     },
     addClass: function(el, className) {
-      return el.className += ' ' + className;
+      return el.classList.add(className);
     },
     removeClass: function(el, className) {
-      return el.className = el.className.replace(' ' + className, '');
+      return el.classList.remove(className);
     },
     rm: function(el) {
       return el.parentNode.removeChild(el);
@@ -1618,7 +1618,7 @@
       }
     },
     toggle: function(thread) {
-      if (thread.className.indexOf('stub') !== -1 || thread.hidden) {
+      if (thread.classList.contains('stub') || thread.hidden) {
         return threadHiding.show(thread);
       } else {
         return threadHiding.hide(thread);

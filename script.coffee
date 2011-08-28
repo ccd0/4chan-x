@@ -258,9 +258,9 @@ $.extend $,
   show: (el) ->
     el.hidden = false
   addClass: (el, className) ->
-    el.className += ' ' + className
+    el.classList.add className
   removeClass: (el, className) ->
-    el.className = el.className.replace ' ' + className, ''
+    el.classList.remove className
   rm: (el) ->
     el.parentNode.removeChild el
   append: (parent, children...) ->
@@ -1311,7 +1311,7 @@ threadHiding =
       threadHiding.show thread
 
   toggle: (thread) ->
-    if thread.className.indexOf('stub') != -1 or thread.hidden
+    if thread.classList.contains('stub') or thread.hidden
       threadHiding.show thread
     else
       threadHiding.hide thread
