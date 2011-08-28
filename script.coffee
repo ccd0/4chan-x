@@ -1678,6 +1678,8 @@ titlePost =
 
 quoteBacklink =
   init: ->
+    format = conf['backlink'].replace /%id/, "' + id + '"
+    quoteBacklink.funk = Function 'id', "return'#{format}'"
     g.callbacks.push (root) ->
       return if /inline/.test root.className
       # op or reply
@@ -1695,7 +1697,7 @@ quoteBacklink =
         link = $.el 'a',
           href: "##{id}"
           className: 'backlink'
-          textContent: conf['backlink'].replace /%id/, id
+          textContent: quoteBacklink.funk id
         if conf['Quote Preview']
           $.bind link, 'mouseover', quotePreview.mouseover
           $.bind link, 'mousemove', ui.hover

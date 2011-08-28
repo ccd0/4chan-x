@@ -2117,6 +2117,9 @@
   };
   quoteBacklink = {
     init: function() {
+      var format;
+      format = conf['backlink'].replace(/%id/, "' + id + '");
+      quoteBacklink.funk = Function('id', "return'" + format + "'");
       return g.callbacks.push(function(root) {
         var container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
         if (/inline/.test(root.className)) {
@@ -2143,7 +2146,7 @@
           link = $.el('a', {
             href: "#" + id,
             className: 'backlink',
-            textContent: conf['backlink'].replace(/%id/, id)
+            textContent: quoteBacklink.funk(id)
           });
           if (conf['Quote Preview']) {
             $.bind(link, 'mouseover', quotePreview.mouseover);
