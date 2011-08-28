@@ -113,6 +113,7 @@
     },
     flavors: ['http://regex.info/exif.cgi?url=', 'http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://imgur.com/upload?url=', '#http://anonym.to/?'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
+    backlink: '>>%id',
     hotkeys: {
       close: 'Esc',
       spoiler: 'ctrl+s',
@@ -1075,7 +1076,7 @@
       var arr, checked, description, dialog, hiddenNum, hiddenThreads, hidingul, html, input, key, li, main, obj, overlay, ul, _i, _len, _ref, _ref2;
       hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
-      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <label for=main_tab>main</label> | <label for=flavors_tab>sauce</label> | <label for=rice_tab>rice</label> | <label for=keybinds_tab>keybinds</label>          </div>          <div id=credits>            <a href=http://aeosynth.github.com/4chan-x/>4chan X</a> |            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <input type=radio name=tab hidden id=main_tab checked>          <div id=main></div>          <input type=radio name=tab hidden id=flavors_tab>          <textarea name=flavors id=flavors>" + conf['flavors'] + "</textarea>          <input type=radio name=tab hidden id=rice_tab>          <div id=rice>            <div><input type=text name=time value='" + conf['time'] + "'> : <span id=timePreview></span></div>            <div>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:              <ul>                <li>Day: %a, %A, %d, %e</li>                <li>Month: %m, %b, %B</li>                <li>Year: %y, %Y</li>                <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i)</li>                <li>Month: %M, %p, %P</li>              </ul>            </div>          </div>          <input type=radio name=tab hidden id=keybinds_tab>          <div id=keybinds>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>                <tr><td>Update now</td><td><input type=text name=update></td></tr>                <tr><td>Reset the unread count to 0</td><td><input type=text name=unreadCountTo0></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
+      html = "      <div class='reply dialog'>        <div id=optionsbar>          <div id=floaty>            <label for=main_tab>main</label> | <label for=flavors_tab>sauce</label> | <label for=rice_tab>rice</label> | <label for=keybinds_tab>keybinds</label>          </div>          <div id=credits>            <a href=http://aeosynth.github.com/4chan-x/>4chan X</a> |            <a href=http://chat.now.im/x/aeos>support throd</a> |            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>          </div>        </div>        <hr>        <div id=content>          <input type=radio name=tab hidden id=main_tab checked>          <div id=main></div>          <input type=radio name=tab hidden id=flavors_tab>          <textarea name=flavors id=flavors>" + conf['flavors'] + "</textarea>          <input type=radio name=tab hidden id=rice_tab>          <div id=rice>            <div><input type=text name=backlink value='" + conf['backlink'] + "'> : <span id=backlinkPreview></span></div>            <div><input type=text name=time value='" + conf['time'] + "'> : <span id=timePreview></span></div>            <div>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:              <ul>                <li>Day: %a, %A, %d, %e</li>                <li>Month: %m, %b, %B</li>                <li>Year: %y, %Y</li>                <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i)</li>                <li>Month: %M, %p, %P</li>              </ul>            </div>          </div>          <input type=radio name=tab hidden id=keybinds_tab>          <div id=keybinds>            <table>              <tbody>                <tr><th>Actions</th><th>Keybinds</th></tr>                <tr><td>Close Options or QR</td><td><input type=text name=close></td></tr>                <tr><td>Quick spoiler</td><td><input type=text name=spoiler></td></tr>                <tr><td>Open QR with post number inserted</td><td><input type=text name=openQR></td></tr>                <tr><td>Open QR without post number inserted</td><td><input type=text name=openEmptyQR></td></tr>                <tr><td>Submit post</td><td><input type=text name=submit></td></tr>                <tr><td>Select next reply</td><td><input type=text name=nextReply ></td></tr>                <tr><td>Select previous reply</td><td><input type=text name=previousReply></td></tr>                <tr><td>See next thread</td><td><input type=text name=nextThread></td></tr>                <tr><td>See previous thread</td><td><input type=text name=previousThread></td></tr>                <tr><td>Jump to the next page</td><td><input type=text name=nextPage></td></tr>                <tr><td>Jump to the previous page</td><td><input type=text name=previousPage></td></tr>                <tr><td>Jump to page 0</td><td><input type=text name=zero></td></tr>                <tr><td>Open thread in current tab</td><td><input type=text name=openThread></td></tr>                <tr><td>Open thread in new tab</td><td><input type=text name=openThreadTab></td></tr>                <tr><td>Expand thread</td><td><input type=text name=expandThread></td></tr>                <tr><td>Watch thread</td><td><input type=text name=watch></td></tr>                <tr><td>Hide thread</td><td><input type=text name=hide></td></tr>                <tr><td>Expand selected image</td><td><input type=text name=expandImages></td></tr>                <tr><td>Expand all images</td><td><input type=text name=expandAllImages></td></tr>                <tr><td>Update now</td><td><input type=text name=update></td></tr>                <tr><td>Reset the unread count to 0</td><td><input type=text name=unreadCountTo0></td></tr>              </tbody>            </table>          </div>        </div>      </div>    ";
       dialog = $.el('div', {
         id: 'options',
         innerHTML: html
@@ -1109,6 +1110,7 @@
       $.bind($('button', li), 'click', options.clearHidden);
       $.bind($('#flavors', dialog), 'change', $.cb.value);
       $.bind($('input[name=time]', dialog), 'keyup', options.time);
+      $.bind($('input[name=backlink]', dialog), 'keyup', options.backlink);
       _ref2 = $$('#keybinds input', dialog);
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         input = _ref2[_i];
@@ -1127,6 +1129,7 @@
       $.append(overlay, dialog);
       $.append(d.body, overlay);
       options.time.call($('input[name=time]', dialog));
+      options.backlink.call($('input[name=backlink]', dialog));
       $.bind(overlay, 'click', function() {
         return $.rm(overlay);
       });
@@ -1156,6 +1159,11 @@
       Time.foo();
       Time.date = new Date();
       return $('#timePreview').textContent = Time.funk(Time);
+    },
+    backlink: function(e) {
+      $.set('backlink', this.value);
+      conf['backlink'] = this.value;
+      return $('#backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     }
   };
   cooldown = {
@@ -2135,7 +2143,7 @@
           link = $.el('a', {
             href: "#" + id,
             className: 'backlink',
-            textContent: ">>" + id
+            textContent: conf['backlink'].replace(/%id/, id)
           });
           if (conf['Quote Preview']) {
             $.bind(link, 'mouseover', quotePreview.mouseover);

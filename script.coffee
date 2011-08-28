@@ -53,6 +53,7 @@ config =
     '#http://anonym.to/?'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
+  backlink: '>>%id'
   hotkeys:
     close:           'Esc'
     spoiler:         'ctrl+s'
@@ -811,6 +812,7 @@ options =
           <textarea name=flavors id=flavors>#{conf['flavors']}</textarea>
           <input type=radio name=tab hidden id=rice_tab>
           <div id=rice>
+            <div><input type=text name=backlink value='#{conf['backlink']}'> : <span id=backlinkPreview></span></div>
             <div><input type=text name=time value='#{conf['time']}'> : <span id=timePreview></span></div>
             <div>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:
               <ul>
@@ -876,6 +878,7 @@ options =
 
     $.bind $('#flavors', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.time
+    $.bind $('input[name=backlink]', dialog), 'keyup', options.backlink
     for input in $$ '#keybinds input', dialog
       input.value = conf[input.name]
       $.bind input, 'keydown', options.keybind
@@ -891,6 +894,7 @@ options =
     $.append d.body, overlay
 
     options.time.call $('input[name=time]', dialog)
+    options.backlink.call $('input[name=backlink]', dialog)
 
     $.bind overlay, 'click', -> $.rm overlay
     $.bind dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
@@ -915,6 +919,10 @@ options =
     Time.foo()
     Time.date = new Date()
     $('#timePreview').textContent = Time.funk Time
+  backlink: (e) ->
+    $.set 'backlink', @value
+    conf['backlink'] = @value
+    $('#backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
 
 cooldown =
   #TODO merge into qr
@@ -1687,7 +1695,7 @@ quoteBacklink =
         link = $.el 'a',
           href: "##{id}"
           className: 'backlink'
-          textContent: ">>#{id}"
+          textContent: conf['backlink'].replace /%id/, id
         if conf['Quote Preview']
           $.bind link, 'mouseover', quotePreview.mouseover
           $.bind link, 'mousemove', ui.hover
