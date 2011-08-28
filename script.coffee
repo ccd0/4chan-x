@@ -818,7 +818,7 @@ options =
               <ul>
                 <li>Day: %a, %A, %d, %e</li>
                 <li>Month: %m, %b, %B</li>
-                <li>Year: %y, %Y</li>
+                <li>Year: %y</li>
                 <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i)</li>
                 <li>Month: %M, %p, %P</li>
               </ul>
@@ -1661,7 +1661,6 @@ Time =
     p: -> if Time.date.getHours() < 12 then 'AM' else 'PM'
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
     y: -> Time.date.getFullYear() - 2000
-    Y: -> Time.date.getFullYear()
 
 getTitle = (thread) ->
   el = $ 'span.filetitle', thread
