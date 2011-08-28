@@ -1973,7 +1973,8 @@
             prefix = _ref[i];
             link = $.el('a', {
               textContent: sauce.names[i],
-              href: prefix + suffix
+              href: prefix + suffix,
+              target: '_blank'
             });
             _results.push($.append(span, $.tn(' '), link));
           }
