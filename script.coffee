@@ -1048,13 +1048,14 @@ qr =
       <div class=autohide>
         <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
           <input type=hidden name=resto value=#{THREAD_ID}>
-          <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field>
           <input type=hidden name=mode value=regist>
+          <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field>
+          <input type=hidden name=recaptcha_response_field id=recaptcha_response_field>
           <div><input class=inputtext type=text name=email value='#{email}' placeholder=E-mail>#{qr.spoiler}</div>
           <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
           <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
           <div><img src=http://www.google.com/recaptcha/api/image?c=#{qr.challenge}></div>
-          <div><input class=inputtext type=text autocomplete=off placeholder=Verification id=dummy><input type=hidden name=recaptcha_response_field id=recaptcha_response_field><span id=captchas>#{$.get('captchas', []).length} captchas</span></div>
+          <div><input class=inputtext type=text autocomplete=off placeholder=Verification id=dummy><span id=captchas>#{$.get('captchas', []).length} captchas</span></div>
           <div><input type=file name=upfile accept='#{qr.acceptFiles}'></div>
         </form>
         <div id=files></div>
