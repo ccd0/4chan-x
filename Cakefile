@@ -1,19 +1,15 @@
-cs    = require 'coffee-script'
-fs    = require 'fs'
-{log} = console
+{log}  = console
+{exec} = require 'child_process'
+fs     = require 'fs'
 
 HEADER  = fs.readFileSync 'header', 'utf8'
 INFILE  = 'script.coffee'
 OUTFILE = '4chan_x.user.js'
 
 build = ->
-  fs.readFile INFILE, 'utf8', (err, code) ->
+  exec 'coffee --print script.coffee', (err, stdout, stderr) ->
     throw err if err
-    try
-      code = HEADER + cs.compile code
-    catch e
-      log e
-    fs.writeFile OUTFILE, code, (err) ->
+    fs.writeFile OUTFILE, HEADER + stdout, (err) ->
       throw err if err
 
 task 'build', ->
