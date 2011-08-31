@@ -864,7 +864,6 @@ options =
     for key, obj of config.main
       ul = $.el 'ul',
         textContent: key
-      hidingul = ul if key is 'Hiding'
       for key, arr of obj
         checked = if conf[key] then "checked" else ""
         description = arr[1]
@@ -873,10 +872,11 @@ options =
         $.bind $('input', li), 'click', $.cb.checked
         $.append ul, li
       $.append main, ul
+
     li = $.el 'li',
       innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `show stubs` disabled."
-    $.append hidingul, li
     $.bind $('button', li), 'click', options.clearHidden
+    $.append $('ul:nth-child(2)', dialog), li
 
     $.bind $('#flavors', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.time
