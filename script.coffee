@@ -1432,8 +1432,7 @@ updater =
         for input in $$ '#com_submit'
           input.disabled = true
           input.value = 404
-        # XXX Firefox - trailing spaces are trimmed
-        d.title = d.title.match(/.+-/)[0] + ' ' + 404
+        d.title = d.title.match(/.+-/)[0] + ' 404'
         g.dead = true
         Favicon.update()
         return
