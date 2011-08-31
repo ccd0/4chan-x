@@ -2154,7 +2154,7 @@
           if (conf['Quote Inline']) {
             $.bind(link, 'click', quoteInline.toggle);
           }
-          if (!(container = $('.container', el))) {
+          if (!((container = $('.container', el)) && container.parentNode === el)) {
             container = $.el('span', {
               className: 'container'
             });
