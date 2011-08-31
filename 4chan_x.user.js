@@ -148,8 +148,8 @@
     }
   };
   if (typeof console !== "undefined" && console !== null) {
-    log = function() {
-      return console.log.apply(console, arguments);
+    log = function(arg) {
+      return console.log(arg);
     };
   }
   if (!Object.keys) {

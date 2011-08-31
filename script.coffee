@@ -86,8 +86,10 @@ config =
 
 # XXX chrome can't into `{log} = console`
 if console?
-  log = ->
-    console.log arguments...
+  # XXX scriptish - console.log.apply is not a function
+  # https://github.com/scriptish/scriptish/issues/499
+  log = (arg) ->
+    console.log arg
 
 # XXX opera cannot into Object.keys
 if not Object.keys
