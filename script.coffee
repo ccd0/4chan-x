@@ -814,17 +814,20 @@ options =
           <textarea name=flavors id=flavors>#{conf['flavors']}</textarea>
           <input type=radio name=tab hidden id=rice_tab>
           <div id=rice>
-            <div><input type=text name=backlink value='#{conf['backlink']}'> : <span id=backlinkPreview></span></div>
-            <div><input type=text name=time value='#{conf['time']}'> : <span id=timePreview></span></div>
-            <div>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:
-              <ul>
-                <li>Day: %a, %A, %d, %e</li>
-                <li>Month: %m, %b, %B</li>
-                <li>Year: %y</li>
-                <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i)</li>
-                <li>Month: %M, %p, %P</li>
-              </ul>
-            </div>
+            <ul>
+              Backlink formatting
+              <li><input type=text name=backlink value='#{conf['backlink']}'> : <span id=backlinkPreview></span></li>
+            </ul>
+            <ul>
+              Time formatting
+              <li><input type=text name=time value='#{conf['time']}'> : <span id=timePreview></span></li>
+              <li>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</li>
+              <li>Day: %a, %A, %d, %e</li>
+              <li>Month: %m, %b, %B</li>
+              <li>Year: %y</li>
+              <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i)</li>
+              <li>Month: %M, %p, %P</li>
+            </ul>
           </div>
           <input type=radio name=tab hidden id=keybinds_tab>
           <div id=keybinds>
