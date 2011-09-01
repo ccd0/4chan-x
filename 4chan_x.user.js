@@ -569,6 +569,9 @@
         if (quote.getAttribute('href') === quote.hash) {
           quote.pathname = "/" + g.BOARD + "/res/" + threadID;
         }
+        if (quote.hash.slice(1) === threadID) {
+          quote.innerHTML += '&nbsp;(OP)';
+        }
         if (conf['Quote Preview']) {
           $.bind(quote, 'mouseover', quotePreview.mouseover);
           $.bind(quote, 'mousemove', ui.hover);
