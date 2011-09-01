@@ -1229,13 +1229,14 @@
       $.append(d.body, $.el('iframe', {
         name: 'iframe'
       }));
+      $.bind(window, 'message', QR.receive);
+      $('#recaptcha_response_field').id = '';
+      QR.dialog();
       holder = $('#recaptcha_challenge_field_holder');
       $.bind(holder, 'DOMNodeInserted', QR.challengeNode);
-      QR.challengeNode({
+      return QR.challengeNode({
         target: holder.firstChild
       });
-      $.bind(window, 'message', QR.receive);
-      return $('#recaptcha_response_field').id = '';
     },
     challengeNode: function(e) {
       var c;
@@ -1263,7 +1264,7 @@
       qr.el = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email></div>      <div><input placeholder=Subject name=sub><button>Submit</button></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file></div>      <div><input placeholder=Password name=pwd type=password></div>    </form>    <a class=error></a>    ");
+      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email></div>      <div><input placeholder=Subject name=sub><button>Submit</button></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file></div>      <div><input placeholder=Password name=pwd type=password></div>    </form>    <a class=error></a>    ");
       $.bind($('form', qr.el), 'submit', QR.submit);
       $.bind($('#recaptcha_response_field', qr.el), 'keydown', QR.keydown);
       $.append(d.body, qr.el);
