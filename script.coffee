@@ -1778,6 +1778,9 @@ quoteInline =
     for quote in $$ 'a.quotelink', newInline
       if quote.getAttribute('href') is quote.hash
         quote.pathname = pathname
+    link = $ 'a.quotejs', newInline
+    link.href = "#{pathname}##{id}"
+    link.nextSibling.href = "#{pathname}#q#{id}"
     $.addClass newInline, 'crossquote'
     $.replace inline, newInline
   table: (id, html) ->
