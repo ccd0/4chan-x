@@ -827,8 +827,8 @@ options =
               <li>Day: %a, %A, %d, %e</li>
               <li>Month: %m, %b, %B</li>
               <li>Year: %y</li>
-              <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i)</li>
-              <li>Month: %M, %p, %P</li>
+              <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
+              <li>Minutes: %M</li>
             </ul>
           </div>
           <input type=radio name=tab hidden id=keybinds_tab>
