@@ -961,6 +961,52 @@ cooldown =
         submit.value = 'Submit'
       qr.autoPost()
 
+QR =
+  init: ->
+    $.append d.body, $.el 'iframe',
+      name: 'iframe'
+    holder = $ '#recaptcha_challenge_field_holder'
+    $.bind holder, 'DOMNodeInserted', QR.challengeNode
+    QR.challengeNode target: holder.firstChild
+    g.callbacks.push QR.node
+  challengeNode: (e) ->
+    QR.captcha =
+      challenge: e.target.value
+      time: Date.now()
+  node: (root) ->
+    quote = $ 'a.quotejs + a', root
+    $.bind quote, 'click', QR.quote
+  quote: (e) ->
+    e.preventDefault()
+    QR.dialog ">>#{@textContent}\n"
+  dialog: (text='') ->
+    qr.el = ui.dialog 'qr', top: '0', left: '0', "
+    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
+    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>
+    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
+      <input type=hidden name=resto value=#{g.THREAD_ID}>
+      <input type=hidden name=mode value=regist>
+      <input type=hidden name=recaptcha_challenge_field id=challenge>
+      <input type=hidden name=recaptcha_response_field id=response>
+      <div><input placeholder=Email name=email></div>
+      <div><input placeholder=Subject name=sub><button>Submit</button></div>
+      <div><textarea placeholder=Comment name=com>#{text}</textarea></div>
+      <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
+      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field ></div>
+      <div><input name=upfile type=file></div>
+      <div><input placeholder=Password name=pwd type=password></div>
+    </form>
+    "
+    $.bind $('form', qr.el), 'submit', QR.submit
+    $.append d.body, qr.el
+    ta = $ 'textarea', qr.el
+    l = text.length
+    ta.setSelectionRange l, l
+    ta.focus()
+  submit: (e) ->
+    $('#challenge', qr.el).value = QR.captcha.challenge
+    $('#response',  qr.el).value = $('#recaptcha_response_field', qr.el).value
+
 qr =
   # TODO
   # error handling / logging
@@ -2259,7 +2305,7 @@ main =
       replyHiding.init()
 
     if conf['Quick Reply'] and canPost
-      qr.init()
+      QR.init()
 
     if conf['Report Button']
       reportButton.init()
@@ -2462,7 +2508,7 @@ main =
         width: 100%;
         height: 125px;
       }
-      #qr #close, #qr #autohide {
+      #qr .close, #qr #autohide {
         float: right;
       }
       #qr:not(:hover) > #autohide:checked ~ .autohide {

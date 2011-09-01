@@ -57,7 +57,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, QR, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -1220,6 +1220,55 @@
         }
         return qr.autoPost();
       }
+    }
+  };
+  QR = {
+    init: function() {
+      var holder;
+      $.append(d.body, $.el('iframe', {
+        name: 'iframe'
+      }));
+      holder = $('#recaptcha_challenge_field_holder');
+      $.bind(holder, 'DOMNodeInserted', QR.challengeNode);
+      QR.challengeNode({
+        target: holder.firstChild
+      });
+      return g.callbacks.push(QR.node);
+    },
+    challengeNode: function(e) {
+      return QR.captcha = {
+        challenge: e.target.value,
+        time: Date.now()
+      };
+    },
+    node: function(root) {
+      var quote;
+      quote = $('a.quotejs + a', root);
+      return $.bind(quote, 'click', QR.quote);
+    },
+    quote: function(e) {
+      e.preventDefault();
+      return QR.dialog(">>" + this.textContent + "\n");
+    },
+    dialog: function(text) {
+      var l, ta;
+      if (text == null) {
+        text = '';
+      }
+      qr.el = ui.dialog('qr', {
+        top: '0',
+        left: '0'
+      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email></div>      <div><input placeholder=Subject name=sub><button>Submit</button></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field ></div>      <div><input name=upfile type=file></div>      <div><input placeholder=Password name=pwd type=password></div>    </form>    ");
+      $.bind($('form', qr.el), 'submit', QR.submit);
+      $.append(d.body, qr.el);
+      ta = $('textarea', qr.el);
+      l = text.length;
+      ta.setSelectionRange(l, l);
+      return ta.focus();
+    },
+    submit: function(e) {
+      $('#challenge', qr.el).value = QR.captcha.challenge;
+      return $('#response', qr.el).value = $('#recaptcha_response_field', qr.el).value;
     }
   };
   qr = {
@@ -2863,7 +2912,7 @@
         replyHiding.init();
       }
       if (conf['Quick Reply'] && canPost) {
-        qr.init();
+        QR.init();
       }
       if (conf['Report Button']) {
         reportButton.init();
@@ -3079,7 +3128,7 @@
         width: 100%;\
         height: 125px;\
       }\
-      #qr #close, #qr #autohide {\
+      #qr .close, #qr #autohide {\
         float: right;\
       }\
       #qr:not(:hover) > #autohide:checked ~ .autohide {\
