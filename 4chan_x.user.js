@@ -1225,6 +1225,7 @@
   QR = {
     init: function() {
       var holder;
+      g.callbacks.push(QR.node);
       $.append(d.body, $.el('iframe', {
         name: 'iframe'
       }));
@@ -1233,7 +1234,7 @@
       QR.challengeNode({
         target: holder.firstChild
       });
-      return g.callbacks.push(QR.node);
+      return $.bind(window, 'message', QR.receive);
     },
     challengeNode: function(e) {
       return QR.captcha = {
@@ -1258,7 +1259,7 @@
       qr.el = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email></div>      <div><input placeholder=Subject name=sub><button>Submit</button></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field ></div>      <div><input name=upfile type=file></div>      <div><input placeholder=Password name=pwd type=password></div>    </form>    ");
+      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email></div>      <div><input placeholder=Subject name=sub><button>Submit</button></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field ></div>      <div><input name=upfile type=file></div>      <div><input placeholder=Password name=pwd type=password></div>    </form>    <a class=error></a>    ");
       $.bind($('form', qr.el), 'submit', QR.submit);
       $.append(d.body, qr.el);
       ta = $('textarea', qr.el);
@@ -1269,6 +1270,30 @@
     submit: function(e) {
       $('#challenge', qr.el).value = QR.captcha.challenge;
       return $('#response', qr.el).value = $('#recaptcha_response_field', qr.el).value;
+    },
+    sys: function() {
+      return $.globalEval(function() {
+        var data, href, location, node, textContent, _ref;
+        if (node = (_ref = document.querySelector('table font b')) != null ? _ref.firstChild : void 0) {
+          textContent = node.textContent, href = node.href;
+          data = JSON.stringify({
+            textContent: textContent,
+            href: href
+          });
+        }
+        parent.postMessage(data, '*');
+        return location = 'about:blank';
+      });
+    },
+    receive: function(e) {
+      var data;
+      data = e.data;
+      if (data) {
+        return $.extend($('a.error', qr.el), JSON.parse(data));
+      } else {
+        $.rm(qr.el);
+        return qr.el = null;
+      }
     }
   };
   qr = {

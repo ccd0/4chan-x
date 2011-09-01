@@ -963,12 +963,13 @@ cooldown =
 
 QR =
   init: ->
+    g.callbacks.push QR.node
     $.append d.body, $.el 'iframe',
       name: 'iframe'
     holder = $ '#recaptcha_challenge_field_holder'
     $.bind holder, 'DOMNodeInserted', QR.challengeNode
     QR.challengeNode target: holder.firstChild
-    g.callbacks.push QR.node
+    $.bind window, 'message', QR.receive
   challengeNode: (e) ->
     QR.captcha =
       challenge: e.target.value
@@ -996,6 +997,7 @@ QR =
       <div><input name=upfile type=file></div>
       <div><input placeholder=Password name=pwd type=password></div>
     </form>
+    <a class=error></a>
     "
     $.bind $('form', qr.el), 'submit', QR.submit
     $.append d.body, qr.el
@@ -1006,6 +1008,21 @@ QR =
   submit: (e) ->
     $('#challenge', qr.el).value = QR.captcha.challenge
     $('#response',  qr.el).value = $('#recaptcha_response_field', qr.el).value
+  sys: ->
+    $.globalEval ->
+      if node = document.querySelector('table font b')?.firstChild
+        {textContent, href} = node
+        data = JSON.stringify {textContent, href}
+      parent.postMessage data, '*'
+      location = 'about:blank'
+
+  receive: (e) ->
+    {data} = e
+    if data
+      $.extend $('a.error', qr.el), JSON.parse data
+    else
+      $.rm qr.el
+      qr.el = null
 
 qr =
   # TODO
