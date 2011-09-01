@@ -975,7 +975,7 @@ QR =
     QR.challengeNode target: holder.firstChild
   challengeNode: (e) ->
     c = e.target.value
-    $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
+    $('img', QR.el).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
     QR.captcha =
       challenge: c
       time: Date.now()
@@ -986,7 +986,7 @@ QR =
     e.preventDefault()
     QR.dialog ">>#{@textContent}\n"
   dialog: (text='') ->
-    qr.el = ui.dialog 'qr', top: '0', left: '0', "
+    QR.el = ui.dialog 'qr', top: '0', left: '0', "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
     <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>
     <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
@@ -1004,16 +1004,16 @@ QR =
     </form>
     <a class=error></a>
     "
-    $.bind $('form', qr.el), 'submit', QR.submit
-    $.bind $('#recaptcha_response_field', qr.el), 'keydown', QR.keydown
-    $.append d.body, qr.el
-    ta = $ 'textarea', qr.el
+    $.bind $('form', QR.el), 'submit', QR.submit
+    $.bind $('#recaptcha_response_field', QR.el), 'keydown', QR.keydown
+    $.append d.body, QR.el
+    ta = $ 'textarea', QR.el
     l = text.length
     ta.setSelectionRange l, l
     ta.focus()
   keydown: (e) ->
     return unless e.keyCode is 13 and @value #enter, captcha filled
-    return if $('textarea', qr.el).value or $('[type=file]', qr.el).files.length #not blank
+    return if $('textarea', QR.el).value or $('[type=file]', QR.el).files.length #not blank
     e.preventDefault()
     {captcha} = QR
     captcha.response = @value
@@ -1024,8 +1024,8 @@ QR =
     Recaptcha.reload()
     @nextSibling.textContent = captchas.length + ' captchas'
   submit: (e) ->
-    $('#challenge', qr.el).value = QR.captcha.challenge
-    $('#response',  qr.el).value = $('#recaptcha_response_field', qr.el).value
+    $('#challenge', QR.el).value = QR.captcha.challenge
+    $('#response',  QR.el).value = $('#recaptcha_response_field', QR.el).value
   sys: ->
     $.globalEval ->
       if node = document.querySelector('table font b')?.firstChild
@@ -1036,10 +1036,10 @@ QR =
   receive: (e) ->
     {data} = e
     if data
-      $.extend $('a.error', qr.el), JSON.parse data
+      $.extend $('a.error', QR.el), JSON.parse data
     else
-      $.rm qr.el
-      qr.el = null
+      $.rm QR.el
+      QR.el = null
 
 qr =
   # TODO

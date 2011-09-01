@@ -1241,7 +1241,7 @@
     challengeNode: function(e) {
       var c;
       c = e.target.value;
-      $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + c;
+      $('img', QR.el).src = "http://www.google.com/recaptcha/api/image?c=" + c;
       return QR.captcha = {
         challenge: c,
         time: Date.now()
@@ -1261,14 +1261,14 @@
       if (text == null) {
         text = '';
       }
-      qr.el = ui.dialog('qr', {
+      QR.el = ui.dialog('qr', {
         top: '0',
         left: '0'
       }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email></div>      <div><input placeholder=Subject name=sub><button>Submit</button></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file></div>      <div><input placeholder=Password name=pwd type=password></div>    </form>    <a class=error></a>    ");
-      $.bind($('form', qr.el), 'submit', QR.submit);
-      $.bind($('#recaptcha_response_field', qr.el), 'keydown', QR.keydown);
-      $.append(d.body, qr.el);
-      ta = $('textarea', qr.el);
+      $.bind($('form', QR.el), 'submit', QR.submit);
+      $.bind($('#recaptcha_response_field', QR.el), 'keydown', QR.keydown);
+      $.append(d.body, QR.el);
+      ta = $('textarea', QR.el);
       l = text.length;
       ta.setSelectionRange(l, l);
       return ta.focus();
@@ -1278,7 +1278,7 @@
       if (!(e.keyCode === 13 && this.value)) {
         return;
       }
-      if ($('textarea', qr.el).value || $('[type=file]', qr.el).files.length) {
+      if ($('textarea', QR.el).value || $('[type=file]', QR.el).files.length) {
         return;
       }
       e.preventDefault();
@@ -1292,8 +1292,8 @@
       return this.nextSibling.textContent = captchas.length + ' captchas';
     },
     submit: function(e) {
-      $('#challenge', qr.el).value = QR.captcha.challenge;
-      return $('#response', qr.el).value = $('#recaptcha_response_field', qr.el).value;
+      $('#challenge', QR.el).value = QR.captcha.challenge;
+      return $('#response', QR.el).value = $('#recaptcha_response_field', QR.el).value;
     },
     sys: function() {
       return $.globalEval(function() {
@@ -1313,10 +1313,10 @@
       var data;
       data = e.data;
       if (data) {
-        return $.extend($('a.error', qr.el), JSON.parse(data));
+        return $.extend($('a.error', QR.el), JSON.parse(data));
       } else {
-        $.rm(qr.el);
-        return qr.el = null;
+        $.rm(QR.el);
+        return QR.el = null;
       }
     }
   };
