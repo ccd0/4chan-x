@@ -970,9 +970,13 @@ QR =
     $.bind holder, 'DOMNodeInserted', QR.challengeNode
     QR.challengeNode target: holder.firstChild
     $.bind window, 'message', QR.receive
+    # nuke id so qr's field focuses on recaptcha reload, instead of normal form's
+    $('#recaptcha_response_field').id = ''
   challengeNode: (e) ->
+    c = e.target.value
+    $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
     QR.captcha =
-      challenge: e.target.value
+      challenge: c
       time: Date.now()
   node: (root) ->
     quote = $ 'a.quotejs + a', root
@@ -993,18 +997,31 @@ QR =
       <div><input placeholder=Subject name=sub><button>Submit</button></div>
       <div><textarea placeholder=Comment name=com>#{text}</textarea></div>
       <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
-      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field ></div>
+      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>#{$.get('captchas', []).length} captchas</span></div>
       <div><input name=upfile type=file></div>
       <div><input placeholder=Password name=pwd type=password></div>
     </form>
     <a class=error></a>
     "
     $.bind $('form', qr.el), 'submit', QR.submit
+    $.bind $('#recaptcha_response_field', qr.el), 'keydown', QR.keydown
     $.append d.body, qr.el
     ta = $ 'textarea', qr.el
     l = text.length
     ta.setSelectionRange l, l
     ta.focus()
+  keydown: (e) ->
+    return unless e.keyCode is 13 and @value #enter, captcha filled
+    return if $('textarea', qr.el).value or $('[type=file]', qr.el).files.length #not blank
+    e.preventDefault()
+    {captcha} = QR
+    captcha.response = @value
+    captchas = $.get 'captchas', []
+    captchas.push captcha
+    $.set 'captchas', captchas
+    @value = ''
+    Recaptcha.reload()
+    @nextSibling.textContent = captchas.length + ' captchas'
   submit: (e) ->
     $('#challenge', qr.el).value = QR.captcha.challenge
     $('#response',  qr.el).value = $('#recaptcha_response_field', qr.el).value
@@ -1015,7 +1032,6 @@ QR =
         data = JSON.stringify {textContent, href}
       parent.postMessage data, '*'
       location = 'about:blank'
-
   receive: (e) ->
     {data} = e
     if data
