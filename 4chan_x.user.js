@@ -1253,8 +1253,20 @@
       return $.bind(quote, 'click', QR.quote);
     },
     quote: function(e) {
+      var i, ss, ta, text, v;
       e.preventDefault();
-      return QR.dialog(">>" + this.textContent + "\n");
+      text = ">>" + this.textContent + "\n";
+      if (!QR.el) {
+        QR.dialog(text);
+        return;
+      }
+      ta = $('textarea', QR.el);
+      v = ta.value;
+      ss = ta.selectionStart;
+      ta.value = v.slice(0, ss) + text + v.slice(ss);
+      i = ss + text.length;
+      ta.setSelectionRange(i, i);
+      return ta.focus();
     },
     dialog: function(text) {
       var l, ta;

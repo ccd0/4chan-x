@@ -984,7 +984,17 @@ QR =
     $.bind quote, 'click', QR.quote
   quote: (e) ->
     e.preventDefault()
-    QR.dialog ">>#{@textContent}\n"
+    text = ">>#{@textContent}\n"
+    if not QR.el
+      QR.dialog text
+      return
+    ta = $ 'textarea', QR.el
+    v  = ta.value
+    ss = ta.selectionStart
+    ta.value = v[0...ss] + text + v[ss..]
+    i = ss + text.length
+    ta.setSelectionRange i, i
+    ta.focus()
   dialog: (text='') ->
     QR.el = ui.dialog 'qr', top: '0', left: '0', "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
