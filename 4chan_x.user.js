@@ -3047,11 +3047,8 @@
       .error {\
         color: red;\
       }\
-      #error {\
+      #qr .error:not([href]) {\
         cursor: default;\
-      }\
-      #error[href] {\
-        cursor: pointer;\
       }\
       td.replyhider {\
         vertical-align: top;\
