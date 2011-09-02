@@ -56,6 +56,8 @@ HEADER  = """
  * Seiba - chrome quick reply focusing
  * herpaderpderp - recaptcha fixes
  * wakimoko - recaptcha tab order http://userscripts.org/scripts/show/82657
+ * xat- new favicons
+ *
  * All the people who've taken the time to write bug reports.
  *
  * Thank you.
