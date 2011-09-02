@@ -1288,7 +1288,6 @@
       return ta.focus();
     },
     keydown: function(e) {
-      var captcha, captchas;
       if (!(e.keyCode === 13 && this.value)) {
         return;
       }
@@ -1296,19 +1295,45 @@
         return;
       }
       e.preventDefault();
+      return QR.captchaPush(this);
+    },
+    captchaPush: function(el) {
+      var captcha, captchas;
       captcha = QR.captcha;
-      captcha.response = this.value;
+      captcha.response = el.value;
       captchas = $.get('captchas', []);
       captchas.push(captcha);
       $.set('captchas', captchas);
-      this.value = '';
+      el.value = '';
       Recaptcha.reload();
-      return this.nextSibling.textContent = captchas.length + ' captchas';
+      return el.nextSibling.textContent = captchas.length + ' captchas';
+    },
+    captchaShift: function() {
+      var captcha, captchas, cutoff;
+      captchas = $.get('captchas', []);
+      cutoff = Date.now() - 5 * HOUR + 5 * MINUTE;
+      while (captcha = captchas.shift()) {
+        if (captcha.time > cutoff) {
+          break;
+        }
+      }
+      $.set('captchas', captchas);
+      return captcha;
     },
     submit: function(e) {
+      var captcha, challenge, el, response;
       $('.error', qr.el).textContent = '';
-      $('#challenge', QR.el).value = QR.captcha.challenge;
-      return $('#response', QR.el).value = $('#recaptcha_response_field', QR.el).value;
+      if ((el = $('#recaptcha_response_field', QR.el)).value) {
+        QR.captchaPush(el);
+      }
+      if (!(captcha = captchaShift())) {
+        alert('You forgot to type in the verification.');
+        e.preventDefault();
+        return;
+      }
+      challenge = captcha.challenge, response = captcha.response;
+      $('#challenge', QR.el).value = challenge;
+      return $('#response', QR.el).value = response;
     },
     sys: function() {
       return $.globalEval(function() {

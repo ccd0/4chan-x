@@ -1025,18 +1025,35 @@ QR =
     return unless e.keyCode is 13 and @value #enter, captcha filled
     return if $('textarea', QR.el).value or $('[type=file]', QR.el).files.length #not blank
     e.preventDefault()
+    QR.captchaPush @
+  captchaPush: (el) ->
     {captcha} = QR
-    captcha.response = @value
+    captcha.response = el.value
     captchas = $.get 'captchas', []
     captchas.push captcha
     $.set 'captchas', captchas
-    @value = ''
+    el.value = ''
     Recaptcha.reload()
-    @nextSibling.textContent = captchas.length + ' captchas'
+    el.nextSibling.textContent = captchas.length + ' captchas'
+  captchaShift: ->
+    captchas = $.get 'captchas', []
+    cutoff = Date.now() - 5*HOUR + 5*MINUTE
+    while captcha = captchas.shift()
+      if captcha.time > cutoff
+        break
+    $.set 'captchas', captchas
+    captcha
   submit: (e) ->
     $('.error', qr.el).textContent = ''
-    $('#challenge', QR.el).value = QR.captcha.challenge
-    $('#response',  QR.el).value = $('#recaptcha_response_field', QR.el).value
+    if (el = $('#recaptcha_response_field', QR.el)).value
+      QR.captchaPush el
+    if not captcha = captchaShift()
+      alert 'You forgot to type in the verification.'
+      e.preventDefault()
+      return
+    {challenge, response} = captcha
+    $('#challenge', QR.el).value = challenge
+    $('#response',  QR.el).value = response
   sys: ->
     $.globalEval ->
       if node = document.querySelector('table font b')?.firstChild
