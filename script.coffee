@@ -970,9 +970,9 @@ QR =
     # nuke id so qr's field focuses on recaptcha reload, instead of normal form's
     $('#recaptcha_response_field').id = ''
     holder = $ '#recaptcha_challenge_field_holder'
-    $.bind holder, 'DOMNodeInserted', QR.challengeNode
-    QR.challengeNode target: holder.firstChild
-  challengeNode: (e) ->
+    $.bind holder, 'DOMNodeInserted', QR.captchaNode
+    QR.captchaNode target: holder.firstChild
+  captchaNode: (e) ->
     c = e.target.value
     $('img', QR.el).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
     QR.captcha =

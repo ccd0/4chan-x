@@ -1234,12 +1234,12 @@
       $.bind(window, 'message', QR.receive);
       $('#recaptcha_response_field').id = '';
       holder = $('#recaptcha_challenge_field_holder');
-      $.bind(holder, 'DOMNodeInserted', QR.challengeNode);
-      return QR.challengeNode({
+      $.bind(holder, 'DOMNodeInserted', QR.captchaNode);
+      return QR.captchaNode({
         target: holder.firstChild
       });
     },
-    challengeNode: function(e) {
+    captchaNode: function(e) {
       var c;
       c = e.target.value;
       $('img', QR.el).src = "http://www.google.com/recaptcha/api/image?c=" + c;
