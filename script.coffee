@@ -994,8 +994,11 @@ QR =
     i = ss + text.length
     ta.setSelectionRange i, i
     ta.focus()
+  close: ->
+    $.rm QR.el
+    QR.el = null
   dialog: (text='') ->
-    QR.el = ui.dialog 'qr', top: '0', left: '0', "
+    QR.el = el = ui.dialog 'qr', top: '0', left: '0', "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
     <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>
     <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
@@ -1013,10 +1016,11 @@ QR =
     </form>
     <a class=error></a>
     "
-    $.bind $('form', QR.el), 'submit', QR.submit
-    $.bind $('#recaptcha_response_field', QR.el), 'keydown', QR.keydown
-    $.append d.body, QR.el
-    ta = $ 'textarea', QR.el
+    $.bind $('.close', el), 'click', QR.close
+    $.bind $('form', el), 'submit', QR.submit
+    $.bind $('#recaptcha_response_field', el), 'keydown', QR.keydown
+    $.append d.body, el
+    ta = $ 'textarea', el
     l = text.length
     ta.setSelectionRange l, l
     ta.focus()
@@ -1065,8 +1069,7 @@ QR =
     if data
       $.extend $('a.error', QR.el), JSON.parse data
     else
-      $.rm QR.el
-      QR.el = null
+      QR.close()
 
 qr =
   # TODO
