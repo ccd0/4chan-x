@@ -978,25 +978,29 @@ QR =
     QR.captcha =
       challenge: c
       time: Date.now()
-  node: (root) ->
-    quote = $ 'a.quotejs + a', root
-    $.bind quote, 'click', QR.quote
-  quote: (e) ->
-    e.preventDefault()
-    text = ">>#{@textContent}\n"
-    if not QR.el
-      QR.dialog text
-      return
-    ta = $ 'textarea', QR.el
-    v  = ta.value
-    ss = ta.selectionStart
-    ta.value = v[0...ss] + text + v[ss..]
-    i = ss + text.length
-    ta.setSelectionRange i, i
-    ta.focus()
+  captchaPush: (el) ->
+    {captcha} = QR
+    captcha.response = el.value
+    captchas = $.get 'captchas', []
+    captchas.push captcha
+    $.set 'captchas', captchas
+    el.value = ''
+    Recaptcha.reload()
+    el.nextSibling.textContent = captchas.length + ' captchas'
+  captchaShift: ->
+    captchas = $.get 'captchas', []
+    cutoff = Date.now() - 5*HOUR + 5*MINUTE
+    while captcha = captchas.shift()
+      if captcha.time > cutoff
+        break
+    $.set 'captchas', captchas
+    captcha
   close: ->
     $.rm QR.el
     QR.el = null
+  node: (root) ->
+    quote = $ 'a.quotejs + a', root
+    $.bind quote, 'click', QR.quote
   dialog: (text='') ->
     QR.el = el = ui.dialog 'qr', top: '0', left: '0', "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
@@ -1029,23 +1033,25 @@ QR =
     return if $('textarea', QR.el).value or $('[type=file]', QR.el).files.length #not blank
     e.preventDefault()
     QR.captchaPush @
-  captchaPush: (el) ->
-    {captcha} = QR
-    captcha.response = el.value
-    captchas = $.get 'captchas', []
-    captchas.push captcha
-    $.set 'captchas', captchas
-    el.value = ''
-    Recaptcha.reload()
-    el.nextSibling.textContent = captchas.length + ' captchas'
-  captchaShift: ->
-    captchas = $.get 'captchas', []
-    cutoff = Date.now() - 5*HOUR + 5*MINUTE
-    while captcha = captchas.shift()
-      if captcha.time > cutoff
-        break
-    $.set 'captchas', captchas
-    captcha
+  quote: (e) ->
+    e.preventDefault()
+    text = ">>#{@textContent}\n"
+    if not QR.el
+      QR.dialog text
+      return
+    ta = $ 'textarea', QR.el
+    v  = ta.value
+    ss = ta.selectionStart
+    ta.value = v[0...ss] + text + v[ss..]
+    i = ss + text.length
+    ta.setSelectionRange i, i
+    ta.focus()
+  receive: (e) ->
+    {data} = e
+    if data
+      $.extend $('a.error', QR.el), JSON.parse data
+    else
+      QR.close()
   submit: (e) ->
     $('.error', qr.el).textContent = ''
     if (el = $('#recaptcha_response_field', QR.el)).value
@@ -1064,12 +1070,6 @@ QR =
         data = JSON.stringify {textContent, href}
       parent.postMessage data, '*'
       location = 'about:blank'
-  receive: (e) ->
-    {data} = e
-    if data
-      $.extend $('a.error', QR.el), JSON.parse data
-    else
-      QR.close()
 
 qr =
   # TODO

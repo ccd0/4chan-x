@@ -1248,30 +1248,37 @@
         time: Date.now()
       };
     },
-    node: function(root) {
-      var quote;
-      quote = $('a.quotejs + a', root);
-      return $.bind(quote, 'click', QR.quote);
+    captchaPush: function(el) {
+      var captcha, captchas;
+      captcha = QR.captcha;
+      captcha.response = el.value;
+      captchas = $.get('captchas', []);
+      captchas.push(captcha);
+      $.set('captchas', captchas);
+      el.value = '';
+      Recaptcha.reload();
+      return el.nextSibling.textContent = captchas.length + ' captchas';
     },
-    quote: function(e) {
-      var i, ss, ta, text, v;
-      e.preventDefault();
-      text = ">>" + this.textContent + "\n";
-      if (!QR.el) {
-        QR.dialog(text);
-        return;
+    captchaShift: function() {
+      var captcha, captchas, cutoff;
+      captchas = $.get('captchas', []);
+      cutoff = Date.now() - 5 * HOUR + 5 * MINUTE;
+      while (captcha = captchas.shift()) {
+        if (captcha.time > cutoff) {
+          break;
+        }
       }
-      ta = $('textarea', QR.el);
-      v = ta.value;
-      ss = ta.selectionStart;
-      ta.value = v.slice(0, ss) + text + v.slice(ss);
-      i = ss + text.length;
-      ta.setSelectionRange(i, i);
-      return ta.focus();
+      $.set('captchas', captchas);
+      return captcha;
     },
     close: function() {
       $.rm(QR.el);
       return QR.el = null;
+    },
+    node: function(root) {
+      var quote;
+      quote = $('a.quotejs + a', root);
+      return $.bind(quote, 'click', QR.quote);
     },
     dialog: function(text) {
       var el, l, ta;
@@ -1301,28 +1308,30 @@
       e.preventDefault();
       return QR.captchaPush(this);
     },
-    captchaPush: function(el) {
-      var captcha, captchas;
-      captcha = QR.captcha;
-      captcha.response = el.value;
-      captchas = $.get('captchas', []);
-      captchas.push(captcha);
-      $.set('captchas', captchas);
-      el.value = '';
-      Recaptcha.reload();
-      return el.nextSibling.textContent = captchas.length + ' captchas';
-    },
-    captchaShift: function() {
-      var captcha, captchas, cutoff;
-      captchas = $.get('captchas', []);
-      cutoff = Date.now() - 5 * HOUR + 5 * MINUTE;
-      while (captcha = captchas.shift()) {
-        if (captcha.time > cutoff) {
-          break;
-        }
+    quote: function(e) {
+      var i, ss, ta, text, v;
+      e.preventDefault();
+      text = ">>" + this.textContent + "\n";
+      if (!QR.el) {
+        QR.dialog(text);
+        return;
       }
-      $.set('captchas', captchas);
-      return captcha;
+      ta = $('textarea', QR.el);
+      v = ta.value;
+      ss = ta.selectionStart;
+      ta.value = v.slice(0, ss) + text + v.slice(ss);
+      i = ss + text.length;
+      ta.setSelectionRange(i, i);
+      return ta.focus();
+    },
+    receive: function(e) {
+      var data;
+      data = e.data;
+      if (data) {
+        return $.extend($('a.error', QR.el), JSON.parse(data));
+      } else {
+        return QR.close();
+      }
     },
     submit: function(e) {
       var captcha, challenge, el, response;
@@ -1352,15 +1361,6 @@
         parent.postMessage(data, '*');
         return location = 'about:blank';
       });
-    },
-    receive: function(e) {
-      var data;
-      data = e.data;
-      if (data) {
-        return $.extend($('a.error', QR.el), JSON.parse(data));
-      } else {
-        return QR.close();
-      }
     }
   };
   qr = {
