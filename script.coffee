@@ -963,7 +963,9 @@ cooldown =
 
 QR =
   init: ->
-    g.callbacks.push QR.node
+    g.callbacks.push (root) ->
+      quote = $ 'a.quotejs + a', root
+      $.bind quote, 'click', QR.quote
     $.append d.body, $.el 'iframe',
       name: 'iframe'
     $.bind window, 'message', QR.receive
@@ -998,9 +1000,6 @@ QR =
   close: ->
     $.rm QR.el
     QR.el = null
-  node: (root) ->
-    quote = $ 'a.quotejs + a', root
-    $.bind quote, 'click', QR.quote
   dialog: (text='') ->
     QR.el = el = ui.dialog 'qr', top: '0', left: '0', "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>

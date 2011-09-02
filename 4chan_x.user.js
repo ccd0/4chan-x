@@ -1227,7 +1227,11 @@
   QR = {
     init: function() {
       var holder;
-      g.callbacks.push(QR.node);
+      g.callbacks.push(function(root) {
+        var quote;
+        quote = $('a.quotejs + a', root);
+        return $.bind(quote, 'click', QR.quote);
+      });
       $.append(d.body, $.el('iframe', {
         name: 'iframe'
       }));
@@ -1274,11 +1278,6 @@
     close: function() {
       $.rm(QR.el);
       return QR.el = null;
-    },
-    node: function(root) {
-      var quote;
-      quote = $('a.quotejs + a', root);
-      return $.bind(quote, 'click', QR.quote);
     },
     dialog: function(text) {
       var el, l, ta;
