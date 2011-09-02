@@ -969,7 +969,6 @@ QR =
     $.bind window, 'message', QR.receive
     # nuke id so qr's field focuses on recaptcha reload, instead of normal form's
     $('#recaptcha_response_field').id = ''
-    QR.dialog()
     holder = $ '#recaptcha_challenge_field_holder'
     $.bind holder, 'DOMNodeInserted', QR.challengeNode
     QR.challengeNode target: holder.firstChild
@@ -1007,7 +1006,7 @@ QR =
       <div><input placeholder=Email name=email></div>
       <div><input placeholder=Subject name=sub><button>Submit</button></div>
       <div><textarea placeholder=Comment name=com>#{text}</textarea></div>
-      <div><img></div>
+      <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
       <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>#{$.get('captchas', []).length} captchas</span></div>
       <div><input name=upfile type=file></div>
       <div><input placeholder=Password name=pwd type=password></div>
