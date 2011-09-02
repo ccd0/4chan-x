@@ -1034,6 +1034,7 @@ QR =
     Recaptcha.reload()
     @nextSibling.textContent = captchas.length + ' captchas'
   submit: (e) ->
+    $('.error', qr.el).textContent = ''
     $('#challenge', QR.el).value = QR.captcha.challenge
     $('#response',  QR.el).value = $('#recaptcha_response_field', QR.el).value
   sys: ->

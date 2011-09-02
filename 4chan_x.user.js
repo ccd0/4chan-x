@@ -1306,6 +1306,7 @@
       return this.nextSibling.textContent = captchas.length + ' captchas';
     },
     submit: function(e) {
+      $('.error', qr.el).textContent = '';
       $('#challenge', QR.el).value = QR.captcha.challenge;
       return $('#response', QR.el).value = $('#recaptcha_response_field', QR.el).value;
     },
