@@ -3191,7 +3191,7 @@
       #qr .close, #qr #autohide {\
         float: right;\
       }\
-      #qr:not(:hover) > #autohide:checked ~ .autohide {\
+      #qr:not(:hover) > #autohide:checked ~ form {\
         height: 0;\
         overflow: hidden;\
       }\
