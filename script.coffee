@@ -987,6 +987,7 @@ QR =
     QR.accept = "'#{accept}'"
     QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value
     QR.spoiler = if $('.postarea label') then ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
+    QR.file = "<input type=file name=upfile accept=#{QR.accept}>"
     if conf['Persistent QR']
       QR.dialog()
       if conf['Auto Hide QR']
@@ -998,22 +999,19 @@ QR =
   attach: ->
     $('#auto', QR.qr).checked = true
     div = $.el 'div',
-      innerHTML: "<input name=upfile type=file accept=#{QR.accept}><a class=close>X</a>"
+      innerHTML: "#{QR.file}<a class=close>X</a>"
     file = $ 'input', div
     $.bind file, 'change', QR.change
     $.bind $('a', div), 'click', -> $.rm @parentNode
     $.append $('#files', QR.qr), div
     file.click()
   attachNext: ->
-    oldFile = $ '[type=file]', QR.qr
+    old = $ '[type=file]', QR.qr
     if file = $ '#files input', QR.qr
       $.rm file.parentNode
+      $.replace old, file
     else
-      file = $.el 'input',
-        type: 'file'
-        name: 'upfile'
-        accept: QR.accept
-    $.replace oldFile, file
+      $.refreshFile old
   captchaNode: (e) ->
     c = e.target.value
     $('img', QR.qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}" if QR.qr
@@ -1038,13 +1036,19 @@ QR =
     $.set 'captchas', captchas
     $('#cl', QR.qr).textContent = captchas.length + ' captchas'
     captcha
-  change: ->
-    if @files[0].size > QR.MAX_FILE_SIZE
-      alert 'Error: File too large.'
-      @.click()
-    else
-      $.unbind @, 'change', QR.change
-      QR.attach()
+  change: (e) ->
+    return unless @files[0].size > QR.MAX_FILE_SIZE
+    alert 'Error: File too large.'
+    QR.refreshFile @
+  refreshFile: (old) ->
+    div = $.el 'div'
+      innerHTML: QR.file
+    file = div.firstChild
+    $.bind file, 'change', QR.change
+    $.replace old, file
+  change1: ->
+    $.unbind @, 'change', QR.change
+    QR.attach()
   close: ->
     $.rm QR.qr
     QR.qr = null
@@ -1078,7 +1082,7 @@ QR =
       <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>
       <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
       <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl>#{$.get('captchas', []).length} captchas</span></div>
-      <div><input name=upfile type=file accept=#{QR.accept}></div>
+      <div>#{QR.file}</div>
     </form>
     <div id=files></div>
     <div><input placeholder=Password name=pwd type=password class=inputtext><a id=attach>attach another file</a></div>

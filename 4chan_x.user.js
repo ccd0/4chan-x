@@ -1254,6 +1254,7 @@
       QR.accept = "'" + accept + "'";
       QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value;
       QR.spoiler = $('.postarea label') ? ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
+      QR.file = "<input type=file name=upfile accept=" + QR.accept + ">";
       if (conf['Persistent QR']) {
         QR.dialog();
         if (conf['Auto Hide QR']) {
@@ -1270,7 +1271,7 @@
       var div, file;
       $('#auto', QR.qr).checked = true;
       div = $.el('div', {
-        innerHTML: "<input name=upfile type=file accept=" + QR.accept + "><a class=close>X</a>"
+        innerHTML: "" + QR.file + "<a class=close>X</a>"
       });
       file = $('input', div);
       $.bind(file, 'change', QR.change);
@@ -1281,18 +1282,14 @@
       return file.click();
     },
     attachNext: function() {
-      var file, oldFile;
-      oldFile = $('[type=file]', QR.qr);
+      var file, old;
+      old = $('[type=file]', QR.qr);
       if (file = $('#files input', QR.qr)) {
         $.rm(file.parentNode);
+        return $.replace(old, file);
       } else {
-        file = $.el('input', {
-          type: 'file',
-          name: 'upfile',
-          accept: QR.accept
-        });
+        return $.refreshFile(old);
       }
-      return $.replace(oldFile, file);
     },
     captchaNode: function(e) {
       var c;
@@ -1329,14 +1326,25 @@
       $('#cl', QR.qr).textContent = captchas.length + ' captchas';
       return captcha;
     },
-    change: function() {
-      if (this.files[0].size > QR.MAX_FILE_SIZE) {
-        alert('Error: File too large.');
-        return this.click();
-      } else {
-        $.unbind(this, 'change', QR.change);
-        return QR.attach();
+    change: function(e) {
+      if (!(this.files[0].size > QR.MAX_FILE_SIZE)) {
+        return;
       }
+      alert('Error: File too large.');
+      return QR.refreshFile(this);
+    },
+    refreshFile: function(old) {
+      var div, file;
+      div = $.el('div', {
+        innerHTML: QR.file
+      });
+      file = div.firstChild;
+      $.bind(file, 'change', QR.change);
+      return $.replace(old, file);
+    },
+    change1: function() {
+      $.unbind(this, 'change', QR.change);
+      return QR.attach();
     },
     close: function() {
       $.rm(QR.qr);
@@ -1375,7 +1383,7 @@
       QR.qr = qr = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form class=inputtext>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + tid + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email class=inputtext>" + QR.spoiler + "</div>      <div><input placeholder=Subject name=sub class=inputtext><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file accept=" + QR.accept + "></div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password class=inputtext><a id=attach>attach another file</a></div>    <a class=error></a>    ");
+      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form class=inputtext>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + tid + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email class=inputtext>" + QR.spoiler + "</div>      <div><input placeholder=Subject name=sub class=inputtext><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div>" + QR.file + "</div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password class=inputtext><a id=attach>attach another file</a></div>    <a class=error></a>    ");
       c = d.cookie;
       $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
