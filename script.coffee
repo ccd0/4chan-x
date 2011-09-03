@@ -1091,16 +1091,21 @@ QR =
     if data
       $.extend $('a.error', QR.el), JSON.parse data
     else
-      if conf['Persistent QR']
-        QR.reset()
+      if ((file = $('#files input', QR.el)) and file.files.length) or conf['Persistent QR']
+        QR.reset file
       else
         QR.close()
       if conf['Cooldown']
         cooldown = Date.now() + 30*SECOND
         $.set "cooldown/#{g.BOARD}", cooldown
         QR.cooldown()
-  reset: ->
+  reset: (file) ->
     $('textarea', QR.el).value = ''
+    oldFile = $ '[type=file]', QR.el
+    file or= $.el 'input',
+      type: 'file'
+      name: 'upfile'
+    $.replace oldFile, file
   submit: (e) ->
     #XXX e is undefined if we're called from QR.autoPost
     $('.error', qr.el).textContent = ''

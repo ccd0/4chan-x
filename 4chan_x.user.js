@@ -1388,13 +1388,13 @@
       return ta.focus();
     },
     receive: function(e) {
-      var data;
+      var data, file;
       data = e.data;
       if (data) {
         return $.extend($('a.error', QR.el), JSON.parse(data));
       } else {
-        if (conf['Persistent QR']) {
-          QR.reset();
+        if (((file = $('#files input', QR.el)) && file.files.length) || conf['Persistent QR']) {
+          QR.reset(file);
         } else {
           QR.close();
         }
@@ -1405,8 +1405,15 @@
         }
       }
     },
-    reset: function() {
-      return $('textarea', QR.el).value = '';
+    reset: function(file) {
+      var oldFile;
+      $('textarea', QR.el).value = '';
+      oldFile = $('[type=file]', QR.el);
+      file || (file = $.el('input', {
+        type: 'file',
+        name: 'upfile'
+      }));
+      return $.replace(oldFile, file);
     },
     submit: function(e) {
       var captcha, challenge, el, response;
