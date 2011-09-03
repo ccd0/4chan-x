@@ -1251,15 +1251,17 @@
       }
     },
     attach: function() {
-      var div;
+      var div, file;
       div = $.el('div', {
         innerHTML: '<input name=upfile type=file><a class=close>X</a>'
       });
-      $.bind($('input', div), 'change', QR.change);
+      file = $('input', div);
+      $.bind(file, 'change', QR.change);
       $.bind($('a', div), 'click', function() {
         return $.rm(this.parentNode);
       });
-      return $.append($('#files', QR.el), div);
+      $.append($('#files', QR.el), div);
+      return file.click();
     },
     autoPost: function() {
       if (!QR.hasContent()) {

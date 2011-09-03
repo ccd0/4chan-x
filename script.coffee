@@ -982,9 +982,11 @@ QR =
   attach: ->
     div = $.el 'div',
       innerHTML: '<input name=upfile type=file><a class=close>X</a>'
-    $.bind $('input', div), 'change', QR.change
+    file = $ 'input', div
+    $.bind file, 'change', QR.change
     $.bind $('a', div), 'click', -> $.rm @parentNode
     $.append $('#files', QR.el), div
+    file.click()
   autoPost: ->
     return unless QR.hasContent()
     QR.submit()
