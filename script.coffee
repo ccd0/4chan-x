@@ -1159,6 +1159,11 @@ QR =
     $('#autohide', qr).checked = true if conf['Auto Hide QR']
     $('#qr_form', qr).submit() if not e
     QR.sage = /sage/i.test $('[name=email]', qr).value
+    if conf['Thread Watcher'] and conf['Auto Watch Reply']
+      id = $('input[name=resto]', qr.el).value
+      op = $.id id
+      if $('img.favicon', op).src is Favicon.empty
+        watcher.watch op, id
   sys: ->
     $.globalEval ->
       if node = document.querySelector('table font b')?.firstChild

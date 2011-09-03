@@ -1455,7 +1455,7 @@
       return QR.attachNext();
     },
     submit: function(e) {
-      var captcha, challenge, el, qr, response;
+      var captcha, challenge, el, id, op, qr, response;
       if (!($('textarea', QR.qr).value || $('[type=file]', QR.qr).files.length)) {
         if (e) {
           alert('Error: No text entered.');
@@ -1484,7 +1484,14 @@
       if (!e) {
         $('#qr_form', qr).submit();
       }
-      return QR.sage = /sage/i.test($('[name=email]', qr).value);
+      QR.sage = /sage/i.test($('[name=email]', qr).value);
+      if (conf['Thread Watcher'] && conf['Auto Watch Reply']) {
+        id = $('input[name=resto]', qr.el).value;
+        op = $.id(id);
+        if ($('img.favicon', op).src === Favicon.empty) {
+          return watcher.watch(op, id);
+        }
+      }
     },
     sys: function() {
       return $.globalEval(function() {
