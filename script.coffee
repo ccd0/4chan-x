@@ -988,19 +988,19 @@ QR =
     if conf['Persistent QR']
       QR.dialog()
       if conf['Auto Hide QR']
-        $('#autohide', QR.el).checked = true
+        $('#autohide', QR.qr).checked = true
   attach: ->
-    $('#auto', QR.el).checked = true
+    $('#auto', QR.qr).checked = true
     div = $.el 'div',
       innerHTML: "<input name=upfile type=file accept=#{QR.accept}><a class=close>X</a>"
     file = $ 'input', div
     $.bind file, 'change', QR.change
     $.bind $('a', div), 'click', -> $.rm @parentNode
-    $.append $('#files', QR.el), div
+    $.append $('#files', QR.qr), div
     file.click()
   attachNext: ->
-    oldFile = $ '[type=file]', QR.el
-    if file = $ '#files input', QR.el
+    oldFile = $ '[type=file]', QR.qr
+    if file = $ '#files input', QR.qr
       $.rm file.parentNode
     else
       file = $.el 'input',
@@ -1013,7 +1013,7 @@ QR =
     QR.submit()
   captchaNode: (e) ->
     c = e.target.value
-    $('img', QR.el).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
+    $('img', QR.qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
     QR.captcha =
       challenge: c
       time: Date.now()
@@ -1033,20 +1033,20 @@ QR =
       if captcha.time > cutoff
         break
     $.set 'captchas', captchas
-    $('#cl', QR.el).textContent = captchas.length
+    $('#cl', QR.qr).textContent = captchas.length
     captcha
   change: ->
     $.unbind @, 'change', QR.change
     QR.attach()
   close: ->
-    $.rm QR.el
-    QR.el = null
+    $.rm QR.qr
+    QR.qr = null
   cooldown: ->
-    return unless QR.el
+    return unless QR.qr
     cooldown = $.get "cooldown/#{g.BOARD}", 0
     now = Date.now()
     n = Math.ceil (cooldown - now) / 1000
-    b = $ 'button', QR.el
+    b = $ 'button', QR.qr
     if n > 0
       $.extend b,
         textContent: n
@@ -1056,9 +1056,9 @@ QR =
       $.extend b,
         textContent: 'Submit'
         disabled: false
-      QR.autoPost() if $('#auto', QR.el).checked
+      QR.autoPost() if $('#auto', QR.qr).checked
   dialog: (text='') ->
-    QR.el = el = ui.dialog 'qr', top: '0', left: '0', "
+    QR.qr = qr = ui.dialog 'qr', top: '0', left: '0', "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
     <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>
     <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
@@ -1078,17 +1078,17 @@ QR =
     <a class=error></a>
     "
     QR.cooldown if conf['Cooldown']
-    $.bind $('.close', el), 'click', QR.close
-    $.bind $('form', el), 'submit', QR.submit
-    $.bind $('#recaptcha_response_field', el), 'keydown', QR.keydown
-    $.bind $('#attach', el), 'click', QR.attach
-    $.append d.body, el
-    ta = $ 'textarea', el
+    $.bind $('.close', qr), 'click', QR.close
+    $.bind $('form', qr), 'submit', QR.submit
+    $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
+    $.bind $('#attach', qr), 'click', QR.attach
+    $.append d.body, qr
+    ta = $ 'textarea', qr
     l = text.length
     ta.setSelectionRange l, l
     ta.focus()
   hasContent: ->
-    $('textarea', QR.el).value or $('[type=file]', QR.el).files.length
+    $('textarea', QR.qr).value or $('[type=file]', QR.qr).files.length
   keydown: (e) ->
     return unless e.keyCode is 13 and @value #enter, captcha filled
     QR.captchaPush @
@@ -1096,10 +1096,10 @@ QR =
   quote: (e) ->
     e.preventDefault()
     text = ">>#{@textContent}\n"
-    if not QR.el
+    if not QR.qr
       QR.dialog text
       return
-    ta = $ 'textarea', QR.el
+    ta = $ 'textarea', QR.qr
     v  = ta.value
     ss = ta.selectionStart
     ta.value = v[0...ss] + text + v[ss..]
@@ -1110,7 +1110,7 @@ QR =
     {data} = e
     if data
       data = JSON.parse data
-      $.extend $('a.error', QR.el), data
+      $.extend $('a.error', QR.qr), data
       tc = data.textContent
       if tc is 'Error: Duplicate file entry detected.'
         QR.attachNext()
@@ -1118,7 +1118,7 @@ QR =
       else if tc is 'You seem to have mistyped the verification.'
         setTimeout QR.submit, 1000
       return
-    if conf['Persistent QR'] or $('#files input', QR.el)?.files.length
+    if conf['Persistent QR'] or $('#files input', QR.qr)?.files.length
       QR.reset()
     else
       QR.close()
@@ -1127,23 +1127,24 @@ QR =
       $.set "cooldown/#{g.BOARD}", cooldown
       QR.cooldown()
   reset: ->
-    $('[name=spoiler]', QR.el)?.checked = false unless conf['Remember Spoiler']
-    $('textarea', QR.el).value = ''
+    $('[name=spoiler]', QR.qr)?.checked = false unless conf['Remember Spoiler']
+    $('textarea', QR.qr).value = ''
     QR.attachNext()
   submit: (e) ->
     #XXX e is undefined if we're called from QR.autoPost
-    $('.error', qr.el).textContent = ''
-    if (el = $('#recaptcha_response_field', QR.el)).value
+    {qr} = QR
+    $('.error', qr).textContent = ''
+    if (el = $('#recaptcha_response_field', qr)).value
       QR.captchaPush el
     if not captcha = QR.captchaShift()
       alert 'You forgot to type in the verification.'
       e?.preventDefault()
       return
     {challenge, response} = captcha
-    $('#challenge', QR.el).value = challenge
-    $('#response',  QR.el).value = response
-    $('#autohide', QR.el).checked = true if conf['Auto Hide QR']
-    $('#qr_form', QR.el).submit() if not e
+    $('#challenge', qr).value = challenge
+    $('#response',  qr).value = response
+    $('#autohide', qr).checked = true if conf['Auto Hide QR']
+    $('#qr_form', qr).submit() if not e
   sys: ->
     $.globalEval ->
       if node = document.querySelector('table font b')?.firstChild

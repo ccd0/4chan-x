@@ -1259,13 +1259,13 @@
       if (conf['Persistent QR']) {
         QR.dialog();
         if (conf['Auto Hide QR']) {
-          return $('#autohide', QR.el).checked = true;
+          return $('#autohide', QR.qr).checked = true;
         }
       }
     },
     attach: function() {
       var div, file;
-      $('#auto', QR.el).checked = true;
+      $('#auto', QR.qr).checked = true;
       div = $.el('div', {
         innerHTML: "<input name=upfile type=file accept=" + QR.accept + "><a class=close>X</a>"
       });
@@ -1274,13 +1274,13 @@
       $.bind($('a', div), 'click', function() {
         return $.rm(this.parentNode);
       });
-      $.append($('#files', QR.el), div);
+      $.append($('#files', QR.qr), div);
       return file.click();
     },
     attachNext: function() {
       var file, oldFile;
-      oldFile = $('[type=file]', QR.el);
-      if (file = $('#files input', QR.el)) {
+      oldFile = $('[type=file]', QR.qr);
+      if (file = $('#files input', QR.qr)) {
         $.rm(file.parentNode);
       } else {
         file = $.el('input', {
@@ -1300,7 +1300,7 @@
     captchaNode: function(e) {
       var c;
       c = e.target.value;
-      $('img', QR.el).src = "http://www.google.com/recaptcha/api/image?c=" + c;
+      $('img', QR.qr).src = "http://www.google.com/recaptcha/api/image?c=" + c;
       return QR.captcha = {
         challenge: c,
         time: Date.now()
@@ -1327,7 +1327,7 @@
         }
       }
       $.set('captchas', captchas);
-      $('#cl', QR.el).textContent = captchas.length;
+      $('#cl', QR.qr).textContent = captchas.length;
       return captcha;
     },
     change: function() {
@@ -1335,18 +1335,18 @@
       return QR.attach();
     },
     close: function() {
-      $.rm(QR.el);
-      return QR.el = null;
+      $.rm(QR.qr);
+      return QR.qr = null;
     },
     cooldown: function() {
       var b, n, now;
-      if (!QR.el) {
+      if (!QR.qr) {
         return;
       }
       cooldown = $.get("cooldown/" + g.BOARD, 0);
       now = Date.now();
       n = Math.ceil((cooldown - now) / 1000);
-      b = $('button', QR.el);
+      b = $('button', QR.qr);
       if (n > 0) {
         $.extend(b, {
           textContent: n,
@@ -1358,35 +1358,35 @@
           textContent: 'Submit',
           disabled: false
         });
-        if ($('#auto', QR.el).checked) {
+        if ($('#auto', QR.qr).checked) {
           return QR.autoPost();
         }
       }
     },
     dialog: function(text) {
-      var el, l, ta;
+      var l, qr, ta;
       if (text == null) {
         text = '';
       }
-      QR.el = el = ui.dialog('qr', {
+      QR.qr = qr = ui.dialog('qr', {
         top: '0',
         left: '0'
       }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email>" + QR.spoiler + "</div>      <div><input placeholder=Subject name=sub><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file accept=" + QR.accept + "></div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password><a id=attach>attach another file</a></div>    <a class=error></a>    ");
       if (conf['Cooldown']) {
         QR.cooldown;
       }
-      $.bind($('.close', el), 'click', QR.close);
-      $.bind($('form', el), 'submit', QR.submit);
-      $.bind($('#recaptcha_response_field', el), 'keydown', QR.keydown);
-      $.bind($('#attach', el), 'click', QR.attach);
-      $.append(d.body, el);
-      ta = $('textarea', el);
+      $.bind($('.close', qr), 'click', QR.close);
+      $.bind($('form', qr), 'submit', QR.submit);
+      $.bind($('#recaptcha_response_field', qr), 'keydown', QR.keydown);
+      $.bind($('#attach', qr), 'click', QR.attach);
+      $.append(d.body, qr);
+      ta = $('textarea', qr);
       l = text.length;
       ta.setSelectionRange(l, l);
       return ta.focus();
     },
     hasContent: function() {
-      return $('textarea', QR.el).value || $('[type=file]', QR.el).files.length;
+      return $('textarea', QR.qr).value || $('[type=file]', QR.qr).files.length;
     },
     keydown: function(e) {
       if (!(e.keyCode === 13 && this.value)) {
@@ -1401,11 +1401,11 @@
       var i, ss, ta, text, v;
       e.preventDefault();
       text = ">>" + this.textContent + "\n";
-      if (!QR.el) {
+      if (!QR.qr) {
         QR.dialog(text);
         return;
       }
-      ta = $('textarea', QR.el);
+      ta = $('textarea', QR.qr);
       v = ta.value;
       ss = ta.selectionStart;
       ta.value = v.slice(0, ss) + text + v.slice(ss);
@@ -1418,7 +1418,7 @@
       data = e.data;
       if (data) {
         data = JSON.parse(data);
-        $.extend($('a.error', QR.el), data);
+        $.extend($('a.error', QR.qr), data);
         tc = data.textContent;
         if (tc === 'Error: Duplicate file entry detected.') {
           QR.attachNext();
@@ -1428,7 +1428,7 @@
         }
         return;
       }
-      if (conf['Persistent QR'] || ((_ref = $('#files input', QR.el)) != null ? _ref.files.length : void 0)) {
+      if (conf['Persistent QR'] || ((_ref = $('#files input', QR.qr)) != null ? _ref.files.length : void 0)) {
         QR.reset();
       } else {
         QR.close();
@@ -1442,17 +1442,18 @@
     reset: function() {
       var _ref;
       if (!conf['Remember Spoiler']) {
-        if ((_ref = $('[name=spoiler]', QR.el)) != null) {
+        if ((_ref = $('[name=spoiler]', QR.qr)) != null) {
           _ref.checked = false;
         }
       }
-      $('textarea', QR.el).value = '';
+      $('textarea', QR.qr).value = '';
       return QR.attachNext();
     },
     submit: function(e) {
-      var captcha, challenge, el, response;
-      $('.error', qr.el).textContent = '';
-      if ((el = $('#recaptcha_response_field', QR.el)).value) {
+      var captcha, challenge, el, qr, response;
+      qr = QR.qr;
+      $('.error', qr).textContent = '';
+      if ((el = $('#recaptcha_response_field', qr)).value) {
         QR.captchaPush(el);
       }
       if (!(captcha = QR.captchaShift())) {
@@ -1463,13 +1464,13 @@
         return;
       }
       challenge = captcha.challenge, response = captcha.response;
-      $('#challenge', QR.el).value = challenge;
-      $('#response', QR.el).value = response;
+      $('#challenge', qr).value = challenge;
+      $('#response', qr).value = response;
       if (conf['Auto Hide QR']) {
-        $('#autohide', QR.el).checked = true;
+        $('#autohide', qr).checked = true;
       }
       if (!e) {
-        return $('#qr_form', QR.el).submit();
+        return $('#qr_form', qr).submit();
       }
     },
     sys: function() {
