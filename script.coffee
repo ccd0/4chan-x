@@ -1068,7 +1068,7 @@ QR =
         {textContent, href} = node
         data = JSON.stringify {textContent, href}
       parent.postMessage data, '*'
-      location = 'about:blank'
+      window.location = 'about:blank'
 
 qr =
   # TODO
@@ -2288,7 +2288,7 @@ main =
       g.PAGENUM = parseInt(temp) or 0
 
     if location.hostname is 'sys.4chan.org'
-      qr.sys()
+      QR.sys()
       return
     if conf['404 Redirect'] and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
       redirect()

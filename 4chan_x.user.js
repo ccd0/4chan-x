@@ -1349,7 +1349,7 @@
     },
     sys: function() {
       return $.globalEval(function() {
-        var data, href, location, node, textContent, _ref;
+        var data, href, node, textContent, _ref;
         if (node = (_ref = document.querySelector('table font b')) != null ? _ref.firstChild : void 0) {
           textContent = node.textContent, href = node.href;
           data = JSON.stringify({
@@ -1358,7 +1358,7 @@
           });
         }
         parent.postMessage(data, '*');
-        return location = 'about:blank';
+        return window.location = 'about:blank';
       });
     }
   };
@@ -2919,7 +2919,7 @@
         g.PAGENUM = parseInt(temp) || 0;
       }
       if (location.hostname === 'sys.4chan.org') {
-        qr.sys();
+        QR.sys();
         return;
       }
       if (conf['404 Redirect'] && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
