@@ -988,6 +988,12 @@ QR =
     $.bind $('a', div), 'click', -> $.rm @parentNode
     $.append $('#files', QR.el), div
     file.click()
+  attachNext: (file) ->
+    oldFile = $ '[type=file]', QR.el
+    file or= $.el 'input',
+      type: 'file'
+      name: 'upfile'
+    $.replace oldFile, file
   autoPost: ->
     return unless QR.hasContent()
     QR.submit()
@@ -1089,22 +1095,21 @@ QR =
     {data} = e
     if data
       $.extend $('a.error', QR.el), JSON.parse data
+      tc = data.textContent
+      if tc is 'Error: Duplicate file entry detected.'
+        QR.attachNext()
+      return
+    if ((file = $('#files input', QR.el)) and file.files.length) or conf['Persistent QR']
+      QR.reset file
     else
-      if ((file = $('#files input', QR.el)) and file.files.length) or conf['Persistent QR']
-        QR.reset file
-      else
-        QR.close()
-      if conf['Cooldown']
-        cooldown = Date.now() + 30*SECOND
-        $.set "cooldown/#{g.BOARD}", cooldown
-        QR.cooldown()
+      QR.close()
+    if conf['Cooldown']
+      cooldown = Date.now() + 30*SECOND
+      $.set "cooldown/#{g.BOARD}", cooldown
+      QR.cooldown()
   reset: (file) ->
     $('textarea', QR.el).value = ''
-    oldFile = $ '[type=file]', QR.el
-    file or= $.el 'input',
-      type: 'file'
-      name: 'upfile'
-    $.replace oldFile, file
+    QR.attachNext file
   submit: (e) ->
     #XXX e is undefined if we're called from QR.autoPost
     $('.error', qr.el).textContent = ''

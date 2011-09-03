@@ -1265,6 +1265,15 @@
       $.append($('#files', QR.el), div);
       return file.click();
     },
+    attachNext: function(file) {
+      var oldFile;
+      oldFile = $('[type=file]', QR.el);
+      file || (file = $.el('input', {
+        type: 'file',
+        name: 'upfile'
+      }));
+      return $.replace(oldFile, file);
+    },
     autoPost: function() {
       if (!QR.hasContent()) {
         return;
@@ -1387,32 +1396,30 @@
       return ta.focus();
     },
     receive: function(e) {
-      var data, file;
+      var data, file, tc;
       data = e.data;
       if (data) {
-        return $.extend($('a.error', QR.el), JSON.parse(data));
+        $.extend($('a.error', QR.el), JSON.parse(data));
+        tc = data.textContent;
+        if (tc === 'Error: Duplicate file entry detected.') {
+          QR.attachNext();
+        }
+        return;
+      }
+      if (((file = $('#files input', QR.el)) && file.files.length) || conf['Persistent QR']) {
+        QR.reset(file);
       } else {
-        if (((file = $('#files input', QR.el)) && file.files.length) || conf['Persistent QR']) {
-          QR.reset(file);
-        } else {
-          QR.close();
-        }
-        if (conf['Cooldown']) {
-          cooldown = Date.now() + 30 * SECOND;
-          $.set("cooldown/" + g.BOARD, cooldown);
-          return QR.cooldown();
-        }
+        QR.close();
+      }
+      if (conf['Cooldown']) {
+        cooldown = Date.now() + 30 * SECOND;
+        $.set("cooldown/" + g.BOARD, cooldown);
+        return QR.cooldown();
       }
     },
     reset: function(file) {
-      var oldFile;
       $('textarea', QR.el).value = '';
-      oldFile = $('[type=file]', QR.el);
-      file || (file = $.el('input', {
-        type: 'file',
-        name: 'upfile'
-      }));
-      return $.replace(oldFile, file);
+      return QR.attachNext(file);
     },
     submit: function(e) {
       var captcha, challenge, el, response;
