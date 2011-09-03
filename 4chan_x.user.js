@@ -1434,7 +1434,7 @@
         $('#autohide', QR.el).checked = true;
       }
       if (!e) {
-        return $('#qr_form', QR.el).submit;
+        return $('#qr_form', QR.el).submit();
       }
     },
     sys: function() {

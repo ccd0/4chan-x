@@ -1118,7 +1118,7 @@ QR =
     $('#challenge', QR.el).value = challenge
     $('#response',  QR.el).value = response
     $('#autohide', QR.el).checked = true if conf['Auto Hide QR']
-    $('#qr_form', QR.el).submit if not e
+    $('#qr_form', QR.el).submit() if not e
   sys: ->
     $.globalEval ->
       if node = document.querySelector('table font b')?.firstChild
