@@ -980,6 +980,7 @@ QR =
       if conf['Auto Hide QR']
         $('#autohide', QR.el).checked = true
   attach: ->
+    $('#auto', QR.el).checked = true
     div = $.el 'div',
       innerHTML: '<input name=upfile type=file><a class=close>X</a>'
     file = $ 'input', div

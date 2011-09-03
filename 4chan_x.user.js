@@ -1253,6 +1253,7 @@
     },
     attach: function() {
       var div, file;
+      $('#auto', QR.el).checked = true;
       div = $.el('div', {
         innerHTML: '<input name=upfile type=file><a class=close>X</a>'
       });
