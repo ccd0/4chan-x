@@ -907,18 +907,13 @@
       }
     },
     qr: function(thread, quote) {
-      var qrLink, tid;
-      if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)', thread))) {
-        qrLink = $("span[id^=nothread] a:not(:first-child)", thread);
-      }
-      tid = g.THREAD_ID || thread.firstChild.id;
       if (quote) {
-        return QR.quote.call(qrLink);
+        return QR.quote.call($('a.quotejs + a', $('td.replyhl', thread) || thread));
       } else {
         if (QR.qr) {
           return $('textarea', QR.qr).focus();
         } else {
-          return QR.dialog('', tid);
+          return QR.dialog('', g.THREAD_ID || thread.firstChild.id);
         }
       }
     },

@@ -650,16 +650,13 @@ keybinds =
       imgExpand.toggle thumb.parentNode
 
   qr: (thread, quote) ->
-    unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
-      qrLink = $ "span[id^=nothread] a:not(:first-child)", thread
-    tid = g.THREAD_ID or thread.firstChild.id
     if quote
-      QR.quote.call qrLink
+      QR.quote.call $ 'a.quotejs + a', $('td.replyhl', thread) or thread
     else
       if QR.qr
         $('textarea', QR.qr).focus()
       else
-        QR.dialog '', tid
+        QR.dialog '', g.THREAD_ID or thread.firstChild.id
 
   open: (thread, tab) ->
     id = thread.firstChild.id
