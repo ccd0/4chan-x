@@ -1040,6 +1040,7 @@ QR =
     return unless @files[0].size > QR.MAX_FILE_SIZE
     alert 'Error: File too large.'
     QR.refreshFile @
+    $('[type=file]', QR.qr).click()
   refreshFile: (old) ->
     div = $.el 'div'
       innerHTML: QR.file
@@ -1098,6 +1099,7 @@ QR =
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('form', qr), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
+    $.bind $('[type=file]', qr), 'change', QR.change
     $.bind $('#attach', qr), 'click', QR.attach
     $.append d.body, qr
     ta = $ 'textarea', qr

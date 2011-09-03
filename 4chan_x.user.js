@@ -1331,7 +1331,8 @@
         return;
       }
       alert('Error: File too large.');
-      return QR.refreshFile(this);
+      QR.refreshFile(this);
+      return $('[type=file]', QR.qr).click();
     },
     refreshFile: function(old) {
       var div, file;
@@ -1395,6 +1396,7 @@
       $.bind($('.close', qr), 'click', QR.close);
       $.bind($('form', qr), 'submit', QR.submit);
       $.bind($('#recaptcha_response_field', qr), 'keydown', QR.keydown);
+      $.bind($('[type=file]', qr), 'change', QR.change);
       $.bind($('#attach', qr), 'click', QR.attach);
       $.append(d.body, qr);
       ta = $('textarea', qr);
