@@ -1391,9 +1391,8 @@
         return;
       }
       QR.captchaPush(this);
-      if (!QR.hasContent()) {
-        return e.preventDefault();
-      }
+      e.preventDefault();
+      return e.submit();
     },
     quote: function(e) {
       var i, ss, ta, text, v;
