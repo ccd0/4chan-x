@@ -974,6 +974,10 @@ QR =
     holder = $ '#recaptcha_challenge_field_holder'
     $.bind holder, 'DOMNodeInserted', QR.captchaNode
     QR.captchaNode target: holder.firstChild
+    if conf['Persistent QR']
+      qr.dialog()
+      if conf['Auto Hide QR']
+        $('#autohide', QR.el).checked = true
   captchaNode: (e) ->
     c = e.target.value
     $('img', QR.el).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
@@ -1066,7 +1070,7 @@ QR =
     if data
       $.extend $('a.error', QR.el), JSON.parse data
     else
-      QR.close()
+      QR.close() unless conf['Persistent QR']
       if conf['Cooldown']
         cooldown = Date.now() + 30*SECOND
         $.set "cooldown/#{g.BOARD}", cooldown
@@ -1082,6 +1086,7 @@ QR =
     {challenge, response} = captcha
     $('#challenge', QR.el).value = challenge
     $('#response',  QR.el).value = response
+    $('#autohide', QR.el).checked = true if conf['Auto Hide QR']
   sys: ->
     $.globalEval ->
       if node = document.querySelector('table font b')?.firstChild
@@ -2419,11 +2424,6 @@ main =
 
       if conf['Image Preloading']
         imgPreloading.init()
-
-      if conf['Quick Reply'] and conf['Persistent QR'] and canPost
-        qr.dialog()
-        if conf['Auto Hide QR']
-          $('#autohide', qr.el).checked = true
 
       if conf['Post in Title']
         titlePost.init()

@@ -1239,9 +1239,15 @@
       $('#recaptcha_response_field').id = '';
       holder = $('#recaptcha_challenge_field_holder');
       $.bind(holder, 'DOMNodeInserted', QR.captchaNode);
-      return QR.captchaNode({
+      QR.captchaNode({
         target: holder.firstChild
       });
+      if (conf['Persistent QR']) {
+        qr.dialog();
+        if (conf['Auto Hide QR']) {
+          return $('#autohide', QR.el).checked = true;
+        }
+      }
     },
     captchaNode: function(e) {
       var c;
@@ -1354,7 +1360,9 @@
       if (data) {
         return $.extend($('a.error', QR.el), JSON.parse(data));
       } else {
-        QR.close();
+        if (!conf['Persistent QR']) {
+          QR.close();
+        }
         if (conf['Cooldown']) {
           cooldown = Date.now() + 30 * SECOND;
           $.set("cooldown/" + g.BOARD, cooldown);
@@ -1375,7 +1383,10 @@
       }
       challenge = captcha.challenge, response = captcha.response;
       $('#challenge', QR.el).value = challenge;
-      return $('#response', QR.el).value = response;
+      $('#response', QR.el).value = response;
+      if (conf['Auto Hide QR']) {
+        return $('#autohide', QR.el).checked = true;
+      }
     },
     sys: function() {
       return $.globalEval(function() {
@@ -3064,12 +3075,6 @@
         }
         if (conf['Image Preloading']) {
           imgPreloading.init();
-        }
-        if (conf['Quick Reply'] && conf['Persistent QR'] && canPost) {
-          qr.dialog();
-          if (conf['Auto Hide QR']) {
-            $('#autohide', qr.el).checked = true;
-          }
         }
         if (conf['Post in Title']) {
           titlePost.init();
