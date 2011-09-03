@@ -1314,6 +1314,7 @@
         }
       }
       $.set('captchas', captchas);
+      $('#cl', QR.el).textContent = captchas.length;
       return captcha;
     },
     change: function() {

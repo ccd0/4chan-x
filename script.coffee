@@ -1022,6 +1022,7 @@ QR =
       if captcha.time > cutoff
         break
     $.set 'captchas', captchas
+    $('#cl', QR.el).textContent = captchas.length
     captcha
   change: ->
     $.unbind @, 'change', QR.change
