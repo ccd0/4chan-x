@@ -1448,6 +1448,7 @@
       if (!($('textarea', QR.qr).value || $('[type=file]', QR.qr).files.length)) {
         if (e) {
           alert('Error: No text entered.');
+          e.preventDefault();
         }
         return;
       }
