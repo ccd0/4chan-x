@@ -1365,11 +1365,10 @@
       if (!(e.keyCode === 13 && this.value)) {
         return;
       }
-      if (QR.hasContent()) {
-        return;
+      QR.captchaPush(this);
+      if (!QR.hasContent()) {
+        return e.preventDefault();
       }
-      e.preventDefault();
-      return QR.captchaPush(this);
     },
     quote: function(e) {
       var i, ss, ta, text, v;

@@ -1070,9 +1070,8 @@ QR =
     $('textarea', QR.el).value or $('[type=file]', QR.el).files.length
   keydown: (e) ->
     return unless e.keyCode is 13 and @value #enter, captcha filled
-    return if QR.hasContent()
-    e.preventDefault()
     QR.captchaPush @
+    e.preventDefault() unless QR.hasContent()
   quote: (e) ->
     e.preventDefault()
     text = ">>#{@textContent}\n"
