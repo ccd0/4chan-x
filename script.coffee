@@ -987,6 +987,7 @@ QR =
         else
           'image/' + type
     QR.accept = "'#{accept}'"
+    QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value
     QR.spoiler = if $('.postarea label') then ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
     if conf['Persistent QR']
       QR.dialog()
@@ -1040,8 +1041,12 @@ QR =
     $('#cl', QR.qr).textContent = captchas.length + ' captchas'
     captcha
   change: ->
-    $.unbind @, 'change', QR.change
-    QR.attach()
+    if @files[0].size > QR.MAX_FILE_SIZE
+      alert 'Error: File too large.'
+      @.click()
+    else
+      $.unbind @, 'change', QR.change
+      QR.attach()
   close: ->
     $.rm QR.qr
     QR.qr = null

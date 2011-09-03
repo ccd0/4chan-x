@@ -1255,6 +1255,7 @@
         }
       });
       QR.accept = "'" + accept + "'";
+      QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value;
       QR.spoiler = $('.postarea label') ? ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       if (conf['Persistent QR']) {
         QR.dialog();
@@ -1332,8 +1333,13 @@
       return captcha;
     },
     change: function() {
-      $.unbind(this, 'change', QR.change);
-      return QR.attach();
+      if (this.files[0].size > QR.MAX_FILE_SIZE) {
+        alert('Error: File too large.');
+        return this.click();
+      } else {
+        $.unbind(this, 'change', QR.change);
+        return QR.attach();
+      }
     },
     close: function() {
       $.rm(QR.qr);
