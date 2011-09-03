@@ -1245,7 +1245,7 @@
         target: holder.firstChild
       });
       if (conf['Persistent QR']) {
-        qr.dialog();
+        QR.dialog();
         if (conf['Auto Hide QR']) {
           return $('#autohide', QR.el).checked = true;
         }

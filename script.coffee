@@ -976,7 +976,7 @@ QR =
     $.bind holder, 'DOMNodeInserted', QR.captchaNode
     QR.captchaNode target: holder.firstChild
     if conf['Persistent QR']
-      qr.dialog()
+      QR.dialog()
       if conf['Auto Hide QR']
         $('#autohide', QR.el).checked = true
   attach: ->
