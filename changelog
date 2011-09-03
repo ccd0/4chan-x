@@ -1,5 +1,11 @@
 master
 
+2.19.2
+- mayhem
+  update archives redirections
+- aeosynth
+  change unread favicons (by xat-)
+
 2.19.1
 - mayhem
   fix OP indication in expanded comments

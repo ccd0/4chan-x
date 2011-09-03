@@ -2647,6 +2647,8 @@
     var url;
     switch (g.BOARD) {
       case 'g':
+        url = "http://archive.installgentoo.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        break;
       case 'lit':
       case 'sci':
       case 'tv':
@@ -2656,7 +2658,7 @@
       case 'jp':
       case 'm':
       case 'tg':
-        url = "http://archive.easymodo.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        url = "http://archive.easymodo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case '3':
       case 'adv':
