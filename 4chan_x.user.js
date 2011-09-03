@@ -1291,12 +1291,6 @@
       }
       return $.replace(oldFile, file);
     },
-    autoPost: function() {
-      if (!QR.hasContent()) {
-        return;
-      }
-      return QR.submit();
-    },
     captchaNode: function(e) {
       var c;
       c = e.target.value;
@@ -1359,7 +1353,7 @@
           disabled: false
         });
         if ($('#auto', QR.qr).checked) {
-          return QR.autoPost();
+          return QR.submit();
         }
       }
     },
@@ -1455,6 +1449,12 @@
     },
     submit: function(e) {
       var captcha, challenge, el, qr, response;
+      if (!QR.hasContent()) {
+        if (e) {
+          alert('Error: No text entered.');
+        }
+        return;
+      }
       qr = QR.qr;
       $('.error', qr).textContent = '';
       if ((el = $('#recaptcha_response_field', qr)).value) {

@@ -1008,9 +1008,6 @@ QR =
         name: 'upfile'
         accept: QR.accept
     $.replace oldFile, file
-  autoPost: ->
-    return unless QR.hasContent()
-    QR.submit()
   captchaNode: (e) ->
     c = e.target.value
     $('img', QR.qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
@@ -1056,7 +1053,7 @@ QR =
       $.extend b,
         textContent: 'Submit'
         disabled: false
-      QR.autoPost() if $('#auto', QR.qr).checked
+      QR.submit() if $('#auto', QR.qr).checked
   dialog: (text='') ->
     QR.qr = qr = ui.dialog 'qr', top: '0', left: '0', "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
@@ -1136,7 +1133,10 @@ QR =
     $('textarea', QR.qr).value = ''
     QR.attachNext()
   submit: (e) ->
-    #XXX e is undefined if we're called from QR.autoPost
+    #XXX e is undefined if method is called explicitly, eg, from auto posting
+    unless QR.hasContent()
+      alert 'Error: No text entered.' if e
+      return
     {qr} = QR
     $('.error', qr).textContent = ''
     if (el = $('#recaptcha_response_field', qr)).value
