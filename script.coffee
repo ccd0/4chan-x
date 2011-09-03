@@ -1077,6 +1077,11 @@ QR =
     <div><input placeholder=Password name=pwd type=password><a id=attach>attach another file</a></div>
     <a class=error></a>
     "
+    #XXX use dom methods to set values instead of injecting raw user input into your html -_-;
+    c = d.cookie
+    $('[name=name]', el).value  = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
+    $('[name=email]', el).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+    $('[name=pwd]', el).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     QR.cooldown if conf['Cooldown']
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('form', qr), 'submit', QR.submit
