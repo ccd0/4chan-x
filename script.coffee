@@ -652,13 +652,14 @@ keybinds =
   qr: (thread, quote) ->
     unless qrLink = $ 'td.replyhl span[id] a:not(:first-child)', thread
       qrLink = $ "span[id^=nothread] a:not(:first-child)", thread
-
+    tid = g.THREAD_ID or thread.firstChild.id
     if quote
-      qr.quote.call qrLink
+      QR.quote.call qrLink
     else
-      unless qr.el
-        qr.dialog qrLink
-      $('textarea', qr.el).focus()
+      if QR.qr
+        $('textarea', QR.qr).focus()
+      else
+        QR.dialog '', tid
 
   open: (thread, tab) ->
     id = thread.firstChild.id
@@ -1107,8 +1108,8 @@ QR =
     QR.captchaPush @
     e.preventDefault()
     QR.submit() #derpy, but prevents calling QR.hasContent twice
-  quote: (e) ->
-    e.preventDefault()
+  quote: (e, blank) ->
+    e?.preventDefault()
     tid = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', @).id
     id = @textContent
     text = ">>#{id}\n"

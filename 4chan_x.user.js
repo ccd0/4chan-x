@@ -907,17 +907,19 @@
       }
     },
     qr: function(thread, quote) {
-      var qrLink;
+      var qrLink, tid;
       if (!(qrLink = $('td.replyhl span[id] a:not(:first-child)', thread))) {
         qrLink = $("span[id^=nothread] a:not(:first-child)", thread);
       }
+      tid = g.THREAD_ID || thread.firstChild.id;
       if (quote) {
-        return qr.quote.call(qrLink);
+        return QR.quote.call(qrLink);
       } else {
-        if (!qr.el) {
-          qr.dialog(qrLink);
+        if (QR.qr) {
+          return $('textarea', QR.qr).focus();
+        } else {
+          return QR.dialog('', tid);
         }
-        return $('textarea', qr.el).focus();
       }
     },
     open: function(thread, tab) {
@@ -1405,9 +1407,11 @@
       e.preventDefault();
       return QR.submit();
     },
-    quote: function(e) {
+    quote: function(e, blank) {
       var i, id, qr, s, sel, ss, ta, text, tid, v, _ref;
-      e.preventDefault();
+      if (e != null) {
+        e.preventDefault();
+      }
       tid = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', this).id;
       id = this.textContent;
       text = ">>" + id + "\n";
