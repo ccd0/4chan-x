@@ -1434,7 +1434,7 @@
         QR.close();
       }
       if (conf['Cooldown']) {
-        cooldown = Date.now() + 30 * SECOND;
+        cooldown = Date.now() + (QR.sage ? 60 : 30) * SECOND;
         $.set("cooldown/" + g.BOARD, cooldown);
         return QR.cooldown();
       }
@@ -1470,8 +1470,9 @@
         $('#autohide', qr).checked = true;
       }
       if (!e) {
-        return $('#qr_form', qr).submit();
+        $('#qr_form', qr).submit();
       }
+      return QR.sage = /sage/i.test($('[name=email]', qr).value);
     },
     sys: function() {
       return $.globalEval(function() {

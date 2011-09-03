@@ -1123,7 +1123,7 @@ QR =
     else
       QR.close()
     if conf['Cooldown']
-      cooldown = Date.now() + 30*SECOND
+      cooldown = Date.now() + (if QR.sage then 60 else 30)*SECOND
       $.set "cooldown/#{g.BOARD}", cooldown
       QR.cooldown()
   reset: ->
@@ -1145,6 +1145,7 @@ QR =
     $('#response',  qr).value = response
     $('#autohide', qr).checked = true if conf['Auto Hide QR']
     $('#qr_form', qr).submit() if not e
+    QR.sage = /sage/i.test $('[name=email]', qr).value
   sys: ->
     $.globalEval ->
       if node = document.querySelector('table font b')?.firstChild
