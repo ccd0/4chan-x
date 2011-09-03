@@ -1367,13 +1367,18 @@
         }
       }
     },
+    reset: function() {
+      return $('textarea', QR.el).value = '';
+    },
     receive: function(e) {
       var data;
       data = e.data;
       if (data) {
         return $.extend($('a.error', QR.el), JSON.parse(data));
       } else {
-        if (!conf['Persistent QR']) {
+        if (conf['Persistent QR']) {
+          QR.reset();
+        } else {
           QR.close();
         }
         if (conf['Cooldown']) {

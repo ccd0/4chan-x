@@ -1072,12 +1072,17 @@ QR =
         textContent: 'Submit'
         disabled: false
       QR.autoPost() if $('#auto', QR.el).checked
+  reset: ->
+    $('textarea', QR.el).value = ''
   receive: (e) ->
     {data} = e
     if data
       $.extend $('a.error', QR.el), JSON.parse data
     else
-      QR.close() unless conf['Persistent QR']
+      if conf['Persistent QR']
+        QR.reset()
+      else
+        QR.close()
       if conf['Cooldown']
         cooldown = Date.now() + 30*SECOND
         $.set "cooldown/#{g.BOARD}", cooldown
