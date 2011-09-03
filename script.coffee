@@ -1135,7 +1135,7 @@ QR =
   submit: (e) ->
     #XXX e is undefined if method is called explicitly, eg, from auto posting
     unless QR.hasContent()
-      alert 'Error: No text entered.' if e
+      alert 'Error: No text entered.' if e #don't alert at the end of auto posting
       return
     {qr} = QR
     $('.error', qr).textContent = ''
