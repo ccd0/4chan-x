@@ -1227,7 +1227,7 @@
   };
   QR = {
     init: function() {
-      var holder;
+      var accept, holder;
       g.callbacks.push(function(root) {
         var quote;
         quote = $('a.quotejs + a', root);
@@ -1244,6 +1244,17 @@
       QR.captchaNode({
         target: holder.firstChild
       });
+      accept = $('.rules').textContent.match(/: (.+) /)[1].replace(/\w+/g, function(type) {
+        switch (type) {
+          case 'JPG':
+            return 'image/JPEG';
+          case 'PDF':
+            return 'application/' + type;
+          default:
+            return 'image/' + type;
+        }
+      });
+      QR.accept = "'" + accept + "'";
       if (conf['Persistent QR']) {
         QR.dialog();
         if (conf['Auto Hide QR']) {
@@ -1255,7 +1266,7 @@
       var div, file;
       $('#auto', QR.el).checked = true;
       div = $.el('div', {
-        innerHTML: '<input name=upfile type=file><a class=close>X</a>'
+        innerHTML: "<input name=upfile type=file accept=" + QR.accept + "><a class=close>X</a>"
       });
       file = $('input', div);
       $.bind(file, 'change', QR.change);
@@ -1273,7 +1284,8 @@
       } else {
         file = $.el('input', {
           type: 'file',
-          name: 'upfile'
+          name: 'upfile',
+          accept: QR.accept
         });
       }
       return $.replace(oldFile, file);
@@ -1358,7 +1370,7 @@
       QR.el = el = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email></div>      <div><input placeholder=Subject name=sub><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file></div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password><a id=attach>attach another file</a></div>    <a class=error></a>    ");
+      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email></div>      <div><input placeholder=Subject name=sub><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file accept=" + QR.accept + "></div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password><a id=attach>attach another file</a></div>    <a class=error></a>    ");
       if (conf['Cooldown']) {
         QR.cooldown;
       }

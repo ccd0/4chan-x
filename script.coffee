@@ -975,6 +975,15 @@ QR =
     holder = $ '#recaptcha_challenge_field_holder'
     $.bind holder, 'DOMNodeInserted', QR.captchaNode
     QR.captchaNode target: holder.firstChild
+    accept = $('.rules').textContent.match(/: (.+) /)[1].replace /\w+/g, (type) ->
+      switch type
+        when 'JPG'
+          'image/JPEG'
+        when 'PDF'
+          'application/' + type
+        else
+          'image/' + type
+    QR.accept = "'#{accept}'"
     if conf['Persistent QR']
       QR.dialog()
       if conf['Auto Hide QR']
@@ -982,7 +991,7 @@ QR =
   attach: ->
     $('#auto', QR.el).checked = true
     div = $.el 'div',
-      innerHTML: '<input name=upfile type=file><a class=close>X</a>'
+      innerHTML: "<input name=upfile type=file accept=#{QR.accept}><a class=close>X</a>"
     file = $ 'input', div
     $.bind file, 'change', QR.change
     $.bind $('a', div), 'click', -> $.rm @parentNode
@@ -996,6 +1005,7 @@ QR =
       file = $.el 'input',
         type: 'file'
         name: 'upfile'
+        accept: QR.accept
     $.replace oldFile, file
   autoPost: ->
     return unless QR.hasContent()
@@ -1060,7 +1070,7 @@ QR =
       <div><textarea placeholder=Comment name=com>#{text}</textarea></div>
       <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
       <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>#{$.get('captchas', []).length} captchas</span></div>
-      <div><input name=upfile type=file></div>
+      <div><input name=upfile type=file accept=#{QR.accept}></div>
     </form>
     <div id=files></div>
     <div><input placeholder=Password name=pwd type=password><a id=attach>attach another file</a></div>
