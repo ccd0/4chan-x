@@ -1103,9 +1103,9 @@ QR =
       tc = data.textContent
       if tc is 'Error: Duplicate file entry detected.'
         QR.attachNext()
-        QR.submit()
+        setTimeout QR.submit, 1000
       else if tc is 'You seem to have mistyped the verification.'
-        QR.submit()
+        setTimeout QR.submit, 1000
       return
     if conf['Persistent QR'] or $('#files input', QR.el)?.files.length
       QR.reset()

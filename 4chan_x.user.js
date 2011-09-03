@@ -1409,9 +1409,9 @@
         tc = data.textContent;
         if (tc === 'Error: Duplicate file entry detected.') {
           QR.attachNext();
-          QR.submit();
+          setTimeout(QR.submit, 1000);
         } else if (tc === 'You seem to have mistyped the verification.') {
-          QR.submit();
+          setTimeout(QR.submit, 1000);
         }
         return;
       }
