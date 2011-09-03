@@ -1098,10 +1098,13 @@ QR =
   receive: (e) ->
     {data} = e
     if data
-      $.extend $('a.error', QR.el), JSON.parse data
+      data = JSON.parse data
+      $.extend $('a.error', QR.el), data
       tc = data.textContent
       if tc is 'Error: Duplicate file entry detected.'
         QR.attachNext()
+        QR.submit()
+      else if tc is 'You seem to have mistyped the verification.'
         QR.submit()
       return
     if conf['Persistent QR'] or $('#files input', QR.el)?.files.length
