@@ -1389,7 +1389,7 @@
       }
       QR.captchaPush(this);
       e.preventDefault();
-      return e.submit();
+      return QR.submit();
     },
     quote: function(e) {
       var i, ss, ta, text, v;

@@ -1093,7 +1093,7 @@ QR =
     return unless e.keyCode is 13 and @value #enter, captcha filled
     QR.captchaPush @
     e.preventDefault()
-    e.submit() #derpy, but prevents calling QR.hasContent twice
+    QR.submit() #derpy, but prevents calling QR.hasContent twice
   quote: (e) ->
     e.preventDefault()
     text = ">>#{@textContent}\n"
