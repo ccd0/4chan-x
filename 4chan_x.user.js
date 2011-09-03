@@ -1338,7 +1338,7 @@
       if ((el = $('#recaptcha_response_field', QR.el)).value) {
         QR.captchaPush(el);
       }
-      if (!(captcha = captchaShift())) {
+      if (!(captcha = QR.captchaShift())) {
         alert('You forgot to type in the verification.');
         e.preventDefault();
         return;
