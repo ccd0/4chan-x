@@ -1367,11 +1367,12 @@
       QR.qr = qr = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email>" + QR.spoiler + "</div>      <div><input placeholder=Subject name=sub><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file accept=" + QR.accept + "></div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password><a id=attach>attach another file</a></div>    <a class=error></a>    ");
+      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email>" + QR.spoiler + "</div>      <div><input placeholder=Subject name=sub><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com></textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file accept=" + QR.accept + "></div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password><a id=attach>attach another file</a></div>    <a class=error></a>    ");
       c = d.cookie;
       $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=pwd]', qr).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
+      $('textarea', qr).value = text;
       if (conf['Cooldown']) {
         QR.cooldown;
       }
@@ -1420,6 +1421,7 @@
     },
     receive: function(e) {
       var data, tc, _ref;
+      $('iframe[name=iframe]').src = 'about:blank';
       data = e.data;
       if (data) {
         data = JSON.parse(data);
@@ -1503,8 +1505,7 @@
             href: href
           });
         }
-        parent.postMessage(data, '*');
-        return window.location = 'about:blank';
+        return parent.postMessage(data, '*');
       });
     }
   };

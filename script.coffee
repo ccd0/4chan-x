@@ -962,6 +962,9 @@ cooldown =
 
 QR =
   #FIXME DRY
+  #index reply
+  #create new thread
+  #sys normal post form fallback
   init: ->
     g.callbacks.push (root) ->
       quote = $ 'a.quotejs + a', root
@@ -1065,7 +1068,7 @@ QR =
       <input type=hidden name=recaptcha_response_field id=response>
       <div><input placeholder=Email name=email>#{QR.spoiler}</div>
       <div><input placeholder=Subject name=sub><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>
-      <div><textarea placeholder=Comment name=com>#{text}</textarea></div>
+      <div><textarea placeholder=Comment name=com></textarea></div>
       <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
       <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>#{$.get('captchas', []).length} captchas</span></div>
       <div><input name=upfile type=file accept=#{QR.accept}></div>
@@ -1079,6 +1082,7 @@ QR =
     $('[name=name]', qr).value  = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
     $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
+    $('textarea', qr).value = text
     QR.cooldown if conf['Cooldown']
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('form', qr), 'submit', QR.submit
@@ -1115,6 +1119,7 @@ QR =
     ta.setSelectionRange i, i
     ta.focus()
   receive: (e) ->
+    $('iframe[name=iframe]').src = 'about:blank'
     {data} = e
     if data
       data = JSON.parse data
@@ -1170,7 +1175,6 @@ QR =
         {textContent, href} = node
         data = JSON.stringify {textContent, href}
       parent.postMessage data, '*'
-      window.location = 'about:blank'
 
 qr =
   # TODO
