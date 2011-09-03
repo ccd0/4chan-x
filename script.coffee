@@ -1101,6 +1101,7 @@ QR =
       tc = data.textContent
       if tc is 'Error: Duplicate file entry detected.'
         QR.attachNext()
+        QR.submit()
       return
     if conf['Persistent QR'] or $('#files input', QR.el)?.files.length
       QR.reset()

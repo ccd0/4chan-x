@@ -1407,6 +1407,7 @@
         tc = data.textContent;
         if (tc === 'Error: Duplicate file entry detected.') {
           QR.attachNext();
+          QR.submit();
         }
         return;
       }
