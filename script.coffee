@@ -1183,8 +1183,8 @@ QR =
         {textContent, href} = node
         data = JSON.stringify {textContent, href}
       parent.postMessage data, '*'
-    return unless (c = $('b')?.lastChild) and c.nodeType is 8 #comment node
-    [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
+    return unless d = $('b').lastChild.data #comment
+    [_, thread, id] = d.match(/thread:(\d+),no:(\d+)/)
     {search} = location
     cooldown = /cooldown/.test search
     noko     = /noko/    .test search

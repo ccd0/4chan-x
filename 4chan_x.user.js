@@ -1502,7 +1502,7 @@
       }
     },
     sys: function() {
-      var c, duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref, _ref2;
+      var duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
@@ -1518,10 +1518,10 @@
         }
         return parent.postMessage(data, '*');
       });
-      if (!((c = (_ref = $('b')) != null ? _ref.lastChild : void 0) && c.nodeType === 8)) {
+      if (!(d = $('b').lastChild.data)) {
         return;
       }
-      _ref2 = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref2[0], thread = _ref2[1], id = _ref2[2];
+      _ref = d.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
       search = location.search;
       cooldown = /cooldown/.test(search);
       noko = /noko/.test(search);
