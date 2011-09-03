@@ -1010,7 +1010,7 @@ QR =
     $.replace oldFile, file
   captchaNode: (e) ->
     c = e.target.value
-    $('img', QR.qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
+    $('img', QR.qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}" if QR.qr
     QR.captcha =
       challenge: c
       time: Date.now()
