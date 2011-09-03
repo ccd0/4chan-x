@@ -1327,7 +1327,7 @@
         }
       }
       $.set('captchas', captchas);
-      $('#cl', QR.qr).textContent = captchas.length;
+      $('#cl', QR.qr).textContent = captchas.length + ' captchas';
       return captcha;
     },
     change: function() {

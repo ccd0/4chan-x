@@ -961,6 +961,7 @@ cooldown =
       qr.autoPost()
 
 QR =
+  #FIXME duplication everywhere
   init: ->
     g.callbacks.push (root) ->
       quote = $ 'a.quotejs + a', root
@@ -1032,7 +1033,7 @@ QR =
       if captcha.time > cutoff
         break
     $.set 'captchas', captchas
-    $('#cl', QR.qr).textContent = captchas.length
+    $('#cl', QR.qr).textContent = captchas.length + ' captchas'
     captcha
   change: ->
     $.unbind @, 'change', QR.change
