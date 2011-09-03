@@ -3,7 +3,7 @@ config =
     Enhancing:
       '404 Redirect':       [true,  'Redirect dead threads']
       'Anonymize':          [false, 'Make everybody anonymous']
-      'Keybinds':           [false, 'Binds actions to keys']
+      'Keybinds':           [true,  'Binds actions to keys']
       'Time Formatting':    [true,  'Arbitrarily formatted timestamps, using your local time']
       'Report Button':      [true,  'Add report buttons']
       'Comment Expansion':  [true,  'Expand too long comments']
