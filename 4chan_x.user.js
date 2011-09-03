@@ -1294,18 +1294,34 @@
       QR.el = el = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email></div>      <div><input placeholder=Subject name=sub><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file></div>      <div><input placeholder=Password name=pwd type=password></div>    </form>    <a class=error></a>    ");
+      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + g.THREAD_ID + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email></div>      <div><input placeholder=Subject name=sub><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com>" + text + "</textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>" + ($.get('captchas', []).length) + " captchas</span></div>      <div><input name=upfile type=file></div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password><a id=attach>attach another file</a></div>    <a class=error></a>    ");
       if (conf['Cooldown']) {
         QR.cooldown;
       }
       $.bind($('.close', el), 'click', QR.close);
       $.bind($('form', el), 'submit', QR.submit);
       $.bind($('#recaptcha_response_field', el), 'keydown', QR.keydown);
+      $.bind($('#attach', el), 'click', QR.attach);
       $.append(d.body, el);
       ta = $('textarea', el);
       l = text.length;
       ta.setSelectionRange(l, l);
       return ta.focus();
+    },
+    change: function() {
+      $.unbind(this, 'change', QR.change);
+      return QR.attach();
+    },
+    attach: function() {
+      var div;
+      div = $.el('div', {
+        innerHTML: '<input name=upfile type=file><a class=close>X</a>'
+      });
+      $.bind($('input', div), 'change', QR.change);
+      $.bind($('a', div), 'click', function() {
+        return $.rm(this.parentNode);
+      });
+      return $.append($('#files', QR.el), div);
     },
     hasContent: function() {
       return $('textarea', QR.el).value || $('[type=file]', QR.el).files.length;

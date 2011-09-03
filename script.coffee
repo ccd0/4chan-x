@@ -1020,19 +1020,30 @@ QR =
       <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
       <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>#{$.get('captchas', []).length} captchas</span></div>
       <div><input name=upfile type=file></div>
-      <div><input placeholder=Password name=pwd type=password></div>
     </form>
+    <div id=files></div>
+    <div><input placeholder=Password name=pwd type=password><a id=attach>attach another file</a></div>
     <a class=error></a>
     "
     QR.cooldown if conf['Cooldown']
     $.bind $('.close', el), 'click', QR.close
     $.bind $('form', el), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', el), 'keydown', QR.keydown
+    $.bind $('#attach', el), 'click', QR.attach
     $.append d.body, el
     ta = $ 'textarea', el
     l = text.length
     ta.setSelectionRange l, l
     ta.focus()
+  change: ->
+    $.unbind @, 'change', QR.change
+    QR.attach()
+  attach: ->
+    div = $.el 'div',
+      innerHTML: '<input name=upfile type=file><a class=close>X</a>'
+    $.bind $('input', div), 'change', QR.change
+    $.bind $('a', div), 'click', -> $.rm @parentNode
+    $.append $('#files', QR.el), div
   hasContent: ->
     $('textarea', QR.el).value or $('[type=file]', QR.el).files.length
   autoPost: ->
