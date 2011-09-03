@@ -1233,7 +1233,8 @@
         return $.bind(quote, 'click', QR.quote);
       });
       $.append(d.body, $.el('iframe', {
-        name: 'iframe'
+        name: 'iframe',
+        hidden: true
       }));
       $.bind(window, 'message', QR.receive);
       $('#recaptcha_response_field').id = '';

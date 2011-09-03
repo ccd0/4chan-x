@@ -968,6 +968,7 @@ QR =
       $.bind quote, 'click', QR.quote
     $.append d.body, $.el 'iframe',
       name: 'iframe'
+      hidden: true
     $.bind window, 'message', QR.receive
     # nuke id so qr's field focuses on recaptcha reload, instead of normal form's
     $('#recaptcha_response_field').id = ''
