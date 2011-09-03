@@ -1265,13 +1265,17 @@
       $.append($('#files', QR.el), div);
       return file.click();
     },
-    attachNext: function(file) {
-      var oldFile;
+    attachNext: function() {
+      var file, oldFile;
       oldFile = $('[type=file]', QR.el);
-      file || (file = $.el('input', {
-        type: 'file',
-        name: 'upfile'
-      }));
+      if (file = $('#files input', QR.el)) {
+        $.rm(file.parentNode);
+      } else {
+        file = $.el('input', {
+          type: 'file',
+          name: 'upfile'
+        });
+      }
       return $.replace(oldFile, file);
     },
     autoPost: function() {
@@ -1396,7 +1400,7 @@
       return ta.focus();
     },
     receive: function(e) {
-      var data, file, tc;
+      var data, tc, _ref;
       data = e.data;
       if (data) {
         $.extend($('a.error', QR.el), JSON.parse(data));
@@ -1406,8 +1410,8 @@
         }
         return;
       }
-      if (((file = $('#files input', QR.el)) && file.files.length) || conf['Persistent QR']) {
-        QR.reset(file);
+      if (conf['Persistent QR'] || ((_ref = $('#files input', QR.el)) != null ? _ref.files.length : void 0)) {
+        QR.reset();
       } else {
         QR.close();
       }
@@ -1417,9 +1421,9 @@
         return QR.cooldown();
       }
     },
-    reset: function(file) {
+    reset: function() {
       $('textarea', QR.el).value = '';
-      return QR.attachNext(file);
+      return QR.attachNext();
     },
     submit: function(e) {
       var captcha, challenge, el, response;

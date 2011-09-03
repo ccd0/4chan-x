@@ -988,11 +988,14 @@ QR =
     $.bind $('a', div), 'click', -> $.rm @parentNode
     $.append $('#files', QR.el), div
     file.click()
-  attachNext: (file) ->
+  attachNext: ->
     oldFile = $ '[type=file]', QR.el
-    file or= $.el 'input',
-      type: 'file'
-      name: 'upfile'
+    if file = $ '#files input', QR.el
+      $.rm file.parentNode
+    else
+      file = $.el 'input',
+        type: 'file'
+        name: 'upfile'
     $.replace oldFile, file
   autoPost: ->
     return unless QR.hasContent()
@@ -1099,17 +1102,17 @@ QR =
       if tc is 'Error: Duplicate file entry detected.'
         QR.attachNext()
       return
-    if ((file = $('#files input', QR.el)) and file.files.length) or conf['Persistent QR']
-      QR.reset file
+    if conf['Persistent QR'] or $('#files input', QR.el)?.files.length
+      QR.reset()
     else
       QR.close()
     if conf['Cooldown']
       cooldown = Date.now() + 30*SECOND
       $.set "cooldown/#{g.BOARD}", cooldown
       QR.cooldown()
-  reset: (file) ->
+  reset: ->
     $('textarea', QR.el).value = ''
-    QR.attachNext file
+    QR.attachNext()
   submit: (e) ->
     #XXX e is undefined if we're called from QR.autoPost
     $('.error', qr.el).textContent = ''
