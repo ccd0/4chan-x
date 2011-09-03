@@ -984,6 +984,7 @@ QR =
         else
           'image/' + type
     QR.accept = "'#{accept}'"
+    QR.spoiler = if $('.postarea label') then ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
     if conf['Persistent QR']
       QR.dialog()
       if conf['Auto Hide QR']
@@ -1065,7 +1066,7 @@ QR =
       <input type=hidden name=mode value=regist>
       <input type=hidden name=recaptcha_challenge_field id=challenge>
       <input type=hidden name=recaptcha_response_field id=response>
-      <div><input placeholder=Email name=email></div>
+      <div><input placeholder=Email name=email>#{QR.spoiler}</div>
       <div><input placeholder=Subject name=sub><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>
       <div><textarea placeholder=Comment name=com>#{text}</textarea></div>
       <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
@@ -1126,6 +1127,7 @@ QR =
       $.set "cooldown/#{g.BOARD}", cooldown
       QR.cooldown()
   reset: ->
+    $('[name=spoiler]', QR.el)?.checked = false unless conf['Remember Spoiler']
     $('textarea', QR.el).value = ''
     QR.attachNext()
   submit: (e) ->
