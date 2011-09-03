@@ -1002,6 +1002,7 @@ QR =
       innerHTML: "#{QR.file}<a class=close>X</a>"
     file = $ 'input', div
     $.bind file, 'change', QR.change
+    $.bind file, 'change', QR.change1
     $.bind $('a', div), 'click', -> $.rm @parentNode
     $.append $('#files', QR.qr), div
     file.click()
@@ -1048,7 +1049,7 @@ QR =
     $.bind file, 'change', QR.change
     $.replace old, file
   change1: ->
-    $.unbind @, 'change', QR.change
+    $.unbind @, 'change', QR.change1
     QR.attach()
   close: ->
     $.rm QR.qr

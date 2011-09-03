@@ -1275,6 +1275,7 @@
       });
       file = $('input', div);
       $.bind(file, 'change', QR.change);
+      $.bind(file, 'change', QR.change1);
       $.bind($('a', div), 'click', function() {
         return $.rm(this.parentNode);
       });
@@ -1344,7 +1345,7 @@
       return $.replace(old, file);
     },
     change1: function() {
-      $.unbind(this, 'change', QR.change);
+      $.unbind(this, 'change', QR.change1);
       return QR.attach();
     },
     close: function() {
