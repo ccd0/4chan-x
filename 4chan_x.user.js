@@ -1227,7 +1227,7 @@
   };
   QR = {
     init: function() {
-      var accept, holder;
+      var accept, holder, m;
       g.callbacks.push(function(root) {
         var quote;
         quote = $('a.quotejs + a', root);
@@ -1259,8 +1259,13 @@
       if (conf['Persistent QR']) {
         QR.dialog();
         if (conf['Auto Hide QR']) {
-          return $('#autohide', QR.qr).checked = true;
+          $('#autohide', QR.qr).checked = true;
         }
+      }
+      if (conf['Cooldown'] && (m = location.search.match(/cooldown=(\d+)/))) {
+        cooldown = m[1];
+        $.set("cooldown/" + g.BOARD, cooldown);
+        return QR.cooldown();
       }
     },
     attach: function() {
@@ -1374,7 +1379,7 @@
       $('[name=pwd]', qr).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
       $('textarea', qr).value = text;
       if (conf['Cooldown']) {
-        QR.cooldown;
+        QR.cooldown();
       }
       $.bind($('.close', qr), 'click', QR.close);
       $.bind($('form', qr), 'submit', QR.submit);
@@ -1497,7 +1502,12 @@
       }
     },
     sys: function() {
-      return $.globalEval(function() {
+      var c, duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref, _ref2;
+      if (recaptcha = $('#recaptcha_response_field')) {
+        $.bind(recaptcha, 'keydown', Recaptcha.listener);
+        return;
+      }
+      $.globalEval(function() {
         var data, href, node, textContent, _ref;
         if (node = (_ref = document.querySelector('table font b')) != null ? _ref.firstChild : void 0) {
           textContent = node.textContent, href = node.href;
@@ -1508,6 +1518,30 @@
         }
         return parent.postMessage(data, '*');
       });
+      if (!((c = (_ref = $('b')) != null ? _ref.lastChild : void 0) && c.nodeType === 8)) {
+        return;
+      }
+      _ref2 = c.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref2[0], thread = _ref2[1], id = _ref2[2];
+      search = location.search;
+      cooldown = /cooldown/.test(search);
+      noko = /noko/.test(search);
+      sage = /sage/.test(search);
+      watch = /watch/.test(search);
+      url = "http://boards.4chan.org/" + g.BOARD;
+      if (watch && thread === '0') {
+        url += "/res/" + id + "?watch";
+      } else if (noko) {
+        url += '/res/';
+        url += thread === '0' ? id : thread;
+      }
+      if (cooldown) {
+        duration = Date.now() + (sage ? 60 : 30) * 1000;
+        url += '?cooldown=' + duration;
+      }
+      if (noko) {
+        url += '#' + id;
+      }
+      return window.location = url;
     }
   };
   qr = {
@@ -3124,9 +3158,6 @@
       }
       if (conf['Auto Noko'] && canPost) {
         form.action += '?noko';
-      }
-      if (conf['Cooldown'] && canPost) {
-        cooldown.init();
       }
       if (conf['Image Expansion']) {
         imgExpand.init();

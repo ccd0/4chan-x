@@ -962,8 +962,9 @@ cooldown =
 
 QR =
   #TODO create new thread
+  #captcha caching for report form
+  #report queueing
   #FIXME DRY
-  #sys normal post form fallback
   init: ->
     g.callbacks.push (root) ->
       quote = $ 'a.quotejs + a', root
@@ -991,6 +992,10 @@ QR =
       QR.dialog()
       if conf['Auto Hide QR']
         $('#autohide', QR.qr).checked = true
+    if conf['Cooldown'] and m = location.search.match /cooldown=(\d+)/
+      cooldown = m[1]
+      $.set "cooldown/#{g.BOARD}", cooldown
+      QR.cooldown()
   attach: ->
     $('#auto', QR.qr).checked = true
     div = $.el 'div',
@@ -1082,7 +1087,7 @@ QR =
     $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     $('textarea', qr).value = text
-    QR.cooldown if conf['Cooldown']
+    QR.cooldown() if conf['Cooldown']
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('form', qr), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
@@ -1170,11 +1175,33 @@ QR =
       if $('img.favicon', op).src is Favicon.empty
         watcher.watch op, id
   sys: ->
+    if recaptcha = $ '#recaptcha_response_field' #post reporting
+      $.bind recaptcha, 'keydown', Recaptcha.listener
+      return
     $.globalEval ->
       if node = document.querySelector('table font b')?.firstChild
         {textContent, href} = node
         data = JSON.stringify {textContent, href}
       parent.postMessage data, '*'
+    return unless (c = $('b')?.lastChild) and c.nodeType is 8 #comment node
+    [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
+    {search} = location
+    cooldown = /cooldown/.test search
+    noko     = /noko/    .test search
+    sage     = /sage/    .test search
+    watch    = /watch/   .test search
+    url = "http://boards.4chan.org/#{g.BOARD}"
+    if watch and thread is '0'
+      url += "/res/#{id}?watch"
+    else if noko
+      url += '/res/'
+      url += if thread is '0' then id else thread
+    if cooldown
+      duration = Date.now() + (if sage then 60 else 30) * 1000
+      url += '?cooldown=' + duration
+    if noko
+      url += '#' + id
+    window.location = url
 
 qr =
   # TODO
@@ -2447,9 +2474,6 @@ main =
 
     if conf['Auto Noko'] and canPost
       form.action += '?noko'
-
-    if conf['Cooldown'] and canPost
-      cooldown.init()
 
     if conf['Image Expansion']
       imgExpand.init()
