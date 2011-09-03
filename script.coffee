@@ -1089,8 +1089,6 @@ QR =
     l = text.length
     ta.setSelectionRange l, l
     ta.focus()
-  hasContent: ->
-    $('textarea', QR.qr).value or $('[type=file]', QR.qr).files.length
   keydown: (e) ->
     return unless e.keyCode is 13 and @value #enter, captcha filled
     QR.captchaPush @
@@ -1135,8 +1133,8 @@ QR =
     QR.attachNext()
   submit: (e) ->
     #XXX e is undefined if method is called explicitly, eg, from auto posting
-    unless QR.hasContent()
-      alert 'Error: No text entered.' if e #don't alert at the end of auto posting
+    unless $('textarea', QR.qr).value or $('[type=file]', QR.qr).files.length
+      alert 'Error: No text entered.' if e #only alert if explicitly submitting
       return
     {qr} = QR
     $('.error', qr).textContent = ''

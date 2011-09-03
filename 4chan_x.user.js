@@ -1383,9 +1383,6 @@
       ta.setSelectionRange(l, l);
       return ta.focus();
     },
-    hasContent: function() {
-      return $('textarea', QR.qr).value || $('[type=file]', QR.qr).files.length;
-    },
     keydown: function(e) {
       if (!(e.keyCode === 13 && this.value)) {
         return;
@@ -1448,7 +1445,7 @@
     },
     submit: function(e) {
       var captcha, challenge, el, qr, response;
-      if (!QR.hasContent()) {
+      if (!($('textarea', QR.qr).value || $('[type=file]', QR.qr).files.length)) {
         if (e) {
           alert('Error: No text entered.');
         }
