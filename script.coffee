@@ -1096,11 +1096,18 @@ QR =
     QR.submit() #derpy, but prevents calling QR.hasContent twice
   quote: (e) ->
     e.preventDefault()
-    text = ">>#{@textContent}\n"
-    if not QR.qr
+    id = @textContent
+    text = ">>#{id}\n"
+    sel = getSelection()
+    if id == $.x('preceding::input[@type="checkbox"][1]', sel.anchorNode)?.name
+      if s = sel.toString().replace /\n/g, '\n>'
+        text += ">#{s}\n"
+    {qr} = QR
+    if not qr
       QR.dialog text
       return
-    ta = $ 'textarea', QR.qr
+    $('#autohide', qr).checked = false
+    ta = $ 'textarea', qr
     v  = ta.value
     ss = ta.selectionStart
     ta.value = v[0...ss] + text + v[ss..]

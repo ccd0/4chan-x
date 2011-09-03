@@ -1392,14 +1392,23 @@
       return QR.submit();
     },
     quote: function(e) {
-      var i, ss, ta, text, v;
+      var i, id, qr, s, sel, ss, ta, text, v, _ref;
       e.preventDefault();
-      text = ">>" + this.textContent + "\n";
-      if (!QR.qr) {
+      id = this.textContent;
+      text = ">>" + id + "\n";
+      sel = getSelection();
+      if (id === ((_ref = $.x('preceding::input[@type="checkbox"][1]', sel.anchorNode)) != null ? _ref.name : void 0)) {
+        if (s = sel.toString().replace(/\n/g, '\n>')) {
+          text += ">" + s + "\n";
+        }
+      }
+      qr = QR.qr;
+      if (!qr) {
         QR.dialog(text);
         return;
       }
-      ta = $('textarea', QR.qr);
+      $('#autohide', qr).checked = false;
+      ta = $('textarea', qr);
       v = ta.value;
       ss = ta.selectionStart;
       ta.value = v.slice(0, ss) + text + v.slice(ss);
