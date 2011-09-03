@@ -1019,6 +1019,7 @@ QR =
     </form>
     <a class=error></a>
     "
+    QR.cooldown if conf['Cooldown']
     $.bind $('.close', el), 'click', QR.close
     $.bind $('form', el), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', el), 'keydown', QR.keydown
@@ -1045,12 +1046,31 @@ QR =
     i = ss + text.length
     ta.setSelectionRange i, i
     ta.focus()
+  cooldown: ->
+    return unless QR.el
+    cooldown = $.get "cooldown/#{g.BOARD}", 0
+    now = Date.now()
+    n = Math.ceil (cooldown - now) / 1000
+    b = $ 'button', QR.el
+    if n > 0
+      setTimeout QR.cooldown, 1000
+      $.extend b,
+        textContent: n
+        disabled: true
+    else
+      $.extend b,
+        textContent: 'Submit'
+        disabled: false
   receive: (e) ->
     {data} = e
     if data
       $.extend $('a.error', QR.el), JSON.parse data
     else
       QR.close()
+      if conf['Cooldown']
+        cooldown = Date.now() + 30*SECOND
+        $.set "cooldown/#{g.BOARD}", cooldown
+        QR.cooldown()
   submit: (e) ->
     $('.error', qr.el).textContent = ''
     if (el = $('#recaptcha_response_field', QR.el)).value
