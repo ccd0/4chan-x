@@ -961,9 +961,8 @@ cooldown =
       qr.autoPost()
 
 QR =
+  #TODO create new thread
   #FIXME DRY
-  #index reply
-  #create new thread
   #sys normal post form fallback
   init: ->
     g.callbacks.push (root) ->
@@ -1057,12 +1056,12 @@ QR =
         textContent: 'Submit'
         disabled: false
       QR.submit() if $('#auto', QR.qr).checked
-  dialog: (text='') ->
+  dialog: (text='', tid) ->
     QR.qr = qr = ui.dialog 'qr', top: '0', left: '0', "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
     <div class=move><input placeholder=Name name=name form=qr_form>Quick Reply</div>
     <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
-      <input type=hidden name=resto value=#{g.THREAD_ID}>
+      <input type=hidden name=resto value=#{tid}>
       <input type=hidden name=mode value=regist>
       <input type=hidden name=recaptcha_challenge_field id=challenge>
       <input type=hidden name=recaptcha_response_field id=response>
@@ -1100,6 +1099,7 @@ QR =
     QR.submit() #derpy, but prevents calling QR.hasContent twice
   quote: (e) ->
     e.preventDefault()
+    tid = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', @).id
     id = @textContent
     text = ">>#{id}\n"
     sel = getSelection()
@@ -1108,7 +1108,7 @@ QR =
         text += ">#{s}\n"
     {qr} = QR
     if not qr
-      QR.dialog text
+      QR.dialog text, tid
       return
     $('#autohide', qr).checked = false
     ta = $ 'textarea', qr
