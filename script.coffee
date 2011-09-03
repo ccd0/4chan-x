@@ -961,7 +961,7 @@ cooldown =
       qr.autoPost()
 
 QR =
-  #FIXME duplication everywhere
+  #FIXME DRY
   init: ->
     g.callbacks.push (root) ->
       quote = $ 'a.quotejs + a', root
