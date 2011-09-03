@@ -979,6 +979,15 @@ QR =
       qr.dialog()
       if conf['Auto Hide QR']
         $('#autohide', QR.el).checked = true
+  attach: ->
+    div = $.el 'div',
+      innerHTML: '<input name=upfile type=file><a class=close>X</a>'
+    $.bind $('input', div), 'change', QR.change
+    $.bind $('a', div), 'click', -> $.rm @parentNode
+    $.append $('#files', QR.el), div
+  autoPost: ->
+    return unless QR.hasContent()
+    QR.submit()
   captchaNode: (e) ->
     c = e.target.value
     $('img', QR.el).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
@@ -1002,9 +1011,28 @@ QR =
         break
     $.set 'captchas', captchas
     captcha
+  change: ->
+    $.unbind @, 'change', QR.change
+    QR.attach()
   close: ->
     $.rm QR.el
     QR.el = null
+  cooldown: ->
+    return unless QR.el
+    cooldown = $.get "cooldown/#{g.BOARD}", 0
+    now = Date.now()
+    n = Math.ceil (cooldown - now) / 1000
+    b = $ 'button', QR.el
+    if n > 0
+      $.extend b,
+        textContent: n
+        disabled: true
+      setTimeout QR.cooldown, 1000
+    else
+      $.extend b,
+        textContent: 'Submit'
+        disabled: false
+      QR.autoPost() if $('#auto', QR.el).checked
   dialog: (text='') ->
     QR.el = el = ui.dialog 'qr', top: '0', left: '0', "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
@@ -1035,20 +1063,8 @@ QR =
     l = text.length
     ta.setSelectionRange l, l
     ta.focus()
-  change: ->
-    $.unbind @, 'change', QR.change
-    QR.attach()
-  attach: ->
-    div = $.el 'div',
-      innerHTML: '<input name=upfile type=file><a class=close>X</a>'
-    $.bind $('input', div), 'change', QR.change
-    $.bind $('a', div), 'click', -> $.rm @parentNode
-    $.append $('#files', QR.el), div
   hasContent: ->
     $('textarea', QR.el).value or $('[type=file]', QR.el).files.length
-  autoPost: ->
-    return unless QR.hasContent()
-    QR.submit()
   keydown: (e) ->
     return unless e.keyCode is 13 and @value #enter, captcha filled
     return if QR.hasContent()
@@ -1067,24 +1083,6 @@ QR =
     i = ss + text.length
     ta.setSelectionRange i, i
     ta.focus()
-  cooldown: ->
-    return unless QR.el
-    cooldown = $.get "cooldown/#{g.BOARD}", 0
-    now = Date.now()
-    n = Math.ceil (cooldown - now) / 1000
-    b = $ 'button', QR.el
-    if n > 0
-      $.extend b,
-        textContent: n
-        disabled: true
-      setTimeout QR.cooldown, 1000
-    else
-      $.extend b,
-        textContent: 'Submit'
-        disabled: false
-      QR.autoPost() if $('#auto', QR.el).checked
-  reset: ->
-    $('textarea', QR.el).value = ''
   receive: (e) ->
     {data} = e
     if data
@@ -1098,6 +1096,8 @@ QR =
         cooldown = Date.now() + 30*SECOND
         $.set "cooldown/#{g.BOARD}", cooldown
         QR.cooldown()
+  reset: ->
+    $('textarea', QR.el).value = ''
   submit: (e) ->
     #XXX e is undefined if we're called from QR.autoPost
     $('.error', qr.el).textContent = ''

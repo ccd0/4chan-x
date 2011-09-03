@@ -1250,6 +1250,23 @@
         }
       }
     },
+    attach: function() {
+      var div;
+      div = $.el('div', {
+        innerHTML: '<input name=upfile type=file><a class=close>X</a>'
+      });
+      $.bind($('input', div), 'change', QR.change);
+      $.bind($('a', div), 'click', function() {
+        return $.rm(this.parentNode);
+      });
+      return $.append($('#files', QR.el), div);
+    },
+    autoPost: function() {
+      if (!QR.hasContent()) {
+        return;
+      }
+      return QR.submit();
+    },
     captchaNode: function(e) {
       var c;
       c = e.target.value;
@@ -1282,9 +1299,38 @@
       $.set('captchas', captchas);
       return captcha;
     },
+    change: function() {
+      $.unbind(this, 'change', QR.change);
+      return QR.attach();
+    },
     close: function() {
       $.rm(QR.el);
       return QR.el = null;
+    },
+    cooldown: function() {
+      var b, n, now;
+      if (!QR.el) {
+        return;
+      }
+      cooldown = $.get("cooldown/" + g.BOARD, 0);
+      now = Date.now();
+      n = Math.ceil((cooldown - now) / 1000);
+      b = $('button', QR.el);
+      if (n > 0) {
+        $.extend(b, {
+          textContent: n,
+          disabled: true
+        });
+        return setTimeout(QR.cooldown, 1000);
+      } else {
+        $.extend(b, {
+          textContent: 'Submit',
+          disabled: false
+        });
+        if ($('#auto', QR.el).checked) {
+          return QR.autoPost();
+        }
+      }
     },
     dialog: function(text) {
       var el, l, ta;
@@ -1308,29 +1354,8 @@
       ta.setSelectionRange(l, l);
       return ta.focus();
     },
-    change: function() {
-      $.unbind(this, 'change', QR.change);
-      return QR.attach();
-    },
-    attach: function() {
-      var div;
-      div = $.el('div', {
-        innerHTML: '<input name=upfile type=file><a class=close>X</a>'
-      });
-      $.bind($('input', div), 'change', QR.change);
-      $.bind($('a', div), 'click', function() {
-        return $.rm(this.parentNode);
-      });
-      return $.append($('#files', QR.el), div);
-    },
     hasContent: function() {
       return $('textarea', QR.el).value || $('[type=file]', QR.el).files.length;
-    },
-    autoPost: function() {
-      if (!QR.hasContent()) {
-        return;
-      }
-      return QR.submit();
     },
     keydown: function(e) {
       if (!(e.keyCode === 13 && this.value)) {
@@ -1358,34 +1383,6 @@
       ta.setSelectionRange(i, i);
       return ta.focus();
     },
-    cooldown: function() {
-      var b, n, now;
-      if (!QR.el) {
-        return;
-      }
-      cooldown = $.get("cooldown/" + g.BOARD, 0);
-      now = Date.now();
-      n = Math.ceil((cooldown - now) / 1000);
-      b = $('button', QR.el);
-      if (n > 0) {
-        $.extend(b, {
-          textContent: n,
-          disabled: true
-        });
-        return setTimeout(QR.cooldown, 1000);
-      } else {
-        $.extend(b, {
-          textContent: 'Submit',
-          disabled: false
-        });
-        if ($('#auto', QR.el).checked) {
-          return QR.autoPost();
-        }
-      }
-    },
-    reset: function() {
-      return $('textarea', QR.el).value = '';
-    },
     receive: function(e) {
       var data;
       data = e.data;
@@ -1403,6 +1400,9 @@
           return QR.cooldown();
         }
       }
+    },
+    reset: function() {
+      return $('textarea', QR.el).value = '';
     },
     submit: function(e) {
       var captcha, challenge, el, response;
