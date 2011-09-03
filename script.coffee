@@ -1015,7 +1015,7 @@ QR =
       <input type=hidden name=recaptcha_challenge_field id=challenge>
       <input type=hidden name=recaptcha_response_field id=response>
       <div><input placeholder=Email name=email></div>
-      <div><input placeholder=Subject name=sub><button>Submit</button></div>
+      <div><input placeholder=Subject name=sub><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>
       <div><textarea placeholder=Comment name=com>#{text}</textarea></div>
       <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
       <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field><span id=cl>#{$.get('captchas', []).length} captchas</span></div>
@@ -1033,9 +1033,14 @@ QR =
     l = text.length
     ta.setSelectionRange l, l
     ta.focus()
+  hasContent: ->
+    $('textarea', QR.el).value or $('[type=file]', QR.el).files.length
+  autoPost: ->
+    return unless QR.hasContent()
+    QR.submit()
   keydown: (e) ->
     return unless e.keyCode is 13 and @value #enter, captcha filled
-    return if $('textarea', QR.el).value or $('[type=file]', QR.el).files.length #not blank
+    return if QR.hasContent()
     e.preventDefault()
     QR.captchaPush @
   quote: (e) ->
@@ -1058,14 +1063,15 @@ QR =
     n = Math.ceil (cooldown - now) / 1000
     b = $ 'button', QR.el
     if n > 0
-      setTimeout QR.cooldown, 1000
       $.extend b,
         textContent: n
         disabled: true
+      setTimeout QR.cooldown, 1000
     else
       $.extend b,
         textContent: 'Submit'
         disabled: false
+      QR.autoPost() if $('#auto', QR.el).checked
   receive: (e) ->
     {data} = e
     if data
@@ -1077,17 +1083,19 @@ QR =
         $.set "cooldown/#{g.BOARD}", cooldown
         QR.cooldown()
   submit: (e) ->
+    #XXX e is undefined if we're called from QR.autoPost
     $('.error', qr.el).textContent = ''
     if (el = $('#recaptcha_response_field', QR.el)).value
       QR.captchaPush el
     if not captcha = QR.captchaShift()
       alert 'You forgot to type in the verification.'
-      e.preventDefault()
+      e?.preventDefault()
       return
     {challenge, response} = captcha
     $('#challenge', QR.el).value = challenge
     $('#response',  QR.el).value = response
     $('#autohide', QR.el).checked = true if conf['Auto Hide QR']
+    $('#qr_form', QR.el).submit if not e
   sys: ->
     $.globalEval ->
       if node = document.querySelector('table font b')?.firstChild
