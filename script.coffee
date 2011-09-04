@@ -989,6 +989,7 @@ QR =
     QR.spoiler = if $('.postarea label') then ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
     if conf['Persistent QR']
       QR.dialog()
+      $('textarea', QR.qr).blur()
       if conf['Auto Hide QR']
         $('#autohide', QR.qr).checked = true
   attach: ->
