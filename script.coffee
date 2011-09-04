@@ -962,6 +962,7 @@ QR =
   #TODO create new thread
   #captcha caching for report form
   #report queueing
+  #check if captchas can be reused on eg dup file error
   #FIXME DRY
   init: ->
     g.callbacks.push (root) ->
@@ -1108,7 +1109,7 @@ QR =
     return unless e.keyCode is 13 and @value #enter, captcha filled
     QR.captchaPush @
     e.preventDefault()
-    QR.submit() #derpy, but prevents calling QR.hasContent twice
+    QR.submit() #derpy, but prevents checking for content twice
   quote: (e, blank) ->
     e?.preventDefault()
     tid = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', @).id
@@ -1196,7 +1197,9 @@ QR =
         {textContent, href} = node
         data = JSON.stringify {textContent, href}
       parent.postMessage data, '*'
-    return unless d = $('b').lastChild.data #comment
+      #parent will blank us on message receival;
+      #if we're not an iframe, we won't get blanked
+    return unless d = $('b').lastChild.data #html comment
     [_, thread, id] = d.match(/thread:(\d+),no:(\d+)/)
     {search} = location
     cooldown = /cooldown/.test search
