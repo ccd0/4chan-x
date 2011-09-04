@@ -1042,9 +1042,7 @@ QR =
       QR.resetFile @
       $('[type=file]', QR.qr).click()
     else
-      p = @parentNode
-      a = p.parentNode
-      if a.id is 'files' and not p.nextSibling
+      if @ is $('#files div:last-of-type input', QR.qr)
         QR.attach()
   close: ->
     $.rm QR.qr

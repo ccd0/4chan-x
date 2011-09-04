@@ -1327,15 +1327,12 @@
       return captcha;
     },
     change: function(e) {
-      var a, p;
       if (this.files[0].size > QR.MAX_FILE_SIZE) {
         alert('Error: File too large.');
         QR.resetFile(this);
         return $('[type=file]', QR.qr).click();
       } else {
-        p = this.parentNode;
-        a = p.parentNode;
-        if (a.id === 'files' && !p.nextSibling) {
+        if (this === $('#files div:last-of-type input', QR.qr)) {
           return QR.attach();
         }
       }
