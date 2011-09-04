@@ -1288,7 +1288,7 @@
         $.rm(file.parentNode);
         return $.replace(old, file);
       } else {
-        return $.resetFile(old);
+        return QR.resetFile(old);
       }
     },
     captchaNode: function(e) {

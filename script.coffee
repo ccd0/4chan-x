@@ -1011,7 +1011,7 @@ QR =
       $.rm file.parentNode
       $.replace old, file
     else
-      $.resetFile old
+      QR.resetFile old
   captchaNode: (e) ->
     c = e.target.value
     $('img', QR.qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}" if QR.qr
