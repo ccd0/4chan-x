@@ -1093,6 +1093,7 @@ QR =
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('form', qr), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
+    $.bind $('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener
     $.bind $('[type=file]', qr), 'change', QR.change
     $.bind $('#attach', qr), 'click', QR.attach
     $.append d.body, qr
