@@ -963,7 +963,6 @@ QR =
   #captcha caching for report form
   #report queueing
   #check if captchas can be reused on eg dup file error
-  #FIXME DRY
   init: ->
     g.callbacks.push (root) ->
       quote = $ 'a.quotejs + a', root
