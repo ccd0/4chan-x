@@ -1375,46 +1375,45 @@
       if (text == null) {
         text = '';
       }
+      /*
+          "
+          <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
+          <div class=move><input placeholder=Name name=name form=qr_form class=inputtext>Quick Reply</div>
+          <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
+            <input type=hidden name=resto value=#{tid}>
+            <input type=hidden name=mode value=regist>
+            <input type=hidden name=recaptcha_challenge_field id=challenge>
+            <input type=hidden name=recaptcha_response_field id=response>
+            <div><input placeholder=Email name=email class=inputtext>#{QR.spoiler}</div>
+            <div><input placeholder=Subject name=sub class=inputtext><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>
+            <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>
+            <div><img></div>
+            <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl></span></div>
+            <div>#{QR.file}</div>
+          </form>
+          <div id=files></div>
+          <div><input placeholder=Password name=pwd type=password class=inputtext><a id=attach>attach another file</a></div>
+          <a class=error></a>
+          "
+          #XXX use dom methods to set values instead of injecting raw user input into your html -_-;
+          c = d.cookie
+          $('[name=name]', qr).value  = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
+          $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+          $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
+          $('textarea', qr).value = text
+          QR.captchaLength()
+          QR.cooldown() if conf['Cooldown']
+          $.bind $('.close', qr), 'click', QR.close
+          $.bind $('form', qr), 'submit', QR.submit
+          $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
+          $.bind $('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener
+          $.bind $('[type=file]', qr), 'change', QR.change
+          $.bind $('#attach', qr), 'click', QR.attach
+          */
       QR.qr = qr = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <button>File</button>      <span class=input><input name=sub placeholder=Subject><span>Subject</span></span>      <span class=input><input name=name placeholder=Name><span>Name</span></span>      <span class=input><input name=email placeholder=Email><span>Email</span></span>    </div>    <div class=autohide>      <textarea></textarea>      <div><img></div>      <div id=captcha>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field>      </div>      <div>        <button>Submit</button>        <input type=checkbox id=autopost title=autopost>        <span class=error>Derp</span>      </div>    </div>    ", {
-        /*
-            "
-            <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
-            <div class=move><input placeholder=Name name=name form=qr_form class=inputtext>Quick Reply</div>
-            <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
-              <input type=hidden name=resto value=#{tid}>
-              <input type=hidden name=mode value=regist>
-              <input type=hidden name=recaptcha_challenge_field id=challenge>
-              <input type=hidden name=recaptcha_response_field id=response>
-              <div><input placeholder=Email name=email class=inputtext>#{QR.spoiler}</div>
-              <div><input placeholder=Subject name=sub class=inputtext><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>
-              <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>
-              <div><img></div>
-              <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl></span></div>
-              <div>#{QR.file}</div>
-            </form>
-            <div id=files></div>
-            <div><input placeholder=Password name=pwd type=password class=inputtext><a id=attach>attach another file</a></div>
-            <a class=error></a>
-            "
-            #XXX use dom methods to set values instead of injecting raw user input into your html -_-;
-            c = d.cookie
-            $('[name=name]', qr).value  = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
-            $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
-            $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
-            $('textarea', qr).value = text
-            QR.captchaLength()
-            QR.cooldown() if conf['Cooldown']
-            $.bind $('.close', qr), 'click', QR.close
-            $.bind $('form', qr), 'submit', QR.submit
-            $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
-            $.bind $('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener
-            $.bind $('[type=file]', qr), 'change', QR.change
-            $.bind $('#attach', qr), 'click', QR.attach
-            */
-      });
+      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <button>File</button>      <span class=input><input name=sub placeholder=Subject><span>Subject</span></span>      <span class=input><input name=name placeholder=Name><span>Name</span></span>      <span class=input><input name=email placeholder=Email><span>Email</span></span>    </div>    <div class=autohide>      <textarea></textarea>      <div><img></div>      <div id=captcha>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field>      </div>      <div>        <button>Submit</button>        <input type=checkbox id=autopost title=autopost>        <span class=error>Derp</span>      </div>    </div>    ");
       QR.captchaImg();
       $.append(d.body, qr);
       ta = $('textarea', qr);
