@@ -1353,7 +1353,7 @@
       cooldown = $.get("cooldown/" + g.BOARD, 0);
       now = Date.now();
       n = Math.ceil((cooldown - now) / 1000);
-      b = $('button', QR.qr);
+      b = $('form button', QR.qr);
       if (n > 0) {
         $.extend(b, {
           textContent: n,
@@ -1365,7 +1365,7 @@
           textContent: 'Submit',
           disabled: false
         });
-        if ($('#auto', QR.qr).checked) {
+        if ($('#autopost', QR.qr).checked) {
           return QR.submit();
         }
       }
@@ -1404,8 +1404,6 @@
           $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
           $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
           $('textarea', qr).value = text
-          QR.cooldown() if conf['Cooldown']
-          $.bind $('.close', qr), 'click', QR.close
           $.bind $('[type=file]', qr), 'change', QR.change
           $.bind $('#attach', qr), 'click', QR.attach
           */
@@ -1413,6 +1411,10 @@
         top: '0',
         left: '0'
       }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <span class=input><input form=qr_form name=sub placeholder=Subject><span>Subject</span></span>        <span class=input><input form=qr_form name=name placeholder=Name><span>Name</span></span>        <span class=input><input form=qr_form name=email placeholder=Email><span>Email</span></span>      </span>    </div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + tid + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <textarea name=com></textarea>      <div><img></div>      <div id=captcha>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field>      </div>      <div>        <button>Submit</button>        <input type=checkbox id=autopost title=autopost>        <a class=error>Derp</span>      </div>    </form>    ");
+      if (conf['Cooldown']) {
+        QR.cooldown();
+      }
+      $.bind($('.close', qr), 'click', QR.close);
       $.bind($('.click', qr), 'mousedown', function(e) {
         return e.stopPropagation();
       });

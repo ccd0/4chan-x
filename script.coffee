@@ -1055,7 +1055,7 @@ QR =
     cooldown = $.get "cooldown/#{g.BOARD}", 0
     now = Date.now()
     n = Math.ceil (cooldown - now) / 1000
-    b = $ 'button', QR.qr
+    b = $ 'form button', QR.qr
     if n > 0
       $.extend b,
         textContent: n
@@ -1065,7 +1065,7 @@ QR =
       $.extend b,
         textContent: 'Submit'
         disabled: false
-      QR.submit() if $('#auto', QR.qr).checked
+      QR.submit() if $('#autopost', QR.qr).checked
   dialog: (text='', tid=g.THREAD_ID) ->
     ###
     "
@@ -1093,8 +1093,6 @@ QR =
     $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     $('textarea', qr).value = text
-    QR.cooldown() if conf['Cooldown']
-    $.bind $('.close', qr), 'click', QR.close
     $.bind $('[type=file]', qr), 'change', QR.change
     $.bind $('#attach', qr), 'click', QR.attach
     ###
@@ -1127,6 +1125,8 @@ QR =
       </div>
     </form>
     "
+    QR.cooldown() if conf['Cooldown']
+    $.bind $('.close', qr), 'click', QR.close
     $.bind $('.click', qr), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('form', qr), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
