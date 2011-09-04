@@ -1224,7 +1224,7 @@
   };
   QR = {
     init: function() {
-      var accept, holder, m;
+      var accept, holder;
       g.callbacks.push(function(root) {
         var quote;
         quote = $('a.quotejs + a', root);
@@ -1257,13 +1257,8 @@
       if (conf['Persistent QR']) {
         QR.dialog();
         if (conf['Auto Hide QR']) {
-          $('#autohide', QR.qr).checked = true;
+          return $('#autohide', QR.qr).checked = true;
         }
-      }
-      if (conf['Cooldown'] && (m = location.search.match(/cooldown=(\d+)/))) {
-        cooldown = m[1];
-        $.set("cooldown/" + g.BOARD, cooldown);
-        return QR.cooldown();
       }
     },
     attach: function() {
@@ -1527,12 +1522,12 @@
       }
     },
     sys: function() {
-      var duration, id, noko, recaptcha, sage, search, thread, url, watch, _, _ref;
+      var recaptcha;
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', Recaptcha.listener);
         return;
       }
-      $.globalEval(function() {
+      return $.globalEval(function() {
         var data, href, node, textContent, _ref;
         if (node = (_ref = document.querySelector('table font b')) != null ? _ref.firstChild : void 0) {
           textContent = node.textContent, href = node.href;
@@ -1543,30 +1538,6 @@
         }
         return parent.postMessage(data, '*');
       });
-      if (!(d = $('b').lastChild.data)) {
-        return;
-      }
-      _ref = d.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], id = _ref[2];
-      search = location.search;
-      cooldown = /cooldown/.test(search);
-      noko = /noko/.test(search);
-      sage = /sage/.test(search);
-      watch = /watch/.test(search);
-      url = "http://boards.4chan.org/" + g.BOARD;
-      if (watch && thread === '0') {
-        url += "/res/" + id + "?watch";
-      } else if (noko) {
-        url += '/res/';
-        url += thread === '0' ? id : thread;
-      }
-      if (cooldown) {
-        duration = Date.now() + (sage ? 60 : 30) * 1000;
-        url += '?cooldown=' + duration;
-      }
-      if (noko) {
-        url += '#' + id;
-      }
-      return window.location = url;
     }
   };
   qr = {

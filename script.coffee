@@ -991,10 +991,6 @@ QR =
       QR.dialog()
       if conf['Auto Hide QR']
         $('#autohide', QR.qr).checked = true
-    if conf['Cooldown'] and m = location.search.match /cooldown=(\d+)/
-      cooldown = m[1]
-      $.set "cooldown/#{g.BOARD}", cooldown
-      QR.cooldown()
   attach: ->
     $('#auto', QR.qr).checked = true
     div = $.el 'div',
@@ -1203,25 +1199,6 @@ QR =
       parent.postMessage data, '*'
       #parent will blank us on message receival;
       #if we're not an iframe, we won't get blanked
-    return unless d = $('b').lastChild.data #html comment
-    [_, thread, id] = d.match(/thread:(\d+),no:(\d+)/)
-    {search} = location
-    cooldown = /cooldown/.test search
-    noko     = /noko/    .test search
-    sage     = /sage/    .test search
-    watch    = /watch/   .test search
-    url = "http://boards.4chan.org/#{g.BOARD}"
-    if watch and thread is '0'
-      url += "/res/#{id}?watch"
-    else if noko
-      url += '/res/'
-      url += if thread is '0' then id else thread
-    if cooldown
-      duration = Date.now() + (if sage then 60 else 30) * 1000
-      url += '?cooldown=' + duration
-    if noko
-      url += '#' + id
-    window.location = url
 
 qr =
   # TODO
