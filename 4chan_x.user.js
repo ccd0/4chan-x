@@ -2800,7 +2800,7 @@
         return;
       }
       Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
-      $('link[rel="shortcut icon"]', d.head).setAttribute('type', 'image/x-icon');
+      $('link[rel="shortcut icon"]', d.head).type = 'image/x-icon';
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       tzOffset = (new Date()).getTimezoneOffset() / 60;
       g.chanOffset = 5 - tzOffset;

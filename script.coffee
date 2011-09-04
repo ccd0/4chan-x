@@ -2193,7 +2193,7 @@ main =
       return
 
     Favicon.halo = if /ws/.test Favicon.default then Favicon.haloSFW else Favicon.haloNSFW
-    $('link[rel="shortcut icon"]', d.head).setAttribute 'type', 'image/x-icon'
+    $('link[rel="shortcut icon"]', d.head).type = 'image/x-icon'
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     tzOffset = (new Date()).getTimezoneOffset() / 60
     # GMT -8 is given as +480; would GMT +8 be -480 ?
