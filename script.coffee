@@ -1512,6 +1512,12 @@ watcher =
     #populate watcher, display watch buttons
     watcher.refresh()
 
+    if conf['Auto Watch']
+      unless g.REPLY
+        $('.postarea form').action += '?watch'
+      else if /watch/.test(location.search) and $('img.favicon').src is Favicon.empty
+        watcher.watch null, g.THREAD_ID
+
     $.bind window, 'storage', (e) -> watcher.refresh() if e.key is "#{NAMESPACE}watched"
 
   refresh: ->
@@ -2307,10 +2313,6 @@ main =
       if conf['Reply Navigation']
         nav.init()
 
-      if conf['Auto Watch'] and conf['Thread Watcher'] and
-        /watch/.test(location.search) and $('img.favicon').src is Favicon.empty
-          watcher.watch null, g.THREAD_ID
-
     else #not reply
       if conf['Index Navigation']
         nav.init()
@@ -2323,9 +2325,6 @@ main =
 
       if conf['Comment Expansion']
         expandComment.init()
-
-      if conf['Auto Watch']
-        $('.postarea form').action += '?watch'
 
     for op in $$ 'div.op'
       for callback in g.callbacks
