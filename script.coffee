@@ -2247,7 +2247,7 @@ main =
     if conf['Sauce']
       sauce.init()
 
-    if conf['Reveal Spoilers']
+    if conf['Reveal Spoilers'] and $('.postarea label')
       revealSpoilers.init()
 
     if conf['Anonymize']
