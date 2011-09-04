@@ -1108,7 +1108,7 @@ QR =
       <input type=hidden name=mode value=regist>
       <input type=hidden name=recaptcha_challenge_field id=challenge>
       <input type=hidden name=recaptcha_response_field id=response>
-      <textarea name=com></textarea>
+      <textarea placeholder=Comment name=com></textarea>
       <div><img></div>
       <div id=captcha>
         <span id=cl>120 Captchas</span>
