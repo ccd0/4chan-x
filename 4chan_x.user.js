@@ -1251,10 +1251,9 @@
             return 'image/' + type;
         }
       });
-      QR.accept = "'" + accept + "'";
+      QR.file = "<input type=file name=upfile accept='" + accept + "'>";
       QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value;
       QR.spoiler = $('.postarea label') ? ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
-      QR.file = "<input type=file name=upfile accept=" + QR.accept + ">";
       if (conf['Persistent QR']) {
         QR.dialog();
         if (conf['Auto Hide QR']) {

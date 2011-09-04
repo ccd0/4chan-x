@@ -984,10 +984,9 @@ QR =
           'application/' + type
         else
           'image/' + type
-    QR.accept = "'#{accept}'"
+    QR.file = "<input type=file name=upfile accept='#{accept}'>"
     QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value
     QR.spoiler = if $('.postarea label') then ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
-    QR.file = "<input type=file name=upfile accept=#{QR.accept}>"
     if conf['Persistent QR']
       QR.dialog()
       if conf['Auto Hide QR']
