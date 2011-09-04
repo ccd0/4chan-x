@@ -1106,10 +1106,12 @@ QR =
     <a class=close>X</a>
     <input type=checkbox id=autohide title=autohide>
     <div class=move>
-      <button>File</button>
-      <span class=input><input name=sub placeholder=Subject><span>Subject</span></span>
-      <span class=input><input name=name placeholder=Name><span>Name</span></span>
-      <span class=input><input name=email placeholder=Email><span>Email</span></span>
+      <span class=click>
+        <button>File</button>
+        <span class=input><input name=sub placeholder=Subject><span>Subject</span></span>
+        <span class=input><input name=name placeholder=Name><span>Name</span></span>
+        <span class=input><input name=email placeholder=Email><span>Email</span></span>
+      </span>
     </div>
     <div class=autohide>
       <textarea></textarea>
@@ -1125,6 +1127,7 @@ QR =
       </div>
     </div>
     "
+    $.bind $('.click', qr), 'mousedown', (e) -> e.stopPropagation()
     QR.captchaImg()
     $.append d.body, qr
     ta = $ 'textarea', qr

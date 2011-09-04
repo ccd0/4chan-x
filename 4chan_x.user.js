@@ -1413,7 +1413,10 @@
       QR.qr = qr = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <button>File</button>      <span class=input><input name=sub placeholder=Subject><span>Subject</span></span>      <span class=input><input name=name placeholder=Name><span>Name</span></span>      <span class=input><input name=email placeholder=Email><span>Email</span></span>    </div>    <div class=autohide>      <textarea></textarea>      <div><img></div>      <div id=captcha>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field>      </div>      <div>        <button>Submit</button>        <input type=checkbox id=autopost title=autopost>        <span class=error>Derp</span>      </div>    </div>    ");
+      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <span class=input><input name=sub placeholder=Subject><span>Subject</span></span>        <span class=input><input name=name placeholder=Name><span>Name</span></span>        <span class=input><input name=email placeholder=Email><span>Email</span></span>      </span>    </div>    <div class=autohide>      <textarea></textarea>      <div><img></div>      <div id=captcha>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field>      </div>      <div>        <button>Submit</button>        <input type=checkbox id=autopost title=autopost>        <span class=error>Derp</span>      </div>    </div>    ");
+      $.bind($('.click', qr), 'mousedown', function(e) {
+        return e.stopPropagation();
+      });
       QR.captchaImg();
       $.append(d.body, qr);
       ta = $('textarea', qr);
