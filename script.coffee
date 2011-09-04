@@ -1108,13 +1108,13 @@ QR =
       <input name=mode value=regist>
       <input name=recaptcha_challenge_field id=challenge>
       <input name=recaptcha_response_field id=response>
-      <input type=file name=upfile>
       <textarea placeholder=Comment name=com></textarea>
       <div><img></div>
       <div id=captcha>
         <span id=cl>120 Captchas</span>
         <input id=recaptcha_response_field>
       </div>
+      <input type=file name=upfile>
       <div>
         <button>Submit</button>
         <input type=checkbox id=autopost title=autopost>
@@ -1127,6 +1127,7 @@ QR =
     $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('textarea', qr).value = text
     QR.cooldown() if conf['Cooldown']
+    $.bind $('button', qr), 'click', -> $('[type=file]', qr).click()
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('.click', qr), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('form', qr), 'submit', QR.submit
