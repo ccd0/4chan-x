@@ -1406,7 +1406,7 @@
       QR.qr = qr = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <span class=input><input form=qr_form name=sub placeholder=Subject><span>Subject</span></span>        <span class=input><input form=qr_form name=name placeholder=Name><span>Name</span></span>        <span class=input><input form=qr_form name=email placeholder=Email><span>Email</span></span>      </span>    </div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + tid + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <textarea placeholder=Comment name=com></textarea>      <div><img></div>      <div id=captcha>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field>      </div>      <div>        <button>Submit</button>        <input type=checkbox id=autopost title=autopost>        <a class=error>Derp</span>      </div>    </form>    ");
+      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <span class=input><input form=qr_form name=sub placeholder=Subject><span>Subject</span></span>        <span class=input><input form=qr_form name=name placeholder=Name><span>Name</span></span>        <span class=input><input form=qr_form name=email placeholder=Email><span>Email</span></span>      </span>    </div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input name=resto value=" + tid + ">      <input name=mode value=regist>      <input name=recaptcha_challenge_field id=challenge>      <input name=recaptcha_response_field id=response>      <input type=file name=upfile>      <textarea placeholder=Comment name=com></textarea>      <div><img></div>      <div id=captcha>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field>      </div>      <div>        <button>Submit</button>        <input type=checkbox id=autopost title=autopost>        <a class=error>Derp</span>      </div>    </form>    ");
       c = d.cookie;
       $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
@@ -3464,8 +3464,11 @@
       #qr .input input {\
         width: 60px;\
       }\
-      #qr .input:not(:hover) input:not(:focus) {\
+      #qr input {\
         display: none;\
+      }\
+      #qr .input:hover input, #qr input:focus {\
+        display: inline;\
       }\
       #qr .input:hover span, #qr .input input:focus + span {\
         display: none;\
@@ -3491,6 +3494,7 @@
         position: absolute;\
       }\
       #qr #recaptcha_response_field {\
+        display: inline;\
         width: 100%;\
       }\
     '
