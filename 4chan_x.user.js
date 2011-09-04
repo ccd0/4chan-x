@@ -1371,30 +1371,51 @@
       }
     },
     dialog: function(text, tid) {
-      var c, l, m, qr, ta;
+      var l, qr, ta;
       if (text == null) {
         text = '';
       }
       QR.qr = qr = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form class=inputtext>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + tid + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email class=inputtext>" + QR.spoiler + "</div>      <div><input placeholder=Subject name=sub class=inputtext><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>      <div><img></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl></span></div>      <div>" + QR.file + "</div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password class=inputtext><a id=attach>attach another file</a></div>    <a class=error></a>    ");
-      c = d.cookie;
-      $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
-      $('[name=pwd]', qr).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
-      $('textarea', qr).value = text;
+      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <button>File</button>      <a>Subject</a>      <a>Name</a>      <a>Email</a>    </div>    <div class=autohide>      <textarea></textarea>      <div><img></div>      <div id=captcha>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field>      </div>      <div>        <button>Submit</button>        <input type=checkbox id=autopost title=autopost>        <span class=error>Derp</span>      </div>    </div>    ", {
+        /*
+            "
+            <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
+            <div class=move><input placeholder=Name name=name form=qr_form class=inputtext>Quick Reply</div>
+            <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
+              <input type=hidden name=resto value=#{tid}>
+              <input type=hidden name=mode value=regist>
+              <input type=hidden name=recaptcha_challenge_field id=challenge>
+              <input type=hidden name=recaptcha_response_field id=response>
+              <div><input placeholder=Email name=email class=inputtext>#{QR.spoiler}</div>
+              <div><input placeholder=Subject name=sub class=inputtext><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>
+              <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>
+              <div><img></div>
+              <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl></span></div>
+              <div>#{QR.file}</div>
+            </form>
+            <div id=files></div>
+            <div><input placeholder=Password name=pwd type=password class=inputtext><a id=attach>attach another file</a></div>
+            <a class=error></a>
+            "
+            #XXX use dom methods to set values instead of injecting raw user input into your html -_-;
+            c = d.cookie
+            $('[name=name]', qr).value  = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
+            $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+            $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
+            $('textarea', qr).value = text
+            QR.captchaLength()
+            QR.cooldown() if conf['Cooldown']
+            $.bind $('.close', qr), 'click', QR.close
+            $.bind $('form', qr), 'submit', QR.submit
+            $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
+            $.bind $('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener
+            $.bind $('[type=file]', qr), 'change', QR.change
+            $.bind $('#attach', qr), 'click', QR.attach
+            */
+      });
       QR.captchaImg();
-      QR.captchaLength();
-      if (conf['Cooldown']) {
-        QR.cooldown();
-      }
-      $.bind($('.close', qr), 'click', QR.close);
-      $.bind($('form', qr), 'submit', QR.submit);
-      $.bind($('#recaptcha_response_field', qr), 'keydown', QR.keydown);
-      $.bind($('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener);
-      $.bind($('[type=file]', qr), 'change', QR.change);
-      $.bind($('#attach', qr), 'click', QR.attach);
       $.append(d.body, qr);
       ta = $('textarea', qr);
       l = text.length;
@@ -3275,7 +3296,7 @@
       div.dialog > div.move {\
         cursor: move;\
       }\
-      label, a, .favicon, #qr img {\
+      label, a, .favicon {\
         cursor: pointer;\
       }\
 \
@@ -3284,9 +3305,6 @@
       }\
       .error {\
         color: red;\
-      }\
-      #qr .error:not([href]) {\
-        cursor: default;\
       }\
       td.replyhider {\
         vertical-align: top;\
@@ -3366,47 +3384,6 @@
         width: 100%;\
       }\
 \
-      #qr {\
-        position: fixed;\
-        max-height: 100%;\
-        overflow-x: hidden;\
-        overflow-y: auto;\
-      }\
-      #qr > div.move {\
-        text-align: right;\
-      }\
-      #qr input[name=name] {\
-        float: left;\
-      }\
-      #qr_form {\
-        clear: left;\
-      }\
-      #qr_form, #qr #com_submit, #qr input[name=upfile] {\
-        margin: 0;\
-      }\
-      #qr textarea {\
-        width: 100%;\
-        height: 125px;\
-      }\
-      #qr .close, #qr #autohide {\
-        float: right;\
-      }\
-      #qr:not(:hover) > #autohide:checked ~ form {\
-        height: 0;\
-        overflow: hidden;\
-      }\
-      /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */\
-      #qr input::-webkit-input-placeholder {\
-        color: grey;\
-      }\
-      #qr input:-moz-placeholder {\
-        color: grey;\
-      }\
-      /* qr reCAPTCHA */\
-      #qr img {\
-        border: 1px solid #AAA;\
-      }\
-\
       #updater {\
         position: fixed;\
         text-align: right;\
@@ -3470,6 +3447,32 @@
 \
       #files > input {\
         display: block;\
+      }\
+      #qr {\
+        position: fixed;\
+      }\
+      #qr #autohide, #qr .close {\
+        float: right;\
+      }\
+      #qr:not(:hover) #autohide:checked ~ .autohide {\
+        height: 0;\
+        overflow: hidden;\
+      }\
+      #qr textarea {\
+        border: 0;\
+        height: 125;\
+        width: 100%;\
+      }\
+      #qr #captcha {\
+        position: relative;\
+      }\
+      #qr #cl {\
+        right: 0;\
+        padding: 2px;\
+        position: absolute;\
+      }\
+      #qr #recaptcha_response_field {\
+        width: 100%;\
       }\
     '
   };

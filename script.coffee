@@ -1068,6 +1068,31 @@ QR =
       QR.submit() if $('#auto', QR.qr).checked
   dialog: (text='', tid) ->
     QR.qr = qr = ui.dialog 'qr', top: '0', left: '0', "
+    <a class=close>X</a>
+    <input type=checkbox id=autohide title=autohide>
+    <div class=move>
+      <button>File</button>
+      <a>Subject</a>
+      <a>Name</a>
+      <a>Email</a>
+    </div>
+    <div class=autohide>
+      <textarea></textarea>
+      <div><img></div>
+      <div id=captcha>
+        <span id=cl>120 Captchas</span>
+        <input id=recaptcha_response_field>
+      </div>
+      <div>
+        <button>Submit</button>
+        <input type=checkbox id=autopost title=autopost>
+        <span class=error>Derp</span>
+      </div>
+    </div>
+    "
+
+    ###
+    "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
     <div class=move><input placeholder=Name name=name form=qr_form class=inputtext>Quick Reply</div>
     <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
@@ -1092,7 +1117,6 @@ QR =
     $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     $('textarea', qr).value = text
-    QR.captchaImg()
     QR.captchaLength()
     QR.cooldown() if conf['Cooldown']
     $.bind $('.close', qr), 'click', QR.close
@@ -1101,6 +1125,8 @@ QR =
     $.bind $('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener
     $.bind $('[type=file]', qr), 'change', QR.change
     $.bind $('#attach', qr), 'click', QR.attach
+    ###
+    QR.captchaImg()
     $.append d.body, qr
     ta = $ 'textarea', qr
     l = text.length
@@ -2580,7 +2606,7 @@ main =
       div.dialog > div.move {
         cursor: move;
       }
-      label, a, .favicon, #qr img {
+      label, a, .favicon {
         cursor: pointer;
       }
 
@@ -2589,9 +2615,6 @@ main =
       }
       .error {
         color: red;
-      }
-      #qr .error:not([href]) {
-        cursor: default;
       }
       td.replyhider {
         vertical-align: top;
@@ -2671,47 +2694,6 @@ main =
         width: 100%;
       }
 
-      #qr {
-        position: fixed;
-        max-height: 100%;
-        overflow-x: hidden;
-        overflow-y: auto;
-      }
-      #qr > div.move {
-        text-align: right;
-      }
-      #qr input[name=name] {
-        float: left;
-      }
-      #qr_form {
-        clear: left;
-      }
-      #qr_form, #qr #com_submit, #qr input[name=upfile] {
-        margin: 0;
-      }
-      #qr textarea {
-        width: 100%;
-        height: 125px;
-      }
-      #qr .close, #qr #autohide {
-        float: right;
-      }
-      #qr:not(:hover) > #autohide:checked ~ form {
-        height: 0;
-        overflow: hidden;
-      }
-      /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
-      #qr input::-webkit-input-placeholder {
-        color: grey;
-      }
-      #qr input:-moz-placeholder {
-        color: grey;
-      }
-      /* qr reCAPTCHA */
-      #qr img {
-        border: 1px solid #AAA;
-      }
-
       #updater {
         position: fixed;
         text-align: right;
@@ -2775,6 +2757,32 @@ main =
 
       #files > input {
         display: block;
+      }
+      #qr {
+        position: fixed;
+      }
+      #qr #autohide, #qr .close {
+        float: right;
+      }
+      #qr:not(:hover) #autohide:checked ~ .autohide {
+        height: 0;
+        overflow: hidden;
+      }
+      #qr textarea {
+        border: 0;
+        height: 125;
+        width: 100%;
+      }
+      #qr #captcha {
+        position: relative;
+      }
+      #qr #cl {
+        right: 0;
+        padding: 2px;
+        position: absolute;
+      }
+      #qr #recaptcha_response_field {
+        width: 100%;
       }
     '
 
