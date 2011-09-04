@@ -1040,11 +1040,19 @@ QR =
     captchas or= $.get 'captchas', []
     $('#cl', QR.qr).textContent = captchas.length + ' captchas'
   change: (e) ->
-    if @files[0].size > QR.MAX_FILE_SIZE
+    file = @files[0]
+    if file.size > QR.MAX_FILE_SIZE
       alert 'Error: File too large.'
       QR.resetFile @
       $('[type=file]', QR.qr).click()
     else
+      fr = new FileReader()
+      fr.onload = (e) ->
+        img = $.el 'img',
+          src: e.target.result
+        $.append $('#thumbs', QR.qr), img
+      fr.readAsDataURL file
+      return
       if @ is $('#files div:last-of-type input', QR.qr)
         QR.attach()
   close: ->
@@ -1089,7 +1097,6 @@ QR =
     "
     #XXX use dom methods to set values instead of injecting raw user input into your html -_-;
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
-    $.bind $('[type=file]', qr), 'change', QR.change
     $.bind $('#attach', qr), 'click', QR.attach
     ###
     QR.qr = qr = ui.dialog 'qr', top: '0', left: '0', "
@@ -1108,13 +1115,14 @@ QR =
       <input name=mode value=regist>
       <input name=recaptcha_challenge_field id=challenge>
       <input name=recaptcha_response_field id=response>
+      <input type=file name=upfile>
       <textarea placeholder=Comment name=com></textarea>
       <div><img></div>
       <div id=captcha>
         <span id=cl>120 Captchas</span>
         <input id=recaptcha_response_field>
       </div>
-      <input type=file name=upfile>
+      <div id=thumbs></div>
       <div>
         <button>Submit</button>
         <input type=checkbox id=autopost title=autopost>
@@ -1128,6 +1136,7 @@ QR =
     $('textarea', qr).value = text
     QR.cooldown() if conf['Cooldown']
     $.bind $('button', qr), 'click', -> $('[type=file]', qr).click()
+    $.bind $('[type=file]', qr), 'change', QR.change
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('.click', qr), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('form', qr), 'submit', QR.submit
