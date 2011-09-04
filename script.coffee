@@ -1796,6 +1796,12 @@ watcher =
     #populate watcher, display watch buttons
     watcher.refresh()
 
+    if conf['Auto Watch']
+      unless g.REPLY
+        $('.postarea form').action += '?watch'
+      else if /watch/.test(location.search) and $('img.favicon').src is Favicon.empty
+        watcher.watch null, g.THREAD_ID
+
     $.bind window, 'storage', (e) -> watcher.refresh() if e.key is "#{NAMESPACE}watched"
 
   refresh: ->
@@ -2471,7 +2477,7 @@ main =
       return
 
     Favicon.halo = if /ws/.test Favicon.default then Favicon.haloSFW else Favicon.haloNSFW
-    $('link[rel="shortcut icon"]', d.head).setAttribute 'type', 'image/x-icon'
+    $('link[rel="shortcut icon"]', d.head).type = 'image/x-icon'
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     tzOffset = (new Date()).getTimezoneOffset() / 60
     # GMT -8 is given as +480; would GMT +8 be -480 ?
@@ -2528,7 +2534,7 @@ main =
     if conf['Sauce']
       sauce.init()
 
-    if conf['Reveal Spoilers']
+    if conf['Reveal Spoilers'] and $('.postarea label')
       revealSpoilers.init()
 
     if conf['Anonymize']
@@ -2583,10 +2589,6 @@ main =
       if conf['Reply Navigation']
         nav.init()
 
-      if conf['Auto Watch'] and conf['Thread Watcher'] and
-        /watch/.test(location.search) and $('img.favicon').src is Favicon.empty
-          watcher.watch null, g.THREAD_ID
-
     else #not reply
       if conf['Index Navigation']
         nav.init()
@@ -2599,9 +2601,6 @@ main =
 
       if conf['Comment Expansion']
         expandComment.init()
-
-      if conf['Auto Watch']
-        $('.postarea form').action += '?watch'
 
     for op in $$ 'div.op'
       for callback in g.callbacks

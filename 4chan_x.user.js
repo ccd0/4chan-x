@@ -2203,6 +2203,13 @@
         $.before(input, favicon);
       }
       watcher.refresh();
+      if (conf['Auto Watch']) {
+        if (!g.REPLY) {
+          $('.postarea form').action += '?watch';
+        } else if (/watch/.test(location.search) && $('img.favicon').src === Favicon.empty) {
+          watcher.watch(null, g.THREAD_ID);
+        }
+      }
       return $.bind(window, 'storage', function(e) {
         if (e.key === ("" + NAMESPACE + "watched")) {
           return watcher.refresh();
@@ -3152,7 +3159,7 @@
         return;
       }
       Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
-      $('link[rel="shortcut icon"]', d.head).setAttribute('type', 'image/x-icon');
+      $('link[rel="shortcut icon"]', d.head).type = 'image/x-icon';
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       tzOffset = (new Date()).getTimezoneOffset() / 60;
       g.chanOffset = 5 - tzOffset;
@@ -3211,7 +3218,7 @@
       if (conf['Sauce']) {
         sauce.init();
       }
-      if (conf['Reveal Spoilers']) {
+      if (conf['Reveal Spoilers'] && $('.postarea label')) {
         revealSpoilers.init();
       }
       if (conf['Anonymize']) {
@@ -3266,9 +3273,6 @@
         if (conf['Reply Navigation']) {
           nav.init();
         }
-        if (conf['Auto Watch'] && conf['Thread Watcher'] && /watch/.test(location.search) && $('img.favicon').src === Favicon.empty) {
-          watcher.watch(null, g.THREAD_ID);
-        }
       } else {
         if (conf['Index Navigation']) {
           nav.init();
@@ -3281,9 +3285,6 @@
         }
         if (conf['Comment Expansion']) {
           expandComment.init();
-        }
-        if (conf['Auto Watch']) {
-          $('.postarea form').action += '?watch';
         }
       }
       _ref3 = $$('div.op');
