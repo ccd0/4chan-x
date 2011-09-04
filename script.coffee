@@ -1072,9 +1072,9 @@ QR =
     <input type=checkbox id=autohide title=autohide>
     <div class=move>
       <button>File</button>
-      <a>Subject</a>
-      <a>Name</a>
-      <a>Email</a>
+      <span class=input><input name=sub placeholder=Subject><span>Subject</span></span>
+      <span class=input><input name=name placeholder=Name><span>Name</span></span>
+      <span class=input><input name=email placeholder=Email><span>Email</span></span>
     </div>
     <div class=autohide>
       <textarea></textarea>
@@ -1090,6 +1090,21 @@ QR =
       </div>
     </div>
     "
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     ###
     "
@@ -2763,6 +2778,15 @@ main =
       }
       #qr #autohide, #qr .close {
         float: right;
+      }
+      #qr .input input {
+        width: 60px;
+      }
+      #qr .input:not(:hover) input:not(:focus) {
+        display: none;
+      }
+      #qr .input:hover span, #qr .input input:focus + span {
+        display: none;
       }
       #qr:not(:hover) #autohide:checked ~ .autohide {
         height: 0;
