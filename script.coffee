@@ -1025,7 +1025,7 @@ QR =
     $.set 'captchas', captchas
     el.value = ''
     Recaptcha.reload()
-    el.nextSibling.textContent = captchas.length + ' captchas'
+    captchaLength captchas
   captchaShift: ->
     captchas = $.get 'captchas', []
     cutoff = Date.now() - 5*HOUR + 5*MINUTE
@@ -1033,8 +1033,11 @@ QR =
       if captcha.time > cutoff
         break
     $.set 'captchas', captchas
-    $('#cl', QR.qr).textContent = captchas.length + ' captchas'
+    captchaLength captchas
     captcha
+  captchaLength: (captchas) ->
+    captchas or= $.get 'captchas', []
+    $('#cl', QR.qr).textContent = captchas.length + ' captchas'
   change: (e) ->
     if @files[0].size > QR.MAX_FILE_SIZE
       alert 'Error: File too large.'
@@ -1075,7 +1078,7 @@ QR =
       <div><input placeholder=Subject name=sub class=inputtext><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>
       <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>
       <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
-      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl>#{$.get('captchas', []).length} captchas</span></div>
+      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl></span></div>
       <div>#{QR.file}</div>
     </form>
     <div id=files></div>
@@ -1088,6 +1091,7 @@ QR =
     $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     $('textarea', qr).value = text
+    QR.captchaLength()
     QR.cooldown() if conf['Cooldown']
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('form', qr), 'submit', QR.submit
