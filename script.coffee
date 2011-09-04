@@ -1026,7 +1026,7 @@ QR =
     $.set 'captchas', captchas
     el.value = ''
     Recaptcha.reload()
-    captchaLength captchas
+    QR.captchaLength captchas
   captchaShift: ->
     captchas = $.get 'captchas', []
     cutoff = Date.now() - 5*HOUR + 5*MINUTE
@@ -1034,7 +1034,7 @@ QR =
       if captcha.time > cutoff
         break
     $.set 'captchas', captchas
-    captchaLength captchas
+    QR.captchaLength captchas
     captcha
   captchaLength: (captchas) ->
     captchas or= $.get 'captchas', []
@@ -1066,7 +1066,7 @@ QR =
         textContent: 'Submit'
         disabled: false
       QR.submit() if $('#auto', QR.qr).checked
-  dialog: (text='', tid) ->
+  dialog: (text='', tid=g.THREAD_ID) ->
     ###
     "
     <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>
@@ -1093,12 +1093,8 @@ QR =
     $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     $('textarea', qr).value = text
-    QR.captchaLength()
     QR.cooldown() if conf['Cooldown']
     $.bind $('.close', qr), 'click', QR.close
-    $.bind $('form', qr), 'submit', QR.submit
-    $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
-    $.bind $('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener
     $.bind $('[type=file]', qr), 'change', QR.change
     $.bind $('#attach', qr), 'click', QR.attach
     ###
@@ -1108,13 +1104,17 @@ QR =
     <div class=move>
       <span class=click>
         <button>File</button>
-        <span class=input><input name=sub placeholder=Subject><span>Subject</span></span>
-        <span class=input><input name=name placeholder=Name><span>Name</span></span>
-        <span class=input><input name=email placeholder=Email><span>Email</span></span>
+        <span class=input><input form=qr_form name=sub placeholder=Subject><span>Subject</span></span>
+        <span class=input><input form=qr_form name=name placeholder=Name><span>Name</span></span>
+        <span class=input><input form=qr_form name=email placeholder=Email><span>Email</span></span>
       </span>
     </div>
-    <div class=autohide>
-      <textarea></textarea>
+    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
+      <input type=hidden name=resto value=#{tid}>
+      <input type=hidden name=mode value=regist>
+      <input type=hidden name=recaptcha_challenge_field id=challenge>
+      <input type=hidden name=recaptcha_response_field id=response>
+      <textarea name=com></textarea>
       <div><img></div>
       <div id=captcha>
         <span id=cl>120 Captchas</span>
@@ -1123,12 +1123,16 @@ QR =
       <div>
         <button>Submit</button>
         <input type=checkbox id=autopost title=autopost>
-        <span class=error>Derp</span>
+        <a class=error>Derp</span>
       </div>
-    </div>
+    </form>
     "
     $.bind $('.click', qr), 'mousedown', (e) -> e.stopPropagation()
+    $.bind $('form', qr), 'submit', QR.submit
+    $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
+    $.bind $('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener
     QR.captchaImg()
+    QR.captchaLength()
     $.append d.body, qr
     ta = $ 'textarea', qr
     l = text.length
@@ -2775,7 +2779,10 @@ main =
       #qr .input:hover span, #qr .input input:focus + span {
         display: none;
       }
-      #qr:not(:hover) #autohide:checked ~ .autohide {
+      #qr form {
+        margin: 0;
+      }
+      #qr:not(:hover) #autohide:checked ~ form {
         height: 0;
         overflow: hidden;
       }
