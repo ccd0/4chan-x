@@ -1013,11 +1013,15 @@ QR =
     else
       QR.resetFile old
   captchaNode: (e) ->
-    c = e.target.value
-    $('img', QR.qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}" if QR.qr
     QR.captcha =
-      challenge: c
+      challenge: e.target.value
       time: Date.now()
+    QR.captchaImg()
+  captchaImg: ->
+    {qr} = QR
+    return unless qr
+    c = QR.captcha.challenge
+    $('img', qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
   captchaPush: (el) ->
     {captcha} = QR
     captcha.response = el.value
@@ -1078,7 +1082,7 @@ QR =
       <div><input placeholder=Email name=email class=inputtext>#{QR.spoiler}</div>
       <div><input placeholder=Subject name=sub class=inputtext><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>
       <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>
-      <div><img src=http://www.google.com/recaptcha/api/image?c=#{QR.captcha.challenge}></div>
+      <div><img></div>
       <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl></span></div>
       <div>#{QR.file}</div>
     </form>
@@ -1092,6 +1096,7 @@ QR =
     $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     $('textarea', qr).value = text
+    QR.captchaImg()
     QR.captchaLength()
     QR.cooldown() if conf['Cooldown']
     $.bind $('.close', qr), 'click', QR.close

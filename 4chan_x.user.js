@@ -1291,15 +1291,20 @@
       }
     },
     captchaNode: function(e) {
-      var c;
-      c = e.target.value;
-      if (QR.qr) {
-        $('img', QR.qr).src = "http://www.google.com/recaptcha/api/image?c=" + c;
-      }
-      return QR.captcha = {
-        challenge: c,
+      QR.captcha = {
+        challenge: e.target.value,
         time: Date.now()
       };
+      return QR.captchaImg();
+    },
+    captchaImg: function() {
+      var c, qr;
+      qr = QR.qr;
+      if (!qr) {
+        return;
+      }
+      c = QR.captcha.challenge;
+      return $('img', qr).src = "http://www.google.com/recaptcha/api/image?c=" + c;
     },
     captchaPush: function(el) {
       var captcha, captchas;
@@ -1377,12 +1382,13 @@
       QR.qr = qr = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form class=inputtext>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + tid + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email class=inputtext>" + QR.spoiler + "</div>      <div><input placeholder=Subject name=sub class=inputtext><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>      <div><img src=http://www.google.com/recaptcha/api/image?c=" + QR.captcha.challenge + "></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl></span></div>      <div>" + QR.file + "</div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password class=inputtext><a id=attach>attach another file</a></div>    <a class=error></a>    ");
+      }, "    <a class=close title=close>X</a><input type=checkbox id=autohide title=autohide>    <div class=move><input placeholder=Name name=name form=qr_form class=inputtext>Quick Reply</div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <input type=hidden name=resto value=" + tid + ">      <input type=hidden name=mode value=regist>      <input type=hidden name=recaptcha_challenge_field id=challenge>      <input type=hidden name=recaptcha_response_field id=response>      <div><input placeholder=Email name=email class=inputtext>" + QR.spoiler + "</div>      <div><input placeholder=Subject name=sub class=inputtext><button>Submit</button><label>auto<input id=auto type=checkbox></label></div>      <div><textarea placeholder=Comment name=com class=inputtext></textarea></div>      <div><img></div>      <div><input placeholder=Verification autocomplete=off id=recaptcha_response_field class=inputtext><span id=cl></span></div>      <div>" + QR.file + "</div>    </form>    <div id=files></div>    <div><input placeholder=Password name=pwd type=password class=inputtext><a id=attach>attach another file</a></div>    <a class=error></a>    ");
       c = d.cookie;
       $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=pwd]', qr).value = (m = c.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value;
       $('textarea', qr).value = text;
+      QR.captchaImg();
       QR.captchaLength();
       if (conf['Cooldown']) {
         QR.cooldown();
