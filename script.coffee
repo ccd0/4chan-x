@@ -656,7 +656,7 @@ keybinds =
       if QR.qr
         $('textarea', QR.qr).focus()
       else
-        QR.dialog '', g.THREAD_ID or thread.firstChild.id
+        QR.dialog '', thread?.firstChild.id
 
   open: (thread, tab) ->
     id = thread.firstChild.id
@@ -1145,7 +1145,7 @@ QR =
     QR.submit() #derpy, but prevents checking for content twice
   quote: (e, blank) ->
     e?.preventDefault()
-    tid = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', @).id
+    tid = $.x('ancestor::div[@class="thread"]/div', @)?.id
     id = @textContent
     text = ">>#{id}\n"
     sel = getSelection()

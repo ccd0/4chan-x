@@ -913,7 +913,7 @@
         if (QR.qr) {
           return $('textarea', QR.qr).focus();
         } else {
-          return QR.dialog('', g.THREAD_ID || thread.firstChild.id);
+          return QR.dialog('', thread != null ? thread.firstChild.id : void 0);
         }
       }
     },
@@ -1436,15 +1436,15 @@
       return QR.submit();
     },
     quote: function(e, blank) {
-      var i, id, qr, s, sel, ss, ta, text, tid, v, _ref;
+      var i, id, qr, s, sel, ss, ta, text, tid, v, _ref, _ref2;
       if (e != null) {
         e.preventDefault();
       }
-      tid = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', this).id;
+      tid = (_ref = $.x('ancestor::div[@class="thread"]/div', this)) != null ? _ref.id : void 0;
       id = this.textContent;
       text = ">>" + id + "\n";
       sel = getSelection();
-      if (id === ((_ref = $.x('preceding::input[@type="checkbox"][1]', sel.anchorNode)) != null ? _ref.name : void 0)) {
+      if (id === ((_ref2 = $.x('preceding::input[@type="checkbox"][1]', sel.anchorNode)) != null ? _ref2.name : void 0)) {
         if (s = sel.toString().replace(/\n/g, '\n>')) {
           text += ">" + s + "\n";
         }
