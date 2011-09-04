@@ -1275,7 +1275,6 @@
       });
       file = $('input', div);
       $.bind(file, 'change', QR.change);
-      $.bind(file, 'change', QR.change1);
       $.bind($('a', div), 'click', function() {
         return $.rm(this.parentNode);
       });
@@ -1289,7 +1288,7 @@
         $.rm(file.parentNode);
         return $.replace(old, file);
       } else {
-        return $.refreshFile(old);
+        return $.resetFile(old);
       }
     },
     captchaNode: function(e) {
@@ -1328,25 +1327,18 @@
       return captcha;
     },
     change: function(e) {
-      if (!(this.files[0].size > QR.MAX_FILE_SIZE)) {
-        return;
+      var a, p;
+      if (this.files[0].size > QR.MAX_FILE_SIZE) {
+        alert('Error: File too large.');
+        QR.resetFile(this);
+        return $('[type=file]', QR.qr).click();
+      } else {
+        p = this.parentNode;
+        a = p.parentNode;
+        if (a.id === 'files' && !p.nextSibling) {
+          return QR.attach();
+        }
       }
-      alert('Error: File too large.');
-      QR.refreshFile(this);
-      return $('[type=file]', QR.qr).click();
-    },
-    refreshFile: function(old) {
-      var div, file;
-      div = $.el('div', {
-        innerHTML: QR.file
-      });
-      file = div.firstChild;
-      $.bind(file, 'change', QR.change);
-      return $.replace(old, file);
-    },
-    change1: function() {
-      $.unbind(this, 'change', QR.change1);
-      return QR.attach();
     },
     close: function() {
       $.rm(QR.qr);
@@ -1477,6 +1469,15 @@
       }
       $('textarea', QR.qr).value = '';
       return QR.attachNext();
+    },
+    resetFile: function(old) {
+      var div, file;
+      div = $.el('div', {
+        innerHTML: QR.file
+      });
+      file = div.firstChild;
+      $.bind(file, 'change', QR.change);
+      return $.replace(old, file);
     },
     submit: function(e) {
       var captcha, challenge, el, id, op, qr, response;

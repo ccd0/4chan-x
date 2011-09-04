@@ -1002,7 +1002,6 @@ QR =
       innerHTML: "#{QR.file}<a class=close>X</a>"
     file = $ 'input', div
     $.bind file, 'change', QR.change
-    $.bind file, 'change', QR.change1
     $.bind $('a', div), 'click', -> $.rm @parentNode
     $.append $('#files', QR.qr), div
     file.click()
@@ -1012,7 +1011,7 @@ QR =
       $.rm file.parentNode
       $.replace old, file
     else
-      $.refreshFile old
+      $.resetFile old
   captchaNode: (e) ->
     c = e.target.value
     $('img', QR.qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}" if QR.qr
@@ -1038,19 +1037,15 @@ QR =
     $('#cl', QR.qr).textContent = captchas.length + ' captchas'
     captcha
   change: (e) ->
-    return unless @files[0].size > QR.MAX_FILE_SIZE
-    alert 'Error: File too large.'
-    QR.refreshFile @
-    $('[type=file]', QR.qr).click()
-  refreshFile: (old) ->
-    div = $.el 'div'
-      innerHTML: QR.file
-    file = div.firstChild
-    $.bind file, 'change', QR.change
-    $.replace old, file
-  change1: ->
-    $.unbind @, 'change', QR.change1
-    QR.attach()
+    if @files[0].size > QR.MAX_FILE_SIZE
+      alert 'Error: File too large.'
+      QR.resetFile @
+      $('[type=file]', QR.qr).click()
+    else
+      p = @parentNode
+      a = p.parentNode
+      if a.id is 'files' and not p.nextSibling
+        QR.attach()
   close: ->
     $.rm QR.qr
     QR.qr = null
@@ -1158,6 +1153,12 @@ QR =
     $('[name=spoiler]', QR.qr)?.checked = false unless conf['Remember Spoiler']
     $('textarea', QR.qr).value = ''
     QR.attachNext()
+  resetFile: (old) ->
+    div = $.el 'div'
+      innerHTML: QR.file
+    file = div.firstChild
+    $.bind file, 'change', QR.change
+    $.replace old, file
   submit: (e) ->
     #XXX e is undefined if method is called explicitly, eg, from auto posting
     unless $('textarea', QR.qr).value or $('[type=file]', QR.qr).files.length
