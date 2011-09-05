@@ -1123,9 +1123,10 @@ QR =
       </div>
       <div>
         <button>Submit</button>
-        <input type=checkbox id=autopost title=autopost>
-        <a class=error>Derp</span>
+        <label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>
+        #{QR.spoiler}
       </div>
+      <a class=error>Derp</span>
     </form>
     "
     c = d.cookie
