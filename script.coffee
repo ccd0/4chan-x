@@ -1101,17 +1101,19 @@ QR =
     <div class=move>
       <span class=click>
         <button>File</button>
-        <span class=input><input form=qr_form name=sub placeholder=Subject><span>Subject</span></span>
-        <span class=input><input form=qr_form name=name placeholder=Name><span>Name</span></span>
-        <span class=input><input form=qr_form name=email placeholder=Email><span>Email</span></span>
+        <span><input form=qr_form name=sub placeholder=Subject><span>Subject</span></span>
+        <span><input form=qr_form name=name placeholder=Name><span>Name</span></span>
+        <span><input form=qr_form name=email placeholder=Email><span>Email</span></span>
       </span>
     </div>
     <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
-      <input name=resto value=#{tid}>
-      <input name=mode value=regist>
-      <input name=recaptcha_challenge_field id=challenge>
-      <input name=recaptcha_response_field id=response>
-      <input type=file name=upfile>
+      <div hidden>
+        <input name=resto value=#{tid}>
+        <input name=mode value=regist>
+        <input name=recaptcha_challenge_field id=challenge>
+        <input name=recaptcha_response_field id=response>
+        <input type=file name=upfile>
+      </div>
       <textarea placeholder=Comment name=com></textarea>
       <div><img></div>
       <div id=captcha>
@@ -2778,16 +2780,14 @@ main =
       #qr #autohide, #qr .close {
         float: right;
       }
-      #qr .input input {
+      #qr .click input {
         width: 60px;
-      }
-      #qr input {
         display: none;
       }
-      #qr .input:hover input, #qr input:focus {
+      #qr .click span:hover input, #qr .click input:focus {
         display: inline;
       }
-      #qr .input:hover span, #qr .input input:focus + span {
+      #qr .click span:hover span, #qr .click input:focus + span {
         display: none;
       }
       #qr form {
