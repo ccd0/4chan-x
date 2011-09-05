@@ -980,7 +980,7 @@ QR =
           'application/' + type
         else
           'image/' + type
-    QR.file = "<input type=file name=upfile accept='#{accept}'>"
+    QR.file = "<input type=file name=upfile accept='#{accept}'><img alt='click here'>"
     QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value
     QR.spoiler = if $('.postarea label') then ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
     if conf['Persistent QR']
@@ -988,6 +988,15 @@ QR =
       $('textarea', QR.qr).blur()
       if conf['Auto Hide QR']
         $('#autohide', QR.qr).checked = true
+  foo: ->
+    files = $ '#files', QR.qr
+    div = $.el 'div',
+      innerHTML: QR.file
+    file = $ 'input', div
+    $.bind file, 'change', QR.change
+    $.bind $('img', div), 'click', -> @previousSibling.click()
+    $.add files, div
+    file.click()
   attach: ->
     $('#auto', QR.qr).checked = true
     div = $.el 'div',
@@ -1039,18 +1048,15 @@ QR =
     file = @files[0]
     if file.size > QR.MAX_FILE_SIZE
       alert 'Error: File too large.'
-      QR.resetFile @
-      $('[type=file]', QR.qr).click()
-    else
-      fr = new FileReader()
-      fr.onload = (e) ->
-        img = $.el 'img',
-          src: e.target.result
-        $.add $('#thumbs', QR.qr), img
-      fr.readAsDataURL file
+      $.rm @parentNode
+      QR.foo()
       return
-      if @ is $('#files div:last-of-type input', QR.qr)
-        QR.attach()
+    {qr} = QR
+    fr = new FileReader()
+    img = @nextSibling
+    fr.onload = (e) ->
+      img.src = e.target.result
+    fr.readAsDataURL file
   close: ->
     $.rm QR.qr
     QR.qr = null
@@ -1089,10 +1095,9 @@ QR =
         <input name=mode value=regist>
         <input name=recaptcha_challenge_field id=challenge>
         <input name=recaptcha_response_field id=response>
-        <input type=file name=upfile>
       </div>
       <textarea placeholder=Comment name=com></textarea>
-      <div id=thumbs></div>
+      <div id=files></div>
       <div id=captcha>
         <div><img></div>
         <span id=cl>120 Captchas</span>
@@ -1114,8 +1119,8 @@ QR =
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     $('textarea', qr).value = text
     QR.cooldown() if conf['Cooldown']
-    $.bind $('button', qr), 'click', -> $('[type=file]', qr).click()
-    $.bind $('[type=file]', qr), 'change', QR.change
+    $.bind $('button', qr), 'click', QR.foo
+    #$.bind $('[type=file]', qr), 'change', QR.change
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('.click', qr), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('form', qr), 'submit', QR.submit
@@ -2795,7 +2800,10 @@ main =
         display: inline;
         width: 100%;
       }
-      #qr #thumbs img {
+      #qr #files input {
+        display: none;
+      }
+      #qr #files img {
         display: block;
         max-height: 250px;
         max-width:  250px;

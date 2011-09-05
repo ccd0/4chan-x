@@ -1248,7 +1248,7 @@
             return 'image/' + type;
         }
       });
-      QR.file = "<input type=file name=upfile accept='" + accept + "'>";
+      QR.file = "<input type=file name=upfile accept='" + accept + "'><img alt='click here'>";
       QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value;
       QR.spoiler = $('.postarea label') ? ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       if (conf['Persistent QR']) {
@@ -1258,6 +1258,20 @@
           return $('#autohide', QR.qr).checked = true;
         }
       }
+    },
+    foo: function() {
+      var div, file, files;
+      files = $('#files', QR.qr);
+      div = $.el('div', {
+        innerHTML: QR.file
+      });
+      file = $('input', div);
+      $.bind(file, 'change', QR.change);
+      $.bind($('img', div), 'click', function() {
+        return this.previousSibling.click();
+      });
+      $.add(files, div);
+      return file.click();
     },
     attach: function() {
       var div, file;
@@ -1328,27 +1342,21 @@
       return $('#cl', QR.qr).textContent = captchas.length + ' captchas';
     },
     change: function(e) {
-      var file, fr;
+      var file, fr, img, qr;
       file = this.files[0];
       if (file.size > QR.MAX_FILE_SIZE) {
         alert('Error: File too large.');
-        QR.resetFile(this);
-        return $('[type=file]', QR.qr).click();
-      } else {
-        fr = new FileReader();
-        fr.onload = function(e) {
-          var img;
-          img = $.el('img', {
-            src: e.target.result
-          });
-          return $.add($('#thumbs', QR.qr), img);
-        };
-        fr.readAsDataURL(file);
+        $.rm(this.parentNode);
+        QR.foo();
         return;
-        if (this === $('#files div:last-of-type input', QR.qr)) {
-          return QR.attach();
-        }
       }
+      qr = QR.qr;
+      fr = new FileReader();
+      img = this.nextSibling;
+      fr.onload = function(e) {
+        return img.src = e.target.result;
+      };
+      return fr.readAsDataURL(file);
     },
     close: function() {
       $.rm(QR.qr);
@@ -1390,7 +1398,7 @@
       QR.qr = qr = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <span><input form=qr_form placeholder=Subject name=sub><span>Subject</span></span>        <span><input form=qr_form placeholder=Name name=name><span>Name</span></span>        <span><input form=qr_form placeholder=Email name=email><span>Email</span></span>        <span><input form=qr_form placeholder=Password name=pwd type=password><span>Password</span></span>      </span>    </div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <div hidden>        <input name=resto value=" + tid + ">        <input name=mode value=regist>        <input name=recaptcha_challenge_field id=challenge>        <input name=recaptcha_response_field id=response>        <input type=file name=upfile>      </div>      <textarea placeholder=Comment name=com></textarea>      <div id=thumbs></div>      <div id=captcha>        <div><img></div>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field>      </div>      <div>        <button>Submit</button>        <label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>        " + QR.spoiler + "      </div>      <a class=error>Derp</span>    </form>    ");
+      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <span><input form=qr_form placeholder=Subject name=sub><span>Subject</span></span>        <span><input form=qr_form placeholder=Name name=name><span>Name</span></span>        <span><input form=qr_form placeholder=Email name=email><span>Email</span></span>        <span><input form=qr_form placeholder=Password name=pwd type=password><span>Password</span></span>      </span>    </div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <div hidden>        <input name=resto value=" + tid + ">        <input name=mode value=regist>        <input name=recaptcha_challenge_field id=challenge>        <input name=recaptcha_response_field id=response>      </div>      <textarea placeholder=Comment name=com></textarea>      <div id=files></div>      <div id=captcha>        <div><img></div>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field>      </div>      <div>        <button>Submit</button>        <label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>        " + QR.spoiler + "      </div>      <a class=error>Derp</span>    </form>    ");
       c = d.cookie;
       $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
@@ -1399,10 +1407,7 @@
       if (conf['Cooldown']) {
         QR.cooldown();
       }
-      $.bind($('button', qr), 'click', function() {
-        return $('[type=file]', qr).click();
-      });
-      $.bind($('[type=file]', qr), 'change', QR.change);
+      $.bind($('button', qr), 'click', QR.foo);
       $.bind($('.close', qr), 'click', QR.close);
       $.bind($('.click', qr), 'mousedown', function(e) {
         return e.stopPropagation();
@@ -3487,7 +3492,10 @@
         display: inline;\
         width: 100%;\
       }\
-      #qr #thumbs img {\
+      #qr #files input {\
+        display: none;\
+      }\
+      #qr #files img {\
         display: block;\
         max-height: 250px;\
         max-width:  250px;\
