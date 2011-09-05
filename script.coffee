@@ -1177,7 +1177,7 @@ QR =
     $('textarea', QR.qr).value = ''
   submit: (e) ->
     #XXX e is undefined if method is called explicitly, eg, from auto posting
-    unless $('textarea', QR.qr).value or $('[type=file]', QR.qr).files.length
+    unless $('textarea', QR.qr).value or $('[type=file]', QR.qr)?.files.length
       if e
         alert 'Error: No text entered.'
         e.preventDefault()

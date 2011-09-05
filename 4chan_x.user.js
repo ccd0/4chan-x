@@ -1524,8 +1524,8 @@
       return $('textarea', QR.qr).value = '';
     },
     submit: function(e) {
-      var captcha, challenge, el, id, input, op, qr, response;
-      if (!($('textarea', QR.qr).value || $('[type=file]', QR.qr).files.length)) {
+      var captcha, challenge, el, id, input, op, qr, response, _ref;
+      if (!($('textarea', QR.qr).value || ((_ref = $('[type=file]', QR.qr)) != null ? _ref.files.length : void 0))) {
         if (e) {
           alert('Error: No text entered.');
           e.preventDefault();
