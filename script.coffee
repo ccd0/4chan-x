@@ -1101,7 +1101,7 @@ QR =
       <div id=captcha>
         <div><img></div>
         <span id=cl>120 Captchas</span>
-        <input id=recaptcha_response_field>
+        <input id=recaptcha_response_field autocomplete=off>
       </div>
       <div>
         <button>Submit</button>
