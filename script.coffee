@@ -217,7 +217,7 @@ $.extend $,
   globalEval: (code) ->
     script = $.el 'script',
       textContent: "(#{code})()"
-    $.append d.head, script
+    $.add d.head, script
     $.rm script
   xhr: (url, cb) ->
     r = new XMLHttpRequest()
@@ -245,7 +245,7 @@ $.extend $,
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
-    $.append d.head, style
+    $.add d.head, style
     style
   x: (path, root=d.body) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
@@ -260,7 +260,7 @@ $.extend $,
     el.classList.remove className
   rm: (el) ->
     el.parentNode.removeChild el
-  append: (parent, children...) ->
+  add: (parent, children...) ->
     for child in children
       parent.appendChild child
   prepend: (parent, child) ->
@@ -524,7 +524,7 @@ replyHiding =
 
       div = $.el 'div',
         className: 'stub'
-      $.append div, a
+      $.add div, a
       $.before table, div
 
     id = reply.id
@@ -717,8 +717,8 @@ nav =
     $.bind prev, 'click', nav.prev
     $.bind next, 'click', nav.next
 
-    $.append span, prev, $.tn(' '), next
-    $.append d.body, span
+    $.add span, prev, $.tn(' '), next
+    $.add d.body, span
 
   prev: ->
     nav.scroll -1
@@ -870,13 +870,13 @@ options =
         li = $.el 'li',
           innerHTML: "<label><input type=checkbox name='#{key}' #{checked}>#{key}</label><span class=description>: #{description}</span>"
         $.bind $('input', li), 'click', $.cb.checked
-        $.append ul, li
-      $.append main, ul
+        $.add ul, li
+      $.add main, ul
 
     li = $.el 'li',
       innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `show stubs` disabled."
     $.bind $('button', li), 'click', options.clearHidden
-    $.append $('ul:nth-child(2)', dialog), li
+    $.add $('ul:nth-child(2)', dialog), li
 
     $.bind $('#flavors', dialog), 'change', $.cb.value
     $.bind $('input[name=time]', dialog), 'keyup', options.time
@@ -892,8 +892,8 @@ options =
     https://bugzilla.mozilla.org/show_bug.cgi?id=579776
     ###
     overlay = $.el 'div', id: 'overlay'
-    $.append overlay, dialog
-    $.append d.body, overlay
+    $.add overlay, dialog
+    $.add d.body, overlay
 
     options.time.call $('input[name=time]', dialog)
     options.backlink.call $('input[name=backlink]', dialog)
@@ -981,7 +981,7 @@ qr =
     iframe = $.el 'iframe',
       name: 'iframe'
       hidden: true
-    $.append d.body, iframe
+    $.add d.body, iframe
 
     #hack - nuke id so it doesn't grab focus when reloading
     $('#recaptcha_response_field').id = ''
@@ -990,7 +990,7 @@ qr =
     fileDiv = $.el 'div', innerHTML: "<input type=file name=upfile accept='#{qr.acceptFiles}'><a>X</a>"
     $.bind fileDiv.firstChild, 'change', qr.validateFileSize
     $.bind fileDiv.lastChild, 'click', (-> $.rm @parentNode)
-    $.append $('#files', qr.el), fileDiv
+    $.add $('#files', qr.el), fileDiv
 
   attachNext: ->
     fileDiv = $.rm $('#files div', qr.el)
@@ -1076,7 +1076,7 @@ qr =
     $.bind $('#dummy',             qr.el), 'keydown', Recaptcha.listener
     $.bind $('#dummy',             qr.el), 'keydown', qr.captchaKeydown
 
-    $.append d.body, qr.el
+    $.add d.body, qr.el
 
   message: (e) ->
     $('iframe[name=iframe]').src = 'about:blank'
@@ -1268,9 +1268,9 @@ threading =
       className: 'op'
     $.before node, op
     while node.nodeName isnt 'BLOCKQUOTE'
-      $.append op, node
+      $.add op, node
       node = op.nextSibling
-    $.append op, node #add the blockquote
+    $.add op, node #add the blockquote
     op.id = $('input[name]', op).name
     op
 
@@ -1284,7 +1284,7 @@ threading =
     $.before node, div
 
     while node.nodeName isnt 'HR'
-      $.append div, node
+      $.add div, node
       node = div.nextSibling
 
     node = node.nextElementSibling #skip text node
@@ -1346,8 +1346,8 @@ threadHiding =
       div = $.el 'div',
         className: 'block'
 
-      $.append div, a
-      $.append thread, div
+      $.add div, a
+      $.add thread, div
       $.addClass thread, 'stub'
     else
       thread.hidden = true
@@ -1408,7 +1408,7 @@ updater =
       else if input.type is 'button'
         $.bind input, 'click', updater.updateNow
 
-    $.append d.body, dialog
+    $.add d.body, dialog
 
   cb:
     verbose: ->
@@ -1495,7 +1495,7 @@ watcher =
   init: ->
     html = '<div class=move>Thread Watcher</div>'
     watcher.dialog = ui.dialog 'watcher', top: '50px', left: '0px', html
-    $.append d.body, watcher.dialog
+    $.add d.body, watcher.dialog
 
     #add watch buttons
     inputs = $$ '.op input'
@@ -1528,8 +1528,8 @@ watcher =
         $.bind x, 'click', watcher.cb.x
         link = $.el 'a', props
 
-        $.append div, x, $.tn(' '), link
-        $.append watcher.dialog, div
+        $.add div, x, $.tn(' '), link
+        $.add watcher.dialog, div
 
     watchedBoard = watched[g.BOARD] or {}
     for favicon in $$ 'img.favicon'
@@ -1596,7 +1596,7 @@ sauce =
             textContent: sauce.names[i]
             href: prefix + suffix
             target: '_blank'
-          $.append span, $.tn(' '), link
+          $.add span, $.tn(' '), link
 
 revealSpoilers =
   init: ->
@@ -1718,7 +1718,7 @@ quoteBacklink =
           container = $.el 'span', className: 'container'
           root = $('.reportbutton', el) or $('span[id^=no]', el)
           $.after root, container
-        $.append container, $.tn(' '), link
+        $.add container, $.tn(' '), link
 
 quoteInline =
   init: ->
@@ -1802,7 +1802,7 @@ quotePreview =
     qp = ui.el = $.el 'div',
       id: 'qp'
       className: 'replyhl'
-    $.append d.body, qp
+    $.add d.body, qp
 
     id = @hash[1..]
     if el = $.id id
@@ -1876,7 +1876,7 @@ threadStats =
     dialog.className = 'dialog'
     threadStats.postcountEl  = $ '#postcount',  dialog
     threadStats.imagecountEl = $ '#imagecount', dialog
-    $.append d.body, dialog
+    $.add d.body, dialog
     g.callbacks.push threadStats.node
   node: (root) ->
     return if root.className
@@ -1986,7 +1986,7 @@ imgHover =
     ui.el = $.el 'img'
       id: 'iHover'
       src: @parentNode.href
-    $.append d.body, ui.el
+    $.add d.body, ui.el
 
 imgPreloading =
   init: ->
@@ -2064,7 +2064,7 @@ imgExpand =
       filesize = $ 'span.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
       img.style.maxWidth = "-moz-calc(#{max}px)"
-    $.append a, img
+    $.add a, img
 
   dialog: ->
     controls = $.el 'div',
@@ -2159,7 +2159,7 @@ firstRun =
             <p>If you don't see the buttons, try disabling your userstyles.</p>
           </div>
         </div>"
-    $.append d.body, dialog
+    $.add d.body, dialog
 
     $.bind window, 'click', firstRun.close
 

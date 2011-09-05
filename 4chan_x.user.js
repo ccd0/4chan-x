@@ -311,7 +311,7 @@
       script = $.el('script', {
         textContent: "(" + code + ")()"
       });
-      $.append(d.head, script);
+      $.add(d.head, script);
       return $.rm(script);
     },
     xhr: function(url, cb) {
@@ -360,7 +360,7 @@
       style = $.el('style', {
         textContent: css
       });
-      $.append(d.head, style);
+      $.add(d.head, style);
       return style;
     },
     x: function(path, root) {
@@ -384,7 +384,7 @@
     rm: function(el) {
       return el.parentNode.removeChild(el);
     },
-    append: function() {
+    add: function() {
       var child, children, parent, _i, _len, _results;
       parent = arguments[0], children = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       _results = [];
@@ -733,7 +733,7 @@
         div = $.el('div', {
           className: 'stub'
         });
-        $.append(div, a);
+        $.add(div, a);
         $.before(table, div);
       }
       id = reply.id;
@@ -994,8 +994,8 @@
       });
       $.bind(prev, 'click', nav.prev);
       $.bind(next, 'click', nav.next);
-      $.append(span, prev, $.tn(' '), next);
-      return $.append(d.body, span);
+      $.add(span, prev, $.tn(' '), next);
+      return $.add(d.body, span);
     },
     prev: function() {
       return nav.scroll(-1);
@@ -1096,15 +1096,15 @@
             innerHTML: "<label><input type=checkbox name='" + key + "' " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
           });
           $.bind($('input', li), 'click', $.cb.checked);
-          $.append(ul, li);
+          $.add(ul, li);
         }
-        $.append(main, ul);
+        $.add(main, ul);
       }
       li = $.el('li', {
         innerHTML: "<button>hidden: " + hiddenNum + "</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `show stubs` disabled."
       });
       $.bind($('button', li), 'click', options.clearHidden);
-      $.append($('ul:nth-child(2)', dialog), li);
+      $.add($('ul:nth-child(2)', dialog), li);
       $.bind($('#flavors', dialog), 'change', $.cb.value);
       $.bind($('input[name=time]', dialog), 'keyup', options.time);
       $.bind($('input[name=backlink]', dialog), 'keyup', options.backlink);
@@ -1123,8 +1123,8 @@
       overlay = $.el('div', {
         id: 'overlay'
       });
-      $.append(overlay, dialog);
-      $.append(d.body, overlay);
+      $.add(overlay, dialog);
+      $.add(d.body, overlay);
       options.time.call($('input[name=time]', dialog));
       options.backlink.call($('input[name=backlink]', dialog));
       $.bind(overlay, 'click', function() {
@@ -1241,7 +1241,7 @@
         name: 'iframe',
         hidden: true
       });
-      $.append(d.body, iframe);
+      $.add(d.body, iframe);
       return $('#recaptcha_response_field').id = '';
     },
     attach: function() {
@@ -1253,7 +1253,7 @@
       $.bind(fileDiv.lastChild, 'click', (function() {
         return $.rm(this.parentNode);
       }));
-      return $.append($('#files', qr.el), fileDiv);
+      return $.add($('#files', qr.el), fileDiv);
     },
     attachNext: function() {
       var file, fileDiv, oldFile;
@@ -1324,7 +1324,7 @@
       $.bind($('img', qr.el), 'click', Recaptcha.reload);
       $.bind($('#dummy', qr.el), 'keydown', Recaptcha.listener);
       $.bind($('#dummy', qr.el), 'keydown', qr.captchaKeydown);
-      return $.append(d.body, qr.el);
+      return $.add(d.body, qr.el);
     },
     message: function(e) {
       var data, duration, fileCount;
@@ -1557,10 +1557,10 @@
       });
       $.before(node, op);
       while (node.nodeName !== 'BLOCKQUOTE') {
-        $.append(op, node);
+        $.add(op, node);
         node = op.nextSibling;
       }
-      $.append(op, node);
+      $.add(op, node);
       op.id = $('input[name]', op).name;
       return op;
     },
@@ -1575,7 +1575,7 @@
       });
       $.before(node, div);
       while (node.nodeName !== 'HR') {
-        $.append(div, node);
+        $.add(div, node);
         node = div.nextSibling;
       }
       node = node.nextElementSibling;
@@ -1648,8 +1648,8 @@
         div = $.el('div', {
           className: 'block'
         });
-        $.append(div, a);
-        $.append(thread, div);
+        $.add(div, a);
+        $.add(thread, div);
         return $.addClass(thread, 'stub');
       } else {
         thread.hidden = true;
@@ -1723,7 +1723,7 @@
           $.bind(input, 'click', updater.updateNow);
         }
       }
-      return $.append(d.body, dialog);
+      return $.add(d.body, dialog);
     },
     cb: {
       verbose: function() {
@@ -1827,7 +1827,7 @@
         top: '50px',
         left: '0px'
       }, html);
-      $.append(d.body, watcher.dialog);
+      $.add(d.body, watcher.dialog);
       inputs = $$('.op input');
       for (_i = 0, _len = inputs.length; _i < _len; _i++) {
         input = inputs[_i];
@@ -1869,8 +1869,8 @@
           });
           $.bind(x, 'click', watcher.cb.x);
           link = $.el('a', props);
-          $.append(div, x, $.tn(' '), link);
-          $.append(watcher.dialog, div);
+          $.add(div, x, $.tn(' '), link);
+          $.add(watcher.dialog, div);
         }
       }
       watchedBoard = watched[g.BOARD] || {};
@@ -1980,7 +1980,7 @@
               href: prefix + suffix,
               target: '_blank'
             });
-            _results.push($.append(span, $.tn(' '), link));
+            _results.push($.add(span, $.tn(' '), link));
           }
           return _results;
         }
@@ -2165,7 +2165,7 @@
             root = $('.reportbutton', el) || $('span[id^=no]', el);
             $.after(root, container);
           }
-          _results.push($.append(container, $.tn(' '), link));
+          _results.push($.add(container, $.tn(' '), link));
         }
         return _results;
       });
@@ -2202,7 +2202,7 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           inlined = _ref[_i];
           if (hidden = $.id(inlined.name)) {
-            $.x('ancestor::table[1]', hidden).hidden = true;
+            $.x('ancestor::table[1]', hidden).hidden = false;
           }
         }
         return;
@@ -2305,7 +2305,7 @@
         id: 'qp',
         className: 'replyhl'
       });
-      $.append(d.body, qp);
+      $.add(d.body, qp);
       id = this.hash.slice(1);
       if (el = $.id(id)) {
         qp.innerHTML = el.innerHTML;
@@ -2422,7 +2422,7 @@
       dialog.className = 'dialog';
       threadStats.postcountEl = $('#postcount', dialog);
       threadStats.imagecountEl = $('#imagecount', dialog);
-      $.append(d.body, dialog);
+      $.add(d.body, dialog);
       return g.callbacks.push(threadStats.node);
     },
     node: function(root) {
@@ -2601,7 +2601,7 @@
         id: 'iHover',
         src: this.parentNode.href
       });
-      return $.append(d.body, ui.el);
+      return $.add(d.body, ui.el);
     }
   };
   imgPreloading = {
@@ -2722,7 +2722,7 @@
         _ref2 = filesize.textContent.match(/(\d+)x/), _ = _ref2[0], max = _ref2[1];
         img.style.maxWidth = "-moz-calc(" + max + "px)";
       }
-      return $.append(a, img);
+      return $.add(a, img);
     },
     dialog: function() {
       var controls, delform, imageType, option, select, _i, _len, _ref2;
@@ -2761,7 +2761,7 @@
         className: 'firstrun',
         innerHTML: "        <div id=options>          <div class='reply dialog'>            <p>Click the <strong>4chan X</strong> buttons for options; they are at the top and bottom of the page.</p>            <p>Updater options are in the updater dialog in replies at the bottom-right corner of the window.</p>            <p>If you don't see the buttons, try disabling your userstyles.</p>          </div>        </div>"
       });
-      $.append(d.body, dialog);
+      $.add(d.body, dialog);
       return $.bind(window, 'click', firstRun.close);
     },
     close: function() {
