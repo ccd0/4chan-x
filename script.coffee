@@ -1075,10 +1075,10 @@ QR =
     <div class=move>
       <span class=click>
         <button>File</button>
-        <span><input form=qr_form placeholder=Subject name=sub><span>Subject</span></span>
-        <span><input form=qr_form placeholder=Name name=name><span>Name</span></span>
-        <span><input form=qr_form placeholder=Email name=email><span>Email</span></span>
-        <span><input form=qr_form placeholder=Password name=pwd type=password><span>Password</span></span>
+        <input form=qr_form placeholder=Subject name=sub>
+        <input form=qr_form placeholder=Name name=name>
+        <input form=qr_form placeholder=Email name=email>
+        <input form=qr_form placeholder=Password name=pwd type=password>
       </span>
     </div>
     <textarea form=qr_form placeholder=Comment name=com></textarea>
@@ -2756,14 +2756,7 @@ main =
         float: right;
       }
       #qr .click input {
-        width: 60px;
-        display: none;
-      }
-      #qr .click span:hover input, #qr .click input:focus {
-        display: inline;
-      }
-      #qr .click span:hover span, #qr .click input:focus + span {
-        display: none;
+        width: 53px;
       }
       #qr form {
         margin: 0;
