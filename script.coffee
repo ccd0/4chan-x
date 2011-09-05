@@ -963,7 +963,7 @@ QR =
     g.callbacks.push (root) ->
       quote = $ 'a.quotejs + a', root
       $.bind quote, 'click', QR.quote
-    $.append d.body, $.el 'iframe',
+    $.add d.body, $.el 'iframe',
       name: 'iframe'
       hidden: true
     $.bind window, 'message', QR.receive
@@ -995,7 +995,7 @@ QR =
     file = $ 'input', div
     $.bind file, 'change', QR.change
     $.bind $('a', div), 'click', -> $.rm @parentNode
-    $.append $('#files', QR.qr), div
+    $.add $('#files', QR.qr), div
     file.click()
   attachNext: ->
     old = $ '[type=file]', QR.qr
@@ -1046,7 +1046,7 @@ QR =
       fr.onload = (e) ->
         img = $.el 'img',
           src: e.target.result
-        $.append $('#thumbs', QR.qr), img
+        $.add $('#thumbs', QR.qr), img
       fr.readAsDataURL file
       return
       if @ is $('#files div:last-of-type input', QR.qr)
@@ -1140,7 +1140,7 @@ QR =
     $.bind $('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener
     QR.captchaImg()
     QR.captchaLength()
-    $.append d.body, qr
+    $.add d.body, qr
     ta = $ 'textarea', qr
     l = text.length
     ta.setSelectionRange l, l

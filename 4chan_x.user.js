@@ -1227,7 +1227,7 @@
         quote = $('a.quotejs + a', root);
         return $.bind(quote, 'click', QR.quote);
       });
-      $.append(d.body, $.el('iframe', {
+      $.add(d.body, $.el('iframe', {
         name: 'iframe',
         hidden: true
       }));
@@ -1270,7 +1270,7 @@
       $.bind($('a', div), 'click', function() {
         return $.rm(this.parentNode);
       });
-      $.append($('#files', QR.qr), div);
+      $.add($('#files', QR.qr), div);
       return file.click();
     },
     attachNext: function() {
@@ -1341,7 +1341,7 @@
           img = $.el('img', {
             src: e.target.result
           });
-          return $.append($('#thumbs', QR.qr), img);
+          return $.add($('#thumbs', QR.qr), img);
         };
         fr.readAsDataURL(file);
         return;
@@ -1435,7 +1435,7 @@
       $.bind($('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener);
       QR.captchaImg();
       QR.captchaLength();
-      $.append(d.body, qr);
+      $.add(d.body, qr);
       ta = $('textarea', qr);
       l = text.length;
       ta.setSelectionRange(l, l);
