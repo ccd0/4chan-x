@@ -254,10 +254,6 @@ $.extend $,
     d.createTextNode s
   replace: (root, el) ->
     root.parentNode.replaceChild el, root
-  hide: (el) ->
-    el.hidden = true
-  show: (el) ->
-    el.hidden = false
   addClass: (el, className) ->
     el.classList.add className
   removeClass: (el, className) ->
@@ -517,7 +513,7 @@ replyHiding =
 
   hide: (reply) ->
     table = reply.parentNode.parentNode.parentNode
-    $.hide table
+    table.hidden = true
 
     if conf['Show Stubs']
       name = $('span.commentpostername', reply).textContent
@@ -536,7 +532,7 @@ replyHiding =
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   show: (table) ->
-    $.show table
+    table.hidden = false
 
     id = $('td[id]', table).id
     delete g.hiddenReplies[id]
@@ -1354,14 +1350,14 @@ threadHiding =
       $.append thread, div
       $.addClass thread, 'stub'
     else
-      $.hide thread
-      $.hide thread.nextSibling
+      thread.hidden = true
+      thread.nextSibling.hidden = true
 
   show: (thread) ->
     $.rm $ 'div.block', thread
     $.removeClass thread, 'stub'
-    $.show thread
-    $.show thread.nextSibling
+    thread.hidden = false
+    thread.nextSibling.hidden = false
 
     id = thread.firstChild.id
 
@@ -1418,12 +1414,12 @@ updater =
     verbose: ->
       if conf['Verbose']
         updater.count.textContent = '+0'
-        $.show updater.timer
+        updater.timer.hidden = false
       else
         $.extend updater.count,
           className: ''
           textContent: 'Thread Updater'
-        $.hide updater.timer
+        updater.timer.hidden = true
     autoUpdate: ->
       if @checked
         updater.timeoutID = setTimeout updater.timeout, 1000
@@ -1741,7 +1737,7 @@ quoteInline =
       $.removeClass @, 'inlined'
       for inlined in $$ 'input', table
         if hidden = $.id inlined.name
-          $.show $.x 'ancestor::table[1]', hidden
+          $.x('ancestor::table[1]', hidden).hidden = false
       return
     root = if @parentNode.nodeName is 'FONT' then @parentNode else if @nextSibling then @nextSibling else @
     if el = $.id id
@@ -1749,7 +1745,7 @@ quoteInline =
       if @className is 'backlink'
         return if $("a.backlink[href='##{id}']", el)
         $.after @parentNode, inline
-        $.hide $.x 'ancestor::table[1]', el
+        $.x('ancestor::table[1]', el).hidden = true
       else
         $.after root, inline
     else
@@ -2056,11 +2052,11 @@ imgExpand =
       imgExpand.expand thumb
 
   contract: (thumb) ->
-    $.show thumb
+    thumb.hidden = false
     $.rm thumb.nextSibling
 
   expand: (thumb) ->
-    $.hide thumb
+    thumb.hidden = true
     a = thumb.parentNode
     img = $.el 'img',
       src: a.href

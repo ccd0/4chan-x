@@ -375,12 +375,6 @@
     replace: function(root, el) {
       return root.parentNode.replaceChild(el, root);
     },
-    hide: function(el) {
-      return el.hidden = true;
-    },
-    show: function(el) {
-      return el.hidden = false;
-    },
     addClass: function(el, className) {
       return el.classList.add(className);
     },
@@ -728,7 +722,7 @@
     hide: function(reply) {
       var a, div, id, name, table, trip, _ref;
       table = reply.parentNode.parentNode.parentNode;
-      $.hide(table);
+      table.hidden = true;
       if (conf['Show Stubs']) {
         name = $('span.commentpostername', reply).textContent;
         trip = ((_ref = $('span.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
@@ -748,7 +742,7 @@
     },
     show: function(table) {
       var id;
-      $.show(table);
+      table.hidden = false;
       id = $('td[id]', table).id;
       delete g.hiddenReplies[id];
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
@@ -1658,16 +1652,16 @@
         $.append(thread, div);
         return $.addClass(thread, 'stub');
       } else {
-        $.hide(thread);
-        return $.hide(thread.nextSibling);
+        thread.hidden = true;
+        return thread.nextSibling.hidden = true;
       }
     },
     show: function(thread) {
       var hiddenThreads, id;
       $.rm($('div.block', thread));
       $.removeClass(thread, 'stub');
-      $.show(thread);
-      $.show(thread.nextSibling);
+      thread.hidden = false;
+      thread.nextSibling.hidden = false;
       id = thread.firstChild.id;
       hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       delete hiddenThreads[id];
@@ -1735,13 +1729,13 @@
       verbose: function() {
         if (conf['Verbose']) {
           updater.count.textContent = '+0';
-          return $.show(updater.timer);
+          return updater.timer.hidden = false;
         } else {
           $.extend(updater.count, {
             className: '',
             textContent: 'Thread Updater'
           });
-          return $.hide(updater.timer);
+          return updater.timer.hidden = true;
         }
       },
       autoUpdate: function() {
@@ -2208,7 +2202,7 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           inlined = _ref[_i];
           if (hidden = $.id(inlined.name)) {
-            $.show($.x('ancestor::table[1]', hidden));
+            $.x('ancestor::table[1]', hidden).hidden = true;
           }
         }
         return;
@@ -2221,7 +2215,7 @@
             return;
           }
           $.after(this.parentNode, inline);
-          $.hide($.x('ancestor::table[1]', el));
+          $.x('ancestor::table[1]', el).hidden = true;
         } else {
           $.after(root, inline);
         }
@@ -2713,12 +2707,12 @@
       }
     },
     contract: function(thumb) {
-      $.show(thumb);
+      thumb.hidden = false;
       return $.rm(thumb.nextSibling);
     },
     expand: function(thumb) {
       var a, filesize, img, max, _, _ref2;
-      $.hide(thumb);
+      thumb.hidden = true;
       a = thumb.parentNode;
       img = $.el('img', {
         src: a.href
