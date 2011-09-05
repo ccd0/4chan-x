@@ -1013,7 +1013,7 @@ QR =
     {qr} = QR
     return unless qr
     c = QR.captcha.challenge
-    $('img', qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
+    $('#captcha img', qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
   captchaPush: (el) ->
     {captcha} = QR
     captcha.response = el.value
@@ -1115,12 +1115,12 @@ QR =
         <input type=file name=upfile>
       </div>
       <textarea placeholder=Comment name=com></textarea>
-      <div><img></div>
+      <div id=thumbs></div>
       <div id=captcha>
+        <div><img></div>
         <span id=cl>120 Captchas</span>
         <input id=recaptcha_response_field>
       </div>
-      <div id=thumbs></div>
       <div>
         <button>Submit</button>
         <input type=checkbox id=autopost title=autopost>
