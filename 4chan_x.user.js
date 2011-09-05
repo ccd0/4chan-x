@@ -922,6 +922,8 @@
             c = String.fromCharCode(kc);
             if (e.shiftKey) {
               return c.toLowerCase();
+            } else {
+              return c;
             }
             break;
           default:
