@@ -987,7 +987,8 @@ QR =
       $('textarea', QR.qr).blur()
       if conf['Auto Hide QR']
         $('#autohide', QR.qr).checked = true
-  foo: ->
+  attach: ->
+    $('#autopost', QR.qr).checked = true
     files = $ '#files', QR.qr
     div = $.el 'div',
       innerHTML: "<input type=file name=upfile accept='#{QR.accept}'><img alt='click here'><a class=x>X</a>"
@@ -997,22 +998,6 @@ QR =
     $.bind $('.x', div), 'click', -> $.rm @parentNode
     $.add files, div
     file.click()
-  attach: ->
-    $('#auto', QR.qr).checked = true
-    div = $.el 'div',
-      innerHTML: "#{QR.file}<a class=close>X</a>"
-    file = $ 'input', div
-    $.bind file, 'change', QR.change
-    $.bind $('a', div), 'click', -> $.rm @parentNode
-    $.add $('#files', QR.qr), div
-    file.click()
-  attachNext: ->
-    old = $ '[type=file]', QR.qr
-    if file = $ '#files input', QR.qr
-      $.rm file.parentNode
-      $.replace old, file
-    else
-      QR.resetFile old
   captchaNode: (e) ->
     QR.captcha =
       challenge: e.target.value
@@ -1049,7 +1034,7 @@ QR =
     if file.size > QR.MAX_FILE_SIZE
       alert 'Error: File too large.'
       $.rm @parentNode
-      QR.foo()
+      QR.attach()
       return
     {qr} = QR
     fr = new FileReader()
@@ -1089,6 +1074,8 @@ QR =
         <span><input form=qr_form placeholder=Password name=pwd type=password><span>Password</span></span>
       </span>
     </div>
+    <textarea form=qr_form placeholder=Comment name=com></textarea>
+    <div id=files></div>
     <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
       <div hidden>
         <input name=resto value=#{tid}>
@@ -1096,8 +1083,6 @@ QR =
         <input name=recaptcha_challenge_field id=challenge>
         <input name=recaptcha_response_field id=response>
       </div>
-      <textarea placeholder=Comment name=com></textarea>
-      <div id=files></div>
       <div id=captcha>
         <div><img></div>
         <span id=cl>120 Captchas</span>
@@ -1119,8 +1104,7 @@ QR =
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     $('textarea', qr).value = text
     QR.cooldown() if conf['Cooldown']
-    $.bind $('button', qr), 'click', QR.foo
-    #$.bind $('[type=file]', qr), 'change', QR.change
+    $.bind $('button', qr), 'click', QR.attach
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('.click', qr), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('form', qr), 'submit', QR.submit
@@ -1161,17 +1145,20 @@ QR =
     ta.focus()
   receive: (e) ->
     $('iframe[name=iframe]').src = 'about:blank'
+    {qr} = QR
+    row = $('#files input[form]', qr)?.parentNode
     {data} = e
     if data
       data = JSON.parse data
       $.extend $('a.error', QR.qr), data
       tc = data.textContent
       if tc is 'Error: Duplicate file entry detected.'
-        QR.attachNext()
+        $.rm row
         setTimeout QR.submit, 1000
       else if tc is 'You seem to have mistyped the verification.'
         setTimeout QR.submit, 1000
       return
+    $.rm row
     if conf['Persistent QR'] or $('#files input', QR.qr)?.files.length
       QR.reset()
     else
@@ -1183,13 +1170,6 @@ QR =
   reset: ->
     $('[name=spoiler]', QR.qr)?.checked = false unless conf['Remember Spoiler']
     $('textarea', QR.qr).value = ''
-    QR.attachNext()
-  resetFile: (old) ->
-    div = $.el 'div'
-      innerHTML: QR.file
-    file = div.firstChild
-    $.bind file, 'change', QR.change
-    $.replace old, file
   submit: (e) ->
     #XXX e is undefined if method is called explicitly, eg, from auto posting
     unless $('textarea', QR.qr).value or $('[type=file]', QR.qr).files.length
@@ -1209,6 +1189,8 @@ QR =
     $('#challenge', qr).value = challenge
     $('#response',  qr).value = response
     $('#autohide', qr).checked = true if conf['Auto Hide QR']
+    if input = $ '#files input', qr
+      input.setAttribute 'form', 'qr_form'
     $('#qr_form', qr).submit() if not e
     QR.sage = /sage/i.test $('[name=email]', qr).value
     if conf['Thread Watcher'] and conf['Auto Watch Reply']

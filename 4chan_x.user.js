@@ -1258,8 +1258,9 @@
         }
       }
     },
-    foo: function() {
+    attach: function() {
       var div, file, files;
+      $('#autopost', QR.qr).checked = true;
       files = $('#files', QR.qr);
       div = $.el('div', {
         innerHTML: "<input type=file name=upfile accept='" + QR.accept + "'><img alt='click here'><a class=x>X</a>"
@@ -1274,30 +1275,6 @@
       });
       $.add(files, div);
       return file.click();
-    },
-    attach: function() {
-      var div, file;
-      $('#auto', QR.qr).checked = true;
-      div = $.el('div', {
-        innerHTML: "" + QR.file + "<a class=close>X</a>"
-      });
-      file = $('input', div);
-      $.bind(file, 'change', QR.change);
-      $.bind($('a', div), 'click', function() {
-        return $.rm(this.parentNode);
-      });
-      $.add($('#files', QR.qr), div);
-      return file.click();
-    },
-    attachNext: function() {
-      var file, old;
-      old = $('[type=file]', QR.qr);
-      if (file = $('#files input', QR.qr)) {
-        $.rm(file.parentNode);
-        return $.replace(old, file);
-      } else {
-        return QR.resetFile(old);
-      }
     },
     captchaNode: function(e) {
       QR.captcha = {
@@ -1349,7 +1326,7 @@
       if (file.size > QR.MAX_FILE_SIZE) {
         alert('Error: File too large.');
         $.rm(this.parentNode);
-        QR.foo();
+        QR.attach();
         return;
       }
       qr = QR.qr;
@@ -1400,7 +1377,7 @@
       QR.qr = qr = ui.dialog('qr', {
         top: '0',
         left: '0'
-      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <span><input form=qr_form placeholder=Subject name=sub><span>Subject</span></span>        <span><input form=qr_form placeholder=Name name=name><span>Name</span></span>        <span><input form=qr_form placeholder=Email name=email><span>Email</span></span>        <span><input form=qr_form placeholder=Password name=pwd type=password><span>Password</span></span>      </span>    </div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <div hidden>        <input name=resto value=" + tid + ">        <input name=mode value=regist>        <input name=recaptcha_challenge_field id=challenge>        <input name=recaptcha_response_field id=response>      </div>      <textarea placeholder=Comment name=com></textarea>      <div id=files></div>      <div id=captcha>        <div><img></div>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field autocomplete=off>      </div>      <div>        <button>Submit</button>        <label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>        " + QR.spoiler + "      </div>      <a class=error>Derp</span>    </form>    ");
+      }, "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <span><input form=qr_form placeholder=Subject name=sub><span>Subject</span></span>        <span><input form=qr_form placeholder=Name name=name><span>Name</span></span>        <span><input form=qr_form placeholder=Email name=email><span>Email</span></span>        <span><input form=qr_form placeholder=Password name=pwd type=password><span>Password</span></span>      </span>    </div>    <textarea form=qr_form placeholder=Comment name=com></textarea>    <div id=files></div>    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>      <div hidden>        <input name=resto value=" + tid + ">        <input name=mode value=regist>        <input name=recaptcha_challenge_field id=challenge>        <input name=recaptcha_response_field id=response>      </div>      <div id=captcha>        <div><img></div>        <span id=cl>120 Captchas</span>        <input id=recaptcha_response_field autocomplete=off>      </div>      <div>        <button>Submit</button>        <label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>        " + QR.spoiler + "      </div>      <a class=error>Derp</span>    </form>    ");
       c = d.cookie;
       $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
@@ -1409,7 +1386,7 @@
       if (conf['Cooldown']) {
         QR.cooldown();
       }
-      $.bind($('button', qr), 'click', QR.foo);
+      $.bind($('button', qr), 'click', QR.attach);
       $.bind($('.close', qr), 'click', QR.close);
       $.bind($('.click', qr), 'mousedown', function(e) {
         return e.stopPropagation();
@@ -1462,22 +1439,25 @@
       return ta.focus();
     },
     receive: function(e) {
-      var data, tc, _ref;
+      var data, qr, row, tc, _ref, _ref2;
       $('iframe[name=iframe]').src = 'about:blank';
+      qr = QR.qr;
+      row = (_ref = $('#files input[form]', qr)) != null ? _ref.parentNode : void 0;
       data = e.data;
       if (data) {
         data = JSON.parse(data);
         $.extend($('a.error', QR.qr), data);
         tc = data.textContent;
         if (tc === 'Error: Duplicate file entry detected.') {
-          QR.attachNext();
+          $.rm(row);
           setTimeout(QR.submit, 1000);
         } else if (tc === 'You seem to have mistyped the verification.') {
           setTimeout(QR.submit, 1000);
         }
         return;
       }
-      if (conf['Persistent QR'] || ((_ref = $('#files input', QR.qr)) != null ? _ref.files.length : void 0)) {
+      $.rm(row);
+      if (conf['Persistent QR'] || ((_ref2 = $('#files input', QR.qr)) != null ? _ref2.files.length : void 0)) {
         QR.reset();
       } else {
         QR.close();
@@ -1495,20 +1475,10 @@
           _ref.checked = false;
         }
       }
-      $('textarea', QR.qr).value = '';
-      return QR.attachNext();
-    },
-    resetFile: function(old) {
-      var div, file;
-      div = $.el('div', {
-        innerHTML: QR.file
-      });
-      file = div.firstChild;
-      $.bind(file, 'change', QR.change);
-      return $.replace(old, file);
+      return $('textarea', QR.qr).value = '';
     },
     submit: function(e) {
-      var captcha, challenge, el, id, op, qr, response;
+      var captcha, challenge, el, id, input, op, qr, response;
       if (!($('textarea', QR.qr).value || $('[type=file]', QR.qr).files.length)) {
         if (e) {
           alert('Error: No text entered.');
@@ -1533,6 +1503,9 @@
       $('#response', qr).value = response;
       if (conf['Auto Hide QR']) {
         $('#autohide', qr).checked = true;
+      }
+      if (input = $('#files input', qr)) {
+        input.setAttribute('form', 'qr_form');
       }
       if (!e) {
         $('#qr_form', qr).submit();
