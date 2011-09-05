@@ -632,11 +632,11 @@ keybinds =
         'Right'
       when 40
         'Down'
-      when 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90 #0-9 and A-Z
-        if e.shiftKey
-          String.fromCharCode kc
-        else
-          String.fromCharCode(kc).toLowerCase()
+      when 48, 49, 50, 51, 52, 53, 54, 55, 56, 57 #0-9
+        String.fromCharCode kc
+      when 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90 #A-Z
+        c = String.fromCharCode kc
+        c.toLowerCase() if e.shiftKey
       else
         null
     if key

@@ -867,7 +867,7 @@
       return e.preventDefault();
     },
     keyCode: function(e) {
-      var kc;
+      var c, kc;
       key = (function() {
         switch (kc = e.keyCode) {
           case 8:
@@ -892,6 +892,7 @@
           case 55:
           case 56:
           case 57:
+            return String.fromCharCode(kc);
           case 65:
           case 66:
           case 67:
@@ -918,10 +919,9 @@
           case 88:
           case 89:
           case 90:
+            c = String.fromCharCode(kc);
             if (e.shiftKey) {
-              return String.fromCharCode(kc);
-            } else {
-              return String.fromCharCode(kc).toLowerCase();
+              return c.toLowerCase();
             }
             break;
           default:
