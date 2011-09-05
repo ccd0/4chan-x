@@ -2780,7 +2780,7 @@ main =
       }
       #qr textarea {
         border: 0;
-        height: 125;
+        height: 150px;
         width: 100%;
       }
       #qr #captcha {
