@@ -972,7 +972,7 @@ QR =
     holder = $ '#recaptcha_challenge_field_holder'
     $.bind holder, 'DOMNodeInserted', QR.captchaNode
     QR.captchaNode target: holder.firstChild
-    accept = $('.rules').textContent.match(/: (.+) /)[1].replace /\w+/g, (type) ->
+    QR.accept = $('.rules').textContent.match(/: (.+) /)[1].replace /\w+/g, (type) ->
       switch type
         when 'JPG'
           'image/JPEG'
@@ -980,7 +980,6 @@ QR =
           'application/' + type
         else
           'image/' + type
-    QR.file = "<input type=file name=upfile accept='#{accept}'><img alt='click here'><a class=x>X</a>"
     QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value
     QR.spoiler = if $('.postarea label') then ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
     if conf['Persistent QR']
@@ -991,7 +990,7 @@ QR =
   foo: ->
     files = $ '#files', QR.qr
     div = $.el 'div',
-      innerHTML: QR.file
+      innerHTML: "<input type=file name=upfile accept='#{QR.accept}'><img alt='click here'><a class=x>X</a>"
     file = $ 'input', div
     $.bind file, 'change', QR.change
     $.bind $('img', div), 'click', -> @previousSibling.click()

@@ -1221,7 +1221,7 @@
   };
   QR = {
     init: function() {
-      var accept, holder;
+      var holder;
       g.callbacks.push(function(root) {
         var quote;
         quote = $('a.quotejs + a', root);
@@ -1238,7 +1238,7 @@
       QR.captchaNode({
         target: holder.firstChild
       });
-      accept = $('.rules').textContent.match(/: (.+) /)[1].replace(/\w+/g, function(type) {
+      QR.accept = $('.rules').textContent.match(/: (.+) /)[1].replace(/\w+/g, function(type) {
         switch (type) {
           case 'JPG':
             return 'image/JPEG';
@@ -1248,7 +1248,6 @@
             return 'image/' + type;
         }
       });
-      QR.file = "<input type=file name=upfile accept='" + accept + "'><img alt='click here'><a class=x>X</a>";
       QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value;
       QR.spoiler = $('.postarea label') ? ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       if (conf['Persistent QR']) {
@@ -1263,7 +1262,7 @@
       var div, file, files;
       files = $('#files', QR.qr);
       div = $.el('div', {
-        innerHTML: QR.file
+        innerHTML: "<input type=file name=upfile accept='" + QR.accept + "'><img alt='click here'><a class=x>X</a>"
       });
       file = $('input', div);
       $.bind(file, 'change', QR.change);
