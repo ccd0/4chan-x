@@ -1,6 +1,7 @@
 master
 - mayhem
   quote inlining default styling (by xat)
+  add up/down/right/left keybinding support
 
 2.19.2
 - mayhem

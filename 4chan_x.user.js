@@ -867,22 +867,69 @@
       return e.preventDefault();
     },
     keyCode: function(e) {
-      var kc;
-      kc = e.keyCode;
-      if ((65 <= kc && kc <= 90)) {
-        key = String.fromCharCode(kc);
-        if (!e.shiftKey) {
-          key = key.toLowerCase();
+      var c, kc;
+      key = (function() {
+        switch (kc = e.keyCode) {
+          case 8:
+            return '';
+          case 27:
+            return 'Esc';
+          case 37:
+            return 'Left';
+          case 38:
+            return 'Up';
+          case 39:
+            return 'Right';
+          case 40:
+            return 'Down';
+          case 48:
+          case 49:
+          case 50:
+          case 51:
+          case 52:
+          case 53:
+          case 54:
+          case 55:
+          case 56:
+          case 57:
+            return String.fromCharCode(kc);
+          case 65:
+          case 66:
+          case 67:
+          case 68:
+          case 69:
+          case 70:
+          case 71:
+          case 72:
+          case 73:
+          case 74:
+          case 75:
+          case 76:
+          case 77:
+          case 78:
+          case 79:
+          case 80:
+          case 81:
+          case 82:
+          case 83:
+          case 84:
+          case 85:
+          case 86:
+          case 87:
+          case 88:
+          case 89:
+          case 90:
+            c = String.fromCharCode(kc);
+            if (e.shiftKey) {
+              return c;
+            } else {
+              return c.toLowerCase();
+            }
+            break;
+          default:
+            return null;
         }
-      } else if ((48 <= kc && kc <= 57)) {
-        key = String.fromCharCode(kc);
-      } else if (kc === 27) {
-        key = 'Esc';
-      } else if (kc === 8) {
-        key = '';
-      } else {
-        key = null;
-      }
+      })();
       if (key) {
         if (e.altKey) {
           key = 'alt+' + key;

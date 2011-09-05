@@ -619,19 +619,26 @@ keybinds =
     e.preventDefault()
 
   keyCode: (e) ->
-    kc = e.keyCode
-    if 65 <= kc <= 90 #A-Z
-      key = String.fromCharCode kc
-      if !e.shiftKey
-        key = key.toLowerCase()
-    else if 48 <= kc <= 57 #0-9
-      key = String.fromCharCode kc
-    else if kc is 27
-      key = 'Esc'
-    else if kc is 8
-      key = ''
-    else
-      key = null
+    key = switch kc = e.keyCode
+      when 8
+        ''
+      when 27
+        'Esc'
+      when 37
+        'Left'
+      when 38
+        'Up'
+      when 39
+        'Right'
+      when 40
+        'Down'
+      when 48, 49, 50, 51, 52, 53, 54, 55, 56, 57 #0-9
+        String.fromCharCode kc
+      when 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90 #A-Z
+        c = String.fromCharCode kc
+        if e.shiftKey then c else c.toLowerCase()
+      else
+        null
     if key
       if e.altKey  then key = 'alt+' + key
       if e.ctrlKey then key = 'ctrl+' + key
