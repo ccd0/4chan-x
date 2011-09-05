@@ -892,7 +892,6 @@
           case 55:
           case 56:
           case 57:
-            return String.fromCharCode(kc);
           case 65:
           case 66:
           case 67:
