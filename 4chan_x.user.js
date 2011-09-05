@@ -3510,6 +3510,11 @@
         display: inline;\
         width: 100%;\
       }\
+      #qr #thumbs img {\
+        display: block;\
+        max-height: 250px;\
+        max-width:  250px;\
+      }\
     '
   };
   main.init();
