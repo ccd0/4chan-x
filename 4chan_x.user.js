@@ -1248,7 +1248,7 @@
             return 'image/' + type;
         }
       });
-      QR.file = "<input type=file name=upfile accept='" + accept + "'><img alt='click here'>";
+      QR.file = "<input type=file name=upfile accept='" + accept + "'><img alt='click here'><a class=x>X</a>";
       QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value;
       QR.spoiler = $('.postarea label') ? ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
       if (conf['Persistent QR']) {
@@ -1269,6 +1269,9 @@
       $.bind(file, 'change', QR.change);
       $.bind($('img', div), 'click', function() {
         return this.previousSibling.click();
+      });
+      $.bind($('.x', div), 'click', function() {
+        return $.rm(this.parentNode);
       });
       $.add(files, div);
       return file.click();
@@ -3496,7 +3499,6 @@
         display: none;\
       }\
       #qr #files img {\
-        display: block;\
         max-height: 250px;\
         max-width:  250px;\
       }\

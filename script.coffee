@@ -980,7 +980,7 @@ QR =
           'application/' + type
         else
           'image/' + type
-    QR.file = "<input type=file name=upfile accept='#{accept}'><img alt='click here'>"
+    QR.file = "<input type=file name=upfile accept='#{accept}'><img alt='click here'><a class=x>X</a>"
     QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value
     QR.spoiler = if $('.postarea label') then ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
     if conf['Persistent QR']
@@ -995,6 +995,7 @@ QR =
     file = $ 'input', div
     $.bind file, 'change', QR.change
     $.bind $('img', div), 'click', -> @previousSibling.click()
+    $.bind $('.x', div), 'click', -> $.rm @parentNode
     $.add files, div
     file.click()
   attach: ->
@@ -2804,7 +2805,6 @@ main =
         display: none;
       }
       #qr #files img {
-        display: block;
         max-height: 250px;
         max-width:  250px;
       }
