@@ -876,6 +876,14 @@
         }
       } else if ((48 <= kc && kc <= 57)) {
         key = String.fromCharCode(kc);
+      } else if (kc === 37) {
+        key = 'Left';
+      } else if (kc === 38) {
+        key = 'Up';
+      } else if (kc === 39) {
+        key = 'Right';
+      } else if (kc === 40) {
+        key = 'Down';
       } else if (kc === 27) {
         key = 'Esc';
       } else if (kc === 8) {

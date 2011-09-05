@@ -626,6 +626,14 @@ keybinds =
         key = key.toLowerCase()
     else if 48 <= kc <= 57 #0-9
       key = String.fromCharCode kc
+    else if kc is 37
+      key = 'Left'
+    else if kc is 38
+      key = 'Up'
+    else if kc is 39
+      key = 'Right'
+    else if kc is 40
+      key = 'Down'
     else if kc is 27
       key = 'Esc'
     else if kc is 8
