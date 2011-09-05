@@ -921,9 +921,9 @@
           case 90:
             c = String.fromCharCode(kc);
             if (e.shiftKey) {
-              return c.toLowerCase();
-            } else {
               return c;
+            } else {
+              return c.toLowerCase();
             }
             break;
           default:
