@@ -219,10 +219,10 @@ $.extend $,
       textContent: "(#{code})()"
     $.add d.head, script
     $.rm script
-  xhr: (url, cb) ->
+  ajax: (url, cb, type='get') ->
     r = new XMLHttpRequest()
     r.onload = cb
-    r.open 'get', url, true
+    r.open type, url, true
     r.send()
     r
   cache: (url, cb) ->
@@ -232,7 +232,7 @@ $.extend $,
       else
         req.callbacks.push cb
     else
-      req = $.xhr url, (-> cb.call @ for cb in @callbacks)
+      req = $.ajax url, (-> cb.call @ for cb in @callbacks)
       req.callbacks = [cb]
       $.cache.requests[url] = req
   cb:
@@ -1489,7 +1489,7 @@ updater =
     updater.request?.abort()
     url = location.pathname + '?' + Date.now() # fool the cache
     cb = updater.cb.update
-    updater.request = $.xhr url, cb
+    updater.request = $.ajax url, cb
 
 watcher =
   init: ->

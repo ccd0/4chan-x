@@ -314,11 +314,14 @@
       $.add(d.head, script);
       return $.rm(script);
     },
-    xhr: function(url, cb) {
+    ajax: function(url, cb, type) {
       var r;
+      if (type == null) {
+        type = 'get';
+      }
       r = new XMLHttpRequest();
       r.onload = cb;
-      r.open('get', url, true);
+      r.open(type, url, true);
       r.send();
       return r;
     },
@@ -331,7 +334,7 @@
           return req.callbacks.push(cb);
         }
       } else {
-        req = $.xhr(url, (function() {
+        req = $.ajax(url, (function() {
           var cb, _i, _len, _ref, _results;
           _ref = this.callbacks;
           _results = [];
@@ -1816,7 +1819,7 @@
       }
       url = location.pathname + '?' + Date.now();
       cb = updater.cb.update;
-      return updater.request = $.xhr(url, cb);
+      return updater.request = $.ajax(url, cb);
     }
   };
   watcher = {
