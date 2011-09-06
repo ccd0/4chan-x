@@ -1553,7 +1553,7 @@
       if (input = $('#files input', qr)) {
         input.setAttribute('form', 'qr_form');
       }
-      if (!e) {
+      if (!(e || $('form button', qr).disabled)) {
         $('#qr_form', qr).submit();
       }
       QR.sage = /sage/i.test($('[name=email]', qr).value);

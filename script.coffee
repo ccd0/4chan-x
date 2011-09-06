@@ -1196,7 +1196,8 @@ QR =
     $('#autohide', qr).checked = true if conf['Auto Hide QR']
     if input = $ '#files input', qr
       input.setAttribute 'form', 'qr_form'
-    $('#qr_form', qr).submit() if not e
+    if not (e or $('form button', qr).disabled)
+      $('#qr_form', qr).submit()
     QR.sage = /sage/i.test $('[name=email]', qr).value
     if conf['Thread Watcher'] and conf['Auto Watch Reply']
       id = $('input[name=resto]', qr.el).value
