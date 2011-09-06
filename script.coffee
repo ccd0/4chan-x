@@ -1158,12 +1158,12 @@ QR =
       $.extend $('a.error', QR.qr), data
       tc = data.textContent
       if tc is 'Error: Duplicate file entry detected.'
-        $.rm row
+        $.rm row if row
         setTimeout QR.submit, 1000
       else if tc is 'You seem to have mistyped the verification.'
         setTimeout QR.submit, 1000
       return
-    $.rm row
+    $.rm row if row
     if conf['Persistent QR'] or $('#files input', QR.qr)?.files.length
       QR.reset()
     else
