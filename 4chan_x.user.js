@@ -1306,7 +1306,6 @@
     },
     attach: function() {
       var div, file, files;
-      $('#autopost', QR.qr).checked = true;
       files = $('#files', QR.qr);
       div = $.el('div', {
         innerHTML: "<input type=file name=upfile accept='" + QR.accept + "'><img alt='click here'><a class=x>X</a>"
@@ -1490,6 +1489,10 @@
       row = (_ref = $('#files input[form]', qr)) != null ? _ref.parentNode : void 0;
       data = e.data;
       if (data) {
+        if (QR.op) {
+          window.location = data;
+        }
+        return;
         data = JSON.parse(data);
         $.extend($('a.error', QR.qr), data);
         tc = data.textContent;
@@ -1563,8 +1566,12 @@
         $('#qr_form', qr).submit();
       }
       QR.sage = /sage/i.test($('[name=email]', qr).value);
+      id = $('input[name=resto]', qr).value;
+      QR.op = !id;
+      if (QR.op) {
+        $('[name=email]', qr).value = 'noko';
+      }
       if (conf['Thread Watcher'] && conf['Auto Watch Reply']) {
-        id = $('input[name=resto]', qr.el).value;
         op = $.id(id);
         if ($('img.favicon', op).src === Favicon.empty) {
           return watcher.watch(op, id);
@@ -1579,12 +1586,18 @@
       }
       return $.globalEval(function() {
         var data, href, node, textContent, _ref;
-        if (node = (_ref = document.querySelector('table font b')) != null ? _ref.firstChild : void 0) {
+        $ = function(css) {
+          return document.querySelector(css);
+        };
+        if (node = (_ref = $('table font b')) != null ? _ref.firstChild : void 0) {
           textContent = node.textContent, href = node.href;
+          alert(textContent);
           data = JSON.stringify({
             textContent: textContent,
             href: href
           });
+        } else if (node = $('meta')) {
+          data = node.content.match(/url=(.+)/)[1];
         }
         return parent.postMessage(data, '*');
       });

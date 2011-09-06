@@ -993,7 +993,7 @@ QR =
       if conf['Auto Hide QR']
         $('#autohide', QR.qr).checked = true
   attach: ->
-    $('#autopost', QR.qr).checked = true
+    #$('#autopost', QR.qr).checked = true
     files = $ '#files', QR.qr
     div = $.el 'div',
       innerHTML: "<input type=file name=upfile accept='#{QR.accept}'><img alt='click here'><a class=x>X</a>"
@@ -1156,6 +1156,8 @@ QR =
     row = $('#files input[form]', qr)?.parentNode
     {data} = e
     if data
+      window.location = data if QR.op
+      return
       data = JSON.parse data
       $.extend $('a.error', QR.qr), data
       tc = data.textContent
@@ -1201,8 +1203,10 @@ QR =
       input.setAttribute 'form', 'qr_form'
     $('#qr_form', qr).submit() if not e
     QR.sage = /sage/i.test $('[name=email]', qr).value
+    id = $('input[name=resto]', qr).value
+    QR.op = not id
+    $('[name=email]', qr).value = 'noko' if QR.op
     if conf['Thread Watcher'] and conf['Auto Watch Reply']
-      id = $('input[name=resto]', qr.el).value
       op = $.id id
       if $('img.favicon', op).src is Favicon.empty
         watcher.watch op, id
@@ -1211,9 +1215,13 @@ QR =
       $.bind recaptcha, 'keydown', Recaptcha.listener
       return
     $.globalEval ->
-      if node = document.querySelector('table font b')?.firstChild
+      $ = (css) -> document.querySelector css
+      if node = $('table font b')?.firstChild
         {textContent, href} = node
+        alert textContent
         data = JSON.stringify {textContent, href}
+      else if node = $ 'meta'
+        data = node.content.match(/url=(.+)/)[1]
       parent.postMessage data, '*'
       #parent will blank us on message receival;
       #if we're not an iframe, we won't get blanked
