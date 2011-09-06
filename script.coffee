@@ -1176,6 +1176,7 @@ QR =
     $('[name=spoiler]', QR.qr)?.checked = false unless conf['Remember Spoiler']
     $('textarea', QR.qr).value = ''
   submit: (e) ->
+    return if $('form button', qr).disabled
     #XXX e is undefined if method is called explicitly, eg, from auto posting
     unless $('textarea', QR.qr).value or $('[type=file]', QR.qr)?.files.length
       if e
@@ -1196,8 +1197,7 @@ QR =
     $('#autohide', qr).checked = true if conf['Auto Hide QR']
     if input = $ '#files input', qr
       input.setAttribute 'form', 'qr_form'
-    if not (e or $('form button', qr).disabled)
-      $('#qr_form', qr).submit()
+    $('#qr_form', qr).submit() if not e
     QR.sage = /sage/i.test $('[name=email]', qr).value
     if conf['Thread Watcher'] and conf['Auto Watch Reply']
       id = $('input[name=resto]', qr.el).value

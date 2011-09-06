@@ -1529,6 +1529,9 @@
     },
     submit: function(e) {
       var captcha, challenge, el, id, input, op, qr, response, _ref;
+      if ($('form button', qr).disabled) {
+        return;
+      }
       if (!($('textarea', QR.qr).value || ((_ref = $('[type=file]', QR.qr)) != null ? _ref.files.length : void 0))) {
         if (e) {
           alert('Error: No text entered.');
@@ -1557,7 +1560,7 @@
       if (input = $('#files input', qr)) {
         input.setAttribute('form', 'qr_form');
       }
-      if (!(e || $('form button', qr).disabled)) {
+      if (!e) {
         $('#qr_form', qr).submit();
       }
       QR.sage = /sage/i.test($('[name=email]', qr).value);
