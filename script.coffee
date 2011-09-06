@@ -1077,13 +1077,13 @@ QR =
         <input form=qr_form placeholder=Subject name=sub>
         <input form=qr_form placeholder=Name name=name>
         <input form=qr_form placeholder=Email name=email>
-        <input form=qr_form placeholder=Password name=pwd type=password>
       </span>
     </div>
     <textarea form=qr_form placeholder=Comment name=com></textarea>
     <div id=files></div>
     <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
       <div hidden>
+        <input name=pwd>
         <input name=mode value=regist>
         <input name=recaptcha_challenge_field id=challenge>
         <input name=recaptcha_response_field id=response>
@@ -2765,7 +2765,7 @@ main =
         float: right;
       }
       #qr .click input {
-        width: 57px;
+        width: 73px;
       }
       #qr .click * {
         float: left;
@@ -2784,6 +2784,12 @@ main =
       }
       #qr #captcha {
         position: relative;
+      }
+      #qr #files a {
+        position: absolute;
+        left: 0;
+        font-size: 50px;
+        color: red;
       }
       #qr #cl {
         right: 0;
