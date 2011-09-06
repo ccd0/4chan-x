@@ -1098,7 +1098,7 @@ QR =
         <label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>
         #{QR.spoiler}
       </div>
-      <a class=error>Derp</span>
+      <a class=error></span>
     </form>
     "
     #$.bind $('#attach', qr), 'click', QR.attach
