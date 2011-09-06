@@ -1051,7 +1051,7 @@ QR =
     $.rm QR.qr
     QR.qr = null
   cooldown: ->
-    return unless QR.qr
+    return unless g.REPLY and QR.qr
     cooldown = $.get "cooldown/#{g.BOARD}", 0
     now = Date.now()
     n = Math.ceil (cooldown - now) / 1000
@@ -1066,7 +1066,8 @@ QR =
         textContent: 'Submit'
         disabled: false
       QR.submit() if $('#autopost', QR.qr).checked
-  dialog: (text='', tid=g.THREAD_ID) ->
+  dialog: (text='', tid) ->
+    tid or= g.THREAD_ID or ''
     QR.qr = qr = ui.dialog 'qr', top: '0', left: '0', "
     <a class=close>X</a>
     <input type=checkbox id=autohide title=autohide>
@@ -1083,7 +1084,6 @@ QR =
     <div id=files></div>
     <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
       <div hidden>
-        <input name=resto value=#{tid}>
         <input name=mode value=regist>
         <input name=recaptcha_challenge_field id=challenge>
         <input name=recaptcha_response_field id=response>
@@ -1095,7 +1095,8 @@ QR =
       </div>
       <div>
         <button>Submit</button>
-        <label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>
+        #{if g.REPLY then "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" else ''}
+        <input form=qr_form placeholder=Thread name=resto value=#{tid} #{if g.REPLY then 'hidden' else ''}>
         #{QR.spoiler}
       </div>
       <a class=error></span>
@@ -1148,6 +1149,7 @@ QR =
     i = ss + text.length
     ta.setSelectionRange i, i
     ta.focus()
+    $('[name=resto]', qr).value or= tid
   receive: (e) ->
     $('iframe[name=iframe]').src = 'about:blank'
     {qr} = QR
@@ -2790,6 +2792,9 @@ main =
       #qr #files img {
         max-height: 250px;
         max-width:  250px;
+      }
+      #qr input[name=resto] {
+        width: 80px;
       }
     '
 
