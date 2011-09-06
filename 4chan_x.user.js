@@ -3480,7 +3480,10 @@
         float: right;\
       }\
       #qr .click input {\
-        width: 53px;\
+        width: 57px;\
+      }\
+      #qr .click * {\
+        float: left;\
       }\
       #qr form {\
         margin: 0;\
