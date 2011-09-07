@@ -929,36 +929,6 @@ options =
     conf['backlink'] = @value
     $('#backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
 
-cooldown =
-  #TODO merge into qr
-  init: ->
-    if match = location.search.match /cooldown=(\d+)/
-      [_, time] = match
-      $.set g.BOARD+'/cooldown', time if $.get(g.BOARD+'/cooldown', 0) < time
-    cooldown.start() if Date.now() < $.get g.BOARD+'/cooldown', 0
-    $.bind window, 'storage', (e) -> cooldown.start() if e.key is "#{NAMESPACE}#{g.BOARD}/cooldown"
-    $('.postarea form').action += '?cooldown' if g.REPLY
-
-  start: ->
-    cooldown.duration = Math.ceil ($.get(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
-    return unless cooldown.duration > 0
-    for submit in $$ '#com_submit'
-      submit.value = cooldown.duration
-      submit.disabled = true
-    setTimeout cooldown.cb, 1000
-
-  cb: ->
-    submits = $$ '#com_submit'
-    if --cooldown.duration
-      setTimeout cooldown.cb, 1000
-      for submit in submits
-        submit.value = cooldown.duration
-    else
-      for submit in submits
-        submit.disabled = false
-        submit.value = 'Submit'
-      qr.autoPost()
-
 QR =
   #TODO create new thread
   #captcha caching for report form
@@ -994,6 +964,8 @@ QR =
       $('textarea', QR.qr).blur()
       if conf['Auto Hide QR']
         $('#autohide', QR.qr).checked = true
+    if conf['Cooldown']
+      $.bind window, 'storage', (e) -> QR.cooldown() if e.key is "#{NAMESPACE}cooldown/#{g.BOARD}"
   attach: ->
     #$('#autopost', QR.qr).checked = true
     files = $ '#files', QR.qr

@@ -60,7 +60,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -1209,62 +1209,6 @@
       return $('#backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     }
   };
-  cooldown = {
-    init: function() {
-      var match, time, _;
-      if (match = location.search.match(/cooldown=(\d+)/)) {
-        _ = match[0], time = match[1];
-        if ($.get(g.BOARD + '/cooldown', 0) < time) {
-          $.set(g.BOARD + '/cooldown', time);
-        }
-      }
-      if (Date.now() < $.get(g.BOARD + '/cooldown', 0)) {
-        cooldown.start();
-      }
-      $.bind(window, 'storage', function(e) {
-        if (e.key === ("" + NAMESPACE + g.BOARD + "/cooldown")) {
-          return cooldown.start();
-        }
-      });
-      if (g.REPLY) {
-        return $('.postarea form').action += '?cooldown';
-      }
-    },
-    start: function() {
-      var submit, _i, _len, _ref;
-      cooldown.duration = Math.ceil(($.get(g.BOARD + '/cooldown', 0) - Date.now()) / 1000);
-      if (!(cooldown.duration > 0)) {
-        return;
-      }
-      _ref = $$('#com_submit');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        submit = _ref[_i];
-        submit.value = cooldown.duration;
-        submit.disabled = true;
-      }
-      return setTimeout(cooldown.cb, 1000);
-    },
-    cb: function() {
-      var submit, submits, _i, _j, _len, _len2, _results;
-      submits = $$('#com_submit');
-      if (--cooldown.duration) {
-        setTimeout(cooldown.cb, 1000);
-        _results = [];
-        for (_i = 0, _len = submits.length; _i < _len; _i++) {
-          submit = submits[_i];
-          _results.push(submit.value = cooldown.duration);
-        }
-        return _results;
-      } else {
-        for (_j = 0, _len2 = submits.length; _j < _len2; _j++) {
-          submit = submits[_j];
-          submit.disabled = false;
-          submit.value = 'Submit';
-        }
-        return qr.autoPost();
-      }
-    }
-  };
   QR = {
     init: function() {
       var holder;
@@ -1303,8 +1247,15 @@
         QR.dialog();
         $('textarea', QR.qr).blur();
         if (conf['Auto Hide QR']) {
-          return $('#autohide', QR.qr).checked = true;
+          $('#autohide', QR.qr).checked = true;
         }
+      }
+      if (conf['Cooldown']) {
+        return $.bind(window, 'storage', function(e) {
+          if (e.key === ("" + NAMESPACE + "cooldown/" + g.BOARD)) {
+            return QR.cooldown();
+          }
+        });
       }
     },
     attach: function() {
@@ -1393,7 +1344,7 @@
       return QR.qr = null;
     },
     cooldown: function() {
-      var b, n, now;
+      var b, cooldown, n, now;
       if (!(g.REPLY && QR.qr)) {
         return;
       }
@@ -1495,7 +1446,7 @@
       return (_base = $('[name=resto]', qr)).value || (_base.value = tid);
     },
     receive: function(e) {
-      var data, qr, row, tc, _ref, _ref2;
+      var cooldown, data, qr, row, tc, _ref, _ref2;
       $('iframe[name=iframe]').src = 'about:blank';
       qr = QR.qr;
       row = (_ref = $('#files input[form]', qr)) != null ? _ref.parentNode : void 0;
