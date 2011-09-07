@@ -3151,8 +3151,8 @@
         display: none;\
       }\
       #qr #files img {\
-        max-height: 250px;\
-        max-width:  250px;\
+        max-height: 150px;\
+        max-width:  150px;\
       }\
       #qr input[name=resto] {\
         width: 80px;\
