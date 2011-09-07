@@ -1075,7 +1075,7 @@ QR =
         <input form=qr_form placeholder=Thread name=resto value=#{tid} #{if g.REPLY then 'hidden' else ''}>
         #{QR.spoiler}
       </div>
-      <a class=error></span>
+      <a class=error></a>
     </form>
     "
     #$.bind $('#attach', qr), 'click', QR.attach
