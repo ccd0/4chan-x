@@ -60,7 +60,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, QR, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -1268,6 +1268,9 @@
   QR = {
     init: function() {
       var holder;
+      if (!($('form[name=post]') && $('#recaptcha_response_field'))) {
+        return;
+      }
       g.callbacks.push(function(root) {
         var quote;
         quote = $('a.quotejs + a', root);
@@ -1365,6 +1368,9 @@
       captchas || (captchas = $.get('captchas', []));
       return $('#cl', QR.qr).textContent = captchas.length + ' captchas';
     },
+    captchaReload: function() {
+      return window.location = 'javascript:Recaptcha.reload()';
+    },
     change: function(e) {
       var file, fr, img, qr;
       file = this.files[0];
@@ -1436,7 +1442,6 @@
       });
       $.bind($('form', qr), 'submit', QR.submit);
       $.bind($('#recaptcha_response_field', qr), 'keydown', QR.keydown);
-      $.bind($('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener);
       QR.captchaImg();
       QR.captchaLength();
       $.add(d.body, qr);
@@ -1446,7 +1451,14 @@
       return ta.focus();
     },
     keydown: function(e) {
-      if (!(e.keyCode === 13 && this.value)) {
+      var kc, v;
+      kc = e.keyCode;
+      v = this.value;
+      if (kc === 8 && !v) {
+        QR.captchaReload();
+        return;
+      }
+      if (!(e.keyCode === 13 && v)) {
         return;
       }
       QR.captchaPush(this);
@@ -1581,7 +1593,7 @@
     sys: function() {
       var recaptcha;
       if (recaptcha = $('#recaptcha_response_field')) {
-        $.bind(recaptcha, 'keydown', Recaptcha.listener);
+        $.bind(recaptcha, 'keydown', QR.keydown);
         return;
       }
       return $.globalEval(function() {
@@ -2936,25 +2948,6 @@
     }
     return location.href = url;
   };
-  Recaptcha = {
-    init: function() {
-      var el, _i, _len, _ref2;
-      _ref2 = $$('#recaptcha_table a');
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        el = _ref2[_i];
-        el.tabIndex = 1;
-      }
-      return $.bind($('#recaptcha_response_field'), 'keydown', Recaptcha.listener);
-    },
-    listener: function(e) {
-      if (e.keyCode === 8 && this.value === '') {
-        return Recaptcha.reload();
-      }
-    },
-    reload: function() {
-      return window.location = 'javascript:Recaptcha.reload()';
-    }
-  };
   nodeInserted = function(e) {
     var callback, target, _i, _len, _ref2, _results;
     target = e.target;
@@ -3157,7 +3150,7 @@
   };
   main = {
     init: function() {
-      var callback, canPost, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var callback, cutoff, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -3208,22 +3201,9 @@
         $.set('lastChecked', now);
       }
       $.addStyle(main.css);
-      if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
-        Recaptcha.init();
-        if (g.REPLY && conf['Auto Watch Reply'] && conf['Thread Watcher']) {
-          $.bind(form, 'submit', function() {
-            if ($('img.favicon').src === Favicon.empty) {
-              return watcher.watch(null, g.THREAD_ID);
-            }
-          });
-        }
-      }
       threading.init();
       if (g.REPLY && (id = location.hash.slice(1)) && /\d/.test(id[0]) && !$.id(id)) {
         scrollTo(0, d.body.scrollHeight);
-      }
-      if (conf['Auto Noko'] && canPost) {
-        form.action += '?noko';
       }
       if (conf['Image Expansion']) {
         imgExpand.init();
@@ -3249,7 +3229,7 @@
       if (conf['Reply Hiding']) {
         replyHiding.init();
       }
-      if (conf['Quick Reply'] && canPost) {
+      if (conf['Quick Reply']) {
         QR.init();
       }
       if (conf['Report Button']) {

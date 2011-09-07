@@ -965,6 +965,8 @@ QR =
   #report queueing
   #check if captchas can be reused on eg dup file error
   init: ->
+    #can't reply in some stickies, recaptcha may be blocked, eg by noscript
+    return unless $('form[name=post]') and $('#recaptcha_response_field')
     g.callbacks.push (root) ->
       quote = $ 'a.quotejs + a', root
       $.bind quote, 'click', QR.quote
@@ -1034,6 +1036,8 @@ QR =
   captchaLength: (captchas) ->
     captchas or= $.get 'captchas', []
     $('#cl', QR.qr).textContent = captchas.length + ' captchas'
+  captchaReload: ->
+    window.location = 'javascript:Recaptcha.reload()'
   change: (e) ->
     file = @files[0]
     if file.size > QR.MAX_FILE_SIZE
@@ -1115,7 +1119,6 @@ QR =
     $.bind $('.click', qr), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('form', qr), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
-    $.bind $('#recaptcha_response_field', qr), 'keydown', Recaptcha.listener
     QR.captchaImg()
     QR.captchaLength()
     $.add d.body, qr
@@ -1124,7 +1127,12 @@ QR =
     ta.setSelectionRange l, l
     ta.focus()
   keydown: (e) ->
-    return unless e.keyCode is 13 and @value #enter, captcha filled
+    kc = e.keyCode
+    v = @value
+    if kc is 8 and not v #backspace, empty
+      QR.captchaReload()
+      return
+    return unless e.keyCode is 13 and v #enter, not empty
     QR.captchaPush @
     e.preventDefault()
     QR.submit() #derpy, but prevents checking for content twice
@@ -1212,7 +1220,7 @@ QR =
         watcher.watch op, id
   sys: ->
     if recaptcha = $ '#recaptcha_response_field' #post reporting
-      $.bind recaptcha, 'keydown', Recaptcha.listener
+      $.bind recaptcha, 'keydown', QR.keydown
       return
     $.globalEval ->
       $ = (css) -> document.querySelector css
@@ -2227,18 +2235,6 @@ redirect = ->
       url = "http://boards.4chan.org/#{g.BOARD}"
   location.href = url
 
-Recaptcha =
-  init: ->
-    #hack to tab from comment straight to recaptcha
-    for el in $$ '#recaptcha_table a'
-      el.tabIndex = 1
-    $.bind $('#recaptcha_response_field'), 'keydown', Recaptcha.listener
-  listener: (e) ->
-    if e.keyCode is 8 and @value is '' # backspace to reload
-      Recaptcha.reload()
-  reload: ->
-    window.location = 'javascript:Recaptcha.reload()'
-
 nodeInserted = (e) ->
   {target} = e
   if target.nodeName is 'TABLE'
@@ -2486,13 +2482,6 @@ main =
 
     $.addStyle main.css
 
-    #recaptcha may be blocked, eg by noscript
-    if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
-      Recaptcha.init()
-      if g.REPLY and conf['Auto Watch Reply'] and conf['Thread Watcher']
-        $.bind form, 'submit', -> if $('img.favicon').src is Favicon.empty
-            watcher.watch null, g.THREAD_ID
-
     #major features
     threading.init()
 
@@ -2500,9 +2489,6 @@ main =
     # thumbnail generation takes time
     if g.REPLY and (id = location.hash[1..]) and /\d/.test(id[0]) and !$.id(id)
       scrollTo 0, d.body.scrollHeight
-
-    if conf['Auto Noko'] and canPost
-      form.action += '?noko'
 
     if conf['Image Expansion']
       imgExpand.init()
@@ -2528,7 +2514,7 @@ main =
     if conf['Reply Hiding']
       replyHiding.init()
 
-    if conf['Quick Reply'] and canPost
+    if conf['Quick Reply']
       QR.init()
 
     if conf['Report Button']
