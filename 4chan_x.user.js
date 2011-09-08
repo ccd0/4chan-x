@@ -3196,7 +3196,7 @@
         opacity: .5;\
       }\
       .inline td.reply {\
-        background-color: rgba(252, 252, 252, 0.15);\
+        background-color: rgba(255, 255, 255, 0.15);\
         border: 1px solid rgba(128, 128, 128, 0.5);\
       }\
       .filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
