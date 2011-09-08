@@ -1259,20 +1259,20 @@
       }
     },
     attach: function() {
-      var div, file, files;
+      var box, file, files;
       files = $('#files', QR.qr);
-      div = $.el('div', {
+      box = $.el('span', {
         innerHTML: "<input type=file name=upfile accept='" + QR.accept + "'><img alt='click here'><a class=x>X</a>"
       });
-      file = $('input', div);
+      file = $('input', box);
       $.bind(file, 'change', QR.change);
-      $.bind($('img', div), 'click', function() {
+      $.bind($('img', box), 'click', function() {
         return this.previousSibling.click();
       });
-      $.bind($('.x', div), 'click', function() {
+      $.bind($('.x', box), 'click', function() {
         return $.rm(this.parentNode);
       });
-      $.add(files, div);
+      $.add(files, box);
       return file.click();
     },
     captchaNode: function(e) {
@@ -3130,6 +3130,14 @@
         width: 100%;\
       }\
       #qr #captcha {\
+        position: relative;\
+      }\
+      #qr #files {\
+        width: 300px;\
+        white-space: nowrap;\
+        overflow: auto;\
+      }\
+      #qr #files span {\
         position: relative;\
       }\
       #qr #files a {\

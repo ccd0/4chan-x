@@ -969,13 +969,13 @@ QR =
   attach: ->
     #$('#autopost', QR.qr).checked = true
     files = $ '#files', QR.qr
-    div = $.el 'div',
+    box = $.el 'span',
       innerHTML: "<input type=file name=upfile accept='#{QR.accept}'><img alt='click here'><a class=x>X</a>"
-    file = $ 'input', div
+    file = $ 'input', box
     $.bind file, 'change', QR.change
-    $.bind $('img', div), 'click', -> @previousSibling.click()
-    $.bind $('.x', div), 'click', -> $.rm @parentNode
-    $.add files, div
+    $.bind $('img', box), 'click', -> @previousSibling.click()
+    $.bind $('.x', box), 'click', -> $.rm @parentNode
+    $.add files, box
     file.click()
   captchaNode: (e) ->
     QR.captcha =
@@ -2447,6 +2447,14 @@ main =
         width: 100%;
       }
       #qr #captcha {
+        position: relative;
+      }
+      #qr #files {
+        width: 300px;
+        white-space: nowrap;
+        overflow: auto;
+      }
+      #qr #files span {
         position: relative;
       }
       #qr #files a {
