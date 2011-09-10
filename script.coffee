@@ -1590,7 +1590,7 @@ anonymize =
 
 sauce =
   init: ->
-    sauce.prefixes = (s for s in (conf['flavors'].split '\n') when s[0] != '#')
+    sauce.prefixes = (s for s in (conf['flavors'].split '\n') when s and s[0] != '#')
     sauce.names = (prefix.match(/(\w+)\./)[1] for prefix in sauce.prefixes)
     g.callbacks.push (root) ->
       return if root.className is 'inline'

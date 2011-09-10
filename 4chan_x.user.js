@@ -1997,7 +1997,7 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           s = _ref[_i];
-          if (s[0] !== '#') {
+          if (s && s[0] !== '#') {
             _results.push(s);
           }
         }
