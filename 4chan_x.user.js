@@ -2823,6 +2823,7 @@
   main = {
     init: function() {
       var callback, canPost, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
+      $.unbind(window, 'load', main.init);
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -3213,5 +3214,9 @@
       }\
     '
   };
-  main.init();
+  if (d.body) {
+    main.init();
+  } else {
+    $.bind(window, 'load', main.init);
+  }
 }).call(this);

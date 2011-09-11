@@ -2176,6 +2176,7 @@ firstRun =
 
 main =
   init: ->
+    $.unbind window, 'load', main.init
     pathname = location.pathname.substring(1).split('/')
     [g.BOARD, temp] = pathname
     if temp is 'res'
@@ -2548,4 +2549,8 @@ main =
       }
     '
 
-main.init()
+#XXX Opera will load early if script is saved w/o .user
+if d.body
+  main.init()
+else
+  $.bind window, 'load', main.init
