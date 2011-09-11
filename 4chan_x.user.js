@@ -2850,7 +2850,6 @@
       if (!$('#navtopr')) {
         return;
       }
-      Favicon.init();
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       tzOffset = (new Date()).getTimezoneOffset() / 60;
       g.chanOffset = 5 - tzOffset;
@@ -2949,6 +2948,7 @@
         keybinds.init();
       }
       if (g.REPLY) {
+        Favicon.init();
         if (conf['Thread Updater']) {
           updater.init();
         }

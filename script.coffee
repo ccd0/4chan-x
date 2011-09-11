@@ -2199,7 +2199,6 @@ main =
     if not $ '#navtopr'
       return
 
-    Favicon.init()
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     tzOffset = (new Date()).getTimezoneOffset() / 60
     # GMT -8 is given as +480; would GMT +8 be -480 ?
@@ -2296,6 +2295,8 @@ main =
       keybinds.init()
 
     if g.REPLY
+      Favicon.init()
+
       if conf['Thread Updater']
         updater.init()
 
