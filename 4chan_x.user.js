@@ -60,7 +60,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _ref;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -1977,7 +1977,7 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           s = _ref[_i];
-          if (s[0] !== '#') {
+          if (s && s[0] !== '#') {
             _results.push(s);
           }
         }
@@ -2508,24 +2508,31 @@
     }
   };
   Favicon = {
+    init: function() {
+      var favicon, href;
+      favicon = $('link[rel="shortcut icon"]', d.head);
+      favicon.type = 'image/x-icon';
+      href = favicon.href;
+      Favicon["default"] = href;
+      return Favicon.unread = /ws/.test(href) ? Favicon.unreadSFW : Favicon.unreadNSFW;
+    },
     dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    deadHalo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAANhJREFUOMutU0EKwjAQzEPFgyBFei209gOKINh6tL3qO3yAB9OHWPTeMZsmJaRpiNjAkE1mMt1stgwA+wdsFgM1oHE4FXmSpWUcRzWBYtozNfKAYdCHCrQuosX9tlk+CBS7NKMMbMF7vXoJtC7Om8HwhXzbCWCSn6qBJHd74FIBVS1jm7czYFSsq7gvpY0s6+ThJwc4743EHnGkIW2YAW+AphkMPj6DJE1LXW3fFUhD2pHBsTznLKCIFCstC3nGNvQZnQa6kX4yMGfdyi7OZaB7wZy93Cx/4xfgv/s+XYFMrAAAAABJRU5ErkJggg%3D%3D',
-    "default": ((_ref = $('link[rel="shortcut icon"]', d.head)) != null ? _ref.href : void 0) || '',
     empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    haloSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAN9JREFUOMtj+P//PwMlmIEqBkDBfxie2NdVVVFaMikzPXsuCIPYIDFkNWANSAb815t+GI5B/Jj8iQfjapafBWEQG5saDBegK0ja8Ok9EH/AJofXBTBFlUf+/wPi/7jkcYYBCLef/v9/9pX//+cAMYiNLo/uAgZQYMVVLzsLcnYF0GaQ5otv/v+/9BpiEEgMJAdSA1JLlAGXgAZcfoNswGfcBpQDowoW2vi8AFIDUothwOQJvVXIgYUrEEFsqFoGYqLxA7HRiNUAWEIiyQBkGpaUsclhMwCWFpBpvHJUyY0AmdYZKFRtAsoAAAAASUVORK5CYII%3D',
-    haloNSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAOBJREFUOMtj+P//PwMlmIEqBkDBfxie2DWxqqykYlJ6dtZcEAaxQWLIasAakAz4n3bGGI5B/JiJ8QfjlsefBWEQG5saDBegKyj5lPQeiD9gk8PrApiinv+V/4D4Py55nGEAwrP+t/9f/X82EM8Bs9Hl0V3AAAqsuGXxZ0HO7vlf8Q+k+eb/i0B8CWwQSAwkB1IDUkuUAbeAmm/9v4ww4DMeA8pKyifBQhufF0BqQGoxDJjcO7kKObBwBSKIDVXLQEw0fiA2GrEaAEtIJBmATMOSMjY5bAbA0gIyjVeOKrkRAMefDK/b7ecEAAAAAElFTkSuQmCC',
+    unreadDead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAANhJREFUOMutU0EKwjAQzEPFgyBFei209gOKINh6tL3qO3yAB9OHWPTeMZsmJaRpiNjAkE1mMt1stgwA+wdsFgM1oHE4FXmSpWUcRzWBYtozNfKAYdCHCrQuosX9tlk+CBS7NKMMbMF7vXoJtC7Om8HwhXzbCWCSn6qBJHd74FIBVS1jm7czYFSsq7gvpY0s6+ThJwc4743EHnGkIW2YAW+AphkMPj6DJE1LXW3fFUhD2pHBsTznLKCIFCstC3nGNvQZnQa6kX4yMGfdyi7OZaB7wZy93Cx/4xfgv/s+XYFMrAAAAABJRU5ErkJggg%3D%3D',
+    unreadSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAN9JREFUOMtj+P//PwMlmIEqBkDBfxie2NdVVVFaMikzPXsuCIPYIDFkNWANSAb815t+GI5B/Jj8iQfjapafBWEQG5saDBegK0ja8Ok9EH/AJofXBTBFlUf+/wPi/7jkcYYBCLef/v9/9pX//+cAMYiNLo/uAgZQYMVVLzsLcnYF0GaQ5otv/v+/9BpiEEgMJAdSA1JLlAGXgAZcfoNswGfcBpQDowoW2vi8AFIDUothwOQJvVXIgYUrEEFsqFoGYqLxA7HRiNUAWEIiyQBkGpaUsclhMwCWFpBpvHJUyY0AmdYZKFRtAsoAAAAASUVORK5CYII%3D',
+    unreadNSFW: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAOBJREFUOMtj+P//PwMlmIEqBkDBfxie2DWxqqykYlJ6dtZcEAaxQWLIasAakAz4n3bGGI5B/JiJ8QfjlsefBWEQG5saDBegKyj5lPQeiD9gk8PrApiinv+V/4D4Py55nGEAwrP+t/9f/X82EM8Bs9Hl0V3AAAqsuGXxZ0HO7vlf8Q+k+eb/i0B8CWwQSAwkB1IDUkuUAbeAmm/9v4ww4DMeA8pKyifBQhufF0BqQGoxDJjcO7kKObBwBSKIDVXLQEw0fiA2GrEaAEtIJBmATMOSMjY5bAbA0gIyjVeOKrkRAMefDK/b7ecEAAAAAElFTkSuQmCC',
     update: function() {
       var clone, favicon, href, l;
       l = unread.replies.length;
       if (g.dead) {
         if (l > 0) {
-          href = Favicon.deadHalo;
+          href = Favicon.unreadDead;
         } else {
           href = Favicon.dead;
         }
       } else {
         if (l > 0) {
-          href = Favicon.halo;
+          href = Favicon.unread;
         } else {
           href = Favicon["default"];
         }
@@ -2582,13 +2589,13 @@
     return location.href = url;
   };
   nodeInserted = function(e) {
-    var callback, target, _i, _len, _ref2, _results;
+    var callback, target, _i, _len, _ref, _results;
     target = e.target;
     if (target.nodeName === 'TABLE') {
-      _ref2 = g.callbacks;
+      _ref = g.callbacks;
       _results = [];
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        callback = _ref2[_i];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
         _results.push(callback(target));
       }
       return _results;
@@ -2721,7 +2728,7 @@
       return $.rm(thumb.nextSibling);
     },
     expand: function(thumb) {
-      var a, filesize, img, max, _, _ref2;
+      var a, filesize, img, max, _, _ref;
       thumb.hidden = true;
       a = thumb.parentNode;
       img = $.el('img', {
@@ -2729,21 +2736,21 @@
       });
       if (a.parentNode.className !== 'op') {
         filesize = $('span.filesize', a.parentNode);
-        _ref2 = filesize.textContent.match(/(\d+)x/), _ = _ref2[0], max = _ref2[1];
+        _ref = filesize.textContent.match(/(\d+)x/), _ = _ref[0], max = _ref[1];
         img.style.maxWidth = "-moz-calc(" + max + "px)";
       }
       return $.add(a, img);
     },
     dialog: function() {
-      var controls, delform, imageType, option, select, _i, _len, _ref2;
+      var controls, delform, imageType, option, select, _i, _len, _ref;
       controls = $.el('div', {
         id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
       });
       imageType = $.get('imageType', 'full');
-      _ref2 = $$('option', controls);
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        option = _ref2[_i];
+      _ref = $$('option', controls);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        option = _ref[_i];
         if (option.textContent === imageType) {
           option.selected = true;
           break;
@@ -2783,7 +2790,8 @@
   };
   main = {
     init: function() {
-      var callback, cutoff, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var callback, cutoff, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
+      $.unbind(window, 'load', main.init);
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2803,8 +2811,7 @@
       if (!$('#navtopr')) {
         return;
       }
-      Favicon.halo = /ws/.test(Favicon["default"]) ? Favicon.haloSFW : Favicon.haloNSFW;
-      $('link[rel="shortcut icon"]', d.head).type = 'image/x-icon';
+      Favicon.init();
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       tzOffset = (new Date()).getTimezoneOffset() / 60;
       g.chanOffset = 5 - tzOffset;
@@ -2822,9 +2829,9 @@
             delete hiddenThreads[id];
           }
         }
-        _ref2 = g.hiddenReplies;
-        for (id in _ref2) {
-          timestamp = _ref2[id];
+        _ref = g.hiddenReplies;
+        for (id in _ref) {
+          timestamp = _ref[id];
           if (timestamp < cutoff) {
             delete g.hiddenReplies[id];
           }
@@ -2919,21 +2926,21 @@
           expandComment.init();
         }
       }
-      _ref3 = $$('div.op');
-      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        op = _ref3[_i];
-        _ref4 = g.callbacks;
-        for (_j = 0, _len2 = _ref4.length; _j < _len2; _j++) {
-          callback = _ref4[_j];
+      _ref2 = $$('div.op');
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        op = _ref2[_i];
+        _ref3 = g.callbacks;
+        for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+          callback = _ref3[_j];
           callback(op);
         }
       }
-      _ref5 = $$('a + table');
-      for (_k = 0, _len3 = _ref5.length; _k < _len3; _k++) {
-        table = _ref5[_k];
-        _ref6 = g.callbacks;
-        for (_l = 0, _len4 = _ref6.length; _l < _len4; _l++) {
-          callback = _ref6[_l];
+      _ref4 = $$('a + table');
+      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
+        table = _ref4[_k];
+        _ref5 = g.callbacks;
+        for (_l = 0, _len4 = _ref5.length; _l < _len4; _l++) {
+          callback = _ref5[_l];
           callback(table);
         }
       }
@@ -3088,7 +3095,7 @@
         opacity: .5;\
       }\
       .inline td.reply {\
-        background-color: rgba(252, 252, 252, 0.15);\
+        background-color: rgba(255, 255, 255, 0.15);\
         border: 1px solid rgba(128, 128, 128, 0.5);\
       }\
       .filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
@@ -3167,5 +3174,9 @@
       }\
     '
   };
-  main.init();
+  if (d.body) {
+    main.init();
+  } else {
+    $.bind(window, 'load', main.init);
+  }
 }).call(this);
