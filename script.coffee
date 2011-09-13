@@ -1618,9 +1618,13 @@ Time =
     g.callbacks.push Time.node
   node: (root) ->
     return if root.className is 'inline'
-    s = $('span[id^=no]', root).previousSibling
+    node = $('span[id]', root).previousSibling
+    tc = node.textContent
+    if tc is ' '
+      node = node.previousSibling
+      tc = node.textContent
     [_, month, day, year, hour, min] =
-      s.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
+      tc.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
     year = "20#{year}"
     month -= 1 #months start at 0
     hour = g.chanOffset + Number hour
@@ -1629,7 +1633,7 @@ Time =
 
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
-    $.replace s, time
+    $.replace node, time
   foo: ->
     code = conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
