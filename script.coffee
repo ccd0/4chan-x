@@ -44,9 +44,9 @@ config =
       'Quote Preview':      [true,  'Show quote content on hover']
       'Indicate OP quote':  [true,  'Add \'(OP)\' to OP quotes']
   flavors: [
-    'http://regex.info/exif.cgi?url='
     'http://iqdb.org/?url='
     'http://google.com/searchbyimage?image_url='
+    '#http://regex.info/exif.cgi?url='
     '#http://tineye.com/search?url='
     '#http://saucenao.com/search.php?db=999&url='
     '#http://imgur.com/upload?url='
