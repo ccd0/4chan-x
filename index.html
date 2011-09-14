@@ -128,14 +128,13 @@
     <p>For linkification / YouTube embedding, check out <a href="http://userscripts.org/scripts/show/107707">YouLink</a>, which works on the entire web, not just 4chan.</p>
     <p>For exhentai sauce, check out <a href="http://userscripts.org/scripts/show/108810">ExSauce</a>.</p>
     <p><strong>DownThemAll</strong>: download all images in a thread with this fast filter: <code>/^http://images.4chan.org/</code>.</p>
-    <p><strong>*nix</strong>: download all images in a thread with this shell function (add it to your <code>.bashrc</code>):
-      <pre>
+    <p><strong>*nix</strong>: download all images in a thread with this shell function (add it to your <code>.bashrc</code>):</p>
+    <pre>
 dta() {
   wget -O - $1 |
   grep -Eo 'http://images.4chan.org/[^"]+' |
   uniq |
   xargs wget
 }</pre>
-    </p>
   </body>
 </html>
