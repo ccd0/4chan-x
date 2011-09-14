@@ -44,9 +44,9 @@ config =
       'Quote Preview':      [true,  'Show quote content on hover']
       'Indicate OP quote':  [true,  'Add \'(OP)\' to OP quotes']
   flavors: [
-    'http://regex.info/exif.cgi?url='
     'http://iqdb.org/?url='
     'http://google.com/searchbyimage?image_url='
+    '#http://regex.info/exif.cgi?url='
     '#http://tineye.com/search?url='
     '#http://saucenao.com/search.php?db=999&url='
     '#http://imgur.com/upload?url='
@@ -1569,9 +1569,13 @@ Time =
     g.callbacks.push Time.node
   node: (root) ->
     return if root.className is 'inline'
-    s = $('span[id^=no]', root).previousSibling
+    node = $('span[id]', root).previousSibling
+    tc = node.textContent
+    if tc is ' '
+      node = node.previousSibling
+      tc = node.textContent
     [_, month, day, year, hour, min] =
-      s.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
+      tc.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
     year = "20#{year}"
     month -= 1 #months start at 0
     hour = g.chanOffset + Number hour
@@ -1580,7 +1584,7 @@ Time =
 
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
-    $.replace s, time
+    $.replace node, time
   foo: ->
     code = conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
