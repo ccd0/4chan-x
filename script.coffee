@@ -2218,7 +2218,7 @@ Main =
       $.set 'lastChecked', now
 
       if conf['Check for Updates'] and VERSION isnt 'master'
-        $.add $.el 'script', src: 'https://raw.github.com/aeosynth/4chan-x/stable/latest.js'
+        $.add d.head, $.el 'script', src: 'https://raw.github.com/aeosynth/4chan-x/stable/latest.js'
 
       cutoff = now - 7*DAY
       hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}

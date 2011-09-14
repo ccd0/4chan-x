@@ -2869,7 +2869,7 @@
       if (lastChecked < now - 1 * DAY) {
         $.set('lastChecked', now);
         if (conf['Check for Updates'] && VERSION !== 'master') {
-          $.add($.el('script', {
+          $.add(d.head, $.el('script', {
             src: 'https://raw.github.com/aeosynth/4chan-x/stable/latest.js'
           }));
         }
