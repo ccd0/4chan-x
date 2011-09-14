@@ -40,12 +40,17 @@
     }
     h1 {
       font-size: 110px;
-      text-shadow: 0 2px 2px #888;
     }
     h2 {
       font-size: 100px;
       text-transform: uppercase;
-      text-shadow: 0 2px 2px #888;
+    }
+    h1, h2 {
+      text-shadow: 1px 1px 1px #FFF, 2px 2px 1px #FFF, 3px 3px 1px #999, 4px 4px 10px #999;
+    }
+    h2:hover a {
+      color: #E69900;
+      text-shadow: 1px 1px 1px #FFF, 2px 2px 1px #FFF, 3px 3px 1px #FA0, 4px 4px 10px #FA0;
     }
     h3 > * {
       float: left;
@@ -61,13 +66,13 @@
     a {
       color: #FA0;
       text-decoration: none;
-      opacity: .75;
-      -webkit-transition: opacity .2s;
-      -moz-transition: opacity .2s;
-      -o-transition: opacity .2s;
+      -webkit-transition: color .5s ease-in-out, text-shadow .2s ease-in-out;
+      -moz-transition: color .2s ease-in-out, text-shadow .2s ease-in-out;
+      -o-transition: color .2s ease-in-out, text-shadow .2s ease-in-out;
     }
     a:hover {
-      opacity: 1;
+      color: #FFF;
+      text-shadow: 0 0 10px #FA0, 0 0 3px #FA0, 0 0 3px #FA0;
     }
     hr {
       border: 1px #DDD solid
