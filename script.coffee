@@ -1084,11 +1084,10 @@ qr =
 
     $.add d.body, qr.el
 
-  message: (e) ->
+  message: (data) ->
     $('iframe[name=iframe]').src = 'about:blank'
     fileCount = $('#files', qr.el).childElementCount
 
-    {data} = e
     if data # error message
       data = JSON.parse data
       $.extend $('#error', qr.el), data
