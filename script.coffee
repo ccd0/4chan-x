@@ -10,6 +10,7 @@ config =
       'Thread Expansion':   [true,  'View all replies']
       'Index Navigation':   [true,  'Navigate to previous / next thread']
       'Reply Navigation':   [false, 'Navigate to top / bottom of thread']
+      'Check for Updates':  [true,  'Check for updated versions of 4chan x (disabled on master)']
     Hiding:
       'Reply Hiding':       [true,  'Hide single replies']
       'Thread Hiding':      [true,  'Hide entire threads']
@@ -111,6 +112,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = 'AEOS.4chan_x.'
+VERSION = 'master'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -969,7 +971,6 @@ qr =
   # email reverts
   init: ->
     g.callbacks.push qr.node
-    $.bind window, 'message', qr.message
     $.bind $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode
     qr.captchaTime = Date.now()
 
@@ -2183,9 +2184,9 @@ firstRun =
     $.rm $ '#overlay'
     $.unbind window, 'click', firstRun.close
 
-main =
+Main =
   init: ->
-    $.unbind window, 'load', main.init
+    $.unbind window, 'load', Main.init
     pathname = location.pathname.substring(1).split('/')
     [g.BOARD, temp] = pathname
     if temp is 'res'
@@ -2203,6 +2204,7 @@ main =
     if not $ '#navtopr'
       return
 
+    $.bind window, 'message', Main.message
     Favicon.init()
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     tzOffset = (new Date()).getTimezoneOffset() / 60
@@ -2213,6 +2215,11 @@ main =
     lastChecked = $.get 'lastChecked', 0
     now = Date.now()
     if lastChecked < now - 1*DAY
+      $.set 'lastChecked', now
+
+      if conf['Check for Updates'] and VERSION isnt 'master'
+        $.add $.el 'script', src: 'https://raw.github.com/aeosynth/4chan-x/stable/latest.js'
+
       cutoff = now - 7*DAY
       hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
 
@@ -2226,9 +2233,8 @@ main =
 
       $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
       $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
-      $.set 'lastChecked', now
 
-    $.addStyle main.css
+    $.addStyle Main.css
 
     #recaptcha may be blocked, eg by noscript
     if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
@@ -2347,6 +2353,14 @@ main =
 
     unless $.get 'firstrun'
       firstRun.init()
+
+  message: (e) ->
+    {origin, data} = e
+    if origin is 'http://sys.4chan.org'
+      qr.message data
+    else
+      if data isnt VERSION
+        alert 'new version of 4chan x available on github!'
 
   css: '
       /* dialog styling */
@@ -2559,6 +2573,6 @@ main =
 
 #XXX Opera will load early if script is saved w/o .user
 if d.body
-  main.init()
+  Main.init()
 else
-  $.bind window, 'load', main.init
+  $.bind window, 'load', Main.init
