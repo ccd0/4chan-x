@@ -42,8 +42,22 @@
       font-size: 110px;
     }
     h2 {
+      background-color: whiteSmoke;
+      border: 1px solid whiteSmoke;
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .2) inset;
       font-size: 100px;
+      margin: 5px -5px;
       text-transform: uppercase;
+      -webkit-transition: all .2s ease-in-out;
+         -moz-transition: all .2s ease-in-out;
+           -o-transition: all .2s ease-in-out;
+              transition: all .2s ease-in-out;
+    }
+    h2:hover {
+      background-color:      rgba(255, 170, 0, .1);
+      border-color:          rgba(255, 170, 0, .25);
+      box-shadow: 0 4px 20px rgba(255, 170, 0, .6) inset;
     }
     h1, h2 {
       text-shadow: 1px 1px 1px #FFF, 2px 2px 1px #FFF, 3px 3px 1px #999, 4px 4px 10px #999;
