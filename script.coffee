@@ -1387,7 +1387,7 @@ updater =
 
     checked = if conf['Auto Update'] then 'checked' else ''
     html += "
-      <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
+      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
       <div><label>Interval (s)<input name=Interval value=#{conf['Interval']} type=text></label></div>
       <div><input value='Update Now' type=button></div>"
 
