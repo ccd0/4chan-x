@@ -60,7 +60,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, VERSION, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -73,7 +73,8 @@
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
-        'Reply Navigation': [false, 'Navigate to top / bottom of thread']
+        'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
+        'Check for Updates': [true, 'Check for updated versions of 4chan x (disabled on master)']
       },
       Hiding: {
         'Reply Hiding': [true, 'Hide single replies'],
@@ -187,6 +188,7 @@
     }
   })(null, config);
   NAMESPACE = 'AEOS.4chan_x.';
+  VERSION = 'master';
   SECOND = 1000;
   MINUTE = 60 * SECOND;
   HOUR = 60 * MINUTE;
@@ -1272,7 +1274,6 @@
     init: function() {
       var iframe;
       g.callbacks.push(qr.node);
-      $.bind(window, 'message', qr.message);
       $.bind($('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode);
       qr.captchaTime = Date.now();
       qr.spoiler = $('.postarea label') ? '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' : '';
@@ -1375,11 +1376,10 @@
       $.bind($('#dummy', qr.el), 'keydown', qr.captchaKeydown);
       return $.add(d.body, qr.el);
     },
-    message: function(e) {
-      var data, duration, fileCount;
+    message: function(data) {
+      var duration, fileCount;
       $('iframe[name=iframe]').src = 'about:blank';
       fileCount = $('#files', qr.el).childElementCount;
-      data = e.data;
       if (data) {
         data = JSON.parse(data);
         $.extend($('#error', qr.el), data);
@@ -2832,10 +2832,10 @@
       return $.unbind(window, 'click', firstRun.close);
     }
   };
-  main = {
+  Main = {
     init: function() {
       var callback, canPost, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
-      $.unbind(window, 'load', main.init);
+      $.unbind(window, 'load', Main.init);
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2855,6 +2855,7 @@
       if (!$('#navtopr')) {
         return;
       }
+      $.bind(window, 'message', Main.message);
       Favicon.init();
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       tzOffset = (new Date()).getTimezoneOffset() / 60;
@@ -2865,6 +2866,12 @@
       lastChecked = $.get('lastChecked', 0);
       now = Date.now();
       if (lastChecked < now - 1 * DAY) {
+        $.set('lastChecked', now);
+        if (conf['Check for Updates'] && VERSION !== 'master') {
+          $.add(d.head, $.el('script', {
+            src: 'https://raw.github.com/aeosynth/4chan-x/stable/latest.js'
+          }));
+        }
         cutoff = now - 7 * DAY;
         hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
         for (id in hiddenThreads) {
@@ -2882,9 +2889,8 @@
         }
         $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
         $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
-        $.set('lastChecked', now);
       }
-      $.addStyle(main.css);
+      $.addStyle(Main.css);
       if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
         Recaptcha.init();
         if (g.REPLY && conf['Auto Watch Reply'] && conf['Thread Watcher']) {
@@ -3014,6 +3020,17 @@
       options.init();
       if (!$.get('firstrun')) {
         return firstRun.init();
+      }
+    },
+    message: function(e) {
+      var data, origin;
+      origin = e.origin, data = e.data;
+      if (origin === 'http://sys.4chan.org') {
+        return qr.message(data);
+      } else {
+        if (data !== VERSION) {
+          return alert('new version of 4chan x available on github!');
+        }
       }
     },
     css: '\
@@ -3226,8 +3243,8 @@
     '
   };
   if (d.body) {
-    main.init();
+    Main.init();
   } else {
-    $.bind(window, 'load', main.init);
+    $.bind(window, 'load', Main.init);
   }
 }).call(this);
