@@ -476,8 +476,10 @@ expandThread =
 
     for reply in $$ 'td[id]', body
       for quote in $$ 'a.quotelink', reply
-        if quote.getAttribute('href') is quote.hash
+        if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
           quote.pathname = pathname
+        else if href isnt quote.href #fix x-thread links, not x-board ones
+          quote.href = "res/#{href}"
       link = $ 'a.quotejs', reply
       link.href = "res/#{thread.firstChild.id}##{reply.id}"
       link.nextSibling.href = "res/#{thread.firstChild.id}#q#{reply.id}"
@@ -1786,8 +1788,10 @@ quoteInline =
           break
     newInline = quoteInline.table id, html
     for quote in $$ 'a.quotelink', newInline
-      if quote.getAttribute('href') is quote.hash
+      if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
         quote.pathname = pathname
+      else if !g.REPLY and href isnt quote.href #fix x-thread links, not x-board ones
+        quote.href = "res/#{href}"
     link = $ 'a.quotejs', newInline
     link.href = "#{pathname}##{id}"
     link.nextSibling.href = "#{pathname}#q#{id}"

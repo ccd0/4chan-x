@@ -652,7 +652,7 @@
       }
     },
     parse: function(req, pathname, thread, a) {
-      var body, br, link, next, quote, reply, table, tables, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _results;
+      var body, br, href, link, next, quote, reply, table, tables, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _results;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.unbind(a, 'click', expandThread.cb.toggle);
@@ -672,8 +672,10 @@
         _ref2 = $$('a.quotelink', reply);
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
-          if (quote.getAttribute('href') === quote.hash) {
+          if ((href = quote.getAttribute('href')) === quote.hash) {
             quote.pathname = pathname;
+          } else if (href !== quote.href) {
+            quote.href = "res/" + href;
           }
         }
         link = $('a.quotejs', reply);
@@ -2289,7 +2291,7 @@
       return $.addClass(this, 'inlined');
     },
     parse: function(req, pathname, id, threadID, inline) {
-      var body, html, link, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
+      var body, href, html, link, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
       if (!inline.parentNode) {
         return;
       }
@@ -2317,8 +2319,10 @@
       _ref2 = $$('a.quotelink', newInline);
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         quote = _ref2[_j];
-        if (quote.getAttribute('href') === quote.hash) {
+        if ((href = quote.getAttribute('href')) === quote.hash) {
           quote.pathname = pathname;
+        } else if (!g.REPLY && href !== quote.href) {
+          quote.href = "res/" + href;
         }
       }
       link = $('a.quotejs', newInline);
