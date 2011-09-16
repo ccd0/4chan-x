@@ -1,4 +1,6 @@
 master
+- mayhem
+  do not display inlined quotes within the quote preview
 
 2.19.3
 - mayhem

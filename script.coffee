@@ -2543,7 +2543,7 @@ Main =
         border: 1px solid;
         padding-bottom: 5px;
       }
-      #qp input {
+      #qp input, #qp .inline {
         display: none;
       }
       .qphl {
