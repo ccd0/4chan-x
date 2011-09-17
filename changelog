@@ -1,4 +1,7 @@
 master
+- mayhem
+  do not display inlined quotes within the quote preview
+  fix cross threads quotes in expanded threads or inlined cross quotes
 
 2.19.3
 - mayhem

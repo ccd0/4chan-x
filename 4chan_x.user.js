@@ -199,24 +199,12 @@
   };
   ui = {
     dialog: function(id, position, html) {
-      var el, left, top, _ref, _ref2;
+      var el, saved;
       el = d.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
-      left = position.left, top = position.top;
-      left = (_ref = localStorage["" + NAMESPACE + id + "Left"]) != null ? _ref : left;
-      top = (_ref2 = localStorage["" + NAMESPACE + id + "Top"]) != null ? _ref2 : top;
-      if (left) {
-        el.style.left = left;
-      } else {
-        el.style.right = 0;
-      }
-      if (top) {
-        el.style.top = top;
-      } else {
-        el.style.bottom = 0;
-      }
+      el.style.cssText = (saved = localStorage["" + NAMESPACE + id + ".position"]) ? saved : position;
       el.querySelector('div.move').addEventListener('mousedown', ui.dragstart, false);
       return el;
     },
@@ -259,8 +247,7 @@
       var el, id;
       el = ui.el;
       id = el.id;
-      localStorage["" + NAMESPACE + id + "Left"] = el.style.left;
-      localStorage["" + NAMESPACE + id + "Top"] = el.style.top;
+      localStorage["" + NAMESPACE + id + ".position"] = el.style.cssText;
       d.removeEventListener('mousemove', ui.drag, false);
       return d.removeEventListener('mouseup', ui.dragend, false);
     },
@@ -652,7 +639,7 @@
       }
     },
     parse: function(req, pathname, thread, a) {
-      var body, br, link, next, quote, reply, table, tables, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _results;
+      var body, br, href, link, next, quote, reply, table, tables, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _results;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.unbind(a, 'click', expandThread.cb.toggle);
@@ -672,8 +659,10 @@
         _ref2 = $$('a.quotelink', reply);
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
-          if (quote.getAttribute('href') === quote.hash) {
+          if ((href = quote.getAttribute('href')) === quote.hash) {
             quote.pathname = pathname;
+          } else if (href !== quote.href) {
+            quote.href = "res/" + href;
           }
         }
         link = $('a.quotejs', reply);
@@ -1360,10 +1349,7 @@
       THREAD_ID = g.THREAD_ID || $.x('ancestor::div[@class="thread"]/div', link).id;
       qr.challenge = $('#recaptcha_challenge_field').value;
       html = "      <a id=close title=close>X</a>      <input type=checkbox id=autohide title=autohide>      <div class=move>        <input class=inputtext type=text name=name value='" + name + "' placeholder=Name form=qr_form>        Quick Reply      </div>      <div class=autohide>        <form name=post action=http://sys.4chan.org/" + g.BOARD + "/post method=POST enctype=multipart/form-data target=iframe id=qr_form>          <input type=hidden name=resto value=" + THREAD_ID + ">          <input type=hidden name=mode value=regist>          <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field>          <input type=hidden name=recaptcha_response_field id=recaptcha_response_field>          <div><input class=inputtext type=text name=email value='" + email + "' placeholder=E-mail>" + qr.spoiler + "</div>          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=" + submitValue + " id=com_submit " + submitDisabled + "><label><input type=checkbox id=auto>auto</label></div>          <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>          <div><img src=http://www.google.com/recaptcha/api/image?c=" + qr.challenge + "></div>          <div><input class=inputtext type=text autocomplete=off placeholder=Verification id=dummy><span id=captchas>" + ($.get('captchas', []).length) + " captchas</span></div>          <div><input type=file name=upfile accept='" + qr.acceptFiles + "'></div>        </form>        <div id=files></div>        <div><input class=inputtext type=password name=pwd value='" + pwd + "' placeholder=Password form=qr_form maxlength=8><a id=attach>attach another file</a></div>      </div>      <a id=error class=error></a>      ";
-      qr.el = ui.dialog('qr', {
-        top: '0px',
-        left: '0px'
-      }, html);
+      qr.el = ui.dialog('qr', 'top: 0; left: 0;', html);
       $.bind($('input[name=name]', qr.el), 'mousedown', function(e) {
         return e.stopPropagation();
       });
@@ -1741,11 +1727,8 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + conf['Interval'] + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
-      dialog = ui.dialog('updater', {
-        bottom: '0',
-        right: '0'
-      }, html);
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + conf['Interval'] + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
+      dialog = ui.dialog('updater', 'bottom: 0; right: 0;', html);
       updater.count = $('#count', dialog);
       updater.timer = $('#timer', dialog);
       updater.br = $('br[clear]');
@@ -1873,10 +1856,7 @@
     init: function() {
       var favicon, html, input, inputs, _i, _len;
       html = '<div class=move>Thread Watcher</div>';
-      watcher.dialog = ui.dialog('watcher', {
-        top: '50px',
-        left: '0px'
-      }, html);
+      watcher.dialog = ui.dialog('watcher', 'top: 50px; left: 0px;', html);
       $.add(d.body, watcher.dialog);
       inputs = $$('.op input');
       for (_i = 0, _len = inputs.length; _i < _len; _i++) {
@@ -2290,7 +2270,7 @@
       return $.addClass(this, 'inlined');
     },
     parse: function(req, pathname, id, threadID, inline) {
-      var body, html, link, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
+      var body, href, html, link, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
       if (!inline.parentNode) {
         return;
       }
@@ -2318,8 +2298,10 @@
       _ref2 = $$('a.quotelink', newInline);
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         quote = _ref2[_j];
-        if (quote.getAttribute('href') === quote.hash) {
+        if ((href = quote.getAttribute('href')) === quote.hash) {
           quote.pathname = pathname;
+        } else if (!g.REPLY && href !== quote.href) {
+          quote.href = "res/" + href;
         }
       }
       link = $('a.quotejs', newInline);
@@ -2470,10 +2452,7 @@
       threadStats.posts = 1;
       threadStats.images = $('.op img[md5]') ? 1 : 0;
       html = "<div class=move><span id=postcount>" + threadStats.posts + "</span> / <span id=imagecount>" + threadStats.images + "</span></div>";
-      dialog = ui.dialog('stats', {
-        bottom: '0px',
-        left: '0px'
-      }, html);
+      dialog = ui.dialog('stats', 'bottom: 0; left: 0;', html);
       dialog.className = 'dialog';
       threadStats.postcountEl = $('#postcount', dialog);
       threadStats.imagecountEl = $('#imagecount', dialog);
@@ -3216,7 +3195,7 @@
         border: 1px solid;\
         padding-bottom: 5px;\
       }\
-      #qp input {\
+      #qp input, #qp .inline {\
         display: none;\
       }\
       .qphl {\
