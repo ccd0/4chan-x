@@ -2339,7 +2339,7 @@
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _results;
       qp = ui.el = $.el('div', {
         id: 'qp',
-        className: 'replyhl'
+        className: 'reply'
       });
       $.add(d.body, qp);
       id = this.hash.slice(1);
