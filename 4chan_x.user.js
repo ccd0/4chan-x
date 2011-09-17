@@ -199,23 +199,25 @@
   };
   ui = {
     dialog: function(id, position, html) {
-      var el, left, top, _ref, _ref2;
+      var el, left, saved, top;
       el = d.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
-      left = position.left, top = position.top;
-      left = (_ref = localStorage["" + NAMESPACE + id + "Left"]) != null ? _ref : left;
-      top = (_ref2 = localStorage["" + NAMESPACE + id + "Top"]) != null ? _ref2 : top;
-      if (left) {
-        el.style.left = left;
+      if (saved = localStorage["" + NAMESPACE + id + ".position"]) {
+        el.style.cssText = saved;
       } else {
-        el.style.right = 0;
-      }
-      if (top) {
-        el.style.top = top;
-      } else {
-        el.style.bottom = 0;
+        left = position.left, top = position.top;
+        if (left) {
+          el.style.left = left;
+        } else {
+          el.style.right = 0;
+        }
+        if (top) {
+          el.style.top = top;
+        } else {
+          el.style.bottom = 0;
+        }
       }
       el.querySelector('div.move').addEventListener('mousedown', ui.dragstart, false);
       return el;
@@ -259,8 +261,7 @@
       var el, id;
       el = ui.el;
       id = el.id;
-      localStorage["" + NAMESPACE + id + "Left"] = el.style.left;
-      localStorage["" + NAMESPACE + id + "Top"] = el.style.top;
+      localStorage["" + NAMESPACE + id + ".position"] = el.style.cssText;
       d.removeEventListener('mousemove', ui.drag, false);
       return d.removeEventListener('mouseup', ui.dragend, false);
     },

@@ -126,11 +126,12 @@ ui =
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
-    {left, top} = position
-    left = localStorage["#{NAMESPACE}#{id}Left"] ? left
-    top  = localStorage["#{NAMESPACE}#{id}Top"]  ? top
-    if left then el.style.left = left else el.style.right  = 0
-    if top  then el.style.top  = top  else el.style.bottom = 0
+    if saved = localStorage["#{NAMESPACE}#{id}.position"]
+      el.style.cssText = saved
+    else
+      {left, top} = position
+      if left then el.style.left = left else el.style.right  = 0
+      if top  then el.style.top  = top  else el.style.bottom = 0
     el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
     el
   dragstart: (e) ->
@@ -170,8 +171,7 @@ ui =
     #a = (b = c.b, c).a;
     {el} = ui
     {id} = el
-    localStorage["#{NAMESPACE}#{id}Left"] = el.style.left
-    localStorage["#{NAMESPACE}#{id}Top"]  = el.style.top
+    localStorage["#{NAMESPACE}#{id}.position"] = el.style.cssText
     d.removeEventListener 'mousemove', ui.drag, false
     d.removeEventListener 'mouseup',   ui.dragend, false
   hover: (e) ->
