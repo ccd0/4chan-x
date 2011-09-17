@@ -126,12 +126,7 @@ ui =
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
-    if saved = localStorage["#{NAMESPACE}#{id}.position"]
-      el.style.cssText = saved
-    else
-      {left, top} = position
-      if left then el.style.left = left else el.style.right  = 0
-      if top  then el.style.top  = top  else el.style.bottom = 0
+    el.style.cssText = if saved = localStorage["#{NAMESPACE}#{id}.position"] then saved else position
     el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
     el
   dragstart: (e) ->
@@ -1073,7 +1068,7 @@ qr =
       </div>
       <a id=error class=error></a>
       "
-    qr.el = ui.dialog 'qr', top: '0px', left: '0px', html
+    qr.el = ui.dialog 'qr', 'top: 0; left: 0;', html
 
     $.bind $('input[name=name]',   qr.el), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('input[name=upfile]', qr.el), 'change', qr.validateFileSize
@@ -1393,7 +1388,7 @@ updater =
       <div><label>Interval (s)<input name=Interval value=#{conf['Interval']} type=text></label></div>
       <div><input value='Update Now' type=button></div>"
 
-    dialog = ui.dialog 'updater', bottom: '0', right: '0', html
+    dialog = ui.dialog 'updater', 'bottom: 0; right: 0;', html
 
     updater.count = $ '#count', dialog
     updater.timer = $ '#timer', dialog
@@ -1501,7 +1496,7 @@ updater =
 watcher =
   init: ->
     html = '<div class=move>Thread Watcher</div>'
-    watcher.dialog = ui.dialog 'watcher', top: '50px', left: '0px', html
+    watcher.dialog = ui.dialog 'watcher', 'top: 50px; left: 0px;', html
     $.add d.body, watcher.dialog
 
     #add watch buttons
@@ -1885,7 +1880,7 @@ threadStats =
     threadStats.posts = 1
     threadStats.images = if $ '.op img[md5]' then 1 else 0
     html = "<div class=move><span id=postcount>#{threadStats.posts}</span> / <span id=imagecount>#{threadStats.images}</span></div>"
-    dialog = ui.dialog 'stats', bottom: '0px', left: '0px', html
+    dialog = ui.dialog 'stats', 'bottom: 0; left: 0;', html
     dialog.className = 'dialog'
     threadStats.postcountEl  = $ '#postcount',  dialog
     threadStats.imagecountEl = $ '#imagecount', dialog
