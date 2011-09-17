@@ -3008,8 +3008,8 @@
       if (origin === 'http://sys.4chan.org') {
         return qr.message(data);
       } else {
-        if (data !== VERSION) {
-          return alert('new version of 4chan x available on github!');
+        if (data !== VERSION && confirm('a newer version of 4chan x is available, would you like to install it now?')) {
+          return window.location = 'https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js';
         }
       }
     },

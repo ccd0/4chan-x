@@ -2358,8 +2358,8 @@ Main =
     if origin is 'http://sys.4chan.org'
       qr.message data
     else
-      if data isnt VERSION
-        alert 'new version of 4chan x available on github!'
+      if data isnt VERSION and confirm 'a newer version of 4chan x is available, would you like to install it now?'
+        window.location = 'https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js'
 
   css: '
       /* dialog styling */
