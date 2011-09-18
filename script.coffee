@@ -86,7 +86,7 @@ config =
 # XXX chrome can't into `{log} = console`
 if console?
   # XXX scriptish - console.log.apply is not a function
-  # https://github.com/scriptish/scriptish/issues/499
+  # https://github.com/scriptish/scriptish/issues/3
   log = (arg) ->
     console.log arg
 
