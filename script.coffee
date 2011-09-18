@@ -1614,7 +1614,7 @@ Time =
     g.callbacks.push Time.node
   node: (root) ->
     return if root.className is 'inline'
-    node = if root.className is 'op' then $('.posttime', root) else $('span[id]', root).previousSibling
+    node = if posttime = $('.posttime', root) then posttime else $('span[id]', root).previousSibling
     [_, month, day, year, hour, min] =
       node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
     year = "20#{year}"
