@@ -10,7 +10,6 @@ config =
       'Thread Expansion':   [true,  'View all replies']
       'Index Navigation':   [true,  'Navigate to previous / next thread']
       'Reply Navigation':   [false, 'Navigate to top / bottom of thread']
-      'Check for Updates':  [true,  'Check for updated versions of 4chan x (disabled on master)']
     Hiding:
       'Reply Hiding':       [true,  'Hide single replies']
       'Thread Hiding':      [true,  'Hide entire threads']
@@ -112,7 +111,6 @@ conf = {}
 ) null, config
 
 NAMESPACE = 'AEOS.4chan_x.'
-VERSION = 'master'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -2216,9 +2214,6 @@ Main =
     if lastChecked < now - 1*DAY
       $.set 'lastChecked', now
 
-      if conf['Check for Updates'] and VERSION isnt 'master'
-        $.add d.head, $.el 'script', src: 'https://raw.github.com/aeosynth/4chan-x/stable/latest.js'
-
       cutoff = now - 7*DAY
       hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
 
@@ -2357,9 +2352,6 @@ Main =
     {origin, data} = e
     if origin is 'http://sys.4chan.org'
       qr.message data
-    else
-      if data isnt VERSION and confirm 'a newer version of 4chan x is available, would you like to install it now?'
-        window.location = 'https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js'
 
   css: '
       /* dialog styling */

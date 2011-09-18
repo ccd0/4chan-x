@@ -1,1 +1,0 @@
-window.postMessage('master', '*');

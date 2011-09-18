@@ -60,7 +60,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, VERSION, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -73,8 +73,7 @@
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
-        'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
-        'Check for Updates': [true, 'Check for updated versions of 4chan x (disabled on master)']
+        'Reply Navigation': [false, 'Navigate to top / bottom of thread']
       },
       Hiding: {
         'Reply Hiding': [true, 'Hide single replies'],
@@ -188,7 +187,6 @@
     }
   })(null, config);
   NAMESPACE = 'AEOS.4chan_x.';
-  VERSION = 'master';
   SECOND = 1000;
   MINUTE = 60 * SECOND;
   HOUR = 60 * MINUTE;
@@ -2847,11 +2845,6 @@
       now = Date.now();
       if (lastChecked < now - 1 * DAY) {
         $.set('lastChecked', now);
-        if (conf['Check for Updates'] && VERSION !== 'master') {
-          $.add(d.head, $.el('script', {
-            src: 'https://raw.github.com/aeosynth/4chan-x/stable/latest.js'
-          }));
-        }
         cutoff = now - 7 * DAY;
         hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
         for (id in hiddenThreads) {
@@ -3007,10 +3000,6 @@
       origin = e.origin, data = e.data;
       if (origin === 'http://sys.4chan.org') {
         return qr.message(data);
-      } else {
-        if (data !== VERSION && confirm('a newer version of 4chan x is available, would you like to install it now?')) {
-          return window.location = 'https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js';
-        }
       }
     },
     css: '\
