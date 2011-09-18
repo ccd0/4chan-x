@@ -86,7 +86,7 @@ config =
 # XXX chrome can't into `{log} = console`
 if console?
   # XXX scriptish - console.log.apply is not a function
-  # https://github.com/scriptish/scriptish/issues/499
+  # https://github.com/scriptish/scriptish/issues/3
   log = (arg) ->
     console.log arg
 
@@ -124,11 +124,7 @@ ui =
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
-    {left, top} = position
-    left = localStorage["#{NAMESPACE}#{id}Left"] ? left
-    top  = localStorage["#{NAMESPACE}#{id}Top"]  ? top
-    if left then el.style.left = left else el.style.right  = 0
-    if top  then el.style.top  = top  else el.style.bottom = 0
+    el.style.cssText = if saved = localStorage["#{NAMESPACE}#{id}.position"] then saved else position
     el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
     el
   dragstart: (e) ->
@@ -168,8 +164,7 @@ ui =
     #a = (b = c.b, c).a;
     {el} = ui
     {id} = el
-    localStorage["#{NAMESPACE}#{id}Left"] = el.style.left
-    localStorage["#{NAMESPACE}#{id}Top"]  = el.style.top
+    localStorage["#{NAMESPACE}#{id}.position"] = el.style.cssText
     d.removeEventListener 'mousemove', ui.drag, false
     d.removeEventListener 'mouseup',   ui.dragend, false
   hover: (e) ->
@@ -474,8 +469,10 @@ expandThread =
 
     for reply in $$ 'td[id]', body
       for quote in $$ 'a.quotelink', reply
-        if quote.getAttribute('href') is quote.hash
+        if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
           quote.pathname = pathname
+        else if href isnt quote.href #fix x-thread links, not x-board ones
+          quote.href = "res/#{href}"
       link = $ 'a.quotejs', reply
       link.href = "res/#{thread.firstChild.id}##{reply.id}"
       link.nextSibling.href = "res/#{thread.firstChild.id}#q#{reply.id}"
@@ -1338,11 +1335,11 @@ updater =
 
     checked = if conf['Auto Update'] then 'checked' else ''
     html += "
-      <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
+      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
       <div><label>Interval (s)<input name=Interval value=#{conf['Interval']} type=text></label></div>
       <div><input value='Update Now' type=button></div>"
 
-    dialog = ui.dialog 'updater', bottom: '0', right: '0', html
+    dialog = ui.dialog 'updater', 'bottom: 0; right: 0;', html
 
     updater.count = $ '#count', dialog
     updater.timer = $ '#timer', dialog
@@ -1450,7 +1447,7 @@ updater =
 watcher =
   init: ->
     html = '<div class=move>Thread Watcher</div>'
-    watcher.dialog = ui.dialog 'watcher', top: '50px', left: '0px', html
+    watcher.dialog = ui.dialog 'watcher', 'top: 50px; left: 0px;', html
     $.add d.body, watcher.dialog
 
     #add watch buttons
@@ -1737,8 +1734,10 @@ quoteInline =
           break
     newInline = quoteInline.table id, html
     for quote in $$ 'a.quotelink', newInline
-      if quote.getAttribute('href') is quote.hash
+      if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
         quote.pathname = pathname
+      else if !g.REPLY and href isnt quote.href #fix x-thread links, not x-board ones
+        quote.href = "res/#{href}"
     link = $ 'a.quotejs', newInline
     link.href = "#{pathname}##{id}"
     link.nextSibling.href = "#{pathname}#q#{id}"
@@ -1761,7 +1760,7 @@ quotePreview =
   mouseover: (e) ->
     qp = ui.el = $.el 'div',
       id: 'qp'
-      className: 'replyhl'
+      className: 'reply'
     $.add d.body, qp
 
     id = @hash[1..]
@@ -1832,7 +1831,7 @@ threadStats =
     threadStats.posts = 1
     threadStats.images = if $ '.op img[md5]' then 1 else 0
     html = "<div class=move><span id=postcount>#{threadStats.posts}</span> / <span id=imagecount>#{threadStats.images}</span></div>"
-    dialog = ui.dialog 'stats', bottom: '0px', left: '0px', html
+    dialog = ui.dialog 'stats', 'bottom: 0; left: 0;', html
     dialog.className = 'dialog'
     threadStats.postcountEl  = $ '#postcount',  dialog
     threadStats.imagecountEl = $ '#imagecount', dialog
@@ -2122,9 +2121,9 @@ firstRun =
     $.rm $ '#overlay'
     $.unbind window, 'click', firstRun.close
 
-main =
+Main =
   init: ->
-    $.unbind window, 'load', main.init
+    $.unbind window, 'load', Main.init
     pathname = location.pathname.substring(1).split('/')
     [g.BOARD, temp] = pathname
     if temp is 'res'
@@ -2142,6 +2141,7 @@ main =
     if not $ '#navtopr'
       return
 
+    $.bind window, 'message', Main.message
     Favicon.init()
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     tzOffset = (new Date()).getTimezoneOffset() / 60
@@ -2152,6 +2152,8 @@ main =
     lastChecked = $.get 'lastChecked', 0
     now = Date.now()
     if lastChecked < now - 1*DAY
+      $.set 'lastChecked', now
+
       cutoff = now - 7*DAY
       hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
 
@@ -2165,9 +2167,8 @@ main =
 
       $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
       $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
-      $.set 'lastChecked', now
 
-    $.addStyle main.css
+    $.addStyle Main.css
 
     #major features
     threading.init()
@@ -2268,6 +2269,11 @@ main =
 
     unless $.get 'firstrun'
       firstRun.init()
+
+  message: (e) ->
+    {origin, data} = e
+    if origin is 'http://sys.4chan.org'
+      qr.message data
 
   css: '
       /* dialog styling */
@@ -2404,7 +2410,7 @@ main =
         border: 1px solid;
         padding-bottom: 5px;
       }
-      #qp input {
+      #qp input, #qp .inline {
         display: none;
       }
       .qphl {
@@ -2495,6 +2501,6 @@ main =
 
 #XXX Opera will load early if script is saved w/o .user
 if d.body
-  main.init()
+  Main.init()
 else
-  $.bind window, 'load', main.init
+  $.bind window, 'load', Main.init

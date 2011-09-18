@@ -6,7 +6,7 @@
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
-// @icon           https://github.com/aeosynth/4chan-x/raw/gh-pages/favicon.png
+// @icon           https://raw.github.com/aeosynth/4chan-x/gh-pages/favicon.png
 // ==/UserScript==
 
 /* LICENSE
@@ -60,7 +60,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, main, nav, nodeInserted, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -197,24 +197,12 @@
   };
   ui = {
     dialog: function(id, position, html) {
-      var el, left, top, _ref, _ref2;
+      var el, saved;
       el = d.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
-      left = position.left, top = position.top;
-      left = (_ref = localStorage["" + NAMESPACE + id + "Left"]) != null ? _ref : left;
-      top = (_ref2 = localStorage["" + NAMESPACE + id + "Top"]) != null ? _ref2 : top;
-      if (left) {
-        el.style.left = left;
-      } else {
-        el.style.right = 0;
-      }
-      if (top) {
-        el.style.top = top;
-      } else {
-        el.style.bottom = 0;
-      }
+      el.style.cssText = (saved = localStorage["" + NAMESPACE + id + ".position"]) ? saved : position;
       el.querySelector('div.move').addEventListener('mousedown', ui.dragstart, false);
       return el;
     },
@@ -257,8 +245,7 @@
       var el, id;
       el = ui.el;
       id = el.id;
-      localStorage["" + NAMESPACE + id + "Left"] = el.style.left;
-      localStorage["" + NAMESPACE + id + "Top"] = el.style.top;
+      localStorage["" + NAMESPACE + id + ".position"] = el.style.cssText;
       d.removeEventListener('mousemove', ui.drag, false);
       return d.removeEventListener('mouseup', ui.dragend, false);
     },
@@ -650,7 +637,7 @@
       }
     },
     parse: function(req, pathname, thread, a) {
-      var body, br, link, next, quote, reply, table, tables, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _results;
+      var body, br, href, link, next, quote, reply, table, tables, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _results;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.unbind(a, 'click', expandThread.cb.toggle);
@@ -670,8 +657,10 @@
         _ref2 = $$('a.quotelink', reply);
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
-          if (quote.getAttribute('href') === quote.hash) {
+          if ((href = quote.getAttribute('href')) === quote.hash) {
             quote.pathname = pathname;
+          } else if (href !== quote.href) {
+            quote.href = "res/" + href;
           }
         }
         link = $('a.quotejs', reply);
@@ -1720,11 +1709,8 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread auotmatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + conf['Interval'] + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
-      dialog = ui.dialog('updater', {
-        bottom: '0',
-        right: '0'
-      }, html);
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + conf['Interval'] + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
+      dialog = ui.dialog('updater', 'bottom: 0; right: 0;', html);
       updater.count = $('#count', dialog);
       updater.timer = $('#timer', dialog);
       updater.br = $('br[clear]');
@@ -1852,10 +1838,7 @@
     init: function() {
       var favicon, html, input, inputs, _i, _len;
       html = '<div class=move>Thread Watcher</div>';
-      watcher.dialog = ui.dialog('watcher', {
-        top: '50px',
-        left: '0px'
-      }, html);
+      watcher.dialog = ui.dialog('watcher', 'top: 50px; left: 0px;', html);
       $.add(d.body, watcher.dialog);
       inputs = $$('.op input');
       for (_i = 0, _len = inputs.length; _i < _len; _i++) {
@@ -2269,7 +2252,7 @@
       return $.addClass(this, 'inlined');
     },
     parse: function(req, pathname, id, threadID, inline) {
-      var body, html, link, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
+      var body, href, html, link, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
       if (!inline.parentNode) {
         return;
       }
@@ -2297,8 +2280,10 @@
       _ref2 = $$('a.quotelink', newInline);
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         quote = _ref2[_j];
-        if (quote.getAttribute('href') === quote.hash) {
+        if ((href = quote.getAttribute('href')) === quote.hash) {
           quote.pathname = pathname;
+        } else if (!g.REPLY && href !== quote.href) {
+          quote.href = "res/" + href;
         }
       }
       link = $('a.quotejs', newInline);
@@ -2337,7 +2322,7 @@
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _results;
       qp = ui.el = $.el('div', {
         id: 'qp',
-        className: 'replyhl'
+        className: 'reply'
       });
       $.add(d.body, qp);
       id = this.hash.slice(1);
@@ -2449,10 +2434,7 @@
       threadStats.posts = 1;
       threadStats.images = $('.op img[md5]') ? 1 : 0;
       html = "<div class=move><span id=postcount>" + threadStats.posts + "</span> / <span id=imagecount>" + threadStats.images + "</span></div>";
-      dialog = ui.dialog('stats', {
-        bottom: '0px',
-        left: '0px'
-      }, html);
+      dialog = ui.dialog('stats', 'bottom: 0; left: 0;', html);
       dialog.className = 'dialog';
       threadStats.postcountEl = $('#postcount', dialog);
       threadStats.imagecountEl = $('#imagecount', dialog);
@@ -2793,10 +2775,10 @@
       return $.unbind(window, 'click', firstRun.close);
     }
   };
-  main = {
+  Main = {
     init: function() {
       var callback, cutoff, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
-      $.unbind(window, 'load', main.init);
+      $.unbind(window, 'load', Main.init);
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2816,6 +2798,7 @@
       if (!$('#navtopr')) {
         return;
       }
+      $.bind(window, 'message', Main.message);
       Favicon.init();
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       tzOffset = (new Date()).getTimezoneOffset() / 60;
@@ -2826,6 +2809,7 @@
       lastChecked = $.get('lastChecked', 0);
       now = Date.now();
       if (lastChecked < now - 1 * DAY) {
+        $.set('lastChecked', now);
         cutoff = now - 7 * DAY;
         hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
         for (id in hiddenThreads) {
@@ -2843,9 +2827,8 @@
         }
         $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
         $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
-        $.set('lastChecked', now);
       }
-      $.addStyle(main.css);
+      $.addStyle(Main.css);
       threading.init();
       if (g.REPLY && (id = location.hash.slice(1)) && /\d/.test(id[0]) && !$.id(id)) {
         scrollTo(0, d.body.scrollHeight);
@@ -2953,6 +2936,13 @@
       options.init();
       if (!$.get('firstrun')) {
         return firstRun.init();
+      }
+    },
+    message: function(e) {
+      var data, origin;
+      origin = e.origin, data = e.data;
+      if (origin === 'http://sys.4chan.org') {
+        return qr.message(data);
       }
     },
     css: '\
@@ -3090,7 +3080,7 @@
         border: 1px solid;\
         padding-bottom: 5px;\
       }\
-      #qp input {\
+      #qp input, #qp .inline {\
         display: none;\
       }\
       .qphl {\
@@ -3180,8 +3170,8 @@
     '
   };
   if (d.body) {
-    main.init();
+    Main.init();
   } else {
-    $.bind(window, 'load', main.init);
+    $.bind(window, 'load', Main.init);
   }
 }).call(this);

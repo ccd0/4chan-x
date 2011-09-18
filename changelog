@@ -1,5 +1,13 @@
 master
 
+2.19.4
+- mayhem
+  do not display inlined quotes within the quote preview
+  fix cross threads quotes in expanded threads or inlined cross quotes
+  default post styling for quote previews
+- aeosynth
+  script auto updating
+
 2.19.3
 - mayhem
   quote inlining default styling (by xat)
