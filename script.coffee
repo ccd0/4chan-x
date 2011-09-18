@@ -1614,13 +1614,9 @@ Time =
     g.callbacks.push Time.node
   node: (root) ->
     return if root.className is 'inline'
-    node = $('span[id]', root).previousSibling
-    tc = node.textContent
-    if tc is ' '
-      node = node.previousSibling
-      tc = node.textContent
+    node = if root.className is 'op' then $('.posttime', root) else $('span[id]', root).previousSibling
     [_, month, day, year, hour, min] =
-      tc.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
+      node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
     year = "20#{year}"
     month -= 1 #months start at 0
     hour = g.chanOffset + Number hour
