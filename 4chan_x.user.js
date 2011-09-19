@@ -1360,11 +1360,10 @@
       $.bind($('#dummy', qr.el), 'keydown', qr.captchaKeydown);
       return $.add(d.body, qr.el);
     },
-    message: function(e) {
-      var data, duration, fileCount;
+    message: function(data) {
+      var duration, fileCount;
       $('iframe[name=iframe]').src = 'about:blank';
       fileCount = $('#files', qr.el).childElementCount;
-      data = e.data;
       if (data) {
         data = JSON.parse(data);
         $.extend($('#error', qr.el), data);
@@ -2994,7 +2993,7 @@
       var data, origin;
       origin = e.origin, data = e.data;
       if (origin === 'http://sys.4chan.org') {
-        return qr.message(e);
+        return qr.message(data);
       }
     },
     css: '\
