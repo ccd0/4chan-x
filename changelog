@@ -1,6 +1,10 @@
 master
 
-2.19.4
+2.20.1
+- mayhem
+  fix regression: qr not preventing errors
+
+2.20.0
 - mayhem
   do not display inlined quotes within the quote preview
   fix cross threads quotes in expanded threads or inlined cross quotes
