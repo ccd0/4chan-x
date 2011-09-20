@@ -796,13 +796,13 @@ options =
       <div class='reply dialog'>
         <div id=optionsbar>
           <div id=floaty>
-            <label for=main_tab>main</label> | <label for=flavors_tab>sauce</label> | <label for=rice_tab>rice</label> | <label for=keybinds_tab>keybinds</label>
+            <label for=main_tab>Main</label> | <label for=flavors_tab>Sauce</label> | <label for=rice_tab>Rice</label> | <label for=keybinds_tab>Keybinds</label>
           </div>
           <div id=credits>
             <a href=http://aeosynth.github.com/4chan-x/>4chan X</a> |
-            <a href=http://chat.now.im/x/aeos>support throd</a> |
-            <a href=https://github.com/aeosynth/4chan-x/issues>github</a> |
-            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>donate</a>
+            <a href=http://chat.now.im/x/aeos>Support Throd</a> |
+            <a href=https://github.com/aeosynth/4chan-x/issues>GitHub</a> |
+            <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>Donate</a>
           </div>
         </div>
         <hr>
