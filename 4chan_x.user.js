@@ -1545,7 +1545,6 @@
         };
         if (node = (_ref = $('table font b')) != null ? _ref.firstChild : void 0) {
           textContent = node.textContent, href = node.href;
-          alert(textContent);
           data = JSON.stringify({
             textContent: textContent,
             href: href

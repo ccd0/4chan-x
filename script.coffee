@@ -1201,7 +1201,6 @@ QR =
       $ = (css) -> document.querySelector css
       if node = $('table font b')?.firstChild
         {textContent, href} = node
-        alert textContent
         data = JSON.stringify {textContent, href}
       else if node = $ 'meta'
         data = node.content.match(/url=(.+)/)[1]
