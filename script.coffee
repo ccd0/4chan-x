@@ -2269,7 +2269,7 @@ Main =
   message: (e) ->
     {origin, data} = e
     if origin is 'http://sys.4chan.org'
-      QR.message data
+      QR.receive data
 
   css: '
       /* dialog styling */

@@ -2934,7 +2934,7 @@
       var data, origin;
       origin = e.origin, data = e.data;
       if (origin === 'http://sys.4chan.org') {
-        return QR.message(data);
+        return QR.receive(data);
       }
     },
     css: '\
