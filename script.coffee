@@ -2483,7 +2483,11 @@ Main =
         width: 100%;
       }
       #qr #files input {
-        display: none;
+        /* cannot use `display: none;`
+        https://bugs.webkit.org/show_bug.cgi?id=58208
+        http://code.google.com/p/chromium/issues/detail?id=78961
+        */
+        visibility: hidden;
       }
       #qr #files img {
         max-height: 100px;
