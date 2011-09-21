@@ -991,7 +991,7 @@ QR =
     captchas.push captcha
     $.set 'captchas', captchas
     el.value = ''
-    Recaptcha.reload()
+    QR.captchaReload()
     QR.captchaLength captchas
   captchaShift: ->
     captchas = $.get 'captchas', []
@@ -2271,7 +2271,7 @@ Main =
   message: (e) ->
     {origin, data} = e
     if origin is 'http://sys.4chan.org'
-      qr.message data
+      QR.message data
 
   css: '
       /* dialog styling */

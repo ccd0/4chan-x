@@ -1288,7 +1288,7 @@
       captchas.push(captcha);
       $.set('captchas', captchas);
       el.value = '';
-      Recaptcha.reload();
+      QR.captchaReload();
       return QR.captchaLength(captchas);
     },
     captchaShift: function() {
@@ -2934,7 +2934,7 @@
       var data, origin;
       origin = e.origin, data = e.data;
       if (origin === 'http://sys.4chan.org') {
-        return qr.message(data);
+        return QR.message(data);
       }
     },
     css: '\
