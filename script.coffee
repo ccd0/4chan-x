@@ -2430,8 +2430,6 @@ Main =
         display: block;
       }
       #qr {
-        max-height: 100%;
-        overflow-y: auto;
         position: fixed;
       }
       #qr #autohide, #qr .close {
