@@ -1076,7 +1076,6 @@ QR =
     </div>
     <a class=error></a>
     "
-    #$.bind $('#attach', qr), 'click', QR.attach
     #XXX use dom methods to set values instead of injecting raw user input into your html -_-;
     c = d.cookie
     $('[name=name]', qr).value  = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
