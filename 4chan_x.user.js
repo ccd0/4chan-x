@@ -1258,7 +1258,7 @@
     attach: function() {
       var box, file, files;
       files = $('#files', QR.qr);
-      box = $.el('span', {
+      box = $.el('li', {
         innerHTML: "<input type=file name=upfile accept='" + QR.accept + "'><img alt='click here'><a class=x>X</a>"
       });
       file = $('input', box);
@@ -1371,7 +1371,7 @@
         text = '';
       }
       tid || (tid = g.THREAD_ID || '');
-      QR.qr = qr = ui.dialog('qr', 'top: 0; left: 0;', "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <input form=qr_form placeholder=Name name=name>        <input form=qr_form placeholder=Email name=email>        <input form=qr_form placeholder=Subject name=sub>      </span>    </div>    <div class=autohide>      <textarea form=qr_form placeholder=Comment name=com></textarea>      <div id=files></div>      <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>        <div hidden>          <input name=pwd>          <input name=mode value=regist>          <input name=recaptcha_challenge_field id=challenge>          <input name=recaptcha_response_field id=response>        </div>        <div id=captcha>          <div><img></div>          <span id=cl>120 Captchas</span>          <input id=recaptcha_response_field autocomplete=off>        </div>        <div>          <button>Submit</button>          " + (g.REPLY ? "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" : '') + "          <input form=qr_form placeholder=Thread name=resto value=" + tid + " " + (g.REPLY ? 'hidden' : '') + ">          " + QR.spoiler + "        </div>      </form>    </div>    <a class=error></a>    ");
+      QR.qr = qr = ui.dialog('qr', 'top: 0; left: 0;', "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <input form=qr_form placeholder=Name name=name>        <input form=qr_form placeholder=Email name=email>        <input form=qr_form placeholder=Subject name=sub>      </span>    </div>    <div class=autohide>      <textarea form=qr_form placeholder=Comment name=com></textarea>      <ul id=files></ul>      <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>        <div hidden>          <input name=pwd>          <input name=mode value=regist>          <input name=recaptcha_challenge_field id=challenge>          <input name=recaptcha_response_field id=response>        </div>        <div id=captcha>          <div><img></div>          <span id=cl>120 Captchas</span>          <input id=recaptcha_response_field autocomplete=off>        </div>        <div>          <button>Submit</button>          " + (g.REPLY ? "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" : '') + "          <input form=qr_form placeholder=Thread name=resto value=" + tid + " " + (g.REPLY ? 'hidden' : '') + ">          " + QR.spoiler + "        </div>      </form>    </div>    <a class=error></a>    ");
       c = d.cookie;
       $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
@@ -3129,9 +3129,12 @@
         width: 300px;\
         white-space: nowrap;\
         overflow: auto;\
+        margin: 0;\
+        padding: 0;\
       }\
-      #qr #files span {\
+      #qr #files li {\
         position: relative;\
+        display: inline;\
       }\
       #qr #files a {\
         position: absolute;\
