@@ -1127,11 +1127,10 @@ QR =
     ta.setSelectionRange i, i
     ta.focus()
     $('[name=resto]', qr).value or= tid
-  receive: (e) ->
+  receive: (data) ->
     $('iframe[name=iframe]').src = 'about:blank'
     {qr} = QR
     row = $('#files input[form]', qr)?.parentNode
-    {data} = e
     if data
       window.location = data if QR.op
       return

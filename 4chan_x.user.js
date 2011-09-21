@@ -1431,12 +1431,11 @@
       ta.focus();
       return (_base = $('[name=resto]', qr)).value || (_base.value = tid);
     },
-    receive: function(e) {
-      var cooldown, data, qr, row, tc, _ref, _ref2;
+    receive: function(data) {
+      var cooldown, qr, row, tc, _ref, _ref2;
       $('iframe[name=iframe]').src = 'about:blank';
       qr = QR.qr;
       row = (_ref = $('#files input[form]', qr)) != null ? _ref.parentNode : void 0;
-      data = e.data;
       if (data) {
         if (QR.op) {
           window.location = data;
