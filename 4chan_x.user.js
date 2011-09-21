@@ -1438,8 +1438,8 @@
       if (data) {
         if (QR.op) {
           window.location = data;
+          return;
         }
-        return;
         data = JSON.parse(data);
         $.extend($('a.error', qr), data);
         tc = data.textContent;

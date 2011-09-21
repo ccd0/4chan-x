@@ -1131,8 +1131,9 @@ QR =
     {qr} = QR
     row = $('#files input[form]', qr)?.parentNode
     if data
-      window.location = data if QR.op
-      return
+      if QR.op
+        window.location = data
+        return
       data = JSON.parse data
       $.extend $('a.error', qr), data
       tc = data.textContent
