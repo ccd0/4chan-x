@@ -6,6 +6,7 @@
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
+// @run-at         document-start
 // @icon           https://raw.github.com/aeosynth/4chan-x/gh-pages/favicon.png
 // ==/UserScript==
 
@@ -60,7 +61,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, pathname, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, temp, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -501,6 +502,14 @@
     val = conf[key];
     conf[key] = $.get(key, val);
   }
+  pathname = location.pathname.substring(1).split('/');
+  g.BOARD = pathname[0], temp = pathname[1];
+  if (temp === 'res') {
+    g.REPLY = temp;
+    g.THREAD_ID = pathname[2];
+  } else {
+    g.PAGENUM = parseInt(temp) || 0;
+  }
   $$ = function(selector, root) {
     if (root == null) {
       root = d.body;
@@ -595,7 +604,7 @@
       }
     },
     toggle: function(thread) {
-      var a, backlink, num, pathname, prev, table, threadID, _i, _len, _ref, _ref2, _results;
+      var a, backlink, num, prev, table, threadID, _i, _len, _ref, _ref2, _results;
       threadID = thread.firstChild.id;
       pathname = "/" + g.BOARD + "/res/" + threadID;
       a = $('a.omittedposts', thread);
@@ -2216,7 +2225,7 @@
       });
     },
     toggle: function(e) {
-      var el, hidden, id, inline, inlined, pathname, root, table, threadID, _i, _len, _ref;
+      var el, hidden, id, inline, inlined, root, table, threadID, _i, _len, _ref;
       if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) {
         return;
       }
@@ -2806,16 +2815,7 @@
   };
   Main = {
     init: function() {
-      var callback, canPost, cutoff, form, hiddenThreads, id, lastChecked, now, op, pathname, table, temp, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
-      $.unbind(window, 'load', Main.init);
-      pathname = location.pathname.substring(1).split('/');
-      g.BOARD = pathname[0], temp = pathname[1];
-      if (temp === 'res') {
-        g.REPLY = temp;
-        g.THREAD_ID = pathname[2];
-      } else {
-        g.PAGENUM = parseInt(temp) || 0;
-      }
+      var callback, canPost, cutoff, form, hiddenThreads, id, lastChecked, now, op, table, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
       if (location.hostname === 'sys.4chan.org') {
         qr.sys();
         return;
@@ -3208,6 +3208,6 @@
   if (d.body) {
     Main.init();
   } else {
-    $.bind(window, 'load', Main.init);
+    $.bind(document, 'DOMContentLoaded', Main.init);
   }
 }).call(this);

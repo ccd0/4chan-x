@@ -11,6 +11,7 @@ HEADER  = """
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
+// @run-at         document-start
 // @icon           https://raw.github.com/aeosynth/4chan-x/gh-pages/favicon.png
 // ==/UserScript==
 
