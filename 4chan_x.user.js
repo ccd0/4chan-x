@@ -1443,7 +1443,7 @@
         }
         return;
         data = JSON.parse(data);
-        $.extend($('a.error', QR.qr), data);
+        $.extend($('a.error', qr), data);
         tc = data.textContent;
         if (tc === 'Error: Duplicate file entry detected.') {
           if (row) {
@@ -1458,7 +1458,7 @@
       if (row) {
         $.rm(row);
       }
-      if (conf['Persistent QR'] || ((_ref2 = $('#files input', QR.qr)) != null ? _ref2.files.length : void 0)) {
+      if (conf['Persistent QR'] || ((_ref2 = $('#files input', qr)) != null ? _ref2.files.length : void 0)) {
         QR.reset();
       } else {
         QR.close();

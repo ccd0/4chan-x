@@ -1136,7 +1136,7 @@ QR =
       window.location = data if QR.op
       return
       data = JSON.parse data
-      $.extend $('a.error', QR.qr), data
+      $.extend $('a.error', qr), data
       tc = data.textContent
       if tc is 'Error: Duplicate file entry detected.'
         $.rm row if row
@@ -1145,7 +1145,7 @@ QR =
         setTimeout QR.submit, 1000
       return
     $.rm row if row
-    if conf['Persistent QR'] or $('#files input', QR.qr)?.files.length
+    if conf['Persistent QR'] or $('#files input', qr)?.files.length
       QR.reset()
     else
       QR.close()
@@ -1207,8 +1207,7 @@ QR =
       else if node = $ 'meta'
         data = node.content.match(/url=(.+)/)[1]
       parent.postMessage data, '*'
-      #parent will blank us on message receival;
-      #if we're not an iframe, we won't get blanked
+      #if we're an iframe, parent will blank us
 
 threading =
   init: ->
