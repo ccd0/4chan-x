@@ -1045,9 +1045,9 @@ QR =
     <div class=move>
       <span class=click>
         <button>File</button>
-        <input form=qr_form placeholder=Subject name=sub>
         <input form=qr_form placeholder=Name name=name>
         <input form=qr_form placeholder=Email name=email>
+        <input form=qr_form placeholder=Subject name=sub>
       </span>
     </div>
     <div class=autohide>
