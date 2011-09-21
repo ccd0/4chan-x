@@ -1205,6 +1205,7 @@ QR =
         data = JSON.stringify {textContent, href}
       else if node = $ 'meta'
         data = node.content.match(/url=(.+)/)[1]
+        if /#/.test data then data = '' #not op
       parent.postMessage data, '*'
       #if we're an iframe, parent will blank us
 

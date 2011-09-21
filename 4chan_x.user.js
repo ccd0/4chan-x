@@ -1552,6 +1552,9 @@
           });
         } else if (node = $('meta')) {
           data = node.content.match(/url=(.+)/)[1];
+          if (/#/.test(data)) {
+            data = '';
+          }
         }
         return parent.postMessage(data, '*');
       });
