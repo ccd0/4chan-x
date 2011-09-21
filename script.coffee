@@ -2125,6 +2125,7 @@ firstRun =
 
 Main =
   init: ->
+    $.unbind document, 'DOMContentLoaded', Main.init
     if location.hostname is 'sys.4chan.org'
       QR.sys()
       return

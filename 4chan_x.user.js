@@ -2779,6 +2779,7 @@
   Main = {
     init: function() {
       var callback, cutoff, hiddenThreads, id, lastChecked, now, op, table, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
+      $.unbind(document, 'DOMContentLoaded', Main.init);
       if (location.hostname === 'sys.4chan.org') {
         QR.sys();
         return;
