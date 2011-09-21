@@ -1052,28 +1052,30 @@ QR =
         <input form=qr_form placeholder=Email name=email>
       </span>
     </div>
-    <textarea form=qr_form placeholder=Comment name=com></textarea>
-    <div id=files></div>
-    <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
-      <div hidden>
-        <input name=pwd>
-        <input name=mode value=regist>
-        <input name=recaptcha_challenge_field id=challenge>
-        <input name=recaptcha_response_field id=response>
-      </div>
-      <div id=captcha>
-        <div><img></div>
-        <span id=cl>120 Captchas</span>
-        <input id=recaptcha_response_field autocomplete=off>
-      </div>
-      <div>
-        <button>Submit</button>
-        #{if g.REPLY then "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" else ''}
-        <input form=qr_form placeholder=Thread name=resto value=#{tid} #{if g.REPLY then 'hidden' else ''}>
-        #{QR.spoiler}
-      </div>
-      <a class=error></a>
-    </form>
+    <div class=autohide>
+      <textarea form=qr_form placeholder=Comment name=com></textarea>
+      <div id=files></div>
+      <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
+        <div hidden>
+          <input name=pwd>
+          <input name=mode value=regist>
+          <input name=recaptcha_challenge_field id=challenge>
+          <input name=recaptcha_response_field id=response>
+        </div>
+        <div id=captcha>
+          <div><img></div>
+          <span id=cl>120 Captchas</span>
+          <input id=recaptcha_response_field autocomplete=off>
+        </div>
+        <div>
+          <button>Submit</button>
+          #{if g.REPLY then "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" else ''}
+          <input form=qr_form placeholder=Thread name=resto value=#{tid} #{if g.REPLY then 'hidden' else ''}>
+          #{QR.spoiler}
+        </div>
+      </form>
+    </div>
+    <a class=error></a>
     "
     #$.bind $('#attach', qr), 'click', QR.attach
     #XXX use dom methods to set values instead of injecting raw user input into your html -_-;
@@ -2448,7 +2450,7 @@ Main =
       #qr form {
         margin: 0;
       }
-      #qr:not(:hover) #autohide:checked ~ form {
+      #qr:not(:hover) #autohide:checked ~ .autohide {
         height: 0;
         overflow: hidden;
       }
