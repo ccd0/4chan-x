@@ -927,7 +927,6 @@ options =
     $('#backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
 
 QR =
-  #TODO create new thread
   #captcha caching for report form
   #report queueing
   #check if captchas can be reused on eg dup file error
