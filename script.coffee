@@ -363,6 +363,14 @@ else
 for key, val of conf
   conf[key] = $.get key, val
 
+pathname = location.pathname.substring(1).split('/')
+[g.BOARD, temp] = pathname
+if temp is 'res'
+  g.REPLY = temp
+  g.THREAD_ID = pathname[2]
+else
+  g.PAGENUM = parseInt(temp) or 0
+
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
@@ -2117,15 +2125,6 @@ firstRun =
 
 Main =
   init: ->
-    $.unbind window, 'load', Main.init
-    pathname = location.pathname.substring(1).split('/')
-    [g.BOARD, temp] = pathname
-    if temp is 'res'
-      g.REPLY = temp
-      g.THREAD_ID = pathname[2]
-    else
-      g.PAGENUM = parseInt(temp) or 0
-
     if location.hostname is 'sys.4chan.org'
       QR.sys()
       return
@@ -2493,8 +2492,7 @@ Main =
       }
     '
 
-#XXX Opera will load early if script is saved w/o .user
 if d.body
   Main.init()
 else
-  $.bind window, 'load', Main.init
+  $.bind document, 'DOMContentLoaded', Main.init
