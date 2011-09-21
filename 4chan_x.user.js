@@ -1213,7 +1213,6 @@
         name: 'iframe',
         hidden: true
       }));
-      $.bind(window, 'message', QR.receive);
       $('#recaptcha_response_field').id = '';
       holder = $('#recaptcha_challenge_field_holder');
       $.bind(holder, 'DOMNodeInserted', QR.captchaNode);
