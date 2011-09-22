@@ -3134,7 +3134,10 @@
       }\
       #qr #files li {\
         position: relative;\
-        display: inline;\
+        display: inline-block;\
+        width: 100px;\
+        height: 100px;\
+        overflow: hidden;\
       }\
       #qr #files a {\
         position: absolute;\
@@ -3161,6 +3164,7 @@
       #qr #files img {\
         max-height: 100px;\
         max-width:  100px;\
+        float: left;\
       }\
       #qr input[name=resto] {\
         width: 80px;\
