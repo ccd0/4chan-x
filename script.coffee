@@ -2021,13 +2021,18 @@ imgExpand =
       filesize = $ 'span.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
       img.style.maxWidth = "-moz-calc(#{max}px)"
-    $.bind img, 'error', (e) ->
-      thumb = @previousSibling
-      imgExpand.contract thumb
-      unless g.dead
-        setTimeout imgExpand.expand, 1000, thumb
+    $.bind img, 'error', imgExpand.error
     thumb.hidden = true
     $.add a, img
+
+  error: (e) ->
+    thumb = @previousSibling
+    imgExpand.contract thumb
+    #navigator.online is not x-browser/os yet
+    #can't easily check if the image/post is deleted
+    setTimeout imgExpand.retry, 10000, thumb unless g.dead
+  retry: (thumb) ->
+    imgExpand.expand thumb unless g.dead or thumb.hidden
 
   dialog: ->
     controls = $.el 'div',
