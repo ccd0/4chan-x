@@ -1059,16 +1059,14 @@ QR =
       <input type=checkbox id=autohide title=autohide>
       <a class=close>X</a>
     </div>
-    <div>
+    <div class=autohide>
       <button>File</button>
       <input form=qr_form placeholder=Name name=name>
       <input form=qr_form placeholder=Email name=email>
       <input form=qr_form placeholder=Subject name=sub>
-    </div>
-    <div class=autohide>
       <ul id=files></ul>
-      <textarea form=qr_form placeholder=Comment name=com></textarea>
       <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
+        <textarea placeholder=Comment name=com></textarea>
         <div hidden>
           <input name=pwd>
           <input name=mode value=regist>
@@ -2446,7 +2444,7 @@ Main =
       #qr > .move {
         text-align: right;
       }
-      #qr form input {
+      #qr .autohide input {
         width: 82px;
       }
       #qr #recaptcha_response_field {
