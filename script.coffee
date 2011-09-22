@@ -976,7 +976,6 @@ QR =
       innerHTML: "<img><input type=file name=upfile accept='#{QR.accept}'><a class=x>X</a>"
     file = $ 'input', box
     $.bind file, 'change', QR.change
-    $.bind $('img', box), 'click', -> $('input', @parentNode).click()
     $.bind $('.x', box), 'click', QR.rmThumb
     $.add files, box
     file.click()

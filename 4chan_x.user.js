@@ -1263,9 +1263,6 @@
       });
       file = $('input', box);
       $.bind(file, 'change', QR.change);
-      $.bind($('img', box), 'click', function() {
-        return $('input', this.parentNode).click();
-      });
       $.bind($('.x', box), 'click', QR.rmThumb);
       $.add(files, box);
       file.click();
