@@ -972,7 +972,7 @@ QR =
   attach: ->
     #$('#autopost', QR.qr).checked = true
     files = $ '#files', QR.qr
-    box = $.el 'span',
+    box = $.el 'li',
       innerHTML: "<input type=file name=upfile accept='#{QR.accept}'><img alt='click here'><a class=x>X</a>"
     file = $ 'input', box
     $.bind file, 'change', QR.change
@@ -1060,7 +1060,7 @@ QR =
     </div>
     <div class=autohide>
       <textarea form=qr_form placeholder=Comment name=com></textarea>
-      <div id=files></div>
+      <ul id=files></ul>
       <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
         <div hidden>
           <input name=pwd>
@@ -2434,8 +2434,6 @@ Main =
         display: block;
       }
       #qr {
-        max-height: 100%;
-        overflow-y: auto;
         position: fixed;
       }
       #qr #autohide, #qr .close {
@@ -2466,9 +2464,15 @@ Main =
         width: 300px;
         white-space: nowrap;
         overflow: auto;
+        margin: 0;
+        padding: 0;
       }
-      #qr #files span {
+      #qr #files li {
         position: relative;
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
       }
       #qr #files a {
         position: absolute;
@@ -2486,11 +2490,16 @@ Main =
         width: 100%;
       }
       #qr #files input {
-        display: none;
+        /* cannot use `display: none;`
+        https://bugs.webkit.org/show_bug.cgi?id=58208
+        http://code.google.com/p/chromium/issues/detail?id=78961
+        */
+        visibility: hidden;
       }
       #qr #files img {
         max-height: 100px;
         max-width:  100px;
+        float: left;
       }
       #qr input[name=resto] {
         width: 80px;
