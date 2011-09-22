@@ -3114,8 +3114,8 @@
       #qr > .move {\
         text-align: right;\
       }\
-      #qr input {\
-        width: 82;\
+      #qr form input {\
+        width: 82px;\
       }\
       #qr #recaptcha_response_field {\
         width: 100%;\
