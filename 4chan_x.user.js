@@ -1259,12 +1259,12 @@
       var box, file, files;
       files = $('#files', QR.qr);
       box = $.el('li', {
-        innerHTML: "<input type=file name=upfile accept='" + QR.accept + "'><img alt='click here'><a class=x>X</a>"
+        innerHTML: "<img alt='click here'><input type=file name=upfile accept='" + QR.accept + "'><a class=x>X</a>"
       });
       file = $('input', box);
       $.bind(file, 'change', QR.change);
       $.bind($('img', box), 'click', function() {
-        return this.previousSibling.click();
+        return this.nextSibling.click();
       });
       $.bind($('.x', box), 'click', QR.rmThumb);
       $.add(files, box);
@@ -1336,7 +1336,7 @@
       }
       qr = QR.qr;
       fr = new FileReader();
-      img = this.nextSibling;
+      img = this.previousSibling;
       fr.onload = function(e) {
         return img.src = e.target.result;
       };

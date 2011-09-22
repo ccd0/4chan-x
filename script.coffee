@@ -973,10 +973,10 @@ QR =
     #$('#autopost', QR.qr).checked = true
     files = $ '#files', QR.qr
     box = $.el 'li',
-      innerHTML: "<input type=file name=upfile accept='#{QR.accept}'><img alt='click here'><a class=x>X</a>"
+      innerHTML: "<img alt='click here'><input type=file name=upfile accept='#{QR.accept}'><a class=x>X</a>"
     file = $ 'input', box
     $.bind file, 'change', QR.change
-    $.bind $('img', box), 'click', -> @previousSibling.click()
+    $.bind $('img', box), 'click', -> @nextSibling.click()
     $.bind $('.x', box), 'click', QR.rmThumb
     $.add files, box
     file.click()
@@ -1028,7 +1028,7 @@ QR =
       return
     {qr} = QR
     fr = new FileReader()
-    img = @nextSibling
+    img = @previousSibling
     fr.onload = (e) ->
       img.src = e.target.result
     fr.readAsDataURL file
