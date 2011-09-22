@@ -980,6 +980,7 @@ QR =
     $.bind $('.x', box), 'click', -> $.rm @parentNode
     $.add files, box
     file.click()
+    QR.stats()
   captchaNode: (e) ->
     QR.captcha =
       challenge: e.target.value
@@ -998,7 +999,7 @@ QR =
     $.set 'captchas', captchas
     el.value = ''
     QR.captchaReload()
-    QR.captchaLength captchas
+    QR.stats captchas
   captchaShift: ->
     captchas = $.get 'captchas', []
     cutoff = Date.now() - 5*HOUR + 5*MINUTE
@@ -1006,11 +1007,13 @@ QR =
       if captcha.time > cutoff
         break
     $.set 'captchas', captchas
-    QR.captchaLength captchas
+    QR.stats captchas
     captcha
-  captchaLength: (captchas) ->
+  stats: (captchas) ->
+    {qr} = QR
     captchas or= $.get 'captchas', []
-    $('#cl', QR.qr).textContent = captchas.length + ' captchas'
+    images = $$ '#files input', qr
+    $('#qr_stats', qr).textContent = "#{images.length} / #{captchas.length}"
   captchaReload: ->
     window.location = 'javascript:Recaptcha.reload()'
   change: (e) ->
@@ -1049,7 +1052,7 @@ QR =
     tid or= g.THREAD_ID or ''
     QR.qr = qr = ui.dialog 'qr', 'top: 0; right: 0;', "
     <div class=move>
-      <span id=stats></span>
+      <span id=qr_stats></span>
       <input type=checkbox id=autohide title=autohide>
       <a class=close>X</a>
     </div>
@@ -1071,7 +1074,6 @@ QR =
         </div>
         <div id=captcha>
           <div><img></div>
-          <span id=cl>120 Captchas</span>
           <input id=recaptcha_response_field autocomplete=off>
         </div>
         <div>
@@ -1096,7 +1098,7 @@ QR =
     $.bind $('form', qr), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
     QR.captchaImg()
-    QR.captchaLength()
+    QR.stats()
     $.add d.body, qr
     ta = $ 'textarea', qr
     l = text.length
@@ -1147,11 +1149,13 @@ QR =
       tc = data.textContent
       if tc is 'Error: Duplicate file entry detected.'
         $.rm row if row
+        QR.stats()
         setTimeout QR.submit, 1000
       else if tc is 'You seem to have mistyped the verification.'
         setTimeout QR.submit, 1000
       return
     $.rm row if row
+    QR.stats()
     if conf['Persistent QR'] or $('#files input', qr)?.files.length
       QR.reset()
     else

@@ -1270,7 +1270,8 @@
         return $.rm(this.parentNode);
       });
       $.add(files, box);
-      return file.click();
+      file.click();
+      return QR.stats();
     },
     captchaNode: function(e) {
       QR.captcha = {
@@ -1297,7 +1298,7 @@
       $.set('captchas', captchas);
       el.value = '';
       QR.captchaReload();
-      return QR.captchaLength(captchas);
+      return QR.stats(captchas);
     },
     captchaShift: function() {
       var captcha, captchas, cutoff;
@@ -1309,12 +1310,15 @@
         }
       }
       $.set('captchas', captchas);
-      QR.captchaLength(captchas);
+      QR.stats(captchas);
       return captcha;
     },
-    captchaLength: function(captchas) {
+    stats: function(captchas) {
+      var images, qr;
+      qr = QR.qr;
       captchas || (captchas = $.get('captchas', []));
-      return $('#cl', QR.qr).textContent = captchas.length + ' captchas';
+      images = $$('#files input', qr);
+      return $('#qr_stats', qr).textContent = "" + images.length + " / " + captchas.length;
     },
     captchaReload: function() {
       return window.location = 'javascript:Recaptcha.reload()';
@@ -1371,7 +1375,7 @@
         text = '';
       }
       tid || (tid = g.THREAD_ID || '');
-      QR.qr = qr = ui.dialog('qr', 'top: 0; right: 0;', "    <div class=move>      <span id=stats></span>      <input type=checkbox id=autohide title=autohide>      <a class=close>X</a>    </div>    <div>      <button>File</button>      <input form=qr_form placeholder=Name name=name>      <input form=qr_form placeholder=Email name=email>      <input form=qr_form placeholder=Subject name=sub>    </div>    <div class=autohide>      <textarea form=qr_form placeholder=Comment name=com></textarea>      <ul id=files></ul>      <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>        <div hidden>          <input name=pwd>          <input name=mode value=regist>          <input name=recaptcha_challenge_field id=challenge>          <input name=recaptcha_response_field id=response>        </div>        <div id=captcha>          <div><img></div>          <span id=cl>120 Captchas</span>          <input id=recaptcha_response_field autocomplete=off>        </div>        <div>          <button>Submit</button>          " + (g.REPLY ? "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" : '') + "          <input form=qr_form placeholder=Thread name=resto value=" + tid + " " + (g.REPLY ? 'hidden' : '') + ">          " + QR.spoiler + "        </div>      </form>    </div>    <a class=error></a>    ");
+      QR.qr = qr = ui.dialog('qr', 'top: 0; right: 0;', "    <div class=move>      <span id=qr_stats></span>      <input type=checkbox id=autohide title=autohide>      <a class=close>X</a>    </div>    <div>      <button>File</button>      <input form=qr_form placeholder=Name name=name>      <input form=qr_form placeholder=Email name=email>      <input form=qr_form placeholder=Subject name=sub>    </div>    <div class=autohide>      <textarea form=qr_form placeholder=Comment name=com></textarea>      <ul id=files></ul>      <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>        <div hidden>          <input name=pwd>          <input name=mode value=regist>          <input name=recaptcha_challenge_field id=challenge>          <input name=recaptcha_response_field id=response>        </div>        <div id=captcha>          <div><img></div>          <input id=recaptcha_response_field autocomplete=off>        </div>        <div>          <button>Submit</button>          " + (g.REPLY ? "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" : '') + "          <input form=qr_form placeholder=Thread name=resto value=" + tid + " " + (g.REPLY ? 'hidden' : '') + ">          " + QR.spoiler + "        </div>      </form>    </div>    <a class=error></a>    ");
       c = d.cookie;
       $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
@@ -1385,7 +1389,7 @@
       $.bind($('form', qr), 'submit', QR.submit);
       $.bind($('#recaptcha_response_field', qr), 'keydown', QR.keydown);
       QR.captchaImg();
-      QR.captchaLength();
+      QR.stats();
       $.add(d.body, qr);
       ta = $('textarea', qr);
       l = text.length;
@@ -1453,6 +1457,7 @@
           if (row) {
             $.rm(row);
           }
+          QR.stats();
           setTimeout(QR.submit, 1000);
         } else if (tc === 'You seem to have mistyped the verification.') {
           setTimeout(QR.submit, 1000);
@@ -1462,6 +1467,7 @@
       if (row) {
         $.rm(row);
       }
+      QR.stats();
       if (conf['Persistent QR'] || ((_ref2 = $('#files input', qr)) != null ? _ref2.files.length : void 0)) {
         QR.reset();
       } else {
