@@ -2727,6 +2727,11 @@
         _ref = filesize.textContent.match(/(\d+)x/), _ = _ref[0], max = _ref[1];
         img.style.maxWidth = "-moz-calc(" + max + "px)";
       }
+      $.bind(img, 'error', function(e) {
+        thumb = this.previousSibling;
+        imgExpand.contract(thumb);
+        return imgExpand.expand(thumb);
+      });
       return $.add(a, img);
     },
     dialog: function() {

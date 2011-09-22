@@ -2018,6 +2018,10 @@ imgExpand =
       filesize = $ 'span.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
       img.style.maxWidth = "-moz-calc(#{max}px)"
+    $.bind img, 'error', (e) ->
+      thumb = @previousSibling
+      imgExpand.contract thumb
+      imgExpand.expand   thumb
     $.add a, img
 
   dialog: ->
