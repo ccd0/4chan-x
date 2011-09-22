@@ -2025,7 +2025,8 @@ imgExpand =
     $.bind img, 'error', (e) ->
       thumb = @previousSibling
       imgExpand.contract thumb
-      imgExpand.expand   thumb
+      unless g.dead
+        setTimeout imgExpand.expand, 1000, thumb
     $.add a, img
 
   dialog: ->

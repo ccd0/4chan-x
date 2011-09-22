@@ -2732,7 +2732,9 @@
       $.bind(img, 'error', function(e) {
         thumb = this.previousSibling;
         imgExpand.contract(thumb);
-        return imgExpand.expand(thumb);
+        if (!g.dead) {
+          return setTimeout(imgExpand.expand, 1000, thumb);
+        }
       });
       return $.add(a, img);
     },
