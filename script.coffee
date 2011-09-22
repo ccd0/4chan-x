@@ -1048,15 +1048,16 @@ QR =
   dialog: (text='', tid) ->
     tid or= g.THREAD_ID or ''
     QR.qr = qr = ui.dialog 'qr', 'top: 0; right: 0;', "
-    <a class=close>X</a>
-    <input type=checkbox id=autohide title=autohide>
     <div class=move>
-      <span class=click>
-        <button>File</button>
-        <input form=qr_form placeholder=Name name=name>
-        <input form=qr_form placeholder=Email name=email>
-        <input form=qr_form placeholder=Subject name=sub>
-      </span>
+      <span id=stats></span>
+      <input type=checkbox id=autohide title=autohide>
+      <a class=close>X</a>
+    </div>
+    <div>
+      <button>File</button>
+      <input form=qr_form placeholder=Name name=name>
+      <input form=qr_form placeholder=Email name=email>
+      <input form=qr_form placeholder=Subject name=sub>
     </div>
     <div class=autohide>
       <textarea form=qr_form placeholder=Comment name=com></textarea>
@@ -1092,7 +1093,6 @@ QR =
     QR.cooldown() if conf['Cooldown']
     $.bind $('button', qr), 'click', QR.attach
     $.bind $('.close', qr), 'click', QR.close
-    $.bind $('.click', qr), 'mousedown', (e) -> e.stopPropagation()
     $.bind $('form', qr), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
     QR.captchaImg()
@@ -2436,14 +2436,14 @@ Main =
       #qr {
         position: fixed;
       }
-      #qr #autohide, #qr .close {
-        float: right;
+      #qr > .move {
+        text-align: right;
       }
-      #qr .click input {
-        width: 73px;
+      #qr input {
+        width: 82;
       }
-      #qr .click * {
-        float: left;
+      #qr #recaptcha_response_field {
+        width: 100%;
       }
       #qr form {
         margin: 0;
@@ -2484,10 +2484,6 @@ Main =
         right: 0;
         padding: 2px;
         position: absolute;
-      }
-      #qr #recaptcha_response_field {
-        display: inline;
-        width: 100%;
       }
       #qr #files input {
         /* cannot use `display: none;`

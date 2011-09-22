@@ -1371,7 +1371,7 @@
         text = '';
       }
       tid || (tid = g.THREAD_ID || '');
-      QR.qr = qr = ui.dialog('qr', 'top: 0; right: 0;', "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span class=click>        <button>File</button>        <input form=qr_form placeholder=Name name=name>        <input form=qr_form placeholder=Email name=email>        <input form=qr_form placeholder=Subject name=sub>      </span>    </div>    <div class=autohide>      <textarea form=qr_form placeholder=Comment name=com></textarea>      <ul id=files></ul>      <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>        <div hidden>          <input name=pwd>          <input name=mode value=regist>          <input name=recaptcha_challenge_field id=challenge>          <input name=recaptcha_response_field id=response>        </div>        <div id=captcha>          <div><img></div>          <span id=cl>120 Captchas</span>          <input id=recaptcha_response_field autocomplete=off>        </div>        <div>          <button>Submit</button>          " + (g.REPLY ? "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" : '') + "          <input form=qr_form placeholder=Thread name=resto value=" + tid + " " + (g.REPLY ? 'hidden' : '') + ">          " + QR.spoiler + "        </div>      </form>    </div>    <a class=error></a>    ");
+      QR.qr = qr = ui.dialog('qr', 'top: 0; right: 0;', "    <div class=move>      <span id=stats></span>      <input type=checkbox id=autohide title=autohide>      <a class=close>X</a>    </div>    <div>      <button>File</button>      <input form=qr_form placeholder=Name name=name>      <input form=qr_form placeholder=Email name=email>      <input form=qr_form placeholder=Subject name=sub>    </div>    <div class=autohide>      <textarea form=qr_form placeholder=Comment name=com></textarea>      <ul id=files></ul>      <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>        <div hidden>          <input name=pwd>          <input name=mode value=regist>          <input name=recaptcha_challenge_field id=challenge>          <input name=recaptcha_response_field id=response>        </div>        <div id=captcha>          <div><img></div>          <span id=cl>120 Captchas</span>          <input id=recaptcha_response_field autocomplete=off>        </div>        <div>          <button>Submit</button>          " + (g.REPLY ? "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" : '') + "          <input form=qr_form placeholder=Thread name=resto value=" + tid + " " + (g.REPLY ? 'hidden' : '') + ">          " + QR.spoiler + "        </div>      </form>    </div>    <a class=error></a>    ");
       c = d.cookie;
       $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
@@ -1382,9 +1382,6 @@
       }
       $.bind($('button', qr), 'click', QR.attach);
       $.bind($('.close', qr), 'click', QR.close);
-      $.bind($('.click', qr), 'mousedown', function(e) {
-        return e.stopPropagation();
-      });
       $.bind($('form', qr), 'submit', QR.submit);
       $.bind($('#recaptcha_response_field', qr), 'keydown', QR.keydown);
       QR.captchaImg();
@@ -3106,14 +3103,14 @@
       #qr {\
         position: fixed;\
       }\
-      #qr #autohide, #qr .close {\
-        float: right;\
+      #qr > .move {\
+        text-align: right;\
       }\
-      #qr .click input {\
-        width: 73px;\
+      #qr input {\
+        width: 82;\
       }\
-      #qr .click * {\
-        float: left;\
+      #qr #recaptcha_response_field {\
+        width: 100%;\
       }\
       #qr form {\
         margin: 0;\
@@ -3154,10 +3151,6 @@
         right: 0;\
         padding: 2px;\
         position: absolute;\
-      }\
-      #qr #recaptcha_response_field {\
-        display: inline;\
-        width: 100%;\
       }\
       #qr #files input {\
         /* cannot use `display: none;`\
