@@ -2014,7 +2014,6 @@ imgExpand =
     $.rm thumb.nextSibling
 
   expand: (thumb) ->
-    thumb.hidden = true
     a = thumb.parentNode
     img = $.el 'img',
       src: a.href
@@ -2027,6 +2026,7 @@ imgExpand =
       imgExpand.contract thumb
       unless g.dead
         setTimeout imgExpand.expand, 1000, thumb
+    thumb.hidden = true
     $.add a, img
 
   dialog: ->

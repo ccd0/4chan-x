@@ -2719,7 +2719,6 @@
     },
     expand: function(thumb) {
       var a, filesize, img, max, _, _ref;
-      thumb.hidden = true;
       a = thumb.parentNode;
       img = $.el('img', {
         src: a.href
@@ -2736,6 +2735,7 @@
           return setTimeout(imgExpand.expand, 1000, thumb);
         }
       });
+      thumb.hidden = true;
       return $.add(a, img);
     },
     dialog: function() {
