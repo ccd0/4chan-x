@@ -1047,7 +1047,7 @@ QR =
       QR.submit() if $('#autopost', QR.qr).checked
   dialog: (text='', tid) ->
     tid or= g.THREAD_ID or ''
-    QR.qr = qr = ui.dialog 'qr', 'top: 0; left: 0;', "
+    QR.qr = qr = ui.dialog 'qr', 'top: 0; right: 0;', "
     <a class=close>X</a>
     <input type=checkbox id=autohide title=autohide>
     <div class=move>
