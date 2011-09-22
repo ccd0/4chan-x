@@ -1066,8 +1066,8 @@ QR =
       <input form=qr_form placeholder=Subject name=sub>
     </div>
     <div class=autohide>
-      <textarea form=qr_form placeholder=Comment name=com></textarea>
       <ul id=files></ul>
+      <textarea form=qr_form placeholder=Comment name=com></textarea>
       <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
         <div hidden>
           <input name=pwd>
