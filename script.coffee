@@ -1054,10 +1054,10 @@ QR =
   dialog: (text='', tid) ->
     tid or= g.THREAD_ID or ''
     QR.qr = qr = ui.dialog 'qr', 'top: 0; right: 0;', "
+    <a class=close>X</a>
+    <input type=checkbox id=autohide title=autohide>
     <div class=move>
       <span id=qr_stats></span>
-      <input type=checkbox id=autohide title=autohide>
-      <a class=close>X</a>
     </div>
     <div class=autohide>
       <button>File</button>
@@ -2441,6 +2441,9 @@ Main =
       #qr {
         position: fixed;
       }
+      #qr .close, #qr #autohide {
+        float: right;
+      }
       #qr > .move {
         text-align: right;
       }
@@ -2452,6 +2455,9 @@ Main =
       }
       #qr form {
         margin: 0;
+      }
+      #qr .autohide {
+        clear: both;
       }
       #qr:not(:hover) #autohide:checked ~ .autohide {
         height: 0;

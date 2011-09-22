@@ -1377,7 +1377,7 @@
         text = '';
       }
       tid || (tid = g.THREAD_ID || '');
-      QR.qr = qr = ui.dialog('qr', 'top: 0; right: 0;', "    <div class=move>      <span id=qr_stats></span>      <input type=checkbox id=autohide title=autohide>      <a class=close>X</a>    </div>    <div class=autohide>      <button>File</button>      <input form=qr_form placeholder=Name name=name>      <input form=qr_form placeholder=Email name=email>      <input form=qr_form placeholder=Subject name=sub>      <ul id=files></ul>      <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>        <textarea placeholder=Comment name=com></textarea>        <div hidden>          <input name=pwd>          <input name=mode value=regist>          <input name=recaptcha_challenge_field id=challenge>          <input name=recaptcha_response_field id=response>        </div>        <div id=captcha>          <div><img></div>          <input id=recaptcha_response_field autocomplete=off>        </div>        <div>          <button>Submit</button>          " + (g.REPLY ? "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" : '') + "          <input form=qr_form placeholder=Thread name=resto value=" + tid + " " + (g.REPLY ? 'hidden' : '') + ">          " + QR.spoiler + "        </div>      </form>    </div>    <a class=error></a>    ");
+      QR.qr = qr = ui.dialog('qr', 'top: 0; right: 0;', "    <a class=close>X</a>    <input type=checkbox id=autohide title=autohide>    <div class=move>      <span id=qr_stats></span>    </div>    <div class=autohide>      <button>File</button>      <input form=qr_form placeholder=Name name=name>      <input form=qr_form placeholder=Email name=email>      <input form=qr_form placeholder=Subject name=sub>      <ul id=files></ul>      <form enctype=multipart/form-data method=post action=http://sys.4chan.org/" + g.BOARD + "/post target=iframe id=qr_form>        <textarea placeholder=Comment name=com></textarea>        <div hidden>          <input name=pwd>          <input name=mode value=regist>          <input name=recaptcha_challenge_field id=challenge>          <input name=recaptcha_response_field id=response>        </div>        <div id=captcha>          <div><img></div>          <input id=recaptcha_response_field autocomplete=off>        </div>        <div>          <button>Submit</button>          " + (g.REPLY ? "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" : '') + "          <input form=qr_form placeholder=Thread name=resto value=" + tid + " " + (g.REPLY ? 'hidden' : '') + ">          " + QR.spoiler + "        </div>      </form>    </div>    <a class=error></a>    ");
       c = d.cookie;
       $('[name=name]', qr).value = (m = c.match(/4chan_name=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
       $('[name=email]', qr).value = (m = c.match(/4chan_email=([^;]+)/)) ? decodeURIComponent(m[1]) : '';
@@ -3111,6 +3111,9 @@
       #qr {\
         position: fixed;\
       }\
+      #qr .close, #qr #autohide {\
+        float: right;\
+      }\
       #qr > .move {\
         text-align: right;\
       }\
@@ -3122,6 +3125,9 @@
       }\
       #qr form {\
         margin: 0;\
+      }\
+      #qr .autohide {\
+        clear: both;\
       }\
       #qr:not(:hover) #autohide:checked ~ .autohide {\
         height: 0;\
