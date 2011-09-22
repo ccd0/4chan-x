@@ -973,10 +973,10 @@ QR =
     #$('#autopost', QR.qr).checked = true
     files = $ '#files', QR.qr
     box = $.el 'li',
-      innerHTML: "<img alt='click here'><input type=file name=upfile accept='#{QR.accept}'><a class=x>X</a>"
+      innerHTML: "<img><input type=file name=upfile accept='#{QR.accept}'><a class=x>X</a>"
     file = $ 'input', box
     $.bind file, 'change', QR.change
-    $.bind $('img', box), 'click', -> @nextSibling.click()
+    $.bind $('img', box), 'click', -> $('input', @parentNode).click()
     $.bind $('.x', box), 'click', QR.rmThumb
     $.add files, box
     file.click()
@@ -1028,7 +1028,7 @@ QR =
       return
     {qr} = QR
     fr = new FileReader()
-    img = @previousSibling
+    img = $ 'img', @parentNode
     fr.onload = (e) ->
       img.src = e.target.result
     fr.readAsDataURL file
@@ -2501,12 +2501,14 @@ Main =
         https://bugs.webkit.org/show_bug.cgi?id=58208
         http://code.google.com/p/chromium/issues/detail?id=78961
         */
-        visibility: hidden;
+        font-size: 100px;
+        position: absolute;
+        left: 0;
+        opacity: 0;
       }
       #qr #files img {
         max-height: 100px;
         max-width:  100px;
-        float: left;
       }
       #qr input[name=resto] {
         width: 80px;
