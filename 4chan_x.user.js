@@ -1266,11 +1266,13 @@
       $.bind($('img', box), 'click', function() {
         return this.previousSibling.click();
       });
-      $.bind($('.x', box), 'click', function() {
-        return $.rm(this.parentNode);
-      });
+      $.bind($('.x', box), 'click', QR.rmThumb);
       $.add(files, box);
       file.click();
+      return QR.stats();
+    },
+    rmThumb: function() {
+      $.rm(this.parentNode);
       return QR.stats();
     },
     captchaNode: function(e) {

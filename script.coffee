@@ -977,9 +977,12 @@ QR =
     file = $ 'input', box
     $.bind file, 'change', QR.change
     $.bind $('img', box), 'click', -> @previousSibling.click()
-    $.bind $('.x', box), 'click', -> $.rm @parentNode
+    $.bind $('.x', box), 'click', QR.rmThumb
     $.add files, box
     file.click()
+    QR.stats()
+  rmThumb: ->
+    $.rm @parentNode
     QR.stats()
   captchaNode: (e) ->
     QR.captcha =
