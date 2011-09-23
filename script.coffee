@@ -1980,16 +1980,13 @@ imgExpand =
       e.preventDefault()
       imgExpand.toggle @
     all: (e) ->
-      thumbs = $$ 'img[md5]'
       imgExpand.on = @checked
       if imgExpand.on #expand
-        for thumb in thumbs
-          unless thumb.hidden #thumbnail hidden, image already expanded
-            imgExpand.expand thumb
+        for thumb in $$ 'img[md5]:not([hidden])'
+          imgExpand.expand thumb
       else #contract
-        for thumb in thumbs
-          if thumb.hidden #thumbnail hidden - unhide it
-            imgExpand.contract thumb
+        for thumb in $$ 'img[md5][hidden]'
+          imgExpand.contract thumb
     typeChange: (e) ->
       switch @value
         when 'full'

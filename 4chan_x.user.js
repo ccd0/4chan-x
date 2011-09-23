@@ -2667,21 +2667,22 @@
         return imgExpand.toggle(this);
       },
       all: function(e) {
-        var thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
-        thumbs = $$('img[md5]');
+        var thumb, _i, _j, _len, _len2, _ref, _ref2, _results, _results2;
         imgExpand.on = this.checked;
         if (imgExpand.on) {
+          _ref = $$('img[md5]:not([hidden])');
           _results = [];
-          for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-            thumb = thumbs[_i];
-            _results.push(!thumb.hidden ? imgExpand.expand(thumb) : void 0);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            thumb = _ref[_i];
+            _results.push(imgExpand.expand(thumb));
           }
           return _results;
         } else {
+          _ref2 = $$('img[md5][hidden]');
           _results2 = [];
-          for (_j = 0, _len2 = thumbs.length; _j < _len2; _j++) {
-            thumb = thumbs[_j];
-            _results2.push(thumb.hidden ? imgExpand.contract(thumb) : void 0);
+          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+            thumb = _ref2[_j];
+            _results2.push(imgExpand.contract(thumb));
           }
           return _results2;
         }
