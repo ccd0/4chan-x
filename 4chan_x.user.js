@@ -2769,7 +2769,7 @@
       return $.prepend(delform, controls);
     },
     resize: function(e) {
-      return imgExpand.style.innerHTML = "body.fitheight img[md5] + img { max-height: " + d.body.clientHeight + "px }";
+      return imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
     }
   };
   firstRun = {

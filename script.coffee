@@ -2055,7 +2055,7 @@ imgExpand =
     $.prepend delform, controls
 
   resize: (e) ->
-    imgExpand.style.innerHTML = "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
+    imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
 
 firstRun =
   init: ->
