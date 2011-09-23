@@ -1973,7 +1973,7 @@ imgExpand =
     return unless thumb = $ 'img[md5]', root
     a = thumb.parentNode
     $.bind a, 'click', imgExpand.cb.toggle
-    if imgExpand.on and root.className isnt 'inline' then imgExpand.toggle a
+    if imgExpand.on and root.className isnt 'inline' then imgExpand.expand a.firstChild
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0

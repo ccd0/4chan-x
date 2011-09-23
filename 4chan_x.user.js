@@ -2655,7 +2655,7 @@
       a = thumb.parentNode;
       $.bind(a, 'click', imgExpand.cb.toggle);
       if (imgExpand.on && root.className !== 'inline') {
-        return imgExpand.toggle(a);
+        return imgExpand.expand(a.firstChild);
       }
     },
     cb: {
