@@ -61,13 +61,12 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, pathname, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, temp, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, pathname, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, temp, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
       Enhancing: {
         '404 Redirect': [true, 'Redirect dead threads'],
-        'Anonymize': [false, 'Make everybody anonymous'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'Report Button': [true, 'Add report buttons'],
@@ -76,7 +75,9 @@
         'Index Navigation': [true, 'Navigate to previous / next thread'],
         'Reply Navigation': [false, 'Navigate to top / bottom of thread']
       },
-      Hiding: {
+      Filtering: {
+        'Anonymize': [false, 'Make everybody anonymous'],
+        'Filter': [false, 'Self-moderation placebo'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
@@ -515,6 +516,15 @@
       root = d.body;
     }
     return Array.prototype.slice.call(root.querySelectorAll(selector));
+  };
+  filter = {
+    init: function() {
+      return HTMLBlockquoteElement.prototype.toString = function() {
+        return ($.el('span', {
+          innerHTML: this.innerHTML.replace(/<br>/g, '\n')
+        })).textContent;
+      };
+    }
   };
   expandComment = {
     init: function() {
@@ -2845,6 +2855,9 @@
       threading.init();
       if (g.REPLY && (id = location.hash.slice(1)) && /\d/.test(id[0]) && !$.id(id)) {
         scrollTo(0, d.body.scrollHeight);
+      }
+      if (conf['Filter']) {
+        filter.init();
       }
       if (conf['Image Expansion']) {
         imgExpand.init();

@@ -2,7 +2,6 @@ config =
   main:
     Enhancing:
       '404 Redirect':       [true,  'Redirect dead threads']
-      'Anonymize':          [false, 'Make everybody anonymous']
       'Keybinds':           [true,  'Binds actions to keys']
       'Time Formatting':    [true,  'Arbitrarily formatted timestamps, using your local time']
       'Report Button':      [true,  'Add report buttons']
@@ -10,7 +9,9 @@ config =
       'Thread Expansion':   [true,  'View all replies']
       'Index Navigation':   [true,  'Navigate to previous / next thread']
       'Reply Navigation':   [false, 'Navigate to top / bottom of thread']
-    Hiding:
+    Filtering:
+      'Anonymize':          [false, 'Make everybody anonymous']
+      'Filter':             [false, 'Self-moderation placebo']
       'Reply Hiding':       [true,  'Hide single replies']
       'Thread Hiding':      [true,  'Hide entire threads']
       'Show Stubs':         [true,  'Of hidden threads / replies']
@@ -373,6 +374,11 @@ else
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
+
+filter =
+  init: ->
+    HTMLBlockquoteElement.prototype.toString = ->
+      return ($.el 'span', innerHTML: @innerHTML.replace /<br>/g, '\n').textContent
 
 expandComment =
   init: ->
@@ -2182,6 +2188,9 @@ Main =
     # thumbnail generation takes time
     if g.REPLY and (id = location.hash[1..]) and /\d/.test(id[0]) and !$.id(id)
       scrollTo 0, d.body.scrollHeight
+
+    if conf['Filter']
+      filter.init()
 
     if conf['Image Expansion']
       imgExpand.init()
