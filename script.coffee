@@ -1915,9 +1915,9 @@ Favicon =
 
 redirect = ->
   switch g.BOARD
-    when 'g'
+    when 'g', 'sci'
       url = "http://archive.installgentoo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when 'lit', 'sci', 'tv'
+    when 'lit', 'tv'
       url = "http://archive.gentoomen.org/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
     when 'a', 'jp', 'm', 'tg'
       url = "http://archive.easymodo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
