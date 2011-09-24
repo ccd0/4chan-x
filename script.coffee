@@ -2026,8 +2026,11 @@ imgExpand =
     thumb = @previousSibling
     imgExpand.contract thumb
     #navigator.online is not x-browser/os yet
-    req = $.ajax @src, null, 'head'
-    req.onreadystatechange = (e) -> setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
+    if navigator.appName isnt 'Opera'
+      req = $.ajax @src, null, 'head'
+      req.onreadystatechange = (e) -> setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
+    else unless g.dead
+      setTimeout imgExpand.retry, 10000, thumb
   retry: (thumb) ->
     imgExpand.expand thumb unless thumb.hidden
 

@@ -2737,12 +2737,16 @@
       var req, thumb;
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
-      req = $.ajax(this.src, null, 'head');
-      return req.onreadystatechange = function(e) {
-        if (this.status !== 404) {
-          return setTimeout(imgExpand.retry, 10000, thumb);
-        }
-      };
+      if (navigator.appName !== 'Opera') {
+        req = $.ajax(this.src, null, 'head');
+        return req.onreadystatechange = function(e) {
+          if (this.status !== 404) {
+            return setTimeout(imgExpand.retry, 10000, thumb);
+          }
+        };
+      } else if (!g.dead) {
+        return setTimeout(imgExpand.retry, 10000, thumb);
+      }
     },
     retry: function(thumb) {
       if (!thumb.hidden) {
