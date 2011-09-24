@@ -2501,11 +2501,11 @@ Main =
         http://code.google.com/p/chromium/issues/detail?id=78961
         */
         font-size: 100px;
-        position: absolute;
-        left: 0;
         opacity: 0;
       }
       #qr #files img {
+        position: absolute;
+        left: 0;
         max-height: 100px;
         max-width:  100px;
       }
