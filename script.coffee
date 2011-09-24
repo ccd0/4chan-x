@@ -2026,10 +2026,10 @@ imgExpand =
     thumb = @previousSibling
     imgExpand.contract thumb
     #navigator.online is not x-browser/os yet
-    #can't easily check if the image/post is deleted
-    setTimeout imgExpand.retry, 10000, thumb unless g.dead
+    req = $.ajax @src, null, 'head'
+    req.onreadystatechange = (e) -> setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
   retry: (thumb) ->
-    imgExpand.expand thumb unless g.dead or thumb.hidden
+    imgExpand.expand thumb unless thumb.hidden
 
   dialog: ->
     controls = $.el 'div',

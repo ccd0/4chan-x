@@ -2734,15 +2734,18 @@
       return $.add(a, img);
     },
     error: function(e) {
-      var thumb;
+      var req, thumb;
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
-      if (!g.dead) {
-        return setTimeout(imgExpand.retry, 10000, thumb);
-      }
+      req = $.ajax(this.src, null, 'head');
+      return req.onreadystatechange = function(e) {
+        if (this.status !== 404) {
+          return setTimeout(imgExpand.retry, 10000, thumb);
+        }
+      };
     },
     retry: function(thumb) {
-      if (!(g.dead || thumb.hidden)) {
+      if (!thumb.hidden) {
         return imgExpand.expand(thumb);
       }
     },
