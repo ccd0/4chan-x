@@ -1915,9 +1915,9 @@ Favicon =
 
 redirect = ->
   switch g.BOARD
-    when 'g'
+    when 'g', 'sci'
       url = "http://archive.installgentoo.net/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when 'lit', 'sci', 'tv'
+    when 'lit', 'tv'
       url = "http://archive.gentoomen.org/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
     when 'a', 'jp', 'm', 'tg'
       url = "http://archive.easymodo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
@@ -1973,23 +1973,20 @@ imgExpand =
     return unless thumb = $ 'img[md5]', root
     a = thumb.parentNode
     $.bind a, 'click', imgExpand.cb.toggle
-    if imgExpand.on and root.className isnt 'inline' then imgExpand.toggle a
+    if imgExpand.on and root.className isnt 'inline' then imgExpand.expand a.firstChild
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
       e.preventDefault()
       imgExpand.toggle @
     all: (e) ->
-      thumbs = $$ 'img[md5]'
       imgExpand.on = @checked
       if imgExpand.on #expand
-        for thumb in thumbs
-          unless thumb.hidden #thumbnail hidden, image already expanded
-            imgExpand.expand thumb
+        for thumb in $$ 'img[md5]:not([hidden])'
+          imgExpand.expand thumb
       else #contract
-        for thumb in thumbs
-          if thumb.hidden #thumbnail hidden - unhide it
-            imgExpand.contract thumb
+        for thumb in $$ 'img[md5][hidden]'
+          imgExpand.contract thumb
     typeChange: (e) ->
       switch @value
         when 'full'
@@ -2014,7 +2011,6 @@ imgExpand =
     $.rm thumb.nextSibling
 
   expand: (thumb) ->
-    thumb.hidden = true
     a = thumb.parentNode
     img = $.el 'img',
       src: a.href
@@ -2022,11 +2018,18 @@ imgExpand =
       filesize = $ 'span.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
       img.style.maxWidth = "-moz-calc(#{max}px)"
-    $.bind img, 'error', (e) ->
-      thumb = @previousSibling
-      imgExpand.contract thumb
-      imgExpand.expand   thumb
+    $.bind img, 'error', imgExpand.error
+    thumb.hidden = true
     $.add a, img
+
+  error: (e) ->
+    thumb = @previousSibling
+    imgExpand.contract thumb
+    #navigator.online is not x-browser/os yet
+    req = $.ajax @src, null, 'head'
+    req.onreadystatechange = (e) -> setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
+  retry: (thumb) ->
+    imgExpand.expand thumb unless thumb.hidden
 
   dialog: ->
     controls = $.el 'div',
@@ -2049,7 +2052,7 @@ imgExpand =
     $.prepend delform, controls
 
   resize: (e) ->
-    imgExpand.style.innerHTML = "body.fitheight img[md5] + img { max-height: #{d.body.clientHeight}px }"
+    imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
 
 firstRun =
   init: ->

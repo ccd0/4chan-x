@@ -2537,10 +2537,10 @@
     var url;
     switch (g.BOARD) {
       case 'g':
+      case 'sci':
         url = "http://archive.installgentoo.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case 'lit':
-      case 'sci':
       case 'tv':
         url = "http://archive.gentoomen.org/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
@@ -2655,7 +2655,7 @@
       a = thumb.parentNode;
       $.bind(a, 'click', imgExpand.cb.toggle);
       if (imgExpand.on && root.className !== 'inline') {
-        return imgExpand.toggle(a);
+        return imgExpand.expand(a.firstChild);
       }
     },
     cb: {
@@ -2667,21 +2667,22 @@
         return imgExpand.toggle(this);
       },
       all: function(e) {
-        var thumb, thumbs, _i, _j, _len, _len2, _results, _results2;
-        thumbs = $$('img[md5]');
+        var thumb, _i, _j, _len, _len2, _ref, _ref2, _results, _results2;
         imgExpand.on = this.checked;
         if (imgExpand.on) {
+          _ref = $$('img[md5]:not([hidden])');
           _results = [];
-          for (_i = 0, _len = thumbs.length; _i < _len; _i++) {
-            thumb = thumbs[_i];
-            _results.push(!thumb.hidden ? imgExpand.expand(thumb) : void 0);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            thumb = _ref[_i];
+            _results.push(imgExpand.expand(thumb));
           }
           return _results;
         } else {
+          _ref2 = $$('img[md5][hidden]');
           _results2 = [];
-          for (_j = 0, _len2 = thumbs.length; _j < _len2; _j++) {
-            thumb = thumbs[_j];
-            _results2.push(thumb.hidden ? imgExpand.contract(thumb) : void 0);
+          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+            thumb = _ref2[_j];
+            _results2.push(imgExpand.contract(thumb));
           }
           return _results2;
         }
@@ -2719,7 +2720,6 @@
     },
     expand: function(thumb) {
       var a, filesize, img, max, _, _ref;
-      thumb.hidden = true;
       a = thumb.parentNode;
       img = $.el('img', {
         src: a.href
@@ -2729,12 +2729,25 @@
         _ref = filesize.textContent.match(/(\d+)x/), _ = _ref[0], max = _ref[1];
         img.style.maxWidth = "-moz-calc(" + max + "px)";
       }
-      $.bind(img, 'error', function(e) {
-        thumb = this.previousSibling;
-        imgExpand.contract(thumb);
-        return imgExpand.expand(thumb);
-      });
+      $.bind(img, 'error', imgExpand.error);
+      thumb.hidden = true;
       return $.add(a, img);
+    },
+    error: function(e) {
+      var req, thumb;
+      thumb = this.previousSibling;
+      imgExpand.contract(thumb);
+      req = $.ajax(this.src, null, 'head');
+      return req.onreadystatechange = function(e) {
+        if (this.status !== 404) {
+          return setTimeout(imgExpand.retry, 10000, thumb);
+        }
+      };
+    },
+    retry: function(thumb) {
+      if (!thumb.hidden) {
+        return imgExpand.expand(thumb);
+      }
     },
     dialog: function() {
       var controls, delform, imageType, option, select, _i, _len, _ref;
@@ -2760,7 +2773,7 @@
       return $.prepend(delform, controls);
     },
     resize: function(e) {
-      return imgExpand.style.innerHTML = "body.fitheight img[md5] + img { max-height: " + d.body.clientHeight + "px }";
+      return imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
     }
   };
   firstRun = {
