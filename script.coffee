@@ -384,20 +384,53 @@ $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
 filter =
+  regexps: {}
   init: ->
     HTMLBlockquoteElement.prototype.toString = ->
       return ($.el 'a', innerHTML: @innerHTML.replace /<br>/g, '\n').textContent
 
-    filters = {}
     for key of config.filter
       unless m = conf[key].match /(.+)/g
         continue
-      filters[key] = []
+      @regexps[key] = []
       for filter in m
         try if (regx = eval filter).constructor is RegExp
-          filters[key].push regx
+          @regexps[key].push regx
+      #only execute what's filterable
+      g.callbacks.push @[key] if @regexps[key].length
 
-    log filters
+  test: (key, value) ->
+    for regexp in filter.regexps[key]
+      return true if regexp.test value
+
+  name: (root) ->
+    unless (name = if root.className is 'op' then $('.postername', root).textContent else $('.commentpostername', root).textContent)
+      return
+    filter.test 'name', name
+  trip: (root) ->
+    unless trip = $('.postertrip', root)
+      return
+    filter.test 'trip', trip.textContent
+  mail: (root) ->
+    unless mail = $('.linkmail', root)
+      return
+    filter.test 'mail', mail.href
+  sub: (root) ->
+    unless(sub = if root.className is 'op' then $('.filetitle', root).textContent else $('.replytitle', root).textContent)
+      return
+    filter.test 'sub', sub
+  com: (root) ->
+    unless com = $('blockquote', root).toString()
+      return
+    filter.test 'com', com
+  file: (root) ->
+    unless file = $ '.filesize span', root
+      return
+    filter.test 'file', file.title
+  md5: (root) ->
+    unless img = $ 'img[md5]', root
+      return
+    filter.test 'md5', img.getAttribute('md5')
 
 expandComment =
   init: ->

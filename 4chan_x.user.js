@@ -527,29 +527,90 @@
     return Array.prototype.slice.call(root.querySelectorAll(selector));
   };
   filter = {
+    regexps: {},
     init: function() {
-      var filter, filters, key, m, regx, _i, _len;
+      var filter, key, m, regx, _i, _len, _results;
       HTMLBlockquoteElement.prototype.toString = function() {
         return ($.el('a', {
           innerHTML: this.innerHTML.replace(/<br>/g, '\n')
         })).textContent;
       };
-      filters = {};
+      _results = [];
       for (key in config.filter) {
         if (!(m = conf[key].match(/(.+)/g))) {
           continue;
         }
-        filters[key] = [];
+        this.regexps[key] = [];
         for (_i = 0, _len = m.length; _i < _len; _i++) {
           filter = m[_i];
           try {
             if ((regx = eval(filter)).constructor === RegExp) {
-              filters[key].push(regx);
+              this.regexps[key].push(regx);
             }
           } catch (_e) {}
         }
+        _results.push(this.regexps[key].length ? g.callbacks.push(this[key]) : void 0);
       }
-      return log(filters);
+      return _results;
+    },
+    test: function(key, value) {
+      var regexp, _i, _len, _ref;
+      _ref = filter.regexps[key];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        regexp = _ref[_i];
+        if (regexp.test(value)) {
+          return true;
+        }
+      }
+    },
+    name: function(root) {
+      var name;
+      if (!(name = root.className === 'op' ? $('.postername', root).textContent : $('.commentpostername', root).textContent)) {
+        return;
+      }
+      return filter.test('name', name);
+    },
+    trip: function(root) {
+      var trip;
+      if (!(trip = $('.postertrip', root))) {
+        return;
+      }
+      return filter.test('trip', trip.textContent);
+    },
+    mail: function(root) {
+      var mail;
+      if (!(mail = $('.linkmail', root))) {
+        return;
+      }
+      return filter.test('mail', mail.href);
+    },
+    sub: function(root) {
+      var sub;
+      if (!(sub = root.className === 'op' ? $('.filetitle', root).textContent : $('.replytitle', root).textContent)) {
+        return;
+      }
+      return filter.test('sub', sub);
+    },
+    com: function(root) {
+      var com;
+      if (!(com = $('blockquote', root).toString())) {
+        return;
+      }
+      return filter.test('com', com);
+    },
+    file: function(root) {
+      var file;
+      if (!(file = $('.filesize span', root))) {
+        return;
+      }
+      return filter.test('file', file.title);
+    },
+    md5: function(root) {
+      var img;
+      if (!(img = $('img[md5]', root))) {
+        return;
+      }
+      return filter.test('md5', img.getAttribute('md5'));
     }
   };
   expandComment = {
