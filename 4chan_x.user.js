@@ -530,16 +530,16 @@
     init: function() {
       var filter, filters, key, m, regx, _i, _len;
       HTMLBlockquoteElement.prototype.toString = function() {
-        return ($.el('span', {
+        return ($.el('a', {
           innerHTML: this.innerHTML.replace(/<br>/g, '\n')
         })).textContent;
       };
       filters = {};
       for (key in config.filter) {
-        filters[key] = [];
         if (!(m = conf[key].match(/(.+)/g))) {
           continue;
         }
+        filters[key] = [];
         for (_i = 0, _len = m.length; _i < _len; _i++) {
           filter = m[_i];
           try {

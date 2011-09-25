@@ -386,13 +386,13 @@ $$ = (selector, root=d.body) ->
 filter =
   init: ->
     HTMLBlockquoteElement.prototype.toString = ->
-      return ($.el 'span', innerHTML: @innerHTML.replace /<br>/g, '\n').textContent
+      return ($.el 'a', innerHTML: @innerHTML.replace /<br>/g, '\n').textContent
 
     filters = {}
     for key of config.filter
-      filters[key] = []
       unless m = conf[key].match /(.+)/g
         continue
+      filters[key] = []
       for filter in m
         try if (regx = eval filter).constructor is RegExp
           filters[key].push regx
