@@ -100,7 +100,7 @@
       },
       Posting: {
         'Auto Noko': [true, 'Always redirect to your post'],
-        'Cooldown': [true, 'Prevent \'flood detected\' errors'],
+        'Cooldown': [true, 'Prevent `flood detected` errors'],
         'Quick Reply': [true, 'Reply without leaving the page'],
         'Persistent QR': [false, 'Quick reply won\'t disappear after posting. Only in replies.'],
         'Auto Hide QR': [true, 'Automatically auto-hide the quick reply when posting'],
@@ -1123,17 +1123,17 @@
         innerHTML: '\
 <div class="reply dialog">\
   <div id=optionsbar>\
-    <div id=floaty>\
-      <label for=main_tab>Main</label>\
-      | <label for=flavors_tab>Sauce</label>\
-      | <label for=rice_tab>Rice</label>\
-      | <label for=keybinds_tab>Keybinds</label>\
-    </div>\
     <div id=credits>\
       <a href=http://aeosynth.github.com/4chan-x/>4chan X</a>\
       | <a href=http://chat.now.im/x/aeos>Support Throd</a>\
       | <a href=https://github.com/aeosynth/4chan-x/issues>GitHub</a>\
       | <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>Donate</a>\
+    </div>\
+    <div>\
+      <label for=main_tab>Main</label>\
+      | <label for=flavors_tab>Sauce</label>\
+      | <label for=rice_tab>Rice</label>\
+      | <label for=keybinds_tab>Keybinds</label>\
     </div>\
   </div>\
   <hr>\
@@ -1197,7 +1197,7 @@
         });
         for (key in obj) {
           arr = obj[key];
-          checked = conf[key] ? "checked" : "";
+          checked = conf[key] ? 'checked' : '';
           description = arr[1];
           li = $.el('li', {
             innerHTML: "<label><input type=checkbox name='" + key + "' " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
@@ -1210,7 +1210,7 @@
       hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
       li = $.el('li', {
-        innerHTML: "<button>hidden: " + hiddenNum + "</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `show stubs` disabled."
+        innerHTML: "<button>hidden: " + hiddenNum + "</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `Show Stubs` disabled."
       });
       $.bind($('button', li), 'click', options.clearHidden);
       $.add($('ul:nth-child(2)', dialog), li);
@@ -3103,7 +3103,7 @@
         width: 500px;\
       }\
       #credits {\
-        text-align: right;\
+        float: right;\
       }\
       #options ul {\
         list-style: none;\
@@ -3111,9 +3111,6 @@
       }\
       #options label {\
         text-decoration: underline;\
-      }\
-      #floaty {\
-        float: left;\
       }\
       #options [name=tab]:not(:checked) + * {\
         display: none;\
