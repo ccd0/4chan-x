@@ -116,6 +116,15 @@
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
       }
     },
+    filter: {
+      name: '',
+      trip: '',
+      mail: '',
+      sub: '',
+      com: '',
+      file: '',
+      md5: ''
+    },
     flavors: ['http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://regex.info/exif.cgi?url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://imgur.com/upload?url='].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
@@ -1127,7 +1136,7 @@
       return $.replace(home, a);
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, flavors, hiddenNum, hiddenThreads, input, key, li, obj, overlay, time, ul, _i, _len, _ref, _ref2;
+      var arr, back, checked, description, dialog, hiddenNum, hiddenThreads, input, key, li, obj, overlay, ta, time, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         innerHTML: '\
@@ -1141,6 +1150,7 @@
     </div>\
     <div>\
       <label for=main_tab>Main</label>\
+      | <label for=filter_tab>Filter</label>\
       | <label for=flavors_tab>Sauce</label>\
       | <label for=rice_tab>Rice</label>\
       | <label for=keybinds_tab>Keybinds</label>\
@@ -1152,6 +1162,18 @@
     <div id=main></div>\
     <input type=radio name=tab hidden id=flavors_tab>\
     <textarea name=flavors id=flavors></textarea>\
+    <input type=radio name=tab hidden id=filter_tab>\
+    <div id=filter>\
+      Filters are case-insensitive. One filter per line.<br>\
+      You can use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, without opening and ending `/`, and without flags.\
+      <p>Name:<br><textarea name=name></textarea></p>\
+      <p>Tripcode:<br><textarea name=trip></textarea></p>\
+      <p>E-mail:<br><textarea name=mail></textarea></p>\
+      <p>Subject:<br><textarea name=sub></textarea></p>\
+      <p>Comment:<br><textarea name=com></textarea></p>\
+      <p>Filename:<br><textarea name=file></textarea></p>\
+      <p>Image MD5:<br><textarea name=md5></textarea></p>\
+    </div>\
     <input type=radio name=tab hidden id=rice_tab>\
     <div id=rice>\
       <ul>\
@@ -1224,15 +1246,19 @@
       });
       $.bind($('button', li), 'click', options.clearHidden);
       $.add($('ul:nth-child(2)', dialog), li);
-      (flavors = $('#flavors', dialog)).textContent = conf['flavors'];
-      $.bind(flavors, 'change', $.cb.value);
+      _ref2 = $$('textarea', dialog);
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        ta = _ref2[_i];
+        ta.textContent = conf[ta.name];
+        $.bind(ta, 'change', $.cb.value);
+      }
       (back = $('[name=backlink]', dialog)).value = conf['backlink'];
       (time = $('[name=time]', dialog)).value = conf['time'];
       $.bind(back, 'keyup', options.backlink);
       $.bind(time, 'keyup', options.time);
-      _ref2 = $$('#keybinds input', dialog);
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        input = _ref2[_i];
+      _ref3 = $$('#keybinds input', dialog);
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        input = _ref3[_j];
         input.type = 'text';
         input.value = conf[input.name];
         $.bind(input, 'keydown', options.keybind);
@@ -3134,6 +3160,8 @@
       }\
       #content textarea {\
         margin: 0;\
+        min-height: 100px;\
+        resize: vertical;\
         width: 100%;\
       }\
 \

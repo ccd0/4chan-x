@@ -44,6 +44,14 @@ config =
       'Quote Inline':       [true,  'Show quoted post inline on quote click']
       'Quote Preview':      [true,  'Show quote content on hover']
       'Indicate OP quote':  [true,  'Add \'(OP)\' to OP quotes']
+  filter:
+    name: ''
+    trip: ''
+    mail: ''
+    sub:  ''
+    com:  ''
+    file: ''
+    md5:  ''
   flavors: [
     'http://iqdb.org/?url='
     'http://google.com/searchbyimage?image_url='
@@ -813,6 +821,7 @@ options =
     </div>
     <div>
       <label for=main_tab>Main</label>
+      | <label for=filter_tab>Filter</label>
       | <label for=flavors_tab>Sauce</label>
       | <label for=rice_tab>Rice</label>
       | <label for=keybinds_tab>Keybinds</label>
@@ -824,6 +833,18 @@ options =
     <div id=main></div>
     <input type=radio name=tab hidden id=flavors_tab>
     <textarea name=flavors id=flavors></textarea>
+    <input type=radio name=tab hidden id=filter_tab>
+    <div id=filter>
+      Filters are case-insensitive. One filter per line.<br>
+      You can use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, without opening and ending `/`, and without flags.
+      <p>Name:<br><textarea name=name></textarea></p>
+      <p>Tripcode:<br><textarea name=trip></textarea></p>
+      <p>E-mail:<br><textarea name=mail></textarea></p>
+      <p>Subject:<br><textarea name=sub></textarea></p>
+      <p>Comment:<br><textarea name=com></textarea></p>
+      <p>Filename:<br><textarea name=file></textarea></p>
+      <p>Image MD5:<br><textarea name=md5></textarea></p>
+    </div>
     <input type=radio name=tab hidden id=rice_tab>
     <div id=rice>
       <ul>
@@ -891,9 +912,10 @@ options =
     $.bind $('button', li), 'click', options.clearHidden
     $.add $('ul:nth-child(2)', dialog), li
 
-    #sauce
-    (flavors = $ '#flavors', dialog).textContent = conf['flavors']
-    $.bind flavors, 'change', $.cb.value
+    #filter & sauce
+    for ta in $$ 'textarea', dialog
+      ta.textContent = conf[ta.name]
+      $.bind ta, 'change', $.cb.value
 
     #rice
     (back = $ '[name=backlink]', dialog).value = conf['backlink']
@@ -2389,6 +2411,8 @@ Main =
       }
       #content textarea {
         margin: 0;
+        min-height: 100px;
+        resize: vertical;
         width: 100%;
       }
 
