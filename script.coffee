@@ -388,6 +388,17 @@ filter =
     HTMLBlockquoteElement.prototype.toString = ->
       return ($.el 'span', innerHTML: @innerHTML.replace /<br>/g, '\n').textContent
 
+    filters = {}
+    for key of config.filter
+      filters[key] = []
+      unless m = conf[key].match /(.+)/g
+        continue
+      for filter in m
+        try if (regx = eval filter).constructor is RegExp
+          filters[key].push regx
+
+    log filters
+
 expandComment =
   init: ->
     for a in $$ 'span.abbr a'
@@ -835,8 +846,8 @@ options =
     <textarea name=flavors id=flavors></textarea>
     <input type=radio name=tab hidden id=filter_tab>
     <div id=filter>
-      Filters are case-insensitive. One filter per line.<br>
-      You can use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, without opening and ending `/`, and without flags.
+      Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
+      For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
       <p>Name:<br><textarea name=name></textarea></p>
       <p>Tripcode:<br><textarea name=trip></textarea></p>
       <p>E-mail:<br><textarea name=mail></textarea></p>

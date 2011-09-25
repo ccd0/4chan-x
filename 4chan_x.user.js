@@ -528,11 +528,28 @@
   };
   filter = {
     init: function() {
-      return HTMLBlockquoteElement.prototype.toString = function() {
+      var filter, filters, key, m, regx, _i, _len;
+      HTMLBlockquoteElement.prototype.toString = function() {
         return ($.el('span', {
           innerHTML: this.innerHTML.replace(/<br>/g, '\n')
         })).textContent;
       };
+      filters = {};
+      for (key in config.filter) {
+        filters[key] = [];
+        if (!(m = conf[key].match(/(.+)/g))) {
+          continue;
+        }
+        for (_i = 0, _len = m.length; _i < _len; _i++) {
+          filter = m[_i];
+          try {
+            if ((regx = eval(filter)).constructor === RegExp) {
+              filters[key].push(regx);
+            }
+          } catch (_e) {}
+        }
+      }
+      return log(filters);
     }
   };
   expandComment = {
@@ -1164,8 +1181,8 @@
     <textarea name=flavors id=flavors></textarea>\
     <input type=radio name=tab hidden id=filter_tab>\
     <div id=filter>\
-      Filters are case-insensitive. One filter per line.<br>\
-      You can use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, without opening and ending `/`, and without flags.\
+      Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\
+      For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.\
       <p>Name:<br><textarea name=name></textarea></p>\
       <p>Tripcode:<br><textarea name=trip></textarea></p>\
       <p>E-mail:<br><textarea name=mail></textarea></p>\
