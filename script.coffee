@@ -1147,18 +1147,18 @@ QR =
     $('iframe[name=iframe]').src = 'about:blank'
     {qr} = QR
     row = $('#files input[form]', qr)?.parentNode
-    if data
-      if QR.op
-        window.location = data
-        return
-      data = JSON.parse data
+    data = JSON.parse data
+    {textContent, href} = data
+    if QR.op
+      window.location = href
+      return
+    if textContent
       $.extend $('a.error', qr), data
-      tc = data.textContent
-      if tc is 'Error: Duplicate file entry detected.'
+      if textContent is 'Error: Duplicate file entry detected.'
         $.rm row if row
         QR.stats()
         setTimeout QR.submit, 1000
-      else if tc is 'You seem to have mistyped the verification.'
+      else if textContent is 'You seem to have mistyped the verification.'
         setTimeout QR.submit, 1000
       return
     $.rm row if row
@@ -1220,10 +1220,10 @@ QR =
       $ = (css) -> document.querySelector css
       if node = $('table font b')?.firstChild
         {textContent, href} = node
-        data = JSON.stringify {textContent, href}
-      else if node = $ 'meta'
-        data = node.content.match(/url=(.+)/)[1]
-        if /#/.test data then data = '' #not op
+      else
+        node = $ 'meta'
+        href = node.content.match(/url=(.+)/)[1]
+      data = JSON.stringify { textContent, href }
       parent.postMessage data, '*'
       #if we're an iframe, parent will blank us
 

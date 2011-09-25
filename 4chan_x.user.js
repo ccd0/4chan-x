@@ -1509,25 +1509,25 @@
       return (_base = $('[name=resto]', qr)).value || (_base.value = tid);
     },
     receive: function(data) {
-      var cooldown, qr, row, tc, _ref, _ref2;
+      var cooldown, href, qr, row, textContent, _ref, _ref2;
       $('iframe[name=iframe]').src = 'about:blank';
       qr = QR.qr;
       row = (_ref = $('#files input[form]', qr)) != null ? _ref.parentNode : void 0;
-      if (data) {
-        if (QR.op) {
-          window.location = data;
-          return;
-        }
-        data = JSON.parse(data);
+      data = JSON.parse(data);
+      textContent = data.textContent, href = data.href;
+      if (QR.op) {
+        window.location = href;
+        return;
+      }
+      if (textContent) {
         $.extend($('a.error', qr), data);
-        tc = data.textContent;
-        if (tc === 'Error: Duplicate file entry detected.') {
+        if (textContent === 'Error: Duplicate file entry detected.') {
           if (row) {
             $.rm(row);
           }
           QR.stats();
           setTimeout(QR.submit, 1000);
-        } else if (tc === 'You seem to have mistyped the verification.') {
+        } else if (textContent === 'You seem to have mistyped the verification.') {
           setTimeout(QR.submit, 1000);
         }
         return;
@@ -1625,16 +1625,14 @@
         };
         if (node = (_ref = $('table font b')) != null ? _ref.firstChild : void 0) {
           textContent = node.textContent, href = node.href;
-          data = JSON.stringify({
-            textContent: textContent,
-            href: href
-          });
-        } else if (node = $('meta')) {
-          data = node.content.match(/url=(.+)/)[1];
-          if (/#/.test(data)) {
-            data = '';
-          }
+        } else {
+          node = $('meta');
+          href = node.content.match(/url=(.+)/)[1];
         }
+        data = JSON.stringify({
+          textContent: textContent,
+          href: href
+        });
         return parent.postMessage(data, '*');
       });
     }
