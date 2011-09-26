@@ -3417,7 +3417,7 @@
         max-width:  100px;\
       }\
       #qr input[name=resto] {\
-        width: 80px;\
+        width: 90px;\
       }\
       #qr button + input[type=file] {\
         position: absolute;\
