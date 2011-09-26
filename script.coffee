@@ -2508,6 +2508,7 @@ Main =
         left: 0;
         font-size: 50px;
         color: red;
+        z-index: 1;
       }
       #qr #cl {
         right: 0;
