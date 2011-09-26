@@ -2,7 +2,6 @@ config =
   main:
     Enhancing:
       '404 Redirect':       [true,  'Redirect dead threads']
-      'Anonymize':          [false, 'Make everybody anonymous']
       'Keybinds':           [true,  'Binds actions to keys']
       'Time Formatting':    [true,  'Arbitrarily formatted timestamps, using your local time']
       'Report Button':      [true,  'Add report buttons']
@@ -10,7 +9,10 @@ config =
       'Thread Expansion':   [true,  'View all replies']
       'Index Navigation':   [true,  'Navigate to previous / next thread']
       'Reply Navigation':   [false, 'Navigate to top / bottom of thread']
-    Hiding:
+    Filtering:
+      'Anonymize':          [false, 'Make everybody anonymous']
+      'Filter':             [false, 'Self-moderation placebo']
+      'Filter OPs':         [false, 'Filter OPs along with their threads']
       'Reply Hiding':       [true,  'Hide single replies']
       'Thread Hiding':      [true,  'Hide entire threads']
       'Show Stubs':         [true,  'Of hidden threads / replies']
@@ -43,6 +45,14 @@ config =
       'Quote Inline':       [true,  'Show quoted post inline on quote click']
       'Quote Preview':      [true,  'Show quote content on hover']
       'Indicate OP quote':  [true,  'Add \'(OP)\' to OP quotes']
+  filter:
+    name: ''
+    trip: ''
+    mail: ''
+    sub:  ''
+    com:  ''
+    file: ''
+    md5:  ''
   flavors: [
     'http://iqdb.org/?url='
     'http://google.com/searchbyimage?image_url='
@@ -374,6 +384,60 @@ else
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
+filter =
+  regexps: {}
+  callbacks: []
+  init: ->
+    for key of config.filter
+      unless m = conf[key].match /(.+)/g
+        continue
+      @regexps[key] = []
+      for filter in m
+        try if (regx = eval filter).constructor is RegExp
+          @regexps[key].push regx
+      #only execute what's filterable
+      @callbacks.push @[key] if @regexps[key].length
+
+    g.callbacks.push @node
+
+  node: (root) ->
+    if root.className is 'op'
+      if !g.REPLY and conf['Filter OPs']
+        for callback in filter.callbacks
+          if callback root
+            threadHiding.hideHide root.parentNode
+            return
+    else unless root.classList.contains 'inline'
+      for callback in filter.callbacks
+        if callback root
+          replyHiding.hideHide $ 'td:not([nowrap])', root
+          return
+  test: (key, value) ->
+    for regexp in filter.regexps[key]
+      return true if regexp.test value
+
+  name: (root) ->
+    if (name = if root.className is 'op' then $('.postername', root).textContent else $('.commentpostername', root).textContent)
+      filter.test 'name', name
+  trip: (root) ->
+    if trip = $ '.postertrip', root
+      filter.test 'trip', trip.textContent
+  mail: (root) ->
+    if mail = $ '.linkmail', root
+      filter.test 'mail', mail.href
+  sub: (root) ->
+    if (sub = if root.className is 'op' then $('.filetitle', root).textContent else $('.replytitle', root).textContent)
+      filter.test 'sub', sub
+  com: (root) ->
+    if com = ($.el 'a', innerHTML: $('blockquote', root).innerHTML.replace /<br>/g, '\n').textContent
+      filter.test 'com', com
+  file: (root) ->
+    if file = $ '.filesize span', root
+      filter.test 'file', file.title
+  md5: (root) ->
+    if img = $ 'img[md5]', root
+      filter.test 'md5', img.getAttribute('md5')
+
 expandComment =
   init: ->
     for a in $$ 'span.abbr a'
@@ -517,6 +581,13 @@ replyHiding =
       $.rm div
 
   hide: (reply) ->
+    replyHiding.hideHide reply
+
+    id = reply.id
+    g.hiddenReplies[id] = Date.now()
+    $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+
+  hideHide: (reply) ->
     table = reply.parentNode.parentNode.parentNode
     table.hidden = true
 
@@ -531,10 +602,6 @@ replyHiding =
         className: 'stub'
       $.add div, a
       $.before table, div
-
-    id = reply.id
-    g.hiddenReplies[id] = Date.now()
-    $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   show: (table) ->
     table.hidden = false
@@ -807,6 +874,7 @@ options =
     </div>
     <div>
       <label for=main_tab>Main</label>
+      | <label for=filter_tab>Filter</label>
       | <label for=flavors_tab>Sauce</label>
       | <label for=rice_tab>Rice</label>
       | <label for=keybinds_tab>Keybinds</label>
@@ -818,6 +886,18 @@ options =
     <div id=main></div>
     <input type=radio name=tab hidden id=flavors_tab>
     <textarea name=flavors id=flavors></textarea>
+    <input type=radio name=tab hidden id=filter_tab>
+    <div id=filter>
+      Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
+      For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
+      <p>Name:<br><textarea name=name></textarea></p>
+      <p>Tripcode:<br><textarea name=trip></textarea></p>
+      <p>E-mail:<br><textarea name=mail></textarea></p>
+      <p>Subject:<br><textarea name=sub></textarea></p>
+      <p>Comment:<br><textarea name=com></textarea></p>
+      <p>Filename:<br><textarea name=file></textarea></p>
+      <p>Image MD5:<br><textarea name=md5></textarea></p>
+    </div>
     <input type=radio name=tab hidden id=rice_tab>
     <div id=rice>
       <ul>
@@ -885,9 +965,10 @@ options =
     $.bind $('button', li), 'click', options.clearHidden
     $.add $('ul:nth-child(2)', dialog), li
 
-    #sauce
-    (flavors = $ '#flavors', dialog).textContent = conf['flavors']
-    $.bind flavors, 'change', $.cb.value
+    #filter & sauce
+    for ta in $$ 'textarea', dialog
+      ta.textContent = conf[ta.name]
+      $.bind ta, 'change', $.cb.value
 
     #rice
     (back = $ '[name=backlink]', dialog).value = conf['backlink']
@@ -2201,6 +2282,9 @@ Main =
     if g.REPLY and (id = location.hash[1..]) and /\d/.test(id[0]) and !$.id(id)
       scrollTo 0, d.body.scrollHeight
 
+    if conf['Filter']
+      filter.init()
+
     if conf['Image Expansion']
       imgExpand.init()
 
@@ -2388,6 +2472,8 @@ Main =
       }
       #content textarea {
         margin: 0;
+        min-height: 100px;
+        resize: vertical;
         width: 100%;
       }
 
