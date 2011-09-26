@@ -388,13 +388,6 @@ filter =
   regexps: {}
   callbacks: []
   init: ->
-    HTMLQuoteElement.prototype.toString = ->
-      return ($.el 'a', innerHTML: @innerHTML.replace /<br>/g, '\n').textContent
-    #to remove when both chrom, ff and oprah will define blockquotes as HTMLQuoteElement
-    if HTMLBlockquoteElement
-      HTMLBlockquoteElement.prototype.toString = ->
-        return ($.el 'a', innerHTML: @innerHTML.replace /<br>/g, '\n').textContent
-
     for key of config.filter
       unless m = conf[key].match /(.+)/g
         continue
@@ -436,7 +429,7 @@ filter =
     if (sub = if root.className is 'op' then $('.filetitle', root).textContent else $('.replytitle', root).textContent)
       filter.test 'sub', sub
   com: (root) ->
-    if com = $('blockquote', root).toString()
+    if com = ($.el 'a', innerHTML: $('blockquote', root).innerHTML.replace /<br>/g, '\n').textContent
       filter.test 'com', com
   file: (root) ->
     if file = $ '.filesize span', root

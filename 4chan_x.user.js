@@ -532,11 +532,6 @@
     callbacks: [],
     init: function() {
       var filter, key, m, regx, _i, _len;
-      HTMLBlockquoteElement.prototype.toString = function() {
-        return ($.el('a', {
-          innerHTML: this.innerHTML.replace(/<br>/g, '\n')
-        })).textContent;
-      };
       for (key in config.filter) {
         if (!(m = conf[key].match(/(.+)/g))) {
           continue;
@@ -616,7 +611,9 @@
     },
     com: function(root) {
       var com;
-      if (com = $('blockquote', root).toString()) {
+      if (com = ($.el('a', {
+        innerHTML: $('blockquote', root).innerHTML.replace(/<br>/g, '\n')
+      })).textContent) {
         return filter.test('com', com);
       }
     },
