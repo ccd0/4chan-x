@@ -2618,7 +2618,7 @@ Main =
         max-width:  100px;
       }
       #qr input[name=resto] {
-        width: 90px;
+        width: 80px;
       }
       #qr button + input[type=file] {
         position: absolute;
