@@ -1324,18 +1324,17 @@
         });
       }
     },
-    attach: function() {
-      var box, file, files;
+    attach: function(file) {
+      var box, files;
       files = $('#files', QR.qr);
       box = $.el('li', {
-        innerHTML: "<img><input type=file name=upfile accept='" + QR.accept + "'><a class=x>X</a>"
+        innerHTML: "<img><a class=x>X</a>"
       });
-      file = $('input', box);
-      $.bind(file, 'change', QR.change);
       $.bind($('.x', box), 'click', QR.rmThumb);
+      $.add(box, file);
       $.add(files, box);
-      file.click();
-      return QR.stats();
+      QR.stats();
+      return QR.foo();
     },
     rmThumb: function() {
       $.rm(this.parentNode);
@@ -1392,15 +1391,16 @@
       return window.location = 'javascript:Recaptcha.reload()';
     },
     change: function(e) {
-      var file, fr, img, qr;
+      var file, fr, img;
       file = this.files[0];
       if (file.size > QR.MAX_FILE_SIZE) {
         alert('Error: File too large.');
-        $.rm(this.parentNode);
-        QR.attach();
+        QR.foo(this);
         return;
       }
-      qr = QR.qr;
+      if (this.previousSibling.nodeName === 'BUTTON') {
+        QR.attach(this);
+      }
       fr = new FileReader();
       img = $('img', this.parentNode);
       fr.onload = function(e) {
@@ -1437,6 +1437,20 @@
         }
       }
     },
+    foo: function(old) {
+      var input;
+      input = $.el('input', {
+        type: 'file',
+        name: 'upfile',
+        accept: QR.accept
+      });
+      $.bind(input, 'change', QR.change);
+      if (old) {
+        return $.replace(old, file);
+      } else {
+        return $.after($('button', QR.qr), input);
+      }
+    },
     dialog: function(text, tid) {
       var c, l, m, qr, ta;
       if (text == null) {
@@ -1452,7 +1466,10 @@
       if (conf['Cooldown']) {
         QR.cooldown();
       }
-      $.bind($('button', qr), 'click', QR.attach);
+      QR.foo();
+      $.bind($('button', qr), 'click', function() {
+        return this.nextSibling.click();
+      });
       $.bind($('.close', qr), 'click', QR.close);
       $.bind($('form', qr), 'submit', QR.submit);
       $.bind($('#recaptcha_response_field', qr), 'keydown', QR.keydown);
@@ -3260,6 +3277,11 @@
       }\
       #qr input[name=resto] {\
         width: 80px;\
+      }\
+      #qr button + input {\
+        position: absolute;\
+        opacity: 0;\
+        pointer-events: none;\
       }\
     '
   };

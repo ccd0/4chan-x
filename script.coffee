@@ -976,17 +976,15 @@ QR =
         $('#autohide', QR.qr).checked = true
     if conf['Cooldown']
       $.bind window, 'storage', (e) -> QR.cooldown() if e.key is "#{NAMESPACE}cooldown/#{g.BOARD}"
-  attach: ->
-    #$('#autopost', QR.qr).checked = true
+  attach: (file) ->
     files = $ '#files', QR.qr
     box = $.el 'li',
-      innerHTML: "<img><input type=file name=upfile accept='#{QR.accept}'><a class=x>X</a>"
-    file = $ 'input', box
-    $.bind file, 'change', QR.change
+      innerHTML: "<img><a class=x>X</a>"
     $.bind $('.x', box), 'click', QR.rmThumb
+    $.add box, file
     $.add files, box
-    file.click()
     QR.stats()
+    QR.foo()
   rmThumb: ->
     $.rm @parentNode
     QR.stats()
@@ -1029,10 +1027,10 @@ QR =
     file = @files[0]
     if file.size > QR.MAX_FILE_SIZE
       alert 'Error: File too large.'
-      $.rm @parentNode
-      QR.attach()
+      QR.foo @
       return
-    {qr} = QR
+    if @previousSibling.nodeName is 'BUTTON'
+      QR.attach @
     fr = new FileReader()
     img = $ 'img', @parentNode
     fr.onload = (e) ->
@@ -1057,6 +1055,16 @@ QR =
         textContent: 'Submit'
         disabled: false
       QR.submit() if $('#autopost', QR.qr).checked
+  foo: (old) ->
+    input = $.el 'input',
+      type: 'file'
+      name: 'upfile'
+      accept: QR.accept
+    $.bind input, 'change', QR.change
+    if old
+      $.replace old, file
+    else
+      $.after $('button', QR.qr), input
   dialog: (text='', tid) ->
     tid or= g.THREAD_ID or ''
     QR.qr = qr = ui.dialog 'qr', 'top: 0; right: 0;', "
@@ -1100,7 +1108,8 @@ QR =
     $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     $('textarea', qr).value = text
     QR.cooldown() if conf['Cooldown']
-    $.bind $('button', qr), 'click', QR.attach
+    QR.foo()
+    $.bind $('button', qr), 'click', -> @nextSibling.click()
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('form', qr), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
@@ -2521,6 +2530,11 @@ Main =
       }
       #qr input[name=resto] {
         width: 80px;
+      }
+      #qr button + input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
       }
     '
 
