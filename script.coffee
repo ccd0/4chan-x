@@ -1109,7 +1109,6 @@ QR =
     $('textarea', qr).value = text
     QR.cooldown() if conf['Cooldown']
     QR.foo()
-    $.bind $('button', qr), 'click', -> @nextSibling.click()
     $.bind $('.close', qr), 'click', QR.close
     $.bind $('form', qr), 'submit', QR.submit
     $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown

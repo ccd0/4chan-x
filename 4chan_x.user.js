@@ -1467,9 +1467,6 @@
         QR.cooldown();
       }
       QR.foo();
-      $.bind($('button', qr), 'click', function() {
-        return this.nextSibling.click();
-      });
       $.bind($('.close', qr), 'click', QR.close);
       $.bind($('form', qr), 'submit', QR.submit);
       $.bind($('#recaptcha_response_field', qr), 'keydown', QR.keydown);
