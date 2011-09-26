@@ -78,6 +78,7 @@
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
         'Filter': [false, 'Self-moderation placebo'],
+        'Filter OPs': [false, 'Filter OPs along with their threads'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
@@ -528,14 +529,14 @@
   };
   filter = {
     regexps: {},
+    callbacks: [],
     init: function() {
-      var filter, key, m, regx, _i, _len, _results;
+      var filter, key, m, regx, _i, _len;
       HTMLBlockquoteElement.prototype.toString = function() {
         return ($.el('a', {
           innerHTML: this.innerHTML.replace(/<br>/g, '\n')
         })).textContent;
       };
-      _results = [];
       for (key in config.filter) {
         if (!(m = conf[key].match(/(.+)/g))) {
           continue;
@@ -549,9 +550,35 @@
             }
           } catch (_e) {}
         }
-        _results.push(this.regexps[key].length ? g.callbacks.push(this[key]) : void 0);
+        if (this.regexps[key].length) {
+          this.callbacks.push(this[key]);
+        }
       }
-      return _results;
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var callback, _i, _j, _len, _len2, _ref, _ref2;
+      if (root.className === 'op') {
+        if (!g.REPLY && conf['Filter OPs']) {
+          _ref = filter.callbacks;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            callback = _ref[_i];
+            if (callback(root)) {
+              threadHiding.hideHide(root.parentNode);
+              return;
+            }
+          }
+        }
+      } else if (!root.classList.contains('inline')) {
+        _ref2 = filter.callbacks;
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          callback = _ref2[_j];
+          if (callback(root)) {
+            replyHiding.hideHide($('td:not([nowrap])', root));
+            return;
+          }
+        }
+      }
     },
     test: function(key, value) {
       var regexp, _i, _len, _ref;
@@ -565,52 +592,45 @@
     },
     name: function(root) {
       var name;
-      if (!(name = root.className === 'op' ? $('.postername', root).textContent : $('.commentpostername', root).textContent)) {
-        return;
+      if ((name = root.className === 'op' ? $('.postername', root).textContent : $('.commentpostername', root).textContent)) {
+        return filter.test('name', name);
       }
-      return filter.test('name', name);
     },
     trip: function(root) {
       var trip;
-      if (!(trip = $('.postertrip', root))) {
-        return;
+      if (trip = $('.postertrip', root)) {
+        return filter.test('trip', trip.textContent);
       }
-      return filter.test('trip', trip.textContent);
     },
     mail: function(root) {
       var mail;
-      if (!(mail = $('.linkmail', root))) {
-        return;
+      if (mail = $('.linkmail', root)) {
+        return filter.test('mail', mail.href);
       }
-      return filter.test('mail', mail.href);
     },
     sub: function(root) {
       var sub;
-      if (!(sub = root.className === 'op' ? $('.filetitle', root).textContent : $('.replytitle', root).textContent)) {
-        return;
+      if ((sub = root.className === 'op' ? $('.filetitle', root).textContent : $('.replytitle', root).textContent)) {
+        return filter.test('sub', sub);
       }
-      return filter.test('sub', sub);
     },
     com: function(root) {
       var com;
-      if (!(com = $('blockquote', root).toString())) {
-        return;
+      if (com = $('blockquote', root).toString()) {
+        return filter.test('com', com);
       }
-      return filter.test('com', com);
     },
     file: function(root) {
       var file;
-      if (!(file = $('.filesize span', root))) {
-        return;
+      if (file = $('.filesize span', root)) {
+        return filter.test('file', file.title);
       }
-      return filter.test('file', file.title);
     },
     md5: function(root) {
       var img;
-      if (!(img = $('img[md5]', root))) {
-        return;
+      if (img = $('img[md5]', root)) {
+        return filter.test('md5', img.getAttribute('md5'));
       }
-      return filter.test('md5', img.getAttribute('md5'));
     }
   };
   expandComment = {
@@ -818,7 +838,14 @@
       }
     },
     hide: function(reply) {
-      var a, div, id, name, table, trip, _ref;
+      var id;
+      replyHiding.hideHide(reply);
+      id = reply.id;
+      g.hiddenReplies[id] = Date.now();
+      return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
+    },
+    hideHide: function(reply) {
+      var a, div, name, table, trip, _ref;
       table = reply.parentNode.parentNode.parentNode;
       table.hidden = true;
       if (conf['Show Stubs']) {
@@ -832,11 +859,8 @@
           className: 'stub'
         });
         $.add(div, a);
-        $.before(table, div);
+        return $.before(table, div);
       }
-      id = reply.id;
-      g.hiddenReplies[id] = Date.now();
-      return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
     show: function(table) {
       var id;

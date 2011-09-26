@@ -12,6 +12,7 @@ config =
     Filtering:
       'Anonymize':          [false, 'Make everybody anonymous']
       'Filter':             [false, 'Self-moderation placebo']
+      'Filter OPs':         [false, 'Filter OPs along with their threads']
       'Reply Hiding':       [true,  'Hide single replies']
       'Thread Hiding':      [true,  'Hide entire threads']
       'Show Stubs':         [true,  'Of hidden threads / replies']
@@ -385,6 +386,7 @@ $$ = (selector, root=d.body) ->
 
 filter =
   regexps: {}
+  callbacks: []
   init: ->
     HTMLBlockquoteElement.prototype.toString = ->
       return ($.el 'a', innerHTML: @innerHTML.replace /<br>/g, '\n').textContent
@@ -397,40 +399,47 @@ filter =
         try if (regx = eval filter).constructor is RegExp
           @regexps[key].push regx
       #only execute what's filterable
-      g.callbacks.push @[key] if @regexps[key].length
+      @callbacks.push @[key] if @regexps[key].length
 
+    g.callbacks.push @node
+
+  node: (root) ->
+    if root.className is 'op'
+      if !g.REPLY and conf['Filter OPs']
+        for callback in filter.callbacks
+          if callback root
+            threadHiding.hideHide root.parentNode
+            return
+    else unless root.classList.contains('inline')
+      for callback in filter.callbacks
+        if callback root
+          replyHiding.hideHide $('td:not([nowrap])', root)
+          return
   test: (key, value) ->
     for regexp in filter.regexps[key]
       return true if regexp.test value
 
   name: (root) ->
-    unless (name = if root.className is 'op' then $('.postername', root).textContent else $('.commentpostername', root).textContent)
-      return
-    filter.test 'name', name
+    if (name = if root.className is 'op' then $('.postername', root).textContent else $('.commentpostername', root).textContent)
+      filter.test 'name', name
   trip: (root) ->
-    unless trip = $('.postertrip', root)
-      return
-    filter.test 'trip', trip.textContent
+    if trip = $('.postertrip', root)
+      filter.test 'trip', trip.textContent
   mail: (root) ->
-    unless mail = $('.linkmail', root)
-      return
-    filter.test 'mail', mail.href
+    if mail = $('.linkmail', root)
+      filter.test 'mail', mail.href
   sub: (root) ->
-    unless(sub = if root.className is 'op' then $('.filetitle', root).textContent else $('.replytitle', root).textContent)
-      return
-    filter.test 'sub', sub
+    if (sub = if root.className is 'op' then $('.filetitle', root).textContent else $('.replytitle', root).textContent)
+      filter.test 'sub', sub
   com: (root) ->
-    unless com = $('blockquote', root).toString()
-      return
-    filter.test 'com', com
+    if com = $('blockquote', root).toString()
+      filter.test 'com', com
   file: (root) ->
-    unless file = $ '.filesize span', root
-      return
-    filter.test 'file', file.title
+    if file = $ '.filesize span', root
+      filter.test 'file', file.title
   md5: (root) ->
-    unless img = $ 'img[md5]', root
-      return
-    filter.test 'md5', img.getAttribute('md5')
+    if img = $ 'img[md5]', root
+      filter.test 'md5', img.getAttribute('md5')
 
 expandComment =
   init: ->
@@ -575,6 +584,13 @@ replyHiding =
       $.rm div
 
   hide: (reply) ->
+    replyHiding.hideHide reply
+
+    id = reply.id
+    g.hiddenReplies[id] = Date.now()
+    $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+
+  hideHide: (reply) ->
     table = reply.parentNode.parentNode.parentNode
     table.hidden = true
 
@@ -589,10 +605,6 @@ replyHiding =
         className: 'stub'
       $.add div, a
       $.before table, div
-
-    id = reply.id
-    g.hiddenReplies[id] = Date.now()
-    $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   show: (table) ->
     table.hidden = false
