@@ -3,6 +3,7 @@ master
   initiate 4chan X earlier
   automatically reload expanded pictures on error
   update /sci/ archive redirection
+  Regular expressions based filter
 
 2.20.1
 - mayhem

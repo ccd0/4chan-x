@@ -410,10 +410,10 @@ filter =
           if callback root
             threadHiding.hideHide root.parentNode
             return
-    else unless root.classList.contains('inline')
+    else unless root.classList.contains 'inline'
       for callback in filter.callbacks
         if callback root
-          replyHiding.hideHide $('td:not([nowrap])', root)
+          replyHiding.hideHide $ 'td:not([nowrap])', root
           return
   test: (key, value) ->
     for regexp in filter.regexps[key]
@@ -423,10 +423,10 @@ filter =
     if (name = if root.className is 'op' then $('.postername', root).textContent else $('.commentpostername', root).textContent)
       filter.test 'name', name
   trip: (root) ->
-    if trip = $('.postertrip', root)
+    if trip = $ '.postertrip', root
       filter.test 'trip', trip.textContent
   mail: (root) ->
-    if mail = $('.linkmail', root)
+    if mail = $ '.linkmail', root
       filter.test 'mail', mail.href
   sub: (root) ->
     if (sub = if root.className is 'op' then $('.filetitle', root).textContent else $('.replytitle', root).textContent)
