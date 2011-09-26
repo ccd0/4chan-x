@@ -1074,7 +1074,7 @@ QR =
       <span id=qr_stats></span>
     </div>
     <div class=autohide>
-      <span class=wat>File</span>
+      <span class=wat><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41Ljg3O4BdAAAAXUlEQVQ4T2NgoAH4DzQTHyZoJckGENJASB6nc9GdCjdo6tSptkCsCPUqVgNAmtFtxiYGUkO0QrBibOqJtWkIGYDTqTgSGOnRiGYQ3mRLKBFhjUZiNCGrIZg3aKsAAGu4rTMFLFBMAAAAAElFTkSuQmCC></span>
       <input form=qr_form placeholder=Name name=name>
       <input form=qr_form placeholder=Email name=email>
       <input form=qr_form placeholder=Subject name=sub>
@@ -2541,10 +2541,10 @@ Main =
       }
       #qr .wat {
         display: inline-block;
-        width: 30px;
+        width: 16px;
         overflow: hidden;
-        background: #FFF;
         position: relative;
+        vertical-align: text-top;
       }
       #qr .wat input {
         opacity: 0;
