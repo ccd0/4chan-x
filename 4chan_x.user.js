@@ -3350,7 +3350,7 @@
         text-align: right;\
       }\
       #qr .autohide input {\
-        width: 82px;\
+        width: 90;\
       }\
       #qr #autopost {\
         width: auto;\
