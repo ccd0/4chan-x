@@ -2468,6 +2468,9 @@ Main =
       #qr .autohide input {
         width: 82px;
       }
+      #qr #autopost {
+        width: auto;
+      }
       #qr #recaptcha_response_field {
         width: 100%;
       }
