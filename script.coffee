@@ -2535,7 +2535,7 @@ Main =
       #qr input[name=resto] {
         width: 80px;
       }
-      #qr button + input {
+      #qr button + input[type=file] {
         position: absolute;
         opacity: 0;
         pointer-events: none;
