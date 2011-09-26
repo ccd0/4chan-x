@@ -1029,7 +1029,7 @@ QR =
       alert 'Error: File too large.'
       QR.foo @
       return
-    if @previousSibling.nodeName is 'BUTTON'
+    if @parentNode.className is 'wat'
       QR.attach @
     fr = new FileReader()
     img = $ 'img', @parentNode
@@ -1064,7 +1064,7 @@ QR =
     if old
       $.replace old, file
     else
-      $.after $('button', QR.qr), input
+      $.add $('.wat', QR.qr), input
   dialog: (text='', tid) ->
     tid or= g.THREAD_ID or ''
     QR.qr = qr = ui.dialog 'qr', 'top: 0; right: 0;', "
@@ -1074,7 +1074,7 @@ QR =
       <span id=qr_stats></span>
     </div>
     <div class=autohide>
-      <button>File</button>
+      <span class=wat>File</span>
       <input form=qr_form placeholder=Name name=name>
       <input form=qr_form placeholder=Email name=email>
       <input form=qr_form placeholder=Subject name=sub>
@@ -2539,6 +2539,18 @@ Main =
         position: absolute;
         opacity: 0;
         pointer-events: none;
+      }
+      #qr .wat {
+        display: inline-block;
+        width: 30px;
+        overflow: hidden;
+        background: #FFF;
+        position: relative;
+      }
+      #qr .wat input {
+        opacity: 0;
+        position: absolute;
+        left: 0;
       }
     '
 
