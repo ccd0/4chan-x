@@ -61,13 +61,12 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, pathname, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, temp, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, pathname, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, temp, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
       Enhancing: {
         '404 Redirect': [true, 'Redirect dead threads'],
-        'Anonymize': [false, 'Make everybody anonymous'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'Report Button': [true, 'Add report buttons'],
@@ -76,7 +75,10 @@
         'Index Navigation': [true, 'Navigate to previous / next thread'],
         'Reply Navigation': [false, 'Navigate to top / bottom of thread']
       },
-      Hiding: {
+      Filtering: {
+        'Anonymize': [false, 'Make everybody anonymous'],
+        'Filter': [false, 'Self-moderation placebo'],
+        'Filter OPs': [false, 'Filter OPs along with their threads'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
@@ -114,6 +116,15 @@
         'Quote Preview': [true, 'Show quote content on hover'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
       }
+    },
+    filter: {
+      name: '',
+      trip: '',
+      mail: '',
+      sub: '',
+      com: '',
+      file: '',
+      md5: ''
     },
     flavors: ['http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://regex.info/exif.cgi?url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://imgur.com/upload?url='].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
@@ -516,6 +527,109 @@
     }
     return Array.prototype.slice.call(root.querySelectorAll(selector));
   };
+  filter = {
+    regexps: {},
+    callbacks: [],
+    init: function() {
+      var filter, key, m, regx, _i, _len;
+      for (key in config.filter) {
+        if (!(m = conf[key].match(/(.+)/g))) {
+          continue;
+        }
+        this.regexps[key] = [];
+        for (_i = 0, _len = m.length; _i < _len; _i++) {
+          filter = m[_i];
+          try {
+            if ((regx = eval(filter)).constructor === RegExp) {
+              this.regexps[key].push(regx);
+            }
+          } catch (_e) {}
+        }
+        if (this.regexps[key].length) {
+          this.callbacks.push(this[key]);
+        }
+      }
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var callback, _i, _j, _len, _len2, _ref, _ref2;
+      if (root.className === 'op') {
+        if (!g.REPLY && conf['Filter OPs']) {
+          _ref = filter.callbacks;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            callback = _ref[_i];
+            if (callback(root)) {
+              threadHiding.hideHide(root.parentNode);
+              return;
+            }
+          }
+        }
+      } else if (!root.classList.contains('inline')) {
+        _ref2 = filter.callbacks;
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          callback = _ref2[_j];
+          if (callback(root)) {
+            replyHiding.hideHide($('td:not([nowrap])', root));
+            return;
+          }
+        }
+      }
+    },
+    test: function(key, value) {
+      var regexp, _i, _len, _ref;
+      _ref = filter.regexps[key];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        regexp = _ref[_i];
+        if (regexp.test(value)) {
+          return true;
+        }
+      }
+    },
+    name: function(root) {
+      var name;
+      if ((name = root.className === 'op' ? $('.postername', root).textContent : $('.commentpostername', root).textContent)) {
+        return filter.test('name', name);
+      }
+    },
+    trip: function(root) {
+      var trip;
+      if (trip = $('.postertrip', root)) {
+        return filter.test('trip', trip.textContent);
+      }
+    },
+    mail: function(root) {
+      var mail;
+      if (mail = $('.linkmail', root)) {
+        return filter.test('mail', mail.href);
+      }
+    },
+    sub: function(root) {
+      var sub;
+      if ((sub = root.className === 'op' ? $('.filetitle', root).textContent : $('.replytitle', root).textContent)) {
+        return filter.test('sub', sub);
+      }
+    },
+    com: function(root) {
+      var com;
+      if (com = ($.el('a', {
+        innerHTML: $('blockquote', root).innerHTML.replace(/<br>/g, '\n')
+      })).textContent) {
+        return filter.test('com', com);
+      }
+    },
+    file: function(root) {
+      var file;
+      if (file = $('.filesize span', root)) {
+        return filter.test('file', file.title);
+      }
+    },
+    md5: function(root) {
+      var img;
+      if (img = $('img[md5]', root)) {
+        return filter.test('md5', img.getAttribute('md5'));
+      }
+    }
+  };
   expandComment = {
     init: function() {
       var a, _i, _len, _ref, _results;
@@ -721,7 +835,14 @@
       }
     },
     hide: function(reply) {
-      var a, div, id, name, table, trip, _ref;
+      var id;
+      replyHiding.hideHide(reply);
+      id = reply.id;
+      g.hiddenReplies[id] = Date.now();
+      return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
+    },
+    hideHide: function(reply) {
+      var a, div, name, table, trip, _ref;
       table = reply.parentNode.parentNode.parentNode;
       table.hidden = true;
       if (conf['Show Stubs']) {
@@ -735,11 +856,8 @@
           className: 'stub'
         });
         $.add(div, a);
-        $.before(table, div);
+        return $.before(table, div);
       }
-      id = reply.id;
-      g.hiddenReplies[id] = Date.now();
-      return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
     show: function(table) {
       var id;
@@ -1117,7 +1235,7 @@
       return $.replace(home, a);
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, flavors, hiddenNum, hiddenThreads, input, key, li, obj, overlay, time, ul, _i, _len, _ref, _ref2;
+      var arr, back, checked, description, dialog, hiddenNum, hiddenThreads, input, key, li, obj, overlay, ta, time, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         innerHTML: '\
@@ -1131,6 +1249,7 @@
     </div>\
     <div>\
       <label for=main_tab>Main</label>\
+      | <label for=filter_tab>Filter</label>\
       | <label for=flavors_tab>Sauce</label>\
       | <label for=rice_tab>Rice</label>\
       | <label for=keybinds_tab>Keybinds</label>\
@@ -1142,6 +1261,18 @@
     <div id=main></div>\
     <input type=radio name=tab hidden id=flavors_tab>\
     <textarea name=flavors id=flavors></textarea>\
+    <input type=radio name=tab hidden id=filter_tab>\
+    <div id=filter>\
+      Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\
+      For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.\
+      <p>Name:<br><textarea name=name></textarea></p>\
+      <p>Tripcode:<br><textarea name=trip></textarea></p>\
+      <p>E-mail:<br><textarea name=mail></textarea></p>\
+      <p>Subject:<br><textarea name=sub></textarea></p>\
+      <p>Comment:<br><textarea name=com></textarea></p>\
+      <p>Filename:<br><textarea name=file></textarea></p>\
+      <p>Image MD5:<br><textarea name=md5></textarea></p>\
+    </div>\
     <input type=radio name=tab hidden id=rice_tab>\
     <div id=rice>\
       <ul>\
@@ -1214,15 +1345,19 @@
       });
       $.bind($('button', li), 'click', options.clearHidden);
       $.add($('ul:nth-child(2)', dialog), li);
-      (flavors = $('#flavors', dialog)).textContent = conf['flavors'];
-      $.bind(flavors, 'change', $.cb.value);
+      _ref2 = $$('textarea', dialog);
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        ta = _ref2[_i];
+        ta.textContent = conf[ta.name];
+        $.bind(ta, 'change', $.cb.value);
+      }
       (back = $('[name=backlink]', dialog)).value = conf['backlink'];
       (time = $('[name=time]', dialog)).value = conf['time'];
       $.bind(back, 'keyup', options.backlink);
       $.bind(time, 'keyup', options.time);
-      _ref2 = $$('#keybinds input', dialog);
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        input = _ref2[_i];
+      _ref3 = $$('#keybinds input', dialog);
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        input = _ref3[_j];
         input.type = 'text';
         input.value = conf[input.name];
         $.bind(input, 'keydown', options.keybind);
@@ -2931,6 +3066,9 @@
       if (g.REPLY && (id = location.hash.slice(1)) && /\d/.test(id[0]) && !$.id(id)) {
         scrollTo(0, d.body.scrollHeight);
       }
+      if (conf['Filter']) {
+        filter.init();
+      }
       if (conf['Image Expansion']) {
         imgExpand.init();
       }
@@ -3133,6 +3271,8 @@
       }\
       #content textarea {\
         margin: 0;\
+        min-height: 100px;\
+        resize: vertical;\
         width: 100%;\
       }\
 \
