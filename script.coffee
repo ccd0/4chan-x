@@ -388,8 +388,12 @@ filter =
   regexps: {}
   callbacks: []
   init: ->
-    HTMLBlockquoteElement.prototype.toString = ->
+    HTMLQuoteElement.prototype.toString = ->
       return ($.el 'a', innerHTML: @innerHTML.replace /<br>/g, '\n').textContent
+    #to remove when both chrom, ff and oprah will define blockquotes as HTMLQuoteElement
+    if HTMLBlockquoteElement
+      HTMLBlockquoteElement.prototype.toString = ->
+        return ($.el 'a', innerHTML: @innerHTML.replace /<br>/g, '\n').textContent
 
     for key of config.filter
       unless m = conf[key].match /(.+)/g
