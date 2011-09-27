@@ -32,7 +32,6 @@ config =
       'Auto Watch':         [true,  'Automatically watch threads that you start']
       'Auto Watch Reply':   [false, 'Automatically watch threads that you reply to']
     Posting:
-      'Auto Noko':          [true,  'Always redirect to your post']
       'Cooldown':           [true,  'Prevent `flood detected` errors']
       'Quick Reply':        [true,  'Reply without leaving the page']
       'Persistent QR':      [false, 'Quick reply won\'t disappear after posting. Only in replies.']
@@ -2276,11 +2275,6 @@ Main =
 
     #major features
     threading.init()
-
-    # scroll to bottom if post isn't found
-    # thumbnail generation takes time
-    if g.REPLY and (id = location.hash[1..]) and /\d/.test(id[0]) and !$.id(id)
-      scrollTo 0, d.body.scrollHeight
 
     if conf['Filter']
       filter.init()
