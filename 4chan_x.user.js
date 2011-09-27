@@ -890,8 +890,8 @@
         case conf.close:
           if (o = $('#overlay')) {
             $.rm(o);
-          } else if (qr.el) {
-            qr.close();
+          } else if (QR.qr) {
+            QR.close();
           }
           break;
         case conf.spoiler:
@@ -965,8 +965,8 @@
           }
           break;
         case conf.submit:
-          if (qr.el) {
-            qr.submit.call($('form', qr.el));
+          if (QR.qr) {
+            QR.submit.call($('form', QR.qr));
           } else {
             $('.postarea form').submit();
           }

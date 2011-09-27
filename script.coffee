@@ -625,8 +625,8 @@ keybinds =
       when conf.close
         if o = $ '#overlay'
           $.rm o
-        else if qr.el
-          qr.close()
+        else if QR.qr
+          QR.close()
       when conf.spoiler
         ta = e.target
         return unless ta.nodeName is 'TEXTAREA'
@@ -677,8 +677,8 @@ keybinds =
       when conf.previousPage
         $('input[value=Previous]')?.click()
       when conf.submit
-        if qr.el
-          qr.submit.call $ 'form', qr.el
+        if QR.qr
+          QR.submit.call $ 'form', QR.qr
         else
           $('.postarea form').submit()
       when conf.unreadCountTo0
