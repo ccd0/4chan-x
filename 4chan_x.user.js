@@ -3345,7 +3345,7 @@
       #qr > .move {\
         text-align: right;\
       }\
-      #qr .autohide input {\
+      #qr .autohide > input {\
         width: 90px;\
       }\
       #qr #autopost {\
