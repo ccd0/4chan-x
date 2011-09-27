@@ -5,11 +5,13 @@
     <title>4chan X</title>
     <link rel="shortcut icon" href="favicon.png">
     <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        var s = document.createElement('script'); s.async = true;
-        s.src = 'https://apis.google.com/js/plusone.js';
+      function gplus() {
+        document.removeEventListener("DOMContentLoaded", gplus, false);
         document.head.appendChild(s);
-      }, false);
+      };
+      document.addEventListener("DOMContentLoaded", gplus, false);
+      var s = document.createElement('script'); s.async = true;
+      s.src = 'https://apis.google.com/js/plusone.js';
     </script>
     <style>
     body {
