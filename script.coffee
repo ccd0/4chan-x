@@ -1264,14 +1264,14 @@ QR =
     $('[name=spoiler]', QR.qr)?.checked = false unless conf['Remember Spoiler']
     $('textarea', QR.qr).value = ''
   submit: (e) ->
+    {qr} = QR
     return if $('form button', qr).disabled
     #XXX e is undefined if method is called explicitly, eg, from auto posting
-    unless $('textarea', QR.qr).value or $('[type=file]', QR.qr)?.files.length
+    unless $('textarea', qr).value or $('#files', qr).childNodes.length
       if e
         alert 'Error: No text entered.'
         e.preventDefault()
       return
-    {qr} = QR
     $('.error', qr).textContent = ''
     if e and (el = $('#recaptcha_response_field', qr)).value
       QR.captchaPush el

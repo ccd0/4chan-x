@@ -1706,18 +1706,18 @@
       return $('textarea', QR.qr).value = '';
     },
     submit: function(e) {
-      var captcha, challenge, el, id, input, op, qr, response, _ref;
+      var captcha, challenge, el, id, input, op, qr, response;
+      qr = QR.qr;
       if ($('form button', qr).disabled) {
         return;
       }
-      if (!($('textarea', QR.qr).value || ((_ref = $('[type=file]', QR.qr)) != null ? _ref.files.length : void 0))) {
+      if (!($('textarea', qr).value || $('#files', qr).childNodes.length)) {
         if (e) {
           alert('Error: No text entered.');
           e.preventDefault();
         }
         return;
       }
-      qr = QR.qr;
       $('.error', qr).textContent = '';
       if (e && (el = $('#recaptcha_response_field', qr)).value) {
         QR.captchaPush(el);
