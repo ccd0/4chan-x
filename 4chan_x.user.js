@@ -1628,7 +1628,7 @@
       return QR.submit();
     },
     quote: function(e, blank) {
-      var bq, i, id, qr, s, sel, ss, ta, text, tid, v, _base, _ref;
+      var bq, i, id, qr, s, sel, ss, ta, text, tid, v, _base, _ref, _ref2;
       if (e != null) {
         e.preventDefault();
       }
@@ -1637,7 +1637,7 @@
       text = ">>" + id + "\n";
       sel = getSelection();
       bq = $.x('ancestor::blockquote', sel.anchorNode);
-      if (id === $.x('preceding-sibling::input', bq).name) {
+      if (id === ((_ref2 = $.x('preceding-sibling::input', bq)) != null ? _ref2.name : void 0)) {
         if (s = sel.toString().replace(/\n/g, '\n>')) {
           text += ">" + s + "\n";
         }

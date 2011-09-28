@@ -1216,7 +1216,7 @@ QR =
     text = ">>#{id}\n"
     sel = getSelection()
     bq = $.x('ancestor::blockquote', sel.anchorNode)
-    if id == $.x('preceding-sibling::input', bq).name
+    if id == $.x('preceding-sibling::input', bq)?.name
       if s = sel.toString().replace /\n/g, '\n>'
         text += ">#{s}\n"
     {qr} = QR
