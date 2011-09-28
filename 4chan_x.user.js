@@ -1790,9 +1790,7 @@
   };
   threading = {
     init: function() {
-      var node;
-      node = $('form[name=delform] > *:not([id])');
-      return threading.thread(node);
+      return threading.thread($('body > form').firstChild);
     },
     op: function(node) {
       var op;
@@ -1805,7 +1803,7 @@
         node = op.nextSibling;
       }
       $.add(op, node);
-      op.id = $('input[name]', op).name;
+      op.id = $('input', op).name;
       return op;
     },
     thread: function(node) {
@@ -3039,7 +3037,7 @@
       tzOffset = (new Date()).getTimezoneOffset() / 60;
       g.chanOffset = 5 - tzOffset;
       if ($.isDST()) {
-        g.chanOffset -= 1;
+        g.chanOffset--;
       }
       lastChecked = $.get('lastChecked', 0);
       now = Date.now();
