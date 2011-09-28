@@ -1215,7 +1215,8 @@ QR =
     id = @textContent
     text = ">>#{id}\n"
     sel = getSelection()
-    if id == $.x('preceding::input[@type="checkbox"][1]', sel.anchorNode)?.name
+    bq = $.x('ancestor::blockquote', sel.anchorNode)
+    if id == $.x('preceding-sibling::input', bq).name
       if s = sel.toString().replace /\n/g, '\n>'
         text += ">#{s}\n"
     {qr} = QR
