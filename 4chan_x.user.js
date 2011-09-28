@@ -3035,7 +3035,7 @@
       tzOffset = (new Date()).getTimezoneOffset() / 60;
       g.chanOffset = 5 - tzOffset;
       if ($.isDST()) {
-        g.chanOffset -= 1;
+        g.chanOffset--;
       }
       lastChecked = $.get('lastChecked', 0);
       now = Date.now();

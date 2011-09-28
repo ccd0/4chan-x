@@ -1977,7 +1977,7 @@ unread =
 
 Favicon =
   init: ->
-    favicon = $  'link[rel="shortcut icon"]', d.head
+    favicon = $ 'link[rel="shortcut icon"]', d.head
     favicon.type = 'image/x-icon'
     {href} = favicon
     Favicon.default = href
@@ -2248,8 +2248,9 @@ Main =
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     tzOffset = (new Date()).getTimezoneOffset() / 60
     # GMT -8 is given as +480; would GMT +8 be -480 ?
-    g.chanOffset = 5 - tzOffset# 4chan = EST = GMT -5
-    if $.isDST() then g.chanOffset -= 1
+    g.chanOffset = 5 - tzOffset
+    # 4chan = EST = GMT -5
+    g.chanOffset-- if $.isDST()
 
     lastChecked = $.get 'lastChecked', 0
     now = Date.now()
