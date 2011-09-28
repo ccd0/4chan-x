@@ -1788,9 +1788,7 @@
   };
   threading = {
     init: function() {
-      var node;
-      node = $('form[name=delform] > *:not([id])');
-      return threading.thread(node);
+      return threading.thread($('body > form').firstChild);
     },
     op: function(node) {
       var op;

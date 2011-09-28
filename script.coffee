@@ -1318,9 +1318,7 @@ QR =
 
 threading =
   init: ->
-    # don't thread image controls
-    node = $ 'form[name=delform] > *:not([id])'
-    threading.thread node
+    threading.thread $('body > form').firstChild
 
   op: (node) ->
     op = $.el 'div',
