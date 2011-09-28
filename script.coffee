@@ -1265,9 +1265,12 @@ QR =
     $('textarea', QR.qr).value = ''
   submit: (e) ->
     {qr} = QR
-    return if $('form button', qr).disabled
     #XXX e is undefined if method is called explicitly, eg, from auto posting
-    unless $('textarea', qr).value or $('#files', qr).childNodes.length
+    if $('textarea', qr).value or $('#files', qr).childNodes.length
+      if $('form button', qr).disabled
+        $('#autopost', qr).checked = true
+        return
+    else
       if e
         alert 'Error: No text entered.'
         e.preventDefault()

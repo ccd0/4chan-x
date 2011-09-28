@@ -1708,10 +1708,12 @@
     submit: function(e) {
       var captcha, challenge, el, id, input, op, qr, response;
       qr = QR.qr;
-      if ($('form button', qr).disabled) {
-        return;
-      }
-      if (!($('textarea', qr).value || $('#files', qr).childNodes.length)) {
+      if ($('textarea', qr).value || $('#files', qr).childNodes.length) {
+        if ($('form button', qr).disabled) {
+          $('#autopost', qr).checked = true;
+          return;
+        }
+      } else {
         if (e) {
           alert('Error: No text entered.');
           e.preventDefault();
