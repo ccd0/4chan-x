@@ -1801,7 +1801,7 @@
         node = op.nextSibling;
       }
       $.add(op, node);
-      op.id = $('input[name]', op).name;
+      op.id = $('input', op).name;
       return op;
     },
     thread: function(node) {

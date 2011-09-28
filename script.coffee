@@ -1328,7 +1328,7 @@ threading =
       $.add op, node
       node = op.nextSibling
     $.add op, node #add the blockquote
-    op.id = $('input[name]', op).name
+    op.id = $('input', op).name
     op
 
   thread: (node) ->
