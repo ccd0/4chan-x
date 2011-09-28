@@ -14,8 +14,10 @@
       s.src = 'https://apis.google.com/js/plusone.js';
     </script>
     <style>
+    @import url(http://fonts.googleapis.com/css?family=Vollkorn:400,700);
     body {
-      font-family: Georgia, "Bitstream Charter", serif;
+      color: #222;
+      font-family: Vollkorn, serif;
       margin: auto;
       position: relative;
       text-align: justify;
@@ -33,6 +35,7 @@
     }
     h1, h2, h3, h4 {
       color: #DDD;
+      font-family: Georgia, "Bitstream Charter", serif;
       font-weight: 700;
       text-transform: capitalize;
       margin: 0;
@@ -79,6 +82,18 @@
       float: left;
       width: 50%;
     }
+    header {
+      border-top: 1px solid #DDD;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 20px;
+      letter-spacing: 1px;
+      margin: 10px -10px 0;
+      padding: 5px;
+    }
+    strong {
+      line-height: 0;
+    }
     a {
       color: #FA0;
       text-decoration: none;
@@ -90,9 +105,6 @@
     a:hover {
       color: #FFF;
       text-shadow: 0 0 10px #FA0, 0 0 3px #FA0, 0 0 3px #FA0;
-    }
-    hr {
-      border: 1px #DDD solid
     }
     code, pre {
       background: #EEE;
@@ -112,17 +124,17 @@
       <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted">donate</a>
       <div><g:plusone></g:plusone></div>
     </h3>
-    <hr>
+    <header>Installation</header>
     <p>The latest stable releases of <strong>Chrome</strong>, <strong>Firefox</strong>, and <strong>Opera</strong> are supported. <strong>Midori</strong> is a bad browser and users should feel bad.</p>
     <p><strong>Chrome</strong>: Install 4chan X, that's it. It may not work within Tampermonkey.</p>
     <p><strong>Firefox</strong>:</p>
     <ul>
       <li>If you don't have either <a href="https://addons.mozilla.org/firefox/addon/scriptish/">Scriptish</a> or <a href="https://addons.mozilla.org/firefox/addon/greasemonkey/">Greasemonkey</a> installed, install Scriptish (it can auto-update scripts), restart Firefox, and then install 4chan X.</li>
-      <li>to disable compatibility checking: go to <code>about:config</code> &gt; right-click &gt; new &gt; boolean &gt; <code>extensions.checkCompatibility.nightly</code> &gt; false. Or you can get the <a href="https://addons.mozilla.org/en-US/firefox/addon/nightly-tester-tools/">Nightly Tester Tools</a>.</li>
+      <li>To disable compatibility checking: go to <code>about:config</code> &gt; right-click &gt; new &gt; boolean &gt; <code>extensions.checkCompatibility.nightly</code> &gt; false. Or you can get the <a href="https://addons.mozilla.org/en-US/firefox/addon/nightly-tester-tools/">Nightly Tester Tools</a>.</li>
     </ul>
     <p><strong>Opera</strong>: Save 4chan X into your userscripts folder. If you haven't already, select a folder with: Ctrl + F12 (Preferences) &gt; Advanced &gt; Content &gt; JavaScript Options &gt; User JavaScript Folder.</p>
-    <hr>
-    <p><strong>Bug reports</strong>: before making one,</p>
+    <header>Bug reports</header>
+    <p>Before making one,</p>
       <ol>
         <li>Update your browser / 4chan X to the latest stable.</li>
         <li>Disable your other extensions / scripts.</li>
@@ -139,7 +151,7 @@
       <a href="http://chat.now.im/x/aeos">anonymous support throd</a>
       <a href="https://github.com/aeosynth/4chan-x/issues">GitHub issues tracker</a>
     </h4>
-    <hr>
+    <header>Links & Tips</header>
     <p>For CSS tweaks, see <a href="http://userstyles.org/styles/48538/4chan-4chan-x-css-defaults">4chan X CSS defaults</a>. For a complete userstyle, check out <a href="http://userstyles.org/styles/46162">AppChan</a>. View all 4chan userstyles by <a href="http://userstyles.org/styles/browse?search_terms=4chan">clicking here</a>.</p>
     <p>If you want 4chan X features on archives, star this <a href="http://code.google.com/p/fuuka/issues/detail?id=64">issue</a> to show your interest and get notified.</p>
     <p>For filtering, check out the <a href="http://userscripts.org/scripts/show/103818">4chan filter fix</a>.</p>
