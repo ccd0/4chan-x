@@ -1959,7 +1959,7 @@ unread =
     g.callbacks.push unread.node
 
   node: (root) ->
-    return if root.className
+    return if root.hidden or root.className
     unread.replies.push root
     unread.updateTitle()
     Favicon.update()

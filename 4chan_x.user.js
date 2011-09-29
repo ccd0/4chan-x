@@ -2684,7 +2684,7 @@
       return g.callbacks.push(unread.node);
     },
     node: function(root) {
-      if (root.className) {
+      if (root.hidden || root.className) {
         return;
       }
       unread.replies.push(root);
