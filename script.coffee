@@ -439,7 +439,7 @@ filter =
 
 expandComment =
   init: ->
-    for a in $$ 'span.abbr a'
+    for a in $$ '.abbr a'
       $.bind a, 'click', expandComment.expand
   expand: (e) ->
     e.preventDefault()
@@ -480,7 +480,7 @@ expandComment =
 
 expandThread =
   init: ->
-    for span in $$ 'span.omittedposts'
+    for span in $$ '.omittedposts'
       a = $.el 'a',
         textContent: "+ #{span.textContent}"
         className: 'omittedposts'
@@ -555,7 +555,7 @@ expandThread =
 replyHiding =
   init: ->
     g.callbacks.push (root) ->
-      return unless dd = $ 'td.doubledash', root
+      return unless dd = $ '.doubledash', root
       dd.className = 'replyhider'
       a = $.el 'a',
         textContent: '[ - ]'
@@ -591,8 +591,8 @@ replyHiding =
     table.hidden = true
 
     if conf['Show Stubs']
-      name = $('span.commentpostername', reply).textContent
-      trip = $('span.postertrip', reply)?.textContent or ''
+      name = $('.commentpostername', reply).textContent
+      trip = $('.postertrip', reply)?.textContent or ''
       a = $.el 'a',
         textContent: "[ + ] #{name} #{trip}"
       $.bind a, 'click', replyHiding.cb.show
@@ -1396,8 +1396,8 @@ threadHiding =
         num = 0
       num += $$('table', thread).length
       text = if num is 1 then "1 reply" else "#{num} replies"
-      name = $('span.postername', thread).textContent
-      trip = $('span.postername + span.postertrip', thread)?.textContent or ''
+      name = $('.postername', thread).textContent
+      trip = $('.postername + .postertrip', thread)?.textContent or ''
 
       a = $.el 'a',
         textContent: "[ + ] #{name}#{trip} (#{text})"
@@ -1635,9 +1635,9 @@ watcher =
 anonymize =
   init: ->
     g.callbacks.push (root) ->
-      name = $ 'span.commentpostername, span.postername', root
+      name = $ '.commentpostername, .postername', root
       name.textContent = 'Anonymous'
-      if trip = $ 'span.postertrip', root
+      if trip = $ '.postertrip', root
         if trip.parentNode.nodeName is 'A'
           $.rm trip.parentNode
         else
@@ -1649,7 +1649,7 @@ sauce =
     sauce.names = (prefix.match(/(\w+)\./)[1] for prefix in sauce.prefixes)
     g.callbacks.push (root) ->
       return if root.className is 'inline'
-      if span = $ 'span.filesize', root
+      if span = $ '.filesize', root
         suffix = $('a', span).href
         for prefix, i in sauce.prefixes
           link = $.el 'a',
@@ -1734,11 +1734,11 @@ Time =
     y: -> Time.date.getFullYear() - 2000
 
 getTitle = (thread) ->
-  el = $ 'span.filetitle', thread
+  el = $ '.filetitle', thread
   if not el.textContent
     el = $ 'blockquote', thread
     if not el.textContent
-      el = $ 'span.postername', thread
+      el = $ '.postername', thread
   span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
   "/#{g.BOARD}/ - #{span.textContent}"
 
@@ -2112,7 +2112,7 @@ imgExpand =
     img = $.el 'img',
       src: a.href
     unless a.parentNode.className is 'op'
-      filesize = $ 'span.filesize', a.parentNode
+      filesize = $ '.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
       img.style.maxWidth = "-moz-calc(#{max}px)"
     $.bind img, 'error', imgExpand.error

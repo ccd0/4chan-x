@@ -632,7 +632,7 @@
   expandComment = {
     init: function() {
       var a, _i, _len, _ref, _results;
-      _ref = $$('span.abbr a');
+      _ref = $$('.abbr a');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
@@ -696,7 +696,7 @@
   expandThread = {
     init: function() {
       var a, span, _i, _len, _ref, _results;
-      _ref = $$('span.omittedposts');
+      _ref = $$('.omittedposts');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         span = _ref[_i];
@@ -803,7 +803,7 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var a, dd, id, reply;
-        if (!(dd = $('td.doubledash', root))) {
+        if (!(dd = $('.doubledash', root))) {
           return;
         }
         dd.className = 'replyhider';
@@ -845,8 +845,8 @@
       table = reply.parentNode.parentNode.parentNode;
       table.hidden = true;
       if (conf['Show Stubs']) {
-        name = $('span.commentpostername', reply).textContent;
-        trip = ((_ref = $('span.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
+        name = $('.commentpostername', reply).textContent;
+        trip = ((_ref = $('.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
           textContent: "[ + ] " + name + " " + trip
         });
@@ -1881,8 +1881,8 @@
         }
         num += $$('table', thread).length;
         text = num === 1 ? "1 reply" : "" + num + " replies";
-        name = $('span.postername', thread).textContent;
-        trip = ((_ref = $('span.postername + span.postertrip', thread)) != null ? _ref.textContent : void 0) || '';
+        name = $('.postername', thread).textContent;
+        trip = ((_ref = $('.postername + .postertrip', thread)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
           textContent: "[ + ] " + name + trip + " (" + text + ")"
         });
@@ -2163,9 +2163,9 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var name, trip;
-        name = $('span.commentpostername, span.postername', root);
+        name = $('.commentpostername, .postername', root);
         name.textContent = 'Anonymous';
-        if (trip = $('span.postertrip', root)) {
+        if (trip = $('.postertrip', root)) {
           if (trip.parentNode.nodeName === 'A') {
             return $.rm(trip.parentNode);
           } else {
@@ -2205,7 +2205,7 @@
         if (root.className === 'inline') {
           return;
         }
-        if (span = $('span.filesize', root)) {
+        if (span = $('.filesize', root)) {
           suffix = $('a', span).href;
           _ref = sauce.prefixes;
           _results = [];
@@ -2336,11 +2336,11 @@
   };
   getTitle = function(thread) {
     var el, span;
-    el = $('span.filetitle', thread);
+    el = $('.filetitle', thread);
     if (!el.textContent) {
       el = $('blockquote', thread);
       if (!el.textContent) {
-        el = $('span.postername', thread);
+        el = $('.postername', thread);
       }
     }
     span = $.el('span', {
@@ -2941,7 +2941,7 @@
         src: a.href
       });
       if (a.parentNode.className !== 'op') {
-        filesize = $('span.filesize', a.parentNode);
+        filesize = $('.filesize', a.parentNode);
         _ref = filesize.textContent.match(/(\d+)x/), _ = _ref[0], max = _ref[1];
         img.style.maxWidth = "-moz-calc(" + max + "px)";
       }
