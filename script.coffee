@@ -2285,6 +2285,9 @@ Main =
     if conf['Filter']
       filter.init()
 
+    if conf['Reply Hiding']
+      replyHiding.init()
+
     if conf['Image Expansion']
       imgExpand.init()
 
@@ -2305,9 +2308,6 @@ Main =
 
     if conf['Image Hover']
       imgHover.init()
-
-    if conf['Reply Hiding']
-      replyHiding.init()
 
     if conf['Quick Reply']
       QR.init()
@@ -2353,11 +2353,11 @@ Main =
         nav.init()
 
     else #not reply
-      if conf['Index Navigation']
-        nav.init()
-
       if conf['Thread Hiding']
         threadHiding.init()
+
+      if conf['Index Navigation']
+        nav.init()
 
       if conf['Thread Expansion']
         expandThread.init()
