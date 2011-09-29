@@ -3066,6 +3066,9 @@
       if (conf['Filter']) {
         filter.init();
       }
+      if (conf['Reply Hiding']) {
+        replyHiding.init();
+      }
       if (conf['Image Expansion']) {
         imgExpand.init();
       }
@@ -3086,9 +3089,6 @@
       }
       if (conf['Image Hover']) {
         imgHover.init();
-      }
-      if (conf['Reply Hiding']) {
-        replyHiding.init();
       }
       if (conf['Quick Reply']) {
         QR.init();
@@ -3134,11 +3134,11 @@
           nav.init();
         }
       } else {
-        if (conf['Index Navigation']) {
-          nav.init();
-        }
         if (conf['Thread Hiding']) {
           threadHiding.init();
+        }
+        if (conf['Index Navigation']) {
+          nav.init();
         }
         if (conf['Thread Expansion']) {
           expandThread.init();
