@@ -1192,6 +1192,7 @@ QR =
     QR.stats()
     $.add d.body, qr
     ta = $ 'textarea', qr
+    ta.value = text
     l = text.length
     ta.setSelectionRange l, l
     ta.focus()
