@@ -1958,7 +1958,7 @@
           }
         } else if (input.name === 'Interval') {
           $.bind(input, 'change', function() {
-            return conf['Interval'] = this.value = parseInt(this.value) || conf['Interval'];
+            return conf['Interval'] = this.value = parseInt(this.value, 10) || conf['Interval'];
           });
           $.bind(input, 'change', $.cb.value);
         } else if (input.type === 'button') {
