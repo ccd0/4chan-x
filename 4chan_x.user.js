@@ -1958,7 +1958,7 @@
           }
         } else if (input.name === 'Interval') {
           $.bind(input, 'change', function() {
-            return conf['Interval'] = this.value = parseInt(this.value) || conf['Interval'];
+            return conf['Interval'] = this.value = parseInt(this.value, 10) || conf['Interval'];
           });
           $.bind(input, 'change', $.cb.value);
         } else if (input.type === 'button') {
@@ -2428,36 +2428,33 @@
       });
     },
     toggle: function(e) {
-      var el, hidden, id, inline, inlined, root, table, threadID, _i, _len, _ref;
+      var id;
       if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) {
         return;
       }
       e.preventDefault();
       id = this.hash.slice(1);
-      if (table = $("#i" + id, $.x('ancestor::td[1]', this))) {
-        $.rm(table);
-        $.removeClass(this, 'inlined');
-        _ref = $$('input', table);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          inlined = _ref[_i];
-          if (hidden = $.id(inlined.name)) {
-            $.x('ancestor::table[1]', hidden).hidden = false;
-          }
+      if (this.classList.contains('inlined')) {
+        quoteInline.rm(this, id);
+      } else {
+        if ($.x('ancestor::td[@id]', this).id === id) {
+          return;
         }
-        return;
+        quoteInline.add(this, id);
       }
-      root = this.parentNode.nodeName === 'FONT' ? this.parentNode : this.nextSibling ? this.nextSibling : this;
+      return this.classList.toggle('inlined');
+    },
+    add: function(q, id) {
+      var el, inline, root, threadID;
+      root = q.parentNode.nodeName === 'FONT' ? q.parentNode : q.nextSibling ? q.nextSibling : q;
       if (el = $.id(id)) {
         inline = quoteInline.table(id, el.innerHTML);
-        if (this.className === 'backlink') {
-          if ($("a.backlink[href='#" + id + "']", el)) {
-            return;
-          }
-          $.after(this.parentNode, inline);
-          $.x('ancestor::table[1]', el).hidden = true;
-        } else {
-          $.after(root, inline);
+        if (q.className === 'backlink') {
+          $.after(q.parentNode, inline);
+          $.x('ancestor::table', el).hidden = true;
+          return;
         }
+        return $.after(root, inline);
       } else {
         inline = $.el('td', {
           className: 'reply inline',
@@ -2465,13 +2462,24 @@
           innerHTML: "Loading " + id + "..."
         });
         $.after(root, inline);
-        pathname = this.pathname;
+        pathname = q.pathname;
         threadID = pathname.split('/').pop();
-        $.cache(pathname, (function() {
+        return $.cache(pathname, (function() {
           return quoteInline.parse(this, pathname, id, threadID, inline);
         }));
       }
-      return $.addClass(this, 'inlined');
+    },
+    rm: function(q, id) {
+      var hidden, inlined, table, _i, _len, _ref;
+      table = $.x("following::*[@id='i" + id + "']", q);
+      _ref = $$('input', table);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        inlined = _ref[_i];
+        if (hidden = $.id(inlined.name)) {
+          $.x('ancestor::table[1]', hidden).hidden = false;
+        }
+      }
+      return $.rm(table);
     },
     parse: function(req, pathname, id, threadID, inline) {
       var body, href, html, link, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
@@ -2486,7 +2494,7 @@
         innerHTML: req.responseText
       });
       if (id === threadID) {
-        op = threading.op($('form[name=delform] > *', body));
+        op = threading.op($('body > form', body).firstChild);
         html = op.innerHTML;
       } else {
         _ref = $$('td.reply', body);
