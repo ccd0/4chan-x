@@ -1792,35 +1792,42 @@ quoteInline =
         $.bind quote, 'click', quoteInline.toggle
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
-
     e.preventDefault()
     id = @hash[1..]
-    if table = $ "#i#{id}", $.x 'ancestor::td[1]', @
-      $.rm table
-      $.removeClass @, 'inlined'
-      for inlined in $$ 'input', table
-        if hidden = $.id inlined.name
-          $.x('ancestor::table[1]', hidden).hidden = false
-      return
-    root = if @parentNode.nodeName is 'FONT' then @parentNode else if @nextSibling then @nextSibling else @
+    if @classList.contains 'inlined'
+      quoteInline.rm @, id
+    else
+      return if $.x('ancestor::td[@id]', @).id is id
+      quoteInline.add @, id
+    @classList.toggle 'inlined'
+
+  add: (q, id) ->
+    root = if q.parentNode.nodeName is 'FONT' then q.parentNode else if q.nextSibling then q.nextSibling else q
     if el = $.id id
       inline = quoteInline.table id, el.innerHTML
-      if @className is 'backlink'
-        return if $("a.backlink[href='##{id}']", el)
-        $.after @parentNode, inline
-        $.x('ancestor::table[1]', el).hidden = true
-      else
-        $.after root, inline
+      if q.className is 'backlink'
+        $.after q.parentNode, inline
+        $.x('ancestor::table', el).hidden = true
+        return
+      $.after root, inline
     else
       inline = $.el 'td',
         className: 'reply inline'
         id: "i#{id}"
         innerHTML: "Loading #{id}..."
       $.after root, inline
-      {pathname} = @
+      {pathname} = q
       threadID = pathname.split('/').pop()
       $.cache pathname, (-> quoteInline.parse @, pathname, id, threadID, inline)
-    $.addClass @, 'inlined'
+
+  rm: (q, id) ->
+    #select the corresponding table or loading td
+    table = $.x "following::*[@id='i#{id}']", q
+    for inlined in $$ 'input', table
+      if hidden = $.id inlined.name
+        $.x('ancestor::table[1]', hidden).hidden = false
+    $.rm table
+
   parse: (req, pathname, id, threadID, inline) ->
     return unless inline.parentNode
 
@@ -1831,7 +1838,7 @@ quoteInline =
     body = $.el 'body',
       innerHTML: req.responseText
     if id == threadID #OP
-      op = threading.op $ 'form[name=delform] > *', body
+      op = threading.op $('body > form', body).firstChild
       html = op.innerHTML
     else
       for reply in $$ 'td.reply', body
