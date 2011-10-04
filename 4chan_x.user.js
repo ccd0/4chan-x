@@ -61,7 +61,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, pathname, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, temp, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, flatten, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, pathname, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, temp, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -178,7 +178,7 @@
     };
   }
   conf = {};
-  (function(parent, obj) {
+  (flatten = function(parent, obj) {
     var key, val, _results;
     if (obj.length) {
       if (typeof obj[0] === 'boolean') {
@@ -190,7 +190,7 @@
       _results = [];
       for (key in obj) {
         val = obj[key];
-        _results.push(arguments.callee(key, val));
+        _results.push(flatten(key, val));
       }
       return _results;
     } else {

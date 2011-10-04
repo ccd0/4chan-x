@@ -106,7 +106,7 @@ if not Object.keys
 
 # flatten the config
 conf = {}
-((parent, obj) ->
+(flatten = (parent, obj) ->
   if obj.length #array
     if typeof obj[0] is 'boolean'
       conf[parent] = obj[0]
@@ -114,7 +114,7 @@ conf = {}
       conf[parent] = obj
   else if typeof obj is 'object'
     for key, val of obj
-      arguments.callee key, val
+      flatten key, val
   else #constant
     conf[parent] = obj
 ) null, config
