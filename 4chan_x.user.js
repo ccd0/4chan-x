@@ -937,7 +937,7 @@
           nav.prev();
           break;
         case conf.update:
-          updater.update();
+          updater.updateNow();
           break;
         case conf.watch:
           watcher.toggle(thread);
