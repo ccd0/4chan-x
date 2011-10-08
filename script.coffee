@@ -388,12 +388,11 @@ filter =
   callbacks: []
   init: ->
     for key of config.filter
-      unless m = conf[key].match /(.+)/g
+      unless m = conf[key].match /^(\/.+\/\w{0,})$/gm
         continue
       @regexps[key] = []
       for filter in m
-        try if (regx = eval filter).constructor is RegExp
-          @regexps[key].push regx
+        @regexps[key].push Function("return #{filter}")()
       #only execute what's filterable
       @callbacks.push @[key] if @regexps[key].length
 
