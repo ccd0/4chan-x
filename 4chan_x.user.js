@@ -935,7 +935,7 @@
           nav.prev();
           break;
         case conf.update:
-          updater.updateNow();
+          updater.update();
           break;
         case conf.watch:
           watcher.toggle(thread);
@@ -1951,7 +1951,7 @@
           });
           $.bind(input, 'change', $.cb.value);
         } else if (input.type === 'button') {
-          $.bind(input, 'click', updater.updateNow);
+          $.bind(input, 'click', updater.update);
         }
       }
       return $.add(d.body, dialog);
@@ -2023,25 +2023,24 @@
     },
     timeout: function() {
       var n;
-      n = Number(updater.timer.textContent);
-      ++n;
-      if (n === 10) {
-        updater.count.textContent = 'retry';
-        updater.count.className = '';
-        n = 0;
-      }
-      updater.timer.textContent = n;
+      updater.timeoutID = setTimeout(updater.timeout, 1000);
+      n = 1 + Number(updater.timer.textContent);
       if (n === 0) {
-        updater.update();
+        return updater.update();
+      } else if (n === 10) {
+        return updater.retry();
+      } else {
+        return updater.timer.textContent = n;
       }
-      return updater.timeoutID = setTimeout(updater.timeout, 1000);
     },
-    updateNow: function() {
-      updater.timer.textContent = 0;
+    retry: function() {
+      updater.count.textContent = 'retry';
+      updater.count.className = '';
       return updater.update();
     },
     update: function() {
       var cb, url, _ref;
+      updater.timer.textContent = 0;
       if ((_ref = updater.request) != null) {
         _ref.abort();
       }

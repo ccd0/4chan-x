@@ -663,7 +663,7 @@ keybinds =
       when conf.previousThread
         nav.prev()
       when conf.update
-        updater.updateNow()
+        updater.update()
       when conf.watch
         watcher.toggle thread
       when conf.hide
@@ -1465,7 +1465,7 @@ updater =
         $.bind input, 'change', -> conf['Interval'] = @value = parseInt(@value) or conf['Interval']
         $.bind input, 'change', $.cb.value
       else if input.type is 'button'
-        $.bind input, 'click', updater.updateNow
+        $.bind input, 'click', updater.update
 
     $.add d.body, dialog
 
@@ -1525,26 +1525,23 @@ updater =
         scrollTo 0, d.body.scrollHeight
 
   timeout: ->
-    n = Number updater.timer.textContent
-    ++n
-
-    if n is 10
-      updater.count.textContent = 'retry'
-      updater.count.className = ''
-      n = 0
-
-    updater.timer.textContent = n
+    updater.timeoutID = setTimeout updater.timeout, 1000
+    n = 1 + Number updater.timer.textContent
 
     if n is 0
       updater.update()
+    else if n is 10
+      updater.retry()
+    else
+      updater.timer.textContent = n
 
-    updater.timeoutID = setTimeout updater.timeout, 1000
-
-  updateNow: ->
-    updater.timer.textContent = 0
+  retry: ->
+    updater.count.textContent = 'retry'
+    updater.count.className = ''
     updater.update()
 
   update: ->
+    updater.timer.textContent = 0
     updater.request?.abort()
     url = location.pathname + '?' + Date.now() # fool the cache
     cb = updater.cb.update
