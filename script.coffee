@@ -172,8 +172,7 @@ ui =
     #var a, b;
     #a = (b = c.b, c).a;
     {el} = ui
-    {id} = el
-    localStorage["#{NAMESPACE}#{id}.position"] = el.style.cssText
+    localStorage["#{NAMESPACE}#{el.id}.position"] = el.style.cssText
     d.removeEventListener 'mousemove', ui.drag, false
     d.removeEventListener 'mouseup',   ui.dragend, false
   hover: (e) ->
