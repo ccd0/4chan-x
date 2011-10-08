@@ -1994,17 +1994,22 @@
           Favicon.update();
           return;
         }
-        id = Number(((_ref2 = $('td[id]', updater.br.previousElementSibling)) != null ? _ref2.id : void 0) || 0);
-        arr = [];
+        updater.timer.textContent = '-' + conf['Interval'];
         body = $.el('body', {
           innerHTML: this.responseText
         });
+        if ($('title', body).textContent === '4chan - Banned') {
+          updater.count.textContent = 'banned';
+          updater.count.className = 'error';
+          return;
+        }
         replies = $$('.reply', body);
+        id = Number(((_ref2 = $('td[id]', updater.br.previousElementSibling)) != null ? _ref2.id : void 0) || 0);
+        arr = [];
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
         scroll = conf['Scrolling'] && updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
-        updater.timer.textContent = '-' + conf['Interval'];
         if (conf['Verbose']) {
           updater.count.textContent = '+' + arr.length;
           if (arr.length === 0) {
