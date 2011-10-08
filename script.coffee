@@ -151,7 +151,6 @@ ui =
     ui.width  = d.body.clientWidth  - el.offsetWidth
     ui.height = d.body.clientHeight - el.offsetHeight
   drag: (e) ->
-    {el} = ui
     left = e.clientX - ui.dx
     if left < 10 then left = '0'
     else if ui.width - left < 10 then left = null
@@ -162,7 +161,7 @@ ui =
     bottom = if top then null else 0
     #using null instead of '' is 4% faster
     #these 4 statements are 40% faster than 1 style.cssText
-    {style} = el
+    {style} = ui.el
     style.top    = top
     style.right  = right
     style.bottom = bottom

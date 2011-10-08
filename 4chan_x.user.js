@@ -230,8 +230,7 @@
       return ui.height = d.body.clientHeight - el.offsetHeight;
     },
     drag: function(e) {
-      var bottom, el, left, right, style, top;
-      el = ui.el;
+      var bottom, left, right, style, top;
       left = e.clientX - ui.dx;
       if (left < 10) {
         left = '0';
@@ -246,7 +245,7 @@
         top = null;
       }
       bottom = top ? null : 0;
-      style = el.style;
+      style = ui.el.style;
       style.top = top;
       style.right = right;
       style.bottom = bottom;
