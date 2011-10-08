@@ -582,9 +582,8 @@
     },
     name: function(root) {
       var name;
-      if ((name = root.className === 'op' ? $('.postername', root).textContent : $('.commentpostername', root).textContent)) {
-        return filter.test('name', name);
-      }
+      name = root.className === 'op' ? $('.postername', root) : $('.commentpostername', root);
+      return filter.test('name', name.textContent);
     },
     trip: function(root) {
       var trip;
@@ -600,17 +599,13 @@
     },
     sub: function(root) {
       var sub;
-      if ((sub = root.className === 'op' ? $('.filetitle', root).textContent : $('.replytitle', root).textContent)) {
-        return filter.test('sub', sub);
-      }
+      sub = root.className === 'op' ? $('.filetitle', root) : $('.replytitle', root);
+      return filter.test('sub', sub.textContent);
     },
     com: function(root) {
-      var com;
-      if (com = ($.el('a', {
+      return filter.test('com', ($.el('a', {
         innerHTML: $('blockquote', root).innerHTML.replace(/<br>/g, '\n')
-      })).textContent) {
-        return filter.test('com', com);
-      }
+      })).textContent);
     },
     file: function(root) {
       var file;

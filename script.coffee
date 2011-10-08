@@ -415,8 +415,8 @@ filter =
       return true if regexp.test value
 
   name: (root) ->
-    if (name = if root.className is 'op' then $('.postername', root).textContent else $('.commentpostername', root).textContent)
-      filter.test 'name', name
+    name = if root.className is 'op' then $ '.postername', root else $ '.commentpostername', root
+    filter.test 'name', name.textContent
   trip: (root) ->
     if trip = $ '.postertrip', root
       filter.test 'trip', trip.textContent
@@ -424,11 +424,10 @@ filter =
     if mail = $ '.linkmail', root
       filter.test 'mail', mail.href
   sub: (root) ->
-    if (sub = if root.className is 'op' then $('.filetitle', root).textContent else $('.replytitle', root).textContent)
-      filter.test 'sub', sub
+    sub = if root.className is 'op' then $ '.filetitle', root else $ '.replytitle', root
+    filter.test 'sub', sub.textContent
   com: (root) ->
-    if com = ($.el 'a', innerHTML: $('blockquote', root).innerHTML.replace /<br>/g, '\n').textContent
-      filter.test 'com', com
+    filter.test 'com', ($.el 'a', innerHTML: $('blockquote', root).innerHTML.replace /<br>/g, '\n').textContent
   file: (root) ->
     if file = $ '.filesize span', root
       filter.test 'file', file.title
