@@ -1646,18 +1646,17 @@ anonymize =
 
 sauce =
   init: ->
-    sauce.prefixes = (s for s in (conf['flavors'].split '\n') when s and s[0] != '#')
-    sauce.names = (prefix.match(/(\w+)\./)[1] for prefix in sauce.prefixes)
+    sauce.prefixes = conf['flavors'].match /^[^#].+$/gm
+    sauce.names = sauce.prefixes.map (s) -> s.match(/\w+(?=\.)/)[0]
     g.callbacks.push (root) ->
-      return if root.className is 'inline'
-      if span = $ '.filesize', root
-        suffix = $('a', span).href
-        for prefix, i in sauce.prefixes
-          link = $.el 'a',
-            textContent: sauce.names[i]
-            href: prefix + suffix
-            target: '_blank'
-          $.add span, $.tn(' '), link
+      return if root.className is 'inline' or not span = $ '.filesize', root
+      suffix = $('a', span).href
+      for prefix, i in sauce.prefixes
+        link = $.el 'a',
+          textContent: sauce.names[i]
+          href: prefix + suffix
+          target: '_blank'
+        $.add span, $.tn(' '), link
 
 revealSpoilers =
   init: ->

@@ -2174,49 +2174,28 @@
   };
   sauce = {
     init: function() {
-      var prefix, s;
-      sauce.prefixes = (function() {
-        var _i, _len, _ref, _results;
-        _ref = conf['flavors'].split('\n');
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          s = _ref[_i];
-          if (s && s[0] !== '#') {
-            _results.push(s);
-          }
-        }
-        return _results;
-      })();
-      sauce.names = (function() {
-        var _i, _len, _ref, _results;
-        _ref = sauce.prefixes;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          prefix = _ref[_i];
-          _results.push(prefix.match(/(\w+)\./)[1]);
-        }
-        return _results;
-      })();
+      sauce.prefixes = conf['flavors'].match(/^[^#].+$/gm);
+      sauce.names = sauce.prefixes.map(function(s) {
+        return s.match(/\w+(?=\.)/)[0];
+      });
       return g.callbacks.push(function(root) {
         var i, link, prefix, span, suffix, _len, _ref, _results;
-        if (root.className === 'inline') {
+        if (root.className === 'inline' || !(span = $('.filesize', root))) {
           return;
         }
-        if (span = $('.filesize', root)) {
-          suffix = $('a', span).href;
-          _ref = sauce.prefixes;
-          _results = [];
-          for (i = 0, _len = _ref.length; i < _len; i++) {
-            prefix = _ref[i];
-            link = $.el('a', {
-              textContent: sauce.names[i],
-              href: prefix + suffix,
-              target: '_blank'
-            });
-            _results.push($.add(span, $.tn(' '), link));
-          }
-          return _results;
+        suffix = $('a', span).href;
+        _ref = sauce.prefixes;
+        _results = [];
+        for (i = 0, _len = _ref.length; i < _len; i++) {
+          prefix = _ref[i];
+          link = $.el('a', {
+            textContent: sauce.names[i],
+            href: prefix + suffix,
+            target: '_blank'
+          });
+          _results.push($.add(span, $.tn(' '), link));
         }
+        return _results;
       });
     }
   };
