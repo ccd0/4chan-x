@@ -386,11 +386,11 @@ filter =
   callbacks: []
   init: ->
     for key of config.filter
-      unless m = conf[key].match /^\/.+\/\w{0,}$/gm
+      unless m = conf[key].match /^\/.+\/\w*$/gm
         continue
       @regexps[key] = []
       for filter in m
-        f = filter.match /^\/(.+)\/(\w{0,})$/
+        f = filter.match /^\/(.+)\/(\w*)$/
         @regexps[key].push RegExp f[1], f[2]
       #only execute what's filterable
       @callbacks.push @[key] if @regexps[key].length
