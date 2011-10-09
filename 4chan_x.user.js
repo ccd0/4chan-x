@@ -3408,6 +3408,6 @@
   if (d.body) {
     Main.init();
   } else {
-    $.bind(document, 'DOMContentLoaded', Main.init);
+    $.bind(d, 'DOMContentLoaded', Main.init);
   }
 }).call(this);
