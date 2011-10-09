@@ -1647,7 +1647,7 @@ anonymize =
 sauce =
   init: ->
     sauce.prefixes = conf['flavors'].match /^[^#].+$/gm
-    sauce.names = sauce.prefixes.map (s) -> s.match(/\w+(?=\.)/)[0]
+    sauce.names = sauce.prefixes.map (prefix) -> prefix.match(/(\w+)\./)[1]
     g.callbacks.push (root) ->
       return if root.className is 'inline' or not span = $ '.filesize', root
       suffix = $('a', span).href

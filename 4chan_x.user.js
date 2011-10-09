@@ -2175,8 +2175,8 @@
   sauce = {
     init: function() {
       sauce.prefixes = conf['flavors'].match(/^[^#].+$/gm);
-      sauce.names = sauce.prefixes.map(function(s) {
-        return s.match(/\w+(?=\.)/)[0];
+      sauce.names = sauce.prefixes.map(function(prefix) {
+        return prefix.match(/(\w+)\./)[1];
       });
       return g.callbacks.push(function(root) {
         var i, link, prefix, span, suffix, _len, _ref, _results;
