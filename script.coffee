@@ -462,7 +462,7 @@ expandComment =
         if reply.id == replyID
           bq = $ 'blockquote', reply
           break
-    for quote in $$ 'a.quotelink', bq
+    for quote in $$ '.quotelink', bq
       if quote.getAttribute('href') is quote.hash
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
       if quote.hash[1..] is threadID
@@ -492,7 +492,7 @@ expandThread =
   toggle: (thread) ->
     threadID = thread.firstChild.id
     pathname = "/#{g.BOARD}/res/#{threadID}"
-    a = $ 'a.omittedposts', thread
+    a = $ '.omittedposts', thread
 
     switch a.textContent[0]
       when '+'
@@ -536,12 +536,12 @@ expandThread =
       innerHTML: req.responseText
 
     for reply in $$ 'td[id]', body
-      for quote in $$ 'a.quotelink', reply
+      for quote in $$ '.quotelink', reply
         if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
           quote.pathname = pathname
         else if href isnt quote.href #fix x-thread links, not x-board ones
           quote.href = "res/#{href}"
-      link = $ 'a.quotejs', reply
+      link = $ '.quotejs', reply
       link.href = "res/#{thread.firstChild.id}##{reply.id}"
       link.nextSibling.href = "res/#{thread.firstChild.id}#q#{reply.id}"
     tables = $$ 'form[name=delform] table', body
@@ -720,7 +720,7 @@ keybinds =
 
   qr: (thread, quote) ->
     if quote
-      QR.quote.call $ 'a.quotejs + a', $('td.replyhl', thread) or thread
+      QR.quote.call $ '.quotejs + a', $('.replyhl', thread) or thread
     else
       if QR.qr
         $('textarea', QR.qr).focus()
@@ -1026,7 +1026,7 @@ QR =
     #can't reply in some stickies, recaptcha may be blocked, eg by noscript
     return unless $('form[name=post]') and $('#recaptcha_response_field')
     g.callbacks.push (root) ->
-      quote = $ 'a.quotejs + a', root
+      quote = $ '.quotejs + a', root
       $.bind quote, 'click', QR.quote
     $.add d.body, $.el 'iframe',
       name: 'iframe'
@@ -1756,7 +1756,7 @@ quoteBacklink =
       # op or reply
       id = root.id or $('td[id]', root).id
       quotes = {}
-      for quote in $$ 'a.quotelink', root
+      for quote in $$ '.quotelink', root
         #don't process >>>/b/
         continue unless qid = quote.hash[1..]
         #duplicate quotes get overwritten
@@ -1784,7 +1784,7 @@ quoteBacklink =
 quoteInline =
   init: ->
     g.callbacks.push (root) ->
-      for quote in $$ 'a.quotelink, a.backlink', root
+      for quote in $$ '.quotelink, .backlink', root
         continue unless quote.hash
         quote.removeAttribute 'onclick'
         $.bind quote, 'click', quoteInline.toggle
@@ -1844,12 +1844,12 @@ quoteInline =
           html = reply.innerHTML
           break
     newInline = quoteInline.table id, html
-    for quote in $$ 'a.quotelink', newInline
+    for quote in $$ '.quotelink', newInline
       if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
         quote.pathname = pathname
       else if !g.REPLY and href isnt quote.href #fix x-thread links, not x-board ones
         quote.href = "res/#{href}"
-    link = $ 'a.quotejs', newInline
+    link = $ '.quotejs', newInline
     link.href = "#{pathname}##{id}"
     link.nextSibling.href = "#{pathname}#q#{id}"
     $.addClass newInline, 'crossquote'
@@ -1863,7 +1863,7 @@ quoteInline =
 quotePreview =
   init: ->
     g.callbacks.push (root) ->
-      for quote in $$ 'a.quotelink, a.backlink', root
+      for quote in $$ '.quotelink, .backlink', root
         continue unless quote.hash
         $.bind quote, 'mouseover', quotePreview.mouseover
         $.bind quote, 'mousemove', ui.hover
@@ -1880,7 +1880,7 @@ quotePreview =
       $.addClass el, 'qphl' if conf['Quote Highlighting']
       if /backlink/.test @className
         replyID = $.x('ancestor::*[@id][1]', @).id.match(/\d+/)[0]
-        for quote in $$ 'a.quotelink', qp
+        for quote in $$ '.quotelink', qp
           if quote.hash[1..] is replyID
             quote.className = 'forwardlink'
     else
@@ -1916,14 +1916,14 @@ quoteOP =
     g.callbacks.push (root) ->
       return if root.className is 'inline'
       tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
-      for quote in $$ 'a.quotelink', root
+      for quote in $$ '.quotelink', root
         if quote.hash[1..] is tid
           quote.innerHTML += '&nbsp;(OP)'
 
 reportButton =
   init: ->
     g.callbacks.push (root) ->
-      if not a = $ 'a.reportbutton', root
+      if not a = $ '.reportbutton', root
         span = $ 'span[id^=no]', root
         a = $.el 'a',
           className: 'reportbutton'

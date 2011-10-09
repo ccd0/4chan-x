@@ -662,7 +662,7 @@
           }
         }
       }
-      _ref2 = $$('a.quotelink', bq);
+      _ref2 = $$('.quotelink', bq);
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         quote = _ref2[_j];
         if (quote.getAttribute('href') === quote.hash) {
@@ -710,7 +710,7 @@
       var a, backlink, num, prev, table, threadID, _i, _len, _ref, _ref2, _results;
       threadID = thread.firstChild.id;
       pathname = "/" + g.BOARD + "/res/" + threadID;
-      a = $('a.omittedposts', thread);
+      a = $('.omittedposts', thread);
       switch (a.textContent[0]) {
         case '+':
           if ((_ref = $('.op .container', thread)) != null) {
@@ -766,7 +766,7 @@
       _ref = $$('td[id]', body);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reply = _ref[_i];
-        _ref2 = $$('a.quotelink', reply);
+        _ref2 = $$('.quotelink', reply);
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
           if ((href = quote.getAttribute('href')) === quote.hash) {
@@ -775,7 +775,7 @@
             quote.href = "res/" + href;
           }
         }
-        link = $('a.quotejs', reply);
+        link = $('.quotejs', reply);
         link.href = "res/" + thread.firstChild.id + "#" + reply.id;
         link.nextSibling.href = "res/" + thread.firstChild.id + "#q" + reply.id;
       }
@@ -1056,7 +1056,7 @@
     },
     qr: function(thread, quote) {
       if (quote) {
-        return QR.quote.call($('a.quotejs + a', $('td.replyhl', thread) || thread));
+        return QR.quote.call($('.quotejs + a', $('.replyhl', thread) || thread));
       } else {
         if (QR.qr) {
           return $('textarea', QR.qr).focus();
@@ -1408,7 +1408,7 @@
       }
       g.callbacks.push(function(root) {
         var quote;
-        quote = $('a.quotejs + a', root);
+        quote = $('.quotejs + a', root);
         return $.bind(quote, 'click', QR.quote);
       });
       $.add(d.body, $.el('iframe', {
@@ -2362,7 +2362,7 @@
         }
         id = root.id || $('td[id]', root).id;
         quotes = {};
-        _ref = $$('a.quotelink', root);
+        _ref = $$('.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
           if (!(qid = quote.hash.slice(1))) {
@@ -2408,7 +2408,7 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var quote, _i, _len, _ref, _results;
-        _ref = $$('a.quotelink, a.backlink', root);
+        _ref = $$('.quotelink, .backlink', root);
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
@@ -2501,7 +2501,7 @@
         }
       }
       newInline = quoteInline.table(id, html);
-      _ref2 = $$('a.quotelink', newInline);
+      _ref2 = $$('.quotelink', newInline);
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         quote = _ref2[_j];
         if ((href = quote.getAttribute('href')) === quote.hash) {
@@ -2510,7 +2510,7 @@
           quote.href = "res/" + href;
         }
       }
-      link = $('a.quotejs', newInline);
+      link = $('.quotejs', newInline);
       link.href = "" + pathname + "#" + id;
       link.nextSibling.href = "" + pathname + "#q" + id;
       $.addClass(newInline, 'crossquote');
@@ -2528,7 +2528,7 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var quote, _i, _len, _ref, _results;
-        _ref = $$('a.quotelink, a.backlink', root);
+        _ref = $$('.quotelink, .backlink', root);
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
@@ -2557,7 +2557,7 @@
         }
         if (/backlink/.test(this.className)) {
           replyID = $.x('ancestor::*[@id][1]', this).id.match(/\d+/)[0];
-          _ref = $$('a.quotelink', qp);
+          _ref = $$('.quotelink', qp);
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             quote = _ref[_i];
@@ -2618,7 +2618,7 @@
           return;
         }
         tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
-        _ref = $$('a.quotelink', root);
+        _ref = $$('.quotelink', root);
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
@@ -2632,7 +2632,7 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var a, span;
-        if (!(a = $('a.reportbutton', root))) {
+        if (!(a = $('.reportbutton', root))) {
           span = $('span[id^=no]', root);
           a = $.el('a', {
             className: 'reportbutton',
