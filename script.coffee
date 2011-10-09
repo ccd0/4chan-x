@@ -2538,7 +2538,7 @@ Main =
         background: none;
       }
 
-      /* Firefox bug: hidden tables are not hidden */
+      /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */
       [hidden] {
         display: none;
       }
