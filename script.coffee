@@ -2370,8 +2370,7 @@ Main =
         expandComment.init()
 
     nodes = $$('.op').concat $$ 'a + table'
-    for callback in g.callbacks
-      nodes.forEach callback
+    g.callbacks.forEach (callback) -> nodes.forEach callback
     $.bind $('form[name=delform]'), 'DOMNodeInserted', nodeInserted
     options.init()
 
