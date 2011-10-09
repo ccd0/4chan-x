@@ -528,15 +528,16 @@
     regexps: {},
     callbacks: [],
     init: function() {
-      var filter, key, m, _i, _len;
+      var f, filter, key, m, _i, _len;
       for (key in config.filter) {
-        if (!(m = conf[key].match(/^(\/.+\/\w{0,})$/gm))) {
+        if (!(m = conf[key].match(/^\/.+\/\w*$/gm))) {
           continue;
         }
         this.regexps[key] = [];
         for (_i = 0, _len = m.length; _i < _len; _i++) {
           filter = m[_i];
-          this.regexps[key].push(Function("return " + filter)());
+          f = filter.match(/^\/(.+)\/(\w*)$/);
+          this.regexps[key].push(RegExp(f[1], f[2]));
         }
         if (this.regexps[key].length) {
           this.callbacks.push(this[key]);
