@@ -2573,7 +2573,7 @@
         innerHTML: req.responseText
       });
       if (id === threadID) {
-        op = threading.op($('form[name=delform] > *', body));
+        op = threading.op($('body > form', body).firstChild);
         html = op.innerHTML;
       } else {
         _ref = $$('td.reply', body);
