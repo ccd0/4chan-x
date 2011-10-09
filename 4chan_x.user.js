@@ -3002,7 +3002,7 @@
   };
   Main = {
     init: function() {
-      var callback, cutoff, hiddenThreads, id, lastChecked, now, op, table, timestamp, tzOffset, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+      var callback, cutoff, hiddenThreads, id, lastChecked, nodes, now, timestamp, tzOffset, _i, _len, _ref, _ref2;
       $.unbind(document, 'DOMContentLoaded', Main.init);
       if (location.hostname === 'sys.4chan.org') {
         QR.sys();
@@ -3131,19 +3131,11 @@
           expandComment.init();
         }
       }
+      nodes = $$('.op').concat($$('a + table'));
       _ref2 = g.callbacks;
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         callback = _ref2[_i];
-        _ref3 = $$('.op');
-        for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-          op = _ref3[_j];
-          callback(op);
-        }
-        _ref4 = $$('a + table');
-        for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
-          table = _ref4[_k];
-          callback(table);
-        }
+        nodes.forEach(callback);
       }
       $.bind($('form[name=delform]'), 'DOMNodeInserted', nodeInserted);
       options.init();
