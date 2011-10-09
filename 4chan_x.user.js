@@ -662,7 +662,7 @@
           }
         }
       }
-      _ref2 = $$('a.quotelink', bq);
+      _ref2 = $$('.quotelink', bq);
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         quote = _ref2[_j];
         if (quote.getAttribute('href') === quote.hash) {
@@ -710,7 +710,7 @@
       var a, backlink, num, prev, table, threadID, _i, _len, _ref, _ref2, _results;
       threadID = thread.firstChild.id;
       pathname = "/" + g.BOARD + "/res/" + threadID;
-      a = $('a.omittedposts', thread);
+      a = $('.omittedposts', thread);
       switch (a.textContent[0]) {
         case '+':
           if ((_ref = $('.op .container', thread)) != null) {
@@ -766,7 +766,7 @@
       _ref = $$('td[id]', body);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reply = _ref[_i];
-        _ref2 = $$('a.quotelink', reply);
+        _ref2 = $$('.quotelink', reply);
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
           if ((href = quote.getAttribute('href')) === quote.hash) {
@@ -775,7 +775,7 @@
             quote.href = "res/" + href;
           }
         }
-        link = $('a.quotejs', reply);
+        link = $('.quotejs', reply);
         link.href = "res/" + thread.firstChild.id + "#" + reply.id;
         link.nextSibling.href = "res/" + thread.firstChild.id + "#q" + reply.id;
       }
@@ -1056,7 +1056,7 @@
     },
     qr: function(thread, quote) {
       if (quote) {
-        return QR.quote.call($('a.quotejs + a', $('td.replyhl', thread) || thread));
+        return QR.quote.call($('.quotejs + a', $('.replyhl', thread) || thread));
       } else {
         if (QR.qr) {
           return $('textarea', QR.qr).focus();
@@ -1408,7 +1408,7 @@
       }
       g.callbacks.push(function(root) {
         var quote;
-        quote = $('a.quotejs + a', root);
+        quote = $('.quotejs + a', root);
         return $.bind(quote, 'click', QR.quote);
       });
       $.add(d.body, $.el('iframe', {
@@ -2174,49 +2174,28 @@
   };
   sauce = {
     init: function() {
-      var prefix, s;
-      sauce.prefixes = (function() {
-        var _i, _len, _ref, _results;
-        _ref = conf['flavors'].split('\n');
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          s = _ref[_i];
-          if (s && s[0] !== '#') {
-            _results.push(s);
-          }
-        }
-        return _results;
-      })();
-      sauce.names = (function() {
-        var _i, _len, _ref, _results;
-        _ref = sauce.prefixes;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          prefix = _ref[_i];
-          _results.push(prefix.match(/(\w+)\./)[1]);
-        }
-        return _results;
-      })();
+      sauce.prefixes = conf['flavors'].match(/^[^#].+$/gm);
+      sauce.names = sauce.prefixes.map(function(s) {
+        return s.match(/\w+(?=\.)/)[0];
+      });
       return g.callbacks.push(function(root) {
         var i, link, prefix, span, suffix, _len, _ref, _results;
-        if (root.className === 'inline') {
+        if (root.className === 'inline' || !(span = $('.filesize', root))) {
           return;
         }
-        if (span = $('.filesize', root)) {
-          suffix = $('a', span).href;
-          _ref = sauce.prefixes;
-          _results = [];
-          for (i = 0, _len = _ref.length; i < _len; i++) {
-            prefix = _ref[i];
-            link = $.el('a', {
-              textContent: sauce.names[i],
-              href: prefix + suffix,
-              target: '_blank'
-            });
-            _results.push($.add(span, $.tn(' '), link));
-          }
-          return _results;
+        suffix = $('a', span).href;
+        _ref = sauce.prefixes;
+        _results = [];
+        for (i = 0, _len = _ref.length; i < _len; i++) {
+          prefix = _ref[i];
+          link = $.el('a', {
+            textContent: sauce.names[i],
+            href: prefix + suffix,
+            target: '_blank'
+          });
+          _results.push($.add(span, $.tn(' '), link));
         }
+        return _results;
       });
     }
   };
@@ -2362,7 +2341,7 @@
         }
         id = root.id || $('td[id]', root).id;
         quotes = {};
-        _ref = $$('a.quotelink', root);
+        _ref = $$('.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
           if (!(qid = quote.hash.slice(1))) {
@@ -2408,7 +2387,7 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var quote, _i, _len, _ref, _results;
-        _ref = $$('a.quotelink, a.backlink', root);
+        _ref = $$('.quotelink, .backlink', root);
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
@@ -2501,7 +2480,7 @@
         }
       }
       newInline = quoteInline.table(id, html);
-      _ref2 = $$('a.quotelink', newInline);
+      _ref2 = $$('.quotelink', newInline);
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         quote = _ref2[_j];
         if ((href = quote.getAttribute('href')) === quote.hash) {
@@ -2510,7 +2489,7 @@
           quote.href = "res/" + href;
         }
       }
-      link = $('a.quotejs', newInline);
+      link = $('.quotejs', newInline);
       link.href = "" + pathname + "#" + id;
       link.nextSibling.href = "" + pathname + "#q" + id;
       $.addClass(newInline, 'crossquote');
@@ -2528,7 +2507,7 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var quote, _i, _len, _ref, _results;
-        _ref = $$('a.quotelink, a.backlink', root);
+        _ref = $$('.quotelink, .backlink', root);
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
@@ -2557,7 +2536,7 @@
         }
         if (/backlink/.test(this.className)) {
           replyID = $.x('ancestor::*[@id][1]', this).id.match(/\d+/)[0];
-          _ref = $$('a.quotelink', qp);
+          _ref = $$('.quotelink', qp);
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             quote = _ref[_i];
@@ -2594,7 +2573,7 @@
         innerHTML: req.responseText
       });
       if (id === threadID) {
-        op = threading.op($('form[name=delform] > *', body));
+        op = threading.op($('body > form', body).firstChild);
         html = op.innerHTML;
       } else {
         _ref = $$('td.reply', body);
@@ -2618,7 +2597,7 @@
           return;
         }
         tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
-        _ref = $$('a.quotelink', root);
+        _ref = $$('.quotelink', root);
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
@@ -2632,7 +2611,7 @@
     init: function() {
       return g.callbacks.push(function(root) {
         var a, span;
-        if (!(a = $('a.reportbutton', root))) {
+        if (!(a = $('.reportbutton', root))) {
           span = $('span[id^=no]', root);
           a = $.el('a', {
             className: 'reportbutton',
@@ -3023,7 +3002,7 @@
   };
   Main = {
     init: function() {
-      var callback, cutoff, hiddenThreads, id, lastChecked, now, op, table, timestamp, tzOffset, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
+      var cutoff, hiddenThreads, id, lastChecked, nodes, now, timestamp, tzOffset, _ref;
       $.unbind(document, 'DOMContentLoaded', Main.init);
       if (location.hostname === 'sys.4chan.org') {
         QR.sys();
@@ -3152,24 +3131,10 @@
           expandComment.init();
         }
       }
-      _ref2 = $$('div.op');
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        op = _ref2[_i];
-        _ref3 = g.callbacks;
-        for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-          callback = _ref3[_j];
-          callback(op);
-        }
-      }
-      _ref4 = $$('a + table');
-      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
-        table = _ref4[_k];
-        _ref5 = g.callbacks;
-        for (_l = 0, _len4 = _ref5.length; _l < _len4; _l++) {
-          callback = _ref5[_l];
-          callback(table);
-        }
-      }
+      nodes = $$('.op').concat($$('a + table'));
+      g.callbacks.forEach(function(callback) {
+        return nodes.forEach(callback);
+      });
       $.bind($('form[name=delform]'), 'DOMNodeInserted', nodeInserted);
       options.init();
       if (!$.get('firstrun')) {
