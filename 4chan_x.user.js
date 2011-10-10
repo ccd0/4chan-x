@@ -3131,7 +3131,7 @@
           expandComment.init();
         }
       }
-      nodes = $$('.op').concat($$('a + table'));
+      nodes = $$('.op, a + table');
       g.callbacks.forEach(function(callback) {
         return nodes.forEach(callback);
       });

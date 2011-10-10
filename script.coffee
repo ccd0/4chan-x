@@ -2369,7 +2369,7 @@ Main =
       if conf['Comment Expansion']
         expandComment.init()
 
-    nodes = $$('.op').concat $$ 'a + table'
+    nodes = $$ '.op, a + table'
     g.callbacks.forEach (callback) -> nodes.forEach callback
     $.bind $('form[name=delform]'), 'DOMNodeInserted', nodeInserted
     options.init()
