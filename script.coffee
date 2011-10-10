@@ -1816,7 +1816,7 @@ quoteInline =
     #select the corresponding table or loading td
     table = $.x "following::*[@id='i#{id}']", q
     for inlined in $$ 'input', table
-      if hidden = $.id inlined.name
+      unless (hidden = $.id inlined.name).classList.contains 'op'
         $.x('ancestor::table[1]', hidden).hidden = false
     $.rm table
 
