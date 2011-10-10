@@ -1987,6 +1987,7 @@ Favicon =
     {href} = favicon
     Favicon.default = href
     Favicon.unread = if /ws/.test href then Favicon.unreadSFW else Favicon.unreadNSFW
+
   dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
   empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
   unreadDead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAANhJREFUOMutU0EKwjAQzEPFgyBFei209gOKINh6tL3qO3yAB9OHWPTeMZsmJaRpiNjAkE1mMt1stgwA+wdsFgM1oHE4FXmSpWUcRzWBYtozNfKAYdCHCrQuosX9tlk+CBS7NKMMbMF7vXoJtC7Om8HwhXzbCWCSn6qBJHd74FIBVS1jm7czYFSsq7gvpY0s6+ThJwc4743EHnGkIW2YAW+AphkMPj6DJE1LXW3fFUhD2pHBsTznLKCIFCstC3nGNvQZnQa6kX4yMGfdyi7OZaB7wZy93Cx/4xfgv/s+XYFMrAAAAABJRU5ErkJggg%3D%3D'
@@ -1995,21 +1996,22 @@ Favicon =
 
   update: ->
     l = unread.replies.length
-    if g.dead
-      if l > 0
-        href = Favicon.unreadDead
+
+    favicon = $ 'link[rel="shortcut icon"]', d.head
+    favicon.href =
+      if g.dead
+        if l
+          Favicon.unreadDead
+        else
+          Favicon.dead
       else
-        href = Favicon.dead
-    else
-      if l > 0
-        href = Favicon.unread
-      else
-        href = Favicon.default
+        if l
+          Favicon.unread
+        else
+          Favicon.default
 
     #XXX `favicon.href = href` doesn't work on Firefox
-    favicon = $ 'link[rel="shortcut icon"]', d.head
     clone = favicon.cloneNode true
-    clone.href = href
     $.replace favicon, clone
 
 redirect = ->
