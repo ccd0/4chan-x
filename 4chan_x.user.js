@@ -2394,7 +2394,7 @@
       if (this.classList.contains('inlined')) {
         quoteInline.rm(this, id);
       } else {
-        if ($.x('ancestor::td[@id]', this).id === id) {
+        if ($.x("ancestor::*[@id='" + id + "']", this)) {
           return;
         }
         quoteInline.add(this, id);

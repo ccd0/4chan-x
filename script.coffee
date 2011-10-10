@@ -1789,7 +1789,7 @@ quoteInline =
     if @classList.contains 'inlined'
       quoteInline.rm @, id
     else
-      return if $.x('ancestor::td[@id]', @).id is id
+      return if $.x("ancestor::*[@id='#{id}']", @)
       quoteInline.add @, id
     @classList.toggle 'inlined'
 
