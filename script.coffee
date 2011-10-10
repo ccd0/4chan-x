@@ -2034,8 +2034,7 @@ redirect = ->
 nodeInserted = (e) ->
   {target} = e
   if target.nodeName is 'TABLE'
-    for callback in g.callbacks
-      callback target
+    g.callbacks.forEach (callback) -> callback target
 
 imgHover =
   init: ->

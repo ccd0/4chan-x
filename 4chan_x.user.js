@@ -2779,16 +2779,12 @@
     return location.href = url;
   };
   nodeInserted = function(e) {
-    var callback, target, _i, _len, _ref, _results;
+    var target;
     target = e.target;
     if (target.nodeName === 'TABLE') {
-      _ref = g.callbacks;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        callback = _ref[_i];
-        _results.push(callback(target));
-      }
-      return _results;
+      return g.callbacks.forEach(function(callback) {
+        return callback(target);
+      });
     }
   };
   imgHover = {
