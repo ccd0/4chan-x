@@ -2394,7 +2394,7 @@
       if (this.classList.contains('inlined')) {
         quoteInline.rm(this, id);
       } else {
-        if ($.x('ancestor::td[@id]', this).id === id) {
+        if ($.x("ancestor::*[@id='" + id + "']", this)) {
           return;
         }
         quoteInline.add(this, id);
@@ -2432,8 +2432,10 @@
       _ref = $$('input', table);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         inlined = _ref[_i];
-        if (!(hidden = $.id(inlined.name)).classList.contains('op')) {
-          $.x('ancestor::table[1]', hidden).hidden = false;
+        if (hidden = $.id(inlined.name)) {
+          if (!hidden.classList.contains('op')) {
+            $.x('ancestor::table[1]', hidden).hidden = false;
+          }
         }
       }
       return $.rm(table);
