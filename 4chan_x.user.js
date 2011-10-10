@@ -2656,7 +2656,9 @@
       }
       unread.replies.push(root);
       unread.updateTitle();
-      return Favicon.update();
+      if (unread.replies.length === 1) {
+        return Favicon.update();
+      }
     },
     scroll: function(e) {
       var bottom, height, i, reply, _len, _ref;

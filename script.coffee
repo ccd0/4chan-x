@@ -1962,7 +1962,8 @@ unread =
     return if root.hidden or root.className
     unread.replies.push root
     unread.updateTitle()
-    Favicon.update()
+    if unread.replies.length is 1
+      Favicon.update()
 
   scroll: (e) ->
     updater.focus = true
