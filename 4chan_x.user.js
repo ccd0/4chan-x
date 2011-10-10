@@ -539,45 +539,29 @@
           f = filter.match(/^\/(.+)\/(\w*)$/);
           this.regexps[key].push(RegExp(f[1], f[2]));
         }
-        if (this.regexps[key].length) {
-          this.callbacks.push(this[key]);
-        }
+        this.callbacks.push(this[key]);
       }
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var callback, _i, _j, _len, _len2, _ref, _ref2;
-      if (root.className === 'op') {
-        if (!g.REPLY && conf['Filter OPs']) {
-          _ref = filter.callbacks;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            callback = _ref[_i];
-            if (callback(root)) {
-              threadHiding.hideHide(root.parentNode);
-              return;
-            }
-          }
+      if (!root.className) {
+        if (filter.callbacks.some(function(callback) {
+          return callback(root);
+        })) {
+          return replyHiding.hideHide($('td:not([nowrap])', root));
         }
-      } else if (!root.classList.contains('inline')) {
-        _ref2 = filter.callbacks;
-        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-          callback = _ref2[_j];
-          if (callback(root)) {
-            replyHiding.hideHide($('td:not([nowrap])', root));
-            return;
-          }
+      } else if (root.className === 'op' && !g.REPLY && conf['Filter OPs']) {
+        if (filter.callbacks.some(function(callback) {
+          return callback(root);
+        })) {
+          return threadHiding.hideHide(root.parentNode);
         }
       }
     },
     test: function(key, value) {
-      var regexp, _i, _len, _ref;
-      _ref = filter.regexps[key];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        regexp = _ref[_i];
-        if (regexp.test(value)) {
-          return true;
-        }
-      }
+      return filter.regexps[key].some(function(regexp) {
+        return regexp.test(value);
+      });
     },
     name: function(root) {
       var name;

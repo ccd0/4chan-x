@@ -393,25 +393,20 @@ filter =
         f = filter.match /^\/(.+)\/(\w*)$/
         @regexps[key].push RegExp f[1], f[2]
       #only execute what's filterable
-      @callbacks.push @[key] if @regexps[key].length
+      @callbacks.push @[key]
 
     g.callbacks.push @node
 
   node: (root) ->
-    if root.className is 'op'
-      if !g.REPLY and conf['Filter OPs']
-        for callback in filter.callbacks
-          if callback root
-            threadHiding.hideHide root.parentNode
-            return
-    else unless root.classList.contains 'inline'
-      for callback in filter.callbacks
-        if callback root
-          replyHiding.hideHide $ 'td:not([nowrap])', root
-          return
+    unless root.className
+      if filter.callbacks.some((callback) -> callback root)
+        replyHiding.hideHide $ 'td:not([nowrap])', root
+    else if root.className is 'op' and not g.REPLY and conf['Filter OPs']
+      if filter.callbacks.some((callback) -> callback root)
+        threadHiding.hideHide root.parentNode
+
   test: (key, value) ->
-    for regexp in filter.regexps[key]
-      return true if regexp.test value
+    filter.regexps[key].some (regexp) -> regexp.test value
 
   name: (root) ->
     name = if root.className is 'op' then $ '.postername', root else $ '.commentpostername', root
