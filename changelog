@@ -3,7 +3,9 @@ master
   initiate 4chan X earlier
   automatically reload expanded pictures on error
   update /sci/ archive redirection
-  Regular expressions based filter
+  regular expressions based filter
+  handle bans with the thread updater
+  performance improvements
 - aeosynth
   quick reply redesign
 
