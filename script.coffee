@@ -2024,11 +2024,6 @@ redirect = ->
       url = "http://boards.4chan.org/#{g.BOARD}"
   location.href = url
 
-nodeInserted = (e) ->
-  {target} = e
-  if target.nodeName is 'TABLE'
-    g.callbacks.forEach (callback) -> callback target
-
 imgHover =
   init: ->
     g.callbacks.push (root) ->
@@ -2368,7 +2363,7 @@ Main =
       catch e
         alert e
         continue
-    $.bind $('form[name=delform]'), 'DOMNodeInserted', nodeInserted
+    $.bind $('form[name=delform]'), 'DOMNodeInserted', Main.node
     options.init()
 
     unless $.get 'firstrun'
@@ -2378,6 +2373,15 @@ Main =
     {origin, data} = e
     if origin is 'http://sys.4chan.org'
       QR.receive data
+
+  node: (e) ->
+    {target} = e
+    return unless target.nodeName is 'TABLE'
+    for callback in g.callbacks
+      try
+        nodes.forEach callback
+      catch e
+        continue
 
   css: '
       /* dialog styling */

@@ -61,7 +61,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, flatten, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, nodeInserted, options, pathname, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, temp, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, flatten, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, options, pathname, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, temp, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -2746,15 +2746,6 @@
     }
     return location.href = url;
   };
-  nodeInserted = function(e) {
-    var target;
-    target = e.target;
-    if (target.nodeName === 'TABLE') {
-      return g.callbacks.forEach(function(callback) {
-        return callback(target);
-      });
-    }
-  };
   imgHover = {
     init: function() {
       return g.callbacks.push(function(root) {
@@ -3106,7 +3097,7 @@
           continue;
         }
       }
-      $.bind($('form[name=delform]'), 'DOMNodeInserted', nodeInserted);
+      $.bind($('form[name=delform]'), 'DOMNodeInserted', Main.node);
       options.init();
       if (!$.get('firstrun')) {
         return firstRun.init();
@@ -3118,6 +3109,24 @@
       if (origin === 'http://sys.4chan.org') {
         return QR.receive(data);
       }
+    },
+    node: function(e) {
+      var callback, target, _i, _len, _ref, _results;
+      target = e.target;
+      if (target.nodeName !== 'TABLE') {
+        return;
+      }
+      _ref = g.callbacks;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        try {
+          nodes.forEach(callback);
+        } catch (e) {
+          continue;
+        }
+      }
+      return _results;
     },
     css: '\
       /* dialog styling */\
