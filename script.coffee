@@ -1663,13 +1663,16 @@ Time =
   node: (root) ->
     return if root.className is 'inline'
     node = if posttime = $('.posttime', root) then posttime else $('span[id]', root).previousSibling
-    [_, month, day, year, hour, min] =
-      node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
-    year = "20#{year}"
-    month -= 1 #months start at 0
-    hour = g.chanOffset + Number hour
-    Time.date = new Date year, month, day, hour, min
-    #XXX /b/ will have seconds cut off
+    if parse = Date.parse node.textContent
+      Time.date = new Date parse + g.chanOffset*HOUR
+    else # Firefox the Archaic cannot parse 4chan's time
+      [_, month, day, year, hour, min] =
+        node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
+      year = "20#{year}"
+      month -= 1 #months start at 0
+      hour = g.chanOffset + Number hour
+      Time.date = new Date year, month, day, hour, min
+      #XXX /b/ will have seconds cut off
 
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
