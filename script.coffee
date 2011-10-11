@@ -2357,12 +2357,11 @@ Main =
         expandComment.init()
 
     nodes = $$ '.op, a + table'
-    for callback in g.callbacks
+    g.callbacks.forEach (callback) ->
       try
         nodes.forEach callback
       catch err
         alert err
-        continue
     $.bind $('form[name=delform]'), 'DOMNodeInserted', Main.node
     options.init()
 
@@ -2377,11 +2376,11 @@ Main =
   node: (e) ->
     {target} = e
     return unless target.nodeName is 'TABLE'
-    for callback in g.callbacks
+    g.callbacks.forEach (callback) ->
       try
         nodes.forEach callback
       catch err
-        continue
+        #nothing
 
   css: '
       /* dialog styling */

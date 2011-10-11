@@ -2957,7 +2957,7 @@
   };
   Main = {
     init: function() {
-      var callback, cutoff, hiddenThreads, id, lastChecked, nodes, now, timestamp, tzOffset, _i, _len, _ref, _ref2;
+      var cutoff, hiddenThreads, id, lastChecked, nodes, now, timestamp, tzOffset, _ref;
       $.unbind(document, 'DOMContentLoaded', Main.init);
       if (location.hostname === 'sys.4chan.org') {
         QR.sys();
@@ -3087,16 +3087,13 @@
         }
       }
       nodes = $$('.op, a + table');
-      _ref2 = g.callbacks;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        callback = _ref2[_i];
+      g.callbacks.forEach(function(callback) {
         try {
-          nodes.forEach(callback);
+          return nodes.forEach(callback);
         } catch (err) {
-          alert(err);
-          continue;
+          return alert(err);
         }
-      }
+      });
       $.bind($('form[name=delform]'), 'DOMNodeInserted', Main.node);
       options.init();
       if (!$.get('firstrun')) {
@@ -3111,22 +3108,18 @@
       }
     },
     node: function(e) {
-      var callback, target, _i, _len, _ref, _results;
+      var target;
       target = e.target;
       if (target.nodeName !== 'TABLE') {
         return;
       }
-      _ref = g.callbacks;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        callback = _ref[_i];
+      return g.callbacks.forEach(function(callback) {
         try {
-          nodes.forEach(callback);
+          return nodes.forEach(callback);
         } catch (err) {
-          continue;
+
         }
-      }
-      return _results;
+      });
     },
     css: '\
       /* dialog styling */\
