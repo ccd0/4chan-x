@@ -1663,7 +1663,14 @@ Time =
   node: (root) ->
     return if root.className is 'inline'
     node = if posttime = $('.posttime', root) then posttime else $('span[id]', root).previousSibling
-    Time.date = new Date Date.parse(node.textContent) + g.chanOffset*HOUR
+    [_, month, day, year, hour, min] =
+      node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
+    year = "20#{year}"
+    month -= 1 #months start at 0
+    hour = g.chanOffset + Number hour
+    Time.date = new Date year, month, day, hour, min
+    #XXX /b/ will have seconds cut off
+
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
     $.replace node, time
