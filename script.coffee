@@ -2378,7 +2378,7 @@ Main =
     return unless target.nodeName is 'TABLE'
     g.callbacks.forEach (callback) ->
       try
-        nodes.forEach callback
+        callback target
       catch err
         #nothing
 

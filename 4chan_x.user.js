@@ -3115,7 +3115,7 @@
       }
       return g.callbacks.forEach(function(callback) {
         try {
-          return nodes.forEach(callback);
+          return callback(target);
         } catch (err) {
 
         }
