@@ -2193,19 +2193,25 @@
   Time = {
     init: function() {
       Time.foo();
+      this.parse = Date.parse('10/11/11(Tue)18:53') ? function(node) {
+        return new Date(Date.parse(node.textContent) + g.chanOffset * HOUR);
+      } : function(node) {
+        var day, hour, min, month, year, _, _ref;
+        _ref = node.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
+        year = "20" + year;
+        month -= 1;
+        hour = g.chanOffset + Number(hour);
+        return new Date(year, month, day, hour, min);
+      };
       return g.callbacks.push(Time.node);
     },
     node: function(root) {
-      var day, hour, min, month, node, posttime, time, year, _, _ref;
+      var node, posttime, time;
       if (root.className === 'inline') {
         return;
       }
       node = (posttime = $('.posttime', root)) ? posttime : $('span[id]', root).previousSibling;
-      _ref = node.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
-      year = "20" + year;
-      month -= 1;
-      hour = g.chanOffset + Number(hour);
-      Time.date = new Date(year, month, day, hour, min);
+      Time.date = Time.parse(node);
       time = $.el('time', {
         textContent: ' ' + Time.funk(Time) + ' '
       });
