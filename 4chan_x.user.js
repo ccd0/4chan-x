@@ -2193,7 +2193,7 @@
   Time = {
     init: function() {
       Time.foo();
-      this.parse = Date.parse($('.posttime').textContent) ? function(node) {
+      this.parse = Date.parse('10/11/11(Tue)18:53') ? function(node) {
         return new Date(Date.parse(node.textContent) + g.chanOffset * HOUR);
       } : function(node) {
         var day, hour, min, month, year, _, _ref;

@@ -1661,7 +1661,7 @@ Time =
     Time.foo()
 
     @parse =
-      if Date.parse $('.posttime').textContent
+      if Date.parse '10/11/11(Tue)18:53'
         (node) -> new Date Date.parse(node.textContent) + g.chanOffset*HOUR
       else # Firefox the Archaic cannot parse 4chan's time
         (node) ->
