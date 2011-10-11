@@ -1739,9 +1739,9 @@ quoteBacklink =
     format = conf['backlink'].replace /%id/, "' + id + '"
     quoteBacklink.funk = Function 'id', "return'#{format}'"
     g.callbacks.push (root) ->
-      return if /inline/.test root.className
+      return if root.classList.contains 'inline'
       # op or reply
-      id = root.id or $('td[id]', root).id
+      id = $('input', root).name
       quotes = {}
       for quote in $$ '.quotelink', root
         #don't process >>>/b/
@@ -1764,7 +1764,7 @@ quoteBacklink =
           $.bind link, 'click', quoteInline.toggle
         unless (container = $ '.container', el) and container.parentNode is el
           container = $.el 'span', className: 'container'
-          root = $('.reportbutton', el) or $('span[id^=no]', el)
+          root = $('.reportbutton', el) or $('span[id]', el)
           $.after root, container
         $.add container, $.tn(' '), link
 
@@ -1866,8 +1866,8 @@ quotePreview =
     if el = $.id id
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl' if conf['Quote Highlighting']
-      if /backlink/.test @className
-        replyID = $.x('ancestor::*[@id][1]', @).id.match(/\d+/)[0]
+      if @classList.contains 'backlink'
+        replyID = $.x('preceding::input', @).name
         for quote in $$ '.quotelink', qp
           if quote.hash[1..] is replyID
             quote.className = 'forwardlink'

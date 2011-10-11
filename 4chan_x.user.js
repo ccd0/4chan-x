@@ -2316,10 +2316,10 @@
       quoteBacklink.funk = Function('id', "return'" + format + "'");
       return g.callbacks.push(function(root) {
         var container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
-        if (/inline/.test(root.className)) {
+        if (root.classList.contains('inline')) {
           return;
         }
-        id = root.id || $('td[id]', root).id;
+        id = $('input', root).name;
         quotes = {};
         _ref = $$('.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2354,7 +2354,7 @@
             container = $.el('span', {
               className: 'container'
             });
-            root = $('.reportbutton', el) || $('span[id^=no]', el);
+            root = $('.reportbutton', el) || $('span[id]', el);
             $.after(root, container);
           }
           _results.push($.add(container, $.tn(' '), link));
@@ -2516,8 +2516,8 @@
         if (conf['Quote Highlighting']) {
           $.addClass(el, 'qphl');
         }
-        if (/backlink/.test(this.className)) {
-          replyID = $.x('ancestor::*[@id][1]', this).id.match(/\d+/)[0];
+        if (this.classList.contains('backlink')) {
+          replyID = $.x('preceding::input', this).name;
           _ref = $$('.quotelink', qp);
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
