@@ -1919,7 +1919,7 @@ reportButton =
   init: ->
     g.callbacks.push (root) ->
       if not a = $ '.reportbutton', root
-        span = $ 'span[id^=no]', root
+        span = $ 'span[id]', root
         a = $.el 'a',
           className: 'reportbutton'
           innerHTML: '[&nbsp;!&nbsp;]'
@@ -1927,7 +1927,7 @@ reportButton =
         $.after span, $.tn(' ')
       $.bind a, 'click', reportButton.report
   report: ->
-    url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{@previousElementSibling.childNodes[1].textContent}"
+    url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
     id  = "#{NAMESPACE}popup"
     set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set

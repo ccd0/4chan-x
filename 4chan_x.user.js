@@ -2598,7 +2598,7 @@
       return g.callbacks.push(function(root) {
         var a, span;
         if (!(a = $('.reportbutton', root))) {
-          span = $('span[id^=no]', root);
+          span = $('span[id]', root);
           a = $.el('a', {
             className: 'reportbutton',
             innerHTML: '[&nbsp;!&nbsp;]'
@@ -2611,7 +2611,7 @@
     },
     report: function() {
       var id, set, url;
-      url = "http://sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + this.previousElementSibling.childNodes[1].textContent;
+      url = "http://sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + ($.x('preceding-sibling::input', this).name);
       id = "" + NAMESPACE + "popup";
       set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
       return window.open(url, id, set);
