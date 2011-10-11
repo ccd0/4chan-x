@@ -2966,7 +2966,7 @@
   };
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, lastChecked, nodes, now, timestamp, tzOffset, _ref;
+      var callback, cutoff, hiddenThreads, id, lastChecked, nodes, now, timestamp, tzOffset, _i, _len, _ref, _ref2;
       $.unbind(document, 'DOMContentLoaded', Main.init);
       if (location.hostname === 'sys.4chan.org') {
         QR.sys();
@@ -3096,9 +3096,16 @@
         }
       }
       nodes = $$('.op, a + table');
-      g.callbacks.forEach(function(callback) {
-        return nodes.forEach(callback);
-      });
+      _ref2 = g.callbacks;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        callback = _ref2[_i];
+        try {
+          nodes.forEach(callback);
+        } catch (e) {
+          alert(e);
+          continue;
+        }
+      }
       $.bind($('form[name=delform]'), 'DOMNodeInserted', nodeInserted);
       options.init();
       if (!$.get('firstrun')) {
