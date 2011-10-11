@@ -3092,8 +3092,8 @@
         callback = _ref2[_i];
         try {
           nodes.forEach(callback);
-        } catch (e) {
-          alert(e);
+        } catch (err) {
+          alert(err);
           continue;
         }
       }
@@ -3122,7 +3122,7 @@
         callback = _ref[_i];
         try {
           nodes.forEach(callback);
-        } catch (e) {
+        } catch (err) {
           continue;
         }
       }

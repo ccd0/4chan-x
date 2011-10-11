@@ -2360,8 +2360,8 @@ Main =
     for callback in g.callbacks
       try
         nodes.forEach callback
-      catch e
-        alert e
+      catch err
+        alert err
         continue
     $.bind $('form[name=delform]'), 'DOMNodeInserted', Main.node
     options.init()
@@ -2380,7 +2380,7 @@ Main =
     for callback in g.callbacks
       try
         nodes.forEach callback
-      catch e
+      catch err
         continue
 
   css: '
