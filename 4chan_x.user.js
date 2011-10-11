@@ -2055,13 +2055,6 @@
         $.before(input, favicon);
       }
       watcher.refresh();
-      if (conf['Auto Watch']) {
-        if (!g.REPLY) {
-          $('.postarea form').action += '?watch';
-        } else if (/watch/.test(location.search) && $('img.favicon').src === Favicon.empty) {
-          watcher.watch(null, g.THREAD_ID);
-        }
-      }
       return $.bind(window, 'storage', function(e) {
         if (e.key === ("" + NAMESPACE + "watched")) {
           return watcher.refresh();
@@ -2203,16 +2196,12 @@
       return g.callbacks.push(Time.node);
     },
     node: function(root) {
-      var day, hour, min, month, node, posttime, time, year, _, _ref;
+      var node, posttime, time;
       if (root.className === 'inline') {
         return;
       }
       node = (posttime = $('.posttime', root)) ? posttime : $('span[id]', root).previousSibling;
-      _ref = node.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
-      year = "20" + year;
-      month -= 1;
-      hour = g.chanOffset + Number(hour);
-      Time.date = new Date(year, month, day, hour, min);
+      Time.date = new Date(Date.parse(node.textContent) + g.chanOffset * HOUR);
       time = $.el('time', {
         textContent: ' ' + Time.funk(Time) + ' '
       });
@@ -2320,10 +2309,10 @@
       quoteBacklink.funk = Function('id', "return'" + format + "'");
       return g.callbacks.push(function(root) {
         var container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
-        if (/inline/.test(root.className)) {
+        if (root.classList.contains('inline')) {
           return;
         }
-        id = root.id || $('td[id]', root).id;
+        id = $('input', root).name;
         quotes = {};
         _ref = $$('.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2358,7 +2347,7 @@
             container = $.el('span', {
               className: 'container'
             });
-            root = $('.reportbutton', el) || $('span[id^=no]', el);
+            root = $('.reportbutton', el) || $('span[id]', el);
             $.after(root, container);
           }
           _results.push($.add(container, $.tn(' '), link));
@@ -2520,8 +2509,8 @@
         if (conf['Quote Highlighting']) {
           $.addClass(el, 'qphl');
         }
-        if (/backlink/.test(this.className)) {
-          replyID = $.x('ancestor::*[@id][1]', this).id.match(/\d+/)[0];
+        if (this.classList.contains('backlink')) {
+          replyID = $.x('preceding::input', this).name;
           _ref = $$('.quotelink', qp);
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2598,7 +2587,7 @@
       return g.callbacks.push(function(root) {
         var a, span;
         if (!(a = $('.reportbutton', root))) {
-          span = $('span[id^=no]', root);
+          span = $('span[id]', root);
           a = $.el('a', {
             className: 'reportbutton',
             innerHTML: '[&nbsp;!&nbsp;]'
@@ -2611,7 +2600,7 @@
     },
     report: function() {
       var id, set, url;
-      url = "http://sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + this.previousElementSibling.childNodes[1].textContent;
+      url = "http://sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + ($.x('preceding-sibling::input', this).name);
       id = "" + NAMESPACE + "popup";
       set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
       return window.open(url, id, set);

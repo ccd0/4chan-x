@@ -1564,12 +1564,6 @@ watcher =
     #populate watcher, display watch buttons
     watcher.refresh()
 
-    if conf['Auto Watch']
-      unless g.REPLY
-        $('.postarea form').action += '?watch'
-      else if /watch/.test(location.search) and $('img.favicon').src is Favicon.empty
-        watcher.watch null, g.THREAD_ID
-
     $.bind window, 'storage', (e) -> watcher.refresh() if e.key is "#{NAMESPACE}watched"
 
   refresh: ->
@@ -1669,14 +1663,7 @@ Time =
   node: (root) ->
     return if root.className is 'inline'
     node = if posttime = $('.posttime', root) then posttime else $('span[id]', root).previousSibling
-    [_, month, day, year, hour, min] =
-      node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
-    year = "20#{year}"
-    month -= 1 #months start at 0
-    hour = g.chanOffset + Number hour
-    Time.date = new Date year, month, day, hour, min
-    #XXX /b/ will have seconds cut off
-
+    Time.date = new Date Date.parse(node.textContent) + g.chanOffset*HOUR
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
     $.replace node, time
@@ -1746,9 +1733,9 @@ quoteBacklink =
     format = conf['backlink'].replace /%id/, "' + id + '"
     quoteBacklink.funk = Function 'id', "return'#{format}'"
     g.callbacks.push (root) ->
-      return if /inline/.test root.className
+      return if root.classList.contains 'inline'
       # op or reply
-      id = root.id or $('td[id]', root).id
+      id = $('input', root).name
       quotes = {}
       for quote in $$ '.quotelink', root
         #don't process >>>/b/
@@ -1771,7 +1758,7 @@ quoteBacklink =
           $.bind link, 'click', quoteInline.toggle
         unless (container = $ '.container', el) and container.parentNode is el
           container = $.el 'span', className: 'container'
-          root = $('.reportbutton', el) or $('span[id^=no]', el)
+          root = $('.reportbutton', el) or $('span[id]', el)
           $.after root, container
         $.add container, $.tn(' '), link
 
@@ -1873,8 +1860,8 @@ quotePreview =
     if el = $.id id
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl' if conf['Quote Highlighting']
-      if /backlink/.test @className
-        replyID = $.x('ancestor::*[@id][1]', @).id.match(/\d+/)[0]
+      if @classList.contains 'backlink'
+        replyID = $.x('preceding::input', @).name
         for quote in $$ '.quotelink', qp
           if quote.hash[1..] is replyID
             quote.className = 'forwardlink'
@@ -1919,7 +1906,7 @@ reportButton =
   init: ->
     g.callbacks.push (root) ->
       if not a = $ '.reportbutton', root
-        span = $ 'span[id^=no]', root
+        span = $ 'span[id]', root
         a = $.el 'a',
           className: 'reportbutton'
           innerHTML: '[&nbsp;!&nbsp;]'
@@ -1927,7 +1914,7 @@ reportButton =
         $.after span, $.tn(' ')
       $.bind a, 'click', reportButton.report
   report: ->
-    url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{@previousElementSibling.childNodes[1].textContent}"
+    url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
     id  = "#{NAMESPACE}popup"
     set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
