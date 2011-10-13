@@ -608,7 +608,6 @@ keybinds =
     $.bind d, 'keydown',  keybinds.keydown
 
   keydown: (e) ->
-    updater.focus = true
     return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
     return unless key = keybinds.keyCode e
 
@@ -1422,12 +1421,6 @@ threadHiding =
 
 updater =
   init: ->
-    if conf['Scrolling']
-      if conf['Scroll BG']
-        updater.focus = true
-      else
-        $.bind window, 'focus', (-> updater.focus = true)
-        $.bind window, 'blur',  (-> updater.focus = false)
     html = "<div class=move><span id=count></span> <span id=timer>-#{conf['Interval']}</span></div>"
     {checkbox} = config.updater
     for name of checkbox
@@ -1451,7 +1444,10 @@ updater =
       if input.type is 'checkbox'
         $.bind input, 'click', $.cb.checked
         $.bind input, 'click', -> conf[@name] = @checked
-        if input.name is 'Verbose'
+        if input.name is 'Scroll BG'
+          $.bind input, 'click', updater.cb.scrollBG
+          updater.cb.scrollBG.call input
+        else if input.name is 'Verbose'
           $.bind input, 'click', updater.cb.verbose
           updater.cb.verbose.call input
         else if input.name is 'Auto Update This'
@@ -1480,6 +1476,21 @@ updater =
         updater.timeoutID = setTimeout updater.timeout, 1000
       else
         clearTimeout updater.timeoutID
+    scrollBG: ->
+      updater.scrollBG =
+        if @checked
+          -> true
+        else
+          if d.visibilityState
+            -> !d.hidden
+          else if d.oVisibilityState
+            -> !d.oHidden
+          else if d.mozVisibilityState
+            -> !d.mozHidden
+          else if d.webkitVisibilityState
+            -> !d.webkitHidden
+          else
+            -> true
     update: ->
       if @status is 404
         updater.timer.textContent = ''
@@ -1505,12 +1516,12 @@ updater =
         return
 
       replies = $$ '.reply', body
-      id = Number $('td[id]', updater.br.previousElementSibling)?.id or 0
+      id = Number $('td[id]', updater.br.previousSibling)?.id or 0
       arr = []
       while (reply = replies.pop()) and (reply.id > id)
         arr.push reply.parentNode.parentNode.parentNode #table
 
-      scroll = conf['Scrolling'] && updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
+      scroll = conf['Scrolling'] && updater.scrollBG() && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
       if conf['Verbose']
         updater.count.textContent = '+' + arr.length
         if arr.length is 0
@@ -1522,7 +1533,7 @@ updater =
       while reply = arr.pop()
         $.before updater.br, reply
       if scroll
-        scrollTo 0, d.body.scrollHeight
+        updater.br.previousSibling.scrollIntoView()
 
   timeout: ->
     updater.timeoutID = setTimeout updater.timeout, 1000
@@ -1966,7 +1977,6 @@ unread =
       Favicon.update()
 
   scroll: (e) ->
-    updater.focus = true
     height = d.body.clientHeight
     for reply, i in unread.replies
       {bottom} = reply.getBoundingClientRect()
