@@ -2866,8 +2866,8 @@
           $.bind(window, 'resize', imgExpand.resize);
           if (!imgExpand.style) {
             imgExpand.style = $.addStyle('');
-            return imgExpand.resize();
           }
+          return imgExpand.resize();
         } else if (imgExpand.style) {
           return $.unbind(window, 'resize', imgExpand.resize);
         }
@@ -2945,7 +2945,7 @@
       return $.prepend(delform, controls);
     },
     resize: function() {
-      return imgExpand.style.innerHTML = ".fitheight img + img {max-height:" + innerHeight + "px;}";
+      return imgExpand.style.innerHTML = ".fitheight img + img {max-height:" + d.body.clientHeight + "px;}";
     }
   };
   firstRun = {
