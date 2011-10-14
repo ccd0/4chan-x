@@ -1614,7 +1614,7 @@ watcher =
   watch: (thread, id) ->
     props =
       href: "/#{g.BOARD}/res/#{id}"
-      textContent: getTitle(thread)[...30]
+      textContent: getTitle(thread)
 
     watched = $.get 'watched', {}
     watched[g.BOARD] or= {}
@@ -2510,6 +2510,9 @@ Main =
 
       #watcher {
         position: absolute;
+        width: 250px;
+        overflow: hidden;
+        white-space: nowrap;
       }
       #watcher > div {
         padding-right: 5px;

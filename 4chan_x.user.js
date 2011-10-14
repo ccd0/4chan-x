@@ -2124,7 +2124,7 @@
       var props, watched, _name;
       props = {
         href: "/" + g.BOARD + "/res/" + id,
-        textContent: getTitle(thread).slice(0, 30)
+        textContent: getTitle(thread)
       };
       watched = $.get('watched', {});
       watched[_name = g.BOARD] || (watched[_name] = {});
@@ -3251,6 +3251,9 @@
 \
       #watcher {\
         position: absolute;\
+        width: 250px;\
+        overflow: hidden;\
+        white-space: nowrap;\
       }\
       #watcher > div {\
         padding-right: 5px;\
