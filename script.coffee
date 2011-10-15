@@ -2510,13 +2510,14 @@ Main =
 
       #watcher {
         position: absolute;
-        width: 250px;
-        overflow: hidden;
-        white-space: nowrap;
       }
       #watcher > div {
+        overflow: hidden;
         padding-right: 5px;
         padding-left: 5px;
+        text-overflow: ellipsis;
+        max-width: 200px;
+        white-space: nowrap;
       }
       #watcher > div.move {
         text-decoration: underline;
