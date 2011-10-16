@@ -1994,12 +1994,12 @@
           return;
         }
         replies = $$('.reply', body);
-        id = Number(((_ref2 = $('td[id]', updater.br.previousSibling)) != null ? _ref2.id : void 0) || 0);
+        id = Number(((_ref2 = $('td[id]', updater.br.previousElementSibling)) != null ? _ref2.id : void 0) || 0);
         arr = [];
         while ((reply = replies.pop()) && (reply.id > id)) {
           arr.push(reply.parentNode.parentNode.parentNode);
         }
-        scroll = conf['Scrolling'] && updater.scrollBG() && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
+        scroll = conf['Scrolling'] && updater.scrollBG() && arr.length && updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25;
         if (conf['Verbose']) {
           updater.count.textContent = '+' + arr.length;
           if (arr.length === 0) {
@@ -2012,7 +2012,7 @@
           $.before(updater.br, reply);
         }
         if (scroll) {
-          return updater.br.previousSibling.scrollIntoView();
+          return updater.br.previousSibling.scrollIntoView(false);
         }
       }
     },
