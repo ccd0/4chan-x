@@ -378,6 +378,12 @@ if temp is 'res'
 else
   g.PAGENUM = parseInt(temp) or 0
 
+g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
+# GMT -8 is given as +480; would GMT +8 be -480 ?
+g.chanOffset = 5 - new Date().getTimezoneOffset() / 60
+# 4chan = EST = GMT -5
+g.chanOffset-- if $.isDST()
+
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
@@ -2248,12 +2254,6 @@ Main =
 
     $.bind window, 'message', Main.message
     Favicon.init()
-    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
-    tzOffset = (new Date()).getTimezoneOffset() / 60
-    # GMT -8 is given as +480; would GMT +8 be -480 ?
-    g.chanOffset = 5 - tzOffset
-    # 4chan = EST = GMT -5
-    g.chanOffset-- if $.isDST()
 
     lastChecked = $.get 'lastChecked', 0
     now = Date.now()

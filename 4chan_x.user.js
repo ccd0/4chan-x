@@ -518,6 +518,11 @@
   } else {
     g.PAGENUM = parseInt(temp) || 0;
   }
+  g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
+  g.chanOffset = 5 - new Date().getTimezoneOffset() / 60;
+  if ($.isDST()) {
+    g.chanOffset--;
+  }
   $$ = function(selector, root) {
     if (root == null) {
       root = d.body;
@@ -2963,7 +2968,7 @@
   };
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, lastChecked, nodes, now, timestamp, tzOffset, _ref;
+      var cutoff, hiddenThreads, id, lastChecked, nodes, now, timestamp, _ref;
       $.unbind(document, 'DOMContentLoaded', Main.init);
       if (location.hostname === 'sys.4chan.org') {
         QR.sys();
@@ -2978,12 +2983,6 @@
       }
       $.bind(window, 'message', Main.message);
       Favicon.init();
-      g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
-      tzOffset = (new Date()).getTimezoneOffset() / 60;
-      g.chanOffset = 5 - tzOffset;
-      if ($.isDST()) {
-        g.chanOffset--;
-      }
       lastChecked = $.get('lastChecked', 0);
       now = Date.now();
       if (lastChecked < now - 1 * DAY) {
