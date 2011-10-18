@@ -232,19 +232,11 @@
     drag: function(e) {
       var bottom, left, right, style, top;
       left = e.clientX - ui.dx;
-      if (left < 10) {
-        left = '0';
-      } else if (ui.width - left < 10) {
-        left = null;
-      }
-      right = left ? null : 0;
       top = e.clientY - ui.dy;
-      if (top < 10) {
-        top = '0';
-      } else if (ui.height - top < 10) {
-        top = null;
-      }
-      bottom = top ? null : 0;
+      left = left < 10 ? 0 : ui.width - left < 10 ? null : left;
+      top = top < 10 ? 0 : ui.height - top < 10 ? null : top;
+      right = left === null ? 0 : null;
+      bottom = top === null ? 0 : null;
       style = ui.el.style;
       style.top = top;
       style.right = right;
