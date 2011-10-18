@@ -197,7 +197,7 @@ ui =
       style.left  = null
       style.right = clientWidth - clientX + 45
 
-  hoverend: (e) ->
+  hoverend: ->
     ui.el.parentNode.removeChild ui.el
 
 ###
@@ -486,7 +486,7 @@ expandThread =
       $.replace span, a
 
   cb:
-    toggle: (e) ->
+    toggle: ->
       thread = @parentNode
       expandThread.toggle thread
 
@@ -566,11 +566,11 @@ replyHiding =
         replyHiding.hide reply
 
   cb:
-    hide: (e) ->
+    hide: ->
       reply = @parentNode.nextSibling
       replyHiding.hide reply
 
-    show: (e) ->
+    show: ->
       div = @parentNode
       table = div.nextSibling
       replyHiding.show table
@@ -994,7 +994,7 @@ options =
     options.time.call     time
     options.backlink.call back
 
-  clearHidden: (e) ->
+  clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
     # not the number of posts actually hidden on the page.
     $.delete "hiddenReplies/#{g.BOARD}/"
@@ -1008,13 +1008,13 @@ options =
     @value = key
     $.set @name, key
     conf[@name] = key
-  time: (e) ->
+  time: ->
     $.set 'time', @value
     conf['time'] = @value
     Time.foo()
     Time.date = new Date()
     $('#timePreview').textContent = Time.funk Time
-  backlink: (e) ->
+  backlink: ->
     $.set 'backlink', @value
     conf['backlink'] = @value
     $('#backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
@@ -1367,10 +1367,10 @@ threadHiding =
         threadHiding.hideHide thread
 
   cb:
-    hide: (e) ->
+    hide: ->
       thread = @parentNode.parentNode
       threadHiding.hide thread
-    show: (e) ->
+    show: ->
       thread = @parentNode.parentNode
       threadHiding.show thread
 
@@ -1596,9 +1596,9 @@ watcher =
         favicon.src = Favicon.empty
 
   cb:
-    toggle: (e) ->
+    toggle: ->
       watcher.toggle @parentNode
-    x: (e) ->
+    x: ->
       [board, _, id] = @nextElementSibling
         .getAttribute('href').substring(1).split('/')
       watcher.unwatch board, id
@@ -1971,7 +1971,7 @@ unread =
     if unread.replies.length is 1
       Favicon.update()
 
-  scroll: (e) ->
+  scroll: ->
     updater.focus = true
     height = d.body.clientHeight
     for reply, i in unread.replies
@@ -2043,7 +2043,7 @@ imgHover =
       $.bind thumb, 'mouseover', imgHover.mouseover
       $.bind thumb, 'mousemove', ui.hover
       $.bind thumb, 'mouseout',  ui.hoverend
-  mouseover: (e) ->
+  mouseover: ->
     ui.el = $.el 'img'
       id: 'iHover'
       src: @parentNode.href
@@ -2082,7 +2082,7 @@ imgExpand =
       return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
       e.preventDefault()
       imgExpand.toggle @
-    all: (e) ->
+    all: ->
       imgExpand.on = @checked
       if imgExpand.on #expand
         for thumb in $$ 'img[md5]:not([hidden])'
@@ -2090,7 +2090,7 @@ imgExpand =
       else #contract
         for thumb in $$ 'img[md5][hidden]'
           imgExpand.contract thumb
-    typeChange: (e) ->
+    typeChange: ->
       switch @value
         when 'full'
           klass = ''
@@ -2125,13 +2125,13 @@ imgExpand =
     thumb.hidden = true
     $.add a, img
 
-  error: (e) ->
+  error: ->
     thumb = @previousSibling
     imgExpand.contract thumb
     #navigator.online is not x-browser/os yet
     if navigator.appName isnt 'Opera'
       req = $.ajax @src, null, 'head'
-      req.onreadystatechange = (e) -> setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
+      req.onreadystatechange = -> setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
     else unless g.dead
       setTimeout imgExpand.retry, 10000, thumb
   retry: (thumb) ->
@@ -2157,7 +2157,7 @@ imgExpand =
     delform = $ 'form[name=delform]'
     $.prepend delform, controls
 
-  resize: (e) ->
+  resize: ->
     imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
 
 firstRun =

@@ -275,7 +275,7 @@
         return style.right = clientWidth - clientX + 45;
       }
     },
-    hoverend: function(e) {
+    hoverend: function() {
       return ui.el.parentNode.removeChild(ui.el);
     }
   };
@@ -689,7 +689,7 @@
       return _results;
     },
     cb: {
-      toggle: function(e) {
+      toggle: function() {
         var thread;
         thread = this.parentNode;
         return expandThread.toggle(thread);
@@ -799,12 +799,12 @@
       });
     },
     cb: {
-      hide: function(e) {
+      hide: function() {
         var reply;
         reply = this.parentNode.nextSibling;
         return replyHiding.hide(reply);
       },
-      show: function(e) {
+      show: function() {
         var div, table;
         div = this.parentNode;
         table = div.nextSibling;
@@ -1360,7 +1360,7 @@
       options.time.call(time);
       return options.backlink.call(back);
     },
-    clearHidden: function(e) {
+    clearHidden: function() {
       $["delete"]("hiddenReplies/" + g.BOARD + "/");
       $["delete"]("hiddenThreads/" + g.BOARD + "/");
       this.textContent = "hidden: 0";
@@ -1376,14 +1376,14 @@
       $.set(this.name, key);
       return conf[this.name] = key;
     },
-    time: function(e) {
+    time: function() {
       $.set('time', this.value);
       conf['time'] = this.value;
       Time.foo();
       Time.date = new Date();
       return $('#timePreview').textContent = Time.funk(Time);
     },
-    backlink: function(e) {
+    backlink: function() {
       $.set('backlink', this.value);
       conf['backlink'] = this.value;
       return $('#backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
@@ -1827,12 +1827,12 @@
       return _results;
     },
     cb: {
-      hide: function(e) {
+      hide: function() {
         var thread;
         thread = this.parentNode.parentNode;
         return threadHiding.hide(thread);
       },
-      show: function(e) {
+      show: function() {
         var thread;
         thread = this.parentNode.parentNode;
         return threadHiding.show(thread);
@@ -2099,10 +2099,10 @@
       return _results;
     },
     cb: {
-      toggle: function(e) {
+      toggle: function() {
         return watcher.toggle(this.parentNode);
       },
-      x: function(e) {
+      x: function() {
         var board, id, _, _ref;
         _ref = this.nextElementSibling.getAttribute('href').substring(1).split('/'), board = _ref[0], _ = _ref[1], id = _ref[2];
         return watcher.unwatch(board, id);
@@ -2664,7 +2664,7 @@
         return Favicon.update();
       }
     },
-    scroll: function(e) {
+    scroll: function() {
       var bottom, height, i, reply, _len, _ref;
       updater.focus = true;
       height = d.body.clientHeight;
@@ -2769,7 +2769,7 @@
         return $.bind(thumb, 'mouseout', ui.hoverend);
       });
     },
-    mouseover: function(e) {
+    mouseover: function() {
       ui.el = $.el('img', {
         id: 'iHover',
         src: this.parentNode.href
@@ -2832,7 +2832,7 @@
         e.preventDefault();
         return imgExpand.toggle(this);
       },
-      all: function(e) {
+      all: function() {
         var thumb, _i, _j, _len, _len2, _ref, _ref2, _results, _results2;
         imgExpand.on = this.checked;
         if (imgExpand.on) {
@@ -2853,7 +2853,7 @@
           return _results2;
         }
       },
-      typeChange: function(e) {
+      typeChange: function() {
         var klass;
         switch (this.value) {
           case 'full':
@@ -2899,13 +2899,13 @@
       thumb.hidden = true;
       return $.add(a, img);
     },
-    error: function(e) {
+    error: function() {
       var req, thumb;
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
       if (navigator.appName !== 'Opera') {
         req = $.ajax(this.src, null, 'head');
-        return req.onreadystatechange = function(e) {
+        return req.onreadystatechange = function() {
           if (this.status !== 404) {
             return setTimeout(imgExpand.retry, 10000, thumb);
           }
@@ -2942,7 +2942,7 @@
       delform = $('form[name=delform]');
       return $.prepend(delform, controls);
     },
-    resize: function(e) {
+    resize: function() {
       return imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
     }
   };
