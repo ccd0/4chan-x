@@ -1216,7 +1216,6 @@
   <div id=optionsbar>\
     <div id=credits>\
       <a href=http://aeosynth.github.com/4chan-x/>4chan X</a>\
-      | <a href=http://chat.now.im/x/aeos>Support Throd</a>\
       | <a href=https://github.com/aeosynth/4chan-x/issues>GitHub</a>\
       | <a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>Donate</a>\
     </div>\
