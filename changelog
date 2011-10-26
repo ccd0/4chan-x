@@ -2,7 +2,7 @@ master
 - mayhem
   initiate 4chan X earlier
   automatically reload expanded pictures on error
-  update /sci/ archive redirection
+  update archives redirections for /diy/, /pol/ and /sci/
   regular expressions based filter
   handle bans with the thread updater
   performance improvements
