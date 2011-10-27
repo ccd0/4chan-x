@@ -2810,10 +2810,8 @@
       return imgPreloading.preload(thumb);
     },
     preload: function(thumb) {
-      var el, src;
-      src = thumb.parentNode.href;
-      return el = $.el('img', {
-        src: src
+      return $.el('img', {
+        src: thumb.parentNode.href
       });
     }
   };

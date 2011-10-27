@@ -2065,8 +2065,7 @@ imgPreloading =
     return unless imgPreloading.on and thumb = $ 'img[md5]:last-child', root
     imgPreloading.preload thumb
   preload: (thumb) ->
-    src = thumb.parentNode.href
-    el = $.el 'img', { src }
+    $.el 'img', src: thumb.parentNode.href
 
 imgGif =
   init: ->
