@@ -374,20 +374,6 @@ else
 for key, val of conf
   conf[key] = $.get key, val
 
-pathname = location.pathname.substring(1).split('/')
-[g.BOARD, temp] = pathname
-if temp is 'res'
-  g.REPLY = temp
-  g.THREAD_ID = pathname[2]
-else
-  g.PAGENUM = parseInt(temp) or 0
-
-g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
-# GMT -8 is given as +480; would GMT +8 be -480 ?
-g.chanOffset = 5 - new Date().getTimezoneOffset() / 60
-# 4chan = EST = GMT -5
-g.chanOffset-- if $.isDST()
-
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
@@ -1359,7 +1345,7 @@ threading =
 threadHiding =
   init: ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    for thread in $$ 'div.thread'
+    for thread in $$ '.thread'
       op = thread.firstChild
       a = $.el 'a',
         textContent: '[ - ]'
@@ -1669,16 +1655,21 @@ Time =
   init: ->
     Time.foo()
 
+    # GMT -8 is given as +480; would GMT +8 be -480 ?
+    chanOffset = 5 - new Date().getTimezoneOffset() / 60
+    # 4chan = EST = GMT -5
+    chanOffset-- if $.isDST()
+
     @parse =
       if Date.parse '10/11/11(Tue)18:53'
-        (node) -> new Date Date.parse(node.textContent) + g.chanOffset*HOUR
+        (node) -> new Date Date.parse(node.textContent) + chanOffset*HOUR
       else # Firefox the Archaic cannot parse 4chan's time
         (node) ->
           [_, month, day, year, hour, min] =
             node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
           year = "20#{year}"
           month -= 1 #months start at 0
-          hour = g.chanOffset + Number hour
+          hour = chanOffset + Number hour
           new Date year, month, day, hour, min
 
     g.callbacks.push Time.node
@@ -2245,22 +2236,27 @@ firstRun =
 
 Main =
   init: ->
-    $.unbind document, 'DOMContentLoaded', Main.init
     if location.hostname is 'sys.4chan.org'
       QR.sys()
       return
-    if conf['404 Redirect'] and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
-      redirect()
-      return
-    if not $ '#navtopr'
-      return
 
     $.bind window, 'message', Main.message
-    Favicon.init()
+
+    pathname = location.pathname.substring(1).split('/')
+    [g.BOARD, temp] = pathname
+    if temp is 'res'
+      g.REPLY = temp
+      g.THREAD_ID = pathname[2]
+    else
+      g.PAGENUM = parseInt(temp) or 0
+
+    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
 
     lastChecked = $.get 'lastChecked', 0
     now = Date.now()
-    if lastChecked < now - 1*DAY
+    reqUpdate = lastChecked < now - 1*DAY
+
+    if reqUpdate
       $.set 'lastChecked', now
 
       cutoff = now - 7*DAY
@@ -2277,22 +2273,16 @@ Main =
       $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
       $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-    $.addStyle Main.css
 
     #major features
-    threading.init()
-
     if conf['Filter']
       filter.init()
 
     if conf['Reply Hiding']
       replyHiding.init()
 
-    if conf['Image Expansion']
-      imgExpand.init()
-
-    if conf['Image Auto-Gif']
-      imgGif.init()
+    if conf['Anonymize']
+      anonymize.init()
 
     if conf['Time Formatting']
       Time.init()
@@ -2300,17 +2290,11 @@ Main =
     if conf['Sauce']
       sauce.init()
 
-    if conf['Reveal Spoilers'] and $('.postarea label')
-      revealSpoilers.init()
-
-    if conf['Anonymize']
-      anonymize.init()
+    if conf['Image Auto-Gif']
+      imgGif.init()
 
     if conf['Image Hover']
       imgHover.init()
-
-    if conf['Quick Reply']
-      QR.init()
 
     if conf['Report Button']
       reportButton.init()
@@ -2327,6 +2311,38 @@ Main =
     if conf['Indicate OP quote']
       quoteOP.init()
 
+    if g.REPLY
+      if conf['Image Preloading']
+        imgPreloading.init()
+
+
+    if d.body
+      Main.onLoad()
+    else
+      $.bind d, 'DOMContentLoaded', Main.onLoad
+
+  onLoad: ->
+    $.unbind document, 'DOMContentLoaded', Main.onLoad
+    if conf['404 Redirect'] and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
+      redirect()
+      return
+    if not $ '#navtopr'
+      return
+    $.addStyle Main.css
+    threading.init()
+    Favicon.init()
+
+
+    #major features
+    if conf['Image Expansion']
+      imgExpand.init()
+
+    if conf['Reveal Spoilers'] and $('.postarea label')
+      revealSpoilers.init()
+
+    if conf['Quick Reply']
+      QR.init()
+
     if conf['Thread Watcher']
       watcher.init()
 
@@ -2337,33 +2353,31 @@ Main =
       if conf['Thread Updater']
         updater.init()
 
-      if conf['Image Preloading']
-        imgPreloading.init()
-
-      if conf['Post in Title']
-        titlePost.init()
-
       if conf['Thread Stats']
         threadStats.init()
-
-      if conf['Unread Count']
-        unread.init()
 
       if conf['Reply Navigation']
         nav.init()
 
+      if conf['Post in Title']
+        titlePost.init()
+
+      if conf['Unread Count']
+        unread.init()
+
     else #not reply
       if conf['Thread Hiding']
         threadHiding.init()
-
-      if conf['Index Navigation']
-        nav.init()
 
       if conf['Thread Expansion']
         expandThread.init()
 
       if conf['Comment Expansion']
         expandComment.init()
+
+      if conf['Index Navigation']
+        nav.init()
+
 
     nodes = $$ '.op, a + table'
     g.callbacks.forEach (callback) ->
@@ -2652,7 +2666,4 @@ Main =
       }
     '
 
-if d.body
-  Main.init()
-else
-  $.bind d, 'DOMContentLoaded', Main.init
+Main.init()
