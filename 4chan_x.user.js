@@ -2775,15 +2775,45 @@
   };
   imgPreloading = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var el, src, thumb;
-        if (!(thumb = $('img[md5]', root))) {
-          return;
-        }
-        src = thumb.parentNode.href;
-        return el = $.el('img', {
-          src: src
+      var controls, form, label;
+      if (!(controls = $.id('imgControls'))) {
+        controls = $.el('div', {
+          id: 'imgControls'
         });
+        form = $('body > form');
+        $.prepend(form, controls);
+      }
+      label = $.el('label', {
+        innerHTML: 'Preload Images<input type=checkbox id=imagePreload>'
+      });
+      $.bind($('input', label), 'click', imgPreloading.click);
+      $.add(controls, label);
+      return g.callbacks.push(imgPreloading.node);
+    },
+    click: function() {
+      var thumb, _i, _len, _ref, _results;
+      if (imgPreloading.on = this.checked) {
+        _ref = $$('img[md5]:last-child');
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          thumb = _ref[_i];
+          _results.push(imgPreloading.preload(thumb));
+        }
+        return _results;
+      }
+    },
+    node: function(root) {
+      var thumb;
+      if (!(imgPreloading.on && (thumb = $('img[md5]:last-child', root)))) {
+        return;
+      }
+      return imgPreloading.preload(thumb);
+    },
+    preload: function(thumb) {
+      var el, src;
+      src = thumb.parentNode.href;
+      return el = $.el('img', {
+        src: src
       });
     }
   };
@@ -2916,7 +2946,7 @@
       }
     },
     dialog: function() {
-      var controls, delform, imageType, option, select, _i, _len, _ref;
+      var controls, form, imageType, option, select, _i, _len, _ref;
       controls = $.el('div', {
         id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
@@ -2935,8 +2965,8 @@
       $.bind(select, 'change', $.cb.value);
       $.bind(select, 'change', imgExpand.cb.typeChange);
       $.bind($('input', controls), 'click', imgExpand.cb.all);
-      delform = $('form[name=delform]');
-      return $.prepend(delform, controls);
+      form = $('body > form');
+      return $.prepend(form, controls);
     },
     resize: function(e) {
       return imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
