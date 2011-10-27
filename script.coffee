@@ -2254,9 +2254,9 @@ Main =
 
     lastChecked = $.get 'lastChecked', 0
     now = Date.now()
-    reqUpdate = lastChecked < now - 1*DAY
+    Main.reqUpdate = lastChecked < now - 1*DAY
 
-    if reqUpdate
+    if Main.reqUpdate
       $.set 'lastChecked', now
 
       cutoff = now - 7*DAY

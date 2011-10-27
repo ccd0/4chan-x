@@ -2953,7 +2953,7 @@
   };
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, lastChecked, now, pathname, reqUpdate, temp, timestamp, _ref;
+      var cutoff, hiddenThreads, id, lastChecked, now, pathname, temp, timestamp, _ref;
       if (location.hostname === 'sys.4chan.org') {
         QR.sys();
         return;
@@ -2970,8 +2970,8 @@
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       lastChecked = $.get('lastChecked', 0);
       now = Date.now();
-      reqUpdate = lastChecked < now - 1 * DAY;
-      if (reqUpdate) {
+      Main.reqUpdate = lastChecked < now - 1 * DAY;
+      if (Main.reqUpdate) {
         $.set('lastChecked', now);
         cutoff = now - 7 * DAY;
         hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
