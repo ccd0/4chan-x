@@ -2044,10 +2044,28 @@ imgHover =
 
 imgPreloading =
   init: ->
-    g.callbacks.push (root) ->
-      return unless thumb = $ 'img[md5]', root
-      src = thumb.parentNode.href
-      el = $.el 'img', { src }
+    unless controls = $.id 'imgControls'
+      controls = $.el 'div',
+        id: 'imgControls'
+      form = $ 'body > form'
+      $.prepend form, controls
+
+    label = $.el 'label',
+      innerHTML: 'Preload Images<input type=checkbox id=imagePreload>'
+    $.bind $('input', label), 'click', imgPreloading.click
+    $.add controls, label
+
+    g.callbacks.push imgPreloading.node
+
+  click: ->
+    if imgPreloading.on = @checked
+      for thumb in $$ 'img[md5]:last-child'
+        imgPreloading.preload thumb
+  node: (root) ->
+    return unless imgPreloading.on and thumb = $ 'img[md5]:last-child', root
+    imgPreloading.preload thumb
+  preload: (thumb) ->
+    $.el 'img', src: thumb.parentNode.href
 
 imgGif =
   init: ->
@@ -2147,8 +2165,8 @@ imgExpand =
     $.bind select, 'change', imgExpand.cb.typeChange
     $.bind $('input', controls), 'click', imgExpand.cb.all
 
-    delform = $ 'form[name=delform]'
-    $.prepend delform, controls
+    form = $ 'body > form'
+    $.prepend form, controls
 
   resize: (e) ->
     imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"

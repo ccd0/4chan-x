@@ -1,11 +1,12 @@
 master
 - mayhem
   initiate 4chan X earlier
+  performance improvements
+  regular expressions based filter
+  do not preload images automatically
   automatically reload expanded pictures on error
   update archives redirections for /diy/, /pol/ and /sci/
-  regular expressions based filter
   handle bans with the thread updater
-  performance improvements
 - aeosynth
   quick reply redesign
 
