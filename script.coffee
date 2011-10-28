@@ -1288,6 +1288,7 @@ QR =
       if $('img.favicon', op).src is Favicon.empty
         watcher.watch op, id
   sys: ->
+    $.unbind d, 'DOMContentLoaded', QR.sys
     if recaptcha = $ '#recaptcha_response_field' #post reporting
       $.bind recaptcha, 'keydown', QR.keydown
       return
@@ -2237,7 +2238,10 @@ firstRun =
 Main =
   init: ->
     if location.hostname is 'sys.4chan.org'
-      QR.sys()
+      if d.body
+        QR.sys()
+      else
+        $.bind d, 'DOMContentLoaded', QR.sys
       return
 
     $.bind window, 'message', Main.message
@@ -2322,7 +2326,7 @@ Main =
       $.bind d, 'DOMContentLoaded', Main.onLoad
 
   onLoad: ->
-    $.unbind document, 'DOMContentLoaded', Main.onLoad
+    $.unbind d, 'DOMContentLoaded', Main.onLoad
     if conf['404 Redirect'] and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
       redirect()
       return

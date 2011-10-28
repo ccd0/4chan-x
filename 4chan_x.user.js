@@ -1718,6 +1718,7 @@
     },
     sys: function() {
       var recaptcha;
+      $.unbind(d, 'DOMContentLoaded', QR.sys);
       if (recaptcha = $('#recaptcha_response_field')) {
         $.bind(recaptcha, 'keydown', QR.keydown);
         return;
@@ -2955,7 +2956,11 @@
     init: function() {
       var cutoff, hiddenThreads, id, lastChecked, now, pathname, temp, timestamp, _ref;
       if (location.hostname === 'sys.4chan.org') {
-        QR.sys();
+        if (d.body) {
+          QR.sys();
+        } else {
+          $.bind(d, 'DOMContentLoaded', QR.sys);
+        }
         return;
       }
       $.bind(window, 'message', Main.message);
@@ -3040,7 +3045,7 @@
     },
     onLoad: function() {
       var nodes;
-      $.unbind(document, 'DOMContentLoaded', Main.onLoad);
+      $.unbind(d, 'DOMContentLoaded', Main.onLoad);
       if (conf['404 Redirect'] && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
         redirect();
         return;
