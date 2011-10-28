@@ -2822,10 +2822,7 @@
   imgExpand = {
     init: function() {
       g.callbacks.push(imgExpand.node);
-      imgExpand.dialog();
-      $.bind(window, 'resize', imgExpand.resize);
-      imgExpand.style = $.addStyle('');
-      return imgExpand.resize();
+      return imgExpand.dialog();
     },
     node: function(root) {
       var a, thumb;
@@ -2868,7 +2865,7 @@
         }
       },
       typeChange: function() {
-        var klass;
+        var form, klass;
         switch (this.value) {
           case 'full':
             klass = '';
@@ -2882,7 +2879,17 @@
           case 'fit screen':
             klass = 'fitwidth fitheight';
         }
-        return d.body.className = klass;
+        form = $('body > form');
+        form.className = klass;
+        if (form.classList.contains('fitheight')) {
+          $.bind(window, 'resize', imgExpand.resize);
+          if (!imgExpand.style) {
+            imgExpand.style = $.addStyle('');
+          }
+          return imgExpand.resize();
+        } else if (imgExpand.style) {
+          return $.unbind(window, 'resize', imgExpand.resize);
+        }
       }
     },
     toggle: function(a) {
@@ -2957,7 +2964,7 @@
       return $.prepend(form, controls);
     },
     resize: function() {
-      return imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
+      return imgExpand.style.innerHTML = ".fitheight img + img {max-height:" + d.body.clientHeight + "px;}";
     }
   };
   firstRun = {
@@ -3194,10 +3201,10 @@
         float: left;\
         pointer-events: none;\
       }\
-      img[md5], img[md5] + img {\
+      img[md5], img + img {\
         pointer-events: all;\
       }\
-      body.fitwidth img[md5] + img {\
+      .fitwidth img + img {\
         max-width: 100%;\
         width: -moz-calc(100%); /* hack so only firefox sees this */\
       }\

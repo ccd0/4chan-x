@@ -2081,9 +2081,6 @@ imgExpand =
   init: ->
     g.callbacks.push imgExpand.node
     imgExpand.dialog()
-    $.bind window, 'resize', imgExpand.resize
-    imgExpand.style = $.addStyle ''
-    imgExpand.resize()
 
   node: (root) ->
     return unless thumb = $ 'img[md5]', root
@@ -2113,7 +2110,15 @@ imgExpand =
           klass = 'fitheight'
         when 'fit screen'
           klass = 'fitwidth fitheight'
-      d.body.className = klass
+      form = $('body > form')
+      form.className = klass
+      if form.classList.contains 'fitheight'
+        $.bind window, 'resize', imgExpand.resize
+        unless imgExpand.style
+          imgExpand.style = $.addStyle ''
+        imgExpand.resize()
+      else if imgExpand.style
+        $.unbind window, 'resize', imgExpand.resize
 
   toggle: (a) ->
     thumb = a.firstChild
@@ -2171,7 +2176,7 @@ imgExpand =
     $.prepend form, controls
 
   resize: ->
-    imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
+    imgExpand.style.innerHTML = ".fitheight img + img {max-height:#{d.body.clientHeight}px;}"
 
 firstRun =
   init: ->
@@ -2457,10 +2462,10 @@ Main =
         float: left;
         pointer-events: none;
       }
-      img[md5], img[md5] + img {
+      img[md5], img + img {
         pointer-events: all;
       }
-      body.fitwidth img[md5] + img {
+      .fitwidth img + img {
         max-width: 100%;
         width: -moz-calc(100%); /* hack so only firefox sees this */
       }
