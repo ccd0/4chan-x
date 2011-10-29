@@ -168,10 +168,9 @@
   }
   if (!Object.keys) {
     Object.keys = function(o) {
-      var key, _i, _len, _results;
+      var key, _results;
       _results = [];
-      for (_i = 0, _len = o.length; _i < _len; _i++) {
-        key = o[_i];
+      for (key in o) {
         _results.push(key);
       }
       return _results;
