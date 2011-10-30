@@ -1433,6 +1433,8 @@ threadHiding =
 
 updater =
   init: ->
+    #thread closed
+    return unless $ 'form[name=post]'
     if conf['Scrolling']
       if conf['Scroll BG']
         updater.focus = true
