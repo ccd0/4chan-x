@@ -2731,11 +2731,11 @@
         url = "http://archive.installgentoo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case 'lit':
-      case 'tv':
         url = "http://archive.gentoomen.org/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case 'a':
       case 'jp':
+      case 'tv':
         url = "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case '3':
