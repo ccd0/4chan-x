@@ -1762,7 +1762,7 @@ quoteBacklink =
         continue if !conf['OP Backlinks'] and el.className is 'op'
         link = $.el 'a',
           href: "##{id}"
-          className: 'backlink'
+          className: if root.hidden then 'filtered backlink' else 'backlink'
           textContent: quoteBacklink.funk id
         if conf['Quote Preview']
           $.bind link, 'mouseover', quotePreview.mouseover
@@ -2585,6 +2585,9 @@ Main =
       }
       .filetitle, .replytitle, .postername, .commentpostername, .postertrip {
         background: none;
+      }
+      .filtered {
+        text-decoration: line-through;
       }
 
       /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */

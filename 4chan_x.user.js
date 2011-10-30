@@ -2330,7 +2330,7 @@
           }
           link = $.el('a', {
             href: "#" + id,
-            className: 'backlink',
+            className: root.hidden ? 'filtered backlink' : 'backlink',
             textContent: quoteBacklink.funk(id)
           });
           if (conf['Quote Preview']) {
@@ -3323,6 +3323,9 @@
       }\
       .filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
         background: none;\
+      }\
+      .filtered {\
+        text-decoration: line-through;\
       }\
 \
       /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */\
