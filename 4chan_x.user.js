@@ -61,7 +61,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, flatten, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, flatten, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -586,6 +586,23 @@
       }
     }
   };
+  strikethroughQuotes = {
+    init: function() {
+      return g.callbacks.push(function(root) {
+        var el, quote, _i, _len, _ref, _results;
+        if (root.className === 'inline') {
+          return;
+        }
+        _ref = $$('.quotelink', root);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          _results.push((el = $.id(quote.hash.slice(1))) ? el.parentNode.parentNode.parentNode.hidden ? $.addClass(quote, 'filtered') : void 0 : void 0);
+        }
+        return _results;
+      });
+    }
+  };
   expandComment = {
     init: function() {
       var a, _i, _len, _ref, _results;
@@ -791,9 +808,14 @@
       }
     },
     hide: function(reply) {
-      var id;
+      var id, quote, _i, _len, _ref;
       replyHiding.hideHide(reply);
       id = reply.id;
+      _ref = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        $.addClass(quote, 'filtered');
+      }
       g.hiddenReplies[id] = Date.now();
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
@@ -816,9 +838,14 @@
       }
     },
     show: function(table) {
-      var id;
+      var id, quote, _i, _len, _ref;
       table.hidden = false;
       id = $('td[id]', table).id;
+      _ref = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        $.removeClass(quote, 'filtered');
+      }
       delete g.hiddenReplies[id];
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     }
@@ -2330,7 +2357,7 @@
           }
           link = $.el('a', {
             href: "#" + id,
-            className: 'backlink',
+            className: root.hidden ? 'filtered backlink' : 'backlink',
             textContent: quoteBacklink.funk(id)
           });
           if (conf['Quote Preview']) {
@@ -2414,16 +2441,15 @@
       }
     },
     rm: function(q, id) {
-      var hidden, inlined, table, _i, _len, _ref;
+      var inlined, table, _i, _len, _ref;
       table = $.x("following::*[@id='i" + id + "']", q);
-      _ref = $$('input', table);
+      _ref = $$('.backlink.inlined:not(.filtered)', table);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         inlined = _ref[_i];
-        if (hidden = $.id(inlined.name)) {
-          if (!hidden.classList.contains('op')) {
-            $.x('ancestor::table[1]', hidden).hidden = false;
-          }
-        }
+        $.x('ancestor::table[1]', $.id(inlined.hash.slice(1))).hidden = false;
+      }
+      if (!q.classList.contains('filtered')) {
+        $.x('ancestor::table[1]', $.id(id)).hidden = false;
       }
       return $.rm(table);
     },
@@ -3036,6 +3062,9 @@
       if (conf['Reply Hiding']) {
         replyHiding.init();
       }
+      if (conf['Filter'] || conf['Reply Hiding']) {
+        strikethroughQuotes.init();
+      }
       if (conf['Anonymize']) {
         anonymize.init();
       }
@@ -3323,6 +3352,9 @@
       }\
       .filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
         background: none;\
+      }\
+      .filtered {\
+        text-decoration: line-through;\
       }\
 \
       /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */\

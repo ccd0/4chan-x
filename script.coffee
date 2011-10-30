@@ -425,6 +425,15 @@ filter =
     if img = $ 'img[md5]', root
       filter.test 'md5', img.getAttribute('md5')
 
+strikethroughQuotes =
+  init: ->
+    g.callbacks.push (root) ->
+      return if root.className is 'inline'
+      for quote in $$ '.quotelink', root
+        if el = $.id quote.hash[1..]
+          if el.parentNode.parentNode.parentNode.hidden
+            $.addClass quote, 'filtered'
+
 expandComment =
   init: ->
     for a in $$ '.abbr a'
@@ -571,6 +580,9 @@ replyHiding =
     replyHiding.hideHide reply
 
     id = reply.id
+    for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
+      $.addClass quote, 'filtered'
+
     g.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
@@ -594,6 +606,9 @@ replyHiding =
     table.hidden = false
 
     id = $('td[id]', table).id
+    for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
+      $.removeClass quote, 'filtered'
+
     delete g.hiddenReplies[id]
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
@@ -1762,7 +1777,7 @@ quoteBacklink =
         continue if !conf['OP Backlinks'] and el.className is 'op'
         link = $.el 'a',
           href: "##{id}"
-          className: 'backlink'
+          className: if root.hidden then 'filtered backlink' else 'backlink'
           textContent: quoteBacklink.funk id
         if conf['Quote Preview']
           $.bind link, 'mouseover', quotePreview.mouseover
@@ -1816,10 +1831,10 @@ quoteInline =
   rm: (q, id) ->
     #select the corresponding table or loading td
     table = $.x "following::*[@id='i#{id}']", q
-    for inlined in $$ 'input', table
-      if hidden = $.id inlined.name
-        unless hidden.classList.contains 'op'
-          $.x('ancestor::table[1]', hidden).hidden = false
+    for inlined in $$ '.backlink.inlined:not(.filtered)', table
+      $.x('ancestor::table[1]', $.id inlined.hash[1..]).hidden = false
+    unless q.classList.contains 'filtered'
+      $.x('ancestor::table[1]', $.id id).hidden = false
     $.rm table
 
   parse: (req, pathname, id, threadID, inline) ->
@@ -2308,6 +2323,9 @@ Main =
     if conf['Reply Hiding']
       replyHiding.init()
 
+    if conf['Filter'] or conf['Reply Hiding']
+      strikethroughQuotes.init()
+
     if conf['Anonymize']
       anonymize.init()
 
@@ -2585,6 +2603,9 @@ Main =
       }
       .filetitle, .replytitle, .postername, .commentpostername, .postertrip {
         background: none;
+      }
+      .filtered {
+        text-decoration: line-through;
       }
 
       /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */
