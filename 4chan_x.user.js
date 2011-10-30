@@ -2336,11 +2336,10 @@
       format = conf['backlink'].replace(/%id/, "' + id + '");
       quoteBacklink.funk = Function('id', "return'" + format + "'");
       return g.callbacks.push(function(root) {
-        var container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
+        var a, container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
         if (root.classList.contains('inline')) {
           return;
         }
-        id = $('input', root).name;
         quotes = {};
         _ref = $$('.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2350,6 +2349,12 @@
           }
           quotes[qid] = quote;
         }
+        id = $('input', root).name;
+        a = $.el('a', {
+          href: "#" + id,
+          className: root.hidden ? 'filtered backlink' : 'backlink',
+          textContent: quoteBacklink.funk(id)
+        });
         _results = [];
         for (qid in quotes) {
           if (!(el = $.id(qid))) {
@@ -2358,11 +2363,7 @@
           if (!conf['OP Backlinks'] && el.className === 'op') {
             continue;
           }
-          link = $.el('a', {
-            href: "#" + id,
-            className: root.hidden ? 'filtered backlink' : 'backlink',
-            textContent: quoteBacklink.funk(id)
-          });
+          link = a.cloneNode(true);
           if (conf['Quote Preview']) {
             $.bind(link, 'mouseover', quotePreview.mouseover);
             $.bind(link, 'mousemove', ui.hover);

@@ -1765,22 +1765,23 @@ quoteBacklink =
     quoteBacklink.funk = Function 'id', "return'#{format}'"
     g.callbacks.push (root) ->
       return if root.classList.contains 'inline'
-      # op or reply
-      id = $('input', root).name
       quotes = {}
       for quote in $$ '.quotelink', root
         #don't process >>>/b/
         continue unless qid = quote.hash[1..]
         #duplicate quotes get overwritten
         quotes[qid] = quote
+      # op or reply
+      id = $('input', root).name
+      a = $.el 'a',
+        href: "##{id}"
+        className: if root.hidden then 'filtered backlink' else 'backlink'
+        textContent: quoteBacklink.funk id
       for qid of quotes
         continue unless el = $.id qid
         #don't backlink the op
         continue if !conf['OP Backlinks'] and el.className is 'op'
-        link = $.el 'a',
-          href: "##{id}"
-          className: if root.hidden then 'filtered backlink' else 'backlink'
-          textContent: quoteBacklink.funk id
+        link = a.cloneNode true
         if conf['Quote Preview']
           $.bind link, 'mouseover', quotePreview.mouseover
           $.bind link, 'mousemove', ui.hover
