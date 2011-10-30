@@ -2441,16 +2441,15 @@
       }
     },
     rm: function(q, id) {
-      var hidden, inlined, table, _i, _len, _ref;
+      var inlined, table, _i, _len, _ref;
       table = $.x("following::*[@id='i" + id + "']", q);
-      _ref = $$('input', table);
+      _ref = $$('.backlink.inlined:not(.filtered)', table);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         inlined = _ref[_i];
-        if (hidden = $.id(inlined.name)) {
-          if (!hidden.classList.contains('op')) {
-            $.x('ancestor::table[1]', hidden).hidden = false;
-          }
-        }
+        $.x('ancestor::table[1]', $.id(inlined.hash.slice(1))).hidden = false;
+      }
+      if (!q.classList.contains('filtered')) {
+        $.x('ancestor::table[1]', $.id(id)).hidden = false;
       }
       return $.rm(table);
     },

@@ -1831,10 +1831,10 @@ quoteInline =
   rm: (q, id) ->
     #select the corresponding table or loading td
     table = $.x "following::*[@id='i#{id}']", q
-    for inlined in $$ 'input', table
-      if hidden = $.id inlined.name
-        unless hidden.classList.contains 'op'
-          $.x('ancestor::table[1]', hidden).hidden = false
+    for inlined in $$ '.backlink.inlined:not(.filtered)', table
+      $.x('ancestor::table[1]', $.id inlined.hash[1..]).hidden = false
+    unless q.classList.contains 'filtered'
+      $.x('ancestor::table[1]', $.id id).hidden = false
     $.rm table
 
   parse: (req, pathname, id, threadID, inline) ->
