@@ -2728,7 +2728,7 @@
       case 'g':
       case 'pol':
       case 'sci':
-        url = "http://archive.installgentoo.net/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        url = "http://archive.installgentoo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case 'lit':
       case 'tv':
@@ -2736,9 +2736,7 @@
         break;
       case 'a':
       case 'jp':
-      case 'm':
-      case 'tg':
-        url = "http://archive.easymodo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        url = "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case '3':
       case 'adv':
