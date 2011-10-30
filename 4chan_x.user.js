@@ -61,7 +61,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, flatten, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, flatten, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
   config = {
     main: {
@@ -584,6 +584,23 @@
       if (img = $('img[md5]', root)) {
         return filter.test('md5', img.getAttribute('md5'));
       }
+    }
+  };
+  strikethroughQuotes = {
+    init: function() {
+      return g.callbacks.push(function(root) {
+        var el, quote, _i, _len, _ref, _results;
+        if (root.className === 'inline') {
+          return;
+        }
+        _ref = $$('.quotelink', root);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          _results.push((el = $.id(quote.hash.slice(1))) ? el.parentNode.parentNode.parentNode.hidden ? $.addClass(quote, 'filtered') : void 0 : void 0);
+        }
+        return _results;
+      });
     }
   };
   expandComment = {
@@ -3035,6 +3052,9 @@
       }
       if (conf['Reply Hiding']) {
         replyHiding.init();
+      }
+      if (conf['Filter'] || conf['Reply Hiding']) {
+        strikethroughQuotes.init();
       }
       if (conf['Anonymize']) {
         anonymize.init();

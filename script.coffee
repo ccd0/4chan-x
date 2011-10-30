@@ -425,6 +425,15 @@ filter =
     if img = $ 'img[md5]', root
       filter.test 'md5', img.getAttribute('md5')
 
+strikethroughQuotes =
+  init: ->
+    g.callbacks.push (root) ->
+      return if root.className is 'inline'
+      for quote in $$ '.quotelink', root
+        if el = $.id quote.hash[1..]
+          if el.parentNode.parentNode.parentNode.hidden
+            $.addClass quote, 'filtered'
+
 expandComment =
   init: ->
     for a in $$ '.abbr a'
@@ -2307,6 +2316,9 @@ Main =
 
     if conf['Reply Hiding']
       replyHiding.init()
+
+    if conf['Filter'] or conf['Reply Hiding']
+      strikethroughQuotes.init()
 
     if conf['Anonymize']
       anonymize.init()
