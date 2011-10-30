@@ -808,9 +808,14 @@
       }
     },
     hide: function(reply) {
-      var id;
+      var id, quote, _i, _len, _ref;
       replyHiding.hideHide(reply);
       id = reply.id;
+      _ref = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        $.addClass(quote, 'filtered');
+      }
       g.hiddenReplies[id] = Date.now();
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
@@ -833,9 +838,14 @@
       }
     },
     show: function(table) {
-      var id;
+      var id, quote, _i, _len, _ref;
       table.hidden = false;
       id = $('td[id]', table).id;
+      _ref = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        $.removeClass(quote, 'filtered');
+      }
       delete g.hiddenReplies[id];
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     }

@@ -580,6 +580,9 @@ replyHiding =
     replyHiding.hideHide reply
 
     id = reply.id
+    for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
+      $.addClass quote, 'filtered'
+
     g.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
@@ -603,6 +606,9 @@ replyHiding =
     table.hidden = false
 
     id = $('td[id]', table).id
+    for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
+      $.removeClass quote, 'filtered'
+
     delete g.hiddenReplies[id]
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
