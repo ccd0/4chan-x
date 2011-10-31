@@ -2355,6 +2355,14 @@
           className: root.hidden ? 'filtered backlink' : 'backlink',
           textContent: quoteBacklink.funk(id)
         });
+        if (conf['Quote Preview']) {
+          $.bind(a, 'mouseover', quotePreview.mouseover);
+          $.bind(a, 'mousemove', ui.hover);
+          $.bind(a, 'mouseout', quotePreview.mouseout);
+        }
+        if (conf['Quote Inline']) {
+          $.bind(a, 'click', quoteInline.toggle);
+        }
         _results = [];
         for (qid in quotes) {
           if (!(el = $.id(qid))) {
@@ -2364,14 +2372,6 @@
             continue;
           }
           link = a.cloneNode(true);
-          if (conf['Quote Preview']) {
-            $.bind(link, 'mouseover', quotePreview.mouseover);
-            $.bind(link, 'mousemove', ui.hover);
-            $.bind(link, 'mouseout', quotePreview.mouseout);
-          }
-          if (conf['Quote Inline']) {
-            $.bind(link, 'click', quoteInline.toggle);
-          }
           if (!((container = $('.container', el)) && container.parentNode === el)) {
             container = $.el('span', {
               className: 'container'

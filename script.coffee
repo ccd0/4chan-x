@@ -1777,17 +1777,17 @@ quoteBacklink =
         href: "##{id}"
         className: if root.hidden then 'filtered backlink' else 'backlink'
         textContent: quoteBacklink.funk id
+      if conf['Quote Preview']
+        $.bind a, 'mouseover', quotePreview.mouseover
+        $.bind a, 'mousemove', ui.hover
+        $.bind a, 'mouseout',  quotePreview.mouseout
+      if conf['Quote Inline']
+        $.bind a, 'click', quoteInline.toggle
       for qid of quotes
         continue unless el = $.id qid
         #don't backlink the op
         continue if !conf['OP Backlinks'] and el.className is 'op'
         link = a.cloneNode true
-        if conf['Quote Preview']
-          $.bind link, 'mouseover', quotePreview.mouseover
-          $.bind link, 'mousemove', ui.hover
-          $.bind link, 'mouseout',  quotePreview.mouseout
-        if conf['Quote Inline']
-          $.bind link, 'click', quoteInline.toggle
         unless (container = $ '.container', el) and container.parentNode is el
           container = $.el 'span', className: 'container'
           root = $('.reportbutton', el) or $('span[id]', el)
