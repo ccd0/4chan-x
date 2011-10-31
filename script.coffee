@@ -865,84 +865,82 @@ options =
     $.replace home, a
 
   dialog: ->
-    dialog = $.el 'div', id: 'options', innerHTML: '
-<div class="reply dialog">
-  <div id=optionsbar>
-    <div id=credits>
-      <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>
-      | <a target=_blank href=https://github.com/aeosynth/4chan-x/issues>Issues</a>
-      | <a target=_blank href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>Donate</a>
-    </div>
-    <div>
-      <label for=main_tab>Main</label>
-      | <label for=filter_tab>Filter</label>
-      | <label for=flavors_tab>Sauce</label>
-      | <label for=rice_tab>Rice</label>
-      | <label for=keybinds_tab>Keybinds</label>
-    </div>
+    dialog = $.el 'div', id: 'options', className: 'reply dialog', innerHTML: '
+<div id=optionsbar>
+  <div id=credits>
+    <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>
+    | <a target=_blank href=https://github.com/aeosynth/4chan-x/issues>Issues</a>
+    | <a target=_blank href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>Donate</a>
   </div>
-  <hr>
-  <div id=content>
-    <input type=radio name=tab hidden id=main_tab checked>
-    <div id=main></div>
-    <input type=radio name=tab hidden id=flavors_tab>
-    <textarea name=flavors id=flavors></textarea>
-    <input type=radio name=tab hidden id=filter_tab>
-    <div id=filter>
-      Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
-      For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
-      <p>Name:<br><textarea name=name></textarea></p>
-      <p>Tripcode:<br><textarea name=trip></textarea></p>
-      <p>E-mail:<br><textarea name=mail></textarea></p>
-      <p>Subject:<br><textarea name=sub></textarea></p>
-      <p>Comment:<br><textarea name=com></textarea></p>
-      <p>Filename:<br><textarea name=file></textarea></p>
-      <p>Image MD5:<br><textarea name=md5></textarea></p>
-    </div>
-    <input type=radio name=tab hidden id=rice_tab>
-    <div id=rice>
-      <ul>
-        Backlink formatting
-        <li><input type=text name=backlink> : <span id=backlinkPreview></span></li>
-      </ul>
-      <ul>
-        Time formatting
-        <li><input type=text name=time> : <span id=timePreview></span></li>
-        <li>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</li>
-        <li>Day: %a, %A, %d, %e</li>
-        <li>Month: %m, %b, %B</li>
-        <li>Year: %y</li>
-        <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
-        <li>Minutes: %M</li>
-      </ul>
-    </div>
-    <input type=radio name=tab hidden id=keybinds_tab>
-    <div id=keybinds>
-      <table><tbody>
-        <tr><th>Actions</th><th>Keybinds</th></tr>
-        <tr><td>Close Options or QR</td><td><input name=close></td></tr>
-        <tr><td>Quick spoiler</td><td><input name=spoiler></td></tr>
-        <tr><td>Open QR with post number inserted</td><td><input name=openQR></td></tr>
-        <tr><td>Open QR without post number inserted</td><td><input name=openEmptyQR></td></tr>
-        <tr><td>Submit post</td><td><input name=submit></td></tr>
-        <tr><td>Select next reply</td><td><input name=nextReply ></td></tr>
-        <tr><td>Select previous reply</td><td><input name=previousReply></td></tr>
-        <tr><td>See next thread</td><td><input name=nextThread></td></tr>
-        <tr><td>See previous thread</td><td><input name=previousThread></td></tr>
-        <tr><td>Jump to the next page</td><td><input name=nextPage></td></tr>
-        <tr><td>Jump to the previous page</td><td><input name=previousPage></td></tr>
-        <tr><td>Jump to page 0</td><td><input name=zero></td></tr>
-        <tr><td>Open thread in current tab</td><td><input name=openThread></td></tr>
-        <tr><td>Open thread in new tab</td><td><input name=openThreadTab></td></tr>
-        <tr><td>Expand thread</td><td><input name=expandThread></td></tr>
-        <tr><td>Watch thread</td><td><input name=watch></td></tr>
-        <tr><td>Hide thread</td><td><input name=hide></td></tr>
-        <tr><td>Expand selected image</td><td><input name=expandImages></td></tr>
-        <tr><td>Expand all images</td><td><input name=expandAllImages></td></tr>
-        <tr><td>Update now</td><td><input name=update></td></tr>
-        <tr><td>Reset the unread count to 0</td><td><input name=unreadCountTo0></td></tr>
-      </tbody></table>
-    </div>
+  <div>
+    <label for=main_tab>Main</label>
+    | <label for=filter_tab>Filter</label>
+    | <label for=flavors_tab>Sauce</label>
+    | <label for=rice_tab>Rice</label>
+    | <label for=keybinds_tab>Keybinds</label>
+  </div>
+</div>
+<hr>
+<div id=content>
+  <input type=radio name=tab hidden id=main_tab checked>
+  <div id=main></div>
+  <input type=radio name=tab hidden id=flavors_tab>
+  <textarea name=flavors id=flavors></textarea>
+  <input type=radio name=tab hidden id=filter_tab>
+  <div id=filter>
+    Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
+    For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
+    <p>Name:<br><textarea name=name></textarea></p>
+    <p>Tripcode:<br><textarea name=trip></textarea></p>
+    <p>E-mail:<br><textarea name=mail></textarea></p>
+    <p>Subject:<br><textarea name=sub></textarea></p>
+    <p>Comment:<br><textarea name=com></textarea></p>
+    <p>Filename:<br><textarea name=file></textarea></p>
+    <p>Image MD5:<br><textarea name=md5></textarea></p>
+  </div>
+  <input type=radio name=tab hidden id=rice_tab>
+  <div id=rice>
+    <ul>
+      Backlink formatting
+      <li><input type=text name=backlink> : <span id=backlinkPreview></span></li>
+    </ul>
+    <ul>
+      Time formatting
+      <li><input type=text name=time> : <span id=timePreview></span></li>
+      <li>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</li>
+      <li>Day: %a, %A, %d, %e</li>
+      <li>Month: %m, %b, %B</li>
+      <li>Year: %y</li>
+      <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
+      <li>Minutes: %M</li>
+    </ul>
+  </div>
+  <input type=radio name=tab hidden id=keybinds_tab>
+  <div id=keybinds>
+    <table><tbody>
+      <tr><th>Actions</th><th>Keybinds</th></tr>
+      <tr><td>Close Options or QR</td><td><input name=close></td></tr>
+      <tr><td>Quick spoiler</td><td><input name=spoiler></td></tr>
+      <tr><td>Open QR with post number inserted</td><td><input name=openQR></td></tr>
+      <tr><td>Open QR without post number inserted</td><td><input name=openEmptyQR></td></tr>
+      <tr><td>Submit post</td><td><input name=submit></td></tr>
+      <tr><td>Select next reply</td><td><input name=nextReply ></td></tr>
+      <tr><td>Select previous reply</td><td><input name=previousReply></td></tr>
+      <tr><td>See next thread</td><td><input name=nextThread></td></tr>
+      <tr><td>See previous thread</td><td><input name=previousThread></td></tr>
+      <tr><td>Jump to the next page</td><td><input name=nextPage></td></tr>
+      <tr><td>Jump to the previous page</td><td><input name=previousPage></td></tr>
+      <tr><td>Jump to page 0</td><td><input name=zero></td></tr>
+      <tr><td>Open thread in current tab</td><td><input name=openThread></td></tr>
+      <tr><td>Open thread in new tab</td><td><input name=openThreadTab></td></tr>
+      <tr><td>Expand thread</td><td><input name=expandThread></td></tr>
+      <tr><td>Watch thread</td><td><input name=watch></td></tr>
+      <tr><td>Hide thread</td><td><input name=hide></td></tr>
+      <tr><td>Expand selected image</td><td><input name=expandImages></td></tr>
+      <tr><td>Expand all images</td><td><input name=expandAllImages></td></tr>
+      <tr><td>Update now</td><td><input name=update></td></tr>
+      <tr><td>Reset the unread count to 0</td><td><input name=unreadCountTo0></td></tr>
+    </tbody></table>
   </div>
 </div>'
 
@@ -983,15 +981,9 @@ options =
       input.value = conf[input.name]
       $.bind input, 'keydown', options.keybind
 
-    ###
-    Two parent divs are necessary to center on all browsers.
-
-    Only one when Firefox and Opera will support flexboxes correctly.
-    https://bugzilla.mozilla.org/show_bug.cgi?id=579776
-    ###
     overlay = $.el 'div', id: 'overlay'
     $.bind overlay, 'click', -> $.rm overlay
-    $.bind dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
+    $.bind dialog, 'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
     $.add d.body, overlay
 
@@ -2258,14 +2250,12 @@ firstRun =
     dialog = $.el 'div',
       id: 'overlay'
       className: 'firstrun'
-      innerHTML: "
-        <div id=options>
-          <div class='reply dialog'>
-            <p>Click the <strong>4chan X</strong> buttons for options; they are at the top and bottom of the page.</p>
-            <p>Updater options are in the updater dialog in replies at the bottom-right corner of the window.</p>
-            <p>If you don't see the buttons, try disabling your userstyles.</p>
-          </div>
-        </div>"
+      innerHTML: '
+<div id=options class="reply dialog">
+  <p>Click the <strong>4chan X</strong> buttons for options; they are at the top and bottom of the page.</p>
+  <p>Updater options are in the updater dialog in replies at the bottom-right corner of the window.</p>
+  <p>If you don\'t see the buttons, try disabling your userstyles.</p>
+</div>'
     $.add d.body, dialog
 
     $.bind window, 'click', firstRun.close
@@ -2506,21 +2496,25 @@ Main =
       }
 
       #overlay {
-        display: table;
         position: fixed;
         top: 0;
         left: 0;
         height: 100%;
         width: 100%;
+        text-align: center;
         background: rgba(0,0,0,.5);
       }
-      #options {
-        display: table-cell;
+      #overlay::before {
+        content: "";
+        display: inline-block;
+        height: 100%;
         vertical-align: middle;
       }
-      #options .dialog {
-        margin: auto;
+      #options {
+        display: inline-block;
         padding: 5px;
+        text-align: left;
+        vertical-align: middle;
         width: 500px;
       }
       #credits {
