@@ -1835,9 +1835,9 @@ quoteInline =
     #select the corresponding table or loading td
     table = $.x "following::*[@id='i#{id}']", q
     for inlined in $$ '.backlink.inlined:not(.filtered)', table
-      $.x('ancestor::table[1]', $.id inlined.hash[1..]).hidden = false
-    unless q.classList.contains 'filtered'
-      $.x('ancestor::table[1]', $.id id).hidden = false
+      $.x('ancestor::table', $.id inlined.hash[1..]).hidden = false
+    if q.classList.contains('backlink') and not q.classList.contains 'filtered'
+      $.x('ancestor::table', $.id id).hidden = false
     $.rm table
 
   parse: (req, pathname, id, threadID, inline) ->
@@ -2359,10 +2359,6 @@ Main =
     if conf['Indicate OP quote']
       quoteOP.init()
 
-    if g.REPLY
-      if conf['Image Preloading']
-        imgPreloading.init()
-
 
     if d.body
       Main.onLoad()
@@ -2403,6 +2399,9 @@ Main =
 
       if conf['Thread Stats']
         threadStats.init()
+
+      if conf['Image Preloading']
+        imgPreloading.init()
 
       if conf['Reply Navigation']
         nav.init()

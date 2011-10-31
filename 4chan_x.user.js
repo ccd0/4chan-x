@@ -2450,10 +2450,10 @@
       _ref = $$('.backlink.inlined:not(.filtered)', table);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         inlined = _ref[_i];
-        $.x('ancestor::table[1]', $.id(inlined.hash.slice(1))).hidden = false;
+        $.x('ancestor::table', $.id(inlined.hash.slice(1))).hidden = false;
       }
-      if (!q.classList.contains('filtered')) {
-        $.x('ancestor::table[1]', $.id(id)).hidden = false;
+      if (q.classList.contains('backlink') && !q.classList.contains('filtered')) {
+        $.x('ancestor::table', $.id(id)).hidden = false;
       }
       return $.rm(table);
     },
@@ -3097,11 +3097,6 @@
       if (conf['Indicate OP quote']) {
         quoteOP.init();
       }
-      if (g.REPLY) {
-        if (conf['Image Preloading']) {
-          imgPreloading.init();
-        }
-      }
       if (d.body) {
         return Main.onLoad();
       } else {
@@ -3142,6 +3137,9 @@
         }
         if (conf['Thread Stats']) {
           threadStats.init();
+        }
+        if (conf['Image Preloading']) {
+          imgPreloading.init();
         }
         if (conf['Reply Navigation']) {
           nav.init();
