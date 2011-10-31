@@ -1780,7 +1780,7 @@ quoteBacklink =
       for qid of quotes
         continue unless el = $.id qid
         #don't backlink the op
-        continue if !conf['OP Backlinks'] and el.className is 'op'
+        continue if el.className is 'op' and !conf['OP Backlinks']
         link = a.cloneNode true
         if conf['Quote Preview']
           $.bind link, 'mouseover', quotePreview.mouseover

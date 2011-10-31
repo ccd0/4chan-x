@@ -2360,7 +2360,7 @@
           if (!(el = $.id(qid))) {
             continue;
           }
-          if (!conf['OP Backlinks'] && el.className === 'op') {
+          if (el.className === 'op' && !conf['OP Backlinks']) {
             continue;
           }
           link = a.cloneNode(true);
