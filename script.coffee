@@ -2359,10 +2359,6 @@ Main =
     if conf['Indicate OP quote']
       quoteOP.init()
 
-    if g.REPLY
-      if conf['Image Preloading']
-        imgPreloading.init()
-
 
     if d.body
       Main.onLoad()
@@ -2403,6 +2399,9 @@ Main =
 
       if conf['Thread Stats']
         threadStats.init()
+
+      if conf['Image Preloading']
+        imgPreloading.init()
 
       if conf['Reply Navigation']
         nav.init()
