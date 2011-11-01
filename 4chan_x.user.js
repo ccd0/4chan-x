@@ -2730,6 +2730,8 @@
         break;
       case 'a':
       case 'jp':
+      case 'm':
+      case 'tg':
       case 'tv':
         url = "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
