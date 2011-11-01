@@ -134,7 +134,7 @@ ui =
     el.innerHTML = html
     el.id = id
     el.style.cssText = if saved = localStorage["#{NAMESPACE}#{id}.position"] then saved else position
-    el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
+    el.querySelector('div.move')?.addEventListener 'mousedown', ui.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection
@@ -865,7 +865,7 @@ options =
     $.replace home, a
 
   dialog: ->
-    dialog = $.el 'div', id: 'options', className: 'reply dialog', innerHTML: '
+    dialog = ui.dialog 'options', '', '
 <div id=optionsbar>
   <div id=credits>
     <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>

@@ -207,13 +207,15 @@
   };
   ui = {
     dialog: function(id, position, html) {
-      var el, saved;
+      var el, saved, _ref;
       el = d.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
       el.style.cssText = (saved = localStorage["" + NAMESPACE + id + ".position"]) ? saved : position;
-      el.querySelector('div.move').addEventListener('mousedown', ui.dragstart, false);
+      if ((_ref = el.querySelector('div.move')) != null) {
+        _ref.addEventListener('mousedown', ui.dragstart, false);
+      }
       return el;
     },
     dragstart: function(e) {
@@ -1219,10 +1221,7 @@
     },
     dialog: function() {
       var arr, back, checked, description, dialog, hiddenNum, hiddenThreads, input, key, li, obj, overlay, ta, time, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;
-      dialog = $.el('div', {
-        id: 'options',
-        className: 'reply dialog',
-        innerHTML: '\
+      dialog = ui.dialog('options', '', '\
 <div id=optionsbar>\
   <div id=credits>\
     <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>\
@@ -1299,8 +1298,7 @@
       <tr><td>Reset the unread count to 0</td><td><input name=unreadCountTo0></td></tr>\
     </tbody></table>\
   </div>\
-</div>'
-      });
+</div>');
       _ref = config.main;
       for (key in _ref) {
         obj = _ref[key];
