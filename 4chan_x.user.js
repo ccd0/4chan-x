@@ -2719,21 +2719,21 @@
   redirect = function() {
     var url;
     switch (g.BOARD) {
-      case 'diy':
-      case 'g':
-      case 'pol':
-      case 'sci':
-        url = "http://archive.installgentoo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      case 'lit':
-        url = "http://archive.gentoomen.org/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
       case 'a':
       case 'jp':
       case 'm':
       case 'tg':
       case 'tv':
         url = "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        break;
+      case 'lit':
+        url = "http://archive.gentoomen.org/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        break;
+      case 'diy':
+      case 'g':
+      case 'pol':
+      case 'sci':
+        url = "http://archive.installgentoo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case '3':
       case 'adv':
