@@ -1835,7 +1835,7 @@
       }
     },
     toggle: function(thread) {
-      if (thread.classList.contains('stub') || thread.hidden) {
+      if (/\bstub\b/.test(thread.className) || thread.hidden) {
         return threadHiding.show(thread);
       } else {
         return threadHiding.hide(thread);
@@ -2328,7 +2328,7 @@
       quoteBacklink.funk = Function('id', "return'" + format + "'");
       return g.callbacks.push(function(root) {
         var a, container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
-        if (root.classList.contains('inline')) {
+        if (/\binline\b/.test(root.className)) {
           return;
         }
         quotes = {};
@@ -2400,7 +2400,7 @@
       }
       e.preventDefault();
       id = this.hash.slice(1);
-      if (this.classList.contains('inlined')) {
+      if (/\binlined\b/.test(this.className)) {
         quoteInline.rm(this, id);
       } else {
         if ($.x("ancestor::*[@id='" + id + "']", this)) {
@@ -2443,7 +2443,7 @@
         inlined = _ref[_i];
         $.x('ancestor::table', $.id(inlined.hash.slice(1))).hidden = false;
       }
-      if (q.classList.contains('backlink') && !q.classList.contains('filtered')) {
+      if (/\bbacklink\b/.test(q.className) && !/\bfiltered\b/.test(q.className)) {
         $.x('ancestor::table', $.id(id)).hidden = false;
       }
       return $.rm(table);
@@ -2528,7 +2528,7 @@
         if (conf['Quote Highlighting']) {
           $.addClass(el, 'qphl');
         }
-        if (this.classList.contains('backlink')) {
+        if (/\bbacklink\b/.test(this.className)) {
           replyID = $.x('preceding::input', this).name;
           _ref = $$('.quotelink', qp);
           _results = [];
@@ -2901,7 +2901,7 @@
         }
         form = $('body > form');
         form.className = klass;
-        if (form.classList.contains('fitheight')) {
+        if (/\bfitheight\b/.test(form.className)) {
           $.bind(window, 'resize', imgExpand.resize);
           if (!imgExpand.style) {
             imgExpand.style = $.addStyle('');

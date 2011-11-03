@@ -1372,7 +1372,7 @@ threadHiding =
       threadHiding.show thread
 
   toggle: (thread) ->
-    if thread.classList.contains('stub') or thread.hidden
+    if /\bstub\b/.test(thread.className) or thread.hidden
       threadHiding.show thread
     else
       threadHiding.hide thread
@@ -1756,7 +1756,7 @@ quoteBacklink =
     format = conf['backlink'].replace /%id/, "' + id + '"
     quoteBacklink.funk = Function 'id', "return'#{format}'"
     g.callbacks.push (root) ->
-      return if root.classList.contains 'inline'
+      return if /\binline\b/.test root.className
       quotes = {}
       for quote in $$ '.quotelink', root
         #don't process >>>/b/
@@ -1797,7 +1797,7 @@ quoteInline =
     return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
     e.preventDefault()
     id = @hash[1..]
-    if @classList.contains 'inlined'
+    if /\binlined\b/.test @className
       quoteInline.rm @, id
     else
       return if $.x("ancestor::*[@id='#{id}']", @)
@@ -1828,7 +1828,7 @@ quoteInline =
     table = $.x "following::*[@id='i#{id}']", q
     for inlined in $$ '.backlink.inlined:not(.filtered)', table
       $.x('ancestor::table', $.id inlined.hash[1..]).hidden = false
-    if q.classList.contains('backlink') and not q.classList.contains 'filtered'
+    if /\bbacklink\b/.test(q.className) and not /\bfiltered\b/.test q.className
       $.x('ancestor::table', $.id id).hidden = false
     $.rm table
 
@@ -1884,7 +1884,7 @@ quotePreview =
     if el = $.id id
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl' if conf['Quote Highlighting']
-      if @classList.contains 'backlink'
+      if /\bbacklink\b/.test @className
         replyID = $.x('preceding::input', @).name
         for quote in $$ '.quotelink', qp
           if quote.hash[1..] is replyID
@@ -2122,7 +2122,7 @@ imgExpand =
           klass = 'fitwidth fitheight'
       form = $('body > form')
       form.className = klass
-      if form.classList.contains 'fitheight'
+      if /\bfitheight\b/.test form.className
         $.bind window, 'resize', imgExpand.resize
         unless imgExpand.style
           imgExpand.style = $.addStyle ''
