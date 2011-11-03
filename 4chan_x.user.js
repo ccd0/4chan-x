@@ -3083,14 +3083,14 @@
       if (conf['Report Button']) {
         reportButton.init();
       }
-      if (conf['Quote Backlinks']) {
-        quoteBacklink.init();
-      }
       if (conf['Quote Inline']) {
         quoteInline.init();
       }
       if (conf['Quote Preview']) {
         quotePreview.init();
+      }
+      if (conf['Quote Backlinks']) {
+        quoteBacklink.init();
       }
       if (conf['Indicate OP quote']) {
         quoteOP.init();
