@@ -13,6 +13,7 @@
 /* LICENSE
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
+ * http://aeosynth.github.com/4chan-x/
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
