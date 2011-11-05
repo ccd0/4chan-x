@@ -403,10 +403,10 @@
       }
       return el;
     },
-    bind: function(el, eventType, handler) {
+    on: function(el, eventType, handler) {
       return el.addEventListener(eventType, handler, false);
     },
-    unbind: function(el, eventType, handler) {
+    off: function(el, eventType, handler) {
       return el.removeEventListener(eventType, handler, false);
     },
     isDST: function() {
@@ -612,7 +612,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        _results.push($.bind(a, 'click', expandComment.expand));
+        _results.push($.on(a, 'click', expandComment.expand));
       }
       return _results;
     },
@@ -658,12 +658,12 @@
           quote.innerHTML += '&nbsp;(OP)';
         }
         if (conf['Quote Preview']) {
-          $.bind(quote, 'mouseover', quotePreview.mouseover);
-          $.bind(quote, 'mousemove', ui.hover);
-          $.bind(quote, 'mouseout', quotePreview.mouseout);
+          $.on(quote, 'mouseover', quotePreview.mouseover);
+          $.on(quote, 'mousemove', ui.hover);
+          $.on(quote, 'mouseout', quotePreview.mouseout);
         }
         if (conf['Quote Inline']) {
-          $.bind(quote, 'click', quoteInline.toggle);
+          $.on(quote, 'click', quoteInline.toggle);
         }
       }
       return $.replace(a.parentNode.parentNode, bq);
@@ -680,7 +680,7 @@
           textContent: "+ " + span.textContent,
           className: 'omittedposts'
         });
-        $.bind(a, 'click', expandThread.cb.toggle);
+        $.on(a, 'click', expandThread.cb.toggle);
         _results.push($.replace(span, a));
       }
       return _results;
@@ -738,7 +738,7 @@
       var body, br, href, link, next, quote, reply, table, tables, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _results;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
-        $.unbind(a, 'click', expandThread.cb.toggle);
+        $.off(a, 'click', expandThread.cb.toggle);
         return;
       }
       a.textContent = a.textContent.replace('X Loading...', '-');
@@ -786,7 +786,7 @@
         a = $.el('a', {
           textContent: '[ - ]'
         });
-        $.bind(a, 'click', replyHiding.cb.hide);
+        $.on(a, 'click', replyHiding.cb.hide);
         $.replace(dd.firstChild, a);
         reply = dd.nextSibling;
         id = reply.id;
@@ -831,7 +831,7 @@
         a = $.el('a', {
           textContent: "[ + ] " + name + " " + trip
         });
-        $.bind(a, 'click', replyHiding.cb.show);
+        $.on(a, 'click', replyHiding.cb.show);
         div = $.el('div', {
           className: 'stub'
         });
@@ -860,7 +860,7 @@
         node = _ref[_i];
         node.removeAttribute('accesskey');
       }
-      return $.bind(d, 'keydown', keybinds.keydown);
+      return $.on(d, 'keydown', keybinds.keydown);
     },
     keydown: function(e) {
       var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
@@ -1139,8 +1139,8 @@
       next = $.el('a', {
         textContent: '▼'
       });
-      $.bind(prev, 'click', nav.prev);
-      $.bind(next, 'click', nav.next);
+      $.on(prev, 'click', nav.prev);
+      $.on(next, 'click', nav.next);
       $.add(span, prev, $.tn(' '), next);
       return $.add(d.body, span);
     },
@@ -1210,13 +1210,13 @@
       a = $.el('a', {
         textContent: '4chan X'
       });
-      $.bind(a, 'click', options.dialog);
+      $.on(a, 'click', options.dialog);
       $.replace(home, a);
       home = $('#navbotr a');
       a = $.el('a', {
         textContent: '4chan X'
       });
-      $.bind(a, 'click', options.dialog);
+      $.on(a, 'click', options.dialog);
       return $.replace(home, a);
     },
     dialog: function() {
@@ -1312,7 +1312,7 @@
           li = $.el('li', {
             innerHTML: "<label><input type=checkbox name='" + key + "' " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
           });
-          $.bind($('input', li), 'click', $.cb.checked);
+          $.on($('input', li), 'click', $.cb.checked);
           $.add(ul, li);
         }
         $.add($('#main', dialog), ul);
@@ -1322,32 +1322,32 @@
       li = $.el('li', {
         innerHTML: "<button>hidden: " + hiddenNum + "</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `Show Stubs` disabled."
       });
-      $.bind($('button', li), 'click', options.clearHidden);
+      $.on($('button', li), 'click', options.clearHidden);
       $.add($('ul:nth-child(2)', dialog), li);
       _ref2 = $$('textarea', dialog);
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         ta = _ref2[_i];
         ta.textContent = conf[ta.name];
-        $.bind(ta, 'change', $.cb.value);
+        $.on(ta, 'change', $.cb.value);
       }
       (back = $('[name=backlink]', dialog)).value = conf['backlink'];
       (time = $('[name=time]', dialog)).value = conf['time'];
-      $.bind(back, 'keyup', options.backlink);
-      $.bind(time, 'keyup', options.time);
+      $.on(back, 'keyup', options.backlink);
+      $.on(time, 'keyup', options.time);
       _ref3 = $$('#keybinds input', dialog);
       for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
         input = _ref3[_j];
         input.type = 'text';
         input.value = conf[input.name];
-        $.bind(input, 'keydown', options.keybind);
+        $.on(input, 'keydown', options.keybind);
       }
       overlay = $.el('div', {
         id: 'overlay'
       });
-      $.bind(overlay, 'click', function() {
+      $.on(overlay, 'click', function() {
         return $.rm(overlay);
       });
-      $.bind(dialog, 'click', function(e) {
+      $.on(dialog, 'click', function(e) {
         return e.stopPropagation();
       });
       $.add(overlay, dialog);
@@ -1393,7 +1393,7 @@
       g.callbacks.push(function(root) {
         var quote;
         quote = $('.quotejs + a', root);
-        return $.bind(quote, 'click', QR.quote);
+        return $.on(quote, 'click', QR.quote);
       });
       $.add(d.body, $.el('iframe', {
         name: 'iframe',
@@ -1401,7 +1401,7 @@
       }));
       $('#recaptcha_response_field').id = '';
       holder = $('#recaptcha_challenge_field_holder');
-      $.bind(holder, 'DOMNodeInserted', QR.captchaNode);
+      $.on(holder, 'DOMNodeInserted', QR.captchaNode);
       QR.captchaNode({
         target: holder.firstChild
       });
@@ -1425,7 +1425,7 @@
         }
       }
       if (conf['Cooldown']) {
-        return $.bind(window, 'storage', function(e) {
+        return $.on(window, 'storage', function(e) {
           if (e.key === ("" + NAMESPACE + "cooldown/" + g.BOARD)) {
             return QR.cooldown();
           }
@@ -1438,7 +1438,7 @@
       box = $.el('li', {
         innerHTML: "<img><a class=x>X</a>"
       });
-      $.bind($('.x', box), 'click', QR.rmThumb);
+      $.on($('.x', box), 'click', QR.rmThumb);
       $.add(box, file);
       $.add(files, box);
       QR.stats();
@@ -1552,7 +1552,7 @@
         name: 'upfile',
         accept: QR.accept
       });
-      $.bind(input, 'change', QR.change);
+      $.on(input, 'change', QR.change);
       if (old) {
         return $.replace(old, file);
       } else {
@@ -1571,9 +1571,9 @@
         QR.cooldown();
       }
       QR.foo();
-      $.bind($('.close', qr), 'click', QR.close);
-      $.bind($('form', qr), 'submit', QR.submit);
-      $.bind($('#recaptcha_response_field', qr), 'keydown', QR.keydown);
+      $.on($('.close', qr), 'click', QR.close);
+      $.on($('form', qr), 'submit', QR.submit);
+      $.on($('#recaptcha_response_field', qr), 'keydown', QR.keydown);
       QR.captchaImg();
       QR.stats();
       $.add(d.body, qr);
@@ -1735,9 +1735,9 @@
     },
     sys: function() {
       var recaptcha;
-      $.unbind(d, 'DOMContentLoaded', QR.sys);
+      $.off(d, 'DOMContentLoaded', QR.sys);
       if (recaptcha = $('#recaptcha_response_field')) {
-        $.bind(recaptcha, 'keydown', QR.keydown);
+        $.on(recaptcha, 'keydown', QR.keydown);
         return;
       }
       /*
@@ -1816,7 +1816,7 @@
         a = $.el('a', {
           textContent: '[ - ]'
         });
-        $.bind(a, 'click', threadHiding.cb.hide);
+        $.on(a, 'click', threadHiding.cb.hide);
         $.prepend(op, a);
         _results.push(op.id in hiddenThreads ? threadHiding.hideHide(thread) : void 0);
       }
@@ -1864,7 +1864,7 @@
         a = $.el('a', {
           textContent: "[ + ] " + name + trip + " (" + text + ")"
         });
-        $.bind(a, 'click', threadHiding.cb.show);
+        $.on(a, 'click', threadHiding.cb.show);
         div = $.el('div', {
           className: 'block'
         });
@@ -1898,10 +1898,10 @@
         if (conf['Scroll BG']) {
           updater.focus = true;
         } else {
-          $.bind(window, 'focus', (function() {
+          $.on(window, 'focus', (function() {
             return updater.focus = true;
           }));
-          $.bind(window, 'blur', (function() {
+          $.on(window, 'blur', (function() {
             return updater.focus = false;
           }));
         }
@@ -1923,24 +1923,24 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
         if (input.type === 'checkbox') {
-          $.bind(input, 'click', $.cb.checked);
-          $.bind(input, 'click', function() {
+          $.on(input, 'click', $.cb.checked);
+          $.on(input, 'click', function() {
             return conf[this.name] = this.checked;
           });
           if (input.name === 'Verbose') {
-            $.bind(input, 'click', updater.cb.verbose);
+            $.on(input, 'click', updater.cb.verbose);
             updater.cb.verbose.call(input);
           } else if (input.name === 'Auto Update This') {
-            $.bind(input, 'click', updater.cb.autoUpdate);
+            $.on(input, 'click', updater.cb.autoUpdate);
             updater.cb.autoUpdate.call(input);
           }
         } else if (input.name === 'Interval') {
-          $.bind(input, 'change', function() {
+          $.on(input, 'change', function() {
             return conf['Interval'] = this.value = parseInt(this.value) || conf['Interval'];
           });
-          $.bind(input, 'change', $.cb.value);
+          $.on(input, 'change', $.cb.value);
         } else if (input.type === 'button') {
-          $.bind(input, 'click', updater.update);
+          $.on(input, 'click', updater.update);
         }
       }
       return $.add(d.body, dialog);
@@ -2055,11 +2055,11 @@
         favicon = $.el('img', {
           className: 'favicon'
         });
-        $.bind(favicon, 'click', watcher.cb.toggle);
+        $.on(favicon, 'click', watcher.cb.toggle);
         $.before(input, favicon);
       }
       watcher.refresh();
-      return $.bind(window, 'storage', function(e) {
+      return $.on(window, 'storage', function(e) {
         if (e.key === ("" + NAMESPACE + "watched")) {
           return watcher.refresh();
         }
@@ -2081,7 +2081,7 @@
           x = $.el('a', {
             textContent: 'X'
           });
-          $.bind(x, 'click', watcher.cb.x);
+          $.on(x, 'click', watcher.cb.x);
           link = $.el('a', props);
           $.add(div, x, $.tn(' '), link);
           $.add(watcher.dialog, div);
@@ -2356,12 +2356,12 @@
           }
           link = a.cloneNode(true);
           if (conf['Quote Preview']) {
-            $.bind(link, 'mouseover', quotePreview.mouseover);
-            $.bind(link, 'mousemove', ui.hover);
-            $.bind(link, 'mouseout', quotePreview.mouseout);
+            $.on(link, 'mouseover', quotePreview.mouseover);
+            $.on(link, 'mousemove', ui.hover);
+            $.on(link, 'mouseout', quotePreview.mouseout);
           }
           if (conf['Quote Inline']) {
-            $.bind(link, 'click', quoteInline.toggle);
+            $.on(link, 'click', quoteInline.toggle);
           }
           if (!((container = $('.container', el)) && container.parentNode === el)) {
             container = $.el('span', {
@@ -2388,7 +2388,7 @@
             continue;
           }
           quote.removeAttribute('onclick');
-          _results.push($.bind(quote, 'click', quoteInline.toggle));
+          _results.push($.on(quote, 'click', quoteInline.toggle));
         }
         return _results;
       });
@@ -2508,9 +2508,9 @@
           if (!quote.hash) {
             continue;
           }
-          $.bind(quote, 'mouseover', quotePreview.mouseover);
-          $.bind(quote, 'mousemove', ui.hover);
-          _results.push($.bind(quote, 'mouseout', quotePreview.mouseout));
+          $.on(quote, 'mouseover', quotePreview.mouseover);
+          $.on(quote, 'mousemove', ui.hover);
+          _results.push($.on(quote, 'mouseout', quotePreview.mouseout));
         }
         return _results;
       });
@@ -2614,7 +2614,7 @@
           $.after(span, a);
           $.after(span, $.tn(' '));
         }
-        return $.bind(a, 'click', reportButton.report);
+        return $.on(a, 'click', reportButton.report);
       });
     },
     report: function() {
@@ -2655,7 +2655,7 @@
     init: function() {
       unread.replies = [];
       d.title = '(0) ' + d.title;
-      $.bind(window, 'scroll', unread.scroll);
+      $.on(window, 'scroll', unread.scroll);
       return g.callbacks.push(unread.node);
     },
     node: function(root) {
@@ -2770,9 +2770,9 @@
         if (!(thumb = $('img[md5]', root))) {
           return;
         }
-        $.bind(thumb, 'mouseover', imgHover.mouseover);
-        $.bind(thumb, 'mousemove', ui.hover);
-        return $.bind(thumb, 'mouseout', ui.hoverend);
+        $.on(thumb, 'mouseover', imgHover.mouseover);
+        $.on(thumb, 'mousemove', ui.hover);
+        return $.on(thumb, 'mouseout', ui.hoverend);
       });
     },
     mouseover: function() {
@@ -2796,7 +2796,7 @@
       label = $.el('label', {
         innerHTML: 'Preload Images<input type=checkbox id=imagePreload>'
       });
-      $.bind($('input', label), 'click', imgPreloading.click);
+      $.on($('input', label), 'click', imgPreloading.click);
       $.add(controls, label);
       return g.callbacks.push(imgPreloading.node);
     },
@@ -2850,7 +2850,7 @@
         return;
       }
       a = thumb.parentNode;
-      $.bind(a, 'click', imgExpand.cb.toggle);
+      $.on(a, 'click', imgExpand.cb.toggle);
       if (imgExpand.on && root.className !== 'inline') {
         return imgExpand.expand(a.firstChild);
       }
@@ -2902,13 +2902,13 @@
         form = $('body > form');
         form.className = klass;
         if (/\bfitheight\b/.test(form.className)) {
-          $.bind(window, 'resize', imgExpand.resize);
+          $.on(window, 'resize', imgExpand.resize);
           if (!imgExpand.style) {
             imgExpand.style = $.addStyle('');
           }
           return imgExpand.resize();
         } else if (imgExpand.style) {
-          return $.unbind(window, 'resize', imgExpand.resize);
+          return $.off(window, 'resize', imgExpand.resize);
         }
       }
     },
@@ -2936,7 +2936,7 @@
         _ref = filesize.textContent.match(/(\d+)x/), _ = _ref[0], max = _ref[1];
         img.style.maxWidth = "-moz-calc(" + max + "px)";
       }
-      $.bind(img, 'error', imgExpand.error);
+      $.on(img, 'error', imgExpand.error);
       thumb.hidden = true;
       return $.add(a, img);
     },
@@ -2977,9 +2977,9 @@
       }
       select = $('select', controls);
       imgExpand.cb.typeChange.call(select);
-      $.bind(select, 'change', $.cb.value);
-      $.bind(select, 'change', imgExpand.cb.typeChange);
-      $.bind($('input', controls), 'click', imgExpand.cb.all);
+      $.on(select, 'change', $.cb.value);
+      $.on(select, 'change', imgExpand.cb.typeChange);
+      $.on($('input', controls), 'click', imgExpand.cb.all);
       form = $('body > form');
       return $.prepend(form, controls);
     },
@@ -3003,13 +3003,13 @@
 </div>'
       });
       $.add(d.body, dialog);
-      return $.bind(window, 'click', firstRun.close);
+      return $.on(window, 'click', firstRun.close);
     },
     close: function() {
       $.set('firstrun', true);
       $.rm($('style.firstrun', d.head));
       $.rm($('#overlay'));
-      return $.unbind(window, 'click', firstRun.close);
+      return $.off(window, 'click', firstRun.close);
     }
   };
   Main = {
@@ -3019,11 +3019,11 @@
         if (d.body) {
           QR.sys();
         } else {
-          $.bind(d, 'DOMContentLoaded', QR.sys);
+          $.on(d, 'DOMContentLoaded', QR.sys);
         }
         return;
       }
-      $.bind(window, 'message', Main.message);
+      $.on(window, 'message', Main.message);
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -3098,12 +3098,12 @@
       if (d.body) {
         return Main.onLoad();
       } else {
-        return $.bind(d, 'DOMContentLoaded', Main.onLoad);
+        return $.on(d, 'DOMContentLoaded', Main.onLoad);
       }
     },
     onLoad: function() {
       var nodes;
-      $.unbind(d, 'DOMContentLoaded', Main.onLoad);
+      $.off(d, 'DOMContentLoaded', Main.onLoad);
       if (conf['404 Redirect'] && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
         redirect();
         return;
@@ -3170,7 +3170,7 @@
           return alert(err);
         }
       });
-      $.bind($('form[name=delform]'), 'DOMNodeInserted', Main.node);
+      $.on($('form[name=delform]'), 'DOMNodeInserted', Main.node);
       options.init();
       if (!$.get('firstrun')) {
         return firstRun.init();

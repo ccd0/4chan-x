@@ -279,9 +279,9 @@ $.extend $,
     el = d.createElement tag
     $.extend el, properties if properties
     el
-  bind: (el, eventType, handler) ->
+  on: (el, eventType, handler) ->
     el.addEventListener eventType, handler, false
-  unbind: (el, eventType, handler) ->
+  off: (el, eventType, handler) ->
     el.removeEventListener eventType, handler, false
   isDST: ->
     # XXX this should check for DST in NY
@@ -437,7 +437,7 @@ strikethroughQuotes =
 expandComment =
   init: ->
     for a in $$ '.abbr a'
-      $.bind a, 'click', expandComment.expand
+      $.on a, 'click', expandComment.expand
   expand: (e) ->
     e.preventDefault()
     [_, threadID, replyID] = @href.match /(\d+)#(\d+)/
@@ -468,11 +468,11 @@ expandComment =
       if quote.hash[1..] is threadID
         quote.innerHTML += '&nbsp;(OP)'
       if conf['Quote Preview']
-        $.bind quote, 'mouseover', quotePreview.mouseover
-        $.bind quote, 'mousemove', ui.hover
-        $.bind quote, 'mouseout',  quotePreview.mouseout
+        $.on quote, 'mouseover', quotePreview.mouseover
+        $.on quote, 'mousemove', ui.hover
+        $.on quote, 'mouseout',  quotePreview.mouseout
       if conf['Quote Inline']
-        $.bind quote, 'click', quoteInline.toggle
+        $.on quote, 'click', quoteInline.toggle
     $.replace a.parentNode.parentNode, bq
 
 expandThread =
@@ -481,7 +481,7 @@ expandThread =
       a = $.el 'a',
         textContent: "+ #{span.textContent}"
         className: 'omittedposts'
-      $.bind a, 'click', expandThread.cb.toggle
+      $.on a, 'click', expandThread.cb.toggle
       $.replace span, a
 
   cb:
@@ -522,7 +522,7 @@ expandThread =
   parse: (req, pathname, thread, a) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
-      $.unbind a, 'click', expandThread.cb.toggle
+      $.off a, 'click', expandThread.cb.toggle
       return
 
     a.textContent = a.textContent.replace 'X Loading...', '-'
@@ -556,7 +556,7 @@ replyHiding =
       dd.className = 'replyhider'
       a = $.el 'a',
         textContent: '[ - ]'
-      $.bind a, 'click', replyHiding.cb.hide
+      $.on a, 'click', replyHiding.cb.hide
       $.replace dd.firstChild, a
 
       reply = dd.nextSibling
@@ -595,7 +595,7 @@ replyHiding =
       trip = $('.postertrip', reply)?.textContent or ''
       a = $.el 'a',
         textContent: "[ + ] #{name} #{trip}"
-      $.bind a, 'click', replyHiding.cb.show
+      $.on a, 'click', replyHiding.cb.show
 
       div = $.el 'div',
         className: 'stub'
@@ -616,7 +616,7 @@ keybinds =
   init: ->
     for node in $$ '[accesskey]'
       node.removeAttribute 'accesskey'
-    $.bind d, 'keydown',  keybinds.keydown
+    $.on d, 'keydown',  keybinds.keydown
 
   keydown: (e) ->
     updater.focus = true
@@ -791,8 +791,8 @@ nav =
     next = $.el 'a',
       textContent: '▼'
 
-    $.bind prev, 'click', nav.prev
-    $.bind next, 'click', nav.next
+    $.on prev, 'click', nav.prev
+    $.on next, 'click', nav.next
 
     $.add span, prev, $.tn(' '), next
     $.add d.body, span
@@ -856,12 +856,12 @@ options =
     home = $ '#navtopr a'
     a = $.el 'a',
       textContent: '4chan X'
-    $.bind a, 'click', options.dialog
+    $.on a, 'click', options.dialog
     $.replace home, a
     home = $ '#navbotr a'
     a = $.el 'a',
       textContent: '4chan X'
-    $.bind a, 'click', options.dialog
+    $.on a, 'click', options.dialog
     $.replace home, a
 
   dialog: ->
@@ -953,7 +953,7 @@ options =
         description = arr[1]
         li = $.el 'li',
           innerHTML: "<label><input type=checkbox name='#{key}' #{checked}>#{key}</label><span class=description>: #{description}</span>"
-        $.bind $('input', li), 'click', $.cb.checked
+        $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
       $.add $('#main', dialog), ul
 
@@ -961,29 +961,29 @@ options =
     hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
     li = $.el 'li',
       innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `Show Stubs` disabled."
-    $.bind $('button', li), 'click', options.clearHidden
+    $.on $('button', li), 'click', options.clearHidden
     $.add $('ul:nth-child(2)', dialog), li
 
     #filter & sauce
     for ta in $$ 'textarea', dialog
       ta.textContent = conf[ta.name]
-      $.bind ta, 'change', $.cb.value
+      $.on ta, 'change', $.cb.value
 
     #rice
     (back = $ '[name=backlink]', dialog).value = conf['backlink']
     (time = $ '[name=time]',     dialog).value = conf['time']
-    $.bind back, 'keyup', options.backlink
-    $.bind time, 'keyup', options.time
+    $.on back, 'keyup', options.backlink
+    $.on time, 'keyup', options.time
 
     #keybinds
     for input in $$ '#keybinds input', dialog
       input.type  = 'text'
       input.value = conf[input.name]
-      $.bind input, 'keydown', options.keybind
+      $.on input, 'keydown', options.keybind
 
     overlay = $.el 'div', id: 'overlay'
-    $.bind overlay, 'click', -> $.rm overlay
-    $.bind dialog, 'click', (e) -> e.stopPropagation()
+    $.on overlay, 'click', -> $.rm overlay
+    $.on dialog, 'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
     $.add d.body, overlay
 
@@ -1024,14 +1024,14 @@ QR =
     return unless $('form[name=post]') and $('#recaptcha_response_field')
     g.callbacks.push (root) ->
       quote = $ '.quotejs + a', root
-      $.bind quote, 'click', QR.quote
+      $.on quote, 'click', QR.quote
     $.add d.body, $.el 'iframe',
       name: 'iframe'
       hidden: true
     # nuke id so qr's field focuses on recaptcha reload, instead of normal form's
     $('#recaptcha_response_field').id = ''
     holder = $ '#recaptcha_challenge_field_holder'
-    $.bind holder, 'DOMNodeInserted', QR.captchaNode
+    $.on holder, 'DOMNodeInserted', QR.captchaNode
     QR.captchaNode target: holder.firstChild
     QR.accept = $('.rules').textContent.match(/: (.+) /)[1].replace /\w+/g, (type) ->
       switch type
@@ -1049,12 +1049,12 @@ QR =
       if conf['Auto Hide QR']
         $('#autohide', QR.qr).checked = true
     if conf['Cooldown']
-      $.bind window, 'storage', (e) -> QR.cooldown() if e.key is "#{NAMESPACE}cooldown/#{g.BOARD}"
+      $.on window, 'storage', (e) -> QR.cooldown() if e.key is "#{NAMESPACE}cooldown/#{g.BOARD}"
   attach: (file) ->
     files = $ '#files', QR.qr
     box = $.el 'li',
       innerHTML: "<img><a class=x>X</a>"
-    $.bind $('.x', box), 'click', QR.rmThumb
+    $.on $('.x', box), 'click', QR.rmThumb
     $.add box, file
     $.add files, box
     QR.stats()
@@ -1134,7 +1134,7 @@ QR =
       type: 'file'
       name: 'upfile'
       accept: QR.accept
-    $.bind input, 'change', QR.change
+    $.on input, 'change', QR.change
     if old
       $.replace old, file
     else
@@ -1179,9 +1179,9 @@ QR =
     QR.reset()
     QR.cooldown() if conf['Cooldown']
     QR.foo()
-    $.bind $('.close', qr), 'click', QR.close
-    $.bind $('form', qr), 'submit', QR.submit
-    $.bind $('#recaptcha_response_field', qr), 'keydown', QR.keydown
+    $.on $('.close', qr), 'click', QR.close
+    $.on $('form', qr), 'submit', QR.submit
+    $.on $('#recaptcha_response_field', qr), 'keydown', QR.keydown
     QR.captchaImg()
     QR.stats()
     $.add d.body, qr
@@ -1295,9 +1295,9 @@ QR =
       if $('img.favicon', op).src is Favicon.empty
         watcher.watch op, id
   sys: ->
-    $.unbind d, 'DOMContentLoaded', QR.sys
+    $.off d, 'DOMContentLoaded', QR.sys
     if recaptcha = $ '#recaptcha_response_field' #post reporting
-      $.bind recaptcha, 'keydown', QR.keydown
+      $.on recaptcha, 'keydown', QR.keydown
       return
     ###
     http://code.google.com/p/chromium/issues/detail?id=20773
@@ -1357,7 +1357,7 @@ threadHiding =
       op = thread.firstChild
       a = $.el 'a',
         textContent: '[ - ]'
-      $.bind a, 'click', threadHiding.cb.hide
+      $.on a, 'click', threadHiding.cb.hide
       $.prepend op, a
 
       if op.id of hiddenThreads
@@ -1399,7 +1399,7 @@ threadHiding =
 
       a = $.el 'a',
         textContent: "[ + ] #{name}#{trip} (#{text})"
-      $.bind a, 'click', threadHiding.cb.show
+      $.on a, 'click', threadHiding.cb.show
 
       div = $.el 'div',
         className: 'block'
@@ -1431,8 +1431,8 @@ updater =
       if conf['Scroll BG']
         updater.focus = true
       else
-        $.bind window, 'focus', (-> updater.focus = true)
-        $.bind window, 'blur',  (-> updater.focus = false)
+        $.on window, 'focus', (-> updater.focus = true)
+        $.on window, 'blur',  (-> updater.focus = false)
     html = "<div class=move><span id=count></span> <span id=timer>-#{conf['Interval']}</span></div>"
     {checkbox} = config.updater
     for name of checkbox
@@ -1454,19 +1454,19 @@ updater =
 
     for input in $$ 'input', dialog
       if input.type is 'checkbox'
-        $.bind input, 'click', $.cb.checked
-        $.bind input, 'click', -> conf[@name] = @checked
+        $.on input, 'click', $.cb.checked
+        $.on input, 'click', -> conf[@name] = @checked
         if input.name is 'Verbose'
-          $.bind input, 'click', updater.cb.verbose
+          $.on input, 'click', updater.cb.verbose
           updater.cb.verbose.call input
         else if input.name is 'Auto Update This'
-          $.bind input, 'click', updater.cb.autoUpdate
+          $.on input, 'click', updater.cb.autoUpdate
           updater.cb.autoUpdate.call input
       else if input.name is 'Interval'
-        $.bind input, 'change', -> conf['Interval'] = @value = parseInt(@value) or conf['Interval']
-        $.bind input, 'change', $.cb.value
+        $.on input, 'change', -> conf['Interval'] = @value = parseInt(@value) or conf['Interval']
+        $.on input, 'change', $.cb.value
       else if input.type is 'button'
-        $.bind input, 'click', updater.update
+        $.on input, 'click', updater.update
 
     $.add d.body, dialog
 
@@ -1563,13 +1563,13 @@ watcher =
     for input in inputs
       favicon = $.el 'img',
         className: 'favicon'
-      $.bind favicon, 'click', watcher.cb.toggle
+      $.on favicon, 'click', watcher.cb.toggle
       $.before input, favicon
 
     #populate watcher, display watch buttons
     watcher.refresh()
 
-    $.bind window, 'storage', (e) -> watcher.refresh() if e.key is "#{NAMESPACE}watched"
+    $.on window, 'storage', (e) -> watcher.refresh() if e.key is "#{NAMESPACE}watched"
 
   refresh: ->
     watched = $.get 'watched', {}
@@ -1580,7 +1580,7 @@ watcher =
         div = $.el 'div'
         x = $.el 'a',
           textContent: 'X'
-        $.bind x, 'click', watcher.cb.x
+        $.on x, 'click', watcher.cb.x
         link = $.el 'a', props
 
         $.add div, x, $.tn(' '), link
@@ -1775,11 +1775,11 @@ quoteBacklink =
         continue if el.className is 'op' and !conf['OP Backlinks']
         link = a.cloneNode true
         if conf['Quote Preview']
-          $.bind link, 'mouseover', quotePreview.mouseover
-          $.bind link, 'mousemove', ui.hover
-          $.bind link, 'mouseout',  quotePreview.mouseout
+          $.on link, 'mouseover', quotePreview.mouseover
+          $.on link, 'mousemove', ui.hover
+          $.on link, 'mouseout',  quotePreview.mouseout
         if conf['Quote Inline']
-          $.bind link, 'click', quoteInline.toggle
+          $.on link, 'click', quoteInline.toggle
         unless (container = $ '.container', el) and container.parentNode is el
           container = $.el 'span', className: 'container'
           root = $('.reportbutton', el) or $('span[id]', el)
@@ -1792,7 +1792,7 @@ quoteInline =
       for quote in $$ '.quotelink, .backlink', root
         continue unless quote.hash
         quote.removeAttribute 'onclick'
-        $.bind quote, 'click', quoteInline.toggle
+        $.on quote, 'click', quoteInline.toggle
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
     e.preventDefault()
@@ -1871,9 +1871,9 @@ quotePreview =
     g.callbacks.push (root) ->
       for quote in $$ '.quotelink, .backlink', root
         continue unless quote.hash
-        $.bind quote, 'mouseover', quotePreview.mouseover
-        $.bind quote, 'mousemove', ui.hover
-        $.bind quote, 'mouseout',  quotePreview.mouseout
+        $.on quote, 'mouseover', quotePreview.mouseover
+        $.on quote, 'mousemove', ui.hover
+        $.on quote, 'mouseout',  quotePreview.mouseout
   mouseover: (e) ->
     qp = ui.el = $.el 'div',
       id: 'qp'
@@ -1936,7 +1936,7 @@ reportButton =
           innerHTML: '[&nbsp;!&nbsp;]'
         $.after span, a
         $.after span, $.tn(' ')
-      $.bind a, 'click', reportButton.report
+      $.on a, 'click', reportButton.report
   report: ->
     url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
     id  = "#{NAMESPACE}popup"
@@ -1966,7 +1966,7 @@ unread =
   init: ->
     unread.replies = []
     d.title = '(0) ' + d.title
-    $.bind window, 'scroll', unread.scroll
+    $.on window, 'scroll', unread.scroll
     g.callbacks.push unread.node
 
   node: (root) ->
@@ -2045,9 +2045,9 @@ imgHover =
   init: ->
     g.callbacks.push (root) ->
       return unless thumb = $ 'img[md5]', root
-      $.bind thumb, 'mouseover', imgHover.mouseover
-      $.bind thumb, 'mousemove', ui.hover
-      $.bind thumb, 'mouseout',  ui.hoverend
+      $.on thumb, 'mouseover', imgHover.mouseover
+      $.on thumb, 'mousemove', ui.hover
+      $.on thumb, 'mouseout',  ui.hoverend
   mouseover: ->
     ui.el = $.el 'img'
       id: 'iHover'
@@ -2064,7 +2064,7 @@ imgPreloading =
 
     label = $.el 'label',
       innerHTML: 'Preload Images<input type=checkbox id=imagePreload>'
-    $.bind $('input', label), 'click', imgPreloading.click
+    $.on $('input', label), 'click', imgPreloading.click
     $.add controls, label
 
     g.callbacks.push imgPreloading.node
@@ -2095,7 +2095,7 @@ imgExpand =
   node: (root) ->
     return unless thumb = $ 'img[md5]', root
     a = thumb.parentNode
-    $.bind a, 'click', imgExpand.cb.toggle
+    $.on a, 'click', imgExpand.cb.toggle
     if imgExpand.on and root.className isnt 'inline' then imgExpand.expand a.firstChild
   cb:
     toggle: (e) ->
@@ -2123,12 +2123,12 @@ imgExpand =
       form = $('body > form')
       form.className = klass
       if /\bfitheight\b/.test form.className
-        $.bind window, 'resize', imgExpand.resize
+        $.on window, 'resize', imgExpand.resize
         unless imgExpand.style
           imgExpand.style = $.addStyle ''
         imgExpand.resize()
       else if imgExpand.style
-        $.unbind window, 'resize', imgExpand.resize
+        $.off window, 'resize', imgExpand.resize
 
   toggle: (a) ->
     thumb = a.firstChild
@@ -2149,7 +2149,7 @@ imgExpand =
       filesize = $ '.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
       img.style.maxWidth = "-moz-calc(#{max}px)"
-    $.bind img, 'error', imgExpand.error
+    $.on img, 'error', imgExpand.error
     thumb.hidden = true
     $.add a, img
 
@@ -2178,9 +2178,9 @@ imgExpand =
         break
     select = $ 'select', controls
     imgExpand.cb.typeChange.call select
-    $.bind select, 'change', $.cb.value
-    $.bind select, 'change', imgExpand.cb.typeChange
-    $.bind $('input', controls), 'click', imgExpand.cb.all
+    $.on select, 'change', $.cb.value
+    $.on select, 'change', imgExpand.cb.typeChange
+    $.on $('input', controls), 'click', imgExpand.cb.all
 
     form = $ 'body > form'
     $.prepend form, controls
@@ -2258,13 +2258,13 @@ firstRun =
 </div>'
     $.add d.body, dialog
 
-    $.bind window, 'click', firstRun.close
+    $.on window, 'click', firstRun.close
 
   close: ->
     $.set 'firstrun', true
     $.rm $ 'style.firstrun', d.head
     $.rm $ '#overlay'
-    $.unbind window, 'click', firstRun.close
+    $.off window, 'click', firstRun.close
 
 Main =
   init: ->
@@ -2272,10 +2272,10 @@ Main =
       if d.body
         QR.sys()
       else
-        $.bind d, 'DOMContentLoaded', QR.sys
+        $.on d, 'DOMContentLoaded', QR.sys
       return
 
-    $.bind window, 'message', Main.message
+    $.on window, 'message', Main.message
 
     pathname = location.pathname.substring(1).split('/')
     [g.BOARD, temp] = pathname
@@ -2353,10 +2353,10 @@ Main =
     if d.body
       Main.onLoad()
     else
-      $.bind d, 'DOMContentLoaded', Main.onLoad
+      $.on d, 'DOMContentLoaded', Main.onLoad
 
   onLoad: ->
-    $.unbind d, 'DOMContentLoaded', Main.onLoad
+    $.off d, 'DOMContentLoaded', Main.onLoad
     if conf['404 Redirect'] and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
       redirect()
       return
@@ -2422,7 +2422,7 @@ Main =
         nodes.forEach callback
       catch err
         alert err
-    $.bind $('form[name=delform]'), 'DOMNodeInserted', Main.node
+    $.on $('form[name=delform]'), 'DOMNodeInserted', Main.node
     options.init()
 
     unless $.get 'firstrun'
