@@ -7,6 +7,7 @@ master
   automatically reload expanded pictures on error
   update archives redirections for /diy/, /pol/ and /sci/
   handle bans with the thread updater
+  fix DST for two days of the year
 - aeosynth
   quick reply redesign
 
