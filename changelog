@@ -11,6 +11,17 @@ master
 - aeosynth
   quick reply redesign
 
+2.20.3
+- mayhem
+  fix DST for two days of the year
+
+2.20.2
+- mayhem
+  update archive redirection
+- aeosynth
+  hopefully fix qr error / update messages
+  rm support throd link
+
 2.20.1
 - mayhem
   fix regression: qr not preventing errors
