@@ -1,12 +1,12 @@
-# Documentation
-
-https://aeosynth.github.com/4chan-x
-
 # Installing
 
 [stable](https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js) - if you don't know what you're doing, choose this
 
 [master](https://github.com/aeosynth/4chan-x/raw/master/4chan_x.user.js) - main development branch, turns into stable. can change frequently, so don't complain if other projects don't support this branch.
+
+# Documentation
+
+http://aeosynth.github.com/4chan-x
 
 # Building
 
