@@ -284,16 +284,20 @@ $.extend $,
   off: (el, eventType, handler) ->
     el.removeEventListener eventType, handler, false
   isDST: ->
-    # XXX this should check for DST in NY
     ###
-       http://en.wikipedia.org/wiki/Daylight_saving_time_in_the_United_States
-       Since 2007, daylight saving time starts on the second Sunday of March
-       and ends on the first Sunday of November, with all time changes taking
-       place at 2:00 AM (0200) local time.
+      http://en.wikipedia.org/wiki/Daylight_saving_time_in_the_United_States
+      Since 2007, daylight saving time starts on the second Sunday of March
+      and ends on the first Sunday of November, with all time changes taking
+      place at 2:00 AM (0200) local time.
+
+      0200 EST (UTC -5) = 0700 UTC
     ###
 
-    date = new Date()
-    month = date.getMonth()
+    D = new Date()
+    date  = D.getUTCDate()
+    day   = D.getUTCDay()
+    hours = D.getUTCHours()
+    month = D.getUTCMonth()
 
     #this is the easy part
     if month < 2 or 10 < month
@@ -303,7 +307,7 @@ $.extend $,
 
     # (sunday's date) = (today's date) - (number of days past sunday)
     # date is not zero-indexed
-    sunday = date.getDate() - date.getDay()
+    sunday = date - day
 
     if month is 2
       #before second sunday
@@ -311,8 +315,8 @@ $.extend $,
         return false
 
       #during second sunday
-      if sunday < 15 and date.getDay() is 0
-        if date.getHours() < 1
+      if sunday < 15 and day is 0
+        if hours < 7
           return false
         return true
 
@@ -325,8 +329,8 @@ $.extend $,
       return true
 
     # during first sunday
-    if sunday < 8 and date.getDay() is 0
-      if date.getHours() < 1
+    if sunday < 8 and day is 0
+      if hours < 7
         return true
       return false
 

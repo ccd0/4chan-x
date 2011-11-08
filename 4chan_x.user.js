@@ -412,27 +412,32 @@
     },
     isDST: function() {
       /*
-             http://en.wikipedia.org/wiki/Daylight_saving_time_in_the_United_States
-             Since 2007, daylight saving time starts on the second Sunday of March
-             and ends on the first Sunday of November, with all time changes taking
-             place at 2:00 AM (0200) local time.
+            http://en.wikipedia.org/wiki/Daylight_saving_time_in_the_United_States
+            Since 2007, daylight saving time starts on the second Sunday of March
+            and ends on the first Sunday of November, with all time changes taking
+            place at 2:00 AM (0200) local time.
+      
+            0200 EST (UTC -5) = 0700 UTC
           */
-      var date, month, sunday;
-      date = new Date();
-      month = date.getMonth();
+      var D, date, day, hours, month, sunday;
+      D = new Date();
+      date = D.getUTCDate();
+      day = D.getUTCDay();
+      hours = D.getUTCHours();
+      month = D.getUTCMonth();
       if (month < 2 || 10 < month) {
         return false;
       }
       if ((2 < month && month < 10)) {
         return true;
       }
-      sunday = date.getDate() - date.getDay();
+      sunday = date - day;
       if (month === 2) {
         if (sunday < 8) {
           return false;
         }
-        if (sunday < 15 && date.getDay() === 0) {
-          if (date.getHours() < 1) {
+        if (sunday < 15 && day === 0) {
+          if (hours < 7) {
             return false;
           }
           return true;
@@ -442,8 +447,8 @@
       if (sunday < 1) {
         return true;
       }
-      if (sunday < 8 && date.getDay() === 0) {
-        if (date.getHours() < 1) {
+      if (sunday < 8 && day === 0) {
+        if (hours < 7) {
           return true;
         }
         return false;
