@@ -417,7 +417,15 @@
             and ends on the first Sunday of November, with all time changes taking
             place at 2:00 AM (0200) local time.
       
-            0200 EST (UTC -5) = 0700 UTC
+            http://en.wikipedia.org/wiki/Eastern_Time_Zone
+            Its UTC time offset is −5 hrs (UTC−05) during standard time and −4
+            hrs (UTC−04) during daylight saving time.
+      
+            Standard time:
+            0200 EST (UTC-05) = 0700 UTC
+      
+            Dalyight saving time:
+            0200 EST (UTC-04) = 0600 UTC
           */
       var D, date, day, hours, month, sunday;
       D = new Date();
@@ -448,7 +456,7 @@
         return true;
       }
       if (sunday < 8 && day === 0) {
-        if (hours < 7) {
+        if (hours < 6) {
           return true;
         }
         return false;
