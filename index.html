@@ -18,6 +18,7 @@
       color: #222;
       font-family: Georgia, Bitstream Charter, serif;
       margin: auto;
+      overflow-y: scroll;
       position: relative;
       text-align: justify;
       width: 500px;
@@ -70,7 +71,31 @@
     }
     h3 > a {
       display: inline-block;
-      width: 33%;
+      vertical-align: middle;
+      width: 25%;
+    }
+    label {
+      cursor: pointer;
+    }
+    #features, #main {
+      position: absolute;
+      left: 0; right: 0;
+      -webkit-transition: opacity .4s ease-in-out, -webkit-transform .5s ease-in-out;
+         -moz-transition: opacity .4s ease-in-out, -moz-transform .5s ease-in-out;
+           -o-transition: opacity .4s ease-in-out, -o-transform .5s ease-in-out;
+              transition: opacity .4s ease-in-out, transform .5s ease-in-out;
+    }
+    #feature-list:target + h3 > a:nth-child(2),
+    #feature-list:not(:target) + h3 > a:first-child {
+      display: none;
+    }
+    #feature-list:not(:target) ~ #features,
+    #feature-list:target ~ #main {
+      opacity: 0;
+      -webkit-transform: rotateY(90deg);
+         -moz-transform: rotateY(90deg);
+           -o-transform: rotateY(90deg);
+              transform: rotateY(90deg);
     }
     header {
       border-top: 1px solid #DDD;
@@ -105,50 +130,126 @@
     <a href="http://github.com/aeosynth/4chan-x"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/7afbc8b248c68eb468279e8c17986ad46549fb71/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub"></a>
     <h1>4chan x</h1>
     <h2><a href="https://raw.github.com/aeosynth/4chan-x/stable/4chan_x.user.js">install</a></h2>
+    <a id='feature-list' hidden></a>
     <h3>
+      <a href='#'>main</a>
+      <a href='#feature-list'>features</a>
       <a href="https://raw.github.com/aeosynth/4chan-x/master/changelog">changelog</a>
       <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted">donate</a>
       <a><g:plusone></g:plusone></a>
     </h3>
-    <header>Installation</header>
-    <p>The latest stable releases of <strong>Chrome</strong>, <strong>Firefox</strong>, and <strong>Opera</strong> are supported. <strong>Midori</strong> is a bad browser and users should feel bad.</p>
-    <p><strong>Chrome</strong>: Install 4chan X, that's it. It may not work within Tampermonkey.</p>
-    <p><strong>Firefox</strong>:</p>
-    <ul>
-      <li>If you don't have either <a href="https://addons.mozilla.org/firefox/addon/scriptish/">Scriptish</a> or <a href="https://addons.mozilla.org/firefox/addon/greasemonkey/">Greasemonkey</a> installed, install Scriptish (it can auto-update scripts), restart Firefox, and then install 4chan X.</li>
-      <li>To disable compatibility checking: go to <code>about:config</code> &gt; right-click &gt; new &gt; boolean &gt; <code>extensions.checkCompatibility.nightly</code> &gt; false. Or you can get the <a href="https://addons.mozilla.org/en-US/firefox/addon/nightly-tester-tools/">Nightly Tester Tools</a>.</li>
-    </ul>
-    <p><strong>Opera</strong>: Save 4chan X into your userscripts folder. If you haven't already, select a folder with: Ctrl + F12 (Preferences) &gt; Advanced &gt; Content &gt; JavaScript Options &gt; User JavaScript Folder.</p>
-    <header>Bug reports</header>
-    <p>Before making one,</p>
-      <ol>
-        <li>Update your browser / 4chan X to the latest stable.</li>
-        <li>Disable your other extensions / scripts.</li>
-        <li>If your issue persists, report console errors, if any. Open your console with: Ctrl + Shift + J on <strong>Firefox</strong> / <strong>Chrome</strong>, Ctrl + Shift + I on <strong>Opera</strong>.</li>
-      </ol>
-    <p>Clearing your 4chan cookies will erase your settings<em>!</em></p>
-    <p><strong>Firefox</strong>: If you get an error stating <code>localStorage is null</code>, go to <code>about:config</code> and enable <code>dom.storage.enabled</code>. If you get a <code>Security error</code>, make sure cookies are enabled.</p>
-    <p><strong>Chrome</strong>:</p>
-    <ul>
-      <li>4chan X only runs on 4chan; Chrome will say that it runs on all domains due to its <a href="http://www.chromium.org/developers/design-documents/user-scripts">match patterns</a>.</li>
-    </ul>
-    <h4>
-      <a href="https://github.com/aeosynth/4chan-x/issues">GitHub issues tracker</a>
-    </h4>
-    <header>Links &amp; Tips</header>
-    <p>For CSS tweaks, see <a href="http://userstyles.org/styles/48538/4chan-4chan-x-css-defaults">4chan X CSS defaults</a>. For a complete userstyle, check out <a href="http://userstyles.org/styles/46162">AppChan</a>. View all 4chan userstyles by <a href="http://userstyles.org/styles/browse?search_terms=4chan">clicking here</a>.</p>
-    <p>If you want 4chan X features on archives, star this <a href="http://code.google.com/p/fuuka/issues/detail?id=64">issue</a> to show your interest and get notified.</p>
-    <p>For filtering, check out the <a href="http://userscripts.org/scripts/show/103818">4chan filter fix</a>.</p>
-    <p>For linkification / YouTube embedding, check out <a href="http://userscripts.org/scripts/show/107707">YouLink</a>, which works on the entire web, not just 4chan.</p>
-    <p>For exhentai sauce, check out <a href="http://userscripts.org/scripts/show/108810">ExSauce</a>.</p>
-    <p><strong>DownThemAll</strong>: download all images in a thread with this fast filter: <code>/^http://images.4chan.org/</code>.</p>
-    <p><strong>*nix</strong>: download all images in a thread with this shell function (add it to your <code>.bashrc</code>):</p>
-    <pre>
+    <div id='main'>
+      <header>Installation</header>
+      <p>The latest stable releases of <strong>Chrome</strong>, <strong>Firefox</strong>, and <strong>Opera</strong> are supported. <strong>Midori</strong> is a bad browser and users should feel bad.</p>
+      <p><strong>Chrome</strong>: Install 4chan X, that's it. It may not work within Tampermonkey.</p>
+      <p><strong>Firefox</strong>:</p>
+      <ul>
+        <li>If you don't have either <a href="https://addons.mozilla.org/firefox/addon/scriptish/">Scriptish</a> or <a href="https://addons.mozilla.org/firefox/addon/greasemonkey/">Greasemonkey</a> installed, install Scriptish (it can auto-update scripts), restart Firefox, and then install 4chan X.</li>
+        <li>To disable compatibility checking: go to <code>about:config</code> &gt; right-click &gt; new &gt; boolean &gt; <code>extensions.checkCompatibility.nightly</code> &gt; false. Or you can get the <a href="https://addons.mozilla.org/en-US/firefox/addon/nightly-tester-tools/">Nightly Tester Tools</a>.</li>
+      </ul>
+      <p><strong>Opera</strong>: Save 4chan X into your userscripts folder. If you haven't already, select a folder with: Ctrl + F12 (Preferences) &gt; Advanced &gt; Content &gt; JavaScript Options &gt; User JavaScript Folder.</p>
+      <header>Bug reports</header>
+      <p>Before making one,</p>
+        <ol>
+          <li>Update your browser / 4chan X to the latest stable.</li>
+          <li>Disable your other extensions / scripts.</li>
+          <li>If your issue persists, report console errors, if any. Open your console with: Ctrl + Shift + J on <strong>Firefox</strong> / <strong>Chrome</strong>, Ctrl + Shift + I on <strong>Opera</strong>.</li>
+        </ol>
+      <p>Clearing your 4chan cookies will erase your settings<em>!</em></p>
+      <p><strong>Firefox</strong>: If you get an error stating <code>localStorage is null</code>, go to <code>about:config</code> and enable <code>dom.storage.enabled</code>. If you get a <code>Security error</code>, make sure cookies are enabled.</p>
+      <p><strong>Chrome</strong>:</p>
+      <ul>
+        <li>4chan X only runs on 4chan; Chrome will say that it runs on all domains due to its <a href="http://www.chromium.org/developers/design-documents/user-scripts">match patterns</a>.</li>
+      </ul>
+      <h4>
+        <a href="https://github.com/aeosynth/4chan-x/issues">GitHub issues tracker</a>
+      </h4>
+      <header>Links &amp; Tips</header>
+      <p>For CSS tweaks, see <a href="http://userstyles.org/styles/48538/4chan-4chan-x-css-defaults">4chan X CSS defaults</a>. For a complete userstyle, check out <a href="http://userstyles.org/styles/46162">AppChan</a>. View all 4chan userstyles by <a href="http://userstyles.org/styles/browse?search_terms=4chan">clicking here</a>.</p>
+      <p>If you want 4chan X features on archives, star this <a href="http://code.google.com/p/fuuka/issues/detail?id=64">issue</a> to show your interest and get notified.</p>
+      <p>For filtering, check out the <a href="http://userscripts.org/scripts/show/103818">4chan filter fix</a>.</p>
+      <p>For linkification / YouTube embedding, check out <a href="http://userscripts.org/scripts/show/107707">YouLink</a>, which works on the entire web, not just 4chan.</p>
+      <p>For exhentai sauce, check out <a href="http://userscripts.org/scripts/show/108810">ExSauce</a>.</p>
+      <p><strong>DownThemAll</strong>: download all images in a thread with this fast filter: <code>/^http://images.4chan.org/</code>.</p>
+      <p><strong>*nix</strong>: download all images in a thread with this shell function (add it to your <code>.bashrc</code>):</p>
+      <pre>
 dta() {
   wget -O - $1 |
   grep -Eo 'http://images.4chan.org/[^"]+' |
   uniq |
   xargs wget
 }</pre>
+    </div>
+    <div id='features'>
+      <header>Feature List</header>
+      <ul>
+        <li>Enhancing
+          <ul>
+            <li>Archive Redirection for 404'd Threads</li>
+            <li>Customizable Keybinds</li>
+            <li>Time Localization + Custom Formatting</li>
+            <li>Report Button</li>
+            <li>Comment &amp; Thread Expansion</li>
+            <li>Index &amp; Reply Navigation</li>
+          </ul>
+        </li>
+        <li>Filtering
+          <ul>
+            <li>Anonymizer</li>
+            <li>Regular Expressions Based Filter (soon)</li>
+            <li>Thread &amp; Reply Hiding</li>
+            <li>Optional Stubs</li>
+          </ul>
+        </li>
+        <li>Imaging
+          <ul>
+            <li>Auto-Gif</li>
+            <li>Image Expansion</li>
+            <li>Image Fit: Full, Width, Height or Screen</li>
+            <li>Image Reload on Loading Error (soon)</li>
+            <li>Image Hover</li>
+            <li>Image Preloading</li>
+            <li>Customizable Sauce Links</li>
+            <li>Reveal Spoilers</li>
+          </ul>
+        </li>
+        <li>Monitoring
+          <ul>
+            <li>Thread Updater</li>
+            <li>Scrolling onto New Posts</li>
+            <li>Unread Count with Favicon Indicator</li>
+            <li>Post In Title</li>
+            <li>Thread Stats</li>
+            <li>Thread Watcher</li>
+            <li>Auto Watch on Thread Creation &amp; Reply</li>
+          </ul>
+        </li>
+        <li>Posting
+          <ul>
+            <li>Auto Noko (soon obsolete)</li>
+            <li>Quick Reply</li>
+            <li>Prevent Upload Failures</li>
+            <li>Automatic Quote from Text Selection</li>
+            <li>Auto-Hide</li>
+            <li>Auto-Posting</li>
+            <li>Cooldown</li>
+            <li>Captcha Caching</li>
+            <li>Captcha Reload on Backspace</li>
+            <li>Persistend QR</li>
+            <li>Thumbnail Preview (soon)</li>
+            <li>Thread Creation from the QR (soon)</li>
+          </ul>
+        </li>
+        <li>Quoting
+          <ul>
+            <li>Quote Backlinks + Custom Formatting</li>
+            <li>Quote Inline</li>
+            <li>Quote Preview</li>
+            <li>Quote Highlighting</li>
+            <li>Indicate OP Quotes</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
   </body>
 </html>
