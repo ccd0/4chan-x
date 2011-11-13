@@ -14,10 +14,9 @@
       s.src = 'https://apis.google.com/js/plusone.js';
     </script>
     <style>
-    @import url(http://fonts.googleapis.com/css?family=Vollkorn);
     body {
       color: #222;
-      font-family: Georgia, "Bitstream Charter", serif;
+      font-family: Georgia, Bitstream Charter, serif;
       margin: auto;
       position: relative;
       text-align: justify;
@@ -35,12 +34,11 @@
     }
     h1, h2, h3, h4 {
       color: #DDD;
-      font-weight: 700;
       text-transform: capitalize;
       margin: 0;
-      opacity: .8;
       overflow: hidden;
       text-align: center;
+      white-space: nowrap;
     }
     h1 {
       font-size: 110px;
@@ -70,27 +68,17 @@
       color: #E69900;
       text-shadow: 1px 1px 1px #FFF, 2px 2px 1px #FFF, 3px 3px 1px #FA0, 4px 4px 10px #FA0;
     }
-    h3 > * {
-      float: left;
+    h3 > a {
+      display: inline-block;
       width: 33%;
-    }
-    h4 {
-      margin: 1em 0;
-    }
-    h4 > * {
-      float: left;
-      width: 50%;
     }
     header {
       border-top: 1px solid #DDD;
-      font-family: Vollkorn, Georgia, "Bitstream Charter", serif;
       font-size: 20px;
-      line-height: 20px;
-      margin: 10px -10px 0;
-      padding: 5px;
-    }
-    strong {
-      line-height: 0;
+      font-variant: small-caps;
+      font-weight: 700;
+      margin-top: 1em;
+      padding: 5px 5px 0;
     }
     a {
       color: #FA0;
@@ -120,7 +108,7 @@
     <h3>
       <a href="https://raw.github.com/aeosynth/4chan-x/master/changelog">changelog</a>
       <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted">donate</a>
-      <div><g:plusone></g:plusone></div>
+      <a><g:plusone></g:plusone></a>
     </h3>
     <header>Installation</header>
     <p>The latest stable releases of <strong>Chrome</strong>, <strong>Firefox</strong>, and <strong>Opera</strong> are supported. <strong>Midori</strong> is a bad browser and users should feel bad.</p>
