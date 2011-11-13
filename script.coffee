@@ -55,7 +55,6 @@ config =
   flavors: [
     'http://iqdb.org/?url='
     'http://google.com/searchbyimage?image_url='
-    '#http://regex.info/exif.cgi?url='
     '#http://tineye.com/search?url='
     '#http://saucenao.com/search.php?db=999&url='
     '#http://imgur.com/upload?url='
@@ -1651,8 +1650,8 @@ sauce =
     sauce.prefixes = conf['flavors'].match /^[^#].+$/gm
     sauce.names = sauce.prefixes.map (prefix) -> prefix.match(/(\w+)\./)[1]
     g.callbacks.push (root) ->
-      return if root.className is 'inline' or not span = $ '.filesize', root
-      suffix = $('a', span).href
+      return if root.className is 'inline' or not thumb = $ 'img[md5]', root
+      suffix = thumb.src
       for prefix, i in sauce.prefixes
         link = $.el 'a',
           textContent: sauce.names[i]
