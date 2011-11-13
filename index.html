@@ -80,10 +80,10 @@
     #features, #main {
       position: absolute;
       left: 0; right: 0;
-      -webkit-transition: opacity .4s ease-in-out, -webkit-transform .5s ease-in-out;
-         -moz-transition: opacity .4s ease-in-out, -moz-transform .5s ease-in-out;
-           -o-transition: opacity .4s ease-in-out, -o-transform .5s ease-in-out;
-              transition: opacity .4s ease-in-out, transform .5s ease-in-out;
+      -webkit-transition: opacity .4s ease-in-out, visibility .5s ease-in-out, -webkit-transform .5s ease-in-out;
+         -moz-transition: opacity .4s ease-in-out, visibility .5s ease-in-out, -moz-transform .5s ease-in-out;
+           -o-transition: opacity .4s ease-in-out, visibility .5s ease-in-out, -o-transform .5s ease-in-out;
+              transition: opacity .4s ease-in-out, visibility .5s ease-in-out, transform .5s ease-in-out;
     }
     #feature-list:target + h3 > a:nth-child(2),
     #feature-list:not(:target) + h3 > a:first-child {
@@ -92,6 +92,7 @@
     #feature-list:not(:target) ~ #features,
     #feature-list:target ~ #main {
       opacity: 0;
+      visibility: hidden;
       -webkit-transform: rotateY(90deg);
          -moz-transform: rotateY(90deg);
            -o-transform: rotateY(90deg);
