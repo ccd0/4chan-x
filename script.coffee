@@ -1651,6 +1651,7 @@ sauce =
     sauce.names = sauce.prefixes.map (prefix) -> prefix.match(/(\w+)\./)[1]
     g.callbacks.push (root) ->
       return if root.className is 'inline' or not thumb = $ 'img[md5]', root
+      span = $ '.filesize', root
       suffix = thumb.src
       for prefix, i in sauce.prefixes
         link = $.el 'a',

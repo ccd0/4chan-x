@@ -2116,8 +2116,9 @@
         return prefix.match(/(\w+)\./)[1];
       });
       return g.callbacks.push(function(root) {
-        var i, link, prefix, suffix, thumb, _len, _ref, _results;
+        var i, link, prefix, span, suffix, thumb, _len, _ref, _results;
         if (root.className === 'inline' || !(thumb = $('img[md5]', root))) return;
+        span = $('.filesize', root);
         suffix = thumb.src;
         _ref = sauce.prefixes;
         _results = [];
