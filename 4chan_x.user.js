@@ -94,7 +94,7 @@
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail']
       },
       Monitoring: {
-        'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
+        'Thread Updater': [false, 'Update threads. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show unread post count in tab title'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
         'Thread Stats': [true, 'Display reply and image count'],
