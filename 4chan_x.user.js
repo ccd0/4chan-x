@@ -7,7 +7,7 @@
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @run-at         document-start
-// @icon           https://raw.github.com/aeosynth/4chan-x/gh-pages/favicon.png
+// @icon           https://raw.github.com/mayhemydg/4chan-x/gh-pages/favicon.png
 // ==/UserScript==
 
 /* LICENSE
@@ -41,7 +41,7 @@
  * 4chan x is written in CoffeeScript[1], and developed on github[2].
  *
  * [1]: http://jashkenas.github.com/coffee-script/
- * [2]: http://github.com/aeosynth/4chan-x
+ * [2]: http://github.com/mayhemydg/4chan-x
  */
 
 /* CONTRIBUTORS
@@ -202,7 +202,7 @@
     }
   })(null, config);
 
-  NAMESPACE = 'AEOS.4chan_x.';
+  NAMESPACE = '4chan_x.';
 
   SECOND = 1000;
 
@@ -1218,9 +1218,8 @@
       dialog = ui.dialog('options', '', '\
 <div id=optionsbar>\
   <div id=credits>\
-    <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>\
-    | <a target=_blank href=https://github.com/aeosynth/4chan-x/issues>Issues</a>\
-    | <a target=_blank href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=2DBVZBUAM4DHC&lc=US&item_name=Aeosynth&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted>Donate</a>\
+    <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>\
+    | <a target=_blank href=https://github.com/mayhemydg/4chan-x/issues>Issues</a>\
   </div>\
   <div>\
     <label for=main_tab>Main</label>\

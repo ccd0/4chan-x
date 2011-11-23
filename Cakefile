@@ -12,7 +12,7 @@ HEADER  = """
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @run-at         document-start
-// @icon           https://raw.github.com/aeosynth/4chan-x/gh-pages/favicon.png
+// @icon           https://raw.github.com/mayhemydg/4chan-x/gh-pages/favicon.png
 // ==/UserScript==
 
 /* LICENSE
@@ -46,7 +46,7 @@ HEADER  = """
  * 4chan x is written in CoffeeScript[1], and developed on github[2].
  *
  * [1]: http://jashkenas.github.com/coffee-script/
- * [2]: http://github.com/aeosynth/4chan-x
+ * [2]: http://github.com/mayhemydg/4chan-x
  */
 
 /* CONTRIBUTORS
