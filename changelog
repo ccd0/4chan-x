@@ -5,9 +5,7 @@ master
   regular expressions based filter
   remove image preloading
   automatically reload expanded pictures on error
-  update archives redirections for /diy/, /pol/ and /sci/
   handle bans with the thread updater
-  fix DST for two days of the year
 - aeosynth
   quick reply redesign
 
