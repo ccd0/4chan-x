@@ -1469,7 +1469,7 @@ updater =
           $.on input, 'click', updater.cb.autoUpdate
           updater.cb.autoUpdate.call input
       else if input.name is 'Interval'
-        $.on input, 'change', -> conf['Interval'] = @value = parseInt(@value) or conf['Interval']
+        $.on input, 'change', -> conf['Interval'] = @value = parseInt(@value, 10) or conf['Interval']
         $.on input, 'change', $.cb.value
       else if input.type is 'button'
         $.on input, 'click', updater.update

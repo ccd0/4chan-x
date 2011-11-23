@@ -1890,7 +1890,7 @@
           }
         } else if (input.name === 'Interval') {
           $.on(input, 'change', function() {
-            return conf['Interval'] = this.value = parseInt(this.value) || conf['Interval'];
+            return conf['Interval'] = this.value = parseInt(this.value, 10) || conf['Interval'];
           });
           $.on(input, 'change', $.cb.value);
         } else if (input.type === 'button') {
