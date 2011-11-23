@@ -20,7 +20,6 @@ config =
       'Image Auto-Gif':     [false, 'Animate gif thumbnails']
       'Image Expansion':    [true,  'Expand images']
       'Image Hover':        [false, 'Show full image on mouseover']
-      'Image Preloading':   [false, 'Preload Images']
       'Sauce':              [true,  'Add sauce to images']
       'Reveal Spoilers':    [false, 'Replace spoiler thumbnails by the original thumbnail']
     Monitoring:
@@ -2065,31 +2064,6 @@ imgHover =
       src: @parentNode.href
     $.add d.body, ui.el
 
-imgPreloading =
-  init: ->
-    unless controls = $.id 'imgControls'
-      controls = $.el 'div',
-        id: 'imgControls'
-      form = $ 'body > form'
-      $.prepend form, controls
-
-    label = $.el 'label',
-      innerHTML: 'Preload Images<input type=checkbox id=imagePreload>'
-    $.on $('input', label), 'click', imgPreloading.click
-    $.add controls, label
-
-    g.callbacks.push imgPreloading.node
-
-  click: ->
-    if imgPreloading.on = @checked
-      for thumb in $$ 'img[md5]:last-child'
-        imgPreloading.preload thumb
-  node: (root) ->
-    return unless imgPreloading.on and thumb = $ 'img[md5]:last-child', root
-    imgPreloading.preload thumb
-  preload: (thumb) ->
-    $.el 'img', src: thumb.parentNode.href
-
 imgGif =
   init: ->
     g.callbacks.push (root) ->
@@ -2400,9 +2374,6 @@ Main =
 
       if conf['Thread Stats']
         threadStats.init()
-
-      if conf['Image Preloading']
-        imgPreloading.init()
 
       if conf['Reply Navigation']
         nav.init()

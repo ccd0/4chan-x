@@ -3,7 +3,7 @@ master
   initiate 4chan X earlier
   performance improvements
   regular expressions based filter
-  do not preload images automatically
+  remove image preloading
   automatically reload expanded pictures on error
   update archives redirections for /diy/, /pol/ and /sci/
   handle bans with the thread updater
