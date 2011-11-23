@@ -1807,7 +1807,8 @@ quoteInline =
       quoteInline.rm @, id
     else
       return if $.x("ancestor::*[@id='#{id}']", @)
-      quoteInline.add @, id
+      # remove the corresponding table or loading td
+      $.rm = $.x "following::*[@id='i#{id}']", @
     @classList.toggle 'inlined'
 
   add: (q, id) ->
@@ -1816,7 +1817,6 @@ quoteInline =
       inline = quoteInline.table id, el.innerHTML
       if q.className is 'backlink'
         $.after q.parentNode, inline
-        $.x('ancestor::table', el).hidden = true
         return
       $.after root, inline
     else
@@ -1828,15 +1828,6 @@ quoteInline =
       {pathname} = q
       threadID = pathname.split('/').pop()
       $.cache pathname, (-> quoteInline.parse @, pathname, id, threadID, inline)
-
-  rm: (q, id) ->
-    #select the corresponding table or loading td
-    table = $.x "following::*[@id='i#{id}']", q
-    for inlined in $$ '.backlink.inlined:not(.filtered)', table
-      $.x('ancestor::table', $.id inlined.hash[1..]).hidden = false
-    if /\bbacklink\b/.test(q.className) and not /\bfiltered\b/.test q.className
-      $.x('ancestor::table', $.id id).hidden = false
-    $.rm table
 
   parse: (req, pathname, id, threadID, inline) ->
     return unless inline.parentNode

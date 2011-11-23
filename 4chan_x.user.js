@@ -2343,7 +2343,7 @@
         quoteInline.rm(this, id);
       } else {
         if ($.x("ancestor::*[@id='" + id + "']", this)) return;
-        quoteInline.add(this, id);
+        $.rm = $.x("following::*[@id='i" + id + "']", this);
       }
       return this.classList.toggle('inlined');
     },
@@ -2354,7 +2354,6 @@
         inline = quoteInline.table(id, el.innerHTML);
         if (q.className === 'backlink') {
           $.after(q.parentNode, inline);
-          $.x('ancestor::table', el).hidden = true;
           return;
         }
         return $.after(root, inline);
@@ -2371,19 +2370,6 @@
           return quoteInline.parse(this, pathname, id, threadID, inline);
         }));
       }
-    },
-    rm: function(q, id) {
-      var inlined, table, _i, _len, _ref;
-      table = $.x("following::*[@id='i" + id + "']", q);
-      _ref = $$('.backlink.inlined:not(.filtered)', table);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        inlined = _ref[_i];
-        $.x('ancestor::table', $.id(inlined.hash.slice(1))).hidden = false;
-      }
-      if (/\bbacklink\b/.test(q.className) && !/\bfiltered\b/.test(q.className)) {
-        $.x('ancestor::table', $.id(id)).hidden = false;
-      }
-      return $.rm(table);
     },
     parse: function(req, pathname, id, threadID, inline) {
       var body, href, html, link, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
