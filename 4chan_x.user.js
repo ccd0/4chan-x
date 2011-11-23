@@ -62,7 +62,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, flatten, g, getTitle, imgExpand, imgGif, imgHover, imgPreloading, key, keybinds, log, nav, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, QR, SECOND, Time, anonymize, conf, config, d, expandComment, expandThread, filter, firstRun, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
 
   config = {
@@ -89,7 +89,6 @@
         'Image Auto-Gif': [false, 'Animate gif thumbnails'],
         'Image Expansion': [true, 'Expand images'],
         'Image Hover': [false, 'Show full image on mouseover'],
-        'Image Preloading': [false, 'Preload Images'],
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail']
       },
@@ -2713,47 +2712,6 @@
     }
   };
 
-  imgPreloading = {
-    init: function() {
-      var controls, form, label;
-      if (!(controls = $.id('imgControls'))) {
-        controls = $.el('div', {
-          id: 'imgControls'
-        });
-        form = $('body > form');
-        $.prepend(form, controls);
-      }
-      label = $.el('label', {
-        innerHTML: 'Preload Images<input type=checkbox id=imagePreload>'
-      });
-      $.on($('input', label), 'click', imgPreloading.click);
-      $.add(controls, label);
-      return g.callbacks.push(imgPreloading.node);
-    },
-    click: function() {
-      var thumb, _i, _len, _ref, _results;
-      if (imgPreloading.on = this.checked) {
-        _ref = $$('img[md5]:last-child');
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          thumb = _ref[_i];
-          _results.push(imgPreloading.preload(thumb));
-        }
-        return _results;
-      }
-    },
-    node: function(root) {
-      var thumb;
-      if (!(imgPreloading.on && (thumb = $('img[md5]:last-child', root)))) return;
-      return imgPreloading.preload(thumb);
-    },
-    preload: function(thumb) {
-      return $.el('img', {
-        src: thumb.parentNode.href
-      });
-    }
-  };
-
   imgGif = {
     init: function() {
       return g.callbacks.push(function(root) {
@@ -3010,7 +2968,6 @@
       if (g.REPLY) {
         if (conf['Thread Updater']) updater.init();
         if (conf['Thread Stats']) threadStats.init();
-        if (conf['Image Preloading']) imgPreloading.init();
         if (conf['Reply Navigation']) nav.init();
         if (conf['Post in Title']) titlePost.init();
         if (conf['Unread Count']) unread.init();
