@@ -2159,84 +2159,6 @@ imgExpand =
   resize: ->
     imgExpand.style.innerHTML = ".fitheight img + img {max-height:#{d.body.clientHeight}px;}"
 
-firstRun =
-  init: ->
-    style = $.addStyle "
-      #navtopr, #navbotr {
-        position: relative;
-      }
-      #navtopr::before {
-        content: '';
-        height: 50px;
-        width: 100px;
-        background: red;
-        -webkit-transform: rotate(-45deg);
-        -moz-transform: rotate(-45deg);
-        -o-transform: rotate(-45deg);
-        -webkit-transform-origin: 100% 200%;
-        -moz-transform-origin: 100% 200%;
-        -o-transform-origin: 100% 200%;
-        position: absolute;
-        top: 100%;
-        right: 100%;
-        z-index: 999;
-      }
-      #navtopr::after {
-        content: '';
-        border-top: 100px solid red;
-        border-left: 100px solid transparent;
-        position: absolute;
-        top: 100%;
-        right: 100%;
-        z-index: 999;
-      }
-      #navbotr::before {
-        content: '';
-        height: 50px;
-        width: 100px;
-        background: red;
-        -webkit-transform: rotate(45deg);
-        -moz-transform: rotate(45deg);
-        -o-transform: rotate(45deg);
-        -webkit-transform-origin: 100% -100%;
-        -moz-transform-origin: 100% -100%;
-        -o-transform-origin: 100% -100%;
-        position: absolute;
-        bottom: 100%;
-        right: 100%;
-        z-index: 999;
-      }
-      #navbotr::after {
-        content: '';
-        border-bottom: 100px solid red;
-        border-left: 100px solid transparent;
-        position: absolute;
-        bottom: 100%;
-        right: 100%;
-        z-index: 999;
-      }
-    "
-    style.className = 'firstrun'
-
-    dialog = $.el 'div',
-      id: 'overlay'
-      className: 'firstrun'
-      innerHTML: '
-<div id=options class="reply dialog">
-  <p>Click the <strong>4chan X</strong> buttons for options; they are at the top and bottom of the page.</p>
-  <p>Updater options are in the updater dialog in replies at the bottom-right corner of the window.</p>
-  <p>If you don\'t see the buttons, try disabling your userstyles.</p>
-</div>'
-    $.add d.body, dialog
-
-    $.on window, 'click', firstRun.close
-
-  close: ->
-    $.set 'firstrun', true
-    $.rm $ 'style.firstrun', d.head
-    $.rm $ '#overlay'
-    $.off window, 'click', firstRun.close
-
 Main =
   init: ->
     if location.hostname is 'sys.4chan.org'
@@ -2392,9 +2314,6 @@ Main =
         alert err
     $.on $('form[name=delform]'), 'DOMNodeInserted', Main.node
     options.init()
-
-    unless $.get 'firstrun'
-      firstRun.init()
 
   message: (e) ->
     {origin, data} = e
