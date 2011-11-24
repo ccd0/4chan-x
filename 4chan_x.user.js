@@ -2339,10 +2339,10 @@
       e.preventDefault();
       id = this.hash.slice(1);
       if (/\binlined\b/.test(this.className)) {
-        quoteInline.rm(this, id);
+        $.rm = $.x("following::*[@id='i" + id + "']", this);
       } else {
         if ($.x("ancestor::*[@id='" + id + "']", this)) return;
-        $.rm = $.x("following::*[@id='i" + id + "']", this);
+        quoteInline.add(this, id);
       }
       return this.classList.toggle('inlined');
     },

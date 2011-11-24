@@ -1803,11 +1803,11 @@ quoteInline =
     e.preventDefault()
     id = @hash[1..]
     if /\binlined\b/.test @className
-      quoteInline.rm @, id
-    else
-      return if $.x("ancestor::*[@id='#{id}']", @)
       # remove the corresponding table or loading td
       $.rm = $.x "following::*[@id='i#{id}']", @
+    else
+      return if $.x("ancestor::*[@id='#{id}']", @)
+      quoteInline.add @, id
     @classList.toggle 'inlined'
 
   add: (q, id) ->
