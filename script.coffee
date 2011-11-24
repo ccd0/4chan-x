@@ -2307,9 +2307,10 @@ Main =
 
 
     nodes = $$ '.op, a + table'
-    g.callbacks.forEach (callback) ->
+    for callback in g.callbacks
       try
-        nodes.forEach callback
+        for node in nodes
+          callback node
       catch err
         alert err
     $.on $('form[name=delform]'), 'DOMNodeInserted', Main.node
@@ -2323,7 +2324,7 @@ Main =
   node: (e) ->
     {target} = e
     return unless target.nodeName is 'TABLE'
-    g.callbacks.forEach (callback) ->
+    for callback in g.callbacks
       try
         callback target
       catch err

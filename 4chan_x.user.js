@@ -2908,7 +2908,7 @@
       }
     },
     onLoad: function() {
-      var nodes;
+      var callback, node, nodes, _i, _j, _len, _len2, _ref;
       $.off(d, 'DOMContentLoaded', Main.onLoad);
       if (conf['404 Redirect'] && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
         redirect();
@@ -2936,13 +2936,18 @@
         if (conf['Index Navigation']) nav.init();
       }
       nodes = $$('.op, a + table');
-      g.callbacks.forEach(function(callback) {
+      _ref = g.callbacks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
         try {
-          return nodes.forEach(callback);
+          for (_j = 0, _len2 = nodes.length; _j < _len2; _j++) {
+            node = nodes[_j];
+            callback(node);
+          }
         } catch (err) {
-          return alert(err);
+          alert(err);
         }
-      });
+      }
       $.on($('form[name=delform]'), 'DOMNodeInserted', Main.node);
       return options.init();
     },
@@ -2952,16 +2957,20 @@
       if (origin === 'http://sys.4chan.org') return QR.receive(data);
     },
     node: function(e) {
-      var target;
+      var callback, target, _i, _len, _ref, _results;
       target = e.target;
       if (target.nodeName !== 'TABLE') return;
-      return g.callbacks.forEach(function(callback) {
+      _ref = g.callbacks;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
         try {
-          return callback(target);
+          _results.push(callback(target));
         } catch (err) {
 
         }
-      });
+      }
+      return _results;
     },
     css: '\
       /* dialog styling */\
