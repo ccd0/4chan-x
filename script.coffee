@@ -488,6 +488,7 @@ expandThread =
       a = $.el 'a',
         textContent: "+ #{span.textContent}"
         className: 'omittedposts'
+        href: 'javascript:;'
       $.on a, 'click', expandThread.cb.toggle
       $.replace span, a
 
@@ -563,6 +564,7 @@ replyHiding =
       dd.className = 'replyhider'
       a = $.el 'a',
         textContent: '[ - ]'
+        href: 'javascript:;'
       $.on a, 'click', replyHiding.cb.hide
       $.replace dd.firstChild, a
 
@@ -602,6 +604,7 @@ replyHiding =
       trip = $('.postertrip', reply)?.textContent or ''
       a = $.el 'a',
         textContent: "[ + ] #{name} #{trip}"
+        href: 'javascript:;'
       $.on a, 'click', replyHiding.cb.show
 
       div = $.el 'div',
@@ -795,8 +798,10 @@ nav =
       id: 'navlinks'
     prev = $.el 'a',
       textContent: '▲'
+      href: 'javascript:;'
     next = $.el 'a',
       textContent: '▼'
+      href: 'javascript:;'
 
     $.on prev, 'click', nav.prev
     $.on next, 'click', nav.next
@@ -863,11 +868,13 @@ options =
     home = $ '#navtopr a'
     a = $.el 'a',
       textContent: '4chan X'
+      href: 'javascript:;'
     $.on a, 'click', options.dialog
     $.replace home, a
     home = $ '#navbotr a'
     a = $.el 'a',
       textContent: '4chan X'
+      href: 'javascript:;'
     $.on a, 'click', options.dialog
     $.replace home, a
 
@@ -1363,6 +1370,7 @@ threadHiding =
       op = thread.firstChild
       a = $.el 'a',
         textContent: '[ - ]'
+        href: 'javascript:;'
       $.on a, 'click', threadHiding.cb.hide
       $.prepend op, a
 
@@ -1405,6 +1413,7 @@ threadHiding =
 
       a = $.el 'a',
         textContent: "[ + ] #{name}#{trip} (#{text})"
+        href: 'javascript:;'
       $.on a, 'click', threadHiding.cb.show
 
       div = $.el 'div',
@@ -1586,6 +1595,7 @@ watcher =
         div = $.el 'div'
         x = $.el 'a',
           textContent: 'X'
+          href: 'javascript:;'
         $.on x, 'click', watcher.cb.x
         link = $.el 'a', props
 
@@ -1931,6 +1941,7 @@ reportButton =
         a = $.el 'a',
           className: 'reportbutton'
           innerHTML: '[&nbsp;!&nbsp;]'
+          href: 'javascript:;'
         $.after span, a
         $.after span, $.tn(' ')
       $.on a, 'click', reportButton.report
