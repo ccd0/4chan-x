@@ -2339,7 +2339,7 @@
       e.preventDefault();
       id = this.hash.slice(1);
       if (/\binlined\b/.test(this.className)) {
-        $.rm = $.x("following::*[@id='i" + id + "']", this);
+        $.rm($.x("following::*[@id='i" + id + "']", this));
       } else {
         if ($.x("ancestor::*[@id='" + id + "']", this)) return;
         quoteInline.add(this, id);

@@ -1804,7 +1804,7 @@ quoteInline =
     id = @hash[1..]
     if /\binlined\b/.test @className
       # remove the corresponding table or loading td
-      $.rm = $.x "following::*[@id='i#{id}']", @
+      $.rm $.x "following::*[@id='i#{id}']", @
     else
       return if $.x("ancestor::*[@id='#{id}']", @)
       quoteInline.add @, id
