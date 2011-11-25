@@ -51,6 +51,9 @@ HEADER  = """
 
 /* CONTRIBUTORS
  *
+ * Shou- - pentadactyl fixes
+ * ferongr - new favicons
+ * xat- - new favicons
  * Zixaphir - fix qr textarea - captcha-image gap
  * Mayhem - various features / fixes
  * Ongpot - sfw favicon
@@ -59,7 +62,6 @@ HEADER  = """
  * Seiba - chrome quick reply focusing
  * herpaderpderp - recaptcha fixes
  * wakimoko - recaptcha tab order http://userscripts.org/scripts/show/82657
- * xat- new favicons
  *
  * All the people who've taken the time to write bug reports.
  *
