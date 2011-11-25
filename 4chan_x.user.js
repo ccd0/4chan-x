@@ -686,7 +686,8 @@
         span = _ref[_i];
         a = $.el('a', {
           textContent: "+ " + span.textContent,
-          className: 'omittedposts'
+          className: 'omittedposts',
+          href: 'javascript:;'
         });
         $.on(a, 'click', expandThread.cb.toggle);
         _results.push($.replace(span, a));
@@ -793,7 +794,8 @@
         if (!(dd = $('.doubledash', root))) return;
         dd.className = 'replyhider';
         a = $.el('a', {
-          textContent: '[ - ]'
+          textContent: '[ - ]',
+          href: 'javascript:;'
         });
         $.on(a, 'click', replyHiding.cb.hide);
         $.replace(dd.firstChild, a);
@@ -836,7 +838,8 @@
         name = $('.commentpostername', reply).textContent;
         trip = ((_ref = $('.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
-          textContent: "[ + ] " + name + " " + trip
+          textContent: "[ + ] " + name + " " + trip,
+          href: 'javascript:;'
         });
         $.on(a, 'click', replyHiding.cb.show);
         div = $.el('div', {
@@ -1129,10 +1132,12 @@
         id: 'navlinks'
       });
       prev = $.el('a', {
-        textContent: '▲'
+        textContent: '▲',
+        href: 'javascript:;'
       });
       next = $.el('a', {
-        textContent: '▼'
+        textContent: '▼',
+        href: 'javascript:;'
       });
       $.on(prev, 'click', nav.prev);
       $.on(next, 'click', nav.next);
@@ -1202,13 +1207,15 @@
       var a, home;
       home = $('#navtopr a');
       a = $.el('a', {
-        textContent: '4chan X'
+        textContent: '4chan X',
+        href: 'javascript:;'
       });
       $.on(a, 'click', options.dialog);
       $.replace(home, a);
       home = $('#navbotr a');
       a = $.el('a', {
-        textContent: '4chan X'
+        textContent: '4chan X',
+        href: 'javascript:;'
       });
       $.on(a, 'click', options.dialog);
       return $.replace(home, a);
@@ -1764,7 +1771,8 @@
         thread = _ref[_i];
         op = thread.firstChild;
         a = $.el('a', {
-          textContent: '[ - ]'
+          textContent: '[ - ]',
+          href: 'javascript:;'
         });
         $.on(a, 'click', threadHiding.cb.hide);
         $.prepend(op, a);
@@ -1816,7 +1824,8 @@
         name = $('.postername', thread).textContent;
         trip = ((_ref = $('.postername + .postertrip', thread)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
-          textContent: "[ + ] " + name + trip + " (" + text + ")"
+          textContent: "[ + ] " + name + trip + " (" + text + ")",
+          href: 'javascript:;'
         });
         $.on(a, 'click', threadHiding.cb.show);
         div = $.el('div', {
@@ -2027,7 +2036,8 @@
           props = _ref2[id];
           div = $.el('div');
           x = $.el('a', {
-            textContent: 'X'
+            textContent: 'X',
+            href: 'javascript:;'
           });
           $.on(x, 'click', watcher.cb.x);
           link = $.el('a', props);
@@ -2530,7 +2540,8 @@
           span = $('span[id]', root);
           a = $.el('a', {
             className: 'reportbutton',
-            innerHTML: '[&nbsp;!&nbsp;]'
+            innerHTML: '[&nbsp;!&nbsp;]',
+            href: 'javascript:;'
           });
           $.after(span, a);
           $.after(span, $.tn(' '));
