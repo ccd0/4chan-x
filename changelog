@@ -6,6 +6,7 @@ master
   remove image preloading
   automatically reload expanded pictures on error
   handle bans with the thread updater
+  use unread favicons by ferongr
 - aeosynth
   quick reply redesign
 
