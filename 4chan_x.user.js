@@ -119,11 +119,12 @@
     },
     filter: {
       name: '',
-      trip: '',
-      mail: '',
-      sub: '',
-      com: '',
-      file: '',
+      tripcode: '',
+      email: '',
+      subject: '',
+      comment: '',
+      filename: '',
+      filesize: '',
       md5: ''
     },
     flavors: ['http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://3d.iqdb.org/?url=', '#http://imgur.com/upload?url='].join('\n'),
@@ -560,29 +561,35 @@
       name = root.className === 'op' ? $('.postername', root) : $('.commentpostername', root);
       return filter.test('name', name.textContent);
     },
-    trip: function(root) {
+    tripcode: function(root) {
       var trip;
       if (trip = $('.postertrip', root)) {
-        return filter.test('trip', trip.textContent);
+        return filter.test('tripcode', trip.textContent);
       }
     },
-    mail: function(root) {
+    email: function(root) {
       var mail;
-      if (mail = $('.linkmail', root)) return filter.test('mail', mail.href);
+      if (mail = $('.linkmail', root)) return filter.test('email', mail.href);
     },
-    sub: function(root) {
+    subject: function(root) {
       var sub;
       sub = root.className === 'op' ? $('.filetitle', root) : $('.replytitle', root);
-      return filter.test('sub', sub.textContent);
+      return filter.test('subject', sub.textContent);
     },
-    com: function(root) {
-      return filter.test('com', ($.el('a', {
+    comment: function(root) {
+      return filter.test('comment', ($.el('a', {
         innerHTML: $('blockquote', root).innerHTML.replace(/<br>/g, '\n')
       })).textContent);
     },
-    file: function(root) {
+    filename: function(root) {
       var file;
-      if (file = $('.filesize span', root)) return filter.test('file', file.title);
+      if (file = $('.filesize span', root)) {
+        return filter.test('filename', file.title);
+      }
+    },
+    filesize: function(root) {
+      var img;
+      if (img = $('img[md5]', root)) return filter.test('filesize', img.alt);
     },
     md5: function(root) {
       var img;
@@ -1247,11 +1254,12 @@
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.\
     <p>Name:<br><textarea name=name></textarea></p>\
-    <p>Tripcode:<br><textarea name=trip></textarea></p>\
-    <p>E-mail:<br><textarea name=mail></textarea></p>\
-    <p>Subject:<br><textarea name=sub></textarea></p>\
-    <p>Comment:<br><textarea name=com></textarea></p>\
-    <p>Filename:<br><textarea name=file></textarea></p>\
+    <p>Tripcode:<br><textarea name=tripcode></textarea></p>\
+    <p>E-mail:<br><textarea name=email></textarea></p>\
+    <p>Subject:<br><textarea name=subject></textarea></p>\
+    <p>Comment:<br><textarea name=comment></textarea></p>\
+    <p>Filename:<br><textarea name=filename></textarea></p>\
+    <p>Filename:<br><textarea name=filesize></textarea></p>\
     <p>Image MD5:<br><textarea name=md5></textarea></p>\
   </div>\
   <input type=radio name=tab hidden id=rice_tab>\
