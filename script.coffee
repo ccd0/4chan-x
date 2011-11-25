@@ -913,7 +913,7 @@ options =
     <p>Subject:<br><textarea name=subject></textarea></p>
     <p>Comment:<br><textarea name=comment></textarea></p>
     <p>Filename:<br><textarea name=filename></textarea></p>
-    <p>Filename:<br><textarea name=filesize></textarea></p>
+    <p>Filesize:<br><textarea name=filesize></textarea></p>
     <p>Image MD5:<br><textarea name=md5></textarea></p>
   </div>
   <input type=radio name=tab hidden id=rice_tab>
