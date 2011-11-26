@@ -3031,6 +3031,9 @@
     },
     css: '\
       /* dialog styling */\
+      a[href="javascript:;"] {\
+        text-decoration: none;\
+      }\
       div.dialog {\
         border: 1px solid;\
       }\
