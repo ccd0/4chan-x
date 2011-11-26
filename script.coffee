@@ -9,6 +9,7 @@ config =
       'Thread Expansion':   [true,  'View all replies']
       'Index Navigation':   [true,  'Navigate to previous / next thread']
       'Reply Navigation':   [false, 'Navigate to top / bottom of thread']
+      'Check for Updates':  [true,  'Check for updated versions of 4chan X']
     Filtering:
       'Anonymize':          [false, 'Make everybody anonymous']
       'Filter':             [false, 'Self-moderation placebo']
@@ -121,6 +122,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
+VERSION = '2.21.0'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -2319,6 +2321,9 @@ Main =
     threading.init()
     Favicon.init()
 
+    if Main.reqUpdate and conf['Check for Updates']
+      $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
+
     #recaptcha may be blocked, eg by noscript
     if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
       Recaptcha.init()
@@ -2397,6 +2402,8 @@ Main =
     {origin, data} = e
     if origin is 'http://sys.4chan.org'
       qr.message data
+    else if data.version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
+      location = "https://raw.github.com/mayhemydg/4chan-x/#{data.version}/4chan_x.user.js"
 
   node: (e) ->
     {target} = e

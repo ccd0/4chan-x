@@ -1,4 +1,6 @@
 master
+
+2.21.0
 - mayhem
   initiate 4chan X earlier
   performance improvements
@@ -7,8 +9,6 @@ master
   automatically reload expanded pictures on error
   handle bans with the thread updater
   use unread favicons by ferongr
-- aeosynth
-  quick reply redesign
 
 2.20.3
 - mayhem

@@ -1,5 +1,6 @@
 // ==UserScript==
 // @name           4chan x
+// @version        2.21.0
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -13,7 +14,8 @@
 /* LICENSE
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
- * http://aeosynth.github.com/4chan-x/
+ * http://mayhemydg.github.com/4chan-x/
+ * 4chan x 2.21.0
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -64,7 +66,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, anonymize, conf, config, cooldown, d, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, VERSION, anonymize, conf, config, cooldown, d, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
 
   config = {
@@ -77,7 +79,8 @@
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
-        'Reply Navigation': [false, 'Navigate to top / bottom of thread']
+        'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
+        'Check for Updates': [true, 'Check for updated versions of 4chan X']
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
@@ -207,6 +210,8 @@
   })(null, config);
 
   NAMESPACE = '4chan_x.';
+
+  VERSION = '2.21.0';
 
   SECOND = 1000;
 
@@ -2963,6 +2968,11 @@
       $.addStyle(Main.css);
       threading.init();
       Favicon.init();
+      if (Main.reqUpdate && conf['Check for Updates']) {
+        $.add(d.head, $.el('script', {
+          src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
+        }));
+      }
       if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
         Recaptcha.init();
         if (g.REPLY && conf['Auto Watch Reply'] && conf['Thread Watcher']) {
@@ -3013,9 +3023,13 @@
       return options.init();
     },
     message: function(e) {
-      var data, origin;
+      var data, location, origin;
       origin = e.origin, data = e.data;
-      if (origin === 'http://sys.4chan.org') return qr.message(data);
+      if (origin === 'http://sys.4chan.org') {
+        return qr.message(data);
+      } else if (data.version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
+        return location = "https://raw.github.com/mayhemydg/4chan-x/" + data.version + "/4chan_x.user.js";
+      }
     },
     node: function(e) {
       var callback, target, _i, _len, _ref, _results;
