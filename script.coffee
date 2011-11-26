@@ -31,6 +31,7 @@ config =
       'Auto Watch':         [true,  'Automatically watch threads that you start']
       'Auto Watch Reply':   [false, 'Automatically watch threads that you reply to']
     Posting:
+      'Auto Noko':          [true,  'Always redirect to your post']
       'Cooldown':           [true,  'Prevent `flood detected` errors']
       'Quick Reply':        [true,  'Reply without leaving the page']
       'Persistent QR':      [false, 'Quick reply won\'t disappear after posting. Only in replies.']
@@ -642,8 +643,8 @@ keybinds =
       when conf.close
         if o = $ '#overlay'
           $.rm o
-        else if QR.qr
-          QR.close()
+        else if qr.qr
+          qr.close()
       when conf.spoiler
         ta = e.target
         return unless ta.nodeName is 'TEXTAREA'
@@ -694,8 +695,8 @@ keybinds =
       when conf.previousPage
         $('input[value=Previous]')?.click()
       when conf.submit
-        if QR.qr
-          QR.submit.call $ 'form', QR.qr
+        if qr.qr
+          qr.submit.call $ 'form', qr.qr
         else
           $('.postarea form').submit()
       when conf.unreadCountTo0
@@ -740,12 +741,12 @@ keybinds =
 
   qr: (thread, quote) ->
     if quote
-      QR.quote.call $ '.quotejs + a', $('.replyhl', thread) or thread
+      qr.quote.call $ '.quotejs + a', $('.replyhl', thread) or thread
     else
-      if QR.qr
-        $('textarea', QR.qr).focus()
+      if qr.qr
+        $('textarea', qr.qr).focus()
       else
-        QR.dialog '', thread?.firstChild.id
+        qr.dialog '', thread?.firstChild.id
 
   open: (thread, tab) ->
     id = thread.firstChild.id
@@ -1033,25 +1034,49 @@ options =
     conf['backlink'] = @value
     $('#backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
 
-QR =
-  #captcha caching for report form
-  #report queueing
-  #check if captchas can be reused on eg dup file error
+cooldown =
+  #TODO merge into qr
   init: ->
-    #can't reply in some stickies, recaptcha may be blocked, eg by noscript
-    return unless $('form[name=post]') and $('#recaptcha_response_field')
-    g.callbacks.push (root) ->
-      quote = $ '.quotejs + a', root
-      $.on quote, 'click', QR.quote
-    $.add d.body, $.el 'iframe',
-      name: 'iframe'
-      hidden: true
-    # nuke id so qr's field focuses on recaptcha reload, instead of normal form's
-    $('#recaptcha_response_field').id = ''
-    holder = $ '#recaptcha_challenge_field_holder'
-    $.on holder, 'DOMNodeInserted', QR.captchaNode
-    QR.captchaNode target: holder.firstChild
-    QR.accept = $('.rules').textContent.match(/: (.+) /)[1].replace /\w+/g, (type) ->
+    if match = location.search.match /cooldown=(\d+)/
+      [_, time] = match
+      $.set g.BOARD+'/cooldown', time if $.get(g.BOARD+'/cooldown', 0) < time
+    cooldown.start() if Date.now() < $.get g.BOARD+'/cooldown', 0
+    $.on window, 'storage', (e) -> cooldown.start() if e.key is "#{NAMESPACE}#{g.BOARD}/cooldown"
+    $('.postarea form').action += '?cooldown' if g.REPLY
+
+  start: ->
+    cooldown.duration = Math.ceil ($.get(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
+    return unless cooldown.duration > 0
+    for submit in $$ '#com_submit'
+      submit.value = cooldown.duration
+      submit.disabled = true
+    setTimeout cooldown.cb, 1000
+
+  cb: ->
+    submits = $$ '#com_submit'
+    if --cooldown.duration
+      setTimeout cooldown.cb, 1000
+      for submit in submits
+        submit.value = cooldown.duration
+    else
+      for submit in submits
+        submit.disabled = false
+        submit.value = 'Submit'
+      qr.autoPost()
+
+qr =
+  # TODO
+  # error handling / logging
+  # persistent captcha
+  # rm Recaptcha
+  # email reverts
+  init: ->
+    g.callbacks.push qr.node
+    $.on $('#recaptcha_challenge_field_holder'), 'DOMNodeInserted', qr.captchaNode
+    qr.captchaTime = Date.now()
+
+    qr.spoiler = if $('.postarea label') then '<label> [<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
+    qr.acceptFiles = $('.rules').textContent.match(/: (.+) /)[1].replace /\w+/g, (type) ->
       switch type
         when 'JPG'
           'image/JPEG'
@@ -1059,281 +1084,295 @@ QR =
           'application/' + type
         else
           'image/' + type
-    QR.MAX_FILE_SIZE = $('input[name=MAX_FILE_SIZE]').value
-    QR.spoiler = if $('.postarea label') then ' <label>[<input type=checkbox name=spoiler>Spoiler Image?]</label>' else ''
-    if conf['Persistent QR']
-      QR.dialog()
-      $('textarea', QR.qr).blur()
-      if conf['Auto Hide QR']
-        $('#autohide', QR.qr).checked = true
-    if conf['Cooldown']
-      $.on window, 'storage', (e) -> QR.cooldown() if e.key is "#{NAMESPACE}cooldown/#{g.BOARD}"
-  attach: (file) ->
-    files = $ '#files', QR.qr
-    box = $.el 'li',
-      innerHTML: "<img><a class=x>X</a>"
-    $.on $('.x', box), 'click', QR.rmThumb
-    $.add box, file
-    $.add files, box
-    QR.stats()
-    QR.foo()
-  rmThumb: ->
-    $.rm @parentNode
-    QR.stats()
+
+    iframe = $.el 'iframe',
+      name: 'iframe'
+      hidden: true
+    $.add d.body, iframe
+
+    #hack - nuke id so it doesn't grab focus when reloading
+    $('#recaptcha_response_field').id = ''
+
+  attach: ->
+    fileDiv = $.el 'div', innerHTML: "<input type=file name=upfile accept='#{qr.acceptFiles}'><a>X</a>"
+    $.on fileDiv.firstChild, 'change', qr.validateFileSize
+    $.on fileDiv.lastChild, 'click', (-> $.rm @parentNode)
+    $.add $('#files', qr.el), fileDiv
+
+  attachNext: ->
+    fileDiv = $.rm $('#files div', qr.el)
+    file = fileDiv.firstChild
+    oldFile = $ '#qr_form input[type=file]', qr.el
+    $.replace oldFile, file
+
+  autoPost: ->
+    if qr.el and $('#auto', qr.el).checked
+      qr.submit.call $ 'form', qr.el
+
   captchaNode: (e) ->
-    QR.captcha =
-      challenge: e.target.value
-      time: Date.now()
-    QR.captchaImg()
-  captchaImg: ->
-    {qr} = QR
-    return unless qr
-    c = QR.captcha.challenge
-    $('#captcha img', qr).src = "http://www.google.com/recaptcha/api/image?c=#{c}"
-  captchaPush: (el) ->
-    {captcha} = QR
-    captcha.response = el.value
+    return unless qr.el
+    val = e.target.value
+    $('img', qr.el).src = "http://www.google.com/recaptcha/api/image?c=" + val
+    qr.challenge = val
+    qr.captchaTime = Date.now()
+
+  captchaKeydown: (e) ->
+    return unless e.keyCode is 13 and @value #enter, captcha filled
+
     captchas = $.get 'captchas', []
-    captchas.push captcha
+    captchas.push
+      challenge: qr.challenge
+      response: @value
+      time: qr.captchaTime
     $.set 'captchas', captchas
-    el.value = ''
-    QR.captchaReload()
-    QR.stats captchas
-  captchaShift: ->
-    captchas = $.get 'captchas', []
+    $('#captchas', qr.el).textContent = captchas.length + ' captchas'
+    Recaptcha.reload()
+    @value = ''
+
+    if !$('textarea', qr.el).value and !$('input[type=file]', qr.el).files.length
+      e.preventDefault()
+
+  close: ->
+    $.rm qr.el
+    qr.el = null
+
+  dialog: (link) ->
+    c = d.cookie
+    name  = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
+    email = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+    pwd   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
+    submitValue = $('#com_submit').value
+    submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
+    #FIXME inlined cross-thread quotes
+    THREAD_ID = g.THREAD_ID or $.x('ancestor::div[@class="thread"]/div', link).id
+    qr.challenge = $('#recaptcha_challenge_field').value
+
+    html = "
+      <a id=close title=close>X</a>
+      <input type=checkbox id=autohide title=autohide>
+      <div class=move>
+        <input class=inputtext type=text name=name value='#{name}' placeholder=Name form=qr_form>
+        Quick Reply
+      </div>
+      <div class=autohide>
+        <form name=post action=http://sys.4chan.org/#{g.BOARD}/post method=POST enctype=multipart/form-data target=iframe id=qr_form>
+          <input type=hidden name=resto value=#{THREAD_ID}>
+          <input type=hidden name=mode value=regist>
+          <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field>
+          <input type=hidden name=recaptcha_response_field id=recaptcha_response_field>
+          <div><input class=inputtext type=text name=email value='#{email}' placeholder=E-mail>#{qr.spoiler}</div>
+          <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
+          <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
+          <div><img src=http://www.google.com/recaptcha/api/image?c=#{qr.challenge}></div>
+          <div><input class=inputtext type=text autocomplete=off placeholder=Verification id=dummy><span id=captchas>#{$.get('captchas', []).length} captchas</span></div>
+          <div><input type=file name=upfile accept='#{qr.acceptFiles}'></div>
+        </form>
+        <div id=files></div>
+        <div><input class=inputtext type=password name=pwd value='#{pwd}' placeholder=Password form=qr_form maxlength=8><a id=attach>attach another file</a></div>
+      </div>
+      <a id=error class=error></a>
+      "
+    qr.el = ui.dialog 'qr', 'top: 0; left: 0;', html
+
+    $.on $('input[name=name]',   qr.el), 'mousedown', (e) -> e.stopPropagation()
+    $.on $('input[name=upfile]', qr.el), 'change', qr.validateFileSize
+    $.on $('#close',             qr.el), 'click', qr.close
+    $.on $('form',               qr.el), 'submit', qr.submit
+    $.on $('#attach',            qr.el), 'click', qr.attach
+    $.on $('img',                qr.el), 'click', Recaptcha.reload
+    $.on $('#dummy',             qr.el), 'keydown', Recaptcha.listener
+    $.on $('#dummy',             qr.el), 'keydown', qr.captchaKeydown
+
+    $.add d.body, qr.el
+
+  message: (data) ->
+    $('iframe[name=iframe]').src = 'about:blank'
+    fileCount = $('#files', qr.el).childElementCount
+
+    tc = data.textContent
+    if tc # error message
+      $.extend $('#error', qr.el), data
+      $('#recaptcha_response_field', qr.el).value = ''
+      $('#autohide', qr.el).checked = false
+      if tc is 'You seem to have mistyped the verification.'
+        setTimeout qr.autoPost, 1000
+      else if tc is 'Error: Duplicate file entry detected.' and fileCount
+        $('textarea', qr.el).value += '\n' + tc + ' ' + data.href
+        qr.attachNext()
+        setTimeout qr.autoPost, 1000
+      return
+
+    if qr.el
+      if g.REPLY and (conf['Persistent QR'] or fileCount)
+        qr.refresh()
+        if fileCount
+          qr.attachNext()
+      else
+        qr.close()
+    if conf['Cooldown']
+      duration = if qr.sage then 60 else 30
+      $.set g.BOARD+'/cooldown', Date.now() + duration * 1000
+      cooldown.start()
+
+  node: (root) ->
+    quote = $ 'a.quotejs:not(:first-child)', root
+    $.on quote, 'click', qr.quote
+
+  postInvalid: ->
+    content = $('textarea', qr.el).value or $('input[type=file]', qr.el).files.length
+    return 'Error: No text entered.' unless content
+
+    ###
+    captchas expire after 5 hours (emperically verified). cutoff 5 minutes
+    before then, b/c posting takes time.
+    ###
+
     cutoff = Date.now() - 5*HOUR + 5*MINUTE
+    captchas = $.get 'captchas', []
     while captcha = captchas.shift()
       if captcha.time > cutoff
         break
     $.set 'captchas', captchas
-    QR.stats captchas
-    captcha
-  stats: (captchas) ->
-    {qr} = QR
-    captchas or= $.get 'captchas', []
-    images = $$ '#files input', qr
-    $('#qr_stats', qr).textContent = "#{images.length} / #{captchas.length}"
-  captchaReload: ->
-    window.location = 'javascript:Recaptcha.reload()'
-  change: (e) ->
-    file = @files[0]
-    if file.size > QR.MAX_FILE_SIZE
-      alert 'Error: File too large.'
-      QR.foo @
-      return
-    if @parentNode.className is 'wat'
-      QR.attach @
-    fr = new FileReader()
-    img = $ 'img', @parentNode
-    fr.onload = (e) ->
-      img.src = e.target.result
-    fr.readAsDataURL file
-  close: ->
-    $.rm QR.qr
-    QR.qr = null
-  cooldown: ->
-    return unless g.REPLY and QR.qr
-    cooldown = $.get "cooldown/#{g.BOARD}", 0
-    now = Date.now()
-    n = Math.ceil (cooldown - now) / 1000
-    b = $ 'form button', QR.qr
-    if n > 0
-      $.extend b,
-        textContent: n
-        disabled: true
-      setTimeout QR.cooldown, 1000
+
+    $('#captchas', qr.el).textContent = captchas.length + ' captchas'
+
+    unless captcha
+      dummy = $ '#dummy', qr.el
+      return 'You forgot to type in the verification' unless response = dummy.value
+      captcha =
+        challenge: qr.challenge
+        response: response
+      dummy.value = ''
+      Recaptcha.reload()
+
+    $('#recaptcha_challenge_field', qr.el).value = captcha.challenge
+    $('#recaptcha_response_field',  qr.el).value = captcha.response
+
+    false
+
+  quote: (e) ->
+    e.preventDefault() if e
+
+    if qr.el
+      $('#autohide', qr.el).checked = false
     else
-      $.extend b,
-        textContent: 'Submit'
-        disabled: false
-      QR.submit() if $('#autopost', QR.qr).checked
-  foo: (old) ->
-    input = $.el 'input',
-      type: 'file'
-      name: 'upfile'
-      accept: QR.accept
-    $.on input, 'change', QR.change
-    if old
-      $.replace old, file
-    else
-      $.add $('.wat', QR.qr), input
-  dialog: (text='', tid) ->
-    tid or= g.THREAD_ID or ''
-    QR.qr = qr = ui.dialog 'qr', 'top: 0; right: 0;', "
-    <a class=close>X</a>
-    <input type=checkbox id=autohide title=autohide>
-    <div class=move>
-      <span id=qr_stats></span>
-    </div>
-    <div class=autohide>
-      <span class=wat><img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41Ljg3O4BdAAAAXUlEQVQ4T2NgoAH4DzQTHyZoJckGENJASB6nc9GdCjdo6tSptkCsCPUqVgNAmtFtxiYGUkO0QrBibOqJtWkIGYDTqTgSGOnRiGYQ3mRLKBFhjUZiNCGrIZg3aKsAAGu4rTMFLFBMAAAAAElFTkSuQmCC></span>
-      <input form=qr_form placeholder=Name name=name>
-      <input form=qr_form placeholder=Email name=email>
-      <input form=qr_form placeholder=Subject name=sub>
-      <ul id=files></ul>
-      <form enctype=multipart/form-data method=post action=http://sys.4chan.org/#{g.BOARD}/post target=iframe id=qr_form>
-        <textarea placeholder=Comment name=com></textarea>
-        <div hidden>
-          <input name=pwd>
-          <input name=mode value=regist>
-          <input name=recaptcha_challenge_field id=challenge>
-          <input name=recaptcha_response_field id=response>
-        </div>
-        <div id=captcha>
-          <div><img></div>
-          <input id=recaptcha_response_field autocomplete=off>
-        </div>
-        <div>
-          <button>Submit</button>
-          #{if g.REPLY then "<label>[<input type=checkbox id=autopost title=autopost> Autopost]</label>" else ''}
-          <input form=qr_form placeholder=Thread name=resto value=#{tid} #{if g.REPLY then 'hidden' else ''}>
-          #{QR.spoiler}
-        </div>
-      </form>
-    </div>
-    <a class=error></a>
-    "
-    #XXX use dom methods to set values instead of injecting raw user input into your html -_-;
-    QR.reset()
-    QR.cooldown() if conf['Cooldown']
-    QR.foo()
-    $.on $('.close', qr), 'click', QR.close
-    $.on $('form', qr), 'submit', QR.submit
-    $.on $('#recaptcha_response_field', qr), 'keydown', QR.keydown
-    QR.captchaImg()
-    QR.stats()
-    $.add d.body, qr
-    ta = $ 'textarea', qr
-    ta.value = text
-    l = text.length
-    ta.setSelectionRange l, l
-    ta.focus()
-  keydown: (e) ->
-    kc = e.keyCode
-    v = @value
-    if kc is 8 and not v #backspace, empty
-      QR.captchaReload()
-      return
-    return unless e.keyCode is 13 and v #enter, not empty
-    QR.captchaPush @
-    e.preventDefault()
-    QR.submit() #derpy, but prevents checking for content twice
-  quote: (e, blank) ->
-    e?.preventDefault()
-    tid = $.x('ancestor::div[@class="thread"]/div', @)?.id
+      qr.dialog @
+
     id = @textContent
     text = ">>#{id}\n"
-    sel = getSelection()
-    bq = $.x('ancestor::blockquote', sel.anchorNode)
-    if id == $.x('preceding-sibling::input', bq)?.name
-      if s = sel.toString().replace /\n/g, '\n>'
-        text += ">#{s}\n"
-    {qr} = QR
-    if not qr
-      QR.dialog text, tid
-      return
-    $('#autohide', qr).checked = false
-    ta = $ 'textarea', qr
-    v  = ta.value
-    ss = ta.selectionStart
-    ta.value = v[0...ss] + text + v[ss..]
-    i = ss + text.length
-    ta.setSelectionRange i, i
-    ta.focus()
-    $('[name=resto]', qr).value or= tid
-  receive: (data) ->
-    $('iframe[name=iframe]').src = 'about:blank'
-    {qr} = QR
-    row = $('#files input[form]', qr)?.parentNode
-    data = JSON.parse data
-    {textContent, href} = data
-    if QR.op
-      window.location = href
-      return
-    if textContent
-      $.extend $('a.error', qr), data
-      if textContent is 'Error: Duplicate file entry detected.'
-        $.rm row if row
-        QR.stats()
-        setTimeout QR.submit, 1000
-      else if textContent is 'You seem to have mistyped the verification.'
-        setTimeout QR.submit, 1000
-      return
-    $.rm row if row
-    QR.stats()
-    if conf['Persistent QR'] or $('#files input', qr)?.files.length
-      QR.reset()
-    else
-      QR.close()
-    if conf['Cooldown']
-      cooldown = Date.now() + (if QR.sage then 60 else 30)*SECOND
-      $.set "cooldown/#{g.BOARD}", cooldown
-      QR.cooldown()
-  reset: ->
-    {qr} = QR
-    c = d.cookie
-    $('[name=name]', qr).value  = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
-    $('[name=email]', qr).value = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
-    $('[name=pwd]', qr).value   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
-    $('[name=sub]', qr).value = ''
-    $('[name=spoiler]', qr)?.checked = false unless conf['Remember Spoiler']
-    $('textarea', qr).value = ''
-  submit: (e) ->
-    {qr} = QR
-    #XXX e is undefined if method is called explicitly, eg, from auto posting
-    if $('textarea', qr).value or $('#files', qr).childNodes.length
-      if $('form button', qr).disabled
-        $('#autopost', qr).checked = true
-        return
-    else
-      if e
-        alert 'Error: No text entered.'
-        e.preventDefault()
-      return
-    $('.error', qr).textContent = ''
-    if e and (el = $('#recaptcha_response_field', qr)).value
-      QR.captchaPush el
-    if not captcha = QR.captchaShift()
-      alert 'You forgot to type in the verification.'
-      e?.preventDefault()
-      return
-    {challenge, response} = captcha
-    $('#challenge', qr).value = challenge
-    $('#response',  qr).value = response
-    $('#autohide', qr).checked = true if conf['Auto Hide QR']
-    if input = $ '#files input', qr
-      input.setAttribute 'form', 'qr_form'
-    $('#qr_form', qr).submit() if not e
-    QR.sage = /sage/i.test $('[name=email]', qr).value
-    id = $('input[name=resto]', qr).value
-    QR.op = not id
-    $('[name=email]', qr).value = 'noko' if QR.op
-    if conf['Thread Watcher'] and conf['Auto Watch Reply']
-      op = $.id id
-      if $('img.favicon', op).src is Favicon.empty
-        watcher.watch op, id
-  sys: ->
-    $.off d, 'DOMContentLoaded', QR.sys
-    if recaptcha = $ '#recaptcha_response_field' #post reporting
-      $.on recaptcha, 'keydown', QR.keydown
-      return
-    ###
-    http://code.google.com/p/chromium/issues/detail?id=20773
-    Let content scripts see other frames (instead of them being undefined)
 
-    To access the parent, we have to break out of the sandbox and evaluate
-    in the global context.
+    selection = window.getSelection()
+    if s = selection.toString()
+      selectionID = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
+      if selectionID == id
+        s = s.replace /\n/g, '\n>'
+        text += ">#{s}\n"
+
+    ta = $ 'textarea', qr.el
+    ta.focus()
+    ta.value += text
+
+  refresh: ->
+    $('[name=sub]', qr.el).value = ''
+    $('[name=email]', qr.el).value = if m = d.cookie.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+    $('[name=com]', qr.el).value = ''
+    $('[name=recaptcha_response_field]', qr.el).value = ''
+    $('[name=spoiler]', qr.el)?.checked = false unless conf['Remember Spoiler']
+    # XXX opera doesn't allow resetting file inputs w/ file.value = ''
+    oldFile = $ '[type=file]', qr.el
+    newFile = $.el 'input', type: 'file', name: 'upfile', accept: qr.acceptFiles
+    $.replace oldFile, newFile
+
+  submit: (e) ->
+    #XXX `e` won't exist if we're here from `qr.submit.call form`.
+    if msg = qr.postInvalid()
+      e.preventDefault?()
+      alert msg
+      if msg is 'You forgot to type in the verification.'
+        $('#dummy', qr.el).focus()
+      return
+
+    if conf['Auto Watch Reply'] and conf['Thread Watcher']
+      if g.REPLY and $('img.favicon').src is Favicon.empty
+        watcher.watch null, g.THREAD_ID
+      else
+        id = $('input[name=resto]', qr.el).value
+        op = $.id id
+        if $('img.favicon', op).src is Favicon.empty
+          watcher.watch op, id
+
+    if !e then @submit()
+    $('#error', qr.el).textContent = ''
+    $('#autohide', qr.el).checked = true if conf['Auto Hide QR']
+    qr.sage = /sage/i.test $('input[name=email]', @).value
+
+  sys: ->
+    if recaptcha = $ '#recaptcha_response_field' #post reporting
+      $.on recaptcha, 'keydown', Recaptcha.listener
+      return
+
+    ###
+      http://code.google.com/p/chromium/issues/detail?id=20773
+      Let content scripts see other frames (instead of them being undefined)
+
+      To access the parent, we have to break out of the sandbox and evaluate
+      in the global context.
     ###
     $.globalEval ->
-      $ = (css) -> document.querySelector css
-      if node = $('table font b')?.firstChild
-        {textContent, href} = node
-      else
-        node = $ 'meta'
-        href = node.content.match(/url=(.+)/)[1]
-      data = JSON.stringify { textContent, href }
+      data = to: 'qr.message'
+      if node = document.querySelector('table font b')?.firstChild
+        data.textContent = node.textContent
+        data.href = node.href
       parent.postMessage data, '*'
-      #if we're an iframe, parent will blank us
+
+    c = $('b')?.lastChild
+
+    return unless c and c.nodeType is 8 #comment node
+
+    [_, thread, id] = c.textContent.match(/thread:(\d+),no:(\d+)/)
+
+    {search} = location
+    cooldown = /cooldown/.test search
+    noko     = /noko/    .test search
+    sage     = /sage/    .test search
+    watch    = /watch/   .test search
+
+    url = "http://boards.4chan.org/#{g.BOARD}"
+
+    if watch and thread is '0'
+      url += "/res/#{id}?watch"
+    else if noko
+      url += '/res/'
+      url += if thread is '0' then id else thread
+    if cooldown
+      duration = Date.now() + (if sage then 60 else 30) * 1000
+      url += '?cooldown=' + duration
+    if noko
+      url += '#' + id
+
+    window.location = url
+
+  validateFileSize: (e) ->
+    return unless @files[0].size > $('input[name=MAX_FILE_SIZE]').value
+
+    file = $.el 'input', type: 'file', name: 'upfile', accept: qr.acceptFiles
+    $.on file, 'change', qr.validateFileSize
+    $.replace @, file
+
+    $('#error', qr.el).textContent = 'Error: File too large.'
+    alert 'Error: File too large.'
+
+Recaptcha =
+  init: ->
+    #hack to tab from comment straight to recaptcha
+    for el in $$ '#recaptcha_table a'
+      el.tabIndex = 1
+    $.bind $('#recaptcha_response_field'), 'keydown', Recaptcha.listener
+  listener: (e) ->
+    if e.keyCode is 8 and @value is '' # backspace to reload
+      Recaptcha.reload()
+  reload: ->
+    window.location = 'javascript:Recaptcha.reload()'
 
 threading =
   init: ->
@@ -2179,15 +2218,6 @@ imgExpand =
 
 Main =
   init: ->
-    if location.hostname is 'sys.4chan.org'
-      if d.body
-        QR.sys()
-      else
-        $.on d, 'DOMContentLoaded', QR.sys
-      return
-
-    $.on window, 'message', Main.message
-
     pathname = location.pathname.substring(1).split('/')
     [g.BOARD, temp] = pathname
     if temp is 'res'
@@ -2195,6 +2225,15 @@ Main =
       g.THREAD_ID = pathname[2]
     else
       g.PAGENUM = parseInt(temp) or 0
+
+    if location.hostname is 'sys.4chan.org'
+      if d.body
+        qr.sys()
+      else
+        $.on d, 'DOMContentLoaded', qr.sys
+      return
+
+    $.on window, 'message', Main.message
 
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
 
@@ -2277,8 +2316,20 @@ Main =
     threading.init()
     Favicon.init()
 
+    #recaptcha may be blocked, eg by noscript
+    if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
+      Recaptcha.init()
+      if g.REPLY and conf['Auto Watch Reply'] and conf['Thread Watcher']
+        $.bind form, 'submit', -> if $('img.favicon').src is Favicon.empty
+            watcher.watch null, g.THREAD_ID
 
     #major features
+    if conf['Auto Noko'] and canPost
+      form.action += '?noko'
+
+    if conf['Cooldown'] and canPost
+      cooldown.init()
+
     if conf['Image Expansion']
       imgExpand.init()
 
@@ -2286,7 +2337,7 @@ Main =
       revealSpoilers.init()
 
     if conf['Quick Reply']
-      QR.init()
+      qr.init()
 
     if conf['Thread Watcher']
       watcher.init()
@@ -2309,6 +2360,11 @@ Main =
 
       if conf['Unread Count']
         unread.init()
+
+      if conf['Quick Reply'] and conf['Persistent QR'] and canPost
+        qr.dialog()
+        if conf['Auto Hide QR']
+          $('#autohide', qr.el).checked = true
 
     else #not reply
       if conf['Thread Hiding']
@@ -2337,7 +2393,7 @@ Main =
   message: (e) ->
     {origin, data} = e
     if origin is 'http://sys.4chan.org'
-      QR.receive data
+      qr.message data
 
   node: (e) ->
     {target} = e
@@ -2356,7 +2412,7 @@ Main =
       div.dialog > div.move {
         cursor: move;
       }
-      label, a, .favicon {
+      label, a, .favicon, #qr img {
         cursor: pointer;
       }
 
@@ -2365,6 +2421,12 @@ Main =
       }
       .error {
         color: red;
+      }
+      #error {
+        cursor: default;
+      }
+      #error[href] {
+        cursor: pointer;
       }
       td.replyhider {
         vertical-align: top;
@@ -2447,6 +2509,47 @@ Main =
         width: 100%;
       }
 
+      #qr {
+        position: fixed;
+        max-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      #qr > div.move {
+        text-align: right;
+      }
+      #qr input[name=name] {
+        float: left;
+      }
+      #qr_form {
+        clear: left;
+      }
+      #qr_form, #qr #com_submit, #qr input[name=upfile] {
+        margin: 0;
+      }
+      #qr textarea {
+        width: 100%;
+        height: 125px;
+      }
+      #qr #close, #qr #autohide {
+        float: right;
+      }
+      #qr:not(:hover) > #autohide:checked ~ .autohide {
+        height: 0;
+        overflow: hidden;
+      }
+      /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
+      #qr input::-webkit-input-placeholder {
+        color: grey;
+      }
+      #qr input:-moz-placeholder {
+        color: grey;
+      }
+      /* qr reCAPTCHA */
+      #qr img {
+        border: 1px solid #AAA;
+      }
+
       #updater {
         position: fixed;
         text-align: right;
@@ -2517,102 +2620,6 @@ Main =
 
       #files > input {
         display: block;
-      }
-      #qr {
-        position: fixed;
-      }
-      #qr .close, #qr #autohide {
-        float: right;
-      }
-      #qr > .move {
-        text-align: right;
-      }
-      #qr .autohide > input {
-        width: 90px;
-      }
-      #qr #autopost {
-        width: auto;
-      }
-      #qr #recaptcha_response_field {
-        width: 100%;
-      }
-      #qr form {
-        margin: 0;
-      }
-      #qr .autohide {
-        clear: both;
-      }
-      #qr:not(:hover) #autohide:checked ~ .autohide {
-        height: 0;
-        overflow: hidden;
-      }
-      #qr textarea {
-        border: 0;
-        height: 150px;
-        width: 100%;
-      }
-      #qr #captcha {
-        position: relative;
-      }
-      #qr #files {
-        width: 300px;
-        white-space: nowrap;
-        overflow: auto;
-        margin: 0;
-        padding: 0;
-      }
-      #qr #files li {
-        position: relative;
-        display: inline-block;
-        width: 100px;
-        height: 100px;
-        overflow: hidden;
-      }
-      #qr #files a {
-        position: absolute;
-        left: 0;
-        font-size: 50px;
-        color: red;
-        z-index: 1;
-      }
-      #qr #cl {
-        right: 0;
-        padding: 2px;
-        position: absolute;
-      }
-      #qr #files input {
-        /* cannot use `display: none;`
-        https://bugs.webkit.org/show_bug.cgi?id=58208
-        http://code.google.com/p/chromium/issues/detail?id=78961
-        */
-        font-size: 100px;
-        opacity: 0;
-      }
-      #qr #files img {
-        position: absolute;
-        left: 0;
-        max-height: 100px;
-        max-width:  100px;
-      }
-      #qr input[name=resto] {
-        width: 80px;
-      }
-      #qr button + input[type=file] {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-      }
-      #qr .wat {
-        display: inline-block;
-        width: 16px;
-        overflow: hidden;
-        position: relative;
-        vertical-align: text-top;
-      }
-      #qr .wat input {
-        opacity: 0;
-        position: absolute;
-        left: 0;
       }
     '
 
