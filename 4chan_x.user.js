@@ -1228,7 +1228,11 @@
         href: 'javascript:;'
       });
       $.on(a, 'click', options.dialog);
-      return $.replace(home, a);
+      $.replace(home, a);
+      if (!$.get('firstrun')) {
+        options.dialog();
+        return $.set('firstrun', true);
+      }
     },
     dialog: function() {
       var arr, back, checked, description, dialog, hiddenNum, hiddenThreads, input, key, li, obj, overlay, ta, time, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3;

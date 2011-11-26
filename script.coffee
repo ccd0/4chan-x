@@ -882,6 +882,9 @@ options =
       href: 'javascript:;'
     $.on a, 'click', options.dialog
     $.replace home, a
+    unless $.get 'firstrun'
+      options.dialog()
+      $.set 'firstrun', true
 
   dialog: ->
     dialog = ui.dialog 'options', '', '
