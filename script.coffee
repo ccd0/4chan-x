@@ -1861,7 +1861,7 @@ quoteInline =
       # remove the corresponding table or loading td
       $.rm $.x "following::*[@id='i#{id}']", @
     else
-      return if $.x("ancestor::*[@id='#{id}']", @)
+      return if $.x "ancestor::*[@id='#{id}']", @
       quoteInline.add @, id
     @classList.toggle 'inlined'
 
