@@ -1936,7 +1936,7 @@ quotePreview =
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl' if conf['Quote Highlighting']
       if /\bbacklink\b/.test @className
-        replyID = $.x('preceding::input', @).name
+        replyID = $.x('preceding-sibling::input', @parentNode).name
         for quote in $$ '.quotelink', qp
           if quote.hash[1..] is replyID
             quote.className = 'forwardlink'

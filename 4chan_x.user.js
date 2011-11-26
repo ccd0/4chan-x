@@ -2486,7 +2486,7 @@
         qp.innerHTML = el.innerHTML;
         if (conf['Quote Highlighting']) $.addClass(el, 'qphl');
         if (/\bbacklink\b/.test(this.className)) {
-          replyID = $.x('preceding::input', this).name;
+          replyID = $.x('preceding-sibling::input', this.parentNode).name;
           _ref = $$('.quotelink', qp);
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
