@@ -901,11 +901,11 @@ options =
 <hr>
 <div id=content>
   <input type=radio name=tab hidden id=main_tab checked>
-  <div id=main></div>
+  <div></div>
   <input type=radio name=tab hidden id=flavors_tab>
   <textarea name=flavors id=flavors></textarea>
   <input type=radio name=tab hidden id=filter_tab>
-  <div id=filter>
+  <div>
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
     <p>Name:<br><textarea name=name></textarea></p>
@@ -918,7 +918,7 @@ options =
     <p>Image MD5:<br><textarea name=md5></textarea></p>
   </div>
   <input type=radio name=tab hidden id=rice_tab>
-  <div id=rice>
+  <div>
     <ul>
       Backlink formatting
       <li><input type=text name=backlink> : <span id=backlinkPreview></span></li>
@@ -935,7 +935,7 @@ options =
     </ul>
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
-  <div id=keybinds>
+  <div>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
       <tr><td>Close Options or QR</td><td><input name=close></td></tr>
@@ -974,7 +974,7 @@ options =
           innerHTML: "<label><input type=checkbox name='#{key}' #{checked}>#{key}</label><span class=description>: #{description}</span>"
         $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
-      $.add $('#main', dialog), ul
+      $.add $('#main_tab + div', dialog), ul
 
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
@@ -995,7 +995,7 @@ options =
     $.on time, 'keyup', options.time
 
     #keybinds
-    for input in $$ '#keybinds input', dialog
+    for input in $$ '#keybinds_tab + div input', dialog
       input.type  = 'text'
       input.value = conf[input.name]
       $.on input, 'keydown', options.keybind

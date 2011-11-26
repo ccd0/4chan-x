@@ -1249,11 +1249,11 @@
 <hr>\
 <div id=content>\
   <input type=radio name=tab hidden id=main_tab checked>\
-  <div id=main></div>\
+  <div></div>\
   <input type=radio name=tab hidden id=flavors_tab>\
   <textarea name=flavors id=flavors></textarea>\
   <input type=radio name=tab hidden id=filter_tab>\
-  <div id=filter>\
+  <div>\
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.\
     <p>Name:<br><textarea name=name></textarea></p>\
@@ -1266,7 +1266,7 @@
     <p>Image MD5:<br><textarea name=md5></textarea></p>\
   </div>\
   <input type=radio name=tab hidden id=rice_tab>\
-  <div id=rice>\
+  <div>\
     <ul>\
       Backlink formatting\
       <li><input type=text name=backlink> : <span id=backlinkPreview></span></li>\
@@ -1283,7 +1283,7 @@
     </ul>\
   </div>\
   <input type=radio name=tab hidden id=keybinds_tab>\
-  <div id=keybinds>\
+  <div>\
     <table><tbody>\
       <tr><th>Actions</th><th>Keybinds</th></tr>\
       <tr><td>Close Options or QR</td><td><input name=close></td></tr>\
@@ -1326,7 +1326,7 @@
           $.on($('input', li), 'click', $.cb.checked);
           $.add(ul, li);
         }
-        $.add($('#main', dialog), ul);
+        $.add($('#main_tab + div', dialog), ul);
       }
       hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length;
@@ -1345,7 +1345,7 @@
       (time = $('[name=time]', dialog)).value = conf['time'];
       $.on(back, 'keyup', options.backlink);
       $.on(time, 'keyup', options.time);
-      _ref3 = $$('#keybinds input', dialog);
+      _ref3 = $$('#keybinds_tab + div input', dialog);
       for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
         input = _ref3[_j];
         input.type = 'text';
