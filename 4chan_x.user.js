@@ -2026,7 +2026,7 @@
       var cb, url, _ref;
       updater.timer.textContent = 0;
       if ((_ref = updater.request) != null) _ref.abort();
-      url = location.pathname + '?' + Date.now();
+      url = location.pathname;
       cb = updater.cb.update;
       return updater.request = $.ajax(url, cb);
     }

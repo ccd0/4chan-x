@@ -1607,7 +1607,7 @@ updater =
   update: ->
     updater.timer.textContent = 0
     updater.request?.abort()
-    url = location.pathname + '?' + Date.now() # fool the cache
+    url = location.pathname
     cb = updater.cb.update
     updater.request = $.ajax url, cb
 
