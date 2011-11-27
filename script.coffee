@@ -1195,7 +1195,9 @@ qr =
     fileCount = $('#files', qr.el).childElementCount
 
     tc = data.textContent
-    if tc # error message
+    if tc isnt "Post successful!" # error message
+      if tc is undefined
+        data.textContent = "Connection error with sys.4chan.org."
       $.extend $('#error', qr.el), data
       $('#recaptcha_response_field', qr.el).value = ''
       $('#autohide', qr.el).checked = false
@@ -1324,8 +1326,8 @@ qr =
       in the global context.
     ###
     $.globalEval ->
-      data = to: 'qr.message'
-      if node = document.querySelector('table font b')?.firstChild
+      data = {}
+      if node = document.querySelector('td b')?.firstChild
         data.textContent = node.textContent
         data.href = node.href
       parent.postMessage data, '*'

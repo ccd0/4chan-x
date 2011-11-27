@@ -2,6 +2,7 @@ master
 - mayhem
   fix time formatting year in Opera
   fix QR keybinds
+  fix QR posts getting swallowed by sys.4chan.org
 
 2.21.1
 - mayhem

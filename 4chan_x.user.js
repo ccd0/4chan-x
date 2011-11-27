@@ -1558,7 +1558,10 @@
       $('iframe[name=iframe]').src = 'about:blank';
       fileCount = $('#files', qr.el).childElementCount;
       tc = data.textContent;
-      if (tc) {
+      if (tc !== "Post successful!") {
+        if (tc === void 0) {
+          data.textContent = "Connection error with sys.4chan.org.";
+        }
         $.extend($('#error', qr.el), data);
         $('#recaptcha_response_field', qr.el).value = '';
         $('#autohide', qr.el).checked = false;
@@ -1699,10 +1702,8 @@
       */
       $.globalEval(function() {
         var data, node, _ref;
-        data = {
-          to: 'qr.message'
-        };
-        if (node = (_ref = document.querySelector('table font b')) != null ? _ref.firstChild : void 0) {
+        data = {};
+        if (node = (_ref = document.querySelector('td b')) != null ? _ref.firstChild : void 0) {
           data.textContent = node.textContent;
           data.href = node.href;
         }
