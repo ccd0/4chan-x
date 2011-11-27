@@ -1560,7 +1560,7 @@
       $('iframe[name=iframe]').src = 'about:blank';
       fileCount = $('#files', qr.el).childElementCount;
       tc = data.textContent;
-      if (tc !== "Post successful!") {
+      if (tc !== "Post successful!" && !/uploaded!$/.test(tc)) {
         if (tc === void 0) {
           data.textContent = "Connection error with sys.4chan.org.";
         }

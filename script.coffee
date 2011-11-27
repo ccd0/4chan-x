@@ -1196,7 +1196,7 @@ qr =
     fileCount = $('#files', qr.el).childElementCount
 
     tc = data.textContent
-    if tc isnt "Post successful!" # error message
+    if tc isnt "Post successful!" and not /uploaded!$/.test tc # error message
       if tc is undefined
         data.textContent = "Connection error with sys.4chan.org."
       $.extend $('#error', qr.el), data
