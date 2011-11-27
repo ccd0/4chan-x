@@ -2188,7 +2188,7 @@ imgExpand =
     a = thumb.parentNode
     img = $.el 'img',
       src: a.href
-    unless a.parentNode.className is 'op'
+    if engine is "Gecko" and a.parentNode.className isnt 'op'
       filesize = $ '.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
       img.style.maxWidth = "-moz-calc(#{max}px)"

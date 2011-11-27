@@ -2855,7 +2855,7 @@
       img = $.el('img', {
         src: a.href
       });
-      if (a.parentNode.className !== 'op') {
+      if (engine === "Gecko" && a.parentNode.className !== 'op') {
         filesize = $('.filesize', a.parentNode);
         _ref = filesize.textContent.match(/(\d+)x/), _ = _ref[0], max = _ref[1];
         img.style.maxWidth = "-moz-calc(" + max + "px)";
