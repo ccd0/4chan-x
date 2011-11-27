@@ -66,7 +66,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, VERSION, anonymize, conf, config, cooldown, d, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, VERSION, anonymize, conf, config, cooldown, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
 
   config = {
@@ -220,6 +220,8 @@
   HOUR = 60 * MINUTE;
 
   DAY = 24 * HOUR;
+
+  engine = /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0];
 
   d = document;
 
