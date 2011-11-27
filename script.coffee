@@ -645,7 +645,7 @@ keybinds =
       when conf.close
         if o = $ '#overlay'
           $.rm o
-        else if qr.qr
+        else if qr.el
           qr.close()
       when conf.spoiler
         ta = e.target
@@ -697,8 +697,8 @@ keybinds =
       when conf.previousPage
         $('input[value=Previous]')?.click()
       when conf.submit
-        if qr.qr
-          qr.submit.call $ 'form', qr.qr
+        if qr.el
+          qr.submit.call $ 'form', qr.el
         else
           $('.postarea form').submit()
       when conf.unreadCountTo0
@@ -745,8 +745,8 @@ keybinds =
     if quote
       qr.quote.call $ '.quotejs + a', $('.replyhl', thread) or thread
     else
-      if qr.qr
-        $('textarea', qr.qr).focus()
+      if qr.el
+        $('textarea', qr.el).focus()
       else
         qr.dialog '', thread?.firstChild.id
 

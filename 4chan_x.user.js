@@ -900,7 +900,7 @@
         case conf.close:
           if (o = $('#overlay')) {
             $.rm(o);
-          } else if (qr.qr) {
+          } else if (qr.el) {
             qr.close();
           }
           break;
@@ -969,8 +969,8 @@
           if ((_ref3 = $('input[value=Previous]')) != null) _ref3.click();
           break;
         case conf.submit:
-          if (qr.qr) {
-            qr.submit.call($('form', qr.qr));
+          if (qr.el) {
+            qr.submit.call($('form', qr.el));
           } else {
             $('.postarea form').submit();
           }
@@ -1068,8 +1068,8 @@
       if (quote) {
         return qr.quote.call($('.quotejs + a', $('.replyhl', thread) || thread));
       } else {
-        if (qr.qr) {
-          return $('textarea', qr.qr).focus();
+        if (qr.el) {
+          return $('textarea', qr.el).focus();
         } else {
           return qr.dialog('', thread != null ? thread.firstChild.id : void 0);
         }
