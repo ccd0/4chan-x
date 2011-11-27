@@ -1,4 +1,6 @@
 master
+
+2.21.3
 - mayhem
   fix locked thread icons with fit width/screen enabled on Firefox
   fix fit width on Opera
