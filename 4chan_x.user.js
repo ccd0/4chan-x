@@ -221,7 +221,7 @@
 
   DAY = 24 * HOUR;
 
-  engine = /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0];
+  engine = /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase();
 
   d = document;
 
@@ -2684,7 +2684,7 @@
       l = unread.replies.length;
       favicon = $('link[rel="shortcut icon"]', d.head);
       favicon.href = g.dead ? l ? Favicon.unreadDead : Favicon.dead : l ? Favicon.unread : Favicon["default"];
-      if (engine === "Gecko") {
+      if (engine === "gecko") {
         clone = favicon.cloneNode(true);
         return $.replace(favicon, clone);
       }
@@ -2811,7 +2811,7 @@
         }
       },
       typeChange: function() {
-        var form, klass;
+        var klass;
         switch (this.value) {
           case 'full':
             klass = '';
@@ -2825,9 +2825,8 @@
           case 'fit screen':
             klass = 'fitwidth fitheight';
         }
-        form = $('body > form');
-        form.className = klass;
-        if (/\bfitheight\b/.test(form.className)) {
+        $('body > form').className = klass;
+        if (/\bfitheight\b/.test(klass)) {
           $.on(window, 'resize', imgExpand.resize);
           if (!imgExpand.style) imgExpand.style = $.addStyle('');
           return imgExpand.resize();
@@ -2855,10 +2854,10 @@
       img = $.el('img', {
         src: a.href
       });
-      if (engine === "Gecko" && a.parentNode.className !== 'op') {
+      if (engine === "gecko" && a.parentNode.className !== 'op') {
         filesize = $('.filesize', a.parentNode);
         _ref = filesize.textContent.match(/(\d+)x/), _ = _ref[0], max = _ref[1];
-        img.style.maxWidth = "-moz-calc(" + max + "px)";
+        img.style.maxWidth = "" + max + "px";
       }
       $.on(img, 'error', imgExpand.error);
       thumb.hidden = true;
@@ -2977,6 +2976,7 @@
         return;
       }
       if (!$('#navtopr')) return;
+      $.addClass(d.body, engine);
       $.addStyle(Main.css);
       threading.init();
       Favicon.init();
@@ -3103,7 +3103,10 @@
       }\
       .fitwidth [md5] + img {\
         max-width: 100%;\
-        width: -moz-calc(100%); /* hack so only firefox sees this */\
+      }\
+      .gecko  > .fitwidth [md5] + img,\
+      .presto > .fitwidth [md5] + img {\
+        width: 100%;\
       }\
 \
       #qp, #iHover {\

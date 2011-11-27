@@ -127,7 +127,7 @@ SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
 DAY    = 24*HOUR
-engine = /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0]
+engine = /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
 d = document
 g = callbacks: []
 
@@ -2090,7 +2090,7 @@ Favicon =
           Favicon.default
 
     #XXX `favicon.href = href` doesn't work on Firefox
-    if engine is "Gecko"
+    if engine is "gecko"
       clone = favicon.cloneNode true
       $.replace favicon, clone
 
@@ -2163,9 +2163,8 @@ imgExpand =
           klass = 'fitheight'
         when 'fit screen'
           klass = 'fitwidth fitheight'
-      form = $('body > form')
-      form.className = klass
-      if /\bfitheight\b/.test form.className
+      $('body > form').className = klass
+      if /\bfitheight\b/.test klass
         $.on window, 'resize', imgExpand.resize
         unless imgExpand.style
           imgExpand.style = $.addStyle ''
@@ -2188,10 +2187,10 @@ imgExpand =
     a = thumb.parentNode
     img = $.el 'img',
       src: a.href
-    if engine is "Gecko" and a.parentNode.className isnt 'op'
+    if engine is "gecko" and a.parentNode.className isnt 'op'
       filesize = $ '.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
-      img.style.maxWidth = "-moz-calc(#{max}px)"
+      img.style.maxWidth = "#{max}px"
     $.on img, 'error', imgExpand.error
     thumb.hidden = true
     $.add a, img
@@ -2327,6 +2326,7 @@ Main =
       return
     if not $ '#navtopr'
       return
+    $.addClass d.body, engine
     $.addStyle Main.css
     threading.init()
     Favicon.init()
@@ -2468,7 +2468,10 @@ Main =
       }
       .fitwidth [md5] + img {
         max-width: 100%;
-        width: -moz-calc(100%); /* hack so only firefox sees this */
+      }
+      .gecko  > .fitwidth [md5] + img,
+      .presto > .fitwidth [md5] + img {
+        width: 100%;
       }
 
       #qp, #iHover {

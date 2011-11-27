@@ -1,6 +1,8 @@
 master
 - mayhem
   fix locked thread icons with fit width/screen enabled on Firefox
+  fix fit width on Opera
+  for userstylers: you can use the rendering engine body class
 
 2.21.2
 - mayhem
