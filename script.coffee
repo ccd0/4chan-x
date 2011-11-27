@@ -122,7 +122,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.21.0'
+VERSION = '2.21.1'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -1372,7 +1372,7 @@ Recaptcha =
     #hack to tab from comment straight to recaptcha
     for el in $$ '#recaptcha_table a'
       el.tabIndex = 1
-    $.bind $('#recaptcha_response_field'), 'keydown', Recaptcha.listener
+    $.on $('#recaptcha_response_field'), 'keydown', Recaptcha.listener
   listener: (e) ->
     if e.keyCode is 8 and @value is '' # backspace to reload
       Recaptcha.reload()
@@ -2328,7 +2328,7 @@ Main =
     if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
       Recaptcha.init()
       if g.REPLY and conf['Auto Watch Reply'] and conf['Thread Watcher']
-        $.bind form, 'submit', -> if $('img.favicon').src is Favicon.empty
+        $.on form, 'submit', -> if $('img.favicon').src is Favicon.empty
             watcher.watch null, g.THREAD_ID
 
     #major features

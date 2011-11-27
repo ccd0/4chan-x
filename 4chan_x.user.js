@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.21.0
+// @version        2.21.1
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -15,7 +15,7 @@
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan x 2.21.0
+ * 4chan x 2.21.1
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -211,7 +211,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.21.0';
+  VERSION = '2.21.1';
 
   SECOND = 1000;
 
@@ -1753,7 +1753,7 @@
         el = _ref[_i];
         el.tabIndex = 1;
       }
-      return $.bind($('#recaptcha_response_field'), 'keydown', Recaptcha.listener);
+      return $.on($('#recaptcha_response_field'), 'keydown', Recaptcha.listener);
     },
     listener: function(e) {
       if (e.keyCode === 8 && this.value === '') return Recaptcha.reload();
@@ -2976,7 +2976,7 @@
       if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
         Recaptcha.init();
         if (g.REPLY && conf['Auto Watch Reply'] && conf['Thread Watcher']) {
-          $.bind(form, 'submit', function() {
+          $.on(form, 'submit', function() {
             if ($('img.favicon').src === Favicon.empty) {
               return watcher.watch(null, g.THREAD_ID);
             }
