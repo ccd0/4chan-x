@@ -2058,6 +2058,13 @@
         $.before(input, favicon);
       }
       watcher.refresh();
+      if (conf['Auto Watch']) {
+        if (!g.REPLY) {
+          $('.postarea form').action += '?watch';
+        } else if (/watch/.test(location.search) && $('img.favicon').src === Favicon.empty) {
+          watcher.watch(null, g.THREAD_ID);
+        }
+      }
       return $.on(window, 'storage', function(e) {
         if (e.key === ("" + NAMESPACE + "watched")) return watcher.refresh();
       });
