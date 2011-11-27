@@ -2684,8 +2684,10 @@
       l = unread.replies.length;
       favicon = $('link[rel="shortcut icon"]', d.head);
       favicon.href = g.dead ? l ? Favicon.unreadDead : Favicon.dead : l ? Favicon.unread : Favicon["default"];
-      clone = favicon.cloneNode(true);
-      return $.replace(favicon, clone);
+      if (engine === "Gecko") {
+        clone = favicon.cloneNode(true);
+        return $.replace(favicon, clone);
+      }
     }
   };
 

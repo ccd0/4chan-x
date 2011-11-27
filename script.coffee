@@ -2090,8 +2090,9 @@ Favicon =
           Favicon.default
 
     #XXX `favicon.href = href` doesn't work on Firefox
-    clone = favicon.cloneNode true
-    $.replace favicon, clone
+    if engine is "Gecko"
+      clone = favicon.cloneNode true
+      $.replace favicon, clone
 
 redirect = ->
   switch g.BOARD
