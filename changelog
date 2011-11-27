@@ -1,4 +1,6 @@
 master
+
+2.21.2
 - mayhem
   fix time formatting year in Opera
   fix QR keybinds
