@@ -1,4 +1,6 @@
 master
+- mayhem
+  fix locked thread icons with fit width/screen enabled on Firefox
 
 2.21.2
 - mayhem

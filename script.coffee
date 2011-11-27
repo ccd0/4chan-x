@@ -2229,7 +2229,7 @@ imgExpand =
     $.prepend form, controls
 
   resize: ->
-    imgExpand.style.innerHTML = ".fitheight img + img {max-height:#{d.body.clientHeight}px;}"
+    imgExpand.style.innerHTML = ".fitheight [md5] + img {max-height:#{d.body.clientHeight}px;}"
 
 Main =
   init: ->
@@ -2463,10 +2463,10 @@ Main =
         float: left;
         pointer-events: none;
       }
-      img[md5], img + img {
+      [md5], [md5] + img {
         pointer-events: all;
       }
-      .fitwidth img + img {
+      .fitwidth [md5] + img {
         max-width: 100%;
         width: -moz-calc(100%); /* hack so only firefox sees this */
       }
