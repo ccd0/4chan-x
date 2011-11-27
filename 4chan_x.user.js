@@ -2203,7 +2203,7 @@
       Time.foo();
       chanOffset = 5 - new Date().getTimezoneOffset() / 60;
       if ($.isDST()) chanOffset--;
-      this.parse = Date.parse('10/11/11(Tue)18:53') ? function(node) {
+      this.parse = Date.parse('10/11/11(Tue)18:53' === 1318351980000) ? function(node) {
         return new Date(Date.parse(node.textContent) + chanOffset * HOUR);
       } : function(node) {
         var day, hour, min, month, year, _, _ref;
