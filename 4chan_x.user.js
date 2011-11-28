@@ -66,7 +66,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, VERSION, anonymize, conf, config, cooldown, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, VERSION, anonymize, conf, config, cooldown, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher;
   var __slice = Array.prototype.slice;
 
   config = {
@@ -120,7 +120,8 @@
         'Quote Highlighting': [true, 'Highlight the previewed post'],
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
         'Quote Preview': [true, 'Show quote content on hover'],
-        'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes']
+        'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
+        'Indicate Duckrolls': [false, 'Add \'(Duckroll)\' to cross threads quotes']
       }
     },
     filter: {
@@ -2581,6 +2582,27 @@
     }
   };
 
+  quoteDR = {
+    init: function() {
+      return g.callbacks.push(function(root) {
+        var quote, tid, _i, _len, _ref, _results;
+        if (root.className === 'inline') return;
+        tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
+        _ref = $$('.quotelink', root);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          if (quote.pathname.indexOf("res/" + tid) === -1) {
+            _results.push(quote.innerHTML += '&nbsp;(Duckroll)');
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      });
+    }
+  };
+
   reportButton = {
     init: function() {
       return g.callbacks.push(function(root) {
@@ -2962,6 +2984,7 @@
       if (conf['Quote Preview']) quotePreview.init();
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
+      if (conf['Indicate Duckrolls']) quoteDR.init();
       if (d.body) {
         return Main.onLoad();
       } else {
