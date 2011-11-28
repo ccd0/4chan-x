@@ -122,7 +122,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.21.3'
+VERSION = '2.21.4'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -2413,7 +2413,7 @@ Main =
     if origin is 'http://sys.4chan.org'
       qr.message data
     else if data.version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
-      location = "https://raw.github.com/mayhemydg/4chan-x/#{data.version}/4chan_x.user.js"
+      window.location = "https://raw.github.com/mayhemydg/4chan-x/#{data.version}/4chan_x.user.js"
 
   node: (e) ->
     {target} = e

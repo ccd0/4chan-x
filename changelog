@@ -1,5 +1,9 @@
 master
 
+2.21.4
+- mayhem
+  fix auto-updater
+
 2.21.3
 - mayhem
   fix locked thread icons with fit width/screen enabled on Firefox
