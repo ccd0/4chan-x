@@ -1,6 +1,7 @@
 master
 - mayhem
   new Indicate Duckrolls feature
+  put regex.info sauce back - disabled by default
 
 2.21.4
 - mayhem

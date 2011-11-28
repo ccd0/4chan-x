@@ -61,6 +61,7 @@ config =
     '#http://tineye.com/search?url='
     '#http://saucenao.com/search.php?db=999&url='
     '#http://3d.iqdb.org/?url='
+    '#http://regex.info/exif.cgi?imgurl='
     '#http://imgur.com/upload?url='
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
