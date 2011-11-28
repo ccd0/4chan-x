@@ -45,7 +45,7 @@ config =
       'Quote Inline':       [true,  'Show quoted post inline on quote click']
       'Quote Preview':      [true,  'Show quote content on hover']
       'Indicate OP quote':  [true,  'Add \'(OP)\' to OP quotes']
-      'Indicate Duckrolls': [false, 'Add \'(Duckroll)\' to cross threads quotes']
+      'Indicate Duckrolls': [true,  'Add \'(Duckroll)\' to cross threads quotes']
   filter:
     name:     ''
     tripcode: ''
@@ -2002,7 +2002,7 @@ quoteDR =
       return if root.className is 'inline'
       tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
       for quote in $$ '.quotelink', root
-        if quote.pathname.indexOf("res/#{tid}") is -1
+        if quote.hash and quote.pathname.indexOf(tid) is -1
           quote.innerHTML += '&nbsp;(Duckroll)'
 
 reportButton =

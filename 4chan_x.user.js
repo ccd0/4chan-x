@@ -121,7 +121,7 @@
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
         'Quote Preview': [true, 'Show quote content on hover'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
-        'Indicate Duckrolls': [false, 'Add \'(Duckroll)\' to cross threads quotes']
+        'Indicate Duckrolls': [true, 'Add \'(Duckroll)\' to cross threads quotes']
       }
     },
     filter: {
@@ -2592,7 +2592,7 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          if (quote.pathname.indexOf("res/" + tid) === -1) {
+          if (quote.hash && quote.pathname.indexOf(tid) === -1) {
             _results.push(quote.innerHTML += '&nbsp;(Duckroll)');
           } else {
             _results.push(void 0);
