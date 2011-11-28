@@ -1143,10 +1143,6 @@ qr =
     qr.el = null
 
   dialog: (link) ->
-    c = d.cookie
-    name  = if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
-    email = if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
-    pwd   = if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
     submitValue = $('#com_submit').value
     submitDisabled = if $('#com_submit').disabled then 'disabled' else ''
     #FIXME inlined cross-thread quotes
@@ -1157,7 +1153,7 @@ qr =
       <a id=close title=close>X</a>
       <input type=checkbox id=autohide title=autohide>
       <div class=move>
-        <input class=inputtext type=text name=name value='#{name}' placeholder=Name form=qr_form>
+        <input class=inputtext type=text name=name placeholder=Name form=qr_form>
         Quick Reply
       </div>
       <div class=autohide>
@@ -1166,7 +1162,7 @@ qr =
           <input type=hidden name=mode value=regist>
           <input type=hidden name=recaptcha_challenge_field id=recaptcha_challenge_field>
           <input type=hidden name=recaptcha_response_field id=recaptcha_response_field>
-          <div><input class=inputtext type=text name=email value='#{email}' placeholder=E-mail>#{qr.spoiler}</div>
+          <div><input class=inputtext type=text name=email placeholder=E-mail>#{qr.spoiler}</div>
           <div><input class=inputtext type=text name=sub placeholder=Subject><input type=submit value=#{submitValue} id=com_submit #{submitDisabled}><label><input type=checkbox id=auto>auto</label></div>
           <div><textarea class=inputtext name=com placeholder=Comment></textarea></div>
           <div><img src=http://www.google.com/recaptcha/api/image?c=#{qr.challenge}></div>
@@ -1174,11 +1170,19 @@ qr =
           <div><input type=file name=upfile accept='#{qr.acceptFiles}'></div>
         </form>
         <div id=files></div>
-        <div><input class=inputtext type=password name=pwd value='#{pwd}' placeholder=Password form=qr_form maxlength=8><a id=attach>attach another file</a></div>
+        <div><input class=inputtext type=password name=pwd placeholder=Password form=qr_form maxlength=8><a id=attach>attach another file</a></div>
       </div>
       <a id=error class=error></a>
       "
     qr.el = ui.dialog 'qr', 'top: 0; left: 0;', html
+
+    c = d.cookie
+    $('input[name=name]', qr.el).value =
+      if m = c.match(/4chan_name=([^;]+)/)  then decodeURIComponent m[1] else ''
+    $('input[name=email]', qr.el).value =
+      if m = c.match(/4chan_email=([^;]+)/) then decodeURIComponent m[1] else ''
+    $('input[name=pwd]', qr.el).value =
+      if m = c.match(/4chan_pass=([^;]+)/)  then decodeURIComponent m[1] else $('input[name=pwd]').value
 
     $.on $('input[name=name]',   qr.el), 'mousedown', (e) -> e.stopPropagation()
     $.on $('input[name=upfile]', qr.el), 'change', qr.validateFileSize
