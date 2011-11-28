@@ -2002,7 +2002,8 @@ quoteDR =
       return if root.className is 'inline'
       tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
       for quote in $$ '.quotelink', root
-        if quote.hash and quote.pathname.indexOf(tid) is -1
+        #if quote leads to a different thread id and is located on the same board (index 0)
+        if quote.pathname.indexOf("res/#{tid}") is -1 and !quote.pathname.indexOf "/#{g.BOARD}/res"
           quote.innerHTML += '&nbsp;(Duckroll)'
 
 reportButton =

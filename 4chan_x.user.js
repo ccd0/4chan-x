@@ -2592,7 +2592,7 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          if (quote.hash && quote.pathname.indexOf(tid) === -1) {
+          if (quote.pathname.indexOf("res/" + tid) === -1 && !quote.pathname.indexOf("/" + g.BOARD + "/res")) {
             _results.push(quote.innerHTML += '&nbsp;(Duckroll)');
           } else {
             _results.push(void 0);
