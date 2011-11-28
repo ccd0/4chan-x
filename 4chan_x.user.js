@@ -2411,7 +2411,7 @@
       root = q.parentNode.nodeName === 'FONT' ? q.parentNode : q.nextSibling ? q.nextSibling : q;
       if (el = $.id(id)) {
         inline = quoteInline.table(id, el.innerHTML);
-        if (q.className === 'backlink') {
+        if (/\bbacklink\b/.test(q.className)) {
           $.after(q.parentNode, inline);
           return;
         }

@@ -1888,7 +1888,7 @@ quoteInline =
     root = if q.parentNode.nodeName is 'FONT' then q.parentNode else if q.nextSibling then q.nextSibling else q
     if el = $.id id
       inline = quoteInline.table id, el.innerHTML
-      if q.className is 'backlink'
+      if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
         return
       $.after root, inline
