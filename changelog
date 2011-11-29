@@ -1,4 +1,6 @@
 master
+
+2.22.0
 - mayhem
   new Indicate Duckrolls feature
   put regex.info sauce back - disabled by default
@@ -6,7 +8,7 @@ master
 
 2.21.4
 - mayhem
-  fix auto-updater
+  fix 4chan X version updater
 
 2.21.3
 - mayhem
