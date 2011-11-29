@@ -2876,7 +2876,7 @@
       img = $.el('img', {
         src: a.href
       });
-      if (engine === "gecko" && a.parentNode.className !== 'op') {
+      if (engine === 'gecko' && a.parentNode.className !== 'op') {
         filesize = $('.filesize', a.parentNode);
         _ref = filesize.textContent.match(/(\d+)x/), _ = _ref[0], max = _ref[1];
         img.style.maxWidth = "" + max + "px";
@@ -2889,7 +2889,7 @@
       var req, thumb;
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
-      if (navigator.appName !== 'Opera') {
+      if (engine === 'webkit') {
         req = $.ajax(this.src, null, 'head');
         return req.onreadystatechange = function() {
           if (this.status !== 404) {

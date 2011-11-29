@@ -2203,7 +2203,7 @@ imgExpand =
     a = thumb.parentNode
     img = $.el 'img',
       src: a.href
-    if engine is "gecko" and a.parentNode.className isnt 'op'
+    if engine is 'gecko' and a.parentNode.className isnt 'op'
       filesize = $ '.filesize', a.parentNode
       [_, max] = filesize.textContent.match /(\d+)x/
       img.style.maxWidth = "#{max}px"
@@ -2215,9 +2215,11 @@ imgExpand =
     thumb = @previousSibling
     imgExpand.contract thumb
     #navigator.online is not x-browser/os yet
-    if navigator.appName isnt 'Opera'
+    if engine is 'webkit'
       req = $.ajax @src, null, 'head'
       req.onreadystatechange = -> setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
+    #Firefox returns a status code of 0 because of the same origin policy
+    #Oprah doesn't send any request
     else unless g.dead
       setTimeout imgExpand.retry, 10000, thumb
   retry: (thumb) ->

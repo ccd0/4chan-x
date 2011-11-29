@@ -2,6 +2,7 @@ master
 - mayhem
   new Indicate Duckrolls feature
   put regex.info sauce back - disabled by default
+  fix for auto image reloading in 404'd threads on Firefox
 
 2.21.4
 - mayhem
