@@ -1577,6 +1577,7 @@ updater =
 
       body = $.el 'body',
         innerHTML: @responseText
+      #this only works on Chrome because of cross origin policy
       if $('title', body).textContent is '4chan - Banned'
         updater.count.textContent = 'banned'
         updater.count.className = 'error'
