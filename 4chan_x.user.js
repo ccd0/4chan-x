@@ -851,6 +851,7 @@
     hideHide: function(reply) {
       var a, div, name, table, trip, _ref;
       table = reply.parentNode.parentNode.parentNode;
+      if (table.hidden) return;
       table.hidden = true;
       if (conf['Show Stubs']) {
         name = $('.commentpostername', reply).textContent;
@@ -1857,6 +1858,7 @@
     hideHide: function(thread) {
       var a, div, name, num, span, text, trip, _ref;
       if (conf['Show Stubs']) {
+        if (/stub/.test(thread.className)) return;
         if (span = $('.omittedposts', thread)) {
           num = Number(span.textContent.match(/\d+/)[0]);
         } else {
