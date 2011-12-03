@@ -2178,10 +2178,12 @@
       return watcher.refresh();
     },
     watch: function(thread, id) {
-      var props, watched, _name;
+      var props, text, watched, _name;
+      text = getTitle(thread);
       props = {
         href: "/" + g.BOARD + "/res/" + id,
-        textContent: getTitle(thread)
+        textContent: text,
+        title: text
       };
       watched = $.get('watched', {});
       watched[_name = g.BOARD] || (watched[_name] = {});
