@@ -2208,9 +2208,9 @@ imgExpand =
     img = $.el 'img',
       src: a.href
     if engine is 'gecko' and a.parentNode.className isnt 'op'
-      filesize = $ '.filesize', a.parentNode
-      [_, max] = filesize.textContent.match /(\d+)x/
-      img.style.maxWidth = "#{max}px"
+      filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent
+      max = filesize.match /(\d+)x/
+      img.style.maxWidth = "#{max[1]}px"
     $.on img, 'error', imgExpand.error
     thumb.hidden = true
     $.add a, img

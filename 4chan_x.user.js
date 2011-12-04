@@ -2873,15 +2873,15 @@
       return $.rm(thumb.nextSibling);
     },
     expand: function(thumb) {
-      var a, filesize, img, max, _, _ref;
+      var a, filesize, img, max;
       a = thumb.parentNode;
       img = $.el('img', {
         src: a.href
       });
       if (engine === 'gecko' && a.parentNode.className !== 'op') {
-        filesize = $('.filesize', a.parentNode);
-        _ref = filesize.textContent.match(/(\d+)x/), _ = _ref[0], max = _ref[1];
-        img.style.maxWidth = "" + max + "px";
+        filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent;
+        max = filesize.match(/(\d+)x/);
+        img.style.maxWidth = "" + max[1] + "px";
       }
       $.on(img, 'error', imgExpand.error);
       thumb.hidden = true;
