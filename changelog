@@ -1,4 +1,6 @@
 master
+
+2.22.1
 - mayhem
   change 'Duckroll' for 'Cross-thread'
   fix image expanding fitness with an inlined backlink on Firefox
