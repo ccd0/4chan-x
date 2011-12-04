@@ -121,7 +121,7 @@
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
         'Quote Preview': [true, 'Show quote content on hover'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
-        'Indicate Duckrolls': [true, 'Add \'(Duckroll)\' to cross threads quotes']
+        'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes']
       }
     },
     filter: {
@@ -2595,7 +2595,7 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
           if (quote.pathname.indexOf("res/" + tid) === -1 && !quote.pathname.indexOf("/" + g.BOARD + "/res")) {
-            _results.push(quote.innerHTML += '&nbsp;(Duckroll)');
+            _results.push(quote.innerHTML += '&nbsp;(Cross-thread)');
           } else {
             _results.push(void 0);
           }
@@ -2986,7 +2986,7 @@
       if (conf['Quote Preview']) quotePreview.init();
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
-      if (conf['Indicate Duckrolls']) quoteDR.init();
+      if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
       if (d.body) {
         return Main.onLoad();
       } else {

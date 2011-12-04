@@ -1,51 +1,51 @@
 config =
   main:
     Enhancing:
-      '404 Redirect':       [true,  'Redirect dead threads']
-      'Keybinds':           [true,  'Binds actions to keys']
-      'Time Formatting':    [true,  'Arbitrarily formatted timestamps, using your local time']
-      'Report Button':      [true,  'Add report buttons']
-      'Comment Expansion':  [true,  'Expand too long comments']
-      'Thread Expansion':   [true,  'View all replies']
-      'Index Navigation':   [true,  'Navigate to previous / next thread']
-      'Reply Navigation':   [false, 'Navigate to top / bottom of thread']
-      'Check for Updates':  [true,  'Check for updated versions of 4chan X']
+      '404 Redirect':                 [true,  'Redirect dead threads']
+      'Keybinds':                     [true,  'Binds actions to keys']
+      'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
+      'Report Button':                [true,  'Add report buttons']
+      'Comment Expansion':            [true,  'Expand too long comments']
+      'Thread Expansion':             [true,  'View all replies']
+      'Index Navigation':             [true,  'Navigate to previous / next thread']
+      'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
+      'Check for Updates':            [true,  'Check for updated versions of 4chan X']
     Filtering:
-      'Anonymize':          [false, 'Make everybody anonymous']
-      'Filter':             [false, 'Self-moderation placebo']
-      'Filter OPs':         [false, 'Filter OPs along with their threads']
-      'Reply Hiding':       [true,  'Hide single replies']
-      'Thread Hiding':      [true,  'Hide entire threads']
-      'Show Stubs':         [true,  'Of hidden threads / replies']
+      'Anonymize':                    [false, 'Make everybody anonymous']
+      'Filter':                       [false, 'Self-moderation placebo']
+      'Filter OPs':                   [false, 'Filter OPs along with their threads']
+      'Reply Hiding':                 [true,  'Hide single replies']
+      'Thread Hiding':                [true,  'Hide entire threads']
+      'Show Stubs':                   [true,  'Of hidden threads / replies']
     Imaging:
-      'Image Auto-Gif':     [false, 'Animate gif thumbnails']
-      'Image Expansion':    [true,  'Expand images']
-      'Image Hover':        [false, 'Show full image on mouseover']
-      'Sauce':              [true,  'Add sauce to images']
-      'Reveal Spoilers':    [false, 'Replace spoiler thumbnails by the original thumbnail']
+      'Image Auto-Gif':               [false, 'Animate gif thumbnails']
+      'Image Expansion':              [true,  'Expand images']
+      'Image Hover':                  [false, 'Show full image on mouseover']
+      'Sauce':                        [true,  'Add sauce to images']
+      'Reveal Spoilers':              [false, 'Replace spoiler thumbnails by the original thumbnail']
     Monitoring:
-      'Thread Updater':     [true,  'Update threads. Has more options in its own dialog.']
-      'Unread Count':       [true,  'Show unread post count in tab title']
-      'Post in Title':      [true,  'Show the op\'s post in the tab title']
-      'Thread Stats':       [true,  'Display reply and image count']
-      'Thread Watcher':     [true,  'Bookmark threads']
-      'Auto Watch':         [true,  'Automatically watch threads that you start']
-      'Auto Watch Reply':   [false, 'Automatically watch threads that you reply to']
+      'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
+      'Unread Count':                 [true,  'Show unread post count in tab title']
+      'Post in Title':                [true,  'Show the op\'s post in the tab title']
+      'Thread Stats':                 [true,  'Display reply and image count']
+      'Thread Watcher':               [true,  'Bookmark threads']
+      'Auto Watch':                   [true,  'Automatically watch threads that you start']
+      'Auto Watch Reply':             [false, 'Automatically watch threads that you reply to']
     Posting:
-      'Auto Noko':          [true,  'Always redirect to your post']
-      'Cooldown':           [true,  'Prevent `flood detected` errors']
-      'Quick Reply':        [true,  'Reply without leaving the page']
-      'Persistent QR':      [false, 'Quick reply won\'t disappear after posting. Only in replies.']
-      'Auto Hide QR':       [true,  'Automatically auto-hide the quick reply when posting']
-      'Remember Spoiler':   [false, 'Remember the spoiler state, instead of resetting after posting']
+      'Auto Noko':                    [true,  'Always redirect to your post']
+      'Cooldown':                     [true,  'Prevent `flood detected` errors']
+      'Quick Reply':                  [true,  'Reply without leaving the page']
+      'Persistent QR':                [false, 'Quick reply won\'t disappear after posting. Only in replies.']
+      'Auto Hide QR':                 [true,  'Automatically auto-hide the quick reply when posting']
+      'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting']
     Quoting:
-      'Quote Backlinks':    [true,  'Add quote backlinks']
-      'OP Backlinks':       [false, 'Add backlinks to the OP']
-      'Quote Highlighting': [true,  'Highlight the previewed post']
-      'Quote Inline':       [true,  'Show quoted post inline on quote click']
-      'Quote Preview':      [true,  'Show quote content on hover']
-      'Indicate OP quote':  [true,  'Add \'(OP)\' to OP quotes']
-      'Indicate Duckrolls': [true,  'Add \'(Duckroll)\' to cross threads quotes']
+      'Quote Backlinks':              [true,  'Add quote backlinks']
+      'OP Backlinks':                 [false, 'Add backlinks to the OP']
+      'Quote Highlighting':           [true,  'Highlight the previewed post']
+      'Quote Inline':                 [true,  'Show quoted post inline on quote click']
+      'Quote Preview':                [true,  'Show quote content on hover']
+      'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes']
+      'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
   filter:
     name:     ''
     tripcode: ''
@@ -2009,7 +2009,7 @@ quoteDR =
       for quote in $$ '.quotelink', root
         #if quote leads to a different thread id and is located on the same board (index 0)
         if quote.pathname.indexOf("res/#{tid}") is -1 and !quote.pathname.indexOf "/#{g.BOARD}/res"
-          quote.innerHTML += '&nbsp;(Duckroll)'
+          quote.innerHTML += '&nbsp;(Cross-thread)'
 
 reportButton =
   init: ->
@@ -2335,7 +2335,7 @@ Main =
     if conf['Indicate OP quote']
       quoteOP.init()
 
-    if conf['Indicate Duckrolls']
+    if conf['Indicate Cross-thread Quotes']
       quoteDR.init()
 
 
