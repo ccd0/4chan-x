@@ -914,12 +914,12 @@ options =
   <div></div>
   <input type=radio name=tab hidden id=flavors_tab>
   <div>
-    <p class=error><code>Sauce</code> is disabled.</p>
+    <div class=error><code>Sauce</code> is disabled.</div>
     <textarea name=flavors id=flavors></textarea>
   </div>
   <input type=radio name=tab hidden id=filter_tab>
   <div>
-    <p class=error><code>Filter</code> is disabled.</p>
+    <div class=error><code>Filter</code> is disabled.</div>
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
     <p>Name:<br><textarea name=name></textarea></p>
@@ -933,12 +933,12 @@ options =
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div>
-    <p class=error><code>Quote Backlinks</code> are disabled.</p>
+    <div class=error><code>Quote Backlinks</code> are disabled.</div>
     <ul>
       Backlink formatting
       <li><input type=text name=backlink> : <span id=backlinkPreview></span></li>
     </ul>
-    <p class=error><code>Time Formatting</code> is disabled.</p>
+    <div class=error><code>Time Formatting</code> is disabled.</div>
     <ul>
       Time formatting
       <li><input type=text name=time> : <span id=timePreview></span></li>
@@ -952,7 +952,7 @@ options =
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
-    <p class=error><code>Keybinds</code> are disabled.</p>
+    <div class=error><code>Keybinds</code> are disabled.</div>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
       <tr><td>Close Options or QR</td><td><input name=close></td></tr>
