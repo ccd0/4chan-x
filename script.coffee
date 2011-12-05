@@ -913,9 +913,13 @@ options =
   <input type=radio name=tab hidden id=main_tab checked>
   <div></div>
   <input type=radio name=tab hidden id=flavors_tab>
-  <textarea name=flavors id=flavors></textarea>
+  <div>
+    <p class=error><code>Sauce</code> is disabled.</p>
+    <textarea name=flavors id=flavors></textarea>
+  </div>
   <input type=radio name=tab hidden id=filter_tab>
   <div>
+    <p class=error><code>Filter</code> is disabled.</p>
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
     <p>Name:<br><textarea name=name></textarea></p>
@@ -929,10 +933,12 @@ options =
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div>
+    <p class=error><code>Quote Backlinks</code> are disabled.</p>
     <ul>
       Backlink formatting
       <li><input type=text name=backlink> : <span id=backlinkPreview></span></li>
     </ul>
+    <p class=error><code>Time Formatting</code> is disabled.</p>
     <ul>
       Time formatting
       <li><input type=text name=time> : <span id=timePreview></span></li>
@@ -946,6 +952,7 @@ options =
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
+    <p class=error><code>Keybinds</code> are disabled.</p>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
       <tr><td>Close Options or QR</td><td><input name=close></td></tr>
@@ -1009,6 +1016,15 @@ options =
       input.type  = 'text'
       input.value = conf[input.name]
       $.on input, 'keydown', options.keybind
+
+    #indicate if the settings require a feature to be enabled
+    indicators = {}
+    for indicator in $$ '.error', dialog
+      key = indicator.firstChild.textContent
+      indicator.hidden = conf[key]
+      indicators[key] = indicator
+      $.on $("[name='#{key}']", dialog), 'click', ->
+        indicators[@name].hidden = @checked
 
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', -> $.rm overlay
@@ -2549,7 +2565,7 @@ Main =
       #options [name=tab]:not(:checked) + * {
         display: none;
       }
-      #content > * {
+      #content > div {
         height: 450px;
         overflow: auto;
       }
@@ -2558,6 +2574,9 @@ Main =
         min-height: 100px;
         resize: vertical;
         width: 100%;
+      }
+      #flavors {
+        height: 100%;
       }
 
       #qr {
