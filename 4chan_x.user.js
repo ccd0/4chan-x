@@ -3064,7 +3064,7 @@
       origin = e.origin, data = e.data;
       if (origin === 'http://sys.4chan.org') {
         return qr.message(data);
-      } else if (data.version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
+      } else if (data.version && data.version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
         return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + data.version + "/4chan_x.user.js";
       }
     },

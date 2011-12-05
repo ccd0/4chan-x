@@ -1,4 +1,6 @@
 master
+- mayhem
+  fix obscure and continuous prompts to auto update
 
 2.22.1
 - mayhem
