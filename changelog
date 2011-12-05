@@ -1,4 +1,6 @@
 master
+
+2.22.2
 - mayhem
   indicate if the settings require a feature to be enabled
   fix obscure and continuous prompts to auto update
