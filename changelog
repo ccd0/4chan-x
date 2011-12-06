@@ -1,4 +1,7 @@
 master
+- mayhem
+  quotes are now inserted at the caret position in the QR
+  quotes also replace the text selection in the QR
 - aeosynth
   update the captcha caching expiration date to 30mins
 

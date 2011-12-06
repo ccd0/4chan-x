@@ -1658,15 +1658,17 @@
       text = ">>" + id + "\n";
       selection = window.getSelection();
       if (s = selection.toString()) {
-        selectionID = (_ref = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)) != null ? _ref.name : void 0;
+        selectionID = (_ref = $.x('ancestor::blockquote', selection.anchorNode)) != null ? _ref.parentNode.firstElementChild.name : void 0;
         if (selectionID === id) {
           s = s.replace(/\n/g, '\n>');
           text += ">" + s + "\n";
         }
       }
       ta = $('textarea', qr.el);
+      ta.value = ta.value.slice(0, ta.selectionStart) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
       ta.focus();
-      return ta.value += text;
+      ta.selectionEnd = ta.selectionStart + text.length;
+      return window.getSelection().collapseToEnd();
     },
     refresh: function() {
       var m, newFile, oldFile, _ref;

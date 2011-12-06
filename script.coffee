@@ -1295,14 +1295,18 @@ qr =
 
     selection = window.getSelection()
     if s = selection.toString()
-      selectionID = $.x('preceding::input[@type="checkbox"][1]', selection.anchorNode)?.name
-      if selectionID == id
+      selectionID = $.x('ancestor::blockquote', selection.anchorNode)?.parentNode.firstElementChild.name
+      if selectionID is id
         s = s.replace /\n/g, '\n>'
         text += ">#{s}\n"
 
     ta = $ 'textarea', qr.el
+    #replace selection for text
+    ta.value = ta.value.slice(0, ta.selectionStart) + text + ta.value.slice(ta.selectionEnd, ta.value.length)
     ta.focus()
-    ta.value += text
+    #move the caret to the end of the new quote
+    ta.selectionEnd = ta.selectionStart + text.length
+    window.getSelection().collapseToEnd()
 
   refresh: ->
     $('[name=sub]', qr.el).value = ''
