@@ -1255,11 +1255,11 @@ qr =
     return 'Error: No text entered.' unless content
 
     ###
-    captchas expire after 5 hours (emperically verified). cutoff 5 minutes
+    captchas expire after 30 minutes (emperically verified). cutoff 5 minutes
     before then, b/c posting takes time.
     ###
 
-    cutoff = Date.now() - 5*HOUR + 5*MINUTE
+    cutoff = Date.now() - 25*MINUTE
     captchas = $.get 'captchas', []
     while captcha = captchas.shift()
       if captcha.time > cutoff

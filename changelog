@@ -1,4 +1,6 @@
 master
+- aeosynth
+  update the captcha caching expiration date to 30mins
 
 2.22.2
 - mayhem
