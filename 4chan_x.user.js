@@ -1647,7 +1647,7 @@
       return false;
     },
     quote: function(e) {
-      var id, s, selection, selectionID, ta, text, _ref;
+      var caretPos, id, s, selection, selectionID, ta, text, _ref;
       if (e) e.preventDefault();
       if (qr.el) {
         $('#autohide', qr.el).checked = false;
@@ -1665,9 +1665,10 @@
         }
       }
       ta = $('textarea', qr.el);
-      ta.value = ta.value.slice(0, ta.selectionStart) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
+      caretPos = ta.selectionStart;
+      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
       ta.focus();
-      return ta.selectionStart = ta.selectionEnd = ta.selectionStart + text.length;
+      return ta.selectionStart = ta.selectionEnd = caretPos + text.length;
     },
     refresh: function() {
       var m, newFile, oldFile, _ref;
