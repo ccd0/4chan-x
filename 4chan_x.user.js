@@ -1667,8 +1667,7 @@
       ta = $('textarea', qr.el);
       ta.value = ta.value.slice(0, ta.selectionStart) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
       ta.focus();
-      ta.selectionEnd = ta.selectionStart + text.length;
-      return window.getSelection().collapseToEnd();
+      return ta.selectionStart = ta.selectionEnd = ta.selectionStart + text.length;
     },
     refresh: function() {
       var m, newFile, oldFile, _ref;

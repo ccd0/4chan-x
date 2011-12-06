@@ -1305,8 +1305,7 @@ qr =
     ta.value = ta.value.slice(0, ta.selectionStart) + text + ta.value.slice(ta.selectionEnd, ta.value.length)
     ta.focus()
     #move the caret to the end of the new quote
-    ta.selectionEnd = ta.selectionStart + text.length
-    window.getSelection().collapseToEnd()
+    ta.selectionStart = ta.selectionEnd = ta.selectionStart + text.length
 
   refresh: ->
     $('[name=sub]', qr.el).value = ''
