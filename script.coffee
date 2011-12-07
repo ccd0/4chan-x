@@ -750,10 +750,9 @@ keybinds =
     if quote
       qr.quote.call $ '.quotejs + a', $('.replyhl', thread) or thread
     else
-      if qr.el
-        $('textarea', qr.el).focus()
-      else
+      unless qr.el
         qr.dialog '', thread?.firstChild.id
+      $('textarea', qr.el).focus()
 
   open: (thread, tab) ->
     id = thread.firstChild.id

@@ -1072,11 +1072,8 @@
       if (quote) {
         return qr.quote.call($('.quotejs + a', $('.replyhl', thread) || thread));
       } else {
-        if (qr.el) {
-          return $('textarea', qr.el).focus();
-        } else {
-          return qr.dialog('', thread != null ? thread.firstChild.id : void 0);
-        }
+        if (!qr.el) qr.dialog('', thread != null ? thread.firstChild.id : void 0);
+        return $('textarea', qr.el).focus();
       }
     },
     open: function(thread, tab) {

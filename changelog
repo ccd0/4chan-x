@@ -2,6 +2,7 @@ master
 - mayhem
   quotes are now inserted at the caret position in the QR
   quotes also replace the text selection in the QR
+  open QR focused when using the `Open QR without post number inserted` keybind
 - aeosynth
   update the captcha caching expiration date to 30mins
 
