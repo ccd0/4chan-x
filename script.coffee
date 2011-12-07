@@ -1076,7 +1076,7 @@ options =
   favicon: ->
     $.cb.value.call @
     Favicon.switch()
-    Favicon.update() if g.REPLY
+    Favicon.update() if g.REPLY and conf['Unread Count']
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}><img src=#{Favicon.unreadNSFW}><img src=#{Favicon.unreadDead}>"
 
 cooldown =
