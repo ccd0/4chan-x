@@ -1687,7 +1687,7 @@
       caretPos = ta.selectionStart;
       ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
       ta.focus();
-      return ta.selectionStart = ta.selectionEnd = caretPos + text.length;
+      return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     refresh: function() {
       var m, newFile, oldFile, _ref;
