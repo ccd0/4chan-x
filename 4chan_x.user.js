@@ -36,23 +36,20 @@
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- */
-
-/* HACKING
+ *
+ * HACKING
  *
  * 4chan x is written in CoffeeScript[1], and developed on github[2].
  *
  * [1]: http://jashkenas.github.com/coffee-script/
  * [2]: http://github.com/mayhemydg/4chan-x
- */
-
-/* CONTRIBUTORS
+ *
+ * CONTRIBUTORS
  *
  * Shou- - pentadactyl fixes
  * ferongr - new favicons
  * xat- - new favicons
  * Zixaphir - fix qr textarea - captcha-image gap
- * Mayhem - various features / fixes
  * Ongpot - sfw favicon
  * thisisanon - nsfw + 404 favicons
  * Anonymous - empty favicon
