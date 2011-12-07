@@ -950,6 +950,7 @@ options =
       <li>Minutes: %M</li>
     </ul>
     <div class=error><code>Unread Count</code> is disabled.</div>
+    Unread favicons<br>
     <select name=favicon>
       <option>ferongr</option>
       <option>None</option>
@@ -1072,7 +1073,7 @@ options =
   favicon: ->
     $.cb.value.call @
     Favicon.switch()
-    Favicon.update()
+    Favicon.update() if g.REPLY
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}><img src=#{Favicon.unreadNSFW}><img src=#{Favicon.unreadDead}>"
 
 cooldown =
