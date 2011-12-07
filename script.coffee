@@ -1664,7 +1664,8 @@ updater =
   update: ->
     updater.timer.textContent = 0
     updater.request?.abort()
-    url = location.pathname
+    #Opera needs to fool its cache
+    url = if engine isnt 'presto' then location.pathname else location.pathname + '?' + Date.now()
     cb = updater.cb.update
     updater.request = $.ajax url, cb
 

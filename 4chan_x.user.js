@@ -2080,7 +2080,7 @@
       var cb, url, _ref;
       updater.timer.textContent = 0;
       if ((_ref = updater.request) != null) _ref.abort();
-      url = location.pathname;
+      url = engine !== 'presto' ? location.pathname : location.pathname + '?' + Date.now();
       cb = updater.cb.update;
       return updater.request = $.ajax(url, cb);
     }
