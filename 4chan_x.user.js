@@ -137,6 +137,7 @@
     flavors: ['http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://3d.iqdb.org/?url=', '#http://regex.info/exif.cgi?imgurl=', '#http://imgur.com/upload?url='].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
+    favicon: 'ferongr',
     hotkeys: {
       close: 'Esc',
       spoiler: 'ctrl+s',
@@ -1241,7 +1242,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, option, overlay, ta, time, ul, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
       dialog = ui.dialog('options', '', '\
 <div id=optionsbar>\
   <div id=credits>\
@@ -1297,6 +1298,12 @@
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>\
       <li>Minutes: %M</li>\
     </ul>\
+    <div class=error><code>Unread Count</code> is disabled.</div>\
+    <select name=favicon>\
+      <option>ferongr</option>\
+      <option>None</option>\
+    </select>\
+    <span></span>\
   </div>\
   <input type=radio name=tab hidden id=keybinds_tab>\
   <div>\
@@ -1362,17 +1369,27 @@
       (time = $('[name=time]', dialog)).value = conf['time'];
       $.on(back, 'keyup', options.backlink);
       $.on(time, 'keyup', options.time);
-      _ref3 = $$('#keybinds_tab + div input', dialog);
+      favicon = $('select', dialog);
+      _ref3 = favicon.options;
       for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-        input = _ref3[_j];
+        option = _ref3[_j];
+        if (option.textContent === conf['favicon']) {
+          option.selected = true;
+          break;
+        }
+      }
+      $.on(favicon, 'change', options.favicon);
+      _ref4 = $$('#keybinds_tab + div input', dialog);
+      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
+        input = _ref4[_k];
         input.type = 'text';
         input.value = conf[input.name];
         $.on(input, 'keydown', options.keybind);
       }
       indicators = {};
-      _ref4 = $$('.error', dialog);
-      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
-        indicator = _ref4[_k];
+      _ref5 = $$('.error', dialog);
+      for (_l = 0, _len4 = _ref5.length; _l < _len4; _l++) {
+        indicator = _ref5[_l];
         key = indicator.firstChild.textContent;
         indicator.hidden = conf[key];
         indicators[key] = indicator;
@@ -1391,8 +1408,9 @@
       });
       $.add(overlay, dialog);
       $.add(d.body, overlay);
+      options.backlink.call(back);
       options.time.call(time);
-      return options.backlink.call(back);
+      return options.favicon.call(favicon);
     },
     clearHidden: function() {
       $["delete"]("hiddenReplies/" + g.BOARD + "/");
@@ -1405,20 +1423,23 @@
       e.stopPropagation();
       if ((key = keybinds.keyCode(e)) == null) return;
       this.value = key;
-      $.set(this.name, key);
-      return conf[this.name] = key;
+      return $.cb.value.call(this);
     },
     time: function() {
-      $.set('time', this.value);
-      conf['time'] = this.value;
+      $.cb.value.call(this);
       Time.foo();
       Time.date = new Date();
       return $('#timePreview').textContent = Time.funk(Time);
     },
     backlink: function() {
-      $.set('backlink', this.value);
-      conf['backlink'] = this.value;
+      $.cb.value.call(this);
       return $('#backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
+    },
+    favicon: function() {
+      $.cb.value.call(this);
+      Favicon["switch"]();
+      Favicon.update();
+      return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "><img src=" + Favicon.unreadNSFW + "><img src=" + Favicon.unreadDead + ">";
     }
   };
 
@@ -2712,19 +2733,29 @@
       favicon = $('link[rel="shortcut icon"]', d.head);
       favicon.type = 'image/x-icon';
       href = favicon.href;
-      Favicon["default"] = href;
-      return Favicon.unread = /ws/.test(href) ? Favicon.unreadSFW : Favicon.unreadNSFW;
+      this.SFW = /ws.ico$/.test(href);
+      this["default"] = href;
+      return this["switch"]();
+    },
+    "switch": function() {
+      switch (conf['favicon']) {
+        case 'ferongr':
+          this.unreadDead = 'data:image/gif;base64,R0lGODlhEAAQAOMHAOgLAnMFAL8AAOgLAukMA/+AgP+rq////////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
+          this.unreadSFW = 'data:image/gif;base64,R0lGODlhEAAQAOMHAADX8QBwfgC2zADX8QDY8nnl8qLp8v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
+          this.unreadNSFW = 'data:image/gif;base64,R0lGODlhEAAQAOMHAFT+ACh5AEncAFT+AFX/Acz/su7/5v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
+          break;
+        case 'None':
+          this.unreadDead = this.unreadSFW = this.unreadNSFW = this["default"];
+      }
+      return this.unread = this.SFW ? this.unreadSFW : this.unreadNSFW;
     },
     empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    unreadDead: 'data:image/png;base64,R0lGODlhEAAQAOMHAOgLAnMFAL8AAOgLAukMA/+AgP+rq////////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==',
-    unreadSFW: 'data:image/png;base64,R0lGODlhEAAQAOMHAADX8QBwfgC2zADX8QDY8nnl8qLp8v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==',
-    unreadNSFW: 'data:image/png;base64,R0lGODlhEAAQAOMHAFT+ACh5AEncAFT+AFX/Acz/su7/5v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==',
     update: function() {
       var clone, favicon, l;
       l = unread.replies.length;
       favicon = $('link[rel="shortcut icon"]', d.head);
-      favicon.href = g.dead ? l ? Favicon.unreadDead : Favicon.dead : l ? Favicon.unread : Favicon["default"];
+      favicon.href = g.dead ? l ? this.unreadDead : this.dead : l ? this.unread : this["default"];
       if (engine === "gecko") {
         clone = favicon.cloneNode(true);
         return $.replace(favicon, clone);
@@ -2929,7 +2960,8 @@
         innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
       });
       imageType = $.get('imageType', 'full');
-      _ref = $$('option', controls);
+      select = $('select', controls);
+      _ref = select.options;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         option = _ref[_i];
         if (option.textContent === imageType) {
@@ -2937,7 +2969,6 @@
           break;
         }
       }
-      select = $('select', controls);
       imgExpand.cb.typeChange.call(select);
       $.on(select, 'change', $.cb.value);
       $.on(select, 'change', imgExpand.cb.typeChange);

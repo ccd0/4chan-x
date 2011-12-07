@@ -66,6 +66,7 @@ config =
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
+  favicon: 'ferongr'
   hotkeys:
     close:           'Esc'
     spoiler:         'ctrl+s'
@@ -948,6 +949,12 @@ options =
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
       <li>Minutes: %M</li>
     </ul>
+    <div class=error><code>Unread Count</code> is disabled.</div>
+    <select name=favicon>
+      <option>ferongr</option>
+      <option>None</option>
+    </select>
+    <span></span>
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
@@ -1009,6 +1016,12 @@ options =
     (time = $ '[name=time]',     dialog).value = conf['time']
     $.on back, 'keyup', options.backlink
     $.on time, 'keyup', options.time
+    favicon = $ 'select', dialog
+    for option in favicon.options
+      if option.textContent is conf['favicon']
+        option.selected = true
+        break
+    $.on favicon, 'change', options.favicon
 
     #keybinds
     for input in $$ '#keybinds_tab + div input', dialog
@@ -1031,8 +1044,9 @@ options =
     $.add overlay, dialog
     $.add d.body, overlay
 
-    options.time.call     time
     options.backlink.call back
+    options.time.call     time
+    options.favicon.call  favicon
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -1046,18 +1060,20 @@ options =
     e.stopPropagation()
     return unless (key = keybinds.keyCode e)?
     @value = key
-    $.set @name, key
-    conf[@name] = key
+    $.cb.value.call @
   time: ->
-    $.set 'time', @value
-    conf['time'] = @value
+    $.cb.value.call @
     Time.foo()
     Time.date = new Date()
     $('#timePreview').textContent = Time.funk Time
   backlink: ->
-    $.set 'backlink', @value
-    conf['backlink'] = @value
+    $.cb.value.call @
     $('#backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
+  favicon: ->
+    $.cb.value.call @
+    Favicon.switch()
+    Favicon.update()
+    @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}><img src=#{Favicon.unreadNSFW}><img src=#{Favicon.unreadDead}>"
 
 cooldown =
   #TODO merge into qr
@@ -2103,14 +2119,22 @@ Favicon =
     favicon = $ 'link[rel="shortcut icon"]', d.head
     favicon.type = 'image/x-icon'
     {href} = favicon
-    Favicon.default = href
-    Favicon.unread = if /ws/.test href then Favicon.unreadSFW else Favicon.unreadNSFW
+    @SFW = /ws.ico$/.test href
+    @default = href
+    @switch()
+
+  switch: ->
+    switch conf['favicon']
+      when 'ferongr'
+        @unreadDead = 'data:image/gif;base64,R0lGODlhEAAQAOMHAOgLAnMFAL8AAOgLAukMA/+AgP+rq////////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw=='
+        @unreadSFW = 'data:image/gif;base64,R0lGODlhEAAQAOMHAADX8QBwfgC2zADX8QDY8nnl8qLp8v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw=='
+        @unreadNSFW = 'data:image/gif;base64,R0lGODlhEAAQAOMHAFT+ACh5AEncAFT+AFX/Acz/su7/5v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw=='
+      when 'None'
+        @unreadDead = @unreadSFW = @unreadNSFW = @default
+    @unread = if @SFW then @unreadSFW else @unreadNSFW
 
   empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
   dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
-  unreadDead: 'data:image/png;base64,R0lGODlhEAAQAOMHAOgLAnMFAL8AAOgLAukMA/+AgP+rq////////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw=='
-  unreadSFW: 'data:image/png;base64,R0lGODlhEAAQAOMHAADX8QBwfgC2zADX8QDY8nnl8qLp8v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw=='
-  unreadNSFW: 'data:image/png;base64,R0lGODlhEAAQAOMHAFT+ACh5AEncAFT+AFX/Acz/su7/5v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw=='
 
   update: ->
     l = unread.replies.length
@@ -2119,14 +2143,14 @@ Favicon =
     favicon.href =
       if g.dead
         if l
-          Favicon.unreadDead
+          @unreadDead
         else
-          Favicon.dead
+          @dead
       else
         if l
-          Favicon.unread
+          @unread
         else
-          Favicon.default
+          @default
 
     #XXX `favicon.href = href` doesn't work on Firefox
     if engine is "gecko"
@@ -2255,11 +2279,11 @@ imgExpand =
         "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>
         <label>Expand Images<input type=checkbox id=imageExpand></label>"
     imageType = $.get 'imageType', 'full'
-    for option in $$ 'option', controls
+    select = $ 'select', controls
+    for option in select.options
       if option.textContent is imageType
         option.selected = true
         break
-    select = $ 'select', controls
     imgExpand.cb.typeChange.call select
     $.on select, 'change', $.cb.value
     $.on select, 'change', imgExpand.cb.typeChange

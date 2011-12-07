@@ -1,5 +1,6 @@
 master
 - mayhem
+  multiple unread favicons to chose in the options
   quotes are now inserted at the caret position in the QR
   quotes also replace the text selection in the QR
   open QR focused when using the `Open QR without post number inserted` keybind
