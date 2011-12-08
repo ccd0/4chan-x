@@ -2171,9 +2171,12 @@ Favicon =
         else
           @default
 
-    #XXX `favicon.href = href` doesn't work on Firefox
-    if engine is "gecko"
+    #`favicon.href = href` doesn't work on Firefox
+    #`favicon.href = href` isn't enough on Opera
+    #Opera won't always update the favicon if the href do not change
+    if engine isnt 'webkit'
       clone = favicon.cloneNode true
+      favicon.href = null
       $.replace favicon, clone
 
 redirect = ->
