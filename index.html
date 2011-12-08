@@ -7,12 +7,12 @@
     <script>
 (function(){
   var d = document;
-  var s = d.createElement('script'); s.async = true;
-  var v = s.cloneNode();
+  var v = d.createElement('script'); v.async = true;
   v.src = 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js';
-  var g = s.cloneNode();
+  var g = d.createElement('script'); g.async = true;
   g.src = 'https://apis.google.com/js/plusone.js';
   d.addEventListener("DOMContentLoaded", function loaded() {
+    d.body.classList.remove('no-js');
     d.head.appendChild(v);
     d.head.appendChild(g);
     d.removeEventListener("DOMContentLoaded", loaded, false);
@@ -42,6 +42,13 @@
       background: #FA0;
       color: #FFF;
       text-shadow: none;
+    }
+    body:not(.no-js) > .notice {
+      display: none;
+    }
+    .notice {
+      color: red;
+      text-align: center;
     }
     h1, h2, h3, h4 {
       color: #DDD;
@@ -137,10 +144,11 @@
     }
     </style>
   </head>
-  <body>
+  <body class='no-js'>
     <a href="http://github.com/mayhemydg/4chan-x"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/7afbc8b248c68eb468279e8c17986ad46549fb71/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub"></a>
     <h1>4chan x</h1>
-    <h2><a href="https://raw.github.com/mayhemydg/4chan-x/2.22.2/4chan_x.user.js">install</a></h2>
+    <h2><a>install</a></h2>
+    <div class='notice'>JavaScript must be enabled.</div>
     <a id='feature-list' hidden></a>
     <h3>
       <a href='#'>main</a>
