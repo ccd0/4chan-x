@@ -1,6 +1,7 @@
 master
 - mayhem
   fix favicon updating on Opera
+  fix compatibility with Tampermonkey
 
 2.23.0
 - mayhem

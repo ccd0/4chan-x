@@ -3012,7 +3012,7 @@
         g.PAGENUM = parseInt(temp) || 0;
       }
       if (location.hostname === 'sys.4chan.org') {
-        if (d.body) {
+        if (/interactive|complete/.test(d.readyState)) {
           qr.sys();
         } else {
           $.on(d, 'DOMContentLoaded', qr.sys);
@@ -3054,7 +3054,7 @@
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
-      if (d.body) {
+      if (/interactive|complete/.test(d.readyState)) {
         return Main.onLoad();
       } else {
         return $.on(d, 'DOMContentLoaded', Main.onLoad);

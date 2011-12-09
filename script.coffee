@@ -2328,7 +2328,7 @@ Main =
       g.PAGENUM = parseInt(temp) or 0
 
     if location.hostname is 'sys.4chan.org'
-      if d.body
+      if /interactive|complete/.test d.readyState
         qr.sys()
       else
         $.on d, 'DOMContentLoaded', qr.sys
@@ -2404,7 +2404,7 @@ Main =
       quoteDR.init()
 
 
-    if d.body
+    if /interactive|complete/.test d.readyState
       Main.onLoad()
     else
       $.on d, 'DOMContentLoaded', Main.onLoad
