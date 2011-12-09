@@ -1213,7 +1213,7 @@ qr =
       </div>
       <a id=error class=error></a>
       "
-    qr.el = ui.dialog 'qr', 'top: 0; left: 0;', html
+    qr.el = ui.dialog 'qr', 'top: 0; right: 0;', html
 
     c = d.cookie
     $('input[name=name]', qr.el).value =
