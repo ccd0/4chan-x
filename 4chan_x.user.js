@@ -55,7 +55,7 @@
  * Anonymous - empty favicon
  * Seiba - chrome quick reply focusing
  * herpaderpderp - recaptcha fixes
- * wakimoko - recaptcha tab order http://userscripts.org/scripts/show/82657
+ * WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
  *
  * All the people who've taken the time to write bug reports.
  *
