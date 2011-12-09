@@ -1797,7 +1797,7 @@ Time =
     @parse =
       if Date.parse '10/11/11(Tue)18:53' is 1318351980000
         (node) -> new Date Date.parse(node.textContent) + chanOffset*HOUR
-      else # Firefox the Archaic cannot parse 4chan's time
+      else # Firefox and Opera do not parse 4chan's time format correctly
         (node) ->
           [_, month, day, year, hour, min] =
             node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
@@ -2336,13 +2336,19 @@ Main =
 
     $.on window, 'message', Main.message
 
-    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
-
-    lastChecked = $.get 'lastChecked', 0
     now = Date.now()
-    Main.reqUpdate = lastChecked < now - 1*DAY
+    if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
+      update = ->
+        $.off d, 'DOMContentLoaded', update
+        $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
+      if /interactive|complete/.test d.readyState
+        update()
+      else
+        $.on d, 'DOMContentLoaded', update
+      $.set 'lastUpdate', now
 
-    if Main.reqUpdate
+    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
+    if $.get('lastChecked', 0) < now - 1*DAY
       $.set 'lastChecked', now
 
       cutoff = now - 7*DAY
@@ -2420,9 +2426,6 @@ Main =
     $.addStyle Main.css
     threading.init()
     Favicon.init()
-
-    if Main.reqUpdate and conf['Check for Updates']
-      $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
 
     #recaptcha may be blocked, eg by noscript
     if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')

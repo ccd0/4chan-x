@@ -3002,7 +3002,7 @@
 
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, lastChecked, now, pathname, temp, timestamp, _ref;
+      var cutoff, hiddenThreads, id, now, pathname, temp, timestamp, update, _ref;
       pathname = location.pathname.substring(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -3020,11 +3020,23 @@
         return;
       }
       $.on(window, 'message', Main.message);
-      g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
-      lastChecked = $.get('lastChecked', 0);
       now = Date.now();
-      Main.reqUpdate = lastChecked < now - 1 * DAY;
-      if (Main.reqUpdate) {
+      if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
+        update = function() {
+          $.off(d, 'DOMContentLoaded', update);
+          return $.add(d.head, $.el('script', {
+            src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
+          }));
+        };
+        if (/interactive|complete/.test(d.readyState)) {
+          update();
+        } else {
+          $.on(d, 'DOMContentLoaded', update);
+        }
+        $.set('lastUpdate', now);
+      }
+      g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
+      if ($.get('lastChecked', 0) < now - 1 * DAY) {
         $.set('lastChecked', now);
         cutoff = now - 7 * DAY;
         hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
@@ -3072,11 +3084,6 @@
       $.addStyle(Main.css);
       threading.init();
       Favicon.init();
-      if (Main.reqUpdate && conf['Check for Updates']) {
-        $.add(d.head, $.el('script', {
-          src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
-        }));
-      }
       if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
         Recaptcha.init();
         if (g.REPLY && conf['Auto Watch Reply'] && conf['Thread Watcher']) {
