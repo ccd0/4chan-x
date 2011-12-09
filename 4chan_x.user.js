@@ -1639,8 +1639,8 @@
       content = $('textarea', qr.el).value || $('input[type=file]', qr.el).files.length;
       if (!content) return 'Error: No text entered.';
       /*
-          captchas expire after 30 minutes (emperically verified). cutoff 5 minutes
-          before then, b/c posting takes time.
+          captchas expire after 30 minutes, see window.RecaptchaState.timeout.
+          cutoff 5 minutes before then, b/c posting takes time.
       */
       cutoff = Date.now() - 25 * MINUTE;
       captchas = $.get('captchas', []);
