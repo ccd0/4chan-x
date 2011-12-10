@@ -1625,23 +1625,23 @@ updater =
         updater.count.className = 'error'
         return
 
-      replies = $$ '.reply', body
-      id = Number $('td[id]', updater.br.previousElementSibling)?.id or 0
-      arr = []
-      while (reply = replies.pop()) and (reply.id > id)
-        arr.push reply.parentNode.parentNode.parentNode #table
+      id = $('td[id]', updater.br.previousElementSibling)?.id or 0
+      frag = d.createDocumentFragment()
+      for reply in $$('.reply', body).reverse()
+        if reply.id is id
+          break
+        $.prepend frag, reply.parentNode.parentNode.parentNode #table
 
-      scroll = conf['Scrolling'] && updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
+      newPosts = frag.childNodes.length
+      scroll = conf['Scrolling'] && updater.focus && newPosts && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
       if conf['Verbose']
-        updater.count.textContent = '+' + arr.length
-        if arr.length is 0
+        updater.count.textContent = '+' + newPosts
+        if newPosts is 0
           updater.count.className = ''
         else
           updater.count.className = 'new'
 
-      #XXX add replies in correct order so backlinks resolve
-      while reply = arr.pop()
-        $.before updater.br, reply
+      $.before updater.br, frag
       if scroll
         scrollTo 0, d.body.scrollHeight
 

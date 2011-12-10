@@ -2012,7 +2012,7 @@
         }
       },
       update: function() {
-        var arr, body, id, input, replies, reply, scroll, _i, _len, _ref, _ref2;
+        var body, frag, id, input, newPosts, reply, scroll, _i, _j, _len, _len2, _ref, _ref2, _ref3;
         if (this.status === 404) {
           updater.timer.textContent = '';
           updater.count.textContent = 404;
@@ -2038,24 +2038,25 @@
           updater.count.className = 'error';
           return;
         }
-        replies = $$('.reply', body);
-        id = Number(((_ref2 = $('td[id]', updater.br.previousElementSibling)) != null ? _ref2.id : void 0) || 0);
-        arr = [];
-        while ((reply = replies.pop()) && (reply.id > id)) {
-          arr.push(reply.parentNode.parentNode.parentNode);
+        id = ((_ref2 = $('td[id]', updater.br.previousElementSibling)) != null ? _ref2.id : void 0) || 0;
+        frag = d.createDocumentFragment();
+        _ref3 = $$('.reply', body).reverse();
+        for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+          reply = _ref3[_j];
+          if (reply.id === id) break;
+          $.prepend(frag, reply.parentNode.parentNode.parentNode);
         }
-        scroll = conf['Scrolling'] && updater.focus && arr.length && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
+        newPosts = frag.childNodes.length;
+        scroll = conf['Scrolling'] && updater.focus && newPosts && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
         if (conf['Verbose']) {
-          updater.count.textContent = '+' + arr.length;
-          if (arr.length === 0) {
+          updater.count.textContent = '+' + newPosts;
+          if (newPosts === 0) {
             updater.count.className = '';
           } else {
             updater.count.className = 'new';
           }
         }
-        while (reply = arr.pop()) {
-          $.before(updater.br, reply);
-        }
+        $.before(updater.br, frag);
         if (scroll) return scrollTo(0, d.body.scrollHeight);
       }
     },
