@@ -118,7 +118,8 @@
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
         'Quote Preview': [true, 'Show quote content on hover'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
-        'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes']
+        'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes'],
+        'Forward Hiding': [true, 'Hide original posts of inlined backlinks']
       }
     },
     filter: {
@@ -2446,7 +2447,7 @@
       e.preventDefault();
       id = this.hash.slice(1);
       if (/\binlined\b/.test(this.className)) {
-        $.rm($.x("following::*[@id='i" + id + "']", this));
+        quoteInline.rm(this, id);
       } else {
         if ($.x("ancestor::*[@id='" + id + "']", this)) return;
         quoteInline.add(this, id);
@@ -2460,6 +2461,9 @@
         inline = quoteInline.table(id, el.innerHTML);
         if (/\bbacklink\b/.test(q.className)) {
           $.after(q.parentNode, inline);
+          if (conf['Forward Hiding']) {
+            $.addClass($.x('ancestor::table', el), 'forwarded');
+          }
           return;
         }
         return $.after(root, inline);
@@ -2475,6 +2479,20 @@
         return $.cache(pathname, (function() {
           return quoteInline.parse(this, pathname, id, threadID, inline);
         }));
+      }
+    },
+    rm: function(q, id) {
+      var inlined, table, _i, _len, _ref;
+      table = $.x("following::*[@id='i" + id + "']", q);
+      $.rm(table);
+      if (!conf['Forward Hiding']) return;
+      _ref = $$('.backlink.inlined', table);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        inlined = _ref[_i];
+        $.removeClass($.x('ancestor::table', $.id(inlined.hash.slice(1))), 'forwarded');
+      }
+      if (/\bbacklink\b/.test(q.className)) {
+        return $.removeClass($.x('ancestor::table', $.id(id)), 'forwarded');
       }
     },
     parse: function(req, pathname, id, threadID, inline) {
@@ -3166,9 +3184,6 @@
     },
     css: '\
       /* dialog styling */\
-      a[href="javascript:;"] {\
-        text-decoration: none;\
-      }\
       div.dialog {\
         border: 1px solid;\
       }\
@@ -3177,6 +3192,17 @@
       }\
       label, a, .favicon, #qr img {\
         cursor: pointer;\
+      }\
+      a[href="javascript:;"] {\
+        text-decoration: none;\
+      }\
+\
+      [hidden], /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */\
+      .thread.stub > :not(.block),\
+      #content > [name=tab]:not(:checked) + div,\
+      #updater:not(:hover) > :not(.move),\
+      #qp > input, #qp .inline, .forwarded {\
+        display: none;\
       }\
 \
       .new {\
@@ -3193,10 +3219,6 @@
       }\
       td.replyhider {\
         vertical-align: top;\
-      }\
-\
-      div.thread.stub > *:not(.block) {\
-        display: none;\
       }\
 \
       .filesize + br + a {\
@@ -3260,9 +3282,6 @@
       }\
       #options label {\
         text-decoration: underline;\
-      }\
-      #options [name=tab]:not(:checked) + * {\
-        display: none;\
       }\
       #content > div {\
         height: 450px;\
@@ -3330,9 +3349,6 @@
         border: none;\
         background: transparent;\
       }\
-      #updater:not(:hover) > div:not(.move) {\
-        display: none;\
-      }\
 \
       #stats {\
         border: none;\
@@ -3362,9 +3378,6 @@
         border: 1px solid;\
         padding-bottom: 5px;\
       }\
-      #qp input, #qp .inline {\
-        display: none;\
-      }\
       .qphl {\
         outline: 2px solid rgba(216, 94, 49, .7);\
       }\
@@ -3380,11 +3393,6 @@
       }\
       .filtered {\
         text-decoration: line-through;\
-      }\
-\
-      /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */\
-      [hidden] {\
-        display: none;\
       }\
 \
       #files > input {\

@@ -46,6 +46,7 @@ config =
       'Quote Preview':                [true,  'Show quote content on hover']
       'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes']
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
+      'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
   filter:
     name:     ''
     tripcode: ''
@@ -1929,8 +1930,7 @@ quoteInline =
     e.preventDefault()
     id = @hash[1..]
     if /\binlined\b/.test @className
-      # remove the corresponding table or loading td
-      $.rm $.x "following::*[@id='i#{id}']", @
+      quoteInline.rm @, id
     else
       return if $.x "ancestor::*[@id='#{id}']", @
       quoteInline.add @, id
@@ -1942,6 +1942,7 @@ quoteInline =
       inline = quoteInline.table id, el.innerHTML
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
+        $.addClass $.x('ancestor::table', el), 'forwarded' if conf['Forward Hiding']
         return
       $.after root, inline
     else
@@ -1953,6 +1954,16 @@ quoteInline =
       {pathname} = q
       threadID = pathname.split('/').pop()
       $.cache pathname, (-> quoteInline.parse @, pathname, id, threadID, inline)
+
+  rm: (q, id) ->
+    #select the corresponding table or loading td
+    table = $.x "following::*[@id='i#{id}']", q
+    $.rm table
+    return unless conf['Forward Hiding']
+    for inlined in $$ '.backlink.inlined', table
+      $.removeClass $.x('ancestor::table', $.id inlined.hash[1..]), 'forwarded'
+    if /\bbacklink\b/.test q.className
+      $.removeClass $.x('ancestor::table', $.id id), 'forwarded'
 
   parse: (req, pathname, id, threadID, inline) ->
     return unless inline.parentNode
@@ -2526,9 +2537,6 @@ Main =
 
   css: '
       /* dialog styling */
-      a[href="javascript:;"] {
-        text-decoration: none;
-      }
       div.dialog {
         border: 1px solid;
       }
@@ -2537,6 +2545,17 @@ Main =
       }
       label, a, .favicon, #qr img {
         cursor: pointer;
+      }
+      a[href="javascript:;"] {
+        text-decoration: none;
+      }
+
+      [hidden], /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */
+      .thread.stub > :not(.block),
+      #content > [name=tab]:not(:checked) + div,
+      #updater:not(:hover) > :not(.move),
+      #qp > input, #qp .inline, .forwarded {
+        display: none;
       }
 
       .new {
@@ -2553,10 +2572,6 @@ Main =
       }
       td.replyhider {
         vertical-align: top;
-      }
-
-      div.thread.stub > *:not(.block) {
-        display: none;
       }
 
       .filesize + br + a {
@@ -2620,9 +2635,6 @@ Main =
       }
       #options label {
         text-decoration: underline;
-      }
-      #options [name=tab]:not(:checked) + * {
-        display: none;
       }
       #content > div {
         height: 450px;
@@ -2690,9 +2702,6 @@ Main =
         border: none;
         background: transparent;
       }
-      #updater:not(:hover) > div:not(.move) {
-        display: none;
-      }
 
       #stats {
         border: none;
@@ -2722,9 +2731,6 @@ Main =
         border: 1px solid;
         padding-bottom: 5px;
       }
-      #qp input, #qp .inline {
-        display: none;
-      }
       .qphl {
         outline: 2px solid rgba(216, 94, 49, .7);
       }
@@ -2740,11 +2746,6 @@ Main =
       }
       .filtered {
         text-decoration: line-through;
-      }
-
-      /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */
-      [hidden] {
-        display: none;
       }
 
       #files > input {
