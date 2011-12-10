@@ -1164,6 +1164,8 @@ qr =
   captchaKeydown: (e) ->
     return unless e.keyCode is 13 and @value #enter, captcha filled
 
+    $('#auto', qr.el).checked = true if cooldown.duration #enable autoposting
+
     captchas = $.get 'captchas', []
     captchas.push
       challenge: qr.challenge

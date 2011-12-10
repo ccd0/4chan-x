@@ -1552,6 +1552,7 @@
     captchaKeydown: function(e) {
       var captchas;
       if (!(e.keyCode === 13 && this.value)) return;
+      if (cooldown.duration) $('#auto', qr.el).checked = true;
       captchas = $.get('captchas', []);
       captchas.push({
         challenge: qr.challenge,
