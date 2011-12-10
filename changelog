@@ -1,6 +1,7 @@
 master
 - mayhem
   enable autoposting when submitting a captcha while on cooldown
+  fix caret position when quoting on Opera
 
 2.23.1
 - mayhem
