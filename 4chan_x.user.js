@@ -2115,28 +2115,31 @@
       });
     },
     refresh: function() {
-      var board, div, favicon, id, link, props, watched, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
+      var board, div, favicon, frag, id, link, props, watched, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
       watched = $.get('watched', {});
-      _ref = $$('div:not(.move)', watcher.dialog);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        div = _ref[_i];
-        $.rm(div);
-      }
+      frag = d.createDocumentFragment();
       for (board in watched) {
-        _ref2 = watched[board];
-        for (id in _ref2) {
-          props = _ref2[id];
-          div = $.el('div');
+        _ref = watched[board];
+        for (id in _ref) {
+          props = _ref[id];
           x = $.el('a', {
             textContent: 'X',
             href: 'javascript:;'
           });
           $.on(x, 'click', watcher.cb.x);
           link = $.el('a', props);
+          link.title = link.textContent;
+          div = $.el('div');
           $.add(div, x, $.tn(' '), link);
-          $.add(watcher.dialog, div);
+          $.add(frag, div);
         }
       }
+      _ref2 = $$('div:not(.move)', watcher.dialog);
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        div = _ref2[_i];
+        $.rm(div);
+      }
+      $.add(watcher.dialog, frag);
       watchedBoard = watched[g.BOARD] || {};
       _ref3 = $$('img.favicon');
       _results = [];
@@ -2183,8 +2186,7 @@
       text = getTitle(thread);
       props = {
         href: "/" + g.BOARD + "/res/" + id,
-        textContent: text,
-        title: text
+        textContent: text
       };
       watched = $.get('watched', {});
       watched[_name = g.BOARD] || (watched[_name] = {});

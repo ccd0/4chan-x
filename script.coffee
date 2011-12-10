@@ -1696,19 +1696,23 @@ watcher =
 
   refresh: ->
     watched = $.get 'watched', {}
-    for div in $$ 'div:not(.move)', watcher.dialog
-      $.rm div
+    frag = d.createDocumentFragment()
     for board of watched
       for id, props of watched[board]
-        div = $.el 'div'
         x = $.el 'a',
           textContent: 'X'
           href: 'javascript:;'
         $.on x, 'click', watcher.cb.x
         link = $.el 'a', props
+        link.title = link.textContent
 
+        div = $.el 'div'
         $.add div, x, $.tn(' '), link
-        $.add watcher.dialog, div
+        $.add frag, div
+
+    for div in $$ 'div:not(.move)', watcher.dialog
+      $.rm div
+    $.add watcher.dialog, frag
 
     watchedBoard = watched[g.BOARD] or {}
     for favicon in $$ 'img.favicon'
@@ -1745,7 +1749,6 @@ watcher =
     props =
       href: "/#{g.BOARD}/res/#{id}"
       textContent: text
-      title: text
 
     watched = $.get 'watched', {}
     watched[g.BOARD] or= {}
