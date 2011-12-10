@@ -1749,7 +1749,7 @@
         data = {};
         if (node = (_ref = document.querySelector('td b')) != null ? _ref.firstChild : void 0) {
           data.textContent = node.textContent;
-          data.href = node.href;
+          if (node.href) data.href = node.href;
         }
         return parent.postMessage(data, '*');
       });

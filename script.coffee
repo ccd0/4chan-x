@@ -1379,7 +1379,7 @@ qr =
       data = {}
       if node = document.querySelector('td b')?.firstChild
         data.textContent = node.textContent
-        data.href = node.href
+        data.href = node.href if node.href
       parent.postMessage data, '*'
 
     c = $('b')?.lastChild
