@@ -1,4 +1,6 @@
 master
+- mayhem
+  fix 2.32.2 regression duplicating new posts in rare cases
 
 2.23.2
 - mayhem

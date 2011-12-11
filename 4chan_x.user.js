@@ -2046,7 +2046,7 @@
         _ref3 = $$('.reply', body).reverse();
         for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
           reply = _ref3[_j];
-          if (reply.id === id) break;
+          if (reply.id <= id) break;
           $.prepend(frag, reply.parentNode.parentNode.parentNode);
         }
         newPosts = frag.childNodes.length;

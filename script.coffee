@@ -1630,7 +1630,7 @@ updater =
       id = $('td[id]', updater.br.previousElementSibling)?.id or 0
       frag = d.createDocumentFragment()
       for reply in $$('.reply', body).reverse()
-        if reply.id is id
+        if reply.id <= id #make sure to not insert older posts
           break
         $.prepend frag, reply.parentNode.parentNode.parentNode #table
 
