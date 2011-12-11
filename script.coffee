@@ -101,7 +101,6 @@ config =
 # XXX chrome can't into `{log} = console`
 if console?
   # XXX scriptish - console.log.apply is not a function
-  # https://github.com/scriptish/scriptish/issues/3
   log = (arg) ->
     console.log arg
 
@@ -2607,9 +2606,9 @@ Main =
       #overlay {
         position: fixed;
         top: 0;
+        right: 0;
         left: 0;
-        height: 100%;
-        width: 100%;
+        bottom: 0;
         text-align: center;
         background: rgba(0,0,0,.5);
       }

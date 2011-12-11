@@ -3255,9 +3255,9 @@
       #overlay {\
         position: fixed;\
         top: 0;\
+        right: 0;\
         left: 0;\
-        height: 100%;\
-        width: 100%;\
+        bottom: 0;\
         text-align: center;\
         background: rgba(0,0,0,.5);\
       }\
