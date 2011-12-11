@@ -171,11 +171,7 @@
     }
   };
 
-  if (typeof console !== "undefined" && console !== null) {
-    log = function(arg) {
-      return console.log(arg);
-    };
-  }
+  log = console.log.bind(console);
 
   if (!Object.keys) {
     Object.keys = function(o) {
