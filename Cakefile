@@ -86,4 +86,4 @@ task 'dev', ->
   invoke 'build'
   fs.watchFile INFILE, interval: 250, (curr, prev) ->
     if curr.mtime > prev.mtime
-      build()
+      invoke 'build'
