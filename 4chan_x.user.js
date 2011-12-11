@@ -1680,7 +1680,7 @@
       text = ">>" + id + "\n";
       selection = window.getSelection();
       if (s = selection.toString()) {
-        selectionID = (_ref = $.x('ancestor::blockquote', selection.anchorNode)) != null ? _ref.parentNode.firstElementChild.name : void 0;
+        selectionID = (_ref = $.x('ancestor::blockquote/preceding-sibling::input', selection.anchorNode)) != null ? _ref.name : void 0;
         if (selectionID === id) {
           s = s.replace(/\n/g, '\n>');
           text += ">" + s + "\n";
