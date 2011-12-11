@@ -1078,7 +1078,7 @@ options =
     $.cb.value.call @
     Favicon.switch()
     Favicon.update() if g.REPLY and conf['Unread Count']
-    @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}><img src=#{Favicon.unreadNSFW}><img src=#{Favicon.unreadDead}>"
+    @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
 
 cooldown =
   #TODO merge into qr

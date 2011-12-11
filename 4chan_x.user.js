@@ -1441,7 +1441,7 @@
       $.cb.value.call(this);
       Favicon["switch"]();
       if (g.REPLY && conf['Unread Count']) Favicon.update();
-      return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "><img src=" + Favicon.unreadNSFW + "><img src=" + Favicon.unreadDead + ">";
+      return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "> <img src=" + Favicon.unreadNSFW + "> <img src=" + Favicon.unreadDead + ">";
     }
   };
 
