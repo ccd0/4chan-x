@@ -1020,13 +1020,16 @@ options =
     (back = $ '[name=backlink]', dialog).value = conf['backlink']
     (time = $ '[name=time]',     dialog).value = conf['time']
     $.on back, 'keyup', options.backlink
+    $.on back, 'keyup', $.cb.value
     $.on time, 'keyup', options.time
+    $.on time, 'keyup', $.cb.value
     favicon = $ 'select', dialog
     for option in favicon.options
       if option.textContent is conf['favicon']
         option.selected = true
         break
     $.on favicon, 'change', options.favicon
+    $.on favicon, 'change', $.cb.value
 
     #keybinds
     for input in $$ '#keybinds_tab + div input', dialog
@@ -1045,7 +1048,7 @@ options =
 
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', -> $.rm overlay
-    $.on dialog, 'click', (e) -> e.stopPropagation()
+    $.on dialog,  'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
     $.add d.body, overlay
 
@@ -1067,15 +1070,12 @@ options =
     @value = key
     $.cb.value.call @
   time: ->
-    $.cb.value.call @
     Time.foo()
     Time.date = new Date()
     $('#timePreview').textContent = Time.funk Time
   backlink: ->
-    $.cb.value.call @
     $('#backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
   favicon: ->
-    $.cb.value.call @
     Favicon.switch()
     Favicon.update() if g.REPLY and conf['Unread Count']
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"

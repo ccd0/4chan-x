@@ -1370,7 +1370,9 @@
       (back = $('[name=backlink]', dialog)).value = conf['backlink'];
       (time = $('[name=time]', dialog)).value = conf['time'];
       $.on(back, 'keyup', options.backlink);
+      $.on(back, 'keyup', $.cb.value);
       $.on(time, 'keyup', options.time);
+      $.on(time, 'keyup', $.cb.value);
       favicon = $('select', dialog);
       _ref3 = favicon.options;
       for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
@@ -1381,6 +1383,7 @@
         }
       }
       $.on(favicon, 'change', options.favicon);
+      $.on(favicon, 'change', $.cb.value);
       _ref4 = $$('#keybinds_tab + div input', dialog);
       for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
         input = _ref4[_k];
@@ -1428,17 +1431,14 @@
       return $.cb.value.call(this);
     },
     time: function() {
-      $.cb.value.call(this);
       Time.foo();
       Time.date = new Date();
       return $('#timePreview').textContent = Time.funk(Time);
     },
     backlink: function() {
-      $.cb.value.call(this);
       return $('#backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     },
     favicon: function() {
-      $.cb.value.call(this);
       Favicon["switch"]();
       if (g.REPLY && conf['Unread Count']) Favicon.update();
       return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "> <img src=" + Favicon.unreadNSFW + "> <img src=" + Favicon.unreadDead + ">";
