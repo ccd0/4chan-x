@@ -1,4 +1,6 @@
 master
+
+2.23.2
 - mayhem
   hide original posts from inlined backlinks - optional
   enable autoposting when submitting a captcha while on cooldown

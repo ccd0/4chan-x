@@ -2,7 +2,7 @@
 {exec} = require 'child_process'
 fs     = require 'fs'
 
-VERSION = '2.23.1'
+VERSION = '2.23.2'
 
 HEADER  = """
 // ==UserScript==
@@ -15,6 +15,7 @@ HEADER  = """
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @run-at         document-start
+// @updateURL      https://raw.github.com/mayhemydg/4chan-x/stable/4chan_x.user.js
 // @icon           https://raw.github.com/mayhemydg/4chan-x/gh-pages/favicon.png
 // ==/UserScript==
 
@@ -46,7 +47,7 @@ HEADER  = """
  *
  * HACKING
  *
- * 4chan x is written in CoffeeScript[1], and developed on github[2].
+ * 4chan x is written in CoffeeScript[1], and developed on GitHub[2].
  *
  * [1]: http://jashkenas.github.com/coffee-script/
  * [2]: http://github.com/mayhemydg/4chan-x

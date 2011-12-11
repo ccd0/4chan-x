@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.23.1
+// @version        2.23.2
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -8,6 +8,7 @@
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @run-at         document-start
+// @updateURL      https://raw.github.com/mayhemydg/4chan-x/stable/4chan_x.user.js
 // @icon           https://raw.github.com/mayhemydg/4chan-x/gh-pages/favicon.png
 // ==/UserScript==
 
@@ -15,7 +16,7 @@
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan x 2.23.1
+ * 4chan x 2.23.2
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -39,7 +40,7 @@
  *
  * HACKING
  *
- * 4chan x is written in CoffeeScript[1], and developed on github[2].
+ * 4chan x is written in CoffeeScript[1], and developed on GitHub[2].
  *
  * [1]: http://jashkenas.github.com/coffee-script/
  * [2]: http://github.com/mayhemydg/4chan-x
@@ -211,7 +212,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.23.1';
+  VERSION = '2.23.2';
 
   SECOND = 1000;
 
