@@ -98,11 +98,7 @@ config =
       'Auto Update':  [true,  'Automatically fetch new posts']
     'Interval': 30
 
-# XXX chrome can't into `{log} = console`
-if console?
-  # XXX scriptish - console.log.apply is not a function
-  log = (arg) ->
-    console.log arg
+log = console.log.bind? console
 
 # XXX opera cannot into Object.keys
 if not Object.keys
