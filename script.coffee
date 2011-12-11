@@ -98,6 +98,7 @@ config =
       'Auto Update':  [true,  'Automatically fetch new posts']
     'Interval': 30
 
+# XXX Chrome can't into {log} = console
 # XXX GreaseMonkey can't into console.log.bind
 log = console.log.bind? console
 
