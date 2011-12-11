@@ -2609,7 +2609,7 @@ Main =
         text-align: center;
         background: rgba(0,0,0,.5);
       }
-      #overlay::before {
+      #overlay::after {
         content: "";
         display: inline-block;
         height: 100%;
