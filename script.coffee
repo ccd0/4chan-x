@@ -98,6 +98,7 @@ config =
       'Auto Update':  [true,  'Automatically fetch new posts']
     'Interval': 30
 
+# XXX GreaseMonkey can't into console.log.bind
 log = console.log.bind? console
 
 # XXX opera cannot into Object.keys
