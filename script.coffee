@@ -99,7 +99,10 @@ config =
     'Interval': 30
 
 # XXX chrome can't into `{log} = console`
-log = console.log.bind console
+if console?
+  # XXX scriptish - console.log.apply is not a function
+  log = (arg) ->
+    console.log arg
 
 # XXX opera cannot into Object.keys
 if not Object.keys
