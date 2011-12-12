@@ -98,6 +98,7 @@ config =
       'Auto Update':  [true,  'Automatically fetch new posts']
     'Interval': 30
 
+
 # XXX Chrome can't into {log} = console
 # XXX GreaseMonkey can't into console.log.bind
 log = console.log.bind? console
@@ -1016,17 +1017,17 @@ options =
     #rice
     (back = $ '[name=backlink]', dialog).value = conf['backlink']
     (time = $ '[name=time]',     dialog).value = conf['time']
-    $.on back, 'keyup', options.backlink
     $.on back, 'keyup', $.cb.value
-    $.on time, 'keyup', options.time
+    $.on back, 'keyup', options.backlink
     $.on time, 'keyup', $.cb.value
+    $.on time, 'keyup', options.time
     favicon = $ 'select', dialog
     for option in favicon.options
       if option.textContent is conf['favicon']
         option.selected = true
         break
-    $.on favicon, 'change', options.favicon
     $.on favicon, 'change', $.cb.value
+    $.on favicon, 'change', options.favicon
 
     #keybinds
     for input in $$ '#keybinds_tab + div input', dialog

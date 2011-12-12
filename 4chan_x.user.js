@@ -1366,10 +1366,10 @@
       }
       (back = $('[name=backlink]', dialog)).value = conf['backlink'];
       (time = $('[name=time]', dialog)).value = conf['time'];
-      $.on(back, 'keyup', options.backlink);
       $.on(back, 'keyup', $.cb.value);
-      $.on(time, 'keyup', options.time);
+      $.on(back, 'keyup', options.backlink);
       $.on(time, 'keyup', $.cb.value);
+      $.on(time, 'keyup', options.time);
       favicon = $('select', dialog);
       _ref3 = favicon.options;
       for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
@@ -1379,8 +1379,8 @@
           break;
         }
       }
-      $.on(favicon, 'change', options.favicon);
       $.on(favicon, 'change', $.cb.value);
+      $.on(favicon, 'change', options.favicon);
       _ref4 = $$('#keybinds_tab + div input', dialog);
       for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
         input = _ref4[_k];
