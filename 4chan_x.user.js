@@ -326,13 +326,13 @@
       $.add(d.head, script);
       return $.rm(script);
     },
-    ajax: function(url, cb, type) {
+    ajax: function(url, cb, type, event) {
       var r;
       if (type == null) type = 'get';
+      if (event == null) event = 'onload';
       r = new XMLHttpRequest();
-      r.onload = cb;
+      r[event] = cb;
       r.open(type, url, true);
-      r.send();
       return r;
     },
     cache: function(url, cb) {
@@ -354,6 +354,7 @@
           }
           return _results;
         }));
+        req.send();
         req.callbacks = [cb];
         return $.cache.requests[url] = req;
       }
@@ -541,7 +542,6 @@
             this.regexps[key].push(RegExp(f[1], f[2]));
           } catch (e) {
             alert(e.message);
-            alert(e);
           }
         }
         this.callbacks.push(this[key]);
@@ -1988,7 +1988,8 @@
           $.on(input, 'click', updater.update);
         }
       }
-      return $.add(d.body, dialog);
+      $.add(d.body, dialog);
+      return updater.lastModified = 0;
     },
     cb: {
       verbose: function() {
@@ -2029,6 +2030,21 @@
           return;
         }
         updater.timer.textContent = '-' + conf['Interval'];
+        /*
+              Status Code 304: Not modified
+              By sending the `If-Modified-Since` header we get a proper status code, and no response.
+              This saves bandwidth for both the user and the servers, avoid unnecessary computation,
+              and won't load images and scripts when parsing the response.
+        */
+        updater.lastModified = this.getResponseHeader('Last-Modified');
+        console.log(this.status);
+        if (this.status === 304) {
+          if (conf['Verbose']) {
+            updater.count.textContent = '+0';
+            updater.count.className = null;
+          }
+          return;
+        }
         body = $.el('body', {
           innerHTML: this.responseText
         });
@@ -2050,7 +2066,7 @@
         if (conf['Verbose']) {
           updater.count.textContent = '+' + newPosts;
           if (newPosts === 0) {
-            updater.count.className = '';
+            updater.count.className = null;
           } else {
             updater.count.className = 'new';
           }
@@ -2077,12 +2093,13 @@
       return updater.update();
     },
     update: function() {
-      var cb, url, _ref;
+      var url, _ref;
       updater.timer.textContent = 0;
       if ((_ref = updater.request) != null) _ref.abort();
-      url = engine !== 'presto' ? location.pathname : location.pathname + '?' + Date.now();
-      cb = updater.cb.update;
-      return updater.request = $.ajax(url, cb);
+      url = location.pathname + '?' + Date.now();
+      updater.request = $.ajax(url, updater.cb.update);
+      updater.request.setRequestHeader('If-Modified-Since', updater.lastModified);
+      return updater.request.send();
     }
   };
 
@@ -2980,12 +2997,12 @@
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
       if (engine === 'webkit') {
-        req = $.ajax(this.src, null, 'head');
-        return req.onreadystatechange = function() {
+        req = $.ajax(this.src, (function() {
           if (this.status !== 404) {
             return setTimeout(imgExpand.retry, 10000, thumb);
           }
-        };
+        }), 'head', 'onreadystatechange');
+        return req.send();
       } else if (!g.dead) {
         return setTimeout(imgExpand.retry, 10000, thumb);
       }

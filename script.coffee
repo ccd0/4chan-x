@@ -231,11 +231,10 @@ $.extend $,
       textContent: "(#{code})()"
     $.add d.head, script
     $.rm script
-  ajax: (url, cb, type='get') ->
+  ajax: (url, cb, type='get', event='onload') ->
     r = new XMLHttpRequest()
-    r.onload = cb
+    r[event] = cb
     r.open type, url, true
-    r.send()
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -245,6 +244,7 @@ $.extend $,
         req.callbacks.push cb
     else
       req = $.ajax url, (-> cb.call @ for cb in @callbacks)
+      req.send()
       req.callbacks = [cb]
       $.cache.requests[url] = req
   cb:
@@ -1587,6 +1587,8 @@ updater =
 
     $.add d.body, dialog
 
+    updater.lastModified = 0
+
   cb:
     verbose: ->
       if conf['Verbose']
@@ -1619,8 +1621,23 @@ updater =
 
       updater.timer.textContent = '-' + conf['Interval']
 
+      ###
+      Status Code 304: Not modified
+      By sending the `If-Modified-Since` header we get a proper status code, and no response.
+      This saves bandwidth for both the user and the servers, avoid unnecessary computation,
+      and won't load images and scripts when parsing the response.
+      ###
+      updater.lastModified = @getResponseHeader('Last-Modified')
+      console.log @status
+      if @status is 304
+        if conf['Verbose']
+          updater.count.textContent = '+0'
+          updater.count.className = null
+        return
+
       body = $.el 'body',
         innerHTML: @responseText
+
       #this only works on Chrome because of cross origin policy
       if $('title', body).textContent is '4chan - Banned'
         updater.count.textContent = 'banned'
@@ -1639,7 +1656,7 @@ updater =
       if conf['Verbose']
         updater.count.textContent = '+' + newPosts
         if newPosts is 0
-          updater.count.className = ''
+          updater.count.className = null
         else
           updater.count.className = 'new'
 
@@ -1666,10 +1683,11 @@ updater =
   update: ->
     updater.timer.textContent = 0
     updater.request?.abort()
-    #Opera needs to fool its cache
-    url = if engine isnt 'presto' then location.pathname else location.pathname + '?' + Date.now()
-    cb = updater.cb.update
-    updater.request = $.ajax url, cb
+    #fool the cache
+    url = location.pathname + '?' + Date.now()
+    updater.request = $.ajax url, updater.cb.update
+    updater.request.setRequestHeader 'If-Modified-Since', updater.lastModified
+    updater.request.send()
 
 watcher =
   init: ->
@@ -2302,8 +2320,10 @@ imgExpand =
     imgExpand.contract thumb
     #navigator.online is not x-browser/os yet
     if engine is 'webkit'
-      req = $.ajax @src, null, 'head'
-      req.onreadystatechange = -> setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
+      req = $.ajax @src, (->
+        setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
+      ), 'head', 'onreadystatechange'
+      req.send()
     #Firefox returns a status code of 0 because of the same origin policy
     #Oprah doesn't send any request
     else unless g.dead
