@@ -1746,7 +1746,7 @@ watcher =
       watcher.toggle @parentNode
     x: ->
       [board, _, id] = @nextElementSibling
-        .getAttribute('href').substring(1).split('/')
+        .getAttribute('href')[1..].split('/')
       watcher.unwatch board, id
 
   toggle: (thread) ->
@@ -2355,7 +2355,7 @@ imgExpand =
 
 Main =
   init: ->
-    pathname = location.pathname.substring(1).split('/')
+    pathname = location.pathname[1..].split('/')
     [g.BOARD, temp] = pathname
     if temp is 'res'
       g.REPLY = temp

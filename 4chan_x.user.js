@@ -2175,7 +2175,7 @@
       },
       x: function() {
         var board, id, _, _ref;
-        _ref = this.nextElementSibling.getAttribute('href').substring(1).split('/'), board = _ref[0], _ = _ref[1], id = _ref[2];
+        _ref = this.nextElementSibling.getAttribute('href').slice(1).split('/'), board = _ref[0], _ = _ref[1], id = _ref[2];
         return watcher.unwatch(board, id);
       }
     },
@@ -3040,7 +3040,7 @@
   Main = {
     init: function() {
       var cutoff, hiddenThreads, id, now, pathname, temp, timestamp, update, _ref;
-      pathname = location.pathname.substring(1).split('/');
+      pathname = location.pathname.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
         g.REPLY = temp;
