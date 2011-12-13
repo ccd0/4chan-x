@@ -2037,7 +2037,6 @@
               and won't load images and scripts when parsing the response.
         */
         updater.lastModified = this.getResponseHeader('Last-Modified');
-        console.log(this.status);
         if (this.status === 304) {
           if (conf['Verbose']) {
             updater.count.textContent = '+0';

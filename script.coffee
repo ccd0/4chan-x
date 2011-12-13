@@ -1628,7 +1628,6 @@ updater =
       and won't load images and scripts when parsing the response.
       ###
       updater.lastModified = @getResponseHeader('Last-Modified')
-      console.log @status
       if @status is 304
         if conf['Verbose']
           updater.count.textContent = '+0'
