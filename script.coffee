@@ -545,15 +545,11 @@ expandThread =
 
     a.textContent = a.textContent.replace 'X Loading...', '-'
 
-    # eat everything, then replace with fresh full posts
-    while (next = a.nextSibling) and not next.clear #br[clear]
-      $.rm next
-    br = next
-
     body = $.el 'body',
       innerHTML: req.responseText
 
-    for reply in $$ 'td[id]', body
+    frag = d.createDocumentFragment()
+    for reply in $$ '.reply', body
       for quote in $$ '.quotelink', reply
         if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
           quote.pathname = pathname
@@ -562,10 +558,12 @@ expandThread =
       link = $ '.quotejs', reply
       link.href = "res/#{thread.firstChild.id}##{reply.id}"
       link.nextSibling.href = "res/#{thread.firstChild.id}#q#{reply.id}"
-    tables = $$ 'form[name=delform] table', body
-    tables.pop()
-    for table in tables
-      $.before br, table
+      $.add frag, reply.parentNode.parentNode.parentNode
+    # eat everything, then replace with fresh full posts
+    while (next = a.nextSibling) and not next.clear #br[clear]
+      $.rm next
+    br = next
+    $.before br, frag
 
 replyHiding =
   init: ->

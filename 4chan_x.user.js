@@ -760,21 +760,18 @@
       }
     },
     parse: function(req, pathname, thread, a) {
-      var body, br, href, link, next, quote, reply, table, tables, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _results;
+      var body, br, frag, href, link, next, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', expandThread.cb.toggle);
         return;
       }
       a.textContent = a.textContent.replace('X Loading...', '-');
-      while ((next = a.nextSibling) && !next.clear) {
-        $.rm(next);
-      }
-      br = next;
       body = $.el('body', {
         innerHTML: req.responseText
       });
-      _ref = $$('td[id]', body);
+      frag = d.createDocumentFragment();
+      _ref = $$('.reply', body);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reply = _ref[_i];
         _ref2 = $$('.quotelink', reply);
@@ -789,15 +786,13 @@
         link = $('.quotejs', reply);
         link.href = "res/" + thread.firstChild.id + "#" + reply.id;
         link.nextSibling.href = "res/" + thread.firstChild.id + "#q" + reply.id;
+        $.add(frag, reply.parentNode.parentNode.parentNode);
       }
-      tables = $$('form[name=delform] table', body);
-      tables.pop();
-      _results = [];
-      for (_k = 0, _len3 = tables.length; _k < _len3; _k++) {
-        table = tables[_k];
-        _results.push($.before(br, table));
+      while ((next = a.nextSibling) && !next.clear) {
+        $.rm(next);
       }
-      return _results;
+      br = next;
+      return $.before(br, frag);
     }
   };
 
