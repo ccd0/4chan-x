@@ -537,7 +537,12 @@
         for (_i = 0, _len = m.length; _i < _len; _i++) {
           filter = m[_i];
           f = filter.match(/^\/(.+)\/(\w*)$/);
-          this.regexps[key].push(RegExp(f[1], f[2]));
+          try {
+            this.regexps[key].push(RegExp(f[1], f[2]));
+          } catch (e) {
+            alert(e.message);
+            alert(e);
+          }
         }
         this.callbacks.push(this[key]);
       }

@@ -401,7 +401,10 @@ filter =
       @regexps[key] = []
       for filter in m
         f = filter.match /^\/(.+)\/(\w*)$/
-        @regexps[key].push RegExp f[1], f[2]
+        try
+          @regexps[key].push RegExp f[1], f[2]
+        catch e
+          alert e.message
       #only execute what's filterable
       @callbacks.push @[key]
 
