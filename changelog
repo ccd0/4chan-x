@@ -1,9 +1,11 @@
 master
+
+2.23.4
 - mayhem
   thread updater network optimization
   prevent regexp errors with the filter
 
-2.32.3
+2.23.3
 - mayhem
   fix 2.32.2 regression duplicating new posts in rare cases
 
