@@ -326,13 +326,21 @@
       $.add(d.head, script);
       return $.rm(script);
     },
-    ajax: function(url, cb, type, event) {
-      var r;
-      if (type == null) type = 'get';
-      if (event == null) event = 'onload';
+    ajax: function(url, cb, opts) {
+      var key, r, val, _ref;
+      opts.type || (opts.type = 'get');
+      opts.event || (opts.event = 'onload');
       r = new XMLHttpRequest();
-      r[event] = cb;
-      r.open(type, url, true);
+      if (opts.headers) {
+        _ref = opts.headers;
+        for (key in _ref) {
+          val = _ref[key];
+          r.setRequestHeader(key, val);
+        }
+      }
+      r[opts.event] = cb;
+      r.open(opts.type, url, true);
+      r.send();
       return r;
     },
     cache: function(url, cb) {
@@ -354,7 +362,6 @@
           }
           return _results;
         }));
-        req.send();
         req.callbacks = [cb];
         return $.cache.requests[url] = req;
       }
@@ -2096,9 +2103,11 @@
       updater.timer.textContent = 0;
       if ((_ref = updater.request) != null) _ref.abort();
       url = location.pathname + '?' + Date.now();
-      updater.request = $.ajax(url, updater.cb.update);
-      updater.request.setRequestHeader('If-Modified-Since', updater.lastModified);
-      return updater.request.send();
+      return updater.request = $.ajax(url, updater.cb.update, {
+        headers: {
+          'If-Modified-Since': updater.lastModified
+        }
+      });
     }
   };
 
@@ -2996,12 +3005,14 @@
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
       if (engine === 'webkit') {
-        req = $.ajax(this.src, (function() {
+        return req = $.ajax(this.src, (function() {
           if (this.status !== 404) {
             return setTimeout(imgExpand.retry, 10000, thumb);
           }
-        }), 'head', 'onreadystatechange');
-        return req.send();
+        }), {
+          type: 'head',
+          event: 'onreadystatechange'
+        });
       } else if (!g.dead) {
         return setTimeout(imgExpand.retry, 10000, thumb);
       }
