@@ -173,17 +173,6 @@
 
   log = typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0;
 
-  if (!Object.keys) {
-    Object.keys = function(o) {
-      var key, _results;
-      _results = [];
-      for (key in o) {
-        _results.push(key);
-      }
-      return _results;
-    };
-  }
-
   conf = {};
 
   (flatten = function(parent, obj) {

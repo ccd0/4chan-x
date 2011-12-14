@@ -103,11 +103,6 @@ config =
 # XXX GreaseMonkey can't into console.log.bind
 log = console.log.bind? console
 
-# XXX opera cannot into Object.keys
-if not Object.keys
-  Object.keys = (o) ->
-    key for key of o
-
 # flatten the config
 conf = {}
 (flatten = (parent, obj) ->
