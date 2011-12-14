@@ -1322,7 +1322,7 @@ qr =
 
     selection = window.getSelection()
     if s = selection.toString()
-      selectionID = $.x('ancestor::blockquote/preceding-sibling::input', selection.anchorNode)?.name
+      selectionID = $.x('ancestor-or-self::blockquote/preceding-sibling::input', selection.anchorNode)?.name
       if selectionID is id
         s = s.replace /\n/g, '\n>'
         text += ">#{s}\n"

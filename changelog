@@ -1,4 +1,6 @@
 master
+- mayhem
+  fix selection to quote when selecting started from the end of a line on Firefox
 
 2.23.4
 - mayhem
