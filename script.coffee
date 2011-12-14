@@ -1068,6 +1068,7 @@ options =
     @textContent = "hidden: 0"
     g.hiddenReplies = {}
   keybind: (e) ->
+    return if e.keyCode is 9
     e.preventDefault()
     e.stopPropagation()
     return unless (key = keybinds.keyCode e)?

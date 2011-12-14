@@ -1427,6 +1427,7 @@
       return g.hiddenReplies = {};
     },
     keybind: function(e) {
+      if (e.keyCode === 9) return;
       e.preventDefault();
       e.stopPropagation();
       if ((key = keybinds.keyCode(e)) == null) return;
