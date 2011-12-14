@@ -333,12 +333,12 @@
       type || (type = 'get');
       event || (event = 'onload');
       r = new XMLHttpRequest();
+      r.open(type, url, true);
       for (key in headers) {
         val = headers[key];
         r.setRequestHeader(key, val);
       }
       r[event] = cb;
-      r.open(type, url, true);
       r.send();
       return r;
     },

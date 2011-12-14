@@ -236,10 +236,10 @@ $.extend $,
     type  or= 'get'
     event or= 'onload'
     r = new XMLHttpRequest()
+    r.open type, url, true
     for key, val of headers
       r.setRequestHeader key, val
     r[event] = cb
-    r.open type, url, true
     r.send()
     r
   cache: (url, cb) ->
