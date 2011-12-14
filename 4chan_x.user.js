@@ -326,13 +326,20 @@
       $.add(d.head, script);
       return $.rm(script);
     },
-    ajax: function(url, cb, type, event) {
-      var r;
-      if (type == null) type = 'get';
-      if (event == null) event = 'onload';
+    ajax: function(url, cb, opts) {
+      var event, headers, key, r, type, val;
+      if (opts == null) opts = {};
+      type = opts.type, event = opts.event, headers = opts.headers;
+      type || (type = 'get');
+      event || (event = 'onload');
       r = new XMLHttpRequest();
+      for (key in headers) {
+        val = headers[key];
+        r.setRequestHeader(key, val);
+      }
       r[event] = cb;
       r.open(type, url, true);
+      r.send();
       return r;
     },
     cache: function(url, cb) {
@@ -354,7 +361,6 @@
           }
           return _results;
         }));
-        req.send();
         req.callbacks = [cb];
         return $.cache.requests[url] = req;
       }
@@ -2096,9 +2102,11 @@
       updater.timer.textContent = 0;
       if ((_ref = updater.request) != null) _ref.abort();
       url = location.pathname + '?' + Date.now();
-      updater.request = $.ajax(url, updater.cb.update);
-      updater.request.setRequestHeader('If-Modified-Since', updater.lastModified);
-      return updater.request.send();
+      return updater.request = $.ajax(url, updater.cb.update, {
+        headers: {
+          'If-Modified-Since': updater.lastModified
+        }
+      });
     }
   };
 
@@ -2996,12 +3004,14 @@
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
       if (engine === 'webkit') {
-        req = $.ajax(this.src, (function() {
+        return req = $.ajax(this.src, (function() {
           if (this.status !== 404) {
             return setTimeout(imgExpand.retry, 10000, thumb);
           }
-        }), 'head', 'onreadystatechange');
-        return req.send();
+        }), {
+          type: 'head',
+          event: 'onreadystatechange'
+        });
       } else if (!g.dead) {
         return setTimeout(imgExpand.retry, 10000, thumb);
       }

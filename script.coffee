@@ -231,10 +231,16 @@ $.extend $,
       textContent: "(#{code})()"
     $.add d.head, script
     $.rm script
-  ajax: (url, cb, type='get', event='onload') ->
+  ajax: (url, cb, opts={}) ->
+    {type, event, headers} = opts
+    type  or= 'get'
+    event or= 'onload'
     r = new XMLHttpRequest()
+    for key, val of headers
+      r.setRequestHeader key, val
     r[event] = cb
     r.open type, url, true
+    r.send()
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -244,7 +250,6 @@ $.extend $,
         req.callbacks.push cb
     else
       req = $.ajax url, (-> cb.call @ for cb in @callbacks)
-      req.send()
       req.callbacks = [cb]
       $.cache.requests[url] = req
   cb:
@@ -1684,9 +1689,7 @@ updater =
     updater.request?.abort()
     #fool the cache
     url = location.pathname + '?' + Date.now()
-    updater.request = $.ajax url, updater.cb.update
-    updater.request.setRequestHeader 'If-Modified-Since', updater.lastModified
-    updater.request.send()
+    updater.request = $.ajax url, updater.cb.update, headers: 'If-Modified-Since': updater.lastModified
 
 watcher =
   init: ->
@@ -2321,8 +2324,7 @@ imgExpand =
     if engine is 'webkit'
       req = $.ajax @src, (->
         setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
-      ), 'head', 'onreadystatechange'
-      req.send()
+      ), type: 'head', event: 'onreadystatechange'
     #Firefox returns a status code of 0 because of the same origin policy
     #Oprah doesn't send any request
     else unless g.dead
