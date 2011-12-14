@@ -538,7 +538,7 @@ expandThread =
           when 'b' then 3
           when 't' then 1
           else 5
-        table = $.x "following::br[@clear][1]/preceding::table[#{num}]", a
+        table = $.x "following::br[@clear]/preceding::table[#{num}]", a
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
           $.rm prev
         for backlink in $$ '.op a.backlink'
@@ -1247,7 +1247,7 @@ qr =
     fileCount = $('#files', qr.el).childElementCount
 
     tc = data.textContent
-    if tc isnt "Post successful!" and not /uploaded!$/.test tc # error message
+    unless /successful!|uploaded!$/.test tc # error message, not a successful post
       if tc is undefined
         data.textContent = "Connection error with sys.4chan.org."
       $.extend $('#error', qr.el), data
@@ -1915,9 +1915,9 @@ quoteBacklink =
       quotes = {}
       for quote in $$ '.quotelink', root
         #don't process >>>/b/
-        continue unless qid = quote.hash[1..]
-        #duplicate quotes get overwritten
-        quotes[qid] = quote
+        if qid = quote.hash[1..]
+          #duplicate quotes get overwritten
+          quotes[qid] = quote
       # op or reply
       id = $('input', root).name
       a = $.el 'a',
@@ -1997,7 +1997,7 @@ quoteInline =
 
     body = $.el 'body',
       innerHTML: req.responseText
-    if id == threadID #OP
+    if id is threadID #OP
       op = threading.op $('body > form', body).firstChild
       html = op.innerHTML
     else
@@ -2062,7 +2062,7 @@ quotePreview =
 
     body = $.el 'body',
       innerHTML: req.responseText
-    if id == threadID #OP
+    if id is threadID #OP
       op = threading.op $('body > form', body).firstChild
       html = op.innerHTML
     else

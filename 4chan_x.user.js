@@ -753,7 +753,7 @@
                 return 5;
             }
           })();
-          table = $.x("following::br[@clear][1]/preceding::table[" + num + "]", a);
+          table = $.x("following::br[@clear]/preceding::table[" + num + "]", a);
           while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
             $.rm(prev);
           }
@@ -1605,7 +1605,7 @@
       $('iframe[name=iframe]').src = 'about:blank';
       fileCount = $('#files', qr.el).childElementCount;
       tc = data.textContent;
-      if (tc !== "Post successful!" && !/uploaded!$/.test(tc)) {
+      if (!/successful!|uploaded!$/.test(tc)) {
         if (tc === void 0) {
           data.textContent = "Connection error with sys.4chan.org.";
         }
@@ -2417,8 +2417,7 @@
         _ref = $$('.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          if (!(qid = quote.hash.slice(1))) continue;
-          quotes[qid] = quote;
+          if (qid = quote.hash.slice(1)) quotes[qid] = quote;
         }
         id = $('input', root).name;
         a = $.el('a', {
