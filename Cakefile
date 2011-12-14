@@ -2,9 +2,12 @@
 {exec} = require 'child_process'
 fs     = require 'fs'
 
+VERSION = '2.23.4'
+
 HEADER  = """
 // ==UserScript==
 // @name           4chan x
+// @version        #{VERSION}
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -12,12 +15,15 @@ HEADER  = """
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @run-at         document-start
-// @icon           https://raw.github.com/aeosynth/4chan-x/gh-pages/favicon.png
+// @updateURL      https://raw.github.com/mayhemydg/4chan-x/stable/4chan_x.user.js
+// @icon           https://raw.github.com/mayhemydg/4chan-x/gh-pages/favicon.png
 // ==/UserScript==
 
 /* LICENSE
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
+ * http://mayhemydg.github.com/4chan-x/
+ * 4chan x #{VERSION}
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -38,27 +44,26 @@ HEADER  = """
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- */
-
-/* HACKING
  *
- * 4chan x is written in CoffeeScript[1], and developed on github[2].
+ * HACKING
+ *
+ * 4chan x is written in CoffeeScript[1], and developed on GitHub[2].
  *
  * [1]: http://jashkenas.github.com/coffee-script/
- * [2]: http://github.com/aeosynth/4chan-x
- */
-
-/* CONTRIBUTORS
+ * [2]: http://github.com/mayhemydg/4chan-x
  *
+ * CONTRIBUTORS
+ *
+ * Shou- - pentadactyl fixes
+ * ferongr - new favicons
+ * xat- - new favicons
  * Zixaphir - fix qr textarea - captcha-image gap
- * Mayhem - various features / fixes
  * Ongpot - sfw favicon
  * thisisanon - nsfw + 404 favicons
  * Anonymous - empty favicon
  * Seiba - chrome quick reply focusing
  * herpaderpderp - recaptcha fixes
- * wakimoko - recaptcha tab order http://userscripts.org/scripts/show/82657
- * xat- new favicons
+ * WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
  *
  * All the people who've taken the time to write bug reports.
  *
@@ -71,17 +76,14 @@ HEADER  = """
 INFILE  = 'script.coffee'
 OUTFILE = '4chan_x.user.js'
 
-build = ->
+task 'build', ->
   exec 'coffee --print script.coffee', (err, stdout, stderr) ->
     throw err if err
     fs.writeFile OUTFILE, HEADER + stdout, (err) ->
       throw err if err
 
-task 'build', ->
-  build()
-
 task 'dev', ->
-  build()
+  invoke 'build'
   fs.watchFile INFILE, interval: 250, (curr, prev) ->
     if curr.mtime > prev.mtime
-      build()
+      invoke 'build'

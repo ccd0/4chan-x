@@ -1,13 +1,91 @@
 master
+
+2.23.4
+- mayhem
+  thread updater network optimization
+  prevent regexp errors with the filter
+
+2.23.3
+- mayhem
+  fix 2.32.2 regression duplicating new posts in rare cases
+
+2.23.2
+- mayhem
+  hide original posts from inlined backlinks - optional
+  enable autoposting when submitting a captcha while on cooldown
+  fix caret position when quoting on Opera
+
+2.23.1
+- mayhem
+  fix favicon updating on Opera
+  fix compatibility with Tampermonkey
+
+2.23.0
+- mayhem
+  multiple unread favicons to chose in the options
+  quotes are now inserted at the caret position in the QR
+  quotes also replace the text selection in the QR
+  open QR focused when using the `Open QR without post number inserted` keybind
+  fix thread updater for Opera
+- aeosynth
+  update the captcha caching expiration date to 30mins
+
+2.22.2
+- mayhem
+  indicate if the settings require a feature to be enabled
+  fix obscure and continuous prompts to auto update
+
+2.22.1
+- mayhem
+  change 'Duckroll' for 'Cross-thread'
+  fix image expanding fitness with an inlined backlink on Firefox
+
+2.22.0
+- mayhem
+  new Indicate Duckrolls feature
+  put regex.info sauce back - disabled by default
+  fix for auto image reloading in 404'd threads on Firefox
+
+2.21.4
+- mayhem
+  fix 4chan X version updater
+
+2.21.3
+- mayhem
+  fix locked thread icons with fit width/screen enabled on Firefox
+  fix fit width on Opera
+  for userstylers: you can use the rendering engine body class
+
+2.21.2
+- mayhem
+  fix time formatting year in Opera
+  fix QR keybinds
+  fix QR posts getting swallowed by sys.4chan.org
+
+2.21.1
+- mayhem
+  fix Opera
+
+2.21.0
 - mayhem
   initiate 4chan X earlier
-  automatically reload expanded pictures on error
-  update archives redirections for /diy/, /pol/ and /sci/
-  regular expressions based filter
-  handle bans with the thread updater
   performance improvements
+  regular expressions based filter
+  remove image preloading
+  automatically reload expanded pictures on error
+  handle bans with the thread updater
+  use unread favicons by ferongr
+
+2.20.3
+- mayhem
+  fix DST for two days of the year
+
+2.20.2
+- mayhem
+  update archive redirection
 - aeosynth
-  quick reply redesign
+  hopefully fix qr error / update messages
+  rm support throd link
 
 2.20.1
 - mayhem
