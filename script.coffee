@@ -2498,15 +2498,15 @@ Main =
     if conf['Keybinds']
       keybinds.init()
 
+    if conf['Reply Navigation'] or conf['Index Navigation']
+      nav.init()
+
     if g.REPLY
       if conf['Thread Updater']
         updater.init()
 
       if conf['Thread Stats']
         threadStats.init()
-
-      if conf['Reply Navigation']
-        nav.init()
 
       if conf['Post in Title']
         titlePost.init()
@@ -2528,9 +2528,6 @@ Main =
 
       if conf['Comment Expansion']
         expandComment.init()
-
-      if conf['Index Navigation']
-        nav.init()
 
 
     nodes = $$ '.op, a + table'
