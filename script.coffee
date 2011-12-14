@@ -1593,6 +1593,7 @@ updater =
 
     $.add d.body, dialog
 
+    updater.retryCoef = 10
     updater.lastModified = 0
 
   cb:
@@ -1625,6 +1626,7 @@ updater =
         Favicon.update()
         return
 
+      updater.retryCoef = 10
       updater.timer.textContent = '-' + conf['Interval']
 
       ###
@@ -1645,7 +1647,7 @@ updater =
 
       #this only works on Chrome because of cross origin policy
       if $('title', body).textContent is '4chan - Banned'
-        updater.count.textContent = 'banned'
+        updater.count.textContent = 'Banned'
         updater.count.className = 'error'
         return
 
@@ -1675,13 +1677,14 @@ updater =
 
     if n is 0
       updater.update()
-    else if n is 10
+    else if n is updater.retryCoef
+      updater.retryCoef += 10 * (updater.retryCoef < 120)
       updater.retry()
     else
       updater.timer.textContent = n
 
   retry: ->
-    updater.count.textContent = 'retry'
+    updater.count.textContent = 'Retry'
     updater.count.className = ''
     updater.update()
 

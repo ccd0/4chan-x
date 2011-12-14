@@ -1996,6 +1996,7 @@
         }
       }
       $.add(d.body, dialog);
+      updater.retryCoef = 10;
       return updater.lastModified = 0;
     },
     cb: {
@@ -2036,6 +2037,7 @@
           Favicon.update();
           return;
         }
+        updater.retryCoef = 10;
         updater.timer.textContent = '-' + conf['Interval'];
         /*
               Status Code 304: Not modified
@@ -2055,7 +2057,7 @@
           innerHTML: this.responseText
         });
         if ($('title', body).textContent === '4chan - Banned') {
-          updater.count.textContent = 'banned';
+          updater.count.textContent = 'Banned';
           updater.count.className = 'error';
           return;
         }
@@ -2087,14 +2089,15 @@
       n = 1 + Number(updater.timer.textContent);
       if (n === 0) {
         return updater.update();
-      } else if (n === 10) {
+      } else if (n === updater.retryCoef) {
+        updater.retryCoef += 10 * (updater.retryCoef < 120);
         return updater.retry();
       } else {
         return updater.timer.textContent = n;
       }
     },
     retry: function() {
-      updater.count.textContent = 'retry';
+      updater.count.textContent = 'Retry';
       updater.count.className = '';
       return updater.update();
     },
