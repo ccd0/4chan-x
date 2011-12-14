@@ -753,7 +753,7 @@
                 return 5;
             }
           })();
-          table = $.x("following::br[@clear][1]/preceding::table[" + num + "]", a);
+          table = $.x("following::br[@clear]/preceding::table[" + num + "]", a);
           while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
             $.rm(prev);
           }
@@ -1604,7 +1604,7 @@
       $('iframe[name=iframe]').src = 'about:blank';
       fileCount = $('#files', qr.el).childElementCount;
       tc = data.textContent;
-      if (tc !== "Post successful!" && !/uploaded!$/.test(tc)) {
+      if (!/successful!|uploaded!$/.test(tc)) {
         if (tc === void 0) {
           data.textContent = "Connection error with sys.4chan.org.";
         }
@@ -1682,7 +1682,7 @@
       text = ">>" + id + "\n";
       selection = window.getSelection();
       if (s = selection.toString()) {
-        selectionID = (_ref = $.x('ancestor::blockquote/preceding-sibling::input', selection.anchorNode)) != null ? _ref.name : void 0;
+        selectionID = (_ref = $.x('ancestor-or-self::blockquote/preceding-sibling::input', selection.anchorNode)) != null ? _ref.name : void 0;
         if (selectionID === id) {
           s = s.replace(/\n/g, '\n>');
           text += ">" + s + "\n";
@@ -2423,8 +2423,7 @@
         _ref = $$('.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          if (!(qid = quote.hash.slice(1))) continue;
-          quotes[qid] = quote;
+          if (qid = quote.hash.slice(1)) quotes[qid] = quote;
         }
         id = $('input', root).name;
         a = $.el('a', {
@@ -3157,10 +3156,10 @@
       if (conf['Quick Reply']) qr.init();
       if (conf['Thread Watcher']) watcher.init();
       if (conf['Keybinds']) keybinds.init();
+      if (conf['Reply Navigation'] || conf['Index Navigation']) nav.init();
       if (g.REPLY) {
         if (conf['Thread Updater']) updater.init();
         if (conf['Thread Stats']) threadStats.init();
-        if (conf['Reply Navigation']) nav.init();
         if (conf['Post in Title']) titlePost.init();
         if (conf['Unread Count']) unread.init();
         if (conf['Quick Reply'] && conf['Persistent QR'] && canPost) {
@@ -3171,7 +3170,6 @@
         if (conf['Thread Hiding']) threadHiding.init();
         if (conf['Thread Expansion']) expandThread.init();
         if (conf['Comment Expansion']) expandComment.init();
-        if (conf['Index Navigation']) nav.init();
       }
       nodes = $$('.op, a + table');
       _ref = g.callbacks;

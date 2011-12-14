@@ -538,7 +538,7 @@ expandThread =
           when 'b' then 3
           when 't' then 1
           else 5
-        table = $.x "following::br[@clear][1]/preceding::table[#{num}]", a
+        table = $.x "following::br[@clear]/preceding::table[#{num}]", a
         while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
           $.rm prev
         for backlink in $$ '.op a.backlink'
@@ -1246,7 +1246,7 @@ qr =
     fileCount = $('#files', qr.el).childElementCount
 
     tc = data.textContent
-    if tc isnt "Post successful!" and not /uploaded!$/.test tc # error message
+    unless /successful!|uploaded!$/.test tc # error message, not a successful post
       if tc is undefined
         data.textContent = "Connection error with sys.4chan.org."
       $.extend $('#error', qr.el), data
@@ -1321,7 +1321,7 @@ qr =
 
     selection = window.getSelection()
     if s = selection.toString()
-      selectionID = $.x('ancestor::blockquote/preceding-sibling::input', selection.anchorNode)?.name
+      selectionID = $.x('ancestor-or-self::blockquote/preceding-sibling::input', selection.anchorNode)?.name
       if selectionID is id
         s = s.replace /\n/g, '\n>'
         text += ">#{s}\n"
@@ -1927,9 +1927,9 @@ quoteBacklink =
       quotes = {}
       for quote in $$ '.quotelink', root
         #don't process >>>/b/
-        continue unless qid = quote.hash[1..]
-        #duplicate quotes get overwritten
-        quotes[qid] = quote
+        if qid = quote.hash[1..]
+          #duplicate quotes get overwritten
+          quotes[qid] = quote
       # op or reply
       id = $('input', root).name
       a = $.el 'a',
@@ -2009,7 +2009,7 @@ quoteInline =
 
     body = $.el 'body',
       innerHTML: req.responseText
-    if id == threadID #OP
+    if id is threadID #OP
       op = threading.op $('body > form', body).firstChild
       html = op.innerHTML
     else
@@ -2074,7 +2074,7 @@ quotePreview =
 
     body = $.el 'body',
       innerHTML: req.responseText
-    if id == threadID #OP
+    if id is threadID #OP
       op = threading.op $('body > form', body).firstChild
       html = op.innerHTML
     else
@@ -2509,15 +2509,15 @@ Main =
     if conf['Keybinds']
       keybinds.init()
 
+    if conf['Reply Navigation'] or conf['Index Navigation']
+      nav.init()
+
     if g.REPLY
       if conf['Thread Updater']
         updater.init()
 
       if conf['Thread Stats']
         threadStats.init()
-
-      if conf['Reply Navigation']
-        nav.init()
 
       if conf['Post in Title']
         titlePost.init()
@@ -2539,9 +2539,6 @@ Main =
 
       if conf['Comment Expansion']
         expandComment.init()
-
-      if conf['Index Navigation']
-        nav.init()
 
 
     nodes = $$ '.op, a + table'
