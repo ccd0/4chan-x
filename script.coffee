@@ -231,15 +231,15 @@ $.extend $,
       textContent: "(#{code})()"
     $.add d.head, script
     $.rm script
-  ajax: (url, cb, opts) ->
-    opts.type  or= 'get'
-    opts.event or= 'onload'
+  ajax: (url, cb, opts={}) ->
+    {type, event, headers} = opts
+    type  or= 'get'
+    event or= 'onload'
     r = new XMLHttpRequest()
-    if opts.headers
-      for key, val of opts.headers
-        r.setRequestHeader key, val
-    r[opts.event] = cb
-    r.open opts.type, url, true
+    for key, val of headers
+      r.setRequestHeader key, val
+    r[event] = cb
+    r.open type, url, true
     r.send()
     r
   cache: (url, cb) ->

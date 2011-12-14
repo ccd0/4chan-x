@@ -327,19 +327,18 @@
       return $.rm(script);
     },
     ajax: function(url, cb, opts) {
-      var key, r, val, _ref;
-      opts.type || (opts.type = 'get');
-      opts.event || (opts.event = 'onload');
+      var event, headers, key, r, type, val;
+      if (opts == null) opts = {};
+      type = opts.type, event = opts.event, headers = opts.headers;
+      type || (type = 'get');
+      event || (event = 'onload');
       r = new XMLHttpRequest();
-      if (opts.headers) {
-        _ref = opts.headers;
-        for (key in _ref) {
-          val = _ref[key];
-          r.setRequestHeader(key, val);
-        }
+      for (key in headers) {
+        val = headers[key];
+        r.setRequestHeader(key, val);
       }
-      r[opts.event] = cb;
-      r.open(opts.type, url, true);
+      r[event] = cb;
+      r.open(type, url, true);
       r.send();
       return r;
     },
