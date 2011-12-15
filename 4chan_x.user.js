@@ -2667,14 +2667,6 @@
       } else {
         g.PAGENUM = parseInt(temp) || 0;
       }
-      if (location.hostname === 'sys.4chan.org') {
-        if (/interactive|complete/.test(d.readyState)) {
-          qr.sys();
-        } else {
-          $.on(d, 'DOMContentLoaded', qr.sys);
-        }
-        return;
-      }
       $.on(window, 'message', Main.message);
       now = Date.now();
       if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
@@ -2772,12 +2764,10 @@
       return options.init();
     },
     message: function(e) {
-      var data, origin;
-      origin = e.origin, data = e.data;
-      if (origin === 'http://sys.4chan.org') {
-        return qr.message(data);
-      } else if (data.version && data.version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
-        return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + data.version + "/4chan_x.user.js";
+      var version;
+      version = e.data.version;
+      if (version && version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
+        return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + version + "/4chan_x.user.js";
       }
     },
     node: function(e) {
@@ -2804,7 +2794,7 @@
       div.dialog > div.move {\
         cursor: move;\
       }\
-      label, a, .favicon, #qr img {\
+      label, a, .favicon {\
         cursor: pointer;\
       }\
       a[href="javascript:;"] {\
@@ -2911,47 +2901,6 @@
         height: 100%;\
       }\
 \
-      #qr {\
-        position: fixed;\
-        max-height: 100%;\
-        overflow-x: hidden;\
-        overflow-y: auto;\
-      }\
-      #qr > div.move {\
-        text-align: right;\
-      }\
-      #qr input[name=name] {\
-        float: left;\
-      }\
-      #qr_form {\
-        clear: left;\
-      }\
-      #qr_form, #qr #com_submit, #qr input[name=upfile] {\
-        margin: 0;\
-      }\
-      #qr textarea {\
-        width: 100%;\
-        height: 125px;\
-      }\
-      #qr #close, #qr #autohide {\
-        float: right;\
-      }\
-      #qr:not(:hover) > #autohide:checked ~ .autohide {\
-        height: 0;\
-        overflow: hidden;\
-      }\
-      /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */\
-      #qr input::-webkit-input-placeholder {\
-        color: grey;\
-      }\
-      #qr input:-moz-placeholder {\
-        color: grey;\
-      }\
-      /* qr reCAPTCHA */\
-      #qr img {\
-        border: 1px solid #AAA;\
-      }\
-\
       #updater {\
         position: fixed;\
         text-align: right;\
@@ -3007,10 +2956,6 @@
       }\
       .filtered {\
         text-decoration: line-through;\
-      }\
-\
-      #files > input {\
-        display: block;\
       }\
     '
   };
