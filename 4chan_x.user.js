@@ -1236,7 +1236,7 @@
       dialog = ui.dialog('options', '', '\
 <div id=optionsbar>\
   <div id=credits>\
-    <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>\
+    <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a> | ' + VERSION + '\
     | <a target=_blank href=https://github.com/mayhemydg/4chan-x/issues>Issues</a>\
   </div>\
   <div>\
