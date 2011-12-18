@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.23.5
+// @version        2.23.6
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -16,7 +16,7 @@
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan x 2.23.5
+ * 4chan x 2.23.6
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -197,7 +197,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.23.5';
+  VERSION = '2.23.6';
 
   SECOND = 1000;
 
