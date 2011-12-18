@@ -2231,7 +2231,7 @@
 
   sauce = {
     init: function() {
-      if (!(sauce.prefixes = conf['flavors'].match(/^[^#].+$/gm)).length) return;
+      if (!(sauce.prefixes = conf['flavors'].match(/^[^#].+$/gm))) return;
       sauce.names = sauce.prefixes.map(function(prefix) {
         return prefix.match(/(\w+)\./)[1];
       });
