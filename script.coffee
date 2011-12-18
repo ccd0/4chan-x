@@ -1790,7 +1790,7 @@ anonymize =
 
 sauce =
   init: ->
-    sauce.prefixes = conf['flavors'].match /^[^#].+$/gm
+    return unless (sauce.prefixes = conf['flavors'].match /^[^#].+$/gm).length
     sauce.names = sauce.prefixes.map (prefix) -> prefix.match(/(\w+)\./)[1]
     g.callbacks.push (root) ->
       return if root.className is 'inline' or not span = $ '.filesize', root
