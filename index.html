@@ -27,6 +27,9 @@ _gaq.push(['_trackPageview',location.pathname+location.hash]);
   d.addEventListener('DOMContentLoaded', function loaded() {
     var hash, el;
     d.removeEventListener('DOMContentLoaded', loaded, false);
+    $('.install').addEventListener("click", function() {
+      _gaq.push(['_trackPageview',this.href]);
+    }, false);
     hash = window.location.hash.slice(1) || 'install';
     el = id(hash) || id('install');
     el.className = 'active';
