@@ -2829,9 +2829,6 @@
       case 'tv':
         url = "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
-      case 'lit':
-        url = "http://archive.gentoomen.org/cgi-board.pl/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
       case 'diy':
       case 'g':
       case 'sci':

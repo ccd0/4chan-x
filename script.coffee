@@ -2219,8 +2219,6 @@ redirect = ->
   switch g.BOARD
     when 'a', 'jp', 'm', 'tg', 'tv'
       url = "http://archive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when 'lit'
-      url = "http://archive.gentoomen.org/cgi-board.pl/#{g.BOARD}/thread/#{g.THREAD_ID}"
     when 'diy', 'g', 'sci'
       url = "http://archive.installgentoo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
     when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
