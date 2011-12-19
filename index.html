@@ -7,7 +7,7 @@
     <script>
 var _gaq = [];
 _gaq.push(['_setAccount', 'UA-17404420-7']);
-_gaq.push(['_trackPageview']);
+_gaq.push(['_trackPageview',location.pathname+location.hash]);
 (function(){
   var d = document;
   function $(s){return d.querySelector(s, d.body)}
@@ -17,6 +17,7 @@ _gaq.push(['_trackPageview']);
     var next;
     next = e.newURL.match(/#(.*)$/)[1];
     if(id(next)) {
+      _gaq.push(['_trackPageview',location.pathname+location.hash]);
       $('.active').className = null;
       $('.on').className = null;
       id(next).className = 'active';
@@ -29,7 +30,7 @@ _gaq.push(['_trackPageview']);
     hash = window.location.hash.slice(1) || 'install';
     el = id(hash) || id('install');
     el.className = 'active';
-    a(hash).className = 'on';
+    a(el.dataset.id).className = 'on';
   }, false);
 })();
     </script>
