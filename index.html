@@ -14,8 +14,7 @@ _gaq.push(['_trackPageview',location.pathname+location.hash]);
   function id(i){return $('[data-id='+i+']')}
   function a(i){return $('[href="#'+i+'"]')}
   window.addEventListener('hashchange', function(e) {
-    var next;
-    next = e.newURL.match(/#(.*)$/)[1];
+    var next = e.newURL.match(/#(.*)$/)[1];
     if(id(next)) {
       _gaq.push(['_trackPageview',location.pathname+location.hash]);
       $('.active').className = null;
@@ -27,8 +26,14 @@ _gaq.push(['_trackPageview',location.pathname+location.hash]);
   d.addEventListener('DOMContentLoaded', function loaded() {
     var hash, el;
     d.removeEventListener('DOMContentLoaded', loaded, false);
-    $('.install').addEventListener("click", function() {
-      _gaq.push(['_trackPageview',this.href]);
+    $('.install').addEventListener('click', function() {
+      _gaq.push(['_trackEvent','Links','Install']);
+    }, false);
+    $('a[href$=changelog]').addEventListener('click', function() {
+      _gaq.push(['_trackEvent','Links','Changelog']);
+    }, false);
+    $('a[href$=issues]').addEventListener('click', function() {
+      _gaq.push(['_trackEvent','Links','GitHub Issues']);
     }, false);
     hash = window.location.hash.slice(1) || 'install';
     el = id(hash) || id('install');
