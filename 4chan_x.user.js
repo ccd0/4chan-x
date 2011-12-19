@@ -42,7 +42,7 @@
  *
  * 4chan x is written in CoffeeScript[1], and developed on GitHub[2].
  *
- * [1]: http://jashkenas.github.com/coffee-script/
+ * [1]: http://coffeescript.org/
  * [2]: http://github.com/mayhemydg/4chan-x
  *
  * CONTRIBUTORS
