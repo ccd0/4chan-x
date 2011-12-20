@@ -16,7 +16,7 @@ HEADER  = """
 // @include        http://sys.4chan.org/*
 // @run-at         document-start
 // @updateURL      https://raw.github.com/mayhemydg/4chan-x/stable/4chan_x.user.js
-// @icon           https://raw.github.com/mayhemydg/4chan-x/gh-pages/favicon.png
+// @icon           https://raw.github.com/mayhemydg/4chan-x/gh-pages/favicon.gif
 // ==/UserScript==
 
 /* LICENSE
