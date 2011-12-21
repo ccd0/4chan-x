@@ -2827,7 +2827,7 @@
       case 'm':
       case 'tg':
       case 'tv':
-        url = "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        url = "http://oldarchive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
         break;
       case 'diy':
       case 'g':
