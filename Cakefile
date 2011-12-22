@@ -2,7 +2,7 @@
 {exec} = require 'child_process'
 fs     = require 'fs'
 
-VERSION = '2.23.4'
+VERSION = '2.23.7'
 
 HEADER  = """
 // ==UserScript==
@@ -15,15 +15,15 @@ HEADER  = """
 // @include        http://boards.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @run-at         document-start
-// @updateURL      https://raw.github.com/mayhemydg/4chan-x/stable/4chan_x.user.js
-// @icon           https://raw.github.com/mayhemydg/4chan-x/gh-pages/favicon.png
+// @updateURL      https://raw.github.com/MayhemYDG/4chan-x/stable/4chan_x.user.js
+// @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
 // ==/UserScript==
 
 /* LICENSE
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan x #{VERSION}
+ * 4chan X #{VERSION}
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -47,10 +47,10 @@ HEADER  = """
  *
  * HACKING
  *
- * 4chan x is written in CoffeeScript[1], and developed on GitHub[2].
+ * 4chan X is written in CoffeeScript[1], and developed on GitHub[2].
  *
- * [1]: http://jashkenas.github.com/coffee-script/
- * [2]: http://github.com/mayhemydg/4chan-x
+ * [1]: http://coffeescript.org/
+ * [2]: https://github.com/MayhemYDG/4chan-x
  *
  * CONTRIBUTORS
  *
