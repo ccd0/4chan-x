@@ -2,8 +2,8 @@
 
 # Building
 
-[install nodejs and npm](https://github.com/joyent/node/wiki/Installation),
-install [coffee-script](https://github.com/jashkenas/coffee-script/) with
-`npm install -g coffee-script`, clone 4chan x, cd into it and actually build
-with `cake build`. for development (continuous builds), run `cake dev &`.
-kill the process with `killall node`.
+- Install [node.js](http://nodejs.org/).
+- Install [CoffeeScript](http://coffeescript.org/) with `npm install -g coffee-script`.
+- Clone 4chan X.
+- `cd` into it and build with `cake build`.
+- For development (continuous builds), run `cake dev &`. Kill the process with `killall node`.

@@ -1,5 +1,16 @@
 master
+
+2.23.7
 - mayhem
+  update archive redirections
+
+2.23.6
+- mayhem
+  fix empty sauce or all flavors commented out from breaking 4chan X
+
+2.23.5
+- mayhem
+  increase the thread updater retry timeout limit at each retry
   fix selection to quote when selecting started from the end of a line on Firefox
 
 2.23.4
