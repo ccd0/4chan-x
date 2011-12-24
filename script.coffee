@@ -64,6 +64,7 @@ config =
     '#http://3d.iqdb.org/?url='
     '#http://regex.info/exif.cgi?imgurl='
     '#http://imgur.com/upload?url='
+    '#http://ompldr.org/upload?url1='
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
