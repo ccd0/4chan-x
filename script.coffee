@@ -135,7 +135,7 @@ ui =
     el.innerHTML = html
     el.id = id
     el.style.cssText = if saved = localStorage["#{NAMESPACE}#{id}.position"] then saved else position
-    el.querySelector('div.move')?.addEventListener 'mousedown', ui.dragstart, false
+    el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection
@@ -863,6 +863,45 @@ nav =
     {top} = nav.threads[i].getBoundingClientRect()
     window.scrollBy 0, top
 
+qr =
+  init: ->
+    g.callbacks.push (root) ->
+      $.on $('.quotejs + .quotejs', root), 'click', qr.quote
+    if conf['Persistent QR']
+      qr.dialog()
+
+  close: ->
+    qr.el.hidden = true
+
+  quote: (e) ->
+    e?.preventDefault()
+
+    if qr.el
+      qr.el.hidden = false
+    else
+      qr.dialog()
+
+    id = @textContent
+    text = ">>#{id}\n"
+
+    sel = window.getSelection()
+    if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote/preceding-sibling::input', sel.anchorNode)?.name
+      s = s.replace /\n/g, '\n>'
+      text += ">#{s}\n"
+
+    ta = $ 'textarea', qr.el
+    caretPos = ta.selectionStart
+    #replace selection for text
+    ta.value = ta.value[0...caretPos] + text + ta.value[ta.selectionEnd...ta.value.length]
+    ta.focus()
+    #move the caret to the end of the new quote
+    ta.selectionEnd = ta.selectionStart = caretPos + text.length
+
+  dialog: ->
+    qr.el = ui.dialog 'qr', 'top:0;right:0;', '<div class=move><a class=close>x</a></div><textarea></textarea>'
+    $.on $('.close', qr.el), 'click', qr.close
+    $.add d.body, qr.el
+
 options =
   init: ->
     home = $ '#navtopr a'
@@ -882,8 +921,10 @@ options =
       $.set 'firstrun', true
 
   dialog: ->
-    dialog = ui.dialog 'options', '', '
-<div id=optionsbar>
+    dialog = $.el 'div'
+      id: 'options'
+      className: 'reply dialog'
+      innerHTML: '<div id=optionsbar>
   <div id=credits>
     <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a> | ' + VERSION + '
     | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>
@@ -2092,6 +2133,9 @@ Main =
     Favicon.init()
 
     #major features
+    if conf['Quick Reply']
+      qr.init()
+
     if conf['Image Expansion']
       imgExpand.init()
 
@@ -2209,7 +2253,7 @@ Main =
         width: 100%;
       }
 
-      #qp, #iHover {
+      #qr, #qp, #updater, #stats, #iHover, #overlay, #navlinks {
         position: fixed;
       }
 
@@ -2219,13 +2263,11 @@ Main =
 
       #navlinks {
         font-size: 16px;
-        position: fixed;
         top: 25px;
         right: 5px;
       }
 
       #overlay {
-        position: fixed;
         top: 0;
         right: 0;
         left: 0;
@@ -2271,7 +2313,6 @@ Main =
       }
 
       #updater {
-        position: fixed;
         text-align: right;
       }
       #updater input[type=text] {
@@ -2284,7 +2325,6 @@ Main =
 
       #stats {
         border: none;
-        position: fixed;
       }
 
       #watcher {

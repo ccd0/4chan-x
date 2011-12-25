@@ -64,7 +64,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base,
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base,
     __slice = Array.prototype.slice;
 
   config = {
@@ -217,15 +217,13 @@
 
   ui = {
     dialog: function(id, position, html) {
-      var el, saved, _ref;
+      var el, saved;
       el = d.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
       el.style.cssText = (saved = localStorage["" + NAMESPACE + id + ".position"]) ? saved : position;
-      if ((_ref = el.querySelector('div.move')) != null) {
-        _ref.addEventListener('mousedown', ui.dragstart, false);
-      }
+      el.querySelector('div.move').addEventListener('mousedown', ui.dragstart, false);
       return el;
     },
     dragstart: function(e) {
@@ -1190,6 +1188,44 @@
     }
   };
 
+  qr = {
+    init: function() {
+      g.callbacks.push(function(root) {
+        return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
+      });
+      if (conf['Persistent QR']) return qr.dialog();
+    },
+    close: function() {
+      return qr.el.hidden = true;
+    },
+    quote: function(e) {
+      var caretPos, id, s, sel, ta, text, _ref;
+      if (e != null) e.preventDefault();
+      if (qr.el) {
+        qr.el.hidden = false;
+      } else {
+        qr.dialog();
+      }
+      id = this.textContent;
+      text = ">>" + id + "\n";
+      sel = window.getSelection();
+      if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote/preceding-sibling::input', sel.anchorNode)) != null ? _ref.name : void 0)) {
+        s = s.replace(/\n/g, '\n>');
+        text += ">" + s + "\n";
+      }
+      ta = $('textarea', qr.el);
+      caretPos = ta.selectionStart;
+      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
+      ta.focus();
+      return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
+    },
+    dialog: function() {
+      qr.el = ui.dialog('qr', 'top:0;right:0;', '<div class=move><a class=close>x</a></div><textarea></textarea>');
+      $.on($('.close', qr.el), 'click', qr.close);
+      return $.add(d.body, qr.el);
+    }
+  };
+
   options = {
     init: function() {
       var a, home;
@@ -1214,8 +1250,10 @@
     },
     dialog: function() {
       var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, option, overlay, ta, time, ul, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
-      dialog = ui.dialog('options', '', '\
-<div id=optionsbar>\
+      dialog = $.el('div', {
+        id: 'options',
+        className: 'reply dialog',
+        innerHTML: '<div id=optionsbar>\
   <div id=credits>\
     <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a> | ' + VERSION + '\
     | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>\
@@ -1308,7 +1346,8 @@
       <tr><td>Reset the unread count to 0</td><td><input name=unreadCountTo0></td></tr>\
     </tbody></table>\
   </div>\
-</div>');
+</div>'
+      });
       _ref = config.main;
       for (key in _ref) {
         obj = _ref[key];
@@ -2729,6 +2768,7 @@
       $.addStyle(Main.css);
       threading.init();
       Favicon.init();
+      if (conf['Quick Reply']) qr.init();
       if (conf['Image Expansion']) imgExpand.init();
       if (conf['Reveal Spoilers'] && $('.postarea label')) revealSpoilers.init();
       if (conf['Thread Watcher']) watcher.init();
@@ -2837,7 +2877,7 @@
         width: 100%;\
       }\
 \
-      #qp, #iHover {\
+      #qr, #qp, #updater, #stats, #iHover, #overlay, #navlinks {\
         position: fixed;\
       }\
 \
@@ -2847,13 +2887,11 @@
 \
       #navlinks {\
         font-size: 16px;\
-        position: fixed;\
         top: 25px;\
         right: 5px;\
       }\
 \
       #overlay {\
-        position: fixed;\
         top: 0;\
         right: 0;\
         left: 0;\
@@ -2899,7 +2937,6 @@
       }\
 \
       #updater {\
-        position: fixed;\
         text-align: right;\
       }\
       #updater input[type=text] {\
@@ -2912,7 +2949,6 @@
 \
       #stats {\
         border: none;\
-        position: fixed;\
       }\
 \
       #watcher {\
