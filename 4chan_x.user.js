@@ -133,7 +133,7 @@
       filesize: '',
       md5: ''
     },
-    flavors: ['http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://3d.iqdb.org/?url=', '#http://regex.info/exif.cgi?imgurl=', '#http://imgur.com/upload?url='].join('\n'),
+    flavors: ['http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://3d.iqdb.org/?url=', '#http://regex.info/exif.cgi?imgurl=', '#http://imgur.com/upload?url=', '#http://ompldr.org/upload?url1='].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     favicon: 'ferongr',
@@ -2841,7 +2841,6 @@
         text-decoration: none;\
       }\
 \
-      [hidden], /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */\
       .thread.stub > :not(.block),\
       #content > [name=tab]:not(:checked) + div,\
       #updater:not(:hover) > :not(.move),\
