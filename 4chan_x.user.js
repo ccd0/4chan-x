@@ -3208,7 +3208,6 @@
         text-decoration: none;\
       }\
 \
-      [hidden], /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */\
       .thread.stub > :not(.block),\
       #content > [name=tab]:not(:checked) + div,\
       #updater:not(:hover) > :not(.move),\
