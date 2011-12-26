@@ -1195,17 +1195,20 @@
       });
       if (conf['Persistent QR']) return qr.dialog();
     },
+    open: function() {
+      if (qr.el) {
+        return qr.el.hidden = false;
+      } else {
+        return qr.dialog();
+      }
+    },
     close: function() {
       return qr.el.hidden = true;
     },
     quote: function(e) {
       var caretPos, id, s, sel, ta, text, _ref;
       if (e != null) e.preventDefault();
-      if (qr.el) {
-        qr.el.hidden = false;
-      } else {
-        qr.dialog();
-      }
+      qr.open();
       id = this.textContent;
       text = ">>" + id + "\n";
       sel = window.getSelection();
@@ -1220,7 +1223,7 @@
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     dialog: function() {
-      qr.el = ui.dialog('qr', 'top:0;right:0;', '<div class=move><a class=close>x</a></div><textarea></textarea>');
+      qr.el = ui.dialog('qr', 'top:0;right:0;', '<div class=move><a class=close>⨯</a></div><textarea></textarea>');
       $.on($('.close', qr.el), 'click', qr.close);
       return $.add(d.body, qr.el);
     }

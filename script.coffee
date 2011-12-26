@@ -870,16 +870,18 @@ qr =
     if conf['Persistent QR']
       qr.dialog()
 
+  open: ->
+    if qr.el
+      qr.el.hidden = false
+    else
+      qr.dialog()
+
   close: ->
     qr.el.hidden = true
 
   quote: (e) ->
     e?.preventDefault()
-
-    if qr.el
-      qr.el.hidden = false
-    else
-      qr.dialog()
+    qr.open()
 
     id = @textContent
     text = ">>#{id}\n"
@@ -898,7 +900,7 @@ qr =
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
 
   dialog: ->
-    qr.el = ui.dialog 'qr', 'top:0;right:0;', '<div class=move><a class=close>x</a></div><textarea></textarea>'
+    qr.el = ui.dialog 'qr', 'top:0;right:0;', '<div class=move><a class=close>⨯</a></div><textarea></textarea>'
     $.on $('.close', qr.el), 'click', qr.close
     $.add d.body, qr.el
 
