@@ -1959,6 +1959,10 @@ quoteInline =
     root = if q.parentNode.nodeName is 'FONT' then q.parentNode else if q.nextSibling then q.nextSibling else q
     if el = $.id id
       inline = quoteInline.table id, el.innerHTML
+      if g.REPLY and conf['Unread Count'] and (i = unread.replies.indexOf el.parentNode.parentNode.parentNode) isnt -1
+        unread.replies.splice i, 1
+        unread.updateTitle()
+        Favicon.update()
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
         $.addClass $.x('ancestor::table', el), 'forwarded' if conf['Forward Hiding']

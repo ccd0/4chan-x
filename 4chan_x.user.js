@@ -2469,10 +2469,15 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var el, inline, pathname, root, threadID;
+      var el, i, inline, pathname, root, threadID;
       root = q.parentNode.nodeName === 'FONT' ? q.parentNode : q.nextSibling ? q.nextSibling : q;
       if (el = $.id(id)) {
         inline = quoteInline.table(id, el.innerHTML);
+        if (g.REPLY && conf['Unread Count'] && (i = unread.replies.indexOf(el.parentNode.parentNode.parentNode)) !== -1) {
+          unread.replies.splice(i, 1);
+          unread.updateTitle();
+          Favicon.update();
+        }
         if (/\bbacklink\b/.test(q.className)) {
           $.after(q.parentNode, inline);
           if (conf['Forward Hiding']) {
