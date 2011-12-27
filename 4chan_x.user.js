@@ -6,6 +6,7 @@
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
+// @include        http://images.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @run-at         document-start
 // @updateURL      https://raw.github.com/MayhemYDG/4chan-x/stable/4chan_x.user.js
@@ -70,7 +71,7 @@
   config = {
     main: {
       Enhancing: {
-        '404 Redirect': [true, 'Redirect dead threads'],
+        '404 Redirect': [true, 'Redirect dead threads and images'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'Report Button': [true, 'Add report buttons'],
@@ -2819,49 +2820,61 @@
     }
   };
 
-  redirect = function() {
-    var url;
-    switch (g.BOARD) {
-      case 'a':
-      case 'jp':
-      case 'm':
-      case 'tg':
-      case 'tv':
-        url = "http://oldarchive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      case 'diy':
-      case 'g':
-      case 'sci':
-        url = "http://archive.installgentoo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      case '3':
-      case 'adv':
-      case 'an':
-      case 'ck':
-      case 'co':
-      case 'fa':
-      case 'fit':
-      case 'int':
-      case 'k':
-      case 'mu':
-      case 'n':
-      case 'o':
-      case 'p':
-      case 'po':
-      case 'pol':
-      case 'soc':
-      case 'sp':
-      case 'toy':
-      case 'trv':
-      case 'v':
-      case 'vp':
-      case 'x':
-        url = "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      default:
-        url = "http://boards.4chan.org/" + g.BOARD;
+  redirect = {
+    init: function() {
+      var url;
+      url = location.hostname === 'images.4chan.org' ? redirect.image(g.BOARD, location.pathname.split('/')[3]) : /^\d+$/.test(g.THREAD_ID) ? redirect.thread() : void 0;
+      if (url) return location.href = url;
+    },
+    image: function(board, filename) {
+      switch (board) {
+        case 'a':
+        case 'jp':
+        case 'm':
+        case 'tg':
+        case 'tv':
+          return "http://archivethumb.foolz.us/board/" + board + "/img/" + filename;
+      }
+    },
+    thread: function() {
+      switch (g.BOARD) {
+        case 'a':
+        case 'jp':
+        case 'm':
+        case 'tg':
+        case 'tv':
+          return "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        case 'diy':
+        case 'g':
+        case 'sci':
+          return "http://archive.installgentoo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        case '3':
+        case 'adv':
+        case 'an':
+        case 'ck':
+        case 'co':
+        case 'fa':
+        case 'fit':
+        case 'int':
+        case 'k':
+        case 'mu':
+        case 'n':
+        case 'o':
+        case 'p':
+        case 'po':
+        case 'pol':
+        case 'soc':
+        case 'sp':
+        case 'toy':
+        case 'trv':
+        case 'v':
+        case 'vp':
+        case 'x':
+          return "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        default:
+          return "http://boards.4chan.org/" + g.BOARD;
+      }
     }
-    return location.href = url;
   };
 
   imgHover = {
@@ -2973,26 +2986,29 @@
       thumb.hidden = false;
       return $.rm(thumb.nextSibling);
     },
-    expand: function(thumb) {
+    expand: function(thumb, url) {
       var a, filesize, img, max;
       a = thumb.parentNode;
       img = $.el('img', {
-        src: a.href
+        src: url ? url : a.href
       });
       if (engine === 'gecko' && a.parentNode.className !== 'op') {
         filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent;
         max = filesize.match(/(\d+)x/);
         img.style.maxWidth = "" + max[1] + "px";
       }
-      $.on(img, 'error', imgExpand.error);
+      if (conf['404 Redirect']) $.on(img, 'error', imgExpand.error);
       thumb.hidden = true;
       return $.add(a, img);
     },
     error: function() {
-      var req, thumb;
+      var req, src, thumb, url;
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
-      if (engine === 'webkit') {
+      src = this.src.split('/');
+      if (url = redirect.image(src[3], src[5])) {
+        return imgExpand.expand(thumb, url);
+      } else if (engine === 'webkit') {
         return req = $.ajax(this.src, (function() {
           if (this.status !== 404) {
             return setTimeout(imgExpand.retry, 10000, thumb);
@@ -3042,7 +3058,7 @@
       pathname = location.pathname.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
-        g.REPLY = temp;
+        g.REPLY = true;
         g.THREAD_ID = pathname[2];
       } else {
         g.PAGENUM = parseInt(temp) || 0;
@@ -3111,11 +3127,11 @@
     onLoad: function() {
       var callback, canPost, form, node, nodes, _i, _j, _len, _len2, _ref;
       $.off(d, 'DOMContentLoaded', Main.onLoad);
-      if (conf['404 Redirect'] && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
-        redirect();
+      if (conf['404 Redirect'] && d.title === '4chan - 404') {
+        redirect.init();
         return;
       }
-      if (!$('#navtopr')) return;
+      if (!$('#navtopr') || location.hostname === 'images.4chan.org') return;
       $.addClass(d.body, engine);
       $.addStyle(Main.css);
       threading.init();

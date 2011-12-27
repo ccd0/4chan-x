@@ -1,7 +1,9 @@
 master
 - mayhem
-  the report button can open multiple popups
+  redirect 404'd pictures to archives when possible
+  the report button can open multiple popups again
   add omploader to the list of optional flavors (http://ompldr.org/upload?url1=)
+  update archive redirections
 
 2.23.7
 - mayhem
