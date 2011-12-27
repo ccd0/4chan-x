@@ -972,7 +972,7 @@
           }
           break;
         case conf.unreadCountTo0:
-          unread.replies.length = 0;
+          unread.replies = [];
           unread.updateTitle();
           Favicon.update();
           break;
