@@ -1243,7 +1243,7 @@
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     dialog: function() {
-      var input, _i, _len, _ref;
+      var input, inputs, _i, _len;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <style>\
 .autohide:not(:hover) > #form {\
@@ -1265,9 +1265,10 @@
 </div>');
       $.on($('#autohide', qr.el), 'click', qr.hide);
       $.on($('.close', qr.el), 'click', qr.close);
-      _ref = [$('[name=name]', qr.el), $('[name=email]', qr.el)];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        input = _ref[_i];
+      inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el)];
+      if (conf['Remember Subject']) inputs.push($('[name=subject]', qr.el));
+      for (_i = 0, _len = inputs.length; _i < _len; _i++) {
+        input = inputs[_i];
         input.value = $.get("qr_" + input.name, null);
         $.on(input, 'change', function() {
           return $.set("qr_" + this.name, this.value);
@@ -1275,7 +1276,7 @@
       }
       $.on(window, 'storage', function(e) {
         var match;
-        if (match = e.key.match(/qr_(name|email)$/)) {
+        if (match = e.key.match(/qr_(.+)$/)) {
           return $("[name=" + match[1] + "]", qr.el).value = JSON.parse(e.newValue);
         }
       });

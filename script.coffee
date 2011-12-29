@@ -936,12 +936,14 @@ qr =
     $.on $('.close', qr.el),    'click', qr.close
 
     # save & load inputs' value with localStorage
-    for input in [$('[name=name]', qr.el), $('[name=email]', qr.el)]
+    inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el)]
+    inputs.push $('[name=subject]', qr.el) if conf['Remember Subject']
+    for input in inputs
       input.value = $.get "qr_#{input.name}", null
       $.on input, 'change', -> $.set "qr_#{@name}", @value
     # sync between tabs
     $.on window, 'storage', (e) ->
-      if match = e.key.match /qr_(name|email)$/
+      if match = e.key.match /qr_(.+)$/
         $("[name=#{match[1]}]", qr.el).value = JSON.parse e.newValue
 
     $.add d.body, qr.el
