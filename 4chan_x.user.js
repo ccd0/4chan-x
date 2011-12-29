@@ -2838,6 +2838,7 @@
         case 'm':
         case 'tg':
         case 'tv':
+        case 'u':
           return "http://archivethumb.foolz.us/board/" + board + "/img/" + filename;
       }
     },
@@ -2848,6 +2849,7 @@
         case 'm':
         case 'tg':
         case 'tv':
+        case 'u':
           return "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
         case 'diy':
         case 'g':

@@ -2231,11 +2231,11 @@ redirect =
     location.href = url if url
   image: (board, filename) -> #board must be given, the image can originate from a cross-quote
     switch board
-      when 'a', 'jp', 'm', 'tg', 'tv'
+      when 'a', 'jp', 'm', 'tg', 'tv', 'u'
         "http://archivethumb.foolz.us/board/#{board}/img/#{filename}"
   thread: ->
     switch g.BOARD
-      when 'a', 'jp', 'm', 'tg', 'tv'
+      when 'a', 'jp', 'm', 'tg', 'tv', 'u'
         "http://archive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}"
       when 'diy', 'g', 'sci'
         "http://archive.installgentoo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
