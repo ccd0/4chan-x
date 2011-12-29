@@ -2872,6 +2872,7 @@
         case 'p':
         case 'po':
         case 'pol':
+        case 'r9k':
         case 'soc':
         case 'sp':
         case 'toy':
