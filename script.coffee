@@ -32,12 +32,12 @@ config =
       'Auto Watch':                   [true,  'Automatically watch threads that you start']
       'Auto Watch Reply':             [false, 'Automatically watch threads that you reply to']
     Posting:
-      'Auto Noko':                    [true,  'Redirect to your thread']
-      'Cooldown':                     [true,  'Prevent `flood detected` errors']
-      'Quick Reply':                  [true,  'Reply without leaving the page']
-      'Persistent QR':                [false, 'Quick reply won\'t disappear after posting. Only in replies.']
-      'Auto Hide QR':                 [true,  'Automatically auto-hide the quick reply when posting']
-      'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting']
+      'Quick Reply':                  [true,  'Reply without leaving the page.']
+      'Cooldown':                     [true,  'Prevent "flood detected" errors.']
+      'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
+      'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
+      'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
+      'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
     Quoting:
       'Quote Backlinks':              [true,  'Add quote backlinks']
       'OP Backlinks':                 [false, 'Add backlinks to the OP']
@@ -1079,7 +1079,7 @@ options =
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
     li = $.el 'li',
-      innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have `Show Stubs` disabled."
+      innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have \"Show Stubs\" disabled."
     $.on $('button', li), 'click', options.clearHidden
     $.add $('ul:nth-child(2)', dialog), li
 
