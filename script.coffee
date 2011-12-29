@@ -872,7 +872,7 @@ qr =
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
     if conf['Persistent QR']
       qr.dialog()
-      $.id('autohide').click()
+      $.id('autohide').click() if conf['Auto Hide QR']
 
   open: ->
     if qr.el
@@ -884,7 +884,10 @@ qr =
       qr.dialog()
 
   hide: ->
-    qr.el.lastChild.hidden = this.checked
+    if this.checked
+      $.addClass qr.el, 'autohide'
+    else
+      $.removeClass qr.el, 'autohide'
 
   close: ->
     qr.el.hidden = true
@@ -912,6 +915,9 @@ qr =
   dialog: ->
     qr.el = ui.dialog 'qr', 'top:0;right:0;', '
 <style>
+.autohide:not(:hover) > div:not(.move) {
+  display: none;
+}
 #qr > .move {
   min-width: 300px;
   text-align: right;

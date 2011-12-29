@@ -1200,7 +1200,7 @@
       });
       if (conf['Persistent QR']) {
         qr.dialog();
-        return $.id('autohide').click();
+        if (conf['Auto Hide QR']) return $.id('autohide').click();
       }
     },
     open: function() {
@@ -1215,7 +1215,11 @@
       }
     },
     hide: function() {
-      return qr.el.lastChild.hidden = this.checked;
+      if (this.checked) {
+        return $.addClass(qr.el, 'autohide');
+      } else {
+        return $.removeClass(qr.el, 'autohide');
+      }
     },
     close: function() {
       return qr.el.hidden = true;
@@ -1241,6 +1245,9 @@
       var input, _i, _len, _ref;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <style>\
+.autohide:not(:hover) > div:not(.move) {\
+  display: none;\
+}\
 #qr > .move {\
   min-width: 300px;\
   text-align: right;\
