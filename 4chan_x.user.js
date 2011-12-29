@@ -1243,10 +1243,10 @@
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     dialog: function() {
-      var input, inputs, _i, _len;
+      var input, _i, _len, _ref;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <style>\
-.autohide:not(:hover) > div:not(.move) {\
+.autohide:not(:hover) > #form {\
   display: none;\
 }\
 #qr > .move {\
@@ -1259,26 +1259,23 @@
   <input type=checkbox name=autohide id=autohide title=Auto-hide>\
   <a class=close>⨯</a>\
 </div>\
-<div>\
-  <input name=name><input name=email><input name=pwd hidden><input name=subject>\
+<div id=form>\
+  <input name=name><input name=email><input name=subject>\
   <textarea></textarea>\
 </div>');
       $.on($('#autohide', qr.el), 'click', qr.hide);
       $.on($('.close', qr.el), 'click', qr.close);
-      inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el), $('[name=pwd]', qr.el)];
-      for (_i = 0, _len = inputs.length; _i < _len; _i++) {
-        input = inputs[_i];
+      _ref = [$('[name=name]', qr.el), $('[name=email]', qr.el)];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
         input.value = $.get("qr_" + input.name, null);
         $.on(input, 'change', function() {
           return $.set("qr_" + this.name, this.value);
         });
       }
-      if (!inputs[2].value) {
-        $.set("qr_pwd", inputs[2].value = $('.postarea [name=pwd]').value);
-      }
       $.on(window, 'storage', function(e) {
         var match;
-        if (match = e.key.match(/qr_(name|email|pwd)$/)) {
+        if (match = e.key.match(/qr_(name|email)$/)) {
           return $("[name=" + match[1] + "]", qr.el).value = JSON.parse(e.newValue);
         }
       });

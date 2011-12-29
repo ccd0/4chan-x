@@ -915,7 +915,7 @@ qr =
   dialog: ->
     qr.el = ui.dialog 'qr', 'top:0;right:0;', '
 <style>
-.autohide:not(:hover) > div:not(.move) {
+.autohide:not(:hover) > #form {
   display: none;
 }
 #qr > .move {
@@ -928,24 +928,20 @@ qr =
   <input type=checkbox name=autohide id=autohide title=Auto-hide>
   <a class=close>⨯</a>
 </div>
-<div>
-  <input name=name><input name=email><input name=pwd hidden><input name=subject>
+<div id=form>
+  <input name=name><input name=email><input name=subject>
   <textarea></textarea>
 </div>'
     $.on $('#autohide', qr.el), 'click', qr.hide
     $.on $('.close', qr.el),    'click', qr.close
 
     # save & load inputs' value with localStorage
-    inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el), $('[name=pwd]', qr.el)]
-    for input in inputs
+    for input in [$('[name=name]', qr.el), $('[name=email]', qr.el)]
       input.value = $.get "qr_#{input.name}", null
       $.on input, 'change', -> $.set "qr_#{@name}", @value
-    # load & save default password if there isn't any saved
-    unless inputs[2].value
-      $.set "qr_pwd", inputs[2].value = $('.postarea [name=pwd]').value
     # sync between tabs
     $.on window, 'storage', (e) ->
-      if match = e.key.match /qr_(name|email|pwd)$/
+      if match = e.key.match /qr_(name|email)$/
         $("[name=#{match[1]}]", qr.el).value = JSON.parse e.newValue
 
     $.add d.body, qr.el
