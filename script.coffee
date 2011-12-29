@@ -1,7 +1,7 @@
 config =
   main:
     Enhancing:
-      '404 Redirect':                 [true,  'Redirect dead threads']
+      '404 Redirect':                 [true,  'Redirect dead threads and images']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'Report Button':                [true,  'Add report buttons']
@@ -706,7 +706,7 @@ keybinds =
       when conf.submit
         ;# QR
       when conf.unreadCountTo0
-        unread.replies.length = 0
+        unread.replies = []
         unread.updateTitle()
         Favicon.update()
       else
@@ -1678,6 +1678,10 @@ quoteInline =
     root = if q.parentNode.nodeName is 'FONT' then q.parentNode else if q.nextSibling then q.nextSibling else q
     if el = $.id id
       inline = quoteInline.table id, el.innerHTML
+      if g.REPLY and conf['Unread Count'] and (i = unread.replies.indexOf el.parentNode.parentNode.parentNode) isnt -1
+        unread.replies.splice i, 1
+        unread.updateTitle()
+        Favicon.update()
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
         $.addClass $.x('ancestor::table', el), 'forwarded' if conf['Forward Hiding']
@@ -1821,7 +1825,7 @@ reportButton =
       $.on a, 'click', reportButton.report
   report: ->
     url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
-    id  = "#{NAMESPACE}popup"
+    id  = Date.now()
     set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
 
@@ -1935,17 +1939,31 @@ Favicon =
       favicon.href = null
       $.replace favicon, clone
 
-redirect = ->
-  switch g.BOARD
-    when 'a', 'jp', 'm', 'tg', 'tv'
-      url = "http://oldarchive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when 'diy', 'g', 'sci'
-      url = "http://archive.installgentoo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
-      url = "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    else
-      url = "http://boards.4chan.org/#{g.BOARD}"
-  location.href = url
+redirect =
+  init: ->
+    url =
+      # waiting for https://github.com/FoOlRulez/FoOlFuuka/issues/11
+      if location.hostname is 'images.4chan.org'
+        redirect.image g.BOARD, location.pathname.split('/')[3]
+      else if /^\d+$/.test g.THREAD_ID
+        redirect.thread()
+    location.href = url if url
+  image: (board, filename) -> #board must be given, the image can originate from a cross-quote
+    switch board
+      when 'a', 'jp', 'm', 'tg', 'tv', 'u'
+        "http://archivethumb.foolz.us/board/#{board}/img/#{filename}"
+  thread: ->
+    switch g.BOARD
+      when 'a', 'jp', 'm', 'tg', 'tv', 'u'
+        "http://archive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}/"
+      when 'lit'
+        "http://fuuka.warosu.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
+      when 'diy', 'g', 'sci'
+        "http://archive.installgentoo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
+      when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'r9k', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
+        "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
+      else
+        "http://boards.4chan.org/#{g.BOARD}"
 
 imgHover =
   init: ->
@@ -1956,7 +1974,7 @@ imgHover =
       $.on thumb, 'mouseout',  ui.hoverend
   mouseover: ->
     ui.el = $.el 'img'
-      id: 'iHover'
+      id: 'ihover'
       src: @parentNode.href
     $.add d.body, ui.el
 
@@ -2022,23 +2040,26 @@ imgExpand =
     thumb.hidden = false
     $.rm thumb.nextSibling
 
-  expand: (thumb) ->
+  expand: (thumb, url) ->
     a = thumb.parentNode
     img = $.el 'img',
-      src: a.href
+      src: if url then url else a.href
     if engine is 'gecko' and a.parentNode.className isnt 'op'
       filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent
       max = filesize.match /(\d+)x/
       img.style.maxWidth = "#{max[1]}px"
-    $.on img, 'error', imgExpand.error
+    $.on img, 'error', imgExpand.error if conf['404 Redirect']
     thumb.hidden = true
     $.add a, img
 
   error: ->
     thumb = @previousSibling
     imgExpand.contract thumb
+    src = @src.split '/'
+    if url = redirect.image src[3], src[5]
+      imgExpand.expand thumb, url
     #navigator.online is not x-browser/os yet
-    if engine is 'webkit'
+    else if engine is 'webkit'
       req = $.ajax @src, (->
         setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
       ), type: 'head', event: 'onreadystatechange'
@@ -2077,7 +2098,7 @@ Main =
     pathname = location.pathname[1..].split('/')
     [g.BOARD, temp] = pathname
     if temp is 'res'
-      g.REPLY = temp
+      g.REPLY = true
       g.THREAD_ID = pathname[2]
     else
       g.PAGENUM = parseInt(temp) or 0
@@ -2165,10 +2186,10 @@ Main =
 
   onLoad: ->
     $.off d, 'DOMContentLoaded', Main.onLoad
-    if conf['404 Redirect'] and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
-      redirect()
+    if conf['404 Redirect'] and d.title is '4chan - 404'
+      redirect.init()
       return
-    if not $ '#navtopr'
+    if not $('#navtopr') or location.hostname is 'images.4chan.org'
       return
     $.addClass d.body, engine
     $.addStyle Main.css
@@ -2295,12 +2316,13 @@ Main =
         width: 100%;
       }
 
-      #qr, #qp, #updater, #stats, #iHover, #overlay, #navlinks {
+      #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {
         position: fixed;
       }
 
-      #iHover {
+      #ihover {
         max-height: 100%;
+        max-width: 75%;
       }
 
       #navlinks {
