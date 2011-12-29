@@ -32,7 +32,7 @@ config =
       'Auto Watch':                   [true,  'Automatically watch threads that you start']
       'Auto Watch Reply':             [false, 'Automatically watch threads that you reply to']
     Posting:
-      'Auto Noko':                    [true,  'Redirect to your post']
+      'Auto Noko':                    [true,  'Redirect to your thread']
       'Cooldown':                     [true,  'Prevent `flood detected` errors']
       'Quick Reply':                  [true,  'Reply without leaving the page']
       'Persistent QR':                [false, 'Quick reply won\'t disappear after posting. Only in replies.']
@@ -650,9 +650,10 @@ keybinds =
     thread = nav.getThread()
     switch key
       when conf.close
-        if o = $ '#overlay'
+        if o = $.id 'overlay'
           $.rm o
-        # else close QR
+        else if qr.el
+          qr.close()
       when conf.spoiler
         ta = e.target
         return unless ta.nodeName is 'TEXTAREA'
@@ -870,12 +871,19 @@ qr =
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
     if conf['Persistent QR']
       qr.dialog()
+      $.id('autohide').click()
 
   open: ->
     if qr.el
       qr.el.hidden = false
+      input = $.id 'autohide'
+      input.checked = false
+      qr.hide.call input
     else
       qr.dialog()
+
+  hide: ->
+    qr.el.lastChild.hidden = this.checked
 
   close: ->
     qr.el.hidden = true
@@ -901,8 +909,24 @@ qr =
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
 
   dialog: ->
-    qr.el = ui.dialog 'qr', 'top:0;right:0;', '<div class=move><a class=close>⨯</a></div><textarea></textarea>'
-    $.on $('.close', qr.el), 'click', qr.close
+    qr.el = ui.dialog 'qr', 'top:0;right:0;', '
+<style>
+#qr > .move {
+  min-width: 300px;
+  text-align: right;
+}
+</style>
+
+<div class=move>
+  <input type=checkbox name=autohide id=autohide title=Auto-hide>
+  <a class=close>⨯</a>
+</div>
+<div>
+  <input name=name><input name=email><input name=subject>
+  <textarea></textarea>
+</div>'
+    $.on $('#autohide', qr.el), 'click', qr.hide
+    $.on $('.close', qr.el),    'click', qr.close
     $.add d.body, qr.el
 
 options =
