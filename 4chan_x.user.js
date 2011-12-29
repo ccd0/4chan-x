@@ -1194,6 +1194,7 @@
 
   qr = {
     init: function() {
+      if (!$('form[name=post]')) return;
       g.callbacks.push(function(root) {
         return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
       });
@@ -1237,6 +1238,7 @@
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     dialog: function() {
+      var input, _i, _len, _ref;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <style>\
 #qr > .move {\
@@ -1250,11 +1252,26 @@
   <a class=close>⨯</a>\
 </div>\
 <div>\
-  <input name=name><input name=email><input name=subject>\
+  <input name=name><input name=email><input name=pwd hidden><input name=subject>\
   <textarea></textarea>\
 </div>');
       $.on($('#autohide', qr.el), 'click', qr.hide);
       $.on($('.close', qr.el), 'click', qr.close);
+      _ref = [$('[name=name]', qr.el), $('[name=email]', qr.el)];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
+        input.value = $.get("qr_" + input.name, null);
+        $.on(input, 'change', function() {
+          return $.set("qr_" + this.name, this.value);
+        });
+      }
+      $.on(window, 'storage', function(e) {
+        var match;
+        if (match = e.key.match(/qr_(name|email)$/)) {
+          return $("[name=" + match[1] + "]", qr.el).value = JSON.parse(e.newValue);
+        }
+      });
+      $('[name=pwd]', qr.el).value = $('.postarea [name=pwd]').value;
       return $.add(d.body, qr.el);
     }
   };

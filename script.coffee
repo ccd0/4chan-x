@@ -867,6 +867,7 @@ nav =
 
 qr =
   init: ->
+    return unless $ 'form[name=post]'
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
     if conf['Persistent QR']
@@ -922,11 +923,21 @@ qr =
   <a class=close>⨯</a>
 </div>
 <div>
-  <input name=name><input name=email><input name=subject>
+  <input name=name><input name=email><input name=pwd hidden><input name=subject>
   <textarea></textarea>
 </div>'
     $.on $('#autohide', qr.el), 'click', qr.hide
     $.on $('.close', qr.el),    'click', qr.close
+
+    # save & load inputs' value with localStorage, sync between tabs
+    for input in [$('[name=name]', qr.el), $('[name=email]', qr.el)]
+      input.value = $.get "qr_#{input.name}", null
+      $.on input, 'change', -> $.set "qr_#{@name}", @value
+    $.on window, 'storage', (e) ->
+      if match = e.key.match /qr_(name|email)$/
+        $("[name=#{match[1]}]", qr.el).value = JSON.parse e.newValue
+    $('[name=pwd]', qr.el).value = $('.postarea [name=pwd]').value
+
     $.add d.body, qr.el
 
 options =
