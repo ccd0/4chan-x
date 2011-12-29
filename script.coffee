@@ -936,13 +936,12 @@ qr =
     $.on $('.close', qr.el),    'click', qr.close
 
     # save & load inputs' value with localStorage, sync between tabs
-    for input in [$('[name=name]', qr.el), $('[name=email]', qr.el)]
-      input.value = $.get "qr_#{input.name}", null
+    for input in [$('[name=name]', qr.el), $('[name=email]', qr.el), $('[name=pwd]', qr.el)]
+      input.value = $.get "qr_#{input.name}", $(".postarea [name=#{input.name}]").value
       $.on input, 'change', -> $.set "qr_#{@name}", @value
     $.on window, 'storage', (e) ->
-      if match = e.key.match /qr_(name|email)$/
+      if match = e.key.match /qr_(name|email|pwd)$/
         $("[name=#{match[1]}]", qr.el).value = JSON.parse e.newValue
-    $('[name=pwd]', qr.el).value = $('.postarea [name=pwd]').value
 
     $.add d.body, qr.el
 

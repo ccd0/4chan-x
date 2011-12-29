@@ -1264,21 +1264,20 @@
 </div>');
       $.on($('#autohide', qr.el), 'click', qr.hide);
       $.on($('.close', qr.el), 'click', qr.close);
-      _ref = [$('[name=name]', qr.el), $('[name=email]', qr.el)];
+      _ref = [$('[name=name]', qr.el), $('[name=email]', qr.el), $('[name=pwd]', qr.el)];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
-        input.value = $.get("qr_" + input.name, null);
+        input.value = $.get("qr_" + input.name, $(".postarea [name=" + input.name + "]").value);
         $.on(input, 'change', function() {
           return $.set("qr_" + this.name, this.value);
         });
       }
       $.on(window, 'storage', function(e) {
         var match;
-        if (match = e.key.match(/qr_(name|email)$/)) {
+        if (match = e.key.match(/qr_(name|email|pwd)$/)) {
           return $("[name=" + match[1] + "]", qr.el).value = JSON.parse(e.newValue);
         }
       });
-      $('[name=pwd]', qr.el).value = $('.postarea [name=pwd]').value;
       return $.add(d.body, qr.el);
     }
   };
