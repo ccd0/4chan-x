@@ -1243,7 +1243,7 @@
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     dialog: function() {
-      var input, _i, _len, _ref;
+      var input, inputs, _i, _len;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <style>\
 .autohide:not(:hover) > div:not(.move) {\
@@ -1265,13 +1265,16 @@
 </div>');
       $.on($('#autohide', qr.el), 'click', qr.hide);
       $.on($('.close', qr.el), 'click', qr.close);
-      _ref = [$('[name=name]', qr.el), $('[name=email]', qr.el), $('[name=pwd]', qr.el)];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        input = _ref[_i];
-        input.value = $.get("qr_" + input.name, $(".postarea [name=" + input.name + "]").value);
+      inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el), $('[name=pwd]', qr.el)];
+      for (_i = 0, _len = inputs.length; _i < _len; _i++) {
+        input = inputs[_i];
+        input.value = $.get("qr_" + input.name, null);
         $.on(input, 'change', function() {
           return $.set("qr_" + this.name, this.value);
         });
+      }
+      if (!inputs[2].value) {
+        $.set("qr_pwd", inputs[2].value = $('.postarea [name=pwd]').value);
       }
       $.on(window, 'storage', function(e) {
         var match;

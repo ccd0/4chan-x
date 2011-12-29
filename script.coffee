@@ -935,10 +935,15 @@ qr =
     $.on $('#autohide', qr.el), 'click', qr.hide
     $.on $('.close', qr.el),    'click', qr.close
 
-    # save & load inputs' value with localStorage, sync between tabs
-    for input in [$('[name=name]', qr.el), $('[name=email]', qr.el), $('[name=pwd]', qr.el)]
-      input.value = $.get "qr_#{input.name}", $(".postarea [name=#{input.name}]").value
+    # save & load inputs' value with localStorage
+    inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el), $('[name=pwd]', qr.el)]
+    for input in inputs
+      input.value = $.get "qr_#{input.name}", null
       $.on input, 'change', -> $.set "qr_#{@name}", @value
+    # load & save default password if there isn't any saved
+    unless inputs[2].value
+      $.set "qr_pwd", inputs[2].value = $('.postarea [name=pwd]').value
+    # sync between tabs
     $.on window, 'storage', (e) ->
       if match = e.key.match /qr_(name|email|pwd)$/
         $("[name=#{match[1]}]", qr.el).value = JSON.parse e.newValue
