@@ -2255,7 +2255,7 @@ imgHover =
       $.on thumb, 'mouseout',  ui.hoverend
   mouseover: ->
     ui.el = $.el 'img'
-      id: 'iHover'
+      id: 'ihover'
       src: @parentNode.href
     $.add d.body, ui.el
 
@@ -2624,12 +2624,13 @@ Main =
         width: 100%;
       }
 
-      #qp, #iHover {
+      #qp, #ihover {
         position: fixed;
       }
 
-      #iHover {
+      #ihover {
         max-height: 100%;
+        max-width: 75%;
       }
 
       #navlinks {
