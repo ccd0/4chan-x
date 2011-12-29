@@ -2850,7 +2850,9 @@
         case 'tg':
         case 'tv':
         case 'u':
-          return "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
+          return "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID + "/";
+        case 'lit':
+          return "http://fuuka.warosu.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
         case 'diy':
         case 'g':
         case 'sci':

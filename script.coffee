@@ -2236,7 +2236,9 @@ redirect =
   thread: ->
     switch g.BOARD
       when 'a', 'jp', 'm', 'tg', 'tv', 'u'
-        "http://archive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}"
+        "http://archive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}/"
+      when 'lit'
+        "http://fuuka.warosu.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
       when 'diy', 'g', 'sci'
         "http://archive.installgentoo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
       when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
