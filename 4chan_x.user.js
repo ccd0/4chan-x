@@ -1243,28 +1243,27 @@
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     dialog: function() {
-      var input, inputs, _i, _len;
+      var input, _i, _len, _ref;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <style>\
-.autohide:not(:hover) > #form {\
+.autohide:not(:hover) > form {\
   display: none;\
 }\
 #qr > .move {\
   min-width: 300px;\
   text-align: right;\
 }\
-.fields > input {\
+#qr > form {\
+  margin: 0;\
+}\
+.field {\
   border: 1px solid #AAA;\
   margin: 0;\
   padding: 2px 4px 3px;\
   width: 33%;\
 }\
-#form > textarea {\
+textarea.field {\
   font-family: sans-serif;\
-  border-color: #AAA;\
-  border-width: 1px 0;\
-  margin: 0;\
-  padding: 2px 4px 3px;\
   min-height: 120px;\
   width: 100%;\
 }\
@@ -1276,28 +1275,30 @@
   height: 57px;\
   width: 300px;\
 }\
+.field[name=captcha] {\
+  width: 100%;\
+}\
 </style>\
 \
 <div class=move>\
   <input type=checkbox name=autohide id=autohide title=Auto-hide>\
   <a class=close>⨯</a>\
 </div>\
-<div id=form>\
-  <div class=fields><input name=name title=Name placeholder=Name size=1><input name=email title=E-mail placeholder=E-mail size=1><input name=subject title=Subject placeholder=Subject size=1></div>\
-  <textarea title=Comment placeholder=Comment></textarea>\
+<form>\
+  <div><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>\
+  <textarea title=Comment placeholder=Comment class=field></textarea>\
   <div class=captcha><img></div>\
-  <input name=captcha title=Verification placeholder=Verification>\
-</div>');
+  <input name=captcha title=Verification placeholder=Verification class=field size=1>\
+</form>');
       $.on($('#autohide', qr.el), 'click', qr.hide);
       $.on($('.close', qr.el), 'click', qr.close);
-      inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el)];
-      if (conf['Remember Subject']) inputs.push($('[name=subject]', qr.el));
-      for (_i = 0, _len = inputs.length; _i < _len; _i++) {
-        input = inputs[_i];
+      $.on($('form', qr.el), 'submit', qr.submit);
+      qr.inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el)];
+      if (conf['Remember Subject']) qr.inputs.push($('[name=subject]', qr.el));
+      _ref = qr.inputs;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
         input.value = $.get("qr_" + input.name, null);
-        $.on(input, 'change', function() {
-          return $.set("qr_" + this.name, this.value);
-        });
       }
       $.on(window, 'storage', function(e) {
         var match;
@@ -1306,6 +1307,24 @@
         }
       });
       return $.add(d.body, qr.el);
+    },
+    submit: function(e) {
+      var input, _i, _len, _ref, _results;
+      if (e != null) e.preventDefault();
+      if (conf['Auto Hide QR']) qr.hide();
+      if (/sage/i.test(qr.inputs[1].value)) {
+        qr.sage = true;
+        qr.inputs[1].value = null;
+      }
+      _ref = qr.inputs;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
+        _results.push($.on(input, 'change', function() {
+          return $.set("qr_" + this.name, this.value);
+        }));
+      }
+      return _results;
     }
   };
 

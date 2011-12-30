@@ -887,7 +887,6 @@ qr =
     if this.checked
       $.addClass qr.el, 'autohide'
     else
-
       $.removeClass qr.el, 'autohide'
 
   close: ->
@@ -916,25 +915,24 @@ qr =
   dialog: ->
     qr.el = ui.dialog 'qr', 'top:0;right:0;', '
 <style>
-.autohide:not(:hover) > #form {
+.autohide:not(:hover) > form {
   display: none;
 }
 #qr > .move {
   min-width: 300px;
   text-align: right;
 }
-.fields > input {
+#qr > form {
+  margin: 0;
+}
+.field {
   border: 1px solid #AAA;
   margin: 0;
   padding: 2px 4px 3px;
   width: 33%;
 }
-#form > textarea {
+textarea.field {
   font-family: sans-serif;
-  border-color: #AAA;
-  border-width: 1px 0;
-  margin: 0;
-  padding: 2px 4px 3px;
   min-height: 120px;
   width: 100%;
 }
@@ -946,33 +944,47 @@ qr =
   height: 57px;
   width: 300px;
 }
+.field[name=captcha] {
+  width: 100%;
+}
 </style>
 
 <div class=move>
   <input type=checkbox name=autohide id=autohide title=Auto-hide>
   <a class=close>⨯</a>
 </div>
-<div id=form>
-  <div class=fields><input name=name title=Name placeholder=Name size=1><input name=email title=E-mail placeholder=E-mail size=1><input name=subject title=Subject placeholder=Subject size=1></div>
-  <textarea title=Comment placeholder=Comment></textarea>
+<form>
+  <div><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>
+  <textarea title=Comment placeholder=Comment class=field></textarea>
   <div class=captcha><img></div>
-  <input name=captcha title=Verification placeholder=Verification>
-</div>'
-    $.on $('#autohide', qr.el), 'click', qr.hide
-    $.on $('.close', qr.el),    'click', qr.close
+  <input name=captcha title=Verification placeholder=Verification class=field size=1>
+</form>'
+    $.on $('#autohide', qr.el), 'click',  qr.hide
+    $.on $('.close',    qr.el), 'click',  qr.close
+    $.on $('form',      qr.el), 'submit', qr.submit
 
     # save & load inputs' value with localStorage
-    inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el)]
-    inputs.push $('[name=subject]', qr.el) if conf['Remember Subject']
-    for input in inputs
+    qr.inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el)]
+    qr.inputs.push $('[name=subject]', qr.el) if conf['Remember Subject']
+    for input in qr.inputs
       input.value = $.get "qr_#{input.name}", null
-      $.on input, 'change', -> $.set "qr_#{@name}", @value
     # sync between tabs
     $.on window, 'storage', (e) ->
       if match = e.key.match /qr_(.+)$/
         $("[name=#{match[1]}]", qr.el).value = JSON.parse e.newValue
 
     $.add d.body, qr.el
+
+  submit: (e) ->
+    e?.preventDefault()
+    qr.hide() if conf['Auto Hide QR']
+
+    if /sage/i.test qr.inputs[1].value
+      qr.sage = true
+      qr.inputs[1].value = null
+
+    for input in qr.inputs
+      $.on input, 'change', -> $.set "qr_#{@name}", @value
 
 options =
   init: ->
