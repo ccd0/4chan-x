@@ -1253,6 +1253,29 @@
   min-width: 300px;\
   text-align: right;\
 }\
+.fields > input {\
+  border: 1px solid #AAA;\
+  margin: 0;\
+  padding: 2px 4px 3px;\
+  width: 100px;\
+}\
+#form > textarea {\
+  font-family: sans-serif;\
+  border-color: #AAA;\
+  border-width: 1px 0;\
+  margin: 0;\
+  padding: 2px 4px 3px;\
+  min-height: 120px;\
+  width: 100%;\
+}\
+.captcha {\
+  background: #FFF;\
+  text-align: center;\
+}\
+.captcha > img {\
+  height: 57px;\
+  width: 300px;\
+}\
 </style>\
 \
 <div class=move>\
@@ -1260,8 +1283,14 @@
   <a class=close>⨯</a>\
 </div>\
 <div id=form>\
-  <input name=name><input name=email><input name=subject>\
-  <textarea></textarea>\
+  <div class=fields>\
+    <input name=name title=Name placeholder=Name>\
+    <input name=email title=E-mail placeholder=E-mail>\
+    <input name=subject title=Subject placeholder=Subject>\
+  </div>\
+  <textarea title=Comment placeholder=Comment></textarea>\
+  <div class=captcha><img></div>\
+  <input name=captcha title=Verification placeholder=Verification>\
 </div>');
       $.on($('#autohide', qr.el), 'click', qr.hide);
       $.on($('.close', qr.el), 'click', qr.close);
