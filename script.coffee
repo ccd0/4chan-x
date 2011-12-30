@@ -1364,8 +1364,7 @@ updater =
         for input in $$ '#com_submit'
           input.disabled = true
           input.value = 404
-        # XXX trailing spaces are trimmed
-        d.title = d.title.match(/.+-/)[0] + ' 404'
+        d.title = d.title.match(/^.+-/)[0] + ' 404'
         g.dead = true
         Favicon.update()
         return
@@ -1379,12 +1378,12 @@ updater =
       This saves bandwidth for both the user and the servers, avoid unnecessary computation,
       and won't load images and scripts when parsing the response.
       ###
-      updater.lastModified = @getResponseHeader('Last-Modified')
       if @status is 304
         if conf['Verbose']
           updater.count.textContent = '+0'
           updater.count.className = null
         return
+      updater.lastModified = @getResponseHeader 'Last-Modified'
 
       body = $.el 'body',
         innerHTML: @responseText
