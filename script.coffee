@@ -927,7 +927,7 @@ qr =
   border: 1px solid #AAA;
   margin: 0;
   padding: 2px 4px 3px;
-  width: 100px;
+  width: 33%;
 }
 #form > textarea {
   font-family: sans-serif;
@@ -953,11 +953,7 @@ qr =
   <a class=close>⨯</a>
 </div>
 <div id=form>
-  <div class=fields>
-    <input name=name title=Name placeholder=Name>
-    <input name=email title=E-mail placeholder=E-mail>
-    <input name=subject title=Subject placeholder=Subject>
-  </div>
+  <div class=fields><input name=name title=Name placeholder=Name size=1><input name=email title=E-mail placeholder=E-mail size=1><input name=subject title=Subject placeholder=Subject size=1></div>
   <textarea title=Comment placeholder=Comment></textarea>
   <div class=captcha><img></div>
   <input name=captcha title=Verification placeholder=Verification>
