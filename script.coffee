@@ -964,27 +964,36 @@ textarea.field {
     $.on $('form',      qr.el), 'submit', qr.submit
 
     # save & load inputs' value with localStorage
-    qr.inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el)]
-    qr.inputs.push $('[name=subject]', qr.el) if conf['Remember Subject']
-    for input in qr.inputs
-      input.value = $.get "qr_#{input.name}", null
+    qr.inputs =
+      name:  $ '[name=name]',  qr.el
+      email: $ '[name=email]', qr.el
+    qr.inputs.subject = $ '[name=subject]', qr.el if conf['Remember Subject']
+    for name, input of qr.inputs
+      input.value = $.get "qr_#{name}", null
     # sync between tabs
     $.on window, 'storage', (e) ->
       if match = e.key.match /qr_(.+)$/
-        $("[name=#{match[1]}]", qr.el).value = JSON.parse e.newValue
+        qr.inputs[match[1]].value = JSON.parse e.newValue
 
     $.add d.body, qr.el
 
   submit: (e) ->
     e?.preventDefault()
     qr.hide() if conf['Auto Hide QR']
+    # magical xhr2
 
-    if /sage/i.test qr.inputs[1].value
+  response: (e) ->
+    log e
+    # successful posting/error handling
+
+    unless conf['Persistent QR'] # or more replies to post
+      qr.close()
+
+    if /sage/i.test qr.inputs.email.value
       qr.sage = true
       qr.inputs[1].value = null
-
-    for input in qr.inputs
-      $.on input, 'change', -> $.set "qr_#{@name}", @value
+    for name, input of qr.inputs
+      $.set "qr_#{name}", input.value
 
 options =
   init: ->

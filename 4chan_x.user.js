@@ -1243,7 +1243,7 @@
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     dialog: function() {
-      var input, _i, _len, _ref;
+      var input, name, _ref;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <style>\
 .autohide:not(:hover) > form {\
@@ -1293,36 +1293,41 @@ textarea.field {\
       $.on($('#autohide', qr.el), 'click', qr.hide);
       $.on($('.close', qr.el), 'click', qr.close);
       $.on($('form', qr.el), 'submit', qr.submit);
-      qr.inputs = [$('[name=name]', qr.el), $('[name=email]', qr.el)];
-      if (conf['Remember Subject']) qr.inputs.push($('[name=subject]', qr.el));
+      qr.inputs = {
+        name: $('[name=name]', qr.el),
+        email: $('[name=email]', qr.el)
+      };
+      if (conf['Remember Subject']) qr.inputs.subject = $('[name=subject]', qr.el);
       _ref = qr.inputs;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        input = _ref[_i];
-        input.value = $.get("qr_" + input.name, null);
+      for (name in _ref) {
+        input = _ref[name];
+        input.value = $.get("qr_" + name, null);
       }
       $.on(window, 'storage', function(e) {
         var match;
         if (match = e.key.match(/qr_(.+)$/)) {
-          return $("[name=" + match[1] + "]", qr.el).value = JSON.parse(e.newValue);
+          return qr.inputs[match[1]].value = JSON.parse(e.newValue);
         }
       });
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
-      var input, _i, _len, _ref, _results;
       if (e != null) e.preventDefault();
-      if (conf['Auto Hide QR']) qr.hide();
-      if (/sage/i.test(qr.inputs[1].value)) {
+      if (conf['Auto Hide QR']) return qr.hide();
+    },
+    response: function(e) {
+      var input, name, _ref, _results;
+      log(e);
+      if (!conf['Persistent QR']) qr.close();
+      if (/sage/i.test(qr.inputs.email.value)) {
         qr.sage = true;
         qr.inputs[1].value = null;
       }
       _ref = qr.inputs;
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        input = _ref[_i];
-        _results.push($.on(input, 'change', function() {
-          return $.set("qr_" + this.name, this.value);
-        }));
+      for (name in _ref) {
+        input = _ref[name];
+        _results.push($.set("qr_" + name, input.value));
       }
       return _results;
     }
