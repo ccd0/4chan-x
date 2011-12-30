@@ -2022,7 +2022,7 @@
             input.disabled = true;
             input.value = 404;
           }
-          d.title = d.title.match(/.+-/)[0] + ' 404';
+          d.title = d.title.match(/^.+-/)[0] + ' 404';
           g.dead = true;
           Favicon.update();
           return;
@@ -2035,7 +2035,6 @@
               This saves bandwidth for both the user and the servers, avoid unnecessary computation,
               and won't load images and scripts when parsing the response.
         */
-        updater.lastModified = this.getResponseHeader('Last-Modified');
         if (this.status === 304) {
           if (conf['Verbose']) {
             updater.count.textContent = '+0';
@@ -2043,6 +2042,7 @@
           }
           return;
         }
+        updater.lastModified = this.getResponseHeader('Last-Modified');
         body = $.el('body', {
           innerHTML: this.responseText
         });
