@@ -7,7 +7,6 @@
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://images.4chan.org/*
-// @include        http://sys.4chan.org/*
 // @run-at         document-start
 // @updateURL      https://raw.github.com/MayhemYDG/4chan-x/stable/4chan_x.user.js
 // @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
@@ -305,14 +304,6 @@
   $.extend($, {
     id: function(id) {
       return d.getElementById(id);
-    },
-    globalEval: function(code) {
-      var script;
-      script = $.el('script', {
-        textContent: "(" + code + ")()"
-      });
-      $.add(d.head, script);
-      return $.rm(script);
     },
     ajax: function(url, cb, opts) {
       var event, headers, key, r, type, val;

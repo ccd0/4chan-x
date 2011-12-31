@@ -14,7 +14,6 @@ HEADER  = """
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://images.4chan.org/*
-// @include        http://sys.4chan.org/*
 // @run-at         document-start
 // @updateURL      https://raw.github.com/MayhemYDG/4chan-x/stable/4chan_x.user.js
 // @icon           http://mayhemydg.github.com/4chan-x/favicon.gif

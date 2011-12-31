@@ -222,11 +222,6 @@ $.extend = (object, properties) ->
 $.extend $,
   id: (id) ->
     d.getElementById id
-  globalEval: (code) ->
-    script = $.el 'script',
-      textContent: "(#{code})()"
-    $.add d.head, script
-    $.rm script
   ajax: (url, cb, opts={}) ->
     {type, event, headers} = opts
     type  or= 'get'
