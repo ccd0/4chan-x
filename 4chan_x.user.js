@@ -2457,7 +2457,9 @@
     },
     toggle: function(e) {
       var id;
-      if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) return;
+      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+        return;
+      }
       e.preventDefault();
       id = this.hash.slice(1);
       if (/\binlined\b/.test(this.className)) {
@@ -2933,7 +2935,9 @@
     },
     cb: {
       toggle: function(e) {
-        if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) return;
+        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+          return;
+        }
         e.preventDefault();
         return imgExpand.toggle(this);
       },
