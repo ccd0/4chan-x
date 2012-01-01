@@ -967,10 +967,20 @@ qr =
 .field {
   border: 1px solid #CCC;
   box-sizing: border-box;
+  color: #333;
   font: 13px sans-serif;
   margin: 0;
   padding: 2px 4px 3px;
   width: 30%;
+  -webkit-transition: color .25s, border .25s;
+  -moz-transition: color .25s, border .25s;
+  -o-transition: color .25s, border .25s;
+  transition: color .25s, border .25s;
+}
+.field:hover, .field:focus {
+  border-color: #999;
+  color: #000;
+  outline: none;
 }
 textarea.field {
   min-height: 120px;
