@@ -1745,7 +1745,7 @@ quoteInline =
         quote.removeAttribute 'onclick'
         $.on quote, 'click', quoteInline.toggle
   toggle: (e) ->
-    return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
+    return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
     id = @hash[1..]
     if /\binlined\b/.test @className
@@ -2080,7 +2080,7 @@ imgExpand =
       imgExpand.expand a.firstChild
   cb:
     toggle: (e) ->
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
+      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       e.preventDefault()
       imgExpand.toggle @
     all: ->
