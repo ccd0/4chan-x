@@ -1234,7 +1234,7 @@
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     dialog: function() {
-      var input, name, _ref;
+      var file, input, name, _ref;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <style>\
 .autohide:not(:hover) > form {\
@@ -1334,6 +1334,17 @@ textarea.field {\
         var match;
         if (match = e.key.match(/qr_(.+)$/)) {
           return qr.inputs[match[1]].value = JSON.parse(e.newValue);
+        }
+      });
+      file = $('[type=file]', qr.el);
+      file.accept = $('.rules').textContent.match(/: (.+)/)[1].replace(/\w+/g, function(type) {
+        switch (type) {
+          case 'JPG':
+            return 'image/JPEG';
+          case 'PDF':
+            return 'application/PDF';
+          default:
+            return 'image/' + type;
         }
       });
       return $.add(d.body, qr.el);

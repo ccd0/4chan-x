@@ -1004,6 +1004,17 @@ textarea.field {
       if match = e.key.match /qr_(.+)$/
         qr.inputs[match[1]].value = JSON.parse e.newValue
 
+    file = $ '[type=file]', qr.el
+    # chose only allowed files
+    file.accept = $('.rules').textContent.match(/: (.+)/)[1].replace /\w+/g, (type) ->
+      switch type
+        when 'JPG'
+          'image/JPEG'
+        when 'PDF'
+          'application/PDF'
+        else
+          'image/' + type
+
     $.add d.body, qr.el
 
   submit: (e) ->
