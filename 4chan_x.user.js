@@ -1216,6 +1216,13 @@
     close: function() {
       return qr.el.hidden = true;
     },
+    error: function(err) {
+      $('.error', qr.el).textContent = err;
+      return alert(err);
+    },
+    cleanError: function() {
+      return $('.error', qr.el).textContent = null;
+    },
     quote: function(e) {
       var caretPos, id, s, sel, ta, text, _ref;
       if (e != null) e.preventDefault();
@@ -1232,6 +1239,27 @@
       ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
       ta.focus();
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
+    },
+    fileInput: function() {
+      var file, _i, _len, _ref;
+      qr.cleanError();
+      if (this.files.length === 1) {
+        if (this.files[0].size > this.max) {
+          qr.error('File too large.');
+        } else {
+
+        }
+        return;
+      }
+      _ref = this.files;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        if (file.size > this.max) {
+          qr.error("File " + file.name + " is too large.");
+          break;
+        }
+      }
+      return $.addClass(qr.el, 'dump');
     },
     dialog: function() {
       var file, input, name, _ref;
@@ -1311,7 +1339,7 @@ textarea.field {\
   <div><textarea title=Comment placeholder=Comment class=field></textarea><div>\
   <div class=captcha><img></div>\
   <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>\
-  <div><input type=file name=upfile><input type=submit value=Submit></div>\
+  <div><input type=file name=upfile multiple><input type=submit value=Submit></div>\
   <div class=error></div>\
 </form>');
       $.on($('#autohide', qr.el), 'click', qr.hide);
@@ -1347,12 +1375,14 @@ textarea.field {\
             return 'image/' + type;
         }
       });
+      file.max = $('[name=MAX_FILE_SIZE]').value;
+      $.on(file, 'change', qr.fileInput);
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
       if (e != null) e.preventDefault();
       if (conf['Auto Hide QR']) qr.hide();
-      return $('.error', qr.el).textContent = null;
+      return qr.cleanError();
     },
     response: function(e) {
       var input, name, _ref, _results;

@@ -877,15 +877,19 @@ qr =
       qr.hide.call input
     else
       qr.dialog()
-
   hide: ->
     if this.checked
       $.addClass qr.el, 'autohide'
     else
       $.removeClass qr.el, 'autohide'
-
   close: ->
     qr.el.hidden = true
+
+  error: (err) ->
+    $('.error', qr.el).textContent = err
+    alert err
+  cleanError: ->
+    $('.error', qr.el).textContent = null
 
   quote: (e) ->
     e?.preventDefault()
@@ -906,6 +910,22 @@ qr =
     ta.focus()
     #move the caret to the end of the new quote
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
+
+  fileInput: ->
+    qr.cleanError()
+    if @files.length is 1
+      if @files[0].size > @max
+        qr.error 'File too large.'
+      else
+        # modify selected reply's file
+      return
+    for file in @files
+      if file.size > @max
+        qr.error "File #{file.name} is too large."
+        break
+      # add new reply
+      # set reply's file
+    $.addClass qr.el, 'dump'
 
   dialog: ->
     qr.el = ui.dialog 'qr', 'top:0;right:0;', '
@@ -984,7 +1004,7 @@ textarea.field {
   <div><textarea title=Comment placeholder=Comment class=field></textarea><div>
   <div class=captcha><img></div>
   <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>
-  <div><input type=file name=upfile><input type=submit value=Submit></div>
+  <div><input type=file name=upfile multiple><input type=submit value=Submit></div>
   <div class=error></div>
 </form>'
     $.on $('#autohide', qr.el), 'click',  qr.hide
@@ -1014,13 +1034,15 @@ textarea.field {
           'application/PDF'
         else
           'image/' + type
+    file.max = $('[name=MAX_FILE_SIZE]').value
+    $.on file, 'change', qr.fileInput
 
     $.add d.body, qr.el
 
   submit: (e) ->
     e?.preventDefault()
     qr.hide() if conf['Auto Hide QR']
-    $('.error', qr.el).textContent = null
+    qr.cleanError()
     # magical xhr2
 
   response: (e) ->
