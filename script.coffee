@@ -1044,7 +1044,7 @@ textarea.field {
   <div><textarea title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha><img></div>
   <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>
-  <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=Submit></div>
+  <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=#{if g.dead then '404 disabled' else 'Submit'}></div>
   <div class=error></div>
 </form>"
     $.on $('#autohide', qr.el), 'click',  qr.hide
@@ -1065,11 +1065,6 @@ textarea.field {
         qr.inputs[match[1]].value = JSON.parse e.newValue
 
     $.on $('[type=file]', qr.el), 'change', qr.fileInput
-
-    if g.dead
-      $.extend $('[type=submit]', qr.el),
-        disabled: true
-        value: 404
 
     $.add d.body, qr.el
 
