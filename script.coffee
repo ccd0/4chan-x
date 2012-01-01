@@ -924,8 +924,11 @@ qr =
   fileInput: ->
     qr.cleanError()
     if @files.length is 1
-      if @files[0].size > @max
+      file = @files[0]
+      if file.size > @max
         qr.error 'File too large.'
+      else if -1 is qr.mimeTypes.indexOf file.type
+        qr.error 'Unsupported file type.'
       else
         # modify selected reply's file
       return
@@ -933,12 +936,25 @@ qr =
       if file.size > @max
         qr.error "File #{file.name} is too large."
         break
+      else if -1 is qr.mimeTypes.indexOf file.type
+        qr.error "#{file.name}: Unsupported file type."
+        break
       # add new reply
       # set reply's file
     $.addClass qr.el, 'dump'
 
   dialog: ->
-    qr.el = ui.dialog 'qr', 'top:0;right:0;', '
+    # chose only allowed files
+    mimeTypes = $('.rules').textContent.toLowerCase().match(/: (.+)/)[1].replace /\w+/g, (type) ->
+      switch type
+        when 'jpg'
+          'image/jpeg'
+        when 'pdf'
+          'application/pdf'
+        else
+          'image/' + type
+    qr.mimeTypes = mimeTypes.split ', '
+    qr.el = ui.dialog 'qr', 'top:0;right:0;', "
 <style>
 .autohide:not(:hover) > form {
   display: none;
@@ -1023,14 +1039,14 @@ textarea.field {
   <a class=close>⨯</a>
 </div>
 <form>
-  <div><input id=dump class=field type=button title="Dump mode" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>
+  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies></div>
   <div><textarea title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha><img></div>
   <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>
-  <div><input type=file name=upfile multiple><input type=submit value=Submit></div>
+  <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=Submit></div>
   <div class=error></div>
-</form>'
+</form>"
     $.on $('#autohide', qr.el), 'click',  qr.hide
     $.on $('.close',    qr.el), 'click',  qr.close
     $.on $('#dump',     qr.el), 'click',  -> qr.el.classList.toggle 'dump'
@@ -1048,18 +1064,7 @@ textarea.field {
       if match = e.key.match /qr_(.+)$/
         qr.inputs[match[1]].value = JSON.parse e.newValue
 
-    file = $ '[type=file]', qr.el
-    # chose only allowed files
-    file.accept = $('.rules').textContent.match(/: (.+)/)[1].replace /\w+/g, (type) ->
-      switch type
-        when 'JPG'
-          'image/JPEG'
-        when 'PDF'
-          'application/PDF'
-        else
-          'image/' + type
-    file.max = $('[name=MAX_FILE_SIZE]').value
-    $.on file, 'change', qr.fileInput
+    $.on $('[type=file]', qr.el), 'change', qr.fileInput
 
     if g.dead
       $.extend $('[type=submit]', qr.el),

@@ -1257,8 +1257,11 @@
       var file, _i, _len, _ref;
       qr.cleanError();
       if (this.files.length === 1) {
-        if (this.files[0].size > this.max) {
+        file = this.files[0];
+        if (file.size > this.max) {
           qr.error('File too large.');
+        } else if (-1 === qr.mimeTypes.indexOf(file.type)) {
+          qr.error('Unsupported file type.');
         } else {
 
         }
@@ -1270,105 +1273,27 @@
         if (file.size > this.max) {
           qr.error("File " + file.name + " is too large.");
           break;
+        } else if (-1 === qr.mimeTypes.indexOf(file.type)) {
+          qr.error("" + file.name + ": Unsupported file type.");
+          break;
         }
       }
       return $.addClass(qr.el, 'dump');
     },
     dialog: function() {
-      var file, input, name, _ref;
-      qr.el = ui.dialog('qr', 'top:0;right:0;', '\
-<style>\
-.autohide:not(:hover) > form {\
-  display: none;\
-}\
-#qr > .move {\
-  min-width: 300px;\
-  text-align: right;\
-}\
-#qr > form {\
-  margin: 0;\
-}\
-#dump {\
-  background: -webkit-linear-gradient(#EEE, #CCC);\
-  background: -moz-linear-gradient(#EEE, #CCC);\
-  background: -o-linear-gradient(#EEE, #CCC);\
-  background: linear-gradient(#EEE, #CCC);\
-  width: 10%;\
-}\
-#dump:hover, #dump:focus {\
-  background: -webkit-linear-gradient(#FFF, #DDD);\
-  background: -moz-linear-gradient(#FFF, #DDD);\
-  background: -o-linear-gradient(#FFF, #DDD);\
-  background: linear-gradient(#FFF, #DDD);\
-}\
-#dump:active, .dump #dump:not(:hover):not(:focus) {\
-  background: -webkit-linear-gradient(#CCC, #DDD);\
-  background: -moz-linear-gradient(#CCC, #DDD);\
-  background: -o-linear-gradient(#CCC, #DDD);\
-  background: linear-gradient(#CCC, #DDD);\
-}\
-#qr:not(.dump) #replies {\
-  display: none;\
-}\
-.field {\
-  border: 1px solid #CCC;\
-  color: #333;\
-  font: 13px sans-serif;\
-  margin: 0;\
-  padding: 2px 4px 3px;\
-  width: 30%;\
-  -webkit-transition: color .25s, border .25s;\
-  -moz-transition: color .25s, border .25s;\
-  -o-transition: color .25s, border .25s;\
-  transition: color .25s, border .25s;\
-}\
-.field:-moz-placeholder,\
-.field:hover:-moz-placeholder {\
-  color: #AAA;\
-}\
-.field:hover, .field:focus {\
-  border-color: #999;\
-  color: #000;\
-  outline: none;\
-}\
-textarea.field {\
-  min-height: 120px;\
-  width: 100%;\
-}\
-.captcha {\
-  background: #FFF;\
-  text-align: center;\
-}\
-.captcha > img {\
-  height: 57px;\
-  width: 300px;\
-}\
-.field[name=captcha] {\
-  width: 100%;\
-}\
-#qr [type=file] {\
-  width: 80%;\
-}\
-#qr [type=submit] {\
-  padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */\
-  width: 20%;\
-}\
-</style>\
-\
-<div class=move>\
-  Quick Reply\
-  <input type=checkbox name=autohide id=autohide title=Auto-hide>\
-  <a class=close>⨯</a>\
-</div>\
-<form>\
-  <div><input id=dump class=field type=button title="Dump mode" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>\
-  <div id=replies></div>\
-  <div><textarea title=Comment placeholder=Comment class=field></textarea></div>\
-  <div class=captcha><img></div>\
-  <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>\
-  <div><input type=file name=upfile multiple><input type=submit value=Submit></div>\
-  <div class=error></div>\
-</form>');
+      var input, mimeTypes, name, _ref;
+      mimeTypes = $('.rules').textContent.toLowerCase().match(/: (.+)/)[1].replace(/\w+/g, function(type) {
+        switch (type) {
+          case 'jpg':
+            return 'image/jpeg';
+          case 'pdf':
+            return 'application/pdf';
+          default:
+            return 'image/' + type;
+        }
+      });
+      qr.mimeTypes = mimeTypes.split(', ');
+      qr.el = ui.dialog('qr', 'top:0;right:0;', "<style>.autohide:not(:hover) > form {  display: none;}#qr > .move {  min-width: 300px;  text-align: right;}#qr > form {  margin: 0;}#dump {  background: -webkit-linear-gradient(#EEE, #CCC);  background: -moz-linear-gradient(#EEE, #CCC);  background: -o-linear-gradient(#EEE, #CCC);  background: linear-gradient(#EEE, #CCC);  width: 10%;}#dump:hover, #dump:focus {  background: -webkit-linear-gradient(#FFF, #DDD);  background: -moz-linear-gradient(#FFF, #DDD);  background: -o-linear-gradient(#FFF, #DDD);  background: linear-gradient(#FFF, #DDD);}#dump:active, .dump #dump:not(:hover):not(:focus) {  background: -webkit-linear-gradient(#CCC, #DDD);  background: -moz-linear-gradient(#CCC, #DDD);  background: -o-linear-gradient(#CCC, #DDD);  background: linear-gradient(#CCC, #DDD);}#qr:not(.dump) #replies {  display: none;}.field {  border: 1px solid #CCC;  color: #333;  font: 13px sans-serif;  margin: 0;  padding: 2px 4px 3px;  width: 30%;  -webkit-transition: color .25s, border .25s;  -moz-transition: color .25s, border .25s;  -o-transition: color .25s, border .25s;  transition: color .25s, border .25s;}.field:-moz-placeholder,.field:hover:-moz-placeholder {  color: #AAA;}.field:hover, .field:focus {  border-color: #999;  color: #000;  outline: none;}textarea.field {  min-height: 120px;  width: 100%;}.captcha {  background: #FFF;  text-align: center;}.captcha > img {  height: 57px;  width: 300px;}.field[name=captcha] {  width: 100%;}#qr [type=file] {  width: 80%;}#qr [type=submit] {  padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */  width: 20%;}</style><div class=move>  Quick Reply  <input type=checkbox name=autohide id=autohide title=Auto-hide>  <a class=close>⨯</a></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>  <div id=replies></div>  <div><textarea title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha><img></div>  <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=Submit></div>  <div class=error></div></form>");
       $.on($('#autohide', qr.el), 'click', qr.hide);
       $.on($('.close', qr.el), 'click', qr.close);
       $.on($('#dump', qr.el), 'click', function() {
@@ -1391,19 +1316,7 @@ textarea.field {\
           return qr.inputs[match[1]].value = JSON.parse(e.newValue);
         }
       });
-      file = $('[type=file]', qr.el);
-      file.accept = $('.rules').textContent.match(/: (.+)/)[1].replace(/\w+/g, function(type) {
-        switch (type) {
-          case 'JPG':
-            return 'image/JPEG';
-          case 'PDF':
-            return 'application/PDF';
-          default:
-            return 'image/' + type;
-        }
-      });
-      file.max = $('[name=MAX_FILE_SIZE]').value;
-      $.on(file, 'change', qr.fileInput);
+      $.on($('[type=file]', qr.el), 'change', qr.fileInput);
       if (g.dead) {
         $.extend($('[type=submit]', qr.el), {
           disabled: true,
