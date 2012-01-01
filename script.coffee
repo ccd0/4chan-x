@@ -70,6 +70,7 @@ config =
   backlink: '>>%id'
   favicon: 'ferongr'
   hotkeys:
+    openOptions:     'ctrl+o'
     close:           'Esc'
     spoiler:         'ctrl+s'
     openQR:          'i'
@@ -644,6 +645,8 @@ keybinds =
 
     thread = nav.getThread()
     switch key
+      when conf.openOptions
+        options.dialog() unless $.id 'overlay'
       when conf.close
         if o = $.id 'overlay'
           $.rm o
@@ -1159,6 +1162,7 @@ options =
     <div class=error><code>Keybinds</code> are disabled.</div>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
+      <tr><td>Open Options</td><td><input name=openOptions></td></tr>
       <tr><td>Close Options or QR</td><td><input name=close></td></tr>
       <tr><td>Quick spoiler</td><td><input name=spoiler></td></tr>
       <tr><td>Open QR with post number inserted</td><td><input name=openQR></td></tr>
