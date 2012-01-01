@@ -1196,25 +1196,23 @@
       }
     },
     open: function() {
-      var input;
       if (qr.el) {
         qr.el.hidden = false;
-        input = $.id('autohide');
-        input.checked = false;
-        return qr.hide.call(input);
+        $.id('autohide').checked = false;
+        return qr.hide();
       } else {
         return qr.dialog();
       }
     },
+    close: function() {
+      return qr.el.hidden = true;
+    },
     hide: function() {
-      if (this.checked) {
+      if ($.id('autohide').checked) {
         return $.addClass(qr.el, 'autohide');
       } else {
         return $.removeClass(qr.el, 'autohide');
       }
-    },
-    close: function() {
-      return qr.el.hidden = true;
     },
     error: function(err) {
       $('.error', qr.el).textContent = err;
@@ -1344,7 +1342,7 @@ textarea.field {\
 </form>');
       $.on($('#autohide', qr.el), 'click', qr.hide);
       $.on($('.close', qr.el), 'click', qr.close);
-      $.on($('button', qr.el), 'click', function() {
+      $.on($('#dump', qr.el), 'click', function() {
         return qr.el.classList.toggle('dump');
       });
       $.on($('form', qr.el), 'submit', qr.submit);
@@ -1377,11 +1375,21 @@ textarea.field {\
       });
       file.max = $('[name=MAX_FILE_SIZE]').value;
       $.on(file, 'change', qr.fileInput);
+      if (g.dead) {
+        $.extend($('[type=submit]', qr.el), {
+          disabled: true,
+          value: 404
+        });
+      }
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
       if (e != null) e.preventDefault();
-      if (conf['Auto Hide QR']) qr.hide();
+      if (g.dead) return;
+      if (conf['Auto Hide QR']) {
+        $.id('autohide').checked = true;
+        qr.hide();
+      }
       return qr.cleanError();
     },
     response: function(e) {
@@ -1842,15 +1850,13 @@ textarea.field {\
         }
       },
       update: function() {
-        var body, frag, id, input, newPosts, reply, scroll, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+        var body, frag, id, input, newPosts, reply, scroll, _i, _len, _ref, _ref2;
         if (this.status === 404) {
           updater.timer.textContent = '';
           updater.count.textContent = 404;
           updater.count.className = 'error';
           clearTimeout(updater.timeoutID);
-          _ref = $$('#com_submit');
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            input = _ref[_i];
+          if (input = $('#qr [type=submit]', qr.el)) {
             input.disabled = true;
             input.value = 404;
           }
@@ -1883,11 +1889,11 @@ textarea.field {\
           updater.count.className = 'error';
           return;
         }
-        id = ((_ref2 = $('td[id]', updater.br.previousElementSibling)) != null ? _ref2.id : void 0) || 0;
+        id = ((_ref = $('td[id]', updater.br.previousElementSibling)) != null ? _ref.id : void 0) || 0;
         frag = d.createDocumentFragment();
-        _ref3 = $$('.reply', body).reverse();
-        for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-          reply = _ref3[_j];
+        _ref2 = $$('.reply', body).reverse();
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          reply = _ref2[_i];
           if (reply.id <= id) break;
           $.prepend(frag, reply.parentNode.parentNode.parentNode);
         }

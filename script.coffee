@@ -872,18 +872,17 @@ qr =
   open: ->
     if qr.el
       qr.el.hidden = false
-      input = $.id 'autohide'
-      input.checked = false
-      qr.hide.call input
+      $.id('autohide').checked = false
+      qr.hide()
     else
       qr.dialog()
+  close: ->
+    qr.el.hidden = true
   hide: ->
-    if this.checked
+    if $.id('autohide').checked
       $.addClass qr.el, 'autohide'
     else
       $.removeClass qr.el, 'autohide'
-  close: ->
-    qr.el.hidden = true
 
   error: (err) ->
     $('.error', qr.el).textContent = err
@@ -1009,7 +1008,7 @@ textarea.field {
 </form>'
     $.on $('#autohide', qr.el), 'click',  qr.hide
     $.on $('.close',    qr.el), 'click',  qr.close
-    $.on $('button',    qr.el), 'click',  -> qr.el.classList.toggle 'dump'
+    $.on $('#dump',     qr.el), 'click',  -> qr.el.classList.toggle 'dump'
     $.on $('form',      qr.el), 'submit', qr.submit
 
     # save & load inputs' value with localStorage
@@ -1037,11 +1036,19 @@ textarea.field {
     file.max = $('[name=MAX_FILE_SIZE]').value
     $.on file, 'change', qr.fileInput
 
+    if g.dead
+      $.extend $('[type=submit]', qr.el),
+        disabled: true
+        value: 404
+
     $.add d.body, qr.el
 
   submit: (e) ->
     e?.preventDefault()
-    qr.hide() if conf['Auto Hide QR']
+    return if g.dead
+    if conf['Auto Hide QR']
+      $.id('autohide').checked = true
+      qr.hide()
     qr.cleanError()
     # magical xhr2
 
@@ -1447,7 +1454,7 @@ updater =
         updater.count.textContent = 404
         updater.count.className = 'error'
         clearTimeout updater.timeoutID
-        for input in $$ '#com_submit'
+        if input = $ '#qr [type=submit]', qr.el
           input.disabled = true
           input.value = 404
         d.title = d.title.match(/^.+-/)[0] + ' 404'
