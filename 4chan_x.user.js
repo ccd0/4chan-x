@@ -1301,7 +1301,6 @@
 }\
 .field {\
   border: 1px solid #CCC;\
-  box-sizing: border-box;\
   color: #333;\
   font: 13px sans-serif;\
   margin: 0;\
@@ -1311,6 +1310,10 @@
   -moz-transition: color .25s, border .25s;\
   -o-transition: color .25s, border .25s;\
   transition: color .25s, border .25s;\
+}\
+.field:-moz-placeholder,\
+.field:hover:-moz-placeholder {\
+  color: #AAA;\
 }\
 .field:hover, .field:focus {\
   border-color: #999;\
@@ -1336,6 +1339,7 @@ textarea.field {\
   width: 80%;\
 }\
 #qr [type=submit] {\
+  padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */\
   width: 20%;\
 }\
 </style>\
@@ -1348,7 +1352,7 @@ textarea.field {\
 <form>\
   <div><input id=dump class=field type=button title="Dump mode" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>\
   <div id=replies></div>\
-  <div><textarea title=Comment placeholder=Comment class=field></textarea><div>\
+  <div><textarea title=Comment placeholder=Comment class=field></textarea></div>\
   <div class=captcha><img></div>\
   <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>\
   <div><input type=file name=upfile multiple><input type=submit value=Submit></div>\
