@@ -998,7 +998,7 @@ textarea.field {
   <a class=close>⨯</a>
 </div>
 <form>
-  <div><button id=dump class=field title="Dump mode">+</button><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>
+  <div><input id=dump class=field type=button title="Dump mode" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies></div>
   <div><textarea title=Comment placeholder=Comment class=field></textarea><div>
   <div class=captcha><img></div>
