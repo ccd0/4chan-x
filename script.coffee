@@ -944,7 +944,13 @@ qr =
     $.addClass qr.el, 'dump'
 
   dialog: ->
-    # chose only allowed files
+    # create a new thread or select thread to reply to
+    unless g.REPLY
+      threads = '<option value=new>New thread</option>'
+      for thread in $$ '.op'
+        threads += "<option value=#{thread.id}>Thread #{thread.id}"
+      threads = "<select>#{threads}</select>"
+    # chose only supported files
     mimeTypes = $('.rules').textContent.toLowerCase().match(/: (.+)/)[1].replace /\w+/g, (type) ->
       switch type
         when 'jpg'
@@ -961,7 +967,10 @@ qr =
 }
 #qr > .move {
   min-width: 300px;
-  text-align: right;
+  overflow: hidden;
+}
+#qr > .move > span {
+  float: right;
 }
 #qr > form {
   margin: 0;
@@ -1034,9 +1043,8 @@ textarea.field {
 </style>
 
 <div class=move>
-  Quick Reply
-  <input type=checkbox name=autohide id=autohide title=Auto-hide>
-  <a class=close>⨯</a>
+  Quick Reply #{threads}
+  <span><input type=checkbox name=autohide id=autohide title=Auto-hide> <a class=close>⨯</a></span>
 </div>
 <form>
   <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>
@@ -1047,10 +1055,12 @@ textarea.field {
   <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=#{if g.dead then '404 disabled' else 'Submit'}></div>
   <div class=error></div>
 </form>"
-    $.on $('#autohide', qr.el), 'click',  qr.hide
-    $.on $('.close',    qr.el), 'click',  qr.close
-    $.on $('#dump',     qr.el), 'click',  -> qr.el.classList.toggle 'dump'
-    $.on $('form',      qr.el), 'submit', qr.submit
+    unless g.REPLY
+      $.on $('select',  qr.el), 'mousedown',  (e) -> e.stopPropagation()
+    $.on $('#autohide', qr.el), 'click',      qr.hide
+    $.on $('.close',    qr.el), 'click',      qr.close
+    $.on $('#dump',     qr.el), 'click',      -> qr.el.classList.toggle 'dump'
+    $.on $('form',      qr.el), 'submit',     qr.submit
 
     # save & load inputs' value with localStorage
     qr.inputs =
