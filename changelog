@@ -1,6 +1,7 @@
 master
 - mayhem
   redirect 404'd pictures to archives when possible
+  new keybind to open the options: ctrl+o
   the unread count will decrease when inlining quotes of unread posts
   the report button can open multiple popups again
   add omploader to the list of optional flavors (http://ompldr.org/upload?url1=)
