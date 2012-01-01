@@ -875,12 +875,11 @@
       return $.on(d, 'keydown', keybinds.keydown);
     },
     keydown: function(e) {
-      var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2, _ref3;
+      var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2;
       updater.focus = true;
-      if (((_ref = e.target.nodeName) === 'TEXTAREA' || _ref === 'INPUT') && !e.altKey && !e.ctrlKey && !(e.keyCode === 27)) {
+      if (!(key = keybinds.keyCode(e)) || /TEXTAREA|INPUT/.test(e.target.nodeName) && !(e.altKey || e.ctrlKey || e.keyCode === 27)) {
         return;
       }
-      if (!(key = keybinds.keyCode(e))) return;
       thread = nav.getThread();
       switch (key) {
         case conf.openOptions:
@@ -910,6 +909,10 @@
           window.location = "/" + g.BOARD + "/0#0";
           break;
         case conf.openEmptyQR:
+          keybinds.qr(thread);
+          break;
+        case conf.openQR:
+          keybinds.qr(thread, true);
           break;
         case conf.nextReply:
           keybinds.hl.next(thread);
@@ -925,8 +928,6 @@
           break;
         case conf.expandThread:
           expandThread.toggle(thread);
-          break;
-        case conf.openQR:
           break;
         case conf.expandImages:
           keybinds.img(thread);
@@ -950,12 +951,13 @@
           threadHiding.toggle(thread);
           break;
         case conf.nextPage:
-          if ((_ref2 = $('input[value=Next]')) != null) _ref2.click();
+          if ((_ref = $('input[value=Next]')) != null) _ref.click();
           break;
         case conf.previousPage:
-          if ((_ref3 = $('input[value=Previous]')) != null) _ref3.click();
+          if ((_ref2 = $('input[value=Previous]')) != null) _ref2.click();
           break;
         case conf.submit:
+          if (qr.el) qr.submit();
           break;
         case conf.unreadCountTo0:
           unread.replies = [];
@@ -1037,14 +1039,21 @@
       return key;
     },
     img: function(thread, all) {
-      var root, thumb;
+      var thumb;
       if (all) {
         return $("#imageExpand").click();
       } else {
-        root = $('td.replyhl', thread) || thread;
-        thumb = $('img[md5]', root);
+        thumb = $('img[md5]', $('.replyhl', thread) || thread);
         return imgExpand.toggle(thumb.parentNode);
       }
+    },
+    qr: function(thread, quote) {
+      if (quote) {
+        qr.quote.call($('.quotejs + .quotejs', $('.replyhl', thread) || thread));
+      } else {
+        qr.open();
+      }
+      return $('textarea', qr.el).focus();
     },
     open: function(thread, tab) {
       var id, url;
@@ -1139,7 +1148,7 @@
     threads: [],
     getThread: function(full) {
       var bottom, i, rect, thread, _len, _ref;
-      nav.threads = $$('div.thread:not([hidden])');
+      nav.threads = $$('.thread:not([hidden])');
       _ref = nav.threads;
       for (i = 0, _len = _ref.length; i < _len; i++) {
         thread = _ref[i];
@@ -1209,7 +1218,8 @@
       }
     },
     close: function() {
-      return qr.el.hidden = true;
+      qr.el.hidden = true;
+      return d.activeElement.blur();
     },
     hide: function() {
       if ($.id('autohide').checked) {
@@ -1220,6 +1230,7 @@
     },
     error: function(err) {
       $('.error', qr.el).textContent = err;
+      qr.open();
       return alert(err);
     },
     cleanError: function() {

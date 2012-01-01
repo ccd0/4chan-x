@@ -640,8 +640,8 @@ keybinds =
 
   keydown: (e) ->
     updater.focus = true
-    return if e.target.nodeName in ['TEXTAREA', 'INPUT'] and not e.altKey and not e.ctrlKey and not (e.keyCode is 27)
-    return unless key = keybinds.keyCode e
+    if not (key = keybinds.keyCode(e)) or /TEXTAREA|INPUT/.test(e.target.nodeName) and not (e.altKey or e.ctrlKey or e.keyCode is 27)
+      return
 
     thread = nav.getThread()
     switch key
@@ -670,7 +670,9 @@ keybinds =
       when conf.zero
         window.location = "/#{g.BOARD}/0#0"
       when conf.openEmptyQR
-        ;# QR
+        keybinds.qr thread
+      when conf.openQR
+        keybinds.qr thread, true
       when conf.nextReply
         keybinds.hl.next thread
       when conf.previousReply
@@ -681,8 +683,6 @@ keybinds =
         keybinds.open thread
       when conf.expandThread
         expandThread.toggle thread
-      when conf.openQR
-        ;# QR
       when conf.expandImages
         keybinds.img thread
       when conf.nextThread
@@ -702,7 +702,7 @@ keybinds =
       when conf.previousPage
         $('input[value=Previous]')?.click()
       when conf.submit
-        ;# QR
+        qr.submit() if qr.el
       when conf.unreadCountTo0
         unread.replies = []
         unread.updateTitle()
@@ -739,9 +739,15 @@ keybinds =
     if all
       $("#imageExpand").click()
     else
-      root = $('td.replyhl', thread) or thread
-      thumb = $ 'img[md5]', root
+      thumb = $ 'img[md5]', $('.replyhl', thread) or thread
       imgExpand.toggle thumb.parentNode
+
+  qr: (thread, quote) ->
+    if quote
+      qr.quote.call $ '.quotejs + .quotejs', $('.replyhl', thread) or thread
+    else
+      qr.open()
+    $('textarea', qr.el).focus()
 
   open: (thread, tab) ->
     id = thread.firstChild.id
@@ -818,7 +824,7 @@ nav =
   threads: []
 
   getThread: (full) ->
-    nav.threads = $$ 'div.thread:not([hidden])'
+    nav.threads = $$ '.thread:not([hidden])'
     for thread, i in nav.threads
       rect = thread.getBoundingClientRect()
       {bottom} = rect
@@ -881,6 +887,7 @@ qr =
       qr.dialog()
   close: ->
     qr.el.hidden = true
+    d.activeElement.blur()
   hide: ->
     if $.id('autohide').checked
       $.addClass qr.el, 'autohide'
@@ -889,6 +896,7 @@ qr =
 
   error: (err) ->
     $('.error', qr.el).textContent = err
+    qr.open()
     alert err
   cleanError: ->
     $('.error', qr.el).textContent = null
