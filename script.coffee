@@ -920,14 +920,37 @@ qr =
 #qr > form {
   margin: 0;
 }
+#dump {
+  background: -webkit-linear-gradient(#EEE, #CCC);
+  background: -moz-linear-gradient(#EEE, #CCC);
+  background: -o-linear-gradient(#EEE, #CCC);
+  background: linear-gradient(#EEE, #CCC);
+  width: 10%;
+}
+#dump:hover, #dump:focus {
+  background: -webkit-linear-gradient(#FFF, #DDD);
+  background: -moz-linear-gradient(#FFF, #DDD);
+  background: -o-linear-gradient(#FFF, #DDD);
+  background: linear-gradient(#FFF, #DDD);
+}
+#dump:active, .dump #dump:not(:hover):not(:focus) {
+  background: -webkit-linear-gradient(#CCC, #DDD);
+  background: -moz-linear-gradient(#CCC, #DDD);
+  background: -o-linear-gradient(#CCC, #DDD);
+  background: linear-gradient(#CCC, #DDD);
+}
+#qr:not(.dump) #replies {
+  display: none;
+}
 .field {
-  border: 1px solid #AAA;
+  border: 1px solid #CCC;
+  box-sizing: border-box;
+  font: 13px sans-serif;
   margin: 0;
   padding: 2px 4px 3px;
-  width: 33%;
+  width: 30%;
 }
 textarea.field {
-  font-family: sans-serif;
   min-height: 120px;
   width: 100%;
 }
@@ -942,20 +965,31 @@ textarea.field {
 .field[name=captcha] {
   width: 100%;
 }
+#qr [type=file] {
+  width: 80%;
+}
+#qr [type=submit] {
+  width: 20%;
+}
 </style>
 
 <div class=move>
+  Quick Reply
   <input type=checkbox name=autohide id=autohide title=Auto-hide>
   <a class=close>⨯</a>
 </div>
 <form>
-  <div><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>
-  <textarea title=Comment placeholder=Comment class=field></textarea>
+  <div><button id=dump class=field title="Dump mode">+</button><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>
+  <div id=replies></div>
+  <div><textarea title=Comment placeholder=Comment class=field></textarea><div>
   <div class=captcha><img></div>
-  <input name=captcha title=Verification placeholder=Verification class=field size=1>
+  <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>
+  <div><input type=file name=upfile><input type=submit value=Submit></div>
+  <div class=error></div>
 </form>'
     $.on $('#autohide', qr.el), 'click',  qr.hide
     $.on $('.close',    qr.el), 'click',  qr.close
+    $.on $('button',    qr.el), 'click',  -> qr.el.classList.toggle 'dump'
     $.on $('form',      qr.el), 'submit', qr.submit
 
     # save & load inputs' value with localStorage
@@ -975,6 +1009,7 @@ textarea.field {
   submit: (e) ->
     e?.preventDefault()
     qr.hide() if conf['Auto Hide QR']
+    $('.error', qr.el).textContent = null
     # magical xhr2
 
   response: (e) ->
@@ -986,7 +1021,9 @@ textarea.field {
 
     if /sage/i.test qr.inputs.email.value
       qr.sage = true
-      qr.inputs[1].value = null
+      qr.inputs.email.value = null
+    unless conf['Remember Subject']
+      $('[name=subject]', qr.el).value = null
     for name, input of qr.inputs
       $.set "qr_#{name}", input.value
 
