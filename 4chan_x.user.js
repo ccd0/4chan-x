@@ -1260,6 +1260,16 @@
       ta.focus();
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
+    fileDrop: function(e) {
+      if (!e.dataTransfer.files.length) return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = 'copy';
+      if (e.type === 'drop') {
+        qr.open();
+        return qr.fileInput.call(e.dataTransfer);
+      }
+    },
     fileInput: function() {
       var file, _i, _len, _ref;
       qr.cleanError();
@@ -1321,6 +1331,9 @@
         return qr.el.classList.toggle('dump');
       });
       $.on($('form', qr.el), 'submit', qr.submit);
+      $.on($('[type=file]', qr.el), 'change', qr.fileInput);
+      $.on(d, 'dragover', qr.fileDrop);
+      $.on(d, 'drop', qr.fileDrop);
       qr.inputs = {
         name: $('[name=name]', qr.el),
         email: $('[name=email]', qr.el)
@@ -1337,7 +1350,6 @@
           return qr.inputs[match[1]].value = JSON.parse(e.newValue);
         }
       });
-      $.on($('[type=file]', qr.el), 'change', qr.fileInput);
       return $.add(d.body, qr.el);
     },
     submit: function(e) {

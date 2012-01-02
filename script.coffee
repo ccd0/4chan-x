@@ -926,6 +926,14 @@ qr =
     #move the caret to the end of the new quote
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
 
+  fileDrop: (e) ->
+    return unless e.dataTransfer.files.length # let it only drop files
+    e.preventDefault()
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = 'copy' # cursor feedback
+    if e.type is 'drop'
+      qr.open()
+      qr.fileInput.call e.dataTransfer
   fileInput: ->
     qr.cleanError()
     if @files.length is 1
@@ -1067,11 +1075,14 @@ textarea.field {
   <div class=error></div>
 </form>"
     unless g.REPLY
-      $.on $('select',  qr.el), 'mousedown',  (e) -> e.stopPropagation()
-    $.on $('#autohide', qr.el), 'click',      qr.hide
-    $.on $('.close',    qr.el), 'click',      qr.close
-    $.on $('#dump',     qr.el), 'click',      -> qr.el.classList.toggle 'dump'
-    $.on $('form',      qr.el), 'submit',     qr.submit
+      $.on $('select',    qr.el), 'mousedown', (e) -> e.stopPropagation()
+    $.on $('#autohide',   qr.el), 'click',     qr.hide
+    $.on $('.close',      qr.el), 'click',     qr.close
+    $.on $('#dump',       qr.el), 'click',     -> qr.el.classList.toggle 'dump'
+    $.on $('form',        qr.el), 'submit',    qr.submit
+    $.on $('[type=file]', qr.el), 'change',    qr.fileInput
+    $.on d,                       'dragover',  qr.fileDrop
+    $.on d,                       'drop',      qr.fileDrop
 
     # save & load inputs' value with localStorage
     qr.inputs =
@@ -1084,8 +1095,6 @@ textarea.field {
     $.on window, 'storage', (e) ->
       if match = e.key.match /qr_(.+)$/
         qr.inputs[match[1]].value = JSON.parse e.newValue
-
-    $.on $('[type=file]', qr.el), 'change', qr.fileInput
 
     $.add d.body, qr.el
 
