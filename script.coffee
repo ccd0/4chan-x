@@ -948,7 +948,7 @@ qr =
     unless g.REPLY
       threads = '<option value=new>New thread</option>'
       for thread in $$ '.op'
-        threads += "<option value=#{thread.id}>Thread #{thread.id}"
+        threads += "<option value=#{thread.id}>Thread #{thread.id}</option>"
       threads = "<select>#{threads}</select>"
     # chose only supported files
     mimeTypes = $('.rules').textContent.toLowerCase().match(/: (.+)/)[1].replace /\w+/g, (type) ->
@@ -968,10 +968,16 @@ qr =
 #qr > .move {
   min-width: 300px;
   overflow: hidden;
+  box-sizing: border-box;
+  padding: 0 2px;
 }
 #qr > .move > span {
   float: right;
 }
+#autohide, #qr select, #dump, .captcha {
+  cursor: pointer;
+}
+#qr select,
 #qr > form {
   margin: 0;
 }
@@ -1043,8 +1049,8 @@ textarea.field {
 </style>
 
 <div class=move>
-  Quick Reply #{threads}
-  <span><input type=checkbox name=autohide id=autohide title=Auto-hide> <a class=close>⨯</a></span>
+  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>
+  <span>#{if g.REPLY then '' else threads} <a class=close>⨯</a></span>
 </div>
 <form>
   <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>
