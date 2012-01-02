@@ -53,14 +53,13 @@ title::after {
    * メリークリスマス by total
    * http://www.pixiv.net/member_illust.php?mode=medium&illust_id=23821319
    */
-  background-image: url(http://ompldr.org/vYncweA/23821319.jpg);
+  background-image:  url(http://ompldr.org/vYncweA/23821319.jpg);
   background-repeat: no-repeat;
   background-size: contain;
-  position: absolute;
-  top: -10px;
-  right: -200px;
   bottom: -1px;
-  left: 100%;
+  position: absolute;
+  height: 100%;
+  width: 100%;
   z-index: -1;
 }
 
@@ -97,21 +96,19 @@ a:hover {
 a:focus {
   text-decoration: underline;
 }
-head {
-  background: #FFF;
+head, title {
   display: block;
-  text-align: center;
-  z-index: -1;
-  position: relative;
 }
 title {
   color: #B61616;
   cursor: default;
-  display: inline-block;
+  background: #FFF;
   font: 700 210px BebasNeueRegular, sans-serif;
   letter-spacing: 10px;
   position: relative;
+  text-align: center;
   text-shadow: 0 1px 0 #DDD, 0 2px 0 #DDD, 0 3px 0 #DDD, 0 4px 0 #DDD, 0 5px 0 #DDD, 0 6px 0 #DDD, 0 7px 0 #DDD, 0 8px 0 #DDD, 0 9px 0 #DDD, 0 10px 0 #DDD, 0 22px 40px #AAA, 0 4px 10px #555;
+  z-index: -1;
 }
 title, nav {
   -webkit-user-select: none;
