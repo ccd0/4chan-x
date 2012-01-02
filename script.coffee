@@ -878,6 +878,8 @@ qr =
     if conf['Persistent QR']
       qr.dialog()
       $.id('autohide').click() if conf['Auto Hide QR']
+    $.on d, 'dragover',  qr.fileDrop
+    $.on d, 'drop',      qr.fileDrop
 
   open: ->
     if qr.el
@@ -934,6 +936,7 @@ qr =
     if e.type is 'drop'
       qr.open()
       qr.fileInput.call e.dataTransfer
+      $.addClass qr.el, 'dump'
   fileInput: ->
     qr.cleanError()
     if @files.length is 1
@@ -1081,8 +1084,6 @@ textarea.field {
     $.on $('#dump',       qr.el), 'click',     -> qr.el.classList.toggle 'dump'
     $.on $('form',        qr.el), 'submit',    qr.submit
     $.on $('[type=file]', qr.el), 'change',    qr.fileInput
-    $.on d,                       'dragover',  qr.fileDrop
-    $.on d,                       'drop',      qr.fileDrop
 
     # save & load inputs' value with localStorage
     qr.inputs =

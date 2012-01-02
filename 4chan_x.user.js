@@ -1206,8 +1206,10 @@
       });
       if (conf['Persistent QR']) {
         qr.dialog();
-        if (conf['Auto Hide QR']) return $.id('autohide').click();
+        if (conf['Auto Hide QR']) $.id('autohide').click();
       }
+      $.on(d, 'dragover', qr.fileDrop);
+      return $.on(d, 'drop', qr.fileDrop);
     },
     open: function() {
       if (qr.el) {
@@ -1267,7 +1269,8 @@
       e.dataTransfer.dropEffect = 'copy';
       if (e.type === 'drop') {
         qr.open();
-        return qr.fileInput.call(e.dataTransfer);
+        qr.fileInput.call(e.dataTransfer);
+        return $.addClass(qr.el, 'dump');
       }
     },
     fileInput: function() {
@@ -1332,8 +1335,6 @@
       });
       $.on($('form', qr.el), 'submit', qr.submit);
       $.on($('[type=file]', qr.el), 'change', qr.fileInput);
-      $.on(d, 'dragover', qr.fileDrop);
-      $.on(d, 'drop', qr.fileDrop);
       qr.inputs = {
         name: $('[name=name]', qr.el),
         email: $('[name=email]', qr.el)
