@@ -45,24 +45,6 @@ _gaq.push(['_trackPageview',location.pathname+location.hash]);
     <script src=http://www.google-analytics.com/ga.js async></script>
     <script src=https://apis.google.com/js/plusone.js></script>
     <style>
-
-
-title::after {
-  content: "";
-  /* Merry Christmas!
-   * メリークリスマス by total
-   * http://www.pixiv.net/member_illust.php?mode=medium&illust_id=23821319
-   */
-  background-image:  url(http://ompldr.org/vYncweA/23821319.jpg);
-  background-repeat: no-repeat;
-  background-size: contain;
-  bottom: -1px;
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  z-index: -1;
-}
-
 @font-face {
   font-family: 'BebasNeueRegular';
   src: url('BebasNeue-webfont.woff') format('woff'),
@@ -74,16 +56,15 @@ title::after {
 ::selection{background:rgba(195,0,255,.2)}
 body {
   color: #373737;
-  background-color: #F0F0F0;
+  background: #F0F0F0;
   font-family: sans-serif;
   margin: 0;
   overflow-y: scroll;
   padding: 0;
   text-align: justify;
-  text-shadow: 0 0 2px #FFF, 0 1px 2px #FFF, 0 2px 2px #FFF;
 }
 a {
-  color: #900;
+  color: #90C;
   outline: none;
   text-decoration: none;
   -webkit-transition: color .3s ease-in-out;
@@ -92,7 +73,7 @@ a {
   transition: color .3s ease-in-out;
 }
 a:hover {
-  color: #C00;
+  color: #C0F;
 }
 a:focus {
   text-decoration: underline;
@@ -101,15 +82,17 @@ head, title {
   display: block;
 }
 title {
-  color: #B61616;
+  color: #9016B6;
   cursor: default;
-  background: #FFF;
+  background: #7E149F;
+  background: -webkit-linear-gradient(#76139A, #8714A3);
+  background: -moz-linear-gradient(#76139A, #8714A3);
+  background: -o-linear-gradient(#76139A, #8714A3);
+  background: linear-gradient(#76139A, #8714A3);
   font: 700 210px BebasNeueRegular, sans-serif;
   letter-spacing: 10px;
-  position: relative;
   text-align: center;
-  text-shadow: 0 1px 0 #DDD, 0 2px 0 #DDD, 0 3px 0 #DDD, 0 4px 0 #DDD, 0 5px 0 #DDD, 0 6px 0 #DDD, 0 7px 0 #DDD, 0 8px 0 #DDD, 0 9px 0 #DDD, 0 10px 0 #DDD, 0 22px 40px #AAA, 0 4px 10px #555;
-  z-index: -1;
+  text-shadow: 0 1px 0 #7B139A, 0 2px 0 #7D139A, 0 3px 0 #7C1396, 0 4px 0 #7E1396, 0 5px 0 #7C1291, 0 6px 0 #7C1291, 0 7px 0 #78118D, 0 8px 0 #78118D, 0 9px 0 #741188, 0 10px 0 #741188, 0 22px 40px #506, 0 4px 10px #506;
 }
 title, nav {
   -webkit-user-select: none;
@@ -119,7 +102,7 @@ title, nav {
   white-space: nowrap;
 }
 nav {
-  background: #300;
+  background: #270033;
   box-shadow: 0 0px 10px #270033;
   text-align: center;
 }
@@ -148,10 +131,10 @@ nav a {
   nav a{width: auto}
 }
 nav a:hover {
-  color: #D00;
+  color: #D0F;
 }
 .on {
-  color: #A00;
+  color: #A0F;
 }
 section {
   display: none;
