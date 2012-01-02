@@ -1053,6 +1053,7 @@
       } else {
         qr.open();
       }
+      if (!g.REPLY) qr.pickThread(thread.firstChild.id);
       return $('textarea', qr.el).focus();
     },
     open: function(thread, tab) {
@@ -1236,10 +1237,16 @@
     cleanError: function() {
       return $('.error', qr.el).textContent = null;
     },
+    pickThread: function(thread) {
+      return $('select', qr.el).value = thread;
+    },
     quote: function(e) {
       var caretPos, id, s, sel, ta, text, _ref;
       if (e != null) e.preventDefault();
       qr.open();
+      if (!g.REPLY) {
+        qr.pickThread($.x('ancestor::div[@class="thread"]/div', this).id);
+      }
       id = this.textContent;
       text = ">>" + id + "\n";
       sel = window.getSelection();

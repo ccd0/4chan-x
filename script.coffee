@@ -747,6 +747,7 @@ keybinds =
       qr.quote.call $ '.quotejs + .quotejs', $('.replyhl', thread) or thread
     else
       qr.open()
+    qr.pickThread thread.firstChild.id unless g.REPLY
     $('textarea', qr.el).focus()
 
   open: (thread, tab) ->
@@ -901,9 +902,13 @@ qr =
   cleanError: ->
     $('.error', qr.el).textContent = null
 
+  pickThread: (thread) ->
+    $('select', qr.el).value = thread
+
   quote: (e) ->
     e?.preventDefault()
     qr.open()
+    qr.pickThread $.x('ancestor::div[@class="thread"]/div', @).id unless g.REPLY
 
     id = @textContent
     text = ">>#{id}\n"
