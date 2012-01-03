@@ -2846,7 +2846,7 @@
         case 'tg':
         case 'tv':
         case 'u':
-          return "http://archivethumb.foolz.us/board/" + board + "/img/" + filename;
+          return "http://archive.foolz.us/" + board + "/full_image/" + filename;
       }
     },
     thread: function() {

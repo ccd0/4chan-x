@@ -2235,7 +2235,7 @@ redirect =
   image: (board, filename) -> #board must be given, the image can originate from a cross-quote
     switch board
       when 'a', 'jp', 'm', 'tg', 'tv', 'u'
-        "http://archivethumb.foolz.us/board/#{board}/img/#{filename}"
+        "http://archive.foolz.us/#{board}/full_image/#{filename}"
   thread: ->
     switch g.BOARD
       when 'a', 'jp', 'm', 'tg', 'tv', 'u'
