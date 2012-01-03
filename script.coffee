@@ -967,7 +967,7 @@ qr =
         threads += "<option value=#{thread.id}>Thread #{thread.id}</option>"
       threads = "<select>#{threads}</select>"
     # chose only supported files
-    mimeTypes = $('.rules').textContent.toLowerCase().match(/: (.+)/)[1].replace /\w+/g, (type) ->
+    mimeTypes = $('.rules').textContent.toLowerCase().match(/: (.+) /)[1].replace /\w+/g, (type) ->
       switch type
         when 'jpg'
           'image/jpeg'

@@ -1311,7 +1311,7 @@
         }
         threads = "<select>" + threads + "</select>";
       }
-      mimeTypes = $('.rules').textContent.toLowerCase().match(/: (.+)/)[1].replace(/\w+/g, function(type) {
+      mimeTypes = $('.rules').textContent.toLowerCase().match(/: (.+) /)[1].replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
             return 'image/jpeg';
