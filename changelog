@@ -1,4 +1,6 @@
 master
+
+2.24.0
 - mayhem
   redirect 404'd pictures to archives when possible
   new keybind to open the options: ctrl+o
