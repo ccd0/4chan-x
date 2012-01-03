@@ -1228,7 +1228,8 @@
       if ($.id('autohide').checked) {
         return $.addClass(qr.el, 'autohide');
       } else {
-        return $.removeClass(qr.el, 'autohide');
+        $.removeClass(qr.el, 'autohide');
+        return d.activeElement.blur();
       }
     },
     error: function(err) {

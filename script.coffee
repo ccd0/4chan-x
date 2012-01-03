@@ -896,6 +896,7 @@ qr =
       $.addClass qr.el, 'autohide'
     else
       $.removeClass qr.el, 'autohide'
+      d.activeElement.blur()
 
   error: (err) ->
     $('.error', qr.el).textContent = err
@@ -1102,7 +1103,7 @@ textarea.field {
   submit: (e) ->
     e?.preventDefault()
     return if g.dead
-    if conf['Auto Hide QR']
+    if conf['Auto Hide QR'] # and only one post (left) to submit
       $.id('autohide').checked = true
       qr.hide()
     qr.cleanError()
