@@ -121,7 +121,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.23.7'
+VERSION = '2.24.0'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -2130,7 +2130,7 @@ redirect =
   image: (board, filename) -> #board must be given, the image can originate from a cross-quote
     switch board
       when 'a', 'jp', 'm', 'tg', 'tv', 'u'
-        "http://archivethumb.foolz.us/board/#{board}/img/#{filename}"
+        "http://archive.foolz.us/#{board}/full_image/#{filename}"
   thread: ->
     switch g.BOARD
       when 'a', 'jp', 'm', 'tg', 'tv', 'u'
