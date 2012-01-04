@@ -304,6 +304,15 @@
   };
 
   $.extend($, {
+    onLoad: function(fc) {
+      var cb;
+      if (/interactive|complete/.test(d.readyState)) return fc();
+      cb = function() {
+        $.off(d, 'DOMContentLoaded', cb);
+        return fc();
+      };
+      return $.on(d, 'DOMContentLoaded', cb);
+    },
     id: function(id) {
       return d.getElementById(id);
     },
@@ -1604,10 +1613,10 @@
     time: function() {
       Time.foo();
       Time.date = new Date();
-      return $('#timePreview').textContent = Time.funk(Time);
+      return $.id('timePreview').textContent = Time.funk(Time);
     },
     backlink: function() {
-      return $('#backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
+      return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     },
     favicon: function() {
       Favicon["switch"]();
@@ -2879,7 +2888,7 @@
 
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, now, pathname, temp, timestamp, update, _ref;
+      var cutoff, hiddenThreads, id, now, pathname, temp, timestamp, _ref;
       pathname = location.pathname.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -2888,20 +2897,27 @@
       } else {
         g.PAGENUM = parseInt(temp) || 0;
       }
+      if (location.hostname === 'sys.4chan.org') {
+        $.onLoad(qr.sys);
+        return;
+      }
+      if (location.hostname === 'images.4chan.org') {
+        if (conf['404 Redirect']) {
+          $.onLoad(function() {
+            if (d.title === '4chan - 404') return redirect.init();
+          });
+        }
+        return;
+      }
+      $.onLoad(options.init);
       $.on(window, 'message', Main.message);
       now = Date.now();
       if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
-        update = function() {
-          $.off(d, 'DOMContentLoaded', update);
+        $.onLoad(function() {
           return $.add(d.head, $.el('script', {
             src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
           }));
-        };
-        if (/interactive|complete/.test(d.readyState)) {
-          update();
-        } else {
-          $.on(d, 'DOMContentLoaded', update);
-        }
+        });
         $.set('lastUpdate', now);
       }
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
@@ -2935,20 +2951,15 @@
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
-      if (/interactive|complete/.test(d.readyState)) {
-        return Main.onLoad();
-      } else {
-        return $.on(d, 'DOMContentLoaded', Main.onLoad);
-      }
+      return $.onLoad(Main.onLoad);
     },
     onLoad: function() {
       var callback, node, nodes, _i, _j, _len, _len2, _ref;
-      $.off(d, 'DOMContentLoaded', Main.onLoad);
       if (conf['404 Redirect'] && d.title === '4chan - 404') {
         redirect.init();
         return;
       }
-      if (!$('#navtopr') || location.hostname === 'images.4chan.org') return;
+      if (!$.id('navtopr')) return;
       $.addClass(d.body, engine);
       $.addStyle(Main.css);
       threading.init();
@@ -2982,8 +2993,7 @@
           alert(err);
         }
       }
-      $.on($('form[name=delform]'), 'DOMNodeInserted', Main.node);
-      return options.init();
+      return $.on($('form[name=delform]'), 'DOMNodeInserted', Main.node);
     },
     message: function(e) {
       var version;
