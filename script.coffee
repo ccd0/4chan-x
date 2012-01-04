@@ -2375,7 +2375,7 @@ imgExpand =
     $.prepend form, controls
 
   resize: ->
-    imgExpand.style.innerHTML = ".fitheight [md5] + img {max-height:#{d.body.clientHeight}px;}"
+    imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
 
 Main =
   init: ->
@@ -2616,14 +2616,14 @@ Main =
         float: left;
         pointer-events: none;
       }
-      [md5], [md5] + img {
+      img[md5], img[md5] + img {
         pointer-events: all;
       }
-      .fitwidth [md5] + img {
+      .fitwidth img[md5] + img {
         max-width: 100%;
       }
-      .gecko  > .fitwidth [md5] + img,
-      .presto > .fitwidth [md5] + img {
+      .gecko  > .fitwidth img[md5] + img,
+      .presto > .fitwidth img[md5] + img {
         width: 100%;
       }
 
