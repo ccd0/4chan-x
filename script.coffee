@@ -1,7 +1,7 @@
 config =
   main:
     Enhancing:
-      '404 Redirect':                 [true,  'Redirect dead threads']
+      '404 Redirect':                 [true,  'Redirect dead threads and images']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'Report Button':                [true,  'Add report buttons']
@@ -64,11 +64,13 @@ config =
     '#http://3d.iqdb.org/?url='
     '#http://regex.info/exif.cgi?imgurl='
     '#http://imgur.com/upload?url='
+    '#http://ompldr.org/upload?url1='
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
   favicon: 'ferongr'
   hotkeys:
+    openOptions:     'ctrl+o'
     close:           'Esc'
     spoiler:         'ctrl+s'
     openQR:          'i'
@@ -119,7 +121,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.23.7'
+VERSION = '2.24.0'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -219,6 +221,13 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  onLoad: (fc) ->
+    if /interactive|complete/.test d.readyState
+      return fc()
+    cb = ->
+      $.off d, 'DOMContentLoaded', cb
+      fc()
+    $.on d, 'DOMContentLoaded', cb
   id: (id) ->
     d.getElementById id
   globalEval: (code) ->
@@ -349,8 +358,8 @@ $.extend $,
 
 $.cache.requests = {}
 
-if GM_deleteValue?
-  $.extend $,
+$.extend $,
+  if GM_deleteValue?
     delete: (name) ->
       name = NAMESPACE + name
       GM_deleteValue name
@@ -360,15 +369,12 @@ if GM_deleteValue?
         JSON.parse value
       else
         defaultValue
-    openInTab: (url) ->
-      GM_openInTab url
     set: (name, value) ->
       name = NAMESPACE + name
       # for `storage` events
       localStorage[name] = JSON.stringify value
       GM_setValue name, JSON.stringify value
-else
-  $.extend $,
+  else
     delete: (name) ->
       name = NAMESPACE + name
       delete localStorage[name]
@@ -378,8 +384,6 @@ else
         JSON.parse value
       else
         defaultValue
-    openInTab: (url) ->
-      window.open url, "_blank"
     set: (name, value) ->
       name = NAMESPACE + name
       localStorage[name] = JSON.stringify value
@@ -647,8 +651,10 @@ keybinds =
 
     thread = nav.getThread()
     switch key
+      when conf.openOptions
+        options.dialog() unless $.id 'overlay'
       when conf.close
-        if o = $ '#overlay'
+        if o = $.id 'overlay'
           $.rm o
         else if qr.el
           qr.close()
@@ -707,7 +713,7 @@ keybinds =
         else
           $('.postarea form').submit()
       when conf.unreadCountTo0
-        unread.replies.length = 0
+        unread.replies = []
         unread.updateTitle()
         Favicon.update()
       else
@@ -758,7 +764,8 @@ keybinds =
     id = thread.firstChild.id
     url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab
-      $.openInTab url
+      open = GM_openInTab or window.open
+      open url, "_blank"
     else
       location.href = url
 
@@ -964,6 +971,7 @@ options =
     <div class=error><code>Keybinds</code> are disabled.</div>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
+      <tr><td>Open Options</td><td><input name=openOptions></td></tr>
       <tr><td>Close Options or QR</td><td><input name=close></td></tr>
       <tr><td>Quick spoiler</td><td><input name=spoiler></td></tr>
       <tr><td>Open QR with post number inserted</td><td><input name=openQR></td></tr>
@@ -1071,9 +1079,9 @@ options =
   time: ->
     Time.foo()
     Time.date = new Date()
-    $('#timePreview').textContent = Time.funk Time
+    $.id('timePreview').textContent = Time.funk Time
   backlink: ->
-    $('#backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
+    $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
   favicon: ->
     Favicon.switch()
     Favicon.update() if g.REPLY and conf['Unread Count']
@@ -1626,8 +1634,7 @@ updater =
         for input in $$ '#com_submit'
           input.disabled = true
           input.value = 404
-        # XXX trailing spaces are trimmed
-        d.title = d.title.match(/.+-/)[0] + ' 404'
+        d.title = d.title.match(/^.+-/)[0] + ' 404'
         g.dead = true
         Favicon.update()
         return
@@ -1641,12 +1648,12 @@ updater =
       This saves bandwidth for both the user and the servers, avoid unnecessary computation,
       and won't load images and scripts when parsing the response.
       ###
-      updater.lastModified = @getResponseHeader('Last-Modified')
       if @status is 304
         if conf['Verbose']
           updater.count.textContent = '+0'
           updater.count.className = null
         return
+      updater.lastModified = @getResponseHeader 'Last-Modified'
 
       body = $.el 'body',
         innerHTML: @responseText
@@ -1956,7 +1963,7 @@ quoteInline =
         quote.removeAttribute 'onclick'
         $.on quote, 'click', quoteInline.toggle
   toggle: (e) ->
-    return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
+    return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
     id = @hash[1..]
     if /\binlined\b/.test @className
@@ -1970,6 +1977,10 @@ quoteInline =
     root = if q.parentNode.nodeName is 'FONT' then q.parentNode else if q.nextSibling then q.nextSibling else q
     if el = $.id id
       inline = quoteInline.table id, el.innerHTML
+      if g.REPLY and conf['Unread Count'] and (i = unread.replies.indexOf el.parentNode.parentNode.parentNode) isnt -1
+        unread.replies.splice i, 1
+        unread.updateTitle()
+        Favicon.update()
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
         $.addClass $.x('ancestor::table', el), 'forwarded' if conf['Forward Hiding']
@@ -2113,7 +2124,7 @@ reportButton =
       $.on a, 'click', reportButton.report
   report: ->
     url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
-    id  = "#{NAMESPACE}popup"
+    id  = Date.now()
     set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
 
@@ -2226,17 +2237,31 @@ Favicon =
       favicon.href = null
       $.replace favicon, clone
 
-redirect = ->
-  switch g.BOARD
-    when 'a', 'jp', 'm', 'tg', 'tv'
-      url = "http://oldarchive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when 'diy', 'g', 'sci'
-      url = "http://archive.installgentoo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
-      url = "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
-    else
-      url = "http://boards.4chan.org/#{g.BOARD}"
-  location.href = url
+redirect =
+  init: ->
+    url =
+      # waiting for https://github.com/FoOlRulez/FoOlFuuka/issues/11
+      if location.hostname is 'images.4chan.org'
+        redirect.image g.BOARD, location.pathname.split('/')[3]
+      else if /^\d+$/.test g.THREAD_ID
+        redirect.thread()
+    location.href = url if url
+  image: (board, filename) -> #board must be given, the image can originate from a cross-quote
+    switch board
+      when 'a', 'jp', 'm', 'tg', 'tv', 'u'
+        "http://archive.foolz.us/#{board}/full_image/#{filename}"
+  thread: ->
+    switch g.BOARD
+      when 'a', 'jp', 'm', 'tg', 'tv', 'u'
+        "http://archive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}/"
+      when 'lit'
+        "http://fuuka.warosu.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
+      when 'diy', 'g', 'sci'
+        "http://archive.installgentoo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
+      when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'r9k', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
+        "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
+      else
+        "http://boards.4chan.org/#{g.BOARD}"
 
 imgHover =
   init: ->
@@ -2247,7 +2272,7 @@ imgHover =
       $.on thumb, 'mouseout',  ui.hoverend
   mouseover: ->
     ui.el = $.el 'img'
-      id: 'iHover'
+      id: 'ihover'
       src: @parentNode.href
     $.add d.body, ui.el
 
@@ -2272,7 +2297,7 @@ imgExpand =
       imgExpand.expand a.firstChild
   cb:
     toggle: (e) ->
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.button isnt 0
+      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       e.preventDefault()
       imgExpand.toggle @
     all: ->
@@ -2313,23 +2338,26 @@ imgExpand =
     thumb.hidden = false
     $.rm thumb.nextSibling
 
-  expand: (thumb) ->
+  expand: (thumb, url) ->
     a = thumb.parentNode
     img = $.el 'img',
-      src: a.href
+      src: if url then url else a.href
     if engine is 'gecko' and a.parentNode.className isnt 'op'
       filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent
       max = filesize.match /(\d+)x/
       img.style.maxWidth = "#{max[1]}px"
-    $.on img, 'error', imgExpand.error
+    $.on img, 'error', imgExpand.error if conf['404 Redirect']
     thumb.hidden = true
     $.add a, img
 
   error: ->
     thumb = @previousSibling
     imgExpand.contract thumb
+    src = @src.split '/'
+    if url = redirect.image src[3], src[5]
+      imgExpand.expand thumb, url
     #navigator.online is not x-browser/os yet
-    if engine is 'webkit'
+    else if engine is 'webkit'
       req = $.ajax @src, (->
         setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
       ), type: 'head', event: 'onreadystatechange'
@@ -2361,36 +2389,33 @@ imgExpand =
     $.prepend form, controls
 
   resize: ->
-    imgExpand.style.innerHTML = ".fitheight [md5] + img {max-height:#{d.body.clientHeight}px;}"
+    imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
 
 Main =
   init: ->
     pathname = location.pathname[1..].split('/')
     [g.BOARD, temp] = pathname
     if temp is 'res'
-      g.REPLY = temp
+      g.REPLY = true
       g.THREAD_ID = pathname[2]
     else
       g.PAGENUM = parseInt(temp) or 0
 
     if location.hostname is 'sys.4chan.org'
-      if /interactive|complete/.test d.readyState
-        qr.sys()
-      else
-        $.on d, 'DOMContentLoaded', qr.sys
+      $.onLoad qr.sys
       return
+    if location.hostname is 'images.4chan.org'
+      if conf['404 Redirect']
+        $.onLoad -> redirect.init() if d.title is '4chan - 404'
+      return
+
+    $.onLoad options.init
 
     $.on window, 'message', Main.message
 
     now = Date.now()
     if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
-      update = ->
-        $.off d, 'DOMContentLoaded', update
-        $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
-      if /interactive|complete/.test d.readyState
-        update()
-      else
-        $.on d, 'DOMContentLoaded', update
+      $.onLoad -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
@@ -2456,17 +2481,13 @@ Main =
       quoteDR.init()
 
 
-    if /interactive|complete/.test d.readyState
-      Main.onLoad()
-    else
-      $.on d, 'DOMContentLoaded', Main.onLoad
+    $.onLoad Main.onLoad
 
   onLoad: ->
-    $.off d, 'DOMContentLoaded', Main.onLoad
-    if conf['404 Redirect'] and d.title is '4chan - 404' and /^\d+$/.test g.THREAD_ID
-      redirect()
+    if conf['404 Redirect'] and d.title is '4chan - 404'
+      redirect.init()
       return
-    if not $ '#navtopr'
+    if not $.id 'navtopr'
       return
     $.addClass d.body, engine
     $.addStyle Main.css
@@ -2474,7 +2495,7 @@ Main =
     Favicon.init()
 
     #recaptcha may be blocked, eg by noscript
-    if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
+    if (form = $ 'form[name=post]') and (canPost = !!$.id 'recaptcha_response_field')
       Recaptcha.init()
       if g.REPLY and conf['Auto Watch Reply'] and conf['Thread Watcher']
         $.on form, 'submit', -> if $('img.favicon').src is Favicon.empty
@@ -2502,15 +2523,15 @@ Main =
     if conf['Keybinds']
       keybinds.init()
 
-    if conf['Reply Navigation'] or conf['Index Navigation']
-      nav.init()
-
     if g.REPLY
       if conf['Thread Updater']
         updater.init()
 
       if conf['Thread Stats']
         threadStats.init()
+
+      if conf['Reply Navigation']
+        nav.init()
 
       if conf['Post in Title']
         titlePost.init()
@@ -2533,6 +2554,9 @@ Main =
       if conf['Comment Expansion']
         expandComment.init()
 
+      if conf['Index Navigation']
+        nav.init()
+
 
     nodes = $$ '.op, a + table'
     for callback in g.callbacks
@@ -2542,7 +2566,6 @@ Main =
       catch err
         alert err
     $.on $('form[name=delform]'), 'DOMNodeInserted', Main.node
-    options.init()
 
   message: (e) ->
     {origin, data} = e
@@ -2575,7 +2598,6 @@ Main =
         text-decoration: none;
       }
 
-      [hidden], /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */
       .thread.stub > :not(.block),
       #content > [name=tab]:not(:checked) + div,
       #updater:not(:hover) > :not(.move),
@@ -2603,23 +2625,24 @@ Main =
         float: left;
         pointer-events: none;
       }
-      [md5], [md5] + img {
+      img[md5], img[md5] + img {
         pointer-events: all;
       }
-      .fitwidth [md5] + img {
+      .fitwidth img[md5] + img {
         max-width: 100%;
       }
-      .gecko  > .fitwidth [md5] + img,
-      .presto > .fitwidth [md5] + img {
+      .gecko  > .fitwidth img[md5] + img,
+      .presto > .fitwidth img[md5] + img {
         width: 100%;
       }
 
-      #qp, #iHover {
+      #qp, #ihover {
         position: fixed;
       }
 
-      #iHover {
+      #ihover {
         max-height: 100%;
+        max-width: 75%;
       }
 
       #navlinks {

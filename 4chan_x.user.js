@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.23.7
+// @version        2.24.0
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
+// @include        http://images.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @run-at         document-start
 // @updateURL      https://raw.github.com/MayhemYDG/4chan-x/stable/4chan_x.user.js
@@ -15,8 +16,9 @@
 /* LICENSE
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
+ * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.23.7
+ * 4chan X 2.24.0
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -70,7 +72,7 @@
   config = {
     main: {
       Enhancing: {
-        '404 Redirect': [true, 'Redirect dead threads'],
+        '404 Redirect': [true, 'Redirect dead threads and images'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'Report Button': [true, 'Add report buttons'],
@@ -133,11 +135,12 @@
       filesize: '',
       md5: ''
     },
-    flavors: ['http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://3d.iqdb.org/?url=', '#http://regex.info/exif.cgi?imgurl=', '#http://imgur.com/upload?url='].join('\n'),
+    flavors: ['http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://3d.iqdb.org/?url=', '#http://regex.info/exif.cgi?imgurl=', '#http://imgur.com/upload?url=', '#http://ompldr.org/upload?url1='].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     favicon: 'ferongr',
     hotkeys: {
+      openOptions: 'ctrl+o',
       close: 'Esc',
       spoiler: 'ctrl+s',
       openQR: 'i',
@@ -197,7 +200,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.23.7';
+  VERSION = '2.24.0';
 
   SECOND = 1000;
 
@@ -304,6 +307,15 @@
   };
 
   $.extend($, {
+    onLoad: function(fc) {
+      var cb;
+      if (/interactive|complete/.test(d.readyState)) return fc();
+      cb = function() {
+        $.off(d, 'DOMContentLoaded', cb);
+        return fc();
+      };
+      return $.on(d, 'DOMContentLoaded', cb);
+    },
     id: function(id) {
       return d.getElementById(id);
     },
@@ -463,54 +475,44 @@
 
   $.cache.requests = {};
 
-  if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $.extend($, {
-      "delete": function(name) {
-        name = NAMESPACE + name;
-        return GM_deleteValue(name);
-      },
-      get: function(name, defaultValue) {
-        var value;
-        name = NAMESPACE + name;
-        if (value = GM_getValue(name)) {
-          return JSON.parse(value);
-        } else {
-          return defaultValue;
-        }
-      },
-      openInTab: function(url) {
-        return GM_openInTab(url);
-      },
-      set: function(name, value) {
-        name = NAMESPACE + name;
-        localStorage[name] = JSON.stringify(value);
-        return GM_setValue(name, JSON.stringify(value));
+  $.extend($, typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null ? {
+    "delete": function(name) {
+      name = NAMESPACE + name;
+      return GM_deleteValue(name);
+    },
+    get: function(name, defaultValue) {
+      var value;
+      name = NAMESPACE + name;
+      if (value = GM_getValue(name)) {
+        return JSON.parse(value);
+      } else {
+        return defaultValue;
       }
-    });
-  } else {
-    $.extend($, {
-      "delete": function(name) {
-        name = NAMESPACE + name;
-        return delete localStorage[name];
-      },
-      get: function(name, defaultValue) {
-        var value;
-        name = NAMESPACE + name;
-        if (value = localStorage[name]) {
-          return JSON.parse(value);
-        } else {
-          return defaultValue;
-        }
-      },
-      openInTab: function(url) {
-        return window.open(url, "_blank");
-      },
-      set: function(name, value) {
-        name = NAMESPACE + name;
-        return localStorage[name] = JSON.stringify(value);
+    },
+    set: function(name, value) {
+      name = NAMESPACE + name;
+      localStorage[name] = JSON.stringify(value);
+      return GM_setValue(name, JSON.stringify(value));
+    }
+  } : {
+    "delete": function(name) {
+      name = NAMESPACE + name;
+      return delete localStorage[name];
+    },
+    get: function(name, defaultValue) {
+      var value;
+      name = NAMESPACE + name;
+      if (value = localStorage[name]) {
+        return JSON.parse(value);
+      } else {
+        return defaultValue;
       }
-    });
-  }
+    },
+    set: function(name, value) {
+      name = NAMESPACE + name;
+      return localStorage[name] = JSON.stringify(value);
+    }
+  });
 
   for (key in conf) {
     val = conf[key];
@@ -891,8 +893,11 @@
       if (!(key = keybinds.keyCode(e))) return;
       thread = nav.getThread();
       switch (key) {
+        case conf.openOptions:
+          if (!$.id('overlay')) options.dialog();
+          break;
         case conf.close:
-          if (o = $('#overlay')) {
+          if (o = $.id('overlay')) {
             $.rm(o);
           } else if (qr.el) {
             qr.close();
@@ -970,7 +975,7 @@
           }
           break;
         case conf.unreadCountTo0:
-          unread.replies.length = 0;
+          unread.replies = [];
           unread.updateTitle();
           Favicon.update();
           break;
@@ -1067,11 +1072,12 @@
       }
     },
     open: function(thread, tab) {
-      var id, url;
+      var id, open, url;
       id = thread.firstChild.id;
       url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
       if (tab) {
-        return $.openInTab(url);
+        open = GM_openInTab || window.open;
+        return open(url, "_blank");
       } else {
         return location.href = url;
       }
@@ -1303,6 +1309,7 @@
     <div class=error><code>Keybinds</code> are disabled.</div>\
     <table><tbody>\
       <tr><th>Actions</th><th>Keybinds</th></tr>\
+      <tr><td>Open Options</td><td><input name=openOptions></td></tr>\
       <tr><td>Close Options or QR</td><td><input name=close></td></tr>\
       <tr><td>Quick spoiler</td><td><input name=spoiler></td></tr>\
       <tr><td>Open QR with post number inserted</td><td><input name=openQR></td></tr>\
@@ -1425,10 +1432,10 @@
     time: function() {
       Time.foo();
       Time.date = new Date();
-      return $('#timePreview').textContent = Time.funk(Time);
+      return $.id('timePreview').textContent = Time.funk(Time);
     },
     backlink: function() {
-      return $('#backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
+      return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     },
     favicon: function() {
       Favicon["switch"]();
@@ -2027,7 +2034,7 @@
             input.disabled = true;
             input.value = 404;
           }
-          d.title = d.title.match(/.+-/)[0] + ' 404';
+          d.title = d.title.match(/^.+-/)[0] + ' 404';
           g.dead = true;
           Favicon.update();
           return;
@@ -2040,7 +2047,6 @@
               This saves bandwidth for both the user and the servers, avoid unnecessary computation,
               and won't load images and scripts when parsing the response.
         */
-        updater.lastModified = this.getResponseHeader('Last-Modified');
         if (this.status === 304) {
           if (conf['Verbose']) {
             updater.count.textContent = '+0';
@@ -2048,6 +2054,7 @@
           }
           return;
         }
+        updater.lastModified = this.getResponseHeader('Last-Modified');
         body = $.el('body', {
           innerHTML: this.responseText
         });
@@ -2462,7 +2469,9 @@
     },
     toggle: function(e) {
       var id;
-      if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) return;
+      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+        return;
+      }
       e.preventDefault();
       id = this.hash.slice(1);
       if (/\binlined\b/.test(this.className)) {
@@ -2474,10 +2483,15 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var el, inline, pathname, root, threadID;
+      var el, i, inline, pathname, root, threadID;
       root = q.parentNode.nodeName === 'FONT' ? q.parentNode : q.nextSibling ? q.nextSibling : q;
       if (el = $.id(id)) {
         inline = quoteInline.table(id, el.innerHTML);
+        if (g.REPLY && conf['Unread Count'] && (i = unread.replies.indexOf(el.parentNode.parentNode.parentNode)) !== -1) {
+          unread.replies.splice(i, 1);
+          unread.updateTitle();
+          Favicon.update();
+        }
         if (/\bbacklink\b/.test(q.className)) {
           $.after(q.parentNode, inline);
           if (conf['Forward Hiding']) {
@@ -2707,7 +2721,7 @@
     report: function() {
       var id, set, url;
       url = "http://sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + ($.x('preceding-sibling::input', this).name);
-      id = "" + NAMESPACE + "popup";
+      id = Date.now();
       set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
       return window.open(url, id, set);
     }
@@ -2824,49 +2838,66 @@
     }
   };
 
-  redirect = function() {
-    var url;
-    switch (g.BOARD) {
-      case 'a':
-      case 'jp':
-      case 'm':
-      case 'tg':
-      case 'tv':
-        url = "http://oldarchive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      case 'diy':
-      case 'g':
-      case 'sci':
-        url = "http://archive.installgentoo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      case '3':
-      case 'adv':
-      case 'an':
-      case 'ck':
-      case 'co':
-      case 'fa':
-      case 'fit':
-      case 'int':
-      case 'k':
-      case 'mu':
-      case 'n':
-      case 'o':
-      case 'p':
-      case 'po':
-      case 'pol':
-      case 'soc':
-      case 'sp':
-      case 'toy':
-      case 'trv':
-      case 'v':
-      case 'vp':
-      case 'x':
-        url = "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
-        break;
-      default:
-        url = "http://boards.4chan.org/" + g.BOARD;
+  redirect = {
+    init: function() {
+      var url;
+      url = location.hostname === 'images.4chan.org' ? redirect.image(g.BOARD, location.pathname.split('/')[3]) : /^\d+$/.test(g.THREAD_ID) ? redirect.thread() : void 0;
+      if (url) return location.href = url;
+    },
+    image: function(board, filename) {
+      switch (board) {
+        case 'a':
+        case 'jp':
+        case 'm':
+        case 'tg':
+        case 'tv':
+        case 'u':
+          return "http://archive.foolz.us/" + board + "/full_image/" + filename;
+      }
+    },
+    thread: function() {
+      switch (g.BOARD) {
+        case 'a':
+        case 'jp':
+        case 'm':
+        case 'tg':
+        case 'tv':
+        case 'u':
+          return "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID + "/";
+        case 'lit':
+          return "http://fuuka.warosu.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        case 'diy':
+        case 'g':
+        case 'sci':
+          return "http://archive.installgentoo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        case '3':
+        case 'adv':
+        case 'an':
+        case 'ck':
+        case 'co':
+        case 'fa':
+        case 'fit':
+        case 'int':
+        case 'k':
+        case 'mu':
+        case 'n':
+        case 'o':
+        case 'p':
+        case 'po':
+        case 'pol':
+        case 'r9k':
+        case 'soc':
+        case 'sp':
+        case 'toy':
+        case 'trv':
+        case 'v':
+        case 'vp':
+        case 'x':
+          return "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
+        default:
+          return "http://boards.4chan.org/" + g.BOARD;
+      }
     }
-    return location.href = url;
   };
 
   imgHover = {
@@ -2881,7 +2912,7 @@
     },
     mouseover: function() {
       ui.el = $.el('img', {
-        id: 'iHover',
+        id: 'ihover',
         src: this.parentNode.href
       });
       return $.add(d.body, ui.el);
@@ -2915,7 +2946,9 @@
     },
     cb: {
       toggle: function(e) {
-        if (e.shiftKey || e.altKey || e.ctrlKey || e.button !== 0) return;
+        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+          return;
+        }
         e.preventDefault();
         return imgExpand.toggle(this);
       },
@@ -2978,26 +3011,29 @@
       thumb.hidden = false;
       return $.rm(thumb.nextSibling);
     },
-    expand: function(thumb) {
+    expand: function(thumb, url) {
       var a, filesize, img, max;
       a = thumb.parentNode;
       img = $.el('img', {
-        src: a.href
+        src: url ? url : a.href
       });
       if (engine === 'gecko' && a.parentNode.className !== 'op') {
         filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent;
         max = filesize.match(/(\d+)x/);
         img.style.maxWidth = "" + max[1] + "px";
       }
-      $.on(img, 'error', imgExpand.error);
+      if (conf['404 Redirect']) $.on(img, 'error', imgExpand.error);
       thumb.hidden = true;
       return $.add(a, img);
     },
     error: function() {
-      var req, thumb;
+      var req, src, thumb, url;
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
-      if (engine === 'webkit') {
+      src = this.src.split('/');
+      if (url = redirect.image(src[3], src[5])) {
+        return imgExpand.expand(thumb, url);
+      } else if (engine === 'webkit') {
         return req = $.ajax(this.src, (function() {
           if (this.status !== 404) {
             return setTimeout(imgExpand.retry, 10000, thumb);
@@ -3037,43 +3073,42 @@
       return $.prepend(form, controls);
     },
     resize: function() {
-      return imgExpand.style.innerHTML = ".fitheight [md5] + img {max-height:" + d.body.clientHeight + "px;}";
+      return imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
     }
   };
 
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, now, pathname, temp, timestamp, update, _ref;
+      var cutoff, hiddenThreads, id, now, pathname, temp, timestamp, _ref;
       pathname = location.pathname.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
-        g.REPLY = temp;
+        g.REPLY = true;
         g.THREAD_ID = pathname[2];
       } else {
         g.PAGENUM = parseInt(temp) || 0;
       }
       if (location.hostname === 'sys.4chan.org') {
-        if (/interactive|complete/.test(d.readyState)) {
-          qr.sys();
-        } else {
-          $.on(d, 'DOMContentLoaded', qr.sys);
+        $.onLoad(qr.sys);
+        return;
+      }
+      if (location.hostname === 'images.4chan.org') {
+        if (conf['404 Redirect']) {
+          $.onLoad(function() {
+            if (d.title === '4chan - 404') return redirect.init();
+          });
         }
         return;
       }
+      $.onLoad(options.init);
       $.on(window, 'message', Main.message);
       now = Date.now();
       if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
-        update = function() {
-          $.off(d, 'DOMContentLoaded', update);
+        $.onLoad(function() {
           return $.add(d.head, $.el('script', {
             src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
           }));
-        };
-        if (/interactive|complete/.test(d.readyState)) {
-          update();
-        } else {
-          $.on(d, 'DOMContentLoaded', update);
-        }
+        });
         $.set('lastUpdate', now);
       }
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
@@ -3107,25 +3142,20 @@
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
-      if (/interactive|complete/.test(d.readyState)) {
-        return Main.onLoad();
-      } else {
-        return $.on(d, 'DOMContentLoaded', Main.onLoad);
-      }
+      return $.onLoad(Main.onLoad);
     },
     onLoad: function() {
       var callback, canPost, form, node, nodes, _i, _j, _len, _len2, _ref;
-      $.off(d, 'DOMContentLoaded', Main.onLoad);
-      if (conf['404 Redirect'] && d.title === '4chan - 404' && /^\d+$/.test(g.THREAD_ID)) {
-        redirect();
+      if (conf['404 Redirect'] && d.title === '4chan - 404') {
+        redirect.init();
         return;
       }
-      if (!$('#navtopr')) return;
+      if (!$.id('navtopr')) return;
       $.addClass(d.body, engine);
       $.addStyle(Main.css);
       threading.init();
       Favicon.init();
-      if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
+      if ((form = $('form[name=post]')) && (canPost = !!$.id('recaptcha_response_field'))) {
         Recaptcha.init();
         if (g.REPLY && conf['Auto Watch Reply'] && conf['Thread Watcher']) {
           $.on(form, 'submit', function() {
@@ -3142,10 +3172,10 @@
       if (conf['Quick Reply']) qr.init();
       if (conf['Thread Watcher']) watcher.init();
       if (conf['Keybinds']) keybinds.init();
-      if (conf['Reply Navigation'] || conf['Index Navigation']) nav.init();
       if (g.REPLY) {
         if (conf['Thread Updater']) updater.init();
         if (conf['Thread Stats']) threadStats.init();
+        if (conf['Reply Navigation']) nav.init();
         if (conf['Post in Title']) titlePost.init();
         if (conf['Unread Count']) unread.init();
         if (conf['Quick Reply'] && conf['Persistent QR'] && canPost) {
@@ -3156,6 +3186,7 @@
         if (conf['Thread Hiding']) threadHiding.init();
         if (conf['Thread Expansion']) expandThread.init();
         if (conf['Comment Expansion']) expandComment.init();
+        if (conf['Index Navigation']) nav.init();
       }
       nodes = $$('.op, a + table');
       _ref = g.callbacks;
@@ -3170,8 +3201,7 @@
           alert(err);
         }
       }
-      $.on($('form[name=delform]'), 'DOMNodeInserted', Main.node);
-      return options.init();
+      return $.on($('form[name=delform]'), 'DOMNodeInserted', Main.node);
     },
     message: function(e) {
       var data, origin;
@@ -3213,7 +3243,6 @@
         text-decoration: none;\
       }\
 \
-      [hidden], /* Firefox bug: hidden tables are not hidden. fixed in 9.0 */\
       .thread.stub > :not(.block),\
       #content > [name=tab]:not(:checked) + div,\
       #updater:not(:hover) > :not(.move),\
@@ -3241,23 +3270,24 @@
         float: left;\
         pointer-events: none;\
       }\
-      [md5], [md5] + img {\
+      img[md5], img[md5] + img {\
         pointer-events: all;\
       }\
-      .fitwidth [md5] + img {\
+      .fitwidth img[md5] + img {\
         max-width: 100%;\
       }\
-      .gecko  > .fitwidth [md5] + img,\
-      .presto > .fitwidth [md5] + img {\
+      .gecko  > .fitwidth img[md5] + img,\
+      .presto > .fitwidth img[md5] + img {\
         width: 100%;\
       }\
 \
-      #qp, #iHover {\
+      #qp, #ihover {\
         position: fixed;\
       }\
 \
-      #iHover {\
+      #ihover {\
         max-height: 100%;\
+        max-width: 75%;\
       }\
 \
       #navlinks {\

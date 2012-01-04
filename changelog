@@ -1,4 +1,17 @@
 master
+- mayhem
+  fix Open thread in new tab keybind for Safari with Ninjakit
+  fix Index/Reply Navigation working in both cases when only one is enabled
+
+2.24.0
+- mayhem
+  redirect 404'd pictures to archives when possible
+  new keybind to open the options: ctrl+o
+  the unread count will decrease when inlining quotes of unread posts
+  the report button can open multiple popups again
+  add omploader to the list of optional flavors (http://ompldr.org/upload?url1=)
+  update archive redirections, add /lit/ and /u/
+  fit horizontally for Image Hover
 
 2.23.7
 - mayhem
