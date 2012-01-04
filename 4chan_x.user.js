@@ -15,6 +15,7 @@
 /* LICENSE
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
+ * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
  * 4chan X 2.24.0
  *
@@ -2872,7 +2873,7 @@
       return $.prepend(form, controls);
     },
     resize: function() {
-      return imgExpand.style.innerHTML = ".fitheight [md5] + img {max-height:" + d.body.clientHeight + "px;}";
+      return imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
     }
   };
 
@@ -3049,14 +3050,14 @@
         float: left;\
         pointer-events: none;\
       }\
-      [md5], [md5] + img {\
+      img[md5], img[md5] + img {\
         pointer-events: all;\
       }\
-      .fitwidth [md5] + img {\
+      .fitwidth img[md5] + img {\
         max-width: 100%;\
       }\
-      .gecko  > .fitwidth [md5] + img,\
-      .presto > .fitwidth [md5] + img {\
+      .gecko  > .fitwidth img[md5] + img,\
+      .presto > .fitwidth img[md5] + img {\
         width: 100%;\
       }\
 \
