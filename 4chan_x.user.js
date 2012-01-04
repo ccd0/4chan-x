@@ -1442,10 +1442,10 @@
     time: function() {
       Time.foo();
       Time.date = new Date();
-      return $('#timePreview').textContent = Time.funk(Time);
+      return $.id('timePreview').textContent = Time.funk(Time);
     },
     backlink: function() {
-      return $('#backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
+      return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     },
     favicon: function() {
       Favicon["switch"]();
@@ -3159,7 +3159,7 @@
       $.addStyle(Main.css);
       threading.init();
       Favicon.init();
-      if ((form = $('form[name=post]')) && (canPost = !!$('#recaptcha_response_field'))) {
+      if ((form = $('form[name=post]')) && (canPost = !!$.id('recaptcha_response_field'))) {
         Recaptcha.init();
         if (g.REPLY && conf['Auto Watch Reply'] && conf['Thread Watcher']) {
           $.on(form, 'submit', function() {

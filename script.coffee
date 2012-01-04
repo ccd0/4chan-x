@@ -1084,9 +1084,9 @@ options =
   time: ->
     Time.foo()
     Time.date = new Date()
-    $('#timePreview').textContent = Time.funk Time
+    $.id('timePreview').textContent = Time.funk Time
   backlink: ->
-    $('#backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
+    $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
   favicon: ->
     Favicon.switch()
     Favicon.update() if g.REPLY and conf['Unread Count']
@@ -2488,7 +2488,7 @@ Main =
     Favicon.init()
 
     #recaptcha may be blocked, eg by noscript
-    if (form = $ 'form[name=post]') and (canPost = !!$ '#recaptcha_response_field')
+    if (form = $ 'form[name=post]') and (canPost = !!$.id 'recaptcha_response_field')
       Recaptcha.init()
       if g.REPLY and conf['Auto Watch Reply'] and conf['Thread Watcher']
         $.on form, 'submit', -> if $('img.favicon').src is Favicon.empty
