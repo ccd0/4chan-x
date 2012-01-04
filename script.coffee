@@ -2397,6 +2397,10 @@ Main =
     if location.hostname is 'sys.4chan.org'
       $.onLoad qr.sys
       return
+    if location.hostname is 'images.4chan.org'
+      if conf['404 Redirect']
+        $.onLoad -> redirect.init() if d.title is '4chan - 404'
+      return
 
     $.onLoad options.init
 
@@ -2476,7 +2480,7 @@ Main =
     if conf['404 Redirect'] and d.title is '4chan - 404'
       redirect.init()
       return
-    if not $('#navtopr') or location.hostname is 'images.4chan.org'
+    if not $.id 'navtopr'
       return
     $.addClass d.body, engine
     $.addStyle Main.css

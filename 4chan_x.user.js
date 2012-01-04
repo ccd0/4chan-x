@@ -3096,6 +3096,14 @@
         $.onLoad(qr.sys);
         return;
       }
+      if (location.hostname === 'images.4chan.org') {
+        if (conf['404 Redirect']) {
+          $.onLoad(function() {
+            if (d.title === '4chan - 404') return redirect.init();
+          });
+        }
+        return;
+      }
       $.onLoad(options.init);
       $.on(window, 'message', Main.message);
       now = Date.now();
@@ -3146,7 +3154,7 @@
         redirect.init();
         return;
       }
-      if (!$('#navtopr') || location.hostname === 'images.4chan.org') return;
+      if (!$.id('navtopr')) return;
       $.addClass(d.body, engine);
       $.addStyle(Main.css);
       threading.init();
