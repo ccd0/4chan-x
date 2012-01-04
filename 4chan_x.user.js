@@ -475,48 +475,44 @@
 
   $.cache.requests = {};
 
-  if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $.extend($, {
-      "delete": function(name) {
-        name = NAMESPACE + name;
-        return GM_deleteValue(name);
-      },
-      get: function(name, defaultValue) {
-        var value;
-        name = NAMESPACE + name;
-        if (value = GM_getValue(name)) {
-          return JSON.parse(value);
-        } else {
-          return defaultValue;
-        }
-      },
-      set: function(name, value) {
-        name = NAMESPACE + name;
-        localStorage[name] = JSON.stringify(value);
-        return GM_setValue(name, JSON.stringify(value));
+  $.extend($, typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null ? {
+    "delete": function(name) {
+      name = NAMESPACE + name;
+      return GM_deleteValue(name);
+    },
+    get: function(name, defaultValue) {
+      var value;
+      name = NAMESPACE + name;
+      if (value = GM_getValue(name)) {
+        return JSON.parse(value);
+      } else {
+        return defaultValue;
       }
-    });
-  } else {
-    $.extend($, {
-      "delete": function(name) {
-        name = NAMESPACE + name;
-        return delete localStorage[name];
-      },
-      get: function(name, defaultValue) {
-        var value;
-        name = NAMESPACE + name;
-        if (value = localStorage[name]) {
-          return JSON.parse(value);
-        } else {
-          return defaultValue;
-        }
-      },
-      set: function(name, value) {
-        name = NAMESPACE + name;
-        return localStorage[name] = JSON.stringify(value);
+    },
+    set: function(name, value) {
+      name = NAMESPACE + name;
+      localStorage[name] = JSON.stringify(value);
+      return GM_setValue(name, JSON.stringify(value));
+    }
+  } : {
+    "delete": function(name) {
+      name = NAMESPACE + name;
+      return delete localStorage[name];
+    },
+    get: function(name, defaultValue) {
+      var value;
+      name = NAMESPACE + name;
+      if (value = localStorage[name]) {
+        return JSON.parse(value);
+      } else {
+        return defaultValue;
       }
-    });
-  }
+    },
+    set: function(name, value) {
+      name = NAMESPACE + name;
+      return localStorage[name] = JSON.stringify(value);
+    }
+  });
 
   for (key in conf) {
     val = conf[key];

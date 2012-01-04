@@ -358,8 +358,8 @@ $.extend $,
 
 $.cache.requests = {}
 
-if GM_deleteValue?
-  $.extend $,
+$.extend $,
+  if GM_deleteValue?
     delete: (name) ->
       name = NAMESPACE + name
       GM_deleteValue name
@@ -374,8 +374,7 @@ if GM_deleteValue?
       # for `storage` events
       localStorage[name] = JSON.stringify value
       GM_setValue name, JSON.stringify value
-else
-  $.extend $,
+  else
     delete: (name) ->
       name = NAMESPACE + name
       delete localStorage[name]
