@@ -307,6 +307,15 @@
   };
 
   $.extend($, {
+    onLoad: function(fc) {
+      var cb;
+      if (/interactive|complete/.test(d.readyState)) return fc();
+      cb = function() {
+        $.off(d, 'DOMContentLoaded', cb);
+        return fc();
+      };
+      return $.on(d, 'DOMContentLoaded', cb);
+    },
     id: function(id) {
       return d.getElementById(id);
     },
@@ -3074,7 +3083,7 @@
 
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, now, pathname, temp, timestamp, update, _ref;
+      var cutoff, hiddenThreads, id, now, pathname, temp, timestamp, _ref;
       pathname = location.pathname.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
@@ -3084,27 +3093,17 @@
         g.PAGENUM = parseInt(temp) || 0;
       }
       if (location.hostname === 'sys.4chan.org') {
-        if (/interactive|complete/.test(d.readyState)) {
-          qr.sys();
-        } else {
-          $.on(d, 'DOMContentLoaded', qr.sys);
-        }
+        $.onLoad(qr.sys);
         return;
       }
       $.on(window, 'message', Main.message);
       now = Date.now();
       if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
-        update = function() {
-          $.off(d, 'DOMContentLoaded', update);
+        $.onLoad(function() {
           return $.add(d.head, $.el('script', {
             src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
           }));
-        };
-        if (/interactive|complete/.test(d.readyState)) {
-          update();
-        } else {
-          $.on(d, 'DOMContentLoaded', update);
-        }
+        });
         $.set('lastUpdate', now);
       }
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
@@ -3138,15 +3137,10 @@
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
-      if (/interactive|complete/.test(d.readyState)) {
-        return Main.onLoad();
-      } else {
-        return $.on(d, 'DOMContentLoaded', Main.onLoad);
-      }
+      return $.onLoad(Main.onLoad);
     },
     onLoad: function() {
       var callback, canPost, form, node, nodes, _i, _j, _len, _len2, _ref;
-      $.off(d, 'DOMContentLoaded', Main.onLoad);
       if (conf['404 Redirect'] && d.title === '4chan - 404') {
         redirect.init();
         return;

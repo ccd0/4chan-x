@@ -221,6 +221,13 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
+  onLoad: (fc) ->
+    if /interactive|complete/.test d.readyState
+      return fc()
+    cb = ->
+      $.off d, 'DOMContentLoaded', cb
+      fc()
+    $.on d, 'DOMContentLoaded', cb
   id: (id) ->
     d.getElementById id
   globalEval: (code) ->
@@ -2388,23 +2395,14 @@ Main =
       g.PAGENUM = parseInt(temp) or 0
 
     if location.hostname is 'sys.4chan.org'
-      if /interactive|complete/.test d.readyState
-        qr.sys()
-      else
-        $.on d, 'DOMContentLoaded', qr.sys
+      $.onLoad qr.sys
       return
 
     $.on window, 'message', Main.message
 
     now = Date.now()
     if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
-      update = ->
-        $.off d, 'DOMContentLoaded', update
-        $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
-      if /interactive|complete/.test d.readyState
-        update()
-      else
-        $.on d, 'DOMContentLoaded', update
+      $.onLoad -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
@@ -2470,13 +2468,9 @@ Main =
       quoteDR.init()
 
 
-    if /interactive|complete/.test d.readyState
-      Main.onLoad()
-    else
-      $.on d, 'DOMContentLoaded', Main.onLoad
+    $.onLoad Main.onLoad
 
   onLoad: ->
-    $.off d, 'DOMContentLoaded', Main.onLoad
     if conf['404 Redirect'] and d.title is '4chan - 404'
       redirect.init()
       return
