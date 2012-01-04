@@ -3096,6 +3096,7 @@
         $.onLoad(qr.sys);
         return;
       }
+      $.onLoad(options.init);
       $.on(window, 'message', Main.message);
       now = Date.now();
       if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
@@ -3195,8 +3196,7 @@
           alert(err);
         }
       }
-      $.on($('form[name=delform]'), 'DOMNodeInserted', Main.node);
-      return options.init();
+      return $.on($('form[name=delform]'), 'DOMNodeInserted', Main.node);
     },
     message: function(e) {
       var data, origin;

@@ -2398,6 +2398,8 @@ Main =
       $.onLoad qr.sys
       return
 
+    $.onLoad options.init
+
     $.on window, 'message', Main.message
 
     now = Date.now()
@@ -2550,7 +2552,6 @@ Main =
       catch err
         alert err
     $.on $('form[name=delform]'), 'DOMNodeInserted', Main.node
-    options.init()
 
   message: (e) ->
     {origin, data} = e
