@@ -369,8 +369,6 @@ if GM_deleteValue?
         JSON.parse value
       else
         defaultValue
-    openInTab: (url) ->
-      GM_openInTab url
     set: (name, value) ->
       name = NAMESPACE + name
       # for `storage` events
@@ -387,8 +385,6 @@ else
         JSON.parse value
       else
         defaultValue
-    openInTab: (url) ->
-      window.open url, "_blank"
     set: (name, value) ->
       name = NAMESPACE + name
       localStorage[name] = JSON.stringify value
@@ -770,7 +766,8 @@ keybinds =
     id = thread.firstChild.id
     url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab
-      $.openInTab url
+      open = GM_openInTab or window.open
+      open url, "_blank"
     else
       location.href = url
 

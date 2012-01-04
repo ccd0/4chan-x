@@ -1,4 +1,7 @@
 master
+- mayhem
+  fix Open thread in new tab keybind for Safari with Ninjakit
+  fix Index/Reply Navigation working in both cases when only one is enabled
 
 2.24.0
 - mayhem

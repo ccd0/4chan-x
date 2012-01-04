@@ -490,9 +490,6 @@
           return defaultValue;
         }
       },
-      openInTab: function(url) {
-        return GM_openInTab(url);
-      },
       set: function(name, value) {
         name = NAMESPACE + name;
         localStorage[name] = JSON.stringify(value);
@@ -513,9 +510,6 @@
         } else {
           return defaultValue;
         }
-      },
-      openInTab: function(url) {
-        return window.open(url, "_blank");
       },
       set: function(name, value) {
         name = NAMESPACE + name;
@@ -1083,11 +1077,12 @@
       }
     },
     open: function(thread, tab) {
-      var id, url;
+      var id, open, url;
       id = thread.firstChild.id;
       url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
       if (tab) {
-        return $.openInTab(url);
+        open = GM_openInTab || window.open;
+        return open(url, "_blank");
       } else {
         return location.href = url;
       }
