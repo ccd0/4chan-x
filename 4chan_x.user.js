@@ -3225,10 +3225,10 @@
     },
     css: '\
       /* dialog styling */\
-      div.dialog {\
-        border: 1px solid;\
+      .dialog {\
+        border: 1px solid rgba(0,0,0,.25);\
       }\
-      div.dialog > div.move {\
+      .move {\
         cursor: move;\
       }\
       label, a, .favicon, #qr img {\
