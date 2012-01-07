@@ -221,7 +221,7 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
-  onLoad: (fc) ->
+  ready: (fc) ->
     if /interactive|complete/.test d.readyState
       return fc()
     cb = ->
@@ -2390,19 +2390,19 @@ Main =
       g.PAGENUM = parseInt(temp) or 0
 
     if location.hostname is 'sys.4chan.org'
-      $.onLoad qr.sys
+      $.ready qr.sys
       return
     if location.hostname is 'images.4chan.org'
-      $.onLoad -> redirect.init() if d.title is '4chan - 404'
+      $.ready -> redirect.init() if d.title is '4chan - 404'
       return
 
-    $.onLoad options.init
+    $.ready options.init
 
     $.on window, 'message', Main.message
 
     now = Date.now()
     if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
-      $.onLoad -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
+      $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
@@ -2468,9 +2468,9 @@ Main =
       quoteDR.init()
 
 
-    $.onLoad Main.onLoad
+    $.ready Main.ready
 
-  onLoad: ->
+  ready: ->
     if conf['404 Redirect'] and d.title is '4chan - 404'
       redirect.init()
       return
