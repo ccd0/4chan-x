@@ -2449,6 +2449,9 @@ Main =
     if conf['Image Hover']
       imgHover.init()
 
+    if conf['Reveal Spoilers']
+      revealSpoilers.init()
+
     if conf['Report Button']
       reportButton.init()
 
@@ -2497,9 +2500,6 @@ Main =
 
     if conf['Image Expansion']
       imgExpand.init()
-
-    if conf['Reveal Spoilers'] and $('.postarea label')
-      revealSpoilers.init()
 
     if conf['Quick Reply']
       qr.init()

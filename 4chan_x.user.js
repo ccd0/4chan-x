@@ -3129,6 +3129,7 @@
       if (conf['Sauce']) sauce.init();
       if (conf['Image Auto-Gif']) imgGif.init();
       if (conf['Image Hover']) imgHover.init();
+      if (conf['Reveal Spoilers']) revealSpoilers.init();
       if (conf['Report Button']) reportButton.init();
       if (conf['Quote Inline']) quoteInline.init();
       if (conf['Quote Preview']) quotePreview.init();
@@ -3161,7 +3162,6 @@
       if (conf['Auto Noko'] && canPost) form.action += '?noko';
       if (conf['Cooldown'] && canPost) cooldown.init();
       if (conf['Image Expansion']) imgExpand.init();
-      if (conf['Reveal Spoilers'] && $('.postarea label')) revealSpoilers.init();
       if (conf['Quick Reply']) qr.init();
       if (conf['Thread Watcher']) watcher.init();
       if (conf['Keybinds']) keybinds.init();
