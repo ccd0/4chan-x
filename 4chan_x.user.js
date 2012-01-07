@@ -3088,11 +3088,9 @@
         return;
       }
       if (location.hostname === 'images.4chan.org') {
-        if (conf['404 Redirect']) {
-          $.onLoad(function() {
-            if (d.title === '4chan - 404') return redirect.init();
-          });
-        }
+        $.onLoad(function() {
+          if (d.title === '4chan - 404') return redirect.init();
+        });
         return;
       }
       $.onLoad(options.init);

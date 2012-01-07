@@ -2229,7 +2229,6 @@ Favicon =
 redirect =
   init: ->
     url =
-      # waiting for https://github.com/FoOlRulez/FoOlFuuka/issues/11
       if location.hostname is 'images.4chan.org'
         redirect.image g.BOARD, location.pathname.split('/')[3]
       else if /^\d+$/.test g.THREAD_ID
@@ -2394,8 +2393,7 @@ Main =
       $.onLoad qr.sys
       return
     if location.hostname is 'images.4chan.org'
-      if conf['404 Redirect']
-        $.onLoad -> redirect.init() if d.title is '4chan - 404'
+      $.onLoad -> redirect.init() if d.title is '4chan - 404'
       return
 
     $.onLoad options.init
