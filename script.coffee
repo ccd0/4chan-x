@@ -959,11 +959,11 @@ options =
     <div class=error><code>Unread Count</code> is disabled.</div>
     Unread favicons<br>
     <select name=favicon>
-      <option>ferongr</option>
-      <option>xat-</option>
-      <option>Mayhem</option>
-      <option>Original</option>
-      <option>None</option>
+      <option value=ferongr>ferongr</option>
+      <option value=xat->xat-</option>
+      <option value=Mayhem>Mayhem</option>
+      <option value=Original>Original</option>
+      <option value=None>None</option>
     </select>
     <span></span>
   </div>
@@ -1031,10 +1031,7 @@ options =
     $.on time, 'keyup', $.cb.value
     $.on time, 'keyup', options.time
     favicon = $ 'select', dialog
-    for option in favicon.options
-      if option.textContent is conf['favicon']
-        option.selected = true
-        break
+    favicon.value = conf['favicon']
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', options.favicon
 
@@ -2360,14 +2357,10 @@ imgExpand =
     controls = $.el 'div',
       id: 'imgControls'
       innerHTML:
-        "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>
-        <label>Expand Images<input type=checkbox id=imageExpand></label>"
+        "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
     imageType = $.get 'imageType', 'full'
     select = $ 'select', controls
-    for option in select.options
-      if option.textContent is imageType
-        option.selected = true
-        break
+    select.value = imageType
     imgExpand.cb.typeChange.call select
     $.on select, 'change', $.cb.value
     $.on select, 'change', imgExpand.cb.typeChange

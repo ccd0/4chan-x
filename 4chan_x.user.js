@@ -1238,7 +1238,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, option, overlay, ta, time, ul, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
+      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
       dialog = ui.dialog('options', '', '\
 <div id=optionsbar>\
   <div id=credits>\
@@ -1297,11 +1297,11 @@
     <div class=error><code>Unread Count</code> is disabled.</div>\
     Unread favicons<br>\
     <select name=favicon>\
-      <option>ferongr</option>\
-      <option>xat-</option>\
-      <option>Mayhem</option>\
-      <option>Original</option>\
-      <option>None</option>\
+      <option value=ferongr>ferongr</option>\
+      <option value=xat->xat-</option>\
+      <option value=Mayhem>Mayhem</option>\
+      <option value=Original>Original</option>\
+      <option value=None>None</option>\
     </select>\
     <span></span>\
   </div>\
@@ -1373,27 +1373,20 @@
       $.on(time, 'keyup', $.cb.value);
       $.on(time, 'keyup', options.time);
       favicon = $('select', dialog);
-      _ref3 = favicon.options;
-      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-        option = _ref3[_j];
-        if (option.textContent === conf['favicon']) {
-          option.selected = true;
-          break;
-        }
-      }
+      favicon.value = conf['favicon'];
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', options.favicon);
-      _ref4 = $$('#keybinds_tab + div input', dialog);
-      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
-        input = _ref4[_k];
+      _ref3 = $$('#keybinds_tab + div input', dialog);
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        input = _ref3[_j];
         input.type = 'text';
         input.value = conf[input.name];
         $.on(input, 'keydown', options.keybind);
       }
       indicators = {};
-      _ref5 = $$('.error', dialog);
-      for (_l = 0, _len4 = _ref5.length; _l < _len4; _l++) {
-        indicator = _ref5[_l];
+      _ref4 = $$('.error', dialog);
+      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
+        indicator = _ref4[_k];
         key = indicator.firstChild.textContent;
         indicator.hidden = conf[key];
         indicators[key] = indicator;
@@ -3045,21 +3038,14 @@
       if (!thumb.hidden) return imgExpand.expand(thumb);
     },
     dialog: function() {
-      var controls, form, imageType, option, select, _i, _len, _ref;
+      var controls, form, imageType, select;
       controls = $.el('div', {
         id: 'imgControls',
-        innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
+        innerHTML: "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
       });
       imageType = $.get('imageType', 'full');
       select = $('select', controls);
-      _ref = select.options;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        option = _ref[_i];
-        if (option.textContent === imageType) {
-          option.selected = true;
-          break;
-        }
-      }
+      select.value = imageType;
       imgExpand.cb.typeChange.call(select);
       $.on(select, 'change', $.cb.value);
       $.on(select, 'change', imgExpand.cb.typeChange);
