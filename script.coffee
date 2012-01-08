@@ -2132,7 +2132,7 @@ threadStats =
     threadStats.postcountEl.textContent = ++threadStats.posts
     if $ 'img[md5]', root
       threadStats.imagecountEl.textContent = ++threadStats.images
-      if threadStats.images > 150
+      if threadStats.images > 151
         threadStats.imagecountEl.className = 'error'
 
 unread =
