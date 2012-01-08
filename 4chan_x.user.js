@@ -1233,8 +1233,8 @@
       $.on(a, 'click', options.dialog);
       $.replace(home, a);
       if (!$.get('firstrun')) {
-        options.dialog();
-        return $.set('firstrun', true);
+        $.set('firstrun', true);
+        return options.dialog();
       }
     },
     dialog: function() {
@@ -2741,11 +2741,11 @@
 
   unread = {
     init: function() {
-      unread.replies = [];
       d.title = '(0) ' + d.title;
       $.on(window, 'scroll', unread.scroll);
       return g.callbacks.push(unread.node);
     },
+    replies: [],
     node: function(root) {
       if (root.hidden || root.className) return;
       unread.replies.push(root);
@@ -3284,6 +3284,7 @@
         bottom: 0;\
         text-align: center;\
         background: rgba(0,0,0,.5);\
+        z-index: 1;\
       }\
       #overlay::after {\
         content: "";\

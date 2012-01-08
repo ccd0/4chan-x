@@ -897,8 +897,8 @@ options =
     $.on a, 'click', options.dialog
     $.replace home, a
     unless $.get 'firstrun'
-      options.dialog()
       $.set 'firstrun', true
+      options.dialog()
 
   dialog: ->
     dialog = ui.dialog 'options', '', '
@@ -2134,10 +2134,11 @@ threadStats =
 
 unread =
   init: ->
-    unread.replies = []
     d.title = '(0) ' + d.title
     $.on window, 'scroll', unread.scroll
     g.callbacks.push unread.node
+
+  replies: []
 
   node: (root) ->
     return if root.hidden or root.className
@@ -2640,6 +2641,7 @@ Main =
         bottom: 0;
         text-align: center;
         background: rgba(0,0,0,.5);
+        z-index: 1;
       }
       #overlay::after {
         content: "";
