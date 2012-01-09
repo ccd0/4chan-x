@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.24.0
+// @version        2.24.2
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -18,7 +18,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.24.0
+ * 4chan X 2.24.2
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -200,7 +200,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.24.0';
+  VERSION = '2.24.2';
 
   SECOND = 1000;
 
@@ -307,7 +307,7 @@
   };
 
   $.extend($, {
-    onLoad: function(fc) {
+    ready: function(fc) {
       var cb;
       if (/interactive|complete/.test(d.readyState)) return fc();
       cb = function() {
@@ -1232,12 +1232,12 @@
       $.on(a, 'click', options.dialog);
       $.replace(home, a);
       if (!$.get('firstrun')) {
-        options.dialog();
-        return $.set('firstrun', true);
+        $.set('firstrun', true);
+        return options.dialog();
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, option, overlay, ta, time, ul, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5;
+      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
       dialog = ui.dialog('options', '', '\
 <div id=optionsbar>\
   <div id=credits>\
@@ -1296,11 +1296,11 @@
     <div class=error><code>Unread Count</code> is disabled.</div>\
     Unread favicons<br>\
     <select name=favicon>\
-      <option>ferongr</option>\
-      <option>xat-</option>\
-      <option>Mayhem</option>\
-      <option>Original</option>\
-      <option>None</option>\
+      <option value=ferongr>ferongr</option>\
+      <option value=xat->xat-</option>\
+      <option value=Mayhem>Mayhem</option>\
+      <option value=Original>Original</option>\
+      <option value=None>None</option>\
     </select>\
     <span></span>\
   </div>\
@@ -1372,27 +1372,20 @@
       $.on(time, 'keyup', $.cb.value);
       $.on(time, 'keyup', options.time);
       favicon = $('select', dialog);
-      _ref3 = favicon.options;
-      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-        option = _ref3[_j];
-        if (option.textContent === conf['favicon']) {
-          option.selected = true;
-          break;
-        }
-      }
+      favicon.value = conf['favicon'];
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', options.favicon);
-      _ref4 = $$('#keybinds_tab + div input', dialog);
-      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
-        input = _ref4[_k];
+      _ref3 = $$('#keybinds_tab + div input', dialog);
+      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+        input = _ref3[_j];
         input.type = 'text';
         input.value = conf[input.name];
         $.on(input, 'keydown', options.keybind);
       }
       indicators = {};
-      _ref5 = $$('.error', dialog);
-      for (_l = 0, _len4 = _ref5.length; _l < _len4; _l++) {
-        indicator = _ref5[_l];
+      _ref4 = $$('.error', dialog);
+      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
+        indicator = _ref4[_k];
         key = indicator.firstChild.textContent;
         indicator.hidden = conf[key];
         indicators[key] = indicator;
@@ -2745,7 +2738,7 @@
       threadStats.postcountEl.textContent = ++threadStats.posts;
       if ($('img[md5]', root)) {
         threadStats.imagecountEl.textContent = ++threadStats.images;
-        if (threadStats.images > 150) {
+        if (threadStats.images > 151) {
           return threadStats.imagecountEl.className = 'error';
         }
       }
@@ -2754,11 +2747,11 @@
 
   unread = {
     init: function() {
-      unread.replies = [];
       d.title = '(0) ' + d.title;
       $.on(window, 'scroll', unread.scroll);
       return g.callbacks.push(unread.node);
     },
+    replies: [],
     node: function(root) {
       if (root.hidden || root.className) return;
       unread.replies.push(root);
@@ -3050,21 +3043,14 @@
       if (!thumb.hidden) return imgExpand.expand(thumb);
     },
     dialog: function() {
-      var controls, form, imageType, option, select, _i, _len, _ref;
+      var controls, form, imageType, select;
       controls = $.el('div', {
         id: 'imgControls',
-        innerHTML: "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>        <label>Expand Images<input type=checkbox id=imageExpand></label>"
+        innerHTML: "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
       });
       imageType = $.get('imageType', 'full');
       select = $('select', controls);
-      _ref = select.options;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        option = _ref[_i];
-        if (option.textContent === imageType) {
-          option.selected = true;
-          break;
-        }
-      }
+      select.value = imageType;
       imgExpand.cb.typeChange.call(select);
       $.on(select, 'change', $.cb.value);
       $.on(select, 'change', imgExpand.cb.typeChange);
@@ -3089,22 +3075,20 @@
         g.PAGENUM = parseInt(temp) || 0;
       }
       if (location.hostname === 'sys.4chan.org') {
-        $.onLoad(qr.sys);
+        $.ready(qr.sys);
         return;
       }
       if (location.hostname === 'images.4chan.org') {
-        if (conf['404 Redirect']) {
-          $.onLoad(function() {
-            if (d.title === '4chan - 404') return redirect.init();
-          });
-        }
+        $.ready(function() {
+          if (d.title === '4chan - 404') return redirect.init();
+        });
         return;
       }
-      $.onLoad(options.init);
+      $.ready(options.init);
       $.on(window, 'message', Main.message);
       now = Date.now();
       if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
-        $.onLoad(function() {
+        $.ready(function() {
           return $.add(d.head, $.el('script', {
             src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
           }));
@@ -3136,15 +3120,16 @@
       if (conf['Sauce']) sauce.init();
       if (conf['Image Auto-Gif']) imgGif.init();
       if (conf['Image Hover']) imgHover.init();
+      if (conf['Reveal Spoilers']) revealSpoilers.init();
       if (conf['Report Button']) reportButton.init();
       if (conf['Quote Inline']) quoteInline.init();
       if (conf['Quote Preview']) quotePreview.init();
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
-      return $.onLoad(Main.onLoad);
+      return $.ready(Main.ready);
     },
-    onLoad: function() {
+    ready: function() {
       var callback, canPost, form, node, nodes, _i, _j, _len, _len2, _ref;
       if (conf['404 Redirect'] && d.title === '4chan - 404') {
         redirect.init();
@@ -3168,7 +3153,6 @@
       if (conf['Auto Noko'] && canPost) form.action += '?noko';
       if (conf['Cooldown'] && canPost) cooldown.init();
       if (conf['Image Expansion']) imgExpand.init();
-      if (conf['Reveal Spoilers'] && $('.postarea label')) revealSpoilers.init();
       if (conf['Quick Reply']) qr.init();
       if (conf['Thread Watcher']) watcher.init();
       if (conf['Keybinds']) keybinds.init();
@@ -3230,10 +3214,10 @@
     },
     css: '\
       /* dialog styling */\
-      div.dialog {\
-        border: 1px solid;\
+      .dialog {\
+        border: 1px solid rgba(0,0,0,.25);\
       }\
-      div.dialog > div.move {\
+      .move {\
         cursor: move;\
       }\
       label, a, .favicon, #qr img {\
@@ -3305,6 +3289,7 @@
         bottom: 0;\
         text-align: center;\
         background: rgba(0,0,0,.5);\
+        z-index: 1;\
       }\
       #overlay::after {\
         content: "";\

@@ -1,4 +1,10 @@
 master
+
+2.24.2
+- mayhem
+  fix options popping up everytime a page loads
+
+2.24.1
 - mayhem
   fix Open thread in new tab keybind for Safari with Ninjakit
   fix Index/Reply Navigation working in both cases when only one is enabled
