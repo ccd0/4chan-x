@@ -1299,11 +1299,32 @@
           qr.error("" + file.name + ": Unsupported file type.");
           break;
         }
+        new qr.reply(file);
       }
       return $.addClass(qr.el, 'dump');
     },
+    replies: [],
+    reply: (function() {
+
+      function _Class(file) {
+        var name, _ref;
+        this.file = file;
+        this.com = null;
+        for (name in qr.inputs) {
+          this[name] = ((_ref = qr.replies[qr.replies.length - 1]) != null ? _ref[name] : void 0) || $.get("qr_" + name, null);
+        }
+        qr.replies.push(this);
+      }
+
+      _Class.prototype.load = function() {
+        return log(this);
+      };
+
+      return _Class;
+
+    })(),
     dialog: function() {
-      var input, mimeTypes, name, thread, threads, _i, _len, _ref, _ref2;
+      var mimeTypes, thread, threads, _i, _len, _ref;
       if (!g.REPLY) {
         threads = '<option value=new>New thread</option>';
         _ref = $$('.op');
@@ -1342,11 +1363,7 @@
         email: $('[name=email]', qr.el)
       };
       if (conf['Remember Subject']) qr.inputs.subject = $('[name=subject]', qr.el);
-      _ref2 = qr.inputs;
-      for (name in _ref2) {
-        input = _ref2[name];
-        input.value = $.get("qr_" + name, null);
-      }
+      new qr.reply().load();
       $.on(window, 'storage', function(e) {
         var match;
         if (match = e.key.match(/qr_(.+)$/)) {

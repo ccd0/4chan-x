@@ -950,7 +950,8 @@ qr =
       else if -1 is qr.mimeTypes.indexOf file.type
         qr.error 'Unsupported file type.'
       else
-        # modify selected reply's file
+        # set or modify selected reply's file
+        # qr.replies[?].file = file
       return
     for file in @files
       if file.size > @max
@@ -959,9 +960,19 @@ qr =
       else if -1 is qr.mimeTypes.indexOf file.type
         qr.error "#{file.name}: Unsupported file type."
         break
-      # add new reply
-      # set reply's file
+      new qr.reply file
     $.addClass qr.el, 'dump'
+
+  replies: []
+  reply: class
+    constructor: (@file) ->
+      @com = null
+      for name of qr.inputs
+        @[name] = qr.replies[qr.replies.length-1]?[name] or $.get "qr_#{name}", null
+      qr.replies.push @
+    load: ->
+      # load reply's data in the QR dialog
+      log @
 
   dialog: ->
     # create a new thread or select thread to reply to
@@ -1094,8 +1105,7 @@ textarea.field {
       name:  $ '[name=name]',  qr.el
       email: $ '[name=email]', qr.el
     qr.inputs.subject = $ '[name=subject]', qr.el if conf['Remember Subject']
-    for name, input of qr.inputs
-      input.value = $.get "qr_#{name}", null
+    new qr.reply().load()
     # sync between tabs
     $.on window, 'storage', (e) ->
       if match = e.key.match /qr_(.+)$/
