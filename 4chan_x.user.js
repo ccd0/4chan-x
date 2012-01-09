@@ -3002,7 +3002,7 @@
       .move {\
         cursor: move;\
       }\
-      label, a, .favicon {\
+      label, .favicon {\
         cursor: pointer;\
       }\
       a[href="javascript:;"] {\
