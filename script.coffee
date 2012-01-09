@@ -121,7 +121,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.24.0'
+VERSION = '2.24.2'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -221,7 +221,7 @@ $.extend = (object, properties) ->
   object
 
 $.extend $,
-  onLoad: (fc) ->
+  ready: (fc) ->
     if /interactive|complete/.test d.readyState
       return fc()
     cb = ->
@@ -353,8 +353,8 @@ $.extend $,
 
 $.cache.requests = {}
 
-if GM_deleteValue?
-  $.extend $,
+$.extend $,
+  if GM_deleteValue?
     delete: (name) ->
       name = NAMESPACE + name
       GM_deleteValue name
@@ -364,15 +364,12 @@ if GM_deleteValue?
         JSON.parse value
       else
         defaultValue
-    openInTab: (url) ->
-      GM_openInTab url
     set: (name, value) ->
       name = NAMESPACE + name
       # for `storage` events
       localStorage[name] = JSON.stringify value
       GM_setValue name, JSON.stringify value
-else
-  $.extend $,
+  else
     delete: (name) ->
       name = NAMESPACE + name
       delete localStorage[name]
@@ -382,8 +379,6 @@ else
         JSON.parse value
       else
         defaultValue
-    openInTab: (url) ->
-      window.open url, "_blank"
     set: (name, value) ->
       name = NAMESPACE + name
       localStorage[name] = JSON.stringify value
@@ -761,7 +756,8 @@ keybinds =
     id = thread.firstChild.id
     url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab
-      $.openInTab url
+      open = GM_openInTab or window.open
+      open url, "_blank"
     else
       location.href = url
 
@@ -1146,8 +1142,8 @@ options =
     $.on a, 'click', options.dialog
     $.replace home, a
     unless $.get 'firstrun'
-      options.dialog()
       $.set 'firstrun', true
+      options.dialog()
 
   dialog: ->
     dialog = $.el 'div'
@@ -1210,11 +1206,11 @@ options =
     <div class=error><code>Unread Count</code> is disabled.</div>
     Unread favicons<br>
     <select name=favicon>
-      <option>ferongr</option>
-      <option>xat-</option>
-      <option>Mayhem</option>
-      <option>Original</option>
-      <option>None</option>
+      <option value=ferongr>ferongr</option>
+      <option value=xat->xat-</option>
+      <option value=Mayhem>Mayhem</option>
+      <option value=Original>Original</option>
+      <option value=None>None</option>
     </select>
     <span></span>
   </div>
@@ -1282,10 +1278,7 @@ options =
     $.on time, 'keyup', $.cb.value
     $.on time, 'keyup', options.time
     favicon = $ 'select', dialog
-    for option in favicon.options
-      if option.textContent is conf['favicon']
-        option.selected = true
-        break
+    favicon.value = conf['favicon']
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', options.favicon
 
@@ -2031,15 +2024,16 @@ threadStats =
     threadStats.postcountEl.textContent = ++threadStats.posts
     if $ 'img[md5]', root
       threadStats.imagecountEl.textContent = ++threadStats.images
-      if threadStats.images > 150
+      if threadStats.images > 151
         threadStats.imagecountEl.className = 'error'
 
 unread =
   init: ->
-    unread.replies = []
     d.title = '(0) ' + d.title
     $.on window, 'scroll', unread.scroll
     g.callbacks.push unread.node
+
+  replies: []
 
   node: (root) ->
     return if root.hidden or root.className
@@ -2128,7 +2122,6 @@ Favicon =
 redirect =
   init: ->
     url =
-      # waiting for https://github.com/FoOlRulez/FoOlFuuka/issues/11
       if location.hostname is 'images.4chan.org'
         redirect.image g.BOARD, location.pathname.split('/')[3]
       else if /^\d+$/.test g.THREAD_ID
@@ -2260,14 +2253,10 @@ imgExpand =
     controls = $.el 'div',
       id: 'imgControls'
       innerHTML:
-        "<select id=imageType name=imageType><option>full</option><option>fit width</option><option>fit height</option><option>fit screen</option></select>
-        <label>Expand Images<input type=checkbox id=imageExpand></label>"
+        "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
     imageType = $.get 'imageType', 'full'
     select = $ 'select', controls
-    for option in select.options
-      if option.textContent is imageType
-        option.selected = true
-        break
+    select.value = imageType
     imgExpand.cb.typeChange.call select
     $.on select, 'change', $.cb.value
     $.on select, 'change', imgExpand.cb.typeChange
@@ -2290,20 +2279,19 @@ Main =
       g.PAGENUM = parseInt(temp) or 0
 
     if location.hostname is 'sys.4chan.org'
-      $.onLoad qr.sys
+      $.ready qr.sys
       return
     if location.hostname is 'images.4chan.org'
-      if conf['404 Redirect']
-        $.onLoad -> redirect.init() if d.title is '4chan - 404'
+      $.ready -> redirect.init() if d.title is '4chan - 404'
       return
 
-    $.onLoad options.init
+    $.ready options.init
 
     $.on window, 'message', Main.message
 
     now = Date.now()
     if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
-      $.onLoad -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
+      $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
@@ -2350,6 +2338,9 @@ Main =
     if conf['Image Hover']
       imgHover.init()
 
+    if conf['Reveal Spoilers']
+      revealSpoilers.init()
+
     if conf['Report Button']
       reportButton.init()
 
@@ -2369,9 +2360,9 @@ Main =
       quoteDR.init()
 
 
-    $.onLoad Main.onLoad
+    $.ready Main.ready
 
-  onLoad: ->
+  ready: ->
     if conf['404 Redirect'] and d.title is '4chan - 404'
       redirect.init()
       return
@@ -2389,17 +2380,11 @@ Main =
     if conf['Image Expansion']
       imgExpand.init()
 
-    if conf['Reveal Spoilers'] and $('.postarea label')
-      revealSpoilers.init()
-
     if conf['Thread Watcher']
       watcher.init()
 
     if conf['Keybinds']
       keybinds.init()
-
-    if conf['Reply Navigation'] or conf['Index Navigation']
-      nav.init()
 
     if g.REPLY
       if conf['Thread Updater']
@@ -2407,6 +2392,9 @@ Main =
 
       if conf['Thread Stats']
         threadStats.init()
+
+      if conf['Reply Navigation']
+        nav.init()
 
       if conf['Post in Title']
         titlePost.init()
@@ -2423,6 +2411,9 @@ Main =
 
       if conf['Comment Expansion']
         expandComment.init()
+
+      if conf['Index Navigation']
+        nav.init()
 
 
     nodes = $$ '.op, a + table'
@@ -2450,10 +2441,10 @@ Main =
 
   css: '
       /* dialog styling */
-      div.dialog {
-        border: 1px solid;
+      .dialog {
+        border: 1px solid rgba(0,0,0,.25);
       }
-      div.dialog > div.move {
+      .move {
         cursor: move;
       }
       label, a, .favicon {
@@ -2523,6 +2514,7 @@ Main =
         bottom: 0;
         text-align: center;
         background: rgba(0,0,0,.5);
+        z-index: 1;
       }
       #overlay::after {
         content: "";
