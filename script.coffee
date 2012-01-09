@@ -2572,7 +2572,7 @@ Main =
       .move {
         cursor: move;
       }
-      label, a, .favicon, #qr img {
+      label, .favicon, #qr_form > div > img {
         cursor: pointer;
       }
       a[href="javascript:;"] {
