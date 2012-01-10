@@ -1946,7 +1946,7 @@ quotePreview =
   mouseover: (e) ->
     qp = ui.el = $.el 'div',
       id: 'qp'
-      className: 'reply'
+      className: 'reply dialog'
     $.add d.body, qp
 
     id = @hash[1..]
@@ -2603,7 +2603,6 @@ Main =
       }
 
       #qp {
-        border: 1px solid;
         padding-bottom: 5px;
       }
       .qphl {

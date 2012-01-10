@@ -2410,7 +2410,7 @@
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _results;
       qp = ui.el = $.el('div', {
         id: 'qp',
-        className: 'reply'
+        className: 'reply dialog'
       });
       $.add(d.body, qp);
       id = this.hash.slice(1);
@@ -3165,7 +3165,6 @@
       }\
 \
       #qp {\
-        border: 1px solid;\
         padding-bottom: 5px;\
       }\
       .qphl {\
