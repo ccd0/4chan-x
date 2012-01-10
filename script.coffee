@@ -881,8 +881,8 @@ qr =
     if conf['Persistent QR']
       qr.dialog()
       $.id('autohide').click() if conf['Auto Hide QR']
-    $.on d, 'dragover',  qr.fileDrop
-    $.on d, 'drop',      qr.fileDrop
+    $.on d, 'dragover', qr.fileDrop
+    $.on d, 'drop',     qr.fileDrop
 
   open: ->
     if qr.el
@@ -933,11 +933,12 @@ qr =
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
 
   fileDrop: (e) ->
-    return unless e.dataTransfer.files.length # let it only drop files
+    return if /TEXTAREA|INPUT/.test e.target.nodeName
     e.preventDefault()
     e.stopPropagation()
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
     if e.type is 'drop'
+      return unless e.dataTransfer.files.length # let it only drop files
       qr.open()
       qr.fileInput.call e.dataTransfer
       $.addClass qr.el, 'dump'

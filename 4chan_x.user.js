@@ -1265,11 +1265,12 @@
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     fileDrop: function(e) {
-      if (!e.dataTransfer.files.length) return;
+      if (/TEXTAREA|INPUT/.test(e.target.nodeName)) return;
       e.preventDefault();
       e.stopPropagation();
       e.dataTransfer.dropEffect = 'copy';
       if (e.type === 'drop') {
+        if (!e.dataTransfer.files.length) return;
         qr.open();
         qr.fileInput.call(e.dataTransfer);
         return $.addClass(qr.el, 'dump');
