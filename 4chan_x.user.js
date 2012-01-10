@@ -2583,7 +2583,7 @@
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _results;
       qp = ui.el = $.el('div', {
         id: 'qp',
-        className: 'reply'
+        className: 'reply dialog'
       });
       $.add(d.body, qp);
       id = this.hash.slice(1);
@@ -3215,7 +3215,7 @@
       .move {\
         cursor: move;\
       }\
-      label, .favicon, #qr img {\
+      label, .favicon, #qr_form > div > img {\
         cursor: pointer;\
       }\
       a[href="javascript:;"] {\
@@ -3401,7 +3401,6 @@
       }\
 \
       #qp {\
-        border: 1px solid;\
         padding-bottom: 5px;\
       }\
       .qphl {\
