@@ -1300,7 +1300,11 @@
           qr.error("" + file.name + ": Unsupported file type.");
           break;
         }
-        new qr.reply(file);
+        if (qr.replies.length === 1 && !qr.replies[0].file) {
+          qr.replies[0].file = file;
+        } else {
+          new qr.reply(file);
+        }
       }
       return $.addClass(qr.el, 'dump');
     },

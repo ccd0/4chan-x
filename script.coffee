@@ -961,7 +961,11 @@ qr =
       else if -1 is qr.mimeTypes.indexOf file.type
         qr.error "#{file.name}: Unsupported file type."
         break
-      new qr.reply file
+      if qr.replies.length is 1 and not qr.replies[0].file
+        # set initial reply's file
+        qr.replies[0].file = file
+      else
+        new qr.reply file
     $.addClass qr.el, 'dump'
 
   replies: []
