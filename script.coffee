@@ -952,7 +952,7 @@ qr =
         qr.error 'Unsupported file type.'
       else
         # set or modify selected reply's file
-        # qr.replies[?].file = file
+        # qr.replies[?].setFile file
       return
     for file in @files
       if file.size > @max
@@ -963,14 +963,14 @@ qr =
         break
       if qr.replies.length is 1 and not qr.replies[0].file
         # set initial reply's file
-        qr.replies[0].file = file
+        qr.replies[0].setFile file
       else
         new qr.reply file
     $.addClass qr.el, 'dump'
 
   replies: []
   reply: class
-    constructor: (@file) ->
+    constructor: (file) ->
       [@name, @email, @sub] =
         if previous = qr.replies[qr.replies.length-1]
           [
@@ -985,10 +985,18 @@ qr =
             if conf['Remember Subject'] then $.get("qr_sub", null) else null
           ]
       @com = null
+      @el = $.el 'li',
+        textContent: 'no file'
+      @setFile file if file
+      $.before $('#addReply', qr.el), @el
       qr.replies.push @
+    # set/rm this reply's file
+    setFile: (@file) ->
+      # update UI
+      @el.textContent = @file.fileName
     load: ->
       for data of @
-        $("[name=#{data}]", qr.el).value = @[data] unless data is 'file'
+        $("[name=#{data}]", qr.el)?.value = @[data]
       # visual feedback in the list
       log @
     rm: ->
@@ -1052,7 +1060,7 @@ qr =
   background: -o-linear-gradient(#CCC, #DDD);
   background: linear-gradient(#CCC, #DDD);
 }
-#qr:not(.dump) #replies {
+#qr:not(.dump) output {
   display: none;
 }
 .field {
@@ -1106,7 +1114,7 @@ textarea.field {
 </div>
 <form>
   <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
-  <div id=replies></div>
+  <output id=replies><ol><a id=addReply>+</a></ol></output>
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha><img></div>
   <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>
@@ -1118,12 +1126,13 @@ textarea.field {
     $.on $('#autohide',   qr.el), 'click',     qr.hide
     $.on $('.close',      qr.el), 'click',     qr.close
     $.on $('#dump',       qr.el), 'click',     -> qr.el.classList.toggle 'dump'
+    $.on $('#addReply',   qr.el), 'click',     -> new qr.reply().load()
     $.on $('form',        qr.el), 'submit',    qr.submit
     $.on $('[type=file]', qr.el), 'change',    qr.fileInput
 
     new qr.reply().load()
+    # save selected reply's data
     for input in ['name', 'email', 'sub', 'com']
-      # save this reply's data
       $.on $("[name=#{input}]", qr.el), 'change', -> # (getReply?)[@name] = @value
     # sync between tabs
     # $.on window, 'storage', (e) ->
