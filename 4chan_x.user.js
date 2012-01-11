@@ -1369,12 +1369,6 @@
       };
       if (conf['Remember Subject']) qr.inputs.subject = $('[name=subject]', qr.el);
       new qr.reply().load();
-      $.on(window, 'storage', function(e) {
-        var match;
-        if (match = e.key.match(/qr_(.+)$/)) {
-          return qr.inputs[match[1]].value = JSON.parse(e.newValue);
-        }
-      });
       return $.add(d.body, qr.el);
     },
     submit: function(e) {

@@ -1112,9 +1112,9 @@ textarea.field {
     qr.inputs.subject = $ '[name=subject]', qr.el if conf['Remember Subject']
     new qr.reply().load()
     # sync between tabs
-    $.on window, 'storage', (e) ->
-      if match = e.key.match /qr_(.+)$/
-        qr.inputs[match[1]].value = JSON.parse e.newValue
+    # $.on window, 'storage', (e) ->
+    #   if match = e.key.match /qr_(.+)$/
+    #     qr.inputs[match[1]].value = JSON.parse e.newValue
 
     $.add d.body, qr.el
 
