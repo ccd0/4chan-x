@@ -971,13 +971,28 @@ qr =
   replies: []
   reply: class
     constructor: (@file) ->
+      [@name, @email, @sub] =
+        if previous = qr.replies[qr.replies.length-1]
+          [
+            previous.name,
+            if /^sage$/.test(previous.email) then null else previous.email,
+            if conf['Remember Subject'] then previous.sub else null
+          ]
+        else
+          [
+            $.get("qr_name", null),
+            $.get("qr_email", null),
+            if conf['Remember Subject'] then $.get("qr_sub", null) else null
+          ]
       @com = null
-      for name of qr.inputs
-        @[name] = qr.replies[qr.replies.length-1]?[name] or $.get "qr_#{name}", null
       qr.replies.push @
     load: ->
       # load reply's data in the QR dialog
+      # visual feedback in the list
       log @
+    rm: ->
+      # rm reply from qr.replies and the UI
+
 
   dialog: ->
     # create a new thread or select thread to reply to
@@ -1089,9 +1104,9 @@ textarea.field {
   <span>#{if g.REPLY then '' else threads} <a class=close>⨯</a></span>
 </div>
 <form>
-  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=subject title=Subject placeholder=Subject class=field size=1></div>
+  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies></div>
-  <div><textarea title=Comment placeholder=Comment class=field></textarea></div>
+  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha><img></div>
   <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>
   <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=#{if g.dead then '404 disabled' else 'Submit'}></div>
@@ -1105,12 +1120,8 @@ textarea.field {
     $.on $('form',        qr.el), 'submit',    qr.submit
     $.on $('[type=file]', qr.el), 'change',    qr.fileInput
 
-    # save & load inputs' value with localStorage
-    qr.inputs =
-      name:  $ '[name=name]',  qr.el
-      email: $ '[name=email]', qr.el
-    qr.inputs.subject = $ '[name=subject]', qr.el if conf['Remember Subject']
     new qr.reply().load()
+    #onchange this reply =
     # sync between tabs
     # $.on window, 'storage', (e) ->
     #   if match = e.key.match /qr_(.+)$/
@@ -1131,16 +1142,19 @@ textarea.field {
     log e
     # successful posting/error handling
 
-    unless conf['Persistent QR'] # or more replies to post
+    unless conf['Persistent QR'] or qr.replies.length > 1
       qr.close()
 
-    if /sage/i.test qr.inputs.email.value
-      qr.sage = true
-      qr.inputs.email.value = null
-    unless conf['Remember Subject']
-      $('[name=subject]', qr.el).value = null
-    for name, input of qr.inputs
-      $.set "qr_#{name}", input.value
+    sage = /sage/i.test reply.email
+    # cooldown
+
+    reply = qr.replies[0]
+    $.set "qr_name",  reply.name
+    $.set "qr_email", if /^sage$/.test reply.email then null else reply.email
+    $.set "qr_sub",   reply.sub if conf['Remember Subject']
+
+    new qr.reply().load() if qr.replies.length is 1
+    reply.rm()
 
 options =
   init: ->
