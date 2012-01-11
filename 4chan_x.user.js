@@ -1320,6 +1320,10 @@
       }
 
       _Class.prototype.load = function() {
+        var data;
+        for (data in this) {
+          if (data !== 'file') $("[name=" + data + "]", qr.el).value = this[data];
+        }
         return log(this);
       };
 
@@ -1329,7 +1333,7 @@
 
     })(),
     dialog: function() {
-      var mimeTypes, thread, threads, _i, _len, _ref;
+      var input, mimeTypes, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
       if (!g.REPLY) {
         threads = '<option value=new>New thread</option>';
         _ref = $$('.op');
@@ -1364,6 +1368,11 @@
       $.on($('form', qr.el), 'submit', qr.submit);
       $.on($('[type=file]', qr.el), 'change', qr.fileInput);
       new qr.reply().load();
+      _ref2 = ['name', 'email', 'sub', 'com'];
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        input = _ref2[_j];
+        $.on($("[name=" + input + "]", qr.el), 'change', function() {});
+      }
       return $.add(d.body, qr.el);
     },
     submit: function(e) {

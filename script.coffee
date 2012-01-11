@@ -980,14 +980,15 @@ qr =
           ]
         else
           [
-            $.get("qr_name", null),
+            $.get("qr_name",  null),
             $.get("qr_email", null),
             if conf['Remember Subject'] then $.get("qr_sub", null) else null
           ]
       @com = null
       qr.replies.push @
     load: ->
-      # load reply's data in the QR dialog
+      for data of @
+        $("[name=#{data}]", qr.el).value = @[data] unless data is 'file'
       # visual feedback in the list
       log @
     rm: ->
@@ -1121,7 +1122,9 @@ textarea.field {
     $.on $('[type=file]', qr.el), 'change',    qr.fileInput
 
     new qr.reply().load()
-    #onchange this reply =
+    for input in ['name', 'email', 'sub', 'com']
+      # save this reply's data
+      $.on $("[name=#{input}]", qr.el), 'change', -> # (getReply?)[@name] = @value
     # sync between tabs
     # $.on window, 'storage', (e) ->
     #   if match = e.key.match /qr_(.+)$/
