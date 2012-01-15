@@ -1934,7 +1934,6 @@
   updater = {
     init: function() {
       var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
-      if (!$('form[name=post]')) return;
       if (conf['Scrolling']) {
         if (conf['Scroll BG']) {
           updater.focus = true;
