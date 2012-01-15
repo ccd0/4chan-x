@@ -3154,7 +3154,7 @@
       if (conf['Auto Noko'] && canPost) form.action += '?noko';
       if (conf['Cooldown'] && canPost) cooldown.init();
       if (conf['Image Expansion']) imgExpand.init();
-      if (conf['Quick Reply']) qr.init();
+      if (conf['Quick Reply'] && canPost) qr.init();
       if (conf['Thread Watcher']) watcher.init();
       if (conf['Keybinds']) keybinds.init();
       if (g.REPLY) {

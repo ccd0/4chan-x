@@ -2498,7 +2498,7 @@ Main =
     if conf['Image Expansion']
       imgExpand.init()
 
-    if conf['Quick Reply']
+    if conf['Quick Reply'] and canPost
       qr.init()
 
     if conf['Thread Watcher']
