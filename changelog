@@ -1,4 +1,6 @@
 master
+- mayhem
+  Set image limit in Thread Stats to 251 for /a/ and /v/, default to 151.
 
 2.24.2
 - mayhem

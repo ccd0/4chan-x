@@ -2716,25 +2716,31 @@
 
   threadStats = {
     init: function() {
-      var dialog, html;
-      threadStats.posts = 1;
-      threadStats.images = $('.op img[md5]') ? 1 : 0;
-      html = "<div class=move><span id=postcount>" + threadStats.posts + "</span> / <span id=imagecount>" + threadStats.images + "</span></div>";
-      dialog = ui.dialog('stats', 'bottom: 0; left: 0;', html);
+      var dialog;
+      dialog = ui.dialog('stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>');
       dialog.className = 'dialog';
-      threadStats.postcountEl = $('#postcount', dialog);
-      threadStats.imagecountEl = $('#imagecount', dialog);
       $.add(d.body, dialog);
+      threadStats.posts = threadStats.images = 0;
+      threadStats.imgLimit = (function() {
+        switch (g.BOARD) {
+          case 'a':
+          case 'v':
+            return 251;
+          default:
+            return 151;
+        }
+      })();
       return g.callbacks.push(threadStats.node);
     },
     node: function(root) {
-      if (root.className) return;
-      threadStats.postcountEl.textContent = ++threadStats.posts;
-      if ($('img[md5]', root)) {
-        threadStats.imagecountEl.textContent = ++threadStats.images;
-        if (threadStats.images > 151) {
-          return threadStats.imagecountEl.className = 'error';
-        }
+      var imgcount;
+      if (/\binline\b/.test(root.className)) return;
+      $.id('postcount').textContent = ++threadStats.posts;
+      if (!$('img[md5]', root)) return;
+      imgcount = $.id('imagecount');
+      imgcount.textContent = ++threadStats.images;
+      if (threadStats.images > threadStats.imgLimit) {
+        return imgcount.className = 'error';
       }
     }
   };

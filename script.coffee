@@ -2115,22 +2115,25 @@ reportButton =
 
 threadStats =
   init: ->
-    threadStats.posts = 1
-    threadStats.images = if $ '.op img[md5]' then 1 else 0
-    html = "<div class=move><span id=postcount>#{threadStats.posts}</span> / <span id=imagecount>#{threadStats.images}</span></div>"
-    dialog = ui.dialog 'stats', 'bottom: 0; left: 0;', html
+    dialog = ui.dialog 'stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>'
     dialog.className = 'dialog'
-    threadStats.postcountEl  = $ '#postcount',  dialog
-    threadStats.imagecountEl = $ '#imagecount', dialog
     $.add d.body, dialog
+    threadStats.posts = threadStats.images = 0
+    threadStats.imgLimit =
+      switch g.BOARD
+        when 'a', 'v'
+          251
+        else
+          151
     g.callbacks.push threadStats.node
   node: (root) ->
-    return if root.className
-    threadStats.postcountEl.textContent = ++threadStats.posts
-    if $ 'img[md5]', root
-      threadStats.imagecountEl.textContent = ++threadStats.images
-      if threadStats.images > 151
-        threadStats.imagecountEl.className = 'error'
+    return if /\binline\b/.test root.className
+    $.id('postcount').textContent = ++threadStats.posts
+    return unless $ 'img[md5]', root
+    imgcount = $.id 'imagecount'
+    imgcount.textContent = ++threadStats.images
+    if threadStats.images > threadStats.imgLimit
+      imgcount.className = 'error'
 
 unread =
   init: ->
