@@ -1,5 +1,10 @@
 master
 
+2.24.3
+- Mayhem
+  Set image limit in Thread Stats to 252 for /a/ and /v/, default to 152.
+  Fix 4chan X in locked threads.
+
 2.24.2
 - mayhem
   fix options popping up everytime a page loads
