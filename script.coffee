@@ -569,8 +569,7 @@ expandThread =
     # eat everything, then replace with fresh full posts
     while (next = a.nextSibling) and not next.clear #br[clear]
       $.rm next
-    br = next
-    $.before br, frag
+    $.before next, frag
 
 replyHiding =
   init: ->

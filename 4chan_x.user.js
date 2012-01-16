@@ -762,7 +762,7 @@
       }
     },
     parse: function(req, pathname, thread, a) {
-      var body, br, frag, href, link, next, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
+      var body, frag, href, link, next, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', expandThread.cb.toggle);
@@ -793,8 +793,7 @@
       while ((next = a.nextSibling) && !next.clear) {
         $.rm(next);
       }
-      br = next;
-      return $.before(br, frag);
+      return $.before(next, frag);
     }
   };
 
