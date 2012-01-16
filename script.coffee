@@ -986,18 +986,19 @@ qr =
       @com = null
       @el = $.el 'li',
         textContent: 'no file'
+      $.on @el, 'click', => @select()
       @setFile file if file
       $.before $('#addReply', qr.el), @el
       qr.replies.push @
-    # set/rm this reply's file
     setFile: (@file) ->
       # update UI
       @el.textContent = @file.fileName
-    load: ->
-      for data of @
-        $("[name=#{data}]", qr.el)?.value = @[data]
-      # visual feedback in the list
-      log @
+    select: ->
+      qr.selected?.el.id = null
+      qr.selected = @
+      @el.id = 'selected'
+      for data in ['name', 'email', 'sub', 'com']
+        $("[name=#{data}]", qr.el).value = @[data]
     rm: ->
       # rm reply from qr.replies and the UI
 
@@ -1125,14 +1126,14 @@ textarea.field {
     $.on $('#autohide',   qr.el), 'click',     qr.hide
     $.on $('.close',      qr.el), 'click',     qr.close
     $.on $('#dump',       qr.el), 'click',     -> qr.el.classList.toggle 'dump'
-    $.on $('#addReply',   qr.el), 'click',     -> new qr.reply().load()
+    $.on $('#addReply',   qr.el), 'click',     -> new qr.reply().select()
     $.on $('form',        qr.el), 'submit',    qr.submit
     $.on $('[type=file]', qr.el), 'change',    qr.fileInput
 
-    new qr.reply().load()
+    new qr.reply().select()
     # save selected reply's data
     for input in ['name', 'email', 'sub', 'com']
-      $.on $("[name=#{input}]", qr.el), 'change', -> # (getReply?)[@name] = @value
+      $.on $("[name=#{input}]", qr.el), 'change', -> qr.selected[@name] = @value
     # sync between tabs
     # $.on window, 'storage', (e) ->
     #   if match = e.key.match /qr_(.+)$/
@@ -1164,7 +1165,7 @@ textarea.field {
     $.set "qr_email", if /^sage$/.test reply.email then null else reply.email
     $.set "qr_sub",   reply.sub if conf['Remember Subject']
 
-    new qr.reply().load() if qr.replies.length is 1
+    new qr.reply().select() if qr.replies.length is 1
     reply.rm()
 
 options =

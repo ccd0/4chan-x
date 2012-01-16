@@ -1311,11 +1311,15 @@
     reply: (function() {
 
       function _Class(file) {
-        var previous, _ref;
+        var previous, _ref,
+          _this = this;
         _ref = (previous = qr.replies[qr.replies.length - 1]) ? [previous.name, /^sage$/.test(previous.email) ? null : previous.email, conf['Remember Subject'] ? previous.sub : null] : [$.get("qr_name", null), $.get("qr_email", null), conf['Remember Subject'] ? $.get("qr_sub", null) : null], this.name = _ref[0], this.email = _ref[1], this.sub = _ref[2];
         this.com = null;
         this.el = $.el('li', {
           textContent: 'no file'
+        });
+        $.on(this.el, 'click', function() {
+          return _this.select();
         });
         if (file) this.setFile(file);
         $.before($('#addReply', qr.el), this.el);
@@ -1327,14 +1331,18 @@
         return this.el.textContent = this.file.fileName;
       };
 
-      _Class.prototype.load = function() {
-        var data, _ref;
-        for (data in this) {
-          if ((_ref = $("[name=" + data + "]", qr.el)) != null) {
-            _ref.value = this[data];
-          }
+      _Class.prototype.select = function() {
+        var data, _i, _len, _ref, _ref2, _results;
+        if ((_ref = qr.selected) != null) _ref.el.id = null;
+        qr.selected = this;
+        this.el.id = 'selected';
+        _ref2 = ['name', 'email', 'sub', 'com'];
+        _results = [];
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          data = _ref2[_i];
+          _results.push($("[name=" + data + "]", qr.el).value = this[data]);
         }
-        return log(this);
+        return _results;
       };
 
       _Class.prototype.rm = function() {};
@@ -1376,15 +1384,17 @@
         return qr.el.classList.toggle('dump');
       });
       $.on($('#addReply', qr.el), 'click', function() {
-        return new qr.reply().load();
+        return new qr.reply().select();
       });
       $.on($('form', qr.el), 'submit', qr.submit);
       $.on($('[type=file]', qr.el), 'change', qr.fileInput);
-      new qr.reply().load();
+      new qr.reply().select();
       _ref2 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         input = _ref2[_j];
-        $.on($("[name=" + input + "]", qr.el), 'change', function() {});
+        $.on($("[name=" + input + "]", qr.el), 'change', function() {
+          return qr.selected[this.name] = this.value;
+        });
       }
       return $.add(d.body, qr.el);
     },
@@ -1406,7 +1416,7 @@
       $.set("qr_name", reply.name);
       $.set("qr_email", /^sage$/.test(reply.email) ? null : reply.email);
       if (conf['Remember Subject']) $.set("qr_sub", reply.sub);
-      if (qr.replies.length === 1) new qr.reply().load();
+      if (qr.replies.length === 1) new qr.reply().select();
       return reply.rm();
     }
   };
