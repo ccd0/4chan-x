@@ -1261,7 +1261,8 @@
       caretPos = ta.selectionStart;
       ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
       ta.focus();
-      return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
+      ta.selectionEnd = ta.selectionStart = caretPos + text.length;
+      return qr.selected.com = ta.value;
     },
     fileDrop: function(e) {
       if (/TEXTAREA|INPUT/.test(e.target.nodeName)) return;

@@ -931,6 +931,9 @@ qr =
     #move the caret to the end of the new quote
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
 
+    # onchange event isn't triggered, save value
+    qr.selected.com = ta.value
+
   fileDrop: (e) ->
     return if /TEXTAREA|INPUT/.test e.target.nodeName
     e.preventDefault()
