@@ -1331,19 +1331,17 @@
       }
 
       _Class.prototype.setFile = function(file) {
-        var reader,
-          _this = this;
+        var url;
         this.file = file;
         this.el.title = file.name;
         if (file.type === 'application/pdf') {
           this.el.style.backgroundImage = null;
           return;
         }
-        reader = new FileReader();
-        reader.onload = function() {
-          return _this.el.style.backgroundImage = "url(" + reader.result + ")";
-        };
-        return reader.readAsDataURL(file);
+        url = window.URL || window.webkitURL;
+        url.revokeObjectURL(this.url);
+        this.url = url.createObjectURL(file);
+        return this.el.style.backgroundImage = "url(" + this.url + ")";
       };
 
       _Class.prototype.select = function() {
@@ -1360,7 +1358,11 @@
         return _results;
       };
 
-      _Class.prototype.rm = function() {};
+      _Class.prototype.rm = function() {
+        var url;
+        url = window.URL || window.webkitURL;
+        return url.revokeObjectURL(this.url);
+      };
 
       return _Class;
 

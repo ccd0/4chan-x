@@ -1001,9 +1001,10 @@ qr =
       if file.type is 'application/pdf'
         @el.style.backgroundImage = null
         return
-      reader = new FileReader()
-      reader.onload = => @el.style.backgroundImage = "url(#{reader.result})"
-      reader.readAsDataURL file
+      url = window.URL or window.webkitURL
+      url.revokeObjectURL @url
+      @url = url.createObjectURL file
+      @el.style.backgroundImage = "url(#{@url})"
     select: ->
       qr.selected?.el.id = null
       qr.selected = @
@@ -1012,6 +1013,8 @@ qr =
         $("[name=#{data}]", qr.el).value = @[data]
     rm: ->
       # rm reply from qr.replies and the UI
+      url = window.URL or window.webkitURL
+      url.revokeObjectURL @url
 
 
   dialog: ->
