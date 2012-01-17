@@ -1066,6 +1066,42 @@ qr =
 #qr:not(.dump) output {
   display: none;
 }
+#replies {
+  display: block;
+  height: 100px;
+  position: relative;
+}
+#replies > ol {
+  top: 0; right: 0; bottom: 0; left: 0;
+  margin: 0; padding: 0;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+}
+#replies > ol:hover {
+  overflow-x: auto;
+}
+#replies > ol > li {
+  background-color: rgba(0,0,0,.5);
+  border: 1px solid #000;
+  box-sizing: border-box;
+  color: #FFF;
+  display: inline-block;
+  height: 80px; width: 80px;
+  margin:10px; padding: 2px;
+  opacity: .8;
+  text-shadow: 0 1px 1px #000;
+  -webkit-transition: opacity .25s;
+  -moz-transition: opacity .25s;
+  -o-transition: opacity .25s;
+  transition: opacity .25s;
+}
+#replies > ol > li:hover {
+  opacity: .9;
+}
+#replies > ol > li#selected {
+  opacity: 1;
+}
 .field {
   border: 1px solid #CCC;
   color: #333;
