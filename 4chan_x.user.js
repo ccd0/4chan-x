@@ -1333,6 +1333,10 @@
         $.on(this.el, 'click', function() {
           return _this.select();
         });
+        $.on($('.remove', this.el), 'click', function(e) {
+          e.stopPropagation();
+          return _this.rm();
+        });
         if (file) this.setFile(file);
         $.before($('#addReply', qr.el), this.el);
         qr.replies.push(this);
@@ -1367,9 +1371,18 @@
       };
 
       _Class.prototype.rm = function() {
-        var url;
+        var index, url;
+        $.rm(this.el);
+        index = qr.replies.indexOf(this);
+        if (qr.replies.length === 1) {
+          new qr.reply().select();
+        } else if (this.el.id === 'selected') {
+          (qr.replies[index - 1] || qr.replies[index + 1]).select();
+        }
+        qr.replies.splice(index, 1);
         url = window.URL || window.webkitURL;
-        return url.revokeObjectURL(this.url);
+        url.revokeObjectURL(this.url);
+        return delete this;
       };
 
       return _Class;

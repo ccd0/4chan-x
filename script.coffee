@@ -1000,6 +1000,9 @@ qr =
         href: 'javascript:;'
         innerHTML: '<a class=remove title=Remove>x</a><label hidden><input type=checkbox></label><span></span>'
       $.on @el, 'click', => @select()
+      $.on $('.remove', @el), 'click', (e) =>
+        e.stopPropagation()
+        @rm()
       @setFile file if file
       $.before $('#addReply', qr.el), @el
       qr.replies.push @
@@ -1019,9 +1022,16 @@ qr =
       for data in ['name', 'email', 'sub', 'com']
         $("[name=#{data}]", qr.el).value = @[data]
     rm: ->
-      # rm reply from qr.replies and the UI
+      $.rm @el
+      index = qr.replies.indexOf @
+      if qr.replies.length is 1
+        new qr.reply().select()
+      else if @el.id is 'selected'
+        (qr.replies[index-1] or qr.replies[index+1]).select()
+      qr.replies.splice index, 1
       url = window.URL or window.webkitURL
       url.revokeObjectURL @url
+      delete @
 
 
   dialog: ->
