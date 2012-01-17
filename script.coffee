@@ -1044,7 +1044,7 @@ qr =
 #qr > .move > span {
   float: right;
 }
-#autohide, #qr select, #dump, .captcha {
+#autohide, .close, #qr select, #dump, .captcha {
   cursor: pointer;
 }
 #qr select,
@@ -1115,7 +1115,7 @@ qr =
   opacity: 1;
 }
 .remove {
-  color: #C00;
+  color: #E00;
   font-weight: 700;
   padding: 3px;
 }
