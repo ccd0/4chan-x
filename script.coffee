@@ -988,8 +988,9 @@ qr =
             if conf['Remember Subject'] then $.get("qr_sub", null) else null
           ]
       @com = null
-      @el = $.el 'li',
+      @el = $.el 'a',
         className: 'preview'
+        href: 'javascript:;'
         innerHTML: '<a class=remove title=Remove>x</a><label hidden><input type=checkbox></label><span></span>'
       $.on @el, 'click', => @select()
       @setFile file if file
@@ -1044,7 +1045,7 @@ qr =
 #qr > .move > span {
   float: right;
 }
-#autohide, .close, #qr select, #dump, .captcha {
+#autohide, .close, #addReply, #qr select, #dump, .captcha {
   cursor: pointer;
 }
 #qr select,
@@ -1078,21 +1079,21 @@ qr =
   height: 100px;
   position: relative;
 }
-#replies > ol {
+#replies > div {
   top: 0; right: 0; bottom: 0; left: 0;
   margin: 0; padding: 0;
   overflow: hidden;
   position: absolute;
   white-space: pre;
 }
-#replies > ol:hover {
+#replies > div:hover {
   overflow-x: auto;
 }
 .preview {
   background-color: rgba(0,0,0,.2);
   background-position: 50% 20%;
   background-size: cover;
-  border: 1px solid #000;
+  border: 1px solid #666;
   box-sizing: border-box;
   color: #FFF;
   cursor: pointer;
@@ -1108,7 +1109,7 @@ qr =
   transition: opacity .25s;
   vertical-align: top;
 }
-.preview:hover {
+.preview:hover, .preview:focus {
   opacity: .9;
 }
 .preview#selected {
@@ -1118,6 +1119,14 @@ qr =
   color: #E00;
   font-weight: 700;
   padding: 3px;
+}
+#addReply {
+  color: #333;
+  font-size: 3.5em;
+  line-height: 100px;
+}
+#addReply:hover, #addReply:focus {
+  color: #000;
 }
 .field {
   border: 1px solid #CCC;
@@ -1170,7 +1179,7 @@ textarea.field {
 </div>
 <form>
   <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
-  <output id=replies><ol><a id=addReply>+</a></ol></output>
+  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha><img></div>
   <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>
