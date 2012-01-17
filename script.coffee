@@ -1032,147 +1032,6 @@ qr =
           'image/' + type
     qr.mimeTypes = mimeTypes.split ', '
     qr.el = ui.dialog 'qr', 'top:0;right:0;', "
-<style>
-.autohide:not(:hover) > form {
-  display: none;
-}
-#qr > .move {
-  min-width: 300px;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 0 2px;
-}
-#qr > .move > span {
-  float: right;
-}
-#autohide, .close, #addReply, #qr select, #dump, .captcha {
-  cursor: pointer;
-}
-#qr select,
-#qr > form {
-  margin: 0;
-}
-#dump {
-  background: -webkit-linear-gradient(#EEE, #CCC);
-  background: -moz-linear-gradient(#EEE, #CCC);
-  background: -o-linear-gradient(#EEE, #CCC);
-  background: linear-gradient(#EEE, #CCC);
-  width: 10%;
-}
-#dump:hover, #dump:focus {
-  background: -webkit-linear-gradient(#FFF, #DDD);
-  background: -moz-linear-gradient(#FFF, #DDD);
-  background: -o-linear-gradient(#FFF, #DDD);
-  background: linear-gradient(#FFF, #DDD);
-}
-#dump:active, .dump #dump:not(:hover):not(:focus) {
-  background: -webkit-linear-gradient(#CCC, #DDD);
-  background: -moz-linear-gradient(#CCC, #DDD);
-  background: -o-linear-gradient(#CCC, #DDD);
-  background: linear-gradient(#CCC, #DDD);
-}
-#qr:not(.dump) output {
-  display: none;
-}
-#replies {
-  display: block;
-  height: 100px;
-  position: relative;
-}
-#replies > div {
-  top: 0; right: 0; bottom: 0; left: 0;
-  margin: 0; padding: 0;
-  overflow: hidden;
-  position: absolute;
-  white-space: pre;
-}
-#replies > div:hover {
-  overflow-x: auto;
-}
-.preview {
-  background-color: rgba(0,0,0,.2);
-  background-position: 50% 20%;
-  background-size: cover;
-  border: 1px solid #666;
-  box-sizing: border-box;
-  color: #FFF;
-  cursor: pointer;
-  display: inline-block;
-  height: 90px; width: 90px;
-  margin: 5px; padding: 2px;
-  opacity: .5;
-  overflow: hidden;
-  text-shadow: 0 1px 1px #000;
-  -webkit-transition: opacity .25s;
-  -moz-transition: opacity .25s;
-  -o-transition: opacity .25s;
-  transition: opacity .25s;
-  vertical-align: top;
-}
-.preview:hover, .preview:focus {
-  opacity: .9;
-}
-.preview#selected {
-  opacity: 1;
-}
-.remove {
-  color: #E00;
-  font-weight: 700;
-  padding: 3px;
-}
-#addReply {
-  color: #333;
-  font-size: 3.5em;
-  line-height: 100px;
-}
-#addReply:hover, #addReply:focus {
-  color: #000;
-}
-.field {
-  border: 1px solid #CCC;
-  color: #333;
-  font: 13px sans-serif;
-  margin: 0;
-  padding: 2px 4px 3px;
-  width: 30%;
-  -webkit-transition: color .25s, border .25s;
-  -moz-transition: color .25s, border .25s;
-  -o-transition: color .25s, border .25s;
-  transition: color .25s, border .25s;
-}
-.field:-moz-placeholder,
-.field:hover:-moz-placeholder {
-  color: #AAA;
-}
-.field:hover, .field:focus {
-  border-color: #999;
-  color: #000;
-  outline: none;
-}
-textarea.field {
-  min-height: 120px;
-  width: 100%;
-}
-.captcha {
-  background: #FFF;
-  text-align: center;
-}
-.captcha > img {
-  height: 57px;
-  width: 300px;
-}
-.field[name=captcha] {
-  width: 100%;
-}
-#qr [type=file] {
-  width: 80%;
-}
-#qr [type=submit] {
-  padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */
-  width: 20%;
-}
-</style>
-
 <div class=move>
   Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>
   <span>#{if g.REPLY then '' else threads} <a class=close>x</a></span>
@@ -2548,172 +2407,309 @@ Main =
         #nothing
 
   css: '
-      /* dialog styling */
-      .dialog {
-        border: 1px solid rgba(0,0,0,.25);
-      }
-      .move {
-        cursor: move;
-      }
-      label, .favicon {
-        cursor: pointer;
-      }
-      a[href="javascript:;"] {
-        text-decoration: none;
-      }
+/* dialog styling */
+.dialog {
+  border: 1px solid rgba(0,0,0,.25);
+}
+.move {
+  cursor: move;
+}
+label, .favicon {
+  cursor: pointer;
+}
+a[href="javascript:;"] {
+  text-decoration: none;
+}
 
-      .thread.stub > :not(.block),
-      #content > [name=tab]:not(:checked) + div,
-      #updater:not(:hover) > :not(.move),
-      #qp > input, #qp .inline, .forwarded {
-        display: none;
-      }
+.thread.stub > :not(.block),
+#content > [name=tab]:not(:checked) + div,
+#updater:not(:hover) > :not(.move),
+#qp > input, #qp .inline, .forwarded {
+  display: none;
+}
 
-      .new {
-        background: lime;
-      }
-      .error {
-        color: red;
-      }
-      #error {
-        cursor: default;
-      }
-      #error[href] {
-        cursor: pointer;
-      }
-      td.replyhider {
-        vertical-align: top;
-      }
+.autohide:not(:hover) > form {
+  display: none;
+}
+#qr > .move {
+  min-width: 300px;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0 2px;
+}
+#qr > .move > span {
+  float: right;
+}
+#autohide, .close, #qr select, #dump, .captcha {
+  cursor: pointer;
+}
+#qr select,
+#qr > form {
+  margin: 0;
+}
+#dump {
+  background: -webkit-linear-gradient(#EEE, #CCC);
+  background: -moz-linear-gradient(#EEE, #CCC);
+  background: -o-linear-gradient(#EEE, #CCC);
+  background: linear-gradient(#EEE, #CCC);
+  width: 10%;
+}
+#dump:hover, #dump:focus {
+  background: -webkit-linear-gradient(#FFF, #DDD);
+  background: -moz-linear-gradient(#FFF, #DDD);
+  background: -o-linear-gradient(#FFF, #DDD);
+  background: linear-gradient(#FFF, #DDD);
+}
+#dump:active, .dump #dump:not(:hover):not(:focus) {
+  background: -webkit-linear-gradient(#CCC, #DDD);
+  background: -moz-linear-gradient(#CCC, #DDD);
+  background: -o-linear-gradient(#CCC, #DDD);
+  background: linear-gradient(#CCC, #DDD);
+}
+#qr:not(.dump) output {
+  display: none;
+}
+#replies {
+  display: block;
+  height: 100px;
+  position: relative;
+}
+#replies > div {
+  top: 0; right: 0; bottom: 0; left: 0;
+  margin: 0; padding: 0;
+  overflow: hidden;
+  position: absolute;
+  white-space: pre;
+}
+#replies > div:hover {
+  overflow-x: auto;
+}
+.preview {
+  background-color: rgba(0,0,0,.2);
+  background-position: 50% 20%;
+  background-size: cover;
+  border: 1px solid #666;
+  box-sizing: border-box;
+  color: #FFF;
+  display: inline-block;
+  height: 90px; width: 90px;
+  margin: 5px; padding: 2px;
+  opacity: .5;
+  overflow: hidden;
+  text-shadow: 0 1px 1px #000;
+  -webkit-transition: opacity .25s;
+  -moz-transition: opacity .25s;
+  -o-transition: opacity .25s;
+  transition: opacity .25s;
+  vertical-align: top;
+}
+.preview:hover, .preview:focus {
+  opacity: .9;
+}
+.preview#selected {
+  opacity: 1;
+}
+.remove {
+  color: #E00;
+  font-weight: 700;
+  padding: 3px;
+}
+#addReply {
+  color: #333;
+  font-size: 3.5em;
+  line-height: 100px;
+}
+#addReply:hover, #addReply:focus {
+  color: #000;
+}
+.field {
+  border: 1px solid #CCC;
+  color: #333;
+  font: 13px sans-serif;
+  margin: 0;
+  padding: 2px 4px 3px;
+  width: 30%;
+  -webkit-transition: color .25s, border .25s;
+  -moz-transition: color .25s, border .25s;
+  -o-transition: color .25s, border .25s;
+  transition: color .25s, border .25s;
+}
+.field:-moz-placeholder,
+.field:hover:-moz-placeholder {
+  color: #AAA;
+}
+.field:hover, .field:focus {
+  border-color: #999;
+  color: #000;
+  outline: none;
+}
+textarea.field {
+  min-height: 120px;
+  width: 100%;
+}
+.captcha {
+  background: #FFF;
+  text-align: center;
+}
+.captcha > img {
+  height: 57px;
+  width: 300px;
+}
+.field[name=captcha] {
+  width: 100%;
+}
+#qr [type=file] {
+  width: 80%;
+}
+#qr [type=submit] {
+  padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */
+  width: 20%;
+}
 
-      .filesize + br + a {
-        float: left;
-        pointer-events: none;
-      }
-      img[md5], img[md5] + img {
-        pointer-events: all;
-      }
-      .fitwidth img[md5] + img {
-        max-width: 100%;
-      }
-      .gecko  > .fitwidth img[md5] + img,
-      .presto > .fitwidth img[md5] + img {
-        width: 100%;
-      }
+.new {
+  background: lime;
+}
+.error {
+  color: red;
+}
+#error {
+  cursor: default;
+}
+#error[href] {
+  cursor: pointer;
+}
+td.replyhider {
+  vertical-align: top;
+}
 
-      #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {
-        position: fixed;
-      }
+.filesize + br + a {
+  float: left;
+  pointer-events: none;
+}
+img[md5], img[md5] + img {
+  pointer-events: all;
+}
+.fitwidth img[md5] + img {
+  max-width: 100%;
+}
+.gecko  > .fitwidth img[md5] + img,
+.presto > .fitwidth img[md5] + img {
+  width: 100%;
+}
 
-      #ihover {
-        max-height: 100%;
-        max-width: 75%;
-      }
+#qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {
+  position: fixed;
+}
 
-      #navlinks {
-        font-size: 16px;
-        top: 25px;
-        right: 5px;
-      }
+#ihover {
+  max-height: 100%;
+  max-width: 75%;
+}
 
-      #overlay {
-        top: 0;
-        right: 0;
-        left: 0;
-        bottom: 0;
-        text-align: center;
-        background: rgba(0,0,0,.5);
-        z-index: 1;
-      }
-      #overlay::after {
-        content: "";
-        display: inline-block;
-        height: 100%;
-        vertical-align: middle;
-      }
-      #options {
-        display: inline-block;
-        padding: 5px;
-        text-align: left;
-        vertical-align: middle;
-        width: 500px;
-      }
-      #credits {
-        float: right;
-      }
-      #options ul {
-        list-style: none;
-        padding: 0;
-      }
-      #options label {
-        text-decoration: underline;
-      }
-      #content > div {
-        height: 450px;
-        overflow: auto;
-      }
-      #content textarea {
-        margin: 0;
-        min-height: 100px;
-        resize: vertical;
-        width: 100%;
-      }
-      #flavors {
-        height: 100%;
-      }
+#navlinks {
+  font-size: 16px;
+  top: 25px;
+  right: 5px;
+}
 
-      #updater {
-        text-align: right;
-      }
-      #updater input[type=text] {
-        width: 50px;
-      }
-      #updater:not(:hover) {
-        border: none;
-        background: transparent;
-      }
+#overlay {
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  text-align: center;
+  background: rgba(0,0,0,.5);
+  z-index: 1;
+}
+#overlay::after {
+  content: "";
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+#options {
+  display: inline-block;
+  padding: 5px;
+  text-align: left;
+  vertical-align: middle;
+  width: 500px;
+}
+#credits {
+  float: right;
+}
+#options ul {
+  list-style: none;
+  padding: 0;
+}
+#options label {
+  text-decoration: underline;
+}
+#content > div {
+  height: 450px;
+  overflow: auto;
+}
+#content textarea {
+  margin: 0;
+  min-height: 100px;
+  resize: vertical;
+  width: 100%;
+}
+#flavors {
+  height: 100%;
+}
 
-      #stats {
-        border: none;
-      }
+#updater {
+  text-align: right;
+}
+#updater input[type=text] {
+  width: 50px;
+}
+#updater:not(:hover) {
+  border: none;
+  background: transparent;
+}
 
-      #watcher {
-        position: absolute;
-      }
-      #watcher > div {
-        overflow: hidden;
-        padding-right: 5px;
-        padding-left: 5px;
-        text-overflow: ellipsis;
-        max-width: 200px;
-        white-space: nowrap;
-      }
-      #watcher > div.move {
-        text-decoration: underline;
-        padding-top: 5px;
-      }
-      #watcher > div:last-child {
-        padding-bottom: 5px;
-      }
+#stats {
+  border: none;
+}
 
-      #qp {
-        padding-bottom: 5px;
-      }
-      .qphl {
-        outline: 2px solid rgba(216, 94, 49, .7);
-      }
-      .inlined {
-        opacity: .5;
-      }
-      .inline td.reply {
-        background-color: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(128, 128, 128, 0.5);
-      }
-      .filetitle, .replytitle, .postername, .commentpostername, .postertrip {
-        background: none;
-      }
-      .filtered {
-        text-decoration: line-through;
-      }
-    '
+#watcher {
+  position: absolute;
+}
+#watcher > div {
+  overflow: hidden;
+  padding-right: 5px;
+  padding-left: 5px;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  white-space: nowrap;
+}
+#watcher > div.move {
+  text-decoration: underline;
+  padding-top: 5px;
+}
+#watcher > div:last-child {
+  padding-bottom: 5px;
+}
+
+#qp {
+  padding-bottom: 5px;
+}
+.qphl {
+  outline: 2px solid rgba(216, 94, 49, .7);
+}
+.inlined {
+  opacity: .5;
+}
+.inline td.reply {
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(128, 128, 128, 0.5);
+}
+.filetitle, .replytitle, .postername, .commentpostername, .postertrip {
+  background: none;
+}
+.filtered {
+  text-decoration: line-through;
+}'
 
 Main.init()
