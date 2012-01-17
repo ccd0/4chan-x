@@ -969,6 +969,13 @@ qr =
       else
         new qr.reply file
     $.addClass qr.el, 'dump'
+    qr.resetFileInput() if @multiple # reset input
+  resetFileInput: ->
+    el    = $ '[type=file]', qr.el
+    clone = el.cloneNode()
+    $.on clone, 'change', qr.fileInput
+    $.replace el, clone
+
 
   replies: []
   reply: class

@@ -1307,7 +1307,15 @@
           new qr.reply(file);
         }
       }
-      return $.addClass(qr.el, 'dump');
+      $.addClass(qr.el, 'dump');
+      if (this.multiple) return qr.resetFileInput();
+    },
+    resetFileInput: function() {
+      var clone, el;
+      el = $('[type=file]', qr.el);
+      clone = el.cloneNode();
+      $.on(clone, 'change', qr.fileInput);
+      return $.replace(el, clone);
     },
     replies: [],
     reply: (function() {
