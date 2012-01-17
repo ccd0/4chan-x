@@ -953,8 +953,7 @@ qr =
       else if -1 is qr.mimeTypes.indexOf file.type
         qr.error 'Unsupported file type.'
       else
-        # set or modify selected reply's file
-        # qr.replies[?].setFile file
+        qr.selected.setFile file
       return
     for file in @files
       if file.size > @max
@@ -963,9 +962,9 @@ qr =
       else if -1 is qr.mimeTypes.indexOf file.type
         qr.error "#{file.name}: Unsupported file type."
         break
-      if qr.replies.length is 1 and not qr.replies[0].file
-        # set initial reply's file
-        qr.replies[0].setFile file
+      unless qr.replies[qr.replies.length - 1].file
+        # set last reply's file
+        qr.replies[qr.replies.length - 1].setFile file
       else
         new qr.reply file
     $.addClass qr.el, 'dump'
@@ -987,15 +986,20 @@ qr =
             if conf['Remember Subject'] then $.get("qr_sub", null) else null
           ]
       @com = null
-      @el = $.el 'li',
-        textContent: 'no file'
+      @el = $.el 'li'
       $.on @el, 'click', => @select()
       @setFile file if file
       $.before $('#addReply', qr.el), @el
       qr.replies.push @
     setFile: (@file) ->
-      # update UI
-      @el.textContent = @file.fileName
+      @el.title = file.name
+      if file.type is 'application/pdf'
+        @el.style.backgroundImage = null
+        return
+      reader = new FileReader()
+      reader.onload = (e) =>
+        @el.style.backgroundImage = "url(#{e.target.result})"
+      reader.readAsDataURL file
     select: ->
       qr.selected?.el.id = null
       qr.selected = @
@@ -1004,7 +1008,6 @@ qr =
         $("[name=#{data}]", qr.el).value = @[data]
     rm: ->
       # rm reply from qr.replies and the UI
-
 
   dialog: ->
     # create a new thread or select thread to reply to
@@ -1083,13 +1086,16 @@ qr =
 }
 #replies > ol > li {
   background-color: rgba(0,0,0,.5);
+  background-position: 50% 20%;
+  background-size: cover;
   border: 1px solid #000;
   box-sizing: border-box;
   color: #FFF;
+  cursor: pointer;
   display: inline-block;
-  height: 80px; width: 80px;
-  margin:10px; padding: 2px;
-  opacity: .8;
+  height: 90px; width: 90px;
+  margin: 5px; padding: 2px;
+  opacity: .5;
   text-shadow: 0 1px 1px #000;
   -webkit-transition: opacity .25s;
   -moz-transition: opacity .25s;
