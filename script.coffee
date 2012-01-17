@@ -933,6 +933,7 @@ qr =
 
     # onchange event isn't triggered, save value
     qr.selected.com = ta.value
+    qr.selected.el.lastChild.textContent = ta.value
 
   fileDrop: (e) ->
     return if /TEXTAREA|INPUT/.test e.target.nodeName
@@ -972,6 +973,7 @@ qr =
   replies: []
   reply: class
     constructor: (file) ->
+      # set values, or null, to avoid 'undefined' values in inputs
       [@name, @email, @sub] =
         if previous = qr.replies[qr.replies.length-1]
           [
@@ -986,7 +988,9 @@ qr =
             if conf['Remember Subject'] then $.get("qr_sub", null) else null
           ]
       @com = null
-      @el = $.el 'li'
+      @el = $.el 'li',
+        className: 'preview'
+        innerHTML: '<a class=remove title=Remove>x</a><label hidden><input type=checkbox></label><span></span>'
       $.on @el, 'click', => @select()
       @setFile file if file
       $.before $('#addReply', qr.el), @el
@@ -997,8 +1001,7 @@ qr =
         @el.style.backgroundImage = null
         return
       reader = new FileReader()
-      reader.onload = (e) =>
-        @el.style.backgroundImage = "url(#{e.target.result})"
+      reader.onload = => @el.style.backgroundImage = "url(#{reader.result})"
       reader.readAsDataURL file
     select: ->
       qr.selected?.el.id = null
@@ -1008,6 +1011,7 @@ qr =
         $("[name=#{data}]", qr.el).value = @[data]
     rm: ->
       # rm reply from qr.replies and the UI
+
 
   dialog: ->
     # create a new thread or select thread to reply to
@@ -1079,13 +1083,13 @@ qr =
   margin: 0; padding: 0;
   overflow: hidden;
   position: absolute;
-  white-space: nowrap;
+  white-space: pre;
 }
 #replies > ol:hover {
   overflow-x: auto;
 }
-#replies > ol > li {
-  background-color: rgba(0,0,0,.5);
+.preview {
+  background-color: rgba(0,0,0,.2);
   background-position: 50% 20%;
   background-size: cover;
   border: 1px solid #000;
@@ -1096,17 +1100,24 @@ qr =
   height: 90px; width: 90px;
   margin: 5px; padding: 2px;
   opacity: .5;
+  overflow: hidden;
   text-shadow: 0 1px 1px #000;
   -webkit-transition: opacity .25s;
   -moz-transition: opacity .25s;
   -o-transition: opacity .25s;
   transition: opacity .25s;
+  vertical-align: top;
 }
-#replies > ol > li:hover {
+.preview:hover {
   opacity: .9;
 }
-#replies > ol > li#selected {
+.preview#selected {
   opacity: 1;
+}
+.remove {
+  color: #C00;
+  font-weight: 700;
+  padding: 3px;
 }
 .field {
   border: 1px solid #CCC;
@@ -1155,7 +1166,7 @@ textarea.field {
 
 <div class=move>
   Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>
-  <span>#{if g.REPLY then '' else threads} <a class=close>⨯</a></span>
+  <span>#{if g.REPLY then '' else threads} <a class=close>x</a></span>
 </div>
 <form>
   <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
@@ -1173,6 +1184,7 @@ textarea.field {
     $.on $('#dump',       qr.el), 'click',     -> qr.el.classList.toggle 'dump'
     $.on $('#addReply',   qr.el), 'click',     -> new qr.reply().select()
     $.on $('form',        qr.el), 'submit',    qr.submit
+    $.on $('textarea',    qr.el), 'change',    -> qr.selected.el.lastChild.textContent = @value
     $.on $('[type=file]', qr.el), 'change',    qr.fileInput
 
     new qr.reply().select()
