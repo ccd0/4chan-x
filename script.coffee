@@ -976,10 +976,7 @@ qr =
     $.addClass qr.el, 'dump'
     qr.resetFileInput() if @multiple # reset input
   resetFileInput: ->
-    el    = $ '[type=file]', qr.el
-    clone = el.cloneNode()
-    $.on clone, 'change', qr.fileInput
-    $.replace el, clone
+    $('[type=file]', qr.el).value = null
 
 
   replies: []
@@ -1003,7 +1000,7 @@ qr =
       @el = $.el 'a',
         className: 'preview'
         href: 'javascript:;'
-        innerHTML: '<a class=remove title=Remove>x</a><label hidden><input type=checkbox></label><span></span>'
+        innerHTML: '<a class=remove>x</a><label hidden><input type=checkbox></label><span></span>'
       $.on @el, 'click', => @select()
       $.on $('.remove', @el), 'click', (e) =>
         e.stopPropagation()
@@ -2460,6 +2457,7 @@ a[href="javascript:;"] {
   min-width: 300px;
   overflow: hidden;
   box-sizing: border-box;
+  -moz-box-sizing: border-box;
   padding: 0 2px;
 }
 #qr > .move > span {
@@ -2515,6 +2513,7 @@ a[href="javascript:;"] {
   background-size: cover;
   border: 1px solid #666;
   box-sizing: border-box;
+  -moz-box-sizing: border-box;
   display: inline-block;
   height: 90px; width: 90px;
   margin: 5px; padding: 2px;
@@ -2540,6 +2539,9 @@ a[href="javascript:;"] {
   color: #E00;
   font-weight: 700;
   padding: 3px;
+}
+.remove:hover::after {
+  content: " Remove";
 }
 #addReply {
   color: #333;
