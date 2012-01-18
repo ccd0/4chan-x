@@ -2960,7 +2960,7 @@
           _results2 = [];
           for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
             thumb = _ref2[_j];
-            _results2.push(imgExpand.contract(thumb, false));
+            _results2.push(imgExpand.contract(thumb));
           }
           return _results2;
         }
@@ -2991,26 +2991,24 @@
       }
     },
     toggle: function(a) {
-      var thumb;
+      var el, thumb, top;
       thumb = a.firstChild;
       if (thumb.hidden) {
-        return imgExpand.contract(thumb, true);
+        if (thumb.nextSibling.offsetHeight > window.innerHeight) {
+          el = thumb.nextSibling;
+          top = el.offsetTop;
+          while (el = el.offsetParent) {
+            top += el.offsetTop;
+          }
+          if (top < window.scrollY) window.scroll(window.scrollX, top);
+        }
+        return imgExpand.contract(thumb);
       } else {
         return imgExpand.expand(thumb);
       }
     },
-    contract: function(thumb, bScroll) {
+    contract: function(thumb) {
       thumb.hidden = false;
-      if (bScroll) {
-        var el, top;
-        el = thumb.parentNode.parentNode;
-        top = el.offsetTop;
-        while (el.offsetParent) {
-          el = el.offsetParent;
-          top += el.offsetTop;
-        }
-        if (top < window.scrollY) window.scroll(window.scrollX, top);
-      }
       return $.rm(thumb.nextSibling);
     },
     expand: function(thumb, url) {
@@ -3031,7 +3029,7 @@
     error: function() {
       var req, src, thumb, url;
       thumb = this.previousSibling;
-      imgExpand.contract(thumb, true);
+      imgExpand.contract(thumb);
       src = this.src.split('/');
       if (url = redirect.image(src[3], src[5])) {
         return imgExpand.expand(thumb, url);
