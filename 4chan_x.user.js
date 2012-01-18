@@ -1221,8 +1221,17 @@
       }
     },
     close: function() {
+      var i, _i, _len, _ref;
       qr.el.hidden = true;
-      return d.activeElement.blur();
+      d.activeElement.blur();
+      $.removeClass(qr.el, 'dump');
+      _ref = qr.replies;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        i = _ref[_i];
+        qr.replies[0].rm();
+      }
+      qr.resetFileInput();
+      return qr.cleanError();
     },
     hide: function() {
       if ($.id('autohide').checked) {
@@ -3162,7 +3171,6 @@ a[href="javascript:;"] {\
   background-size: cover;\
   border: 1px solid #666;\
   box-sizing: border-box;\
-  color: #FFF;\
   display: inline-block;\
   height: 90px; width: 90px;\
   margin: 5px; padding: 2px;\
@@ -3180,6 +3188,9 @@ a[href="javascript:;"] {\
 }\
 .preview#selected {\
   opacity: 1;\
+}\
+.preview > span {\
+  color: #FFF;\
 }\
 .remove {\
   color: #E00;\

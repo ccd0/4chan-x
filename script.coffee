@@ -893,6 +893,11 @@ qr =
   close: ->
     qr.el.hidden = true
     d.activeElement.blur()
+    $.removeClass qr.el, 'dump'
+    for i in qr.replies
+      qr.replies[0].rm()
+    qr.resetFileInput()
+    qr.cleanError()
   hide: ->
     if $.id('autohide').checked
       $.addClass qr.el, 'autohide'
@@ -2510,7 +2515,6 @@ a[href="javascript:;"] {
   background-size: cover;
   border: 1px solid #666;
   box-sizing: border-box;
-  color: #FFF;
   display: inline-block;
   height: 90px; width: 90px;
   margin: 5px; padding: 2px;
@@ -2528,6 +2532,9 @@ a[href="javascript:;"] {
 }
 .preview#selected {
   opacity: 1;
+}
+.preview > span {
+  color: #FFF;
 }
 .remove {
   color: #E00;
