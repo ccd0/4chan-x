@@ -875,6 +875,7 @@ nav =
 qr =
   init: ->
     return unless $ 'form[name=post]'
+    qr.spoiler = !!$ '#com_submit + label'
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
     if conf['Persistent QR']
@@ -897,6 +898,7 @@ qr =
     for i in qr.replies
       qr.replies[0].rm()
     qr.resetFileInput()
+    spoiler.click() if (spoiler = $.id 'spoiler').checked
     qr.cleanError()
   hide: ->
     if $.id('autohide').checked
@@ -978,41 +980,49 @@ qr =
   resetFileInput: ->
     $('[type=file]', qr.el).value = null
 
-
   replies: []
   reply: class
     constructor: (file) ->
       # set values, or null, to avoid 'undefined' values in inputs
-      [@name, @email, @sub] =
+      @com = null
+      [@name, @email, @sub, @spoiler] =
         if previous = qr.replies[qr.replies.length-1]
           [
             previous.name,
             if /^sage$/.test(previous.email) then null else previous.email,
-            if conf['Remember Subject'] then previous.sub else null
+            if conf['Remember Subject'] then previous.sub else null,
+            if conf['Remember Spoiler'] then previous.spoiler else false
           ]
         else
           [
             $.get("qr_name",  null),
             $.get("qr_email", null),
-            if conf['Remember Subject'] then $.get("qr_sub", null) else null
+            if conf['Remember Subject'] then $.get("qr_sub", null) else null,
+            false
           ]
-      @com = null
+
       @el = $.el 'a',
         className: 'preview'
         href: 'javascript:;'
-        innerHTML: '<a class=remove>x</a><label hidden><input type=checkbox></label><span></span>'
-      $.on @el, 'click', => @select()
-      $.on $('.remove', @el), 'click', (e) =>
+        innerHTML: "<a class=remove>x</a><label hidden><input type=checkbox#{if @spoiler then ' checked' else ''}> Spoiler</label><span></span>"
+      $.on @el,               'click',      => @select()
+      $.on $('.remove', @el), 'click',  (e) =>
         e.stopPropagation()
         @rm()
+      $.on $('label',   @el), 'click',  (e) -> e.stopPropagation()
+      $.on $('input',   @el), 'change', (e) =>
+        @spoiler = e.target.checked
+        $.id('spoiler').checked = @spoiler if @el.id is 'selected'
       @setFile file if file
       $.before $('#addReply', qr.el), @el
+
       qr.replies.push @
     setFile: (@file) ->
       @el.title = file.name
       if file.type is 'application/pdf'
         @el.style.backgroundImage = null
         return
+      $('label', @el).hidden = false if qr.spoiler
       url = window.URL or window.webkitURL
       url.revokeObjectURL @url
       @url = url.createObjectURL file
@@ -1023,6 +1033,7 @@ qr =
       @el.id = 'selected'
       for data in ['name', 'email', 'sub', 'com']
         $("[name=#{data}]", qr.el).value = @[data]
+      $('#spoiler', qr.el).checked = @spoiler
     rm: ->
       $.rm @el
       index = qr.replies.indexOf @
@@ -1065,6 +1076,7 @@ qr =
   <div class=captcha><img></div>
   <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>
   <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=#{if g.dead then '404 disabled' else 'Submit'}></div>
+  <label#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image?</label>
   <div class=error></div>
 </form>"
     unless g.REPLY
@@ -1076,6 +1088,7 @@ qr =
     $.on $('form',        qr.el), 'submit',    qr.submit
     $.on $('textarea',    qr.el), 'change',    -> qr.selected.el.lastChild.textContent = @value
     $.on $('[type=file]', qr.el), 'change',    qr.fileInput
+    $.on $('#spoiler',    qr.el), 'change',    -> $('input', qr.selected.el).click()
 
     new qr.reply().select()
     # save selected reply's data
@@ -2489,7 +2502,7 @@ a[href="javascript:;"] {
   background: -o-linear-gradient(#CCC, #DDD);
   background: linear-gradient(#CCC, #DDD);
 }
-#qr:not(.dump) output {
+#qr:not(.dump) output, .dump > form > label {
   display: none;
 }
 #replies {
@@ -2519,6 +2532,7 @@ a[href="javascript:;"] {
   margin: 5px; padding: 2px;
   opacity: .5;
   overflow: hidden;
+  position: relative;
   text-shadow: 0 1px 1px #000;
   -webkit-transition: opacity .25s;
   -moz-transition: opacity .25s;
@@ -2542,6 +2556,16 @@ a[href="javascript:;"] {
 }
 .remove:hover::after {
   content: " Remove";
+}
+.preview > label {
+  background: rgba(0,0,0,.5);
+  color: #FFF;
+  right: 0; bottom: 0; left: 0;
+  position: absolute;
+  text-align: center;
+}
+.preview > label > input {
+  margin: 0;
 }
 #addReply {
   color: #333;

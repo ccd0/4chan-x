@@ -1201,6 +1201,7 @@
   qr = {
     init: function() {
       if (!$('form[name=post]')) return;
+      qr.spoiler = !!$('#com_submit + label');
       g.callbacks.push(function(root) {
         return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
       });
@@ -1221,7 +1222,7 @@
       }
     },
     close: function() {
-      var i, _i, _len, _ref;
+      var i, spoiler, _i, _len, _ref;
       qr.el.hidden = true;
       d.activeElement.blur();
       $.removeClass(qr.el, 'dump');
@@ -1231,6 +1232,7 @@
         qr.replies[0].rm();
       }
       qr.resetFileInput();
+      if ((spoiler = $.id('spoiler')).checked) spoiler.click();
       return qr.cleanError();
     },
     hide: function() {
@@ -1328,12 +1330,12 @@
       function _Class(file) {
         var previous, _ref,
           _this = this;
-        _ref = (previous = qr.replies[qr.replies.length - 1]) ? [previous.name, /^sage$/.test(previous.email) ? null : previous.email, conf['Remember Subject'] ? previous.sub : null] : [$.get("qr_name", null), $.get("qr_email", null), conf['Remember Subject'] ? $.get("qr_sub", null) : null], this.name = _ref[0], this.email = _ref[1], this.sub = _ref[2];
         this.com = null;
+        _ref = (previous = qr.replies[qr.replies.length - 1]) ? [previous.name, /^sage$/.test(previous.email) ? null : previous.email, conf['Remember Subject'] ? previous.sub : null, conf['Remember Spoiler'] ? previous.spoiler : false] : [$.get("qr_name", null), $.get("qr_email", null), conf['Remember Subject'] ? $.get("qr_sub", null) : null, false], this.name = _ref[0], this.email = _ref[1], this.sub = _ref[2], this.spoiler = _ref[3];
         this.el = $.el('a', {
           className: 'preview',
           href: 'javascript:;',
-          innerHTML: '<a class=remove>x</a><label hidden><input type=checkbox></label><span></span>'
+          innerHTML: "<a class=remove>x</a><label hidden><input type=checkbox" + (this.spoiler ? ' checked' : '') + "> Spoiler</label><span></span>"
         });
         $.on(this.el, 'click', function() {
           return _this.select();
@@ -1341,6 +1343,15 @@
         $.on($('.remove', this.el), 'click', function(e) {
           e.stopPropagation();
           return _this.rm();
+        });
+        $.on($('label', this.el), 'click', function(e) {
+          return e.stopPropagation();
+        });
+        $.on($('input', this.el), 'change', function(e) {
+          _this.spoiler = e.target.checked;
+          if (_this.el.id === 'selected') {
+            return $.id('spoiler').checked = _this.spoiler;
+          }
         });
         if (file) this.setFile(file);
         $.before($('#addReply', qr.el), this.el);
@@ -1355,6 +1366,7 @@
           this.el.style.backgroundImage = null;
           return;
         }
+        if (qr.spoiler) $('label', this.el).hidden = false;
         url = window.URL || window.webkitURL;
         url.revokeObjectURL(this.url);
         this.url = url.createObjectURL(file);
@@ -1362,17 +1374,16 @@
       };
 
       _Class.prototype.select = function() {
-        var data, _i, _len, _ref, _ref2, _results;
+        var data, _i, _len, _ref, _ref2;
         if ((_ref = qr.selected) != null) _ref.el.id = null;
         qr.selected = this;
         this.el.id = 'selected';
         _ref2 = ['name', 'email', 'sub', 'com'];
-        _results = [];
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           data = _ref2[_i];
-          _results.push($("[name=" + data + "]", qr.el).value = this[data]);
+          $("[name=" + data + "]", qr.el).value = this[data];
         }
-        return _results;
+        return $('#spoiler', qr.el).checked = this.spoiler;
       };
 
       _Class.prototype.rm = function() {
@@ -1415,7 +1426,7 @@
         }
       });
       qr.mimeTypes = mimeTypes.split(', ');
-      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha><img></div>  <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=" + (g.dead ? '404 disabled' : 'Submit') + "></div>  <div class=error></div></form>");
+      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha><img></div>  <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=" + (g.dead ? '404 disabled' : 'Submit') + "></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form>");
       if (!g.REPLY) {
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
@@ -1434,6 +1445,9 @@
         return qr.selected.el.lastChild.textContent = this.value;
       });
       $.on($('[type=file]', qr.el), 'change', qr.fileInput);
+      $.on($('#spoiler', qr.el), 'change', function() {
+        return $('input', qr.selected.el).click();
+      });
       new qr.reply().select();
       _ref2 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
@@ -3144,7 +3158,7 @@ a[href="javascript:;"] {\
   background: -o-linear-gradient(#CCC, #DDD);\
   background: linear-gradient(#CCC, #DDD);\
 }\
-#qr:not(.dump) output {\
+#qr:not(.dump) output, .dump > form > label {\
   display: none;\
 }\
 #replies {\
@@ -3174,6 +3188,7 @@ a[href="javascript:;"] {\
   margin: 5px; padding: 2px;\
   opacity: .5;\
   overflow: hidden;\
+  position: relative;\
   text-shadow: 0 1px 1px #000;\
   -webkit-transition: opacity .25s;\
   -moz-transition: opacity .25s;\
@@ -3197,6 +3212,16 @@ a[href="javascript:;"] {\
 }\
 .remove:hover::after {\
   content: " Remove";\
+}\
+.preview > label {\
+  background: rgba(0,0,0,.5);\
+  color: #FFF;\
+  right: 0; bottom: 0; left: 0;\
+  position: absolute;\
+  text-align: center;\
+}\
+.preview > label > input {\
+  margin: 0;\
 }\
 #addReply {\
   color: #333;\
