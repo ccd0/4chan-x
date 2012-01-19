@@ -2325,9 +2325,10 @@ imgExpand =
     $.rm thumb.nextSibling
 
   expand: (thumb, url) ->
+    return if thumb.hidden
     a = thumb.parentNode
     img = $.el 'img',
-      src: if url then url else a.href
+      src: url or a.href
     if engine is 'gecko' and a.parentNode.className isnt 'op'
       filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent
       max = filesize.match /(\d+)x/
@@ -2337,22 +2338,23 @@ imgExpand =
     $.add a, img
 
   error: ->
+    href = @parentNode.href
     thumb = @previousSibling
     imgExpand.contract thumb
-    src = @src.split '/'
+    src = href.split '/'
     if src[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
       setTimeout imgExpand.expand, 10000, thumb, url
+      return
+    url = href + '?' + Date.now()
     #navigator.online is not x-browser/os yet
-    else if engine is 'webkit'
+    if engine is 'webkit'
       req = $.ajax @src, (->
-        setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
+        setTimeout imgExpand.expand, 10000, thumb, url if @status isnt 404
       ), type: 'head', event: 'onreadystatechange'
     #Firefox returns a status code of 0 because of the same origin policy
     #Oprah doesn't send any request
     else unless g.dead
-      setTimeout imgExpand.retry, 10000, thumb
-  retry: (thumb) ->
-    imgExpand.expand thumb unless thumb.hidden
+      setTimeout imgExpand.expand, 10000, thumb, url
 
   dialog: ->
     controls = $.el 'div',

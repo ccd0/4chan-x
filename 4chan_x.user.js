@@ -3005,9 +3005,10 @@
     },
     expand: function(thumb, url) {
       var a, filesize, img, max;
+      if (thumb.hidden) return;
       a = thumb.parentNode;
       img = $.el('img', {
-        src: url ? url : a.href
+        src: url || a.href
       });
       if (engine === 'gecko' && a.parentNode.className !== 'op') {
         filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent;
@@ -3019,27 +3020,28 @@
       return $.add(a, img);
     },
     error: function() {
-      var req, src, thumb, url;
+      var href, req, src, thumb, url;
+      href = this.parentNode.href;
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
-      src = this.src.split('/');
+      src = href.split('/');
       if (src[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5]))) {
-        return setTimeout(imgExpand.expand, 10000, thumb, url);
-      } else if (engine === 'webkit') {
+        setTimeout(imgExpand.expand, 10000, thumb, url);
+        return;
+      }
+      url = href + '?' + Date.now();
+      if (engine === 'webkit') {
         return req = $.ajax(this.src, (function() {
           if (this.status !== 404) {
-            return setTimeout(imgExpand.retry, 10000, thumb);
+            return setTimeout(imgExpand.expand, 10000, thumb, url);
           }
         }), {
           type: 'head',
           event: 'onreadystatechange'
         });
       } else if (!g.dead) {
-        return setTimeout(imgExpand.retry, 10000, thumb);
+        return setTimeout(imgExpand.expand, 10000, thumb, url);
       }
-    },
-    retry: function(thumb) {
-      if (!thumb.hidden) return imgExpand.expand(thumb);
     },
     dialog: function() {
       var controls, form, imageType, select;
