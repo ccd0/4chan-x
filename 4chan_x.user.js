@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.24.2
+// @version        2.24.3
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -18,7 +18,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.24.2
+ * 4chan X 2.24.3
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -200,7 +200,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.24.2';
+  VERSION = '2.24.3';
 
   SECOND = 1000;
 
@@ -762,7 +762,7 @@
       }
     },
     parse: function(req, pathname, thread, a) {
-      var body, br, frag, href, link, next, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
+      var body, frag, href, link, next, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', expandThread.cb.toggle);
@@ -793,8 +793,7 @@
       while ((next = a.nextSibling) && !next.clear) {
         $.rm(next);
       }
-      br = next;
-      return $.before(br, frag);
+      return $.before(next, frag);
     }
   };
 
@@ -1933,7 +1932,6 @@
   updater = {
     init: function() {
       var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
-      if (!$('form[name=post]')) return;
       html = "<div class=move><span id=count></span> <span id=timer>-" + conf['Interval'] + "</span></div>";
       checkbox = config.updater.checkbox;
       for (name in checkbox) {
@@ -2581,7 +2579,7 @@
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _results;
       qp = ui.el = $.el('div', {
         id: 'qp',
-        className: 'reply'
+        className: 'reply dialog'
       });
       $.add(d.body, qp);
       id = this.hash.slice(1);
@@ -2714,25 +2712,31 @@
 
   threadStats = {
     init: function() {
-      var dialog, html;
-      threadStats.posts = 1;
-      threadStats.images = $('.op img[md5]') ? 1 : 0;
-      html = "<div class=move><span id=postcount>" + threadStats.posts + "</span> / <span id=imagecount>" + threadStats.images + "</span></div>";
-      dialog = ui.dialog('stats', 'bottom: 0; left: 0;', html);
+      var dialog;
+      dialog = ui.dialog('stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>');
       dialog.className = 'dialog';
-      threadStats.postcountEl = $('#postcount', dialog);
-      threadStats.imagecountEl = $('#imagecount', dialog);
       $.add(d.body, dialog);
+      threadStats.posts = threadStats.images = 0;
+      threadStats.imgLimit = (function() {
+        switch (g.BOARD) {
+          case 'a':
+          case 'v':
+            return 251;
+          default:
+            return 151;
+        }
+      })();
       return g.callbacks.push(threadStats.node);
     },
     node: function(root) {
-      if (root.className) return;
-      threadStats.postcountEl.textContent = ++threadStats.posts;
-      if ($('img[md5]', root)) {
-        threadStats.imagecountEl.textContent = ++threadStats.images;
-        if (threadStats.images > 151) {
-          return threadStats.imagecountEl.className = 'error';
-        }
+      var imgcount;
+      if (/\binline\b/.test(root.className)) return;
+      $.id('postcount').textContent = ++threadStats.posts;
+      if (!$('img[md5]', root)) return;
+      imgcount = $.id('imagecount');
+      imgcount.textContent = ++threadStats.images;
+      if (threadStats.images > threadStats.imgLimit) {
+        return imgcount.className = 'error';
       }
     }
   };
@@ -3145,7 +3149,7 @@
       if (conf['Auto Noko'] && canPost) form.action += '?noko';
       if (conf['Cooldown'] && canPost) cooldown.init();
       if (conf['Image Expansion']) imgExpand.init();
-      if (conf['Quick Reply']) qr.init();
+      if (conf['Quick Reply'] && canPost) qr.init();
       if (conf['Thread Watcher']) watcher.init();
       if (conf['Keybinds']) keybinds.init();
       if (g.REPLY) {
@@ -3212,7 +3216,7 @@
       .move {\
         cursor: move;\
       }\
-      label, a, .favicon, #qr img {\
+      label, .favicon, #qr_form > div > img {\
         cursor: pointer;\
       }\
       a[href="javascript:;"] {\
@@ -3398,7 +3402,6 @@
       }\
 \
       #qp {\
-        border: 1px solid;\
         padding-bottom: 5px;\
       }\
       .qphl {\
