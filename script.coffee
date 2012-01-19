@@ -2316,12 +2316,8 @@ imgExpand =
   toggle: (a) ->
     thumb = a.firstChild
     if thumb.hidden
-      if thumb.nextSibling.offsetHeight > window.innerHeight
-        el = thumb.nextSibling
-        top = el.offsetTop
-        while el = el.offsetParent
-          top += el.offsetTop
-        window.scroll window.scrollX, top if top < window.scrollY
+      if thumb.nextSibling.offsetHeight > d.body.clientHeight and (top = a.getBoundingClientRect().top) < 0
+        window.scroll window.scrollX, window.scrollY + top
       imgExpand.contract thumb
     else
       imgExpand.expand thumb

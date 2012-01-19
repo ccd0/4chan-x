@@ -2991,16 +2991,11 @@
       }
     },
     toggle: function(a) {
-      var el, thumb, top;
+      var thumb, top;
       thumb = a.firstChild;
       if (thumb.hidden) {
-        if (thumb.nextSibling.offsetHeight > window.innerHeight) {
-          el = thumb.nextSibling;
-          top = el.offsetTop;
-          while (el = el.offsetParent) {
-            top += el.offsetTop;
-          }
-          if (top < window.scrollY) window.scroll(window.scrollX, top);
+        if (thumb.nextSibling.offsetHeight > d.body.clientHeight && (top = a.getBoundingClientRect().top) < 0) {
+          window.scroll(window.scrollX, window.scrollY + top);
         }
         return imgExpand.contract(thumb);
       } else {
