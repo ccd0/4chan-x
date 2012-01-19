@@ -2002,16 +2002,8 @@
       scrollBG: function() {
         return updater.scrollBG = this.checked ? function() {
           return true;
-        } : d.visibilityState ? function() {
-          return !d.hidden;
-        } : d.oVisibilityState ? function() {
-          return !d.oHidden;
-        } : d.mozVisibilityState ? function() {
-          return !d.mozHidden;
-        } : d.webkitVisibilityState ? function() {
-          return !d.webkitHidden;
         } : function() {
-          return true;
+          return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
         };
       },
       update: function() {

@@ -1612,16 +1612,7 @@ updater =
         if @checked
           -> true
         else
-          if d.visibilityState
-            -> !d.hidden
-          else if d.oVisibilityState
-            -> !d.oHidden
-          else if d.mozVisibilityState
-            -> !d.mozHidden
-          else if d.webkitVisibilityState
-            -> !d.webkitHidden
-          else
-            -> true
+          -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
     update: ->
       if @status is 404
         updater.timer.textContent = ''
