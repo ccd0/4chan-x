@@ -3025,7 +3025,7 @@
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
       src = href.split('/');
-      if (src[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5]))) {
+      if (this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5]))) {
         setTimeout(imgExpand.expand, 10000, thumb, url);
         return;
       }

@@ -2342,7 +2342,7 @@ imgExpand =
     thumb = @previousSibling
     imgExpand.contract thumb
     src = href.split '/'
-    if src[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
+    if @src.split('/')[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
       setTimeout imgExpand.expand, 10000, thumb, url
       return
     url = href + '?' + Date.now()
