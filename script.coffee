@@ -2340,8 +2340,8 @@ imgExpand =
     thumb = @previousSibling
     imgExpand.contract thumb
     src = @src.split '/'
-    if url = redirect.image src[3], src[5]
-      imgExpand.expand thumb, url
+    if src[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
+      setTimeout imgExpand.expand, 10000, thumb, url
     #navigator.online is not x-browser/os yet
     else if engine is 'webkit'
       req = $.ajax @src, (->

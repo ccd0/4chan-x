@@ -3023,8 +3023,8 @@
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
       src = this.src.split('/');
-      if (url = redirect.image(src[3], src[5])) {
-        return imgExpand.expand(thumb, url);
+      if (src[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5]))) {
+        return setTimeout(imgExpand.expand, 10000, thumb, url);
       } else if (engine === 'webkit') {
         return req = $.ajax(this.src, (function() {
           if (this.status !== 404) {
