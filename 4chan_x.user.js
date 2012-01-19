@@ -2995,12 +2995,8 @@
       thumb = a.firstChild;
       if (thumb.hidden) {
         rect = a.getBoundingClientRect();
-        if (rect.top < 0) {
-          d.body.scrollTop += rect.top + thumb.height / (rect.height / rect.top * -1);
-        }
-        if (rect.left < 0) {
-          d.body.scrollLeft += rect.left + thumb.width / (rect.width / rect.left * -1);
-        }
+        if (rect.top < 0) d.body.scrollTop += rect.top;
+        if (rect.left < 0) d.body.scrollLeft += rect.left;
         return imgExpand.contract(thumb);
       } else {
         return imgExpand.expand(thumb);
