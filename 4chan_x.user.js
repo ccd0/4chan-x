@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.24.3
+// @version        2.24.4
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -17,7 +17,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.24.3
+ * 4chan X 2.24.4
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -48,6 +48,8 @@
  *
  * CONTRIBUTORS
  *
+ * e000 - cooldown sanity check
+ * ahokadesuka - scroll back when unexpanding images
  * Shou- - pentadactyl fixes
  * ferongr - new favicons
  * xat- - new favicons
@@ -199,7 +201,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.24.3';
+  VERSION = '2.24.4';
 
   SECOND = 1000;
 
@@ -2895,9 +2897,12 @@
       }
     },
     toggle: function(a) {
-      var thumb;
+      var rect, thumb;
       thumb = a.firstChild;
       if (thumb.hidden) {
+        rect = a.parentNode.getBoundingClientRect();
+        if (rect.top < 0) d.body.scrollTop += rect.top;
+        if (rect.left < 0) d.body.scrollLeft += rect.left;
         return imgExpand.contract(thumb);
       } else {
         return imgExpand.expand(thumb);
@@ -2909,9 +2914,10 @@
     },
     expand: function(thumb, url) {
       var a, filesize, img, max;
+      if (thumb.hidden) return;
       a = thumb.parentNode;
       img = $.el('img', {
-        src: url ? url : a.href
+        src: url || a.href
       });
       if (engine === 'gecko' && a.parentNode.className !== 'op') {
         filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent;
@@ -2923,27 +2929,28 @@
       return $.add(a, img);
     },
     error: function() {
-      var req, src, thumb, url;
+      var href, req, src, thumb, url;
+      href = this.parentNode.href;
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
-      src = this.src.split('/');
-      if (url = redirect.image(src[3], src[5])) {
-        return imgExpand.expand(thumb, url);
-      } else if (engine === 'webkit') {
+      src = href.split('/');
+      if (this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5]))) {
+        setTimeout(imgExpand.expand, 10000, thumb, url);
+        return;
+      }
+      url = href + '?' + Date.now();
+      if (engine === 'webkit') {
         return req = $.ajax(this.src, (function() {
           if (this.status !== 404) {
-            return setTimeout(imgExpand.retry, 10000, thumb);
+            return setTimeout(imgExpand.expand, 10000, thumb, url);
           }
         }), {
           type: 'head',
           event: 'onreadystatechange'
         });
       } else if (!g.dead) {
-        return setTimeout(imgExpand.retry, 10000, thumb);
+        return setTimeout(imgExpand.expand, 10000, thumb, url);
       }
-    },
-    retry: function(thumb) {
-      if (!thumb.hidden) return imgExpand.expand(thumb);
     },
     dialog: function() {
       var controls, form, imageType, select;

@@ -1,5 +1,13 @@
 master
 
+2.24.4
+- ahokadesuka
+  Scroll back up when unexpanding images.
+- e000
+  Prevent absurd cooldown durations.
+- Mayhem
+  Better image expanding reload, should fool CloudFlare's cache.
+
 2.24.3
 - Mayhem
   Set image limit in Thread Stats to 252 for /a/ and /v/, default to 152.

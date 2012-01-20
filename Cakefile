@@ -2,7 +2,7 @@
 {exec} = require 'child_process'
 fs     = require 'fs'
 
-VERSION = '2.24.3'
+VERSION = '2.24.4'
 
 HEADER  = """
 // ==UserScript==
@@ -55,6 +55,8 @@ HEADER  = """
  *
  * CONTRIBUTORS
  *
+ * e000 - cooldown sanity check
+ * ahokadesuka - scroll back when unexpanding images
  * Shou- - pentadactyl fixes
  * ferongr - new favicons
  * xat- - new favicons

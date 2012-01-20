@@ -121,7 +121,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.24.3'
+VERSION = '2.24.4'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -2213,6 +2213,9 @@ imgExpand =
   toggle: (a) ->
     thumb = a.firstChild
     if thumb.hidden
+      rect = a.parentNode.getBoundingClientRect()
+      d.body.scrollTop += rect.top if rect.top < 0
+      d.body.scrollLeft += rect.left if rect.left < 0
       imgExpand.contract thumb
     else
       imgExpand.expand thumb
@@ -2222,9 +2225,10 @@ imgExpand =
     $.rm thumb.nextSibling
 
   expand: (thumb, url) ->
+    return if thumb.hidden
     a = thumb.parentNode
     img = $.el 'img',
-      src: if url then url else a.href
+      src: url or a.href
     if engine is 'gecko' and a.parentNode.className isnt 'op'
       filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent
       max = filesize.match /(\d+)x/
@@ -2234,22 +2238,23 @@ imgExpand =
     $.add a, img
 
   error: ->
+    href = @parentNode.href
     thumb = @previousSibling
     imgExpand.contract thumb
-    src = @src.split '/'
-    if url = redirect.image src[3], src[5]
-      imgExpand.expand thumb, url
+    src = href.split '/'
+    if @src.split('/')[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
+      setTimeout imgExpand.expand, 10000, thumb, url
+      return
+    url = href + '?' + Date.now()
     #navigator.online is not x-browser/os yet
-    else if engine is 'webkit'
+    if engine is 'webkit'
       req = $.ajax @src, (->
-        setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
+        setTimeout imgExpand.expand, 10000, thumb, url if @status isnt 404
       ), type: 'head', event: 'onreadystatechange'
     #Firefox returns a status code of 0 because of the same origin policy
     #Oprah doesn't send any request
     else unless g.dead
-      setTimeout imgExpand.retry, 10000, thumb
-  retry: (thumb) ->
-    imgExpand.expand thumb unless thumb.hidden
+      setTimeout imgExpand.expand, 10000, thumb, url
 
   dialog: ->
     controls = $.el 'div',
