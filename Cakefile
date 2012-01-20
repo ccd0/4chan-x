@@ -56,6 +56,8 @@ HEADER  = """
  *
  * CONTRIBUTORS
  *
+ * e000 - cooldown sanity check
+ * ahokadesuka - scroll back when unexpanding images
  * Shou- - pentadactyl fixes
  * ferongr - new favicons
  * xat- - new favicons

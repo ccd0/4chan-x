@@ -1,4 +1,10 @@
 master
+- ahokadesuka
+  Scroll back up when unexpanding images.
+- e000
+  Prevent absurd cooldown durations.
+- Mayhem
+  Better image expanding reload, should fool CloudFlare's cache.
 
 2.24.3
 - Mayhem

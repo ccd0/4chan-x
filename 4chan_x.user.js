@@ -49,6 +49,8 @@
  *
  * CONTRIBUTORS
  *
+ * e000 - cooldown sanity check
+ * ahokadesuka - scroll back when unexpanding images
  * Shou- - pentadactyl fixes
  * ferongr - new favicons
  * xat- - new favicons
@@ -1455,12 +1457,12 @@
       if (g.REPLY) return $('.postarea form').action += '?cooldown';
     },
     start: function() {
-      var submit, _i, _len, _ref;
+      var submit, _i, _len, _ref, _ref2;
       cooldown.duration = Math.ceil(($.get(g.BOARD + '/cooldown', 0) - Date.now()) / 1000);
-      if (!(cooldown.duration > 0)) return;
-      _ref = $$('#com_submit');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        submit = _ref[_i];
+      if (!((60 >= (_ref = cooldown.duration) && _ref > 0))) return;
+      _ref2 = $$('#com_submit');
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        submit = _ref2[_i];
         submit.value = cooldown.duration;
         submit.disabled = true;
       }
@@ -3276,6 +3278,7 @@
       #ihover {\
         max-height: 100%;\
         max-width: 75%;\
+        padding-bottom: 18px;\
       }\
 \
       #navlinks {\
