@@ -2994,7 +2994,7 @@
       var rect, thumb;
       thumb = a.firstChild;
       if (thumb.hidden) {
-        rect = a.getBoundingClientRect();
+        rect = a.parentNode.getBoundingClientRect();
         if (rect.top < 0) d.body.scrollTop += rect.top;
         if (rect.left < 0) d.body.scrollLeft += rect.left;
         return imgExpand.contract(thumb);

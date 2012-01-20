@@ -2316,7 +2316,7 @@ imgExpand =
   toggle: (a) ->
     thumb = a.firstChild
     if thumb.hidden
-      rect = a.getBoundingClientRect()
+      rect = a.parentNode.getBoundingClientRect()
       d.body.scrollTop += rect.top if rect.top < 0
       d.body.scrollLeft += rect.left if rect.left < 0
       imgExpand.contract thumb
