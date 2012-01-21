@@ -1058,7 +1058,7 @@ qr =
       @count $.get('captchas', []).length
       @load()
       # prevent original captcha input from being focused on reload
-      window.location = 'javascript:Recaptcha.focus_response_field=function(){}'
+      window.location = 'javascript:(function(){Recaptcha.focus_response_field=function(){}})()'
     save: ->
       return unless response = @input.value
       captchas = $.get 'captchas', []

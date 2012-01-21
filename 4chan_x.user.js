@@ -1427,7 +1427,7 @@
         });
         this.count($.get('captchas', []).length);
         this.load();
-        return window.location = 'javascript:Recaptcha.focus_response_field=function(){}';
+        return window.location = 'javascript:(function(){Recaptcha.focus_response_field=function(){}})()';
       },
       save: function() {
         var captchas, length, now, response;
