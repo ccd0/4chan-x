@@ -878,6 +878,10 @@ qr =
     qr.spoiler = !!$ '#com_submit + label'
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
+    $.add d.body, $.el 'iframe',
+      id: 'iframe'
+      hidden: true
+      src: 'http://sys.4chan.org/post'
     if conf['Persistent QR']
       qr.dialog()
       $.id('autohide').click() if conf['Auto Hide QR']
@@ -1126,8 +1130,7 @@ qr =
   <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=#{if g.dead then '404 disabled' else 'Submit'}></div>
   <label#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image?</label>
   <div class=error></div>
-</form>
-<iframe id=iframe src=http://sys.4chan.org/post hidden></iframe>"
+</form>"
     unless g.REPLY
       $.on $('select',    qr.el), 'mousedown', (e) -> e.stopPropagation()
     $.on $('#autohide',   qr.el), 'click',     qr.hide
@@ -1238,8 +1241,9 @@ qr =
           parent.postMessage data, '*'
       script = $.el 'script',
         textContent: "window.addEventListener('message',#{code},false)"
-      $.add d.documentElement, script
-      $.rm script
+      $.ready ->
+        $.add d.head, script
+        $.rm script
     send: (data) ->
       data.changeContext = true
       data.qr            = true

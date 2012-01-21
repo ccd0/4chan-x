@@ -1208,6 +1208,11 @@
       g.callbacks.push(function(root) {
         return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
       });
+      $.add(d.body, $.el('iframe', {
+        id: 'iframe',
+        hidden: true,
+        src: 'http://sys.4chan.org/post'
+      }));
       if (conf['Persistent QR']) {
         qr.dialog();
         if (conf['Auto Hide QR']) $.id('autohide').click();
@@ -1498,7 +1503,7 @@
         }
       });
       qr.mimeTypes = mimeTypes.split(', ');
-      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=" + (g.dead ? '404 disabled' : 'Submit') + "></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form><iframe id=iframe src=http://sys.4chan.org/post hidden></iframe>");
+      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=" + (g.dead ? '404 disabled' : 'Submit') + "></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form>");
       if (!g.REPLY) {
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
@@ -1612,8 +1617,10 @@
         script = $.el('script', {
           textContent: "window.addEventListener('message'," + code + ",false)"
         });
-        $.add(d.documentElement, script);
-        return $.rm(script);
+        return $.ready(function() {
+          $.add(d.head, script);
+          return $.rm(script);
+        });
       },
       send: function(data) {
         data.changeContext = true;
