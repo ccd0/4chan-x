@@ -294,6 +294,7 @@
   not chainable
   */
 
+
   $ = function(selector, root) {
     if (root == null) root = d.body;
     return root.querySelector(selector);
@@ -449,6 +450,7 @@
             0200 EST (UTC-05) = 0700 UTC
             0200 EDT (UTC-04) = 0600 UTC
       */
+
       var D, date, day, hours, month, sunday;
       D = new Date();
       date = D.getUTCDate();
@@ -851,7 +853,7 @@
         name = $('.commentpostername', reply).textContent;
         trip = ((_ref = $('.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
-          textContent: "[ + ] " + name + " " + trip,
+          innerHTML: "<span>[ + ]</span> " + name + " " + trip,
           href: 'javascript:;'
         });
         $.on(a, 'click', replyHiding.cb.show);
@@ -1638,6 +1640,7 @@
           captchas expire after 30 minutes, see window.RecaptchaState.timeout.
           cutoff 5 minutes before then, b/c posting takes time.
       */
+
       cutoff = Date.now() - 25 * MINUTE;
       captchas = $.get('captchas', []);
       while (captcha = captchas.shift()) {
@@ -1739,6 +1742,7 @@
             To access the parent, we have to break out of the sandbox and evaluate
             in the global context.
       */
+
       $.globalEval(function() {
         var data, node, _ref;
         data = {};
@@ -1904,7 +1908,7 @@
         name = $('.postername', thread).textContent;
         trip = ((_ref = $('.postername + .postertrip', thread)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
-          textContent: "[ + ] " + name + trip + " (" + text + ")",
+          innerHTML: "<span>[ + ]</span> " + name + trip + " (" + text + ")",
           href: 'javascript:;'
         });
         $.on(a, 'click', threadHiding.cb.show);
@@ -2034,6 +2038,7 @@
               This saves bandwidth for both the user and the servers, avoid unnecessary computation,
               and won't load images and scripts when parsing the response.
         */
+
         if (this.status === 304) {
           if (conf['Verbose']) {
             updater.count.textContent = '+0';
