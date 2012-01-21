@@ -841,7 +841,7 @@
         name = $('.commentpostername', reply).textContent;
         trip = ((_ref = $('.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
-          textContent: "[ + ] " + name + " " + trip,
+          innerHTML: "<span>[ + ]</span> " + name + " " + trip,
           href: 'javascript:;'
         });
         $.on(a, 'click', replyHiding.cb.show);
@@ -1908,7 +1908,7 @@
         name = $('.postername', thread).textContent;
         trip = ((_ref = $('.postername + .postertrip', thread)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
-          textContent: "[ + ] " + name + trip + " (" + text + ")",
+          innerHTML: "<span>[ + ]</span> " + name + trip + " (" + text + ")",
           href: 'javascript:;'
         });
         $.on(a, 'click', threadHiding.cb.show);
