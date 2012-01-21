@@ -2334,7 +2334,12 @@ Main =
       g.PAGENUM = parseInt(temp) or 0
 
     if location.hostname is 'sys.4chan.org'
-      $.ready qr.sys
+      $.ready ->
+        if /report/.test location.search
+          $.on $('#recaptcha_response_field'), 'keydown', (e) ->
+            window.location = 'javascript:Recaptcha.reload()' if e.keyCode is 8 and not e.target.value
+        else
+          # posting
       return
     if location.hostname is 'images.4chan.org'
       $.ready -> redirect.init() if d.title is '4chan - 404'

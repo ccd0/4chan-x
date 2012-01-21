@@ -7,6 +7,7 @@
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://images.4chan.org/*
+// @include        http://sys.4chan.org/*
 // @run-at         document-start
 // @updateURL      https://raw.github.com/MayhemYDG/4chan-x/stable/4chan_x.user.js
 // @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
@@ -3051,7 +3052,17 @@
         g.PAGENUM = parseInt(temp) || 0;
       }
       if (location.hostname === 'sys.4chan.org') {
-        $.ready(qr.sys);
+        $.ready(function() {
+          if (/report/.test(location.search)) {
+            return $.on($('#recaptcha_response_field'), 'keydown', function(e) {
+              if (e.keyCode === 8 && !e.target.value) {
+                return window.location = 'javascript:Recaptcha.reload()';
+              }
+            });
+          } else {
+
+          }
+        });
         return;
       }
       if (location.hostname === 'images.4chan.org') {
