@@ -1494,7 +1494,7 @@
         }
       });
       qr.mimeTypes = mimeTypes.split(', ');
-      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=" + (g.dead ? '404 disabled' : 'Submit') + "></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form>");
+      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=" + (g.dead ? '404 disabled' : 'Submit') + "></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form><iframe id=iframe src=http://sys.4chan.org/post hidden></iframe>");
       if (!g.REPLY) {
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
@@ -1525,6 +1525,7 @@
         });
       }
       qr.captcha.init();
+      qr.message.init();
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
@@ -1547,6 +1548,36 @@
       if (conf['Remember Subject']) $.set("qr_sub", reply.sub);
       if (qr.replies.length === 1) new qr.reply().select();
       return reply.rm();
+    },
+    message: {
+      init: function() {
+        var code, script;
+        code = function(e) {
+          var data, host;
+          data = e.data;
+          if (!data.changeContext) return;
+          delete data.changeContext;
+          host = location.hostname;
+          if (host === 'boards.4chan.org') {
+            return document.getElementById('iframe').contentWindow.postMessage(data, '*');
+          } else if (host === 'sys.4chan.org') {
+            return parent.postMessage(data, '*');
+          }
+        };
+        script = $.el('script', {
+          textContent: "window.addEventListener('message'," + code + ",false)"
+        });
+        $.add(d.documentElement, script);
+        return $.rm(script);
+      },
+      send: function(data) {
+        data.changeContext = true;
+        data.qr = true;
+        return postMessage(data, '*');
+      },
+      receive: function(data) {
+        return log('receive', location.hostname, data);
+      }
     }
   };
 
@@ -3051,18 +3082,19 @@
       } else {
         g.PAGENUM = parseInt(temp) || 0;
       }
+      $.on(window, 'message', Main.message);
       if (location.hostname === 'sys.4chan.org') {
-        $.ready(function() {
-          if (/report/.test(location.search)) {
+        if (location.pathname === '/post') {
+          qr.message.init();
+        } else if (/report/.test(location.search)) {
+          $.ready(function() {
             return $.on($('#recaptcha_response_field'), 'keydown', function(e) {
               if (e.keyCode === 8 && !e.target.value) {
                 return window.location = 'javascript:Recaptcha.reload()';
               }
             });
-          } else {
-
-          }
-        });
+          });
+        }
         return;
       }
       if (location.hostname === 'images.4chan.org') {
@@ -3072,7 +3104,6 @@
         return;
       }
       $.ready(options.init);
-      $.on(window, 'message', Main.message);
       now = Date.now();
       if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
         $.ready(function() {
@@ -3159,9 +3190,12 @@
       return $.on($('form[name=delform]'), 'DOMNodeInserted', Main.node);
     },
     message: function(e) {
-      var version;
-      version = e.data.version;
-      if (version && version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
+      var data, version;
+      data = e.data;
+      version = data.version;
+      if (data.qr && !data.changeContext) {
+        return qr.message.receive(data);
+      } else if (version && version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
         return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + version + "/4chan_x.user.js";
       }
     },

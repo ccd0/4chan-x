@@ -1125,7 +1125,8 @@ qr =
   <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=#{if g.dead then '404 disabled' else 'Submit'}></div>
   <label#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image?</label>
   <div class=error></div>
-</form>"
+</form>
+<iframe id=iframe src=http://sys.4chan.org/post hidden></iframe>"
     unless g.REPLY
       $.on $('select',    qr.el), 'mousedown', (e) -> e.stopPropagation()
     $.on $('#autohide',   qr.el), 'click',     qr.hide
@@ -1147,6 +1148,7 @@ qr =
     #     qr.inputs[match[1]].value = JSON.parse e.newValue
 
     qr.captcha.init()
+    qr.message.init()
     $.add d.body, qr.el
 
   submit: (e) ->
@@ -1175,6 +1177,32 @@ qr =
 
     new qr.reply().select() if qr.replies.length is 1
     reply.rm()
+
+  message:
+    init: ->
+      # http://code.google.com/p/chromium/issues/detail?id=20773
+      # Let content scripts see other frames (instead of them being undefined)
+      # To access the parent, we have to break out of the sandbox and evaluate
+      # in the global context.
+      code = (e) ->
+        {data} = e
+        return unless data.changeContext
+        delete data.changeContext
+        host = location.hostname
+        if host is 'boards.4chan.org'
+          document.getElementById('iframe').contentWindow.postMessage data, '*'
+        else if host is 'sys.4chan.org'
+          parent.postMessage data, '*'
+      script = $.el 'script',
+        textContent: "window.addEventListener('message',#{code},false)"
+      $.add d.documentElement, script
+      $.rm script
+    send: (data) ->
+      data.changeContext = true
+      data.qr = true
+      postMessage data, '*'
+    receive: (data) ->
+      log 'receive', location.hostname, data
 
 options =
   init: ->
@@ -2333,21 +2361,21 @@ Main =
     else
       g.PAGENUM = parseInt(temp) or 0
 
+    $.on window, 'message', Main.message
+
     if location.hostname is 'sys.4chan.org'
-      $.ready ->
-        if /report/.test location.search
+      if location.pathname is '/post'
+        qr.message.init()
+      else if /report/.test location.search
+        $.ready ->
           $.on $('#recaptcha_response_field'), 'keydown', (e) ->
             window.location = 'javascript:Recaptcha.reload()' if e.keyCode is 8 and not e.target.value
-        else
-          # posting
       return
     if location.hostname is 'images.4chan.org'
       $.ready -> redirect.init() if d.title is '4chan - 404'
       return
 
     $.ready options.init
-
-    $.on window, 'message', Main.message
 
     now = Date.now()
     if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
@@ -2486,8 +2514,11 @@ Main =
     $.on $('form[name=delform]'), 'DOMNodeInserted', Main.node
 
   message: (e) ->
-    {version} = e.data
-    if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
+    {data} = e
+    {version} = data
+    if data.qr and not data.changeContext
+      qr.message.receive data
+    else if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   node: (e) ->
