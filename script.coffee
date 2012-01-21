@@ -1046,6 +1046,53 @@ qr =
       url.revokeObjectURL @url
       delete @
 
+  captcha:
+    init: ->
+      @img       = $ '.captcha > img', qr.el
+      @input     = $ '[name=captcha]', qr.el
+      @challenge = $.id 'recaptcha_challenge_field_holder'
+      $.on @img.parentNode, 'click',              @reload
+      $.on @input,          'keydown',            @keydown
+      $.on @challenge,      'DOMNodeInserted', => @load()
+      $.on window,          'storage',     (e) => @count JSON.parse(e.newValue).length if e.key is "#{NAMESPACE}captchas"
+      @count $.get('captchas', []).length
+      @load()
+      # prevent original captcha input from being focused on reload
+      window.location = 'javascript:Recaptcha.focus_response_field=function(){}'
+    save: ->
+      return unless response = @input.value
+      captchas = $.get 'captchas', []
+      # remove old captchas
+      now = Date.now()
+      while captchas[0].time < now
+        captchas.shift()
+      length = captchas.push
+        challenge: @challenge.firstChild.value
+        response:  response
+        time:      @timeout
+      $.set 'captchas', captchas
+      @count length
+      @reload()
+    load: ->
+      @timeout = Date.now() + 25*MINUTE
+      challenge = @challenge.firstChild.value
+      @img.alt = challenge
+      @img.src = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
+      @input.value = null
+    count: (count) ->
+      @input.placeholder = "Verification (#{count} cached captchas)"
+    reload: ->
+      window.location = 'javascript:Recaptcha.reload()'
+      qr.captcha.input.focus()
+    keydown: (e) ->
+      c = qr.captcha
+      if e.keyCode is 8 and not c.input.value
+        c.reload()
+      else if e.keyCode is 13 and e.shiftKey
+        c.save()
+      else
+        return
+      e.preventDefault()
 
   dialog: ->
     # create a new thread or select thread to reply to
@@ -1073,8 +1120,8 @@ qr =
   <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
   <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
-  <div class=captcha><img></div>
-  <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>
+  <div class=captcha title=Reload><img></div>
+  <div><input name=captcha title=Verification class=field size=1></div>
   <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=#{if g.dead then '404 disabled' else 'Submit'}></div>
   <label#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image?</label>
   <div class=error></div>
@@ -1099,6 +1146,7 @@ qr =
     #   if match = e.key.match /qr_(.+)$/
     #     qr.inputs[match[1]].value = JSON.parse e.newValue
 
+    qr.captcha.init()
     $.add d.body, qr.el
 
   submit: (e) ->
@@ -2607,6 +2655,8 @@ textarea.field {
 }
 .captcha {
   background: #FFF;
+  outline: 1px solid #CCC;
+  outline-offset: -1px;
   text-align: center;
 }
 .captcha > img {

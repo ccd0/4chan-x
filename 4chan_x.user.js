@@ -1406,6 +1406,71 @@
       return _Class;
 
     })(),
+    captcha: {
+      init: function() {
+        var _this = this;
+        this.img = $('.captcha > img', qr.el);
+        this.input = $('[name=captcha]', qr.el);
+        this.challenge = $.id('recaptcha_challenge_field_holder');
+        $.on(this.img.parentNode, 'click', this.reload);
+        $.on(this.input, 'keydown', this.keydown);
+        $.on(this.challenge, 'DOMNodeInserted', function() {
+          return _this.load();
+        });
+        $.on(window, 'storage', function(e) {
+          if (e.key === ("" + NAMESPACE + "captchas")) {
+            return _this.count(JSON.parse(e.newValue).length);
+          }
+        });
+        this.count($.get('captchas', []).length);
+        this.load();
+        return window.location = 'javascript:Recaptcha.focus_response_field=function(){}';
+      },
+      save: function() {
+        var captchas, length, now, response;
+        if (!(response = this.input.value)) return;
+        captchas = $.get('captchas', []);
+        now = Date.now();
+        while (captchas[0].time < now) {
+          captchas.shift();
+        }
+        length = captchas.push({
+          challenge: this.challenge.firstChild.value,
+          response: response,
+          time: this.timeout
+        });
+        $.set('captchas', captchas);
+        this.count(length);
+        return this.reload();
+      },
+      load: function() {
+        var challenge;
+        this.timeout = Date.now() + 25 * MINUTE;
+        challenge = this.challenge.firstChild.value;
+        this.img.alt = challenge;
+        this.img.src = "http://www.google.com/recaptcha/api/image?c=" + challenge;
+        return this.input.value = null;
+      },
+      count: function(count) {
+        return this.input.placeholder = "Verification (" + count + " cached captchas)";
+      },
+      reload: function() {
+        window.location = 'javascript:Recaptcha.reload()';
+        return qr.captcha.input.focus();
+      },
+      keydown: function(e) {
+        var c;
+        c = qr.captcha;
+        if (e.keyCode === 8 && !c.input.value) {
+          c.reload();
+        } else if (e.keyCode === 13 && e.shiftKey) {
+          c.save();
+        } else {
+          return;
+        }
+        return e.preventDefault();
+      }
+    },
     dialog: function() {
       var input, mimeTypes, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
       if (!g.REPLY) {
@@ -1428,7 +1493,7 @@
         }
       });
       qr.mimeTypes = mimeTypes.split(', ');
-      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha><img></div>  <div><input name=captcha title=Verification placeholder=Verification class=field size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=" + (g.dead ? '404 disabled' : 'Submit') + "></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form>");
+      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=" + (g.dead ? '404 disabled' : 'Submit') + "></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form>");
       if (!g.REPLY) {
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
@@ -1458,6 +1523,7 @@
           return qr.selected[this.name] = this.value;
         });
       }
+      qr.captcha.init();
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
@@ -3265,6 +3331,8 @@ textarea.field {\
 }\
 .captcha {\
   background: #FFF;\
+  outline: 1px solid #CCC;\
+  outline-offset: -1px;\
   text-align: center;\
 }\
 .captcha > img {\
