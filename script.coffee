@@ -910,7 +910,7 @@ qr =
   error: (err) ->
     $('.error', qr.el).textContent = err
     qr.open()
-    alert err
+    alert err if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
     $('.error', qr.el).textContent = null
 
@@ -1064,8 +1064,9 @@ qr =
       captchas = $.get 'captchas', []
       # remove old captchas
       now = Date.now()
-      while captchas[0].time < now
-        captchas.shift()
+      if captchas.length
+        while captchas[0].time < now
+          captchas.shift()
       length = captchas.push
         challenge: @challenge.firstChild.value
         response:  response
@@ -1153,12 +1154,55 @@ qr =
 
   submit: (e) ->
     e?.preventDefault()
-    return if g.dead
-    if conf['Auto Hide QR'] # and only one post (left) to submit
+    reply = qr.replies[0]
+
+    # prevent errors
+    unless reply.com or reply.file
+      err = 'Error: No file selected.'
+    else
+      # get oldest valid captcha
+      captchas = $.get 'captchas', []
+      if len = captchas.length
+        # remove old captchas
+        now = Date.now()
+        while captchas[0].time < now
+          captchas.shift()
+      if captcha  = captchas.shift()
+        challenge = captcha.challenge
+        response  = captcha.response
+      else
+        challenge    = qr.captcha.img.alt
+        if response  = qr.captcha.input.value then qr.captcha.reload()
+      $.set 'captchas', captchas
+      qr.captcha.count captchas.length
+      unless response
+        err = 'Error: No valid captcha.'
+
+    # more error prevention ?
+    if err
+      qr.error err
+      return
+    qr.cleanError()
+
+    if conf['Auto Hide QR'] and qr.replies.length is 1
       $.id('autohide').checked = true
       qr.hide()
-    qr.cleanError()
-    # magical xhr2
+
+    qr.message.send
+      resto:
+        if g.REPLY
+          g.THREAD_ID
+        else if resto = $('select').value isnt 'new'
+          resto
+      name:  reply.name
+      email: reply.email
+      sub:   reply.sub
+      com:   reply.com
+      file:  reply.file
+      mode:  'regist'
+      pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
+      recaptcha_challenge_field: challenge
+      recaptcha_response_field:  response
 
   response: (e) ->
     log e
@@ -1199,7 +1243,7 @@ qr =
       $.rm script
     send: (data) ->
       data.changeContext = true
-      data.qr = true
+      data.qr            = true
       postMessage data, '*'
     receive: (data) ->
       log 'receive', location.hostname, data

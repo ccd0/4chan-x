@@ -1249,7 +1249,9 @@
     error: function(err) {
       $('.error', qr.el).textContent = err;
       qr.open();
-      return alert(err);
+      if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
+        return alert(err);
+      }
     },
     cleanError: function() {
       return $('.error', qr.el).textContent = null;
@@ -1432,8 +1434,10 @@
         if (!(response = this.input.value)) return;
         captchas = $.get('captchas', []);
         now = Date.now();
-        while (captchas[0].time < now) {
-          captchas.shift();
+        if (captchas.length) {
+          while (captchas[0].time < now) {
+            captchas.shift();
+          }
         }
         length = captchas.push({
           challenge: this.challenge.firstChild.value,
@@ -1529,13 +1533,51 @@
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
+      var captcha, captchas, challenge, err, len, m, now, reply, response, resto;
       if (e != null) e.preventDefault();
-      if (g.dead) return;
-      if (conf['Auto Hide QR']) {
+      reply = qr.replies[0];
+      if (!(reply.com || reply.file)) {
+        err = 'Error: No file selected.';
+      } else {
+        captchas = $.get('captchas', []);
+        if (len = captchas.length) {
+          now = Date.now();
+          while (captchas[0].time < now) {
+            captchas.shift();
+          }
+        }
+        if (captcha = captchas.shift()) {
+          challenge = captcha.challenge;
+          response = captcha.response;
+        } else {
+          challenge = qr.captcha.img.alt;
+          if (response = qr.captcha.input.value) qr.captcha.reload();
+        }
+        $.set('captchas', captchas);
+        qr.captcha.count(captchas.length);
+        if (!response) err = 'Error: No valid captcha.';
+      }
+      if (err) {
+        qr.error(err);
+        return;
+      }
+      qr.cleanError();
+      if (conf['Auto Hide QR'] && qr.replies.length === 1) {
         $.id('autohide').checked = true;
         qr.hide();
       }
-      return qr.cleanError();
+      return qr.message.send({
+        resto: g.REPLY ? g.THREAD_ID : (resto = $('select').value !== 'new') ? resto : void 0,
+        name: reply.name,
+        email: reply.email,
+        sub: reply.sub,
+        com: reply.com,
+        file: reply.file,
+        mode: 'regist',
+        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
+        recaptcha_challenge_field: challenge,
+        recaptcha_response_field: response
+      });
     },
     response: function(e) {
       var reply, sage;
