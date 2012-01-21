@@ -294,7 +294,6 @@
   not chainable
   */
 
-
   $ = function(selector, root) {
     if (root == null) root = d.body;
     return root.querySelector(selector);
@@ -450,7 +449,6 @@
             0200 EST (UTC-05) = 0700 UTC
             0200 EDT (UTC-04) = 0600 UTC
       */
-
       var D, date, day, hours, month, sunday;
       D = new Date();
       date = D.getUTCDate();
@@ -1640,7 +1638,6 @@
           captchas expire after 30 minutes, see window.RecaptchaState.timeout.
           cutoff 5 minutes before then, b/c posting takes time.
       */
-
       cutoff = Date.now() - 25 * MINUTE;
       captchas = $.get('captchas', []);
       while (captcha = captchas.shift()) {
@@ -1742,7 +1739,6 @@
             To access the parent, we have to break out of the sandbox and evaluate
             in the global context.
       */
-
       $.globalEval(function() {
         var data, node, _ref;
         data = {};
@@ -2038,7 +2034,6 @@
               This saves bandwidth for both the user and the servers, avoid unnecessary computation,
               and won't load images and scripts when parsing the response.
         */
-
         if (this.status === 304) {
           if (conf['Verbose']) {
             updater.count.textContent = '+0';
