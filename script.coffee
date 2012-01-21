@@ -619,7 +619,7 @@ replyHiding =
       name = $('.commentpostername', reply).textContent
       trip = $('.postertrip', reply)?.textContent or ''
       a = $.el 'a',
-        textContent: "[ + ] #{name} #{trip}"
+        innerHTML: "<span>[ + ]</span> #{name} #{trip}"
         href: 'javascript:;'
       $.on a, 'click', replyHiding.cb.show
 
@@ -1519,7 +1519,7 @@ threadHiding =
       trip = $('.postername + .postertrip', thread)?.textContent or ''
 
       a = $.el 'a',
-        textContent: "[ + ] #{name}#{trip} (#{text})"
+        innerHTML: "<span>[ + ]</span> #{name}#{trip} (#{text})"
         href: 'javascript:;'
       $.on a, 'click', threadHiding.cb.show
 

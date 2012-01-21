@@ -69,7 +69,7 @@
 
 (function() {
   var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, VERSION, anonymize, conf, config, cooldown, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base,
-    __slice = Array.prototype.slice;
+    __slice = [].slice;
 
   config = {
     main: {
@@ -294,6 +294,7 @@
   not chainable
   */
 
+
   $ = function(selector, root) {
     if (root == null) root = d.body;
     return root.querySelector(selector);
@@ -449,6 +450,7 @@
             0200 EST (UTC-05) = 0700 UTC
             0200 EDT (UTC-04) = 0600 UTC
       */
+
       var D, date, day, hours, month, sunday;
       D = new Date();
       date = D.getUTCDate();
@@ -851,7 +853,7 @@
         name = $('.commentpostername', reply).textContent;
         trip = ((_ref = $('.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
-          textContent: "[ + ] " + name + " " + trip,
+          innerHTML: "<span>[ + ]</span> " + name + " " + trip,
           href: 'javascript:;'
         });
         $.on(a, 'click', replyHiding.cb.show);
@@ -1166,10 +1168,10 @@
     },
     threads: [],
     getThread: function(full) {
-      var bottom, i, rect, thread, _len, _ref;
+      var bottom, i, rect, thread, _i, _len, _ref;
       nav.threads = $$('div.thread:not([hidden])');
       _ref = nav.threads;
-      for (i = 0, _len = _ref.length; i < _len; i++) {
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         thread = _ref[i];
         rect = thread.getBoundingClientRect();
         bottom = rect.bottom;
@@ -1638,6 +1640,7 @@
           captchas expire after 30 minutes, see window.RecaptchaState.timeout.
           cutoff 5 minutes before then, b/c posting takes time.
       */
+
       cutoff = Date.now() - 25 * MINUTE;
       captchas = $.get('captchas', []);
       while (captcha = captchas.shift()) {
@@ -1739,6 +1742,7 @@
             To access the parent, we have to break out of the sandbox and evaluate
             in the global context.
       */
+
       $.globalEval(function() {
         var data, node, _ref;
         data = {};
@@ -1904,7 +1908,7 @@
         name = $('.postername', thread).textContent;
         trip = ((_ref = $('.postername + .postertrip', thread)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
-          textContent: "[ + ] " + name + trip + " (" + text + ")",
+          innerHTML: "<span>[ + ]</span> " + name + trip + " (" + text + ")",
           href: 'javascript:;'
         });
         $.on(a, 'click', threadHiding.cb.show);
@@ -2034,6 +2038,7 @@
               This saves bandwidth for both the user and the servers, avoid unnecessary computation,
               and won't load images and scripts when parsing the response.
         */
+
         if (this.status === 304) {
           if (conf['Verbose']) {
             updater.count.textContent = '+0';
@@ -2236,12 +2241,12 @@
         return prefix.match(/(\w+)\./)[1];
       });
       return g.callbacks.push(function(root) {
-        var i, link, prefix, span, suffix, _len, _ref, _results;
+        var i, link, prefix, span, suffix, _i, _len, _ref, _results;
         if (root.className === 'inline' || !(span = $('.filesize', root))) return;
         suffix = $('a', span).href;
         _ref = sauce.prefixes;
         _results = [];
-        for (i = 0, _len = _ref.length; i < _len; i++) {
+        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
           prefix = _ref[i];
           link = $.el('a', {
             textContent: sauce.names[i],
@@ -2759,11 +2764,11 @@
       if (unread.replies.length === 1) return Favicon.update();
     },
     scroll: function() {
-      var bottom, height, i, reply, _len, _ref;
+      var bottom, height, i, reply, _i, _len, _ref;
       updater.focus = true;
       height = d.body.clientHeight;
       _ref = unread.replies;
-      for (i = 0, _len = _ref.length; i < _len; i++) {
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         reply = _ref[i];
         bottom = reply.getBoundingClientRect().bottom;
         if (bottom > height) break;
