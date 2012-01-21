@@ -69,7 +69,7 @@
 
 (function() {
   var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, Recaptcha, SECOND, Time, VERSION, anonymize, conf, config, cooldown, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base,
-    __slice = [].slice;
+    __slice = Array.prototype.slice;
 
   config = {
     main: {
@@ -1168,10 +1168,10 @@
     },
     threads: [],
     getThread: function(full) {
-      var bottom, i, rect, thread, _i, _len, _ref;
+      var bottom, i, rect, thread, _len, _ref;
       nav.threads = $$('div.thread:not([hidden])');
       _ref = nav.threads;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      for (i = 0, _len = _ref.length; i < _len; i++) {
         thread = _ref[i];
         rect = thread.getBoundingClientRect();
         bottom = rect.bottom;
@@ -2241,12 +2241,12 @@
         return prefix.match(/(\w+)\./)[1];
       });
       return g.callbacks.push(function(root) {
-        var i, link, prefix, span, suffix, _i, _len, _ref, _results;
+        var i, link, prefix, span, suffix, _len, _ref, _results;
         if (root.className === 'inline' || !(span = $('.filesize', root))) return;
         suffix = $('a', span).href;
         _ref = sauce.prefixes;
         _results = [];
-        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        for (i = 0, _len = _ref.length; i < _len; i++) {
           prefix = _ref[i];
           link = $.el('a', {
             textContent: sauce.names[i],
@@ -2764,11 +2764,11 @@
       if (unread.replies.length === 1) return Favicon.update();
     },
     scroll: function() {
-      var bottom, height, i, reply, _i, _len, _ref;
+      var bottom, height, i, reply, _len, _ref;
       updater.focus = true;
       height = d.body.clientHeight;
       _ref = unread.replies;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      for (i = 0, _len = _ref.length; i < _len; i++) {
         reply = _ref[i];
         bottom = reply.getBoundingClientRect().bottom;
         if (bottom > height) break;
