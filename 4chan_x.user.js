@@ -319,7 +319,7 @@
     id: function(id) {
       return d.getElementById(id);
     },
-    ajax: function(url, cb, opts) {
+    ajax: function(url, cb, opts, form) {
       var event, headers, key, r, type, val;
       if (opts == null) opts = {};
       type = opts.type, event = opts.event, headers = opts.headers;
@@ -332,7 +332,7 @@
         r.setRequestHeader(key, val);
       }
       r[event] = cb;
-      r.send();
+      r.send(form);
       return r;
     },
     cache: function(url, cb) {
@@ -1533,8 +1533,9 @@
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
-      var captcha, captchas, challenge, err, len, m, now, reply, response, resto;
+      var captcha, captchas, challenge, err, len, m, now, reply, response, _ref;
       if (e != null) e.preventDefault();
+      if ((_ref = qr.ajax) != null) _ref.abort();
       reply = qr.replies[0];
       if (!(reply.com || reply.file)) {
         err = 'Error: No file selected.';
@@ -1567,12 +1568,13 @@
         qr.hide();
       }
       return qr.message.send({
-        resto: g.REPLY ? g.THREAD_ID : (resto = $('select').value !== 'new') ? resto : void 0,
+        board: g.BOARD,
+        resto: g.THREAD_ID || $('select', qr.el).value,
         name: reply.name,
         email: reply.email,
         sub: reply.sub,
         com: reply.com,
-        file: reply.file,
+        upfile: reply.file,
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
@@ -1581,7 +1583,8 @@
     },
     response: function(e) {
       var reply, sage;
-      log(e);
+      log(e, qr.ajax);
+      return;
       if (!(conf['Persistent QR'] || qr.replies.length > 1)) qr.close();
       sage = /sage/i.test(reply.email);
       reply = qr.replies[0];
@@ -1618,7 +1621,20 @@
         return postMessage(data, '*');
       },
       receive: function(data) {
-        return log('receive', location.hostname, data);
+        var form, name, url, val;
+        delete data.qr;
+        if (data.mode === 'regist') {
+          url = "http://sys.4chan.org/" + data.board + "/post?" + (Date.now());
+          delete data.board;
+          form = new FormData();
+          for (name in data) {
+            val = data[name];
+            if (val) form.append(name, val);
+          }
+          return qr.ajax = $.ajax(url, qr.response, {
+            type: 'post'
+          }, form);
+        }
       }
     }
   };

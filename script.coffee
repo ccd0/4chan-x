@@ -230,7 +230,7 @@ $.extend $,
     $.on d, 'DOMContentLoaded', cb
   id: (id) ->
     d.getElementById id
-  ajax: (url, cb, opts={}) ->
+  ajax: (url, cb, opts={}, form) ->
     {type, event, headers} = opts
     type  or= 'get'
     event or= 'onload'
@@ -239,7 +239,7 @@ $.extend $,
     for key, val of headers
       r.setRequestHeader key, val
     r[event] = cb
-    r.send()
+    r.send form
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -1154,6 +1154,7 @@ qr =
 
   submit: (e) ->
     e?.preventDefault()
+    qr.ajax?.abort()
     reply = qr.replies[0]
 
     # prevent errors
@@ -1189,23 +1190,21 @@ qr =
       qr.hide()
 
     qr.message.send
-      resto:
-        if g.REPLY
-          g.THREAD_ID
-        else if resto = $('select').value isnt 'new'
-          resto
-      name:  reply.name
-      email: reply.email
-      sub:   reply.sub
-      com:   reply.com
-      file:  reply.file
-      mode:  'regist'
+      board: g.BOARD
+      resto: g.THREAD_ID or $('select', qr.el).value
+      name:   reply.name
+      email:  reply.email
+      sub:    reply.sub
+      com:    reply.com
+      upfile: reply.file
+      mode:   'regist'
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
 
   response: (e) ->
-    log e
+    log e, qr.ajax
+    return
     # successful posting/error handling
 
     unless conf['Persistent QR'] or qr.replies.length > 1
@@ -1246,7 +1245,15 @@ qr =
       data.qr            = true
       postMessage data, '*'
     receive: (data) ->
-      log 'receive', location.hostname, data
+      delete data.qr
+      if data.mode is 'regist' # reply object: we're posting
+        # fool CloudFlare's cache to hopefully avoid connection errors
+        url = "http://sys.4chan.org/#{data.board}/post?#{Date.now()}"
+        delete data.board
+        form = new FormData()
+        for name, val of data
+          form.append name, val if val
+        qr.ajax = $.ajax url, qr.response, type: 'post', form
 
 options =
   init: ->
