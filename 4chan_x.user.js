@@ -1592,6 +1592,7 @@
         reader = new FileReader();
         reader.onload = function() {
           file.buffer = this.result;
+          file.name = reply.file.name;
           file.type = reply.file.type;
           post.upfile = file;
           return qr.message.send(post);
@@ -1652,6 +1653,7 @@
         if (data.mode === 'regist') {
           url = "http://sys.4chan.org/" + data.board + "/post?" + (Date.now());
           delete data.board;
+          form = new FormData();
           if (engine === 'gecko' && data.upfile) {
             l = data.upfile.buffer.length;
             ui8a = new Uint8Array(l);
@@ -1660,9 +1662,9 @@
             }
             bb = new MozBlobBuilder();
             bb.append(ui8a.buffer);
-            data.upfile = bb.getBlob(data.upfile.type);
+            form.append('upfile', bb.getBlob(data.upfile.type), data.upfile.name);
+            delete data.upfile;
           }
-          form = new FormData();
           for (name in data) {
             val = data[name];
             if (val) form.append(name, val);

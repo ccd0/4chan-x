@@ -1213,6 +1213,7 @@ qr =
       reader = new FileReader()
       reader.onload = ->
         file.buffer = @result
+        file.name   = reply.file.name
         file.type   = reply.file.type
         post.upfile = file
         qr.message.send post
@@ -1273,6 +1274,7 @@ qr =
         # fool CloudFlare's cache to hopefully avoid connection errors
         url = "http://sys.4chan.org/#{data.board}/post?#{Date.now()}"
         delete data.board
+        form = new FormData()
         if engine is 'gecko' and data.upfile
           # binary string to ArrayBuffer code from Aeosynth's 4chan X
           l = data.upfile.buffer.length
@@ -1281,8 +1283,10 @@ qr =
             ui8a[i] = data.upfile.buffer.charCodeAt i
           bb = new MozBlobBuilder()
           bb.append ui8a.buffer
-          data.upfile = bb.getBlob data.upfile.type
-        form = new FormData()
+          # https://bugzilla.mozilla.org/show_bug.cgi?id=690659
+          # Firefox does not support assigning a filename when appending a blob to a FormData
+          form.append 'upfile', bb.getBlob(data.upfile.type), data.upfile.name
+          delete data.upfile
         for name, val of data
           form.append name, val if val
         qr.ajax = $.ajax url, qr.response, type: 'post', form
