@@ -1538,7 +1538,7 @@
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
-      var bb, blob, captcha, captchas, challenge, err, m, now, reply, response;
+      var captcha, captchas, challenge, err, file, m, now, post, reader, reply, response;
       if (e != null) e.preventDefault();
       qr.message.send({
         abort: true
@@ -1574,28 +1574,36 @@
         $.id('autohide').checked = true;
         qr.hide();
       }
-      if (engine === 'gecko' && reply.file) {
-        bb = new MozBlobBuilder();
-        bb.append(reply.file);
-        blob = bb.getBlob(reply.file.type);
-      }
-      return qr.message.send({
+      post = {
         board: g.BOARD,
         resto: g.THREAD_ID || $('select', qr.el).value,
         name: reply.name,
         email: reply.email,
         sub: reply.sub,
         com: reply.com,
-        upfile: blob || reply.file,
+        upfile: reply.file,
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response
-      });
+      };
+      if (engine === 'gecko' && reply.file) {
+        file = {};
+        reader = new FileReader();
+        reader.onload = function() {
+          file.buffer = this.result;
+          file.type = reply.file.type;
+          post.upfile = file;
+          return qr.message.send(post);
+        };
+        reader.readAsArrayBuffer(reply.file);
+        return;
+      }
+      return qr.message.send(post);
     },
     response: function(e) {
       var reply, sage;
-      log(e, qr.ajax);
+      log(e);
       return;
       if (!(conf['Persistent QR'] || qr.replies.length > 1)) qr.close();
       sage = /sage/i.test(reply.email);
@@ -1635,7 +1643,7 @@
         return postMessage(data, '*');
       },
       receive: function(data) {
-        var form, name, url, val, _ref;
+        var bb, form, name, url, val, _ref;
         if (data.abort) {
           if ((_ref = qr.ajax) != null) _ref.abort();
           return;
@@ -1644,6 +1652,11 @@
         if (data.mode === 'regist') {
           url = "http://sys.4chan.org/" + data.board + "/post?" + (Date.now());
           delete data.board;
+          if (engine === 'gecko' && data.upfile) {
+            bb = new MozBlobBuilder();
+            bb.append(data.upfile.buffer);
+            data.upfile = bb.getBlob(data.upfile.type);
+          }
           form = new FormData();
           for (name in data) {
             val = data[name];

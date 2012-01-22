@@ -1192,29 +1192,37 @@ qr =
       $.id('autohide').checked = true
       qr.hide()
 
-    if engine is 'gecko' and reply.file
-      # https://bugzilla.mozilla.org/show_bug.cgi?id=673742
-      # We plan to allow postMessaging Files and FileLists across origins,
-      # that just needs a more in depth security review.
-      bb   = new MozBlobBuilder()
-      bb.append reply.file
-      blob   = bb.getBlob reply.file.type
-
-    qr.message.send
+    post =
       board: g.BOARD
       resto: g.THREAD_ID or $('select', qr.el).value
       name:   reply.name
       email:  reply.email
       sub:    reply.sub
       com:    reply.com
-      upfile: blob or reply.file
+      upfile: reply.file
       mode:   'regist'
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
 
+    if engine is 'gecko' and reply.file
+      # https://bugzilla.mozilla.org/show_bug.cgi?id=673742
+      # We plan to allow postMessaging Files and FileLists across origins,
+      # that just needs a more in depth security review.
+      file = {}
+      reader = new FileReader()
+      reader.onload = ->
+        file.buffer = @result
+        file.type   = reply.file.type
+        post.upfile = file
+        qr.message.send post
+      reader.readAsArrayBuffer reply.file
+      return
+
+    qr.message.send post
+
   response: (e) ->
-    log e, qr.ajax
+    log e
     return
     # successful posting/error handling
 
@@ -1265,6 +1273,10 @@ qr =
         # fool CloudFlare's cache to hopefully avoid connection errors
         url = "http://sys.4chan.org/#{data.board}/post?#{Date.now()}"
         delete data.board
+        if engine is 'gecko' and data.upfile
+          bb = new MozBlobBuilder()
+          bb.append data.upfile.buffer
+          data.upfile = bb.getBlob data.upfile.type
         form = new FormData()
         for name, val of data
           form.append name, val if val
