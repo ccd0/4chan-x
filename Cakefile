@@ -56,6 +56,7 @@ HEADER  = """
  *
  * CONTRIBUTORS
  *
+ * seaweed - bottom padding for image hover
  * e000 - cooldown sanity check
  * ahokadesuka - scroll back when unexpanding images
  * Shou- - pentadactyl fixes

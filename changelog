@@ -7,6 +7,8 @@ master
   Prevent absurd cooldown durations.
 - Mayhem
   Better image expanding reload, should fool CloudFlare's cache.
+- seaweed
+  Prevent the hover image to be partially masked by the url preview/status bar.
 
 2.24.3
 - Mayhem
