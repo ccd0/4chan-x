@@ -1538,15 +1538,17 @@
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
-      var captcha, captchas, challenge, err, len, m, now, reply, response, _ref;
+      var bb, blob, captcha, captchas, challenge, err, m, now, reply, response;
       if (e != null) e.preventDefault();
-      if ((_ref = qr.ajax) != null) _ref.abort();
+      qr.message.send({
+        abort: true
+      });
       reply = qr.replies[0];
       if (!(reply.com || reply.file)) {
         err = 'Error: No file selected.';
       } else {
         captchas = $.get('captchas', []);
-        if (len = captchas.length) {
+        if (captchas.length) {
           now = Date.now();
           while (captchas[0].time < now) {
             captchas.shift();
@@ -1572,6 +1574,11 @@
         $.id('autohide').checked = true;
         qr.hide();
       }
+      if (engine === 'gecko' && reply.file) {
+        bb = new MozBlobBuilder();
+        bb.append(reply.file);
+        blob = bb.getBlob(reply.file.type);
+      }
       return qr.message.send({
         board: g.BOARD,
         resto: g.THREAD_ID || $('select', qr.el).value,
@@ -1579,7 +1586,7 @@
         email: reply.email,
         sub: reply.sub,
         com: reply.com,
-        upfile: reply.file,
+        upfile: blob || reply.file,
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
@@ -1628,7 +1635,11 @@
         return postMessage(data, '*');
       },
       receive: function(data) {
-        var form, name, url, val;
+        var form, name, url, val, _ref;
+        if (data.abort) {
+          if ((_ref = qr.ajax) != null) _ref.abort();
+          return;
+        }
         delete data.qr;
         if (data.mode === 'regist') {
           url = "http://sys.4chan.org/" + data.board + "/post?" + (Date.now());

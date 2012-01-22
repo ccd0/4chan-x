@@ -1157,7 +1157,7 @@ qr =
 
   submit: (e) ->
     e?.preventDefault()
-    qr.ajax?.abort()
+    qr.message.send abort: true
     reply = qr.replies[0]
 
     # prevent errors
@@ -1166,7 +1166,7 @@ qr =
     else
       # get oldest valid captcha
       captchas = $.get 'captchas', []
-      if len = captchas.length
+      if captchas.length
         # remove old captchas
         now = Date.now()
         while captchas[0].time < now
@@ -1192,6 +1192,14 @@ qr =
       $.id('autohide').checked = true
       qr.hide()
 
+    if engine is 'gecko' and reply.file
+      # https://bugzilla.mozilla.org/show_bug.cgi?id=673742
+      # We plan to allow postMessaging Files and FileLists across origins,
+      # that just needs a more in depth security review.
+      bb   = new MozBlobBuilder()
+      bb.append reply.file
+      blob   = bb.getBlob reply.file.type
+
     qr.message.send
       board: g.BOARD
       resto: g.THREAD_ID or $('select', qr.el).value
@@ -1199,7 +1207,7 @@ qr =
       email:  reply.email
       sub:    reply.sub
       com:    reply.com
-      upfile: reply.file
+      upfile: blob or reply.file
       mode:   'regist'
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
@@ -1249,6 +1257,9 @@ qr =
       data.qr            = true
       postMessage data, '*'
     receive: (data) ->
+      if data.abort
+        qr.ajax?.abort()
+        return
       delete data.qr
       if data.mode is 'regist' # reply object: we're posting
         # fool CloudFlare's cache to hopefully avoid connection errors
