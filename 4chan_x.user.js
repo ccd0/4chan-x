@@ -1596,7 +1596,7 @@
           post.upfile = file;
           return qr.message.send(post);
         };
-        reader.readAsArrayBuffer(reply.file);
+        reader.readAsBinaryString(reply.file);
         return;
       }
       return qr.message.send(post);
@@ -1643,7 +1643,7 @@
         return postMessage(data, '*');
       },
       receive: function(data) {
-        var bb, form, name, url, val, _ref;
+        var bb, form, i, l, name, ui8a, url, val, _ref;
         if (data.abort) {
           if ((_ref = qr.ajax) != null) _ref.abort();
           return;
@@ -1653,8 +1653,13 @@
           url = "http://sys.4chan.org/" + data.board + "/post?" + (Date.now());
           delete data.board;
           if (engine === 'gecko' && data.upfile) {
+            l = data.upfile.buffer.length;
+            ui8a = new Uint8Array(l);
+            for (i = 0; 0 <= l ? i < l : i > l; 0 <= l ? i++ : i--) {
+              ui8a[i] = data.upfile.buffer.charCodeAt(i);
+            }
             bb = new MozBlobBuilder();
-            bb.append(data.upfile.buffer);
+            bb.append(ui8a.buffer);
             data.upfile = bb.getBlob(data.upfile.type);
           }
           form = new FormData();

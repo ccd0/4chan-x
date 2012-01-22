@@ -1216,7 +1216,7 @@ qr =
         file.type   = reply.file.type
         post.upfile = file
         qr.message.send post
-      reader.readAsArrayBuffer reply.file
+      reader.readAsBinaryString reply.file
       return
 
     qr.message.send post
@@ -1274,8 +1274,13 @@ qr =
         url = "http://sys.4chan.org/#{data.board}/post?#{Date.now()}"
         delete data.board
         if engine is 'gecko' and data.upfile
+          # binary string to ArrayBuffer code from Aeosynth's 4chan X
+          l = data.upfile.buffer.length
+          ui8a = new Uint8Array l
+          for i in  [0...l]
+            ui8a[i] = data.upfile.buffer.charCodeAt i
           bb = new MozBlobBuilder()
-          bb.append data.upfile.buffer
+          bb.append ui8a.buffer
           data.upfile = bb.getBlob data.upfile.type
         form = new FormData()
         for name, val of data
