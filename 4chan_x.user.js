@@ -1339,10 +1339,10 @@
     reply: (function() {
 
       function _Class(file) {
-        var previous, _ref,
+        var persona, previous, _ref,
           _this = this;
         this.com = null;
-        _ref = (previous = qr.replies[qr.replies.length - 1]) ? [previous.name, /^sage$/.test(previous.email) ? null : previous.email, conf['Remember Subject'] ? previous.sub : null, conf['Remember Spoiler'] ? previous.spoiler : false] : [$.get("qr_name", null), $.get("qr_email", null), conf['Remember Subject'] ? $.get("qr_sub", null) : null, false], this.name = _ref[0], this.email = _ref[1], this.sub = _ref[2], this.spoiler = _ref[3];
+        _ref = (previous = qr.replies[qr.replies.length - 1]) ? [previous.name, /^sage$/.test(previous.email) ? null : previous.email, conf['Remember Subject'] ? previous.sub : null, conf['Remember Spoiler'] ? previous.spoiler : false] : (persona = $.get('qr.persona', {}), [persona.name || null, persona.email || null, conf['Remember Subject'] ? persona.sub || null : null, false]), this.name = _ref[0], this.email = _ref[1], this.sub = _ref[2], this.spoiler = _ref[3];
         this.el = $.el('a', {
           className: 'preview',
           href: 'javascript:;',
@@ -1607,18 +1607,18 @@
       }
       return qr.message.send(post);
     },
-    response: function(e) {
-      var reply, sage;
-      log(e);
-      return;
-      if (!(conf['Persistent QR'] || qr.replies.length > 1)) qr.close();
-      sage = /sage/i.test(reply.email);
+    response: function(html) {
+      var persona, reply, sage;
+      log(html);
+      if (!(conf['Persistent QR'] || qr.replies.length > 1)) {}
       reply = qr.replies[0];
-      $.set("qr_name", reply.name);
-      $.set("qr_email", /^sage$/.test(reply.email) ? null : reply.email);
-      if (conf['Remember Subject']) $.set("qr_sub", reply.sub);
-      if (qr.replies.length === 1) new qr.reply().select();
-      return reply.rm();
+      sage = /sage/i.test(reply.email);
+      persona = {
+        name: reply.name,
+        email: /^sage$/.test(reply.email) ? null : reply.email,
+        sub: conf['Remember Subject'] ? reply.sub : null
+      };
+      return $.set('qr.persona', persona);
     },
     message: {
       init: function() {
@@ -1654,6 +1654,10 @@
           if ((_ref = qr.ajax) != null) _ref.abort();
           return;
         }
+        if (data.response) {
+          qr.response(data.html);
+          return;
+        }
         delete data.qr;
         if (data.mode === 'regist') {
           url = "http://sys.4chan.org/" + data.board + "/post?" + (Date.now());
@@ -1674,7 +1678,12 @@
             val = data[name];
             if (val) form.append(name, val);
           }
-          return qr.ajax = $.ajax(url, qr.response, {
+          return qr.ajax = $.ajax(url, (function() {
+            return qr.message.send({
+              response: true,
+              html: this.response
+            });
+          }), {
             type: 'post'
           }, form);
         }

@@ -998,10 +998,11 @@ qr =
             if conf['Remember Spoiler'] then previous.spoiler else false
           ]
         else
+          persona = $.get 'qr.persona', {}
           [
-            $.get("qr_name",  null),
-            $.get("qr_email", null),
-            if conf['Remember Subject'] then $.get("qr_sub", null) else null,
+            persona.name  or null,
+            persona.email or null,
+            if conf['Remember Subject'] then persona.sub or null else null,
             false
           ]
 
@@ -1226,24 +1227,24 @@ qr =
 
     qr.message.send post
 
-  response: (e) ->
-    log e
-    return
+  response: (html) ->
+    log html
     # successful posting/error handling
 
     unless conf['Persistent QR'] or qr.replies.length > 1
-      qr.close()
+      ;# qr.close()
 
+    reply = qr.replies[0]
     sage = /sage/i.test reply.email
     # cooldown
 
-    reply = qr.replies[0]
-    $.set "qr_name",  reply.name
-    $.set "qr_email", if /^sage$/.test reply.email then null else reply.email
-    $.set "qr_sub",   reply.sub if conf['Remember Subject']
+    persona =
+      name:  reply.name
+      email: if /^sage$/.test reply.email then null else reply.email
+      sub:   if conf['Remember Subject'] then reply.sub else null
+    $.set 'qr.persona', persona
 
-    new qr.reply().select() if qr.replies.length is 1
-    reply.rm()
+    # reply.rm()
 
   message:
     init: ->
@@ -1273,6 +1274,9 @@ qr =
       if data.abort
         qr.ajax?.abort()
         return
+      if data.response # xhr response
+        qr.response data.html
+        return
       delete data.qr
       if data.mode is 'regist' # reply object: we're posting
         # fool CloudFlare's cache to hopefully avoid connection errors
@@ -1293,7 +1297,7 @@ qr =
           delete data.upfile
         for name, val of data
           form.append name, val if val
-        qr.ajax = $.ajax url, qr.response, type: 'post', form
+        qr.ajax = $.ajax url, (-> qr.message.send response: true, html: @response), type: 'post', form
 
 options =
   init: ->
