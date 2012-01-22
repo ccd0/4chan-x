@@ -2278,7 +2278,7 @@
     },
     toggle: function(thread) {
       var id;
-      id = $('.op', thread).id;
+      id = $('.favicon + input', thread).name;
       return watcher.watch(id) || watcher.unwatch(id, g.BOARD);
     },
     unwatch: function(id, board) {

@@ -1810,7 +1810,7 @@ watcher =
       watcher.unwatch thread[3], thread[1]
 
   toggle: (thread) ->
-    id = $('.op', thread).id
+    id = $('.favicon + input', thread).name
     watcher.watch(id) or watcher.unwatch id, g.BOARD
 
   unwatch: (id, board) ->
