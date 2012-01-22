@@ -1188,13 +1188,17 @@ qr =
       return
     qr.cleanError()
 
+    threadID = g.THREAD_ID or $('select', qr.el).value
+
     if conf['Auto Hide QR'] and qr.replies.length is 1
       $.id('autohide').checked = true
       qr.hide()
+    if conf['Thread Watcher'] and conf['Auto Watch Reply'] and threadID isnt 'new'
+      watcher.watch threadID
 
     post =
-      board: g.BOARD
-      resto: g.THREAD_ID or $('select', qr.el).value
+      board:  g.BOARD
+      resto:  threadID
       name:   reply.name
       email:  reply.email
       sub:    reply.sub
@@ -1768,12 +1772,6 @@ watcher =
     #populate watcher, display watch buttons
     watcher.refresh()
 
-    if conf['Auto Watch']
-      unless g.REPLY
-        $('.postarea form').action += '?watch'
-      else if /watch/.test(location.search) and $('img.favicon').src is Favicon.empty
-        watcher.watch null, g.THREAD_ID
-
     $.on window, 'storage', (e) -> watcher.refresh() if e.key is "#{NAMESPACE}watched"
 
   refresh: ->
@@ -1808,33 +1806,28 @@ watcher =
     toggle: ->
       watcher.toggle @parentNode
     x: ->
-      [board, _, id] = @nextElementSibling
-        .getAttribute('href')[1..].split('/')
-      watcher.unwatch board, id
+      thread = @nextElementSibling.pathname.split '/'
+      watcher.unwatch thread[3], thread[1]
 
   toggle: (thread) ->
-    favicon = $ 'img.favicon', thread
-    id = favicon.nextSibling.name
-    if favicon.src == Favicon.empty
-      watcher.watch thread, id
-    else # favicon.src == Favicon.default
-      watcher.unwatch g.BOARD, id
+    id = $('.op', thread).id
+    watcher.watch(id) or watcher.unwatch id, g.BOARD
 
-  unwatch: (board, id) ->
+  unwatch: (id, board) ->
     watched = $.get 'watched', {}
     delete watched[board][id]
     $.set 'watched', watched
     watcher.refresh()
 
-  watch: (thread, id) ->
-    text = getTitle thread
-    props =
-      href: "/#{g.BOARD}/res/#{id}"
-      textContent: text
+  watch: (id) ->
+    thread = $.id id
+    return false if $('.favicon', thread).src is Favicon.default
 
     watched = $.get 'watched', {}
     watched[g.BOARD] or= {}
-    watched[g.BOARD][id] = props
+    watched[g.BOARD][id] =
+      href: "/#{g.BOARD}/res/#{id}"
+      textContent: getTitle thread
     $.set 'watched', watched
     watcher.refresh()
 

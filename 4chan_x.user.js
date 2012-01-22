@@ -1539,7 +1539,7 @@
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
-      var captcha, captchas, challenge, err, file, m, now, post, reader, reply, response;
+      var captcha, captchas, challenge, err, file, m, now, post, reader, reply, response, threadID;
       if (e != null) e.preventDefault();
       qr.message.send({
         abort: true
@@ -1571,13 +1571,17 @@
         return;
       }
       qr.cleanError();
+      threadID = g.THREAD_ID || $('select', qr.el).value;
       if (conf['Auto Hide QR'] && qr.replies.length === 1) {
         $.id('autohide').checked = true;
         qr.hide();
       }
+      if (conf['Thread Watcher'] && conf['Auto Watch Reply'] && threadID !== 'new') {
+        watcher.watch(threadID);
+      }
       post = {
         board: g.BOARD,
-        resto: g.THREAD_ID || $('select', qr.el).value,
+        resto: threadID,
         name: reply.name,
         email: reply.email,
         sub: reply.sub,
@@ -2218,13 +2222,6 @@
         $.before(input, favicon);
       }
       watcher.refresh();
-      if (conf['Auto Watch']) {
-        if (!g.REPLY) {
-          $('.postarea form').action += '?watch';
-        } else if (/watch/.test(location.search) && $('img.favicon').src === Favicon.empty) {
-          watcher.watch(null, g.THREAD_ID);
-        }
-      }
       return $.on(window, 'storage', function(e) {
         if (e.key === ("" + NAMESPACE + "watched")) return watcher.refresh();
       });
@@ -2274,38 +2271,33 @@
         return watcher.toggle(this.parentNode);
       },
       x: function() {
-        var board, id, _, _ref;
-        _ref = this.nextElementSibling.getAttribute('href').slice(1).split('/'), board = _ref[0], _ = _ref[1], id = _ref[2];
-        return watcher.unwatch(board, id);
+        var thread;
+        thread = this.nextElementSibling.pathname.split('/');
+        return watcher.unwatch(thread[3], thread[1]);
       }
     },
     toggle: function(thread) {
-      var favicon, id;
-      favicon = $('img.favicon', thread);
-      id = favicon.nextSibling.name;
-      if (favicon.src === Favicon.empty) {
-        return watcher.watch(thread, id);
-      } else {
-        return watcher.unwatch(g.BOARD, id);
-      }
+      var id;
+      id = $('.op', thread).id;
+      return watcher.watch(id) || watcher.unwatch(id, g.BOARD);
     },
-    unwatch: function(board, id) {
+    unwatch: function(id, board) {
       var watched;
       watched = $.get('watched', {});
       delete watched[board][id];
       $.set('watched', watched);
       return watcher.refresh();
     },
-    watch: function(thread, id) {
-      var props, text, watched, _name;
-      text = getTitle(thread);
-      props = {
-        href: "/" + g.BOARD + "/res/" + id,
-        textContent: text
-      };
+    watch: function(id) {
+      var thread, watched, _name;
+      thread = $.id(id);
+      if ($('.favicon', thread).src === Favicon["default"]) return false;
       watched = $.get('watched', {});
       watched[_name = g.BOARD] || (watched[_name] = {});
-      watched[g.BOARD][id] = props;
+      watched[g.BOARD][id] = {
+        href: "/" + g.BOARD + "/res/" + id,
+        textContent: getTitle(thread)
+      };
       $.set('watched', watched);
       return watcher.refresh();
     }
