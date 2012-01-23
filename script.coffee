@@ -1128,7 +1128,7 @@ qr =
   <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha title=Reload><img></div>
-  <div><input name=captcha title=Verification class=field size=1></div>
+  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>
   <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=#{if g.dead then '404 disabled' else 'Submit'}></div>
   <label#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image?</label>
   <div class=error></div>
