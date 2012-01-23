@@ -1071,16 +1071,14 @@ qr =
       return unless response = @input.value
       captchas = $.get 'captchas', []
       # remove old captchas
-      now = Date.now()
-      if captchas.length
-        while captchas[0].time < now
-          captchas.shift()
-      length = captchas.push
+      while (captcha = captchas[0]) and captcha.time < Date.now()
+        captchas.shift()
+      captchas.push
         challenge: @challenge.firstChild.value
         response:  response
         time:      @timeout
       $.set 'captchas', captchas
-      @count length
+      @count captchas.length
       @reload()
     load: ->
       @timeout = Date.now() + 25*MINUTE
@@ -1170,12 +1168,10 @@ qr =
     else
       # get oldest valid captcha
       captchas = $.get 'captchas', []
-      if captchas.length
-        # remove old captchas
-        now = Date.now()
-        while (time = captchas[0].time) and time < now
-          captchas.shift()
-      if captcha  = captchas.shift()
+      # remove old captchas
+      while (captcha = captchas[0]) and captcha.time < Date.now()
+        captchas.shift()
+      if captcha = captchas.shift()
         challenge = captcha.challenge
         response  = captcha.response
       else

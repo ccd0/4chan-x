@@ -1442,22 +1442,19 @@
         return window.location = 'javascript:(function(){Recaptcha.focus_response_field=function(){}})()';
       },
       save: function() {
-        var captchas, length, now, response;
+        var captcha, captchas, response;
         if (!(response = this.input.value)) return;
         captchas = $.get('captchas', []);
-        now = Date.now();
-        if (captchas.length) {
-          while (captchas[0].time < now) {
-            captchas.shift();
-          }
+        while ((captcha = captchas[0]) && captcha.time < Date.now()) {
+          captchas.shift();
         }
-        length = captchas.push({
+        captchas.push({
           challenge: this.challenge.firstChild.value,
           response: response,
           time: this.timeout
         });
         $.set('captchas', captchas);
-        this.count(length);
+        this.count(captchas.length);
         return this.reload();
       },
       load: function() {
@@ -1545,7 +1542,7 @@
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
-      var captcha, captchas, challenge, err, file, m, now, post, reader, reply, response, threadID, time;
+      var captcha, captchas, challenge, err, file, m, post, reader, reply, response, threadID;
       if (e != null) e.preventDefault();
       qr.message.send({
         abort: true
@@ -1555,11 +1552,8 @@
         err = 'Error: No file selected.';
       } else {
         captchas = $.get('captchas', []);
-        if (captchas.length) {
-          now = Date.now();
-          while ((time = captchas[0].time) && time < now) {
-            captchas.shift();
-          }
+        while ((captcha = captchas[0]) && captcha.time < Date.now()) {
+          captchas.shift();
         }
         if (captcha = captchas.shift()) {
           challenge = captcha.challenge;
