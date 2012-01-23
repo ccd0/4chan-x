@@ -997,8 +997,7 @@ qr =
             if conf['Remember Subject'] then previous.sub else null,
             if conf['Remember Spoiler'] then previous.spoiler else false
           ]
-        else
-          persona = $.get 'qr.persona', {}
+        else if persona = $.get 'qr.persona', {}
           [
             persona.name  or null,
             persona.email or null,

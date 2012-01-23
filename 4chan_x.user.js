@@ -1342,7 +1342,7 @@
         var persona, previous, _ref,
           _this = this;
         this.com = null;
-        _ref = (previous = qr.replies[qr.replies.length - 1]) ? [previous.name, /^sage$/.test(previous.email) ? null : previous.email, conf['Remember Subject'] ? previous.sub : null, conf['Remember Spoiler'] ? previous.spoiler : false] : (persona = $.get('qr.persona', {}), [persona.name || null, persona.email || null, conf['Remember Subject'] ? persona.sub || null : null, false]), this.name = _ref[0], this.email = _ref[1], this.sub = _ref[2], this.spoiler = _ref[3];
+        _ref = (previous = qr.replies[qr.replies.length - 1]) ? [previous.name, /^sage$/.test(previous.email) ? null : previous.email, conf['Remember Subject'] ? previous.sub : null, conf['Remember Spoiler'] ? previous.spoiler : false] : (persona = $.get('qr.persona', {})) ? [persona.name || null, persona.email || null, conf['Remember Subject'] ? persona.sub || null : null, false] : void 0, this.name = _ref[0], this.email = _ref[1], this.sub = _ref[2], this.spoiler = _ref[3];
         this.el = $.el('a', {
           className: 'preview',
           href: 'javascript:;',
