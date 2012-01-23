@@ -1233,6 +1233,9 @@
     close: function() {
       var i, spoiler, _i, _len, _ref;
       qr.el.hidden = true;
+      qr.message.send({
+        abort: true
+      });
       d.activeElement.blur();
       $.removeClass(qr.el, 'dump');
       _ref = qr.replies;
@@ -1542,7 +1545,7 @@
       return $.add(d.body, qr.el);
     },
     submit: function(e) {
-      var captcha, captchas, challenge, err, file, m, now, post, reader, reply, response, threadID;
+      var captcha, captchas, challenge, err, file, m, now, post, reader, reply, response, threadID, time;
       if (e != null) e.preventDefault();
       qr.message.send({
         abort: true
@@ -1554,7 +1557,7 @@
         captchas = $.get('captchas', []);
         if (captchas.length) {
           now = Date.now();
-          while (captchas[0].time < now) {
+          while ((time = captchas[0].time) && time < now) {
             captchas.shift();
           }
         }
@@ -1621,7 +1624,6 @@
         console.dir(b);
         return;
       }
-      if (!(conf['Persistent QR'] || qr.replies.length > 1)) qr.close();
       reply = qr.replies[0];
       sage = /sage/i.test(reply.email);
       persona = {
@@ -1630,11 +1632,15 @@
         sub: conf['Remember Subject'] ? reply.sub : null
       };
       $.set('qr.persona', persona);
-      return reply.rm();
+      if (conf['Persistent QR'] || qr.replies.length > 1) {
+        return reply.rm();
+      } else {
+        return qr.close();
+      }
     },
     message: {
       init: function() {
-        var code, script;
+        var code;
         code = function(e) {
           var data, host;
           data = e.data;
@@ -1647,13 +1653,7 @@
             return parent.postMessage(data, '*');
           }
         };
-        script = $.el('script', {
-          textContent: "window.addEventListener('message'," + code + ",false)"
-        });
-        return $.ready(function() {
-          $.add(d.head, script);
-          return $.rm(script);
-        });
+        return window.location = "javascript:window.addEventListener('message'," + code + ",false)";
       },
       send: function(data) {
         data.changeContext = true;

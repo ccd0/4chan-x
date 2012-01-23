@@ -897,6 +897,7 @@ qr =
       qr.dialog()
   close: ->
     qr.el.hidden = true
+    qr.message.send abort: true
     d.activeElement.blur()
     $.removeClass qr.el, 'dump'
     for i in qr.replies
@@ -1172,7 +1173,7 @@ qr =
       if captchas.length
         # remove old captchas
         now = Date.now()
-        while captchas[0].time < now
+        while (time = captchas[0].time) and time < now
           captchas.shift()
       if captcha  = captchas.shift()
         challenge = captcha.challenge
@@ -1238,9 +1239,6 @@ qr =
       # error handling
       return
 
-    unless conf['Persistent QR'] or qr.replies.length > 1
-      qr.close()
-
     reply = qr.replies[0]
     sage = /sage/i.test reply.email
     # cooldown
@@ -1251,7 +1249,10 @@ qr =
       sub:   if conf['Remember Subject'] then reply.sub else null
     $.set 'qr.persona', persona
 
-    reply.rm()
+    if conf['Persistent QR'] or qr.replies.length > 1
+      reply.rm()
+    else
+      qr.close()
 
   message:
     init: ->
@@ -1268,11 +1269,8 @@ qr =
           document.getElementById('iframe').contentWindow.postMessage data, '*'
         else if host is 'sys.4chan.org'
           parent.postMessage data, '*'
-      script = $.el 'script',
-        textContent: "window.addEventListener('message',#{code},false)"
-      $.ready ->
-        $.add d.head, script
-        $.rm script
+      # do not wait for 4chan to load
+      window.location = "javascript:window.addEventListener('message',#{code},false)"
     send: (data) ->
       data.changeContext = true
       data.qr            = true
