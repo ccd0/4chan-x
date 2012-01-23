@@ -1306,8 +1306,10 @@
         file = this.files[0];
         if (file.size > this.max) {
           qr.error('File too large.');
+          qr.resetFileInput();
         } else if (-1 === qr.mimeTypes.indexOf(file.type)) {
           qr.error('Unsupported file type.');
+          qr.resetFileInput();
         } else {
           qr.selected.setFile(file);
         }
@@ -1399,6 +1401,7 @@
 
       _Class.prototype.rm = function() {
         var index, url;
+        qr.resetFileInput();
         $.rm(this.el);
         index = qr.replies.indexOf(this);
         if (qr.replies.length === 1) {
@@ -1608,9 +1611,17 @@
       return qr.message.send(post);
     },
     response: function(html) {
-      var persona, reply, sage;
-      log(html);
-      if (!(conf['Persistent QR'] || qr.replies.length > 1)) {}
+      var b, persona, reply, sage;
+      b = $('td b', $.el('a', {
+        innerHTML: html
+      }));
+      if (b.childElementCount) {
+        qr.error(b.firstChild.data);
+        log(b);
+        console.dir(b);
+        return;
+      }
+      if (!(conf['Persistent QR'] || qr.replies.length > 1)) qr.close();
       reply = qr.replies[0];
       sage = /sage/i.test(reply.email);
       persona = {
@@ -1618,7 +1629,8 @@
         email: /^sage$/.test(reply.email) ? null : reply.email,
         sub: conf['Remember Subject'] ? reply.sub : null
       };
-      return $.set('qr.persona', persona);
+      $.set('qr.persona', persona);
+      return reply.rm();
     },
     message: {
       init: function() {

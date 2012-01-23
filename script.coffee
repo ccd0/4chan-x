@@ -962,8 +962,10 @@ qr =
       file = @files[0]
       if file.size > @max
         qr.error 'File too large.'
+        qr.resetFileInput()
       else if -1 is qr.mimeTypes.indexOf file.type
         qr.error 'Unsupported file type.'
+        qr.resetFileInput()
       else
         qr.selected.setFile file
       return
@@ -1039,6 +1041,7 @@ qr =
         $("[name=#{data}]", qr.el).value = @[data]
       $('#spoiler', qr.el).checked = @spoiler
     rm: ->
+      qr.resetFileInput()
       $.rm @el
       index = qr.replies.indexOf @
       if qr.replies.length is 1
@@ -1227,11 +1230,16 @@ qr =
     qr.message.send post
 
   response: (html) ->
-    log html
-    # successful posting/error handling
+    b = $ 'td b', $.el('a', innerHTML: html)
+    if b.childElementCount # error!
+      qr.error b.firstChild.data
+      log b
+      console.dir b
+      # error handling
+      return
 
     unless conf['Persistent QR'] or qr.replies.length > 1
-      ;# qr.close()
+      qr.close()
 
     reply = qr.replies[0]
     sage = /sage/i.test reply.email
@@ -1243,7 +1251,7 @@ qr =
       sub:   if conf['Remember Subject'] then reply.sub else null
     $.set 'qr.persona', persona
 
-    # reply.rm()
+    reply.rm()
 
   message:
     init: ->
