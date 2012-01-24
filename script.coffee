@@ -229,8 +229,8 @@ $.extend $,
     $.on d, 'DOMContentLoaded', cb
   id: (id) ->
     d.getElementById id
-  ajax: (url, cb, opts={}, form) ->
-    {type, event, headers} = opts
+  ajax: (url, cb, opts={}) ->
+    {type, event, headers, form, onprogress} = opts
     type  or= 'get'
     event or= 'onload'
     r = new XMLHttpRequest()
@@ -238,6 +238,7 @@ $.extend $,
     for key, val of headers
       r.setRequestHeader key, val
     r[event] = cb
+    r.upload.onprogress = onprogress
     r.send form
     r
   cache: (url, cb) ->
@@ -888,6 +889,7 @@ qr =
     $.removeClass qr.el, 'dump'
     for i in qr.replies
       qr.replies[0].rm()
+    qr.status()
     qr.resetFileInput()
     spoiler.click() if (spoiler = $.id 'spoiler').checked
     qr.cleanError()
@@ -904,6 +906,16 @@ qr =
     alert err if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
     $('.error', qr.el).textContent = null
+
+  status: (data) ->
+    if g.dead
+      value    = 404
+      disabled = true
+    else if data
+      if data.progress?
+        value = "#{data.progress}%"
+    qr.status.input.value    =    value or 'Submit'
+    qr.status.input.disabled = disabled or false
 
   pickThread: (thread) ->
     $('select', qr.el).value = thread
@@ -1115,7 +1127,7 @@ qr =
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha title=Reload><img></div>
   <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>
-  <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit value=#{if g.dead then '404 disabled' else 'Submit'}></div>
+  <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit></div>
   <label#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image?</label>
   <div class=error></div>
 </form>"
@@ -1139,6 +1151,8 @@ qr =
     #   if match = e.key.match /qr_(.+)$/
     #     qr.inputs[match[1]].value = JSON.parse e.newValue
 
+    qr.status.input = $ '[type=submit]', qr.el
+    qr.status()
     qr.captcha.init()
     qr.message.init()
     $.add d.body, qr.el
@@ -1213,6 +1227,7 @@ qr =
     qr.message.send post
 
   response: (html) ->
+    qr.status()
     b = $ 'td b', $.el('a', innerHTML: html)
     if b.childElementCount # error!
       qr.error b.firstChild.data
@@ -1266,10 +1281,13 @@ qr =
     receive: (data) ->
       if data.abort
         qr.ajax?.abort()
+        qr.message.send status: true
         return
       if data.response # xhr response
         qr.response data.html
         return
+      if data.status
+        qr.status data
       delete data.qr
       if data.mode is 'regist' # reply object: we're posting
         # fool CloudFlare's cache to hopefully avoid connection errors
@@ -1290,7 +1308,10 @@ qr =
           delete data.upfile
         for name, val of data
           form.append name, val if val
-        qr.ajax = $.ajax url, (-> qr.message.send response: true, html: @response), type: 'post', form
+        qr.ajax = $.ajax url, (-> qr.message.send response: true, html: @response),
+          type: 'post',
+          form: form,
+          onprogress: (e) -> qr.message.send status: true, progress: Math.floor e.loaded / e.total * 100
 
 options =
   init: ->

@@ -320,10 +320,10 @@
     id: function(id) {
       return d.getElementById(id);
     },
-    ajax: function(url, cb, opts, form) {
-      var event, headers, key, r, type, val;
+    ajax: function(url, cb, opts) {
+      var event, form, headers, key, onprogress, r, type, val;
       if (opts == null) opts = {};
-      type = opts.type, event = opts.event, headers = opts.headers;
+      type = opts.type, event = opts.event, headers = opts.headers, form = opts.form, onprogress = opts.onprogress;
       type || (type = 'get');
       event || (event = 'onload');
       r = new XMLHttpRequest();
@@ -333,6 +333,7 @@
         r.setRequestHeader(key, val);
       }
       r[event] = cb;
+      r.upload.onprogress = onprogress;
       r.send(form);
       return r;
     },
@@ -1229,6 +1230,7 @@
         i = _ref[_i];
         qr.replies[0].rm();
       }
+      qr.status();
       qr.resetFileInput();
       if ((spoiler = $.id('spoiler')).checked) spoiler.click();
       return qr.cleanError();
@@ -1250,6 +1252,17 @@
     },
     cleanError: function() {
       return $('.error', qr.el).textContent = null;
+    },
+    status: function(data) {
+      var disabled, value;
+      if (g.dead) {
+        value = 404;
+        disabled = true;
+      } else if (data) {
+        if (data.progress != null) value = "" + data.progress + "%";
+      }
+      qr.status.input.value = value || 'Submit';
+      return qr.status.input.disabled = disabled || false;
     },
     pickThread: function(thread) {
       return $('select', qr.el).value = thread;
@@ -1495,7 +1508,7 @@
       });
       qr.mimeTypes = mimeTypes.split(', ');
       qr.spoiler = !!$('#com_submit + label');
-      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=" + (g.dead ? '404 disabled' : 'Submit') + "></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form>");
+      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form>");
       if (!g.REPLY) {
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
@@ -1525,6 +1538,8 @@
           return qr.selected[this.name] = this.value;
         });
       }
+      qr.status.input = $('[type=submit]', qr.el);
+      qr.status();
       qr.captcha.init();
       qr.message.init();
       return $.add(d.body, qr.el);
@@ -1597,6 +1612,7 @@
     },
     response: function(html) {
       var b, persona, reply, sage;
+      qr.status();
       b = $('td b', $.el('a', {
         innerHTML: html
       }));
@@ -1655,12 +1671,16 @@
         var bb, form, i, l, name, ui8a, url, val, _ref;
         if (data.abort) {
           if ((_ref = qr.ajax) != null) _ref.abort();
+          qr.message.send({
+            status: true
+          });
           return;
         }
         if (data.response) {
           qr.response(data.html);
           return;
         }
+        if (data.status) qr.status(data);
         delete data.qr;
         if (data.mode === 'regist') {
           url = "http://sys.4chan.org/" + data.board + "/post?" + (Date.now());
@@ -1687,8 +1707,15 @@
               html: this.response
             });
           }), {
-            type: 'post'
-          }, form);
+            type: 'post',
+            form: form,
+            onprogress: function(e) {
+              return qr.message.send({
+                status: true,
+                progress: Math.floor(e.loaded / e.total * 100)
+              });
+            }
+          });
         }
       }
     }
