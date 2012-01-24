@@ -1560,7 +1560,7 @@
       });
       reply = qr.replies[0];
       if (!(reply.com || reply.file)) {
-        err = 'Error: No file selected.';
+        err = 'No file selected.';
       } else {
         captchas = $.get('captchas', []);
         while ((captcha = captchas[0]) && captcha.time < Date.now()) {
@@ -1575,7 +1575,7 @@
         }
         $.set('captchas', captchas);
         qr.captcha.count(captchas.length);
-        if (!response) err = 'Error: No valid captcha.';
+        if (!response) err = 'No valid captcha.';
       }
       if (err) {
         qr.error(err);
@@ -1628,8 +1628,7 @@
       } else if (b.childElementCount) {
         if (b.firstChild.tagName) node = b.firstChild;
         err = b.firstChild.textContent;
-        log(b);
-        console.dir(b);
+        if (err === 'You seem to have mistyped the verification.') {}
       }
       if (err) {
         qr.error(err, node);

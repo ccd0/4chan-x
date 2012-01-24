@@ -1157,7 +1157,7 @@ qr =
 
     # prevent errors
     unless reply.com or reply.file
-      err = 'Error: No file selected.'
+      err = 'No file selected.'
     else
       # get oldest valid captcha
       captchas = $.get 'captchas', []
@@ -1173,7 +1173,7 @@ qr =
       $.set 'captchas', captchas
       qr.captcha.count captchas.length
       unless response
-        err = 'Error: No valid captcha.'
+        err = 'No valid captcha.'
 
     # more error prevention ?
     if err
@@ -1226,9 +1226,8 @@ qr =
     else if b.childElementCount # error!
       node = b.firstChild if b.firstChild.tagName # duplicate image link
       err  = b.firstChild.textContent
-      log b
-      console.dir b
-      # error handling
+      if err is 'You seem to have mistyped the verification.'
+        ;# cooldown to prevent autoban
 
     if err
       qr.error err, node
