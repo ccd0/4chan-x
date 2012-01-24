@@ -1072,7 +1072,8 @@ qr =
       @img.src = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
       @input.value = null
     count: (count) ->
-      @input.placeholder = "Verification (#{count} cached captchas)"
+      s = if count is 1 then '' else 's'
+      @input.placeholder = "Verification (#{count} cached captcha#{s})"
     reload: ->
       window.location = 'javascript:Recaptcha.reload()'
       qr.captcha.input.focus()

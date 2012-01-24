@@ -1451,7 +1451,9 @@
         return this.input.value = null;
       },
       count: function(count) {
-        return this.input.placeholder = "Verification (" + count + " cached captchas)";
+        var s;
+        s = count === 1 ? '' : 's';
+        return this.input.placeholder = "Verification (" + count + " cached captcha" + s + ")";
       },
       reload: function() {
         window.location = 'javascript:Recaptcha.reload()';
