@@ -912,8 +912,8 @@ qr =
       value    = 404
       disabled = true
     else if data
-      if data.progress?
-        value = "#{data.progress}%"
+      if data.progress
+        value = data.progress
     qr.status.input.value    =    value or 'Submit'
     qr.status.input.disabled = disabled or false
 
@@ -1310,10 +1310,14 @@ qr =
           form: form
           type: 'post'
           upCallbacks:
+            onload: ->
+              qr.message.send
+                status: true
+                progress: '...'
             onprogress: (e) ->
               qr.message.send
                 status: true
-                progress: Math.floor e.loaded / e.total * 100
+                progress: "#{Math.round e.loaded / e.total * 100}%"
 
 options =
   init: ->

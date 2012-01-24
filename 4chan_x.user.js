@@ -1262,7 +1262,7 @@
         value = 404;
         disabled = true;
       } else if (data) {
-        if (data.progress != null) value = "" + data.progress + "%";
+        if (data.progress) value = data.progress;
       }
       qr.status.input.value = value || 'Submit';
       return qr.status.input.disabled = disabled || false;
@@ -1727,10 +1727,16 @@
             form: form,
             type: 'post',
             upCallbacks: {
+              onload: function() {
+                return qr.message.send({
+                  status: true,
+                  progress: '...'
+                });
+              },
               onprogress: function(e) {
                 return qr.message.send({
                   status: true,
-                  progress: Math.floor(e.loaded / e.total * 100)
+                  progress: "" + (Math.round(e.loaded / e.total * 100)) + "%"
                 });
               }
             }
