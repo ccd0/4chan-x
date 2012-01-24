@@ -687,11 +687,13 @@ keybinds =
       when conf.expandImages
         keybinds.img thread
       when conf.nextThread
-        nav.next()
+        return if g.REPLY
+        nav.scroll +1
       when conf.openThreadTab
         keybinds.open thread, true
       when conf.previousThread
-        nav.prev()
+        return if g.REPLY
+        nav.scroll -1
       when conf.update
         updater.update()
       when conf.watch
@@ -819,10 +821,16 @@ nav =
     $.add d.body, span
 
   prev: ->
-    nav.scroll -1
+    if g.REPLY
+      window.scrollTo 0, 0
+    else
+      nav.scroll -1
 
   next: ->
-    nav.scroll +1
+    if g.REPLY
+      window.scrollTo 0, d.body.scrollHeight
+    else
+      nav.scroll +1
 
   threads: []
 
@@ -838,13 +846,6 @@ nav =
     return null
 
   scroll: (delta) ->
-    if g.REPLY
-      if delta is -1
-        window.scrollTo 0,0
-      else
-        window.scrollTo 0, d.body.scrollHeight
-      return
-
     [thread, i, rect] = nav.getThread true
     {top} = rect
 
@@ -854,22 +855,7 @@ nav =
     unless (delta is -1 and Math.ceil(top) < 0) or (delta is +1 and top > 1)
       i += delta
 
-    if i is -1
-      if g.PAGENUM is 0
-        window.scrollTo 0, 0
-      else
-        window.location = "#{g.PAGENUM - 1}#0"
-      return
-    if delta is +1
-      # if we're at the last thread, or we're at the bottom of the page.
-      # kind of hackish, what we really need to do is make nav.getThread smarter.
-      if i is nav.threads.length or (innerHeight + pageYOffset == d.body.scrollHeight)
-        if $ 'table.pages input[value="Next"]'
-          window.location = "#{g.PAGENUM + 1}#0"
-          return
-        #TODO sfx
-
-    {top} = nav.threads[i].getBoundingClientRect()
+    {top} = nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
 
 qr =

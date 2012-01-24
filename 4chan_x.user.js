@@ -936,13 +936,15 @@
           keybinds.img(thread);
           break;
         case conf.nextThread:
-          nav.next();
+          if (g.REPLY) return;
+          nav.scroll(+1);
           break;
         case conf.openThreadTab:
           keybinds.open(thread, true);
           break;
         case conf.previousThread:
-          nav.prev();
+          if (g.REPLY) return;
+          nav.scroll(-1);
           break;
         case conf.update:
           updater.update();
@@ -1145,10 +1147,18 @@
       return $.add(d.body, span);
     },
     prev: function() {
-      return nav.scroll(-1);
+      if (g.REPLY) {
+        return window.scrollTo(0, 0);
+      } else {
+        return nav.scroll(-1);
+      }
     },
     next: function() {
-      return nav.scroll(+1);
+      if (g.REPLY) {
+        return window.scrollTo(0, d.body.scrollHeight);
+      } else {
+        return nav.scroll(+1);
+      }
     },
     threads: [],
     getThread: function(full) {
@@ -1167,37 +1177,13 @@
       return null;
     },
     scroll: function(delta) {
-      var i, rect, thread, top, _ref;
-      if (g.REPLY) {
-        if (delta === -1) {
-          window.scrollTo(0, 0);
-        } else {
-          window.scrollTo(0, d.body.scrollHeight);
-        }
-        return;
-      }
+      var i, rect, thread, top, _ref, _ref2;
       _ref = nav.getThread(true), thread = _ref[0], i = _ref[1], rect = _ref[2];
       top = rect.top;
       if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
         i += delta;
       }
-      if (i === -1) {
-        if (g.PAGENUM === 0) {
-          window.scrollTo(0, 0);
-        } else {
-          window.location = "" + (g.PAGENUM - 1) + "#0";
-        }
-        return;
-      }
-      if (delta === +1) {
-        if (i === nav.threads.length || (innerHeight + pageYOffset === d.body.scrollHeight)) {
-          if ($('table.pages input[value="Next"]')) {
-            window.location = "" + (g.PAGENUM + 1) + "#0";
-            return;
-          }
-        }
-      }
-      top = nav.threads[i].getBoundingClientRect().top;
+      top = (_ref2 = nav.threads[i]) != null ? _ref2.getBoundingClientRect().top : void 0;
       return window.scrollBy(0, top);
     }
   };
