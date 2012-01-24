@@ -1638,29 +1638,31 @@
     },
     message: {
       init: function() {
-        var code;
+        var code, script;
         code = function(e) {
-          var data, host, i, o, u;
+          var data, host;
           data = e.data;
           if (!data.changeContext) return;
           delete data.changeContext;
           host = location.hostname;
-          o = {};
-          for (i in data) {
-            u = data[i];
-            o[i] = u;
-          }
           if (host === 'boards.4chan.org') {
-            return document.getElementById('iframe').contentWindow.postMessage(o, '*');
+            return document.getElementById('iframe').contentWindow.postMessage(data, '*');
           } else if (host === 'sys.4chan.org') {
-            return parent.postMessage(o, '*');
+            return parent.postMessage(data, '*');
           }
         };
-        if (engine === 'gecko') {
-          return $.on(window, 'message', code);
-        } else {
-          return window.location = "javascript:window.addEventListener('message'," + code + ",false)";
+        script = $.el('script', {
+          textContent: "window.addEventListener('message'," + code + ",false)"
+        });
+        if (d.documentElement) {
+          $.add(d.documentElement, script);
+          $.rm(script);
+          return;
         }
+        return $.ready(function() {
+          $.add(d.head, script);
+          return $.rm(script);
+        });
       },
       send: function(data) {
         data.changeContext = true;

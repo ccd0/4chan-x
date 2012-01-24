@@ -1262,18 +1262,20 @@ qr =
         return unless data.changeContext
         delete data.changeContext
         host = location.hostname
-        o = {}
-        for i, u of data
-          o[i] = u
         if host is 'boards.4chan.org'
-          document.getElementById('iframe').contentWindow.postMessage o, '*'
+          document.getElementById('iframe').contentWindow.postMessage data, '*'
         else if host is 'sys.4chan.org'
-          parent.postMessage o, '*'
-      # do not wait for 4chan to load
-      if engine is 'gecko'
-        $.on window, 'message', code
-      else
-        window.location = "javascript:window.addEventListener('message',#{code},false)"
+          parent.postMessage data, '*'
+      script = $.el 'script', textContent: "window.addEventListener('message',#{code},false)"
+      # Chrome can access the documentElement on document-start
+      if d.documentElement
+        $.add d.documentElement, script
+        $.rm script
+        return
+      # other browsers will have to wait
+      $.ready ->
+        $.add d.head, script
+        $.rm script
     send: (data) ->
       data.changeContext = true
       data.qr            = true
