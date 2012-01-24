@@ -1624,18 +1624,27 @@
       init: function() {
         var code;
         code = function(e) {
-          var data, host;
+          var data, host, i, o, u;
           data = e.data;
           if (!data.changeContext) return;
           delete data.changeContext;
           host = location.hostname;
+          o = {};
+          for (i in data) {
+            u = data[i];
+            o[i] = u;
+          }
           if (host === 'boards.4chan.org') {
-            return document.getElementById('iframe').contentWindow.postMessage(data, '*');
+            return document.getElementById('iframe').contentWindow.postMessage(o, '*');
           } else if (host === 'sys.4chan.org') {
-            return parent.postMessage(data, '*');
+            return parent.postMessage(o, '*');
           }
         };
-        return window.location = "javascript:window.addEventListener('message'," + code + ",false)";
+        if (engine === 'gecko') {
+          return $.on(window, 'message', code);
+        } else {
+          return window.location = "javascript:window.addEventListener('message'," + code + ",false)";
+        }
       },
       send: function(data) {
         data.changeContext = true;

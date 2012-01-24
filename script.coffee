@@ -100,7 +100,6 @@ config =
       'Auto Update':  [true,  'Automatically fetch new posts']
     'Interval': 30
 
-
 # XXX Chrome can't into {log} = console
 # XXX GreaseMonkey can't into console.log.bind
 log = console.log.bind? console
@@ -1248,12 +1247,18 @@ qr =
         return unless data.changeContext
         delete data.changeContext
         host = location.hostname
+        o = {}
+        for i, u of data
+          o[i] = u
         if host is 'boards.4chan.org'
-          document.getElementById('iframe').contentWindow.postMessage data, '*'
+          document.getElementById('iframe').contentWindow.postMessage o, '*'
         else if host is 'sys.4chan.org'
-          parent.postMessage data, '*'
+          parent.postMessage o, '*'
       # do not wait for 4chan to load
-      window.location = "javascript:window.addEventListener('message',#{code},false)"
+      if engine is 'gecko'
+        $.on window, 'message', code
+      else
+        window.location = "javascript:window.addEventListener('message',#{code},false)"
     send: (data) ->
       data.changeContext = true
       data.qr            = true
