@@ -1243,8 +1243,11 @@
         return d.activeElement.blur();
       }
     },
-    error: function(err) {
-      $('.error', qr.el).textContent = err;
+    error: function(err, node) {
+      var el;
+      el = $('.error', qr.el);
+      el.textContent = err;
+      if (node) $.replace(el.firstChild, node);
       qr.open();
       if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
         return alert(err);
@@ -1611,15 +1614,20 @@
       return qr.message.send(post);
     },
     response: function(html) {
-      var b, persona, reply, sage;
+      var b, err, node, persona, reply, sage;
       qr.status();
-      b = $('td b', $.el('a', {
+      if (!(b = $('td b', $.el('a', {
         innerHTML: html
-      }));
-      if (b.childElementCount) {
-        qr.error(b.firstChild.data);
+      })))) {
+        err = 'Connection error with sys.4chan.org.';
+      } else if (b.childElementCount) {
+        if (b.firstChild.tagName) node = b.firstChild;
+        err = b.firstChild.textContent;
         log(b);
         console.dir(b);
+      }
+      if (err) {
+        qr.error(err, node);
         return;
       }
       reply = qr.replies[0];

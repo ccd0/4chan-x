@@ -900,8 +900,10 @@ qr =
       $.removeClass qr.el, 'autohide'
       d.activeElement.blur()
 
-  error: (err) ->
-    $('.error', qr.el).textContent = err
+  error: (err, node) ->
+    el = $('.error', qr.el)
+    el.textContent = err
+    $.replace el.firstChild, node if node
     qr.open()
     alert err if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
@@ -1228,12 +1230,17 @@ qr =
 
   response: (html) ->
     qr.status()
-    b = $ 'td b', $.el('a', innerHTML: html)
-    if b.childElementCount # error!
-      qr.error b.firstChild.data
+    unless b = $ 'td b', $.el('a', innerHTML: html)
+      err = 'Connection error with sys.4chan.org.'
+    else if b.childElementCount # error!
+      node = b.firstChild if b.firstChild.tagName # duplicate image link
+      err  = b.firstChild.textContent
       log b
       console.dir b
       # error handling
+
+    if err
+      qr.error err, node
       return
 
     reply = qr.replies[0]
