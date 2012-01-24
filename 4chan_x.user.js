@@ -320,20 +320,18 @@
     id: function(id) {
       return d.getElementById(id);
     },
-    ajax: function(url, cb, opts) {
-      var event, form, headers, key, onprogress, r, type, val;
+    ajax: function(url, callbacks, opts) {
+      var form, headers, key, r, type, upCallbacks, val;
       if (opts == null) opts = {};
-      type = opts.type, event = opts.event, headers = opts.headers, form = opts.form, onprogress = opts.onprogress;
-      type || (type = 'get');
-      event || (event = 'onload');
+      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
       r = new XMLHttpRequest();
-      r.open(type, url, true);
+      r.open(type || 'get', url, true);
       for (key in headers) {
         val = headers[key];
         r.setRequestHeader(key, val);
       }
-      r[event] = cb;
-      r.upload.onprogress = onprogress;
+      $.extend(r, callbacks);
+      $.extend(r.upload, upCallbacks);
       r.send(form);
       return r;
     },
@@ -346,16 +344,18 @@
           return req.callbacks.push(cb);
         }
       } else {
-        req = $.ajax(url, (function() {
-          var cb, _i, _len, _ref, _results;
-          _ref = this.callbacks;
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            cb = _ref[_i];
-            _results.push(cb.call(this));
-          }
-          return _results;
-        }));
+        req = $.ajax(url, {
+          onload: (function() {
+            var cb, _i, _len, _ref, _results;
+            _ref = this.callbacks;
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              cb = _ref[_i];
+              _results.push(cb.call(this));
+            }
+            return _results;
+          })
+        });
         req.callbacks = [cb];
         return $.cache.requests[url] = req;
       }
@@ -1716,19 +1716,23 @@
             val = data[name];
             if (val) form.append(name, val);
           }
-          return qr.ajax = $.ajax(url, (function() {
-            return qr.message.send({
-              response: true,
-              html: this.response
-            });
-          }), {
-            type: 'post',
-            form: form,
-            onprogress: function(e) {
+          return qr.ajax = $.ajax(url, {
+            onload: (function() {
               return qr.message.send({
-                status: true,
-                progress: Math.floor(e.loaded / e.total * 100)
+                response: true,
+                html: this.response
               });
+            })
+          }, {
+            form: form,
+            type: 'post',
+            upCallbacks: {
+              onprogress: function(e) {
+                return qr.message.send({
+                  status: true,
+                  progress: Math.floor(e.loaded / e.total * 100)
+                });
+              }
             }
           });
         }
@@ -2252,7 +2256,9 @@
       updater.timer.textContent = 0;
       if ((_ref = updater.request) != null) _ref.abort();
       url = location.pathname + '?' + Date.now();
-      return updater.request = $.ajax(url, updater.cb.update, {
+      return updater.request = $.ajax(url, {
+        onload: updater.cb.update
+      }, {
         headers: {
           'If-Modified-Since': updater.lastModified
         }
@@ -3181,13 +3187,14 @@
       }
       url = href + '?' + Date.now();
       if (engine === 'webkit') {
-        return req = $.ajax(this.src, (function() {
-          if (this.status !== 404) {
-            return setTimeout(imgExpand.expand, 10000, thumb, url);
-          }
-        }), {
-          type: 'head',
-          event: 'onreadystatechange'
+        return req = $.ajax(this.src, {
+          onreadystatechange: (function() {
+            if (this.status !== 404) {
+              return setTimeout(imgExpand.expand, 10000, thumb, url);
+            }
+          })
+        }, {
+          type: 'head'
         });
       } else if (!g.dead) {
         return setTimeout(imgExpand.expand, 10000, thumb, url);

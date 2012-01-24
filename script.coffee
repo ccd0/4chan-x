@@ -229,16 +229,14 @@ $.extend $,
     $.on d, 'DOMContentLoaded', cb
   id: (id) ->
     d.getElementById id
-  ajax: (url, cb, opts={}) ->
-    {type, event, headers, form, onprogress} = opts
-    type  or= 'get'
-    event or= 'onload'
+  ajax: (url, callbacks, opts={}) ->
+    {type, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
-    r.open type, url, true
+    r.open type or 'get', url, true
     for key, val of headers
       r.setRequestHeader key, val
-    r[event] = cb
-    r.upload.onprogress = onprogress
+    $.extend r, callbacks
+    $.extend r.upload, upCallbacks
     r.send form
     r
   cache: (url, cb) ->
@@ -248,7 +246,7 @@ $.extend $,
       else
         req.callbacks.push cb
     else
-      req = $.ajax url, (-> cb.call @ for cb in @callbacks)
+      req = $.ajax url, onload: (-> cb.call @ for cb in @callbacks)
       req.callbacks = [cb]
       $.cache.requests[url] = req
   cb:
@@ -1308,10 +1306,14 @@ qr =
           delete data.upfile
         for name, val of data
           form.append name, val if val
-        qr.ajax = $.ajax url, (-> qr.message.send response: true, html: @response),
-          type: 'post',
-          form: form,
-          onprogress: (e) -> qr.message.send status: true, progress: Math.floor e.loaded / e.total * 100
+        qr.ajax = $.ajax url, onload: (-> qr.message.send response: true, html: @response),
+          form: form
+          type: 'post'
+          upCallbacks:
+            onprogress: (e) ->
+              qr.message.send
+                status: true
+                progress: Math.floor e.loaded / e.total * 100
 
 options =
   init: ->
@@ -1771,7 +1773,8 @@ updater =
     updater.request?.abort()
     #fool the cache
     url = location.pathname + '?' + Date.now()
-    updater.request = $.ajax url, updater.cb.update, headers: 'If-Modified-Since': updater.lastModified
+    updater.request = $.ajax url, onload: updater.cb.update,
+      headers: 'If-Modified-Since': updater.lastModified
 
 watcher =
   init: ->
@@ -2422,9 +2425,8 @@ imgExpand =
     url = href + '?' + Date.now()
     #navigator.online is not x-browser/os yet
     if engine is 'webkit'
-      req = $.ajax @src, (->
-        setTimeout imgExpand.expand, 10000, thumb, url if @status isnt 404
-      ), type: 'head', event: 'onreadystatechange'
+      req = $.ajax @src, onreadystatechange: (-> setTimeout imgExpand.expand, 10000, thumb, url if @status isnt 404),
+        type: 'head'
     #Firefox returns a status code of 0 because of the same origin policy
     #Oprah doesn't send any request
     else unless g.dead
