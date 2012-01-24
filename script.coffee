@@ -991,22 +991,13 @@ qr =
   reply: class
     constructor: (file) ->
       # set values, or null, to avoid 'undefined' values in inputs
+      previous = qr.replies[qr.replies.length-1]
+      persona  = $.get 'qr.persona', {}
+      @name    = if previous then previous.name else persona.name or null
+      @email   = if previous and !/^sage$/.test previous.email then previous.email   else persona.email or null
+      @sub     = if previous and conf['Remember Subject']      then previous.sub     else if conf['Remember Subject'] then persona.sub else null
+      @spoiler = if previous and conf['Remember Spoiler']      then previous.spoiler else false
       @com = null
-      [@name, @email, @sub, @spoiler] =
-        if previous = qr.replies[qr.replies.length-1]
-          [
-            previous.name,
-            if /^sage$/.test(previous.email) then null else previous.email,
-            if conf['Remember Subject'] then previous.sub else null,
-            if conf['Remember Spoiler'] then previous.spoiler else false
-          ]
-        else if persona = $.get 'qr.persona', {}
-          [
-            persona.name  or null,
-            persona.email or null,
-            if conf['Remember Subject'] then persona.sub or null else null,
-            false
-          ]
 
       @el = $.el 'a',
         className: 'preview'
@@ -1247,10 +1238,11 @@ qr =
     sage = /sage/i.test reply.email
     # cooldown
 
+    persona = $.get 'qr.persona', {}
     persona =
       name:  reply.name
-      email: if /^sage$/.test reply.email then null else reply.email
-      sub:   if conf['Remember Subject'] then reply.sub else null
+      email: if /^sage$/.test reply.email then persona.email else reply.email
+      sub:   if conf['Remember Subject']  then reply.sub     else null
     $.set 'qr.persona', persona
 
     if conf['Persistent QR'] or qr.replies.length > 1

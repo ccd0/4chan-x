@@ -1346,10 +1346,15 @@
     reply: (function() {
 
       function _Class(file) {
-        var persona, previous, _ref,
+        var persona, previous,
           _this = this;
+        previous = qr.replies[qr.replies.length - 1];
+        persona = $.get('qr.persona', {});
+        this.name = previous ? previous.name : persona.name || null;
+        this.email = previous && !/^sage$/.test(previous.email) ? previous.email : persona.email || null;
+        this.sub = previous && conf['Remember Subject'] ? previous.sub : conf['Remember Subject'] ? persona.sub : null;
+        this.spoiler = previous && conf['Remember Spoiler'] ? previous.spoiler : false;
         this.com = null;
-        _ref = (previous = qr.replies[qr.replies.length - 1]) ? [previous.name, /^sage$/.test(previous.email) ? null : previous.email, conf['Remember Subject'] ? previous.sub : null, conf['Remember Spoiler'] ? previous.spoiler : false] : (persona = $.get('qr.persona', {})) ? [persona.name || null, persona.email || null, conf['Remember Subject'] ? persona.sub || null : null, false] : void 0, this.name = _ref[0], this.email = _ref[1], this.sub = _ref[2], this.spoiler = _ref[3];
         this.el = $.el('a', {
           className: 'preview',
           href: 'javascript:;',
@@ -1632,9 +1637,10 @@
       }
       reply = qr.replies[0];
       sage = /sage/i.test(reply.email);
+      persona = $.get('qr.persona', {});
       persona = {
         name: reply.name,
-        email: /^sage$/.test(reply.email) ? null : reply.email,
+        email: /^sage$/.test(reply.email) ? persona.email : reply.email,
         sub: conf['Remember Subject'] ? reply.sub : null
       };
       $.set('qr.persona', persona);
