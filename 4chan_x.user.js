@@ -1205,7 +1205,6 @@
   qr = {
     init: function() {
       if (!$('form[name=post]')) return;
-      qr.spoiler = !!$('#com_submit + label');
       g.callbacks.push(function(root) {
         return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
       });
@@ -1219,7 +1218,8 @@
         if (conf['Auto Hide QR']) $.id('autohide').click();
       }
       $.on(d, 'dragover', qr.fileDrop);
-      return $.on(d, 'drop', qr.fileDrop);
+      $.on(d, 'drop', qr.fileDrop);
+      return window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})';
     },
     open: function() {
       if (qr.el) {
@@ -1438,8 +1438,7 @@
           }
         });
         this.count($.get('captchas', []).length);
-        this.load();
-        return window.location = 'javascript:(function(){Recaptcha.focus_response_field=function(){}})()';
+        return this.load();
       },
       save: function() {
         var captcha, captchas, response;
@@ -1507,6 +1506,7 @@
         }
       });
       qr.mimeTypes = mimeTypes.split(', ');
+      qr.spoiler = !!$('#com_submit + label');
       qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit value=" + (g.dead ? '404 disabled' : 'Submit') + "></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form>");
       if (!g.REPLY) {
         $.on($('select', qr.el), 'mousedown', function(e) {

@@ -875,7 +875,6 @@ nav =
 qr =
   init: ->
     return unless $ 'form[name=post]'
-    qr.spoiler = !!$ '#com_submit + label'
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
     $.add d.body, $.el 'iframe',
@@ -887,6 +886,8 @@ qr =
       $.id('autohide').click() if conf['Auto Hide QR']
     $.on d, 'dragover', qr.fileDrop
     $.on d, 'drop',     qr.fileDrop
+    # prevent original captcha input from being focused on reload
+    window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})'
 
   open: ->
     if qr.el
@@ -1065,8 +1066,6 @@ qr =
       $.on window,          'storage',     (e) => @count JSON.parse(e.newValue).length if e.key is "#{NAMESPACE}captchas"
       @count $.get('captchas', []).length
       @load()
-      # prevent original captcha input from being focused on reload
-      window.location = 'javascript:(function(){Recaptcha.focus_response_field=function(){}})()'
     save: ->
       return unless response = @input.value
       captchas = $.get 'captchas', []
@@ -1118,6 +1117,7 @@ qr =
         else
           'image/' + type
     qr.mimeTypes = mimeTypes.split ', '
+    qr.spoiler = !!$ '#com_submit + label'
     qr.el = ui.dialog 'qr', 'top:0;right:0;', "
 <div class=move>
   Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>
