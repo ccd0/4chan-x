@@ -1282,13 +1282,42 @@
       if (g.dead) {
         value = 404;
         disabled = true;
-      } else if (data.progress) {
-        value = data.progress;
+      } else {
+        value = qr.cooldown.seconds || data.progress || value;
       }
       if (!qr.el) return;
       input = qr.status.input;
       input.value = value || 'Submit';
       return input.disabled = disabled || false;
+    },
+    cooldown: {
+      init: function() {
+        if (!conf['Cooldown']) return;
+        qr.cooldown.start($.get("/" + g.BOARD + "/cooldown", 0));
+        return $.on(window, 'storage', function(e) {
+          var timeout;
+          if (e.key === ("" + NAMESPACE + "/" + g.BOARD + "/cooldown") && (timeout = JSON.parse(e.newValue))) {
+            return qr.cooldown.start(timeout);
+          }
+        });
+      },
+      start: function(timeout) {
+        var seconds;
+        seconds = Math.floor((timeout - Date.now()) / 1000);
+        return qr.cooldown.count(seconds);
+      },
+      set: function(seconds) {
+        if (!conf['Cooldown']) return;
+        qr.cooldown.count(seconds);
+        return $.set("/" + g.BOARD + "/cooldown", Date.now() + seconds * SECOND);
+      },
+      count: function(seconds) {
+        if (!((60 >= seconds && seconds >= 0))) return;
+        setTimeout(qr.cooldown.count, 1000, seconds - 1);
+        if (seconds === 0) $["delete"]("/" + g.BOARD + "/cooldown");
+        qr.cooldown.seconds = seconds;
+        return qr.status();
+      }
     },
     pickThread: function(thread) {
       return $('select', qr.el).value = thread;
@@ -1540,7 +1569,7 @@
       });
       qr.mimeTypes = mimeTypes.split(', ');
       qr.spoiler = !!$('#com_submit + label');
-      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=warning></div></form>");
+      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image</label>  <div class=warning></div></form>");
       if (!g.REPLY) {
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
@@ -1585,6 +1614,7 @@
       });
       qr.status.input = $('[type=submit]', qr.el);
       qr.status();
+      qr.cooldown.init();
       qr.captcha.init();
       qr.message.init();
       return $.add(d.body, qr.el);
@@ -1592,6 +1622,7 @@
     submit: function(e) {
       var captcha, captchas, challenge, err, file, m, post, reader, reply, response, threadID;
       if (e != null) e.preventDefault();
+      if (qr.cooldown.seconds) return;
       qr.message.send({
         abort: true
       });
@@ -1653,7 +1684,7 @@
       return qr.message.send(post);
     },
     response: function(html) {
-      var b, err, node, persona, reply, sage;
+      var b, err, node, persona, postNumber, reply, thread, _, _ref;
       qr.status();
       if (!(b = $('td b', $.el('a', {
         innerHTML: html
@@ -1662,14 +1693,19 @@
       } else if (b.childElementCount) {
         if (b.firstChild.tagName) node = b.firstChild;
         err = b.firstChild.textContent;
-        if (err === 'You seem to have mistyped the verification.') {}
+        if (err === 'You seem to have mistyped the verification.') {
+          qr.cooldown.set(10);
+        }
       }
       if (err) {
         qr.error(err, node);
         return;
       }
       reply = qr.replies[0];
-      sage = /sage/i.test(reply.email);
+      _ref = b.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], postNumber = _ref[2];
+      if (thread === 0) {} else {
+        qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
+      }
       persona = $.get('qr.persona', {});
       persona = {
         name: reply.name,
@@ -3586,11 +3622,11 @@ textarea.field {\
   width: 100%;\
 }\
 #qr [type=file] {\
-  width: 80%;\
+  width: 75%;\
 }\
 #qr [type=submit] {\
   padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */\
-  width: 20%;\
+  width: 25%;\
 }\
 \
 .new {\

@@ -923,12 +923,36 @@ qr =
     if g.dead
       value    = 404
       disabled = true
-    else if data.progress
-      value = data.progress
+    else
+      # do not cancel `value = 'Loading'` once the cooldown is over
+      value = qr.cooldown.seconds or data.progress or value
     return unless qr.el
     {input} = qr.status
-    input.value    =    value or 'Submit'
+    input.value    =    value or 'Submit' # dispaly "Auto #{...}" when auto postan
     input.disabled = disabled or false
+
+  cooldown:
+    init: ->
+      return unless conf['Cooldown']
+      qr.cooldown.start $.get "/#{g.BOARD}/cooldown", 0
+      $.on window, 'storage', (e) ->
+        if e.key is "#{NAMESPACE}/#{g.BOARD}/cooldown" and timeout = JSON.parse e.newValue
+          qr.cooldown.start timeout
+    start: (timeout) ->
+      seconds = Math.floor (timeout - Date.now()) / 1000
+      qr.cooldown.count seconds
+    set: (seconds) ->
+      return unless conf['Cooldown']
+      qr.cooldown.count seconds
+      $.set "/#{g.BOARD}/cooldown", Date.now() + seconds*SECOND
+    count: (seconds) ->
+      return unless 60 >= seconds >= 0
+      setTimeout qr.cooldown.count, 1000, seconds-1
+      if seconds is 0
+        $.delete "/#{g.BOARD}/cooldown"
+        # auto postan
+      qr.cooldown.seconds = seconds
+      qr.status()
 
   pickThread: (thread) ->
     $('select', qr.el).value = thread
@@ -1133,7 +1157,7 @@ qr =
   <div class=captcha title=Reload><img></div>
   <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>
   <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit></div>
-  <label#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image?</label>
+  <label#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image</label>
   <div class=warning></div>
 </form>"
     unless g.REPLY
@@ -1160,12 +1184,16 @@ qr =
 
     qr.status.input = $ '[type=submit]', qr.el
     qr.status()
+    qr.cooldown.init()
     qr.captcha.init()
     qr.message.init()
     $.add d.body, qr.el
 
   submit: (e) ->
     e?.preventDefault()
+    if qr.cooldown.seconds
+      # toggle auto postan
+      return
     qr.message.send abort: true
     reply = qr.replies[0]
 
@@ -1239,15 +1267,20 @@ qr =
       node = b.firstChild if b.firstChild.tagName # duplicate image link
       err  = b.firstChild.textContent
       if err is 'You seem to have mistyped the verification.'
-        ;# cooldown to prevent autoban
+        qr.cooldown.set 10 # prevent autoban
+        # turn auto postan ON? Might depend if we have captchas in stock or not
 
     if err
       qr.error err, node
       return
 
     reply = qr.replies[0]
-    sage = /sage/i.test reply.email
-    # cooldown
+
+    [_, thread, postNumber] = b.lastChild.textContent.match /thread:(\d+),no:(\d+)/
+    if thread is 0 # new thread
+      # auto noko to postNumber
+    else
+      qr.cooldown.set if /sage/i.test reply.email then 60 else 30
 
     persona = $.get 'qr.persona', {}
     persona =
@@ -2825,11 +2858,11 @@ textarea.field {
   width: 100%;
 }
 #qr [type=file] {
-  width: 80%;
+  width: 75%;
 }
 #qr [type=submit] {
   padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */
-  width: 20%;
+  width: 25%;
 }
 
 .new {
