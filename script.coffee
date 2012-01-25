@@ -906,13 +906,13 @@ qr =
       $.removeClass qr.el, 'autohide'
 
   error: (err, node) ->
-    el = $('.error', qr.el)
+    el = $('.warning', qr.el)
     el.textContent = err
     $.replace el.firstChild, node if node
     qr.open()
     alert err if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
-    $('.error', qr.el).textContent = null
+    $('.warning', qr.el).textContent = null
 
   status: (data={}) ->
     if data.ready
@@ -1134,7 +1134,7 @@ qr =
   <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>
   <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit></div>
   <label#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image?</label>
-  <div class=error></div>
+  <div class=warning></div>
 </form>"
     unless g.REPLY
       $.on $('select',    qr.el), 'mousedown', (e) -> e.stopPropagation()
@@ -1380,12 +1380,12 @@ options =
   <div></div>
   <input type=radio name=tab hidden id=flavors_tab>
   <div>
-    <div class=error><code>Sauce</code> is disabled.</div>
+    <div class=warning><code>Sauce</code> is disabled.</div>
     <textarea name=flavors id=flavors></textarea>
   </div>
   <input type=radio name=tab hidden id=filter_tab>
   <div>
-    <div class=error><code>Filter</code> is disabled.</div>
+    <div class=warning><code>Filter</code> is disabled.</div>
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
     <p>Name:<br><textarea name=name></textarea></p>
@@ -1399,12 +1399,12 @@ options =
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div>
-    <div class=error><code>Quote Backlinks</code> are disabled.</div>
+    <div class=warning><code>Quote Backlinks</code> are disabled.</div>
     <ul>
       Backlink formatting
       <li><input type=text name=backlink> : <span id=backlinkPreview></span></li>
     </ul>
-    <div class=error><code>Time Formatting</code> is disabled.</div>
+    <div class=warning><code>Time Formatting</code> is disabled.</div>
     <ul>
       Time formatting
       <li><input type=text name=time> : <span id=timePreview></span></li>
@@ -1415,7 +1415,7 @@ options =
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
       <li>Minutes: %M</li>
     </ul>
-    <div class=error><code>Unread Count</code> is disabled.</div>
+    <div class=warning><code>Unread Count</code> is disabled.</div>
     Unread favicons<br>
     <select name=favicon>
       <option value=ferongr>ferongr</option>
@@ -1428,7 +1428,7 @@ options =
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
-    <div class=error><code>Keybinds</code> are disabled.</div>
+    <div class=warning><code>Keybinds</code> are disabled.</div>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
       <tr><td>Open Options</td><td><input name=openOptions></td></tr>
@@ -1502,7 +1502,7 @@ options =
 
     #indicate if the settings require a feature to be enabled
     indicators = {}
-    for indicator in $$ '.error', dialog
+    for indicator in $$ '.warning', dialog
       key = indicator.firstChild.textContent
       indicator.hidden = conf[key]
       indicators[key] = indicator
@@ -1720,7 +1720,7 @@ updater =
       if @status is 404
         updater.timer.textContent = ''
         updater.count.textContent = 404
-        updater.count.className = 'error'
+        updater.count.className = 'warning'
         clearTimeout updater.timeoutID
         d.title = d.title.match(/^.+-/)[0] + ' 404'
         g.dead = true
@@ -1750,7 +1750,7 @@ updater =
       #this only works on Chrome because of cross origin policy
       if $('title', body).textContent is '4chan - Banned'
         updater.count.textContent = 'Banned'
-        updater.count.className = 'error'
+        updater.count.className   = 'warning'
         return
 
       id = $('td[id]', updater.br.previousElementSibling)?.id or 0
@@ -2226,7 +2226,7 @@ threadStats =
     imgcount = $.id 'imagecount'
     imgcount.textContent = ++threadStats.images
     if threadStats.images > threadStats.imgLimit
-      imgcount.className = 'error'
+      imgcount.className = 'warning'
 
 unread =
   init: ->
@@ -2835,14 +2835,8 @@ textarea.field {
 .new {
   background: lime;
 }
-.error {
+.warning {
   color: red;
-}
-#error {
-  cursor: default;
-}
-#error[href] {
-  cursor: pointer;
 }
 td.replyhider {
   vertical-align: top;

@@ -1259,7 +1259,7 @@
     },
     error: function(err, node) {
       var el;
-      el = $('.error', qr.el);
+      el = $('.warning', qr.el);
       el.textContent = err;
       if (node) $.replace(el.firstChild, node);
       qr.open();
@@ -1268,7 +1268,7 @@
       }
     },
     cleanError: function() {
-      return $('.error', qr.el).textContent = null;
+      return $('.warning', qr.el).textContent = null;
     },
     status: function(data) {
       var disabled, input, value;
@@ -1540,7 +1540,7 @@
       });
       qr.mimeTypes = mimeTypes.split(', ');
       qr.spoiler = !!$('#com_submit + label');
-      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=error></div></form>");
+      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit></div>  <label" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image?</label>  <div class=warning></div></form>");
       if (!g.REPLY) {
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
@@ -1837,12 +1837,12 @@
   <div></div>\
   <input type=radio name=tab hidden id=flavors_tab>\
   <div>\
-    <div class=error><code>Sauce</code> is disabled.</div>\
+    <div class=warning><code>Sauce</code> is disabled.</div>\
     <textarea name=flavors id=flavors></textarea>\
   </div>\
   <input type=radio name=tab hidden id=filter_tab>\
   <div>\
-    <div class=error><code>Filter</code> is disabled.</div>\
+    <div class=warning><code>Filter</code> is disabled.</div>\
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.\
     <p>Name:<br><textarea name=name></textarea></p>\
@@ -1856,12 +1856,12 @@
   </div>\
   <input type=radio name=tab hidden id=rice_tab>\
   <div>\
-    <div class=error><code>Quote Backlinks</code> are disabled.</div>\
+    <div class=warning><code>Quote Backlinks</code> are disabled.</div>\
     <ul>\
       Backlink formatting\
       <li><input type=text name=backlink> : <span id=backlinkPreview></span></li>\
     </ul>\
-    <div class=error><code>Time Formatting</code> is disabled.</div>\
+    <div class=warning><code>Time Formatting</code> is disabled.</div>\
     <ul>\
       Time formatting\
       <li><input type=text name=time> : <span id=timePreview></span></li>\
@@ -1872,7 +1872,7 @@
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>\
       <li>Minutes: %M</li>\
     </ul>\
-    <div class=error><code>Unread Count</code> is disabled.</div>\
+    <div class=warning><code>Unread Count</code> is disabled.</div>\
     Unread favicons<br>\
     <select name=favicon>\
       <option value=ferongr>ferongr</option>\
@@ -1885,7 +1885,7 @@
   </div>\
   <input type=radio name=tab hidden id=keybinds_tab>\
   <div>\
-    <div class=error><code>Keybinds</code> are disabled.</div>\
+    <div class=warning><code>Keybinds</code> are disabled.</div>\
     <table><tbody>\
       <tr><th>Actions</th><th>Keybinds</th></tr>\
       <tr><td>Open Options</td><td><input name=openOptions></td></tr>\
@@ -1963,7 +1963,7 @@
         $.on(input, 'keydown', options.keybind);
       }
       indicators = {};
-      _ref4 = $$('.error', dialog);
+      _ref4 = $$('.warning', dialog);
       for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
         indicator = _ref4[_k];
         key = indicator.firstChild.textContent;
@@ -2227,7 +2227,7 @@
         if (this.status === 404) {
           updater.timer.textContent = '';
           updater.count.textContent = 404;
-          updater.count.className = 'error';
+          updater.count.className = 'warning';
           clearTimeout(updater.timeoutID);
           d.title = d.title.match(/^.+-/)[0] + ' 404';
           g.dead = true;
@@ -2256,7 +2256,7 @@
         });
         if ($('title', body).textContent === '4chan - Banned') {
           updater.count.textContent = 'Banned';
-          updater.count.className = 'error';
+          updater.count.className = 'warning';
           return;
         }
         id = ((_ref = $('td[id]', updater.br.previousElementSibling)) != null ? _ref.id : void 0) || 0;
@@ -2939,7 +2939,7 @@
       imgcount = $.id('imagecount');
       imgcount.textContent = ++threadStats.images;
       if (threadStats.images > threadStats.imgLimit) {
-        return imgcount.className = 'error';
+        return imgcount.className = 'warning';
       }
     }
   };
@@ -3596,14 +3596,8 @@ textarea.field {\
 .new {\
   background: lime;\
 }\
-.error {\
+.warning {\
   color: red;\
-}\
-#error {\
-  cursor: default;\
-}\
-#error[href] {\
-  cursor: pointer;\
 }\
 td.replyhider {\
   vertical-align: top;\
