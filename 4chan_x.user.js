@@ -1191,15 +1191,20 @@
 
   qr = {
     init: function() {
+      var iframe;
       if (!$('form[name=post]')) return;
       g.callbacks.push(function(root) {
         return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
       });
-      $.add(d.body, $.el('iframe', {
+      iframe = $.el('iframe', {
         id: 'iframe',
         hidden: true,
         src: 'http://sys.4chan.org/post'
-      }));
+      });
+      $.on(iframe, 'error', function() {
+        return this.src = this.src;
+      });
+      $.add(d.body, iframe);
       if (conf['Persistent QR']) {
         qr.dialog();
         if (conf['Auto Hide QR']) qr.hide();

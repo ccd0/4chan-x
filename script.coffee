@@ -861,10 +861,12 @@ qr =
     return unless $ 'form[name=post]'
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
-    $.add d.body, $.el 'iframe',
+    iframe = $.el 'iframe',
       id: 'iframe'
       hidden: true
       src: 'http://sys.4chan.org/post'
+    $.on iframe, 'error', -> @src = @src
+    $.add d.body, iframe
     if conf['Persistent QR']
       qr.dialog()
       qr.hide() if conf['Auto Hide QR']
