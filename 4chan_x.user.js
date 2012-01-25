@@ -1273,10 +1273,8 @@
     status: function(data) {
       var disabled, input, value;
       if (data == null) data = {};
-      input = qr.status.input;
       if (data.ready) {
         qr.status.ready = true;
-        if (!qr.el) return;
       } else if (!qr.status.ready) {
         value = 'Loading';
         disabled = true;
@@ -1287,6 +1285,8 @@
       } else if (data.progress) {
         value = data.progress;
       }
+      if (!qr.el) return;
+      input = qr.status.input;
       input.value = value || 'Submit';
       return input.disabled = disabled || false;
     },
@@ -2223,18 +2223,15 @@
         }
       },
       update: function() {
-        var body, frag, id, input, newPosts, reply, scroll, _i, _len, _ref, _ref2;
+        var body, frag, id, newPosts, reply, scroll, _i, _len, _ref, _ref2;
         if (this.status === 404) {
           updater.timer.textContent = '';
           updater.count.textContent = 404;
           updater.count.className = 'error';
           clearTimeout(updater.timeoutID);
-          if (input = $('#qr [type=submit]', qr.el)) {
-            input.disabled = true;
-            input.value = 404;
-          }
           d.title = d.title.match(/^.+-/)[0] + ' 404';
           g.dead = true;
+          qr.status();
           Favicon.update();
           return;
         }

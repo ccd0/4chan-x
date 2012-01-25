@@ -915,10 +915,8 @@ qr =
     $('.error', qr.el).textContent = null
 
   status: (data={}) ->
-    {input} = qr.status
     if data.ready
       qr.status.ready = true
-      return unless qr.el
     else unless qr.status.ready
       value    = 'Loading'
       disabled = true
@@ -927,6 +925,8 @@ qr =
       disabled = true
     else if data.progress
       value = data.progress
+    return unless qr.el
+    {input} = qr.status
     input.value    =    value or 'Submit'
     input.disabled = disabled or false
 
@@ -1722,11 +1722,9 @@ updater =
         updater.count.textContent = 404
         updater.count.className = 'error'
         clearTimeout updater.timeoutID
-        if input = $ '#qr [type=submit]', qr.el
-          input.disabled = true
-          input.value = 404
         d.title = d.title.match(/^.+-/)[0] + ' 404'
         g.dead = true
+        qr.status()
         Favicon.update()
         return
 
