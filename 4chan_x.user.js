@@ -1555,6 +1555,19 @@
           return qr.selected[this.name] = this.value;
         });
       }
+      $.on(window, 'storage', function(e) {
+        var key, val, _ref3, _results;
+        if (e.key === ("" + NAMESPACE + "qr.persona") && qr.replies.length === 1) {
+          _ref3 = JSON.parse(e.newValue);
+          _results = [];
+          for (key in _ref3) {
+            val = _ref3[key];
+            qr.selected[key] = val;
+            _results.push($("[name=" + key + "]", qr.el).value = val);
+          }
+          return _results;
+        }
+      });
       qr.status.input = $('[type=submit]', qr.el);
       qr.status();
       qr.captcha.init();

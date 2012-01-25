@@ -1143,9 +1143,11 @@ qr =
     for input in ['name', 'email', 'sub', 'com']
       $.on $("[name=#{input}]", qr.el), 'change', -> qr.selected[@name] = @value
     # sync between tabs
-    # $.on window, 'storage', (e) ->
-    #   if match = e.key.match /qr_(.+)$/
-    #     qr.inputs[match[1]].value = JSON.parse e.newValue
+    $.on window, 'storage', (e) ->
+      if e.key is "#{NAMESPACE}qr.persona" and qr.replies.length is 1
+        for key, val of JSON.parse e.newValue
+          qr.selected[key] = val
+          $("[name=#{key}]", qr.el).value = val
 
     qr.status.input = $ '[type=submit]', qr.el
     qr.status()
