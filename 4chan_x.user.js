@@ -1271,15 +1271,24 @@
       return $('.error', qr.el).textContent = null;
     },
     status: function(data) {
-      var disabled, value;
+      var disabled, input, value;
+      if (data == null) data = {};
+      input = qr.status.input;
+      if (data.ready) {
+        qr.status.ready = true;
+        if (!qr.el) return;
+      } else if (!qr.status.ready) {
+        value = 'Loading';
+        disabled = true;
+      }
       if (g.dead) {
         value = 404;
         disabled = true;
-      } else if (data) {
-        if (data.progress) value = data.progress;
+      } else if (data.progress) {
+        value = data.progress;
       }
-      qr.status.input.value = value || 'Submit';
-      return qr.status.input.disabled = disabled || false;
+      input.value = value || 'Submit';
+      return input.disabled = disabled || false;
     },
     pickThread: function(thread) {
       return $('select', qr.el).value = thread;
@@ -1677,7 +1686,7 @@
     },
     message: {
       init: function() {
-        var code, script;
+        var code, ready, script;
         code = function(e) {
           var data, host;
           data = e.data;
@@ -1693,14 +1702,24 @@
         script = $.el('script', {
           textContent: "window.addEventListener('message'," + code + ",false)"
         });
+        ready = function() {
+          if (location.hostname === 'sys.4chan.org') {
+            return qr.message.send({
+              status: true,
+              ready: true
+            });
+          }
+        };
         if (d.documentElement) {
           $.add(d.documentElement, script);
           $.rm(script);
+          ready();
           return;
         }
         return $.ready(function() {
           $.add(d.head, script);
-          return $.rm(script);
+          $.rm(script);
+          return ready();
         });
       },
       send: function(data) {

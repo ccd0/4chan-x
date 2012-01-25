@@ -914,15 +914,21 @@ qr =
   cleanError: ->
     $('.error', qr.el).textContent = null
 
-  status: (data) ->
+  status: (data={}) ->
+    {input} = qr.status
+    if data.ready
+      qr.status.ready = true
+      return unless qr.el
+    else unless qr.status.ready
+      value    = 'Loading'
+      disabled = true
     if g.dead
       value    = 404
       disabled = true
-    else if data
-      if data.progress
-        value = data.progress
-    qr.status.input.value    =    value or 'Submit'
-    qr.status.input.disabled = disabled or false
+    else if data.progress
+      value = data.progress
+    input.value    =    value or 'Submit'
+    input.disabled = disabled or false
 
   pickThread: (thread) ->
     $('select', qr.el).value = thread
@@ -1183,7 +1189,6 @@ qr =
       unless response
         err = 'No valid captcha.'
 
-    # more error prevention ?
     if err
       qr.error err
       return
@@ -1273,15 +1278,20 @@ qr =
         else if host is 'sys.4chan.org'
           parent.postMessage data, '*'
       script = $.el 'script', textContent: "window.addEventListener('message',#{code},false)"
+      ready = ->
+        if location.hostname is 'sys.4chan.org'
+          qr.message.send status: true, ready: true
       # Chrome can access the documentElement on document-start
       if d.documentElement
         $.add d.documentElement, script
         $.rm script
+        ready()
         return
       # other browsers will have to wait
       $.ready ->
         $.add d.head, script
         $.rm script
+        ready()
     send: (data) ->
       data.changeContext = true
       data.qr            = true
