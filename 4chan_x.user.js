@@ -1367,8 +1367,9 @@
         this.el = $.el('a', {
           className: 'preview',
           href: 'javascript:;',
-          innerHTML: "<a class=remove>x</a><label hidden><input type=checkbox" + (this.spoiler ? ' checked' : '') + "> Spoiler</label><span></span>"
+          innerHTML: '<a class=remove>x</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
         });
+        $('input', this.el).checked = this.spoiler;
         $.on(this.el, 'click', function() {
           return _this.select();
         });
@@ -1663,10 +1664,11 @@
       };
       $.set('qr.persona', persona);
       if (conf['Persistent QR'] || qr.replies.length > 1) {
-        return reply.rm();
+        reply.rm();
       } else {
-        return qr.close();
+        qr.close();
       }
+      return qr.resetFileInput();
     },
     message: {
       init: function() {

@@ -1005,12 +1005,13 @@ qr =
       @el = $.el 'a',
         className: 'preview'
         href: 'javascript:;'
-        innerHTML: "<a class=remove>x</a><label hidden><input type=checkbox#{if @spoiler then ' checked' else ''}> Spoiler</label><span></span>"
+        innerHTML: '<a class=remove>x</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+      $('input', @el).checked = @spoiler
       $.on @el,               'click',      => @select()
       $.on $('.remove', @el), 'click',  (e) =>
         e.stopPropagation()
         @rm()
-      $.on $('label',   @el), 'click',  (e) -> e.stopPropagation()
+      $.on $('label',   @el), 'click',  (e) => e.stopPropagation()
       $.on $('input',   @el), 'change', (e) =>
         @spoiler = e.target.checked
         $.id('spoiler').checked = @spoiler if @el.id is 'selected'
@@ -1252,6 +1253,7 @@ qr =
       reply.rm()
     else
       qr.close()
+    qr.resetFileInput()
 
   message:
     init: ->
