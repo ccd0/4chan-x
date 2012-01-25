@@ -867,7 +867,7 @@ qr =
       src: 'http://sys.4chan.org/post'
     if conf['Persistent QR']
       qr.dialog()
-      $.id('autohide').click() if conf['Auto Hide QR']
+      qr.hide() if conf['Auto Hide QR']
     $.on d, 'dragover', qr.fileDrop
     $.on d, 'drop',     qr.fileDrop
     # prevent original captcha input from being focused on reload
@@ -876,8 +876,7 @@ qr =
   open: ->
     if qr.el
       qr.el.hidden = false
-      $.id('autohide').checked = false
-      qr.hide()
+      qr.unhide()
     else
       qr.dialog()
   close: ->
@@ -892,11 +891,17 @@ qr =
     spoiler.click() if (spoiler = $.id 'spoiler').checked
     qr.cleanError()
   hide: ->
-    if $.id('autohide').checked
-      $.addClass qr.el, 'autohide'
+    auto = $.id('autohide')
+    auto.click() unless auto.checked
+  unhide: ->
+    auto = $.id('autohide')
+    auto.click() if auto.checked
+  toggleHide: ->
+    if @checked
+      $.addClass    qr.el, 'autohide'
+      d.activeElement.blur()
     else
       $.removeClass qr.el, 'autohide'
-      d.activeElement.blur()
 
   error: (err, node) ->
     el = $('.error', qr.el)
@@ -1124,7 +1129,7 @@ qr =
 </form>"
     unless g.REPLY
       $.on $('select',    qr.el), 'mousedown', (e) -> e.stopPropagation()
-    $.on $('#autohide',   qr.el), 'click',     qr.hide
+    $.on $('#autohide',   qr.el), 'click',     qr.toggleHide
     $.on $('.close',      qr.el), 'click',     qr.close
     $.on $('#dump',       qr.el), 'click',     -> qr.el.classList.toggle 'dump'
     $.on $('#addReply',   qr.el), 'click',     -> new qr.reply().select()
@@ -1182,7 +1187,6 @@ qr =
     threadID = g.THREAD_ID or $('select', qr.el).value
 
     if conf['Auto Hide QR'] and qr.replies.length is 1
-      $.id('autohide').checked = true
       qr.hide()
     if conf['Thread Watcher'] and conf['Auto Watch Reply'] and threadID isnt 'new'
       watcher.watch threadID

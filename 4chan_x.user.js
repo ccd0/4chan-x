@@ -1202,7 +1202,7 @@
       }));
       if (conf['Persistent QR']) {
         qr.dialog();
-        if (conf['Auto Hide QR']) $.id('autohide').click();
+        if (conf['Auto Hide QR']) qr.hide();
       }
       $.on(d, 'dragover', qr.fileDrop);
       $.on(d, 'drop', qr.fileDrop);
@@ -1211,8 +1211,7 @@
     open: function() {
       if (qr.el) {
         qr.el.hidden = false;
-        $.id('autohide').checked = false;
-        return qr.hide();
+        return qr.unhide();
       } else {
         return qr.dialog();
       }
@@ -1236,11 +1235,21 @@
       return qr.cleanError();
     },
     hide: function() {
-      if ($.id('autohide').checked) {
-        return $.addClass(qr.el, 'autohide');
-      } else {
-        $.removeClass(qr.el, 'autohide');
+      var auto;
+      auto = $.id('autohide');
+      if (!auto.checked) return auto.click();
+    },
+    unhide: function() {
+      var auto;
+      auto = $.id('autohide');
+      if (auto.checked) return auto.click();
+    },
+    toggleHide: function() {
+      if (this.checked) {
+        $.addClass(qr.el, 'autohide');
         return d.activeElement.blur();
+      } else {
+        return $.removeClass(qr.el, 'autohide');
       }
     },
     error: function(err, node) {
@@ -1522,7 +1531,7 @@
           return e.stopPropagation();
         });
       }
-      $.on($('#autohide', qr.el), 'click', qr.hide);
+      $.on($('#autohide', qr.el), 'click', qr.toggleHide);
       $.on($('.close', qr.el), 'click', qr.close);
       $.on($('#dump', qr.el), 'click', function() {
         return qr.el.classList.toggle('dump');
@@ -1583,10 +1592,7 @@
       }
       qr.cleanError();
       threadID = g.THREAD_ID || $('select', qr.el).value;
-      if (conf['Auto Hide QR'] && qr.replies.length === 1) {
-        $.id('autohide').checked = true;
-        qr.hide();
-      }
+      if (conf['Auto Hide QR'] && qr.replies.length === 1) qr.hide();
       if (conf['Thread Watcher'] && conf['Auto Watch Reply'] && threadID !== 'new') {
         watcher.watch(threadID);
       }
