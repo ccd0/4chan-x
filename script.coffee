@@ -1052,6 +1052,8 @@ qr =
       qr.replies.push @
     setFile: (@file) ->
       @el.title = file.name
+      if @ is qr.selected
+        $('#filename', qr.el).textContent = file.name
       if file.type is 'application/pdf'
         @el.style.backgroundImage = null
         return
@@ -1070,7 +1072,8 @@ qr =
       @el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
       for data in ['name', 'email', 'sub', 'com']
         $("[name=#{data}]", qr.el).value = @[data]
-      $('#spoiler', qr.el).checked = @spoiler
+      $('#filename', qr.el).textContent  = if @file then @file.name else null
+      $('#spoiler',  qr.el).checked      = @spoiler
     rm: ->
       $.rm @el
       index = qr.replies.indexOf @
@@ -1158,7 +1161,7 @@ qr =
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha title=Reload><img></div>
   <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>
-  <div><label for=upfile><input type=button value='Select Files' class=button></label><span id=fileInfo></span><input type=submit class=button></div>
+  <div><label for=upfile><input type=button value='Select Files' class=button></label><span id=filename></span><input type=submit class=button></div>
   <label id=spoilerLabel#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image</label>
   <div class=warning></div>
 </form>
@@ -2896,7 +2899,7 @@ textarea.field {
   position: absolute;
   visibility: hidden;
 }
-#fileInfo {
+#filename {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   display: inline-block;
