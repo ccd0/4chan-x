@@ -2800,7 +2800,9 @@ a[href="javascript:;"] {
   white-space: pre;
 }
 #replies > div:hover {
+  bottom: -10px;
   overflow-x: auto;
+  z-index: 1;
 }
 .preview {
   background-color: rgba(0,0,0,.2);
