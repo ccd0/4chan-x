@@ -1454,10 +1454,13 @@
       };
 
       _Class.prototype.select = function() {
-        var data, _i, _len, _ref, _ref2;
+        var data, rectEl, rectList, _i, _len, _ref, _ref2;
         if ((_ref = qr.selected) != null) _ref.el.id = null;
         qr.selected = this;
         this.el.id = 'selected';
+        rectEl = this.el.getBoundingClientRect();
+        rectList = this.el.parentNode.getBoundingClientRect();
+        this.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
         _ref2 = ['name', 'email', 'sub', 'com'];
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           data = _ref2[_i];

@@ -1070,6 +1070,10 @@ qr =
       qr.selected?.el.id = null
       qr.selected = @
       @el.id = 'selected'
+      # Scroll the list to center the focused reply.
+      rectEl   = @el.getBoundingClientRect()
+      rectList = @el.parentNode.getBoundingClientRect()
+      @el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
       for data in ['name', 'email', 'sub', 'com']
         $("[name=#{data}]", qr.el).value = @[data]
       $('#spoiler', qr.el).checked = @spoiler
