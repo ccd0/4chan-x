@@ -1252,6 +1252,10 @@ qr =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
 
+    # Starting to upload might take some time.
+    # Provide some feedback that we're starting to submit.
+    qr.status progress: '...'
+
     if engine is 'gecko' and reply.file
       # https://bugzilla.mozilla.org/show_bug.cgi?id=673742
       # We plan to allow postMessaging Files and FileLists across origins,
@@ -1275,19 +1279,21 @@ qr =
     else if b.childElementCount # error!
       node = b.firstChild if b.firstChild.tagName # duplicate image link
       err  = b.firstChild.textContent
-      if err is 'You seem to have mistyped the verification.'
+
+    if err
+      if err is 'You seem to have mistyped the verification.' or err is 'Connection error with sys.4chan.org.'
         # Enable auto-post if we have some cached captchas.
         qr.cooldown.auto = !!$.get('captchas', []).length
         # Too many frequent mistyped captchas will auto-ban you!
+        # On connection error, the post most likely didn't go through.
         qr.cooldown.set 10
       else # stop auto-posting
         qr.cooldown.auto = false
-
-    qr.status()
-
-    if err
+      qr.status()
       qr.error err, node
       return
+
+    qr.status()
 
     reply = qr.replies[0]
 

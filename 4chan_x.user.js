@@ -1678,6 +1678,9 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response
       };
+      qr.status({
+        progress: '...'
+      });
       if (engine === 'gecko' && reply.file) {
         file = {};
         reader = new FileReader();
@@ -1702,18 +1705,19 @@
       } else if (b.childElementCount) {
         if (b.firstChild.tagName) node = b.firstChild;
         err = b.firstChild.textContent;
-        if (err === 'You seem to have mistyped the verification.') {
+      }
+      if (err) {
+        if (err === 'You seem to have mistyped the verification.' || err === 'Connection error with sys.4chan.org.') {
           qr.cooldown.auto = !!$.get('captchas', []).length;
           qr.cooldown.set(10);
         } else {
           qr.cooldown.auto = false;
         }
-      }
-      qr.status();
-      if (err) {
+        qr.status();
         qr.error(err, node);
         return;
       }
+      qr.status();
       reply = qr.replies[0];
       persona = $.get('qr.persona', {});
       persona = {
