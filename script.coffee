@@ -929,7 +929,7 @@ qr =
     return unless qr.el
     {input} = qr.status
     input.value    =
-      if qr.cooldown.auto
+      if qr.cooldown.auto and conf['Cooldown']
         if value then "Auto #{value}" else 'Auto'
       else
         value or 'Submit'
@@ -1223,6 +1223,9 @@ qr =
         err = 'No valid captcha.'
 
     if err
+      # stop auto-posting
+      qr.cooldown.auto = false
+      qr.status()
       qr.error err
       return
     qr.cleanError()

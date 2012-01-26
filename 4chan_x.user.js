@@ -1287,7 +1287,7 @@
       }
       if (!qr.el) return;
       input = qr.status.input;
-      input.value = qr.cooldown.auto ? value ? "Auto " + value : 'Auto' : value || 'Submit';
+      input.value = qr.cooldown.auto && conf['Cooldown'] ? value ? "Auto " + value : 'Auto' : value || 'Submit';
       return input.disabled = disabled || false;
     },
     cooldown: {
@@ -1653,6 +1653,8 @@
         if (!response) err = 'No valid captcha.';
       }
       if (err) {
+        qr.cooldown.auto = false;
+        qr.status();
         qr.error(err);
         return;
       }
