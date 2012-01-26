@@ -1282,6 +1282,7 @@
       if (g.dead) {
         value = 404;
         disabled = true;
+        qr.cooldown.auto = false;
       } else {
         value = qr.cooldown.seconds || data.progress || value;
       }

@@ -923,6 +923,7 @@ qr =
     if g.dead
       value    = 404
       disabled = true
+      qr.cooldown.auto = false
     else
       # do not cancel `value = 'Loading'` once the cooldown is over
       value = qr.cooldown.seconds or data.progress or value
