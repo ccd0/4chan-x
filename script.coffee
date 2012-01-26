@@ -1173,6 +1173,8 @@ qr =
     $.on $('textarea',    qr.el), 'change',    -> qr.selected.el.lastChild.textContent = @value
     $.on $('#upfile',     qr.el), 'change',    qr.fileInput
     $.on $('#spoiler',    qr.el), 'change',    -> $('input', qr.selected.el).click()
+    if engine is 'gecko'
+      $.on $('label>.button', qr.el), 'click', -> $.id('upfile').click()
 
     new qr.reply().select()
     # save selected reply's data
