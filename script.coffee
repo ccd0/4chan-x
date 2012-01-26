@@ -1300,8 +1300,10 @@ qr =
 
     [_, thread, postNumber] = b.lastChild.textContent.match /thread:(\d+),no:(\d+)/
     if thread is '0' # new thread
+      if conf['Thread Watcher'] and conf['Auto Watch']
+        $.set 'autoWatch', postNumber
       # auto-noko
-      window.open "/#{g.BOARD}/res/#{postNumber}", '_self'
+      location.pathname = "/#{g.BOARD}/res/#{postNumber}"
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       qr.cooldown.auto = qr.replies.length > 1
@@ -1862,8 +1864,12 @@ watcher =
       $.on favicon, 'click', watcher.cb.toggle
       $.before input, favicon
 
-    #populate watcher, display watch buttons
-    watcher.refresh()
+    if g.THREAD_ID is $.get 'autoWatch', 0
+      watcher.watch g.THREAD_ID
+      $.delete 'autoWatch'
+    else
+      #populate watcher, display watch buttons
+      watcher.refresh()
 
     $.on window, 'storage', (e) -> watcher.refresh() if e.key is "#{NAMESPACE}watched"
 

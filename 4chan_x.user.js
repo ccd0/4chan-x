@@ -1724,7 +1724,10 @@
       $.set('qr.persona', persona);
       _ref = b.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], postNumber = _ref[2];
       if (thread === '0') {
-        window.open("/" + g.BOARD + "/res/" + postNumber, '_self');
+        if (conf['Thread Watcher'] && conf['Auto Watch']) {
+          $.set('autoWatch', postNumber);
+        }
+        location.pathname = "/" + g.BOARD + "/res/" + postNumber;
       } else {
         qr.cooldown.auto = qr.replies.length > 1;
         qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
@@ -2381,7 +2384,12 @@
         $.on(favicon, 'click', watcher.cb.toggle);
         $.before(input, favicon);
       }
-      watcher.refresh();
+      if (g.THREAD_ID === $.get('autoWatch', 0)) {
+        watcher.watch(g.THREAD_ID);
+        $["delete"]('autoWatch');
+      } else {
+        watcher.refresh();
+      }
       return $.on(window, 'storage', function(e) {
         if (e.key === ("" + NAMESPACE + "watched")) return watcher.refresh();
       });
