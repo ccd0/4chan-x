@@ -3546,6 +3546,10 @@ a[href="javascript:;"] {\
   display: block;\
   height: 100px;\
   position: relative;\
+  -webkit-user-select: none;\
+  -moz-user-select: none;\
+  -o-user-select: none;\
+  user-select: none;\
 }\
 #replies > div {\
   top: 0; right: 0; bottom: 0; left: 0;\
