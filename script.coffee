@@ -928,7 +928,11 @@ qr =
       value = qr.cooldown.seconds or data.progress or value
     return unless qr.el
     {input} = qr.status
-    input.value    =    value or 'Submit' # dispaly "Auto #{...}" when auto postan
+    input.value    =
+      if qr.cooldown.auto
+        if value then "Auto #{value}" else 'Auto'
+      else
+        value or 'Submit'
     input.disabled = disabled or false
 
   cooldown:
@@ -946,12 +950,12 @@ qr =
       qr.cooldown.count seconds
       $.set "/#{g.BOARD}/cooldown", Date.now() + seconds*SECOND
     count: (seconds) ->
-      return unless 60 >= seconds >= 0
+      return unless 0 <= seconds <= 60
       setTimeout qr.cooldown.count, 1000, seconds-1
+      qr.cooldown.seconds = seconds
       if seconds is 0
         $.delete "/#{g.BOARD}/cooldown"
-        # auto postan
-      qr.cooldown.seconds = seconds
+        qr.submit() if qr.cooldown.auto
       qr.status()
 
   pickThread: (thread) ->
@@ -1192,7 +1196,8 @@ qr =
   submit: (e) ->
     e?.preventDefault()
     if qr.cooldown.seconds
-      # toggle auto postan
+      qr.cooldown.auto = !qr.cooldown.auto
+      qr.status()
       return
     qr.message.send abort: true
     reply = qr.replies[0]
@@ -1224,7 +1229,9 @@ qr =
 
     threadID = g.THREAD_ID or $('select', qr.el).value
 
-    if conf['Auto Hide QR'] and qr.replies.length is 1
+    # Enable auto-posting if we have stuff to post, disable it otherwise.
+    qr.cooldown.auto = qr.replies.length > 1
+    if conf['Auto Hide QR'] and not qr.cooldown.auto
       qr.hide()
     if conf['Thread Watcher'] and conf['Auto Watch Reply'] and threadID isnt 'new'
       watcher.watch threadID
@@ -1260,27 +1267,26 @@ qr =
     qr.message.send post
 
   response: (html) ->
-    qr.status()
     unless b = $ 'td b', $.el('a', innerHTML: html)
       err = 'Connection error with sys.4chan.org.'
     else if b.childElementCount # error!
       node = b.firstChild if b.firstChild.tagName # duplicate image link
       err  = b.firstChild.textContent
       if err is 'You seem to have mistyped the verification.'
-        qr.cooldown.set 10 # prevent autoban
-        # turn auto postan ON? Might depend if we have captchas in stock or not
+        # Enable auto-post if we have some cached captchas.
+        qr.cooldown.auto = !!$.get('captchas', []).length
+        # Too many frequent mistyped captchas will auto-ban you!
+        qr.cooldown.set 10
+      else # stop auto-posting
+        qr.cooldown.auto = false
+
+    qr.status()
 
     if err
       qr.error err, node
       return
 
     reply = qr.replies[0]
-
-    [_, thread, postNumber] = b.lastChild.textContent.match /thread:(\d+),no:(\d+)/
-    if thread is 0 # new thread
-      # auto noko to postNumber
-    else
-      qr.cooldown.set if /sage/i.test reply.email then 60 else 30
 
     persona = $.get 'qr.persona', {}
     persona =
@@ -1289,7 +1295,15 @@ qr =
       sub:   if conf['Remember Subject']  then reply.sub     else null
     $.set 'qr.persona', persona
 
-    if conf['Persistent QR'] or qr.replies.length > 1
+    [_, thread, postNumber] = b.lastChild.textContent.match /thread:(\d+),no:(\d+)/
+    if thread is 0 # new thread
+      # auto noko to postNumber
+    else
+      # Enable auto-posting if we have stuff to post, disable it otherwise.
+      qr.cooldown.auto = qr.replies.length > 1
+      qr.cooldown.set if /sage/i.test reply.email then 60 else 30
+
+    if conf['Persistent QR'] or qr.cooldown.auto
       reply.rm()
     else
       qr.close()
@@ -1341,8 +1355,7 @@ qr =
         qr.status data
       delete data.qr
       if data.mode is 'regist' # reply object: we're posting
-        # fool CloudFlare's cache to hopefully avoid connection errors
-        url = "http://sys.4chan.org/#{data.board}/post?#{Date.now()}"
+        url = "http://sys.4chan.org/#{data.board}/post"
         delete data.board
         form = new FormData()
         if engine is 'gecko' and data.upfile

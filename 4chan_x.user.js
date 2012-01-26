@@ -1287,7 +1287,7 @@
       }
       if (!qr.el) return;
       input = qr.status.input;
-      input.value = value || 'Submit';
+      input.value = qr.cooldown.auto ? value ? "Auto " + value : 'Auto' : value || 'Submit';
       return input.disabled = disabled || false;
     },
     cooldown: {
@@ -1312,10 +1312,13 @@
         return $.set("/" + g.BOARD + "/cooldown", Date.now() + seconds * SECOND);
       },
       count: function(seconds) {
-        if (!((60 >= seconds && seconds >= 0))) return;
+        if (!((0 <= seconds && seconds <= 60))) return;
         setTimeout(qr.cooldown.count, 1000, seconds - 1);
-        if (seconds === 0) $["delete"]("/" + g.BOARD + "/cooldown");
         qr.cooldown.seconds = seconds;
+        if (seconds === 0) {
+          $["delete"]("/" + g.BOARD + "/cooldown");
+          if (qr.cooldown.auto) qr.submit();
+        }
         return qr.status();
       }
     },
@@ -1622,7 +1625,11 @@
     submit: function(e) {
       var captcha, captchas, challenge, err, file, m, post, reader, reply, response, threadID;
       if (e != null) e.preventDefault();
-      if (qr.cooldown.seconds) return;
+      if (qr.cooldown.seconds) {
+        qr.cooldown.auto = !qr.cooldown.auto;
+        qr.status();
+        return;
+      }
       qr.message.send({
         abort: true
       });
@@ -1651,7 +1658,8 @@
       }
       qr.cleanError();
       threadID = g.THREAD_ID || $('select', qr.el).value;
-      if (conf['Auto Hide QR'] && qr.replies.length === 1) qr.hide();
+      qr.cooldown.auto = qr.replies.length > 1;
+      if (conf['Auto Hide QR'] && !qr.cooldown.auto) qr.hide();
       if (conf['Thread Watcher'] && conf['Auto Watch Reply'] && threadID !== 'new') {
         watcher.watch(threadID);
       }
@@ -1685,7 +1693,6 @@
     },
     response: function(html) {
       var b, err, node, persona, postNumber, reply, thread, _, _ref;
-      qr.status();
       if (!(b = $('td b', $.el('a', {
         innerHTML: html
       })))) {
@@ -1694,18 +1701,18 @@
         if (b.firstChild.tagName) node = b.firstChild;
         err = b.firstChild.textContent;
         if (err === 'You seem to have mistyped the verification.') {
+          qr.cooldown.auto = !!$.get('captchas', []).length;
           qr.cooldown.set(10);
+        } else {
+          qr.cooldown.auto = false;
         }
       }
+      qr.status();
       if (err) {
         qr.error(err, node);
         return;
       }
       reply = qr.replies[0];
-      _ref = b.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], postNumber = _ref[2];
-      if (thread === 0) {} else {
-        qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
-      }
       persona = $.get('qr.persona', {});
       persona = {
         name: reply.name,
@@ -1713,7 +1720,12 @@
         sub: conf['Remember Subject'] ? reply.sub : null
       };
       $.set('qr.persona', persona);
-      if (conf['Persistent QR'] || qr.replies.length > 1) {
+      _ref = b.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], postNumber = _ref[2];
+      if (thread === 0) {} else {
+        qr.cooldown.auto = qr.replies.length > 1;
+        qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
+      }
+      if (conf['Persistent QR'] || qr.cooldown.auto) {
         reply.rm();
       } else {
         qr.close();
@@ -1779,7 +1791,7 @@
         if (data.status) qr.status(data);
         delete data.qr;
         if (data.mode === 'regist') {
-          url = "http://sys.4chan.org/" + data.board + "/post?" + (Date.now());
+          url = "http://sys.4chan.org/" + data.board + "/post";
           delete data.board;
           form = new FormData();
           if (engine === 'gecko' && data.upfile) {
