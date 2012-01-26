@@ -1299,8 +1299,9 @@ qr =
     $.set 'qr.persona', persona
 
     [_, thread, postNumber] = b.lastChild.textContent.match /thread:(\d+),no:(\d+)/
-    if thread is 0 # new thread
-      # auto noko to postNumber
+    if thread is '0' # new thread
+      # auto-noko
+      window.open "/#{g.BOARD}/res/#{postNumber}", '_self'
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       qr.cooldown.auto = qr.replies.length > 1

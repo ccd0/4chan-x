@@ -1723,7 +1723,9 @@
       };
       $.set('qr.persona', persona);
       _ref = b.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], postNumber = _ref[2];
-      if (thread === 0) {} else {
+      if (thread === '0') {
+        window.open("/" + g.BOARD + "/res/" + postNumber, '_self');
+      } else {
         qr.cooldown.auto = qr.replies.length > 1;
         qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
       }
