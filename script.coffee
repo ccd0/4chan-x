@@ -1162,7 +1162,7 @@ qr =
   <div class=captcha title=Reload><img></div>
   <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>
   <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit></div>
-  <label#{if qr.spoiler then '' else ' hidden'} id=spoilerlabel><input type=checkbox id=spoiler> Spoiler Image</label>
+  <label id=spoilerLabel#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image</label>
   <div class=warning></div>
 </form>"
     unless g.REPLY
