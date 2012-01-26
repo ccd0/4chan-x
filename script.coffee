@@ -889,7 +889,6 @@ qr =
     for i in qr.replies
       qr.replies[0].rm()
     qr.status()
-    qr.resetFileInput()
     spoiler.click() if (spoiler = $.id 'spoiler').checked
     qr.cleanError()
   hide: ->
@@ -1003,10 +1002,8 @@ qr =
       file = @files[0]
       if file.size > @max
         qr.error 'File too large.'
-        qr.resetFileInput()
       else if -1 is qr.mimeTypes.indexOf file.type
         qr.error 'Unsupported file type.'
-        qr.resetFileInput()
       else
         qr.selected.setFile file
       return
@@ -1023,9 +1020,6 @@ qr =
       else
         new qr.reply file
     $.addClass qr.el, 'dump'
-    qr.resetFileInput() if @multiple # reset input
-  resetFileInput: ->
-    $('[type=file]', qr.el).value = null
 
   replies: []
   reply: class
@@ -1078,7 +1072,6 @@ qr =
         $("[name=#{data}]", qr.el).value = @[data]
       $('#spoiler', qr.el).checked = @spoiler
     rm: ->
-      qr.resetFileInput()
       $.rm @el
       index = qr.replies.indexOf @
       if qr.replies.length is 1
@@ -1165,10 +1158,11 @@ qr =
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha title=Reload><img></div>
   <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>
-  <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit></div>
+  <div><label for=upfile><input type=button value='Select Files' class=button></label><span id=fileInfo></span><input type=submit class=button></div>
   <label id=spoilerLabel#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image</label>
   <div class=warning></div>
-</form>"
+</form>
+<input type=file id=upfile tabindex=-1 max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple>"
     unless g.REPLY
       $.on $('select',    qr.el), 'mousedown', (e) -> e.stopPropagation()
     $.on $('#autohide',   qr.el), 'click',     qr.toggleHide
@@ -1177,7 +1171,7 @@ qr =
     $.on $('#addReply',   qr.el), 'click',     -> new qr.reply().select()
     $.on $('form',        qr.el), 'submit',    qr.submit
     $.on $('textarea',    qr.el), 'change',    -> qr.selected.el.lastChild.textContent = @value
-    $.on $('[type=file]', qr.el), 'change',    qr.fileInput
+    $.on $('#upfile',     qr.el), 'change',    qr.fileInput
     $.on $('#spoiler',    qr.el), 'change',    -> $('input', qr.selected.el).click()
 
     new qr.reply().select()
@@ -1324,7 +1318,6 @@ qr =
       reply.rm()
     else
       qr.close()
-    qr.resetFileInput()
 
   message:
     init: ->
@@ -2897,12 +2890,24 @@ textarea.field {
 .field[name=captcha] {
   width: 100%;
 }
-#qr [type=file] {
-  width: 75%;
+#upfile {
+  position: absolute;
+  visibility: hidden;
 }
-#qr [type=submit] {
+#fileInfo {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  display: inline-block;
+  overflow: hidden;
+  padding: 2px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 40%;
+}
+.button {
+  margin: 1px 0;
   padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */
-  width: 25%;
+  width: 30%;
 }
 
 .new {
