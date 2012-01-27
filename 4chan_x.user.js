@@ -1235,6 +1235,7 @@
         qr.replies[0].rm();
       }
       qr.status();
+      qr.resetFileInput();
       if ((spoiler = $.id('spoiler')).checked) spoiler.click();
       return qr.cleanError();
     },
@@ -1366,8 +1367,10 @@
         file = this.files[0];
         if (file.size > this.max) {
           qr.error('File too large.');
+          qr.resetFileInput();
         } else if (-1 === qr.mimeTypes.indexOf(file.type)) {
           qr.error('Unsupported file type.');
+          qr.resetFileInput();
         } else {
           qr.selected.setFile(file);
         }
@@ -1389,7 +1392,11 @@
           new qr.reply(file);
         }
       }
-      return $.addClass(qr.el, 'dump');
+      $.addClass(qr.el, 'dump');
+      if (this.multiple) return qr.resetFileInput();
+    },
+    resetFileInput: function() {
+      return $('[type=file]', qr.el).value = null;
     },
     replies: [],
     reply: (function() {
@@ -1464,6 +1471,7 @@
 
       _Class.prototype.rm = function() {
         var index, url;
+        qr.resetFileInput();
         $.rm(this.el);
         index = qr.replies.indexOf(this);
         if (qr.replies.length === 1) {
@@ -1568,7 +1576,7 @@
       });
       qr.mimeTypes = mimeTypes.split(', ');
       qr.spoiler = !!$('#com_submit + label');
-      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><label for=upfile><input type=button value='Select Files' class=button></label><span id=fileInfo></span><input type=submit class=button></div>  <label id=spoilerLabel" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image</label>  <div class=warning></div></form><input type=file id=upfile tabindex=-1 max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple>");
+      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit></div>  <label id=spoilerLabel" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image</label>  <div class=warning></div></form>");
       if (!g.REPLY) {
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
@@ -1586,7 +1594,7 @@
       $.on($('textarea', qr.el), 'change', function() {
         return qr.selected.el.lastChild.textContent = this.value;
       });
-      $.on($('#upfile', qr.el), 'change', qr.fileInput);
+      $.on($('[type=file]', qr.el), 'change', qr.fileInput);
       $.on($('#spoiler', qr.el), 'change', function() {
         return $('input', qr.selected.el).click();
       });
@@ -1734,10 +1742,11 @@
         qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
       }
       if (conf['Persistent QR'] || qr.cooldown.auto) {
-        return reply.rm();
+        reply.rm();
       } else {
-        return qr.close();
+        qr.close();
       }
+      return qr.resetFileInput();
     },
     message: {
       init: function() {
@@ -3651,24 +3660,12 @@ textarea.field {\
 .field[name=captcha] {\
   width: 100%;\
 }\
-#upfile {\
-  position: absolute;\
-  visibility: hidden;\
+#qr [type=file] {\
+  width: 75%;\
 }\
-#fileInfo {\
-  box-sizing: border-box;\
-  -moz-box-sizing: border-box;\
-  display: inline-block;\
-  overflow: hidden;\
-  padding: 2px;\
-  text-overflow: ellipsis;\
-  white-space: nowrap;\
-  width: 40%;\
-}\
-.button {\
-  margin: 1px 0;\
+#qr [type=submit] {\
   padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */\
-  width: 30%;\
+  width: 25%;\
 }\
 \
 .new {\
