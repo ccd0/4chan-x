@@ -973,13 +973,13 @@ qr =
 
     ta = $ 'textarea', qr.el
     caretPos = ta.selectionStart
-    #replace selection for text
+    # Replace selection for text.
     ta.value = ta.value[0...caretPos] + text + ta.value[ta.selectionEnd...ta.value.length]
     ta.focus()
-    #move the caret to the end of the new quote
+    # Move the caret to the end of the new quote.
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
 
-    # onchange event isn't triggered, save value
+    # onchange event isn't triggered, save value.
     qr.selected.com = ta.value
     qr.selected.el.lastChild.textContent = ta.value
 
@@ -995,6 +995,7 @@ qr =
       $.addClass qr.el, 'dump'
   fileInput: ->
     qr.cleanError()
+    # Set or change current reply's file.
     if @files.length is 1
       file = @files[0]
       if file.size > @max
@@ -1006,6 +1007,7 @@ qr =
       else
         qr.selected.setFile file
       return
+    # Create new replies with these files.
     for file in @files
       if file.size > @max
         qr.error "File #{file.name} is too large."
@@ -1017,22 +1019,22 @@ qr =
         # set last reply's file
         qr.replies[qr.replies.length - 1].setFile file
       else
-        new qr.reply file
+        new qr.reply().setFile file
     $.addClass qr.el, 'dump'
-    qr.resetFileInput() if @multiple # reset input
+    qr.resetFileInput() # reset input
   resetFileInput: ->
     $('[type=file]', qr.el).value = null
 
   replies: []
   reply: class
-    constructor: (file) ->
+    constructor: ->
       # set values, or null, to avoid 'undefined' values in inputs
-      previous = qr.replies[qr.replies.length-1]
+      prev     = qr.replies[qr.replies.length-1]
       persona  = $.get 'qr.persona', {}
-      @name    = if previous then previous.name else persona.name or null
-      @email   = if previous and !/^sage$/.test previous.email then previous.email   else persona.email or null
-      @sub     = if previous and conf['Remember Subject']      then previous.sub     else if conf['Remember Subject'] then persona.sub else null
-      @spoiler = if previous and conf['Remember Spoiler']      then previous.spoiler else false
+      @name    = if prev then prev.name else persona.name or null
+      @email   = if prev and !/^sage$/.test prev.email then prev.email   else persona.email or null
+      @sub     = if prev and conf['Remember Subject']  then prev.sub     else if conf['Remember Subject'] then persona.sub else null
+      @spoiler = if prev and conf['Remember Spoiler']  then prev.spoiler else false
       @com = null
 
       @el = $.el 'a',
@@ -1048,7 +1050,6 @@ qr =
       $.on $('input',   @el), 'change', (e) =>
         @spoiler = e.target.checked
         $.id('spoiler').checked = @spoiler if @el.id is 'selected'
-      @setFile file if file
       $.before $('#addReply', qr.el), @el
 
       qr.replies.push @
@@ -1070,6 +1071,7 @@ qr =
       rectEl   = @el.getBoundingClientRect()
       rectList = @el.parentNode.getBoundingClientRect()
       @el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
+      # Load this reply's values.
       for data in ['name', 'email', 'sub', 'com']
         $("[name=#{data}]", qr.el).value = @[data]
       $('#spoiler', qr.el).checked = @spoiler
@@ -1082,8 +1084,7 @@ qr =
       else if @el.id is 'selected'
         (qr.replies[index-1] or qr.replies[index+1]).select()
       qr.replies.splice index, 1
-      url = window.URL or window.webkitURL
-      url.revokeObjectURL @url
+      (window.URL or window.webkitURL).revokeObjectURL @url
       delete @
 
   captcha:
@@ -1100,7 +1101,7 @@ qr =
     save: ->
       return unless response = @input.value
       captchas = $.get 'captchas', []
-      # remove old captchas
+      # Remove old captchas.
       while (captcha = captchas[0]) and captcha.time < Date.now()
         captchas.shift()
       captchas.push
@@ -1111,17 +1112,19 @@ qr =
       @count captchas.length
       @reload()
     load: ->
-      @timeout = Date.now() + 25*MINUTE
+      # Timeout is available at RecaptchaState.timeout in seconds.
+      @timeout  = Date.now() + 26*MINUTE
       challenge = @challenge.firstChild.value
-      @img.alt = challenge
-      @img.src = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
+      @img.alt  = challenge
+      @img.src  = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
       @input.value = null
     count: (count) ->
       s = if count is 1 then '' else 's'
       @input.placeholder = "Verification (#{count} cached captcha#{s})"
-    reload: ->
+    reload: (focus) ->
       window.location = 'javascript:Recaptcha.reload()'
-      qr.captcha.input.focus()
+      # Focus if we meant to.
+      qr.captcha.input.focus() if focus
     keydown: (e) ->
       c = qr.captcha
       if e.keyCode is 8 and not c.input.value
@@ -2897,11 +2900,11 @@ textarea.field {
   width: 100%;
 }
 #qr [type=file] {
-  width: 75%;
+  width: 70%;
 }
 #qr [type=submit] {
   padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */
-  width: 25%;
+  width: 30%;
 }
 
 .new {

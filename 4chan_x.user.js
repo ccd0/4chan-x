@@ -1380,11 +1380,11 @@
         if (!qr.replies[qr.replies.length - 1].file) {
           qr.replies[qr.replies.length - 1].setFile(file);
         } else {
-          new qr.reply(file);
+          new qr.reply().setFile(file);
         }
       }
       $.addClass(qr.el, 'dump');
-      if (this.multiple) return qr.resetFileInput();
+      return qr.resetFileInput();
     },
     resetFileInput: function() {
       return $('[type=file]', qr.el).value = null;
@@ -1392,15 +1392,15 @@
     replies: [],
     reply: (function() {
 
-      function _Class(file) {
-        var persona, previous,
+      function _Class() {
+        var persona, prev,
           _this = this;
-        previous = qr.replies[qr.replies.length - 1];
+        prev = qr.replies[qr.replies.length - 1];
         persona = $.get('qr.persona', {});
-        this.name = previous ? previous.name : persona.name || null;
-        this.email = previous && !/^sage$/.test(previous.email) ? previous.email : persona.email || null;
-        this.sub = previous && conf['Remember Subject'] ? previous.sub : conf['Remember Subject'] ? persona.sub : null;
-        this.spoiler = previous && conf['Remember Spoiler'] ? previous.spoiler : false;
+        this.name = prev ? prev.name : persona.name || null;
+        this.email = prev && !/^sage$/.test(prev.email) ? prev.email : persona.email || null;
+        this.sub = prev && conf['Remember Subject'] ? prev.sub : conf['Remember Subject'] ? persona.sub : null;
+        this.spoiler = prev && conf['Remember Spoiler'] ? prev.spoiler : false;
         this.com = null;
         this.el = $.el('a', {
           className: 'preview',
@@ -1424,7 +1424,6 @@
             return $.id('spoiler').checked = _this.spoiler;
           }
         });
-        if (file) this.setFile(file);
         $.before($('#addReply', qr.el), this.el);
         qr.replies.push(this);
       }
@@ -1461,7 +1460,7 @@
       };
 
       _Class.prototype.rm = function() {
-        var index, url;
+        var index;
         qr.resetFileInput();
         $.rm(this.el);
         index = qr.replies.indexOf(this);
@@ -1471,8 +1470,7 @@
           (qr.replies[index - 1] || qr.replies[index + 1]).select();
         }
         qr.replies.splice(index, 1);
-        url = window.URL || window.webkitURL;
-        url.revokeObjectURL(this.url);
+        (window.URL || window.webkitURL).revokeObjectURL(this.url);
         return delete this;
       };
 
@@ -1514,7 +1512,7 @@
       },
       load: function() {
         var challenge;
-        this.timeout = Date.now() + 25 * MINUTE;
+        this.timeout = Date.now() + 26 * MINUTE;
         challenge = this.challenge.firstChild.value;
         this.img.alt = challenge;
         this.img.src = "http://www.google.com/recaptcha/api/image?c=" + challenge;
@@ -1525,9 +1523,9 @@
         s = count === 1 ? '' : 's';
         return this.input.placeholder = "Verification (" + count + " cached captcha" + s + ")";
       },
-      reload: function() {
+      reload: function(focus) {
         window.location = 'javascript:Recaptcha.reload()';
-        return qr.captcha.input.focus();
+        if (focus) return qr.captcha.input.focus();
       },
       keydown: function(e) {
         var c;
@@ -3648,11 +3646,11 @@ textarea.field {\
   width: 100%;\
 }\
 #qr [type=file] {\
-  width: 75%;\
+  width: 70%;\
 }\
 #qr [type=submit] {\
   padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */\
-  width: 25%;\
+  width: 30%;\
 }\
 \
 .new {\
