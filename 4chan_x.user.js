@@ -3293,7 +3293,7 @@
       return $.add(a, img);
     },
     error: function() {
-      var href, req, src, thumb, url;
+      var href, src, thumb, timeoutID, url;
       href = this.parentNode.href;
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
@@ -3302,20 +3302,16 @@
         setTimeout(imgExpand.expand, 10000, thumb, url);
         return;
       }
+      if (g.dead) return;
       url = href + '?' + Date.now();
-      if (engine === 'webkit') {
-        return req = $.ajax(this.src, {
-          onreadystatechange: (function() {
-            if (this.status !== 404) {
-              return setTimeout(imgExpand.expand, 10000, thumb, url);
-            }
-          })
-        }, {
-          type: 'head'
-        });
-      } else if (!g.dead) {
-        return setTimeout(imgExpand.expand, 10000, thumb, url);
-      }
+      timeoutID = setTimeout(imgExpand.expand, 10000, thumb, url);
+      return $.ajax(this.src, {
+        onreadystatechange: (function() {
+          if (this.status === 404) return clearTimeout(timeoutID);
+        })
+      }, {
+        type: 'head'
+      });
     },
     dialog: function() {
       var controls, form, imageType, select;
