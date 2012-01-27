@@ -317,6 +317,11 @@
       };
       return $.on(d, 'DOMContentLoaded', cb);
     },
+    sync: function(key, cb) {
+      return $.on(window, 'storage', function(e) {
+        if (e.key === ("" + NAMESPACE + key)) return cb(JSON.parse(e.newValue));
+      });
+    },
     id: function(id) {
       return d.getElementById(id);
     },
@@ -1294,12 +1299,7 @@
       init: function() {
         if (!conf['Cooldown']) return;
         qr.cooldown.start($.get("/" + g.BOARD + "/cooldown", 0));
-        return $.on(window, 'storage', function(e) {
-          var timeout;
-          if (e.key === ("" + NAMESPACE + "/" + g.BOARD + "/cooldown") && (timeout = JSON.parse(e.newValue))) {
-            return qr.cooldown.start(timeout);
-          }
-        });
+        return $.sync("/" + g.BOARD + "/cooldown", qr.cooldown.start);
       },
       start: function(timeout) {
         var seconds;
@@ -1495,10 +1495,8 @@
         $.on(this.challenge, 'DOMNodeInserted', function() {
           return _this.load();
         });
-        $.on(window, 'storage', function(e) {
-          if (e.key === ("" + NAMESPACE + "captchas")) {
-            return _this.count(JSON.parse(e.newValue).length);
-          }
+        $.sync('captchas', function(arr) {
+          return _this.count(arr.length);
         });
         this.count($.get('captchas', []).length);
         return this.load();
@@ -1602,18 +1600,16 @@
           return qr.selected[this.name] = this.value;
         });
       }
-      $.on(window, 'storage', function(e) {
-        var key, val, _ref3, _results;
-        if (e.key === ("" + NAMESPACE + "qr.persona") && qr.replies.length === 1) {
-          _ref3 = JSON.parse(e.newValue);
-          _results = [];
-          for (key in _ref3) {
-            val = _ref3[key];
-            qr.selected[key] = val;
-            _results.push($("[name=" + key + "]", qr.el).value = val);
-          }
-          return _results;
+      $.sync('qr.persona', function(persona) {
+        var key, val, _results;
+        if (qr.replies.length !== 1) return;
+        _results = [];
+        for (key in persona) {
+          val = persona[key];
+          qr.selected[key] = val;
+          _results.push($("[name=" + key + "]", qr.el).value = val);
         }
+        return _results;
       });
       qr.status.input = $('[type=submit]', qr.el);
       qr.status();
@@ -2395,13 +2391,11 @@
       } else {
         watcher.refresh();
       }
-      return $.on(window, 'storage', function(e) {
-        if (e.key === ("" + NAMESPACE + "watched")) return watcher.refresh();
-      });
+      return $.sync('watched', watcher.refresh);
     },
-    refresh: function() {
-      var board, div, favicon, frag, id, link, props, watched, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
-      watched = $.get('watched', {});
+    refresh: function(watched) {
+      var board, div, favicon, frag, id, link, props, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
+      watched || (watched = $.get('watched', {}));
       frag = d.createDocumentFragment();
       for (board in watched) {
         _ref = watched[board];

@@ -227,6 +227,9 @@ $.extend $,
       $.off d, 'DOMContentLoaded', cb
       fc()
     $.on d, 'DOMContentLoaded', cb
+  sync: (key, cb) ->
+    $.on window, 'storage', (e) ->
+      cb JSON.parse e.newValue if e.key is "#{NAMESPACE}#{key}"
   id: (id) ->
     d.getElementById id
   ajax: (url, callbacks, opts={}) ->
@@ -939,9 +942,7 @@ qr =
     init: ->
       return unless conf['Cooldown']
       qr.cooldown.start $.get "/#{g.BOARD}/cooldown", 0
-      $.on window, 'storage', (e) ->
-        if e.key is "#{NAMESPACE}/#{g.BOARD}/cooldown" and timeout = JSON.parse e.newValue
-          qr.cooldown.start timeout
+      $.sync "/#{g.BOARD}/cooldown", qr.cooldown.start
     start: (timeout) ->
       seconds = Math.floor (timeout - Date.now()) / 1000
       qr.cooldown.count seconds
@@ -1095,7 +1096,7 @@ qr =
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
       $.on @challenge,      'DOMNodeInserted', => @load()
-      $.on window,          'storage',     (e) => @count JSON.parse(e.newValue).length if e.key is "#{NAMESPACE}captchas"
+      $.sync 'captchas', (arr) => @count arr.length
       @count $.get('captchas', []).length
       @load()
     save: ->
@@ -1182,11 +1183,11 @@ qr =
     for input in ['name', 'email', 'sub', 'com']
       $.on $("[name=#{input}]", qr.el), 'change', -> qr.selected[@name] = @value
     # sync between tabs
-    $.on window, 'storage', (e) ->
-      if e.key is "#{NAMESPACE}qr.persona" and qr.replies.length is 1
-        for key, val of JSON.parse e.newValue
-          qr.selected[key] = val
-          $("[name=#{key}]", qr.el).value = val
+    $.sync 'qr.persona', (persona) ->
+      return if qr.replies.length isnt 1
+      for key, val of persona
+        qr.selected[key] = val
+        $("[name=#{key}]", qr.el).value = val
 
     qr.status.input = $ '[type=submit]', qr.el
     qr.status()
@@ -1880,10 +1881,10 @@ watcher =
       #populate watcher, display watch buttons
       watcher.refresh()
 
-    $.on window, 'storage', (e) -> watcher.refresh() if e.key is "#{NAMESPACE}watched"
+    $.sync 'watched', watcher.refresh
 
-  refresh: ->
-    watched = $.get 'watched', {}
+  refresh: (watched) ->
+    watched or= $.get 'watched', {}
     frag = d.createDocumentFragment()
     for board of watched
       for id, props of watched[board]
