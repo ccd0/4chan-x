@@ -1676,6 +1676,7 @@
         sub: reply.sub,
         com: reply.com,
         upfile: reply.file,
+        spoiler: reply.spoiler,
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,

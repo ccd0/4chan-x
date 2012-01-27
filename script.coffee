@@ -1244,14 +1244,15 @@ qr =
       watcher.watch threadID
 
     post =
-      board:  g.BOARD
-      resto:  threadID
-      name:   reply.name
-      email:  reply.email
-      sub:    reply.sub
-      com:    reply.com
-      upfile: reply.file
-      mode:   'regist'
+      board:   g.BOARD
+      resto:   threadID
+      name:    reply.name
+      email:   reply.email
+      sub:     reply.sub
+      com:     reply.com
+      upfile:  reply.file
+      spoiler: reply.spoiler
+      mode:    'regist'
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
