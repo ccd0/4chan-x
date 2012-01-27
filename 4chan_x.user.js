@@ -1590,11 +1590,6 @@
       $.on($('#spoiler', qr.el), 'change', function() {
         return $('input', qr.selected.el).click();
       });
-      if (engine === 'gecko') {
-        $.on($('label>.button', qr.el), 'click', function() {
-          return $.id('upfile').click();
-        });
-      }
       new qr.reply().select();
       _ref2 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
