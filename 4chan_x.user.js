@@ -1435,7 +1435,6 @@
         var url;
         this.file = file;
         this.el.title = file.name;
-        if (this === qr.selected) $('#filename', qr.el).textContent = file.name;
         if (file.type === 'application/pdf') {
           this.el.style.backgroundImage = null;
           return;
@@ -1460,7 +1459,6 @@
           data = _ref2[_i];
           $("[name=" + data + "]", qr.el).value = this[data];
         }
-        $('#filename', qr.el).textContent = this.file ? this.file.name : null;
         return $('#spoiler', qr.el).checked = this.spoiler;
       };
 
@@ -1570,7 +1568,7 @@
       });
       qr.mimeTypes = mimeTypes.split(', ');
       qr.spoiler = !!$('#com_submit + label');
-      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><label for=upfile><input type=button value='Select Files' class=button></label><span id=filename></span><input type=submit class=button></div>  <label id=spoilerLabel" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image</label>  <div class=warning></div></form><input type=file id=upfile tabindex=-1 max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple>");
+      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><label for=upfile><input type=button value='Select Files' class=button></label><span id=fileInfo></span><input type=submit class=button></div>  <label id=spoilerLabel" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image</label>  <div class=warning></div></form><input type=file id=upfile tabindex=-1 max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple>");
       if (!g.REPLY) {
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
@@ -3662,7 +3660,7 @@ textarea.field {\
   position: absolute;\
   visibility: hidden;\
 }\
-#filename {\
+#fileInfo {\
   box-sizing: border-box;\
   -moz-box-sizing: border-box;\
   display: inline-block;\
