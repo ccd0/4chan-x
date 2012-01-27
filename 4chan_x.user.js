@@ -968,7 +968,7 @@
           if ((_ref2 = $('input[value=Previous]')) != null) _ref2.click();
           break;
         case conf.submit:
-          if (qr.el) qr.submit();
+          if (qr.el && !qr.status()) qr.submit();
           break;
         case conf.unreadCountTo0:
           unread.replies = [];
@@ -1196,7 +1196,7 @@
   qr = {
     init: function() {
       var iframe;
-      if (!$('form[name=post]')) return;
+      if (!$.id('recaptcha_challenge_field_holder')) return;
       g.callbacks.push(function(root) {
         return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
       });
@@ -1238,28 +1238,23 @@
         i = _ref[_i];
         qr.replies[0].rm();
       }
+      qr.cooldown.auto = false;
       qr.status();
       qr.resetFileInput();
       if ((spoiler = $.id('spoiler')).checked) spoiler.click();
       return qr.cleanError();
     },
     hide: function() {
-      var auto;
-      auto = $.id('autohide');
-      if (!auto.checked) return auto.click();
+      d.activeElement.blur();
+      $.addClass(qr.el, 'autohide');
+      return $.id('autohide').checked = true;
     },
     unhide: function() {
-      var auto;
-      auto = $.id('autohide');
-      if (auto.checked) return auto.click();
+      $.removeClass(qr.el, 'autohide');
+      return $.id('autohide').checked = false;
     },
     toggleHide: function() {
-      if (this.checked) {
-        $.addClass(qr.el, 'autohide');
-        return d.activeElement.blur();
-      } else {
-        return $.removeClass(qr.el, 'autohide');
-      }
+      return this.checked && qr.hide() || qr.unhide();
     },
     error: function(err, node) {
       var el;
@@ -1576,7 +1571,7 @@
           return e.stopPropagation();
         });
       }
-      $.on($('#autohide', qr.el), 'click', qr.toggleHide);
+      $.on($('#autohide', qr.el), 'change', qr.toggleHide);
       $.on($('.close', qr.el), 'click', qr.close);
       $.on($('#dump', qr.el), 'click', function() {
         return qr.el.classList.toggle('dump');
@@ -1700,7 +1695,10 @@
       })))) {
         err = 'Connection error with sys.4chan.org.';
       } else if (b.childElementCount) {
-        if (b.firstChild.tagName) node = b.firstChild;
+        if (b.firstChild.tagName) {
+          node = b.firstChild;
+          node.target = '_blank';
+        }
         err = b.firstChild.textContent;
       }
       if (err) {
@@ -2287,6 +2285,9 @@
           clearTimeout(updater.timeoutID);
           d.title = d.title.match(/^.+-/)[0] + ' 404';
           g.dead = true;
+          qr.message.send({
+            abort: true
+          });
           qr.status();
           Favicon.update();
           return;

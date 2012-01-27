@@ -706,7 +706,7 @@ keybinds =
       when conf.previousPage
         $('input[value=Previous]')?.click()
       when conf.submit
-        qr.submit() if qr.el
+        qr.submit() if qr.el and !qr.status()
       when conf.unreadCountTo0
         unread.replies = []
         unread.updateTitle()
@@ -860,7 +860,7 @@ nav =
 
 qr =
   init: ->
-    return unless $ 'form[name=post]'
+    return unless $.id 'recaptcha_challenge_field_holder'
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
     iframe = $.el 'iframe',
@@ -890,25 +890,23 @@ qr =
     $.removeClass qr.el, 'dump'
     for i in qr.replies
       qr.replies[0].rm()
+    qr.cooldown.auto = false
     qr.status()
     qr.resetFileInput()
     spoiler.click() if (spoiler = $.id 'spoiler').checked
     qr.cleanError()
   hide: ->
-    auto = $.id('autohide')
-    auto.click() unless auto.checked
+    d.activeElement.blur()
+    $.addClass qr.el, 'autohide'
+    $.id('autohide').checked = true
   unhide: ->
-    auto = $.id('autohide')
-    auto.click() if auto.checked
+    $.removeClass qr.el, 'autohide'
+    $.id('autohide').checked = false
   toggleHide: ->
-    if @checked
-      $.addClass    qr.el, 'autohide'
-      d.activeElement.blur()
-    else
-      $.removeClass qr.el, 'autohide'
+    @checked and qr.hide() or qr.unhide()
 
   error: (err, node) ->
-    el = $('.warning', qr.el)
+    el = $ '.warning', qr.el
     el.textContent = err
     $.replace el.firstChild, node if node
     qr.open()
@@ -931,7 +929,7 @@ qr =
       value = qr.cooldown.seconds or data.progress or value
     return unless qr.el
     {input} = qr.status
-    input.value    =
+    input.value =
       if qr.cooldown.auto and conf['Cooldown']
         if value then "Auto #{value}" else 'Auto'
       else
@@ -1169,7 +1167,7 @@ qr =
 </form>"
     unless g.REPLY
       $.on $('select',    qr.el), 'mousedown', (e) -> e.stopPropagation()
-    $.on $('#autohide',   qr.el), 'click',     qr.toggleHide
+    $.on $('#autohide',   qr.el), 'change',    qr.toggleHide
     $.on $('.close',      qr.el), 'click',     qr.close
     $.on $('#dump',       qr.el), 'click',     -> qr.el.classList.toggle 'dump'
     $.on $('#addReply',   qr.el), 'click',     -> new qr.reply().select()
@@ -1281,7 +1279,9 @@ qr =
     unless b = $ 'td b', $.el('a', innerHTML: html)
       err = 'Connection error with sys.4chan.org.'
     else if b.childElementCount # error!
-      node = b.firstChild if b.firstChild.tagName # duplicate image link
+      if b.firstChild.tagName # duplicate image link
+        node = b.firstChild
+        node.target = '_blank'
       err  = b.firstChild.textContent
 
     if err
@@ -1786,6 +1786,7 @@ updater =
         clearTimeout updater.timeoutID
         d.title = d.title.match(/^.+-/)[0] + ' 404'
         g.dead = true
+        qr.message.send abort: true
         qr.status()
         Favicon.update()
         return
