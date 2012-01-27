@@ -136,7 +136,7 @@ ui =
     el.innerHTML = html
     el.id = id
     el.style.cssText = if saved = localStorage["#{NAMESPACE}#{id}.position"] then saved else position
-    el.querySelector('div.move').addEventListener 'mousedown', ui.dragstart, false
+    el.querySelector('.move').addEventListener 'mousedown', ui.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection
@@ -1090,7 +1090,7 @@ qr =
   captcha:
     init: ->
       @img       = $ '.captcha > img', qr.el
-      @input     = $ '[name=captcha]', qr.el
+      @input     = $ '[autocomplete]', qr.el
       @challenge = $.id 'recaptcha_challenge_field_holder'
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
@@ -1136,48 +1136,55 @@ qr =
       e.preventDefault()
 
   dialog: ->
-    # create a new thread or select thread to reply to
-    unless g.REPLY
-      threads = '<option value=new>New thread</option>'
-      for thread in $$ '.op'
-        threads += "<option value=#{thread.id}>Thread #{thread.id}</option>"
-      threads = "<select>#{threads}</select>"
-    # chose only supported files
-    mimeTypes = $('.rules').textContent.toLowerCase().match(/: (.+) /)[1].replace /\w+/g, (type) ->
+    qr.el = ui.dialog 'qr', 'top:0;right:0;', '
+<div class=move>
+  Quick Reply <input type=checkbox id=autohide title=Auto-hide>
+  <span> <a class=close>x</a></span>
+</div>
+<form>
+  <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
+  <div id=replies><div><a id=addReply href=javascript:;>+</a></div></div>
+  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
+  <div class=captcha title=Reload><img></div>
+  <div><input title=Verification class=field autocomplete=off size=1></div>
+  <div><input type=file multiple><input type=submit></div>
+  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
+  <div class=warning></div>
+</form>'
+
+    # Allow only this board's supported files.
+    mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
         when 'jpg'
           'image/jpeg'
         when 'pdf'
           'application/pdf'
         else
-          'image/' + type
-    qr.mimeTypes = mimeTypes.split ', '
-    qr.spoiler = !!$ '#com_submit + label'
-    qr.el = ui.dialog 'qr', 'top:0;right:0;', "
-<div class=move>
-  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>
-  <span>#{if g.REPLY then '' else threads} <a class=close>x</a></span>
-</div>
-<form>
-  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
-  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>
-  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
-  <div class=captcha title=Reload><img></div>
-  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>
-  <div><input type=file name=upfile max=#{$('[name=MAX_FILE_SIZE]').value} accept='#{mimeTypes}' multiple><input type=submit></div>
-  <label id=spoilerLabel#{if qr.spoiler then '' else ' hidden'}><input type=checkbox id=spoiler> Spoiler Image</label>
-  <div class=warning></div>
-</form>"
+          "image/#{type}"
+    qr.mimeTypes     = mimeTypes.split ', '
+    fileInput        = $ '[type=file]', qr.el
+    fileInput.max    = $('[name=MAX_FILE_SIZE]').value
+    fileInput.accept = mimeTypes
+
+    qr.spoiler     = !!$ '#com_submit + label'
+    spoiler        = $ '#spoilerLabel', qr.el
+    spoiler.hidden = !qr.spoiler
+
     unless g.REPLY
-      $.on $('select',    qr.el), 'mousedown', (e) -> e.stopPropagation()
-    $.on $('#autohide',   qr.el), 'change',    qr.toggleHide
-    $.on $('.close',      qr.el), 'click',     qr.close
-    $.on $('#dump',       qr.el), 'click',     -> qr.el.classList.toggle 'dump'
-    $.on $('#addReply',   qr.el), 'click',     -> new qr.reply().select()
-    $.on $('form',        qr.el), 'submit',    qr.submit
-    $.on $('textarea',    qr.el), 'change',    -> qr.selected.el.lastChild.textContent = @value
-    $.on $('[type=file]', qr.el), 'change',    qr.fileInput
-    $.on $('#spoiler',    qr.el), 'change',    -> $('input', qr.selected.el).click()
+      # Make a list with visible threads and an option to create a new one.
+      threads = '<option value=new>New thread</option>'
+      for thread in $$ '.op'
+        threads += "<option value=#{thread.id}>Thread #{thread.id}</option>"
+      $.prepend $('.move > span', qr.el), $.el 'select', innerHTML: threads
+      $.on $('select',  qr.el), 'mousedown', (e) -> e.stopPropagation()
+    $.on $('#autohide', qr.el), 'change',    qr.toggleHide
+    $.on $('.close',    qr.el), 'click',     qr.close
+    $.on $('#dump',     qr.el), 'click',     -> qr.el.classList.toggle 'dump'
+    $.on $('#addReply', qr.el), 'click',     -> new qr.reply().select()
+    $.on $('form',      qr.el), 'submit',    qr.submit
+    $.on $('textarea',  qr.el), 'change',    -> qr.selected.el.lastChild.textContent = @value
+    $.on fileInput,             'change',    qr.fileInput
+    $.on spoiler.firstChild,    'change',    -> $('input', qr.selected.el).click()
 
     new qr.reply().select()
     # save selected reply's data
@@ -2782,7 +2789,7 @@ a[href="javascript:;"] {
   background: -o-linear-gradient(#CCC, #DDD);
   background: linear-gradient(#CCC, #DDD);
 }
-#qr:not(.dump) output, .dump > form > label {
+#qr:not(.dump) #replies, .dump > form > label {
   display: none;
 }
 #replies {
@@ -2896,7 +2903,7 @@ textarea.field {
   height: 57px;
   width: 300px;
 }
-.field[name=captcha] {
+.field:only-child {
   width: 100%;
 }
 #qr [type=file] {

@@ -229,7 +229,7 @@
       el.innerHTML = html;
       el.id = id;
       el.style.cssText = (saved = localStorage["" + NAMESPACE + id + ".position"]) ? saved : position;
-      el.querySelector('div.move').addEventListener('mousedown', ui.dragstart, false);
+      el.querySelector('.move').addEventListener('mousedown', ui.dragstart, false);
       return el;
     },
     dragstart: function(e) {
@@ -1481,7 +1481,7 @@
       init: function() {
         var _this = this;
         this.img = $('.captcha > img', qr.el);
-        this.input = $('[name=captcha]', qr.el);
+        this.input = $('[autocomplete]', qr.el);
         this.challenge = $.id('recaptcha_challenge_field_holder');
         $.on(this.img.parentNode, 'click', this.reload);
         $.on(this.input, 'keydown', this.keydown);
@@ -1541,7 +1541,39 @@
       }
     },
     dialog: function() {
-      var input, mimeTypes, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
+      var fileInput, input, mimeTypes, spoiler, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
+      qr.el = ui.dialog('qr', 'top:0;right:0;', '\
+<div class=move>\
+  Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
+  <span> <a class=close>x</a></span>\
+</div>\
+<form>\
+  <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
+  <div id=replies><div><a id=addReply href=javascript:;>+</a></div></div>\
+  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>\
+  <div class=captcha title=Reload><img></div>\
+  <div><input title=Verification class=field autocomplete=off size=1></div>\
+  <div><input type=file multiple><input type=submit></div>\
+  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\
+  <div class=warning></div>\
+</form>');
+      mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
+        switch (type) {
+          case 'jpg':
+            return 'image/jpeg';
+          case 'pdf':
+            return 'application/pdf';
+          default:
+            return "image/" + type;
+        }
+      });
+      qr.mimeTypes = mimeTypes.split(', ');
+      fileInput = $('[type=file]', qr.el);
+      fileInput.max = $('[name=MAX_FILE_SIZE]').value;
+      fileInput.accept = mimeTypes;
+      qr.spoiler = !!$('#com_submit + label');
+      spoiler = $('#spoilerLabel', qr.el);
+      spoiler.hidden = !qr.spoiler;
       if (!g.REPLY) {
         threads = '<option value=new>New thread</option>';
         _ref = $$('.op');
@@ -1549,22 +1581,9 @@
           thread = _ref[_i];
           threads += "<option value=" + thread.id + ">Thread " + thread.id + "</option>";
         }
-        threads = "<select>" + threads + "</select>";
-      }
-      mimeTypes = $('.rules').textContent.toLowerCase().match(/: (.+) /)[1].replace(/\w+/g, function(type) {
-        switch (type) {
-          case 'jpg':
-            return 'image/jpeg';
-          case 'pdf':
-            return 'application/pdf';
-          default:
-            return 'image/' + type;
-        }
-      });
-      qr.mimeTypes = mimeTypes.split(', ');
-      qr.spoiler = !!$('#com_submit + label');
-      qr.el = ui.dialog('qr', 'top:0;right:0;', "<div class=move>  Quick Reply <input type=checkbox name=autohide id=autohide title=Auto-hide>  <span>" + (g.REPLY ? '' : threads) + " <a class=close>x</a></span></div><form>  <div><input id=dump class=field type=button title='Dump mode' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>  <output id=replies><div><a id=addReply href=javascript:;>+</a></div></output>  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>  <div class=captcha title=Reload><img></div>  <div><input name=captcha title=Verification class=field autocomplete=off size=1></div>  <div><input type=file name=upfile max=" + ($('[name=MAX_FILE_SIZE]').value) + " accept='" + mimeTypes + "' multiple><input type=submit></div>  <label id=spoilerLabel" + (qr.spoiler ? '' : ' hidden') + "><input type=checkbox id=spoiler> Spoiler Image</label>  <div class=warning></div></form>");
-      if (!g.REPLY) {
+        $.prepend($('.move > span', qr.el), $.el('select', {
+          innerHTML: threads
+        }));
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
         });
@@ -1581,8 +1600,8 @@
       $.on($('textarea', qr.el), 'change', function() {
         return qr.selected.el.lastChild.textContent = this.value;
       });
-      $.on($('[type=file]', qr.el), 'change', qr.fileInput);
-      $.on($('#spoiler', qr.el), 'change', function() {
+      $.on(fileInput, 'change', qr.fileInput);
+      $.on(spoiler.firstChild, 'change', function() {
         return $('input', qr.selected.el).click();
       });
       new qr.reply().select();
@@ -3528,7 +3547,7 @@ a[href="javascript:;"] {\
   background: -o-linear-gradient(#CCC, #DDD);\
   background: linear-gradient(#CCC, #DDD);\
 }\
-#qr:not(.dump) output, .dump > form > label {\
+#qr:not(.dump) #replies, .dump > form > label {\
   display: none;\
 }\
 #replies {\
@@ -3642,7 +3661,7 @@ textarea.field {\
   height: 57px;\
   width: 300px;\
 }\
-.field[name=captcha] {\
+.field:only-child {\
   width: 100%;\
 }\
 #qr [type=file] {\
