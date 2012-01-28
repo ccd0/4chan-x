@@ -1188,6 +1188,7 @@ qr =
     $.on $('textarea',  qr.el), 'change',    -> qr.selected.el.lastChild.textContent = @value
     $.on fileInput,             'change',    qr.fileInput
     $.on spoiler.firstChild,    'change',    -> $('input', qr.selected.el).click()
+    $.on $('.warning',  qr.el), 'click',     qr.cleanError
 
     new qr.reply().select()
     # save selected reply's data
@@ -2779,7 +2780,7 @@ a[href="javascript:;"] {
 #qr > .move > span {
   float: right;
 }
-#autohide, .close, #qr select, #dump, .captcha {
+#autohide, .close, #qr select, #dump, .captcha, #qr .warning {
   cursor: pointer;
 }
 #qr select,

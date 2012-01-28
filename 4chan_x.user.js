@@ -1605,6 +1605,7 @@
       $.on(spoiler.firstChild, 'change', function() {
         return $('input', qr.selected.el).click();
       });
+      $.on($('.warning', qr.el), 'click', qr.cleanError);
       new qr.reply().select();
       _ref2 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
@@ -3525,7 +3526,7 @@ a[href="javascript:;"] {\
 #qr > .move > span {\
   float: right;\
 }\
-#autohide, .close, #qr select, #dump, .captcha {\
+#autohide, .close, #qr select, #dump, .captcha, #qr .warning {\
   cursor: pointer;\
 }\
 #qr select,\
