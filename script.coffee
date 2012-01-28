@@ -887,7 +887,7 @@ qr =
       qr.dialog()
   close: ->
     qr.el.hidden = true
-    qr.message.send abort: true
+    qr.message.send req: 'abort'
     d.activeElement.blur()
     $.removeClass qr.el, 'dump'
     for i in qr.replies
@@ -1212,7 +1212,7 @@ qr =
       qr.cooldown.auto = !qr.cooldown.auto
       qr.status()
       return
-    qr.message.send abort: true
+    qr.message.send req: 'abort'
     reply = qr.replies[0]
 
     # prevent errors
@@ -1355,63 +1355,76 @@ qr =
       script = $.el 'script', textContent: "window.addEventListener('message',#{code},false)"
       ready = ->
         if location.hostname is 'sys.4chan.org'
-          qr.message.send status: true, ready: true
+          $.rm script
+          qr.message.send req: 'status', ready: true
       # Chrome can access the documentElement on document-start
       if d.documentElement
         $.add d.documentElement, script
-        $.rm script
         ready()
         return
       # other browsers will have to wait
       $.ready ->
         $.add d.head, script
-        $.rm script
         ready()
     send: (data) ->
       data.changeContext = true
       data.qr            = true
       postMessage data, '*'
     receive: (data) ->
-      if data.abort
-        qr.ajax?.abort()
-        qr.message.send status: true
-        return
-      if data.response # xhr response
-        qr.response data.html
-        return
-      if data.status
-        qr.status data
+      switch data.req
+        when 'abort'
+          qr.ajax?.abort()
+          qr.message.send req: 'status'
+        when 'response' # xhr response
+          qr.response data.html
+        when 'status'
+          qr.status data
+        else
+          qr.message.post data # Reply object: we're posting
+
+    post: (data) ->
+      form = new FormData()
+
+      if engine is 'gecko' and data.upfile
+        # binary string to ArrayBuffer code from Aeosynth's 4chan X
+        l = data.upfile.buffer.length
+        ui8a = new Uint8Array l
+        for i in  [0...l]
+          ui8a[i] = data.upfile.buffer.charCodeAt i
+        bb = new MozBlobBuilder()
+        bb.append ui8a.buffer
+        # https://bugzilla.mozilla.org/show_bug.cgi?id=690659
+        # Firefox does not support assigning a filename when appending a blob to a FormData.
+        form.append 'upfile', bb.getBlob(data.upfile.type), data.upfile.name
+        delete data.upfile
+
+      url = "http://sys.4chan.org/#{data.board}/post"
+      # Do not append these values to the form.
+      delete data.board
       delete data.qr
-      if data.mode is 'regist' # reply object: we're posting
-        url = "http://sys.4chan.org/#{data.board}/post"
-        delete data.board
-        form = new FormData()
-        if engine is 'gecko' and data.upfile
-          # binary string to ArrayBuffer code from Aeosynth's 4chan X
-          l = data.upfile.buffer.length
-          ui8a = new Uint8Array l
-          for i in  [0...l]
-            ui8a[i] = data.upfile.buffer.charCodeAt i
-          bb = new MozBlobBuilder()
-          bb.append ui8a.buffer
-          # https://bugzilla.mozilla.org/show_bug.cgi?id=690659
-          # Firefox does not support assigning a filename when appending a blob to a FormData
-          form.append 'upfile', bb.getBlob(data.upfile.type), data.upfile.name
-          delete data.upfile
-        for name, val of data
-          form.append name, val if val
-        qr.ajax = $.ajax url, onload: (-> qr.message.send response: true, html: @response),
-          form: form
-          type: 'post'
-          upCallbacks:
-            onload: ->
-              qr.message.send
-                status: true
-                progress: '...'
-            onprogress: (e) ->
-              qr.message.send
-                status: true
-                progress: "#{Math.round e.loaded / e.total * 100}%"
+
+      for name, val of data
+        form.append name, val if val
+
+      callbacks =
+        onload: ->
+          qr.message.send
+            req:  'response'
+            html: @response
+      opts =
+        form: form
+        type: 'post'
+        upCallbacks:
+          onload: ->
+            qr.message.send
+              req:      'status'
+              progress: '...'
+          onprogress: (e) ->
+            qr.message.send
+              req:      'status'
+              progress: "#{Math.round e.loaded / e.total * 100}%"
+
+      qr.ajax = $.ajax url, callbacks, opts
 
 options =
   init: ->
@@ -1798,7 +1811,7 @@ updater =
         clearTimeout updater.timeoutID
         d.title = d.title.match(/^.+-/)[0] + ' 404'
         g.dead = true
-        qr.message.send abort: true
+        qr.message.send req: 'abort'
         qr.status()
         Favicon.update()
         return

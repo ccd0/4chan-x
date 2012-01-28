@@ -1229,7 +1229,7 @@
       var i, spoiler, _i, _len, _ref;
       qr.el.hidden = true;
       qr.message.send({
-        abort: true
+        req: 'abort'
       });
       d.activeElement.blur();
       $.removeClass(qr.el, 'dump');
@@ -1639,7 +1639,7 @@
         return;
       }
       qr.message.send({
-        abort: true
+        req: 'abort'
       });
       reply = qr.replies[0];
       if (!(reply.com || reply.file)) {
@@ -1775,21 +1775,20 @@
         });
         ready = function() {
           if (location.hostname === 'sys.4chan.org') {
+            $.rm(script);
             return qr.message.send({
-              status: true,
+              req: 'status',
               ready: true
             });
           }
         };
         if (d.documentElement) {
           $.add(d.documentElement, script);
-          $.rm(script);
           ready();
           return;
         }
         return $.ready(function() {
           $.add(d.head, script);
-          $.rm(script);
           return ready();
         });
       },
@@ -1799,65 +1798,69 @@
         return postMessage(data, '*');
       },
       receive: function(data) {
-        var bb, form, i, l, name, ui8a, url, val, _ref;
-        if (data.abort) {
-          if ((_ref = qr.ajax) != null) _ref.abort();
-          qr.message.send({
-            status: true
-          });
-          return;
+        var _ref;
+        switch (data.req) {
+          case 'abort':
+            if ((_ref = qr.ajax) != null) _ref.abort();
+            return qr.message.send({
+              req: 'status'
+            });
+          case 'response':
+            return qr.response(data.html);
+          case 'status':
+            return qr.status(data);
+          default:
+            return qr.message.post(data);
         }
-        if (data.response) {
-          qr.response(data.html);
-          return;
+      },
+      post: function(data) {
+        var bb, callbacks, form, i, l, name, opts, ui8a, url, val;
+        form = new FormData();
+        if (engine === 'gecko' && data.upfile) {
+          l = data.upfile.buffer.length;
+          ui8a = new Uint8Array(l);
+          for (i = 0; 0 <= l ? i < l : i > l; 0 <= l ? i++ : i--) {
+            ui8a[i] = data.upfile.buffer.charCodeAt(i);
+          }
+          bb = new MozBlobBuilder();
+          bb.append(ui8a.buffer);
+          form.append('upfile', bb.getBlob(data.upfile.type), data.upfile.name);
+          delete data.upfile;
         }
-        if (data.status) qr.status(data);
+        url = "http://sys.4chan.org/" + data.board + "/post";
+        delete data.board;
         delete data.qr;
-        if (data.mode === 'regist') {
-          url = "http://sys.4chan.org/" + data.board + "/post";
-          delete data.board;
-          form = new FormData();
-          if (engine === 'gecko' && data.upfile) {
-            l = data.upfile.buffer.length;
-            ui8a = new Uint8Array(l);
-            for (i = 0; 0 <= l ? i < l : i > l; 0 <= l ? i++ : i--) {
-              ui8a[i] = data.upfile.buffer.charCodeAt(i);
-            }
-            bb = new MozBlobBuilder();
-            bb.append(ui8a.buffer);
-            form.append('upfile', bb.getBlob(data.upfile.type), data.upfile.name);
-            delete data.upfile;
-          }
-          for (name in data) {
-            val = data[name];
-            if (val) form.append(name, val);
-          }
-          return qr.ajax = $.ajax(url, {
-            onload: (function() {
-              return qr.message.send({
-                response: true,
-                html: this.response
-              });
-            })
-          }, {
-            form: form,
-            type: 'post',
-            upCallbacks: {
-              onload: function() {
-                return qr.message.send({
-                  status: true,
-                  progress: '...'
-                });
-              },
-              onprogress: function(e) {
-                return qr.message.send({
-                  status: true,
-                  progress: "" + (Math.round(e.loaded / e.total * 100)) + "%"
-                });
-              }
-            }
-          });
+        for (name in data) {
+          val = data[name];
+          if (val) form.append(name, val);
         }
+        callbacks = {
+          onload: function() {
+            return qr.message.send({
+              req: 'response',
+              html: this.response
+            });
+          }
+        };
+        opts = {
+          form: form,
+          type: 'post',
+          upCallbacks: {
+            onload: function() {
+              return qr.message.send({
+                req: 'status',
+                progress: '...'
+              });
+            },
+            onprogress: function(e) {
+              return qr.message.send({
+                req: 'status',
+                progress: "" + (Math.round(e.loaded / e.total * 100)) + "%"
+              });
+            }
+          }
+        };
+        return qr.ajax = $.ajax(url, callbacks, opts);
       }
     }
   };
@@ -2303,7 +2306,7 @@
           d.title = d.title.match(/^.+-/)[0] + ' 404';
           g.dead = true;
           qr.message.send({
-            abort: true
+            req: 'abort'
           });
           qr.status();
           Favicon.update();
