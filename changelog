@@ -1,6 +1,7 @@
 master
 - Mayhem
   Index Navigation and the See next/previous thread keybinds will not cycle through board pages anymore.
+  Fix archive redirection in Opera.
 
 2.24.4
 - ahokadesuka

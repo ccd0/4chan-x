@@ -223,7 +223,9 @@ $.extend = (object, properties) ->
 $.extend $,
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
-      return fc()
+      # Execute the functions in parallel.
+      # If one fails, do not stop the others.
+      return setTimeout fc
     cb = ->
       $.off d, 'DOMContentLoaded', cb
       fc()

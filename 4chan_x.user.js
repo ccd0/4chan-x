@@ -312,7 +312,7 @@
   $.extend($, {
     ready: function(fc) {
       var cb;
-      if (/interactive|complete/.test(d.readyState)) return fc();
+      if (/interactive|complete/.test(d.readyState)) return setTimeout(fc);
       cb = function() {
         $.off(d, 'DOMContentLoaded', cb);
         return fc();
