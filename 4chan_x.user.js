@@ -3671,9 +3671,11 @@ textarea.field {\
   width: 100%;\
 }\
 #qr [type=file] {\
+  margin: 1px 0;\
   width: 70%;\
 }\
 #qr [type=submit] {\
+  margin: 1px 0;\
   padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */\
   width: 30%;\
 }\
