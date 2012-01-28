@@ -1,6 +1,11 @@
 master
+
+2.24.5
 - Mayhem
   Index Navigation and the See next/previous thread keybinds will not cycle through board pages anymore.
+  Fix archive redirection in Opera.
+  Opera support will now be temporarily on hold.
+    see https://github.com/MayhemYDG/4chan-x/issues/136
 
 2.24.4
 - ahokadesuka

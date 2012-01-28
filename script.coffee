@@ -120,7 +120,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.24.4'
+VERSION = '2.24.5'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -222,7 +222,9 @@ $.extend = (object, properties) ->
 $.extend $,
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
-      return fc()
+      # Execute the functions in parallel.
+      # If one fails, do not stop the others.
+      return setTimeout fc
     cb = ->
       $.off d, 'DOMContentLoaded', cb
       fc()
