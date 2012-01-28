@@ -1222,12 +1222,12 @@ qr =
       # remove old captchas
       while (captcha = captchas[0]) and captcha.time < Date.now()
         captchas.shift()
-      if captcha = captchas.shift()
+      if captcha  = captchas.shift()
         challenge = captcha.challenge
         response  = captcha.response
       else
-        challenge    = qr.captcha.img.alt
-        if response  = qr.captcha.input.value then qr.captcha.reload()
+        challenge   = qr.captcha.img.alt
+        if response = qr.captcha.input.value then qr.captcha.reload()
       $.set 'captchas', captchas
       qr.captcha.count captchas.length
       unless response
@@ -1260,7 +1260,7 @@ qr =
       upfile:  reply.file
       spoiler: reply.spoiler
       mode:    'regist'
-      pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
+      pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
 
@@ -1292,7 +1292,7 @@ qr =
       if b.firstChild.tagName # duplicate image link
         node = b.firstChild
         node.target = '_blank'
-      err  = b.firstChild.textContent
+      err = b.firstChild.textContent
 
     if err
       if err is 'You seem to have mistyped the verification.' or err is 'Connection error with sys.4chan.org.'
@@ -1306,8 +1306,6 @@ qr =
       qr.status()
       qr.error err, node
       return
-
-    qr.status()
 
     reply = qr.replies[0]
 
@@ -1333,6 +1331,8 @@ qr =
       reply.rm()
     else
       qr.close()
+
+    qr.status()
     qr.resetFileInput()
 
   message:

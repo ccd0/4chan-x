@@ -1683,7 +1683,7 @@
         upfile: reply.file,
         spoiler: reply.spoiler,
         mode: 'regist',
-        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
+        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('[name=pwd]').value,
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response
       };
@@ -1729,7 +1729,6 @@
         qr.error(err, node);
         return;
       }
-      qr.status();
       reply = qr.replies[0];
       persona = $.get('qr.persona', {});
       persona = {
@@ -1753,6 +1752,7 @@
       } else {
         qr.close();
       }
+      qr.status();
       return qr.resetFileInput();
     },
     message: {
