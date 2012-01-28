@@ -1,5 +1,22 @@
 master
 
+2.24.5
+- Mayhem
+  Index Navigation and the See next/previous thread keybinds will not cycle through board pages anymore.
+  Fix archive redirection in Opera.
+  Opera support will now be temporarily on hold.
+    see https://github.com/MayhemYDG/4chan-x/issues/136
+
+2.24.4
+- ahokadesuka
+  Scroll back up when unexpanding images.
+- e000
+  Prevent absurd cooldown durations.
+- Mayhem
+  Better image expanding reload, should fool CloudFlare's cache.
+- seaweed
+  Prevent the hover image to be partially masked by the url preview/status bar.
+
 2.24.3
 - Mayhem
   Set image limit in Thread Stats to 252 for /a/ and /v/, default to 152.

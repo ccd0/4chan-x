@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.24.3
+// @version        2.24.5
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -18,7 +18,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.24.3
+ * 4chan X 2.24.5
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -49,6 +49,9 @@
  *
  * CONTRIBUTORS
  *
+ * seaweed - bottom padding for image hover
+ * e000 - cooldown sanity check
+ * ahokadesuka - scroll back when unexpanding images
  * Shou- - pentadactyl fixes
  * ferongr - new favicons
  * xat- - new favicons
@@ -200,7 +203,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.24.3';
+  VERSION = '2.24.5';
 
   SECOND = 1000;
 
@@ -309,7 +312,7 @@
   $.extend($, {
     ready: function(fc) {
       var cb;
-      if (/interactive|complete/.test(d.readyState)) return fc();
+      if (/interactive|complete/.test(d.readyState)) return setTimeout(fc);
       cb = function() {
         $.off(d, 'DOMContentLoaded', cb);
         return fc();
@@ -849,7 +852,7 @@
         name = $('.commentpostername', reply).textContent;
         trip = ((_ref = $('.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
-          textContent: "[ + ] " + name + " " + trip,
+          innerHTML: "<span>[ + ]</span> " + name + " " + trip,
           href: 'javascript:;'
         });
         $.on(a, 'click', replyHiding.cb.show);
@@ -943,13 +946,15 @@
           keybinds.img(thread);
           break;
         case conf.nextThread:
-          nav.next();
+          if (g.REPLY) return;
+          nav.scroll(+1);
           break;
         case conf.openThreadTab:
           keybinds.open(thread, true);
           break;
         case conf.previousThread:
-          nav.prev();
+          if (g.REPLY) return;
+          nav.scroll(-1);
           break;
         case conf.update:
           updater.update();
@@ -1156,10 +1161,18 @@
       return $.add(d.body, span);
     },
     prev: function() {
-      return nav.scroll(-1);
+      if (g.REPLY) {
+        return window.scrollTo(0, 0);
+      } else {
+        return nav.scroll(-1);
+      }
     },
     next: function() {
-      return nav.scroll(+1);
+      if (g.REPLY) {
+        return window.scrollTo(0, d.body.scrollHeight);
+      } else {
+        return nav.scroll(+1);
+      }
     },
     threads: [],
     getThread: function(full) {
@@ -1178,37 +1191,13 @@
       return null;
     },
     scroll: function(delta) {
-      var i, rect, thread, top, _ref;
-      if (g.REPLY) {
-        if (delta === -1) {
-          window.scrollTo(0, 0);
-        } else {
-          window.scrollTo(0, d.body.scrollHeight);
-        }
-        return;
-      }
+      var i, rect, thread, top, _ref, _ref2;
       _ref = nav.getThread(true), thread = _ref[0], i = _ref[1], rect = _ref[2];
       top = rect.top;
       if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
         i += delta;
       }
-      if (i === -1) {
-        if (g.PAGENUM === 0) {
-          window.scrollTo(0, 0);
-        } else {
-          window.location = "" + (g.PAGENUM - 1) + "#0";
-        }
-        return;
-      }
-      if (delta === +1) {
-        if (i === nav.threads.length || (innerHeight + pageYOffset === d.body.scrollHeight)) {
-          if ($('table.pages input[value="Next"]')) {
-            window.location = "" + (g.PAGENUM + 1) + "#0";
-            return;
-          }
-        }
-      }
-      top = nav.threads[i].getBoundingClientRect().top;
+      top = (_ref2 = nav.threads[i]) != null ? _ref2.getBoundingClientRect().top : void 0;
       return window.scrollBy(0, top);
     }
   };
@@ -1454,12 +1443,12 @@
       if (g.REPLY) return $('.postarea form').action += '?cooldown';
     },
     start: function() {
-      var submit, _i, _len, _ref;
+      var submit, _i, _len, _ref, _ref2;
       cooldown.duration = Math.ceil(($.get(g.BOARD + '/cooldown', 0) - Date.now()) / 1000);
-      if (!(cooldown.duration > 0)) return;
-      _ref = $$('#com_submit');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        submit = _ref[_i];
+      if (!((60 >= (_ref = cooldown.duration) && _ref > 0))) return;
+      _ref2 = $$('#com_submit');
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        submit = _ref2[_i];
         submit.value = cooldown.duration;
         submit.disabled = true;
       }
@@ -1901,7 +1890,7 @@
         name = $('.postername', thread).textContent;
         trip = ((_ref = $('.postername + .postertrip', thread)) != null ? _ref.textContent : void 0) || '';
         a = $.el('a', {
-          textContent: "[ + ] " + name + trip + " (" + text + ")",
+          innerHTML: "<span>[ + ]</span> " + name + trip + " (" + text + ")",
           href: 'javascript:;'
         });
         $.on(a, 'click', threadHiding.cb.show);
@@ -2988,9 +2977,12 @@
       }
     },
     toggle: function(a) {
-      var thumb;
+      var rect, thumb;
       thumb = a.firstChild;
       if (thumb.hidden) {
+        rect = a.parentNode.getBoundingClientRect();
+        if (rect.top < 0) d.body.scrollTop += rect.top;
+        if (rect.left < 0) d.body.scrollLeft += rect.left;
         return imgExpand.contract(thumb);
       } else {
         return imgExpand.expand(thumb);
@@ -3002,9 +2994,10 @@
     },
     expand: function(thumb, url) {
       var a, filesize, img, max;
+      if (thumb.hidden) return;
       a = thumb.parentNode;
       img = $.el('img', {
-        src: url ? url : a.href
+        src: url || a.href
       });
       if (engine === 'gecko' && a.parentNode.className !== 'op') {
         filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent;
@@ -3016,27 +3009,28 @@
       return $.add(a, img);
     },
     error: function() {
-      var req, src, thumb, url;
+      var href, req, src, thumb, url;
+      href = this.parentNode.href;
       thumb = this.previousSibling;
       imgExpand.contract(thumb);
-      src = this.src.split('/');
-      if (url = redirect.image(src[3], src[5])) {
-        return imgExpand.expand(thumb, url);
-      } else if (engine === 'webkit') {
+      src = href.split('/');
+      if (this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5]))) {
+        setTimeout(imgExpand.expand, 10000, thumb, url);
+        return;
+      }
+      url = href + '?' + Date.now();
+      if (engine === 'webkit') {
         return req = $.ajax(this.src, (function() {
           if (this.status !== 404) {
-            return setTimeout(imgExpand.retry, 10000, thumb);
+            return setTimeout(imgExpand.expand, 10000, thumb, url);
           }
         }), {
           type: 'head',
           event: 'onreadystatechange'
         });
       } else if (!g.dead) {
-        return setTimeout(imgExpand.retry, 10000, thumb);
+        return setTimeout(imgExpand.expand, 10000, thumb, url);
       }
-    },
-    retry: function(thumb) {
-      if (!thumb.hidden) return imgExpand.expand(thumb);
     },
     dialog: function() {
       var controls, form, imageType, select;
@@ -3268,6 +3262,7 @@
       #ihover {\
         max-height: 100%;\
         max-width: 75%;\
+        padding-bottom: 18px;\
       }\
 \
       #navlinks {\

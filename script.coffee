@@ -121,7 +121,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.24.3'
+VERSION = '2.24.5'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -223,7 +223,9 @@ $.extend = (object, properties) ->
 $.extend $,
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
-      return fc()
+      # Execute the functions in parallel.
+      # If one fails, do not stop the others.
+      return setTimeout fc
     cb = ->
       $.off d, 'DOMContentLoaded', cb
       fc()
@@ -619,7 +621,7 @@ replyHiding =
       name = $('.commentpostername', reply).textContent
       trip = $('.postertrip', reply)?.textContent or ''
       a = $.el 'a',
-        textContent: "[ + ] #{name} #{trip}"
+        innerHTML: "<span>[ + ]</span> #{name} #{trip}"
         href: 'javascript:;'
       $.on a, 'click', replyHiding.cb.show
 
@@ -691,11 +693,13 @@ keybinds =
       when conf.expandImages
         keybinds.img thread
       when conf.nextThread
-        nav.next()
+        return if g.REPLY
+        nav.scroll +1
       when conf.openThreadTab
         keybinds.open thread, true
       when conf.previousThread
-        nav.prev()
+        return if g.REPLY
+        nav.scroll -1
       when conf.update
         updater.update()
       when conf.watch
@@ -827,10 +831,16 @@ nav =
     $.add d.body, span
 
   prev: ->
-    nav.scroll -1
+    if g.REPLY
+      window.scrollTo 0, 0
+    else
+      nav.scroll -1
 
   next: ->
-    nav.scroll +1
+    if g.REPLY
+      window.scrollTo 0, d.body.scrollHeight
+    else
+      nav.scroll +1
 
   threads: []
 
@@ -846,13 +856,6 @@ nav =
     return null
 
   scroll: (delta) ->
-    if g.REPLY
-      if delta is -1
-        window.scrollTo 0,0
-      else
-        window.scrollTo 0, d.body.scrollHeight
-      return
-
     [thread, i, rect] = nav.getThread true
     {top} = rect
 
@@ -862,22 +865,7 @@ nav =
     unless (delta is -1 and Math.ceil(top) < 0) or (delta is +1 and top > 1)
       i += delta
 
-    if i is -1
-      if g.PAGENUM is 0
-        window.scrollTo 0, 0
-      else
-        window.location = "#{g.PAGENUM - 1}#0"
-      return
-    if delta is +1
-      # if we're at the last thread, or we're at the bottom of the page.
-      # kind of hackish, what we really need to do is make nav.getThread smarter.
-      if i is nav.threads.length or (innerHeight + pageYOffset == d.body.scrollHeight)
-        if $ 'table.pages input[value="Next"]'
-          window.location = "#{g.PAGENUM + 1}#0"
-          return
-        #TODO sfx
-
-    {top} = nav.threads[i].getBoundingClientRect()
+    {top} = nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
 
 options =
@@ -1095,7 +1083,7 @@ cooldown =
 
   start: ->
     cooldown.duration = Math.ceil ($.get(g.BOARD+'/cooldown', 0) - Date.now()) / 1000
-    return unless cooldown.duration > 0
+    return unless 60 >= cooldown.duration > 0
     for submit in $$ '#com_submit'
       submit.value = cooldown.duration
       submit.disabled = true
@@ -1518,7 +1506,7 @@ threadHiding =
       trip = $('.postername + .postertrip', thread)?.textContent or ''
 
       a = $.el 'a',
-        textContent: "[ + ] #{name}#{trip} (#{text})"
+        innerHTML: "<span>[ + ]</span> #{name}#{trip} (#{text})"
         href: 'javascript:;'
       $.on a, 'click', threadHiding.cb.show
 
@@ -2318,6 +2306,9 @@ imgExpand =
   toggle: (a) ->
     thumb = a.firstChild
     if thumb.hidden
+      rect = a.parentNode.getBoundingClientRect()
+      d.body.scrollTop += rect.top if rect.top < 0
+      d.body.scrollLeft += rect.left if rect.left < 0
       imgExpand.contract thumb
     else
       imgExpand.expand thumb
@@ -2327,9 +2318,10 @@ imgExpand =
     $.rm thumb.nextSibling
 
   expand: (thumb, url) ->
+    return if thumb.hidden
     a = thumb.parentNode
     img = $.el 'img',
-      src: if url then url else a.href
+      src: url or a.href
     if engine is 'gecko' and a.parentNode.className isnt 'op'
       filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent
       max = filesize.match /(\d+)x/
@@ -2339,22 +2331,23 @@ imgExpand =
     $.add a, img
 
   error: ->
+    href = @parentNode.href
     thumb = @previousSibling
     imgExpand.contract thumb
-    src = @src.split '/'
-    if url = redirect.image src[3], src[5]
-      imgExpand.expand thumb, url
+    src = href.split '/'
+    if @src.split('/')[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
+      setTimeout imgExpand.expand, 10000, thumb, url
+      return
+    url = href + '?' + Date.now()
     #navigator.online is not x-browser/os yet
-    else if engine is 'webkit'
+    if engine is 'webkit'
       req = $.ajax @src, (->
-        setTimeout imgExpand.retry, 10000, thumb if @status isnt 404
+        setTimeout imgExpand.expand, 10000, thumb, url if @status isnt 404
       ), type: 'head', event: 'onreadystatechange'
     #Firefox returns a status code of 0 because of the same origin policy
     #Oprah doesn't send any request
     else unless g.dead
-      setTimeout imgExpand.retry, 10000, thumb
-  retry: (thumb) ->
-    imgExpand.expand thumb unless thumb.hidden
+      setTimeout imgExpand.expand, 10000, thumb, url
 
   dialog: ->
     controls = $.el 'div',
@@ -2626,6 +2619,7 @@ Main =
       #ihover {
         max-height: 100%;
         max-width: 75%;
+        padding-bottom: 18px;
       }
 
       #navlinks {
