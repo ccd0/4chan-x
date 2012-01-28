@@ -1521,7 +1521,8 @@
       count: function(count) {
         var s;
         s = count === 1 ? '' : 's';
-        return this.input.placeholder = "Verification (" + count + " cached captcha" + s + ")";
+        this.input.placeholder = "Verification (" + count + " cached captcha" + s + ")";
+        return this.input.alt = count;
       },
       reload: function(focus) {
         window.location = 'javascript:Recaptcha.reload()';

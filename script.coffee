@@ -1123,6 +1123,7 @@ qr =
     count: (count) ->
       s = if count is 1 then '' else 's'
       @input.placeholder = "Verification (#{count} cached captcha#{s})"
+      @input.alt         = count # For XTRM RICE.
     reload: (focus) ->
       window.location = 'javascript:Recaptcha.reload()'
       # Focus if we meant to.
