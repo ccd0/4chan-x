@@ -1147,7 +1147,7 @@ qr =
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha title=Reload><img></div>
   <div><input title=Verification class=field autocomplete=off size=1></div>
-  <div><input type=file multiple><input type=submit></div>
+  <div><input type=file multiple size=16><input type=submit></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
   <div class=warning></div>
 </form>'
@@ -2776,6 +2776,7 @@ a[href="javascript:;"] {
   background: -o-linear-gradient(#EEE, #CCC);
   background: linear-gradient(#EEE, #CCC);
   width: 10%;
+  padding: -moz-calc(1px) 0 2px;
 }
 #dump:hover, #dump:focus {
   background: -webkit-linear-gradient(#FFF, #DDD);
