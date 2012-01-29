@@ -3424,7 +3424,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var callback, node, nodes, _i, _j, _len, _len2, _ref;
+      var callback, form, node, nodes, _i, _j, _len, _len2, _ref;
       if (conf['404 Redirect'] && d.title === '4chan - 404') {
         redirect.init();
         return;
