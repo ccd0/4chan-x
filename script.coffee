@@ -1357,8 +1357,8 @@ qr =
       script = $.el 'script', textContent: "window.addEventListener('message',#{code},false)"
       ready = ->
         if location.hostname is 'sys.4chan.org'
-          $.rm script
           qr.message.send req: 'status', ready: true
+        $.rm script
       # Chrome can access the documentElement on document-start
       if d.documentElement
         $.add d.documentElement, script

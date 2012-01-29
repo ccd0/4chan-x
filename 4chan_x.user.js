@@ -1777,12 +1777,12 @@
         });
         ready = function() {
           if (location.hostname === 'sys.4chan.org') {
-            $.rm(script);
-            return qr.message.send({
+            qr.message.send({
               req: 'status',
               ready: true
             });
           }
+          return $.rm(script);
         };
         if (d.documentElement) {
           $.add(d.documentElement, script);
