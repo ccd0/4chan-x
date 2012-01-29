@@ -2026,7 +2026,7 @@ Time =
     g.callbacks.push Time.node
   node: (root) ->
     return if root.className is 'inline'
-    node = if posttime = $('.posttime', root) then posttime else $('span[id]', root).previousSibling
+    node = $('.posttime', root) or $('span[id]', root).previousSibling
     Time.date = Time.parse node
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
@@ -2719,14 +2719,15 @@ Main =
         nav.init()
 
 
-    nodes = $$ '.op, a + table'
+    form = $ 'body > form'
+    nodes = $$ '.op, a + table', form
     for callback in g.callbacks
       try
         for node in nodes
           callback node
       catch err
         alert err
-    $.on $('form[name=delform]'), 'DOMNodeInserted', Main.node
+    $.on form, 'DOMNodeInserted', Main.node
 
   message: (e) ->
     {data} = e

@@ -2570,9 +2570,9 @@
       return g.callbacks.push(Time.node);
     },
     node: function(root) {
-      var node, posttime, time;
+      var node, time;
       if (root.className === 'inline') return;
-      node = (posttime = $('.posttime', root)) ? posttime : $('span[id]', root).previousSibling;
+      node = $('.posttime', root) || $('span[id]', root).previousSibling;
       Time.date = Time.parse(node);
       time = $.el('time', {
         textContent: ' ' + Time.funk(Time) + ' '
@@ -3450,7 +3450,8 @@
         if (conf['Comment Expansion']) expandComment.init();
         if (conf['Index Navigation']) nav.init();
       }
-      nodes = $$('.op, a + table');
+      form = $('body > form');
+      nodes = $$('.op, a + table', form);
       _ref = g.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
@@ -3463,7 +3464,7 @@
           alert(err);
         }
       }
-      return $.on($('form[name=delform]'), 'DOMNodeInserted', Main.node);
+      return $.on(form, 'DOMNodeInserted', Main.node);
     },
     message: function(e) {
       var data, version;
