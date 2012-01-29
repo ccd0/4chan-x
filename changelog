@@ -1,6 +1,24 @@
 master
 - Mayhem
   Fix 4chan X on /f/.
+  Support for the normal post form has been phased out in favor of the new QR.
+  New rewritten and redesigned Quick Reply. Highlights include:
+    - Easy dumping for image, text, or samefagging.
+    - Toggle auto-posting by trying to submit during the cooldown.
+    - Multiple file selection.
+    - Image thumbnails.
+    - Drag and drop files on the page will add these files to the QR.
+    - Cache captchas with Shift + Enter.
+    - Create new threads with the QR, will auto-noko.
+    - Also includes all the previous features:
+      - Cooldown and auto-posting.
+      - Posting error detection and prevention.
+      - Captcha reloading on backspace.
+      - Auto Watch on reply/thread creation.
+      - Text selection to quote.
+      - Etc...
+  CAUTION: Images posted with the new QR on Firefox/Aurora/Nightly will have their filename missing.
+    see https://github.com/MayhemYDG/4chan-x/issues/137
 
 2.24.5
 - Mayhem
