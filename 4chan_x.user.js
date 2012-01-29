@@ -1542,7 +1542,7 @@
       }
     },
     dialog: function() {
-      var fileInput, input, mimeTypes, spoiler, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
+      var e, fileInput, input, mimeTypes, spoiler, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
@@ -1630,7 +1630,10 @@
       qr.cooldown.init();
       qr.captcha.init();
       qr.message.init();
-      return $.add(d.body, qr.el);
+      $.add(d.body, qr.el);
+      e = d.createEvent('CustomEvent');
+      e.initEvent('QRDialogCreation', true, false);
+      return qr.el.dispatchEvent(e);
     },
     submit: function(e) {
       var captcha, captchas, challenge, err, file, m, post, reader, reply, response, threadID;

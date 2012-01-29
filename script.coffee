@@ -1208,6 +1208,12 @@ qr =
     qr.message.init()
     $.add d.body, qr.el
 
+    # Create a custom event when the QR dialog is first initialized.
+    # Use it to extend the QR's functionalities, or for XTRM RICE.
+    e = d.createEvent 'CustomEvent'
+    e.initEvent 'QRDialogCreation', true, false
+    qr.el.dispatchEvent e
+
   submit: (e) ->
     e?.preventDefault()
     if qr.cooldown.seconds
