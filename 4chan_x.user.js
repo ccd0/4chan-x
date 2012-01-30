@@ -3319,6 +3319,9 @@
         url = href + '?' + Date.now();
       }
       timeoutID = setTimeout(imgExpand.expand, 10000, thumb, url);
+      if (!(engine === 'webkit' && url.split('/')[2] === 'image.4chan.org')) {
+        return;
+      }
       return $.ajax(url, {
         onreadystatechange: (function() {
           if (this.status === 404) return clearTimeout(timeoutID);

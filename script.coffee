@@ -2548,6 +2548,9 @@ imgExpand =
       url = href + '?' + Date.now()
     #navigator.online is not x-browser/os yet
     timeoutID = setTimeout imgExpand.expand, 10000, thumb, url
+    # Only Chrome let userscript break through cross domain requests.
+    # Don't check it 404s in the archivers.
+    return unless engine is 'webkit' and url.split('/')[2] is 'image.4chan.org'
     $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
 
