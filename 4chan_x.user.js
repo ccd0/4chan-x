@@ -3312,16 +3312,14 @@
       var href, src, thumb, timeoutID, url;
       href = this.parentNode.href;
       thumb = this.previousSibling;
-      imgExpand.contract(thumb);
       src = href.split('/');
-      if (this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5]))) {
-        setTimeout(imgExpand.expand, 10000, thumb, url);
-        return;
+      imgExpand.contract(thumb);
+      if (!(this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5])))) {
+        if (g.dead) return;
+        url = href + '?' + Date.now();
       }
-      if (g.dead) return;
-      url = href + '?' + Date.now();
       timeoutID = setTimeout(imgExpand.expand, 10000, thumb, url);
-      return $.ajax(this.src, {
+      return $.ajax(url, {
         onreadystatechange: (function() {
           if (this.status === 404) return clearTimeout(timeoutID);
         })

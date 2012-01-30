@@ -2537,20 +2537,18 @@ imgExpand =
     $.add a, img
 
   error: ->
-    href = @parentNode.href
+    href  = @parentNode.href
     thumb = @previousSibling
+    src   = href.split '/'
     imgExpand.contract thumb
-    src = href.split '/'
-    if @src.split('/')[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
-      setTimeout imgExpand.expand, 10000, thumb, url
-      return
-    return if g.dead
-    # CloudFlare may cache banned pages instead of images.
-    # This will fool CloudFlare's cache.
-    url = href + '?' + Date.now()
+    unless @src.split('/')[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
+      return if g.dead
+      # CloudFlare may cache banned pages instead of images.
+      # This will fool CloudFlare's cache.
+      url = href + '?' + Date.now()
     #navigator.online is not x-browser/os yet
     timeoutID = setTimeout imgExpand.expand, 10000, thumb, url
-    $.ajax @src, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
+    $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
 
   dialog: ->
