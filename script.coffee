@@ -643,7 +643,6 @@ keybinds =
     $.on d, 'keydown',  keybinds.keydown
 
   keydown: (e) ->
-    updater.focus = true
     if not (key = keybinds.keyCode(e)) or /TEXTAREA|INPUT/.test(e.target.nodeName) and not (e.altKey or e.ctrlKey or e.keyCode is 27)
       return
 
@@ -1750,12 +1749,6 @@ threadHiding =
 
 updater =
   init: ->
-    if conf['Scrolling']
-      if conf['Scroll BG']
-        updater.focus = true
-      else
-        $.on window, 'focus', (-> updater.focus = true)
-        $.on window, 'blur',  (-> updater.focus = false)
     html = "<div class=move><span id=count></span> <span id=timer>-#{conf['Interval']}</span></div>"
     {checkbox} = config.updater
     for name of checkbox
@@ -1779,6 +1772,9 @@ updater =
       if input.type is 'checkbox'
         $.on input, 'click', $.cb.checked
         $.on input, 'click', -> conf[@name] = @checked
+        if input.name is 'Scroll BG'
+          $.on input, 'click', updater.cb.scrollBG
+          updater.cb.scrollBG.call input
         if input.name is 'Verbose'
           $.on input, 'click', updater.cb.verbose
           updater.cb.verbose.call input
@@ -1811,6 +1807,12 @@ updater =
         updater.timeoutID = setTimeout updater.timeout, 1000
       else
         clearTimeout updater.timeoutID
+    scrollBG: ->
+      updater.scrollBG =
+        if @checked
+          -> true
+        else
+          -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
     update: ->
       if @status is 404
         updater.timer.textContent = ''
@@ -1857,7 +1859,8 @@ updater =
         $.prepend frag, reply.parentNode.parentNode.parentNode #table
 
       newPosts = frag.childNodes.length
-      scroll = conf['Scrolling'] && updater.focus && newPosts && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20)
+      scroll = conf['Scrolling'] && updater.scrollBG() && newPosts &&
+        updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25
       if conf['Verbose']
         updater.count.textContent = '+' + newPosts
         if newPosts is 0
@@ -1867,7 +1870,7 @@ updater =
 
       $.before updater.br, frag
       if scroll
-        scrollTo 0, d.body.scrollHeight
+        updater.br.previousSibling.scrollIntoView(false)
 
   timeout: ->
     updater.timeoutID = setTimeout updater.timeout, 1000
@@ -2344,7 +2347,6 @@ unread =
       Favicon.update()
 
   scroll: ->
-    updater.focus = true
     height = d.body.clientHeight
     for reply, i in unread.replies
       {bottom} = reply.getBoundingClientRect()

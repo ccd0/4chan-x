@@ -885,7 +885,6 @@
     },
     keydown: function(e) {
       var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2;
-      updater.focus = true;
       if (!(key = keybinds.keyCode(e)) || /TEXTAREA|INPUT/.test(e.target.nodeName) && !(e.altKey || e.ctrlKey || e.keyCode === 27)) {
         return;
       }
@@ -2228,18 +2227,6 @@
   updater = {
     init: function() {
       var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
-      if (conf['Scrolling']) {
-        if (conf['Scroll BG']) {
-          updater.focus = true;
-        } else {
-          $.on(window, 'focus', (function() {
-            return updater.focus = true;
-          }));
-          $.on(window, 'blur', (function() {
-            return updater.focus = false;
-          }));
-        }
-      }
       html = "<div class=move><span id=count></span> <span id=timer>-" + conf['Interval'] + "</span></div>";
       checkbox = config.updater.checkbox;
       for (name in checkbox) {
@@ -2261,6 +2248,10 @@
           $.on(input, 'click', function() {
             return conf[this.name] = this.checked;
           });
+          if (input.name === 'Scroll BG') {
+            $.on(input, 'click', updater.cb.scrollBG);
+            updater.cb.scrollBG.call(input);
+          }
           if (input.name === 'Verbose') {
             $.on(input, 'click', updater.cb.verbose);
             updater.cb.verbose.call(input);
@@ -2300,6 +2291,13 @@
         } else {
           return clearTimeout(updater.timeoutID);
         }
+      },
+      scrollBG: function() {
+        return updater.scrollBG = this.checked ? function() {
+          return true;
+        } : function() {
+          return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
+        };
       },
       update: function() {
         var body, frag, id, newPosts, reply, scroll, _i, _len, _ref, _ref2;
@@ -2350,7 +2348,7 @@
           $.prepend(frag, reply.parentNode.parentNode.parentNode);
         }
         newPosts = frag.childNodes.length;
-        scroll = conf['Scrolling'] && updater.focus && newPosts && (d.body.scrollHeight - d.body.clientHeight - window.scrollY < 20);
+        scroll = conf['Scrolling'] && updater.scrollBG() && newPosts && updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25;
         if (conf['Verbose']) {
           updater.count.textContent = '+' + newPosts;
           if (newPosts === 0) {
@@ -2360,7 +2358,7 @@
           }
         }
         $.before(updater.br, frag);
-        if (scroll) return scrollTo(0, d.body.scrollHeight);
+        if (scroll) return updater.br.previousSibling.scrollIntoView(false);
       }
     },
     timeout: function() {
@@ -3044,7 +3042,6 @@
     },
     scroll: function() {
       var bottom, height, i, reply, _len, _ref;
-      updater.focus = true;
       height = d.body.clientHeight;
       _ref = unread.replies;
       for (i = 0, _len = _ref.length; i < _len; i++) {
