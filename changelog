@@ -17,8 +17,10 @@ master
       - Auto Watch on reply/thread creation.
       - Text selection to quote.
       - Etc...
-  CAUTION: Images posted with the new QR on Firefox/Aurora/Nightly will have their filename missing.
-    see https://github.com/MayhemYDG/4chan-x/issues/137
+  CAUTION:
+    Images posted with the new QR on Firefox/Aurora/Nightly will have their filename missing.
+      see https://github.com/MayhemYDG/4chan-x/issues/137
+    Greasemonkey is buggy, use Scriptish instead.
 
 2.24.5
 - Mayhem
