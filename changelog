@@ -1,4 +1,6 @@
 master
+
+2.25.0
 - Mayhem
   Fix 4chan X on /f/.
   Support for the normal post form has been phased out in favor of the new QR.
