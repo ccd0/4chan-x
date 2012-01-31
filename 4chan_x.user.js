@@ -49,6 +49,7 @@
  *
  * CONTRIBUTORS
  *
+ * desuwa - Firefox filename upload fix
  * seaweed - bottom padding for image hover
  * e000 - cooldown sanity check
  * ahokadesuka - scroll back when unexpanding images
@@ -337,7 +338,11 @@
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
-      r.send(form);
+      if (typeof form === 'string') {
+        r.sendAsBinary(form);
+      } else {
+        r.send(form);
+      }
       return r;
     },
     cache: function(url, cb) {
@@ -1818,25 +1823,28 @@
         }
       },
       post: function(data) {
-        var bb, callbacks, form, i, l, name, opts, ui8a, url, val;
-        form = new FormData();
-        if (engine === 'gecko' && data.upfile) {
-          l = data.upfile.buffer.length;
-          ui8a = new Uint8Array(l);
-          for (i = 0; 0 <= l ? i < l : i > l; 0 <= l ? i++ : i--) {
-            ui8a[i] = data.upfile.buffer.charCodeAt(i);
-          }
-          bb = new MozBlobBuilder();
-          bb.append(ui8a.buffer);
-          form.append('upfile', bb.getBlob(data.upfile.type), data.upfile.name);
-          delete data.upfile;
-        }
+        var boundary, callbacks, form, name, opts, parts, url, val;
         url = "http://sys.4chan.org/" + data.board + "/post";
         delete data.board;
         delete data.qr;
-        for (name in data) {
-          val = data[name];
-          if (val) form.append(name, val);
+        if (engine === 'gecko' && data.upfile) {
+          boundary = '-------------SMCD' + Date.now();
+          parts = [];
+          parts.push('Content-Disposition: form-data; name="upfile"; filename="' + data.upfile.name + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n');
+          delete data.upfile;
+          for (name in data) {
+            val = data[name];
+            if (val) {
+              parts.push('Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n');
+            }
+          }
+          form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n';
+        } else {
+          form = new FormData();
+          for (name in data) {
+            val = data[name];
+            if (val) form.append(name, val);
+          }
         }
         callbacks = {
           onload: function() {
@@ -1864,6 +1872,11 @@
             }
           }
         };
+        if (boundary) {
+          opts.headers = {
+            'Content-Type': 'multipart/form-data;boundary=' + boundary
+          };
+        }
         return qr.ajax = $.ajax(url, callbacks, opts);
       }
     }

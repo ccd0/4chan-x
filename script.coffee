@@ -242,7 +242,7 @@ $.extend $,
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    r.send form
+    if typeof form is 'string' then r.sendAsBinary form else r.send form
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -1390,28 +1390,27 @@ qr =
           qr.message.post data # Reply object: we're posting
 
     post: (data) ->
-      form = new FormData()
-
-      if engine is 'gecko' and data.upfile
-        # binary string to ArrayBuffer code from Aeosynth's 4chan X
-        l = data.upfile.buffer.length
-        ui8a = new Uint8Array l
-        for i in  [0...l]
-          ui8a[i] = data.upfile.buffer.charCodeAt i
-        bb = new MozBlobBuilder()
-        bb.append ui8a.buffer
-        # https://bugzilla.mozilla.org/show_bug.cgi?id=690659
-        # Firefox does not support assigning a filename when appending a blob to a FormData.
-        form.append 'upfile', bb.getBlob(data.upfile.type), data.upfile.name
-        delete data.upfile
 
       url = "http://sys.4chan.org/#{data.board}/post"
       # Do not append these values to the form.
       delete data.board
       delete data.qr
 
-      for name, val of data
-        form.append name, val if val
+      # File with filename upload fix from desuwa
+      if engine is 'gecko' and data.upfile
+        boundary = '-------------SMCD' + Date.now();
+        parts = []
+        parts.push 'Content-Disposition: form-data; name="upfile"; filename="' + data.upfile.name + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n'
+        delete data.upfile
+
+        for name, val of data
+          parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n' if val
+        form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n';
+
+      else
+        form = new FormData()
+        for name, val of data
+          form.append name, val if val
 
       callbacks =
         onload: ->
@@ -1430,6 +1429,9 @@ qr =
             qr.message.send
               req:      'status'
               progress: "#{Math.round e.loaded / e.total * 100}%"
+      if boundary
+        opts.headers =
+          'Content-Type': 'multipart/form-data;boundary=' + boundary
 
       qr.ajax = $.ajax url, callbacks, opts
 
