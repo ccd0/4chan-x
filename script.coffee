@@ -1419,7 +1419,7 @@ qr =
         delete data.upfile
 
         for name, val of data
-          parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + toUTF8(val) + '\r\n' if val
+          parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + toUTF8(String val) + '\r\n' if val
         form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n'
 
       else
