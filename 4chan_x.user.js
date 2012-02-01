@@ -1602,7 +1602,7 @@
         return new qr.reply().select();
       });
       $.on($('form', qr.el), 'submit', qr.submit);
-      $.on($('textarea', qr.el), 'change', function() {
+      $.on($('textarea', qr.el), 'keypress', function() {
         return qr.selected.el.lastChild.textContent = this.value;
       });
       $.on(fileInput, 'change', qr.fileInput);
@@ -1614,7 +1614,7 @@
       _ref2 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         input = _ref2[_j];
-        $.on($("[name=" + input + "]", qr.el), 'change', function() {
+        $.on($("[name=" + input + "]", qr.el), 'keypress', function() {
           return qr.selected[this.name] = this.value;
         });
       }
