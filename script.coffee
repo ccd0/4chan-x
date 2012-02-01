@@ -1405,7 +1405,7 @@ qr =
 
         for name, val of data
           parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n' if val
-        form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n';
+        form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n'
 
       else
         form = new FormData()
@@ -2554,7 +2554,7 @@ imgExpand =
     timeoutID = setTimeout imgExpand.expand, 10000, thumb, url
     # Only Chrome let userscript break through cross domain requests.
     # Don't check it 404s in the archivers.
-    return unless engine is 'webkit' and url.split('/')[2] is 'image.4chan.org'
+    return unless engine is 'webkit' and url.split('/')[2] is 'images.4chan.org'
     $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
 
