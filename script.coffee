@@ -2921,7 +2921,9 @@ a[href="javascript:;"] {
 }
 textarea.field {
   min-height: 120px;
-  width: 100%;
+}
+.field:only-child {
+  min-width: 100%;
 }
 .captcha {
   background: #FFF;
@@ -2932,9 +2934,6 @@ textarea.field {
 .captcha > img {
   height: 57px;
   width: 300px;
-}
-.field:only-child {
-  width: 100%;
 }
 #qr [type=file] {
   margin: 1px 0;
