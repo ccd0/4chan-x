@@ -1,4 +1,6 @@
 master
+
+2.25.2
 - Mayhem
   Reverted updater's scrolling behavior.
   Fix image posting on Firefox along with Unicode characters in the form.
