@@ -1218,6 +1218,15 @@
       $.on(iframe, 'error', function() {
         return this.src = this.src;
       });
+      $.on(iframe, 'load', function() {
+        var _this = this;
+        if (!(qr.status.ready || this.src === 'about:blank')) {
+          this.src = 'about:blank';
+          return setTimeout((function() {
+            return _this.src = 'http://sys.4chan.org/post';
+          }), 250);
+        }
+      });
       $.add(d.body, iframe);
       if (conf['Persistent QR']) {
         qr.dialog();

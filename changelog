@@ -2,6 +2,8 @@ master
 - Mayhem
   Reverted updater's scrolling behavior.
   Fix image posting on Firefox along with Unicode characters in the form.
+  Ghettofix Greasemonkey compatibility with the new QR.
+  Greasemonkey is still NOT RECOMMENDED, use Scriptish instead.
 
 2.25.1
 - Mayhem

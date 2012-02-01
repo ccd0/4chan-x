@@ -874,6 +874,11 @@ qr =
       hidden: true
       src: 'http://sys.4chan.org/post'
     $.on iframe, 'error', -> @src = @src
+    # Greasemonkey ghetto fix
+    $.on iframe, 'load',  ->
+      unless qr.status.ready or @src is 'about:blank'
+        @src = 'about:blank'
+        setTimeout (=> @src = 'http://sys.4chan.org/post'), 250
     $.add d.body, iframe
     if conf['Persistent QR']
       qr.dialog()
