@@ -2389,7 +2389,7 @@
           }
         }
         $.before(updater.br, frag);
-        if (scroll) return updater.br.previousSibling.scrollIntoView(false);
+        if (scroll) return updater.br.previousSibling.scrollIntoView();
       }
     },
     timeout: function() {

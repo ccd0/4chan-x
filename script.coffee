@@ -1887,7 +1887,7 @@ updater =
 
       $.before updater.br, frag
       if scroll
-        updater.br.previousSibling.scrollIntoView(false)
+        updater.br.previousSibling.scrollIntoView()
 
   timeout: ->
     updater.timeoutID = setTimeout updater.timeout, 1000
