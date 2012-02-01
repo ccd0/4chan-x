@@ -1730,7 +1730,7 @@
       if (err) {
         if (err === 'You seem to have mistyped the verification.' || err === 'Connection error with sys.4chan.org.') {
           qr.cooldown.auto = !!$.get('captchas', []).length;
-          qr.cooldown.set(10);
+          qr.cooldown.set(2);
         } else {
           qr.cooldown.auto = false;
         }

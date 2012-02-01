@@ -1309,7 +1309,7 @@ qr =
         qr.cooldown.auto = !!$.get('captchas', []).length
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
-        qr.cooldown.set 10
+        qr.cooldown.set 2
       else # stop auto-posting
         qr.cooldown.auto = false
       qr.status()
