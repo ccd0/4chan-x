@@ -1184,7 +1184,7 @@ qr =
     $.on $('#dump',     qr.el), 'click',     -> qr.el.classList.toggle 'dump'
     $.on $('#addReply', qr.el), 'click',     -> new qr.reply().select()
     $.on $('form',      qr.el), 'submit',    qr.submit
-    $.on $('textarea',  qr.el), 'keypress',  -> qr.selected.el.lastChild.textContent = @value
+    $.on $('textarea',  qr.el), 'keyup',     -> qr.selected.el.lastChild.textContent = @value
     $.on fileInput,             'change',    qr.fileInput
     $.on spoiler.firstChild,    'change',    -> $('input', qr.selected.el).click()
     $.on $('.warning',  qr.el), 'click',     qr.cleanError
@@ -1192,7 +1192,7 @@ qr =
     new qr.reply().select()
     # save selected reply's data
     for input in ['name', 'email', 'sub', 'com']
-      $.on $("[name=#{input}]", qr.el), 'keypress', -> qr.selected[@name] = @value
+      $.on $("[name=#{input}]", qr.el), 'keyup', -> qr.selected[@name] = @value
     # sync between tabs
     $.sync 'qr.persona', (persona) ->
       return if qr.replies.length isnt 1
