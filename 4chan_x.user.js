@@ -1823,19 +1823,37 @@
         }
       },
       post: function(data) {
-        var boundary, callbacks, form, name, opts, parts, url, val;
+        var boundary, callbacks, form, name, opts, parts, toUTF8, url, val;
         url = "http://sys.4chan.org/" + data.board + "/post";
         delete data.board;
         delete data.qr;
         if (engine === 'gecko' && data.upfile) {
+          toUTF8 = function(val) {
+            var c, n, utf, _ref;
+            utf = '';
+            for (n = 0, _ref = val.length - 1; 0 <= _ref ? n <= _ref : n >= _ref; 0 <= _ref ? n++ : n--) {
+              c = val.charCodeAt(n);
+              if (c < 128) {
+                utf += String.fromCharCode(c);
+              } else if ((127 < c && c < 2048)) {
+                utf += String.fromCharCode((c >> 6) | 192);
+                utf += String.fromCharCode((c & 63) | 128);
+              } else {
+                utf += String.fromCharCode((c >> 12) | 224);
+                utf += String.fromCharCode(((c >> 6) & 63) | 128);
+                utf += String.fromCharCode((c & 63) | 128);
+              }
+            }
+            return utf;
+          };
           boundary = '-------------SMCD' + Date.now();
           parts = [];
-          parts.push('Content-Disposition: form-data; name="upfile"; filename="' + data.upfile.name + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n');
+          parts.push('Content-Disposition: form-data; name="upfile"; filename="' + toUTF8(data.upfile.name) + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n');
           delete data.upfile;
           for (name in data) {
             val = data[name];
             if (val) {
-              parts.push('Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n');
+              parts.push('Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + toUTF8(val) + '\r\n');
             }
           }
           form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n';

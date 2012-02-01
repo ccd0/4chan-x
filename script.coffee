@@ -1398,13 +1398,28 @@ qr =
 
       # File with filename upload fix from desuwa
       if engine is 'gecko' and data.upfile
+        toUTF8 = (val) ->
+          utf = ''
+          for n in [0..val.length-1]
+            c = val.charCodeAt n
+            if c < 128
+              utf += String.fromCharCode c
+            else if 127 < c < 2048
+              utf += String.fromCharCode (c >> 6) | 192
+              utf += String.fromCharCode (c & 63) | 128
+            else
+              utf += String.fromCharCode (c >> 12) | 224
+              utf += String.fromCharCode ((c >> 6) & 63) | 128
+              utf += String.fromCharCode (c & 63) | 128
+          utf
+
         boundary = '-------------SMCD' + Date.now();
         parts = []
-        parts.push 'Content-Disposition: form-data; name="upfile"; filename="' + data.upfile.name + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n'
+        parts.push 'Content-Disposition: form-data; name="upfile"; filename="' + toUTF8(data.upfile.name) + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n'
         delete data.upfile
 
         for name, val of data
-          parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n' if val
+          parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + toUTF8(val) + '\r\n' if val
         form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n'
 
       else
