@@ -1403,28 +1403,36 @@ qr =
 
       # File with filename upload fix from desuwa
       if engine is 'gecko' and data.upfile
-        toUTF8 = (val) ->
-          utf = ''
-          for n in [0..val.length-1]
-            c = val.charCodeAt n
-            if c < 128
-              utf += String.fromCharCode c
-            else if 127 < c < 2048
-              utf += String.fromCharCode (c >> 6) | 192
-              utf += String.fromCharCode (c & 63) | 128
+        # All of this is fucking retarded.
+        unless data.binary
+          toBin = (data, name, val) ->
+            bb = new MozBlobBuilder()
+            bb.append val
+            r = new FileReader()
+            r.onload = ->
+              data[name] = r.result
+              unless --i
+                qr.message.post data
+            r.readAsBinaryString bb.getBlob 'text/plain'
+          i = Object.keys(data).length
+          for name, val of data
+            if typeof val is 'object' # File. toBin the filename.
+              toBin data.upfile, 'name', data.upfile.name
             else
-              utf += String.fromCharCode (c >> 12) | 224
-              utf += String.fromCharCode ((c >> 6) & 63) | 128
-              utf += String.fromCharCode (c & 63) | 128
-          utf
+              toBin data, name, String(val)
+          data.board  = url.split('/')[3]
+          data.binary = true
+          return
+
+        delete data.binary
 
         boundary = '-------------SMCD' + Date.now();
         parts = []
-        parts.push 'Content-Disposition: form-data; name="upfile"; filename="' + toUTF8(data.upfile.name) + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n'
+        parts.push 'Content-Disposition: form-data; name="upfile"; filename="' + data.upfile.name + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n'
         delete data.upfile
 
         for name, val of data
-          parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + toUTF8(String val) + '\r\n' if val
+          parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n' if val
         form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n'
 
       else
