@@ -1,4 +1,6 @@
 master
+- Mayhem
+  Fix image spoiler always enabled, bug introduced in 2.25.2.
 
 2.25.2
 - Mayhem

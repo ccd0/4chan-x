@@ -1860,8 +1860,14 @@
               val = data[name];
               if (typeof val === 'object') {
                 toBin(data.upfile, 'name', data.upfile.name);
+              } else if (typeof val === 'boolean') {
+                if (val) {
+                  toBin(data, name, String(val));
+                } else {
+                  i--;
+                }
               } else {
-                toBin(data, name, String(val));
+                toBin(data, name, val);
               }
             }
             data.board = url.split('/')[3];
