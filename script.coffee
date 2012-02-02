@@ -1159,11 +1159,11 @@ qr =
     qr.el = ui.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
-  <span> <a class=close>x</a></span>
+  <span> <a class=close title=Close>x</a></span>
 </div>
 <form>
   <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
-  <div id=replies><div><a id=addReply href=javascript:;>+</a></div></div>
+  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply"+</a></div></div>
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha title=Reload><img></div>
   <div><input title=Verification class=field autocomplete=off size=1></div>
@@ -1195,7 +1195,9 @@ qr =
       threads = '<option value=new>New thread</option>'
       for thread in $$ '.op'
         threads += "<option value=#{thread.id}>Thread #{thread.id}</option>"
-      $.prepend $('.move > span', qr.el), $.el 'select', innerHTML: threads
+      $.prepend $('.move > span', qr.el), $.el 'select'
+        innerHTML: threads
+        title: 'Create a new thread / Reply to a thread'
       $.on $('select',  qr.el), 'mousedown', (e) -> e.stopPropagation()
     $.on $('#autohide', qr.el), 'change',    qr.toggleHide
     $.on $('.close',    qr.el), 'click',     qr.close
