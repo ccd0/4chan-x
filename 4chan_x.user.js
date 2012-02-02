@@ -1349,11 +1349,9 @@
       }
       ta = $('textarea', qr.el);
       caretPos = ta.selectionStart;
-      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
+      qr.selected.el.lastChild.textContent = qr.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
       ta.focus();
-      ta.selectionEnd = ta.selectionStart = caretPos + text.length;
-      qr.selected.com = ta.value;
-      return qr.selected.el.lastChild.textContent = ta.value;
+      return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     fileDrop: function(e) {
       if (/TEXTAREA|INPUT/.test(e.target.nodeName)) return;

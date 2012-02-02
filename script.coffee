@@ -983,14 +983,14 @@ qr =
     ta = $ 'textarea', qr.el
     caretPos = ta.selectionStart
     # Replace selection for text.
-    ta.value = ta.value[0...caretPos] + text + ta.value[ta.selectionEnd...ta.value.length]
+    # onchange event isn't triggered, save value.
+    qr.selected.el.lastChild.textContent =
+      qr.selected.com =
+        ta.value =
+          ta.value[0...caretPos] + text + ta.value[ta.selectionEnd...ta.value.length]
     ta.focus()
     # Move the caret to the end of the new quote.
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
-
-    # onchange event isn't triggered, save value.
-    qr.selected.com = ta.value
-    qr.selected.el.lastChild.textContent = ta.value
 
   fileDrop: (e) ->
     return if /TEXTAREA|INPUT/.test e.target.nodeName
