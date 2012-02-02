@@ -1539,9 +1539,16 @@
         return this.input.value = null;
       },
       count: function(count) {
-        var s;
-        s = count === 1 ? '' : 's';
-        this.input.placeholder = "Verification (" + count + " cached captcha" + s + ")";
+        this.input.placeholder = (function() {
+          switch (count) {
+            case 0:
+              return 'Verification (Shift + Enter to cache)';
+            case 1:
+              return 'Vertification (1 cached captcha)';
+            default:
+              return "Verification (" + count + " cached captchas)";
+          }
+        })();
         return this.input.alt = count;
       },
       reload: function(focus) {
@@ -1630,7 +1637,7 @@
       _ref2 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         name = _ref2[_j];
-        input = $("[name=" + input + "]", qr.el);
+        input = $("[name=" + name + "]", qr.el);
         $.on(input, 'keyup', function() {
           return qr.selected[this.name] = this.value;
         });

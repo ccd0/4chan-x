@@ -1130,9 +1130,14 @@ qr =
       @img.src  = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
       @input.value = null
     count: (count) ->
-      s = if count is 1 then '' else 's'
-      @input.placeholder = "Verification (#{count} cached captcha#{s})"
-      @input.alt         = count # For XTRM RICE.
+      @input.placeholder = switch count
+        when 0
+          'Verification (Shift + Enter to cache)'
+        when 1
+          'Vertification (1 cached captcha)'
+        else
+          "Verification (#{count} cached captchas)"
+      @input.alt = count # For XTRM RICE.
     reload: (focus) ->
       window.location = 'javascript:Recaptcha.reload()'
       # Focus if we meant to.
@@ -1202,7 +1207,7 @@ qr =
     new qr.reply().select()
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
-      input = $ "[name=#{input}]", qr.el
+      input = $ "[name=#{name}]", qr.el
       $.on input, 'keyup',  -> qr.selected[@name] = @value
       $.on input, 'change', -> qr.selected[@name] = @value
     # sync between tabs
