@@ -1200,14 +1200,8 @@
 
   qr = {
     init: function() {
-      var h1, iframe, loadChecking;
+      var iframe, loadChecking;
       if (!$.id('recaptcha_challenge_field_holder')) return;
-      $('form[name=post]').hidden = true;
-      h1 = $.el('h1', {
-        innerHTML: '<a href=javascript:;>Open the Quick Reply</a>'
-      });
-      $.on($('a', h1), 'click', qr.open);
-      $.add($('.postarea'), h1);
       g.callbacks.push(function(root) {
         return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
       });
