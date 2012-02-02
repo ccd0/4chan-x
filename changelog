@@ -1,4 +1,6 @@
 master
+
+2.25.4
 - Mayhem
   Fix text inputs not sent/saved correctly in the QR when pasted for example.
   Revert hidding normal post form.
