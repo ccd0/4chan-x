@@ -1,6 +1,7 @@
 master
 - Mayhem
-  Fix text inputs not saved correctly in the QR.
+  Fix text inputs not sent/saved correctly in the QR when pasted for example.
+  Revert hidding normal post form.
 
 2.25.3
 - Mayhem
