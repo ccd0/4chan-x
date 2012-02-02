@@ -1201,8 +1201,10 @@ qr =
 
     new qr.reply().select()
     # save selected reply's data
-    for input in ['name', 'email', 'sub', 'com']
-      $.on $("[name=#{input}]", qr.el), 'keyup', -> qr.selected[@name] = @value
+    for name in ['name', 'email', 'sub', 'com']
+      input = $ "[name=#{input}]", qr.el
+      $.on input, 'keyup',  -> qr.selected[@name] = @value
+      $.on input, 'change', -> qr.selected[@name] = @value
     # sync between tabs
     $.sync 'qr.persona', (persona) ->
       return if qr.replies.length isnt 1

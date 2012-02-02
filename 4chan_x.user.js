@@ -1562,7 +1562,7 @@
       }
     },
     dialog: function() {
-      var e, fileInput, input, mimeTypes, spoiler, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
+      var e, fileInput, input, mimeTypes, name, spoiler, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
@@ -1629,8 +1629,12 @@
       new qr.reply().select();
       _ref2 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        input = _ref2[_j];
-        $.on($("[name=" + input + "]", qr.el), 'keyup', function() {
+        name = _ref2[_j];
+        input = $("[name=" + input + "]", qr.el);
+        $.on(input, 'keyup', function() {
+          return qr.selected[this.name] = this.value;
+        });
+        $.on(input, 'change', function() {
           return qr.selected[this.name] = this.value;
         });
       }
