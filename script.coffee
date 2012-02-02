@@ -869,17 +869,20 @@ qr =
     $.add $('.postarea'), h1
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
+
     iframe = $.el 'iframe',
       id: 'iframe'
       hidden: true
       src: 'http://sys.4chan.org/post'
     $.on iframe, 'error', -> @src = @src
     # Greasemonkey ghetto fix
-    $.on iframe, 'load',  ->
-      unless qr.status.ready or @src is 'about:blank'
-        @src = 'about:blank'
-        setTimeout (=> @src = 'http://sys.4chan.org/post'), 250
+    loadChecking = (iframe) ->
+      unless qr.status.ready
+        iframe.src = 'about:blank'
+        setTimeout (-> iframe.src = 'http://sys.4chan.org/post'), 250
+    $.on iframe, 'load', -> unless @src is 'about:blank' then setTimeout loadChecking, 250, @
     $.add d.body, iframe
+
     if conf['Persistent QR']
       qr.dialog()
       qr.hide() if conf['Auto Hide QR']

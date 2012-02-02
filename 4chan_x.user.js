@@ -1200,7 +1200,7 @@
 
   qr = {
     init: function() {
-      var h1, iframe;
+      var h1, iframe, loadChecking;
       if (!$.id('recaptcha_challenge_field_holder')) return;
       $('form[name=post]').hidden = true;
       h1 = $.el('h1', {
@@ -1219,14 +1219,16 @@
       $.on(iframe, 'error', function() {
         return this.src = this.src;
       });
-      $.on(iframe, 'load', function() {
-        var _this = this;
-        if (!(qr.status.ready || this.src === 'about:blank')) {
-          this.src = 'about:blank';
+      loadChecking = function(iframe) {
+        if (!qr.status.ready) {
+          iframe.src = 'about:blank';
           return setTimeout((function() {
-            return _this.src = 'http://sys.4chan.org/post';
+            return iframe.src = 'http://sys.4chan.org/post';
           }), 250);
         }
+      };
+      $.on(iframe, 'load', function() {
+        if (this.src !== 'about:blank') return setTimeout(loadChecking, 250, this);
       });
       $.add(d.body, iframe);
       if (conf['Persistent QR']) {
