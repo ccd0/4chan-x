@@ -1,4 +1,6 @@
 master
+- aeosynth
+  prevent post form flicker
 
 2.25.3
 - Mayhem

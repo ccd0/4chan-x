@@ -1202,7 +1202,6 @@
     init: function() {
       var h1, iframe;
       if (!$.id('recaptcha_challenge_field_holder')) return;
-      $('form[name=post]').hidden = true;
       h1 = $.el('h1', {
         innerHTML: '<a href=javascript:;>Open the Quick Reply</a>'
       });
@@ -3483,6 +3482,8 @@
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
+      if (conf['Quick Reply']) Main.css += 'form[name=post] { display: none; }';
+      Main.addStyle();
       return $.ready(Main.ready);
     },
     ready: function() {
@@ -3493,7 +3494,6 @@
       }
       if (!$.id('navtopr')) return;
       $.addClass(d.body, engine);
-      $.addStyle(Main.css);
       threading.init();
       Favicon.init();
       if (conf['Quick Reply']) qr.init();
@@ -3527,6 +3527,14 @@
         }
       }
       return $.on(form, 'DOMNodeInserted', Main.node);
+    },
+    addStyle: function() {
+      $.off(d, 'DOMNodeInserted', Main.addStyle);
+      if (d.head) {
+        return $.addStyle(Main.css);
+      } else {
+        return $.on(d, 'DOMNodeInserted', Main.addStyle);
+      }
     },
     message: function(e) {
       var data, version;
@@ -3881,7 +3889,8 @@ img[md5], img[md5] + img {\
 }\
 .filtered {\
   text-decoration: line-through;\
-}'
+}\
+'
   };
 
   Main.init();

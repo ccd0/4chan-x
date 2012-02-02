@@ -862,7 +862,6 @@ nav =
 qr =
   init: ->
     return unless $.id 'recaptcha_challenge_field_holder'
-    $('form[name=post]').hidden = true
     h1 = $.el 'h1'
       innerHTML: '<a href=javascript:;>Open the Quick Reply</a>'
     $.on $('a', h1), 'click', qr.open
@@ -2711,6 +2710,10 @@ Main =
     if conf['Indicate Cross-thread Quotes']
       quoteDR.init()
 
+    if conf['Quick Reply']
+      Main.css += 'form[name=post] { display: none; }'
+
+    Main.addStyle()
 
     $.ready Main.ready
 
@@ -2721,7 +2724,6 @@ Main =
     if not $.id 'navtopr'
       return
     $.addClass d.body, engine
-    $.addStyle Main.css
     threading.init()
     Favicon.init()
 
@@ -2777,6 +2779,13 @@ Main =
       catch err
         alert err
     $.on form, 'DOMNodeInserted', Main.node
+
+  addStyle: ->
+    $.off d, 'DOMNodeInserted', Main.addStyle
+    if d.head
+      $.addStyle Main.css
+    else # XXX fox
+      $.on d, 'DOMNodeInserted', Main.addStyle
 
   message: (e) ->
     {data} = e
@@ -3122,6 +3131,7 @@ img[md5], img[md5] + img {
 }
 .filtered {
   text-decoration: line-through;
-}'
+}
+'
 
 Main.init()
