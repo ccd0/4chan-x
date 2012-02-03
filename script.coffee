@@ -38,6 +38,7 @@ config =
       'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
+      'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR.']
     Quoting:
       'Quote Backlinks':              [true,  'Add quote backlinks']
       'OP Backlinks':                 [false, 'Add backlinks to the OP']
@@ -862,6 +863,12 @@ nav =
 qr =
   init: ->
     return unless $.id 'recaptcha_challenge_field_holder'
+    if conf['Hide Original Post Form']
+      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Open the Quick Reply' else 'Create a New Thread'}</a>"
+      $.on $('a', link), 'click', qr.open
+      form = d.forms[0]
+      form.hidden = true
+      $.before form, link
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
 

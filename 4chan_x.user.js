@@ -117,7 +117,8 @@
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
-        'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.']
+        'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
+        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.']
       },
       Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
@@ -1200,8 +1201,17 @@
 
   qr = {
     init: function() {
-      var iframe, loadChecking;
+      var form, iframe, link, loadChecking;
       if (!$.id('recaptcha_challenge_field_holder')) return;
+      if (conf['Hide Original Post Form']) {
+        link = $.el('h1', {
+          innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Open the Quick Reply' : 'Create a New Thread') + "</a>"
+        });
+        $.on($('a', link), 'click', qr.open);
+        form = d.forms[0];
+        form.hidden = true;
+        $.before(form, link);
+      }
       g.callbacks.push(function(root) {
         return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
       });
