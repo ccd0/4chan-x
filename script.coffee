@@ -2590,10 +2590,6 @@ imgExpand =
     a = thumb.parentNode
     img = $.el 'img',
       src: url or a.href
-    if engine is 'gecko' and a.parentNode.className isnt 'op'
-      filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent
-      max = filesize.match /(\d+)x/
-      img.style.maxWidth = "#{max[1]}px"
     $.on img, 'error', imgExpand.error if conf['404 Redirect']
     $.add a, img
 

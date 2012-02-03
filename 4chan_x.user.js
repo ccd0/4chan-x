@@ -3367,7 +3367,7 @@
       return thumb.nextSibling.hidden = true;
     },
     expand: function(thumb, url) {
-      var a, filesize, img, max;
+      var a, img;
       if ($.x('ancestor-or-self::*[@hidden]', thumb)) return;
       thumb.hidden = true;
       if (img = thumb.nextSibling) {
@@ -3378,11 +3378,6 @@
       img = $.el('img', {
         src: url || a.href
       });
-      if (engine === 'gecko' && a.parentNode.className !== 'op') {
-        filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent;
-        max = filesize.match(/(\d+)x/);
-        img.style.maxWidth = "" + max[1] + "px";
-      }
       if (conf['404 Redirect']) $.on(img, 'error', imgExpand.error);
       return $.add(a, img);
     },
