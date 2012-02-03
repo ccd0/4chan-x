@@ -3308,7 +3308,7 @@
         var thumb, _i, _j, _len, _len2, _ref, _ref2, _results, _results2;
         imgExpand.on = this.checked;
         if (imgExpand.on) {
-          _ref = $$('.op > a > img[md5]:last-child, table:not([hidden]) img[md5]:last-child');
+          _ref = $$('img[md5]');
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             thumb = _ref[_i];
@@ -3364,11 +3364,16 @@
     },
     contract: function(thumb) {
       thumb.hidden = false;
-      return $.rm(thumb.nextSibling);
+      return thumb.nextSibling.hidden = true;
     },
     expand: function(thumb, url) {
       var a, filesize, img, max;
-      if (thumb.hidden) return;
+      if ($.x('ancestor-or-self::*[@hidden]', thumb)) return;
+      thumb.hidden = true;
+      if (img = thumb.nextSibling) {
+        img.hidden = false;
+        return;
+      }
       a = thumb.parentNode;
       img = $.el('img', {
         src: url || a.href
@@ -3379,7 +3384,6 @@
         img.style.maxWidth = "" + max[1] + "px";
       }
       if (conf['404 Redirect']) $.on(img, 'error', imgExpand.error);
-      thumb.hidden = true;
       return $.add(a, img);
     },
     error: function() {
@@ -3388,6 +3392,7 @@
       thumb = this.previousSibling;
       src = href.split('/');
       imgExpand.contract(thumb);
+      $.rm(this);
       if (!(this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5])))) {
         if (g.dead) return;
         url = href + '?' + Date.now();

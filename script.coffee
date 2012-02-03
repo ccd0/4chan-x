@@ -2541,7 +2541,7 @@ imgExpand =
     all: ->
       imgExpand.on = @checked
       if imgExpand.on #expand
-        for thumb in $$ '.op > a > img[md5]:last-child, table:not([hidden]) img[md5]:last-child'
+        for thumb in $$ 'img[md5]'
           imgExpand.expand thumb
       else #contract
         for thumb in $$ 'img[md5][hidden]'
@@ -2577,10 +2577,16 @@ imgExpand =
 
   contract: (thumb) ->
     thumb.hidden = false
-    $.rm thumb.nextSibling
+    thumb.nextSibling.hidden = true
 
   expand: (thumb, url) ->
-    return if thumb.hidden
+    # Do not expand images of hidden/filtered replies, or already expanded pictures.
+    return if $.x 'ancestor-or-self::*[@hidden]', thumb
+    thumb.hidden = true
+    if img = thumb.nextSibling
+      # Expand already loaded picture
+      img.hidden = false
+      return
     a = thumb.parentNode
     img = $.el 'img',
       src: url or a.href
@@ -2589,7 +2595,6 @@ imgExpand =
       max = filesize.match /(\d+)x/
       img.style.maxWidth = "#{max[1]}px"
     $.on img, 'error', imgExpand.error if conf['404 Redirect']
-    thumb.hidden = true
     $.add a, img
 
   error: ->
@@ -2597,6 +2602,7 @@ imgExpand =
     thumb = @previousSibling
     src   = href.split '/'
     imgExpand.contract thumb
+    $.rm @
     unless @src.split('/')[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
       return if g.dead
       # CloudFlare may cache banned pages instead of images.
