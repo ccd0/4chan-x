@@ -3099,22 +3099,24 @@ img[md5], img[md5] + img {
 }
 
 #watcher {
+  padding-bottom: 5px;
   position: absolute;
-}
-#watcher > div {
   overflow: hidden;
-  padding-right: 5px;
-  padding-left: 5px;
-  text-overflow: ellipsis;
-  max-width: 200px;
   white-space: nowrap;
 }
-#watcher > div.move {
-  text-decoration: underline;
-  padding-top: 5px;
+#watcher:not(:hover) {
+  max-height: 220px;
 }
-#watcher > div:last-child {
-  padding-bottom: 5px;
+#watcher > div {
+  max-width: 200px;
+  overflow: hidden;
+  padding-left: 5px;
+  padding-right: 5px;
+  text-overflow: ellipsis;
+}
+#watcher > .move {
+  padding-top: 5px;
+  text-decoration: underline;
 }
 
 #qp {
