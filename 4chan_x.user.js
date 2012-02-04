@@ -146,28 +146,28 @@
     backlink: '>>%id',
     favicon: 'ferongr',
     hotkeys: {
-      openOptions: 'ctrl+o',
-      close: 'Esc',
-      spoiler: 'ctrl+s',
-      openQR: 'i',
-      openEmptyQR: 'I',
-      submit: 'alt+s',
-      nextReply: 'J',
-      previousReply: 'K',
-      nextThread: 'n',
-      previousThread: 'p',
-      nextPage: 'L',
-      previousPage: 'H',
-      zero: '0',
-      openThreadTab: 'o',
-      openThread: 'O',
-      expandThread: 'e',
-      watch: 'w',
-      hide: 'x',
-      expandImages: 'm',
-      expandAllImages: 'M',
-      update: 'u',
-      unreadCountTo0: 'z'
+      openOptions: ['ctrl+o', 'Open Options'],
+      close: ['Esc', 'Close Options or QR'],
+      spoiler: ['ctrl+s', 'Quick spoiler'],
+      openQR: ['i', 'Open QR with post number inserted'],
+      openEmptyQR: ['I', 'Open QR without post number inserted'],
+      submit: ['alt+s', 'Submit post'],
+      nextReply: ['J', 'Select next reply'],
+      previousReply: ['K', 'Select previous reply'],
+      nextThread: ['n', 'See next thread'],
+      previousThread: ['p', 'See previous thread'],
+      nextPage: ['L', 'Jump to the next page'],
+      previousPage: ['H', 'Jump to the previous page'],
+      zero: ['0', 'Jump to page 0'],
+      openThreadTab: ['o', 'Open thread in current tab'],
+      openThread: ['O', 'Open thread in new tab'],
+      expandThread: ['e', 'Expand thread'],
+      watch: ['w', 'Watch thread'],
+      hide: ['x', 'Hide thread'],
+      expandImages: ['m', 'Expand selected image'],
+      expandAllImages: ['M', 'Expand all images'],
+      update: ['u', 'Update now'],
+      unreadCountTo0: ['z', 'Reset unread count to 0']
     },
     updater: {
       checkbox: {
@@ -186,19 +186,17 @@
 
   (flatten = function(parent, obj) {
     var key, val, _results;
-    if (obj.length) {
-      if (typeof obj[0] === 'boolean') {
+    if (typeof obj === 'object') {
+      if (obj.length) {
         return conf[parent] = obj[0];
       } else {
-        return conf[parent] = obj;
+        _results = [];
+        for (key in obj) {
+          val = obj[key];
+          _results.push(flatten(key, val));
+        }
+        return _results;
       }
-    } else if (typeof obj === 'object') {
-      _results = [];
-      for (key in obj) {
-        val = obj[key];
-        _results.push(flatten(key, val));
-      }
-      return _results;
     } else {
       return conf[parent] = obj;
     }
@@ -1969,7 +1967,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2041,30 +2039,9 @@
   <input type=radio name=tab hidden id=keybinds_tab>\
   <div>\
     <div class=warning><code>Keybinds</code> are disabled.</div>\
+    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-1, Up, Down, Right, Left.</div>\
     <table><tbody>\
       <tr><th>Actions</th><th>Keybinds</th></tr>\
-      <tr><td>Open Options</td><td><input name=openOptions></td></tr>\
-      <tr><td>Close Options or QR</td><td><input name=close></td></tr>\
-      <tr><td>Quick spoiler</td><td><input name=spoiler></td></tr>\
-      <tr><td>Open QR with post number inserted</td><td><input name=openQR></td></tr>\
-      <tr><td>Open QR without post number inserted</td><td><input name=openEmptyQR></td></tr>\
-      <tr><td>Submit post</td><td><input name=submit></td></tr>\
-      <tr><td>Select next reply</td><td><input name=nextReply ></td></tr>\
-      <tr><td>Select previous reply</td><td><input name=previousReply></td></tr>\
-      <tr><td>See next thread</td><td><input name=nextThread></td></tr>\
-      <tr><td>See previous thread</td><td><input name=previousThread></td></tr>\
-      <tr><td>Jump to the next page</td><td><input name=nextPage></td></tr>\
-      <tr><td>Jump to the previous page</td><td><input name=previousPage></td></tr>\
-      <tr><td>Jump to page 0</td><td><input name=zero></td></tr>\
-      <tr><td>Open thread in current tab</td><td><input name=openThread></td></tr>\
-      <tr><td>Open thread in new tab</td><td><input name=openThreadTab></td></tr>\
-      <tr><td>Expand thread</td><td><input name=expandThread></td></tr>\
-      <tr><td>Watch thread</td><td><input name=watch></td></tr>\
-      <tr><td>Hide thread</td><td><input name=hide></td></tr>\
-      <tr><td>Expand selected image</td><td><input name=expandImages></td></tr>\
-      <tr><td>Expand all images</td><td><input name=expandAllImages></td></tr>\
-      <tr><td>Update now</td><td><input name=update></td></tr>\
-      <tr><td>Reset the unread count to 0</td><td><input name=unreadCountTo0></td></tr>\
     </tbody></table>\
   </div>\
 </div>'
@@ -2110,17 +2087,21 @@
       favicon.value = conf['favicon'];
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', options.favicon);
-      _ref3 = $$('#keybinds_tab + div input', dialog);
-      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-        input = _ref3[_j];
-        input.type = 'text';
-        input.value = conf[input.name];
+      _ref3 = config.hotkeys;
+      for (key in _ref3) {
+        arr = _ref3[key];
+        tr = $.el('tr', {
+          innerHTML: "<td>" + arr[1] + "</td><td><input name=" + key + "></td>"
+        });
+        input = $('input', tr);
+        input.value = conf[key];
         $.on(input, 'keydown', options.keybind);
+        $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
       indicators = {};
       _ref4 = $$('.warning', dialog);
-      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
-        indicator = _ref4[_k];
+      for (_j = 0, _len2 = _ref4.length; _j < _len2; _j++) {
+        indicator = _ref4[_j];
         key = indicator.firstChild.textContent;
         indicator.hidden = conf[key];
         indicators[key] = indicator;

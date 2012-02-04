@@ -71,34 +71,34 @@ config =
   backlink: '>>%id'
   favicon: 'ferongr'
   hotkeys:
-    openOptions:     'ctrl+o'
-    close:           'Esc'
-    spoiler:         'ctrl+s'
-    openQR:          'i'
-    openEmptyQR:     'I'
-    submit:          'alt+s'
-    nextReply:       'J'
-    previousReply:   'K'
-    nextThread:      'n'
-    previousThread:  'p'
-    nextPage:        'L'
-    previousPage:    'H'
-    zero:            '0'
-    openThreadTab:   'o'
-    openThread:      'O'
-    expandThread:    'e'
-    watch:           'w'
-    hide:            'x'
-    expandImages:    'm'
-    expandAllImages: 'M'
-    update:          'u'
-    unreadCountTo0:  'z'
+    openOptions:     ['ctrl+o', 'Open Options']
+    close:           ['Esc',    'Close Options or QR']
+    spoiler:         ['ctrl+s', 'Quick spoiler']
+    openQR:          ['i',      'Open QR with post number inserted']
+    openEmptyQR:     ['I',      'Open QR without post number inserted']
+    submit:          ['alt+s',  'Submit post']
+    nextReply:       ['J',      'Select next reply']
+    previousReply:   ['K',      'Select previous reply']
+    nextThread:      ['n',      'See next thread']
+    previousThread:  ['p',      'See previous thread']
+    nextPage:        ['L',      'Jump to the next page']
+    previousPage:    ['H',      'Jump to the previous page']
+    zero:            ['0',      'Jump to page 0']
+    openThreadTab:   ['o',      'Open thread in current tab']
+    openThread:      ['O',      'Open thread in new tab']
+    expandThread:    ['e',      'Expand thread']
+    watch:           ['w',      'Watch thread']
+    hide:            ['x',      'Hide thread']
+    expandImages:    ['m',      'Expand selected image']
+    expandAllImages: ['M',      'Expand all images']
+    update:          ['u',      'Update now']
+    unreadCountTo0:  ['z',      'Reset unread count to 0']
   updater:
     checkbox:
-      'Scrolling':    [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
-      'Scroll BG':    [false, 'Scroll background tabs']
-      'Verbose':      [true,  'Show countdown timer, new post count']
-      'Auto Update':  [true,  'Automatically fetch new posts']
+      'Scrolling':   [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
+      'Scroll BG':   [false, 'Scroll background tabs']
+      'Verbose':     [true,  'Show countdown timer, new post count']
+      'Auto Update': [true,  'Automatically fetch new posts']
     'Interval': 30
 
 # XXX Chrome can't into {log} = console
@@ -108,15 +108,14 @@ log = console.log.bind? console
 # flatten the config
 conf = {}
 (flatten = (parent, obj) ->
-  if obj.length #array
-    if typeof obj[0] is 'boolean'
+  if typeof obj is 'object'
+    # array
+    if obj.length
       conf[parent] = obj[0]
-    else
-      conf[parent] = obj
-  else if typeof obj is 'object'
-    for key, val of obj
+    # object
+    else for key, val of obj
       flatten key, val
-  else #constant
+  else # string or number
     conf[parent] = obj
 ) null, config
 
@@ -1577,30 +1576,9 @@ options =
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
     <div class=warning><code>Keybinds</code> are disabled.</div>
+    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-1, Up, Down, Right, Left.</div>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
-      <tr><td>Open Options</td><td><input name=openOptions></td></tr>
-      <tr><td>Close Options or QR</td><td><input name=close></td></tr>
-      <tr><td>Quick spoiler</td><td><input name=spoiler></td></tr>
-      <tr><td>Open QR with post number inserted</td><td><input name=openQR></td></tr>
-      <tr><td>Open QR without post number inserted</td><td><input name=openEmptyQR></td></tr>
-      <tr><td>Submit post</td><td><input name=submit></td></tr>
-      <tr><td>Select next reply</td><td><input name=nextReply ></td></tr>
-      <tr><td>Select previous reply</td><td><input name=previousReply></td></tr>
-      <tr><td>See next thread</td><td><input name=nextThread></td></tr>
-      <tr><td>See previous thread</td><td><input name=previousThread></td></tr>
-      <tr><td>Jump to the next page</td><td><input name=nextPage></td></tr>
-      <tr><td>Jump to the previous page</td><td><input name=previousPage></td></tr>
-      <tr><td>Jump to page 0</td><td><input name=zero></td></tr>
-      <tr><td>Open thread in current tab</td><td><input name=openThread></td></tr>
-      <tr><td>Open thread in new tab</td><td><input name=openThreadTab></td></tr>
-      <tr><td>Expand thread</td><td><input name=expandThread></td></tr>
-      <tr><td>Watch thread</td><td><input name=watch></td></tr>
-      <tr><td>Hide thread</td><td><input name=hide></td></tr>
-      <tr><td>Expand selected image</td><td><input name=expandImages></td></tr>
-      <tr><td>Expand all images</td><td><input name=expandAllImages></td></tr>
-      <tr><td>Update now</td><td><input name=update></td></tr>
-      <tr><td>Reset the unread count to 0</td><td><input name=unreadCountTo0></td></tr>
     </tbody></table>
   </div>
 </div>'
@@ -1643,10 +1621,13 @@ options =
     $.on favicon, 'change', options.favicon
 
     #keybinds
-    for input in $$ '#keybinds_tab + div input', dialog
-      input.type  = 'text'
-      input.value = conf[input.name]
+    for key, arr of config.hotkeys
+      tr = $.el 'tr',
+        innerHTML: "<td>#{arr[1]}</td><td><input name=#{key}></td>"
+      input = $ 'input', tr
+      input.value = conf[key]
       $.on input, 'keydown', options.keybind
+      $.add $('#keybinds_tab + div tbody', dialog), tr
 
     #indicate if the settings require a feature to be enabled
     indicators = {}
