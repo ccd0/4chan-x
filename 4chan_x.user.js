@@ -2756,8 +2756,8 @@
   quoteBacklink = {
     init: function() {
       var format;
-      format = conf['backlink'].replace(/%id/, "' + id + '");
-      quoteBacklink.funk = Function('id', "return'" + format + "'");
+      format = conf['backlink'].replace(/%id/g, "' + id + '");
+      quoteBacklink.funk = Function('id', "return '" + format + "'");
       return g.callbacks.push(function(root) {
         var a, container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
         if (/\binline\b/.test(root.className)) return;
@@ -2765,7 +2765,7 @@
         _ref = $$('.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          if (qid = quote.hash.slice(1)) quotes[qid] = quote;
+          if (qid = quote.hash.slice(1)) quotes[qid] = true;
         }
         id = $('input', root).name;
         a = $.el('a', {
@@ -2775,8 +2775,9 @@
         });
         _results = [];
         for (qid in quotes) {
-          if (!(el = $.id(qid))) continue;
-          if (el.className === 'op' && !conf['OP Backlinks']) continue;
+          if (!(el = $.id(qid)) || el.className === 'op' && !conf['OP Backlinks']) {
+            continue;
+          }
           link = a.cloneNode(true);
           if (conf['Quote Preview']) {
             $.on(link, 'mouseover', quotePreview.mouseover);
@@ -3178,15 +3179,11 @@
     empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     update: function() {
-      var clone, favicon, l;
+      var favicon, l;
       l = unread.replies.length;
       favicon = $('link[rel="shortcut icon"]', d.head);
       favicon.href = g.dead ? l ? this.unreadDead : this.dead : l ? this.unread : this["default"];
-      if (engine !== 'webkit') {
-        clone = favicon.cloneNode(true);
-        favicon.href = null;
-        return $.replace(favicon, clone);
-      }
+      if (engine !== 'webkit') return $.add(d.head, $.rm(favicon));
     }
   };
 

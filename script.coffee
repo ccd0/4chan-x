@@ -2157,26 +2157,25 @@ titlePost =
 
 quoteBacklink =
   init: ->
-    format = conf['backlink'].replace /%id/, "' + id + '"
-    quoteBacklink.funk = Function 'id', "return'#{format}'"
+    format = conf['backlink'].replace /%id/g, "' + id + '"
+    quoteBacklink.funk = Function 'id', "return '#{format}'"
     g.callbacks.push (root) ->
       return if /\binline\b/.test root.className
       quotes = {}
       for quote in $$ '.quotelink', root
-        #don't process >>>/b/
+        # Don't process >>>/b/.
         if qid = quote.hash[1..]
-          #duplicate quotes get overwritten
-          quotes[qid] = quote
-      # op or reply
+          # Duplicate quotes get overwritten.
+          quotes[qid] = true
+      # OP or reply id.
       id = $('input', root).name
       a = $.el 'a',
         href: "##{id}"
         className: if root.hidden then 'filtered backlink' else 'backlink'
         textContent: quoteBacklink.funk id
       for qid of quotes
-        continue unless el = $.id qid
-        #don't backlink the op
-        continue if el.className is 'op' and !conf['OP Backlinks']
+        # Don't backlink the OP.
+        continue if !(el = $.id qid) or el.className is 'op' and !conf['OP Backlinks']
         link = a.cloneNode true
         if conf['Quote Preview']
           $.on link, 'mouseover', quotePreview.mouseover
@@ -2472,9 +2471,7 @@ Favicon =
     #`favicon.href = href` isn't enough on Opera
     #Opera won't always update the favicon if the href do not change
     if engine isnt 'webkit'
-      clone = favicon.cloneNode true
-      favicon.href = null
-      $.replace favicon, clone
+      $.add d.head, $.rm favicon
 
 redirect =
   init: ->
