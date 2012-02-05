@@ -1,4 +1,6 @@
 master
+- desuwa
+  Remember the size of the QR on Firefox.
 - Mayhem
   Increase Sauce linking possibilites:
     Thumbnails, full images, MD5 hashes.

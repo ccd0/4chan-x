@@ -36,6 +36,7 @@ config =
       'Cooldown':                     [true,  'Prevent "flood detected" errors.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
+      'Remember QR size':             [false, 'Remember the size of the Quick reply (Firefox only).']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR.']
@@ -1178,6 +1179,12 @@ qr =
   <div class=warning></div>
 </form>'
 
+    if conf['Remember QR size'] and engine is 'gecko'
+      $.on (ta = qr.el.querySelector 'textarea'), 'mouseup', ->
+        $.set 'qr.size', @style.cssText
+      if saved = $.get 'qr.size'
+        ta.style.cssText = saved
+    
     # Allow only this board's supported files.
     mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type

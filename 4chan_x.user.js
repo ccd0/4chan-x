@@ -116,6 +116,7 @@
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
+        'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.']
@@ -1568,7 +1569,7 @@
       }
     },
     dialog: function() {
-      var e, fileInput, input, mimeTypes, name, spoiler, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
+      var e, fileInput, input, mimeTypes, name, saved, spoiler, ta, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
@@ -1584,6 +1585,12 @@
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\
   <div class=warning></div>\
 </form>');
+      if (conf['Remember QR size'] && engine === 'gecko') {
+        $.on((ta = qr.el.querySelector('textarea')), 'mouseup', function() {
+          return $.set('qr.size', this.style.cssText);
+        });
+        if (saved = $.get('qr.size')) ta.style.cssText = saved;
+      }
       mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
