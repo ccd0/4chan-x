@@ -141,7 +141,7 @@
       filesize: '',
       md5: ''
     },
-    flavors: ['http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://3d.iqdb.org/?url=', '#http://regex.info/exif.cgi?imgurl=', '#http://imgur.com/upload?url=', '#http://ompldr.org/upload?url1='].join('\n'),
+    sauces: ['http://iqdb.org/?url=$1', 'http://google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '#http://imgur.com/upload?url=$2', '#http://ompldr.org/upload?url1=$2'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     favicon: 'ferongr',
@@ -305,7 +305,6 @@
       val = properties[key];
       object[key] = val;
     }
-    return object;
   };
 
   $.extend($, {
@@ -408,14 +407,12 @@
       return el.parentNode.removeChild(el);
     },
     add: function() {
-      var child, children, parent, _i, _len, _results;
+      var child, children, parent, _i, _len;
       parent = arguments[0], children = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      _results = [];
       for (_i = 0, _len = children.length; _i < _len; _i++) {
         child = children[_i];
-        _results.push(parent.appendChild(child));
+        parent.appendChild(child);
       }
-      return _results;
     },
     prepend: function(parent, child) {
       return parent.insertBefore(child, parent.firstChild);
@@ -1979,7 +1976,7 @@
   <div>\
     <label for=main_tab>Main</label>\
     | <label for=filter_tab>Filter</label>\
-    | <label for=flavors_tab>Sauce</label>\
+    | <label for=sauces_tab>Sauce</label>\
     | <label for=rice_tab>Rice</label>\
     | <label for=keybinds_tab>Keybinds</label>\
   </div>\
@@ -1988,10 +1985,15 @@
 <div id=content>\
   <input type=radio name=tab hidden id=main_tab checked>\
   <div></div>\
-  <input type=radio name=tab hidden id=flavors_tab>\
+  <input type=radio name=tab hidden id=sauces_tab>\
   <div>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
-    <textarea name=flavors id=flavors></textarea>\
+    <div>Lines starting with a <code>#</code> will be ignored.</div>\
+    <ul>These variables will be replaced by the corresponding url:\
+      <li>$1: Thumbnail.</li>\
+      <li>$2: Full image.</li>\
+    </ul>\
+    <textarea name=sauces id=sauces></textarea>\
   </div>\
   <input type=radio name=tab hidden id=filter_tab>\
   <div>\
@@ -2571,26 +2573,38 @@
 
   sauce = {
     init: function() {
-      if (!(sauce.prefixes = conf['flavors'].match(/^[^#].+$/gm))) return;
-      sauce.names = sauce.prefixes.map(function(prefix) {
-        return prefix.match(/(\w+)\./)[1];
-      });
-      return g.callbacks.push(function(root) {
-        var i, link, prefix, span, suffix, _len, _ref, _results;
-        if (root.className === 'inline' || !(span = $('.filesize', root))) return;
-        suffix = $('a', span).href;
-        _ref = sauce.prefixes;
-        _results = [];
-        for (i = 0, _len = _ref.length; i < _len; i++) {
-          prefix = _ref[i];
-          link = $.el('a', {
-            textContent: sauce.names[i],
-            href: prefix + suffix,
-            target: '_blank'
-          });
-          _results.push($.add(span, $.tn(' '), link));
+      var link, links, _i, _len;
+      links = conf['sauces'].match(/^[^#].+$/gm);
+      this.links = [];
+      for (_i = 0, _len = links.length; _i < _len; _i++) {
+        link = links[_i];
+        this.links.push([link, link.match(/(\w+)\./)[1]]);
+      }
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var a, img, link, span, _i, _len, _ref;
+      if (root.className === 'inline' || !(span = $('.filesize', root))) return;
+      img = $('img', root);
+      _ref = sauce.links;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        a = $.el('a', {
+          textContent: link[1],
+          href: sauce.href(link[0], img),
+          target: '_blank'
+        });
+        $.add(span, $.tn(' '), a);
+      }
+    },
+    href: function(link, img) {
+      return link.replace(/\$\d/, function(fragment) {
+        switch (fragment) {
+          case '$1':
+            return img.src;
+          case '$2':
+            return img.parentNode.href;
         }
-        return _results;
       });
     }
   };
@@ -3819,8 +3833,8 @@ img[md5], img[md5] + img {\
   resize: vertical;\
   width: 100%;\
 }\
-#flavors {\
-  height: 100%;\
+#sauces {\
+  height: 350px;\
 }\
 \
 #updater {\

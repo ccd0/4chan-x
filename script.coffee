@@ -57,15 +57,15 @@ config =
     filename: ''
     filesize: ''
     md5:      ''
-  flavors: [
-    'http://iqdb.org/?url='
-    'http://google.com/searchbyimage?image_url='
-    '#http://tineye.com/search?url='
-    '#http://saucenao.com/search.php?db=999&url='
-    '#http://3d.iqdb.org/?url='
-    '#http://regex.info/exif.cgi?imgurl='
-    '#http://imgur.com/upload?url='
-    '#http://ompldr.org/upload?url1='
+  sauces: [
+    'http://iqdb.org/?url=$1'
+    'http://google.com/searchbyimage?image_url=$1'
+    '#http://tineye.com/search?url=$1'
+    '#http://saucenao.com/search.php?db=999&url=$1'
+    '#http://3d.iqdb.org/?url=$1'
+    '#http://regex.info/exif.cgi?imgurl=$2'
+    '#http://imgur.com/upload?url=$2'
+    '#http://ompldr.org/upload?url1=$2'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
@@ -217,7 +217,7 @@ $ = (selector, root=d.body) ->
 $.extend = (object, properties) ->
   for key, val of properties
     object[key] = val
-  object
+  return
 
 $.extend $,
   ready: (fc) ->
@@ -282,6 +282,7 @@ $.extend $,
   add: (parent, children...) ->
     for child in children
       parent.appendChild child
+    return
   prepend: (parent, child) ->
     parent.insertBefore child, parent.firstChild
   after: (root, el) ->
@@ -1516,7 +1517,7 @@ options =
   <div>
     <label for=main_tab>Main</label>
     | <label for=filter_tab>Filter</label>
-    | <label for=flavors_tab>Sauce</label>
+    | <label for=sauces_tab>Sauce</label>
     | <label for=rice_tab>Rice</label>
     | <label for=keybinds_tab>Keybinds</label>
   </div>
@@ -1525,10 +1526,15 @@ options =
 <div id=content>
   <input type=radio name=tab hidden id=main_tab checked>
   <div></div>
-  <input type=radio name=tab hidden id=flavors_tab>
+  <input type=radio name=tab hidden id=sauces_tab>
   <div>
     <div class=warning><code>Sauce</code> is disabled.</div>
-    <textarea name=flavors id=flavors></textarea>
+    <div>Lines starting with a <code>#</code> will be ignored.</div>
+    <ul>These variables will be replaced by the corresponding url:
+      <li>$1: Thumbnail.</li>
+      <li>$2: Full image.</li>
+    </ul>
+    <textarea name=sauces id=sauces></textarea>
   </div>
   <input type=radio name=tab hidden id=filter_tab>
   <div>
@@ -2025,17 +2031,29 @@ anonymize =
 
 sauce =
   init: ->
-    return unless sauce.prefixes = conf['flavors'].match /^[^#].+$/gm
-    sauce.names = sauce.prefixes.map (prefix) -> prefix.match(/(\w+)\./)[1]
-    g.callbacks.push (root) ->
-      return if root.className is 'inline' or not span = $ '.filesize', root
-      suffix = $('a', span).href
-      for prefix, i in sauce.prefixes
-        link = $.el 'a',
-          textContent: sauce.names[i]
-          href: prefix + suffix
-          target: '_blank'
-        $.add span, $.tn(' '), link
+    # return unless
+    links = conf['sauces'].match /^[^#].+$/gm
+    @links = []
+    for link in links
+      @links.push [link, link.match(/(\w+)\./)[1]]
+    g.callbacks.push @node
+  node: (root) ->
+    return if root.className is 'inline' or not span = $ '.filesize', root
+    img = $ 'img', root
+    for link in sauce.links
+      a = $.el 'a',
+        textContent: link[1]
+        href: sauce.href link[0], img
+        target: '_blank'
+      $.add span, $.tn(' '), a
+    return
+  href: (link, img) ->
+    link.replace /\$\d/, (fragment) ->
+      switch fragment
+        when '$1'
+          img.src
+        when '$2'
+          img.parentNode.href
 
 revealSpoilers =
   init: ->
@@ -3060,8 +3078,8 @@ img[md5], img[md5] + img {
   resize: vertical;
   width: 100%;
 }
-#flavors {
-  height: 100%;
+#sauces {
+  height: 350px;
 }
 
 #updater {
