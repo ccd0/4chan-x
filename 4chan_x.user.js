@@ -2113,6 +2113,7 @@
         id: 'overlay'
       });
       $.on(overlay, 'click', function() {
+        d.body.style.removeProperty('overflow');
         return $.rm(overlay);
       });
       $.on(dialog, 'click', function(e) {
@@ -2120,6 +2121,7 @@
       });
       $.add(overlay, dialog);
       $.add(d.body, overlay);
+      d.body.style.setProperty('overflow', 'hidden', 'important');
       options.backlink.call(back);
       options.time.call(time);
       return options.favicon.call(favicon);

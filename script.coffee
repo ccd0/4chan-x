@@ -1647,10 +1647,13 @@ options =
         indicators[@name].hidden = @checked
 
     overlay = $.el 'div', id: 'overlay'
-    $.on overlay, 'click', -> $.rm overlay
+    $.on overlay, 'click', ->
+      d.body.style.removeProperty 'overflow'
+      $.rm overlay
     $.on dialog,  'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
     $.add d.body, overlay
+    d.body.style.setProperty 'overflow', 'hidden', 'important'
 
     options.backlink.call back
     options.time.call     time
