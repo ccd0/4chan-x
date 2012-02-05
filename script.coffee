@@ -2743,6 +2743,7 @@ Main =
       return
     if not $.id 'navtopr'
       return
+    $.addClass d.body, "chanx_#{VERSION.match(/\.(\d+)/)[1]}"
     $.addClass d.body, engine
     threading.init()
     Favicon.init()
