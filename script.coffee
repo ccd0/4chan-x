@@ -26,6 +26,7 @@ config =
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
+      'Unread Favicon':               [true,  'Show a different favicon when there are unread posts']
       'Post in Title':                [true,  'Show the op\'s post in the tab title']
       'Thread Stats':                 [true,  'Display reply and image count']
       'Thread Watcher':               [true,  'Bookmark threads']
@@ -96,7 +97,7 @@ config =
     expandImages:    ['m',      'Expand selected image']
     expandAllImages: ['M',      'Expand all images']
     update:          ['u',      'Update now']
-    unreadCountTo0:  ['z',      'Reset unread count to 0']
+    unreadCountTo0:  ['z',      'Reset unread status']
   updater:
     checkbox:
       'Scrolling':   [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
@@ -713,8 +714,7 @@ keybinds =
         qr.submit() if qr.el and !qr.status()
       when conf.unreadCountTo0
         unread.replies = []
-        unread.updateTitle()
-        Favicon.update()
+        unread.update()
       else
         return
     e.preventDefault()
@@ -1570,14 +1570,13 @@ options =
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
       <li>Minutes: %M</li>
     </ul>
-    <div class=warning><code>Unread Count</code> is disabled.</div>
+    <div class=warning><code>Unread Favicon</code> is disabled.</div>
     Unread favicons<br>
     <select name=favicon>
       <option value=ferongr>ferongr</option>
       <option value=xat->xat-</option>
       <option value=Mayhem>Mayhem</option>
       <option value=Original>Original</option>
-      <option value=None>None</option>
     </select>
     <span></span>
   </div>
@@ -1681,7 +1680,7 @@ options =
     $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
   favicon: ->
     Favicon.switch()
-    Favicon.update() if g.REPLY and conf['Unread Count']
+    unread.update true
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
 
 threading =
@@ -1865,8 +1864,12 @@ updater =
         updater.count.textContent = 404
         updater.count.className = 'warning'
         clearTimeout updater.timeoutID
-        d.title = d.title.match(/^.+-/)[0] + ' 404'
         g.dead = true
+        if conf['Unread Count']
+          unread.title = unread.title.match(/^.+-/)[0] + ' 404'
+        else
+          d.title = d.title.match(/^.+-/)[0] + ' 404'
+        unread.update true
         qr.message.send req: 'abort'
         qr.status()
         Favicon.update()
@@ -2217,10 +2220,9 @@ quoteInline =
     root = if q.parentNode.nodeName is 'FONT' then q.parentNode else if q.nextSibling then q.nextSibling else q
     if el = $.id id
       inline = quoteInline.table id, el.innerHTML
-      if g.REPLY and conf['Unread Count'] and (i = unread.replies.indexOf el.parentNode.parentNode.parentNode) isnt -1
+      if (i = unread.replies.indexOf el.parentNode.parentNode.parentNode) isnt -1
         unread.replies.splice i, 1
-        unread.updateTitle()
-        Favicon.update()
+        unread.update()
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
         $.addClass $.x('ancestor::table', el), 'forwarded' if conf['Forward Hiding']
@@ -2392,7 +2394,8 @@ threadStats =
 
 unread =
   init: ->
-    d.title = '(0) ' + d.title
+    @title = d.title
+    unread.update()
     $.on window, 'scroll', unread.scroll
     g.callbacks.push unread.node
 
@@ -2401,9 +2404,7 @@ unread =
   node: (root) ->
     return if root.hidden or root.className
     unread.replies.push root
-    unread.updateTitle()
-    if unread.replies.length is 1
-      Favicon.update()
+    unread.update()
 
   scroll: ->
     height = d.body.clientHeight
@@ -2414,18 +2415,42 @@ unread =
     return if i is 0
 
     unread.replies = unread.replies[i..]
-    unread.updateTitle()
-    if unread.replies.length is 0
-      Favicon.update()
+    unread.update()
 
-  updateTitle: ->
-    d.title = d.title.replace /\d+/, unread.replies.length
+  update: (forceUpdate) ->
+    return unless g.REPLY
+
+    count = unread.replies.length
+
+    if conf['Unread Count']
+      d.title = "(#{count}) #{unread.title}"
+
+    unless conf['Unread Favicon'] and count < 2 or forceUpdate
+      return
+
+    Favicon.el.href =
+      if g.dead
+        if count
+          Favicon.unreadDead
+        else
+          Favicon.dead
+      else
+        if count
+          Favicon.unread
+        else
+          Favicon.default
+
+    #`favicon.href = href` doesn't work on Firefox
+    #`favicon.href = href` isn't enough on Opera
+    #Opera won't always update the favicon if the href didn't not change
+    if engine isnt 'webkit'
+      $.add d.head, $.rm Favicon.el
 
 Favicon =
   init: ->
-    favicon = $ 'link[rel="shortcut icon"]', d.head
-    favicon.type = 'image/x-icon'
-    {href} = favicon
+    @el = $ 'link[rel="shortcut icon"]', d.head
+    @el.type = 'image/x-icon'
+    {href} = @el
     @SFW = /ws.ico$/.test href
     @default = href
     @switch()
@@ -2448,36 +2473,10 @@ Favicon =
         @unreadDead = 'data:unreadDead;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs='
         @unreadSFW  = 'data:unreadSFW;base64,R0lGODlhEAAQAKECAAAAAC6Xw////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs='
         @unreadNSFW = 'data:unreadNSFW;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs='
-      when 'None'
-        @unreadDead = @dead
-        @unreadSFW  = 'http://static.4chan.org/image/favicon-ws.ico'
-        @unreadNSFW = 'http://static.4chan.org/image/favicon.ico'
     @unread = if @SFW then @unreadSFW else @unreadNSFW
 
   empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
   dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
-
-  update: ->
-    l = unread.replies.length
-
-    favicon = $ 'link[rel="shortcut icon"]', d.head
-    favicon.href =
-      if g.dead
-        if l
-          @unreadDead
-        else
-          @dead
-      else
-        if l
-          @unread
-        else
-          @default
-
-    #`favicon.href = href` doesn't work on Firefox
-    #`favicon.href = href` isn't enough on Opera
-    #Opera won't always update the favicon if the href do not change
-    if engine isnt 'webkit'
-      $.add d.head, $.rm favicon
 
 redirect =
   init: ->
@@ -2774,7 +2773,7 @@ Main =
       if conf['Post in Title']
         titlePost.init()
 
-      if conf['Unread Count']
+      if conf['Unread Count'] or conf['Unread Favicon']
         unread.init()
 
     else #not reply

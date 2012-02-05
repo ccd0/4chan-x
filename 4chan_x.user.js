@@ -105,6 +105,7 @@
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show unread post count in tab title'],
+        'Unread Favicon': [true, 'Show a different favicon when there are unread posts'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
         'Thread Stats': [true, 'Display reply and image count'],
         'Thread Watcher': [true, 'Bookmark threads'],
@@ -167,7 +168,7 @@
       expandImages: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
       update: ['u', 'Update now'],
-      unreadCountTo0: ['z', 'Reset unread count to 0']
+      unreadCountTo0: ['z', 'Reset unread status']
     },
     updater: {
       checkbox: {
@@ -971,8 +972,7 @@
           break;
         case conf.unreadCountTo0:
           unread.replies = [];
-          unread.updateTitle();
-          Favicon.update();
+          unread.update();
           break;
         default:
           return;
@@ -2025,14 +2025,13 @@
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>\
       <li>Minutes: %M</li>\
     </ul>\
-    <div class=warning><code>Unread Count</code> is disabled.</div>\
+    <div class=warning><code>Unread Favicon</code> is disabled.</div>\
     Unread favicons<br>\
     <select name=favicon>\
       <option value=ferongr>ferongr</option>\
       <option value=xat->xat-</option>\
       <option value=Mayhem>Mayhem</option>\
       <option value=Original>Original</option>\
-      <option value=None>None</option>\
     </select>\
     <span></span>\
   </div>\
@@ -2150,7 +2149,7 @@
     },
     favicon: function() {
       Favicon["switch"]();
-      if (g.REPLY && conf['Unread Count']) Favicon.update();
+      unread.update(true);
       return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "> <img src=" + Favicon.unreadNSFW + "> <img src=" + Favicon.unreadDead + ">";
     }
   };
@@ -2366,8 +2365,13 @@
           updater.count.textContent = 404;
           updater.count.className = 'warning';
           clearTimeout(updater.timeoutID);
-          d.title = d.title.match(/^.+-/)[0] + ' 404';
           g.dead = true;
+          if (conf['Unread Count']) {
+            unread.title = unread.title.match(/^.+-/)[0] + ' 404';
+          } else {
+            d.title = d.title.match(/^.+-/)[0] + ' 404';
+          }
+          unread.update(true);
           qr.message.send({
             req: 'abort'
           });
@@ -2831,10 +2835,9 @@
       root = q.parentNode.nodeName === 'FONT' ? q.parentNode : q.nextSibling ? q.nextSibling : q;
       if (el = $.id(id)) {
         inline = quoteInline.table(id, el.innerHTML);
-        if (g.REPLY && conf['Unread Count'] && (i = unread.replies.indexOf(el.parentNode.parentNode.parentNode)) !== -1) {
+        if ((i = unread.replies.indexOf(el.parentNode.parentNode.parentNode)) !== -1) {
           unread.replies.splice(i, 1);
-          unread.updateTitle();
-          Favicon.update();
+          unread.update();
         }
         if (/\bbacklink\b/.test(q.className)) {
           $.after(q.parentNode, inline);
@@ -3104,7 +3107,8 @@
 
   unread = {
     init: function() {
-      d.title = '(0) ' + d.title;
+      this.title = d.title;
+      unread.update();
       $.on(window, 'scroll', unread.scroll);
       return g.callbacks.push(unread.node);
     },
@@ -3112,8 +3116,7 @@
     node: function(root) {
       if (root.hidden || root.className) return;
       unread.replies.push(root);
-      unread.updateTitle();
-      if (unread.replies.length === 1) return Favicon.update();
+      return unread.update();
     },
     scroll: function() {
       var bottom, height, i, reply, _len, _ref;
@@ -3126,20 +3129,25 @@
       }
       if (i === 0) return;
       unread.replies = unread.replies.slice(i);
-      unread.updateTitle();
-      if (unread.replies.length === 0) return Favicon.update();
+      return unread.update();
     },
-    updateTitle: function() {
-      return d.title = d.title.replace(/\d+/, unread.replies.length);
+    update: function(forceUpdate) {
+      var count;
+      if (!g.REPLY) return;
+      count = unread.replies.length;
+      if (conf['Unread Count']) d.title = "(" + count + ") " + unread.title;
+      if (!(conf['Unread Favicon'] && count < 2 || forceUpdate)) return;
+      Favicon.el.href = g.dead ? count ? Favicon.unreadDead : Favicon.dead : count ? Favicon.unread : Favicon["default"];
+      if (engine !== 'webkit') return $.add(d.head, $.rm(Favicon.el));
     }
   };
 
   Favicon = {
     init: function() {
-      var favicon, href;
-      favicon = $('link[rel="shortcut icon"]', d.head);
-      favicon.type = 'image/x-icon';
-      href = favicon.href;
+      var href;
+      this.el = $('link[rel="shortcut icon"]', d.head);
+      this.el.type = 'image/x-icon';
+      href = this.el.href;
       this.SFW = /ws.ico$/.test(href);
       this["default"] = href;
       return this["switch"]();
@@ -3165,23 +3173,11 @@
           this.unreadDead = 'data:unreadDead;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
           this.unreadSFW = 'data:unreadSFW;base64,R0lGODlhEAAQAKECAAAAAC6Xw////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
           this.unreadNSFW = 'data:unreadNSFW;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
-          break;
-        case 'None':
-          this.unreadDead = this.dead;
-          this.unreadSFW = 'http://static.4chan.org/image/favicon-ws.ico';
-          this.unreadNSFW = 'http://static.4chan.org/image/favicon.ico';
       }
       return this.unread = this.SFW ? this.unreadSFW : this.unreadNSFW;
     },
     empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    update: function() {
-      var favicon, l;
-      l = unread.replies.length;
-      favicon = $('link[rel="shortcut icon"]', d.head);
-      favicon.href = g.dead ? l ? this.unreadDead : this.dead : l ? this.unread : this["default"];
-      if (engine !== 'webkit') return $.add(d.head, $.rm(favicon));
-    }
+    dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
   };
 
   redirect = {
@@ -3519,7 +3515,7 @@
         if (conf['Thread Stats']) threadStats.init();
         if (conf['Reply Navigation']) nav.init();
         if (conf['Post in Title']) titlePost.init();
-        if (conf['Unread Count']) unread.init();
+        if (conf['Unread Count'] || conf['Unread Favicon']) unread.init();
       } else {
         if (conf['Thread Hiding']) threadHiding.init();
         if (conf['Thread Expansion']) expandThread.init();
