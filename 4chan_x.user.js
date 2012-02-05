@@ -1204,7 +1204,6 @@
         });
         $.on($('a', link), 'click', qr.open);
         form = d.forms[0];
-        form.hidden = true;
         $.before(form, link);
       }
       g.callbacks.push(function(root) {

@@ -871,7 +871,6 @@ qr =
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Open the Quick Reply' else 'Create a New Thread'}</a>"
       $.on $('a', link), 'click', qr.open
       form = d.forms[0]
-      form.hidden = true
       $.before form, link
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
