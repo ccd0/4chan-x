@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.25.3
+// @version        2.25.5
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.25.3
+ * 4chan X 2.25.5
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -117,7 +117,8 @@
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
-        'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.']
+        'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
+        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.']
       },
       Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
@@ -140,33 +141,33 @@
       filesize: '',
       md5: ''
     },
-    flavors: ['http://iqdb.org/?url=', 'http://google.com/searchbyimage?image_url=', '#http://tineye.com/search?url=', '#http://saucenao.com/search.php?db=999&url=', '#http://3d.iqdb.org/?url=', '#http://regex.info/exif.cgi?imgurl=', '#http://imgur.com/upload?url=', '#http://ompldr.org/upload?url1='].join('\n'),
+    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://ompldr.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/a/image/$3/', '#http://archive.installgentoo.net/g/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     favicon: 'ferongr',
     hotkeys: {
-      openOptions: 'ctrl+o',
-      close: 'Esc',
-      spoiler: 'ctrl+s',
-      openQR: 'i',
-      openEmptyQR: 'I',
-      submit: 'alt+s',
-      nextReply: 'J',
-      previousReply: 'K',
-      nextThread: 'n',
-      previousThread: 'p',
-      nextPage: 'L',
-      previousPage: 'H',
-      zero: '0',
-      openThreadTab: 'o',
-      openThread: 'O',
-      expandThread: 'e',
-      watch: 'w',
-      hide: 'x',
-      expandImages: 'm',
-      expandAllImages: 'M',
-      update: 'u',
-      unreadCountTo0: 'z'
+      openOptions: ['ctrl+o', 'Open Options'],
+      close: ['Esc', 'Close Options or QR'],
+      spoiler: ['ctrl+s', 'Quick spoiler'],
+      openQR: ['i', 'Open QR with post number inserted'],
+      openEmptyQR: ['I', 'Open QR without post number inserted'],
+      submit: ['alt+s', 'Submit post'],
+      nextReply: ['J', 'Select next reply'],
+      previousReply: ['K', 'Select previous reply'],
+      nextThread: ['n', 'See next thread'],
+      previousThread: ['p', 'See previous thread'],
+      nextPage: ['L', 'Jump to the next page'],
+      previousPage: ['H', 'Jump to the previous page'],
+      zero: ['0', 'Jump to page 0'],
+      openThreadTab: ['o', 'Open thread in current tab'],
+      openThread: ['O', 'Open thread in new tab'],
+      expandThread: ['e', 'Expand thread'],
+      watch: ['w', 'Watch thread'],
+      hide: ['x', 'Hide thread'],
+      expandImages: ['m', 'Expand selected image'],
+      expandAllImages: ['M', 'Expand all images'],
+      update: ['u', 'Update now'],
+      unreadCountTo0: ['z', 'Reset unread count to 0']
     },
     updater: {
       checkbox: {
@@ -185,19 +186,17 @@
 
   (flatten = function(parent, obj) {
     var key, val, _results;
-    if (obj.length) {
-      if (typeof obj[0] === 'boolean') {
+    if (typeof obj === 'object') {
+      if (obj.length) {
         return conf[parent] = obj[0];
       } else {
-        return conf[parent] = obj;
+        _results = [];
+        for (key in obj) {
+          val = obj[key];
+          _results.push(flatten(key, val));
+        }
+        return _results;
       }
-    } else if (typeof obj === 'object') {
-      _results = [];
-      for (key in obj) {
-        val = obj[key];
-        _results.push(flatten(key, val));
-      }
-      return _results;
     } else {
       return conf[parent] = obj;
     }
@@ -205,7 +204,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.25.3';
+  VERSION = '2.25.5';
 
   SECOND = 1000;
 
@@ -306,7 +305,6 @@
       val = properties[key];
       object[key] = val;
     }
-    return object;
   };
 
   $.extend($, {
@@ -409,14 +407,12 @@
       return el.parentNode.removeChild(el);
     },
     add: function() {
-      var child, children, parent, _i, _len, _results;
+      var child, children, parent, _i, _len;
       parent = arguments[0], children = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      _results = [];
       for (_i = 0, _len = children.length; _i < _len; _i++) {
         child = children[_i];
-        _results.push(parent.appendChild(child));
+        parent.appendChild(child);
       }
-      return _results;
     },
     prepend: function(parent, child) {
       return parent.insertBefore(child, parent.firstChild);
@@ -1200,13 +1196,17 @@
 
   qr = {
     init: function() {
-      var h1, iframe;
+      var form, iframe, link, loadChecking;
       if (!$.id('recaptcha_challenge_field_holder')) return;
-      h1 = $.el('h1', {
-        innerHTML: '<a href=javascript:;>Open the Quick Reply</a>'
-      });
-      $.on($('a', h1), 'click', qr.open);
-      $.add($('.postarea'), h1);
+      if (conf['Hide Original Post Form']) {
+        link = $.el('h1', {
+          innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Open the Quick Reply' : 'Create a New Thread') + "</a>"
+        });
+        $.on($('a', link), 'click', qr.open);
+        form = d.forms[0];
+        form.hidden = true;
+        $.before(form, link);
+      }
       g.callbacks.push(function(root) {
         return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
       });
@@ -1218,14 +1218,16 @@
       $.on(iframe, 'error', function() {
         return this.src = this.src;
       });
-      $.on(iframe, 'load', function() {
-        var _this = this;
-        if (!(qr.status.ready || this.src === 'about:blank')) {
-          this.src = 'about:blank';
+      loadChecking = function(iframe) {
+        if (!qr.status.ready) {
+          iframe.src = 'about:blank';
           return setTimeout((function() {
-            return _this.src = 'http://sys.4chan.org/post';
+            return iframe.src = 'http://sys.4chan.org/post';
           }), 250);
         }
+      };
+      $.on(iframe, 'load', function() {
+        if (this.src !== 'about:blank') return setTimeout(loadChecking, 250, this);
       });
       $.add(d.body, iframe);
       if (conf['Persistent QR']) {
@@ -1352,11 +1354,9 @@
       }
       ta = $('textarea', qr.el);
       caretPos = ta.selectionStart;
-      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
+      qr.selected.el.lastChild.textContent = qr.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
       ta.focus();
-      ta.selectionEnd = ta.selectionStart = caretPos + text.length;
-      qr.selected.com = ta.value;
-      return qr.selected.el.lastChild.textContent = ta.value;
+      return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
     fileDrop: function(e) {
       if (/TEXTAREA|INPUT/.test(e.target.nodeName)) return;
@@ -1538,9 +1538,16 @@
         return this.input.value = null;
       },
       count: function(count) {
-        var s;
-        s = count === 1 ? '' : 's';
-        this.input.placeholder = "Verification (" + count + " cached captcha" + s + ")";
+        this.input.placeholder = (function() {
+          switch (count) {
+            case 0:
+              return 'Verification (Shift + Enter to cache)';
+            case 1:
+              return 'Vertification (1 cached captcha)';
+            default:
+              return "Verification (" + count + " cached captchas)";
+          }
+        })();
         return this.input.alt = count;
       },
       reload: function(focus) {
@@ -1561,15 +1568,15 @@
       }
     },
     dialog: function() {
-      var e, fileInput, input, mimeTypes, spoiler, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
+      var e, fileInput, input, mimeTypes, name, spoiler, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
-  <span> <a class=close>x</a></span>\
+  <span> <a class=close title=Close>x</a></span>\
 </div>\
 <form>\
   <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
-  <div id=replies><div><a id=addReply href=javascript:;>+</a></div></div>\
+  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>\
   <div class=captcha title=Reload><img></div>\
   <div><input title=Verification class=field autocomplete=off size=1></div>\
@@ -1602,7 +1609,8 @@
           threads += "<option value=" + thread.id + ">Thread " + thread.id + "</option>";
         }
         $.prepend($('.move > span', qr.el), $.el('select', {
-          innerHTML: threads
+          innerHTML: threads,
+          title: 'Create a new thread / Reply to a thread'
         }));
         $.on($('select', qr.el), 'mousedown', function(e) {
           return e.stopPropagation();
@@ -1628,8 +1636,12 @@
       new qr.reply().select();
       _ref2 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        input = _ref2[_j];
-        $.on($("[name=" + input + "]", qr.el), 'keyup', function() {
+        name = _ref2[_j];
+        input = $("[name=" + name + "]", qr.el);
+        $.on(input, 'keyup', function() {
+          return qr.selected[this.name] = this.value;
+        });
+        $.on(input, 'change', function() {
           return qr.selected[this.name] = this.value;
         });
       }
@@ -1952,7 +1964,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, ul, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4;
+      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -1964,7 +1976,7 @@
   <div>\
     <label for=main_tab>Main</label>\
     | <label for=filter_tab>Filter</label>\
-    | <label for=flavors_tab>Sauce</label>\
+    | <label for=sauces_tab>Sauce</label>\
     | <label for=rice_tab>Rice</label>\
     | <label for=keybinds_tab>Keybinds</label>\
   </div>\
@@ -1973,10 +1985,16 @@
 <div id=content>\
   <input type=radio name=tab hidden id=main_tab checked>\
   <div></div>\
-  <input type=radio name=tab hidden id=flavors_tab>\
+  <input type=radio name=tab hidden id=sauces_tab>\
   <div>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
-    <textarea name=flavors id=flavors></textarea>\
+    <div>Lines starting with a <code>#</code> will be ignored.</div>\
+    <ul>These variables will be replaced by the corresponding url:\
+      <li>$1: Thumbnail.</li>\
+      <li>$2: Full image.</li>\
+      <li>$3: MD5 hash.</li>\
+    </ul>\
+    <textarea name=sauces id=sauces></textarea>\
   </div>\
   <input type=radio name=tab hidden id=filter_tab>\
   <div>\
@@ -2024,30 +2042,9 @@
   <input type=radio name=tab hidden id=keybinds_tab>\
   <div>\
     <div class=warning><code>Keybinds</code> are disabled.</div>\
+    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-1, Up, Down, Right, Left.</div>\
     <table><tbody>\
       <tr><th>Actions</th><th>Keybinds</th></tr>\
-      <tr><td>Open Options</td><td><input name=openOptions></td></tr>\
-      <tr><td>Close Options or QR</td><td><input name=close></td></tr>\
-      <tr><td>Quick spoiler</td><td><input name=spoiler></td></tr>\
-      <tr><td>Open QR with post number inserted</td><td><input name=openQR></td></tr>\
-      <tr><td>Open QR without post number inserted</td><td><input name=openEmptyQR></td></tr>\
-      <tr><td>Submit post</td><td><input name=submit></td></tr>\
-      <tr><td>Select next reply</td><td><input name=nextReply ></td></tr>\
-      <tr><td>Select previous reply</td><td><input name=previousReply></td></tr>\
-      <tr><td>See next thread</td><td><input name=nextThread></td></tr>\
-      <tr><td>See previous thread</td><td><input name=previousThread></td></tr>\
-      <tr><td>Jump to the next page</td><td><input name=nextPage></td></tr>\
-      <tr><td>Jump to the previous page</td><td><input name=previousPage></td></tr>\
-      <tr><td>Jump to page 0</td><td><input name=zero></td></tr>\
-      <tr><td>Open thread in current tab</td><td><input name=openThread></td></tr>\
-      <tr><td>Open thread in new tab</td><td><input name=openThreadTab></td></tr>\
-      <tr><td>Expand thread</td><td><input name=expandThread></td></tr>\
-      <tr><td>Watch thread</td><td><input name=watch></td></tr>\
-      <tr><td>Hide thread</td><td><input name=hide></td></tr>\
-      <tr><td>Expand selected image</td><td><input name=expandImages></td></tr>\
-      <tr><td>Expand all images</td><td><input name=expandAllImages></td></tr>\
-      <tr><td>Update now</td><td><input name=update></td></tr>\
-      <tr><td>Reset the unread count to 0</td><td><input name=unreadCountTo0></td></tr>\
     </tbody></table>\
   </div>\
 </div>'
@@ -2093,17 +2090,21 @@
       favicon.value = conf['favicon'];
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', options.favicon);
-      _ref3 = $$('#keybinds_tab + div input', dialog);
-      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-        input = _ref3[_j];
-        input.type = 'text';
-        input.value = conf[input.name];
+      _ref3 = config.hotkeys;
+      for (key in _ref3) {
+        arr = _ref3[key];
+        tr = $.el('tr', {
+          innerHTML: "<td>" + arr[1] + "</td><td><input name=" + key + "></td>"
+        });
+        input = $('input', tr);
+        input.value = conf[key];
         $.on(input, 'keydown', options.keybind);
+        $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
       indicators = {};
       _ref4 = $$('.warning', dialog);
-      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
-        indicator = _ref4[_k];
+      for (_j = 0, _len2 = _ref4.length; _j < _len2; _j++) {
+        indicator = _ref4[_j];
         key = indicator.firstChild.textContent;
         indicator.hidden = conf[key];
         indicators[key] = indicator;
@@ -2573,26 +2574,40 @@
 
   sauce = {
     init: function() {
-      if (!(sauce.prefixes = conf['flavors'].match(/^[^#].+$/gm))) return;
-      sauce.names = sauce.prefixes.map(function(prefix) {
-        return prefix.match(/(\w+)\./)[1];
-      });
-      return g.callbacks.push(function(root) {
-        var i, link, prefix, span, suffix, _len, _ref, _results;
-        if (root.className === 'inline' || !(span = $('.filesize', root))) return;
-        suffix = $('a', span).href;
-        _ref = sauce.prefixes;
-        _results = [];
-        for (i = 0, _len = _ref.length; i < _len; i++) {
-          prefix = _ref[i];
-          link = $.el('a', {
-            textContent: sauce.names[i],
-            href: prefix + suffix,
-            target: '_blank'
-          });
-          _results.push($.add(span, $.tn(' '), link));
+      var link, links, _i, _len;
+      links = conf['sauces'].match(/^[^#].+$/gm);
+      this.links = [];
+      for (_i = 0, _len = links.length; _i < _len; _i++) {
+        link = links[_i];
+        this.links.push([link, link.match(/(\w+)\.\w+\//)[1]]);
+      }
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var a, img, link, span, _i, _len, _ref;
+      if (root.className === 'inline' || !(span = $('.filesize', root))) return;
+      img = $('img', root);
+      _ref = sauce.links;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        a = $.el('a', {
+          textContent: link[1],
+          href: sauce.href(link[0], img),
+          target: '_blank'
+        });
+        $.add(span, $.tn(' '), a);
+      }
+    },
+    href: function(link, img) {
+      return link.replace(/\$\d/, function(fragment) {
+        switch (fragment) {
+          case '$1':
+            return img.src;
+          case '$2':
+            return img.parentNode.href;
+          case '$3':
+            return img.getAttribute('md5').replace(/\=+$/, '');
         }
-        return _results;
       });
     }
   };
@@ -2739,8 +2754,8 @@
   quoteBacklink = {
     init: function() {
       var format;
-      format = conf['backlink'].replace(/%id/, "' + id + '");
-      quoteBacklink.funk = Function('id', "return'" + format + "'");
+      format = conf['backlink'].replace(/%id/g, "' + id + '");
+      quoteBacklink.funk = Function('id', "return '" + format + "'");
       return g.callbacks.push(function(root) {
         var a, container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
         if (/\binline\b/.test(root.className)) return;
@@ -2748,7 +2763,7 @@
         _ref = $$('.quotelink', root);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          if (qid = quote.hash.slice(1)) quotes[qid] = quote;
+          if (qid = quote.hash.slice(1)) quotes[qid] = true;
         }
         id = $('input', root).name;
         a = $.el('a', {
@@ -2758,8 +2773,9 @@
         });
         _results = [];
         for (qid in quotes) {
-          if (!(el = $.id(qid))) continue;
-          if (el.className === 'op' && !conf['OP Backlinks']) continue;
+          if (!(el = $.id(qid)) || el.className === 'op' && !conf['OP Backlinks']) {
+            continue;
+          }
           link = a.cloneNode(true);
           if (conf['Quote Preview']) {
             $.on(link, 'mouseover', quotePreview.mouseover);
@@ -3161,15 +3177,11 @@
     empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     update: function() {
-      var clone, favicon, l;
+      var favicon, l;
       l = unread.replies.length;
       favicon = $('link[rel="shortcut icon"]', d.head);
       favicon.href = g.dead ? l ? this.unreadDead : this.dead : l ? this.unread : this["default"];
-      if (engine !== 'webkit') {
-        clone = favicon.cloneNode(true);
-        favicon.href = null;
-        return $.replace(favicon, clone);
-      }
+      if (engine !== 'webkit') return $.add(d.head, $.rm(favicon));
     }
   };
 
@@ -3291,7 +3303,7 @@
         var thumb, _i, _j, _len, _len2, _ref, _ref2, _results, _results2;
         imgExpand.on = this.checked;
         if (imgExpand.on) {
-          _ref = $$('.op > a > img[md5]:last-child, table:not([hidden]) img[md5]:last-child');
+          _ref = $$('img[md5]');
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             thumb = _ref[_i];
@@ -3347,22 +3359,21 @@
     },
     contract: function(thumb) {
       thumb.hidden = false;
-      return $.rm(thumb.nextSibling);
+      return thumb.nextSibling.hidden = true;
     },
     expand: function(thumb, url) {
-      var a, filesize, img, max;
-      if (thumb.hidden) return;
+      var a, img;
+      if ($.x('ancestor-or-self::*[@hidden]', thumb)) return;
+      thumb.hidden = true;
+      if (img = thumb.nextSibling) {
+        img.hidden = false;
+        return;
+      }
       a = thumb.parentNode;
       img = $.el('img', {
         src: url || a.href
       });
-      if (engine === 'gecko' && a.parentNode.className !== 'op') {
-        filesize = $.x('preceding-sibling::span[@class="filesize"]', a).textContent;
-        max = filesize.match(/(\d+)x/);
-        img.style.maxWidth = "" + max[1] + "px";
-      }
       if (conf['404 Redirect']) $.on(img, 'error', imgExpand.error);
-      thumb.hidden = true;
       return $.add(a, img);
     },
     error: function() {
@@ -3371,6 +3382,7 @@
       thumb = this.previousSibling;
       src = href.split('/');
       imgExpand.contract(thumb);
+      $.rm(this);
       if (!(this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5])))) {
         if (g.dead) return;
         url = href + '?' + Date.now();
@@ -3833,8 +3845,8 @@ img[md5], img[md5] + img {\
   resize: vertical;\
   width: 100%;\
 }\
-#flavors {\
-  height: 100%;\
+#sauces {\
+  height: 320px;\
 }\
 \
 #updater {\
@@ -3853,22 +3865,24 @@ img[md5], img[md5] + img {\
 }\
 \
 #watcher {\
+  padding-bottom: 5px;\
   position: absolute;\
-}\
-#watcher > div {\
   overflow: hidden;\
-  padding-right: 5px;\
-  padding-left: 5px;\
-  text-overflow: ellipsis;\
-  max-width: 200px;\
   white-space: nowrap;\
 }\
-#watcher > div.move {\
-  text-decoration: underline;\
-  padding-top: 5px;\
+#watcher:not(:hover) {\
+  max-height: 220px;\
 }\
-#watcher > div:last-child {\
-  padding-bottom: 5px;\
+#watcher > div {\
+  max-width: 200px;\
+  overflow: hidden;\
+  padding-left: 5px;\
+  padding-right: 5px;\
+  text-overflow: ellipsis;\
+}\
+#watcher > .move {\
+  padding-top: 5px;\
+  text-decoration: underline;\
 }\
 \
 #qp {\
