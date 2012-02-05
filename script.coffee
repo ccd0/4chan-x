@@ -889,8 +889,10 @@ qr =
     if conf['Persistent QR']
       qr.dialog()
       qr.hide() if conf['Auto Hide QR']
-    $.on d, 'dragover', qr.fileDrop
-    $.on d, 'drop',     qr.fileDrop
+    $.on d, 'dragover',  qr.dragOver
+    $.on d, 'drop',      qr.dropFile
+    $.on d, 'dragstart', qr.drag
+    $.on d, 'dragend',   qr.drag
     # prevent original captcha input from being focused on reload
     window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})'
 
@@ -1000,16 +1002,21 @@ qr =
     # Move the caret to the end of the new quote.
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
 
-  fileDrop: (e) ->
-    return if /TEXTAREA|INPUT/.test e.target.nodeName
+  drag: (e) ->
+    # Let it drag anything from the page.
+    i = if e.type is 'dragstart' then 'off' else 'on'
+    $[i] d, 'dragover', qr.dragOver
+    $[i] d, 'drop',     qr.dropFile
+  dragOver: (e) ->
     e.preventDefault()
-    e.stopPropagation()
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
-    if e.type is 'drop'
-      return unless e.dataTransfer.files.length # let it only drop files
-      qr.open()
-      qr.fileInput.call e.dataTransfer
-      $.addClass qr.el, 'dump'
+  dropFile: (e) ->
+    # Let it only handle files from the desktop.
+    return unless e.dataTransfer.files.length
+    e.preventDefault()
+    qr.open()
+    qr.fileInput.call e.dataTransfer
+    $.addClass qr.el, 'dump'
   fileInput: ->
     qr.cleanError()
     # Set or change current reply's file.

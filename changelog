@@ -5,6 +5,7 @@ master
   Increase Sauce linking possibilites:
     Thumbnails, full images, MD5 hashes.
   Unread Favicon is now optional, independent of Unread Count.
+  Fix some compatibility issues with file drag and drop, notably with QuickDrag extension.
 
 2.25.5
 - Mayhem

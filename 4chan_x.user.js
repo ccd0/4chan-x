@@ -1231,8 +1231,10 @@
         qr.dialog();
         if (conf['Auto Hide QR']) qr.hide();
       }
-      $.on(d, 'dragover', qr.fileDrop);
-      $.on(d, 'drop', qr.fileDrop);
+      $.on(d, 'dragover', qr.dragOver);
+      $.on(d, 'drop', qr.dropFile);
+      $.on(d, 'dragstart', qr.drag);
+      $.on(d, 'dragend', qr.drag);
       return window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})';
     },
     open: function() {
@@ -1355,17 +1357,22 @@
       ta.focus();
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
-    fileDrop: function(e) {
-      if (/TEXTAREA|INPUT/.test(e.target.nodeName)) return;
+    drag: function(e) {
+      var i;
+      i = e.type === 'dragstart' ? 'off' : 'on';
+      $[i](d, 'dragover', qr.dragOver);
+      return $[i](d, 'drop', qr.dropFile);
+    },
+    dragOver: function(e) {
       e.preventDefault();
-      e.stopPropagation();
-      e.dataTransfer.dropEffect = 'copy';
-      if (e.type === 'drop') {
-        if (!e.dataTransfer.files.length) return;
-        qr.open();
-        qr.fileInput.call(e.dataTransfer);
-        return $.addClass(qr.el, 'dump');
-      }
+      return e.dataTransfer.dropEffect = 'copy';
+    },
+    dropFile: function(e) {
+      if (!e.dataTransfer.files.length) return;
+      e.preventDefault();
+      qr.open();
+      qr.fileInput.call(e.dataTransfer);
+      return $.addClass(qr.el, 'dump');
     },
     fileInput: function() {
       var file, _i, _len, _ref;
