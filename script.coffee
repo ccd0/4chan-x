@@ -2730,7 +2730,7 @@ Main =
     if conf['Indicate Cross-thread Quotes']
       quoteDR.init()
 
-    if conf['Quick Reply']
+    if conf['Quick Reply'] and conf['Hide Original Post Form']
       Main.css += 'form[name=post] { display: none; }'
 
     Main.addStyle()

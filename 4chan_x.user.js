@@ -3494,7 +3494,9 @@
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
-      if (conf['Quick Reply']) Main.css += 'form[name=post] { display: none; }';
+      if (conf['Quick Reply'] && conf['Hide Original Post Form']) {
+        Main.css += 'form[name=post] { display: none; }';
+      }
       Main.addStyle();
       return $.ready(Main.ready);
     },
