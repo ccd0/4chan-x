@@ -59,13 +59,17 @@ config =
     md5:      ''
   sauces: [
     'http://iqdb.org/?url=$1'
-    'http://google.com/searchbyimage?image_url=$1'
+    'http://www.google.com/searchbyimage?image_url=$1'
     '#http://tineye.com/search?url=$1'
     '#http://saucenao.com/search.php?db=999&url=$1'
     '#http://3d.iqdb.org/?url=$1'
     '#http://regex.info/exif.cgi?imgurl=$2'
+    '# uploaders:'
     '#http://imgur.com/upload?url=$2'
     '#http://ompldr.org/upload?url1=$2'
+    '# "View Same" in archives:'
+    '#http://archive.foolz.us/a/image/$3/'
+    '#http://archive.installgentoo.net/g/image/$3'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
@@ -2036,7 +2040,7 @@ sauce =
     links = conf['sauces'].match /^[^#].+$/gm
     @links = []
     for link in links
-      @links.push [link, link.match(/(\w+)\./)[1]]
+      @links.push [link, link.match(/(\w+)\.\w+\//)[1]]
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline' or not span = $ '.filesize', root
@@ -3082,7 +3086,7 @@ img[md5], img[md5] + img {
   width: 100%;
 }
 #sauces {
-  height: 350px;
+  height: 320px;
 }
 
 #updater {

@@ -141,7 +141,7 @@
       filesize: '',
       md5: ''
     },
-    sauces: ['http://iqdb.org/?url=$1', 'http://google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '#http://imgur.com/upload?url=$2', '#http://ompldr.org/upload?url1=$2'].join('\n'),
+    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://ompldr.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/a/image/$3/', '#http://archive.installgentoo.net/g/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     favicon: 'ferongr',
@@ -2579,7 +2579,7 @@
       this.links = [];
       for (_i = 0, _len = links.length; _i < _len; _i++) {
         link = links[_i];
-        this.links.push([link, link.match(/(\w+)\./)[1]]);
+        this.links.push([link, link.match(/(\w+)\.\w+\//)[1]]);
       }
       return g.callbacks.push(this.node);
     },
@@ -3837,7 +3837,7 @@ img[md5], img[md5] + img {\
   width: 100%;\
 }\
 #sauces {\
-  height: 350px;\
+  height: 320px;\
 }\
 \
 #updater {\
