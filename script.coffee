@@ -871,7 +871,6 @@ qr =
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Open the Quick Reply' else 'Create a New Thread'}</a>"
       $.on $('a', link), 'click', qr.open
       form = d.forms[0]
-      form.hidden = true
       $.before form, link
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
@@ -2730,6 +2729,10 @@ Main =
     if conf['Indicate Cross-thread Quotes']
       quoteDR.init()
 
+    if conf['Quick Reply'] and conf['Hide Original Post Form']
+      Main.css += 'form[name=post] { display: none; }'
+
+    Main.addStyle()
 
     $.ready Main.ready
 
@@ -2740,7 +2743,6 @@ Main =
     if not $.id 'navtopr'
       return
     $.addClass d.body, engine
-    $.addStyle Main.css
     threading.init()
     Favicon.init()
 
@@ -2796,6 +2798,13 @@ Main =
       catch err
         alert err
     $.on form, 'DOMNodeInserted', Main.node
+
+  addStyle: ->
+    $.off d, 'DOMNodeInserted', Main.addStyle
+    if d.head
+      $.addStyle Main.css
+    else # XXX fox
+      $.on d, 'DOMNodeInserted', Main.addStyle
 
   message: (e) ->
     {data} = e
@@ -3143,6 +3152,7 @@ img[md5], img[md5] + img {
 }
 .filtered {
   text-decoration: line-through;
-}'
+}
+'
 
 Main.init()

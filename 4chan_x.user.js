@@ -1204,7 +1204,6 @@
         });
         $.on($('a', link), 'click', qr.open);
         form = d.forms[0];
-        form.hidden = true;
         $.before(form, link);
       }
       g.callbacks.push(function(root) {
@@ -3494,6 +3493,10 @@
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
+      if (conf['Quick Reply'] && conf['Hide Original Post Form']) {
+        Main.css += 'form[name=post] { display: none; }';
+      }
+      Main.addStyle();
       return $.ready(Main.ready);
     },
     ready: function() {
@@ -3504,7 +3507,6 @@
       }
       if (!$.id('navtopr')) return;
       $.addClass(d.body, engine);
-      $.addStyle(Main.css);
       threading.init();
       Favicon.init();
       if (conf['Quick Reply']) qr.init();
@@ -3538,6 +3540,14 @@
         }
       }
       return $.on(form, 'DOMNodeInserted', Main.node);
+    },
+    addStyle: function() {
+      $.off(d, 'DOMNodeInserted', Main.addStyle);
+      if (d.head) {
+        return $.addStyle(Main.css);
+      } else {
+        return $.on(d, 'DOMNodeInserted', Main.addStyle);
+      }
     },
     message: function(e) {
       var data, version;
@@ -3894,7 +3904,8 @@ img[md5], img[md5] + img {\
 }\
 .filtered {\
   text-decoration: line-through;\
-}'
+}\
+'
   };
 
   Main.init();
