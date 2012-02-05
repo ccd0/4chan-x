@@ -186,17 +186,15 @@
 
   (flatten = function(parent, obj) {
     var key, val, _results;
-    if (typeof obj === 'object') {
-      if (obj.length) {
-        return conf[parent] = obj[0];
-      } else {
-        _results = [];
-        for (key in obj) {
-          val = obj[key];
-          _results.push(flatten(key, val));
-        }
-        return _results;
+    if (obj instanceof Array) {
+      return conf[parent] = obj[0];
+    } else if (typeof obj === 'object') {
+      _results = [];
+      for (key in obj) {
+        val = obj[key];
+        _results.push(flatten(key, val));
       }
+      return _results;
     } else {
       return conf[parent] = obj;
     }

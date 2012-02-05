@@ -112,12 +112,10 @@ log = console.log.bind? console
 # flatten the config
 conf = {}
 (flatten = (parent, obj) ->
-  if typeof obj is 'object'
-    # array
-    if obj.length
-      conf[parent] = obj[0]
-    # object
-    else for key, val of obj
+  if obj instanceof Array
+    conf[parent] = obj[0]
+  else if typeof obj is 'object'
+    for key, val of obj
       flatten key, val
   else # string or number
     conf[parent] = obj
