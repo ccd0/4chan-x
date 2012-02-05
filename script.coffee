@@ -1652,7 +1652,7 @@ options =
     $.on dialog,  'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
     $.add d.body, overlay
-    d.body.style.setProperty 'overflow', 'hidden', 'important'
+    d.body.style.setProperty 'overflow', 'hidden', null
 
     options.backlink.call back
     options.time.call     time

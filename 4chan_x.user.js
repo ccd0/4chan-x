@@ -2120,7 +2120,7 @@
       });
       $.add(overlay, dialog);
       $.add(d.body, overlay);
-      d.body.style.setProperty('overflow', 'hidden', 'important');
+      d.body.style.setProperty('overflow', 'hidden', null);
       options.backlink.call(back);
       options.time.call(time);
       return options.favicon.call(favicon);
