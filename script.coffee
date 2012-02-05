@@ -1533,6 +1533,7 @@ options =
     <ul>These variables will be replaced by the corresponding url:
       <li>$1: Thumbnail.</li>
       <li>$2: Full image.</li>
+      <li>$3: MD5 hash.</li>
     </ul>
     <textarea name=sauces id=sauces></textarea>
   </div>
@@ -2054,6 +2055,8 @@ sauce =
           img.src
         when '$2'
           img.parentNode.href
+        when '$3'
+          img.getAttribute('md5').replace /\=+$/, ''
 
 revealSpoilers =
   init: ->

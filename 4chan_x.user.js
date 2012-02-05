@@ -1992,6 +1992,7 @@
     <ul>These variables will be replaced by the corresponding url:\
       <li>$1: Thumbnail.</li>\
       <li>$2: Full image.</li>\
+      <li>$3: MD5 hash.</li>\
     </ul>\
     <textarea name=sauces id=sauces></textarea>\
   </div>\
@@ -2604,6 +2605,8 @@
             return img.src;
           case '$2':
             return img.parentNode.href;
+          case '$3':
+            return img.getAttribute('md5').replace(/\=+$/, '');
         }
       });
     }
