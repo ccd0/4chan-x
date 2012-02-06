@@ -2588,12 +2588,24 @@
 
   sauce = {
     init: function() {
-      var link, links, _i, _len;
+      var domain, fc, link, links, _i, _len;
       links = conf['sauces'].match(/^[^#].+$/gm);
+      if (!links.length) return;
       this.links = [];
       for (_i = 0, _len = links.length; _i < _len; _i++) {
         link = links[_i];
-        this.links.push([link, link.match(/(\w+)\.\w+\//)[1]]);
+        domain = link.match(/(\w+)\.\w+\//)[1];
+        fc = link.replace(/\$\d/, function(fragment) {
+          switch (fragment) {
+            case '$1':
+              return "' + img.src + '";
+            case '$2':
+              return "' + img.parentNode.href + '";
+            case '$3':
+              return "' + img.getAttribute('md5').replace(/\=*$/, '') + '";
+          }
+        });
+        this.links.push([Function('img', "return '" + fc + "'"), domain]);
       }
       return g.callbacks.push(this.node);
     },
@@ -2605,24 +2617,12 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
         a = $.el('a', {
-          textContent: link[1],
-          href: sauce.href(link[0], img),
-          target: '_blank'
+          href: link[0](img),
+          target: '_blank',
+          textContent: link[1]
         });
         $.add(span, $.tn(' '), a);
       }
-    },
-    href: function(link, img) {
-      return link.replace(/\$\d/, function(fragment) {
-        switch (fragment) {
-          case '$1':
-            return img.src;
-          case '$2':
-            return img.parentNode.href;
-          case '$3':
-            return img.getAttribute('md5').replace(/\=+$/, '');
-        }
-      });
     }
   };
 

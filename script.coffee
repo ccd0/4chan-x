@@ -2051,31 +2051,31 @@ anonymize =
 
 sauce =
   init: ->
-    # return unless
     links = conf['sauces'].match /^[^#].+$/gm
+    return unless links.length
     @links = []
     for link in links
-      @links.push [link, link.match(/(\w+)\.\w+\//)[1]]
+      domain = link.match(/(\w+)\.\w+\//)[1]
+      fc = link.replace /\$\d/, (fragment) ->
+        switch fragment
+          when '$1'
+            "' + img.src + '"
+          when '$2'
+            "' + img.parentNode.href + '"
+          when '$3'
+            "' + img.getAttribute('md5').replace(/\=*$/, '') + '"
+      @links.push [Function('img', "return '#{fc}'"), domain]
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline' or not span = $ '.filesize', root
     img = $ 'img', root
     for link in sauce.links
       a = $.el 'a',
-        textContent: link[1]
-        href: sauce.href link[0], img
+        href: link[0] img
         target: '_blank'
+        textContent: link[1]
       $.add span, $.tn(' '), a
     return
-  href: (link, img) ->
-    link.replace /\$\d/, (fragment) ->
-      switch fragment
-        when '$1'
-          img.src
-        when '$2'
-          img.parentNode.href
-        when '$3'
-          img.getAttribute('md5').replace /\=+$/, ''
 
 revealSpoilers =
   init: ->
