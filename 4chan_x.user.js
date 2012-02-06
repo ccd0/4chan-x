@@ -1200,7 +1200,10 @@
         link = $.el('h1', {
           innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Open the Quick Reply' : 'Create a New Thread') + "</a>"
         });
-        $.on($('a', link), 'click', qr.open);
+        $.on($('a', link), 'click', function() {
+          qr.open();
+          return $('textarea', qr.el).focus();
+        });
         form = d.forms[0];
         $.before(form, link);
       }
