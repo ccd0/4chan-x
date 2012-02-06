@@ -460,6 +460,7 @@ strikethroughQuotes =
         if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
           $.addClass quote, 'filtered'
           root.hidden = true if conf['Recursive Filtering']
+      return
 
 expandComment =
   init: ->

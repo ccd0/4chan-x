@@ -612,24 +612,16 @@
   strikethroughQuotes = {
     init: function() {
       return g.callbacks.push(function(root) {
-        var el, quote, _i, _len, _ref, _results;
+        var el, quote, _i, _len, _ref;
         if (root.className === 'inline') return;
         _ref = $$('.quotelink', root);
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
           if ((el = $.id(quote.hash.slice(1))) && el.parentNode.parentNode.parentNode.hidden) {
             $.addClass(quote, 'filtered');
-            if (conf['Recursive Filtering']) {
-              _results.push(root.hidden = true);
-            } else {
-              _results.push(void 0);
-            }
-          } else {
-            _results.push(void 0);
+            if (conf['Recursive Filtering']) root.hidden = true;
           }
         }
-        return _results;
       });
     }
   };
