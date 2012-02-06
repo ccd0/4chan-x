@@ -14,6 +14,7 @@ config =
       'Anonymize':                    [false, 'Make everybody anonymous']
       'Filter':                       [false, 'Self-moderation placebo']
       'Filter OPs':                   [false, 'Filter OPs along with their threads']
+      'Recursive Filtering':          [false, 'Filter replies of filtered posts, recursively']
       'Reply Hiding':                 [true,  'Hide single replies']
       'Thread Hiding':                [true,  'Hide entire threads']
       'Show Stubs':                   [true,  'Of hidden threads / replies']
@@ -456,9 +457,9 @@ strikethroughQuotes =
     g.callbacks.push (root) ->
       return if root.className is 'inline'
       for quote in $$ '.quotelink', root
-        if el = $.id quote.hash[1..]
-          if el.parentNode.parentNode.parentNode.hidden
-            $.addClass quote, 'filtered'
+        if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
+          $.addClass quote, 'filtered'
+          root.hidden = true if conf['Recursive Filtering']
 
 expandComment =
   init: ->

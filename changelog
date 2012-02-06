@@ -4,6 +4,7 @@ master
 - Mayhem
   Increase Sauce linking possibilites:
     Thumbnails, full images, MD5 hashes.
+  New option: Recursive Filtering: Filter replies of filtered posts.
   Unread Favicon is now optional, independent of Unread Count.
   Fix some compatibility issues with file drag and drop, notably with QuickDrag extension.
 

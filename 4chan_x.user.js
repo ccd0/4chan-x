@@ -91,6 +91,7 @@
         'Anonymize': [false, 'Make everybody anonymous'],
         'Filter': [false, 'Self-moderation placebo'],
         'Filter OPs': [false, 'Filter OPs along with their threads'],
+        'Recursive Filtering': [false, 'Filter replies of filtered posts, recursively'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
@@ -617,9 +618,10 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          if (el = $.id(quote.hash.slice(1))) {
-            if (el.parentNode.parentNode.parentNode.hidden) {
-              _results.push($.addClass(quote, 'filtered'));
+          if ((el = $.id(quote.hash.slice(1))) && el.parentNode.parentNode.parentNode.hidden) {
+            $.addClass(quote, 'filtered');
+            if (conf['Recursive Filtering']) {
+              _results.push(root.hidden = true);
             } else {
               _results.push(void 0);
             }
