@@ -931,6 +931,9 @@ qr =
     el.textContent = err
     $.replace el.firstChild, node if node
     qr.open()
+    if /captcha|verification/i.test err
+      # Focus the captcha input on captcha error.
+      $('[autocomplete]', qr.el).focus()
     alert err if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
     $('.warning', qr.el).textContent = null

@@ -1285,6 +1285,7 @@
       el.textContent = err;
       if (node) $.replace(el.firstChild, node);
       qr.open();
+      if (/captcha|verification/i.test(err)) $('[autocomplete]', qr.el).focus();
       if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
         return alert(err);
       }
