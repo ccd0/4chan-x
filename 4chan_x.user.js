@@ -1207,7 +1207,7 @@
       iframe = $.el('iframe', {
         id: 'iframe',
         hidden: true,
-        src: 'http://sys.4chan.org/favicon.ico'
+        src: 'http://sys.4chan.org/robots.txt'
       });
       $.on(iframe, 'error', function() {
         return this.src = this.src;
@@ -1216,7 +1216,7 @@
         if (!qr.status.ready) {
           iframe.src = 'about:blank';
           return setTimeout((function() {
-            return iframe.src = 'http://sys.4chan.org/favicon.ico';
+            return iframe.src = 'http://sys.4chan.org/robots.txt';
           }), 250);
         }
       };
@@ -3434,7 +3434,7 @@
       }
       $.on(window, 'message', Main.message);
       if (location.hostname === 'sys.4chan.org') {
-        if (location.pathname === '/favicon.ico') {
+        if (location.pathname === '/robots.txt') {
           qr.message.init();
         } else if (/report/.test(location.search)) {
           $.ready(function() {
