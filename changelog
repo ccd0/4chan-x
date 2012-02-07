@@ -2,6 +2,7 @@ master
 - aeosynth
   prevent post form flicker
 - Mayhem
+  Load QR's iframe to sys.4chan.org faster. Thanks desuwa.
   Increase Sauce linking possibilites:
     Thumbnails, full images, MD5 hashes.
   New option: Recursive Filtering: Filter replies of filtered posts.

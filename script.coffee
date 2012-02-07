@@ -880,13 +880,13 @@ qr =
     iframe = $.el 'iframe',
       id: 'iframe'
       hidden: true
-      src: 'http://sys.4chan.org/post'
+      src: 'http://sys.4chan.org/favicon.ico'
     $.on iframe, 'error', -> @src = @src
     # Greasemonkey ghetto fix
     loadChecking = (iframe) ->
       unless qr.status.ready
         iframe.src = 'about:blank'
-        setTimeout (-> iframe.src = 'http://sys.4chan.org/post'), 250
+        setTimeout (-> iframe.src = 'http://sys.4chan.org/favicon.ico'), 250
     $.on iframe, 'load', -> unless @src is 'about:blank' then setTimeout loadChecking, 250, @
     $.add d.body, iframe
 
@@ -2660,7 +2660,7 @@ Main =
     $.on window, 'message', Main.message
 
     if location.hostname is 'sys.4chan.org'
-      if location.pathname is '/post'
+      if location.pathname is '/favicon.ico'
         qr.message.init()
       else if /report/.test location.search
         $.ready ->
