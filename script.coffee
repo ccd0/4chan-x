@@ -1400,18 +1400,15 @@ qr =
           parent.postMessage data, '*'
       script = $.el 'script', textContent: "window.addEventListener('message',#{code},false)"
       ready = ->
+        $.add d.documentElement, script
         if location.hostname is 'sys.4chan.org'
           qr.message.send req: 'status', ready: true
         $.rm script
       # Chrome can access the documentElement on document-start
       if d.documentElement
-        $.add d.documentElement, script
         ready()
-        return
       # other browsers will have to wait
-      $.ready ->
-        $.add d.head, script
-        ready()
+      else $.ready ready
     send: (data) ->
       data.changeContext = true
       data.qr            = true

@@ -1812,6 +1812,7 @@
           textContent: "window.addEventListener('message'," + code + ",false)"
         });
         ready = function() {
+          $.add(d.documentElement, script);
           if (location.hostname === 'sys.4chan.org') {
             qr.message.send({
               req: 'status',
@@ -1821,14 +1822,10 @@
           return $.rm(script);
         };
         if (d.documentElement) {
-          $.add(d.documentElement, script);
-          ready();
-          return;
-        }
-        return $.ready(function() {
-          $.add(d.head, script);
           return ready();
-        });
+        } else {
+          return $.ready(ready);
+        }
       },
       send: function(data) {
         data.changeContext = true;
