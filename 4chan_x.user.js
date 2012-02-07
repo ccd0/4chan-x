@@ -1545,7 +1545,7 @@
             case 0:
               return 'Verification (Shift + Enter to cache)';
             case 1:
-              return 'Vertification (1 cached captcha)';
+              return 'Verification (1 cached captcha)';
             default:
               return "Verification (" + count + " cached captchas)";
           }

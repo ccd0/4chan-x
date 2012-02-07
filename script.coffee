@@ -1154,7 +1154,7 @@ qr =
         when 0
           'Verification (Shift + Enter to cache)'
         when 1
-          'Vertification (1 cached captcha)'
+          'Verification (1 cached captcha)'
         else
           "Verification (#{count} cached captchas)"
       @input.alt = count # For XTRM RICE.
