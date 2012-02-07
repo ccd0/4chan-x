@@ -890,7 +890,7 @@
           break;
         case conf.close:
           if (o = $.id('overlay')) {
-            $.rm(o);
+            options.close.call(o);
           } else if (qr.el) {
             qr.close();
           }
@@ -2043,7 +2043,7 @@
   <input type=radio name=tab hidden id=keybinds_tab>\
   <div>\
     <div class=warning><code>Keybinds</code> are disabled.</div>\
-    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-1, Up, Down, Right, Left.</div>\
+    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>\
     <table><tbody>\
       <tr><th>Actions</th><th>Keybinds</th></tr>\
     </tbody></table>\
@@ -2116,10 +2116,7 @@
       overlay = $.el('div', {
         id: 'overlay'
       });
-      $.on(overlay, 'click', function() {
-        d.body.style.removeProperty('overflow');
-        return $.rm(overlay);
-      });
+      $.on(overlay, 'click', options.close);
       $.on(dialog, 'click', function(e) {
         return e.stopPropagation();
       });
@@ -2129,6 +2126,10 @@
       options.backlink.call(back);
       options.time.call(time);
       return options.favicon.call(favicon);
+    },
+    close: function() {
+      $.rm(this);
+      return d.body.style.removeProperty('overflow');
     },
     clearHidden: function() {
       $["delete"]("hiddenReplies/" + g.BOARD + "/");

@@ -658,7 +658,7 @@ keybinds =
         options.dialog() unless $.id 'overlay'
       when conf.close
         if o = $.id 'overlay'
-          $.rm o
+          options.close.call o
         else if qr.el
           qr.close()
       when conf.spoiler
@@ -1597,7 +1597,7 @@ options =
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
     <div class=warning><code>Keybinds</code> are disabled.</div>
-    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-1, Up, Down, Right, Left.</div>
+    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
     </tbody></table>
@@ -1660,9 +1660,7 @@ options =
         indicators[@name].hidden = @checked
 
     overlay = $.el 'div', id: 'overlay'
-    $.on overlay, 'click', ->
-      d.body.style.removeProperty 'overflow'
-      $.rm overlay
+    $.on overlay, 'click', options.close
     $.on dialog,  'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
     $.add d.body, overlay
@@ -1671,6 +1669,10 @@ options =
     options.backlink.call back
     options.time.call     time
     options.favicon.call  favicon
+
+  close: ->
+    $.rm this
+    d.body.style.removeProperty 'overflow'
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
