@@ -3190,6 +3190,7 @@
       if (url) return location.href = url;
     },
     image: function(board, filename) {
+      if (!conf['404 Redirect']) return;
       switch (board) {
         case 'a':
         case 'jp':
@@ -3371,7 +3372,7 @@
       img = $.el('img', {
         src: url || a.href
       });
-      if (conf['404 Redirect']) $.on(img, 'error', imgExpand.error);
+      $.on(img, 'error', imgExpand.error);
       return $.add(a, img);
     },
     error: function() {

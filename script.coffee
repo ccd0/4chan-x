@@ -2500,6 +2500,7 @@ redirect =
         redirect.thread()
     location.href = url if url
   image: (board, filename) -> #board must be given, the image can originate from a cross-quote
+    return unless conf['404 Redirect']
     switch board
       when 'a', 'jp', 'm', 'tg', 'tv', 'u'
         "http://archive.foolz.us/#{board}/full_image/#{filename}"
@@ -2605,7 +2606,7 @@ imgExpand =
     a = thumb.parentNode
     img = $.el 'img',
       src: url or a.href
-    $.on img, 'error', imgExpand.error if conf['404 Redirect']
+    $.on img, 'error', imgExpand.error
     $.add a, img
 
   error: ->
