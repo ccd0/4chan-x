@@ -1221,7 +1221,7 @@
         }
       };
       $.on(iframe, 'load', function() {
-        if (this.src !== 'about:blank') return setTimeout(loadChecking, 250, this);
+        if (this.src !== 'about:blank') return setTimeout(loadChecking, 500, this);
       });
       $.add(d.body, iframe);
       if (conf['Persistent QR']) {

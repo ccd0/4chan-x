@@ -887,7 +887,7 @@ qr =
       unless qr.status.ready
         iframe.src = 'about:blank'
         setTimeout (-> iframe.src = 'http://sys.4chan.org/favicon.ico'), 250
-    $.on iframe, 'load', -> unless @src is 'about:blank' then setTimeout loadChecking, 250, @
+    $.on iframe, 'load', -> unless @src is 'about:blank' then setTimeout loadChecking, 500, @
     $.add d.body, iframe
 
     if conf['Persistent QR']
