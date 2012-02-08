@@ -3141,7 +3141,7 @@
       if (conf['Unread Count']) d.title = "(" + count + ") " + unread.title;
       if (!(conf['Unread Favicon'] && count < 2 || forceUpdate)) return;
       Favicon.el.href = g.dead ? count ? Favicon.unreadDead : Favicon.dead : count ? Favicon.unread : Favicon["default"];
-      if (engine !== 'webkit') return $.add(d.head, Favicon.el);
+      return $.add(d.head, Favicon.el);
     }
   };
 

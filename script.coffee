@@ -2456,8 +2456,7 @@ unread =
     #`favicon.href = href` doesn't work on Firefox
     #`favicon.href = href` isn't enough on Opera
     #Opera won't always update the favicon if the href didn't not change
-    if engine isnt 'webkit'
-      $.add d.head, Favicon.el
+    $.add d.head, Favicon.el
 
 Favicon =
   init: ->
