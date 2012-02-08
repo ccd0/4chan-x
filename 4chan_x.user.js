@@ -1649,7 +1649,7 @@
       }
       $.sync('qr.persona', function(persona) {
         var key, val, _results;
-        if (qr.replies.length !== 1) return;
+        if (!qr.el.hidden) return;
         _results = [];
         for (key in persona) {
           val = persona[key];

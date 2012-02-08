@@ -1234,7 +1234,7 @@ qr =
       $.on input, 'change', -> qr.selected[@name] = @value
     # sync between tabs
     $.sync 'qr.persona', (persona) ->
-      return if qr.replies.length isnt 1
+      return unless qr.el.hidden
       for key, val of persona
         qr.selected[key] = val
         $("[name=#{key}]", qr.el).value = val
