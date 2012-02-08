@@ -2495,16 +2495,19 @@ redirect =
   init: ->
     url =
       if location.hostname is 'images.4chan.org'
-        redirect.image g.BOARD, location.pathname.split('/')[3]
+        redirect.image location.href
       else if /^\d+$/.test g.THREAD_ID
         redirect.thread()
     location.href = url if url
-  image: (board, filename) -> #board must be given, the image can originate from a cross-quote
+  image: (href) ->
+    href = href.split '/'
+    # Do not use g.BOARD, the image url can originate from a cross-quote.
     return unless conf['404 Redirect']
-    switch board
+    switch href[3]
       when 'a', 'jp', 'm', 'tg', 'tv', 'u'
-        "http://archive.foolz.us/#{board}/full_image/#{filename}"
+        "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
   thread: ->
+    return unless conf['404 Redirect']
     switch g.BOARD
       when 'a', 'jp', 'm', 'tg', 'tv', 'u'
         "http://archive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}/"
@@ -2515,7 +2518,7 @@ redirect =
       when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'r9k', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
         "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
       else
-        "http://boards.4chan.org/#{g.BOARD}"
+        "http://boards.4chan.org/#{g.BOARD}/"
 
 imgHover =
   init: ->
@@ -2612,10 +2615,9 @@ imgExpand =
   error: ->
     href  = @parentNode.href
     thumb = @previousSibling
-    src   = href.split '/'
     imgExpand.contract thumb
     $.rm @
-    unless @src.split('/')[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
+    unless @src.split('/')[2] is 'images.4chan.org' and url = redirect.image href
       return if g.dead
       # CloudFlare may cache banned pages instead of images.
       # This will fool CloudFlare's cache.
@@ -2751,7 +2753,7 @@ Main =
     $.ready Main.ready
 
   ready: ->
-    if conf['404 Redirect'] and d.title is '4chan - 404'
+    if d.title is '4chan - 404'
       redirect.init()
       return
     if not $.id 'navtopr'

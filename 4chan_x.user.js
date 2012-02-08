@@ -3186,22 +3186,24 @@
   redirect = {
     init: function() {
       var url;
-      url = location.hostname === 'images.4chan.org' ? redirect.image(g.BOARD, location.pathname.split('/')[3]) : /^\d+$/.test(g.THREAD_ID) ? redirect.thread() : void 0;
+      url = location.hostname === 'images.4chan.org' ? redirect.image(location.href) : /^\d+$/.test(g.THREAD_ID) ? redirect.thread() : void 0;
       if (url) return location.href = url;
     },
-    image: function(board, filename) {
+    image: function(href) {
+      href = href.split('/');
       if (!conf['404 Redirect']) return;
-      switch (board) {
+      switch (href[3]) {
         case 'a':
         case 'jp':
         case 'm':
         case 'tg':
         case 'tv':
         case 'u':
-          return "http://archive.foolz.us/" + board + "/full_image/" + filename;
+          return "http://archive.foolz.us/" + href[3] + "/full_image/" + href[5];
       }
     },
     thread: function() {
+      if (!conf['404 Redirect']) return;
       switch (g.BOARD) {
         case 'a':
         case 'jp':
@@ -3241,7 +3243,7 @@
         case 'x':
           return "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
         default:
-          return "http://boards.4chan.org/" + g.BOARD;
+          return "http://boards.4chan.org/" + g.BOARD + "/";
       }
     }
   };
@@ -3376,13 +3378,12 @@
       return $.add(a, img);
     },
     error: function() {
-      var href, src, thumb, timeoutID, url;
+      var href, thumb, timeoutID, url;
       href = this.parentNode.href;
       thumb = this.previousSibling;
-      src = href.split('/');
       imgExpand.contract(thumb);
       $.rm(this);
-      if (!(this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5])))) {
+      if (!(this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(href)))) {
         if (g.dead) return;
         url = href + '?' + Date.now();
       }
@@ -3501,7 +3502,7 @@
     },
     ready: function() {
       var callback, form, node, nodes, _i, _j, _len, _len2, _ref;
-      if (conf['404 Redirect'] && d.title === '4chan - 404') {
+      if (d.title === '4chan - 404') {
         redirect.init();
         return;
       }
