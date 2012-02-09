@@ -1192,7 +1192,7 @@
       if (!$.id('recaptcha_challenge_field_holder')) return;
       if (conf['Hide Original Post Form']) {
         link = $.el('h1', {
-          innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Open the Quick Reply' : 'Create a New Thread') + "</a>"
+          innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Quick Reply' : 'New Thread') + "</a>"
         });
         $.on($('a', link), 'click', function() {
           qr.open();

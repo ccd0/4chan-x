@@ -868,7 +868,7 @@ qr =
   init: ->
     return unless $.id 'recaptcha_challenge_field_holder'
     if conf['Hide Original Post Form']
-      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Open the Quick Reply' else 'Create a New Thread'}</a>"
+      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on $('a', link), 'click', ->
         qr.open()
         $('textarea', qr.el).focus()
