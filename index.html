@@ -157,6 +157,14 @@ h5 {
   text-align: center;
   margin: -1.67em 0 1.67em 0;
 }
+hr {
+  background: -webkit-linear-gradient(left, #F0F0F0, #A040A0, #F0F0F0);
+  background: -moz-linear-gradient(left, #F0F0F0, #A040A0, #F0F0F0);
+  background: -o-linear-gradient(left, #F0F0F0, #A040A0, #F0F0F0);
+  background: linear-gradient(left, #F0F0F0, #A040A0, #F0F0F0);
+  border: none;
+  height: 1px;
+}
 code, pre {
   background: #EEE;
   border: 1px solid #CCC;
@@ -324,7 +332,13 @@ code {
           </ul>
         </li>
       </ol>
-      <p>Clearing your 4chan cookies will erase your settings!</p>
+
+      <hr>
+
+      <b>Known issues:</b>
+      <ul>
+        <li>Clearing your 4chan cookies will erase your settings!</li>
+      </ul>
 
       <b class=chrome>Chrome</b>:
       <ul>
@@ -338,6 +352,8 @@ code {
         <li>If you get a <code>Security error</code>, make sure cookies are enabled.</li>
         <li>If <b>Linkify Plus</b> does not work with <b>4chan X</b>, make sure to use <b>Scriptish</b> and edit the script by adding <code>// @delay 1</code> in the metadata block.</li>
       </ul>
+
+      <hr>
 
       <h1><a href=https://github.com/mayhemydg/4chan-x/issues>GitHub Issues Tracker</a></h1>
     </section>
