@@ -91,6 +91,7 @@
         'Anonymize': [false, 'Make everybody anonymous'],
         'Filter': [false, 'Self-moderation placebo'],
         'Filter OPs': [false, 'Filter OPs along with their threads'],
+        'Recursive Filtering': [false, 'Filter replies of filtered posts, recursively'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
@@ -105,6 +106,7 @@
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show unread post count in tab title'],
+        'Unread Favicon': [true, 'Show a different favicon when there are unread posts'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
         'Thread Stats': [true, 'Display reply and image count'],
         'Thread Watcher': [true, 'Bookmark threads'],
@@ -168,7 +170,7 @@
       expandImages: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
       update: ['u', 'Update now'],
-      unreadCountTo0: ['z', 'Reset unread count to 0']
+      unreadCountTo0: ['z', 'Reset unread status']
     },
     updater: {
       checkbox: {
@@ -187,17 +189,15 @@
 
   (flatten = function(parent, obj) {
     var key, val, _results;
-    if (typeof obj === 'object') {
-      if (obj.length) {
-        return conf[parent] = obj[0];
-      } else {
-        _results = [];
-        for (key in obj) {
-          val = obj[key];
-          _results.push(flatten(key, val));
-        }
-        return _results;
+    if (obj instanceof Array) {
+      return conf[parent] = obj[0];
+    } else if (typeof obj === 'object') {
+      _results = [];
+      for (key in obj) {
+        val = obj[key];
+        _results.push(flatten(key, val));
       }
+      return _results;
     } else {
       return conf[parent] = obj;
     }
@@ -613,23 +613,16 @@
   strikethroughQuotes = {
     init: function() {
       return g.callbacks.push(function(root) {
-        var el, quote, _i, _len, _ref, _results;
+        var el, quote, _i, _len, _ref;
         if (root.className === 'inline') return;
         _ref = $$('.quotelink', root);
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          if (el = $.id(quote.hash.slice(1))) {
-            if (el.parentNode.parentNode.parentNode.hidden) {
-              _results.push($.addClass(quote, 'filtered'));
-            } else {
-              _results.push(void 0);
-            }
-          } else {
-            _results.push(void 0);
+          if ((el = $.id(quote.hash.slice(1))) && el.parentNode.parentNode.parentNode.hidden) {
+            $.addClass(quote, 'filtered');
+            if (conf['Recursive Filtering']) root.hidden = true;
           }
         }
-        return _results;
       });
     }
   };
@@ -898,7 +891,7 @@
           break;
         case conf.close:
           if (o = $.id('overlay')) {
-            $.rm(o);
+            options.close.call(o);
           } else if (qr.el) {
             qr.close();
           }
@@ -974,8 +967,7 @@
           break;
         case conf.unreadCountTo0:
           unread.replies = [];
-          unread.updateTitle();
-          Favicon.update();
+          unread.update();
           break;
         default:
           return;
@@ -1201,11 +1193,13 @@
       if (!$.id('recaptcha_challenge_field_holder')) return;
       if (conf['Hide Original Post Form']) {
         link = $.el('h1', {
-          innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Open the Quick Reply' : 'Create a New Thread') + "</a>"
+          innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Quick Reply' : 'New Thread') + "</a>"
         });
-        $.on($('a', link), 'click', qr.open);
+        $.on($('a', link), 'click', function() {
+          qr.open();
+          return $('textarea', qr.el).focus();
+        });
         form = d.forms[0];
-        form.hidden = true;
         $.before(form, link);
       }
       g.callbacks.push(function(root) {
@@ -1214,7 +1208,7 @@
       iframe = $.el('iframe', {
         id: 'iframe',
         hidden: true,
-        src: 'http://sys.4chan.org/post'
+        src: 'http://sys.4chan.org/robots.txt'
       });
       $.on(iframe, 'error', function() {
         return this.src = this.src;
@@ -1223,20 +1217,22 @@
         if (!qr.status.ready) {
           iframe.src = 'about:blank';
           return setTimeout((function() {
-            return iframe.src = 'http://sys.4chan.org/post';
+            return iframe.src = 'http://sys.4chan.org/robots.txt';
           }), 250);
         }
       };
       $.on(iframe, 'load', function() {
-        if (this.src !== 'about:blank') return setTimeout(loadChecking, 250, this);
+        if (this.src !== 'about:blank') return setTimeout(loadChecking, 500, this);
       });
       $.add(d.body, iframe);
       if (conf['Persistent QR']) {
         qr.dialog();
         if (conf['Auto Hide QR']) qr.hide();
       }
-      $.on(d, 'dragover', qr.fileDrop);
-      $.on(d, 'drop', qr.fileDrop);
+      $.on(d, 'dragover', qr.dragOver);
+      $.on(d, 'drop', qr.dropFile);
+      $.on(d, 'dragstart', qr.drag);
+      $.on(d, 'dragend', qr.drag);
       return window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})';
     },
     open: function() {
@@ -1284,6 +1280,7 @@
       el.textContent = err;
       if (node) $.replace(el.firstChild, node);
       qr.open();
+      if (/captcha|verification/i.test(err)) $('[autocomplete]', qr.el).focus();
       if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
         return alert(err);
       }
@@ -1359,17 +1356,22 @@
       ta.focus();
       return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
     },
-    fileDrop: function(e) {
-      if (/TEXTAREA|INPUT/.test(e.target.nodeName)) return;
+    drag: function(e) {
+      var i;
+      i = e.type === 'dragstart' ? 'off' : 'on';
+      $[i](d, 'dragover', qr.dragOver);
+      return $[i](d, 'drop', qr.dropFile);
+    },
+    dragOver: function(e) {
       e.preventDefault();
-      e.stopPropagation();
-      e.dataTransfer.dropEffect = 'copy';
-      if (e.type === 'drop') {
-        if (!e.dataTransfer.files.length) return;
-        qr.open();
-        qr.fileInput.call(e.dataTransfer);
-        return $.addClass(qr.el, 'dump');
-      }
+      return e.dataTransfer.dropEffect = 'copy';
+    },
+    dropFile: function(e) {
+      if (!e.dataTransfer.files.length) return;
+      e.preventDefault();
+      qr.open();
+      qr.fileInput.call(e.dataTransfer);
+      return $.addClass(qr.el, 'dump');
     },
     fileInput: function() {
       var file, _i, _len, _ref;
@@ -1544,7 +1546,7 @@
             case 0:
               return 'Verification (Shift + Enter to cache)';
             case 1:
-              return 'Vertification (1 cached captcha)';
+              return 'Verification (1 cached captcha)';
             default:
               return "Verification (" + count + " cached captchas)";
           }
@@ -1586,7 +1588,7 @@
   <div class=warning></div>\
 </form>');
       if (conf['Remember QR size'] && engine === 'gecko') {
-        $.on(ta = qr.el.querySelector('textarea'), 'mouseup', function() {
+        $.on(ta = $('textarea', qr.el), 'mouseup', function() {
           return $.set('qr.size', this.style.cssText);
         });
         ta.style.cssText = $.get('qr.size', '');
@@ -1654,7 +1656,7 @@
       }
       $.sync('qr.persona', function(persona) {
         var key, val, _results;
-        if (qr.replies.length !== 1) return;
+        if (!qr.el.hidden) return;
         _results = [];
         for (key in persona) {
           val = persona[key];
@@ -1817,6 +1819,7 @@
           textContent: "window.addEventListener('message'," + code + ",false)"
         });
         ready = function() {
+          $.add(d.documentElement, script);
           if (location.hostname === 'sys.4chan.org') {
             qr.message.send({
               req: 'status',
@@ -1826,14 +1829,10 @@
           return $.rm(script);
         };
         if (d.documentElement) {
-          $.add(d.documentElement, script);
-          ready();
-          return;
-        }
-        return $.ready(function() {
-          $.add(d.head, script);
           return ready();
-        });
+        } else {
+          return $.ready(ready);
+        }
       },
       send: function(data) {
         data.changeContext = true;
@@ -2035,21 +2034,20 @@
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>\
       <li>Minutes: %M</li>\
     </ul>\
-    <div class=warning><code>Unread Count</code> is disabled.</div>\
+    <div class=warning><code>Unread Favicon</code> is disabled.</div>\
     Unread favicons<br>\
     <select name=favicon>\
       <option value=ferongr>ferongr</option>\
       <option value=xat->xat-</option>\
       <option value=Mayhem>Mayhem</option>\
       <option value=Original>Original</option>\
-      <option value=None>None</option>\
     </select>\
     <span></span>\
   </div>\
   <input type=radio name=tab hidden id=keybinds_tab>\
   <div>\
     <div class=warning><code>Keybinds</code> are disabled.</div>\
-    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-1, Up, Down, Right, Left.</div>\
+    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>\
     <table><tbody>\
       <tr><th>Actions</th><th>Keybinds</th></tr>\
     </tbody></table>\
@@ -2122,17 +2120,20 @@
       overlay = $.el('div', {
         id: 'overlay'
       });
-      $.on(overlay, 'click', function() {
-        return $.rm(overlay);
-      });
+      $.on(overlay, 'click', options.close);
       $.on(dialog, 'click', function(e) {
         return e.stopPropagation();
       });
       $.add(overlay, dialog);
       $.add(d.body, overlay);
+      d.body.style.setProperty('overflow', 'hidden', null);
       options.backlink.call(back);
       options.time.call(time);
       return options.favicon.call(favicon);
+    },
+    close: function() {
+      $.rm(this);
+      return d.body.style.removeProperty('overflow');
     },
     clearHidden: function() {
       $["delete"]("hiddenReplies/" + g.BOARD + "/");
@@ -2158,7 +2159,7 @@
     },
     favicon: function() {
       Favicon["switch"]();
-      if (g.REPLY && conf['Unread Count']) Favicon.update();
+      unread.update(true);
       return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "> <img src=" + Favicon.unreadNSFW + "> <img src=" + Favicon.unreadDead + ">";
     }
   };
@@ -2374,8 +2375,13 @@
           updater.count.textContent = 404;
           updater.count.className = 'warning';
           clearTimeout(updater.timeoutID);
-          d.title = d.title.match(/^.+-/)[0] + ' 404';
           g.dead = true;
+          if (conf['Unread Count']) {
+            unread.title = unread.title.match(/^.+-/)[0] + ' 404';
+          } else {
+            d.title = d.title.match(/^.+-/)[0] + ' 404';
+          }
+          unread.update(true);
           qr.message.send({
             req: 'abort'
           });
@@ -2581,12 +2587,24 @@
 
   sauce = {
     init: function() {
-      var link, links, _i, _len;
+      var domain, fc, link, links, _i, _len;
       links = conf['sauces'].match(/^[^#].+$/gm);
+      if (!links.length) return;
       this.links = [];
       for (_i = 0, _len = links.length; _i < _len; _i++) {
         link = links[_i];
-        this.links.push([link, link.match(/(\w+)\.\w+\//)[1]]);
+        domain = link.match(/(\w+)\.\w+\//)[1];
+        fc = link.replace(/\$\d/, function(fragment) {
+          switch (fragment) {
+            case '$1':
+              return "' + img.src + '";
+            case '$2':
+              return "' + img.parentNode.href + '";
+            case '$3':
+              return "' + img.getAttribute('md5').replace(/\=*$/, '') + '";
+          }
+        });
+        this.links.push([Function('img', "return '" + fc + "'"), domain]);
       }
       return g.callbacks.push(this.node);
     },
@@ -2598,24 +2616,12 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
         a = $.el('a', {
-          textContent: link[1],
-          href: sauce.href(link[0], img),
-          target: '_blank'
+          href: link[0](img),
+          target: '_blank',
+          textContent: link[1]
         });
         $.add(span, $.tn(' '), a);
       }
-    },
-    href: function(link, img) {
-      return link.replace(/\$\d/, function(fragment) {
-        switch (fragment) {
-          case '$1':
-            return img.src;
-          case '$2':
-            return img.parentNode.href;
-          case '$3':
-            return img.getAttribute('md5').replace(/\=+$/, '');
-        }
-      });
     }
   };
 
@@ -2839,10 +2845,9 @@
       root = q.parentNode.nodeName === 'FONT' ? q.parentNode : q.nextSibling ? q.nextSibling : q;
       if (el = $.id(id)) {
         inline = quoteInline.table(id, el.innerHTML);
-        if (g.REPLY && conf['Unread Count'] && (i = unread.replies.indexOf(el.parentNode.parentNode.parentNode)) !== -1) {
+        if ((i = unread.replies.indexOf(el.parentNode.parentNode.parentNode)) !== -1) {
           unread.replies.splice(i, 1);
-          unread.updateTitle();
-          Favicon.update();
+          unread.update();
         }
         if (/\bbacklink\b/.test(q.className)) {
           $.after(q.parentNode, inline);
@@ -3112,7 +3117,8 @@
 
   unread = {
     init: function() {
-      d.title = '(0) ' + d.title;
+      this.title = d.title;
+      unread.update();
       $.on(window, 'scroll', unread.scroll);
       return g.callbacks.push(unread.node);
     },
@@ -3120,8 +3126,7 @@
     node: function(root) {
       if (root.hidden || root.className) return;
       unread.replies.push(root);
-      unread.updateTitle();
-      if (unread.replies.length === 1) return Favicon.update();
+      return unread.update();
     },
     scroll: function() {
       var bottom, height, i, reply, _len, _ref;
@@ -3134,20 +3139,25 @@
       }
       if (i === 0) return;
       unread.replies = unread.replies.slice(i);
-      unread.updateTitle();
-      if (unread.replies.length === 0) return Favicon.update();
+      return unread.update();
     },
-    updateTitle: function() {
-      return d.title = d.title.replace(/\d+/, unread.replies.length);
+    update: function(forceUpdate) {
+      var count;
+      if (!g.REPLY) return;
+      count = unread.replies.length;
+      if (conf['Unread Count']) d.title = "(" + count + ") " + unread.title;
+      if (!(conf['Unread Favicon'] && count < 2 || forceUpdate)) return;
+      Favicon.el.href = g.dead ? count ? Favicon.unreadDead : Favicon.dead : count ? Favicon.unread : Favicon["default"];
+      return $.add(d.head, Favicon.el);
     }
   };
 
   Favicon = {
     init: function() {
-      var favicon, href;
-      favicon = $('link[rel="shortcut icon"]', d.head);
-      favicon.type = 'image/x-icon';
-      href = favicon.href;
+      var href;
+      this.el = $('link[rel="shortcut icon"]', d.head);
+      this.el.type = 'image/x-icon';
+      href = this.el.href;
       this.SFW = /ws.ico$/.test(href);
       this["default"] = href;
       return this["switch"]();
@@ -3173,43 +3183,34 @@
           this.unreadDead = 'data:unreadDead;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
           this.unreadSFW = 'data:unreadSFW;base64,R0lGODlhEAAQAKECAAAAAC6Xw////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
           this.unreadNSFW = 'data:unreadNSFW;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
-          break;
-        case 'None':
-          this.unreadDead = this.dead;
-          this.unreadSFW = 'http://static.4chan.org/image/favicon-ws.ico';
-          this.unreadNSFW = 'http://static.4chan.org/image/favicon.ico';
       }
       return this.unread = this.SFW ? this.unreadSFW : this.unreadNSFW;
     },
     empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    update: function() {
-      var favicon, l;
-      l = unread.replies.length;
-      favicon = $('link[rel="shortcut icon"]', d.head);
-      favicon.href = g.dead ? l ? this.unreadDead : this.dead : l ? this.unread : this["default"];
-      if (engine !== 'webkit') return $.add(d.head, $.rm(favicon));
-    }
+    dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
   };
 
   redirect = {
     init: function() {
       var url;
-      url = location.hostname === 'images.4chan.org' ? redirect.image(g.BOARD, location.pathname.split('/')[3]) : /^\d+$/.test(g.THREAD_ID) ? redirect.thread() : void 0;
+      url = location.hostname === 'images.4chan.org' ? redirect.image(location.href) : /^\d+$/.test(g.THREAD_ID) ? redirect.thread() : void 0;
       if (url) return location.href = url;
     },
-    image: function(board, filename) {
-      switch (board) {
+    image: function(href) {
+      href = href.split('/');
+      if (!conf['404 Redirect']) return;
+      switch (href[3]) {
         case 'a':
         case 'jp':
         case 'm':
         case 'tg':
         case 'tv':
         case 'u':
-          return "http://archive.foolz.us/" + board + "/full_image/" + filename;
+          return "http://archive.foolz.us/" + href[3] + "/full_image/" + href[5];
       }
     },
     thread: function() {
+      if (!conf['404 Redirect']) return;
       switch (g.BOARD) {
         case 'a':
         case 'jp':
@@ -3249,7 +3250,7 @@
         case 'x':
           return "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
         default:
-          return "http://boards.4chan.org/" + g.BOARD;
+          return "http://boards.4chan.org/" + g.BOARD + "/";
       }
     }
   };
@@ -3380,17 +3381,16 @@
       img = $.el('img', {
         src: url || a.href
       });
-      if (conf['404 Redirect']) $.on(img, 'error', imgExpand.error);
+      $.on(img, 'error', imgExpand.error);
       return $.add(a, img);
     },
     error: function() {
-      var href, src, thumb, timeoutID, url;
+      var href, thumb, timeoutID, url;
       href = this.parentNode.href;
       thumb = this.previousSibling;
-      src = href.split('/');
       imgExpand.contract(thumb);
       $.rm(this);
-      if (!(this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(src[3], src[5])))) {
+      if (!(this.src.split('/')[2] === 'images.4chan.org' && (url = redirect.image(href)))) {
         if (g.dead) return;
         url = href + '?' + Date.now();
       }
@@ -3440,7 +3440,7 @@
       }
       $.on(window, 'message', Main.message);
       if (location.hostname === 'sys.4chan.org') {
-        if (location.pathname === '/post') {
+        if (location.pathname === '/robots.txt') {
           qr.message.init();
         } else if (/report/.test(location.search)) {
           $.ready(function() {
@@ -3501,17 +3501,21 @@
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
+      if (conf['Quick Reply'] && conf['Hide Original Post Form']) {
+        Main.css += 'form[name=post] { display: none; }';
+      }
+      Main.addStyle();
       return $.ready(Main.ready);
     },
     ready: function() {
       var callback, form, node, nodes, _i, _j, _len, _len2, _ref;
-      if (conf['404 Redirect'] && d.title === '4chan - 404') {
+      if (d.title === '4chan - 404') {
         redirect.init();
         return;
       }
       if (!$.id('navtopr')) return;
+      $.addClass(d.body, "chanx_" + (VERSION.match(/\.(\d+)/)[1]));
       $.addClass(d.body, engine);
-      $.addStyle(Main.css);
       threading.init();
       Favicon.init();
       if (conf['Quick Reply']) qr.init();
@@ -3523,7 +3527,7 @@
         if (conf['Thread Stats']) threadStats.init();
         if (conf['Reply Navigation']) nav.init();
         if (conf['Post in Title']) titlePost.init();
-        if (conf['Unread Count']) unread.init();
+        if (conf['Unread Count'] || conf['Unread Favicon']) unread.init();
       } else {
         if (conf['Thread Hiding']) threadHiding.init();
         if (conf['Thread Expansion']) expandThread.init();
@@ -3545,6 +3549,14 @@
         }
       }
       return $.on(form, 'DOMNodeInserted', Main.node);
+    },
+    addStyle: function() {
+      $.off(d, 'DOMNodeInserted', Main.addStyle);
+      if (d.head) {
+        return $.addStyle(Main.css);
+      } else {
+        return $.on(d, 'DOMNodeInserted', Main.addStyle);
+      }
     },
     message: function(e) {
       var data, version;
@@ -3756,6 +3768,7 @@ textarea.field {\
 }\
 #qr [type=submit] {\
   margin: 1px 0;\
+  padding: 1px; /* not Gecko */\
   padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */\
   width: 30%;\
 }\
@@ -3901,7 +3914,8 @@ img[md5], img[md5] + img {\
 }\
 .filtered {\
   text-decoration: line-through;\
-}'
+}\
+'
   };
 
   Main.init();

@@ -14,6 +14,7 @@ config =
       'Anonymize':                    [false, 'Make everybody anonymous']
       'Filter':                       [false, 'Self-moderation placebo']
       'Filter OPs':                   [false, 'Filter OPs along with their threads']
+      'Recursive Filtering':          [false, 'Filter replies of filtered posts, recursively']
       'Reply Hiding':                 [true,  'Hide single replies']
       'Thread Hiding':                [true,  'Hide entire threads']
       'Show Stubs':                   [true,  'Of hidden threads / replies']
@@ -26,6 +27,7 @@ config =
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
+      'Unread Favicon':               [true,  'Show a different favicon when there are unread posts']
       'Post in Title':                [true,  'Show the op\'s post in the tab title']
       'Thread Stats':                 [true,  'Display reply and image count']
       'Thread Watcher':               [true,  'Bookmark threads']
@@ -97,7 +99,7 @@ config =
     expandImages:    ['m',      'Expand selected image']
     expandAllImages: ['M',      'Expand all images']
     update:          ['u',      'Update now']
-    unreadCountTo0:  ['z',      'Reset unread count to 0']
+    unreadCountTo0:  ['z',      'Reset unread status']
   updater:
     checkbox:
       'Scrolling':   [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
@@ -113,12 +115,10 @@ log = console.log.bind? console
 # flatten the config
 conf = {}
 (flatten = (parent, obj) ->
-  if typeof obj is 'object'
-    # array
-    if obj.length
-      conf[parent] = obj[0]
-    # object
-    else for key, val of obj
+  if obj instanceof Array
+    conf[parent] = obj[0]
+  else if typeof obj is 'object'
+    for key, val of obj
       flatten key, val
   else # string or number
     conf[parent] = obj
@@ -458,9 +458,10 @@ strikethroughQuotes =
     g.callbacks.push (root) ->
       return if root.className is 'inline'
       for quote in $$ '.quotelink', root
-        if el = $.id quote.hash[1..]
-          if el.parentNode.parentNode.parentNode.hidden
-            $.addClass quote, 'filtered'
+        if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
+          $.addClass quote, 'filtered'
+          root.hidden = true if conf['Recursive Filtering']
+      return
 
 expandComment =
   init: ->
@@ -658,7 +659,7 @@ keybinds =
         options.dialog() unless $.id 'overlay'
       when conf.close
         if o = $.id 'overlay'
-          $.rm o
+          options.close.call o
         else if qr.el
           qr.close()
       when conf.spoiler
@@ -716,8 +717,7 @@ keybinds =
         qr.submit() if qr.el and !qr.status()
       when conf.unreadCountTo0
         unread.replies = []
-        unread.updateTitle()
-        Favicon.update()
+        unread.update()
       else
         return
     e.preventDefault()
@@ -869,10 +869,11 @@ qr =
   init: ->
     return unless $.id 'recaptcha_challenge_field_holder'
     if conf['Hide Original Post Form']
-      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Open the Quick Reply' else 'Create a New Thread'}</a>"
-      $.on $('a', link), 'click', qr.open
+      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
+      $.on $('a', link), 'click', ->
+        qr.open()
+        $('textarea', qr.el).focus()
       form = d.forms[0]
-      form.hidden = true
       $.before form, link
     g.callbacks.push (root) ->
       $.on $('.quotejs + .quotejs', root), 'click', qr.quote
@@ -880,21 +881,23 @@ qr =
     iframe = $.el 'iframe',
       id: 'iframe'
       hidden: true
-      src: 'http://sys.4chan.org/post'
+      src: 'http://sys.4chan.org/robots.txt'
     $.on iframe, 'error', -> @src = @src
     # Greasemonkey ghetto fix
     loadChecking = (iframe) ->
       unless qr.status.ready
         iframe.src = 'about:blank'
-        setTimeout (-> iframe.src = 'http://sys.4chan.org/post'), 250
-    $.on iframe, 'load', -> unless @src is 'about:blank' then setTimeout loadChecking, 250, @
+        setTimeout (-> iframe.src = 'http://sys.4chan.org/robots.txt'), 250
+    $.on iframe, 'load', -> unless @src is 'about:blank' then setTimeout loadChecking, 500, @
     $.add d.body, iframe
 
     if conf['Persistent QR']
       qr.dialog()
       qr.hide() if conf['Auto Hide QR']
-    $.on d, 'dragover', qr.fileDrop
-    $.on d, 'drop',     qr.fileDrop
+    $.on d, 'dragover',  qr.dragOver
+    $.on d, 'drop',      qr.dropFile
+    $.on d, 'dragstart', qr.drag
+    $.on d, 'dragend',   qr.drag
     # prevent original captcha input from being focused on reload
     window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})'
 
@@ -931,6 +934,9 @@ qr =
     el.textContent = err
     $.replace el.firstChild, node if node
     qr.open()
+    if /captcha|verification/i.test err
+      # Focus the captcha input on captcha error.
+      $('[autocomplete]', qr.el).focus()
     alert err if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
     $('.warning', qr.el).textContent = null
@@ -1004,16 +1010,21 @@ qr =
     # Move the caret to the end of the new quote.
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
 
-  fileDrop: (e) ->
-    return if /TEXTAREA|INPUT/.test e.target.nodeName
+  drag: (e) ->
+    # Let it drag anything from the page.
+    i = if e.type is 'dragstart' then 'off' else 'on'
+    $[i] d, 'dragover', qr.dragOver
+    $[i] d, 'drop',     qr.dropFile
+  dragOver: (e) ->
     e.preventDefault()
-    e.stopPropagation()
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
-    if e.type is 'drop'
-      return unless e.dataTransfer.files.length # let it only drop files
-      qr.open()
-      qr.fileInput.call e.dataTransfer
-      $.addClass qr.el, 'dump'
+  dropFile: (e) ->
+    # Let it only handle files from the desktop.
+    return unless e.dataTransfer.files.length
+    e.preventDefault()
+    qr.open()
+    qr.fileInput.call e.dataTransfer
+    $.addClass qr.el, 'dump'
   fileInput: ->
     qr.cleanError()
     # Set or change current reply's file.
@@ -1144,7 +1155,7 @@ qr =
         when 0
           'Verification (Shift + Enter to cache)'
         when 1
-          'Vertification (1 cached captcha)'
+          'Verification (1 cached captcha)'
         else
           "Verification (#{count} cached captchas)"
       @input.alt = count # For XTRM RICE.
@@ -1180,7 +1191,7 @@ qr =
 </form>'
 
     if conf['Remember QR size'] and engine is 'gecko'
-      $.on ta = qr.el.querySelector('textarea'), 'mouseup', ->
+      $.on ta = $('textarea', qr.el), 'mouseup', ->
         $.set 'qr.size', @style.cssText
       ta.style.cssText = $.get 'qr.size', ''
     
@@ -1229,7 +1240,7 @@ qr =
       $.on input, 'change', -> qr.selected[@name] = @value
     # sync between tabs
     $.sync 'qr.persona', (persona) ->
-      return if qr.replies.length isnt 1
+      return unless qr.el.hidden
       for key, val of persona
         qr.selected[key] = val
         $("[name=#{key}]", qr.el).value = val
@@ -1395,18 +1406,15 @@ qr =
           parent.postMessage data, '*'
       script = $.el 'script', textContent: "window.addEventListener('message',#{code},false)"
       ready = ->
+        $.add d.documentElement, script
         if location.hostname is 'sys.4chan.org'
           qr.message.send req: 'status', ready: true
         $.rm script
       # Chrome can access the documentElement on document-start
       if d.documentElement
-        $.add d.documentElement, script
         ready()
-        return
       # other browsers will have to wait
-      $.ready ->
-        $.add d.head, script
-        ready()
+      else $.ready ready
     send: (data) ->
       data.changeContext = true
       data.qr            = true
@@ -1579,21 +1587,20 @@ options =
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
       <li>Minutes: %M</li>
     </ul>
-    <div class=warning><code>Unread Count</code> is disabled.</div>
+    <div class=warning><code>Unread Favicon</code> is disabled.</div>
     Unread favicons<br>
     <select name=favicon>
       <option value=ferongr>ferongr</option>
       <option value=xat->xat-</option>
       <option value=Mayhem>Mayhem</option>
       <option value=Original>Original</option>
-      <option value=None>None</option>
     </select>
     <span></span>
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
     <div class=warning><code>Keybinds</code> are disabled.</div>
-    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-1, Up, Down, Right, Left.</div>
+    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
     </tbody></table>
@@ -1656,14 +1663,19 @@ options =
         indicators[@name].hidden = @checked
 
     overlay = $.el 'div', id: 'overlay'
-    $.on overlay, 'click', -> $.rm overlay
+    $.on overlay, 'click', options.close
     $.on dialog,  'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
     $.add d.body, overlay
+    d.body.style.setProperty 'overflow', 'hidden', null
 
     options.backlink.call back
     options.time.call     time
     options.favicon.call  favicon
+
+  close: ->
+    $.rm this
+    d.body.style.removeProperty 'overflow'
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -1687,7 +1699,7 @@ options =
     $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
   favicon: ->
     Favicon.switch()
-    Favicon.update() if g.REPLY and conf['Unread Count']
+    unread.update true
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
 
 threading =
@@ -1871,8 +1883,12 @@ updater =
         updater.count.textContent = 404
         updater.count.className = 'warning'
         clearTimeout updater.timeoutID
-        d.title = d.title.match(/^.+-/)[0] + ' 404'
         g.dead = true
+        if conf['Unread Count']
+          unread.title = unread.title.match(/^.+-/)[0] + ' 404'
+        else
+          d.title = d.title.match(/^.+-/)[0] + ' 404'
+        unread.update true
         qr.message.send req: 'abort'
         qr.status()
         Favicon.update()
@@ -2042,31 +2058,31 @@ anonymize =
 
 sauce =
   init: ->
-    # return unless
     links = conf['sauces'].match /^[^#].+$/gm
+    return unless links.length
     @links = []
     for link in links
-      @links.push [link, link.match(/(\w+)\.\w+\//)[1]]
+      domain = link.match(/(\w+)\.\w+\//)[1]
+      fc = link.replace /\$\d/, (fragment) ->
+        switch fragment
+          when '$1'
+            "' + img.src + '"
+          when '$2'
+            "' + img.parentNode.href + '"
+          when '$3'
+            "' + img.getAttribute('md5').replace(/\=*$/, '') + '"
+      @links.push [Function('img', "return '#{fc}'"), domain]
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline' or not span = $ '.filesize', root
     img = $ 'img', root
     for link in sauce.links
       a = $.el 'a',
-        textContent: link[1]
-        href: sauce.href link[0], img
+        href: link[0] img
         target: '_blank'
+        textContent: link[1]
       $.add span, $.tn(' '), a
     return
-  href: (link, img) ->
-    link.replace /\$\d/, (fragment) ->
-      switch fragment
-        when '$1'
-          img.src
-        when '$2'
-          img.parentNode.href
-        when '$3'
-          img.getAttribute('md5').replace /\=+$/, ''
 
 revealSpoilers =
   init: ->
@@ -2223,10 +2239,9 @@ quoteInline =
     root = if q.parentNode.nodeName is 'FONT' then q.parentNode else if q.nextSibling then q.nextSibling else q
     if el = $.id id
       inline = quoteInline.table id, el.innerHTML
-      if g.REPLY and conf['Unread Count'] and (i = unread.replies.indexOf el.parentNode.parentNode.parentNode) isnt -1
+      if (i = unread.replies.indexOf el.parentNode.parentNode.parentNode) isnt -1
         unread.replies.splice i, 1
-        unread.updateTitle()
-        Favicon.update()
+        unread.update()
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
         $.addClass $.x('ancestor::table', el), 'forwarded' if conf['Forward Hiding']
@@ -2398,7 +2413,8 @@ threadStats =
 
 unread =
   init: ->
-    d.title = '(0) ' + d.title
+    @title = d.title
+    unread.update()
     $.on window, 'scroll', unread.scroll
     g.callbacks.push unread.node
 
@@ -2407,9 +2423,7 @@ unread =
   node: (root) ->
     return if root.hidden or root.className
     unread.replies.push root
-    unread.updateTitle()
-    if unread.replies.length is 1
-      Favicon.update()
+    unread.update()
 
   scroll: ->
     height = d.body.clientHeight
@@ -2420,18 +2434,41 @@ unread =
     return if i is 0
 
     unread.replies = unread.replies[i..]
-    unread.updateTitle()
-    if unread.replies.length is 0
-      Favicon.update()
+    unread.update()
 
-  updateTitle: ->
-    d.title = d.title.replace /\d+/, unread.replies.length
+  update: (forceUpdate) ->
+    return unless g.REPLY
+
+    count = unread.replies.length
+
+    if conf['Unread Count']
+      d.title = "(#{count}) #{unread.title}"
+
+    unless conf['Unread Favicon'] and count < 2 or forceUpdate
+      return
+
+    Favicon.el.href =
+      if g.dead
+        if count
+          Favicon.unreadDead
+        else
+          Favicon.dead
+      else
+        if count
+          Favicon.unread
+        else
+          Favicon.default
+
+    #`favicon.href = href` doesn't work on Firefox
+    #`favicon.href = href` isn't enough on Opera
+    #Opera won't always update the favicon if the href didn't not change
+    $.add d.head, Favicon.el
 
 Favicon =
   init: ->
-    favicon = $ 'link[rel="shortcut icon"]', d.head
-    favicon.type = 'image/x-icon'
-    {href} = favicon
+    @el = $ 'link[rel="shortcut icon"]', d.head
+    @el.type = 'image/x-icon'
+    {href} = @el
     @SFW = /ws.ico$/.test href
     @default = href
     @switch()
@@ -2454,50 +2491,28 @@ Favicon =
         @unreadDead = 'data:unreadDead;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs='
         @unreadSFW  = 'data:unreadSFW;base64,R0lGODlhEAAQAKECAAAAAC6Xw////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs='
         @unreadNSFW = 'data:unreadNSFW;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs='
-      when 'None'
-        @unreadDead = @dead
-        @unreadSFW  = 'http://static.4chan.org/image/favicon-ws.ico'
-        @unreadNSFW = 'http://static.4chan.org/image/favicon.ico'
     @unread = if @SFW then @unreadSFW else @unreadNSFW
 
   empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
   dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
 
-  update: ->
-    l = unread.replies.length
-
-    favicon = $ 'link[rel="shortcut icon"]', d.head
-    favicon.href =
-      if g.dead
-        if l
-          @unreadDead
-        else
-          @dead
-      else
-        if l
-          @unread
-        else
-          @default
-
-    #`favicon.href = href` doesn't work on Firefox
-    #`favicon.href = href` isn't enough on Opera
-    #Opera won't always update the favicon if the href do not change
-    if engine isnt 'webkit'
-      $.add d.head, $.rm favicon
-
 redirect =
   init: ->
     url =
       if location.hostname is 'images.4chan.org'
-        redirect.image g.BOARD, location.pathname.split('/')[3]
+        redirect.image location.href
       else if /^\d+$/.test g.THREAD_ID
         redirect.thread()
     location.href = url if url
-  image: (board, filename) -> #board must be given, the image can originate from a cross-quote
-    switch board
+  image: (href) ->
+    href = href.split '/'
+    # Do not use g.BOARD, the image url can originate from a cross-quote.
+    return unless conf['404 Redirect']
+    switch href[3]
       when 'a', 'jp', 'm', 'tg', 'tv', 'u'
-        "http://archive.foolz.us/#{board}/full_image/#{filename}"
+        "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
   thread: ->
+    return unless conf['404 Redirect']
     switch g.BOARD
       when 'a', 'jp', 'm', 'tg', 'tv', 'u'
         "http://archive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}/"
@@ -2508,7 +2523,7 @@ redirect =
       when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'r9k', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
         "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
       else
-        "http://boards.4chan.org/#{g.BOARD}"
+        "http://boards.4chan.org/#{g.BOARD}/"
 
 imgHover =
   init: ->
@@ -2599,16 +2614,15 @@ imgExpand =
     a = thumb.parentNode
     img = $.el 'img',
       src: url or a.href
-    $.on img, 'error', imgExpand.error if conf['404 Redirect']
+    $.on img, 'error', imgExpand.error
     $.add a, img
 
   error: ->
     href  = @parentNode.href
     thumb = @previousSibling
-    src   = href.split '/'
     imgExpand.contract thumb
     $.rm @
-    unless @src.split('/')[2] is 'images.4chan.org' and url = redirect.image src[3], src[5]
+    unless @src.split('/')[2] is 'images.4chan.org' and url = redirect.image href
       return if g.dead
       # CloudFlare may cache banned pages instead of images.
       # This will fool CloudFlare's cache.
@@ -2653,7 +2667,7 @@ Main =
     $.on window, 'message', Main.message
 
     if location.hostname is 'sys.4chan.org'
-      if location.pathname is '/post'
+      if location.pathname is '/robots.txt'
         qr.message.init()
       else if /report/.test location.search
         $.ready ->
@@ -2736,17 +2750,21 @@ Main =
     if conf['Indicate Cross-thread Quotes']
       quoteDR.init()
 
+    if conf['Quick Reply'] and conf['Hide Original Post Form']
+      Main.css += 'form[name=post] { display: none; }'
+
+    Main.addStyle()
 
     $.ready Main.ready
 
   ready: ->
-    if conf['404 Redirect'] and d.title is '4chan - 404'
+    if d.title is '4chan - 404'
       redirect.init()
       return
     if not $.id 'navtopr'
       return
+    $.addClass d.body, "chanx_#{VERSION.match(/\.(\d+)/)[1]}"
     $.addClass d.body, engine
-    $.addStyle Main.css
     threading.init()
     Favicon.init()
 
@@ -2776,7 +2794,7 @@ Main =
       if conf['Post in Title']
         titlePost.init()
 
-      if conf['Unread Count']
+      if conf['Unread Count'] or conf['Unread Favicon']
         unread.init()
 
     else #not reply
@@ -2802,6 +2820,13 @@ Main =
       catch err
         alert err
     $.on form, 'DOMNodeInserted', Main.node
+
+  addStyle: ->
+    $.off d, 'DOMNodeInserted', Main.addStyle
+    if d.head
+      $.addStyle Main.css
+    else # XXX fox
+      $.on d, 'DOMNodeInserted', Main.addStyle
 
   message: (e) ->
     {data} = e
@@ -3004,6 +3029,7 @@ textarea.field {
 }
 #qr [type=submit] {
   margin: 1px 0;
+  padding: 1px; /* not Gecko */
   padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */
   width: 30%;
 }
@@ -3149,6 +3175,7 @@ img[md5], img[md5] + img {
 }
 .filtered {
   text-decoration: line-through;
-}'
+}
+'
 
 Main.init()
