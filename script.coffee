@@ -1180,10 +1180,9 @@ qr =
 </form>'
 
     if conf['Remember QR size'] and engine is 'gecko'
-      $.on (ta = qr.el.querySelector 'textarea'), 'mouseup', ->
+      $.on ta = qr.el.querySelector('textarea'), 'mouseup', ->
         $.set 'qr.size', @style.cssText
-      if saved = $.get 'qr.size'
-        ta.style.cssText = saved
+      ta.style.cssText = $.get 'qr.size', ''
     
     # Allow only this board's supported files.
     mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->

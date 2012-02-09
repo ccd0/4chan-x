@@ -1569,7 +1569,7 @@
       }
     },
     dialog: function() {
-      var e, fileInput, input, mimeTypes, name, saved, spoiler, ta, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
+      var e, fileInput, input, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
@@ -1586,10 +1586,10 @@
   <div class=warning></div>\
 </form>');
       if (conf['Remember QR size'] && engine === 'gecko') {
-        $.on((ta = qr.el.querySelector('textarea')), 'mouseup', function() {
+        $.on(ta = qr.el.querySelector('textarea'), 'mouseup', function() {
           return $.set('qr.size', this.style.cssText);
         });
-        if (saved = $.get('qr.size')) ta.style.cssText = saved;
+        ta.style.cssText = $.get('qr.size', '');
       }
       mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
