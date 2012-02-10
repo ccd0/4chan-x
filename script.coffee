@@ -455,13 +455,14 @@ filter =
 
 strikethroughQuotes =
   init: ->
-    g.callbacks.push (root) ->
-      return if root.className is 'inline'
-      for quote in $$ '.quotelink', root
-        if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
-          $.addClass quote, 'filtered'
-          root.hidden = true if conf['Recursive Filtering']
-      return
+    g.callbacks.push @node
+  node: (root) ->
+    return if root.className is 'inline'
+    for quote in $$ '.quotelink', root
+      if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
+        $.addClass quote, 'filtered'
+        root.hidden = true if conf['Recursive Filtering']
+    return
 
 expandComment =
   init: ->
@@ -578,19 +579,21 @@ expandThread =
 
 replyHiding =
   init: ->
-    g.callbacks.push (root) ->
-      return unless dd = $ '.doubledash', root
-      dd.className = 'replyhider'
-      a = $.el 'a',
-        textContent: '[ - ]'
-        href: 'javascript:;'
-      $.on a, 'click', replyHiding.cb.hide
-      $.replace dd.firstChild, a
+    g.callbacks.push @node
 
-      reply = dd.nextSibling
-      id = reply.id
-      if id of g.hiddenReplies
-        replyHiding.hide reply
+  node: (root) ->
+    return unless dd = $ '.doubledash', root
+    dd.className = 'replyhider'
+    a = $.el 'a',
+      textContent: '[ - ]'
+      href: 'javascript:;'
+    $.on a, 'click', replyHiding.cb.hide
+    $.replace dd.firstChild, a
+
+    reply = dd.nextSibling
+    id = reply.id
+    if id of g.hiddenReplies
+      replyHiding.hide reply
 
   cb:
     hide: ->
@@ -875,8 +878,7 @@ qr =
         $('textarea', qr.el).focus()
       form = d.forms[0]
       $.before form, link
-    g.callbacks.push (root) ->
-      $.on $('.quotejs + .quotejs', root), 'click', qr.quote
+    g.callbacks.push @node
 
     iframe = $.el 'iframe',
       id: 'iframe'
@@ -900,6 +902,9 @@ qr =
     $.on d, 'dragend',   qr.drag
     # prevent original captcha input from being focused on reload
     window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})'
+
+  node: (root) ->
+    $.on $('.quotejs + .quotejs', root), 'click', qr.quote
 
   open: ->
     if qr.el
@@ -2047,14 +2052,15 @@ watcher =
 
 anonymize =
   init: ->
-    g.callbacks.push (root) ->
-      name = $ '.commentpostername, .postername', root
-      name.textContent = 'Anonymous'
-      if trip = $ '.postertrip', root
-        if trip.parentNode.nodeName is 'A'
-          $.rm trip.parentNode
-        else
-          $.rm trip
+    g.callbacks.push @node
+  node: (root) ->
+    name = $ '.commentpostername, .postername', root
+    name.textContent = 'Anonymous'
+    if trip = $ '.postertrip', root
+      if trip.parentNode.nodeName is 'A'
+        $.rm trip.parentNode
+      else
+        $.rm trip
 
 sauce =
   init: ->
@@ -2086,12 +2092,13 @@ sauce =
 
 revealSpoilers =
   init: ->
-    g.callbacks.push (root) ->
-      return if not (img = $ 'img[alt^=Spoiler]', root) or root.className is 'inline'
-      img.removeAttribute 'height'
-      img.removeAttribute 'width'
-      [_, board, imgID] = img.parentNode.href.match /(\w+)\/src\/(\d+)/
-      img.src = "http://0.thumbs.4chan.org/#{board}/thumb/#{imgID}s.jpg"
+    g.callbacks.push @node
+  node: (root) ->
+    return if not (img = $ 'img[alt^=Spoiler]', root) or root.className is 'inline'
+    img.removeAttribute 'height'
+    img.removeAttribute 'width'
+    [_, board, imgID] = img.parentNode.href.match /(\w+)\/src\/(\d+)/
+    img.src = "http://0.thumbs.4chan.org/#{board}/thumb/#{imgID}s.jpg"
 
 Time =
   init: ->
@@ -2114,7 +2121,7 @@ Time =
           hour = chanOffset + Number hour
           new Date year, month, day, hour, min
 
-    g.callbacks.push Time.node
+    g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline'
     node = $('.posttime', root) or $('span[id]', root).previousSibling
@@ -2187,43 +2194,45 @@ quoteBacklink =
   init: ->
     format = conf['backlink'].replace /%id/g, "' + id + '"
     quoteBacklink.funk = Function 'id', "return '#{format}'"
-    g.callbacks.push (root) ->
-      return if /\binline\b/.test root.className
-      quotes = {}
-      for quote in $$ '.quotelink', root
-        # Don't process >>>/b/.
-        if qid = quote.hash[1..]
-          # Duplicate quotes get overwritten.
-          quotes[qid] = true
-      # OP or reply id.
-      id = $('input', root).name
-      a = $.el 'a',
-        href: "##{id}"
-        className: if root.hidden then 'filtered backlink' else 'backlink'
-        textContent: quoteBacklink.funk id
-      for qid of quotes
-        # Don't backlink the OP.
-        continue if !(el = $.id qid) or el.className is 'op' and !conf['OP Backlinks']
-        link = a.cloneNode true
-        if conf['Quote Preview']
-          $.on link, 'mouseover', quotePreview.mouseover
-          $.on link, 'mousemove', ui.hover
-          $.on link, 'mouseout',  quotePreview.mouseout
-        if conf['Quote Inline']
-          $.on link, 'click', quoteInline.toggle
-        unless (container = $ '.container', el) and container.parentNode is el
-          container = $.el 'span', className: 'container'
-          root = $('.reportbutton', el) or $('span[id]', el)
-          $.after root, container
-        $.add container, $.tn(' '), link
+    g.callbacks.push @node
+  node: (root) ->
+    return if /\binline\b/.test root.className
+    quotes = {}
+    for quote in $$ '.quotelink', root
+      # Don't process >>>/b/.
+      if qid = quote.hash[1..]
+        # Duplicate quotes get overwritten.
+        quotes[qid] = true
+    # OP or reply id.
+    id = $('input', root).name
+    a = $.el 'a',
+      href: "##{id}"
+      className: if root.hidden then 'filtered backlink' else 'backlink'
+      textContent: quoteBacklink.funk id
+    for qid of quotes
+      # Don't backlink the OP.
+      continue if !(el = $.id qid) or el.className is 'op' and !conf['OP Backlinks']
+      link = a.cloneNode true
+      if conf['Quote Preview']
+        $.on link, 'mouseover', quotePreview.mouseover
+        $.on link, 'mousemove', ui.hover
+        $.on link, 'mouseout',  quotePreview.mouseout
+      if conf['Quote Inline']
+        $.on link, 'click', quoteInline.toggle
+      unless (container = $ '.container', el) and container.parentNode is el
+        container = $.el 'span', className: 'container'
+        root = $('.reportbutton', el) or $('span[id]', el)
+        $.after root, container
+      $.add container, $.tn(' '), link
 
 quoteInline =
   init: ->
-    g.callbacks.push (root) ->
-      for quote in $$ '.quotelink, .backlink', root
-        continue unless quote.hash
-        quote.removeAttribute 'onclick'
-        $.on quote, 'click', quoteInline.toggle
+    g.callbacks.push @node
+  node: (root) ->
+    for quote in $$ '.quotelink, .backlink', root
+      continue unless quote.hash
+      quote.removeAttribute 'onclick'
+      $.on quote, 'click', quoteInline.toggle
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
@@ -2303,12 +2312,13 @@ quoteInline =
 
 quotePreview =
   init: ->
-    g.callbacks.push (root) ->
-      for quote in $$ '.quotelink, .backlink', root
-        continue unless quote.hash
-        $.on quote, 'mouseover', quotePreview.mouseover
-        $.on quote, 'mousemove', ui.hover
-        $.on quote, 'mouseout',  quotePreview.mouseout
+    g.callbacks.push @node
+  node: (root) ->
+    for quote in $$ '.quotelink, .backlink', root
+      continue unless quote.hash
+      $.on quote, 'mouseover', quotePreview.mouseover
+      $.on quote, 'mousemove', ui.hover
+      $.on quote, 'mouseout',  quotePreview.mouseout
   mouseover: (e) ->
     qp = ui.el = $.el 'div',
       id: 'qp'
@@ -2354,35 +2364,38 @@ quotePreview =
 
 quoteOP =
   init: ->
-    g.callbacks.push (root) ->
-      return if root.className is 'inline'
-      tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
-      for quote in $$ '.quotelink', root
-        if quote.hash[1..] is tid
-          quote.innerHTML += '&nbsp;(OP)'
+    g.callbacks.push @node
+  node: (root) ->
+    return if root.className is 'inline'
+    tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
+    for quote in $$ '.quotelink', root
+      if quote.hash[1..] is tid
+        quote.innerHTML += '&nbsp;(OP)'
 
 quoteDR =
   init: ->
-    g.callbacks.push (root) ->
-      return if root.className is 'inline'
-      tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
-      for quote in $$ '.quotelink', root
-        #if quote leads to a different thread id and is located on the same board (index 0)
-        if quote.pathname.indexOf("res/#{tid}") is -1 and !quote.pathname.indexOf "/#{g.BOARD}/res"
-          quote.innerHTML += '&nbsp;(Cross-thread)'
+    g.callbacks.push @node
+  node: (root) ->
+    return if root.className is 'inline'
+    tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
+    for quote in $$ '.quotelink', root
+      #if quote leads to a different thread id and is located on the same board (index 0)
+      if quote.pathname.indexOf("res/#{tid}") is -1 and !quote.pathname.indexOf "/#{g.BOARD}/res"
+        quote.innerHTML += '&nbsp;(Cross-thread)'
 
 reportButton =
   init: ->
-    g.callbacks.push (root) ->
-      if not a = $ '.reportbutton', root
-        span = $ 'span[id]', root
-        a = $.el 'a',
-          className: 'reportbutton'
-          innerHTML: '[&nbsp;!&nbsp;]'
-          href: 'javascript:;'
-        $.after span, a
-        $.after span, $.tn(' ')
-      $.on a, 'click', reportButton.report
+    g.callbacks.push @node
+  node: (root) ->
+    if not a = $ '.reportbutton', root
+      span = $ 'span[id]', root
+      a = $.el 'a',
+        className: 'reportbutton'
+        innerHTML: '[&nbsp;!&nbsp;]'
+        href: 'javascript:;'
+      $.after span, a
+      $.after span, $.tn(' ')
+    $.on a, 'click', reportButton.report
   report: ->
     url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
     id  = Date.now()
@@ -2401,7 +2414,7 @@ threadStats =
           251
         else
           151
-    g.callbacks.push threadStats.node
+    g.callbacks.push @node
   node: (root) ->
     return if /\binline\b/.test root.className
     $.id('postcount').textContent = ++threadStats.posts
@@ -2416,7 +2429,7 @@ unread =
     @title = d.title
     unread.update()
     $.on window, 'scroll', unread.scroll
-    g.callbacks.push unread.node
+    g.callbacks.push @node
 
   replies: []
 
@@ -2527,11 +2540,12 @@ redirect =
 
 imgHover =
   init: ->
-    g.callbacks.push (root) ->
-      return unless thumb = $ 'img[md5]', root
-      $.on thumb, 'mouseover', imgHover.mouseover
-      $.on thumb, 'mousemove', ui.hover
-      $.on thumb, 'mouseout',  ui.hoverend
+    g.callbacks.push @node
+  node: (root) ->
+    return unless thumb = $ 'img[md5]', root
+    $.on thumb, 'mouseover', imgHover.mouseover
+    $.on thumb, 'mousemove', ui.hover
+    $.on thumb, 'mouseout',  ui.hoverend
   mouseover: ->
     ui.el = $.el 'img'
       id: 'ihover'
@@ -2540,15 +2554,16 @@ imgHover =
 
 imgGif =
   init: ->
-    g.callbacks.push (root) ->
-      return if root.hidden or !thumb = $ 'img[md5]', root
-      src = thumb.parentNode.href
-      if /gif$/.test src
-        thumb.src = src
+    g.callbacks.push @node
+  node: (root) ->
+    return if root.hidden or !thumb = $ 'img[md5]', root
+    src = thumb.parentNode.href
+    if /gif$/.test src
+      thumb.src = src
 
 imgExpand =
   init: ->
-    g.callbacks.push imgExpand.node
+    g.callbacks.push @node
     imgExpand.dialog()
 
   node: (root) ->

@@ -612,18 +612,19 @@
 
   strikethroughQuotes = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var el, quote, _i, _len, _ref;
-        if (root.className === 'inline') return;
-        _ref = $$('.quotelink', root);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          quote = _ref[_i];
-          if ((el = $.id(quote.hash.slice(1))) && el.parentNode.parentNode.parentNode.hidden) {
-            $.addClass(quote, 'filtered');
-            if (conf['Recursive Filtering']) root.hidden = true;
-          }
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var el, quote, _i, _len, _ref;
+      if (root.className === 'inline') return;
+      _ref = $$('.quotelink', root);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if ((el = $.id(quote.hash.slice(1))) && el.parentNode.parentNode.parentNode.hidden) {
+          $.addClass(quote, 'filtered');
+          if (conf['Recursive Filtering']) root.hidden = true;
         }
-      });
+      }
     }
   };
 
@@ -794,20 +795,21 @@
 
   replyHiding = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var a, dd, id, reply;
-        if (!(dd = $('.doubledash', root))) return;
-        dd.className = 'replyhider';
-        a = $.el('a', {
-          textContent: '[ - ]',
-          href: 'javascript:;'
-        });
-        $.on(a, 'click', replyHiding.cb.hide);
-        $.replace(dd.firstChild, a);
-        reply = dd.nextSibling;
-        id = reply.id;
-        if (id in g.hiddenReplies) return replyHiding.hide(reply);
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var a, dd, id, reply;
+      if (!(dd = $('.doubledash', root))) return;
+      dd.className = 'replyhider';
+      a = $.el('a', {
+        textContent: '[ - ]',
+        href: 'javascript:;'
       });
+      $.on(a, 'click', replyHiding.cb.hide);
+      $.replace(dd.firstChild, a);
+      reply = dd.nextSibling;
+      id = reply.id;
+      if (id in g.hiddenReplies) return replyHiding.hide(reply);
     },
     cb: {
       hide: function() {
@@ -1202,9 +1204,7 @@
         form = d.forms[0];
         $.before(form, link);
       }
-      g.callbacks.push(function(root) {
-        return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
-      });
+      g.callbacks.push(this.node);
       iframe = $.el('iframe', {
         id: 'iframe',
         hidden: true,
@@ -1234,6 +1234,9 @@
       $.on(d, 'dragstart', qr.drag);
       $.on(d, 'dragend', qr.drag);
       return window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})';
+    },
+    node: function(root) {
+      return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
     },
     open: function() {
       if (qr.el) {
@@ -2570,18 +2573,19 @@
 
   anonymize = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var name, trip;
-        name = $('.commentpostername, .postername', root);
-        name.textContent = 'Anonymous';
-        if (trip = $('.postertrip', root)) {
-          if (trip.parentNode.nodeName === 'A') {
-            return $.rm(trip.parentNode);
-          } else {
-            return $.rm(trip);
-          }
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var name, trip;
+      name = $('.commentpostername, .postername', root);
+      name.textContent = 'Anonymous';
+      if (trip = $('.postertrip', root)) {
+        if (trip.parentNode.nodeName === 'A') {
+          return $.rm(trip.parentNode);
+        } else {
+          return $.rm(trip);
         }
-      });
+      }
     }
   };
 
@@ -2627,16 +2631,17 @@
 
   revealSpoilers = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var board, img, imgID, _, _ref;
-        if (!(img = $('img[alt^=Spoiler]', root)) || root.className === 'inline') {
-          return;
-        }
-        img.removeAttribute('height');
-        img.removeAttribute('width');
-        _ref = img.parentNode.href.match(/(\w+)\/src\/(\d+)/), _ = _ref[0], board = _ref[1], imgID = _ref[2];
-        return img.src = "http://0.thumbs.4chan.org/" + board + "/thumb/" + imgID + "s.jpg";
-      });
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var board, img, imgID, _, _ref;
+      if (!(img = $('img[alt^=Spoiler]', root)) || root.className === 'inline') {
+        return;
+      }
+      img.removeAttribute('height');
+      img.removeAttribute('width');
+      _ref = img.parentNode.href.match(/(\w+)\/src\/(\d+)/), _ = _ref[0], board = _ref[1], imgID = _ref[2];
+      return img.src = "http://0.thumbs.4chan.org/" + board + "/thumb/" + imgID + "s.jpg";
     }
   };
 
@@ -2656,7 +2661,7 @@
         hour = chanOffset + Number(hour);
         return new Date(year, month, day, hour, min);
       };
-      return g.callbacks.push(Time.node);
+      return g.callbacks.push(this.node);
     },
     node: function(root) {
       var node, time;
@@ -2769,61 +2774,63 @@
       var format;
       format = conf['backlink'].replace(/%id/g, "' + id + '");
       quoteBacklink.funk = Function('id', "return '" + format + "'");
-      return g.callbacks.push(function(root) {
-        var a, container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
-        if (/\binline\b/.test(root.className)) return;
-        quotes = {};
-        _ref = $$('.quotelink', root);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          quote = _ref[_i];
-          if (qid = quote.hash.slice(1)) quotes[qid] = true;
-        }
-        id = $('input', root).name;
-        a = $.el('a', {
-          href: "#" + id,
-          className: root.hidden ? 'filtered backlink' : 'backlink',
-          textContent: quoteBacklink.funk(id)
-        });
-        _results = [];
-        for (qid in quotes) {
-          if (!(el = $.id(qid)) || el.className === 'op' && !conf['OP Backlinks']) {
-            continue;
-          }
-          link = a.cloneNode(true);
-          if (conf['Quote Preview']) {
-            $.on(link, 'mouseover', quotePreview.mouseover);
-            $.on(link, 'mousemove', ui.hover);
-            $.on(link, 'mouseout', quotePreview.mouseout);
-          }
-          if (conf['Quote Inline']) $.on(link, 'click', quoteInline.toggle);
-          if (!((container = $('.container', el)) && container.parentNode === el)) {
-            container = $.el('span', {
-              className: 'container'
-            });
-            root = $('.reportbutton', el) || $('span[id]', el);
-            $.after(root, container);
-          }
-          _results.push($.add(container, $.tn(' '), link));
-        }
-        return _results;
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var a, container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
+      if (/\binline\b/.test(root.className)) return;
+      quotes = {};
+      _ref = $$('.quotelink', root);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if (qid = quote.hash.slice(1)) quotes[qid] = true;
+      }
+      id = $('input', root).name;
+      a = $.el('a', {
+        href: "#" + id,
+        className: root.hidden ? 'filtered backlink' : 'backlink',
+        textContent: quoteBacklink.funk(id)
       });
+      _results = [];
+      for (qid in quotes) {
+        if (!(el = $.id(qid)) || el.className === 'op' && !conf['OP Backlinks']) {
+          continue;
+        }
+        link = a.cloneNode(true);
+        if (conf['Quote Preview']) {
+          $.on(link, 'mouseover', quotePreview.mouseover);
+          $.on(link, 'mousemove', ui.hover);
+          $.on(link, 'mouseout', quotePreview.mouseout);
+        }
+        if (conf['Quote Inline']) $.on(link, 'click', quoteInline.toggle);
+        if (!((container = $('.container', el)) && container.parentNode === el)) {
+          container = $.el('span', {
+            className: 'container'
+          });
+          root = $('.reportbutton', el) || $('span[id]', el);
+          $.after(root, container);
+        }
+        _results.push($.add(container, $.tn(' '), link));
+      }
+      return _results;
     }
   };
 
   quoteInline = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var quote, _i, _len, _ref, _results;
-        _ref = $$('.quotelink, .backlink', root);
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          quote = _ref[_i];
-          if (!quote.hash) continue;
-          quote.removeAttribute('onclick');
-          _results.push($.on(quote, 'click', quoteInline.toggle));
-        }
-        return _results;
-      });
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var quote, _i, _len, _ref, _results;
+      _ref = $$('.quotelink, .backlink', root);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if (!quote.hash) continue;
+        quote.removeAttribute('onclick');
+        _results.push($.on(quote, 'click', quoteInline.toggle));
+      }
+      return _results;
     },
     toggle: function(e) {
       var id;
@@ -2935,19 +2942,20 @@
 
   quotePreview = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var quote, _i, _len, _ref, _results;
-        _ref = $$('.quotelink, .backlink', root);
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          quote = _ref[_i];
-          if (!quote.hash) continue;
-          $.on(quote, 'mouseover', quotePreview.mouseover);
-          $.on(quote, 'mousemove', ui.hover);
-          _results.push($.on(quote, 'mouseout', quotePreview.mouseout));
-        }
-        return _results;
-      });
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var quote, _i, _len, _ref, _results;
+      _ref = $$('.quotelink, .backlink', root);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if (!quote.hash) continue;
+        $.on(quote, 'mouseover', quotePreview.mouseover);
+        $.on(quote, 'mousemove', ui.hover);
+        _results.push($.on(quote, 'mouseout', quotePreview.mouseout));
+      }
+      return _results;
     },
     mouseover: function(e) {
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _results;
@@ -3018,62 +3026,65 @@
 
   quoteOP = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var quote, tid, _i, _len, _ref, _results;
-        if (root.className === 'inline') return;
-        tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
-        _ref = $$('.quotelink', root);
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          quote = _ref[_i];
-          if (quote.hash.slice(1) === tid) {
-            _results.push(quote.innerHTML += '&nbsp;(OP)');
-          } else {
-            _results.push(void 0);
-          }
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var quote, tid, _i, _len, _ref, _results;
+      if (root.className === 'inline') return;
+      tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
+      _ref = $$('.quotelink', root);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if (quote.hash.slice(1) === tid) {
+          _results.push(quote.innerHTML += '&nbsp;(OP)');
+        } else {
+          _results.push(void 0);
         }
-        return _results;
-      });
+      }
+      return _results;
     }
   };
 
   quoteDR = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var quote, tid, _i, _len, _ref, _results;
-        if (root.className === 'inline') return;
-        tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
-        _ref = $$('.quotelink', root);
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          quote = _ref[_i];
-          if (quote.pathname.indexOf("res/" + tid) === -1 && !quote.pathname.indexOf("/" + g.BOARD + "/res")) {
-            _results.push(quote.innerHTML += '&nbsp;(Cross-thread)');
-          } else {
-            _results.push(void 0);
-          }
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var quote, tid, _i, _len, _ref, _results;
+      if (root.className === 'inline') return;
+      tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
+      _ref = $$('.quotelink', root);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if (quote.pathname.indexOf("res/" + tid) === -1 && !quote.pathname.indexOf("/" + g.BOARD + "/res")) {
+          _results.push(quote.innerHTML += '&nbsp;(Cross-thread)');
+        } else {
+          _results.push(void 0);
         }
-        return _results;
-      });
+      }
+      return _results;
     }
   };
 
   reportButton = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var a, span;
-        if (!(a = $('.reportbutton', root))) {
-          span = $('span[id]', root);
-          a = $.el('a', {
-            className: 'reportbutton',
-            innerHTML: '[&nbsp;!&nbsp;]',
-            href: 'javascript:;'
-          });
-          $.after(span, a);
-          $.after(span, $.tn(' '));
-        }
-        return $.on(a, 'click', reportButton.report);
-      });
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var a, span;
+      if (!(a = $('.reportbutton', root))) {
+        span = $('span[id]', root);
+        a = $.el('a', {
+          className: 'reportbutton',
+          innerHTML: '[&nbsp;!&nbsp;]',
+          href: 'javascript:;'
+        });
+        $.after(span, a);
+        $.after(span, $.tn(' '));
+      }
+      return $.on(a, 'click', reportButton.report);
     },
     report: function() {
       var id, set, url;
@@ -3100,7 +3111,7 @@
             return 151;
         }
       })();
-      return g.callbacks.push(threadStats.node);
+      return g.callbacks.push(this.node);
     },
     node: function(root) {
       var imgcount;
@@ -3120,7 +3131,7 @@
       this.title = d.title;
       unread.update();
       $.on(window, 'scroll', unread.scroll);
-      return g.callbacks.push(unread.node);
+      return g.callbacks.push(this.node);
     },
     replies: [],
     node: function(root) {
@@ -3257,13 +3268,14 @@
 
   imgHover = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var thumb;
-        if (!(thumb = $('img[md5]', root))) return;
-        $.on(thumb, 'mouseover', imgHover.mouseover);
-        $.on(thumb, 'mousemove', ui.hover);
-        return $.on(thumb, 'mouseout', ui.hoverend);
-      });
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var thumb;
+      if (!(thumb = $('img[md5]', root))) return;
+      $.on(thumb, 'mouseover', imgHover.mouseover);
+      $.on(thumb, 'mousemove', ui.hover);
+      return $.on(thumb, 'mouseout', ui.hoverend);
     },
     mouseover: function() {
       ui.el = $.el('img', {
@@ -3276,18 +3288,19 @@
 
   imgGif = {
     init: function() {
-      return g.callbacks.push(function(root) {
-        var src, thumb;
-        if (root.hidden || !(thumb = $('img[md5]', root))) return;
-        src = thumb.parentNode.href;
-        if (/gif$/.test(src)) return thumb.src = src;
-      });
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var src, thumb;
+      if (root.hidden || !(thumb = $('img[md5]', root))) return;
+      src = thumb.parentNode.href;
+      if (/gif$/.test(src)) return thumb.src = src;
     }
   };
 
   imgExpand = {
     init: function() {
-      g.callbacks.push(imgExpand.node);
+      g.callbacks.push(this.node);
       return imgExpand.dialog();
     },
     node: function(root) {
