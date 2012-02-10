@@ -2370,7 +2370,10 @@ quotePreview =
           html = reply.innerHTML
           break
     qp.innerHTML = html
-    Time.node qp
+    if conf['Image Auto-Gif']
+      imgGif.node qp
+    if conf['Time Formatting']
+      Time.node   qp
 
 quoteOP =
   init: ->

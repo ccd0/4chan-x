@@ -3016,7 +3016,8 @@
         }
       }
       qp.innerHTML = html;
-      return Time.node(qp);
+      if (conf['Image Auto-Gif']) imgGif.node(qp);
+      if (conf['Time Formatting']) return Time.node(qp);
     }
   };
 
