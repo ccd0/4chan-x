@@ -2251,7 +2251,11 @@ quoteInline =
         unread.update()
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
-        $.addClass $.x('ancestor::table', el), 'forwarded' if conf['Forward Hiding']
+        if conf['Forward Hiding']
+          table = $.x 'ancestor::table', el
+          $.addClass table, 'forwarded'
+          # Will only unhide if there's no inlined backlinks of it anymore.
+          ++table.title or table.title = 1
         return
       $.after root, inline
     else
@@ -2270,9 +2274,11 @@ quoteInline =
     $.rm table
     return unless conf['Forward Hiding']
     for inlined in $$ '.backlink.inlined', table
-      $.removeClass $.x('ancestor::table', $.id inlined.hash[1..]), 'forwarded'
+      table = $.x 'ancestor::table', $.id inlined.hash[1..]
+      $.removeClass table, 'forwarded' unless --table.title
     if /\bbacklink\b/.test q.className
-      $.removeClass $.x('ancestor::table', $.id id), 'forwarded'
+      table = $.x 'ancestor::table', $.id id
+      $.removeClass table, 'forwarded' unless --table.title
 
   parse: (req, pathname, id, threadID, inline) ->
     return unless inline.parentNode

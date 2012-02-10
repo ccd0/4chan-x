@@ -2844,7 +2844,7 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var el, i, inline, pathname, root, threadID;
+      var el, i, inline, pathname, root, table, threadID;
       root = q.parentNode.nodeName === 'FONT' ? q.parentNode : q.nextSibling ? q.nextSibling : q;
       if (el = $.id(id)) {
         inline = quoteInline.table(id, el.innerHTML);
@@ -2855,7 +2855,9 @@
         if (/\bbacklink\b/.test(q.className)) {
           $.after(q.parentNode, inline);
           if (conf['Forward Hiding']) {
-            $.addClass($.x('ancestor::table', el), 'forwarded');
+            table = $.x('ancestor::table', el);
+            $.addClass(table, 'forwarded');
+            ++table.title || (table.title = 1);
           }
           return;
         }
@@ -2882,10 +2884,12 @@
       _ref = $$('.backlink.inlined', table);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         inlined = _ref[_i];
-        $.removeClass($.x('ancestor::table', $.id(inlined.hash.slice(1))), 'forwarded');
+        table = $.x('ancestor::table', $.id(inlined.hash.slice(1)));
+        if (!--table.title) $.removeClass(table, 'forwarded');
       }
       if (/\bbacklink\b/.test(q.className)) {
-        return $.removeClass($.x('ancestor::table', $.id(id)), 'forwarded');
+        table = $.x('ancestor::table', $.id(id));
+        if (!--table.title) return $.removeClass(table, 'forwarded');
       }
     },
     parse: function(req, pathname, id, threadID, inline) {
