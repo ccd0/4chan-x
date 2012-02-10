@@ -1,4 +1,6 @@
 master
+- desuwa
+  New option: remember the size of the QR on Firefox.
 - aeosynth
   prevent post form flicker
 - Mayhem
