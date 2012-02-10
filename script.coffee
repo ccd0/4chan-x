@@ -2316,6 +2316,7 @@ quotePreview =
       $.on quote, 'mouseover', quotePreview.mouseover if quote.hash
     return
   mouseover: (e) ->
+    return if /\binlined\b/.test @className
     qp = ui.el = $.el 'div',
       id: 'qp'
       className: 'reply dialog'
@@ -2337,12 +2338,14 @@ quotePreview =
       ui.hover e
     $.on @, 'mousemove', ui.hover
     $.on @, 'mouseout',  quotePreview.mouseout
+    $.on @, 'click',     quotePreview.mouseout
   mouseout: ->
     if el = $.id @hash[1..]
       $.removeClass el, 'qphl'
     ui.hoverend()
     $.off @, 'mousemove', ui.hover
     $.off @, 'mouseout',  quotePreview.mouseout
+    $.off @, 'click',     quotePreview.mouseout
   parse: (req, id, threadID) ->
     return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")
 

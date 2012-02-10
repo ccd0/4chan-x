@@ -2950,6 +2950,7 @@
     },
     mouseover: function(e) {
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
+      if (/\binlined\b/.test(this.className)) return;
       qp = ui.el = $.el('div', {
         id: 'qp',
         className: 'reply dialog'
@@ -2976,14 +2977,16 @@
         ui.hover(e);
       }
       $.on(this, 'mousemove', ui.hover);
-      return $.on(this, 'mouseout', quotePreview.mouseout);
+      $.on(this, 'mouseout', quotePreview.mouseout);
+      return $.on(this, 'click', quotePreview.mouseout);
     },
     mouseout: function() {
       var el;
       if (el = $.id(this.hash.slice(1))) $.removeClass(el, 'qphl');
       ui.hoverend();
       $.off(this, 'mousemove', ui.hover);
-      return $.off(this, 'mouseout', quotePreview.mouseout);
+      $.off(this, 'mouseout', quotePreview.mouseout);
+      return $.off(this, 'click', quotePreview.mouseout);
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
