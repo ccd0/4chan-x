@@ -125,7 +125,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.25.5'
+VERSION = '2.26.0'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -1194,7 +1194,7 @@ qr =
       $.on ta = $('textarea', qr.el), 'mouseup', ->
         $.set 'qr.size', @style.cssText
       ta.style.cssText = $.get 'qr.size', ''
-    
+
     # Allow only this board's supported files.
     mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
