@@ -2215,8 +2215,6 @@ quoteBacklink =
       link = a.cloneNode true
       if conf['Quote Preview']
         $.on link, 'mouseover', quotePreview.mouseover
-        $.on link, 'mousemove', ui.hover
-        $.on link, 'mouseout',  quotePreview.mouseout
       if conf['Quote Inline']
         $.on link, 'click', quoteInline.toggle
       unless (container = $ '.container', el) and container.parentNode is el
@@ -2315,10 +2313,8 @@ quotePreview =
     g.callbacks.push @node
   node: (root) ->
     for quote in $$ '.quotelink, .backlink', root
-      continue unless quote.hash
-      $.on quote, 'mouseover', quotePreview.mouseover
-      $.on quote, 'mousemove', ui.hover
-      $.on quote, 'mouseout',  quotePreview.mouseout
+      $.on quote, 'mouseover', quotePreview.mouseover if quote.hash
+    return
   mouseover: (e) ->
     qp = ui.el = $.el 'div',
       id: 'qp'
@@ -2339,9 +2335,14 @@ quotePreview =
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
       ui.hover e
+    $.on @, 'mousemove', ui.hover
+    $.on @, 'mouseout',  quotePreview.mouseout
   mouseout: ->
-    $.removeClass el, 'qphl' if el = $.id @hash[1..]
+    if el = $.id @hash[1..]
+      $.removeClass el, 'qphl'
     ui.hoverend()
+    $.off @, 'mousemove', ui.hover
+    $.off @, 'mouseout',  quotePreview.mouseout
   parse: (req, id, threadID) ->
     return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")
 

@@ -2797,11 +2797,7 @@
           continue;
         }
         link = a.cloneNode(true);
-        if (conf['Quote Preview']) {
-          $.on(link, 'mouseover', quotePreview.mouseover);
-          $.on(link, 'mousemove', ui.hover);
-          $.on(link, 'mouseout', quotePreview.mouseout);
-        }
+        if (conf['Quote Preview']) $.on(link, 'mouseover', quotePreview.mouseover);
         if (conf['Quote Inline']) $.on(link, 'click', quoteInline.toggle);
         if (!((container = $('.container', el)) && container.parentNode === el)) {
           container = $.el('span', {
@@ -2945,20 +2941,15 @@
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var quote, _i, _len, _ref, _results;
+      var quote, _i, _len, _ref;
       _ref = $$('.quotelink, .backlink', root);
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!quote.hash) continue;
-        $.on(quote, 'mouseover', quotePreview.mouseover);
-        $.on(quote, 'mousemove', ui.hover);
-        _results.push($.on(quote, 'mouseout', quotePreview.mouseout));
+        if (quote.hash) $.on(quote, 'mouseover', quotePreview.mouseover);
       }
-      return _results;
     },
     mouseover: function(e) {
-      var el, id, qp, quote, replyID, threadID, _i, _len, _ref, _results;
+      var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
       qp = ui.el = $.el('div', {
         id: 'qp',
         className: 'reply dialog'
@@ -2971,16 +2962,10 @@
         if (/\bbacklink\b/.test(this.className)) {
           replyID = $.x('preceding-sibling::input', this.parentNode).name;
           _ref = $$('.quotelink', qp);
-          _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             quote = _ref[_i];
-            if (quote.hash.slice(1) === replyID) {
-              _results.push(quote.className = 'forwardlink');
-            } else {
-              _results.push(void 0);
-            }
+            if (quote.hash.slice(1) === replyID) quote.className = 'forwardlink';
           }
-          return _results;
         }
       } else {
         qp.innerHTML = "Loading " + id + "...";
@@ -2988,13 +2973,17 @@
         $.cache(this.pathname, (function() {
           return quotePreview.parse(this, id, threadID);
         }));
-        return ui.hover(e);
+        ui.hover(e);
       }
+      $.on(this, 'mousemove', ui.hover);
+      return $.on(this, 'mouseout', quotePreview.mouseout);
     },
     mouseout: function() {
       var el;
       if (el = $.id(this.hash.slice(1))) $.removeClass(el, 'qphl');
-      return ui.hoverend();
+      ui.hoverend();
+      $.off(this, 'mousemove', ui.hover);
+      return $.off(this, 'mouseout', quotePreview.mouseout);
     },
     parse: function(req, id, threadID) {
       var body, html, op, qp, reply, _i, _len, _ref;
