@@ -1262,7 +1262,9 @@
       qr.cooldown.auto = false;
       qr.status();
       qr.resetFileInput();
-      if ((spoiler = $.id('spoiler')).checked) spoiler.click();
+      if (!conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
+        spoiler.click();
+      }
       return qr.cleanError();
     },
     hide: function() {

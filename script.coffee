@@ -922,7 +922,8 @@ qr =
     qr.cooldown.auto = false
     qr.status()
     qr.resetFileInput()
-    spoiler.click() if (spoiler = $.id 'spoiler').checked
+    if not conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
+      spoiler.click()
     qr.cleanError()
   hide: ->
     d.activeElement.blur()
