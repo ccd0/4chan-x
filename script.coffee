@@ -1132,10 +1132,15 @@ qr =
       e.dataTransfer.dropEffect = 'move'
     drop: ->
       el     = $ '.drag', @parentNode
-      index  = -> Array::slice.call(el.parentNode.children).indexOf el
-      reply = qr.replies.splice(index(), 1)[0]
-      $.before @, el
-      qr.replies.splice index(), 0, reply
+      index  = (el) -> Array::slice.call(el.parentNode.children).indexOf el
+      oldIndex = index el
+      newIndex = index @
+      if oldIndex < newIndex
+        $.after  @, el
+      else
+        $.before @, el
+      reply = qr.replies.splice(oldIndex, 1)[0]
+      qr.replies.splice newIndex, 0, reply
     dragEnd: ->
       $.removeClass @, 'drag'
       $.removeClass $('.over', @parentNode), 'over'

@@ -1511,14 +1511,20 @@
       };
 
       _Class.prototype.drop = function() {
-        var el, index, reply;
+        var el, index, newIndex, oldIndex, reply;
         el = $('.drag', this.parentNode);
-        index = function() {
+        index = function(el) {
           return Array.prototype.slice.call(el.parentNode.children).indexOf(el);
         };
-        reply = qr.replies.splice(index(), 1)[0];
-        $.before(this, el);
-        return qr.replies.splice(index(), 0, reply);
+        oldIndex = index(el);
+        newIndex = index(this);
+        if (oldIndex < newIndex) {
+          $.after(this, el);
+        } else {
+          $.before(this, el);
+        }
+        reply = qr.replies.splice(oldIndex, 1)[0];
+        return qr.replies.splice(newIndex, 0, reply);
       };
 
       _Class.prototype.dragEnd = function() {
