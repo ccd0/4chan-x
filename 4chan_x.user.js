@@ -1528,8 +1528,9 @@
       };
 
       _Class.prototype.dragEnd = function() {
+        var el;
         $.removeClass(this, 'drag');
-        return $.removeClass($('.over', this.parentNode), 'over');
+        if (el = $('.over', this.parentNode)) return $.removeClass(el, 'over');
       };
 
       _Class.prototype.rm = function() {

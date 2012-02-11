@@ -1143,7 +1143,8 @@ qr =
       qr.replies.splice newIndex, 0, reply
     dragEnd: ->
       $.removeClass @, 'drag'
-      $.removeClass $('.over', @parentNode), 'over'
+      if el = $ '.over', @parentNode
+        $.removeClass el, 'over'
     rm: ->
       qr.resetFileInput()
       $.rm @el
