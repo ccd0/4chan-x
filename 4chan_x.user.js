@@ -3735,6 +3735,7 @@ a[href="javascript:;"] {\
   height: 90px; width: 90px;\
   margin: 5px; padding: 2px;\
   opacity: .5;\
+  outline: none;\
   overflow: hidden;\
   position: relative;\
   text-shadow: 0 1px 1px #000;\
