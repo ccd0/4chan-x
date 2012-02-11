@@ -2629,40 +2629,46 @@
 
   sauce = {
     init: function() {
-      var domain, fc, link, links, _i, _len;
-      links = conf['sauces'].match(/^[^#].+$/gm);
-      if (!links.length) return;
+      var link, _i, _len, _ref;
       this.links = [];
-      for (_i = 0, _len = links.length; _i < _len; _i++) {
-        link = links[_i];
-        domain = link.match(/(\w+)\.\w+\//)[1];
-        fc = link.replace(/\$\d/, function(fragment) {
-          switch (fragment) {
-            case '$1':
-              return "' + img.src + '";
-            case '$2':
-              return "' + img.parentNode.href + '";
-            case '$3':
-              return "' + img.getAttribute('md5').replace(/\=*$/, '') + '";
-          }
-        });
-        this.links.push([Function('img', "return '" + fc + "'"), domain]);
+      _ref = conf['sauces'].match(/^[^#].+$/gm);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        this.links.push(this.funk(link));
       }
+      if (!this.links.length) return;
       return g.callbacks.push(this.node);
     },
+    funk: function(link) {
+      var domain, href;
+      domain = link.match(/(\w+)\.\w+\//)[1];
+      href = link.replace(/(\$\d)/, function(fragment) {
+        switch (fragment) {
+          case '$1':
+            return "http://thumbs.4chan.org' + img.parentNode.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '";
+          case '$2':
+            return "' + img.parentNode.href + '";
+          case '$3':
+            return "' + img.getAttribute('md5').replace(/\=*$/, '') + '";
+        }
+      });
+      href = Function('img', "return '" + href + "'");
+      return function(img) {
+        return $.el('a', {
+          href: href(img),
+          target: '_blank',
+          textContent: domain
+        });
+      };
+    },
     node: function(root) {
-      var a, img, link, span, _i, _len, _ref;
+      var img, link, span, _i, _len, _ref;
       if (root.className === 'inline' || !(span = $('.filesize', root))) return;
       img = $('img', root);
       _ref = sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
-        a = $.el('a', {
-          href: link[0](img),
-          target: '_blank',
-          textContent: link[1]
-        });
-        $.add(span, $.tn(' '), a);
+        $.add(span, $.tn(' '), link(img));
       }
     }
   };
@@ -2672,14 +2678,13 @@
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var board, img, imgID, _, _ref;
-      if (!(img = $('img[alt^=Spoiler]', root)) || root.className === 'inline') {
+      var img;
+      if (!(img = $('img[alt^=Spoil]', root)) || root.className === 'inline') {
         return;
       }
       img.removeAttribute('height');
       img.removeAttribute('width');
-      _ref = img.parentNode.href.match(/(\w+)\/src\/(\d+)/), _ = _ref[0], board = _ref[1], imgID = _ref[2];
-      return img.src = "http://0.thumbs.4chan.org/" + board + "/thumb/" + imgID + "s.jpg";
+      return img.src = "http://thumbs.4chan.org" + (img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg'));
     }
   };
 

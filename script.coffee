@@ -2085,41 +2085,44 @@ anonymize =
 
 sauce =
   init: ->
-    links = conf['sauces'].match /^[^#].+$/gm
-    return unless links.length
     @links = []
-    for link in links
-      domain = link.match(/(\w+)\.\w+\//)[1]
-      fc = link.replace /\$\d/, (fragment) ->
-        switch fragment
-          when '$1'
-            "' + img.src + '"
-          when '$2'
-            "' + img.parentNode.href + '"
-          when '$3'
-            "' + img.getAttribute('md5').replace(/\=*$/, '') + '"
-      @links.push [Function('img', "return '#{fc}'"), domain]
+    for link in conf['sauces'].match /^[^#].+$/gm
+      @links.push @funk link
+    return unless @links.length
     g.callbacks.push @node
+
+  funk: (link) ->
+    domain = link.match(/(\w+)\.\w+\//)[1]
+    href   = link.replace /(\$\d)/, (fragment) ->
+      switch fragment
+        when '$1'
+          "http://thumbs.4chan.org' + img.parentNode.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '"
+        when '$2'
+          "' + img.parentNode.href + '"
+        when '$3'
+          "' + img.getAttribute('md5').replace(/\=*$/, '') + '"
+    href = Function 'img', "return '#{href}'"
+    (img) ->
+      $.el 'a',
+        href: href img
+        target: '_blank'
+        textContent: domain
+
   node: (root) ->
     return if root.className is 'inline' or not span = $ '.filesize', root
     img = $ 'img', root
     for link in sauce.links
-      a = $.el 'a',
-        href: link[0] img
-        target: '_blank'
-        textContent: link[1]
-      $.add span, $.tn(' '), a
+      $.add span, $.tn(' '), link img
     return
 
 revealSpoilers =
   init: ->
     g.callbacks.push @node
   node: (root) ->
-    return if not (img = $ 'img[alt^=Spoiler]', root) or root.className is 'inline'
+    return if not (img = $ 'img[alt^=Spoil]', root) or root.className is 'inline'
     img.removeAttribute 'height'
     img.removeAttribute 'width'
-    [_, board, imgID] = img.parentNode.href.match /(\w+)\/src\/(\d+)/
-    img.src = "http://0.thumbs.4chan.org/#{board}/thumb/#{imgID}s.jpg"
+    img.src = "http://thumbs.4chan.org#{img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg')}"
 
 Time =
   init: ->
