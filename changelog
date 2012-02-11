@@ -1,7 +1,9 @@
 master
+
+2.26.1
 - Mayhem
   You can now drag replies in the dump list to reorder them.
-  Fix sauce links for spoiler thumbnails.
+  Fix sauce links with spoiled thumbnails.
 
 2.26.0
 - desuwa
