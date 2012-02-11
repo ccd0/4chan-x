@@ -1539,18 +1539,12 @@ qr =
 
 options =
   init: ->
-    home = $ '#navtopr a'
-    a = $.el 'a',
-      textContent: '4chan X'
-      href: 'javascript:;'
-    $.on a, 'click', options.dialog
-    $.replace home, a
-    home = $ '#navbotr a'
-    a = $.el 'a',
-      textContent: '4chan X'
-      href: 'javascript:;'
-    $.on a, 'click', options.dialog
-    $.replace home, a
+    for home in [$.id('navtopr'), $.id('navbotr')]
+      a = $.el 'a',
+        textContent: '4chan X'
+        href: 'javascript:;'
+      $.on a, 'click', options.dialog
+      $.replace home.firstElementChild, a
     unless $.get 'firstrun'
       $.set 'firstrun', true
       options.dialog()

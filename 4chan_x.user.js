@@ -1994,21 +1994,17 @@
 
   options = {
     init: function() {
-      var a, home;
-      home = $('#navtopr a');
-      a = $.el('a', {
-        textContent: '4chan X',
-        href: 'javascript:;'
-      });
-      $.on(a, 'click', options.dialog);
-      $.replace(home, a);
-      home = $('#navbotr a');
-      a = $.el('a', {
-        textContent: '4chan X',
-        href: 'javascript:;'
-      });
-      $.on(a, 'click', options.dialog);
-      $.replace(home, a);
+      var a, home, _i, _len, _ref;
+      _ref = [$.id('navtopr'), $.id('navbotr')];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        home = _ref[_i];
+        a = $.el('a', {
+          textContent: '4chan X',
+          href: 'javascript:;'
+        });
+        $.on(a, 'click', options.dialog);
+        $.replace(home.firstElementChild, a);
+      }
       if (!$.get('firstrun')) {
         $.set('firstrun', true);
         return options.dialog();
