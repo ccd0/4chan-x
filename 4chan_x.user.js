@@ -1431,6 +1431,7 @@
         this.com = null;
         this.el = $.el('a', {
           className: 'preview',
+          draggable: true,
           href: 'javascript:;',
           innerHTML: '<a class=remove>x</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
         });
@@ -1452,6 +1453,12 @@
           }
         });
         $.before($('#addReply', qr.el), this.el);
+        $.on(this.el, 'dragstart', this.dragStart);
+        $.on(this.el, 'dragenter', this.dragEnter);
+        $.on(this.el, 'dragleave', this.dragLeave);
+        $.on(this.el, 'dragover', this.dragOver);
+        $.on(this.el, 'dragend', this.dragEnd);
+        $.on(this.el, 'drop', this.drop);
         qr.replies.push(this);
       }
 
@@ -1484,6 +1491,39 @@
           $("[name=" + data + "]", qr.el).value = this[data];
         }
         return $('#spoiler', qr.el).checked = this.spoiler;
+      };
+
+      _Class.prototype.dragStart = function() {
+        return $.addClass(this, 'drag');
+      };
+
+      _Class.prototype.dragEnter = function() {
+        return $.addClass(this, 'over');
+      };
+
+      _Class.prototype.dragLeave = function() {
+        return $.removeClass(this, 'over');
+      };
+
+      _Class.prototype.dragOver = function(e) {
+        e.preventDefault();
+        return e.dataTransfer.dropEffect = 'move';
+      };
+
+      _Class.prototype.drop = function() {
+        var el, index, reply;
+        el = $('.drag', this.parentNode);
+        index = function() {
+          return Array.prototype.slice.call(el.parentNode.children).indexOf(el);
+        };
+        reply = qr.replies.splice(index(), 1)[0];
+        $.before(this, el);
+        return qr.replies.splice(index(), 0, reply);
+      };
+
+      _Class.prototype.dragEnd = function() {
+        $.removeClass(this, 'drag');
+        return $.removeClass($('.over', this.parentNode), 'over');
       };
 
       _Class.prototype.rm = function() {
@@ -3631,7 +3671,7 @@ a[href="javascript:;"] {\
 #qr > .move > span {\
   float: right;\
 }\
-#autohide, .close, #qr select, #dump, .captcha, #qr .warning {\
+#autohide, .close, #qr select, #dump, .remove, .captcha, #qr .warning {\
   cursor: pointer;\
 }\
 #qr select,\
@@ -3689,6 +3729,7 @@ a[href="javascript:;"] {\
   border: 1px solid #666;\
   box-sizing: border-box;\
   -moz-box-sizing: border-box;\
+  cursor: move;\
   display: inline-block;\
   height: 90px; width: 90px;\
   margin: 5px; padding: 2px;\
@@ -3696,10 +3737,10 @@ a[href="javascript:;"] {\
   overflow: hidden;\
   position: relative;\
   text-shadow: 0 1px 1px #000;\
-  -webkit-transition: opacity .25s;\
-  -moz-transition: opacity .25s;\
-  -o-transition: opacity .25s;\
-  transition: opacity .25s;\
+  -webkit-transition: .25s ease-in-out;\
+  -moz-transition: .25s ease-in-out;\
+  -o-transition: .25s ease-in-out;\
+  transition: .25s ease-in-out;\
   vertical-align: top;\
 }\
 .preview:hover, .preview:focus {\
@@ -3707,6 +3748,12 @@ a[href="javascript:;"] {\
 }\
 .preview#selected {\
   opacity: 1;\
+}\
+.preview.drag {\
+  box-shadow: 0 0 10px rgba(0,0,0,.5);\
+}\
+.preview.over {\
+  border-color: #FFF;\
 }\
 .preview > span {\
   color: #FFF;\

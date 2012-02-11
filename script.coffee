@@ -1077,6 +1077,7 @@ qr =
 
       @el = $.el 'a',
         className: 'preview'
+        draggable: true
         href: 'javascript:;'
         innerHTML: '<a class=remove>x</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
       $('input', @el).checked = @spoiler
@@ -1089,6 +1090,13 @@ qr =
         @spoiler = e.target.checked
         $.id('spoiler').checked = @spoiler if @el.id is 'selected'
       $.before $('#addReply', qr.el), @el
+
+      $.on @el, 'dragstart', @dragStart
+      $.on @el, 'dragenter', @dragEnter
+      $.on @el, 'dragleave', @dragLeave
+      $.on @el, 'dragover',  @dragOver
+      $.on @el, 'dragend',   @dragEnd
+      $.on @el, 'drop',      @drop
 
       qr.replies.push @
     setFile: (@file) ->
@@ -1113,6 +1121,24 @@ qr =
       for data in ['name', 'email', 'sub', 'com']
         $("[name=#{data}]", qr.el).value = @[data]
       $('#spoiler', qr.el).checked = @spoiler
+    dragStart: ->
+      $.addClass    @, 'drag'
+    dragEnter: ->
+      $.addClass    @, 'over'
+    dragLeave: ->
+      $.removeClass @, 'over'
+    dragOver: (e) ->
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'move'
+    drop: ->
+      el     = $ '.drag', @parentNode
+      index  = -> Array::slice.call(el.parentNode.children).indexOf el
+      reply = qr.replies.splice(index(), 1)[0]
+      $.before @, el
+      qr.replies.splice index(), 0, reply
+    dragEnd: ->
+      $.removeClass @, 'drag'
+      $.removeClass $('.over', @parentNode), 'over'
     rm: ->
       qr.resetFileInput()
       $.rm @el
@@ -2909,7 +2935,7 @@ a[href="javascript:;"] {
 #qr > .move > span {
   float: right;
 }
-#autohide, .close, #qr select, #dump, .captcha, #qr .warning {
+#autohide, .close, #qr select, #dump, .remove, .captcha, #qr .warning {
   cursor: pointer;
 }
 #qr select,
@@ -2967,6 +2993,7 @@ a[href="javascript:;"] {
   border: 1px solid #666;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
+  cursor: move;
   display: inline-block;
   height: 90px; width: 90px;
   margin: 5px; padding: 2px;
@@ -2974,10 +3001,10 @@ a[href="javascript:;"] {
   overflow: hidden;
   position: relative;
   text-shadow: 0 1px 1px #000;
-  -webkit-transition: opacity .25s;
-  -moz-transition: opacity .25s;
-  -o-transition: opacity .25s;
-  transition: opacity .25s;
+  -webkit-transition: .25s ease-in-out;
+  -moz-transition: .25s ease-in-out;
+  -o-transition: .25s ease-in-out;
+  transition: .25s ease-in-out;
   vertical-align: top;
 }
 .preview:hover, .preview:focus {
@@ -2985,6 +3012,12 @@ a[href="javascript:;"] {
 }
 .preview#selected {
   opacity: 1;
+}
+.preview.drag {
+  box-shadow: 0 0 10px rgba(0,0,0,.5);
+}
+.preview.over {
+  border-color: #FFF;
 }
 .preview > span {
   color: #FFF;
