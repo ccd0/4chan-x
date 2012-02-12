@@ -2652,11 +2652,11 @@
       href = link.replace(/(\$\d)/, function(fragment) {
         switch (fragment) {
           case '$1':
-            return "http://thumbs.4chan.org' + img.parentNode.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '";
+            return "http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '";
           case '$2':
-            return "' + img.parentNode.href + '";
+            return "' + img.href + '";
           case '$3':
-            return "' + img.getAttribute('md5').replace(/\=*$/, '') + '";
+            return "' + img.firstChild.getAttribute('md5').replace(/\=*$/, '') + '";
         }
       });
       href = Function('img', "return '" + href + "'");
@@ -2671,7 +2671,7 @@
     node: function(root) {
       var img, link, span, _i, _len, _ref;
       if (root.className === 'inline' || !(span = $('.filesize', root))) return;
-      img = $('img', root);
+      img = span.nextElementSibling.nextElementSibling;
       _ref = sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];

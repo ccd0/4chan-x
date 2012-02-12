@@ -2102,11 +2102,11 @@ sauce =
     href   = link.replace /(\$\d)/, (fragment) ->
       switch fragment
         when '$1'
-          "http://thumbs.4chan.org' + img.parentNode.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '"
+          "http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '"
         when '$2'
-          "' + img.parentNode.href + '"
+          "' + img.href + '"
         when '$3'
-          "' + img.getAttribute('md5').replace(/\=*$/, '') + '"
+          "' + img.firstChild.getAttribute('md5').replace(/\=*$/, '') + '"
     href = Function 'img', "return '#{href}'"
     (img) ->
       $.el 'a',
@@ -2116,7 +2116,7 @@ sauce =
 
   node: (root) ->
     return if root.className is 'inline' or not span = $ '.filesize', root
-    img = $ 'img', root
+    img = span.nextElementSibling.nextElementSibling
     for link in sauce.links
       $.add span, $.tn(' '), link img
     return
