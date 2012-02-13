@@ -2091,6 +2091,7 @@ anonymize =
 
 sauce =
   init: ->
+    return if g.BOARD is 'f'
     @links = []
     for link in conf['sauces'].match /^[^#].+$/gm
       @links.push @funk link

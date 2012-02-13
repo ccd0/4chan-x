@@ -2637,6 +2637,7 @@
   sauce = {
     init: function() {
       var link, _i, _len, _ref;
+      if (g.BOARD === 'f') return;
       this.links = [];
       _ref = conf['sauces'].match(/^[^#].+$/gm);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
