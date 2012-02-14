@@ -71,7 +71,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base,
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, message, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base,
     __slice = Array.prototype.slice;
 
   config = {
@@ -1191,7 +1191,7 @@
 
   qr = {
     init: function() {
-      var form, iframe, link, loadChecking;
+      var form, link;
       if (!$.id('recaptcha_challenge_field_holder')) return;
       if (conf['Hide Original Post Form']) {
         link = $.el('h1', {
@@ -1205,26 +1205,6 @@
         $.before(form, link);
       }
       g.callbacks.push(this.node);
-      iframe = $.el('iframe', {
-        id: 'iframe',
-        hidden: true,
-        src: 'http://sys.4chan.org/robots.txt'
-      });
-      $.on(iframe, 'error', function() {
-        return this.src = this.src;
-      });
-      loadChecking = function(iframe) {
-        if (!qr.status.ready) {
-          iframe.src = 'about:blank';
-          return setTimeout((function() {
-            return iframe.src = 'http://sys.4chan.org/robots.txt';
-          }), 250);
-        }
-      };
-      $.on(iframe, 'load', function() {
-        if (this.src !== 'about:blank') return setTimeout(loadChecking, 500, this);
-      });
-      $.add(d.body, iframe);
       if (conf['Persistent QR']) {
         qr.dialog();
         if (conf['Auto Hide QR']) qr.hide();
@@ -1249,9 +1229,9 @@
     close: function() {
       var i, spoiler, _i, _len, _ref;
       qr.el.hidden = true;
-      qr.message.send({
+      message.send({
         req: 'abort'
-      });
+      }, 'sys');
       d.activeElement.blur();
       $.removeClass(qr.el, 'dump');
       _ref = qr.replies;
@@ -1721,7 +1701,6 @@
       qr.status();
       qr.cooldown.init();
       qr.captcha.init();
-      qr.message.init();
       $.add(d.body, qr.el);
       e = d.createEvent('CustomEvent');
       e.initEvent('QRDialogCreation', true, false);
@@ -1735,9 +1714,9 @@
         qr.status();
         return;
       }
-      qr.message.send({
+      message.send({
         req: 'abort'
-      });
+      }, 'sys');
       reply = qr.replies[0];
       if (!(reply.com || reply.file)) {
         err = 'No file selected.';
@@ -1795,12 +1774,12 @@
           file.name = reply.file.name;
           file.type = reply.file.type;
           post.upfile = file;
-          return qr.message.send(post);
+          return message.send(post, 'sys');
         };
         reader.readAsBinaryString(reply.file);
         return;
       }
-      return qr.message.send(post);
+      return message.send(post, 'sys');
     },
     response: function(html) {
       var b, err, node, persona, postNumber, reply, thread, _, _ref;
@@ -1852,150 +1831,93 @@
       qr.status();
       return qr.resetFileInput();
     },
-    message: {
-      init: function() {
-        var code, ready, script;
-        code = function(e) {
-          var data, host;
-          data = e.data;
-          if (!data.changeContext) return;
-          delete data.changeContext;
-          host = location.hostname;
-          if (host === 'boards.4chan.org') {
-            return document.getElementById('iframe').contentWindow.postMessage(data, '*');
-          } else if (host === 'sys.4chan.org') {
-            return parent.postMessage(data, '*');
-          }
-        };
-        script = $.el('script', {
-          textContent: "window.addEventListener('message'," + code + ",false)"
-        });
-        ready = function() {
-          $.add(d.documentElement, script);
-          if (location.hostname === 'sys.4chan.org') {
-            qr.message.send({
-              req: 'status',
-              ready: true
-            });
-          }
-          return $.rm(script);
-        };
-        if (d.documentElement) {
-          return ready();
-        } else {
-          return $.ready(ready);
-        }
-      },
-      send: function(data) {
-        data.changeContext = true;
-        data.qr = true;
-        return postMessage(data, '*');
-      },
-      receive: function(data) {
-        var _ref;
-        switch (data.req) {
-          case 'abort':
-            if ((_ref = qr.ajax) != null) _ref.abort();
-            return qr.message.send({
-              req: 'status'
-            });
-          case 'response':
-            return qr.response(data.html);
-          case 'status':
-            return qr.status(data);
-          default:
-            return qr.message.post(data);
-        }
-      },
-      post: function(data) {
-        var boundary, callbacks, form, i, name, opts, parts, toBin, url, val;
-        url = "http://sys.4chan.org/" + data.board + "/post";
-        delete data.board;
-        delete data.qr;
-        if (engine === 'gecko' && data.upfile) {
-          if (!data.binary) {
-            toBin = function(data, name, val) {
-              var bb, r;
-              bb = new MozBlobBuilder();
-              bb.append(val);
-              r = new FileReader();
-              r.onload = function() {
-                data[name] = r.result;
-                if (!--i) return qr.message.post(data);
-              };
-              return r.readAsBinaryString(bb.getBlob('text/plain'));
+    post: function(data) {
+      var boundary, callbacks, form, i, name, opts, parts, toBin, url, val;
+      url = "http://sys.4chan.org/" + data.board + "/post";
+      delete data.board;
+      if (engine === 'gecko' && data.upfile) {
+        if (!data.binary) {
+          toBin = function(data, name, val) {
+            var bb, r;
+            bb = new MozBlobBuilder();
+            bb.append(val);
+            r = new FileReader();
+            r.onload = function() {
+              data[name] = r.result;
+              if (!--i) return qr.post(data);
             };
-            i = Object.keys(data).length;
-            for (name in data) {
-              val = data[name];
-              if (typeof val === 'object') {
-                toBin(data.upfile, 'name', data.upfile.name);
-              } else if (typeof val === 'boolean') {
-                if (val) {
-                  toBin(data, name, String(val));
-                } else {
-                  i--;
-                }
+            return r.readAsBinaryString(bb.getBlob('text/plain'));
+          };
+          i = Object.keys(data).length;
+          for (name in data) {
+            val = data[name];
+            if (typeof val === 'object') {
+              toBin(data.upfile, 'name', data.upfile.name);
+            } else if (typeof val === 'boolean') {
+              if (val) {
+                toBin(data, name, String(val));
               } else {
-                toBin(data, name, val);
+                i--;
               }
-            }
-            data.board = url.split('/')[3];
-            data.binary = true;
-            return;
-          }
-          delete data.binary;
-          boundary = '-------------SMCD' + Date.now();
-          parts = [];
-          parts.push('Content-Disposition: form-data; name="upfile"; filename="' + data.upfile.name + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n');
-          delete data.upfile;
-          for (name in data) {
-            val = data[name];
-            if (val) {
-              parts.push('Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n');
+            } else {
+              toBin(data, name, val);
             }
           }
-          form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n';
-        } else {
-          form = new FormData();
-          for (name in data) {
-            val = data[name];
-            if (val) form.append(name, val);
+          data.board = url.split('/')[3];
+          data.binary = true;
+          return;
+        }
+        delete data.binary;
+        boundary = '-------------SMCD' + Date.now();
+        parts = [];
+        parts.push('Content-Disposition: form-data; name="upfile"; filename="' + data.upfile.name + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n');
+        delete data.upfile;
+        for (name in data) {
+          val = data[name];
+          if (val) {
+            parts.push('Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n');
           }
         }
-        callbacks = {
+        form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n';
+      } else {
+        form = new FormData();
+        for (name in data) {
+          val = data[name];
+          if (val) form.append(name, val);
+        }
+      }
+      callbacks = {
+        onload: function() {
+          return message.send({
+            req: 'response',
+            html: this.response
+          });
+        }
+      };
+      opts = {
+        form: form,
+        type: 'post',
+        upCallbacks: {
           onload: function() {
-            return qr.message.send({
-              req: 'response',
-              html: this.response
+            return message.send({
+              req: 'status',
+              progress: '...'
+            });
+          },
+          onprogress: function(e) {
+            return message.send({
+              req: 'status',
+              progress: "" + (Math.round(e.loaded / e.total * 100)) + "%"
             });
           }
-        };
-        opts = {
-          form: form,
-          type: 'post',
-          upCallbacks: {
-            onload: function() {
-              return qr.message.send({
-                req: 'status',
-                progress: '...'
-              });
-            },
-            onprogress: function(e) {
-              return qr.message.send({
-                req: 'status',
-                progress: "" + (Math.round(e.loaded / e.total * 100)) + "%"
-              });
-            }
-          }
-        };
-        if (boundary) {
-          opts.headers = {
-            'Content-Type': 'multipart/form-data;boundary=' + boundary
-          };
         }
-        return qr.ajax = $.ajax(url, callbacks, opts);
+      };
+      if (boundary) {
+        opts.headers = {
+          'Content-Type': 'multipart/form-data;boundary=' + boundary
+        };
       }
+      return qr.ajax = $.ajax(url, callbacks, opts);
     }
   };
 
@@ -2430,9 +2352,9 @@
             d.title = d.title.match(/^.+-/)[0] + ' 404';
           }
           unread.update(true);
-          qr.message.send({
+          message.send({
             req: 'abort'
-          });
+          }, 'sys');
           qr.status();
           Favicon.update();
           return;
@@ -3488,6 +3410,113 @@
     }
   };
 
+  message = {
+    init: function() {
+      var code, script;
+      $.on(window, 'message', message.receive);
+      $.ready(function() {
+        var domain, domains, iframe, _i, _len, _results;
+        if (location.hostname !== 'boards.4chan.org') return;
+        domains = [];
+        if (conf['Quick Reply']) domains.push('sys');
+        if (conf['Image Expansion'] || conf['Sauce']) domains.push('images');
+        _results = [];
+        for (_i = 0, _len = domains.length; _i < _len; _i++) {
+          domain = domains[_i];
+          iframe = $.el('iframe', {
+            id: domain,
+            hidden: true,
+            src: "http://" + domain + ".4chan.org/robots.txt"
+          });
+          $.on(iframe, 'error', message.loadControl);
+          $.on(iframe, 'load', message.loadControl);
+          _results.push($.add(d.body, iframe));
+        }
+        return _results;
+      });
+      code = function(e) {
+        var data;
+        data = e.data;
+        if (!data.changeContext) return;
+        delete data.changeContext;
+        if (location.hostname === 'boards.4chan.org') {
+          return document.getElementById(data.iframe).contentWindow.postMessage(data, '*');
+        } else {
+          return parent.postMessage(data, '*');
+        }
+      };
+      script = $.el('script', {
+        textContent: "window.addEventListener('message'," + code + ",false)"
+      });
+      return $.ready(function() {
+        var host;
+        $.add(d.documentElement, script);
+        host = location.hostname;
+        if (host === 'sys.4chan.org') {
+          message.send({
+            req: 'status',
+            ready: true
+          });
+        }
+        if (host !== 'boards.4chan.org') {
+          message.send({
+            req: 'iframeLoad',
+            id: location.hostname.split('.')[0]
+          });
+        }
+        return $.rm(script);
+      });
+    },
+    loadControl: function() {
+      var _this = this;
+      return setTimeout((function() {
+        if (_this.src === 'about:blank' || message[_this.id] === 'ready') return;
+        _this.src = 'about:blank';
+        return setTimeout((function() {
+          return _this.src = "http://" + _this.id + ".4chan.org/robots.txt";
+        }), 250);
+      }), 1000);
+    },
+    receive: function(e) {
+      var data, version;
+      data = e.data;
+      if (data.iframe) {
+        if (!data.changeContext) message.handle(data);
+        return;
+      }
+      version = data.version;
+      if (version && version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
+        return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + version + "/4chan_x.user.js";
+      }
+    },
+    send: function(data, iframe) {
+      data.changeContext = true;
+      data.iframe = iframe || 'boards';
+      return postMessage(data, '*');
+    },
+    handle: function(data) {
+      var req, _ref;
+      req = data.req;
+      delete data.req;
+      delete data.iframe;
+      switch (req) {
+        case 'iframeLoad':
+          return message[data.id] = 'ready';
+        case 'abort':
+          if ((_ref = qr.ajax) != null) _ref.abort();
+          return message.send({
+            req: 'status'
+          });
+        case 'response':
+          return qr.response(data.html);
+        case 'status':
+          return qr.status(data);
+        default:
+          return qr.post(data);
+      }
+    }
+  };
+
   Main = {
     init: function() {
       var cutoff, hiddenThreads, id, now, pathname, temp, timestamp, _ref;
@@ -3499,11 +3528,9 @@
       } else {
         g.PAGENUM = parseInt(temp) || 0;
       }
-      $.on(window, 'message', Main.message);
+      message.init();
       if (location.hostname === 'sys.4chan.org') {
-        if (location.pathname === '/robots.txt') {
-          qr.message.init();
-        } else if (/report/.test(location.search)) {
+        if (/report/.test(location.search)) {
           $.ready(function() {
             return $.on($('#recaptcha_response_field'), 'keydown', function(e) {
               if (e.keyCode === 8 && !e.target.value) {
@@ -3617,16 +3644,6 @@
         return $.addStyle(Main.css);
       } else {
         return $.on(d, 'DOMNodeInserted', Main.addStyle);
-      }
-    },
-    message: function(e) {
-      var data, version;
-      data = e.data;
-      version = data.version;
-      if (data.qr && !data.changeContext) {
-        return qr.message.receive(data);
-      } else if (version && version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
-        return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + version + "/4chan_x.user.js";
       }
     },
     node: function(e) {
