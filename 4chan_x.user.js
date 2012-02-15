@@ -1348,7 +1348,7 @@
       if (!g.REPLY) {
         $('select', qr.el).value = $.x('ancestor::div[@class="thread"]/div', this).id;
       }
-      id = this.textContent;
+      id = this.hash.slice(2);
       text = ">>" + id + "\n";
       sel = window.getSelection();
       if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote/preceding-sibling::input', sel.anchorNode)) != null ? _ref.name : void 0)) {

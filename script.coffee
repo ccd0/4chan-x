@@ -996,7 +996,8 @@ qr =
     unless g.REPLY
       $('select', qr.el).value = $.x('ancestor::div[@class="thread"]/div', @).id
 
-    id = @textContent
+    # Make sure we get the correct number, even with XXX censors
+    id = @hash[2..]
     text = ">>#{id}\n"
 
     sel = window.getSelection()
