@@ -2,6 +2,7 @@ config =
   main:
     Enhancing:
       '404 Redirect':                 [true,  'Redirect dead threads and images']
+      'Fix XXX\'d Post Numbers':      [true,  'Replace XXX\'d post numbers with their actual number']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'Report Button':                [true,  'Add report buttons']
@@ -868,6 +869,21 @@ nav =
     {top} = nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
 
+unxify =
+  init: ->
+    g.callbacks.push @node
+  node: (root) ->
+    if unxify.censor is false
+      # Don't execute on safe boards
+      return
+    if unxify.censor is undefined
+      # Test if the board's censored
+      unxify.censor = /\D/.test $('.quotejs + .quotejs', root).textContent
+      unxify.node root
+      return
+    quote = $ '.quotejs + .quotejs', root
+    quote.textContent = quote.previousElementSibling.hash[1..]
+
 qr =
   init: ->
     return unless $.id 'recaptcha_challenge_field_holder'
@@ -997,7 +1013,7 @@ qr =
       $('select', qr.el).value = $.x('ancestor::div[@class="thread"]/div', @).id
 
     # Make sure we get the correct number, even with XXX censors
-    id = @hash[2..]
+    id = @previousElementSibling.hash[1..]
     text = ">>#{id}\n"
 
     sel = window.getSelection()
@@ -2809,6 +2825,9 @@ Main =
 
     if conf['Indicate Cross-thread Quotes']
       quoteDR.init()
+
+    if conf['Fix XXX\'d Post Numbers']
+      unxify.init()
 
     if conf['Quick Reply'] and conf['Hide Original Post Form']
       Main.css += 'form[name=post] { display: none; }'

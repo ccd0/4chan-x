@@ -1,5 +1,6 @@
 master
 - Mayhem
+  New option to fix XXX'd post numbers.
   Fix post number quoting on /b/ and /v/.
   Update archive redirection for /v/.
 

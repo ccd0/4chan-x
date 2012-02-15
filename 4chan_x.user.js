@@ -71,13 +71,14 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base,
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base,
     __slice = Array.prototype.slice;
 
   config = {
     main: {
       Enhancing: {
         '404 Redirect': [true, 'Redirect dead threads and images'],
+        'Fix XXX\'d Post Numbers': [true, 'Replace XXX\'d post numbers with their actual number'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'Report Button': [true, 'Add report buttons'],
@@ -1189,6 +1190,23 @@
     }
   };
 
+  unxify = {
+    init: function() {
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var quote;
+      if (unxify.censor === false) return;
+      if (unxify.censor === void 0) {
+        unxify.censor = /\D/.test($('.quotejs + .quotejs', root).textContent);
+        unxify.node(root);
+        return;
+      }
+      quote = $('.quotejs + .quotejs', root);
+      return quote.textContent = quote.previousElementSibling.hash.slice(1);
+    }
+  };
+
   qr = {
     init: function() {
       var form, iframe, link, loadChecking;
@@ -1348,7 +1366,7 @@
       if (!g.REPLY) {
         $('select', qr.el).value = $.x('ancestor::div[@class="thread"]/div', this).id;
       }
-      id = this.hash.slice(2);
+      id = this.previousElementSibling.hash.slice(1);
       text = ">>" + id + "\n";
       sel = window.getSelection();
       if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote/preceding-sibling::input', sel.anchorNode)) != null ? _ref.name : void 0)) {
@@ -3562,6 +3580,7 @@
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
+      if (conf['Fix XXX\'d Post Numbers']) unxify.init();
       if (conf['Quick Reply'] && conf['Hide Original Post Form']) {
         Main.css += 'form[name=post] { display: none; }';
       }
