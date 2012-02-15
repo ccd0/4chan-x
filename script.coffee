@@ -880,6 +880,19 @@ qr =
       $.before form, link
     g.callbacks.push @node
 
+    iframe = $.el 'iframe',
+      id: 'iframe'
+      hidden: true
+      src: 'http://sys.4chan.org/robots.txt'
+    $.on iframe, 'error', -> @src = @src
+    # Greasemonkey ghetto fix
+    loadChecking = (iframe) ->
+      unless qr.status.ready
+        iframe.src = 'about:blank'
+        setTimeout (-> iframe.src = 'http://sys.4chan.org/robots.txt'), 250
+    $.on iframe, 'load', -> unless @src is 'about:blank' then setTimeout loadChecking, 500, @
+    $.add d.body, iframe
+
     if conf['Persistent QR']
       qr.dialog()
       qr.hide() if conf['Auto Hide QR']
@@ -901,7 +914,7 @@ qr =
       qr.dialog()
   close: ->
     qr.el.hidden = true
-    message.send req: 'abort', 'sys'
+    qr.message.send req: 'abort'
     d.activeElement.blur()
     $.removeClass qr.el, 'dump'
     for i in qr.replies
@@ -1274,6 +1287,7 @@ qr =
     qr.status()
     qr.cooldown.init()
     qr.captcha.init()
+    qr.message.init()
     $.add d.body, qr.el
 
     # Create a custom event when the QR dialog is first initialized.
@@ -1288,7 +1302,7 @@ qr =
       qr.cooldown.auto = !qr.cooldown.auto
       qr.status()
       return
-    message.send req: 'abort', 'sys'
+    qr.message.send req: 'abort'
     reply = qr.replies[0]
 
     # prevent errors
@@ -1357,11 +1371,11 @@ qr =
         file.name   = reply.file.name
         file.type   = reply.file.type
         post.upfile = file
-        message.send post, 'sys'
+        qr.message.send post
       reader.readAsBinaryString reply.file
       return
 
-    message.send post, 'sys'
+    qr.message.send post
 
   response: (html) ->
     unless b = $ 'td b', $.el('a', innerHTML: html)
@@ -1413,78 +1427,121 @@ qr =
     qr.status()
     qr.resetFileInput()
 
-  post: (data) ->
+  message:
+    init: ->
+      # http://code.google.com/p/chromium/issues/detail?id=20773
+      # Let content scripts see other frames (instead of them being undefined)
+      # To access the parent, we have to break out of the sandbox and evaluate
+      # in the global context.
+      code = (e) ->
+        {data} = e
+        return unless data.changeContext
+        delete data.changeContext
+        host = location.hostname
+        if host is 'boards.4chan.org'
+          document.getElementById('iframe').contentWindow.postMessage data, '*'
+        else if host is 'sys.4chan.org'
+          parent.postMessage data, '*'
+      script = $.el 'script', textContent: "window.addEventListener('message',#{code},false)"
+      ready = ->
+        $.add d.documentElement, script
+        if location.hostname is 'sys.4chan.org'
+          qr.message.send req: 'status', ready: true
+        $.rm script
+      # Chrome can access the documentElement on document-start
+      if d.documentElement
+        ready()
+      # other browsers will have to wait
+      else $.ready ready
+    send: (data) ->
+      data.changeContext = true
+      data.qr            = true
+      postMessage data, '*'
+    receive: (data) ->
+      switch data.req
+        when 'abort'
+          qr.ajax?.abort()
+          qr.message.send req: 'status'
+        when 'response' # xhr response
+          qr.response data.html
+        when 'status'
+          qr.status data
+        else
+          qr.message.post data # Reply object: we're posting
 
-    url = "http://sys.4chan.org/#{data.board}/post"
-    # Do not append that value to the form.
-    delete data.board
+    post: (data) ->
 
-    # File with filename upload fix from desuwa
-    if engine is 'gecko' and data.upfile
-      # All of this is fucking retarded.
-      unless data.binary
-        toBin = (data, name, val) ->
-          bb = new MozBlobBuilder()
-          bb.append val
-          r = new FileReader()
-          r.onload = ->
-            data[name] = r.result
-            unless --i
-              qr.post data
-          r.readAsBinaryString bb.getBlob 'text/plain'
-        i = Object.keys(data).length
-        for name, val of data
-          if typeof val is 'object' # File. toBin the filename.
-            toBin data.upfile, 'name', data.upfile.name
-          else if typeof val is 'boolean'
-            if val
-              toBin data, name, String val
+      url = "http://sys.4chan.org/#{data.board}/post"
+      # Do not append these values to the form.
+      delete data.board
+      delete data.qr
+
+      # File with filename upload fix from desuwa
+      if engine is 'gecko' and data.upfile
+        # All of this is fucking retarded.
+        unless data.binary
+          toBin = (data, name, val) ->
+            bb = new MozBlobBuilder()
+            bb.append val
+            r = new FileReader()
+            r.onload = ->
+              data[name] = r.result
+              unless --i
+                qr.message.post data
+            r.readAsBinaryString bb.getBlob 'text/plain'
+          i = Object.keys(data).length
+          for name, val of data
+            if typeof val is 'object' # File. toBin the filename.
+              toBin data.upfile, 'name', data.upfile.name
+            else if typeof val is 'boolean'
+              if val
+                toBin data, name, String val
+              else
+                i--
             else
-              i--
-          else
-            toBin data, name, val
-        data.board  = url.split('/')[3]
-        data.binary = true
-        return
+              toBin data, name, val
+          data.board  = url.split('/')[3]
+          data.binary = true
+          return
 
-      delete data.binary
+        delete data.binary
 
-      boundary = '-------------SMCD' + Date.now();
-      parts = []
-      parts.push 'Content-Disposition: form-data; name="upfile"; filename="' + data.upfile.name + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n'
-      delete data.upfile
+        boundary = '-------------SMCD' + Date.now();
+        parts = []
+        parts.push 'Content-Disposition: form-data; name="upfile"; filename="' + data.upfile.name + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n'
+        delete data.upfile
 
-      for name, val of data
-        parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n' if val
-      form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n'
+        for name, val of data
+          parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n' if val
+        form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n'
 
-    else
-      form = new FormData()
-      for name, val of data
-        form.append name, val if val
+      else
+        form = new FormData()
+        for name, val of data
+          form.append name, val if val
 
-    callbacks =
-      onload: ->
-        message.send
-          req:  'response'
-          html: @response
-    opts =
-      form: form
-      type: 'post'
-      upCallbacks:
+      callbacks =
         onload: ->
-          message.send
-            req:      'status'
-            progress: '...'
-        onprogress: (e) ->
-          message.send
-            req:      'status'
-            progress: "#{Math.round e.loaded / e.total * 100}%"
-    if boundary
-      opts.headers =
-        'Content-Type': 'multipart/form-data;boundary=' + boundary
+          qr.message.send
+            req:  'response'
+            html: @response
+      opts =
+        form: form
+        type: 'post'
+        upCallbacks:
+          onload: ->
+            qr.message.send
+              req:      'status'
+              progress: '...'
+          onprogress: (e) ->
+            qr.message.send
+              req:      'status'
+              progress: "#{Math.round e.loaded / e.total * 100}%"
+      if boundary
+        opts.headers =
+          'Content-Type': 'multipart/form-data;boundary=' + boundary
 
-    qr.ajax = $.ajax url, callbacks, opts
+      qr.ajax = $.ajax url, callbacks, opts
 
 options =
   init: ->
@@ -1864,7 +1921,7 @@ updater =
         else
           d.title = d.title.match(/^.+-/)[0] + ' 404'
         unread.update true
-        message.send req: 'abort', 'sys'
+        qr.message.send req: 'abort'
         qr.status()
         Favicon.update()
         return
@@ -2656,98 +2713,6 @@ imgExpand =
   resize: ->
     imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
 
-message =
-  init: ->
-    $.on window, 'message', message.receive
-
-    $.ready ->
-      return if location.hostname isnt 'boards.4chan.org'
-      domains = []
-      if conf['Quick Reply']
-        domains.push 'sys'
-      if conf['Image Expansion'] or conf['Sauce']
-        domains.push 'images'
-      for domain in domains
-        iframe = $.el 'iframe',
-          id: domain
-          hidden: true
-          src: "http://#{domain}.4chan.org/robots.txt"
-        $.on iframe, 'error', message.loadControl
-        $.on iframe, 'load',  message.loadControl
-        $.add d.body, iframe
-
-    # http://code.google.com/p/chromium/issues/detail?id=20773
-    # Let content scripts see other frames (instead of them being undefined)
-    # To access the parent, we have to break out of the sandbox and evaluate
-    # in the global context.
-    code = (e) ->
-      {data} = e
-      return unless data.changeContext
-      delete data.changeContext
-      if location.hostname is 'boards.4chan.org'
-        document.getElementById(data.iframe).contentWindow.postMessage data, '*'
-      else
-        parent.postMessage data, '*'
-
-    script = $.el 'script',
-      textContent: "window.addEventListener('message',#{code},false)"
-
-    $.ready ->
-      $.add d.documentElement, script
-      host = location.hostname
-      if host is 'sys.4chan.org'
-        message.send req: 'status', ready: true
-      if host isnt 'boards.4chan.org'
-        message.send req: 'iframeLoad', id: location.hostname.split('.')[0]
-      $.rm script
-
-  loadControl: ->
-    # Make sure the iframe has loaded correctly.
-    # This is necessary for Greasemonkey users.
-    setTimeout (=>
-      return if @src is 'about:blank' or message[@id] is 'ready'
-      @src = 'about:blank'
-      setTimeout (=>
-        @src = "http://#{@id}.4chan.org/robots.txt"
-      ), 250
-    ), 1000
-
-  receive: (e) ->
-    {data} = e
-    if data.iframe
-      unless data.changeContext
-        message.handle data
-      return
-
-    {version} = data
-    if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
-      window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
-
-  send: (data, iframe) ->
-    data.changeContext = true
-    data.iframe        = iframe or 'boards'
-    postMessage data, '*'
-
-  handle: (data) ->
-    {req} = data
-
-    delete data.req
-    delete data.iframe
-
-    switch req
-      when 'iframeLoad'
-        message[data.id] = 'ready'
-      when 'abort'
-        qr.ajax?.abort()
-        message.send req: 'status'
-      when 'response' # xhr response
-        qr.response data.html
-      when 'status'
-        qr.status data
-      else
-        # Reply object: we're posting
-        qr.post data
-
 Main =
   init: ->
     pathname = location.pathname[1..].split('/')
@@ -2758,10 +2723,12 @@ Main =
     else
       g.PAGENUM = parseInt(temp) or 0
 
-    message.init()
+    $.on window, 'message', Main.message
 
     if location.hostname is 'sys.4chan.org'
-      if /report/.test location.search
+      if location.pathname is '/robots.txt'
+        qr.message.init()
+      else if /report/.test location.search
         $.ready ->
           $.on $('#recaptcha_response_field'), 'keydown', (e) ->
             window.location = 'javascript:Recaptcha.reload()' if e.keyCode is 8 and not e.target.value
@@ -2919,6 +2886,14 @@ Main =
       $.addStyle Main.css
     else # XXX fox
       $.on d, 'DOMNodeInserted', Main.addStyle
+
+  message: (e) ->
+    {data} = e
+    {version} = data
+    if data.qr and not data.changeContext
+      qr.message.receive data
+    else if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
+      window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   node: (e) ->
     {target} = e
