@@ -110,7 +110,11 @@ config =
 
 # XXX Chrome can't into {log} = console
 # XXX GreaseMonkey can't into console.log.bind
-log = console.log.bind? console
+try
+  log = console.log.bind console
+catch error
+  if location.hostname is 'boards.4chan.org' and confirm 'You appear to be using Greasemonkey.\nYou need to use the superior and stable alternative Scriptish for 4chan X to function correctly.'
+    GM_openInTab 'https://addons.mozilla.org/firefox/addon/scriptish/'
 
 # flatten the config
 conf = {}
@@ -2698,7 +2702,7 @@ message =
       if host is 'sys.4chan.org'
         message.send req: 'status', ready: true
       if host isnt 'boards.4chan.org'
-        message.send req: 'iframeLoad', id: location.hostname.split('.')[0]
+        message.send req: 'iframeLoad', id: host.split('.')[0]
       $.rm script
 
   loadControl: ->

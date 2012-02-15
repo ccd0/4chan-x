@@ -71,7 +71,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, message, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base,
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, message, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher,
     __slice = Array.prototype.slice;
 
   config = {
@@ -183,7 +183,13 @@
     }
   };
 
-  log = typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0;
+  try {
+    log = console.log.bind(console);
+  } catch (error) {
+    if (location.hostname === 'boards.4chan.org' && confirm('You appear to be using Greasemonkey.\nYou need to use the superior and stable alternative Scriptish for 4chan X to function correctly.')) {
+      GM_openInTab('https://addons.mozilla.org/firefox/addon/scriptish/');
+    }
+  }
 
   conf = {};
 
@@ -3461,7 +3467,7 @@
         if (host !== 'boards.4chan.org') {
           message.send({
             req: 'iframeLoad',
-            id: location.hostname.split('.')[0]
+            id: host.split('.')[0]
           });
         }
         return $.rm(script);
