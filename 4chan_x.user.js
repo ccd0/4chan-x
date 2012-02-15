@@ -3277,6 +3277,7 @@
         case 'tg':
         case 'tv':
         case 'u':
+        case 'v':
           return "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID + "/";
         case 'lit':
           return "http://fuuka.warosu.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
@@ -3304,7 +3305,6 @@
         case 'sp':
         case 'toy':
         case 'trv':
-        case 'v':
         case 'vp':
         case 'x':
           return "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;

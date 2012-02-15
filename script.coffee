@@ -2572,13 +2572,13 @@ redirect =
   thread: ->
     return unless conf['404 Redirect']
     switch g.BOARD
-      when 'a', 'jp', 'm', 'tg', 'tv', 'u'
+      when 'a', 'jp', 'm', 'tg', 'tv', 'u', 'v'
         "http://archive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}/"
       when 'lit'
         "http://fuuka.warosu.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
       when 'diy', 'g', 'sci'
         "http://archive.installgentoo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
-      when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'r9k', 'soc', 'sp', 'toy', 'trv', 'v', 'vp', 'x'
+      when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'r9k', 'soc', 'sp', 'toy', 'trv', 'vp', 'x'
         "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
       else
         "http://boards.4chan.org/#{g.BOARD}/"

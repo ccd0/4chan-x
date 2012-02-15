@@ -1,6 +1,7 @@
 master
 - Mayhem
   Fix post number quoting on /b/ and /v/.
+  Update archive redirection for /v/.
 
 2.26.1
 - Mayhem
