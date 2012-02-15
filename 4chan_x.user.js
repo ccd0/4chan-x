@@ -2131,7 +2131,7 @@
           checked = conf[key] ? 'checked' : '';
           description = arr[1];
           li = $.el('li', {
-            innerHTML: "<label><input type=checkbox name='" + key + "' " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
+            innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
           });
           $.on($('input', li), 'click', $.cb.checked);
           $.add(ul, li);

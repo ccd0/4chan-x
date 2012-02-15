@@ -1664,7 +1664,7 @@ options =
         checked = if conf[key] then 'checked' else ''
         description = arr[1]
         li = $.el 'li',
-          innerHTML: "<label><input type=checkbox name='#{key}' #{checked}>#{key}</label><span class=description>: #{description}</span>"
+          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
         $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
       $.add $('#main_tab + div', dialog), ul
