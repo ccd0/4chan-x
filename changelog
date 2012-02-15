@@ -1,4 +1,6 @@
 master
+
+2.26.2
 - Mayhem
   New option to fix XXX'd post numbers.
   Fix post number quoting on /b/ and /v/.
