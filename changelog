@@ -1,5 +1,6 @@
 master
 - Mayhem
+  Ensure fresh captcha on QR load.
   Fix unXXXifier on pages starting with not XXXed numbers.
   Update image limit notifier for /vg/.
 

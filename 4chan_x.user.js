@@ -1247,6 +1247,7 @@
         if (this.src !== 'about:blank') return setTimeout(loadChecking, 500, this);
       });
       $.add(d.body, iframe);
+      window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})';
       if (conf['Persistent QR']) {
         qr.dialog();
         if (conf['Auto Hide QR']) qr.hide();
@@ -1254,8 +1255,7 @@
       $.on(d, 'dragover', qr.dragOver);
       $.on(d, 'drop', qr.dropFile);
       $.on(d, 'dragstart', qr.drag);
-      $.on(d, 'dragend', qr.drag);
-      return window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})';
+      return $.on(d, 'dragend', qr.drag);
     },
     node: function(root) {
       return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
@@ -1588,7 +1588,7 @@
           return _this.count(arr.length);
         });
         this.count($.get('captchas', []).length);
-        return this.load();
+        return this.reload();
       },
       save: function() {
         var captcha, captchas, response;

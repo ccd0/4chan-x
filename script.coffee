@@ -912,6 +912,8 @@ qr =
     $.on iframe, 'load', -> unless @src is 'about:blank' then setTimeout loadChecking, 500, @
     $.add d.body, iframe
 
+    # Prevent original captcha input from being focused on reload.
+    window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})'
     if conf['Persistent QR']
       qr.dialog()
       qr.hide() if conf['Auto Hide QR']
@@ -919,8 +921,6 @@ qr =
     $.on d, 'drop',      qr.dropFile
     $.on d, 'dragstart', qr.drag
     $.on d, 'dragend',   qr.drag
-    # prevent original captcha input from being focused on reload
-    window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})'
 
   node: (root) ->
     $.on $('.quotejs + .quotejs', root), 'click', qr.quote
@@ -1187,7 +1187,8 @@ qr =
       $.on @challenge,      'DOMNodeInserted', => @load()
       $.sync 'captchas', (arr) => @count arr.length
       @count $.get('captchas', []).length
-      @load()
+      # start with an uncached captcha
+      @reload()
     save: ->
       return unless response = @input.value
       captchas = $.get 'captchas', []
