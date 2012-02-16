@@ -1,6 +1,7 @@
 master
 - Mayhem
   Fix unXXXifier on pages starting with not XXXed numbers.
+  Update image limit notifier for /vg/.
 
 2.26.2
 - Mayhem

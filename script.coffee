@@ -2476,6 +2476,8 @@ threadStats =
       switch g.BOARD
         when 'a', 'v'
           251
+        when 'vg'
+          501
         else
           151
     g.callbacks.push @node
