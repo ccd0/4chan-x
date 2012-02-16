@@ -1404,7 +1404,7 @@ qr =
       err = b.firstChild.textContent
 
     if err
-      if err is 'You seem to have mistyped the verification.' or err is 'Connection error with sys.4chan.org.'
+      if /captcha|verification/i.test(err) or err is 'Connection error with sys.4chan.org.'
         # Enable auto-post if we have some cached captchas.
         qr.cooldown.auto = !!$.get('captchas', []).length
         # Too many frequent mistyped captchas will auto-ban you!

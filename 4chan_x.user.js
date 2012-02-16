@@ -1834,7 +1834,7 @@
         err = b.firstChild.textContent;
       }
       if (err) {
-        if (err === 'You seem to have mistyped the verification.' || err === 'Connection error with sys.4chan.org.') {
+        if (/captcha|verification/i.test(err) || err === 'Connection error with sys.4chan.org.') {
           qr.cooldown.auto = !!$.get('captchas', []).length;
           qr.cooldown.set(2);
         } else {
