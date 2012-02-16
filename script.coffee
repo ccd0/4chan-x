@@ -3017,9 +3017,9 @@ a[href="javascript:;"] {
   z-index: 1;
 }
 .preview {
-  background-color: rgba(0,0,0,.2);
-  background-position: 50% 20%;
-  background-size: cover;
+  background-color: rgba(0,0,0,.2) !important;
+  background-position: 50% 20% !important;
+  background-size: cover !important;
   border: 1px solid #666;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -3054,6 +3054,7 @@ a[href="javascript:;"] {
   color: #FFF;
 }
 .remove {
+  background: none;
   color: #E00;
   font-weight: 700;
   padding: 3px;
