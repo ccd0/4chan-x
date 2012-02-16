@@ -3177,6 +3177,8 @@
           case 'a':
           case 'v':
             return 251;
+          case 'vg':
+            return 501;
           default:
             return 151;
         }
