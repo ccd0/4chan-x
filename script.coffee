@@ -2738,7 +2738,7 @@ imgExpand =
 
 Main =
   init: ->
-    pathname = location.pathname[1..].split('/')
+    pathname = location.pathname[1..].split '/'
     [g.BOARD, temp] = pathname
     if temp is 'res'
       g.REPLY = true
@@ -2898,13 +2898,15 @@ Main =
 
     form = $ 'body > form'
     nodes = $$ '.op, a + table', form
-    for callback in g.callbacks
-      try
-        for node in nodes
-          callback node
-      catch err
-        alert err
-    $.on form, 'DOMNodeInserted', Main.node
+    Main.node nodes, true
+
+    if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
+      observer = new MutationObserver Main.observer
+      observer.observe form,
+        childList: true
+        subtree:   true
+    else
+      $.on form, 'DOMNodeInserted', Main.listener
 
   addStyle: ->
     $.off d, 'DOMNodeInserted', Main.addStyle
@@ -2921,14 +2923,22 @@ Main =
     else if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
-  node: (e) ->
-    {target} = e
-    return unless target.nodeName is 'TABLE'
+  node: (nodes, notify) ->
     for callback in g.callbacks
       try
-        callback target
+        callback node for node in nodes
       catch err
-        #nothing
+        alert err.message if notify
+    return
+  observer: (mutations) ->
+    nodes = []
+    for mutation in mutations
+      for addedNode in mutation.addedNodes
+        nodes.push addedNode if addedNode.nodeName is 'TABLE'
+    Main.node nodes if nodes.length
+  listener: (e) ->
+    {target} = e
+    Main.node [target] if target.nodeName is 'TABLE'
 
   css: '
 /* dialog styling */

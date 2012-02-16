@@ -3594,7 +3594,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var callback, form, node, nodes, _i, _j, _len, _len2, _ref;
+      var MutationObserver, form, nodes, observer;
       if (d.title === '4chan - 404') {
         redirect.init();
         return;
@@ -3622,19 +3622,16 @@
       }
       form = $('body > form');
       nodes = $$('.op, a + table', form);
-      _ref = g.callbacks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        callback = _ref[_i];
-        try {
-          for (_j = 0, _len2 = nodes.length; _j < _len2; _j++) {
-            node = nodes[_j];
-            callback(node);
-          }
-        } catch (err) {
-          alert(err);
-        }
+      Main.node(nodes, true);
+      if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
+        observer = new MutationObserver(Main.observer);
+        return observer.observe(form, {
+          childList: true,
+          subtree: true
+        });
+      } else {
+        return $.on(form, 'DOMNodeInserted', Main.listener);
       }
-      return $.on(form, 'DOMNodeInserted', Main.node);
     },
     addStyle: function() {
       $.off(d, 'DOMNodeInserted', Main.addStyle);
@@ -3654,21 +3651,38 @@
         return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + version + "/4chan_x.user.js";
       }
     },
-    node: function(e) {
-      var callback, target, _i, _len, _ref, _results;
-      target = e.target;
-      if (target.nodeName !== 'TABLE') return;
+    node: function(nodes, notify) {
+      var callback, node, _i, _j, _len, _len2, _ref;
       _ref = g.callbacks;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
         try {
-          _results.push(callback(target));
+          for (_j = 0, _len2 = nodes.length; _j < _len2; _j++) {
+            node = nodes[_j];
+            callback(node);
+          }
         } catch (err) {
-
+          if (notify) alert(err.message);
         }
       }
-      return _results;
+    },
+    observer: function(mutations) {
+      var addedNode, mutation, nodes, _i, _j, _len, _len2, _ref;
+      nodes = [];
+      for (_i = 0, _len = mutations.length; _i < _len; _i++) {
+        mutation = mutations[_i];
+        _ref = mutation.addedNodes;
+        for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
+          addedNode = _ref[_j];
+          if (addedNode.nodeName === 'TABLE') nodes.push(addedNode);
+        }
+      }
+      if (nodes.length) return Main.node(nodes);
+    },
+    listener: function(e) {
+      var target;
+      target = e.target;
+      if (target.nodeName === 'TABLE') return Main.node([target]);
     },
     css: '\
 /* dialog styling */\
