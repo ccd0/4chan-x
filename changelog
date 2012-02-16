@@ -1,7 +1,9 @@
 master
+
+2.26.3
 - Mayhem
   Ensure fresh captcha on QR load.
-  There is now a reply counter in the dump list.
+  There is now a reply counter in the QR dump list.
   Fix unXXXifier on pages starting with not XXXed numbers.
   Update image limit notifier for /vg/.
 
