@@ -873,16 +873,19 @@ unxify =
   init: ->
     g.callbacks.push @node
   node: (root) ->
-    if unxify.censor is false
-      # Don't execute on safe boards
-      return
-    if unxify.censor is undefined
-      # Test if the board's censored
-      unxify.censor = /\D/.test $('.quotejs + .quotejs', root).textContent
-      unxify.node root
-      return
-    quote = $ '.quotejs + .quotejs', root
-    quote.textContent = quote.previousElementSibling.hash[1..]
+    switch unxify.censor
+      when true
+        quote = $ '.quotejs + .quotejs', root
+        quote.textContent = quote.previousElementSibling.hash[1..]
+      when false
+        # Don't execute on safe boards.
+      else
+        number = $('.quotejs + .quotejs', root).textContent
+        # 3 digits long post numbers are not censored.
+        return if number.length < 4
+        # Test if the board's censored.
+        unxify.censor = /\D/.test $('.quotejs + .quotejs', root).textContent
+        unxify.node root
 
 qr =
   init: ->

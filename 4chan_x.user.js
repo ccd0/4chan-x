@@ -1195,15 +1195,19 @@
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var quote;
-      if (unxify.censor === false) return;
-      if (unxify.censor === void 0) {
-        unxify.censor = /\D/.test($('.quotejs + .quotejs', root).textContent);
-        unxify.node(root);
-        return;
+      var number, quote;
+      switch (unxify.censor) {
+        case true:
+          quote = $('.quotejs + .quotejs', root);
+          return quote.textContent = quote.previousElementSibling.hash.slice(1);
+        case false:
+          break;
+        default:
+          number = $('.quotejs + .quotejs', root).textContent;
+          if (number.length < 4) return;
+          unxify.censor = /\D/.test($('.quotejs + .quotejs', root).textContent);
+          return unxify.node(root);
       }
-      quote = $('.quotejs + .quotejs', root);
-      return quote.textContent = quote.previousElementSibling.hash.slice(1);
     }
   };
 
