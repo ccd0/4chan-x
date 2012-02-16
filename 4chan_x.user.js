@@ -3745,6 +3745,7 @@ a[href="javascript:;"] {\
   user-select: none;\
 }\
 #replies > div {\
+  counter-reset: previews;\
   top: 0; right: 0; bottom: 0; left: 0;\
   margin: 0; padding: 0;\
   overflow: hidden;\
@@ -3783,6 +3784,16 @@ a[href="javascript:;"] {\
 }\
 .preview#selected {\
   opacity: 1;\
+}\
+.preview::before {\
+  counter-increment: previews;\
+  content: counter(previews);\
+  color: #FFF;\
+  font-weight: 700;\
+  padding: 3px;\
+  position: absolute;\
+  top: 0;\
+  right: 0;\
 }\
 .preview.drag {\
   box-shadow: 0 0 10px rgba(0,0,0,.5);\
