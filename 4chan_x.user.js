@@ -71,8 +71,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base,
-    __slice = Array.prototype.slice;
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base;
 
   config = {
     main: {
@@ -189,18 +188,16 @@
   conf = {};
 
   (flatten = function(parent, obj) {
-    var key, val, _results;
+    var key, val;
     if (obj instanceof Array) {
-      return conf[parent] = obj[0];
+      conf[parent] = obj[0];
     } else if (typeof obj === 'object') {
-      _results = [];
       for (key in obj) {
         val = obj[key];
-        _results.push(flatten(key, val));
+        flatten(key, val);
       }
-      return _results;
     } else {
-      return conf[parent] = obj;
+      conf[parent] = obj;
     }
   })(null, config);
 
@@ -393,9 +390,6 @@
       if (root == null) root = d.body;
       return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
     },
-    tn: function(s) {
-      return d.createTextNode(s);
-    },
     replace: function(root, el) {
       return root.parentNode.replaceChild(el, root);
     },
@@ -408,22 +402,30 @@
     rm: function(el) {
       return el.parentNode.removeChild(el);
     },
-    add: function() {
-      var child, children, parent, _i, _len;
-      parent = arguments[0], children = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      for (_i = 0, _len = children.length; _i < _len; _i++) {
-        child = children[_i];
-        parent.appendChild(child);
-      }
+    tn: function(s) {
+      return d.createTextNode(s);
     },
-    prepend: function(parent, child) {
-      return parent.insertBefore(child, parent.firstChild);
+    nodes: function(nodes) {
+      var frag, node, _i, _len;
+      if (!(nodes instanceof Array)) return nodes;
+      frag = d.createDocumentFragment();
+      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+        node = nodes[_i];
+        frag.appendChild(node);
+      }
+      return frag;
+    },
+    add: function(parent, children) {
+      return parent.appendChild($.nodes(children));
+    },
+    prepend: function(parent, children) {
+      return parent.insertBefore($.nodes(children), parent.firstChild);
     },
     after: function(root, el) {
-      return root.parentNode.insertBefore(el, root.nextSibling);
+      return root.parentNode.insertBefore($.nodes(el), root.nextSibling);
     },
     before: function(root, el) {
-      return root.parentNode.insertBefore(el, root);
+      return root.parentNode.insertBefore($.nodes(el), root);
     },
     el: function(tag, properties) {
       var el;
@@ -678,14 +680,10 @@
         if (quote.getAttribute('href') === quote.hash) {
           quote.pathname = "/" + g.BOARD + "/res/" + threadID;
         }
-        if (quote.hash.slice(1) === threadID) quote.innerHTML += '&nbsp;(OP)';
-        if (conf['Quote Preview']) {
-          $.on(quote, 'mouseover', quotePreview.mouseover);
-          $.on(quote, 'mousemove', ui.hover);
-          $.on(quote, 'mouseout', quotePreview.mouseout);
-        }
-        if (conf['Quote Inline']) $.on(quote, 'click', quoteInline.toggle);
       }
+      quoteIndicators.node(bq);
+      if (conf['Quote Preview']) quotePreview.node(bq);
+      if (conf['Quote Inline']) quoteInline.node(bq);
       return $.replace(a.parentNode.parentNode, bq);
     }
   };
@@ -742,10 +740,10 @@
             }
           })();
           table = $.x("following::br[@clear]/preceding::table[" + num + "]", a);
-          while ((prev = table.previousSibling) && (prev.nodeName === 'TABLE')) {
+          while ((prev = table.previousSibling) && (prev.nodeName !== 'A')) {
             $.rm(prev);
           }
-          _ref2 = $$('.op a.backlink');
+          _ref2 = $$('.backlink', $('.op', thread));
           _results = [];
           for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
             backlink = _ref2[_i];
@@ -759,7 +757,7 @@
       }
     },
     parse: function(req, pathname, thread, a) {
-      var body, frag, href, link, next, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
+      var body, href, link, next, nodes, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', expandThread.cb.toggle);
@@ -769,7 +767,7 @@
       body = $.el('body', {
         innerHTML: req.responseText
       });
-      frag = d.createDocumentFragment();
+      nodes = [];
       _ref = $$('.reply', body);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reply = _ref[_i];
@@ -785,12 +783,12 @@
         link = $('.quotejs', reply);
         link.href = "res/" + thread.firstChild.id + "#" + reply.id;
         link.nextSibling.href = "res/" + thread.firstChild.id + "#q" + reply.id;
-        $.add(frag, reply.parentNode.parentNode.parentNode);
+        nodes.push(reply.parentNode.parentNode.parentNode);
       }
       while ((next = a.nextSibling) && !next.clear) {
         $.rm(next);
       }
-      return $.before(next, frag);
+      return $.before(next, nodes);
     }
   };
 
@@ -1145,7 +1143,7 @@
       });
       $.on(prev, 'click', nav.prev);
       $.on(next, 'click', nav.next);
-      $.add(span, prev, $.tn(' '), next);
+      $.add(span, [prev, $.tn(' '), next]);
       return $.add(d.body, span);
     },
     prev: function() {
@@ -2439,7 +2437,7 @@
         };
       },
       update: function() {
-        var body, frag, id, newPosts, reply, scroll, _i, _len, _ref, _ref2;
+        var body, id, newPosts, nodes, reply, scroll, _i, _len, _ref, _ref2;
         if (this.status === 404) {
           updater.timer.textContent = '';
           updater.count.textContent = 404;
@@ -2484,14 +2482,14 @@
           return;
         }
         id = ((_ref = $('td[id]', updater.br.previousElementSibling)) != null ? _ref.id : void 0) || 0;
-        frag = d.createDocumentFragment();
+        nodes = [];
         _ref2 = $$('.reply', body).reverse();
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           reply = _ref2[_i];
           if (reply.id <= id) break;
-          $.prepend(frag, reply.parentNode.parentNode.parentNode);
+          nodes.push(reply.parentNode.parentNode.parentNode);
         }
-        newPosts = frag.childNodes.length;
+        newPosts = nodes.length;
         scroll = conf['Scrolling'] && updater.scrollBG() && newPosts && updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25;
         if (conf['Verbose']) {
           updater.count.textContent = '+' + newPosts;
@@ -2501,7 +2499,7 @@
             updater.count.className = 'new';
           }
         }
-        $.before(updater.br, frag);
+        $.before(updater.br, nodes.reverse());
         if (scroll) return updater.br.previousSibling.scrollIntoView();
       }
     },
@@ -2562,9 +2560,9 @@
       return $.sync('watched', watcher.refresh);
     },
     refresh: function(watched) {
-      var board, div, favicon, frag, id, link, props, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3, _results;
+      var board, div, favicon, id, link, nodes, props, watchedBoard, x, _i, _j, _len, _len2, _ref, _ref2, _ref3;
       watched || (watched = $.get('watched', {}));
-      frag = d.createDocumentFragment();
+      nodes = [];
       for (board in watched) {
         _ref = watched[board];
         for (id in _ref) {
@@ -2577,8 +2575,8 @@
           link = $.el('a', props);
           link.title = link.textContent;
           div = $.el('div');
-          $.add(div, x, $.tn(' '), link);
-          $.add(frag, div);
+          $.add(div, [x, $.tn(' '), link]);
+          nodes.push(div);
         }
       }
       _ref2 = $$('div:not(.move)', watcher.dialog);
@@ -2586,20 +2584,18 @@
         div = _ref2[_i];
         $.rm(div);
       }
-      $.add(watcher.dialog, frag);
+      $.add(watcher.dialog, nodes);
       watchedBoard = watched[g.BOARD] || {};
       _ref3 = $$('img.favicon');
-      _results = [];
       for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
         favicon = _ref3[_j];
         id = favicon.nextSibling.name;
         if (id in watchedBoard) {
-          _results.push(favicon.src = Favicon["default"]);
+          favicon.src = Favicon["default"];
         } else {
-          _results.push(favicon.src = Favicon.empty);
+          favicon.src = Favicon.empty;
         }
       }
-      return _results;
     },
     cb: {
       toggle: function() {
@@ -2692,14 +2688,16 @@
       };
     },
     node: function(root) {
-      var img, link, span, _i, _len, _ref;
+      var img, link, nodes, span, _i, _len, _ref;
       if (root.className === 'inline' || !(span = $('.filesize', root))) return;
       img = span.nextElementSibling.nextElementSibling;
+      nodes = [];
       _ref = sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
-        $.add(span, $.tn(' '), link(img));
+        nodes.push($.tn(' '), link(img));
       }
+      return $.add(span, nodes);
     }
   };
 
@@ -2850,7 +2848,7 @@
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var a, container, el, id, link, qid, quote, quotes, _i, _len, _ref, _results;
+      var a, container, el, id, link, qid, quote, quotes, _i, _len, _ref;
       if (/\binline\b/.test(root.className)) return;
       quotes = {};
       _ref = $$('.quotelink', root);
@@ -2864,7 +2862,6 @@
         className: root.hidden ? 'filtered backlink' : 'backlink',
         textContent: quoteBacklink.funk(id)
       });
-      _results = [];
       for (qid in quotes) {
         if (!(el = $.id(qid)) || el.className === 'op' && !conf['OP Backlinks']) {
           continue;
@@ -2879,9 +2876,8 @@
           root = $('.reportbutton', el) || $('span[id]', el);
           $.after(root, container);
         }
-        _results.push($.add(container, $.tn(' '), link));
+        $.add(container, [$.tn(' '), link]);
       }
-      return _results;
     }
   };
 
@@ -2890,16 +2886,14 @@
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var quote, _i, _len, _ref, _results;
+      var quote, _i, _len, _ref;
       _ref = $$('.quotelink, .backlink', root);
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (!quote.hash) continue;
         quote.removeAttribute('onclick');
-        _results.push($.on(quote, 'click', quoteInline.toggle));
+        $.on(quote, 'click', quoteInline.toggle);
       }
-      return _results;
     },
     toggle: function(e) {
       var id;
@@ -3106,12 +3100,12 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (conf['Indicate OP quote'] && quote.hash.slice(1) === tid) {
-          quote.innerHTML += '&nbsp;(OP)';
+          $.add(quote, $.tn('\u00A0(OP)'));
           return;
         }
         path = quote.pathname;
         if (conf['Indicate Cross-thread Quotes'] && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
-          quote.innerHTML += '&nbsp;(Cross-thread)';
+          $.add(quote, $.tn('\u00A0(Cross-thread)'));
         }
       }
     }
@@ -3130,8 +3124,7 @@
           innerHTML: '[&nbsp;!&nbsp;]',
           href: 'javascript:;'
         });
-        $.after(span, a);
-        $.after(span, $.tn(' '));
+        $.after(span, [$.tn(' '), a]);
       }
       return $.on(a, 'click', reportButton.report);
     },
@@ -3372,24 +3365,20 @@
         return imgExpand.toggle(this);
       },
       all: function() {
-        var thumb, _i, _j, _len, _len2, _ref, _ref2, _results, _results2;
+        var thumb, _i, _j, _len, _len2, _ref, _ref2;
         imgExpand.on = this.checked;
         if (imgExpand.on) {
           _ref = $$('img[md5]');
-          _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             thumb = _ref[_i];
-            _results.push(imgExpand.expand(thumb));
+            imgExpand.expand(thumb);
           }
-          return _results;
         } else {
           _ref2 = $$('img[md5][hidden]');
-          _results2 = [];
           for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
             thumb = _ref2[_j];
-            _results2.push(imgExpand.contract(thumb));
+            imgExpand.contract(thumb);
           }
-          return _results2;
         }
       },
       typeChange: function() {

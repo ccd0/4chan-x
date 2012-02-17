@@ -123,6 +123,7 @@ conf = {}
       flatten key, val
   else # string or number
     conf[parent] = obj
+  return
 ) null, config
 
 NAMESPACE = '4chan_x.'
@@ -275,8 +276,6 @@ $.extend $,
   x: (path, root=d.body) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
       singleNodeValue
-  tn: (s) ->
-    d.createTextNode s
   replace: (root, el) ->
     root.parentNode.replaceChild el, root
   addClass: (el, className) ->
@@ -285,16 +284,23 @@ $.extend $,
     el.classList.remove className
   rm: (el) ->
     el.parentNode.removeChild el
-  add: (parent, children...) ->
-    for child in children
-      parent.appendChild child
-    return
-  prepend: (parent, child) ->
-    parent.insertBefore child, parent.firstChild
+  tn: (s) ->
+    d.createTextNode s
+  nodes: (nodes) ->
+    unless nodes instanceof Array
+      return nodes
+    frag = d.createDocumentFragment()
+    for node in nodes
+      frag.appendChild node
+    frag
+  add: (parent, children) ->
+    parent.appendChild $.nodes children
+  prepend: (parent, children) ->
+    parent.insertBefore $.nodes(children), parent.firstChild
   after: (root, el) ->
-    root.parentNode.insertBefore el, root.nextSibling
+    root.parentNode.insertBefore $.nodes(el), root.nextSibling
   before: (root, el) ->
-    root.parentNode.insertBefore el, root
+    root.parentNode.insertBefore $.nodes(el), root
   el: (tag, properties) ->
     el = d.createElement tag
     $.extend el, properties if properties
@@ -496,14 +502,11 @@ expandComment =
     for quote in $$ '.quotelink', bq
       if quote.getAttribute('href') is quote.hash
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
-      if quote.hash[1..] is threadID
-        quote.innerHTML += '&nbsp;(OP)'
-      if conf['Quote Preview']
-        $.on quote, 'mouseover', quotePreview.mouseover
-        $.on quote, 'mousemove', ui.hover
-        $.on quote, 'mouseout',  quotePreview.mouseout
-      if conf['Quote Inline']
-        $.on quote, 'click', quoteInline.toggle
+    quoteIndicators.node bq
+    if conf['Quote Preview']
+      quotePreview.node bq
+    if conf['Quote Inline']
+      quoteInline.node bq
     $.replace a.parentNode.parentNode, bq
 
 expandThread =
@@ -545,9 +548,9 @@ expandThread =
           when 't' then 1
           else 5
         table = $.x "following::br[@clear]/preceding::table[#{num}]", a
-        while (prev = table.previousSibling) and (prev.nodeName is 'TABLE')
+        while (prev = table.previousSibling) and (prev.nodeName isnt 'A')
           $.rm prev
-        for backlink in $$ '.op a.backlink'
+        for backlink in $$ '.backlink', $ '.op', thread
           $.rm backlink if !$.id backlink.hash[1..]
 
 
@@ -562,7 +565,7 @@ expandThread =
     body = $.el 'body',
       innerHTML: req.responseText
 
-    frag = d.createDocumentFragment()
+    nodes = []
     for reply in $$ '.reply', body
       for quote in $$ '.quotelink', reply
         if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
@@ -572,11 +575,11 @@ expandThread =
       link = $ '.quotejs', reply
       link.href = "res/#{thread.firstChild.id}##{reply.id}"
       link.nextSibling.href = "res/#{thread.firstChild.id}#q#{reply.id}"
-      $.add frag, reply.parentNode.parentNode.parentNode
+      nodes.push reply.parentNode.parentNode.parentNode
     # eat everything, then replace with fresh full posts
     while (next = a.nextSibling) and not next.clear #br[clear]
       $.rm next
-    $.before next, frag
+    $.before next, nodes
 
 replyHiding =
   init: ->
@@ -828,7 +831,7 @@ nav =
     $.on prev, 'click', nav.prev
     $.on next, 'click', nav.next
 
-    $.add span, prev, $.tn(' '), next
+    $.add span, [prev, $.tn(' '), next]
     $.add d.body, span
 
   prev: ->
@@ -1973,13 +1976,13 @@ updater =
         return
 
       id = $('td[id]', updater.br.previousElementSibling)?.id or 0
-      frag = d.createDocumentFragment()
+      nodes = []
       for reply in $$('.reply', body).reverse()
         if reply.id <= id #make sure to not insert older posts
           break
-        $.prepend frag, reply.parentNode.parentNode.parentNode #table
+        nodes.push reply.parentNode.parentNode.parentNode #table
 
-      newPosts = frag.childNodes.length
+      newPosts = nodes.length
       scroll = conf['Scrolling'] && updater.scrollBG() && newPosts &&
         updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25
       if conf['Verbose']
@@ -1989,7 +1992,7 @@ updater =
         else
           updater.count.className = 'new'
 
-      $.before updater.br, frag
+      $.before updater.br, nodes.reverse()
       if scroll
         updater.br.previousSibling.scrollIntoView()
 
@@ -2043,7 +2046,7 @@ watcher =
 
   refresh: (watched) ->
     watched or= $.get 'watched', {}
-    frag = d.createDocumentFragment()
+    nodes = []
     for board of watched
       for id, props of watched[board]
         x = $.el 'a',
@@ -2054,12 +2057,12 @@ watcher =
         link.title = link.textContent
 
         div = $.el 'div'
-        $.add div, x, $.tn(' '), link
-        $.add frag, div
+        $.add div, [x, $.tn(' '), link]
+        nodes.push div
 
     for div in $$ 'div:not(.move)', watcher.dialog
       $.rm div
-    $.add watcher.dialog, frag
+    $.add watcher.dialog, nodes
 
     watchedBoard = watched[g.BOARD] or {}
     for favicon in $$ 'img.favicon'
@@ -2068,6 +2071,7 @@ watcher =
         favicon.src = Favicon.default
       else
         favicon.src = Favicon.empty
+    return
 
   cb:
     toggle: ->
@@ -2139,9 +2143,10 @@ sauce =
   node: (root) ->
     return if root.className is 'inline' or not span = $ '.filesize', root
     img = span.nextElementSibling.nextElementSibling
+    nodes = []
     for link in sauce.links
-      $.add span, $.tn(' '), link img
-    return
+      nodes.push $.tn(' '), link img
+    $.add span, nodes
 
 revealSpoilers =
   init: ->
@@ -2273,7 +2278,8 @@ quoteBacklink =
         container = $.el 'span', className: 'container'
         root = $('.reportbutton', el) or $('span[id]', el)
         $.after root, container
-      $.add container, $.tn(' '), link
+      $.add container, [$.tn(' '), link]
+    return
 
 quoteInline =
   init: ->
@@ -2283,6 +2289,7 @@ quoteInline =
       continue unless quote.hash
       quote.removeAttribute 'onclick'
       $.on quote, 'click', quoteInline.toggle
+    return
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
@@ -2435,12 +2442,14 @@ quoteIndicators =
     tid = g.THREAD_ID or $.x('ancestor::div', root).firstChild.id
     for quote in $$ '.quotelink', root
       if conf['Indicate OP quote'] and quote.hash[1..] is tid
-        quote.innerHTML += '&nbsp;(OP)'
+        # \u00A0 is nbsp
+        $.add quote, $.tn '\u00A0(OP)'
         return
       path = quote.pathname
       #if quote leads to a different thread id and is located on the same board (index 0)
       if conf['Indicate Cross-thread Quotes'] and path.lastIndexOf("/#{tid}") is -1 and path.indexOf("/#{g.BOARD}/") is 0
-        quote.innerHTML += '&nbsp;(Cross-thread)'
+        # \u00A0 is nbsp
+        $.add quote, $.tn '\u00A0(Cross-thread)'
     return
 
 reportButton =
@@ -2453,8 +2462,7 @@ reportButton =
         className: 'reportbutton'
         innerHTML: '[&nbsp;!&nbsp;]'
         href: 'javascript:;'
-      $.after span, a
-      $.after span, $.tn(' ')
+      $.after span, [$.tn(' '), a]
     $.on a, 'click', reportButton.report
   report: ->
     url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
@@ -2647,6 +2655,7 @@ imgExpand =
       else #contract
         for thumb in $$ 'img[md5][hidden]'
           imgExpand.contract thumb
+      return
     typeChange: ->
       switch @value
         when 'full'
