@@ -70,7 +70,7 @@ config =
     '#http://regex.info/exif.cgi?imgurl=$2'
     '# uploaders:'
     '#http://imgur.com/upload?url=$2'
-    '#http://ompldr.org/upload?url1=$2'
+    '#http://omploader.org/upload?url1=$2'
     '# "View Same" in archives:'
     '#http://archive.foolz.us/a/image/$3/'
     '#http://archive.installgentoo.net/g/image/$3'
