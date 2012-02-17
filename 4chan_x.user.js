@@ -71,7 +71,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base,
+  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base,
     __slice = Array.prototype.slice;
 
   config = {
@@ -1368,7 +1368,7 @@
       if (e != null) e.preventDefault();
       qr.open();
       if (!g.REPLY) {
-        $('select', qr.el).value = $.x('ancestor::div[@class="thread"]/div', this).id;
+        $('select', qr.el).value = $.x('ancestor::div', this).firstChild.id;
       }
       id = this.previousElementSibling.hash.slice(1);
       text = ">>" + id + "\n";
@@ -3047,7 +3047,7 @@
         }
       } else {
         qp.innerHTML = "Loading " + id + "...";
-        threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
+        threadID = this.pathname.split('/').pop() || $.x('ancestor::div', this).firstChild.id;
         $.cache(this.pathname, (function() {
           return quotePreview.parse(this, id, threadID);
         }));
@@ -3094,47 +3094,26 @@
     }
   };
 
-  quoteOP = {
+  quoteIndicators = {
     init: function() {
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var quote, tid, _i, _len, _ref, _results;
+      var path, quote, tid, _i, _len, _ref;
       if (root.className === 'inline') return;
-      tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
+      tid = g.THREAD_ID || $.x('ancestor::div', root).firstChild.id;
       _ref = $$('.quotelink', root);
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (quote.hash.slice(1) === tid) {
-          _results.push(quote.innerHTML += '&nbsp;(OP)');
-        } else {
-          _results.push(void 0);
+        if (conf['Indicate OP quote'] && quote.hash.slice(1) === tid) {
+          quote.innerHTML += '&nbsp;(OP)';
+          return;
+        }
+        path = quote.pathname;
+        if (conf['Indicate Cross-thread Quotes'] && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
+          quote.innerHTML += '&nbsp;(Cross-thread)';
         }
       }
-      return _results;
-    }
-  };
-
-  quoteDR = {
-    init: function() {
-      return g.callbacks.push(this.node);
-    },
-    node: function(root) {
-      var quote, tid, _i, _len, _ref, _results;
-      if (root.className === 'inline') return;
-      tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]/div', root).id;
-      _ref = $$('.quotelink', root);
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        if (quote.pathname.indexOf("res/" + tid) === -1 && !quote.pathname.indexOf("/" + g.BOARD + "/res")) {
-          _results.push(quote.innerHTML += '&nbsp;(Cross-thread)');
-        } else {
-          _results.push(void 0);
-        }
-      }
-      return _results;
     }
   };
 
@@ -3584,8 +3563,9 @@
       if (conf['Quote Inline']) quoteInline.init();
       if (conf['Quote Preview']) quotePreview.init();
       if (conf['Quote Backlinks']) quoteBacklink.init();
-      if (conf['Indicate OP quote']) quoteOP.init();
-      if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
+      if (conf['Indicate OP quote'] || conf['Indicate Cross-thread Quotes']) {
+        quoteIndicators.init();
+      }
       if (conf['Fix XXX\'d Post Numbers']) unxify.init();
       if (conf['Quick Reply'] && conf['Hide Original Post Form']) {
         Main.css += 'form[name=post] { display: none; }';

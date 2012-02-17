@@ -1013,7 +1013,7 @@ qr =
     e?.preventDefault()
     qr.open()
     unless g.REPLY
-      $('select', qr.el).value = $.x('ancestor::div[@class="thread"]/div', @).id
+      $('select', qr.el).value = $.x('ancestor::div', @).firstChild.id
 
     # Make sure we get the correct number, even with XXX censors
     id = @previousElementSibling.hash[1..]
@@ -2391,7 +2391,7 @@ quotePreview =
             quote.className = 'forwardlink'
     else
       qp.innerHTML = "Loading #{id}..."
-      threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
+      threadID = @pathname.split('/').pop() or $.x('ancestor::div', @).firstChild.id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
       ui.hover e
     $.on @, 'mousemove', ui.hover
@@ -2427,26 +2427,21 @@ quotePreview =
     if conf['Time Formatting']
       Time.node   qp
 
-quoteOP =
+quoteIndicators =
   init: ->
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline'
-    tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
+    tid = g.THREAD_ID or $.x('ancestor::div', root).firstChild.id
     for quote in $$ '.quotelink', root
-      if quote.hash[1..] is tid
+      if conf['Indicate OP quote'] and quote.hash[1..] is tid
         quote.innerHTML += '&nbsp;(OP)'
-
-quoteDR =
-  init: ->
-    g.callbacks.push @node
-  node: (root) ->
-    return if root.className is 'inline'
-    tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]/div', root).id
-    for quote in $$ '.quotelink', root
+        return
+      path = quote.pathname
       #if quote leads to a different thread id and is located on the same board (index 0)
-      if quote.pathname.indexOf("res/#{tid}") is -1 and !quote.pathname.indexOf "/#{g.BOARD}/res"
+      if conf['Indicate Cross-thread Quotes'] and path.lastIndexOf("/#{tid}") is -1 and path.indexOf("/#{g.BOARD}/") is 0
         quote.innerHTML += '&nbsp;(Cross-thread)'
+    return
 
 reportButton =
   init: ->
@@ -2826,11 +2821,8 @@ Main =
     if conf['Quote Backlinks']
       quoteBacklink.init()
 
-    if conf['Indicate OP quote']
-      quoteOP.init()
-
-    if conf['Indicate Cross-thread Quotes']
-      quoteDR.init()
+    if conf['Indicate OP quote'] or conf['Indicate Cross-thread Quotes']
+      quoteIndicators.init()
 
     if conf['Fix XXX\'d Post Numbers']
       unxify.init()
