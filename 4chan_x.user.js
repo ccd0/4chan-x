@@ -1222,26 +1222,34 @@
         $.before(form, link);
       }
       g.callbacks.push(this.node);
-      iframe = $.el('iframe', {
-        id: 'iframe',
-        hidden: true,
-        src: 'http://sys.4chan.org/robots.txt'
-      });
-      $.on(iframe, 'error', function() {
-        return this.src = this.src;
-      });
-      loadChecking = function(iframe) {
-        if (!qr.status.ready) {
-          iframe.src = 'about:blank';
-          return setTimeout((function() {
-            return iframe.src = 'http://sys.4chan.org/robots.txt';
-          }), 250);
-        }
-      };
-      $.on(iframe, 'load', function() {
-        if (this.src !== 'about:blank') return setTimeout(loadChecking, 500, this);
-      });
-      $.add(d.body, iframe);
+      if (engine === 'webkit') {
+        qr.status({
+          ready: true
+        });
+      } else {
+        iframe = $.el('iframe', {
+          id: 'iframe',
+          hidden: true,
+          src: 'http://sys.4chan.org/robots.txt'
+        });
+        $.on(iframe, 'error', function() {
+          return this.src = this.src;
+        });
+        loadChecking = function(iframe) {
+          if (!qr.status.ready) {
+            iframe.src = 'about:blank';
+            return setTimeout((function() {
+              return iframe.src = 'http://sys.4chan.org/robots.txt';
+            }), 100);
+          }
+        };
+        $.on(iframe, 'load', function() {
+          if (this.src !== 'about:blank') {
+            return setTimeout(loadChecking, 500, this);
+          }
+        });
+        $.add(d.body, iframe);
+      }
       window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})';
       if (conf['Persistent QR']) {
         qr.dialog();
@@ -1738,7 +1746,6 @@
       qr.status();
       qr.cooldown.init();
       qr.captcha.init();
-      qr.message.init();
       $.add(d.body, qr.el);
       e = d.createEvent('CustomEvent');
       e.initEvent('QRDialogCreation', true, false);
@@ -1817,6 +1824,10 @@
         reader.readAsBinaryString(reply.file);
         return;
       }
+      if (engine === 'webkit') {
+        qr.message.post(post);
+        return;
+      }
       return qr.message.send(post);
     },
     response: function(html) {
@@ -1870,43 +1881,16 @@
       return qr.resetFileInput();
     },
     message: {
-      init: function() {
-        var code, ready, script;
-        code = function(e) {
-          var data, host;
-          data = e.data;
-          if (!data.changeContext) return;
-          delete data.changeContext;
-          host = location.hostname;
-          if (host === 'boards.4chan.org') {
-            return document.getElementById('iframe').contentWindow.postMessage(data, '*');
-          } else if (host === 'sys.4chan.org') {
-            return parent.postMessage(data, '*');
-          }
-        };
-        script = $.el('script', {
-          textContent: "window.addEventListener('message'," + code + ",false)"
-        });
-        ready = function() {
-          $.add(d.documentElement, script);
-          if (location.hostname === 'sys.4chan.org') {
-            qr.message.send({
-              req: 'status',
-              ready: true
-            });
-          }
-          return $.rm(script);
-        };
-        if (d.documentElement) {
-          return ready();
-        } else {
-          return $.ready(ready);
-        }
-      },
       send: function(data) {
-        data.changeContext = true;
+        var host, window;
+        if (engine === 'webkit') {
+          qr.message.receive(data);
+          return;
+        }
         data.qr = true;
-        return postMessage(data, '*');
+        host = location.hostname;
+        window = host === 'boards.4chan.org' ? $.id('iframe').contentWindow : host === 'sys.4chan.org' ? parent : void 0;
+        return window.postMessage(data, '*');
       },
       receive: function(data) {
         var _ref;
@@ -3349,7 +3333,7 @@
       var src, thumb;
       if (root.hidden || !(thumb = $('img[md5]', root))) return;
       src = thumb.parentNode.href;
-      if (/gif$/.test(src)) return thumb.src = src;
+      if (/gif$/.test(src && !/^Spoiler/.test(thumb.alt))) return thumb.src = src;
     }
   };
 
@@ -3505,7 +3489,10 @@
       $.on(window, 'message', Main.message);
       if (location.hostname === 'sys.4chan.org') {
         if (location.pathname === '/robots.txt') {
-          qr.message.init();
+          qr.message.send({
+            req: 'status',
+            ready: true
+          });
         } else if (/report/.test(location.search)) {
           $.ready(function() {
             return $.on($('#recaptcha_response_field'), 'keydown', function(e) {
@@ -3624,10 +3611,12 @@
     message: function(e) {
       var data, version;
       data = e.data;
+      if (data.qr) {
+        qr.message.receive(data);
+        return;
+      }
       version = data.version;
-      if (data.qr && !data.changeContext) {
-        return qr.message.receive(data);
-      } else if (version && version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
+      if (version && version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
         return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + version + "/4chan_x.user.js";
       }
     },

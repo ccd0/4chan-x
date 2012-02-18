@@ -900,18 +900,21 @@ qr =
       $.before form, link
     g.callbacks.push @node
 
-    iframe = $.el 'iframe',
-      id: 'iframe'
-      hidden: true
-      src: 'http://sys.4chan.org/robots.txt'
-    $.on iframe, 'error', -> @src = @src
-    # Greasemonkey ghetto fix
-    loadChecking = (iframe) ->
-      unless qr.status.ready
-        iframe.src = 'about:blank'
-        setTimeout (-> iframe.src = 'http://sys.4chan.org/robots.txt'), 250
-    $.on iframe, 'load', -> unless @src is 'about:blank' then setTimeout loadChecking, 500, @
-    $.add d.body, iframe
+    if engine is 'webkit'
+      qr.status ready: true
+    else
+      iframe = $.el 'iframe',
+        id: 'iframe'
+        hidden: true
+        src: 'http://sys.4chan.org/robots.txt'
+      $.on iframe, 'error', -> @src = @src
+      # Greasemonkey ghetto fix
+      loadChecking = (iframe) ->
+        unless qr.status.ready
+          iframe.src = 'about:blank'
+          setTimeout (-> iframe.src = 'http://sys.4chan.org/robots.txt'), 100
+      $.on iframe, 'load', -> if @src isnt 'about:blank' then setTimeout loadChecking, 500, @
+      $.add d.body, iframe
 
     # Prevent original captcha input from being focused on reload.
     window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})'
@@ -1309,7 +1312,6 @@ qr =
     qr.status()
     qr.cooldown.init()
     qr.captcha.init()
-    qr.message.init()
     $.add d.body, qr.el
 
     # Create a custom event when the QR dialog is first initialized.
@@ -1397,6 +1399,9 @@ qr =
       reader.readAsBinaryString reply.file
       return
 
+    if engine is 'webkit'
+      qr.message.post post
+      return
     qr.message.send post
 
   response: (html) ->
@@ -1450,35 +1455,18 @@ qr =
     qr.resetFileInput()
 
   message:
-    init: ->
-      # http://code.google.com/p/chromium/issues/detail?id=20773
-      # Let content scripts see other frames (instead of them being undefined)
-      # To access the parent, we have to break out of the sandbox and evaluate
-      # in the global context.
-      code = (e) ->
-        {data} = e
-        return unless data.changeContext
-        delete data.changeContext
-        host = location.hostname
-        if host is 'boards.4chan.org'
-          document.getElementById('iframe').contentWindow.postMessage data, '*'
-        else if host is 'sys.4chan.org'
-          parent.postMessage data, '*'
-      script = $.el 'script', textContent: "window.addEventListener('message',#{code},false)"
-      ready = ->
-        $.add d.documentElement, script
-        if location.hostname is 'sys.4chan.org'
-          qr.message.send req: 'status', ready: true
-        $.rm script
-      # Chrome can access the documentElement on document-start
-      if d.documentElement
-        ready()
-      # other browsers will have to wait
-      else $.ready ready
     send: (data) ->
-      data.changeContext = true
-      data.qr            = true
-      postMessage data, '*'
+      if engine is 'webkit'
+        qr.message.receive data
+        return
+      data.qr = true
+      host = location.hostname
+      window =
+        if host is 'boards.4chan.org'
+          $.id('iframe').contentWindow
+        else if host is 'sys.4chan.org'
+          parent
+      window.postMessage data, '*'
     receive: (data) ->
       switch data.req
         when 'abort'
@@ -2764,7 +2752,7 @@ Main =
 
     if location.hostname is 'sys.4chan.org'
       if location.pathname is '/robots.txt'
-        qr.message.init()
+        qr.message.send req: 'status', ready: true
       else if /report/.test location.search
         $.ready ->
           $.on $('#recaptcha_response_field'), 'keydown', (e) ->
@@ -2928,10 +2916,11 @@ Main =
 
   message: (e) ->
     {data} = e
-    {version} = data
-    if data.qr and not data.changeContext
+    if data.qr
       qr.message.receive data
-    else if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
+      return
+    {version} = data
+    if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   node: (nodes, notify) ->
