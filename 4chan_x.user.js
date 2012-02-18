@@ -3241,9 +3241,7 @@
         case 'jp':
         case 'm':
         case 'tg':
-        case 'tv':
         case 'u':
-        case 'vg':
           return "http://archive.foolz.us/" + href[3] + "/full_image/" + href[5];
       }
     },
