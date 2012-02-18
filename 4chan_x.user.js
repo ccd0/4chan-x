@@ -273,8 +273,8 @@
       _ref = d.body, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
       height = el.offsetHeight;
       top = clientY - 120;
-      style.top = clientHeight < height || top < 0 ? 0 : top + height > clientHeight ? clientHeight - height : top;
-      if (clientX < clientWidth - 400) {
+      style.top = clientHeight <= height || top <= 0 ? 0 : top + height >= clientHeight ? clientHeight - height : top;
+      if (clientX <= clientWidth - 400) {
         style.left = clientX + 45;
         return style.right = null;
       } else {
@@ -283,7 +283,8 @@
       }
     },
     hoverend: function() {
-      return ui.el.parentNode.removeChild(ui.el);
+      $.rm(ui.el);
+      return delete ui.el;
     }
   };
 
@@ -3320,9 +3321,18 @@
         id: 'ihover',
         src: this.parentNode.href
       });
+      $.add(d.body, ui.el);
+      $.on(ui.el, 'load', imgHover.load);
       $.on(this, 'mousemove', ui.hover);
-      $.on(this, 'mouseout', imgHover.mouseout);
-      return $.add(d.body, ui.el);
+      return $.on(this, 'mouseout', imgHover.mouseout);
+    },
+    load: function() {
+      var style;
+      style = this.style;
+      return ui.hover({
+        clientX: -45 + parseInt(style.left),
+        clientY: 120 + parseInt(style.top)
+      });
     },
     mouseout: function() {
       ui.hoverend();

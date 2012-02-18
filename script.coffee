@@ -196,14 +196,14 @@ ui =
 
     top = clientY - 120
     style.top =
-      if clientHeight < height or top < 0
+      if clientHeight <= height or top <= 0
         0
-      else if top + height > clientHeight
+      else if top + height >= clientHeight
         clientHeight - height
       else
         top
 
-    if clientX < clientWidth - 400
+    if clientX <= clientWidth - 400
       style.left  = clientX + 45
       style.right = null
     else
@@ -211,7 +211,8 @@ ui =
       style.right = clientWidth - clientX + 45
 
   hoverend: ->
-    ui.el.parentNode.removeChild ui.el
+    $.rm ui.el
+    delete ui.el
 
 ###
 loosely follows the jquery api:
@@ -2616,9 +2617,16 @@ imgHover =
     ui.el = $.el 'img'
       id: 'ihover'
       src: @parentNode.href
+    $.add d.body, ui.el
+    $.on ui.el, 'load',      imgHover.load
     $.on @,     'mousemove', ui.hover
     $.on @,     'mouseout',  imgHover.mouseout
-    $.add d.body, ui.el
+  load: ->
+    # 'Fake' mousemove event by giving required values.
+    {style} = @
+    ui.hover
+      clientX: - 45 + parseInt style.left
+      clientY:  120 + parseInt style.top
   mouseout: ->
     ui.hoverend()
     $.off @, 'mousemove', ui.hover
