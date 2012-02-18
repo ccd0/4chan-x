@@ -719,7 +719,7 @@
       a = $('.omittedposts', thread);
       switch (a.textContent[0]) {
         case '+':
-          if ((_ref = $('.op .container', thread)) != null) _ref.innerHTML = '';
+          if ((_ref = $('.op .container', thread)) != null) _ref.textContent = '';
           a.textContent = a.textContent.replace('+', 'X Loading...');
           return $.cache(pathname, (function() {
             return expandThread.parse(this, pathname, thread, a);
@@ -2963,7 +2963,7 @@
       var body, href, html, link, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
       if (!inline.parentNode) return;
       if (req.status !== 200) {
-        inline.innerHTML = "" + req.status + " " + req.statusText;
+        inline.textContent = "" + req.status + " " + req.statusText;
         return;
       }
       body = $.el('body', {
@@ -3040,7 +3040,7 @@
           }
         }
       } else {
-        qp.innerHTML = "Loading " + id + "...";
+        qp.textContent = "Loading " + id + "...";
         threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]', this).firstChild.id;
         $.cache(this.pathname, (function() {
           return quotePreview.parse(this, id, threadID);
@@ -3063,7 +3063,7 @@
       var body, html, op, qp, reply, _i, _len, _ref;
       if (!((qp = ui.el) && (qp.innerHTML === ("Loading " + id + "...")))) return;
       if (req.status !== 200) {
-        qp.innerHTML = "" + req.status + " " + req.statusText;
+        qp.textContent = "" + req.status + " " + req.statusText;
         return;
       }
       body = $.el('body', {
@@ -3476,7 +3476,7 @@
       return $.prepend(form, controls);
     },
     resize: function() {
-      return imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
+      return imgExpand.style.textContent = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
     }
   };
 

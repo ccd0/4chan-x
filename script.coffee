@@ -531,7 +531,7 @@ expandThread =
 
     switch a.textContent[0]
       when '+'
-        $('.op .container', thread)?.innerHTML = ''
+        $('.op .container', thread)?.textContent = ''
         a.textContent = a.textContent.replace '+', 'X Loading...'
         $.cache pathname, (-> expandThread.parse @, pathname, thread, a)
 
@@ -2343,7 +2343,7 @@ quoteInline =
     return unless inline.parentNode
 
     if req.status isnt 200
-      inline.innerHTML = "#{req.status} #{req.statusText}"
+      inline.textContent = "#{req.status} #{req.statusText}"
       return
 
     body = $.el 'body',
@@ -2397,7 +2397,7 @@ quotePreview =
           if quote.hash[1..] is replyID
             quote.className = 'forwardlink'
     else
-      qp.innerHTML = "Loading #{id}..."
+      qp.textContent = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]', @).firstChild.id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
       ui.hover e
@@ -2415,7 +2415,7 @@ quotePreview =
     return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")
 
     if req.status isnt 200
-      qp.innerHTML = "#{req.status} #{req.statusText}"
+      qp.textContent = "#{req.status} #{req.statusText}"
       return
 
     body = $.el 'body',
@@ -2739,7 +2739,7 @@ imgExpand =
     $.prepend form, controls
 
   resize: ->
-    imgExpand.style.innerHTML = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
+    imgExpand.style.textContent = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
 
 Main =
   init: ->
