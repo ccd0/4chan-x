@@ -3243,6 +3243,7 @@
         case 'tg':
         case 'tv':
         case 'u':
+        case 'vg':
           return "http://archive.foolz.us/" + href[3] + "/full_image/" + href[5];
       }
     },
@@ -3256,6 +3257,7 @@
         case 'tv':
         case 'u':
         case 'v':
+        case 'vg':
           return "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID + "/";
         case 'lit':
           return "http://fuuka.warosu.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
