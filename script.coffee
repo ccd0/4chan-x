@@ -2087,6 +2087,7 @@ watcher =
       textContent: getTitle thread
     $.set 'watched', watched
     watcher.refresh()
+    true
 
 anonymize =
   init: ->

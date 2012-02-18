@@ -2611,7 +2611,8 @@
         textContent: getTitle(thread)
       };
       $.set('watched', watched);
-      return watcher.refresh();
+      watcher.refresh();
+      return true;
     }
   };
 
