@@ -502,12 +502,12 @@ expandComment =
     for quote in $$ '.quotelink', bq
       if quote.getAttribute('href') is quote.hash
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
-    quoteIndicators.node bq
+    $.replace a.parentNode.parentNode, bq
     if conf['Quote Preview']
       quotePreview.node bq
     if conf['Quote Inline']
       quoteInline.node bq
-    $.replace a.parentNode.parentNode, bq
+    quoteIndicators.node bq
 
 expandThread =
   init: ->
@@ -2398,7 +2398,7 @@ quotePreview =
             quote.className = 'forwardlink'
     else
       qp.innerHTML = "Loading #{id}..."
-      threadID = @pathname.split('/').pop() or $.x('ancestor::div', @).firstChild.id
+      threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]', @).firstChild.id
       $.cache @pathname, (-> quotePreview.parse @, id, threadID)
       ui.hover e
     $.on @, 'mousemove', ui.hover
@@ -2439,7 +2439,7 @@ quoteIndicators =
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline'
-    tid = g.THREAD_ID or $.x('ancestor::div', root).firstChild.id
+    tid = g.THREAD_ID or $.x('ancestor::div[@class="thread"]', root).firstChild.id
     for quote in $$ '.quotelink', root
       if conf['Indicate OP quote'] and quote.hash[1..] is tid
         # \u00A0 is nbsp

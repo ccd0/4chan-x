@@ -681,10 +681,10 @@
           quote.pathname = "/" + g.BOARD + "/res/" + threadID;
         }
       }
-      quoteIndicators.node(bq);
+      $.replace(a.parentNode.parentNode, bq);
       if (conf['Quote Preview']) quotePreview.node(bq);
       if (conf['Quote Inline']) quoteInline.node(bq);
-      return $.replace(a.parentNode.parentNode, bq);
+      return quoteIndicators.node(bq);
     }
   };
 
@@ -3041,7 +3041,7 @@
         }
       } else {
         qp.innerHTML = "Loading " + id + "...";
-        threadID = this.pathname.split('/').pop() || $.x('ancestor::div', this).firstChild.id;
+        threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]', this).firstChild.id;
         $.cache(this.pathname, (function() {
           return quotePreview.parse(this, id, threadID);
         }));
@@ -3095,7 +3095,7 @@
     node: function(root) {
       var path, quote, tid, _i, _len, _ref;
       if (root.className === 'inline') return;
-      tid = g.THREAD_ID || $.x('ancestor::div', root).firstChild.id;
+      tid = g.THREAD_ID || $.x('ancestor::div[@class="thread"]', root).firstChild.id;
       _ref = $$('.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
