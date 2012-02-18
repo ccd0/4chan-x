@@ -917,7 +917,10 @@ qr =
       $.add d.body, iframe
 
     # Prevent original captcha input from being focused on reload.
-    window.location = 'javascript:void(Recaptcha.focus_response_field=function(){})'
+    script = $.el 'script', textContent: 'Recaptcha.focus_response_field=function(){}'
+    $.add d.head, script
+    $.rm script
+
     if conf['Persistent QR']
       qr.dialog()
       qr.hide() if conf['Auto Hide QR']
