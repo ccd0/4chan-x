@@ -2612,13 +2612,17 @@ imgHover =
   node: (root) ->
     return unless thumb = $ 'img[md5]', root
     $.on thumb, 'mouseover', imgHover.mouseover
-    $.on thumb, 'mousemove', ui.hover
-    $.on thumb, 'mouseout',  ui.hoverend
   mouseover: ->
     ui.el = $.el 'img'
       id: 'ihover'
       src: @parentNode.href
+    $.on @,     'mousemove', ui.hover
+    $.on @,     'mouseout',  imgHover.mouseout
     $.add d.body, ui.el
+  mouseout: ->
+    ui.hoverend()
+    $.off @, 'mousemove', ui.hover
+    $.off @, 'mouseout',  imgHover.mouseout
 
 imgGif =
   init: ->

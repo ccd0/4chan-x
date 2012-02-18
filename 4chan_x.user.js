@@ -3313,16 +3313,21 @@
     node: function(root) {
       var thumb;
       if (!(thumb = $('img[md5]', root))) return;
-      $.on(thumb, 'mouseover', imgHover.mouseover);
-      $.on(thumb, 'mousemove', ui.hover);
-      return $.on(thumb, 'mouseout', ui.hoverend);
+      return $.on(thumb, 'mouseover', imgHover.mouseover);
     },
     mouseover: function() {
       ui.el = $.el('img', {
         id: 'ihover',
         src: this.parentNode.href
       });
+      $.on(this, 'mousemove', ui.hover);
+      $.on(this, 'mouseout', imgHover.mouseout);
       return $.add(d.body, ui.el);
+    },
+    mouseout: function() {
+      ui.hoverend();
+      $.off(this, 'mousemove', ui.hover);
+      return $.off(this, 'mouseout', imgHover.mouseout);
     }
   };
 
