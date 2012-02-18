@@ -2439,7 +2439,8 @@ quoteIndicators =
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline'
-    tid = g.THREAD_ID or $.x('ancestor::div[@class="thread"]', root).firstChild.id
+    # We use contains() so that it works with hidden threads
+    tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', root).firstChild.id
     for quote in $$ '.quotelink', root
       if conf['Indicate OP quote'] and quote.hash[1..] is tid
         # \u00A0 is nbsp

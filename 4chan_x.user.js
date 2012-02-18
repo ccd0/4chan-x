@@ -3095,7 +3095,7 @@
     node: function(root) {
       var path, quote, tid, _i, _len, _ref;
       if (root.className === 'inline') return;
-      tid = g.THREAD_ID || $.x('ancestor::div[@class="thread"]', root).firstChild.id;
+      tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', root).firstChild.id;
       _ref = $$('.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
