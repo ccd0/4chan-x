@@ -634,7 +634,7 @@
   expandComment = {
     init: function() {
       var a, _i, _len, _ref, _results;
-      _ref = $$('.abbr a');
+      _ref = $$('.abbr > a');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
@@ -837,22 +837,18 @@
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
     hideHide: function(reply) {
-      var a, div, name, table, trip, _ref;
+      var div, name, table, trip, _ref;
       table = reply.parentNode.parentNode.parentNode;
       if (table.hidden) return;
       table.hidden = true;
       if (conf['Show Stubs']) {
         name = $('.commentpostername', reply).textContent;
         trip = ((_ref = $('.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
-        a = $.el('a', {
-          innerHTML: "<span>[ + ]</span> " + name + " " + trip,
-          href: 'javascript:;'
-        });
-        $.on(a, 'click', replyHiding.cb.show);
         div = $.el('div', {
-          className: 'stub'
+          className: 'stub',
+          innerHTML: "<a href=javascript:;><span>[ + ]</span> " + name + " " + trip + "</a>"
         });
-        $.add(div, a);
+        $.on($('a', div), 'click', replyHiding.cb.show);
         return $.before(table, div);
       }
     },
@@ -2542,7 +2538,7 @@
       html = '<div class=move>Thread Watcher</div>';
       watcher.dialog = ui.dialog('watcher', 'top: 50px; left: 0px;', html);
       $.add(d.body, watcher.dialog);
-      inputs = $$('.op input');
+      inputs = $$('.op > input');
       for (_i = 0, _len = inputs.length; _i < _len; _i++) {
         input = inputs[_i];
         favicon = $.el('img', {
@@ -2586,7 +2582,7 @@
       }
       $.add(watcher.dialog, nodes);
       watchedBoard = watched[g.BOARD] || {};
-      _ref3 = $$('img.favicon');
+      _ref3 = $$('.favicon');
       for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
         favicon = _ref3[_j];
         id = favicon.nextSibling.name;
@@ -2973,7 +2969,7 @@
         op = threading.op($('body > form', body).firstChild);
         html = op.innerHTML;
       } else {
-        _ref = $$('td.reply', body);
+        _ref = $$('.reply', body);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           reply = _ref[_i];
           if (reply.id === id) {
@@ -3073,7 +3069,7 @@
         op = threading.op($('body > form', body).firstChild);
         html = op.innerHTML;
       } else {
-        _ref = $$('td.reply', body);
+        _ref = $$('.reply', body);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           reply = _ref[_i];
           if (reply.id === id) {

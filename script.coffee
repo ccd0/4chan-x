@@ -473,7 +473,7 @@ strikethroughQuotes =
 
 expandComment =
   init: ->
-    for a in $$ '.abbr a'
+    for a in $$ '.abbr > a'
       $.on a, 'click', expandComment.expand
   expand: (e) ->
     e.preventDefault()
@@ -630,14 +630,11 @@ replyHiding =
     if conf['Show Stubs']
       name = $('.commentpostername', reply).textContent
       trip = $('.postertrip', reply)?.textContent or ''
-      a = $.el 'a',
-        innerHTML: "<span>[ + ]</span> #{name} #{trip}"
-        href: 'javascript:;'
-      $.on a, 'click', replyHiding.cb.show
 
       div = $.el 'div',
         className: 'stub'
-      $.add div, a
+        innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{trip}</a>"
+      $.on $('a', div), 'click', replyHiding.cb.show
       $.before table, div
 
   show: (table) ->
@@ -2028,7 +2025,7 @@ watcher =
     $.add d.body, watcher.dialog
 
     #add watch buttons
-    inputs = $$ '.op input'
+    inputs = $$ '.op > input'
     for input in inputs
       favicon = $.el 'img',
         className: 'favicon'
@@ -2065,7 +2062,7 @@ watcher =
     $.add watcher.dialog, nodes
 
     watchedBoard = watched[g.BOARD] or {}
-    for favicon in $$ 'img.favicon'
+    for favicon in $$ '.favicon'
       id = favicon.nextSibling.name
       if id of watchedBoard
         favicon.src = Favicon.default
@@ -2352,7 +2349,7 @@ quoteInline =
       op = threading.op $('body > form', body).firstChild
       html = op.innerHTML
     else
-      for reply in $$ 'td.reply', body
+      for reply in $$ '.reply', body
         if reply.id == id
           html = reply.innerHTML
           break
@@ -2424,7 +2421,7 @@ quotePreview =
       op = threading.op $('body > form', body).firstChild
       html = op.innerHTML
     else
-      for reply in $$ 'td.reply', body
+      for reply in $$ '.reply', body
         if reply.id == id
           html = reply.innerHTML
           break
