@@ -2630,7 +2630,7 @@ imgGif =
   node: (root) ->
     return if root.hidden or !thumb = $ 'img[md5]', root
     src = thumb.parentNode.href
-    if /gif$/.test(src) and !/^Spoiler/.test thumb.alt
+    if /gif$/.test(src) and !/spoiler/.test src
       thumb.src = src
 
 imgExpand =
@@ -2811,14 +2811,14 @@ Main =
     if conf['Sauce']
       sauce.init()
 
+    if conf['Reveal Spoilers']
+      revealSpoilers.init()
+
     if conf['Image Auto-Gif']
       imgGif.init()
 
     if conf['Image Hover']
       imgHover.init()
-
-    if conf['Reveal Spoilers']
-      revealSpoilers.init()
 
     if conf['Report Button']
       reportButton.init()

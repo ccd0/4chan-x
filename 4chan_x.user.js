@@ -3339,7 +3339,7 @@
       var src, thumb;
       if (root.hidden || !(thumb = $('img[md5]', root))) return;
       src = thumb.parentNode.href;
-      if (/gif$/.test(src) && !/^Spoiler/.test(thumb.alt)) return thumb.src = src;
+      if (/gif$/.test(src) && !/spoiler/.test(src)) return thumb.src = src;
     }
   };
 
@@ -3549,9 +3549,9 @@
       if (conf['Anonymize']) anonymize.init();
       if (conf['Time Formatting']) Time.init();
       if (conf['Sauce']) sauce.init();
+      if (conf['Reveal Spoilers']) revealSpoilers.init();
       if (conf['Image Auto-Gif']) imgGif.init();
       if (conf['Image Hover']) imgHover.init();
-      if (conf['Reveal Spoilers']) revealSpoilers.init();
       if (conf['Report Button']) reportButton.init();
       if (conf['Quote Inline']) quoteInline.init();
       if (conf['Quote Preview']) quotePreview.init();
