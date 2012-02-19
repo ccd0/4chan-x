@@ -2218,35 +2218,36 @@
   };
 
   threading = {
-    init: function() {
-      return threading.thread($('body > form').firstChild);
-    },
     op: function(node) {
-      var op;
+      var nodes, op;
+      nodes = [];
+      while (node.nodeName !== 'BLOCKQUOTE') {
+        nodes.push(node);
+        node = node.nextSibling;
+      }
+      nodes.push(node);
+      node = node.nextSibling;
       op = $.el('div', {
         className: 'op'
       });
-      $.before(node, op);
-      while (node.nodeName !== 'BLOCKQUOTE') {
-        $.add(op, node);
-        node = op.nextSibling;
-      }
-      $.add(op, node);
+      $.add(op, nodes);
       op.id = $('input', op).name;
-      return op;
+      return $.before(node, op);
     },
     thread: function(node) {
-      var div;
+      var div, nodes;
       node = threading.op(node);
       if (g.REPLY) return;
+      nodes = [];
+      while (node.nodeName !== 'HR') {
+        nodes.push(node);
+        node = node.nextElementSibling;
+      }
       div = $.el('div', {
         className: 'thread'
       });
+      $.add(div, nodes);
       $.before(node, div);
-      while (node.nodeName !== 'HR') {
-        $.add(div, node);
-        node = div.nextSibling;
-      }
       node = node.nextElementSibling;
       if (!(node.align || node.nodeName === 'CENTER')) {
         return threading.thread(node);
@@ -3574,7 +3575,8 @@
       if (!$.id('navtopr')) return;
       $.addClass(d.body, "chanx_" + (VERSION.match(/\.(\d+)/)[1]));
       $.addClass(d.body, engine);
-      threading.init();
+      form = $('form[name=delform]');
+      threading.thread(form.firstElementChild);
       Favicon.init();
       if (conf['Quick Reply']) qr.init();
       if (conf['Image Expansion']) imgExpand.init();
@@ -3592,7 +3594,6 @@
         if (conf['Comment Expansion']) expandComment.init();
         if (conf['Index Navigation']) nav.init();
       }
-      form = $('body > form');
       nodes = $$('.op, a + table', form);
       Main.node(nodes, true);
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {

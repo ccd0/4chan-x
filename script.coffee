@@ -1748,35 +1748,35 @@ options =
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
 
 threading =
-  init: ->
-    threading.thread $('body > form').firstChild
-
   op: (node) ->
+    nodes = []
+    until node.nodeName is 'BLOCKQUOTE'
+      nodes.push node
+      node = node.nextSibling
+    nodes.push node # Add the blockquote.
+    node = node.nextSibling
     op = $.el 'div',
       className: 'op'
-    $.before node, op
-    while node.nodeName isnt 'BLOCKQUOTE'
-      $.add op, node
-      node = op.nextSibling
-    $.add op, node #add the blockquote
+    $.add op, nodes
     op.id = $('input', op).name
-    op
+    $.before node, op
 
   thread: (node) ->
     node = threading.op node
 
     return if g.REPLY
 
+    nodes = []
+    until node.nodeName is 'HR'
+      nodes.push node
+      node = node.nextElementSibling # Skip text nodes.
     div = $.el 'div',
       className: 'thread'
+    $.add div, nodes
     $.before node, div
 
-    while node.nodeName isnt 'HR'
-      $.add div, node
-      node = div.nextSibling
-
-    node = node.nextElementSibling #skip text node
-    #{N,}SFW
+    node = node.nextElementSibling
+    # {N,}SFW
     unless node.align or node.nodeName is 'CENTER'
       threading.thread node
 
@@ -2853,7 +2853,8 @@ Main =
       return
     $.addClass d.body, "chanx_#{VERSION.match(/\.(\d+)/)[1]}"
     $.addClass d.body, engine
-    threading.init()
+    form = $ 'form[name=delform]'
+    threading.thread form.firstElementChild
     Favicon.init()
 
     #major features
@@ -2899,7 +2900,6 @@ Main =
         nav.init()
 
 
-    form = $ 'body > form'
     nodes = $$ '.op, a + table', form
     Main.node nodes, true
 
