@@ -3313,6 +3313,7 @@
     },
     load: function() {
       var style;
+      if (this !== ui.el) return;
       style = this.style;
       return ui.hover({
         clientX: -45 + parseInt(style.left),

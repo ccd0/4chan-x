@@ -2608,6 +2608,7 @@ imgHover =
     $.on @,     'mousemove', ui.hover
     $.on @,     'mouseout',  imgHover.mouseout
   load: ->
+    return if @ isnt ui.el
     # 'Fake' mousemove event by giving required values.
     {style} = @
     ui.hover
