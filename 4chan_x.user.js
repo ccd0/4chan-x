@@ -3339,7 +3339,7 @@
       var src, thumb;
       if (root.hidden || !(thumb = $('img[md5]', root))) return;
       src = thumb.parentNode.href;
-      if (/gif$/.test(src && !/^Spoiler/.test(thumb.alt))) return thumb.src = src;
+      if (/gif$/.test(src) && !/^Spoiler/.test(thumb.alt)) return thumb.src = src;
     }
   };
 

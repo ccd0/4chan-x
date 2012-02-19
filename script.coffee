@@ -2630,7 +2630,7 @@ imgGif =
   node: (root) ->
     return if root.hidden or !thumb = $ 'img[md5]', root
     src = thumb.parentNode.href
-    if /gif$/.test src and !/^Spoiler/.test thumb.alt
+    if /gif$/.test(src) and !/^Spoiler/.test thumb.alt
       thumb.src = src
 
 imgExpand =
