@@ -1958,12 +1958,6 @@ updater =
       body = $.el 'body',
         innerHTML: @responseText
 
-      #this only works on Chrome because of cross origin policy
-      if $('title', body).textContent is '4chan - Banned'
-        updater.count.textContent = 'Banned'
-        updater.count.className   = 'warning'
-        return
-
       id = $('td[id]', updater.br.previousElementSibling)?.id or 0
       nodes = []
       for reply in $$('.reply', body).reverse()

@@ -2462,11 +2462,6 @@
         body = $.el('body', {
           innerHTML: this.responseText
         });
-        if ($('title', body).textContent === '4chan - Banned') {
-          updater.count.textContent = 'Banned';
-          updater.count.className = 'warning';
-          return;
-        }
         id = ((_ref = $('td[id]', updater.br.previousElementSibling)) != null ? _ref.id : void 0) || 0;
         nodes = [];
         _ref2 = $$('.reply', body).reverse();
