@@ -1379,7 +1379,7 @@
       if (e != null) e.preventDefault();
       qr.open();
       if (!g.REPLY) {
-        $('select', qr.el).value = $.x('ancestor::div', this).firstChild.id;
+        $('select', qr.el).value = $.x('ancestor::div[@class="thread"]', this).firstChild.id;
       }
       id = this.previousElementSibling.hash.slice(1);
       text = ">>" + id + "\n";

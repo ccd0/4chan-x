@@ -1023,7 +1023,7 @@ qr =
     e?.preventDefault()
     qr.open()
     unless g.REPLY
-      $('select', qr.el).value = $.x('ancestor::div', @).firstChild.id
+      $('select', qr.el).value = $.x('ancestor::div[@class="thread"]', @).firstChild.id
 
     # Make sure we get the correct number, even with XXX censors
     id = @previousElementSibling.hash[1..]
