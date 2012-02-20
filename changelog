@@ -1,6 +1,7 @@
 master
 - Mayhem
   Add /vg/ archive redirection.
+  Update ban support with the QR.
   Fix history issues on Chrome.
 
 2.26.3

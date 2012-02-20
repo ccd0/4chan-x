@@ -9,6 +9,7 @@
 // @include        http://boards.4chan.org/*
 // @include        http://images.4chan.org/*
 // @include        http://sys.4chan.org/*
+// @include        http://www.4chan.org/*
 // @run-at         document-start
 // @updateURL      https://raw.github.com/MayhemYDG/4chan-x/stable/4chan_x.user.js
 // @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
@@ -1229,7 +1230,6 @@
       } else {
         iframe = $.el('iframe', {
           id: 'iframe',
-          hidden: true,
           src: 'http://sys.4chan.org/robots.txt'
         });
         $.on(iframe, 'error', function() {
@@ -1248,7 +1248,7 @@
             return setTimeout(loadChecking, 500, this);
           }
         });
-        $.add(d.body, iframe);
+        $.add(d.head, iframe);
       }
       script = $.el('script', {
         textContent: 'Recaptcha.focus_response_field=function(){}'
@@ -1327,6 +1327,7 @@
       if (data == null) data = {};
       if (data.ready) {
         qr.status.ready = true;
+        qr.status.banned = data.banned;
       } else if (!qr.status.ready) {
         value = 'Loading';
         disabled = true;
@@ -1335,6 +1336,9 @@
         value = 404;
         disabled = true;
         qr.cooldown.auto = false;
+      } else if (qr.status.banned) {
+        value = 'Banned';
+        disabled = true;
       } else {
         value = qr.cooldown.seconds || data.progress || value;
       }
@@ -1893,7 +1897,7 @@
         }
         data.qr = true;
         host = location.hostname;
-        window = host === 'boards.4chan.org' ? $.id('iframe').contentWindow : host === 'sys.4chan.org' ? parent : void 0;
+        window = host === 'boards.4chan.org' ? $.id('iframe').contentWindow : parent;
         return window.postMessage(data, '*');
       },
       receive: function(data) {
@@ -3479,8 +3483,9 @@
 
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, now, pathname, temp, timestamp, _ref;
-      pathname = location.pathname.slice(1).split('/');
+      var cutoff, hiddenThreads, id, now, path, pathname, temp, timestamp, _ref;
+      path = location.pathname;
+      pathname = path.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
         g.REPLY = true;
@@ -3489,28 +3494,37 @@
         g.PAGENUM = parseInt(temp) || 0;
       }
       $.on(window, 'message', Main.message);
-      if (location.hostname === 'sys.4chan.org') {
-        if (location.pathname === '/robots.txt') {
-          qr.message.send({
-            req: 'status',
-            ready: true
-          });
-        } else if (/report/.test(location.search)) {
-          $.ready(function() {
-            return $.on($('#recaptcha_response_field'), 'keydown', function(e) {
-              if (e.keyCode === 8 && !e.target.value) {
-                return window.location = 'javascript:Recaptcha.reload()';
-              }
+      switch (location.hostname) {
+        case 'sys.4chan.org':
+          if (path === '/robots.txt') {
+            qr.message.send({
+              req: 'status',
+              ready: true
             });
+          } else if (/report/.test(location.search)) {
+            $.ready(function() {
+              return $.on($.id('recaptcha_response_field'), 'keydown', function(e) {
+                if (e.keyCode === 8 && !e.target.value) {
+                  return window.location = 'javascript:Recaptcha.reload()';
+                }
+              });
+            });
+          }
+          return;
+        case 'www.4chan.org':
+          if (path === '/banned') {
+            qr.message.send({
+              req: 'status',
+              ready: true,
+              banned: true
+            });
+          }
+          return;
+        case 'images.4chan.org':
+          $.ready(function() {
+            if (d.title === '4chan - 404') return redirect.init();
           });
-        }
-        return;
-      }
-      if (location.hostname === 'images.4chan.org') {
-        $.ready(function() {
-          if (d.title === '4chan - 404') return redirect.init();
-        });
-        return;
+          return;
       }
       $.ready(options.init);
       now = Date.now();

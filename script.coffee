@@ -905,7 +905,6 @@ qr =
     else
       iframe = $.el 'iframe',
         id: 'iframe'
-        hidden: true
         src: 'http://sys.4chan.org/robots.txt'
       $.on iframe, 'error', -> @src = @src
       # Greasemonkey ghetto fix
@@ -914,7 +913,7 @@ qr =
           iframe.src = 'about:blank'
           setTimeout (-> iframe.src = 'http://sys.4chan.org/robots.txt'), 100
       $.on iframe, 'load', -> if @src isnt 'about:blank' then setTimeout loadChecking, 500, @
-      $.add d.body, iframe
+      $.add d.head, iframe
 
     # Prevent original captcha input from being focused on reload.
     script = $.el 'script', textContent: 'Recaptcha.focus_response_field=function(){}'
@@ -975,7 +974,8 @@ qr =
 
   status: (data={}) ->
     if data.ready
-      qr.status.ready = true
+      qr.status.ready  = true
+      qr.status.banned = data.banned
     else unless qr.status.ready
       value    = 'Loading'
       disabled = true
@@ -983,6 +983,9 @@ qr =
       value    = 404
       disabled = true
       qr.cooldown.auto = false
+    else if qr.status.banned
+      value    = 'Banned'
+      disabled = true
     else
       # do not cancel `value = 'Loading'` once the cooldown is over
       value = qr.cooldown.seconds or data.progress or value
@@ -1467,7 +1470,7 @@ qr =
       window =
         if host is 'boards.4chan.org'
           $.id('iframe').contentWindow
-        else if host is 'sys.4chan.org'
+        else
           parent
       window.postMessage data, '*'
     receive: (data) ->
@@ -2739,7 +2742,8 @@ imgExpand =
 
 Main =
   init: ->
-    pathname = location.pathname[1..].split '/'
+    path = location.pathname
+    pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname
     if temp is 'res'
       g.REPLY = true
@@ -2749,17 +2753,22 @@ Main =
 
     $.on window, 'message', Main.message
 
-    if location.hostname is 'sys.4chan.org'
-      if location.pathname is '/robots.txt'
-        qr.message.send req: 'status', ready: true
-      else if /report/.test location.search
-        $.ready ->
-          $.on $('#recaptcha_response_field'), 'keydown', (e) ->
-            window.location = 'javascript:Recaptcha.reload()' if e.keyCode is 8 and not e.target.value
-      return
-    if location.hostname is 'images.4chan.org'
-      $.ready -> redirect.init() if d.title is '4chan - 404'
-      return
+    switch location.hostname
+      when 'sys.4chan.org'
+        if path is '/robots.txt'
+          qr.message.send req: 'status', ready: true
+        else if /report/.test location.search
+          $.ready ->
+            $.on $.id('recaptcha_response_field'), 'keydown', (e) ->
+              window.location = 'javascript:Recaptcha.reload()' if e.keyCode is 8 and not e.target.value
+        return
+      when 'www.4chan.org'
+        if path is '/banned'
+          qr.message.send req: 'status', ready: true, banned: true
+        return
+      when 'images.4chan.org'
+        $.ready -> redirect.init() if d.title is '4chan - 404'
+        return
 
     $.ready options.init
 
