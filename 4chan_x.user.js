@@ -3099,18 +3099,19 @@
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var path, quote, tid, _i, _len, _ref;
+      var hash, path, quote, tid, _i, _len, _ref;
       if (root.className === 'inline') return;
       tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', root).firstChild.id;
       _ref = $$('.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (conf['Indicate OP quote'] && quote.hash.slice(1) === tid) {
+        hash = quote.hash.slice(1);
+        if (conf['Indicate OP quote'] && hash === tid) {
           $.add(quote, $.tn('\u00A0(OP)'));
           return;
         }
         path = quote.pathname;
-        if (conf['Indicate Cross-thread Quotes'] && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
+        if (conf['Indicate Cross-thread Quotes'] && hash && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
           $.add(quote, $.tn('\u00A0(Cross-thread)'));
         }
       }
