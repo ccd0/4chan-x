@@ -1899,7 +1899,7 @@
     message: {
       send: function(data) {
         var host, window;
-        if (engine === 'webkit') {
+        if (/chrome/i.test(navigator.userAgent)) {
           qr.message.receive(data);
           return;
         }

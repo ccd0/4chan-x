@@ -1469,7 +1469,8 @@ qr =
 
   message:
     send: (data) ->
-      if engine is 'webkit'
+      # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
+      if /chrome/i.test navigator.userAgent
         qr.message.receive data
         return
       data.qr = true
