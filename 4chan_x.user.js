@@ -100,6 +100,7 @@
       Imaging: {
         'Image Auto-Gif': [false, 'Animate gif thumbnails'],
         'Image Expansion': [true, 'Expand images'],
+        'Expand All (Unscrolled)': [false, 'Expand all images will only expand those which you have not scrolled past'],
         'Image Hover': [false, 'Show full image on mouseover'],
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail']
@@ -3392,7 +3393,13 @@
           _ref = $$('img[md5]');
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             thumb = _ref[_i];
-            imgExpand.expand(thumb);
+            if (conf['Expand All (Unscrolled)']) {
+              if (thumb.getBoundingClientRect().bottom >= 0) {
+                imgExpand.expand(thumb);
+              }
+            } else {
+              imgExpand.expand(thumb);
+            }
           }
         } else {
           _ref2 = $$('img[md5][hidden]');
