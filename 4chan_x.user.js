@@ -1223,7 +1223,7 @@
         $.before(form, link);
       }
       g.callbacks.push(this.node);
-      if (engine === 'webkit') {
+      if (/chrome/i.test(navigator.userAgent)) {
         qr.status({
           ready: true
         });
@@ -1832,7 +1832,7 @@
         reader.readAsBinaryString(reply.file);
         return;
       }
-      if (engine === 'webkit') {
+      if (/chrome/i.test(navigator.userAgent)) {
         qr.message.post(post);
         return;
       }

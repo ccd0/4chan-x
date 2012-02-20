@@ -900,7 +900,8 @@ qr =
       $.before form, link
     g.callbacks.push @node
 
-    if engine is 'webkit'
+    # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
+    if /chrome/i.test navigator.userAgent
       qr.status ready: true
     else
       iframe = $.el 'iframe',
@@ -1405,7 +1406,8 @@ qr =
       reader.readAsBinaryString reply.file
       return
 
-    if engine is 'webkit'
+    # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
+    if /chrome/i.test navigator.userAgent
       qr.message.post post
       return
     qr.message.send post
