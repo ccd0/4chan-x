@@ -1411,7 +1411,12 @@ qr =
     qr.message.send post
 
   response: (html) ->
-    unless b = $ 'td b', $.el('a', innerHTML: html)
+    doc = $.el 'a', innerHTML: html
+    # Check for ban.
+    if $('title', doc).textContent is '4chan - Banned'
+      qr.status ready: true, banned: true
+      return
+    unless b = $ 'td b', doc
       err = 'Connection error with sys.4chan.org.'
     else if b.childElementCount # error!
       if b.firstChild.tagName # duplicate image link
@@ -1474,7 +1479,10 @@ qr =
           parent
       window.postMessage data, '*'
     receive: (data) ->
-      switch data.req
+      req = data.req
+      delete data.req
+      delete data.qr
+      switch req
         when 'abort'
           qr.ajax?.abort()
           qr.message.send req: 'status'
@@ -1490,7 +1498,6 @@ qr =
       url = "http://sys.4chan.org/#{data.board}/post"
       # Do not append these values to the form.
       delete data.board
-      delete data.qr
 
       # File with filename upload fix from desuwa
       if engine is 'gecko' and data.upfile
@@ -1557,7 +1564,12 @@ qr =
         opts.headers =
           'Content-Type': 'multipart/form-data;boundary=' + boundary
 
-      qr.ajax = $.ajax url, callbacks, opts
+      try
+        qr.ajax = $.ajax url, callbacks, opts
+      catch e
+        # CORS disabled error: redirecting to banned page ;_;
+        if e.name is 'NETWORK_ERR'
+          qr.message.send req: 'status', ready: true, banned: true
 
 options =
   init: ->

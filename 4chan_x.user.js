@@ -1839,10 +1839,18 @@
       return qr.message.send(post);
     },
     response: function(html) {
-      var b, err, node, persona, postNumber, reply, thread, _, _ref;
-      if (!(b = $('td b', $.el('a', {
+      var b, doc, err, node, persona, postNumber, reply, thread, _, _ref;
+      doc = $.el('a', {
         innerHTML: html
-      })))) {
+      });
+      if ($('title', doc).textContent === '4chan - Banned') {
+        qr.status({
+          ready: true,
+          banned: true
+        });
+        return;
+      }
+      if (!(b = $('td b', doc))) {
         err = 'Connection error with sys.4chan.org.';
       } else if (b.childElementCount) {
         if (b.firstChild.tagName) {
@@ -1901,8 +1909,11 @@
         return window.postMessage(data, '*');
       },
       receive: function(data) {
-        var _ref;
-        switch (data.req) {
+        var req, _ref;
+        req = data.req;
+        delete data.req;
+        delete data.qr;
+        switch (req) {
           case 'abort':
             if ((_ref = qr.ajax) != null) _ref.abort();
             return qr.message.send({
@@ -1920,7 +1931,6 @@
         var boundary, callbacks, form, i, name, opts, parts, toBin, url, val;
         url = "http://sys.4chan.org/" + data.board + "/post";
         delete data.board;
-        delete data.qr;
         if (engine === 'gecko' && data.upfile) {
           if (!data.binary) {
             toBin = function(data, name, val) {
@@ -2003,7 +2013,17 @@
             'Content-Type': 'multipart/form-data;boundary=' + boundary
           };
         }
-        return qr.ajax = $.ajax(url, callbacks, opts);
+        try {
+          return qr.ajax = $.ajax(url, callbacks, opts);
+        } catch (e) {
+          if (e.name === 'NETWORK_ERR') {
+            return qr.message.send({
+              req: 'status',
+              ready: true,
+              banned: true
+            });
+          }
+        }
       }
     }
   };
