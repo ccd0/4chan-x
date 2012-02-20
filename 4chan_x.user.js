@@ -3929,7 +3929,7 @@ img[md5], img[md5] + img {\
 }\
 \
 #ihover {\
-  max-height: 100%;\
+  max-height: 97%;\
   max-width: 75%;\
   padding-bottom: 18px;\
 }\
