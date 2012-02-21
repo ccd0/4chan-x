@@ -534,7 +534,7 @@
   filter = {
     filters: {},
     init: function() {
-      var boards, filter, hl, key, op, regexp, _i, _len, _ref, _ref2, _ref3;
+      var boards, filter, hl, key, op, regexp, _i, _len, _ref, _ref2, _ref3, _ref4;
       for (key in config.filter) {
         this.filters[key] = [];
         _ref = conf[key].split('\n');
@@ -554,7 +554,9 @@
             continue;
           }
           op = ((_ref3 = filter.match(/op:(yes|no|only)/)) != null ? _ref3[1].toLowerCase() : void 0) || 'no';
-          hl = /highlight/.test(filter);
+          if (hl = /highlight/.test(filter)) {
+            hl = ((_ref4 = filter.match(/highlight:(\w+)/)) != null ? _ref4[1].toLowerCase() : void 0) || 'filter_highlight';
+          }
           this.filters[key].push(this.createFilter(regexp, op, hl));
         }
         if (!this.filters[key].length) delete this.filters[key];
@@ -566,7 +568,7 @@
         if (isOP && op === 'no' || !isOP && op === 'only') return false;
         if (!regexp.test(value)) return false;
         if (hl) {
-          $.addClass(root, 'filter_highlight');
+          $.addClass(root, hl);
         } else if (isOP) {
           if (!g.REPLY) threadHiding.hideHide(root.parentNode);
         } else {

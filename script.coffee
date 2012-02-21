@@ -441,8 +441,10 @@ filter =
         op = filter.match(/op:(yes|no|only)/)?[1].toLowerCase() or 'no'
 
         # Highlight the post, or hide it.
+        # If not specified, the highlight class will be filter_highlight.
         # Defaults to post hiding.
-        hl = /highlight/.test filter
+        if hl = /highlight/.test filter
+          hl = filter.match(/highlight:(\w+)/)?[1].toLowerCase() or 'filter_highlight'
 
         @filters[key].push @createFilter regexp, op, hl
 
@@ -460,7 +462,7 @@ filter =
       unless regexp.test value
         return false
       if hl
-        $.addClass root, 'filter_highlight'
+        $.addClass root, hl
       else if isOP
         unless g.REPLY
           threadHiding.hideHide root.parentNode
