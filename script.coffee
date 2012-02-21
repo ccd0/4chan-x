@@ -24,6 +24,7 @@ config =
       'Image Hover':                  [false, 'Show full image on mouseover']
       'Sauce':                        [true,  'Add sauce to images']
       'Reveal Spoilers':              [false, 'Replace spoiler thumbnails by the original thumbnail']
+      'Expand From Current':          [true,  'Expand images from current position to thread end.']
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
@@ -2767,7 +2768,13 @@ imgExpand =
     all: ->
       imgExpand.on = @checked
       if imgExpand.on #expand
-        for thumb in $$ 'img[md5]'
+        thumbs = $$ 'img[md5]'
+        if conf['Expand From Current']
+          for thumb, i in thumbs
+            if thumb.getBoundingClientRect().top > 0
+              break
+          thumbs = thumbs[i...]
+        for thumb in thumbs
           imgExpand.expand thumb
       else #contract
         for thumb in $$ 'img[md5][hidden]'
