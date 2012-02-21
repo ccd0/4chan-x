@@ -75,7 +75,7 @@ config =
     ].join '\n'
     dimensions: [
       '# Highlight potential wallpapers:'
-      '#/1920x1080/;op:yes;highlight;boards:w,wg'
+      '#/1920x1080/;op:yes;highlight;top:no;boards:w,wg'
     ].join '\n'
     filesize: [
       ''
@@ -460,15 +460,19 @@ filter =
 
         # Filter OPs along with their threads, replies only, or both.
         # Defaults to replies only.
-        op = filter.match(/op:(yes|no|only)/)?[1].toLowerCase() or 'no'
+        op = filter.match(/[^t]op:(yes|no|only)/)?[1].toLowerCase() or 'no'
 
         # Highlight the post, or hide it.
         # If not specified, the highlight class will be filter_highlight.
         # Defaults to post hiding.
         if hl = /highlight/.test filter
-          hl = filter.match(/highlight:(\w+)/)?[1].toLowerCase() or 'filter_highlight'
+          hl  = filter.match(/highlight:(\w+)/)?[1].toLowerCase() or 'filter_highlight'
+          # Put highlighted OP's thread on top of the board page or not.
+          # Defaults to on top.
+          top = filter.match(/top:(yes|no)/)?[1].toLowerCase() or 'yes'
+          top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push @createFilter regexp, op, hl
+        @filters[key].push @createFilter regexp, op, hl, top
 
       # Only execute filter types that contain valid filters.
       unless @filters[key].length
@@ -477,7 +481,7 @@ filter =
     if Object.keys(@filters).length
       g.callbacks.push @node
 
-  createFilter: (regexp, op, hl) ->
+  createFilter: (regexp, op, hl, top) ->
     (root, value, isOP) ->
       if isOP and op is 'no' or !isOP and op is 'only'
         return false
@@ -485,7 +489,7 @@ filter =
         return false
       if hl
         $.addClass root, hl
-        if isOP and not g.REPLY
+        if isOP and top and not g.REPLY
           # Put the highlighted OPs' threads on top of the board pages...
           thisThread = root.parentNode
           # ...before the first non highlighted thread.
@@ -493,7 +497,7 @@ filter =
             $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
         # Continue the filter lookup to add more classes or hide it.
         return false
-      else if isOP
+      if isOP
         unless g.REPLY
           threadHiding.hideHide root.parentNode
       else
@@ -1719,7 +1723,8 @@ options =
     <ul>You can use these settings with each regular expression, separate them with semicolons:
       <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>
       <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>
-      <li>Highlight instead of hiding. Highlighted OPs will have their threads put on top of board pages. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>hightlight:wallpaper;</code>.</li>
+      <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>hightlight:wallpaper;</code>.</li>
+      <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>
     </ul>
     <p>Name:<br><textarea name=name></textarea></p>
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>

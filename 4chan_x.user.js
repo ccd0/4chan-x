@@ -141,7 +141,7 @@
       subject: ['# Filter Generals on /v/:', '#/general/i;boards:v;op:only'].join('\n'),
       comment: ['# Filter Stallman copypasta on /g/:', '#/what you\'re refer+ing to as linux/i;boards:g'].join('\n'),
       filename: [''].join('\n'),
-      dimensions: ['# Highlight potential wallpapers:', '#/1920x1080/;op:yes;highlight;boards:w,wg'].join('\n'),
+      dimensions: ['# Highlight potential wallpapers:', '#/1920x1080/;op:yes;highlight;top:no;boards:w,wg'].join('\n'),
       filesize: [''].join('\n'),
       md5: [''].join('\n')
     },
@@ -534,7 +534,7 @@
   filter = {
     filters: {},
     init: function() {
-      var boards, filter, hl, key, op, regexp, _i, _len, _ref, _ref2, _ref3, _ref4;
+      var boards, filter, hl, key, op, regexp, top, _i, _len, _ref, _ref2, _ref3, _ref4, _ref5;
       for (key in config.filter) {
         this.filters[key] = [];
         _ref = conf[key].split('\n');
@@ -553,31 +553,34 @@
             alert(e.message);
             continue;
           }
-          op = ((_ref3 = filter.match(/op:(yes|no|only)/)) != null ? _ref3[1].toLowerCase() : void 0) || 'no';
+          op = ((_ref3 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref3[1].toLowerCase() : void 0) || 'no';
           if (hl = /highlight/.test(filter)) {
             hl = ((_ref4 = filter.match(/highlight:(\w+)/)) != null ? _ref4[1].toLowerCase() : void 0) || 'filter_highlight';
+            top = ((_ref5 = filter.match(/top:(yes|no)/)) != null ? _ref5[1].toLowerCase() : void 0) || 'yes';
+            top = top === 'yes';
           }
-          this.filters[key].push(this.createFilter(regexp, op, hl));
+          this.filters[key].push(this.createFilter(regexp, op, hl, top));
         }
         if (!this.filters[key].length) delete this.filters[key];
       }
       if (Object.keys(this.filters).length) return g.callbacks.push(this.node);
     },
-    createFilter: function(regexp, op, hl) {
+    createFilter: function(regexp, op, hl, top) {
       return function(root, value, isOP) {
         var firstThread, thisThread;
         if (isOP && op === 'no' || !isOP && op === 'only') return false;
         if (!regexp.test(value)) return false;
         if (hl) {
           $.addClass(root, hl);
-          if (isOP && !g.REPLY) {
+          if (isOP && top && !g.REPLY) {
             thisThread = root.parentNode;
             if (firstThread = $('div[class=op]')) {
               $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
             }
           }
           return false;
-        } else if (isOP) {
+        }
+        if (isOP) {
           if (!g.REPLY) threadHiding.hideHide(root.parentNode);
         } else {
           replyHiding.hideHide(root.previousSibling);
@@ -2125,7 +2128,8 @@
     <ul>You can use these settings with each regular expression, separate them with semicolons:\
       <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>\
       <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>\
-      <li>Highlight instead of hiding. Highlighted OPs will have their threads put on top of board pages. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>hightlight:wallpaper;</code>.</li>\
+      <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>hightlight:wallpaper;</code>.</li>\
+      <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>\
     </ul>\
     <p>Name:<br><textarea name=name></textarea></p>\
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>\
