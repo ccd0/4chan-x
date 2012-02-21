@@ -5,10 +5,10 @@ master
   Add Open Reply in New Tab option for replies made from the main board (not dumping).
   Scroll back up (top of anchor - 42px) when unexpanding images.
   Reply/Thread File Info Formatting:
-    - Link: %l.
+    - Link: %l, %L (Original file names are shown inside threads).
     - Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default).
     - Resolution/PDF: %r
-    - Original filename: %n (truncated if longer than 40~ character, on hover the entire string is shown.
+    - Original filename: %n, %N.
 - Mayhem
   The Filter now has per filter settings:
     - Filter the OP only along its thread, replies only, or both.

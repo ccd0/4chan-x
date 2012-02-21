@@ -149,8 +149,8 @@
     sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/a/image/$3/', '#http://archive.installgentoo.net/g/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
-    fileInfoR: '%l (%s, %r, %n)',
-    fileInfoT: '%l (%s, %r)',
+    fileInfoR: '%l, %s, %r',
+    fileInfoT: '%l, %s, %r',
     favicon: 'ferongr',
     hotkeys: {
       openOptions: ['ctrl+o', 'Open Options'],
@@ -2146,14 +2146,16 @@
     </ul>\
     <div class=warning><code>File Info Formatting</code> is disabled.</div>\
     <ul>\
-      Reply File Info Formatting\
-      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>\
       Thread File Info Formatting\
       <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>\
       <li>Link: %l (lowercase L)</li>\
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>\
       <li>Resolution: %r (Displays PDF on /po/, for PDF\'s)</li>\
-      <li>Original filename: %n (Reply only)</li>\
+      Reply File Info Formatting\
+      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>\
+      <li>All thread formatters also work for reply formatting.</li>\
+      <li>Link (with original file name): %l (lowercase L)(Truncated), %L (Untruncated)</li>\
+      <li>Original file name: %n (Truncated), %N (Untruncated)</li>\
     </ul>\
     <div class=warning><code>Unread Favicon</code> is disabled.</div>\
     Unread favicons<br>\
@@ -2294,6 +2296,7 @@
         resolution: '1366x768',
         filename: 'Untitled.png'
       };
+      FileInfo.funks = FileInfo.setFormats();
       return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[this.name === 'fileInfoR' ? 0 : 1](FileInfo);
     },
     favicon: function() {
@@ -2893,7 +2896,7 @@
     init: function() {
       if (g.BOARD === 'f') return;
       FileInfo.ffConf = ['fileInfoR', 'fileInfoT'];
-      FileInfo.ffMtrs = [/%([BKlMnrs])/g, /%([BKlMrs])/g];
+      FileInfo.ffMtrs = [/%([BKlLMnNrs])/g, /%([BKlMrs])/g];
       FileInfo.ffRgex = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/];
       this.parse = function(node) {
         var filename, link, resolution, size, unit, _, _ref;
@@ -2962,7 +2965,14 @@
         return FileInfo.convertUnit('KB');
       },
       l: function() {
-        return FileInfo.data.link;
+        if (FileInfo.ffType === 0) {
+          return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + FileInfo.formatters.n() + '<');
+        } else {
+          return FileInfo.data.link;
+        }
+      },
+      L: function() {
+        return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + FileInfo.data.filename + '<');
       },
       M: function() {
         return FileInfo.convertUnit('MB');
@@ -2974,6 +2984,9 @@
         } else {
           return FileInfo.data.filename;
         }
+      },
+      N: function() {
+        return FileInfo.data.filename;
       },
       r: function() {
         return FileInfo.data.resolution;

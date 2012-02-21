@@ -78,8 +78,8 @@ config =
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
-  fileInfoR: '%l (%s, %r, %n)'
-  fileInfoT: '%l (%s, %r)'
+  fileInfoR: '%l, %s, %r'
+  fileInfoT: '%l, %s, %r'
   favicon: 'ferongr'
   hotkeys:
     openOptions:     ['ctrl+o', 'Open Options']
@@ -1718,14 +1718,16 @@ options =
     </ul>
     <div class=warning><code>File Info Formatting</code> is disabled.</div>
     <ul>
-      Reply File Info Formatting
-      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>
       Thread File Info Formatting
       <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>
       <li>Link: %l (lowercase L)</li>
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
       <li>Resolution: %r (Displays PDF on /po/, for PDF\'s)</li>
-      <li>Original filename: %n (Reply only)</li>
+      Reply File Info Formatting
+      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>
+      <li>All thread formatters also work for reply formatting.</li>
+      <li>Link (with original file name): %l (lowercase L)(Truncated), %L (Untruncated)</li>
+      <li>Original file name: %n (Truncated), %N (Untruncated)</li>
     </ul>
     <div class=warning><code>Unread Favicon</code> is disabled.</div>
     Unread favicons<br>
@@ -1852,6 +1854,7 @@ options =
       unit      : 'KB'
       resolution: '1366x768'
       filename  : 'Untitled.png'
+    FileInfo.funks = FileInfo.setFormats()
     $.id("#{@name}Preview").innerHTML = FileInfo.funks[if @name is 'fileInfoR' then 0 else 1] FileInfo
   favicon: ->
     Favicon.switch()
@@ -2333,7 +2336,7 @@ FileInfo =
   init: ->
     return if g.BOARD is 'f'
     FileInfo.ffConf = [ 'fileInfoR', 'fileInfoT' ]
-    FileInfo.ffMtrs = [ /%([BKlMnrs])/g, /%([BKlMrs])/g ]
+    FileInfo.ffMtrs = [ /%([BKlLMnNrs])/g, /%([BKlMrs])/g ]
     FileInfo.ffRgex = [ /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/,
                           /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/ ]
     @parse = (node) ->
@@ -2377,12 +2380,17 @@ FileInfo =
   formatters:
     B: -> FileInfo.convertUnit 'B'
     K: -> FileInfo.convertUnit 'KB'
-    l: -> FileInfo.data.link
+    l: -> if FileInfo.ffType is 0 
+            FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.formatters.n() + '<'
+          else
+            FileInfo.data.link
+    L: -> FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.data.filename + '<'
     M: -> FileInfo.convertUnit 'MB'
     n: -> if (ext = FileInfo.data.filename.lastIndexOf '.') > 38
            '<span class=fnfull>' + FileInfo.data.filename + '</span><span class=fntrunc>' + FileInfo.data.filename.substr(0, 32) + ' (...)' + FileInfo.data.filename.substr(ext) + '</span>'
           else
             FileInfo.data.filename
+    N: -> FileInfo.data.filename
     r: -> FileInfo.data.resolution
     s: -> "#{FileInfo.data.size} #{FileInfo.data.unit}"
 
