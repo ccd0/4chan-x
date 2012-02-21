@@ -2338,8 +2338,8 @@ Filesize =
   init: ->
     Filesize.fstype = if g.REPLY then 0 else 1
     Filesize.fsconf = [ 'filesizeR', 'filesizeT' ]
-    Filesize.regEx  = [ /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/,
-                        /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/ ]
+    Filesize.regEx  = [ /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/,
+                        /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/ ]
     @parse = (node) ->
       [_, link, size, unit, width, height, filename] =
         node.innerHTML.match Filesize.regEx[Filesize.fstype]

@@ -2897,7 +2897,7 @@
     init: function() {
       Filesize.fstype = g.REPLY ? 0 : 1;
       Filesize.fsconf = ['filesizeR', 'filesizeT'];
-      Filesize.regEx = [/File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/];
+      Filesize.regEx = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/];
       this.parse = function(node) {
         var filename, height, link, size, unit, width, _, _ref;
         _ref = node.innerHTML.match(Filesize.regEx[Filesize.fstype]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], width = _ref[4], height = _ref[5], filename = _ref[6];
