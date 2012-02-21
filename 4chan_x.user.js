@@ -3576,6 +3576,10 @@
           return;
       }
       $.ready(options.init);
+      if (conf['Quick Reply'] && conf['Hide Original Post Form']) {
+        Main.css += 'form[name=post] { display: none; }';
+      }
+      Main.addStyle();
       now = Date.now();
       if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
         $.ready(function() {
@@ -3619,10 +3623,6 @@
         quoteIndicators.init();
       }
       if (conf['Fix XXX\'d Post Numbers']) unxify.init();
-      if (conf['Quick Reply'] && conf['Hide Original Post Form']) {
-        Main.css += 'form[name=post] { display: none; }';
-      }
-      Main.addStyle();
       return $.ready(Main.ready);
     },
     ready: function() {

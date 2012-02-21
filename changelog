@@ -6,7 +6,7 @@ master
     - Hightlight, or hide.
   New filter group: Image dimensions.
   Fix posting on Safari.
-  Fix rare case where the QR would not accept images.
+  Fix rare case where the QR would not accept certain image types.
 
 2.26.4
 - Mayhem

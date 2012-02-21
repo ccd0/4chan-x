@@ -2848,6 +2848,11 @@ Main =
 
     $.ready options.init
 
+    if conf['Quick Reply'] and conf['Hide Original Post Form']
+      Main.css += 'form[name=post] { display: none; }'
+
+    Main.addStyle()
+
     now = Date.now()
     if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
       $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
@@ -2917,11 +2922,6 @@ Main =
 
     if conf['Fix XXX\'d Post Numbers']
       unxify.init()
-
-    if conf['Quick Reply'] and conf['Hide Original Post Form']
-      Main.css += 'form[name=post] { display: none; }'
-
-    Main.addStyle()
 
     $.ready Main.ready
 
