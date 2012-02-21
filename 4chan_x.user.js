@@ -568,7 +568,7 @@
         if (hl) {
           $.addClass(root, 'filter_highlight');
         } else if (isOP) {
-          threadHiding.hideHide(root.parentNode);
+          if (!g.REPLY) threadHiding.hideHide(root.parentNode);
         } else {
           replyHiding.hideHide(root.previousSibling);
         }

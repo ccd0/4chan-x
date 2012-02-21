@@ -462,7 +462,8 @@ filter =
       if hl
         $.addClass root, 'filter_highlight'
       else if isOP
-        threadHiding.hideHide root.parentNode
+        unless g.REPLY
+          threadHiding.hideHide root.parentNode
       else
         replyHiding.hideHide  root.previousSibling
       true
