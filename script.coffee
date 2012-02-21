@@ -13,9 +13,8 @@ config =
       'Check for Updates':            [true,  'Check for updated versions of 4chan X']
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
-      'Filter':                       [false, 'Self-moderation placebo']
-      'Filter OPs':                   [false, 'Filter OPs along with their threads']
-      'Recursive Filtering':          [false, 'Filter replies of filtered posts, recursively']
+      'Filter':                       [true, 'Self-moderation placebo']
+      'Recursive Filtering':          [true, 'Filter replies of filtered posts, recursively']
       'Reply Hiding':                 [true,  'Hide single replies']
       'Thread Hiding':                [true,  'Hide entire threads']
       'Show Stubs':                   [true,  'Of hidden threads / replies']
@@ -408,58 +407,113 @@ $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
 filter =
-  regexps: {}
-  callbacks: []
+  filters: {}
   init: ->
     for key of config.filter
-      unless m = conf[key].match /^\/.+\/\w*$/gm
-        continue
-      @regexps[key] = []
-      for filter in m
-        f = filter.match /^\/(.+)\/(\w*)$/
-        try
-          @regexps[key].push RegExp f[1], f[2]
-        catch e
-          alert e.message
-      #only execute what's filterable
-      @callbacks.push @[key]
+      @filters[key] = []
+      for filter in conf[key].split('\n')
+        continue if filter[0] is '#'
 
-    g.callbacks.push @node
+        unless regexp = filter.match /\/(.+)\/(\w*)/
+          continue
+
+        # Don't mix up filter flags with the regular expression.
+        filter = filter.replace regexp[0], ''
+
+        # Do not add this filter to the list if it's not a global one
+        # and it's not specifically applicable to the current board.
+        # Defaults to global.
+        boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
+        if boards isnt 'global' and boards.split(',').indexOf(g.BOARD) is -1
+          continue
+
+        try
+          # Please, don't write silly regular expressions.
+          regexp = RegExp regexp[1], regexp[2]
+        catch e
+          # I warned you, bro.
+          alert e.message
+          continue
+
+        # Filter OPs along with their threads, replies only, or both.
+        # Defaults to replies only.
+        op = filter.match(/op:(yes|no|only)/)?[1].toLowerCase() or 'no'
+
+        # Highlight the post, or hide it.
+        # Defaults to post hiding.
+        hl = /highlight/.test filter
+
+        @filters[key].push @createFilter regexp, op, hl
+
+      # Only execute filter types that contain valid filters.
+      unless @filters[key].length
+        delete @filters[key]
+
+    if Object.keys(@filters).length
+      g.callbacks.push @node
+
+  createFilter: (regexp, op, hl) ->
+    (root, value, isOP) ->
+      if isOP and op is 'no' or op is 'only'
+        return false
+      unless regexp.test value
+        return false
+      if hl
+        $.addClass root, 'filter_highlight'
+      else if isOP
+        threadHiding.hideHide root.parentNode
+      else
+        replyHiding.hideHide  root.previousSibling
+      true
 
   node: (root) ->
-    unless root.className
-      if filter.callbacks.some((callback) -> callback root)
-        replyHiding.hideHide $ 'td:not([nowrap])', root
-    else if root.className is 'op' and not g.REPLY and conf['Filter OPs']
-      if filter.callbacks.some((callback) -> callback root)
-        threadHiding.hideHide root.parentNode
+    klass = root.className
+    return if /\binlined\b/.test klass
+    unless isOP = klass is 'op'
+      root = $ 'td[id]', root
+    for key of filter.filters
+      if filter.test root, key, isOP
+        return
 
-  test: (key, value) ->
-    filter.regexps[key].some (regexp) -> regexp.test value
+  test: (root, key, isOP) ->
+    value = @[key] root, isOP
+    if value is false
+      # Return if there's nothing to filter (no tripcode for example).
+      return false
 
-  name: (root) ->
-    name = if root.className is 'op' then $ '.postername', root else $ '.commentpostername', root
-    filter.test 'name', name.textContent
+    for filter in @filters[key]
+      if filter root, value, isOP
+        return true
+    false
+
+  name: (root, isOP) ->
+    name = if isOP then $ '.postername', root else $ '.commentpostername', root
+    name.textContent
   tripcode: (root) ->
     if trip = $ '.postertrip', root
-      filter.test 'tripcode', trip.textContent
+      return trip.textContent
+    false
   email: (root) ->
-    if mail = $ '.linkmail', root
-      filter.test 'email', mail.href
-  subject: (root) ->
-    sub = if root.className is 'op' then $ '.filetitle', root else $ '.replytitle', root
-    filter.test 'subject', sub.textContent
+    unless mail = $ '.linkmail', root
+      return mail.href
+    false
+  subject: (root, isOP) ->
+    sub = if isOP then $ '.filetitle', root else $ '.replytitle', root
+    sub.textContent
   comment: (root) ->
-    filter.test 'comment', ($.el 'a', innerHTML: $('blockquote', root).innerHTML.replace /<br>/g, '\n').textContent
+    ($.el 'a', innerHTML: $('blockquote', root).innerHTML.replace /<br>/g, '\n').textContent
   filename: (root) ->
-    if file = $ '.filesize span', root
-      filter.test 'filename', file.title
+    if file = $ '.filesize > span', root
+      return file.title
+    false
   filesize: (root) ->
     if img = $ 'img[md5]', root
-      filter.test 'filesize', img.alt
+      return img.alt
+    false
   md5: (root) ->
     if img = $ 'img[md5]', root
-      filter.test 'md5', img.getAttribute('md5')
+      return img.getAttribute 'md5'
+    false
 
 strikethroughQuotes =
   init: ->
@@ -3306,12 +3360,15 @@ img[md5], img[md5] + img {
 .inlined {
   opacity: .5;
 }
-.inline td.reply {
+.inline .reply {
   background-color: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(128, 128, 128, 0.5);
 }
 .filetitle, .replytitle, .postername, .commentpostername, .postertrip {
   background: none;
+}
+.filter_highlight {
+  box-shadow: -5px 0 rgba(255,0,0,0.5);
 }
 .filtered {
   text-decoration: line-through;
