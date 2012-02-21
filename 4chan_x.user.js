@@ -632,7 +632,7 @@
     },
     comment: function(root) {
       return ($.el('a', {
-        innerHTML: $('blockquote', root).innerHTML.replace(/<br>/g, '\n')
+        innerHTML: root.lastChild.innerHTML.replace(/<br>/g, '\n')
       })).textContent;
     },
     filename: function(root) {
@@ -4023,7 +4023,7 @@ img[md5], img[md5] + img {\
   padding: 5px;\
   text-align: left;\
   vertical-align: middle;\
-  width: 500px;\
+  width: 600px;\
 }\
 #credits {\
   float: right;\

@@ -543,7 +543,7 @@ filter =
     sub = if isOP then $ '.filetitle', root else $ '.replytitle', root
     sub.textContent
   comment: (root) ->
-    ($.el 'a', innerHTML: $('blockquote', root).innerHTML.replace /<br>/g, '\n').textContent
+    ($.el 'a', innerHTML: root.lastChild.innerHTML.replace /<br>/g, '\n').textContent
   filename: (root) ->
     if file = $ '.filesize > span', root
       return file.title
@@ -3353,7 +3353,7 @@ img[md5], img[md5] + img {
   padding: 5px;
   text-align: left;
   vertical-align: middle;
-  width: 500px;
+  width: 600px;
 }
 #credits {
   float: right;
