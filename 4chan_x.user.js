@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base;
+  var $, $$, DAY, Favicon, Filesize, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base;
 
   config = {
     main: {
@@ -81,6 +81,7 @@
         'Fix XXX\'d Post Numbers': [true, 'Replace XXX\'d post numbers with their actual number'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
+        'Filesize Formatting': [true, 'Reformats the image information'],
         'Report Button': [true, 'Add report buttons'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
@@ -148,6 +149,8 @@
     sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/a/image/$3/', '#http://archive.installgentoo.net/g/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
+    filesizeR: '%l (%s, %wx%h, %n)',
+    filesizeT: '%l (%s, %wx%h)',
     favicon: 'ferongr',
     hotkeys: {
       openOptions: ['ctrl+o', 'Open Options'],
@@ -2076,7 +2079,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
+      var arr, back, checked, description, dialog, favicon, filesizeR, filesizeT, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2141,6 +2144,18 @@
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>\
       <li>Minutes: %M</li>\
     </ul>\
+    <div class=warning><code>Filesize Formatting</code> is disabled.</div>\
+    <ul>\
+      Reply Filesize formatting\
+      <li><input type=text name=filesizeR> : <span id=filesizeRPreview></span></li>\
+      Thread Filesize formatting\
+      <li><input type=text name=filesizeT> : <span id=filesizeTPreview></span></li>\
+      <li>Link: %l (lowercase L)</li>\
+      <li>Size: %B (Bytes), %K (KB), %M (MB), %s (simplified unit)</li>\
+      <li>Width: %w</li>\
+      <li>Height: %h</li>\
+      <li>Original filename: %n (Reply only)</li>\
+    </ul>\
     <div class=warning><code>Unread Favicon</code> is disabled.</div>\
     Unread favicons<br>\
     <select name=favicon>\
@@ -2194,10 +2209,16 @@
       }
       (back = $('[name=backlink]', dialog)).value = conf['backlink'];
       (time = $('[name=time]', dialog)).value = conf['time'];
+      (filesizeR = $('[name=filesizeR]', dialog)).value = conf['filesizeR'];
+      (filesizeT = $('[name=filesizeT]', dialog)).value = conf['filesizeT'];
       $.on(back, 'keyup', $.cb.value);
       $.on(back, 'keyup', options.backlink);
       $.on(time, 'keyup', $.cb.value);
       $.on(time, 'keyup', options.time);
+      $.on(filesizeR, 'keyup', $.cb.value);
+      $.on(filesizeR, 'keyup', options.filesize);
+      $.on(filesizeT, 'keyup', $.cb.value);
+      $.on(filesizeT, 'keyup', options.filesize);
       favicon = $('select', dialog);
       favicon.value = conf['favicon'];
       $.on(favicon, 'change', $.cb.value);
@@ -2236,6 +2257,8 @@
       d.body.style.setProperty('overflow', 'hidden', null);
       options.backlink.call(back);
       options.time.call(time);
+      options.filesize.call(filesizeR);
+      options.filesize.call(filesizeT);
       return options.favicon.call(favicon);
     },
     close: function() {
@@ -2263,6 +2286,20 @@
     },
     backlink: function() {
       return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
+    },
+    filesize: function() {
+      Filesize.fsize = this.name;
+      Filesize.reply = this.name === 'filesizeR';
+      Filesize.getFormat();
+      Filesize.data = {
+        link: '<a href="javascript:;">1329791824.png</a>',
+        size: 996,
+        unit: 'KB',
+        width: 1366,
+        height: 768
+      };
+      if (Filesize.reply) Filesize.data.filename = 'Untitled.png';
+      return $.id("" + this.name + "Preview").innerHTML = Filesize.funk(Filesize);
     },
     favicon: function() {
       Favicon["switch"]();
@@ -2857,6 +2894,102 @@
     }
   };
 
+  Filesize = {
+    init: function() {
+      Filesize.reply = g.REPLY;
+      Filesize.fsize = Filesize.reply ? 'filesizeR' : 'filesizeT';
+      Filesize.regEx = Filesize.reply ? /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/ : Filesize.regEx = /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/;
+      this.parse = function(node) {
+        var filename, height, link, size, unit, width, _, _ref;
+        _ref = node.innerHTML.match(Filesize.regEx), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], width = _ref[4], height = _ref[5], filename = _ref[6];
+        return {
+          'link': link,
+          'size': size,
+          'unit': unit,
+          'width': width,
+          'height': height,
+          'filename': filename
+        };
+      };
+      Filesize.getFormat();
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var filesize, node;
+      if (root.className === 'inline' || !(node = $('.filesize', root))) return;
+      Filesize.data = Filesize.parse(node);
+      filesize = $.el('span', {
+        className: 'filesize',
+        innerHTML: ' ' + Filesize.funk(Filesize) + ' '
+      });
+      return $.replace(node, filesize);
+    },
+    getFormat: function() {
+      var code;
+      code = conf[Filesize.fsize].replace(/%([BhKlMnsw])/g, function(s, c) {
+        if (c in Filesize.formatters) {
+          return "' + Filesize.formatters." + c + "() + '";
+        } else {
+          return s;
+        }
+      });
+      return Filesize.funk = Function('Filesize', "return '" + code + "'");
+    },
+    convertUnit: function(size, unitF, unitT) {
+      var i, units;
+      if (unitF !== unitT) {
+        units = ['B', 'KB', 'MB'];
+        i = units.indexOf(unitF) - units.indexOf(unitT);
+        if (unitT === 'B') unitT = 'Bytes';
+        if (i > 0) {
+          while (i > 0) {
+            size *= 1024;
+            --i;
+          }
+        } else if (i < 0) {
+          while (i < 0) {
+            size /= 1024;
+            ++i;
+          }
+        }
+        if (size < 1 && size.toString().length > size.toFixed(2).toString.length) {
+          size = size.toFixed(2);
+        }
+      }
+      return "" + size + " " + unitT;
+    },
+    formatters: {
+      B: function() {
+        return Filesize.convertUnit(Filesize.data.size, Filesize.data.unit, 'B');
+      },
+      h: function() {
+        return Filesize.data.height;
+      },
+      K: function() {
+        return Filesize.convertUnit(Filesize.data.size, Filesize.data.unit, 'KB');
+      },
+      l: function() {
+        return Filesize.data.link;
+      },
+      M: function() {
+        return Filesize.convertUnit(Filesize.data.size, Filesize.data.unit, 'MB');
+      },
+      n: function() {
+        if (Filesize.reply) {
+          return Filesize.data.filename;
+        } else {
+          return '%n';
+        }
+      },
+      s: function() {
+        return "" + Filesize.data.size + " " + Filesize.data.unit;
+      },
+      w: function() {
+        return Filesize.data.width;
+      }
+    }
+  };
+
   getTitle = function(thread) {
     var el, span;
     el = $('.filetitle', thread);
@@ -3120,7 +3253,8 @@
       }
       qp.innerHTML = html;
       if (conf['Image Auto-Gif']) imgGif.node(qp);
-      if (conf['Time Formatting']) return Time.node(qp);
+      if (conf['Time Formatting']) Time.node(qp);
+      if (conf['Filesize Formatting']) return Filesize.node(qp);
     }
   };
 
@@ -3613,6 +3747,7 @@
       if (conf['Filter'] || conf['Reply Hiding']) strikethroughQuotes.init();
       if (conf['Anonymize']) anonymize.init();
       if (conf['Time Formatting']) Time.init();
+      if (conf['Filesize Formatting']) Filesize.init();
       if (conf['Sauce']) sauce.init();
       if (conf['Reveal Spoilers']) revealSpoilers.init();
       if (conf['Image Auto-Gif']) imgGif.init();

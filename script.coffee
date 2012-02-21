@@ -5,6 +5,7 @@ config =
       'Fix XXX\'d Post Numbers':      [true,  'Replace XXX\'d post numbers with their actual number']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
+      'Filesize Formatting':          [true,  'Reformats the image information']
       'Report Button':                [true,  'Add report buttons']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
@@ -77,6 +78,8 @@ config =
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
+  filesizeR: '%l (%s, %wx%h, %n)'
+  filesizeT: '%l (%s, %wx%h)'
   favicon: 'ferongr'
   hotkeys:
     openOptions:     ['ctrl+o', 'Open Options']
@@ -1713,6 +1716,18 @@ options =
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
       <li>Minutes: %M</li>
     </ul>
+    <div class=warning><code>Filesize Formatting</code> is disabled.</div>
+    <ul>
+      Reply Filesize formatting
+      <li><input type=text name=filesizeR> : <span id=filesizeRPreview></span></li>
+      Thread Filesize formatting
+      <li><input type=text name=filesizeT> : <span id=filesizeTPreview></span></li>
+      <li>Link: %l (lowercase L)</li>
+      <li>Size: %B (Bytes), %K (KB), %M (MB), %s (simplified unit)</li>
+      <li>Width: %w</li>
+      <li>Height: %h</li>
+      <li>Original filename: %n (Reply only)</li>
+    </ul>
     <div class=warning><code>Unread Favicon</code> is disabled.</div>
     Unread favicons<br>
     <select name=favicon>
@@ -1759,12 +1774,18 @@ options =
       $.on ta, 'change', $.cb.value
 
     #rice
-    (back = $ '[name=backlink]', dialog).value = conf['backlink']
-    (time = $ '[name=time]',     dialog).value = conf['time']
+    (back      = $ '[name=backlink]',  dialog).value = conf['backlink']
+    (time      = $ '[name=time]',      dialog).value = conf['time']
+    (filesizeR = $ '[name=filesizeR]', dialog).value = conf['filesizeR']
+    (filesizeT = $ '[name=filesizeT]', dialog).value = conf['filesizeT']
     $.on back, 'keyup', $.cb.value
     $.on back, 'keyup', options.backlink
     $.on time, 'keyup', $.cb.value
     $.on time, 'keyup', options.time
+    $.on filesizeR, 'keyup', $.cb.value
+    $.on filesizeR, 'keyup', options.filesize
+    $.on filesizeT, 'keyup', $.cb.value
+    $.on filesizeT, 'keyup', options.filesize
     favicon = $ 'select', dialog
     favicon.value = conf['favicon']
     $.on favicon, 'change', $.cb.value
@@ -1797,6 +1818,8 @@ options =
 
     options.backlink.call back
     options.time.call     time
+    options.filesize.call filesizeR
+    options.filesize.call filesizeT
     options.favicon.call  favicon
 
   close: ->
@@ -1823,6 +1846,19 @@ options =
     $.id('timePreview').textContent = Time.funk Time
   backlink: ->
     $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
+  filesize: () ->
+    Filesize.fsize = @name
+    Filesize.reply = @name is 'filesizeR'
+    Filesize.getFormat()
+    Filesize.data = {
+      link    : '<a href="javascript:;">1329791824.png</a>',
+      size    : 996,
+      unit    : 'KB',
+      width   : 1366,
+      height  : 768
+    }
+    Filesize.data.filename = 'Untitled.png' if Filesize.reply
+    $.id("#{@name}Preview").innerHTML = Filesize.funk Filesize
   favicon: ->
     Favicon.switch()
     unread.update true
@@ -2298,6 +2334,65 @@ Time =
     p: -> if Time.date.getHours() < 12 then 'AM' else 'PM'
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
     y: -> Time.date.getFullYear() - 2000
+    
+Filesize =
+  init: ->
+    Filesize.reply = g.REPLY
+    Filesize.fsize = if Filesize.reply then 'filesizeR' else 'filesizeT'
+    Filesize.regEx = if Filesize.reply then /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/ else Filesize.regEx = /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/
+    @parse = (node) ->
+      [_, link, size, unit, width, height, filename] =
+        node.innerHTML.match Filesize.regEx
+      {
+        'link'    : link,
+        'size'    : size,
+        'unit'    : unit,
+        'width'   : width,
+        'height'  : height,
+        'filename': filename
+      }
+
+    Filesize.getFormat()
+    g.callbacks.push @node
+  node: (root) ->
+    return if root.className is 'inline' or not node = $ '.filesize', root
+    Filesize.data = Filesize.parse node
+    filesize = $.el 'span',
+      className: 'filesize',
+      innerHTML: ' ' + Filesize.funk(Filesize) + ' '
+    $.replace node, filesize
+  getFormat: ->
+    code = conf[Filesize.fsize].replace /%([BhKlMnsw])/g, (s, c) ->
+      if c of Filesize.formatters
+        "' + Filesize.formatters.#{c}() + '"
+      else
+        s
+    Filesize.funk = Function 'Filesize', "return '#{code}'"
+  convertUnit: (size, unitF, unitT) ->
+    if unitF isnt unitT
+      units = [ 'B', 'KB', 'MB' ]
+      i     = units.indexOf(unitF) - units.indexOf(unitT)
+      unitT = 'Bytes' if unitT is 'B'
+      if i > 0
+        while i > 0
+          size *= 1024
+          --i
+      else if i < 0
+        while i < 0
+          size /= 1024
+          ++i
+      if size < 1 and size.toString().length > size.toFixed(2).toString.length
+        size = size.toFixed 2
+    "#{size} #{unitT}"
+  formatters:
+    B: -> Filesize.convertUnit Filesize.data.size, Filesize.data.unit, 'B'
+    h: -> Filesize.data.height
+    K: -> Filesize.convertUnit Filesize.data.size, Filesize.data.unit, 'KB'
+    l: -> Filesize.data.link
+    M: -> Filesize.convertUnit Filesize.data.size, Filesize.data.unit, 'MB'
+    n: -> return if Filesize.reply then Filesize.data.filename else '%n'
+    s: -> "#{Filesize.data.size} #{Filesize.data.unit}"
+    w: -> Filesize.data.width
 
 getTitle = (thread) ->
   el = $ '.filetitle', thread
@@ -2498,6 +2593,8 @@ quotePreview =
       imgGif.node qp
     if conf['Time Formatting']
       Time.node   qp
+    if conf['Filesize Formatting']
+      Filesize.node   qp
 
 quoteIndicators =
   init: ->
@@ -2895,6 +2992,9 @@ Main =
 
     if conf['Time Formatting']
       Time.init()
+      
+    if conf['Filesize Formatting']
+      Filesize.init()
 
     if conf['Sauce']
       sauce.init()
