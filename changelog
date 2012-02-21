@@ -1,4 +1,6 @@
 master
+- ahodesuka
+  Add Open Reply in New Tab option for replies made from the main board (not dumping).
 - Mayhem
   The Filter now has per filter settings:
     - Filter the OP only along its thread, replies only, or both.
@@ -101,7 +103,7 @@ master
     see https://github.com/MayhemYDG/4chan-x/issues/136
 
 2.24.4
-- ahokadesuka
+- ahodesuka
   Scroll back up when unexpanding images.
 - e000
   Prevent absurd cooldown durations.
