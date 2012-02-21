@@ -3,11 +3,13 @@ master
   expand images from current position
 - ahodesuka
   Add Open Reply in New Tab option for replies made from the main board (not dumping).
+  Scroll back up (top of anchor - 42px) when unexpanding images.
 - Mayhem
   The Filter now has per filter settings:
     - Filter the OP only along its thread, replies only, or both.
     - Per boards, or global.
-    - Highlight, or hide. Highlighted OPs will have their threads put on top of the board page.
+    - Highlight, or hide.
+    - Highlighted OPs will have their threads put on top of the board page by default.
   New filter group: Image dimensions.
   Fix posting on Safari.
   Fix rare case where the QR would not accept certain image types.
