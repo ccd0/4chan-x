@@ -1,8 +1,6 @@
 master
-<<<<<<< HEAD
 - ahodesuka
   Add auto noko option for replies from the main board and not dumping.
-=======
 - Mayhem
   The Filter now has per filter settings:
     - Filter the OP along its thread, replies only, or both.
@@ -11,7 +9,6 @@ master
   New filter group: Image dimensions.
   Fix posting on Safari.
   Fix rare case where the QR would not accept certain image types.
->>>>>>> 15b7a55fe01b90965f3663202b71d799456ff95e
 
 2.26.4
 - Mayhem
