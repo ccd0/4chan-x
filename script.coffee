@@ -5,7 +5,7 @@ config =
       'Fix XXX\'d Post Numbers':      [true,  'Replace XXX\'d post numbers with their actual number']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
-      'Filesize Formatting':          [true,  'Reformats the image information']
+      'File Info Formatting':         [true,  'Reformats the file information']
       'Report Button':                [true,  'Add report buttons']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
@@ -78,8 +78,8 @@ config =
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
-  filesizeR: '%l (%s, %wx%h, %n)'
-  filesizeT: '%l (%s, %wx%h)'
+  fileFormatR: '%l (%s, %r, %n)'
+  fileFormatT: '%l (%s, %r)'
   favicon: 'ferongr'
   hotkeys:
     openOptions:     ['ctrl+o', 'Open Options']
@@ -1695,7 +1695,7 @@ options =
     <p>Comment:<br><textarea name=comment></textarea></p>
     <p>Filename:<br><textarea name=filename></textarea></p>
     <p>Image dimensions:<br><textarea name=dimensions></textarea></p>
-    <p>Filesize:<br><textarea name=filesize></textarea></p>
+    <p>FileFormat:<br><textarea name=filesize></textarea></p>
     <p>Image MD5:<br><textarea name=md5></textarea></p>
   </div>
   <input type=radio name=tab hidden id=rice_tab>
@@ -1716,16 +1716,15 @@ options =
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
       <li>Minutes: %M</li>
     </ul>
-    <div class=warning><code>Filesize Formatting</code> is disabled.</div>
+    <div class=warning><code>File Info Formatting</code> is disabled.</div>
     <ul>
-      Reply Filesize formatting
-      <li><input type=text name=filesizeR> : <span id=filesizeRPreview></span></li>
-      Thread Filesize formatting
-      <li><input type=text name=filesizeT> : <span id=filesizeTPreview></span></li>
+      Reply File Info Formatting
+      <li><input type=text name=fileFormatR> : <span id=fileFormatRPreview></span></li>
+      Thread File Info Formatting
+      <li><input type=text name=fileFormatT> : <span id=fileFormatTPreview></span></li>
       <li>Link: %l (lowercase L)</li>
-      <li>Size: %B (Bytes), %K (KB), %M (MB), %s (simplified unit)</li>
-      <li>Width: %w</li>
-      <li>Height: %h</li>
+      <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
+      <li>Resolution: %r (Displays PDF on /po/, for PDF\'s)</li>
       <li>Original filename: %n (Reply only)</li>
     </ul>
     <div class=warning><code>Unread Favicon</code> is disabled.</div>
@@ -1774,18 +1773,18 @@ options =
       $.on ta, 'change', $.cb.value
 
     #rice
-    (back      = $ '[name=backlink]',  dialog).value = conf['backlink']
-    (time      = $ '[name=time]',      dialog).value = conf['time']
-    (filesizeR = $ '[name=filesizeR]', dialog).value = conf['filesizeR']
-    (filesizeT = $ '[name=filesizeT]', dialog).value = conf['filesizeT']
+    (back         = $ '[name=backlink]',     dialog).value = conf['backlink']
+    (time         = $ '[name=time]',         dialog).value = conf['time']
+    (fileFormatR = $ '[name=fileFormatR]', dialog).value = conf['fileFormatR']
+    (fileFormatT = $ '[name=fileFormatT]', dialog).value = conf['fileFormatT']
     $.on back, 'keyup', $.cb.value
     $.on back, 'keyup', options.backlink
     $.on time, 'keyup', $.cb.value
     $.on time, 'keyup', options.time
-    $.on filesizeR, 'keyup', $.cb.value
-    $.on filesizeR, 'keyup', options.filesize
-    $.on filesizeT, 'keyup', $.cb.value
-    $.on filesizeT, 'keyup', options.filesize
+    $.on fileFormatR, 'keyup', $.cb.value
+    $.on fileFormatR, 'keyup', options.fileFormat
+    $.on fileFormatT, 'keyup', $.cb.value
+    $.on fileFormatT, 'keyup', options.fileFormat
     favicon = $ 'select', dialog
     favicon.value = conf['favicon']
     $.on favicon, 'change', $.cb.value
@@ -1818,8 +1817,8 @@ options =
 
     options.backlink.call back
     options.time.call     time
-    options.filesize.call filesizeR
-    options.filesize.call filesizeT
+    options.fileFormat.call fileFormatR
+    options.fileFormat.call fileFormatT
     options.favicon.call  favicon
 
   close: ->
@@ -1846,18 +1845,14 @@ options =
     $.id('timePreview').textContent = Time.funk Time
   backlink: ->
     $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
-  filesize: () ->
-    Filesize.fstype = if @name is 'filesizeR' then 0 else 1
-    Filesize.getFormat()
-    Filesize.data = {
-      link    : '<a href="javascript:;">1329791824.png</a>',
-      size    : 996,
-      unit    : 'KB',
-      width   : 1366,
-      height  : 768
-    }
-    Filesize.data.filename = 'Untitled.png' if Filesize.fstype is 0
-    $.id("#{@name}Preview").innerHTML = Filesize.funk Filesize
+  fileFormat: ->
+    FileFormat.data =
+      link      : '<a href="javascript:;">1329791824.png</a>'
+      size      : 996
+      unit      : 'KB'
+      resolution: '1366x768'
+      filename  : 'Untitled.png'
+    $.id("#{@name}Preview").innerHTML = FileFormat.funks[if @name is 'fileFormatR' then 0 else 1] FileFormat
   favicon: ->
     Favicon.switch()
     unread.update true
@@ -2334,43 +2329,40 @@ Time =
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
     y: -> Time.date.getFullYear() - 2000
     
-Filesize =
+FileFormat =
   init: ->
-    Filesize.fstype = if g.REPLY then 0 else 1
-    Filesize.fsconf = [ 'filesizeR', 'filesizeT' ]
-    Filesize.regEx  = [ /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/,
-                        /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/ ]
+    return if g.BOARD is 'f'
+    FileFormat.ffConf = [ 'fileFormatR', 'fileFormatT' ]
+    FileFormat.ffMtrs = [ /%([BKlMnrs])/g, /%([BKlMrs])/g ]
+    FileFormat.ffRgex = [ /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/,
+                          /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/ ]
     @parse = (node) ->
-      [_, link, size, unit, width, height, filename] =
-        node.innerHTML.match Filesize.regEx[Filesize.fstype]
-      {
-        'link'    : link,
-        'size'    : size,
-        'unit'    : unit,
-        'width'   : width,
-        'height'  : height,
-        'filename': filename
-      }
+      FileFormat.ffType = if node.childNodes.length > 3 then 0 else 1
+      [_, link, size, unit, resolution, filename] =
+        node.innerHTML.match FileFormat.ffRgex[FileFormat.ffType]
+      link      : link
+      size      : size
+      unit      : unit
+      resolution: resolution
+      filename  : filename
 
-    Filesize.getFormat()
+    FileFormat.funks = FileFormat.setFormats()
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline' or not node = $ '.filesize', root
-    Filesize.data = Filesize.parse node
-    filesize = $.el 'span',
-      className: 'filesize',
-      innerHTML: Filesize.funk(Filesize) + ' '
-    $.replace node, filesize
-  getFormat: ->
-    code = conf[Filesize.fsconf[Filesize.fstype]].replace /%([BhKlMnsw])/g, (s, c) ->
-      if c of Filesize.formatters
-        "' + Filesize.formatters.#{c}() + '"
-      else
-        s
-    Filesize.funk = Function 'Filesize', "return '#{code}'"
+    FileFormat.data = FileFormat.parse node
+    node.innerHTML  = FileFormat.funks[FileFormat.ffType](FileFormat) + ' '
+  setFormats: ->
+    for i in [0..1]
+      code = conf[FileFormat.ffConf[i]].replace FileFormat.ffMtrs[i], (s, c) ->
+        if c of FileFormat.formatters
+          "' + FileFormat.formatters.#{c}() + '"
+        else
+          s
+      Function 'FileFormat', "return '#{code}'"
   convertUnit: (unitT) ->
-    size  = Filesize.data.size
-    unitF = Filesize.data.unit
+    size  = FileFormat.data.size
+    unitF = FileFormat.data.unit
     if unitF isnt unitT
       units = [ 'B', 'KB', 'MB' ]
       i     = units.indexOf(unitF) - units.indexOf(unitT)
@@ -2383,14 +2375,16 @@ Filesize =
         size = size.toFixed 2
     "#{size} #{unitT}"
   formatters:
-    B: -> Filesize.convertUnit 'B'
-    h: -> Filesize.data.height
-    K: -> Filesize.convertUnit 'KB'
-    l: -> Filesize.data.link
-    M: -> Filesize.convertUnit 'MB'
-    n: -> if Filesize.fstype is 0 then Filesize.data.filename else '%n'
-    s: -> "#{Filesize.data.size} #{Filesize.data.unit}"
-    w: -> Filesize.data.width
+    B: -> FileFormat.convertUnit 'B'
+    K: -> FileFormat.convertUnit 'KB'
+    l: -> FileFormat.data.link
+    M: -> FileFormat.convertUnit 'MB'
+    n: -> if (ext = FileFormat.data.filename.lastIndexOf '.') > 38
+           '<span class=fnfull>' + FileFormat.data.filename + '</span><span class=fntrunc>' + FileFormat.data.filename.substr(0, 32) + ' (...)' + FileFormat.data.filename.substr(ext) + '</span>'
+          else
+            FileFormat.data.filename
+    r: -> FileFormat.data.resolution
+    s: -> "#{FileFormat.data.size} #{FileFormat.data.unit}"
 
 getTitle = (thread) ->
   el = $ '.filetitle', thread
@@ -2591,8 +2585,8 @@ quotePreview =
       imgGif.node   qp
     if conf['Time Formatting']
       Time.node     qp
-    if conf['Filesize Formatting']
-      Filesize.node qp if id isnt threadID
+    if conf['File Info Formatting']
+      FileFormat.node qp if id isnt threadID
 
 quoteIndicators =
   init: ->
@@ -2991,8 +2985,8 @@ Main =
     if conf['Time Formatting']
       Time.init()
       
-    if conf['Filesize Formatting']
-      Filesize.init()
+    if conf['File Info Formatting']
+      FileFormat.init()
 
     if conf['Sauce']
       sauce.init()
@@ -3083,10 +3077,6 @@ Main =
 
     nodes = $$ '.op, a + table', form
     Main.node nodes, true
-    
-    if not g.REPLY and conf['Filesize Formatting']
-      Filesize.fstype = 0
-      Filesize.getFormat()
 
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
       observer = new MutationObserver Main.observer
@@ -3352,6 +3342,12 @@ td.replyhider {
 .filesize + br + a {
   float: left;
   pointer-events: none;
+}
+.filesize .fnfull, .filesize:hover .fntrunc {
+  display: none;
+}
+.filesize:hover .fnfull {
+  display: inline;
 }
 img[md5], img[md5] + img {
   pointer-events: all;

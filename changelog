@@ -1,9 +1,20 @@
 master
+- aeosynth / ahodesuka
+  new option: expand images from current position
+- ahodesuka
+  Add Open Reply in New Tab option for replies made from the main board (not dumping).
+  Scroll back up (top of anchor - 42px) when unexpanding images.
+  Reply/Thread File Info Formatting:
+    - Link: %l.
+    - Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default).
+    - Resolution/PDF: %r
+    - Original filename: %n (truncated if longer than 40~ character, on hover the entire string is shown.
 - Mayhem
   The Filter now has per filter settings:
-    - Filter the OP along its thread, replies only, or both.
+    - Filter the OP only along its thread, replies only, or both.
     - Per boards, or global.
     - Highlight, or hide.
+    - Highlighted OPs will have their threads put on top of the board page by default.
   New filter group: Image dimensions.
   Fix posting on Safari.
   Fix rare case where the QR would not accept certain image types.
@@ -101,7 +112,7 @@ master
     see https://github.com/MayhemYDG/4chan-x/issues/136
 
 2.24.4
-- ahokadesuka
+- ahodesuka
   Scroll back up when unexpanding images.
 - e000
   Prevent absurd cooldown durations.
