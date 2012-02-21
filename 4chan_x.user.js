@@ -2147,7 +2147,7 @@
     <p>Comment:<br><textarea name=comment></textarea></p>\
     <p>Filename:<br><textarea name=filename></textarea></p>\
     <p>Image dimensions:<br><textarea name=dimensions></textarea></p>\
-    <p>FileInfo:<br><textarea name=filesize></textarea></p>\
+    <p>Filesize:<br><textarea name=filesize></textarea></p>\
     <p>Image MD5:<br><textarea name=md5></textarea></p>\
   </div>\
   <input type=radio name=tab hidden id=rice_tab>\
@@ -3286,9 +3286,7 @@
       qp.innerHTML = html;
       if (conf['Image Auto-Gif']) imgGif.node(qp);
       if (conf['Time Formatting']) Time.node(qp);
-      if (conf['File Info Formatting']) {
-        if (id !== threadID) return FileInfo.node(qp);
-      }
+      if (conf['File Info Formatting']) return FileInfo.node(qp);
     }
   };
 
