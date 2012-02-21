@@ -562,7 +562,7 @@
     },
     createFilter: function(regexp, op, hl) {
       return function(root, value, isOP) {
-        if (isOP && op === 'no' || op === 'only') return false;
+        if (isOP && op === 'no' || !isOP && op === 'only') return false;
         if (!regexp.test(value)) return false;
         if (hl) {
           $.addClass(root, 'filter_highlight');

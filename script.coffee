@@ -454,7 +454,7 @@ filter =
 
   createFilter: (regexp, op, hl) ->
     (root, value, isOP) ->
-      if isOP and op is 'no' or op is 'only'
+      if isOP and op is 'no' or !isOP and op is 'only'
         return false
       unless regexp.test value
         return false
