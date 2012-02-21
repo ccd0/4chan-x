@@ -1,6 +1,7 @@
 master
 - ahodesuka
   Add Open Reply in New Tab option for replies made from the main board (not dumping).
+  Scroll back up (top of anchor - 42px) when unexpanding images.
 - Mayhem
   The Filter now has per filter settings:
     - Filter the OP only along its thread, replies only, or both.
