@@ -90,9 +90,8 @@
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
-        'Filter': [false, 'Self-moderation placebo'],
-        'Filter OPs': [false, 'Filter OPs along with their threads'],
-        'Recursive Filtering': [false, 'Filter replies of filtered posts, recursively'],
+        'Filter': [true, 'Self-moderation placebo'],
+        'Recursive Filtering': [true, 'Filter replies of filtered posts, recursively'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
@@ -532,86 +531,108 @@
   };
 
   filter = {
-    regexps: {},
-    callbacks: [],
+    filters: {},
     init: function() {
-      var f, filter, key, m, _i, _len;
+      var boards, filter, hl, key, op, regexp, _i, _len, _ref, _ref2, _ref3;
       for (key in config.filter) {
-        if (!(m = conf[key].match(/^\/.+\/\w*$/gm))) continue;
-        this.regexps[key] = [];
-        for (_i = 0, _len = m.length; _i < _len; _i++) {
-          filter = m[_i];
-          f = filter.match(/^\/(.+)\/(\w*)$/);
+        this.filters[key] = [];
+        _ref = conf[key].split('\n');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          filter = _ref[_i];
+          if (filter[0] === '#') continue;
+          if (!(regexp = filter.match(/\/(.+)\/(\w*)/))) continue;
+          filter = filter.replace(regexp[0], '');
+          boards = ((_ref2 = filter.match(/boards:([^;]+)/)) != null ? _ref2[1].toLowerCase() : void 0) || 'global';
+          if (boards !== 'global' && boards.split(',').indexOf(g.BOARD) === -1) {
+            continue;
+          }
           try {
-            this.regexps[key].push(RegExp(f[1], f[2]));
+            regexp = RegExp(regexp[1], regexp[2]);
           } catch (e) {
             alert(e.message);
+            continue;
           }
+          op = ((_ref3 = filter.match(/op:(yes|no|only)/)) != null ? _ref3[1].toLowerCase() : void 0) || 'no';
+          hl = /highlight/.test(filter);
+          this.filters[key].push(this.createFilter(regexp, op, hl));
         }
-        this.callbacks.push(this[key]);
+        if (!this.filters[key].length) delete this.filters[key];
       }
-      return g.callbacks.push(this.node);
+      if (Object.keys(this.filters).length) return g.callbacks.push(this.node);
+    },
+    createFilter: function(regexp, op, hl) {
+      return function(root, value, isOP) {
+        if (isOP && op === 'no' || op === 'only') return false;
+        if (!regexp.test(value)) return false;
+        if (hl) {
+          $.addClass(root, 'filter_highlight');
+        } else if (isOP) {
+          threadHiding.hideHide(root.parentNode);
+        } else {
+          replyHiding.hideHide(root.previousSibling);
+        }
+        return true;
+      };
     },
     node: function(root) {
-      if (!root.className) {
-        if (filter.callbacks.some(function(callback) {
-          return callback(root);
-        })) {
-          return replyHiding.hideHide($('td:not([nowrap])', root));
-        }
-      } else if (root.className === 'op' && !g.REPLY && conf['Filter OPs']) {
-        if (filter.callbacks.some(function(callback) {
-          return callback(root);
-        })) {
-          return threadHiding.hideHide(root.parentNode);
-        }
+      var isOP, key, klass;
+      klass = root.className;
+      if (/\binlined\b/.test(klass)) return;
+      if (!(isOP = klass === 'op')) root = $('td[id]', root);
+      for (key in filter.filters) {
+        if (filter.test(root, key, isOP)) return;
       }
     },
-    test: function(key, value) {
-      return filter.regexps[key].some(function(regexp) {
-        return regexp.test(value);
-      });
+    test: function(root, key, isOP) {
+      var filter, value, _i, _len, _ref;
+      value = this[key](root, isOP);
+      if (value === false) return false;
+      _ref = this.filters[key];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        filter = _ref[_i];
+        if (filter(root, value, isOP)) return true;
+      }
+      return false;
     },
-    name: function(root) {
+    name: function(root, isOP) {
       var name;
-      name = root.className === 'op' ? $('.postername', root) : $('.commentpostername', root);
-      return filter.test('name', name.textContent);
+      name = isOP ? $('.postername', root) : $('.commentpostername', root);
+      return name.textContent;
     },
     tripcode: function(root) {
       var trip;
-      if (trip = $('.postertrip', root)) {
-        return filter.test('tripcode', trip.textContent);
-      }
+      if (trip = $('.postertrip', root)) return trip.textContent;
+      return false;
     },
     email: function(root) {
       var mail;
-      if (mail = $('.linkmail', root)) return filter.test('email', mail.href);
+      if (!(mail = $('.linkmail', root))) return mail.href;
+      return false;
     },
-    subject: function(root) {
+    subject: function(root, isOP) {
       var sub;
-      sub = root.className === 'op' ? $('.filetitle', root) : $('.replytitle', root);
-      return filter.test('subject', sub.textContent);
+      sub = isOP ? $('.filetitle', root) : $('.replytitle', root);
+      return sub.textContent;
     },
     comment: function(root) {
-      return filter.test('comment', ($.el('a', {
+      return ($.el('a', {
         innerHTML: $('blockquote', root).innerHTML.replace(/<br>/g, '\n')
-      })).textContent);
+      })).textContent;
     },
     filename: function(root) {
       var file;
-      if (file = $('.filesize span', root)) {
-        return filter.test('filename', file.title);
-      }
+      if (file = $('.filesize > span', root)) return file.title;
+      return false;
     },
     filesize: function(root) {
       var img;
-      if (img = $('img[md5]', root)) return filter.test('filesize', img.alt);
+      if (img = $('img[md5]', root)) return img.alt;
+      return false;
     },
     md5: function(root) {
       var img;
-      if (img = $('img[md5]', root)) {
-        return filter.test('md5', img.getAttribute('md5'));
-      }
+      if (img = $('img[md5]', root)) return img.getAttribute('md5');
+      return false;
     }
   };
 
@@ -4032,12 +4053,15 @@ img[md5], img[md5] + img {\
 .inlined {\
   opacity: .5;\
 }\
-.inline td.reply {\
+.inline .reply {\
   background-color: rgba(255, 255, 255, 0.15);\
   border: 1px solid rgba(128, 128, 128, 0.5);\
 }\
 .filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
   background: none;\
+}\
+.filter_highlight {\
+  box-shadow: -5px 0 rgba(255,0,0,0.5);\
 }\
 .filtered {\
   text-decoration: line-through;\
