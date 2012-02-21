@@ -24,6 +24,7 @@ config =
       'Image Hover':                  [false, 'Show full image on mouseover']
       'Sauce':                        [true,  'Add sauce to images']
       'Reveal Spoilers':              [false, 'Replace spoiler thumbnails by the original thumbnail']
+      'Expand From Current':          [false, 'Expand images from current position to thread end.']
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
@@ -122,7 +123,7 @@ config =
     expandThread:    ['e',      'Expand thread']
     watch:           ['w',      'Watch thread']
     hide:            ['x',      'Hide thread']
-    expandImages:    ['m',      'Expand selected image']
+    expandImage:     ['m',      'Expand selected image']
     expandAllImages: ['M',      'Expand all images']
     update:          ['u',      'Update now']
     unreadCountTo0:  ['z',      'Reset unread status']
@@ -797,7 +798,7 @@ keybinds =
         keybinds.open thread
       when conf.expandThread
         expandThread.toggle thread
-      when conf.expandImages
+      when conf.expandImage
         keybinds.img thread
       when conf.nextThread
         return if g.REPLY
@@ -2776,7 +2777,13 @@ imgExpand =
     all: ->
       imgExpand.on = @checked
       if imgExpand.on #expand
-        for thumb in $$ 'img[md5]'
+        thumbs = $$ 'img[md5]'
+        if conf['Expand From Current']
+          for thumb, i in thumbs
+            if thumb.getBoundingClientRect().top > 0
+              break
+          thumbs = thumbs[i...]
+        for thumb in thumbs
           imgExpand.expand thumb
       else #contract
         for thumb in $$ 'img[md5][hidden]'

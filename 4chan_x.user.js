@@ -101,7 +101,8 @@
         'Image Expansion': [true, 'Expand images'],
         'Image Hover': [false, 'Show full image on mouseover'],
         'Sauce': [true, 'Add sauce to images'],
-        'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail']
+        'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail'],
+        'Expand From Current': [false, 'Expand images from current position to thread end.']
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
@@ -169,7 +170,7 @@
       expandThread: ['e', 'Expand thread'],
       watch: ['w', 'Watch thread'],
       hide: ['x', 'Hide thread'],
-      expandImages: ['m', 'Expand selected image'],
+      expandImage: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
       update: ['u', 'Update now'],
       unreadCountTo0: ['z', 'Reset unread status']
@@ -973,7 +974,7 @@
         case conf.expandThread:
           expandThread.toggle(thread);
           break;
-        case conf.expandImages:
+        case conf.expandImage:
           keybinds.img(thread);
           break;
         case conf.nextThread:
@@ -3440,18 +3441,25 @@
         return imgExpand.toggle(this);
       },
       all: function() {
-        var thumb, _i, _j, _len, _len2, _ref, _ref2;
+        var i, thumb, thumbs, _i, _j, _len, _len2, _len3, _ref;
         imgExpand.on = this.checked;
         if (imgExpand.on) {
-          _ref = $$('img[md5]');
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            thumb = _ref[_i];
+          thumbs = $$('img[md5]');
+          if (conf['Expand From Current']) {
+            for (i = 0, _len = thumbs.length; i < _len; i++) {
+              thumb = thumbs[i];
+              if (thumb.getBoundingClientRect().top > 0) break;
+            }
+            thumbs = thumbs.slice(i);
+          }
+          for (_i = 0, _len2 = thumbs.length; _i < _len2; _i++) {
+            thumb = thumbs[_i];
             imgExpand.expand(thumb);
           }
         } else {
-          _ref2 = $$('img[md5][hidden]');
-          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-            thumb = _ref2[_j];
+          _ref = $$('img[md5][hidden]');
+          for (_j = 0, _len3 = _ref.length; _j < _len3; _j++) {
+            thumb = _ref[_j];
             imgExpand.contract(thumb);
           }
         }
