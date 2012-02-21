@@ -169,7 +169,7 @@
       expandThread: ['e', 'Expand thread'],
       watch: ['w', 'Watch thread'],
       hide: ['x', 'Hide thread'],
-      expandImages: ['m', 'Expand selected image'],
+      expandImage: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
       update: ['u', 'Update now'],
       unreadCountTo0: ['z', 'Reset unread status']
@@ -969,7 +969,7 @@
         case conf.expandThread:
           expandThread.toggle(thread);
           break;
-        case conf.expandImages:
+        case conf.expandImage:
           keybinds.img(thread);
           break;
         case conf.nextThread:

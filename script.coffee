@@ -120,7 +120,7 @@ config =
     expandThread:    ['e',      'Expand thread']
     watch:           ['w',      'Watch thread']
     hide:            ['x',      'Hide thread']
-    expandImages:    ['m',      'Expand selected image']
+    expandImage:     ['m',      'Expand selected image']
     expandAllImages: ['M',      'Expand all images']
     update:          ['u',      'Update now']
     unreadCountTo0:  ['z',      'Reset unread status']
@@ -789,7 +789,7 @@ keybinds =
         keybinds.open thread
       when conf.expandThread
         expandThread.toggle thread
-      when conf.expandImages
+      when conf.expandImage
         keybinds.img thread
       when conf.nextThread
         return if g.REPLY
