@@ -90,9 +90,8 @@
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
-        'Filter': [false, 'Self-moderation placebo'],
-        'Filter OPs': [false, 'Filter OPs along with their threads'],
-        'Recursive Filtering': [false, 'Filter replies of filtered posts, recursively'],
+        'Filter': [true, 'Self-moderation placebo'],
+        'Recursive Filtering': [true, 'Filter replies of filtered posts, recursively'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
@@ -119,6 +118,7 @@
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
+        'Open Reply in New Tab': [false, 'Open replies in a new tab that are made from the main board.'],
         'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
@@ -136,14 +136,15 @@
       }
     },
     filter: {
-      name: '',
-      tripcode: '',
-      email: '',
-      subject: '',
-      comment: '',
-      filename: '',
-      filesize: '',
-      md5: ''
+      name: ['# Filter any namefags:', '#/^(?!Anonymous$)/'].join('\n'),
+      tripcode: ['# Filter any tripfags', '#/^!/'].join('\n'),
+      email: ['# Filter any e-mails that are not `sage` on /a/ and /jp/:', '#/^(?!sage$)/;boards:a,jp'].join('\n'),
+      subject: ['# Filter Generals on /v/:', '#/general/i;boards:v;op:only'].join('\n'),
+      comment: ['# Filter Stallman copypasta on /g/:', '#/what you\'re refer+ing to as linux/i;boards:g'].join('\n'),
+      filename: [''].join('\n'),
+      dimensions: ['# Highlight potential wallpapers:', '#/1920x1080/;op:yes;highlight;top:no;boards:w,wg'].join('\n'),
+      filesize: [''].join('\n'),
+      md5: [''].join('\n')
     },
     sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/a/image/$3/', '#http://archive.installgentoo.net/g/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
@@ -532,86 +533,126 @@
   };
 
   filter = {
-    regexps: {},
-    callbacks: [],
+    filters: {},
     init: function() {
-      var f, filter, key, m, _i, _len;
+      var boards, filter, hl, key, op, regexp, top, _i, _len, _ref, _ref2, _ref3, _ref4, _ref5;
       for (key in config.filter) {
-        if (!(m = conf[key].match(/^\/.+\/\w*$/gm))) continue;
-        this.regexps[key] = [];
-        for (_i = 0, _len = m.length; _i < _len; _i++) {
-          filter = m[_i];
-          f = filter.match(/^\/(.+)\/(\w*)$/);
+        this.filters[key] = [];
+        _ref = conf[key].split('\n');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          filter = _ref[_i];
+          if (filter[0] === '#') continue;
+          if (!(regexp = filter.match(/\/(.+)\/(\w*)/))) continue;
+          filter = filter.replace(regexp[0], '');
+          boards = ((_ref2 = filter.match(/boards:([^;]+)/)) != null ? _ref2[1].toLowerCase() : void 0) || 'global';
+          if (boards !== 'global' && boards.split(',').indexOf(g.BOARD) === -1) {
+            continue;
+          }
           try {
-            this.regexps[key].push(RegExp(f[1], f[2]));
+            regexp = RegExp(regexp[1], regexp[2]);
           } catch (e) {
             alert(e.message);
+            continue;
           }
+          op = ((_ref3 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref3[1].toLowerCase() : void 0) || 'no';
+          if (hl = /highlight/.test(filter)) {
+            hl = ((_ref4 = filter.match(/highlight:(\w+)/)) != null ? _ref4[1].toLowerCase() : void 0) || 'filter_highlight';
+            top = ((_ref5 = filter.match(/top:(yes|no)/)) != null ? _ref5[1].toLowerCase() : void 0) || 'yes';
+            top = top === 'yes';
+          }
+          this.filters[key].push(this.createFilter(regexp, op, hl, top));
         }
-        this.callbacks.push(this[key]);
+        if (!this.filters[key].length) delete this.filters[key];
       }
-      return g.callbacks.push(this.node);
+      if (Object.keys(this.filters).length) return g.callbacks.push(this.node);
+    },
+    createFilter: function(regexp, op, hl, top) {
+      return function(root, value, isOP) {
+        var firstThread, thisThread;
+        if (isOP && op === 'no' || !isOP && op === 'only') return false;
+        if (!regexp.test(value)) return false;
+        if (hl) {
+          $.addClass(root, hl);
+          if (isOP && top && !g.REPLY) {
+            thisThread = root.parentNode;
+            if (firstThread = $('div[class=op]')) {
+              $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
+            }
+          }
+          return false;
+        }
+        if (isOP) {
+          if (!g.REPLY) threadHiding.hideHide(root.parentNode);
+        } else {
+          replyHiding.hideHide(root.previousSibling);
+        }
+        return true;
+      };
     },
     node: function(root) {
-      if (!root.className) {
-        if (filter.callbacks.some(function(callback) {
-          return callback(root);
-        })) {
-          return replyHiding.hideHide($('td:not([nowrap])', root));
-        }
-      } else if (root.className === 'op' && !g.REPLY && conf['Filter OPs']) {
-        if (filter.callbacks.some(function(callback) {
-          return callback(root);
-        })) {
-          return threadHiding.hideHide(root.parentNode);
-        }
+      var isOP, key, klass;
+      klass = root.className;
+      if (/\binlined\b/.test(klass)) return;
+      if (!(isOP = klass === 'op')) root = $('td[id]', root);
+      for (key in filter.filters) {
+        if (filter.test(root, key, isOP)) return;
       }
     },
-    test: function(key, value) {
-      return filter.regexps[key].some(function(regexp) {
-        return regexp.test(value);
-      });
+    test: function(root, key, isOP) {
+      var filter, value, _i, _len, _ref;
+      value = this[key](root, isOP);
+      if (value === false) return false;
+      _ref = this.filters[key];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        filter = _ref[_i];
+        if (filter(root, value, isOP)) return true;
+      }
+      return false;
     },
-    name: function(root) {
+    name: function(root, isOP) {
       var name;
-      name = root.className === 'op' ? $('.postername', root) : $('.commentpostername', root);
-      return filter.test('name', name.textContent);
+      name = isOP ? $('.postername', root) : $('.commentpostername', root);
+      return name.textContent;
     },
     tripcode: function(root) {
       var trip;
-      if (trip = $('.postertrip', root)) {
-        return filter.test('tripcode', trip.textContent);
-      }
+      if (trip = $('.postertrip', root)) return trip.textContent;
+      return false;
     },
     email: function(root) {
       var mail;
-      if (mail = $('.linkmail', root)) return filter.test('email', mail.href);
+      if (!(mail = $('.linkmail', root))) return mail.href;
+      return false;
     },
-    subject: function(root) {
+    subject: function(root, isOP) {
       var sub;
-      sub = root.className === 'op' ? $('.filetitle', root) : $('.replytitle', root);
-      return filter.test('subject', sub.textContent);
+      sub = isOP ? $('.filetitle', root) : $('.replytitle', root);
+      return sub.textContent;
     },
     comment: function(root) {
-      return filter.test('comment', ($.el('a', {
+      return ($.el('a', {
         innerHTML: $('blockquote', root).innerHTML.replace(/<br>/g, '\n')
-      })).textContent);
+      })).textContent;
     },
     filename: function(root) {
       var file;
-      if (file = $('.filesize span', root)) {
-        return filter.test('filename', file.title);
-      }
+      if (file = $('.filesize > span', root)) return file.title;
+      return false;
+    },
+    dimensions: function(root) {
+      var span;
+      if (span = $('.filesize', root)) return span.textContent.match(/\d+x\d+/)[0];
+      return false;
     },
     filesize: function(root) {
       var img;
-      if (img = $('img[md5]', root)) return filter.test('filesize', img.alt);
+      if (img = $('img[md5]', root)) return img.alt;
+      return false;
     },
     md5: function(root) {
       var img;
-      if (img = $('img[md5]', root)) {
-        return filter.test('md5', img.getAttribute('md5'));
-      }
+      if (img = $('img[md5]', root)) return img.getAttribute('md5');
+      return false;
     }
   };
 
@@ -1223,7 +1264,7 @@
         $.before(form, link);
       }
       g.callbacks.push(this.node);
-      if (engine === 'webkit') {
+      if (/chrome/i.test(navigator.userAgent)) {
         qr.status({
           ready: true
         });
@@ -1379,7 +1420,7 @@
       if (e != null) e.preventDefault();
       qr.open();
       if (!g.REPLY) {
-        $('select', qr.el).value = $.x('ancestor::div', this).firstChild.id;
+        $('select', qr.el).value = $.x('ancestor::div[@class="thread"]', this).firstChild.id;
       }
       id = this.previousElementSibling.hash.slice(1);
       text = ">>" + id + "\n";
@@ -1678,7 +1719,7 @@
         });
         ta.style.cssText = $.get('qr.size', '');
       }
-      mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
+      mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
             return 'image/jpeg';
@@ -1832,14 +1873,14 @@
         reader.readAsBinaryString(reply.file);
         return;
       }
-      if (engine === 'webkit') {
+      if (/chrome/i.test(navigator.userAgent)) {
         qr.message.post(post);
         return;
       }
       return qr.message.send(post);
     },
     response: function(html) {
-      var b, doc, err, node, persona, postNumber, reply, thread, _, _ref;
+      var b, doc, err, node, open, persona, postNumber, reply, thread, _, _ref;
       doc = $.el('a', {
         innerHTML: html
       });
@@ -1887,6 +1928,10 @@
       } else {
         qr.cooldown.auto = qr.replies.length > 1;
         qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
+        if (conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto) {
+          open = GM_openInTab || window.open;
+          open("http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber, "_blank");
+        }
       }
       if (conf['Persistent QR'] || qr.cooldown.auto) {
         reply.rm();
@@ -1899,7 +1944,7 @@
     message: {
       send: function(data) {
         var host, window;
-        if (engine === 'webkit') {
+        if (/chrome/i.test(navigator.userAgent)) {
           qr.message.receive(data);
           return;
         }
@@ -2071,7 +2116,7 @@
   <input type=radio name=tab hidden id=sauces_tab>\
   <div>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
-    <div>Lines starting with a <code>#</code> will be ignored.</div>\
+    Lines starting with a <code>#</code> will be ignored.\
     <ul>These variables will be replaced by the corresponding url:\
       <li>$1: Thumbnail.</li>\
       <li>$2: Full image.</li>\
@@ -2083,13 +2128,21 @@
   <div>\
     <div class=warning><code>Filter</code> is disabled.</div>\
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\
+    Lines starting with a <code>#</code> will be ignored.<br>\
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.\
+    <ul>You can use these settings with each regular expression, separate them with semicolons:\
+      <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>\
+      <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>\
+      <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>hightlight:wallpaper;</code>.</li>\
+      <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>\
+    </ul>\
     <p>Name:<br><textarea name=name></textarea></p>\
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>\
     <p>E-mail:<br><textarea name=email></textarea></p>\
     <p>Subject:<br><textarea name=subject></textarea></p>\
     <p>Comment:<br><textarea name=comment></textarea></p>\
     <p>Filename:<br><textarea name=filename></textarea></p>\
+    <p>Image dimensions:<br><textarea name=dimensions></textarea></p>\
     <p>Filesize:<br><textarea name=filesize></textarea></p>\
     <p>Image MD5:<br><textarea name=md5></textarea></p>\
   </div>\
@@ -3099,18 +3152,19 @@
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var path, quote, tid, _i, _len, _ref;
+      var hash, path, quote, tid, _i, _len, _ref;
       if (root.className === 'inline') return;
       tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', root).firstChild.id;
       _ref = $$('.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (conf['Indicate OP quote'] && quote.hash.slice(1) === tid) {
+        hash = quote.hash.slice(1);
+        if (conf['Indicate OP quote'] && hash === tid) {
           $.add(quote, $.tn('\u00A0(OP)'));
           return;
         }
         path = quote.pathname;
-        if (conf['Indicate Cross-thread Quotes'] && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
+        if (conf['Indicate Cross-thread Quotes'] && hash && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
           $.add(quote, $.tn('\u00A0(Cross-thread)'));
         }
       }
@@ -3431,8 +3485,8 @@
       var rect, thumb;
       thumb = a.firstChild;
       if (thumb.hidden) {
-        rect = a.parentNode.getBoundingClientRect();
-        if (rect.top < 0) d.body.scrollTop += rect.top;
+        rect = a.getBoundingClientRect();
+        if (rect.top < 0) d.body.scrollTop += rect.top - 42;
         if (rect.left < 0) d.body.scrollLeft += rect.left;
         return imgExpand.contract(thumb);
       } else {
@@ -3547,6 +3601,10 @@
           return;
       }
       $.ready(options.init);
+      if (conf['Quick Reply'] && conf['Hide Original Post Form']) {
+        Main.css += 'form[name=post] { display: none; }';
+      }
+      Main.addStyle();
       now = Date.now();
       if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
         $.ready(function() {
@@ -3590,10 +3648,6 @@
         quoteIndicators.init();
       }
       if (conf['Fix XXX\'d Post Numbers']) unxify.init();
-      if (conf['Quick Reply'] && conf['Hide Original Post Form']) {
-        Main.css += 'form[name=post] { display: none; }';
-      }
-      Main.addStyle();
       return $.ready(Main.ready);
     },
     ready: function() {
@@ -4031,12 +4085,15 @@ img[md5], img[md5] + img {\
 .inlined {\
   opacity: .5;\
 }\
-.inline td.reply {\
+.inline .reply {\
   background-color: rgba(255, 255, 255, 0.15);\
   border: 1px solid rgba(128, 128, 128, 0.5);\
 }\
 .filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
   background: none;\
+}\
+.filter_highlight {\
+  box-shadow: -5px 0 rgba(255,0,0,0.5);\
 }\
 .filtered {\
   text-decoration: line-through;\

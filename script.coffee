@@ -13,9 +13,8 @@ config =
       'Check for Updates':            [true,  'Check for updated versions of 4chan X']
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
-      'Filter':                       [false, 'Self-moderation placebo']
-      'Filter OPs':                   [false, 'Filter OPs along with their threads']
-      'Recursive Filtering':          [false, 'Filter replies of filtered posts, recursively']
+      'Filter':                       [true,  'Self-moderation placebo']
+      'Recursive Filtering':          [true,  'Filter replies of filtered posts, recursively']
       'Reply Hiding':                 [true,  'Hide single replies']
       'Thread Hiding':                [true,  'Hide entire threads']
       'Show Stubs':                   [true,  'Of hidden threads / replies']
@@ -39,6 +38,7 @@ config =
       'Cooldown':                     [true,  'Prevent "flood detected" errors.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
+      'Open Reply in New Tab':        [false, 'Open replies in a new tab that are made from the main board.']
       'Remember QR size':             [false, 'Remember the size of the Quick reply (Firefox only).']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
@@ -53,14 +53,39 @@ config =
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
   filter:
-    name:     ''
-    tripcode: ''
-    email:    ''
-    subject:  ''
-    comment:  ''
-    filename: ''
-    filesize: ''
-    md5:      ''
+    name: [
+      '# Filter any namefags:'
+      '#/^(?!Anonymous$)/'
+    ].join '\n'
+    tripcode: [
+      '# Filter any tripfags'
+      '#/^!/'
+    ].join '\n'
+    email: [
+      '# Filter any e-mails that are not `sage` on /a/ and /jp/:'
+      '#/^(?!sage$)/;boards:a,jp'
+    ].join '\n'
+    subject: [
+      '# Filter Generals on /v/:'
+      '#/general/i;boards:v;op:only'
+    ].join '\n'
+    comment: [
+      '# Filter Stallman copypasta on /g/:'
+      '#/what you\'re refer+ing to as linux/i;boards:g'
+    ].join '\n'
+    filename: [
+      ''
+    ].join '\n'
+    dimensions: [
+      '# Highlight potential wallpapers:'
+      '#/1920x1080/;op:yes;highlight;top:no;boards:w,wg'
+    ].join '\n'
+    filesize: [
+      ''
+    ].join '\n'
+    md5: [
+      ''
+    ].join '\n'
   sauces: [
     'http://iqdb.org/?url=$1'
     'http://www.google.com/searchbyimage?image_url=$1'
@@ -408,58 +433,132 @@ $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
 filter =
-  regexps: {}
-  callbacks: []
+  filters: {}
   init: ->
     for key of config.filter
-      unless m = conf[key].match /^\/.+\/\w*$/gm
-        continue
-      @regexps[key] = []
-      for filter in m
-        f = filter.match /^\/(.+)\/(\w*)$/
-        try
-          @regexps[key].push RegExp f[1], f[2]
-        catch e
-          alert e.message
-      #only execute what's filterable
-      @callbacks.push @[key]
+      @filters[key] = []
+      for filter in conf[key].split('\n')
+        continue if filter[0] is '#'
 
-    g.callbacks.push @node
+        unless regexp = filter.match /\/(.+)\/(\w*)/
+          continue
+
+        # Don't mix up filter flags with the regular expression.
+        filter = filter.replace regexp[0], ''
+
+        # Do not add this filter to the list if it's not a global one
+        # and it's not specifically applicable to the current board.
+        # Defaults to global.
+        boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
+        if boards isnt 'global' and boards.split(',').indexOf(g.BOARD) is -1
+          continue
+
+        try
+          # Please, don't write silly regular expressions.
+          regexp = RegExp regexp[1], regexp[2]
+        catch e
+          # I warned you, bro.
+          alert e.message
+          continue
+
+        # Filter OPs along with their threads, replies only, or both.
+        # Defaults to replies only.
+        op = filter.match(/[^t]op:(yes|no|only)/)?[1].toLowerCase() or 'no'
+
+        # Highlight the post, or hide it.
+        # If not specified, the highlight class will be filter_highlight.
+        # Defaults to post hiding.
+        if hl = /highlight/.test filter
+          hl  = filter.match(/highlight:(\w+)/)?[1].toLowerCase() or 'filter_highlight'
+          # Put highlighted OP's thread on top of the board page or not.
+          # Defaults to on top.
+          top = filter.match(/top:(yes|no)/)?[1].toLowerCase() or 'yes'
+          top = top is 'yes' # Turn it into a boolean
+
+        @filters[key].push @createFilter regexp, op, hl, top
+
+      # Only execute filter types that contain valid filters.
+      unless @filters[key].length
+        delete @filters[key]
+
+    if Object.keys(@filters).length
+      g.callbacks.push @node
+
+  createFilter: (regexp, op, hl, top) ->
+    (root, value, isOP) ->
+      if isOP and op is 'no' or !isOP and op is 'only'
+        return false
+      unless regexp.test value
+        return false
+      if hl
+        $.addClass root, hl
+        if isOP and top and not g.REPLY
+          # Put the highlighted OPs' threads on top of the board pages...
+          thisThread = root.parentNode
+          # ...before the first non highlighted thread.
+          if firstThread = $ 'div[class=op]'
+            $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
+        # Continue the filter lookup to add more classes or hide it.
+        return false
+      if isOP
+        unless g.REPLY
+          threadHiding.hideHide root.parentNode
+      else
+        replyHiding.hideHide  root.previousSibling
+      true
 
   node: (root) ->
-    unless root.className
-      if filter.callbacks.some((callback) -> callback root)
-        replyHiding.hideHide $ 'td:not([nowrap])', root
-    else if root.className is 'op' and not g.REPLY and conf['Filter OPs']
-      if filter.callbacks.some((callback) -> callback root)
-        threadHiding.hideHide root.parentNode
+    klass = root.className
+    return if /\binlined\b/.test klass
+    unless isOP = klass is 'op'
+      root = $ 'td[id]', root
+    for key of filter.filters
+      if filter.test root, key, isOP
+        return
 
-  test: (key, value) ->
-    filter.regexps[key].some (regexp) -> regexp.test value
+  test: (root, key, isOP) ->
+    value = @[key] root, isOP
+    if value is false
+      # Return if there's nothing to filter (no tripcode for example).
+      return false
 
-  name: (root) ->
-    name = if root.className is 'op' then $ '.postername', root else $ '.commentpostername', root
-    filter.test 'name', name.textContent
+    for filter in @filters[key]
+      if filter root, value, isOP
+        return true
+    false
+
+  name: (root, isOP) ->
+    name = if isOP then $ '.postername', root else $ '.commentpostername', root
+    name.textContent
   tripcode: (root) ->
     if trip = $ '.postertrip', root
-      filter.test 'tripcode', trip.textContent
+      return trip.textContent
+    false
   email: (root) ->
-    if mail = $ '.linkmail', root
-      filter.test 'email', mail.href
-  subject: (root) ->
-    sub = if root.className is 'op' then $ '.filetitle', root else $ '.replytitle', root
-    filter.test 'subject', sub.textContent
+    unless mail = $ '.linkmail', root
+      return mail.href
+    false
+  subject: (root, isOP) ->
+    sub = if isOP then $ '.filetitle', root else $ '.replytitle', root
+    sub.textContent
   comment: (root) ->
-    filter.test 'comment', ($.el 'a', innerHTML: $('blockquote', root).innerHTML.replace /<br>/g, '\n').textContent
+    ($.el 'a', innerHTML: $('blockquote', root).innerHTML.replace /<br>/g, '\n').textContent
   filename: (root) ->
-    if file = $ '.filesize span', root
-      filter.test 'filename', file.title
+    if file = $ '.filesize > span', root
+      return file.title
+    false
+  dimensions: (root) ->
+    if span = $ '.filesize', root
+      return span.textContent.match(/\d+x\d+/)[0]
+    return false
   filesize: (root) ->
     if img = $ 'img[md5]', root
-      filter.test 'filesize', img.alt
+      return img.alt
+    false
   md5: (root) ->
     if img = $ 'img[md5]', root
-      filter.test 'md5', img.getAttribute('md5')
+      return img.getAttribute 'md5'
+    false
 
 strikethroughQuotes =
   init: ->
@@ -900,7 +999,8 @@ qr =
       $.before form, link
     g.callbacks.push @node
 
-    if engine is 'webkit'
+    # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
+    if /chrome/i.test navigator.userAgent
       qr.status ready: true
     else
       iframe = $.el 'iframe',
@@ -1023,7 +1123,7 @@ qr =
     e?.preventDefault()
     qr.open()
     unless g.REPLY
-      $('select', qr.el).value = $.x('ancestor::div', @).firstChild.id
+      $('select', qr.el).value = $.x('ancestor::div[@class="thread"]', @).firstChild.id
 
     # Make sure we get the correct number, even with XXX censors
     id = @previousElementSibling.hash[1..]
@@ -1265,7 +1365,7 @@ qr =
       ta.style.cssText = $.get 'qr.size', ''
 
     # Allow only this board's supported files.
-    mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
+    mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
         when 'jpg'
           'image/jpeg'
@@ -1405,7 +1505,8 @@ qr =
       reader.readAsBinaryString reply.file
       return
 
-    if engine is 'webkit'
+    # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
+    if /chrome/i.test navigator.userAgent
       qr.message.post post
       return
     qr.message.send post
@@ -1456,6 +1557,9 @@ qr =
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       qr.cooldown.auto = qr.replies.length > 1
       qr.cooldown.set if /sage/i.test reply.email then 60 else 30
+      if conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto
+        open = GM_openInTab or window.open
+        open "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}", "_blank"
 
     if conf['Persistent QR'] or qr.cooldown.auto
       reply.rm()
@@ -1467,7 +1571,8 @@ qr =
 
   message:
     send: (data) ->
-      if engine is 'webkit'
+      # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
+      if /chrome/i.test navigator.userAgent
         qr.message.receive data
         return
       data.qr = true
@@ -1607,7 +1712,7 @@ options =
   <input type=radio name=tab hidden id=sauces_tab>
   <div>
     <div class=warning><code>Sauce</code> is disabled.</div>
-    <div>Lines starting with a <code>#</code> will be ignored.</div>
+    Lines starting with a <code>#</code> will be ignored.
     <ul>These variables will be replaced by the corresponding url:
       <li>$1: Thumbnail.</li>
       <li>$2: Full image.</li>
@@ -1619,13 +1724,21 @@ options =
   <div>
     <div class=warning><code>Filter</code> is disabled.</div>
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
+    Lines starting with a <code>#</code> will be ignored.<br>
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
+    <ul>You can use these settings with each regular expression, separate them with semicolons:
+      <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>
+      <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>
+      <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>hightlight:wallpaper;</code>.</li>
+      <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>
+    </ul>
     <p>Name:<br><textarea name=name></textarea></p>
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>
     <p>E-mail:<br><textarea name=email></textarea></p>
     <p>Subject:<br><textarea name=subject></textarea></p>
     <p>Comment:<br><textarea name=comment></textarea></p>
     <p>Filename:<br><textarea name=filename></textarea></p>
+    <p>Image dimensions:<br><textarea name=dimensions></textarea></p>
     <p>Filesize:<br><textarea name=filesize></textarea></p>
     <p>Image MD5:<br><textarea name=md5></textarea></p>
   </div>
@@ -2441,13 +2554,14 @@ quoteIndicators =
     # We use contains() so that it works with hidden threads
     tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', root).firstChild.id
     for quote in $$ '.quotelink', root
-      if conf['Indicate OP quote'] and quote.hash[1..] is tid
+      hash = quote.hash[1..]
+      if conf['Indicate OP quote'] and hash is tid
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(OP)'
         return
       path = quote.pathname
       #if quote leads to a different thread id and is located on the same board (index 0)
-      if conf['Indicate Cross-thread Quotes'] and path.lastIndexOf("/#{tid}") is -1 and path.indexOf("/#{g.BOARD}/") is 0
+      if conf['Indicate Cross-thread Quotes'] and hash and path.lastIndexOf("/#{tid}") is -1 and path.indexOf("/#{g.BOARD}/") is 0
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(Cross-thread)'
     return
@@ -2690,8 +2804,8 @@ imgExpand =
   toggle: (a) ->
     thumb = a.firstChild
     if thumb.hidden
-      rect = a.parentNode.getBoundingClientRect()
-      d.body.scrollTop += rect.top if rect.top < 0
+      rect = a.getBoundingClientRect()
+      d.body.scrollTop += rect.top - 42 if rect.top < 0
       d.body.scrollLeft += rect.left if rect.left < 0
       imgExpand.contract thumb
     else
@@ -2784,6 +2898,11 @@ Main =
 
     $.ready options.init
 
+    if conf['Quick Reply'] and conf['Hide Original Post Form']
+      Main.css += 'form[name=post] { display: none; }'
+
+    Main.addStyle()
+
     now = Date.now()
     if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
       $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
@@ -2853,11 +2972,6 @@ Main =
 
     if conf['Fix XXX\'d Post Numbers']
       unxify.init()
-
-    if conf['Quick Reply'] and conf['Hide Original Post Form']
-      Main.css += 'form[name=post] { display: none; }'
-
-    Main.addStyle()
 
     $.ready Main.ready
 
@@ -3302,12 +3416,15 @@ img[md5], img[md5] + img {
 .inlined {
   opacity: .5;
 }
-.inline td.reply {
+.inline .reply {
   background-color: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(128, 128, 128, 0.5);
 }
 .filetitle, .replytitle, .postername, .commentpostername, .postertrip {
   background: none;
+}
+.filter_highlight {
+  box-shadow: -5px 0 rgba(255,0,0,0.5);
 }
 .filtered {
   text-decoration: line-through;

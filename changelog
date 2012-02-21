@@ -1,4 +1,15 @@
 master
+- ahodesuka
+  Add Open Reply in New Tab option for replies made from the main board (not dumping).
+  Scroll back up (top of anchor - 42px) when unexpanding images.
+- Mayhem
+  The Filter now has per filter settings:
+    - Filter the OP only along its thread, replies only, or both.
+    - Per boards, or global.
+    - Highlight, or hide. Highlighted OPs will have their threads put on top of the board page.
+  New filter group: Image dimensions.
+  Fix posting on Safari.
+  Fix rare case where the QR would not accept certain image types.
 
 2.26.4
 - Mayhem
@@ -93,7 +104,7 @@ master
     see https://github.com/MayhemYDG/4chan-x/issues/136
 
 2.24.4
-- ahokadesuka
+- ahodesuka
   Scroll back up when unexpanding images.
 - e000
   Prevent absurd cooldown durations.
