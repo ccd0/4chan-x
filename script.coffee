@@ -3418,6 +3418,10 @@ img[md5], img[md5] + img {
 #qp {
   padding-bottom: 5px;
 }
+#qp > a > img {
+  max-height: 300px;
+  max-width: 500px;
+}
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
 }
