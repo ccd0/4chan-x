@@ -576,6 +576,7 @@
               $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
             }
           }
+          return false;
         } else if (isOP) {
           if (!g.REPLY) threadHiding.hideHide(root.parentNode);
         } else {

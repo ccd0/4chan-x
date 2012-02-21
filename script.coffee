@@ -491,6 +491,8 @@ filter =
           # ...before the first non highlighted thread.
           if firstThread = $ 'div[class=op]'
             $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
+        # Continue the filter lookup to add more classes or hide it.
+        return false
       else if isOP
         unless g.REPLY
           threadHiding.hideHide root.parentNode
