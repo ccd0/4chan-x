@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, FileFormat, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base;
+  var $, $$, DAY, Favicon, FileInfo, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base;
 
   config = {
     main: {
@@ -149,8 +149,8 @@
     sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/a/image/$3/', '#http://archive.installgentoo.net/g/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
-    fileFormatR: '%l (%s, %r, %n)',
-    fileFormatT: '%l (%s, %r)',
+    fileInfoR: '%l (%s, %r, %n)',
+    fileInfoT: '%l (%s, %r)',
     favicon: 'ferongr',
     hotkeys: {
       openOptions: ['ctrl+o', 'Open Options'],
@@ -2079,7 +2079,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, fileFormatR, fileFormatT, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
+      var arr, back, checked, description, dialog, favicon, fileInfoR, fileInfoT, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2123,7 +2123,7 @@
     <p>Comment:<br><textarea name=comment></textarea></p>\
     <p>Filename:<br><textarea name=filename></textarea></p>\
     <p>Image dimensions:<br><textarea name=dimensions></textarea></p>\
-    <p>FileFormat:<br><textarea name=filesize></textarea></p>\
+    <p>FileInfo:<br><textarea name=filesize></textarea></p>\
     <p>Image MD5:<br><textarea name=md5></textarea></p>\
   </div>\
   <input type=radio name=tab hidden id=rice_tab>\
@@ -2147,9 +2147,9 @@
     <div class=warning><code>File Info Formatting</code> is disabled.</div>\
     <ul>\
       Reply File Info Formatting\
-      <li><input type=text name=fileFormatR> : <span id=fileFormatRPreview></span></li>\
+      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>\
       Thread File Info Formatting\
-      <li><input type=text name=fileFormatT> : <span id=fileFormatTPreview></span></li>\
+      <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>\
       <li>Link: %l (lowercase L)</li>\
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>\
       <li>Resolution: %r (Displays PDF on /po/, for PDF\'s)</li>\
@@ -2208,16 +2208,16 @@
       }
       (back = $('[name=backlink]', dialog)).value = conf['backlink'];
       (time = $('[name=time]', dialog)).value = conf['time'];
-      (fileFormatR = $('[name=fileFormatR]', dialog)).value = conf['fileFormatR'];
-      (fileFormatT = $('[name=fileFormatT]', dialog)).value = conf['fileFormatT'];
+      (fileInfoR = $('[name=fileInfoR]', dialog)).value = conf['fileInfoR'];
+      (fileInfoT = $('[name=fileInfoT]', dialog)).value = conf['fileInfoT'];
       $.on(back, 'keyup', $.cb.value);
       $.on(back, 'keyup', options.backlink);
       $.on(time, 'keyup', $.cb.value);
       $.on(time, 'keyup', options.time);
-      $.on(fileFormatR, 'keyup', $.cb.value);
-      $.on(fileFormatR, 'keyup', options.fileFormat);
-      $.on(fileFormatT, 'keyup', $.cb.value);
-      $.on(fileFormatT, 'keyup', options.fileFormat);
+      $.on(fileInfoR, 'keyup', $.cb.value);
+      $.on(fileInfoR, 'keyup', options.fileInfo);
+      $.on(fileInfoT, 'keyup', $.cb.value);
+      $.on(fileInfoT, 'keyup', options.fileInfo);
       favicon = $('select', dialog);
       favicon.value = conf['favicon'];
       $.on(favicon, 'change', $.cb.value);
@@ -2256,8 +2256,8 @@
       d.body.style.setProperty('overflow', 'hidden', null);
       options.backlink.call(back);
       options.time.call(time);
-      options.fileFormat.call(fileFormatR);
-      options.fileFormat.call(fileFormatT);
+      options.fileInfo.call(fileInfoR);
+      options.fileInfo.call(fileInfoT);
       return options.favicon.call(favicon);
     },
     close: function() {
@@ -2286,15 +2286,15 @@
     backlink: function() {
       return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     },
-    fileFormat: function() {
-      FileFormat.data = {
+    fileInfo: function() {
+      FileInfo.data = {
         link: '<a href="javascript:;">1329791824.png</a>',
         size: 996,
         unit: 'KB',
         resolution: '1366x768',
         filename: 'Untitled.png'
       };
-      return $.id("" + this.name + "Preview").innerHTML = FileFormat.funks[this.name === 'fileFormatR' ? 0 : 1](FileFormat);
+      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[this.name === 'fileInfoR' ? 0 : 1](FileInfo);
     },
     favicon: function() {
       Favicon["switch"]();
@@ -2889,16 +2889,16 @@
     }
   };
 
-  FileFormat = {
+  FileInfo = {
     init: function() {
       if (g.BOARD === 'f') return;
-      FileFormat.ffConf = ['fileFormatR', 'fileFormatT'];
-      FileFormat.ffMtrs = [/%([BKlMnrs])/g, /%([BKlMrs])/g];
-      FileFormat.ffRgex = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/];
+      FileInfo.ffConf = ['fileInfoR', 'fileInfoT'];
+      FileInfo.ffMtrs = [/%([BKlMnrs])/g, /%([BKlMrs])/g];
+      FileInfo.ffRgex = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/];
       this.parse = function(node) {
         var filename, link, resolution, size, unit, _, _ref;
-        FileFormat.ffType = node.childNodes.length > 3 ? 0 : 1;
-        _ref = node.innerHTML.match(FileFormat.ffRgex[FileFormat.ffType]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
+        FileInfo.ffType = node.childNodes.length > 3 ? 0 : 1;
+        _ref = node.innerHTML.match(FileInfo.ffRgex[FileInfo.ffType]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
         return {
           link: link,
           size: size,
@@ -2907,34 +2907,34 @@
           filename: filename
         };
       };
-      FileFormat.funks = FileFormat.setFormats();
+      FileInfo.funks = FileInfo.setFormats();
       return g.callbacks.push(this.node);
     },
     node: function(root) {
       var node;
       if (root.className === 'inline' || !(node = $('.filesize', root))) return;
-      FileFormat.data = FileFormat.parse(node);
-      return node.innerHTML = FileFormat.funks[FileFormat.ffType](FileFormat) + ' ';
+      FileInfo.data = FileInfo.parse(node);
+      return node.innerHTML = FileInfo.funks[FileInfo.ffType](FileInfo) + ' ';
     },
     setFormats: function() {
       var code, i, _results;
       _results = [];
       for (i = 0; i <= 1; i++) {
-        code = conf[FileFormat.ffConf[i]].replace(FileFormat.ffMtrs[i], function(s, c) {
-          if (c in FileFormat.formatters) {
-            return "' + FileFormat.formatters." + c + "() + '";
+        code = conf[FileInfo.ffConf[i]].replace(FileInfo.ffMtrs[i], function(s, c) {
+          if (c in FileInfo.formatters) {
+            return "' + FileInfo.formatters." + c + "() + '";
           } else {
             return s;
           }
         });
-        _results.push(Function('FileFormat', "return '" + code + "'"));
+        _results.push(Function('FileInfo', "return '" + code + "'"));
       }
       return _results;
     },
     convertUnit: function(unitT) {
       var i, size, unitF, units;
-      size = FileFormat.data.size;
-      unitF = FileFormat.data.unit;
+      size = FileInfo.data.size;
+      unitF = FileInfo.data.unit;
       if (unitF !== unitT) {
         units = ['B', 'KB', 'MB'];
         i = units.indexOf(unitF) - units.indexOf(unitT);
@@ -2956,30 +2956,30 @@
     },
     formatters: {
       B: function() {
-        return FileFormat.convertUnit('B');
+        return FileInfo.convertUnit('B');
       },
       K: function() {
-        return FileFormat.convertUnit('KB');
+        return FileInfo.convertUnit('KB');
       },
       l: function() {
-        return FileFormat.data.link;
+        return FileInfo.data.link;
       },
       M: function() {
-        return FileFormat.convertUnit('MB');
+        return FileInfo.convertUnit('MB');
       },
       n: function() {
         var ext;
-        if ((ext = FileFormat.data.filename.lastIndexOf('.')) > 38) {
-          return '<span class=fnfull>' + FileFormat.data.filename + '</span><span class=fntrunc>' + FileFormat.data.filename.substr(0, 32) + ' (...)' + FileFormat.data.filename.substr(ext) + '</span>';
+        if ((ext = FileInfo.data.filename.lastIndexOf('.')) > 38) {
+          return '<span class=fnfull>' + FileInfo.data.filename + '</span><span class=fntrunc>' + FileInfo.data.filename.substr(0, 32) + ' (...)' + FileInfo.data.filename.substr(ext) + '</span>';
         } else {
-          return FileFormat.data.filename;
+          return FileInfo.data.filename;
         }
       },
       r: function() {
-        return FileFormat.data.resolution;
+        return FileInfo.data.resolution;
       },
       s: function() {
-        return "" + FileFormat.data.size + " " + FileFormat.data.unit;
+        return "" + FileInfo.data.size + " " + FileInfo.data.unit;
       }
     }
   };
@@ -3249,7 +3249,7 @@
       if (conf['Image Auto-Gif']) imgGif.node(qp);
       if (conf['Time Formatting']) Time.node(qp);
       if (conf['File Info Formatting']) {
-        if (id !== threadID) return FileFormat.node(qp);
+        if (id !== threadID) return FileInfo.node(qp);
       }
     }
   };
@@ -3743,7 +3743,7 @@
       if (conf['Filter'] || conf['Reply Hiding']) strikethroughQuotes.init();
       if (conf['Anonymize']) anonymize.init();
       if (conf['Time Formatting']) Time.init();
-      if (conf['File Info Formatting']) FileFormat.init();
+      if (conf['File Info Formatting']) FileInfo.init();
       if (conf['Sauce']) sauce.init();
       if (conf['Reveal Spoilers']) revealSpoilers.init();
       if (conf['Image Auto-Gif']) imgGif.init();

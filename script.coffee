@@ -78,8 +78,8 @@ config =
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
-  fileFormatR: '%l (%s, %r, %n)'
-  fileFormatT: '%l (%s, %r)'
+  fileInfoR: '%l (%s, %r, %n)'
+  fileInfoT: '%l (%s, %r)'
   favicon: 'ferongr'
   hotkeys:
     openOptions:     ['ctrl+o', 'Open Options']
@@ -1695,7 +1695,7 @@ options =
     <p>Comment:<br><textarea name=comment></textarea></p>
     <p>Filename:<br><textarea name=filename></textarea></p>
     <p>Image dimensions:<br><textarea name=dimensions></textarea></p>
-    <p>FileFormat:<br><textarea name=filesize></textarea></p>
+    <p>FileInfo:<br><textarea name=filesize></textarea></p>
     <p>Image MD5:<br><textarea name=md5></textarea></p>
   </div>
   <input type=radio name=tab hidden id=rice_tab>
@@ -1719,9 +1719,9 @@ options =
     <div class=warning><code>File Info Formatting</code> is disabled.</div>
     <ul>
       Reply File Info Formatting
-      <li><input type=text name=fileFormatR> : <span id=fileFormatRPreview></span></li>
+      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>
       Thread File Info Formatting
-      <li><input type=text name=fileFormatT> : <span id=fileFormatTPreview></span></li>
+      <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>
       <li>Link: %l (lowercase L)</li>
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
       <li>Resolution: %r (Displays PDF on /po/, for PDF\'s)</li>
@@ -1775,16 +1775,16 @@ options =
     #rice
     (back         = $ '[name=backlink]',     dialog).value = conf['backlink']
     (time         = $ '[name=time]',         dialog).value = conf['time']
-    (fileFormatR = $ '[name=fileFormatR]', dialog).value = conf['fileFormatR']
-    (fileFormatT = $ '[name=fileFormatT]', dialog).value = conf['fileFormatT']
+    (fileInfoR = $ '[name=fileInfoR]', dialog).value = conf['fileInfoR']
+    (fileInfoT = $ '[name=fileInfoT]', dialog).value = conf['fileInfoT']
     $.on back, 'keyup', $.cb.value
     $.on back, 'keyup', options.backlink
     $.on time, 'keyup', $.cb.value
     $.on time, 'keyup', options.time
-    $.on fileFormatR, 'keyup', $.cb.value
-    $.on fileFormatR, 'keyup', options.fileFormat
-    $.on fileFormatT, 'keyup', $.cb.value
-    $.on fileFormatT, 'keyup', options.fileFormat
+    $.on fileInfoR, 'keyup', $.cb.value
+    $.on fileInfoR, 'keyup', options.fileInfo
+    $.on fileInfoT, 'keyup', $.cb.value
+    $.on fileInfoT, 'keyup', options.fileInfo
     favicon = $ 'select', dialog
     favicon.value = conf['favicon']
     $.on favicon, 'change', $.cb.value
@@ -1817,8 +1817,8 @@ options =
 
     options.backlink.call back
     options.time.call     time
-    options.fileFormat.call fileFormatR
-    options.fileFormat.call fileFormatT
+    options.fileInfo.call fileInfoR
+    options.fileInfo.call fileInfoT
     options.favicon.call  favicon
 
   close: ->
@@ -1845,14 +1845,14 @@ options =
     $.id('timePreview').textContent = Time.funk Time
   backlink: ->
     $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
-  fileFormat: ->
-    FileFormat.data =
+  fileInfo: ->
+    FileInfo.data =
       link      : '<a href="javascript:;">1329791824.png</a>'
       size      : 996
       unit      : 'KB'
       resolution: '1366x768'
       filename  : 'Untitled.png'
-    $.id("#{@name}Preview").innerHTML = FileFormat.funks[if @name is 'fileFormatR' then 0 else 1] FileFormat
+    $.id("#{@name}Preview").innerHTML = FileInfo.funks[if @name is 'fileInfoR' then 0 else 1] FileInfo
   favicon: ->
     Favicon.switch()
     unread.update true
@@ -2329,40 +2329,40 @@ Time =
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
     y: -> Time.date.getFullYear() - 2000
     
-FileFormat =
+FileInfo =
   init: ->
     return if g.BOARD is 'f'
-    FileFormat.ffConf = [ 'fileFormatR', 'fileFormatT' ]
-    FileFormat.ffMtrs = [ /%([BKlMnrs])/g, /%([BKlMrs])/g ]
-    FileFormat.ffRgex = [ /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/,
+    FileInfo.ffConf = [ 'fileInfoR', 'fileInfoT' ]
+    FileInfo.ffMtrs = [ /%([BKlMnrs])/g, /%([BKlMrs])/g ]
+    FileInfo.ffRgex = [ /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/,
                           /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/ ]
     @parse = (node) ->
-      FileFormat.ffType = if node.childNodes.length > 3 then 0 else 1
+      FileInfo.ffType = if node.childNodes.length > 3 then 0 else 1
       [_, link, size, unit, resolution, filename] =
-        node.innerHTML.match FileFormat.ffRgex[FileFormat.ffType]
+        node.innerHTML.match FileInfo.ffRgex[FileInfo.ffType]
       link      : link
       size      : size
       unit      : unit
       resolution: resolution
       filename  : filename
 
-    FileFormat.funks = FileFormat.setFormats()
+    FileInfo.funks = FileInfo.setFormats()
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline' or not node = $ '.filesize', root
-    FileFormat.data = FileFormat.parse node
-    node.innerHTML  = FileFormat.funks[FileFormat.ffType](FileFormat) + ' '
+    FileInfo.data = FileInfo.parse node
+    node.innerHTML  = FileInfo.funks[FileInfo.ffType](FileInfo) + ' '
   setFormats: ->
     for i in [0..1]
-      code = conf[FileFormat.ffConf[i]].replace FileFormat.ffMtrs[i], (s, c) ->
-        if c of FileFormat.formatters
-          "' + FileFormat.formatters.#{c}() + '"
+      code = conf[FileInfo.ffConf[i]].replace FileInfo.ffMtrs[i], (s, c) ->
+        if c of FileInfo.formatters
+          "' + FileInfo.formatters.#{c}() + '"
         else
           s
-      Function 'FileFormat', "return '#{code}'"
+      Function 'FileInfo', "return '#{code}'"
   convertUnit: (unitT) ->
-    size  = FileFormat.data.size
-    unitF = FileFormat.data.unit
+    size  = FileInfo.data.size
+    unitF = FileInfo.data.unit
     if unitF isnt unitT
       units = [ 'B', 'KB', 'MB' ]
       i     = units.indexOf(unitF) - units.indexOf(unitT)
@@ -2375,16 +2375,16 @@ FileFormat =
         size = size.toFixed 2
     "#{size} #{unitT}"
   formatters:
-    B: -> FileFormat.convertUnit 'B'
-    K: -> FileFormat.convertUnit 'KB'
-    l: -> FileFormat.data.link
-    M: -> FileFormat.convertUnit 'MB'
-    n: -> if (ext = FileFormat.data.filename.lastIndexOf '.') > 38
-           '<span class=fnfull>' + FileFormat.data.filename + '</span><span class=fntrunc>' + FileFormat.data.filename.substr(0, 32) + ' (...)' + FileFormat.data.filename.substr(ext) + '</span>'
+    B: -> FileInfo.convertUnit 'B'
+    K: -> FileInfo.convertUnit 'KB'
+    l: -> FileInfo.data.link
+    M: -> FileInfo.convertUnit 'MB'
+    n: -> if (ext = FileInfo.data.filename.lastIndexOf '.') > 38
+           '<span class=fnfull>' + FileInfo.data.filename + '</span><span class=fntrunc>' + FileInfo.data.filename.substr(0, 32) + ' (...)' + FileInfo.data.filename.substr(ext) + '</span>'
           else
-            FileFormat.data.filename
-    r: -> FileFormat.data.resolution
-    s: -> "#{FileFormat.data.size} #{FileFormat.data.unit}"
+            FileInfo.data.filename
+    r: -> FileInfo.data.resolution
+    s: -> "#{FileInfo.data.size} #{FileInfo.data.unit}"
 
 getTitle = (thread) ->
   el = $ '.filetitle', thread
@@ -2586,7 +2586,7 @@ quotePreview =
     if conf['Time Formatting']
       Time.node     qp
     if conf['File Info Formatting']
-      FileFormat.node qp if id isnt threadID
+      FileInfo.node qp if id isnt threadID
 
 quoteIndicators =
   init: ->
@@ -2986,7 +2986,7 @@ Main =
       Time.init()
       
     if conf['File Info Formatting']
-      FileFormat.init()
+      FileInfo.init()
 
     if conf['Sauce']
       sauce.init()
