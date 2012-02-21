@@ -136,8 +136,8 @@
       }
     },
     filter: {
-      name: [''].join('\n'),
-      tripcode: [''].join('\n'),
+      name: ['# Filter any namefags:', '#/^(?!Anonymous$)/'].join('\n'),
+      tripcode: ['# Filter any tripfags', '#/^!/'].join('\n'),
       email: ['# Filter any e-mails that are not `sage` on /a/ and /jp/:', '#/^(?!sage$)/;boards:a,jp'].join('\n'),
       subject: ['# Filter Generals on /v/:', '#/general/i;boards:v;op:only'].join('\n'),
       comment: ['# Filter Stallman copypasta on /g/:', '#/what you\'re refer+ing to as linux/i;boards:g'].join('\n'),

@@ -54,10 +54,12 @@ config =
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
   filter:
     name: [
-      ''
+      '# Filter any namefags:'
+      '#/^(?!Anonymous$)/'
     ].join '\n'
     tripcode: [
-      ''
+      '# Filter any tripfags'
+      '#/^!/'
     ].join '\n'
     email: [
       '# Filter any e-mails that are not `sage` on /a/ and /jp/:'
