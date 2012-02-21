@@ -90,9 +90,8 @@
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
-        'Filter': [false, 'Self-moderation placebo'],
-        'Filter OPs': [false, 'Filter OPs along with their threads'],
-        'Recursive Filtering': [false, 'Filter replies of filtered posts, recursively'],
+        'Filter': [true, 'Self-moderation placebo'],
+        'Recursive Filtering': [true, 'Filter replies of filtered posts, recursively'],
         'Reply Hiding': [true, 'Hide single replies'],
         'Thread Hiding': [true, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
@@ -100,7 +99,6 @@
       Imaging: {
         'Image Auto-Gif': [false, 'Animate gif thumbnails'],
         'Image Expansion': [true, 'Expand images'],
-        'Expand From Current': [true, 'Expand images from current position to thread end'],
         'Image Hover': [false, 'Show full image on mouseover'],
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail']
@@ -120,6 +118,7 @@
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
+        'Auto Noko': [true, 'Always redirect to your post unless you are in dump mode'],
         'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
@@ -143,6 +142,7 @@
       subject: '',
       comment: '',
       filename: '',
+      dimensions: '',
       filesize: '',
       md5: ''
     },
@@ -169,7 +169,7 @@
       expandThread: ['e', 'Expand thread'],
       watch: ['w', 'Watch thread'],
       hide: ['x', 'Hide thread'],
-      expandImage: ['m', 'Expand selected image'],
+      expandImages: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
       update: ['u', 'Update now'],
       unreadCountTo0: ['z', 'Reset unread status']
@@ -533,86 +533,113 @@
   };
 
   filter = {
-    regexps: {},
-    callbacks: [],
+    filters: {},
     init: function() {
-      var f, filter, key, m, _i, _len;
+      var boards, filter, hl, key, op, regexp, _i, _len, _ref, _ref2, _ref3;
       for (key in config.filter) {
-        if (!(m = conf[key].match(/^\/.+\/\w*$/gm))) continue;
-        this.regexps[key] = [];
-        for (_i = 0, _len = m.length; _i < _len; _i++) {
-          filter = m[_i];
-          f = filter.match(/^\/(.+)\/(\w*)$/);
+        this.filters[key] = [];
+        _ref = conf[key].split('\n');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          filter = _ref[_i];
+          if (filter[0] === '#') continue;
+          if (!(regexp = filter.match(/\/(.+)\/(\w*)/))) continue;
+          filter = filter.replace(regexp[0], '');
+          boards = ((_ref2 = filter.match(/boards:([^;]+)/)) != null ? _ref2[1].toLowerCase() : void 0) || 'global';
+          if (boards !== 'global' && boards.split(',').indexOf(g.BOARD) === -1) {
+            continue;
+          }
           try {
-            this.regexps[key].push(RegExp(f[1], f[2]));
+            regexp = RegExp(regexp[1], regexp[2]);
           } catch (e) {
             alert(e.message);
+            continue;
           }
+          op = ((_ref3 = filter.match(/op:(yes|no|only)/)) != null ? _ref3[1].toLowerCase() : void 0) || 'no';
+          hl = /highlight/.test(filter);
+          this.filters[key].push(this.createFilter(regexp, op, hl));
         }
-        this.callbacks.push(this[key]);
+        if (!this.filters[key].length) delete this.filters[key];
       }
-      return g.callbacks.push(this.node);
+      if (Object.keys(this.filters).length) return g.callbacks.push(this.node);
+    },
+    createFilter: function(regexp, op, hl) {
+      return function(root, value, isOP) {
+        if (isOP && op === 'no' || !isOP && op === 'only') return false;
+        if (!regexp.test(value)) return false;
+        if (hl) {
+          $.addClass(root, 'filter_highlight');
+        } else if (isOP) {
+          threadHiding.hideHide(root.parentNode);
+        } else {
+          replyHiding.hideHide(root.previousSibling);
+        }
+        return true;
+      };
     },
     node: function(root) {
-      if (!root.className) {
-        if (filter.callbacks.some(function(callback) {
-          return callback(root);
-        })) {
-          return replyHiding.hideHide($('td:not([nowrap])', root));
-        }
-      } else if (root.className === 'op' && !g.REPLY && conf['Filter OPs']) {
-        if (filter.callbacks.some(function(callback) {
-          return callback(root);
-        })) {
-          return threadHiding.hideHide(root.parentNode);
-        }
+      var isOP, key, klass;
+      klass = root.className;
+      if (/\binlined\b/.test(klass)) return;
+      if (!(isOP = klass === 'op')) root = $('td[id]', root);
+      for (key in filter.filters) {
+        if (filter.test(root, key, isOP)) return;
       }
     },
-    test: function(key, value) {
-      return filter.regexps[key].some(function(regexp) {
-        return regexp.test(value);
-      });
+    test: function(root, key, isOP) {
+      var filter, value, _i, _len, _ref;
+      value = this[key](root, isOP);
+      if (value === false) return false;
+      _ref = this.filters[key];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        filter = _ref[_i];
+        if (filter(root, value, isOP)) return true;
+      }
+      return false;
     },
-    name: function(root) {
+    name: function(root, isOP) {
       var name;
-      name = root.className === 'op' ? $('.postername', root) : $('.commentpostername', root);
-      return filter.test('name', name.textContent);
+      name = isOP ? $('.postername', root) : $('.commentpostername', root);
+      return name.textContent;
     },
     tripcode: function(root) {
       var trip;
-      if (trip = $('.postertrip', root)) {
-        return filter.test('tripcode', trip.textContent);
-      }
+      if (trip = $('.postertrip', root)) return trip.textContent;
+      return false;
     },
     email: function(root) {
       var mail;
-      if (mail = $('.linkmail', root)) return filter.test('email', mail.href);
+      if (!(mail = $('.linkmail', root))) return mail.href;
+      return false;
     },
-    subject: function(root) {
+    subject: function(root, isOP) {
       var sub;
-      sub = root.className === 'op' ? $('.filetitle', root) : $('.replytitle', root);
-      return filter.test('subject', sub.textContent);
+      sub = isOP ? $('.filetitle', root) : $('.replytitle', root);
+      return sub.textContent;
     },
     comment: function(root) {
-      return filter.test('comment', ($.el('a', {
+      return ($.el('a', {
         innerHTML: $('blockquote', root).innerHTML.replace(/<br>/g, '\n')
-      })).textContent);
+      })).textContent;
     },
     filename: function(root) {
       var file;
-      if (file = $('.filesize span', root)) {
-        return filter.test('filename', file.title);
-      }
+      if (file = $('.filesize > span', root)) return file.title;
+      return false;
+    },
+    dimensions: function(root) {
+      var span;
+      if (span = $('.filesize', root)) return span.textContent.match(/\d+x\d+/)[0];
+      return false;
     },
     filesize: function(root) {
       var img;
-      if (img = $('img[md5]', root)) return filter.test('filesize', img.alt);
+      if (img = $('img[md5]', root)) return img.alt;
+      return false;
     },
     md5: function(root) {
       var img;
-      if (img = $('img[md5]', root)) {
-        return filter.test('md5', img.getAttribute('md5'));
-      }
+      if (img = $('img[md5]', root)) return img.getAttribute('md5');
+      return false;
     }
   };
 
@@ -933,7 +960,7 @@
         case conf.expandThread:
           expandThread.toggle(thread);
           break;
-        case conf.expandImage:
+        case conf.expandImages:
           keybinds.img(thread);
           break;
         case conf.nextThread:
@@ -1224,7 +1251,7 @@
         $.before(form, link);
       }
       g.callbacks.push(this.node);
-      if (engine === 'webkit') {
+      if (/chrome/i.test(navigator.userAgent)) {
         qr.status({
           ready: true
         });
@@ -1679,7 +1706,7 @@
         });
         ta.style.cssText = $.get('qr.size', '');
       }
-      mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
+      mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
             return 'image/jpeg';
@@ -1833,7 +1860,7 @@
         reader.readAsBinaryString(reply.file);
         return;
       }
-      if (engine === 'webkit') {
+      if (/chrome/i.test(navigator.userAgent)) {
         qr.message.post(post);
         return;
       }
@@ -1888,6 +1915,9 @@
       } else {
         qr.cooldown.auto = qr.replies.length > 1;
         qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
+        if (conf['Auto Noko'] && !g.REPLY && !qr.cooldown.auto) {
+          location.href = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber;
+        }
       }
       if (conf['Persistent QR'] || qr.cooldown.auto) {
         reply.rm();
@@ -1900,7 +1930,7 @@
     message: {
       send: function(data) {
         var host, window;
-        if (engine === 'webkit') {
+        if (/chrome/i.test(navigator.userAgent)) {
           qr.message.receive(data);
           return;
         }
@@ -2091,6 +2121,7 @@
     <p>Subject:<br><textarea name=subject></textarea></p>\
     <p>Comment:<br><textarea name=comment></textarea></p>\
     <p>Filename:<br><textarea name=filename></textarea></p>\
+    <p>Image dimensions:<br><textarea name=dimensions></textarea></p>\
     <p>Filesize:<br><textarea name=filesize></textarea></p>\
     <p>Image MD5:<br><textarea name=md5></textarea></p>\
   </div>\
@@ -3388,25 +3419,18 @@
         return imgExpand.toggle(this);
       },
       all: function() {
-        var i, thumb, thumbs, _i, _j, _len, _len2, _len3, _ref;
+        var thumb, _i, _j, _len, _len2, _ref, _ref2;
         imgExpand.on = this.checked;
         if (imgExpand.on) {
-          thumbs = $$('img[md5]');
-          if (conf['Expand From Current']) {
-            for (i = 0, _len = thumbs.length; i < _len; i++) {
-              thumb = thumbs[i];
-              if (thumb.getBoundingClientRect().top > 0) break;
-            }
-            thumbs = thumbs.slice(i);
-          }
-          for (_i = 0, _len2 = thumbs.length; _i < _len2; _i++) {
-            thumb = thumbs[_i];
+          _ref = $$('img[md5]');
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            thumb = _ref[_i];
             imgExpand.expand(thumb);
           }
         } else {
-          _ref = $$('img[md5][hidden]');
-          for (_j = 0, _len3 = _ref.length; _j < _len3; _j++) {
-            thumb = _ref[_j];
+          _ref2 = $$('img[md5][hidden]');
+          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+            thumb = _ref2[_j];
             imgExpand.contract(thumb);
           }
         }
@@ -4040,12 +4064,15 @@ img[md5], img[md5] + img {\
 .inlined {\
   opacity: .5;\
 }\
-.inline td.reply {\
+.inline .reply {\
   background-color: rgba(255, 255, 255, 0.15);\
   border: 1px solid rgba(128, 128, 128, 0.5);\
 }\
 .filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
   background: none;\
+}\
+.filter_highlight {\
+  box-shadow: -5px 0 rgba(255,0,0,0.5);\
 }\
 .filtered {\
   text-decoration: line-through;\
