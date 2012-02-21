@@ -2288,8 +2288,7 @@
       return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     },
     filesize: function() {
-      Filesize.fsize = this.name;
-      Filesize.reply = this.name === 'filesizeR';
+      Filesize.fstype = this.name === 'filesizeR' ? 0 : 1;
       Filesize.getFormat();
       Filesize.data = {
         link: '<a href="javascript:;">1329791824.png</a>',
@@ -2298,7 +2297,7 @@
         width: 1366,
         height: 768
       };
-      if (Filesize.reply) Filesize.data.filename = 'Untitled.png';
+      if (Filesize.fstype === 0) Filesize.data.filename = 'Untitled.png';
       return $.id("" + this.name + "Preview").innerHTML = Filesize.funk(Filesize);
     },
     favicon: function() {
@@ -2896,12 +2895,12 @@
 
   Filesize = {
     init: function() {
-      Filesize.reply = g.REPLY;
-      Filesize.fsize = Filesize.reply ? 'filesizeR' : 'filesizeT';
-      Filesize.regEx = Filesize.reply ? /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/ : Filesize.regEx = /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/;
+      Filesize.fstype = g.REPLY ? 0 : 1;
+      Filesize.fsconf = ['filesizeR', 'filesizeT'];
+      Filesize.regEx = [/File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/];
       this.parse = function(node) {
         var filename, height, link, size, unit, width, _, _ref;
-        _ref = node.innerHTML.match(Filesize.regEx), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], width = _ref[4], height = _ref[5], filename = _ref[6];
+        _ref = node.innerHTML.match(Filesize.regEx[Filesize.fstype]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], width = _ref[4], height = _ref[5], filename = _ref[6];
         return {
           'link': link,
           'size': size,
@@ -2916,19 +2915,17 @@
     },
     node: function(root) {
       var filesize, node;
-      if (root.id === 'qp' || root.className === 'inline' || !(node = $('span.filesize', root))) {
-        return;
-      }
+      if (root.className === 'inline' || !(node = $('.filesize', root))) return;
       Filesize.data = Filesize.parse(node);
       filesize = $.el('span', {
         className: 'filesize',
-        innerHTML: ' ' + Filesize.funk(Filesize) + ' '
+        innerHTML: Filesize.funk(Filesize) + ' '
       });
       return $.replace(node, filesize);
     },
     getFormat: function() {
       var code;
-      code = conf[Filesize.fsize].replace(/%([BhKlMnsw])/g, function(s, c) {
+      code = conf[Filesize.fsconf[Filesize.fstype]].replace(/%([BhKlMnsw])/g, function(s, c) {
         if (c in Filesize.formatters) {
           return "' + Filesize.formatters." + c + "() + '";
         } else {
@@ -2937,21 +2934,21 @@
       });
       return Filesize.funk = Function('Filesize', "return '" + code + "'");
     },
-    convertUnit: function(size, unitF, unitT) {
-      var i, units;
+    convertUnit: function(unitT) {
+      var i, size, unitF, units;
+      size = Filesize.data.size;
+      unitF = Filesize.data.unit;
       if (unitF !== unitT) {
         units = ['B', 'KB', 'MB'];
         i = units.indexOf(unitF) - units.indexOf(unitT);
         if (unitT === 'B') unitT = 'Bytes';
         if (i > 0) {
-          while (i > 0) {
+          while (i-- > 0) {
             size *= 1024;
-            --i;
           }
         } else if (i < 0) {
-          while (i < 0) {
+          while (i++ < 0) {
             size /= 1024;
-            ++i;
           }
         }
         if (size < 1 && size.toString().length > size.toFixed(2).toString.length) {
@@ -2962,22 +2959,22 @@
     },
     formatters: {
       B: function() {
-        return Filesize.convertUnit(Filesize.data.size, Filesize.data.unit, 'B');
+        return Filesize.convertUnit('B');
       },
       h: function() {
         return Filesize.data.height;
       },
       K: function() {
-        return Filesize.convertUnit(Filesize.data.size, Filesize.data.unit, 'KB');
+        return Filesize.convertUnit('KB');
       },
       l: function() {
         return Filesize.data.link;
       },
       M: function() {
-        return Filesize.convertUnit(Filesize.data.size, Filesize.data.unit, 'MB');
+        return Filesize.convertUnit('MB');
       },
       n: function() {
-        if (Filesize.reply) {
+        if (Filesize.fstype === 0) {
           return Filesize.data.filename;
         } else {
           return '%n';
@@ -3256,7 +3253,9 @@
       qp.innerHTML = html;
       if (conf['Image Auto-Gif']) imgGif.node(qp);
       if (conf['Time Formatting']) Time.node(qp);
-      if (conf['Filesize Formatting']) return Filesize.node(qp);
+      if (conf['Filesize Formatting']) {
+        if (id !== threadID) return Filesize.node(qp);
+      }
     }
   };
 
@@ -3794,6 +3793,10 @@
       }
       nodes = $$('.op, a + table', form);
       Main.node(nodes, true);
+      if (!g.REPLY && conf['Filesize Formatting']) {
+        Filesize.fstype = 0;
+        Filesize.getFormat();
+      }
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
         return observer.observe(form, {

@@ -1847,8 +1847,7 @@ options =
   backlink: ->
     $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
   filesize: () ->
-    Filesize.fsize = @name
-    Filesize.reply = @name is 'filesizeR'
+    Filesize.fstype = if @name is 'filesizeR' then 0 else 1
     Filesize.getFormat()
     Filesize.data = {
       link    : '<a href="javascript:;">1329791824.png</a>',
@@ -1857,7 +1856,7 @@ options =
       width   : 1366,
       height  : 768
     }
-    Filesize.data.filename = 'Untitled.png' if Filesize.reply
+    Filesize.data.filename = 'Untitled.png' if Filesize.fstype is 0
     $.id("#{@name}Preview").innerHTML = Filesize.funk Filesize
   favicon: ->
     Favicon.switch()
@@ -2337,12 +2336,13 @@ Time =
     
 Filesize =
   init: ->
-    Filesize.reply = g.REPLY
-    Filesize.fsize = if Filesize.reply then 'filesizeR' else 'filesizeT'
-    Filesize.regEx = if Filesize.reply then /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/ else Filesize.regEx = /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/
+    Filesize.fstype = if g.REPLY then 0 else 1
+    Filesize.fsconf = [ 'filesizeR', 'filesizeT' ]
+    Filesize.regEx  = [ /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+),\s<span\stitle=\"([^\"]+)\">/,
+                        /File:\s(<a.+<\/a>)-\(([\d\.]+)\s([BKM]{1,2}),\s(\d+)x(\d+)\)/ ]
     @parse = (node) ->
       [_, link, size, unit, width, height, filename] =
-        node.innerHTML.match Filesize.regEx
+        node.innerHTML.match Filesize.regEx[Filesize.fstype]
       {
         'link'    : link,
         'size'    : size,
@@ -2355,42 +2355,40 @@ Filesize =
     Filesize.getFormat()
     g.callbacks.push @node
   node: (root) ->
-    return if root.id is 'qp' or root.className is 'inline' or not node = $ 'span.filesize', root
+    return if root.className is 'inline' or not node = $ '.filesize', root
     Filesize.data = Filesize.parse node
     filesize = $.el 'span',
       className: 'filesize',
-      innerHTML: ' ' + Filesize.funk(Filesize) + ' '
+      innerHTML: Filesize.funk(Filesize) + ' '
     $.replace node, filesize
   getFormat: ->
-    code = conf[Filesize.fsize].replace /%([BhKlMnsw])/g, (s, c) ->
+    code = conf[Filesize.fsconf[Filesize.fstype]].replace /%([BhKlMnsw])/g, (s, c) ->
       if c of Filesize.formatters
         "' + Filesize.formatters.#{c}() + '"
       else
         s
     Filesize.funk = Function 'Filesize', "return '#{code}'"
-  convertUnit: (size, unitF, unitT) ->
+  convertUnit: (unitT) ->
+    size  = Filesize.data.size
+    unitF = Filesize.data.unit
     if unitF isnt unitT
       units = [ 'B', 'KB', 'MB' ]
       i     = units.indexOf(unitF) - units.indexOf(unitT)
       unitT = 'Bytes' if unitT is 'B'
       if i > 0
-        while i > 0
-          size *= 1024
-          --i
+        size *= 1024 while i-- > 0
       else if i < 0
-        while i < 0
-          size /= 1024
-          ++i
+        size /= 1024 while i++ < 0
       if size < 1 and size.toString().length > size.toFixed(2).toString.length
         size = size.toFixed 2
     "#{size} #{unitT}"
   formatters:
-    B: -> Filesize.convertUnit Filesize.data.size, Filesize.data.unit, 'B'
+    B: -> Filesize.convertUnit 'B'
     h: -> Filesize.data.height
-    K: -> Filesize.convertUnit Filesize.data.size, Filesize.data.unit, 'KB'
+    K: -> Filesize.convertUnit 'KB'
     l: -> Filesize.data.link
-    M: -> Filesize.convertUnit Filesize.data.size, Filesize.data.unit, 'MB'
-    n: -> return if Filesize.reply then Filesize.data.filename else '%n'
+    M: -> Filesize.convertUnit 'MB'
+    n: -> if Filesize.fstype is 0 then Filesize.data.filename else '%n'
     s: -> "#{Filesize.data.size} #{Filesize.data.unit}"
     w: -> Filesize.data.width
 
@@ -2590,11 +2588,11 @@ quotePreview =
           break
     qp.innerHTML = html
     if conf['Image Auto-Gif']
-      imgGif.node qp
+      imgGif.node   qp
     if conf['Time Formatting']
-      Time.node   qp
+      Time.node     qp
     if conf['Filesize Formatting']
-      Filesize.node   qp
+      Filesize.node qp if id isnt threadID
 
 quoteIndicators =
   init: ->
@@ -3085,6 +3083,10 @@ Main =
 
     nodes = $$ '.op, a + table', form
     Main.node nodes, true
+    
+    if not g.REPLY and conf['Filesize Formatting']
+      Filesize.fstype = 0
+      Filesize.getFormat()
 
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
       observer = new MutationObserver Main.observer
