@@ -135,15 +135,15 @@
       }
     },
     filter: {
-      name: '',
-      tripcode: '',
-      email: '',
-      subject: '',
-      comment: '',
-      filename: '',
-      dimensions: '',
-      filesize: '',
-      md5: ''
+      name: [''].join('\n'),
+      tripcode: [''].join('\n'),
+      email: ['# Filter any e-mails that are not `sage` on /a/ and /jp/:', '#/^(?!sage$)/;boards:a,jp'].join('\n'),
+      subject: ['# Filter Generals on /v/:', '#/general/i;boards:v;op:only'].join('\n'),
+      comment: ['# Filter Stallman copypasta on /g/:', '#/what you\'re refer+ing to as linux/i;boards:g'].join('\n'),
+      filename: [''].join('\n'),
+      dimensions: ['# Highlight potential wallpapers:', '#/1920x1080/;op:yes;highlight;boards:w,wg'].join('\n'),
+      filesize: [''].join('\n'),
+      md5: [''].join('\n')
     },
     sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/a/image/$3/', '#http://archive.installgentoo.net/g/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
@@ -2100,7 +2100,7 @@
   <input type=radio name=tab hidden id=sauces_tab>\
   <div>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
-    <div>Lines starting with a <code>#</code> will be ignored.</div>\
+    Lines starting with a <code>#</code> will be ignored.\
     <ul>These variables will be replaced by the corresponding url:\
       <li>$1: Thumbnail.</li>\
       <li>$2: Full image.</li>\
@@ -2112,7 +2112,13 @@
   <div>\
     <div class=warning><code>Filter</code> is disabled.</div>\
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\
+    Lines starting with a <code>#</code> will be ignored.<br>\
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.\
+    <ul>You can use these settings with each regular expression, separate them with semi-colons:\
+      <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>\
+      <li>Filter OP along with their threads only (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>\
+      <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>hightlight:wallpaper;</code>.</li>\
+    </ul>\
     <p>Name:<br><textarea name=name></textarea></p>\
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>\
     <p>E-mail:<br><textarea name=email></textarea></p>\
