@@ -631,9 +631,20 @@
       return sub.textContent;
     },
     comment: function(root) {
-      return ($.el('a', {
-        innerHTML: root.lastChild.innerHTML.replace(/<br>/g, '\n')
-      })).textContent;
+      var i, len, node, nodes, text;
+      text = [];
+      nodes = d.evaluate('.//node()', root.lastChild, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+      i = 0;
+      len = nodes.snapshotLength;
+      while (i < len) {
+        node = nodes.snapshotItem(i++);
+        if (node instanceof Text) {
+          text.push(node.data);
+        } else if (node instanceof HTMLBRElement) {
+          text.push('\n');
+        }
+      }
+      return text.join('');
     },
     filename: function(root) {
       var file;
