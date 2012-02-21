@@ -13,8 +13,8 @@ config =
       'Check for Updates':            [true,  'Check for updated versions of 4chan X']
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
-      'Filter':                       [true, 'Self-moderation placebo']
-      'Recursive Filtering':          [true, 'Filter replies of filtered posts, recursively']
+      'Filter':                       [true,  'Self-moderation placebo']
+      'Recursive Filtering':          [true,  'Filter replies of filtered posts, recursively']
       'Reply Hiding':                 [true,  'Hide single replies']
       'Thread Hiding':                [true,  'Hide entire threads']
       'Show Stubs':                   [true,  'Of hidden threads / replies']
