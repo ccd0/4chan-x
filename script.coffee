@@ -2231,7 +2231,8 @@ sauce =
   init: ->
     return if g.BOARD is 'f'
     @links = []
-    for link in conf['sauces'].match /^[^#].+$/gm
+    for link in conf['sauces'].split '\n'
+      continue if link[0] is '#'
       @links.push @funk link
     return unless @links.length
     g.callbacks.push @node

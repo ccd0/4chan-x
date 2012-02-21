@@ -2717,9 +2717,10 @@
       var link, _i, _len, _ref;
       if (g.BOARD === 'f') return;
       this.links = [];
-      _ref = conf['sauces'].match(/^[^#].+$/gm);
+      _ref = conf['sauces'].split('\n');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
+        if (link[0] === '#') continue;
         this.links.push(this.funk(link));
       }
       if (!this.links.length) return;
