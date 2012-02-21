@@ -1325,7 +1325,7 @@ qr =
       ta.style.cssText = $.get 'qr.size', ''
 
     # Allow only this board's supported files.
-    mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
+    mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
         when 'jpg'
           'image/jpeg'

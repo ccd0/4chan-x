@@ -1705,7 +1705,7 @@
         });
         ta.style.cssText = $.get('qr.size', '');
       }
-      mimeTypes = $('.rules').textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
+      mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
             return 'image/jpeg';
