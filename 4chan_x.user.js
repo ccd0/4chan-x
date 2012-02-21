@@ -2916,7 +2916,9 @@
     },
     node: function(root) {
       var filesize, node;
-      if (root.className === 'inline' || !(node = $('.filesize', root))) return;
+      if (root.id === 'qp' || root.className === 'inline' || !(node = $('span.filesize', root))) {
+        return;
+      }
       Filesize.data = Filesize.parse(node);
       filesize = $.el('span', {
         className: 'filesize',

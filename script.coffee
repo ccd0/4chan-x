@@ -2355,7 +2355,7 @@ Filesize =
     Filesize.getFormat()
     g.callbacks.push @node
   node: (root) ->
-    return if root.className is 'inline' or not node = $ '.filesize', root
+    return if root.id is 'qp' or root.className is 'inline' or not node = $ 'span.filesize', root
     Filesize.data = Filesize.parse node
     filesize = $.el 'span',
       className: 'filesize',
