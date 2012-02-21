@@ -1,6 +1,9 @@
 master
 - aeosynth / ahodesuka
   expand images from current position
+- Mayhem
+  Fix posting on Safari.
+  Fix rare case where the QR would not accept images.
 
 2.26.4
 - Mayhem
