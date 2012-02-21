@@ -21,7 +21,6 @@ config =
     Imaging:
       'Image Auto-Gif':               [false, 'Animate gif thumbnails']
       'Image Expansion':              [true,  'Expand images']
-      'Expand From Current':          [true,  'Expand images from current position to thread end']
       'Image Hover':                  [false, 'Show full image on mouseover']
       'Sauce':                        [true,  'Add sauce to images']
       'Reveal Spoilers':              [false, 'Replace spoiler thumbnails by the original thumbnail']
@@ -39,6 +38,7 @@ config =
       'Cooldown':                     [true,  'Prevent "flood detected" errors.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
+      'Open Reply in New Tab':        [false, 'Open replies in a new tab that are made from the main board.']
       'Remember QR size':             [false, 'Remember the size of the Quick reply (Firefox only).']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
@@ -53,15 +53,37 @@ config =
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
   filter:
-    name:       ''
-    tripcode:   ''
-    email:      ''
-    subject:    ''
-    comment:    ''
-    filename:   ''
-    dimensions: ''
-    filesize:   ''
-    md5:        ''
+    name: [
+      ''
+    ].join '\n'
+    tripcode: [
+      ''
+    ].join '\n'
+    email: [
+      '# Filter any e-mails that are not `sage` on /a/ and /jp/:'
+      '#/^(?!sage$)/;boards:a,jp'
+    ].join '\n'
+    subject: [
+      '# Filter Generals on /v/:'
+      '#/general/i;boards:v;op:only'
+    ].join '\n'
+    comment: [
+      '# Filter Stallman copypasta on /g/:'
+      '#/what you\'re refer+ing to as linux/i;boards:g'
+    ].join '\n'
+    filename: [
+      ''
+    ].join '\n'
+    dimensions: [
+      '# Highlight potential wallpapers:'
+      '#/1920x1080/;op:yes;highlight;boards:w,wg'
+    ].join '\n'
+    filesize: [
+      ''
+    ].join '\n'
+    md5: [
+      ''
+    ].join '\n'
   sauces: [
     'http://iqdb.org/?url=$1'
     'http://www.google.com/searchbyimage?image_url=$1'
@@ -98,7 +120,7 @@ config =
     expandThread:    ['e',      'Expand thread']
     watch:           ['w',      'Watch thread']
     hide:            ['x',      'Hide thread']
-    expandImage:     ['m',      'Expand selected image']
+    expandImages:    ['m',      'Expand selected image']
     expandAllImages: ['M',      'Expand all images']
     update:          ['u',      'Update now']
     unreadCountTo0:  ['z',      'Reset unread status']
@@ -442,8 +464,10 @@ filter =
         op = filter.match(/op:(yes|no|only)/)?[1].toLowerCase() or 'no'
 
         # Highlight the post, or hide it.
+        # If not specified, the highlight class will be filter_highlight.
         # Defaults to post hiding.
-        hl = /highlight/.test filter
+        if hl = /highlight/.test filter
+          hl = filter.match(/highlight:(\w+)/)?[1].toLowerCase() or 'filter_highlight'
 
         @filters[key].push @createFilter regexp, op, hl
 
@@ -461,9 +485,16 @@ filter =
       unless regexp.test value
         return false
       if hl
-        $.addClass root, 'filter_highlight'
+        $.addClass root, hl
+        if isOP and not g.REPLY
+          # Put the highlighted OPs' threads on top of the board pages...
+          thisThread = root.parentNode
+          # ...before the first non highlighted thread.
+          if firstThread = $ 'div[class=op]'
+            $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
       else if isOP
-        threadHiding.hideHide root.parentNode
+        unless g.REPLY
+          threadHiding.hideHide root.parentNode
       else
         replyHiding.hideHide  root.previousSibling
       true
@@ -758,7 +789,7 @@ keybinds =
         keybinds.open thread
       when conf.expandThread
         expandThread.toggle thread
-      when conf.expandImage
+      when conf.expandImages
         keybinds.img thread
       when conf.nextThread
         return if g.REPLY
@@ -1518,6 +1549,9 @@ qr =
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       qr.cooldown.auto = qr.replies.length > 1
       qr.cooldown.set if /sage/i.test reply.email then 60 else 30
+      if conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto
+        open = GM_openInTab or window.open
+        open "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}", "_blank"
 
     if conf['Persistent QR'] or qr.cooldown.auto
       reply.rm()
@@ -1670,7 +1704,7 @@ options =
   <input type=radio name=tab hidden id=sauces_tab>
   <div>
     <div class=warning><code>Sauce</code> is disabled.</div>
-    <div>Lines starting with a <code>#</code> will be ignored.</div>
+    Lines starting with a <code>#</code> will be ignored.
     <ul>These variables will be replaced by the corresponding url:
       <li>$1: Thumbnail.</li>
       <li>$2: Full image.</li>
@@ -1682,7 +1716,13 @@ options =
   <div>
     <div class=warning><code>Filter</code> is disabled.</div>
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
+    Lines starting with a <code>#</code> will be ignored.<br>
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
+    <ul>You can use these settings with each regular expression, separate them with semicolons:
+      <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>
+      <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>
+      <li>Highlight instead of hiding. Highlighted OPs will have their threads put on top of board pages. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>hightlight:wallpaper;</code>.</li>
+    </ul>
     <p>Name:<br><textarea name=name></textarea></p>
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>
     <p>E-mail:<br><textarea name=email></textarea></p>
@@ -2727,13 +2767,7 @@ imgExpand =
     all: ->
       imgExpand.on = @checked
       if imgExpand.on #expand
-        thumbs = $$ 'img[md5]'
-        if conf['Expand From Current']
-          for thumb, i in thumbs
-            if thumb.getBoundingClientRect().top > 0
-              break
-          thumbs = thumbs[i...]
-        for thumb in thumbs
+        for thumb in $$ 'img[md5]'
           imgExpand.expand thumb
       else #contract
         for thumb in $$ 'img[md5][hidden]'
@@ -2855,6 +2889,11 @@ Main =
 
     $.ready options.init
 
+    if conf['Quick Reply'] and conf['Hide Original Post Form']
+      Main.css += 'form[name=post] { display: none; }'
+
+    Main.addStyle()
+
     now = Date.now()
     if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
       $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
@@ -2924,11 +2963,6 @@ Main =
 
     if conf['Fix XXX\'d Post Numbers']
       unxify.init()
-
-    if conf['Quick Reply'] and conf['Hide Original Post Form']
-      Main.css += 'form[name=post] { display: none; }'
-
-    Main.addStyle()
 
     $.ready Main.ready
 
