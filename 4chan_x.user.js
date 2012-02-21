@@ -565,10 +565,17 @@
     },
     createFilter: function(regexp, op, hl) {
       return function(root, value, isOP) {
+        var firstThread, thisThread;
         if (isOP && op === 'no' || !isOP && op === 'only') return false;
         if (!regexp.test(value)) return false;
         if (hl) {
           $.addClass(root, hl);
+          if (isOP && !g.REPLY) {
+            thisThread = root.parentNode;
+            if (firstThread = $('div[class=op]')) {
+              $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
+            }
+          }
         } else if (isOP) {
           if (!g.REPLY) threadHiding.hideHide(root.parentNode);
         } else {
@@ -2114,10 +2121,10 @@
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\
     Lines starting with a <code>#</code> will be ignored.<br>\
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.\
-    <ul>You can use these settings with each regular expression, separate them with semi-colons:\
+    <ul>You can use these settings with each regular expression, separate them with semicolons:\
       <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>\
-      <li>Filter OP along with their threads only (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>\
-      <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>hightlight:wallpaper;</code>.</li>\
+      <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>\
+      <li>Highlight instead of hiding. Highlighted OPs will have their threads put on top of board pages. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>hightlight:wallpaper;</code>.</li>\
     </ul>\
     <p>Name:<br><textarea name=name></textarea></p>\
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>\
