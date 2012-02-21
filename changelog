@@ -5,7 +5,8 @@ master
   The Filter now has per filter settings:
     - Filter the OP only along its thread, replies only, or both.
     - Per boards, or global.
-    - Highlight, or hide. Highlighted OPs will have their threads put on top of the board page.
+    - Highlight, or hide.
+    - Highlighted OPs will have their threads put on top of the board page by default.
   New filter group: Image dimensions.
   Fix posting on Safari.
   Fix rare case where the QR would not accept certain image types.
