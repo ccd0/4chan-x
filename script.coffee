@@ -52,14 +52,15 @@ config =
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
   filter:
-    name:     ''
-    tripcode: ''
-    email:    ''
-    subject:  ''
-    comment:  ''
-    filename: ''
-    filesize: ''
-    md5:      ''
+    name:       ''
+    tripcode:   ''
+    email:      ''
+    subject:    ''
+    comment:    ''
+    filename:   ''
+    dimensions: ''
+    filesize:   ''
+    md5:        ''
   sauces: [
     'http://iqdb.org/?url=$1'
     'http://www.google.com/searchbyimage?image_url=$1'
@@ -506,6 +507,10 @@ filter =
     if file = $ '.filesize > span', root
       return file.title
     false
+  dimensions: (root) ->
+    if span = $ '.filesize', root
+      return span.textContent.match(/\d+x\d+/)[0]
+    return false
   filesize: (root) ->
     if img = $ 'img[md5]', root
       return img.alt
@@ -1683,6 +1688,7 @@ options =
     <p>Subject:<br><textarea name=subject></textarea></p>
     <p>Comment:<br><textarea name=comment></textarea></p>
     <p>Filename:<br><textarea name=filename></textarea></p>
+    <p>Image dimensions:<br><textarea name=dimensions></textarea></p>
     <p>Filesize:<br><textarea name=filesize></textarea></p>
     <p>Image MD5:<br><textarea name=md5></textarea></p>
   </div>
