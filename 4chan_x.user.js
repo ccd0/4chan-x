@@ -102,7 +102,7 @@
         'Image Hover': [false, 'Show full image on mouseover'],
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail'],
-        'Expand From Current': [true, 'Expand images from current position to thread end.']
+        'Expand From Current': [false, 'Expand images from current position to thread end.']
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
