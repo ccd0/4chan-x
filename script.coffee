@@ -38,7 +38,7 @@ config =
       'Cooldown':                     [true,  'Prevent "flood detected" errors.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
-      'Auto Noko':                    [true,  'Always redirect to your post unless you are in dump mode']
+      'Open Reply in New Tab':        [false, 'Open replies in a new tab that are made from the main board.']
       'Remember QR size':             [false, 'Remember the size of the Quick reply (Firefox only).']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
@@ -1518,8 +1518,9 @@ qr =
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       qr.cooldown.auto = qr.replies.length > 1
       qr.cooldown.set if /sage/i.test reply.email then 60 else 30
-      # auto-noko
-      location.href = "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}" if conf['Auto Noko'] && !g.REPLY && !qr.cooldown.auto
+      if conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto
+        open = GM_openInTab or window.open
+        open "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}", "_blank"
 
     if conf['Persistent QR'] or qr.cooldown.auto
       reply.rm()

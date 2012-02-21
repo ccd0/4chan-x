@@ -1,6 +1,6 @@
 master
 - ahodesuka
-  Add auto noko option for replies from the main board and not dumping.
+  Add Open Reply in New Tab option for replies made from the main board (not dumping).
 - Mayhem
   The Filter now has per filter settings:
     - Filter the OP along its thread, replies only, or both.

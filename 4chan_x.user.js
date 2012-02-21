@@ -118,7 +118,7 @@
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
-        'Auto Noko': [true, 'Always redirect to your post unless you are in dump mode'],
+        'Open Reply in New Tab': [false, 'Open replies in a new tab that are made from the main board.'],
         'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
@@ -1867,7 +1867,7 @@
       return qr.message.send(post);
     },
     response: function(html) {
-      var b, doc, err, node, persona, postNumber, reply, thread, _, _ref;
+      var b, doc, err, node, open, persona, postNumber, reply, thread, _, _ref;
       doc = $.el('a', {
         innerHTML: html
       });
@@ -1915,8 +1915,9 @@
       } else {
         qr.cooldown.auto = qr.replies.length > 1;
         qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
-        if (conf['Auto Noko'] && !g.REPLY && !qr.cooldown.auto) {
-          location.href = "http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber;
+        if (conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto) {
+          open = GM_openInTab || window.open;
+          open("http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber, "_blank");
         }
       }
       if (conf['Persistent QR'] || qr.cooldown.auto) {
