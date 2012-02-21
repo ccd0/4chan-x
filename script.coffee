@@ -14,8 +14,8 @@ config =
       'Check for Updates':            [true,  'Check for updated versions of 4chan X']
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
-      'Filter':                       [true, 'Self-moderation placebo']
-      'Recursive Filtering':          [true, 'Filter replies of filtered posts, recursively']
+      'Filter':                       [true,  'Self-moderation placebo']
+      'Recursive Filtering':          [true,  'Filter replies of filtered posts, recursively']
       'Reply Hiding':                 [true,  'Hide single replies']
       'Thread Hiding':                [true,  'Hide entire threads']
       'Show Stubs':                   [true,  'Of hidden threads / replies']
@@ -25,6 +25,7 @@ config =
       'Image Hover':                  [false, 'Show full image on mouseover']
       'Sauce':                        [true,  'Add sauce to images']
       'Reveal Spoilers':              [false, 'Replace spoiler thumbnails by the original thumbnail']
+      'Expand From Current':          [false, 'Expand images from current position to thread end.']
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
@@ -39,6 +40,7 @@ config =
       'Cooldown':                     [true,  'Prevent "flood detected" errors.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
+      'Open Reply in New Tab':        [false, 'Open replies in a new tab that are made from the main board.']
       'Remember QR size':             [false, 'Remember the size of the Quick reply (Firefox only).']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
@@ -53,15 +55,39 @@ config =
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
   filter:
-    name:       ''
-    tripcode:   ''
-    email:      ''
-    subject:    ''
-    comment:    ''
-    filename:   ''
-    dimensions: ''
-    filesize:   ''
-    md5:        ''
+    name: [
+      '# Filter any namefags:'
+      '#/^(?!Anonymous$)/'
+    ].join '\n'
+    tripcode: [
+      '# Filter any tripfags'
+      '#/^!/'
+    ].join '\n'
+    email: [
+      '# Filter any e-mails that are not `sage` on /a/ and /jp/:'
+      '#/^(?!sage$)/;boards:a,jp'
+    ].join '\n'
+    subject: [
+      '# Filter Generals on /v/:'
+      '#/general/i;boards:v;op:only'
+    ].join '\n'
+    comment: [
+      '# Filter Stallman copypasta on /g/:'
+      '#/what you\'re refer+ing to as linux/i;boards:g'
+    ].join '\n'
+    filename: [
+      ''
+    ].join '\n'
+    dimensions: [
+      '# Highlight potential wallpapers:'
+      '#/1920x1080/;op:yes;highlight;top:no;boards:w,wg'
+    ].join '\n'
+    filesize: [
+      ''
+    ].join '\n'
+    md5: [
+      ''
+    ].join '\n'
   sauces: [
     'http://iqdb.org/?url=$1'
     'http://www.google.com/searchbyimage?image_url=$1'
@@ -100,7 +126,7 @@ config =
     expandThread:    ['e',      'Expand thread']
     watch:           ['w',      'Watch thread']
     hide:            ['x',      'Hide thread']
-    expandImages:    ['m',      'Expand selected image']
+    expandImage:     ['m',      'Expand selected image']
     expandAllImages: ['M',      'Expand all images']
     update:          ['u',      'Update now']
     unreadCountTo0:  ['z',      'Reset unread status']
@@ -441,15 +467,19 @@ filter =
 
         # Filter OPs along with their threads, replies only, or both.
         # Defaults to replies only.
-        op = filter.match(/op:(yes|no|only)/)?[1].toLowerCase() or 'no'
+        op = filter.match(/[^t]op:(yes|no|only)/)?[1].toLowerCase() or 'no'
 
         # Highlight the post, or hide it.
         # If not specified, the highlight class will be filter_highlight.
         # Defaults to post hiding.
         if hl = /highlight/.test filter
-          hl = filter.match(/highlight:(\w+)/)?[1].toLowerCase() or 'filter_highlight'
+          hl  = filter.match(/highlight:(\w+)/)?[1].toLowerCase() or 'filter_highlight'
+          # Put highlighted OP's thread on top of the board page or not.
+          # Defaults to on top.
+          top = filter.match(/top:(yes|no)/)?[1].toLowerCase() or 'yes'
+          top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push @createFilter regexp, op, hl
+        @filters[key].push @createFilter regexp, op, hl, top
 
       # Only execute filter types that contain valid filters.
       unless @filters[key].length
@@ -458,7 +488,7 @@ filter =
     if Object.keys(@filters).length
       g.callbacks.push @node
 
-  createFilter: (regexp, op, hl) ->
+  createFilter: (regexp, op, hl, top) ->
     (root, value, isOP) ->
       if isOP and op is 'no' or !isOP and op is 'only'
         return false
@@ -466,7 +496,15 @@ filter =
         return false
       if hl
         $.addClass root, hl
-      else if isOP
+        if isOP and top and not g.REPLY
+          # Put the highlighted OPs' threads on top of the board pages...
+          thisThread = root.parentNode
+          # ...before the first non highlighted thread.
+          if firstThread = $ 'div[class=op]'
+            $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
+        # Continue the filter lookup to add more classes or hide it.
+        return false
+      if isOP
         unless g.REPLY
           threadHiding.hideHide root.parentNode
       else
@@ -508,7 +546,7 @@ filter =
     sub = if isOP then $ '.filetitle', root else $ '.replytitle', root
     sub.textContent
   comment: (root) ->
-    ($.el 'a', innerHTML: $('blockquote', root).innerHTML.replace /<br>/g, '\n').textContent
+    ($.el 'a', innerHTML: root.lastChild.innerHTML.replace /<br>/g, '\n').textContent
   filename: (root) ->
     if file = $ '.filesize > span', root
       return file.title
@@ -763,7 +801,7 @@ keybinds =
         keybinds.open thread
       when conf.expandThread
         expandThread.toggle thread
-      when conf.expandImages
+      when conf.expandImage
         keybinds.img thread
       when conf.nextThread
         return if g.REPLY
@@ -1523,6 +1561,9 @@ qr =
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       qr.cooldown.auto = qr.replies.length > 1
       qr.cooldown.set if /sage/i.test reply.email then 60 else 30
+      if conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto
+        open = GM_openInTab or window.open
+        open "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}", "_blank"
 
     if conf['Persistent QR'] or qr.cooldown.auto
       reply.rm()
@@ -1675,7 +1716,7 @@ options =
   <input type=radio name=tab hidden id=sauces_tab>
   <div>
     <div class=warning><code>Sauce</code> is disabled.</div>
-    <div>Lines starting with a <code>#</code> will be ignored.</div>
+    Lines starting with a <code>#</code> will be ignored.
     <ul>These variables will be replaced by the corresponding url:
       <li>$1: Thumbnail.</li>
       <li>$2: Full image.</li>
@@ -1687,7 +1728,14 @@ options =
   <div>
     <div class=warning><code>Filter</code> is disabled.</div>
     Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
+    Lines starting with a <code>#</code> will be ignored.<br>
     For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
+    <ul>You can use these settings with each regular expression, separate them with semicolons:
+      <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>
+      <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>
+      <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li>
+      <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>
+    </ul>
     <p>Name:<br><textarea name=name></textarea></p>
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>
     <p>E-mail:<br><textarea name=email></textarea></p>
@@ -2216,7 +2264,8 @@ sauce =
   init: ->
     return if g.BOARD is 'f'
     @links = []
-    for link in conf['sauces'].match /^[^#].+$/gm
+    for link in conf['sauces'].split '\n'
+      continue if link[0] is '#'
       @links.push @funk link
     return unless @links.length
     g.callbacks.push @node
@@ -2826,7 +2875,13 @@ imgExpand =
     all: ->
       imgExpand.on = @checked
       if imgExpand.on #expand
-        for thumb in $$ 'img[md5]'
+        thumbs = $$ 'img[md5]'
+        if conf['Expand From Current']
+          for thumb, i in thumbs
+            if thumb.getBoundingClientRect().top > 0
+              break
+          thumbs = thumbs[i...]
+        for thumb in thumbs
           imgExpand.expand thumb
       else #contract
         for thumb in $$ 'img[md5][hidden]'
@@ -2854,8 +2909,8 @@ imgExpand =
   toggle: (a) ->
     thumb = a.firstChild
     if thumb.hidden
-      rect = a.parentNode.getBoundingClientRect()
-      d.body.scrollTop += rect.top if rect.top < 0
+      rect = a.getBoundingClientRect()
+      d.body.scrollTop += rect.top - 42 if rect.top < 0
       d.body.scrollLeft += rect.left if rect.left < 0
       imgExpand.contract thumb
     else
@@ -3404,7 +3459,7 @@ img[md5], img[md5] + img {
   padding: 5px;
   text-align: left;
   vertical-align: middle;
-  width: 500px;
+  width: 600px;
 }
 #credits {
   float: right;
@@ -3468,6 +3523,10 @@ img[md5], img[md5] + img {
 
 #qp {
   padding-bottom: 5px;
+}
+#qp > a > img {
+  max-height: 300px;
+  max-width: 500px;
 }
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
