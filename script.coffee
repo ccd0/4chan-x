@@ -301,7 +301,8 @@ $.extend $,
     $.add d.head, style
     style
   x: (path, root=d.body) ->
-    d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
+    # XPathResult.ANY_UNORDERED_NODE_TYPE is 8
+    d.evaluate(path, root, null, 8, null).
       singleNodeValue
   replace: (root, el) ->
     root.parentNode.replaceChild el, root
@@ -552,7 +553,8 @@ filter =
     sub.textContent
   comment: (root) ->
     text = []
-    nodes = d.evaluate './/node()', root.lastChild, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
+    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 7
+    nodes = d.evaluate './/node()', root.lastChild, null, 7, null
     i = 0
     len = nodes.snapshotLength
     while i < len

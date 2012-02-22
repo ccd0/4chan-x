@@ -392,7 +392,7 @@
     },
     x: function(path, root) {
       if (root == null) root = d.body;
-      return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
+      return d.evaluate(path, root, null, 8, null).singleNodeValue;
     },
     replace: function(root, el) {
       return root.parentNode.replaceChild(el, root);
@@ -641,7 +641,7 @@
     comment: function(root) {
       var i, len, node, nodes, text;
       text = [];
-      nodes = d.evaluate('.//node()', root.lastChild, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+      nodes = d.evaluate('.//node()', root.lastChild, null, 7, null);
       i = 0;
       len = nodes.snapshotLength;
       while (i < len) {
