@@ -153,7 +153,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.26.4'
+VERSION = '2.27.0'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
