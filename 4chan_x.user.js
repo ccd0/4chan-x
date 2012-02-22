@@ -639,18 +639,13 @@
       return sub.textContent;
     },
     comment: function(root) {
-      var i, len, node, nodes, text;
+      var data, i, len, nodes, text;
       text = [];
-      nodes = d.evaluate('.//node()', root.lastChild, null, 7, null);
+      nodes = d.evaluate('.//br|.//text()', root.lastChild, null, 7, null);
       i = 0;
       len = nodes.snapshotLength;
       while (i < len) {
-        node = nodes.snapshotItem(i++);
-        if (node instanceof Text) {
-          text.push(node.data);
-        } else if (node instanceof HTMLBRElement) {
-          text.push('\n');
-        }
+        text.push((data = nodes.snapshotItem(i++).data) ? data : '\n');
       }
       return text.join('');
     },

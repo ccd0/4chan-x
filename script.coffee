@@ -554,15 +554,11 @@ filter =
   comment: (root) ->
     text = []
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 7
-    nodes = d.evaluate './/node()', root.lastChild, null, 7, null
+    nodes = d.evaluate './/br|.//text()', root.lastChild, null, 7, null
     i = 0
     len = nodes.snapshotLength
     while i < len
-      node = nodes.snapshotItem i++
-      if node instanceof Text
-        text.push node.data
-      else if node instanceof HTMLBRElement
-        text.push '\n'
+      text.push if data = nodes.snapshotItem(i++).data then data else '\n'
     text.join ''
   filename: (root) ->
     if file = $ '.filesize > span', root
