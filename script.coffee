@@ -3334,6 +3334,16 @@ img[md5], img[md5] + img {
 .presto > .fitwidth img[md5] + img {
   width: 100%;
 }
+/* revealed spoilers do not have height/width,
+   this fixed "expanded" auto-gifs */
+img[md5] {
+  max-height: 126px;
+  max-width: 126px;
+}
+.op > a > img[md5] {
+  max-height: 251px;
+  max-width: 251px;
+}
 
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {
   position: fixed;
