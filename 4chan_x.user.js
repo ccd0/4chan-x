@@ -630,7 +630,7 @@
     },
     email: function(root) {
       var mail;
-      if (!(mail = $('.linkmail', root))) return mail.href;
+      if (mail = $('.linkmail', root)) return mail.href;
       return false;
     },
     subject: function(root, isOP) {

@@ -544,7 +544,7 @@ filter =
       return trip.textContent
     false
   email: (root) ->
-    unless mail = $ '.linkmail', root
+    if mail = $ '.linkmail', root
       return mail.href
     false
   subject: (root, isOP) ->
