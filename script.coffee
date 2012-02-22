@@ -1914,6 +1914,7 @@ options =
   backlink: ->
     $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
   fileInfo: ->
+    FileInfo.ffType = if @name is 'fileInfoR' then 0 else 1
     FileInfo.data =
       link      : '<a href="javascript:;">1329791824.png</a>'
       size      : 996
@@ -1921,7 +1922,7 @@ options =
       resolution: '1366x768'
       filename  : 'Untitled.png'
     FileInfo.funks = FileInfo.setFormats()
-    $.id("#{@name}Preview").innerHTML = FileInfo.funks[if @name is 'fileInfoR' then 0 else 1] FileInfo
+    $.id("#{@name}Preview").innerHTML = FileInfo.funks[FileInfo.ffType] FileInfo
   favicon: ->
     Favicon.switch()
     unread.update true

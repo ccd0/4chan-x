@@ -2332,6 +2332,7 @@
       return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     },
     fileInfo: function() {
+      FileInfo.ffType = this.name === 'fileInfoR' ? 0 : 1;
       FileInfo.data = {
         link: '<a href="javascript:;">1329791824.png</a>',
         size: 996,
@@ -2340,7 +2341,7 @@
         filename: 'Untitled.png'
       };
       FileInfo.funks = FileInfo.setFormats();
-      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[this.name === 'fileInfoR' ? 0 : 1](FileInfo);
+      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[FileInfo.ffType](FileInfo);
     },
     favicon: function() {
       Favicon["switch"]();
