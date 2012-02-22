@@ -156,7 +156,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.26.4'
+VERSION = '2.27.0'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -546,7 +546,17 @@ filter =
     sub = if isOP then $ '.filetitle', root else $ '.replytitle', root
     sub.textContent
   comment: (root) ->
-    ($.el 'a', innerHTML: root.lastChild.innerHTML.replace /<br>/g, '\n').textContent
+    text = []
+    nodes = d.evaluate './/node()', root.lastChild, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
+    i = 0
+    len = nodes.snapshotLength
+    while i < len
+      node = nodes.snapshotItem i++
+      if node instanceof Text
+        text.push node.data
+      else if node instanceof HTMLBRElement
+        text.push '\n'
+    text.join ''
   filename: (root) ->
     if file = $ '.filesize > span', root
       return file.title
