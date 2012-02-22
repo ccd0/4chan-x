@@ -1,5 +1,10 @@
 master
 
+2.27.1
+- Mayhem
+  Fix stubs with the new filter.
+  The MD5 will now check for exact string matching, it will not use regular expressions.
+
 2.27.0
 - aeosynth / ahodesuka
   new option: expand images from current position

@@ -153,7 +153,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.27.0'
+VERSION = '2.27.1'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -455,8 +455,12 @@ filter =
           continue
 
         try
-          # Please, don't write silly regular expressions.
-          regexp = RegExp regexp[1], regexp[2]
+          if key is 'md5'
+            # MD5 filter will use strings instead of regular expressions.
+            regexp = regexp[1]
+          else
+            # Please, don't write silly regular expressions.
+            regexp = RegExp regexp[1], regexp[2]
         catch e
           # I warned you, bro.
           alert e.message
@@ -489,7 +493,11 @@ filter =
     (root, value, isOP) ->
       if isOP and op is 'no' or !isOP and op is 'only'
         return false
-      unless regexp.test value
+      if typeof regexp is 'string'
+        # MD5 checking
+        if regexp isnt value
+          return false
+      else unless regexp.test value
         return false
       if hl
         $.addClass root, hl
@@ -505,7 +513,7 @@ filter =
         unless g.REPLY
           threadHiding.hideHide root.parentNode
       else
-        replyHiding.hideHide  root.previousSibling
+        replyHiding.hideHide root
       true
 
   node: (root) ->
@@ -1751,7 +1759,7 @@ options =
     <p>Filename:<br><textarea name=filename></textarea></p>
     <p>Image dimensions:<br><textarea name=dimensions></textarea></p>
     <p>Filesize:<br><textarea name=filesize></textarea></p>
-    <p>Image MD5:<br><textarea name=md5></textarea></p>
+    <p>Image MD5 (uses exact string matching, not regular expressions):<br><textarea name=md5></textarea></p>
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div>

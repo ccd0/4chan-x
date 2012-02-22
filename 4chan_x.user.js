@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.27.0
+// @version        2.27.1
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -20,7 +20,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.27.0
+ * 4chan X 2.27.1
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -206,7 +206,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.27.0';
+  VERSION = '2.27.1';
 
   SECOND = 1000;
 
@@ -550,7 +550,11 @@
             continue;
           }
           try {
-            regexp = RegExp(regexp[1], regexp[2]);
+            if (key === 'md5') {
+              regexp = regexp[1];
+            } else {
+              regexp = RegExp(regexp[1], regexp[2]);
+            }
           } catch (e) {
             alert(e.message);
             continue;
@@ -571,7 +575,11 @@
       return function(root, value, isOP) {
         var firstThread, thisThread;
         if (isOP && op === 'no' || !isOP && op === 'only') return false;
-        if (!regexp.test(value)) return false;
+        if (typeof regexp === 'string') {
+          if (regexp !== value) return false;
+        } else if (!regexp.test(value)) {
+          return false;
+        }
         if (hl) {
           $.addClass(root, hl);
           if (isOP && top && !g.REPLY) {
@@ -585,7 +593,7 @@
         if (isOP) {
           if (!g.REPLY) threadHiding.hideHide(root.parentNode);
         } else {
-          replyHiding.hideHide(root.previousSibling);
+          replyHiding.hideHide(root);
         }
         return true;
       };
@@ -2156,7 +2164,7 @@
     <p>Filename:<br><textarea name=filename></textarea></p>\
     <p>Image dimensions:<br><textarea name=dimensions></textarea></p>\
     <p>Filesize:<br><textarea name=filesize></textarea></p>\
-    <p>Image MD5:<br><textarea name=md5></textarea></p>\
+    <p>Image MD5 (uses exact string matching, not regular expressions):<br><textarea name=md5></textarea></p>\
   </div>\
   <input type=radio name=tab hidden id=rice_tab>\
   <div>\
