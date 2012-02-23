@@ -5,10 +5,13 @@ master
     - Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default).
     - Resolution/PDF: %r
     - Original filename: %n, %N.
+- noface
+  Update imagelimit for mlp.
 
 2.27.1
 - Mayhem
   Fix stubs with the new filter.
+  Fix mail filtering.
   The MD5 will now check for exact string matching, it will not use regular expressions.
 
 2.27.0

@@ -304,7 +304,8 @@ $.extend $,
     $.add d.head, style
     style
   x: (path, root=d.body) ->
-    d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
+    # XPathResult.ANY_UNORDERED_NODE_TYPE is 8
+    d.evaluate(path, root, null, 8, null).
       singleNodeValue
   replace: (root, el) ->
     root.parentNode.replaceChild el, root
@@ -547,7 +548,7 @@ filter =
       return trip.textContent
     false
   email: (root) ->
-    unless mail = $ '.linkmail', root
+    if mail = $ '.linkmail', root
       return mail.href
     false
   subject: (root, isOP) ->
@@ -555,15 +556,12 @@ filter =
     sub.textContent
   comment: (root) ->
     text = []
-    nodes = d.evaluate './/node()', root.lastChild, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
+    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 7
+    nodes = d.evaluate './/br|.//text()', root.lastChild, null, 7, null
     i = 0
     len = nodes.snapshotLength
     while i < len
-      node = nodes.snapshotItem i++
-      if node instanceof Text
-        text.push node.data
-      else if node instanceof HTMLBRElement
-        text.push '\n'
+      text.push if data = nodes.snapshotItem(i++).data then data else '\n'
     text.join ''
   filename: (root) ->
     if file = $ '.filesize > span', root
@@ -666,7 +664,7 @@ expandThread =
         a.textContent = a.textContent.replace '-', '+'
         #goddamit moot
         num = switch g.BOARD
-          when 'b' then 3
+          when 'b', 'vg' then 3
           when 't' then 1
           else 5
         table = $.x "following::br[@clear]/preceding::table[#{num}]", a
@@ -1231,7 +1229,7 @@ qr =
         className: 'preview'
         draggable: true
         href: 'javascript:;'
-        innerHTML: '<a class=remove>x</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+        innerHTML: '<a class=remove>&times;</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
       $('input', @el).checked = @spoiler
       $.on @el,               'click',      => @select()
       $.on $('.remove', @el), 'click',  (e) =>
@@ -1368,7 +1366,7 @@ qr =
     qr.el = ui.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
-  <span> <a class=close title=Close>x</a></span>
+  <span> <a class=close title=Close>&times;</a></span>
 </div>
 <form>
   <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
@@ -1716,7 +1714,8 @@ options =
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
   <div id=credits>
-    <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a> | ' + VERSION + '
+    <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>
+    | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + VERSION + '</a>
     | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>
   </div>
   <div>
@@ -2214,7 +2213,8 @@ watcher =
     for board of watched
       for id, props of watched[board]
         x = $.el 'a',
-          textContent: 'X'
+          # \u00d7 is &times;
+          textContent: '\u00d7'
           href: 'javascript:;'
         $.on x, 'click', watcher.cb.x
         link = $.el 'a', props
@@ -2710,7 +2710,7 @@ threadStats =
     threadStats.posts = threadStats.images = 0
     threadStats.imgLimit =
       switch g.BOARD
-        when 'a', 'v'
+        when 'a', 'mlp', 'v'
           251
         when 'vg'
           501
@@ -2824,7 +2824,7 @@ redirect =
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     return unless conf['404 Redirect']
     switch href[3]
-      when 'a', 'jp', 'm', 'tg', 'u'
+      when 'a', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
   thread: ->
     return unless conf['404 Redirect']
@@ -3440,6 +3440,16 @@ img[md5], img[md5] + img {
 .gecko  > .fitwidth img[md5] + img,
 .presto > .fitwidth img[md5] + img {
   width: 100%;
+}
+/* revealed spoilers do not have height/width,
+   this fixed "expanded" auto-gifs */
+img[md5] {
+  max-height: 251px;
+  max-width: 251px;
+}
+td > .filesize > img[md5] {
+  max-height: 126px;
+  max-width: 126px;
 }
 
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {
