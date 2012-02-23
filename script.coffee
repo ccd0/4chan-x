@@ -1973,10 +1973,11 @@ threadHiding =
       num += $$('table', thread).length
       text = if num is 1 then "1 reply" else "#{num} replies"
       name = $('.postername', thread).textContent
+      uid  = $('.posteruid', thread)?.textContent or ''
       trip = $('.postername + .postertrip', thread)?.textContent or ''
 
       a = $.el 'a',
-        innerHTML: "<span>[ + ]</span> #{name}#{trip} (#{text})"
+        innerHTML: "<span>[ + ]</span> #{name}#{uid}#{trip} (#{text})"
         href: 'javascript:;'
       $.on a, 'click', threadHiding.cb.show
 

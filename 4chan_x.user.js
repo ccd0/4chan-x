@@ -2399,7 +2399,7 @@
       return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
     hideHide: function(thread) {
-      var a, div, name, num, span, text, trip, _ref;
+      var a, div, name, num, span, text, trip, uid, _ref, _ref2;
       if (conf['Show Stubs']) {
         if (/stub/.test(thread.className)) return;
         if (span = $('.omittedposts', thread)) {
@@ -2410,9 +2410,10 @@
         num += $$('table', thread).length;
         text = num === 1 ? "1 reply" : "" + num + " replies";
         name = $('.postername', thread).textContent;
-        trip = ((_ref = $('.postername + .postertrip', thread)) != null ? _ref.textContent : void 0) || '';
+        uid = ((_ref = $('.posteruid', thread)) != null ? _ref.textContent : void 0) || '';
+        trip = ((_ref2 = $('.postername + .postertrip', thread)) != null ? _ref2.textContent : void 0) || '';
         a = $.el('a', {
-          innerHTML: "<span>[ + ]</span> " + name + trip + " (" + text + ")",
+          innerHTML: "<span>[ + ]</span> " + name + uid + trip + " (" + text + ")",
           href: 'javascript:;'
         });
         $.on(a, 'click', threadHiding.cb.show);
