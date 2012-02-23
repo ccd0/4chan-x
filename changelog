@@ -1,6 +1,7 @@
 master
 - noface
   Update imagelimit for mlp.
+  Fix stubs if poster has unique ID.
 
 2.27.1
 - Mayhem
