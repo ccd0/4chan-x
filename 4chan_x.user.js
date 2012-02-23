@@ -895,14 +895,14 @@
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
     hideHide: function(reply) {
-      var div, name, table, trip, uid, _ref;
+      var div, name, table, trip, uid, _ref, _ref2;
       table = reply.parentNode.parentNode.parentNode;
       if (table.hidden) return;
       table.hidden = true;
       if (conf['Show Stubs']) {
         name = $('.commentpostername', reply).textContent;
-        uid = $('.posteruid', reply).textContent;
-        trip = ((_ref = $('.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
+        uid = ((_ref = $('.posteruid', reply)) != null ? _ref.textContent : void 0) || '';
+        trip = ((_ref2 = $('.postertrip', reply)) != null ? _ref2.textContent : void 0) || '';
         div = $.el('div', {
           className: 'stub',
           innerHTML: "<a href=javascript:;><span>[ + ]</span> " + name + " " + uid + " " + trip + "</a>"

@@ -746,7 +746,7 @@ replyHiding =
 
     if conf['Show Stubs']
       name = $('.commentpostername', reply).textContent
-      uid = $('.posteruid', reply).textContent
+      uid = $('.posteruid', reply)?.textContent or ''
       trip = $('.postertrip', reply)?.textContent or ''
 
       div = $.el 'div',
