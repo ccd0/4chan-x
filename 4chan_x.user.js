@@ -1523,7 +1523,7 @@
           className: 'preview',
           draggable: true,
           href: 'javascript:;',
-          innerHTML: '<a class=remove>x</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+          innerHTML: '<a class=remove>&times;</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
         });
         $('input', this.el).checked = this.spoiler;
         $.on(this.el, 'click', function() {
@@ -1717,7 +1717,7 @@
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
-  <span> <a class=close title=Close>x</a></span>\
+  <span> <a class=close title=Close>&times;</a></span>\
 </div>\
 <form>\
   <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
@@ -2642,7 +2642,7 @@
         for (id in _ref) {
           props = _ref[id];
           x = $.el('a', {
-            textContent: 'X',
+            textContent: '\u00d7',
             href: 'javascript:;'
           });
           $.on(x, 'click', watcher.cb.x);

@@ -1226,7 +1226,7 @@ qr =
         className: 'preview'
         draggable: true
         href: 'javascript:;'
-        innerHTML: '<a class=remove>x</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+        innerHTML: '<a class=remove>&times;</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
       $('input', @el).checked = @spoiler
       $.on @el,               'click',      => @select()
       $.on $('.remove', @el), 'click',  (e) =>
@@ -1363,7 +1363,7 @@ qr =
     qr.el = ui.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
-  <span> <a class=close title=Close>x</a></span>
+  <span> <a class=close title=Close>&times;</a></span>
 </div>
 <form>
   <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
@@ -2178,7 +2178,8 @@ watcher =
     for board of watched
       for id, props of watched[board]
         x = $.el 'a',
-          textContent: 'X'
+          # \u00d7 is &times;
+          textContent: '\u00d7'
           href: 'javascript:;'
         $.on x, 'click', watcher.cb.x
         link = $.el 'a', props
