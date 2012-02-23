@@ -790,6 +790,7 @@
           num = (function() {
             switch (g.BOARD) {
               case 'b':
+              case 'vg':
                 return 3;
               case 't':
                 return 1;

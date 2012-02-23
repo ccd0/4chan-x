@@ -661,7 +661,7 @@ expandThread =
         a.textContent = a.textContent.replace '-', '+'
         #goddamit moot
         num = switch g.BOARD
-          when 'b' then 3
+          when 'b', 'vg' then 3
           when 't' then 1
           else 5
         table = $.x "following::br[@clear]/preceding::table[#{num}]", a
