@@ -2610,7 +2610,7 @@ threadStats =
     threadStats.posts = threadStats.images = 0
     threadStats.imgLimit =
       switch g.BOARD
-        when 'a', 'v'
+        when 'a', 'mlp', 'v'
           251
         when 'vg'
           501

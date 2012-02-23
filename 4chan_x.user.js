@@ -3223,6 +3223,7 @@
       threadStats.imgLimit = (function() {
         switch (g.BOARD) {
           case 'a':
+          case 'mlp':
           case 'v':
             return 251;
           case 'vg':
