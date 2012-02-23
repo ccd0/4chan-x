@@ -4137,10 +4137,10 @@ td.replyhider {\
   float: left;\
   pointer-events: none;\
 }\
-.filesize .fnfull, .filesize:hover .fntrunc {\
+.filesize a .fnfull, .filesize a:hover .fntrunc {\
   display: none;\
 }\
-.filesize:hover .fnfull {\
+.filesize a:hover .fnfull {\
   display: inline;\
 }\
 img[md5], img[md5] + img {\
