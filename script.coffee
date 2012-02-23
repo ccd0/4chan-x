@@ -2724,7 +2724,7 @@ redirect =
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     return unless conf['404 Redirect']
     switch href[3]
-      when 'a', 'jp', 'm', 'tg', 'u'
+      when 'a', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
   thread: ->
     return unless conf['404 Redirect']
