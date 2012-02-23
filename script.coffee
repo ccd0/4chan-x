@@ -746,11 +746,12 @@ replyHiding =
 
     if conf['Show Stubs']
       name = $('.commentpostername', reply).textContent
+      uid = $('.posteruid', reply)?.textContent or ''
       trip = $('.postertrip', reply)?.textContent or ''
 
       div = $.el 'div',
         className: 'stub'
-        innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{trip}</a>"
+        innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{uid} #{trip}</a>"
       $.on $('a', div), 'click', replyHiding.cb.show
       $.before table, div
 
@@ -1973,10 +1974,11 @@ threadHiding =
       num += $$('table', thread).length
       text = if num is 1 then "1 reply" else "#{num} replies"
       name = $('.postername', thread).textContent
+      uid  = $('.posteruid', thread)?.textContent or ''
       trip = $('.postername + .postertrip', thread)?.textContent or ''
 
       a = $.el 'a',
-        innerHTML: "<span>[ + ]</span> #{name}#{trip} (#{text})"
+        innerHTML: "<span>[ + ]</span> #{name}#{uid}#{trip} (#{text})"
         href: 'javascript:;'
       $.on a, 'click', threadHiding.cb.show
 

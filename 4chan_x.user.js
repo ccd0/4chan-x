@@ -896,16 +896,17 @@
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
     hideHide: function(reply) {
-      var div, name, table, trip, _ref;
+      var div, name, table, trip, uid, _ref, _ref2;
       table = reply.parentNode.parentNode.parentNode;
       if (table.hidden) return;
       table.hidden = true;
       if (conf['Show Stubs']) {
         name = $('.commentpostername', reply).textContent;
-        trip = ((_ref = $('.postertrip', reply)) != null ? _ref.textContent : void 0) || '';
+        uid = ((_ref = $('.posteruid', reply)) != null ? _ref.textContent : void 0) || '';
+        trip = ((_ref2 = $('.postertrip', reply)) != null ? _ref2.textContent : void 0) || '';
         div = $.el('div', {
           className: 'stub',
-          innerHTML: "<a href=javascript:;><span>[ + ]</span> " + name + " " + trip + "</a>"
+          innerHTML: "<a href=javascript:;><span>[ + ]</span> " + name + " " + uid + " " + trip + "</a>"
         });
         $.on($('a', div), 'click', replyHiding.cb.show);
         return $.before(table, div);
@@ -2400,7 +2401,7 @@
       return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
     hideHide: function(thread) {
-      var a, div, name, num, span, text, trip, _ref;
+      var a, div, name, num, span, text, trip, uid, _ref, _ref2;
       if (conf['Show Stubs']) {
         if (/stub/.test(thread.className)) return;
         if (span = $('.omittedposts', thread)) {
@@ -2411,9 +2412,10 @@
         num += $$('table', thread).length;
         text = num === 1 ? "1 reply" : "" + num + " replies";
         name = $('.postername', thread).textContent;
-        trip = ((_ref = $('.postername + .postertrip', thread)) != null ? _ref.textContent : void 0) || '';
+        uid = ((_ref = $('.posteruid', thread)) != null ? _ref.textContent : void 0) || '';
+        trip = ((_ref2 = $('.postername + .postertrip', thread)) != null ? _ref2.textContent : void 0) || '';
         a = $.el('a', {
-          innerHTML: "<span>[ + ]</span> " + name + trip + " (" + text + ")",
+          innerHTML: "<span>[ + ]</span> " + name + uid + trip + " (" + text + ")",
           href: 'javascript:;'
         });
         $.on(a, 'click', threadHiding.cb.show);
