@@ -746,11 +746,12 @@ replyHiding =
 
     if conf['Show Stubs']
       name = $('.commentpostername', reply).textContent
+      uid = $('.posteruid', reply).textContent
       trip = $('.postertrip', reply)?.textContent or ''
 
       div = $.el 'div',
         className: 'stub'
-        innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{trip}</a>"
+        innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{uid} #{trip}</a>"
       $.on $('a', div), 'click', replyHiding.cb.show
       $.before table, div
 
