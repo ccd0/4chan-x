@@ -58,6 +58,10 @@ config =
       '# Filter any namefags:'
       '#/^(?!Anonymous$)/'
     ].join '\n'
+    uniqueid: [
+      '# Filter a specific ID:'
+      '#/Txhvk1Tl/'
+    ].join '\n'
     tripcode: [
       '# Filter any tripfags'
       '#/^!/'
@@ -540,6 +544,10 @@ filter =
   name: (root, isOP) ->
     name = if isOP then $ '.postername', root else $ '.commentpostername', root
     name.textContent
+  uniqueid: (root) ->
+    if uniqueid = $ '.posteruid', root
+      return uniqueid.textContent
+    false
   tripcode: (root) ->
     if trip = $ '.postertrip', root
       return trip.textContent
@@ -1750,6 +1758,7 @@ options =
       <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>
     </ul>
     <p>Name:<br><textarea name=name></textarea></p>
+    <p>Unique ID:<br><textarea name=uniqueid></textarea></p>
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>
     <p>E-mail:<br><textarea name=email></textarea></p>
     <p>Subject:<br><textarea name=subject></textarea></p>
