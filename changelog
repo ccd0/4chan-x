@@ -1,4 +1,10 @@
 master
+-ahodesuka
+  Reply/Thread File Info Formatting:
+    - Link: %l, %L (Original file names are shown inside threads).
+    - Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default).
+    - Resolution/PDF: %r
+    - Original filename: %n, %N.
 - noface
   Update imagelimit for mlp.
   Fix stubs if poster has unique ID.

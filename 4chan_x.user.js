@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base;
+  var $, $$, DAY, Favicon, FileInfo, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base;
 
   config = {
     main: {
@@ -81,6 +81,7 @@
         'Fix XXX\'d Post Numbers': [true, 'Replace XXX\'d post numbers with their actual number'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
+        'File Info Formatting': [true, 'Reformats the file information'],
         'Report Button': [true, 'Add report buttons'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
@@ -150,6 +151,8 @@
     sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/a/image/$3/', '#http://archive.installgentoo.net/g/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
+    fileInfoR: '%l, %s, %r',
+    fileInfoT: '%l, %s, %r',
     favicon: 'ferongr',
     hotkeys: {
       openOptions: ['ctrl+o', 'Open Options'],
@@ -2109,7 +2112,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
+      var arr, back, checked, description, dialog, favicon, fileInfoR, fileInfoT, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2182,6 +2185,19 @@
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>\
       <li>Minutes: %M</li>\
     </ul>\
+    <div class=warning><code>File Info Formatting</code> is disabled.</div>\
+    <ul>\
+      Thread File Info Formatting\
+      <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>\
+      <li>Link: %l (lowercase L)</li>\
+      <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>\
+      <li>Resolution: %r (Displays PDF on /po/, for PDF\'s)</li>\
+      Reply File Info Formatting\
+      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>\
+      <li>All thread formatters also work for reply formatting.</li>\
+      <li>Link (with original file name): %l (lowercase L)(Truncated), %L (Untruncated)</li>\
+      <li>Original file name: %n (Truncated), %N (Untruncated)</li>\
+    </ul>\
     <div class=warning><code>Unread Favicon</code> is disabled.</div>\
     Unread favicons<br>\
     <select name=favicon>\
@@ -2235,10 +2251,16 @@
       }
       (back = $('[name=backlink]', dialog)).value = conf['backlink'];
       (time = $('[name=time]', dialog)).value = conf['time'];
+      (fileInfoR = $('[name=fileInfoR]', dialog)).value = conf['fileInfoR'];
+      (fileInfoT = $('[name=fileInfoT]', dialog)).value = conf['fileInfoT'];
       $.on(back, 'keyup', $.cb.value);
       $.on(back, 'keyup', options.backlink);
       $.on(time, 'keyup', $.cb.value);
       $.on(time, 'keyup', options.time);
+      $.on(fileInfoR, 'keyup', $.cb.value);
+      $.on(fileInfoR, 'keyup', options.fileInfo);
+      $.on(fileInfoT, 'keyup', $.cb.value);
+      $.on(fileInfoT, 'keyup', options.fileInfo);
       favicon = $('select', dialog);
       favicon.value = conf['favicon'];
       $.on(favicon, 'change', $.cb.value);
@@ -2277,6 +2299,8 @@
       d.body.style.setProperty('overflow', 'hidden', null);
       options.backlink.call(back);
       options.time.call(time);
+      options.fileInfo.call(fileInfoR);
+      options.fileInfo.call(fileInfoT);
       return options.favicon.call(favicon);
     },
     close: function() {
@@ -2304,6 +2328,18 @@
     },
     backlink: function() {
       return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
+    },
+    fileInfo: function() {
+      FileInfo.ffType = this.name === 'fileInfoR' ? 0 : 1;
+      FileInfo.data = {
+        link: '<a href="javascript:;">1329791824.png</a>',
+        size: 996,
+        unit: 'KB',
+        resolution: '1366x768',
+        filename: 'Untitled.png'
+      };
+      FileInfo.funks = FileInfo.setFormats();
+      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[FileInfo.ffType](FileInfo);
     },
     favicon: function() {
       Favicon["switch"]();
@@ -2900,6 +2936,111 @@
     }
   };
 
+  FileInfo = {
+    init: function() {
+      if (g.BOARD === 'f') return;
+      FileInfo.ffConf = ['fileInfoR', 'fileInfoT'];
+      FileInfo.ffMtrs = [/%([BKlLMnNrs])/g, /%([BKlMrs])/g];
+      FileInfo.ffRgex = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/];
+      this.parse = function(node) {
+        var filename, link, resolution, size, unit, _, _ref;
+        FileInfo.ffType = node.childNodes.length > 3 ? 0 : 1;
+        _ref = node.innerHTML.match(FileInfo.ffRgex[FileInfo.ffType]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
+        return {
+          link: link,
+          size: size,
+          unit: unit,
+          resolution: resolution,
+          filename: filename
+        };
+      };
+      FileInfo.funks = FileInfo.setFormats();
+      return g.callbacks.push(this.node);
+    },
+    node: function(root) {
+      var node;
+      if (root.className === 'inline' || !(node = $('.filesize', root))) return;
+      FileInfo.data = FileInfo.parse(node);
+      return node.innerHTML = FileInfo.funks[FileInfo.ffType](FileInfo) + ' ';
+    },
+    setFormats: function() {
+      var code, i, _results;
+      _results = [];
+      for (i = 0; i <= 1; i++) {
+        code = conf[FileInfo.ffConf[i]].replace(FileInfo.ffMtrs[i], function(s, c) {
+          if (c in FileInfo.formatters) {
+            return "' + FileInfo.formatters." + c + "() + '";
+          } else {
+            return s;
+          }
+        });
+        _results.push(Function('FileInfo', "return '" + code + "'"));
+      }
+      return _results;
+    },
+    convertUnit: function(unitT) {
+      var i, size, unitF, units;
+      size = FileInfo.data.size;
+      unitF = FileInfo.data.unit;
+      if (unitF !== unitT) {
+        units = ['B', 'KB', 'MB'];
+        i = units.indexOf(unitF) - units.indexOf(unitT);
+        if (unitT === 'B') unitT = 'Bytes';
+        if (i > 0) {
+          while (i-- > 0) {
+            size *= 1024;
+          }
+        } else if (i < 0) {
+          while (i++ < 0) {
+            size /= 1024;
+          }
+        }
+        if (size < 1 && size.toString().length > size.toFixed(2).toString.length) {
+          size = size.toFixed(2);
+        }
+      }
+      return "" + size + " " + unitT;
+    },
+    formatters: {
+      B: function() {
+        return FileInfo.convertUnit('B');
+      },
+      K: function() {
+        return FileInfo.convertUnit('KB');
+      },
+      l: function() {
+        if (FileInfo.ffType === 0) {
+          return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + FileInfo.formatters.n() + '<');
+        } else {
+          return FileInfo.data.link;
+        }
+      },
+      L: function() {
+        return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + FileInfo.data.filename + '<');
+      },
+      M: function() {
+        return FileInfo.convertUnit('MB');
+      },
+      n: function() {
+        var ext;
+        if ((ext = FileInfo.data.filename.lastIndexOf('.')) > 38) {
+          return '<span class=fnfull>' + FileInfo.data.filename + '</span><span class=fntrunc>' + FileInfo.data.filename.substr(0, 32) + ' (...)' + FileInfo.data.filename.substr(ext) + '</span>';
+        } else {
+          return FileInfo.data.filename;
+        }
+      },
+      N: function() {
+        return FileInfo.data.filename;
+      },
+      r: function() {
+        return FileInfo.data.resolution;
+      },
+      s: function() {
+        return "" + FileInfo.data.size + " " + FileInfo.data.unit;
+      }
+    }
+  };
+
   getTitle = function(thread) {
     var el, span;
     el = $('.filetitle', thread);
@@ -3163,7 +3304,8 @@
       }
       qp.innerHTML = html;
       if (conf['Image Auto-Gif']) imgGif.node(qp);
-      if (conf['Time Formatting']) return Time.node(qp);
+      if (conf['Time Formatting']) Time.node(qp);
+      if (conf['File Info Formatting']) return FileInfo.node(qp);
     }
   };
 
@@ -3665,6 +3807,7 @@
       if (conf['Filter'] || conf['Reply Hiding']) strikethroughQuotes.init();
       if (conf['Anonymize']) anonymize.init();
       if (conf['Time Formatting']) Time.init();
+      if (conf['File Info Formatting']) FileInfo.init();
       if (conf['Sauce']) sauce.init();
       if (conf['Reveal Spoilers']) revealSpoilers.init();
       if (conf['Image Auto-Gif']) imgGif.init();
@@ -3995,6 +4138,9 @@ td.replyhider {\
 .filesize + br + a {\
   float: left;\
   pointer-events: none;\
+}\
+.filesize a:not(:hover) .fnfull, .filesize a:hover .fntrunc {\
+  display: none;\
 }\
 img[md5], img[md5] + img {\
   pointer-events: all;\

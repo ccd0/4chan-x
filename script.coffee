@@ -5,6 +5,7 @@ config =
       'Fix XXX\'d Post Numbers':      [true,  'Replace XXX\'d post numbers with their actual number']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
+      'File Info Formatting':         [true,  'Reformats the file information']
       'Report Button':                [true,  'Add report buttons']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
@@ -103,6 +104,8 @@ config =
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
+  fileInfoR: '%l, %s, %r'
+  fileInfoT: '%l, %s, %r'
   favicon: 'ferongr'
   hotkeys:
     openOptions:     ['ctrl+o', 'Open Options']
@@ -1779,6 +1782,19 @@ options =
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
       <li>Minutes: %M</li>
     </ul>
+    <div class=warning><code>File Info Formatting</code> is disabled.</div>
+    <ul>
+      Thread File Info Formatting
+      <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>
+      <li>Link: %l (lowercase L)</li>
+      <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
+      <li>Resolution: %r (Displays PDF on /po/, for PDF\'s)</li>
+      Reply File Info Formatting
+      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>
+      <li>All thread formatters also work for reply formatting.</li>
+      <li>Link (with original file name): %l (lowercase L)(Truncated), %L (Untruncated)</li>
+      <li>Original file name: %n (Truncated), %N (Untruncated)</li>
+    </ul>
     <div class=warning><code>Unread Favicon</code> is disabled.</div>
     Unread favicons<br>
     <select name=favicon>
@@ -1825,12 +1841,18 @@ options =
       $.on ta, 'change', $.cb.value
 
     #rice
-    (back = $ '[name=backlink]', dialog).value = conf['backlink']
-    (time = $ '[name=time]',     dialog).value = conf['time']
+    (back         = $ '[name=backlink]',     dialog).value = conf['backlink']
+    (time         = $ '[name=time]',         dialog).value = conf['time']
+    (fileInfoR = $ '[name=fileInfoR]', dialog).value = conf['fileInfoR']
+    (fileInfoT = $ '[name=fileInfoT]', dialog).value = conf['fileInfoT']
     $.on back, 'keyup', $.cb.value
     $.on back, 'keyup', options.backlink
     $.on time, 'keyup', $.cb.value
     $.on time, 'keyup', options.time
+    $.on fileInfoR, 'keyup', $.cb.value
+    $.on fileInfoR, 'keyup', options.fileInfo
+    $.on fileInfoT, 'keyup', $.cb.value
+    $.on fileInfoT, 'keyup', options.fileInfo
     favicon = $ 'select', dialog
     favicon.value = conf['favicon']
     $.on favicon, 'change', $.cb.value
@@ -1863,6 +1885,8 @@ options =
 
     options.backlink.call back
     options.time.call     time
+    options.fileInfo.call fileInfoR
+    options.fileInfo.call fileInfoT
     options.favicon.call  favicon
 
   close: ->
@@ -1889,6 +1913,16 @@ options =
     $.id('timePreview').textContent = Time.funk Time
   backlink: ->
     $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
+  fileInfo: ->
+    FileInfo.ffType = if @name is 'fileInfoR' then 0 else 1
+    FileInfo.data =
+      link      : '<a href="javascript:;">1329791824.png</a>'
+      size      : 996
+      unit      : 'KB'
+      resolution: '1366x768'
+      filename  : 'Untitled.png'
+    FileInfo.funks = FileInfo.setFormats()
+    $.id("#{@name}Preview").innerHTML = FileInfo.funks[FileInfo.ffType] FileInfo
   favicon: ->
     Favicon.switch()
     unread.update true
@@ -2367,6 +2401,68 @@ Time =
     p: -> if Time.date.getHours() < 12 then 'AM' else 'PM'
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
     y: -> Time.date.getFullYear() - 2000
+    
+FileInfo =
+  init: ->
+    return if g.BOARD is 'f'
+    FileInfo.ffConf = [ 'fileInfoR', 'fileInfoT' ]
+    FileInfo.ffMtrs = [ /%([BKlLMnNrs])/g, /%([BKlMrs])/g ]
+    FileInfo.ffRgex = [ /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/,
+                          /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/ ]
+    @parse = (node) ->
+      FileInfo.ffType = if node.childNodes.length > 3 then 0 else 1
+      [_, link, size, unit, resolution, filename] =
+        node.innerHTML.match FileInfo.ffRgex[FileInfo.ffType]
+      link      : link
+      size      : size
+      unit      : unit
+      resolution: resolution
+      filename  : filename
+
+    FileInfo.funks = FileInfo.setFormats()
+    g.callbacks.push @node
+  node: (root) ->
+    return if root.className is 'inline' or not node = $ '.filesize', root
+    FileInfo.data = FileInfo.parse node
+    node.innerHTML  = FileInfo.funks[FileInfo.ffType](FileInfo) + ' '
+  setFormats: ->
+    for i in [0..1]
+      code = conf[FileInfo.ffConf[i]].replace FileInfo.ffMtrs[i], (s, c) ->
+        if c of FileInfo.formatters
+          "' + FileInfo.formatters.#{c}() + '"
+        else
+          s
+      Function 'FileInfo', "return '#{code}'"
+  convertUnit: (unitT) ->
+    size  = FileInfo.data.size
+    unitF = FileInfo.data.unit
+    if unitF isnt unitT
+      units = [ 'B', 'KB', 'MB' ]
+      i     = units.indexOf(unitF) - units.indexOf(unitT)
+      unitT = 'Bytes' if unitT is 'B'
+      if i > 0
+        size *= 1024 while i-- > 0
+      else if i < 0
+        size /= 1024 while i++ < 0
+      if size < 1 and size.toString().length > size.toFixed(2).toString.length
+        size = size.toFixed 2
+    "#{size} #{unitT}"
+  formatters:
+    B: -> FileInfo.convertUnit 'B'
+    K: -> FileInfo.convertUnit 'KB'
+    l: -> if FileInfo.ffType is 0 
+            FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.formatters.n() + '<'
+          else
+            FileInfo.data.link
+    L: -> FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.data.filename + '<'
+    M: -> FileInfo.convertUnit 'MB'
+    n: -> if (ext = FileInfo.data.filename.lastIndexOf '.') > 38
+           '<span class=fnfull>' + FileInfo.data.filename + '</span><span class=fntrunc>' + FileInfo.data.filename.substr(0, 32) + ' (...)' + FileInfo.data.filename.substr(ext) + '</span>'
+          else
+            FileInfo.data.filename
+    N: -> FileInfo.data.filename
+    r: -> FileInfo.data.resolution
+    s: -> "#{FileInfo.data.size} #{FileInfo.data.unit}"
 
 getTitle = (thread) ->
   el = $ '.filetitle', thread
@@ -2564,9 +2660,11 @@ quotePreview =
           break
     qp.innerHTML = html
     if conf['Image Auto-Gif']
-      imgGif.node qp
+      imgGif.node   qp
     if conf['Time Formatting']
-      Time.node   qp
+      Time.node     qp
+    if conf['File Info Formatting']
+      FileInfo.node qp
 
 quoteIndicators =
   init: ->
@@ -2970,6 +3068,9 @@ Main =
 
     if conf['Time Formatting']
       Time.init()
+      
+    if conf['File Info Formatting']
+      FileInfo.init()
 
     if conf['Sauce']
       sauce.init()
@@ -3325,6 +3426,9 @@ td.replyhider {
 .filesize + br + a {
   float: left;
   pointer-events: none;
+}
+.filesize a:not(:hover) .fnfull, .filesize a:hover .fntrunc {
+  display: none;
 }
 img[md5], img[md5] + img {
   pointer-events: all;
