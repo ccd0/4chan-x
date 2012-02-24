@@ -2401,7 +2401,7 @@ Time =
     p: -> if Time.date.getHours() < 12 then 'AM' else 'PM'
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
     y: -> Time.date.getFullYear() - 2000
-    
+
 FileInfo =
   init: ->
     return if g.BOARD is 'f'
@@ -2444,13 +2444,13 @@ FileInfo =
         size *= 1024 while i-- > 0
       else if i < 0
         size /= 1024 while i++ < 0
-      if size < 1 and size.toString().length > size.toFixed(2).toString.length
+      if size < 1 and size.toString().length > size.toFixed(2).length
         size = size.toFixed 2
     "#{size} #{unitT}"
   formatters:
     B: -> FileInfo.convertUnit 'B'
     K: -> FileInfo.convertUnit 'KB'
-    l: -> if FileInfo.ffType is 0 
+    l: -> if FileInfo.ffType is 0
             FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.formatters.n() + '<'
           else
             FileInfo.data.link
@@ -3068,7 +3068,7 @@ Main =
 
     if conf['Time Formatting']
       Time.init()
-      
+
     if conf['File Info Formatting']
       FileInfo.init()
 

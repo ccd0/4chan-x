@@ -2995,7 +2995,7 @@
             size /= 1024;
           }
         }
-        if (size < 1 && size.toString().length > size.toFixed(2).toString.length) {
+        if (size < 1 && size.toString().length > size.toFixed(2).length) {
           size = size.toFixed(2);
         }
       }
