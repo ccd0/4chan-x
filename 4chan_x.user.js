@@ -3320,13 +3320,13 @@
       _ref = $$('.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        hash = quote.hash.slice(1);
+        if (!(hash = quote.hash.slice(1))) continue;
         if (conf['Indicate OP quote'] && hash === tid) {
           $.add(quote, $.tn('\u00A0(OP)'));
-          return;
+          continue;
         }
         path = quote.pathname;
-        if (conf['Indicate Cross-thread Quotes'] && hash && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
+        if (conf['Indicate Cross-thread Quotes'] && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
           $.add(quote, $.tn('\u00A0(Cross-thread)'));
         }
       }

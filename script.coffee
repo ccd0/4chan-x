@@ -2674,14 +2674,15 @@ quoteIndicators =
     # We use contains() so that it works with hidden threads
     tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', root).firstChild.id
     for quote in $$ '.quotelink', root
-      hash = quote.hash[1..]
+      unless hash = quote.hash[1..]
+        continue
       if conf['Indicate OP quote'] and hash is tid
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(OP)'
-        return
+        continue
       path = quote.pathname
       #if quote leads to a different thread id and is located on the same board (index 0)
-      if conf['Indicate Cross-thread Quotes'] and hash and path.lastIndexOf("/#{tid}") is -1 and path.indexOf("/#{g.BOARD}/") is 0
+      if conf['Indicate Cross-thread Quotes'] and path.lastIndexOf("/#{tid}") is -1 and path.indexOf("/#{g.BOARD}/") is 0
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(Cross-thread)'
     return
