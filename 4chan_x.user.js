@@ -72,13 +72,12 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, FileInfo, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base;
+  var $, $$, DAY, Favicon, FileInfo, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base;
 
   config = {
     main: {
       Enhancing: {
         '404 Redirect': [true, 'Redirect dead threads and images'],
-        'Fix XXX\'d Post Numbers': [true, 'Replace XXX\'d post numbers with their actual number'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
@@ -140,6 +139,7 @@
     filter: {
       name: ['# Filter any namefags:', '#/^(?!Anonymous$)/'].join('\n'),
       tripcode: ['# Filter any tripfags', '#/^!/'].join('\n'),
+      mod: ['# Set a custom class for mods:', '#/Mod$/;highlight:mod;op:yes', '# Set a custom class for moot:', '#/Admin$/;highlight:moot;op:yes'].join('\n'),
       email: ['# Filter any e-mails that are not `sage` on /a/ and /jp/:', '#/^(?!sage$)/;boards:a,jp'].join('\n'),
       subject: ['# Filter Generals on /v/:', '#/general/i;boards:v;op:only'].join('\n'),
       comment: ['# Filter Stallman copypasta on /g/:', '#/what you\'re refer+ing to as linux/i;boards:g'].join('\n'),
@@ -602,24 +602,19 @@
       };
     },
     node: function(root) {
-      var isOP, key, klass;
+      var Filter, isOP, key, klass, value, _i, _len, _ref;
       klass = root.className;
       if (/\binlined\b/.test(klass)) return;
       if (!(isOP = klass === 'op')) root = $('td[id]', root);
       for (key in filter.filters) {
-        if (filter.test(root, key, isOP)) return;
+        value = filter[key](root, isOP);
+        if (value === false) continue;
+        _ref = filter.filters[key];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          Filter = _ref[_i];
+          if (Filter(root, value, isOP)) return;
+        }
       }
-    },
-    test: function(root, key, isOP) {
-      var filter, value, _i, _len, _ref;
-      value = this[key](root, isOP);
-      if (value === false) return false;
-      _ref = this.filters[key];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        filter = _ref[_i];
-        if (filter(root, value, isOP)) return true;
-      }
-      return false;
     },
     name: function(root, isOP) {
       var name;
@@ -629,6 +624,13 @@
     tripcode: function(root) {
       var trip;
       if (trip = $('.postertrip', root)) return trip.textContent;
+      return false;
+    },
+    mod: function(root, isOP) {
+      var mod;
+      if (mod = (isOP ? $('.commentpostername', root) : $('.commentpostername ~ .commentpostername', root))) {
+        return mod.textContent;
+      }
       return false;
     },
     email: function(root) {
@@ -1244,27 +1246,6 @@
       }
       top = (_ref2 = nav.threads[i]) != null ? _ref2.getBoundingClientRect().top : void 0;
       return window.scrollBy(0, top);
-    }
-  };
-
-  unxify = {
-    init: function() {
-      return g.callbacks.push(this.node);
-    },
-    node: function(root) {
-      var number, quote;
-      switch (unxify.censor) {
-        case true:
-          quote = $('.quotejs + .quotejs', root);
-          return quote.textContent = quote.previousElementSibling.hash.slice(1);
-        case false:
-          break;
-        default:
-          number = $('.quotejs + .quotejs', root).textContent;
-          if (number.length < 4) return;
-          unxify.censor = /\D/.test($('.quotejs + .quotejs', root).textContent);
-          return unxify.node(root);
-      }
     }
   };
 
@@ -2159,6 +2140,7 @@
     </ul>\
     <p>Name:<br><textarea name=name></textarea></p>\
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>\
+    <p>Admin/Mod:<br><textarea name=mod></textarea></p>\
     <p>E-mail:<br><textarea name=email></textarea></p>\
     <p>Subject:<br><textarea name=subject></textarea></p>\
     <p>Comment:<br><textarea name=comment></textarea></p>\
@@ -2852,7 +2834,7 @@
     node: function(root) {
       var node, time;
       if (root.className === 'inline') return;
-      node = $('.posttime', root) || $('span[id]', root).previousSibling;
+      node = $('.posttime', root);
       Time.date = Time.parse(node);
       time = $.el('time', {
         textContent: ' ' + Time.funk(Time) + ' '
@@ -2995,7 +2977,7 @@
             size /= 1024;
           }
         }
-        if (size < 1 && size.toString().length > size.toFixed(2).toString.length) {
+        if (size < 1 && size.toString().length > size.toFixed(2).length) {
           size = size.toFixed(2);
         }
       }
@@ -3320,13 +3302,13 @@
       _ref = $$('.quotelink', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        hash = quote.hash.slice(1);
+        if (!(hash = quote.hash.slice(1))) continue;
         if (conf['Indicate OP quote'] && hash === tid) {
           $.add(quote, $.tn('\u00A0(OP)'));
-          return;
+          continue;
         }
         path = quote.pathname;
-        if (conf['Indicate Cross-thread Quotes'] && hash && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
+        if (conf['Indicate Cross-thread Quotes'] && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
           $.add(quote, $.tn('\u00A0(Cross-thread)'));
         }
       }
@@ -3819,7 +3801,6 @@
       if (conf['Indicate OP quote'] || conf['Indicate Cross-thread Quotes']) {
         quoteIndicators.init();
       }
-      if (conf['Fix XXX\'d Post Numbers']) unxify.init();
       return $.ready(Main.ready);
     },
     ready: function() {

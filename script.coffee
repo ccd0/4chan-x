@@ -2,7 +2,6 @@ config =
   main:
     Enhancing:
       '404 Redirect':                 [true,  'Redirect dead threads and images']
-      'Fix XXX\'d Post Numbers':      [true,  'Replace XXX\'d post numbers with their actual number']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
@@ -62,6 +61,12 @@ config =
     tripcode: [
       '# Filter any tripfags'
       '#/^!/'
+    ].join '\n'
+    mod: [
+      '# Set a custom class for mods:'
+      '#/Mod$/;highlight:mod;op:yes'
+      '# Set a custom class for moot:'
+      '#/Admin$/;highlight:moot;op:yes'
     ].join '\n'
     email: [
       '# Filter any e-mails that are not `sage` on /a/ and /jp/:'
@@ -526,19 +531,13 @@ filter =
     unless isOP = klass is 'op'
       root = $ 'td[id]', root
     for key of filter.filters
-      if filter.test root, key, isOP
-        return
-
-  test: (root, key, isOP) ->
-    value = @[key] root, isOP
-    if value is false
-      # Return if there's nothing to filter (no tripcode for example).
-      return false
-
-    for filter in @filters[key]
-      if filter root, value, isOP
-        return true
-    false
+      value = filter[key] root, isOP
+      if value is false
+        # Continue if there's nothing to filter (no tripcode for example).
+        continue
+      for Filter in filter.filters[key]
+        if Filter root, value, isOP
+          return
 
   name: (root, isOP) ->
     name = if isOP then $ '.postername', root else $ '.commentpostername', root
@@ -546,6 +545,10 @@ filter =
   tripcode: (root) ->
     if trip = $ '.postertrip', root
       return trip.textContent
+    false
+  mod: (root, isOP) ->
+    if mod = (if isOP then $ '.commentpostername', root else $ '.commentpostername ~ .commentpostername', root)
+      return mod.textContent
     false
   email: (root) ->
     if mail = $ '.linkmail', root
@@ -989,24 +992,6 @@ nav =
 
     {top} = nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
-
-unxify =
-  init: ->
-    g.callbacks.push @node
-  node: (root) ->
-    switch unxify.censor
-      when true
-        quote = $ '.quotejs + .quotejs', root
-        quote.textContent = quote.previousElementSibling.hash[1..]
-      when false
-        # Don't execute on safe boards.
-      else
-        number = $('.quotejs + .quotejs', root).textContent
-        # 3 digits long post numbers are not censored.
-        return if number.length < 4
-        # Test if the board's censored.
-        unxify.censor = /\D/.test $('.quotejs + .quotejs', root).textContent
-        unxify.node root
 
 qr =
   init: ->
@@ -1756,6 +1741,7 @@ options =
     </ul>
     <p>Name:<br><textarea name=name></textarea></p>
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>
+    <p>Admin/Mod:<br><textarea name=mod></textarea></p>
     <p>E-mail:<br><textarea name=email></textarea></p>
     <p>Subject:<br><textarea name=subject></textarea></p>
     <p>Comment:<br><textarea name=comment></textarea></p>
@@ -2349,7 +2335,7 @@ Time =
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline'
-    node = $('.posttime', root) or $('span[id]', root).previousSibling
+    node = $ '.posttime', root
     Time.date = Time.parse node
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
@@ -2401,7 +2387,7 @@ Time =
     p: -> if Time.date.getHours() < 12 then 'AM' else 'PM'
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
     y: -> Time.date.getFullYear() - 2000
-    
+
 FileInfo =
   init: ->
     return if g.BOARD is 'f'
@@ -2444,13 +2430,13 @@ FileInfo =
         size *= 1024 while i-- > 0
       else if i < 0
         size /= 1024 while i++ < 0
-      if size < 1 and size.toString().length > size.toFixed(2).toString.length
+      if size < 1 and size.toString().length > size.toFixed(2).length
         size = size.toFixed 2
     "#{size} #{unitT}"
   formatters:
     B: -> FileInfo.convertUnit 'B'
     K: -> FileInfo.convertUnit 'KB'
-    l: -> if FileInfo.ffType is 0 
+    l: -> if FileInfo.ffType is 0
             FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.formatters.n() + '<'
           else
             FileInfo.data.link
@@ -2674,14 +2660,15 @@ quoteIndicators =
     # We use contains() so that it works with hidden threads
     tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', root).firstChild.id
     for quote in $$ '.quotelink', root
-      hash = quote.hash[1..]
+      unless hash = quote.hash[1..]
+        continue
       if conf['Indicate OP quote'] and hash is tid
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(OP)'
-        return
+        continue
       path = quote.pathname
       #if quote leads to a different thread id and is located on the same board (index 0)
-      if conf['Indicate Cross-thread Quotes'] and hash and path.lastIndexOf("/#{tid}") is -1 and path.indexOf("/#{g.BOARD}/") is 0
+      if conf['Indicate Cross-thread Quotes'] and path.lastIndexOf("/#{tid}") is -1 and path.indexOf("/#{g.BOARD}/") is 0
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(Cross-thread)'
     return
@@ -3068,7 +3055,7 @@ Main =
 
     if conf['Time Formatting']
       Time.init()
-      
+
     if conf['File Info Formatting']
       FileInfo.init()
 
@@ -3098,9 +3085,6 @@ Main =
 
     if conf['Indicate OP quote'] or conf['Indicate Cross-thread Quotes']
       quoteIndicators.init()
-
-    if conf['Fix XXX\'d Post Numbers']
-      unxify.init()
 
     $.ready Main.ready
 

@@ -1,5 +1,5 @@
 master
--ahodesuka
+- ahodesuka
   Reply/Thread File Info Formatting:
     - Link: %l, %L (Original file names are shown inside threads).
     - Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default).
@@ -8,6 +8,8 @@ master
 - noface
   Update imagelimit for mlp.
   Fix stubs if poster has unique ID.
+- Mayhem
+  You can now filter or highlight admin/mod posts.
 
 2.27.1
 - Mayhem
