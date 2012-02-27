@@ -2,7 +2,6 @@ config =
   main:
     Enhancing:
       '404 Redirect':                 [true,  'Redirect dead threads and images']
-      'Fix XXX\'d Post Numbers':      [true,  'Replace XXX\'d post numbers with their actual number']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
@@ -983,24 +982,6 @@ nav =
 
     {top} = nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
-
-unxify =
-  init: ->
-    g.callbacks.push @node
-  node: (root) ->
-    switch unxify.censor
-      when true
-        quote = $ '.quotejs + .quotejs', root
-        quote.textContent = quote.previousElementSibling.hash[1..]
-      when false
-        # Don't execute on safe boards.
-      else
-        number = $('.quotejs + .quotejs', root).textContent
-        # 3 digits long post numbers are not censored.
-        return if number.length < 4
-        # Test if the board's censored.
-        unxify.censor = /\D/.test $('.quotejs + .quotejs', root).textContent
-        unxify.node root
 
 qr =
   init: ->
@@ -3093,9 +3074,6 @@ Main =
 
     if conf['Indicate OP quote'] or conf['Indicate Cross-thread Quotes']
       quoteIndicators.init()
-
-    if conf['Fix XXX\'d Post Numbers']
-      unxify.init()
 
     $.ready Main.ready
 

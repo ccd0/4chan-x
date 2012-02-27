@@ -72,13 +72,12 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, FileInfo, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, unxify, updater, val, watcher, _base;
+  var $, $$, DAY, Favicon, FileInfo, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base;
 
   config = {
     main: {
       Enhancing: {
         '404 Redirect': [true, 'Redirect dead threads and images'],
-        'Fix XXX\'d Post Numbers': [true, 'Replace XXX\'d post numbers with their actual number'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
@@ -1239,27 +1238,6 @@
       }
       top = (_ref2 = nav.threads[i]) != null ? _ref2.getBoundingClientRect().top : void 0;
       return window.scrollBy(0, top);
-    }
-  };
-
-  unxify = {
-    init: function() {
-      return g.callbacks.push(this.node);
-    },
-    node: function(root) {
-      var number, quote;
-      switch (unxify.censor) {
-        case true:
-          quote = $('.quotejs + .quotejs', root);
-          return quote.textContent = quote.previousElementSibling.hash.slice(1);
-        case false:
-          break;
-        default:
-          number = $('.quotejs + .quotejs', root).textContent;
-          if (number.length < 4) return;
-          unxify.censor = /\D/.test($('.quotejs + .quotejs', root).textContent);
-          return unxify.node(root);
-      }
     }
   };
 
@@ -3814,7 +3792,6 @@
       if (conf['Indicate OP quote'] || conf['Indicate Cross-thread Quotes']) {
         quoteIndicators.init();
       }
-      if (conf['Fix XXX\'d Post Numbers']) unxify.init();
       return $.ready(Main.ready);
     },
     ready: function() {
