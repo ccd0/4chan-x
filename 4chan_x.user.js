@@ -139,6 +139,7 @@
     filter: {
       name: ['# Filter any namefags:', '#/^(?!Anonymous$)/'].join('\n'),
       tripcode: ['# Filter any tripfags', '#/^!/'].join('\n'),
+      mod: ['# Set a custom class for mods:', '#/Mod$/;highlight:mod;op:yes', '# Set a custom class for moot:', '#/Admin$/;highlight:moot;op:yes'].join('\n'),
       email: ['# Filter any e-mails that are not `sage` on /a/ and /jp/:', '#/^(?!sage$)/;boards:a,jp'].join('\n'),
       subject: ['# Filter Generals on /v/:', '#/general/i;boards:v;op:only'].join('\n'),
       comment: ['# Filter Stallman copypasta on /g/:', '#/what you\'re refer+ing to as linux/i;boards:g'].join('\n'),
@@ -623,6 +624,13 @@
     tripcode: function(root) {
       var trip;
       if (trip = $('.postertrip', root)) return trip.textContent;
+      return false;
+    },
+    mod: function(root, isOP) {
+      var mod;
+      if (mod = (isOP ? $('.commentpostername', root) : $('.commentpostername ~ .commentpostername', root))) {
+        return mod.textContent;
+      }
       return false;
     },
     email: function(root) {
@@ -2132,6 +2140,7 @@
     </ul>\
     <p>Name:<br><textarea name=name></textarea></p>\
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>\
+    <p>Admin/Mod:<br><textarea name=mod></textarea></p>\
     <p>E-mail:<br><textarea name=email></textarea></p>\
     <p>Subject:<br><textarea name=subject></textarea></p>\
     <p>Comment:<br><textarea name=comment></textarea></p>\

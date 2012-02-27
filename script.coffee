@@ -62,6 +62,12 @@ config =
       '# Filter any tripfags'
       '#/^!/'
     ].join '\n'
+    mod: [
+      '# Set a custom class for mods:'
+      '#/Mod$/;highlight:mod;op:yes'
+      '# Set a custom class for moot:'
+      '#/Admin$/;highlight:moot;op:yes'
+    ].join '\n'
     email: [
       '# Filter any e-mails that are not `sage` on /a/ and /jp/:'
       '#/^(?!sage$)/;boards:a,jp'
@@ -539,6 +545,10 @@ filter =
   tripcode: (root) ->
     if trip = $ '.postertrip', root
       return trip.textContent
+    false
+  mod: (root, isOP) ->
+    if mod = (if isOP then $ '.commentpostername', root else $ '.commentpostername ~ .commentpostername', root)
+      return mod.textContent
     false
   email: (root) ->
     if mail = $ '.linkmail', root
@@ -1731,6 +1741,7 @@ options =
     </ul>
     <p>Name:<br><textarea name=name></textarea></p>
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>
+    <p>Admin/Mod:<br><textarea name=mod></textarea></p>
     <p>E-mail:<br><textarea name=email></textarea></p>
     <p>Subject:<br><textarea name=subject></textarea></p>
     <p>Comment:<br><textarea name=comment></textarea></p>
