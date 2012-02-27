@@ -2343,7 +2343,7 @@ Time =
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline'
-    node = $('.posttime', root) or $('span[id]', root).previousSibling
+    node = $ '.posttime', root
     Time.date = Time.parse node
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
