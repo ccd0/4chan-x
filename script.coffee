@@ -526,19 +526,13 @@ filter =
     unless isOP = klass is 'op'
       root = $ 'td[id]', root
     for key of filter.filters
-      if filter.test root, key, isOP
-        return
-
-  test: (root, key, isOP) ->
-    value = @[key] root, isOP
-    if value is false
-      # Return if there's nothing to filter (no tripcode for example).
-      return false
-
-    for filter in @filters[key]
-      if filter root, value, isOP
-        return true
-    false
+      value = filter[key] root, isOP
+      if value is false
+        # Continue if there's nothing to filter (no tripcode for example).
+        continue
+      for Filter in filter.filters[key]
+        if Filter root, value, isOP
+          return
 
   name: (root, isOP) ->
     name = if isOP then $ '.postername', root else $ '.commentpostername', root

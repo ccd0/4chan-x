@@ -602,24 +602,19 @@
       };
     },
     node: function(root) {
-      var isOP, key, klass;
+      var Filter, isOP, key, klass, value, _i, _len, _ref;
       klass = root.className;
       if (/\binlined\b/.test(klass)) return;
       if (!(isOP = klass === 'op')) root = $('td[id]', root);
       for (key in filter.filters) {
-        if (filter.test(root, key, isOP)) return;
+        value = filter[key](root, isOP);
+        if (value === false) continue;
+        _ref = filter.filters[key];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          Filter = _ref[_i];
+          if (Filter(root, value, isOP)) return;
+        }
       }
-    },
-    test: function(root, key, isOP) {
-      var filter, value, _i, _len, _ref;
-      value = this[key](root, isOP);
-      if (value === false) return false;
-      _ref = this.filters[key];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        filter = _ref[_i];
-        if (filter(root, value, isOP)) return true;
-      }
-      return false;
     },
     name: function(root, isOP) {
       var name;
