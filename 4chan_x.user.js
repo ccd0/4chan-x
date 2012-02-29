@@ -664,8 +664,10 @@
       return false;
     },
     dimensions: function(root) {
-      var span;
-      if (span = $('.filesize', root)) return span.textContent.match(/\d+x\d+/)[0];
+      var match, span;
+      if ((span = $('.filesize', root)) && (match = span.textContent.match(/\d+x\d+/))) {
+        return match[0];
+      }
       return false;
     },
     filesize: function(root) {

@@ -574,8 +574,8 @@ filter =
       return file.title
     false
   dimensions: (root) ->
-    if span = $ '.filesize', root
-      return span.textContent.match(/\d+x\d+/)[0]
+    if (span = $ '.filesize', root) and match = span.textContent.match /\d+x\d+/
+      return match[0]
     return false
   filesize: (root) ->
     if img = $ 'img[md5]', root
