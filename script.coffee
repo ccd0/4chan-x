@@ -2324,7 +2324,7 @@ Time =
     chanOffset-- if $.isDST()
 
     @parse =
-      if Date.parse '10/11/11(Tue)18:53' is 1318351980000
+      if Date.parse('10/11/11(Tue)18:53') is 1318351980000
         (node) -> new Date Date.parse(node.textContent) + chanOffset*HOUR
       else # Firefox and Opera do not parse 4chan's time format correctly
         (node) ->
