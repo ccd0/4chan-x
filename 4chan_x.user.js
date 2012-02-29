@@ -1704,7 +1704,7 @@
       }
     },
     dialog: function() {
-      var e, fileInput, input, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
+      var e, event, fileInput, input, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
@@ -1780,12 +1780,13 @@
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         name = _ref2[_j];
         input = $("[name=" + name + "]", qr.el);
-        $.on(input, 'keyup', function() {
-          return qr.selected[this.name] = this.value;
-        });
-        $.on(input, 'change', function() {
-          return qr.selected[this.name] = this.value;
-        });
+        _ref3 = ['textInput', 'keyup', 'change', 'paste'];
+        for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
+          event = _ref3[_k];
+          $.on(input, event, function() {
+            return qr.selected[this.name] = this.value;
+          });
+        }
       }
       $.sync('qr.persona', function(persona) {
         var key, val, _results;

@@ -1414,8 +1414,8 @@ qr =
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
       input = $ "[name=#{name}]", qr.el
-      $.on input, 'keyup',  -> qr.selected[@name] = @value
-      $.on input, 'change', -> qr.selected[@name] = @value
+      for event in ['textInput', 'keyup', 'change', 'paste']
+        $.on input, event, -> qr.selected[@name] = @value
     # sync between tabs
     $.sync 'qr.persona', (persona) ->
       return unless qr.el.hidden
