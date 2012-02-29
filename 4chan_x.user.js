@@ -2181,7 +2181,7 @@
       <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>\
       <li>Link: %l (lowercase L)</li>\
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>\
-      <li>Resolution: %r (Displays PDF on /po/, for PDF\'s)</li>\
+      <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>\
       Reply File Info Formatting\
       <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>\
       <li>All thread formatters also work for reply formatting.</li>\
@@ -2941,7 +2941,7 @@
       var fullname, link, node, regexp, resolution, shortname, size, type, unit, _, _ref;
       if (root.className === 'inline' || !(node = $('.filesize', root))) return;
       type = node.childElementCount === 2 ? 0 : 1;
-      regexp = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">([^<]+)/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/][type];
+      regexp = type ? /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/ : /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF), <span title="(.+)">([^<]+)/;
       _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], fullname = _ref[5], shortname = _ref[6];
       FileInfo.data = {
         link: link,
@@ -2958,8 +2958,8 @@
       var code, format, funks, i, param;
       funks = [];
       for (i = 0; i <= 1; i++) {
-        format = conf[['fileInfoR', 'fileInfoT'][i]];
-        param = [/%([BKlLMnNrs])/g, /%([BKlMrs])/g][i];
+        format = i ? conf['fileInfoT'] : conf['fileInfoR'];
+        param = i ? /%([BKlMrs])/g : /%([BKlLMnNrs])/g;
         code = format.replace(param, function(s, c) {
           if (c in FileInfo.formatters) {
             return "' + f.formatters." + c + "() + '";

@@ -1778,7 +1778,7 @@ options =
       <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>
       <li>Link: %l (lowercase L)</li>
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
-      <li>Resolution: %r (Displays PDF on /po/, for PDF\'s)</li>
+      <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>
       Reply File Info Formatting
       <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>
       <li>All thread formatters also work for reply formatting.</li>
@@ -2405,10 +2405,11 @@ FileInfo =
   node: (root) ->
     return if root.className is 'inline' or not node = $ '.filesize', root
     type   = if node.childElementCount is 2 then 0 else 1
-    regexp = [
-      /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">([^<]+)/
-      /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/
-    ][type]
+    regexp =
+      if type
+        /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/
+      else
+        /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF), <span title="(.+)">([^<]+)/
     [_, link, size, unit, resolution, fullname, shortname] =
       node.innerHTML.match regexp
     FileInfo.data =
@@ -2423,8 +2424,8 @@ FileInfo =
   setFormats: ->
     funks = []
     for i in [0..1]
-      format = conf[['fileInfoR', 'fileInfoT'][i]]
-      param  = [/%([BKlLMnNrs])/g, /%([BKlMrs])/g][i]
+      format = if i then conf['fileInfoT'] else conf['fileInfoR']
+      param  = if i then /%([BKlMrs])/g    else /%([BKlLMnNrs])/g
       code   = format.replace param, (s, c) ->
         if c of FileInfo.formatters
           "' + f.formatters.#{c}() + '"
