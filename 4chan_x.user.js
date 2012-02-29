@@ -584,7 +584,11 @@
           return false;
         }
         if (hl) {
-          $.addClass(root, hl);
+          if (isOP) {
+            $.addClass(root, hl);
+          } else {
+            $.addClass(root.parentNode, hl);
+          }
           if (isOP && top && !g.REPLY) {
             thisThread = root.parentNode;
             if (firstThread = $('div[class=op]')) {
@@ -4268,7 +4272,8 @@ td > .filesize > img[md5] {\
 .filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
   background: none;\
 }\
-.filter_highlight {\
+.filter_highlight.op,\
+.filter_highlight > td[id] {\
   box-shadow: -5px 0 rgba(255,0,0,0.5);\
 }\
 .filtered {\
