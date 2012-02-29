@@ -2320,7 +2320,7 @@
       return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     },
     fileInfo: function() {
-      FileInfo.ffType = this.name === 'fileInfoR' ? 0 : 1;
+      FileInfo.type = this.name === 'fileInfoR' ? 0 : 1;
       FileInfo.data = {
         link: '<a href="javascript:;">1329791824.png</a>',
         size: 996,
@@ -2329,7 +2329,7 @@
         filename: 'Untitled.png'
       };
       FileInfo.funks = FileInfo.setFormats();
-      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[FileInfo.ffType](FileInfo);
+      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[FileInfo.type](FileInfo);
     },
     favicon: function() {
       Favicon["switch"]();
@@ -2937,8 +2937,8 @@
     node: function(root) {
       var filename, link, node, resolution, size, unit, _, _ref;
       if (root.className === 'inline' || !(node = $('.filesize', root))) return;
-      FileInfo.ffType = node.childElementCount === 2 ? 0 : 1;
-      _ref = node.innerHTML.match(FileInfo.ffRgex[FileInfo.ffType]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
+      FileInfo.type = node.childElementCount === 2 ? 0 : 1;
+      _ref = node.innerHTML.match(FileInfo.regexp[FileInfo.type]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
       FileInfo.data = {
         link: link,
         size: size,
@@ -2946,13 +2946,13 @@
         resolution: resolution,
         filename: filename
       };
-      return node.innerHTML = FileInfo.funks[FileInfo.ffType](FileInfo);
+      return node.innerHTML = FileInfo.funks[FileInfo.type](FileInfo);
     },
     setFormats: function() {
       var code, i, _results;
       _results = [];
       for (i = 0; i <= 1; i++) {
-        code = conf[FileInfo.ffConf[i]].replace(FileInfo.ffMtrs[i], function(s, c) {
+        code = conf[FileInfo.conf[i]].replace(FileInfo.param[i], function(s, c) {
           if (c in FileInfo.formatters) {
             return "' + FileInfo.formatters." + c + "() + '";
           } else {
@@ -2986,9 +2986,9 @@
       }
       return "" + size + " " + unitT;
     },
-    ffConf: ['fileInfoR', 'fileInfoT'],
-    ffMtrs: [/%([BKlLMnNrs])/g, /%([BKlMrs])/g],
-    ffRgex: [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/],
+    conf: ['fileInfoR', 'fileInfoT'],
+    param: [/%([BKlLMnNrs])/g, /%([BKlMrs])/g],
+    regexp: [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/],
     formatters: {
       B: function() {
         return FileInfo.convertUnit('B');
@@ -2997,7 +2997,7 @@
         return FileInfo.convertUnit('KB');
       },
       l: function() {
-        if (FileInfo.ffType === 0) {
+        if (FileInfo.type === 0) {
           return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + FileInfo.formatters.n() + '<');
         } else {
           return FileInfo.data.link;

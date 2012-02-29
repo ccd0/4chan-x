@@ -1904,7 +1904,7 @@ options =
   backlink: ->
     $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
   fileInfo: ->
-    FileInfo.ffType = if @name is 'fileInfoR' then 0 else 1
+    FileInfo.type = if @name is 'fileInfoR' then 0 else 1
     FileInfo.data =
       link      : '<a href="javascript:;">1329791824.png</a>'
       size      : 996
@@ -1912,7 +1912,7 @@ options =
       resolution: '1366x768'
       filename  : 'Untitled.png'
     FileInfo.funks = FileInfo.setFormats()
-    $.id("#{@name}Preview").innerHTML = FileInfo.funks[FileInfo.ffType] FileInfo
+    $.id("#{@name}Preview").innerHTML = FileInfo.funks[FileInfo.type] FileInfo
   favicon: ->
     Favicon.switch()
     unread.update true
@@ -2402,19 +2402,19 @@ FileInfo =
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline' or not node = $ '.filesize', root
-    FileInfo.ffType = if node.childElementCount is 2 then 0 else 1
+    FileInfo.type = if node.childElementCount is 2 then 0 else 1
     [_, link, size, unit, resolution, filename] =
-      node.innerHTML.match FileInfo.ffRgex[FileInfo.ffType]
+      node.innerHTML.match FileInfo.regexp[FileInfo.type]
     FileInfo.data =
       link:       link
       size:       size
       unit:       unit
       resolution: resolution
       filename:   filename
-    node.innerHTML = FileInfo.funks[FileInfo.ffType] FileInfo
+    node.innerHTML = FileInfo.funks[FileInfo.type] FileInfo
   setFormats: ->
     for i in [0..1]
-      code = conf[FileInfo.ffConf[i]].replace FileInfo.ffMtrs[i], (s, c) ->
+      code = conf[FileInfo.conf[i]].replace FileInfo.param[i], (s, c) ->
         if c of FileInfo.formatters
           "' + FileInfo.formatters.#{c}() + '"
         else
@@ -2434,15 +2434,15 @@ FileInfo =
       if size < 1 and size.toString().length > size.toFixed(2).length
         size = size.toFixed 2
     "#{size} #{unitT}"
-  ffConf: [
+  conf: [
     'fileInfoR'
     'fileInfoT'
   ]
-  ffMtrs: [
+  param: [
     /%([BKlLMnNrs])/g
     /%([BKlMrs])/g
   ]
-  ffRgex: [
+  regexp: [
     /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/
     /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/
   ]
@@ -2450,7 +2450,7 @@ FileInfo =
     B: -> FileInfo.convertUnit 'B'
     K: -> FileInfo.convertUnit 'KB'
     l: ->
-      if FileInfo.ffType is 0
+      if FileInfo.type is 0
         FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.formatters.n() + '<'
       else
         FileInfo.data.link
