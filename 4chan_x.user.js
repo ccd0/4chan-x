@@ -2320,16 +2320,18 @@
       return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     },
     fileInfo: function() {
-      FileInfo.type = this.name === 'fileInfoR' ? 0 : 1;
+      var type;
+      type = this.name === 'fileInfoR' ? 0 : 1;
       FileInfo.data = {
         link: '<a href="javascript:;">1329791824.png</a>',
         size: 996,
         unit: 'KB',
         resolution: '1366x768',
-        filename: 'Untitled.png'
+        filename: 'Untitled.png',
+        type: type
       };
-      FileInfo.funks = FileInfo.setFormats();
-      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[FileInfo.type](FileInfo);
+      FileInfo.setFormats();
+      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[type](FileInfo);
     },
     favicon: function() {
       Favicon["switch"]();
@@ -2931,42 +2933,46 @@
   FileInfo = {
     init: function() {
       if (g.BOARD === 'f') return;
-      FileInfo.funks = FileInfo.setFormats();
+      this.setFormats();
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var filename, link, node, resolution, size, unit, _, _ref;
+      var filename, link, node, regexp, resolution, size, type, unit, _, _ref;
       if (root.className === 'inline' || !(node = $('.filesize', root))) return;
-      FileInfo.type = node.childElementCount === 2 ? 0 : 1;
-      _ref = node.innerHTML.match(FileInfo.regexp[FileInfo.type]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
+      type = node.childElementCount === 2 ? 0 : 1;
+      regexp = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/][type];
+      _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
       FileInfo.data = {
         link: link,
         size: size,
         unit: unit,
         resolution: resolution,
-        filename: filename
+        filename: filename,
+        type: type
       };
-      return node.innerHTML = FileInfo.funks[FileInfo.type](FileInfo);
+      return node.innerHTML = FileInfo.funks[type](FileInfo);
     },
     setFormats: function() {
-      var code, i, _results;
-      _results = [];
+      var code, format, funks, i, param;
+      funks = [];
       for (i = 0; i <= 1; i++) {
-        code = conf[FileInfo.conf[i]].replace(FileInfo.param[i], function(s, c) {
+        format = conf[['fileInfoR', 'fileInfoT'][i]];
+        param = [/%([BKlLMnNrs])/g, /%([BKlMrs])/g][i];
+        code = format.replace(param, function(s, c) {
           if (c in FileInfo.formatters) {
-            return "' + FileInfo.formatters." + c + "() + '";
+            return "' + f.formatters." + c + "() + '";
           } else {
             return s;
           }
         });
-        _results.push(Function('FileInfo', "return '" + code + "'"));
+        funks.push(Function('f', "return '" + code + "'"));
       }
-      return _results;
+      return this.funks = funks;
     },
     convertUnit: function(unitT) {
       var i, size, unitF, units;
-      size = FileInfo.data.size;
-      unitF = FileInfo.data.unit;
+      size = this.data.size;
+      unitF = this.data.unit;
       if (unitF !== unitT) {
         units = ['B', 'KB', 'MB'];
         i = units.indexOf(unitF) - units.indexOf(unitT);
@@ -2986,9 +2992,6 @@
       }
       return "" + size + " " + unitT;
     },
-    conf: ['fileInfoR', 'fileInfoT'],
-    param: [/%([BKlLMnNrs])/g, /%([BKlMrs])/g],
-    regexp: [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/],
     formatters: {
       B: function() {
         return FileInfo.convertUnit('B');
@@ -2996,9 +2999,15 @@
       K: function() {
         return FileInfo.convertUnit('KB');
       },
+      M: function() {
+        return FileInfo.convertUnit('MB');
+      },
+      s: function() {
+        return "" + FileInfo.data.size + " " + FileInfo.data.unit;
+      },
       l: function() {
-        if (FileInfo.type === 0) {
-          return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + FileInfo.formatters.n() + '<');
+        if (FileInfo.data.type === 0) {
+          return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + this.n() + '<');
         } else {
           return FileInfo.data.link;
         }
@@ -3006,13 +3015,10 @@
       L: function() {
         return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + FileInfo.data.filename + '<');
       },
-      M: function() {
-        return FileInfo.convertUnit('MB');
-      },
       n: function() {
         var ext;
         if ((ext = FileInfo.data.filename.lastIndexOf('.')) > 38) {
-          return '<span class=fnfull>' + FileInfo.data.filename + '</span><span class=fntrunc>' + FileInfo.data.filename.substr(0, 32) + ' (...)' + FileInfo.data.filename.substr(ext) + '</span>';
+          return "<span class=fnfull>" + FileInfo.data.filename + "</span><span class=fntrunc>" + (FileInfo.data.filename.substr(0, 32)) + "(...)" + (FileInfo.data.filename.substr(ext)) + "</span>";
         } else {
           return FileInfo.data.filename;
         }
@@ -3022,9 +3028,6 @@
       },
       r: function() {
         return FileInfo.data.resolution;
-      },
-      s: function() {
-        return "" + FileInfo.data.size + " " + FileInfo.data.unit;
       }
     }
   };

@@ -1904,15 +1904,16 @@ options =
   backlink: ->
     $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
   fileInfo: ->
-    FileInfo.type = if @name is 'fileInfoR' then 0 else 1
+    type = if @name is 'fileInfoR' then 0 else 1
     FileInfo.data =
-      link      : '<a href="javascript:;">1329791824.png</a>'
-      size      : 996
-      unit      : 'KB'
+      link:       '<a href="javascript:;">1329791824.png</a>'
+      size:       996
+      unit:       'KB'
       resolution: '1366x768'
-      filename  : 'Untitled.png'
-    FileInfo.funks = FileInfo.setFormats()
-    $.id("#{@name}Preview").innerHTML = FileInfo.funks[FileInfo.type] FileInfo
+      filename:   'Untitled.png'
+      type:       type
+    FileInfo.setFormats()
+    $.id("#{@name}Preview").innerHTML = FileInfo.funks[type] FileInfo
   favicon: ->
     Favicon.switch()
     unread.update true
@@ -2398,31 +2399,40 @@ Time =
 FileInfo =
   init: ->
     return if g.BOARD is 'f'
-    FileInfo.funks = FileInfo.setFormats()
+    @setFormats()
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline' or not node = $ '.filesize', root
-    FileInfo.type = if node.childElementCount is 2 then 0 else 1
+    type   = if node.childElementCount is 2 then 0 else 1
+    regexp = [
+      /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/
+      /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/
+    ][type]
     [_, link, size, unit, resolution, filename] =
-      node.innerHTML.match FileInfo.regexp[FileInfo.type]
+      node.innerHTML.match regexp
     FileInfo.data =
       link:       link
       size:       size
       unit:       unit
       resolution: resolution
       filename:   filename
-    node.innerHTML = FileInfo.funks[FileInfo.type] FileInfo
+      type:       type
+    node.innerHTML = FileInfo.funks[type] FileInfo
   setFormats: ->
+    funks = []
     for i in [0..1]
-      code = conf[FileInfo.conf[i]].replace FileInfo.param[i], (s, c) ->
+      format = conf[['fileInfoR', 'fileInfoT'][i]]
+      param  = [/%([BKlLMnNrs])/g, /%([BKlMrs])/g][i]
+      code   = format.replace param, (s, c) ->
         if c of FileInfo.formatters
-          "' + FileInfo.formatters.#{c}() + '"
+          "' + f.formatters.#{c}() + '"
         else
           s
-      Function 'FileInfo', "return '#{code}'"
+      funks.push Function 'f', "return '#{code}'"
+    @funks = funks
   convertUnit: (unitT) ->
-    size  = FileInfo.data.size
-    unitF = FileInfo.data.unit
+    size  = @data.size
+    unitF = @data.unit
     if unitF isnt unitT
       units = ['B', 'KB', 'MB']
       i     = units.indexOf(unitF) - units.indexOf unitT
@@ -2434,36 +2444,24 @@ FileInfo =
       if size < 1 and size.toString().length > size.toFixed(2).length
         size = size.toFixed 2
     "#{size} #{unitT}"
-  conf: [
-    'fileInfoR'
-    'fileInfoT'
-  ]
-  param: [
-    /%([BKlLMnNrs])/g
-    /%([BKlMrs])/g
-  ]
-  regexp: [
-    /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/
-    /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/
-  ]
   formatters:
     B: -> FileInfo.convertUnit 'B'
     K: -> FileInfo.convertUnit 'KB'
+    M: -> FileInfo.convertUnit 'MB'
+    s: -> "#{FileInfo.data.size} #{FileInfo.data.unit}"
     l: ->
-      if FileInfo.type is 0
-        FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.formatters.n() + '<'
+      if FileInfo.data.type is 0
+        FileInfo.data.link.replace />\d+\.\w+</, '>' + @n() + '<'
       else
         FileInfo.data.link
     L: -> FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.data.filename + '<'
-    M: -> FileInfo.convertUnit 'MB'
     n: ->
       if (ext = FileInfo.data.filename.lastIndexOf '.') > 38
-       '<span class=fnfull>' + FileInfo.data.filename + '</span><span class=fntrunc>' + FileInfo.data.filename.substr(0, 32) + ' (...)' + FileInfo.data.filename.substr(ext) + '</span>'
+        "<span class=fnfull>#{FileInfo.data.filename}</span><span class=fntrunc>#{FileInfo.data.filename.substr 0, 32}(...)#{FileInfo.data.filename.substr ext}</span>"
       else
         FileInfo.data.filename
     N: -> FileInfo.data.filename
     r: -> FileInfo.data.resolution
-    s: -> "#{FileInfo.data.size} #{FileInfo.data.unit}"
 
 getTitle = (thread) ->
   el = $ '.filetitle', thread
