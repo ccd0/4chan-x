@@ -3556,10 +3556,16 @@
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var src, thumb;
+      var img, src, thumb;
       if (root.hidden || !(thumb = $('img[md5]', root))) return;
       src = thumb.parentNode.href;
-      if (/gif$/.test(src) && !/spoiler/.test(src)) return thumb.src = src;
+      if (/gif$/.test(src) && !/spoiler/.test(src)) {
+        img = $.el('img');
+        $.on(img, 'load', function() {
+          return thumb.src = src;
+        });
+        return img.src = src;
+      }
     }
   };
 

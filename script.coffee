@@ -2862,7 +2862,11 @@ imgGif =
     return if root.hidden or !thumb = $ 'img[md5]', root
     src = thumb.parentNode.href
     if /gif$/.test(src) and !/spoiler/.test src
-      thumb.src = src
+      img = $.el 'img'
+      $.on img, 'load', ->
+        # Replace the thumbnail once the GIF has finished loading.
+        thumb.src = src
+      img.src = src
 
 imgExpand =
   init: ->
