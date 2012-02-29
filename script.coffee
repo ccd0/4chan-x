@@ -2338,7 +2338,8 @@ Time =
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline'
-    node = $ '.posttime', root
+    # .posttime exists on every board except /f/
+    node = $('.posttime', root) or $('span[id]', root).previousSibling
     Time.date = Time.parse node
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '

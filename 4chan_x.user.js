@@ -2840,7 +2840,7 @@
     node: function(root) {
       var node, time;
       if (root.className === 'inline') return;
-      node = $('.posttime', root);
+      node = $('.posttime', root) || $('span[id]', root).previousSibling;
       Time.date = Time.parse(node);
       time = $.el('time', {
         textContent: ' ' + Time.funk(Time) + ' '
