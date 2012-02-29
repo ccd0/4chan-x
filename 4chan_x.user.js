@@ -2327,7 +2327,8 @@
         size: 996,
         unit: 'KB',
         resolution: '1366x768',
-        filename: 'Untitled.png',
+        fullname: '[a.f.k.] Sayonara Zetsubou Sensei - 09.avi_snapshot_03.34_[2011.02.20_06.58.00].jpg',
+        shortname: '[a.f.k.] Sayonara Zetsubou Sen(...).jpg',
         type: type
       };
       FileInfo.setFormats();
@@ -2937,17 +2938,18 @@
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var filename, link, node, regexp, resolution, size, type, unit, _, _ref;
+      var fullname, link, node, regexp, resolution, shortname, size, type, unit, _, _ref;
       if (root.className === 'inline' || !(node = $('.filesize', root))) return;
       type = node.childElementCount === 2 ? 0 : 1;
-      regexp = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/][type];
-      _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
+      regexp = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">([^<]+)/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/][type];
+      _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], fullname = _ref[5], shortname = _ref[6];
       FileInfo.data = {
         link: link,
         size: size,
         unit: unit,
         resolution: resolution,
-        filename: filename,
+        fullname: fullname,
+        shortname: shortname,
         type: type
       };
       return node.innerHTML = FileInfo.funks[type](FileInfo);
@@ -2993,6 +2995,29 @@
       return "" + size + " " + unitT;
     },
     formatters: {
+      l: function() {
+        if (FileInfo.data.type === 0) {
+          return FileInfo.data.link.replace(/>\d+\.\w+</, ">" + (this.n()) + "<");
+        } else {
+          return FileInfo.data.link;
+        }
+      },
+      L: function() {
+        return FileInfo.data.link.replace(/>\d+\.\w+</, ">" + FileInfo.data.fullname + "<");
+      },
+      n: function() {
+        if (FileInfo.data.fullname === FileInfo.data.shortname) {
+          return FileInfo.data.fullname;
+        } else {
+          return "<span class=filename><span class=fnfull>" + FileInfo.data.fullname + "</span><span class=fntrunc>" + FileInfo.data.shortname + "</span></span>";
+        }
+      },
+      N: function() {
+        return FileInfo.data.fullname;
+      },
+      s: function() {
+        return "" + FileInfo.data.size + " " + FileInfo.data.unit;
+      },
       B: function() {
         return FileInfo.convertUnit('B');
       },
@@ -3001,30 +3026,6 @@
       },
       M: function() {
         return FileInfo.convertUnit('MB');
-      },
-      s: function() {
-        return "" + FileInfo.data.size + " " + FileInfo.data.unit;
-      },
-      l: function() {
-        if (FileInfo.data.type === 0) {
-          return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + this.n() + '<');
-        } else {
-          return FileInfo.data.link;
-        }
-      },
-      L: function() {
-        return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + FileInfo.data.filename + '<');
-      },
-      n: function() {
-        var ext;
-        if ((ext = FileInfo.data.filename.lastIndexOf('.')) > 38) {
-          return "<span class=fnfull>" + FileInfo.data.filename + "</span><span class=fntrunc>" + (FileInfo.data.filename.substr(0, 32)) + "(...)" + (FileInfo.data.filename.substr(ext)) + "</span>";
-        } else {
-          return FileInfo.data.filename;
-        }
-      },
-      N: function() {
-        return FileInfo.data.filename;
       },
       r: function() {
         return FileInfo.data.resolution;
@@ -4135,7 +4136,8 @@ td.replyhider {\
   float: left;\
   pointer-events: none;\
 }\
-.filesize a:not(:hover) .fnfull, .filesize a:hover .fntrunc {\
+.filename:hover > .fntrunc,\
+.filename:not(:hover) > .fnfull {\
   display: none;\
 }\
 img[md5], img[md5] + img {\

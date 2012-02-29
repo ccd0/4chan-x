@@ -1910,7 +1910,8 @@ options =
       size:       996
       unit:       'KB'
       resolution: '1366x768'
-      filename:   'Untitled.png'
+      fullname:   '[a.f.k.] Sayonara Zetsubou Sensei - 09.avi_snapshot_03.34_[2011.02.20_06.58.00].jpg'
+      shortname:  '[a.f.k.] Sayonara Zetsubou Sen(...).jpg'
       type:       type
     FileInfo.setFormats()
     $.id("#{@name}Preview").innerHTML = FileInfo.funks[type] FileInfo
@@ -2405,17 +2406,18 @@ FileInfo =
     return if root.className is 'inline' or not node = $ '.filesize', root
     type   = if node.childElementCount is 2 then 0 else 1
     regexp = [
-      /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/
+      /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">([^<]+)/
       /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/
     ][type]
-    [_, link, size, unit, resolution, filename] =
+    [_, link, size, unit, resolution, fullname, shortname] =
       node.innerHTML.match regexp
     FileInfo.data =
       link:       link
       size:       size
       unit:       unit
       resolution: resolution
-      filename:   filename
+      fullname:   fullname
+      shortname:  shortname
       type:       type
     node.innerHTML = FileInfo.funks[type] FileInfo
   setFormats: ->
@@ -2445,22 +2447,22 @@ FileInfo =
         size = size.toFixed 2
     "#{size} #{unitT}"
   formatters:
+    l: ->
+      if FileInfo.data.type is 0
+        FileInfo.data.link.replace />\d+\.\w+</, ">#{@n()}<"
+      else
+        FileInfo.data.link
+    L: -> FileInfo.data.link.replace />\d+\.\w+</, ">#{FileInfo.data.fullname}<"
+    n: ->
+      if FileInfo.data.fullname is FileInfo.data.shortname
+        FileInfo.data.fullname
+      else
+        "<span class=filename><span class=fnfull>#{FileInfo.data.fullname}</span><span class=fntrunc>#{FileInfo.data.shortname}</span></span>"
+    N: -> FileInfo.data.fullname
+    s: -> "#{FileInfo.data.size} #{FileInfo.data.unit}"
     B: -> FileInfo.convertUnit 'B'
     K: -> FileInfo.convertUnit 'KB'
     M: -> FileInfo.convertUnit 'MB'
-    s: -> "#{FileInfo.data.size} #{FileInfo.data.unit}"
-    l: ->
-      if FileInfo.data.type is 0
-        FileInfo.data.link.replace />\d+\.\w+</, '>' + @n() + '<'
-      else
-        FileInfo.data.link
-    L: -> FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.data.filename + '<'
-    n: ->
-      if (ext = FileInfo.data.filename.lastIndexOf '.') > 38
-        "<span class=fnfull>#{FileInfo.data.filename}</span><span class=fntrunc>#{FileInfo.data.filename.substr 0, 32}(...)#{FileInfo.data.filename.substr ext}</span>"
-      else
-        FileInfo.data.filename
-    N: -> FileInfo.data.filename
     r: -> FileInfo.data.resolution
 
 getTitle = (thread) ->
@@ -3428,7 +3430,8 @@ td.replyhider {
   float: left;
   pointer-events: none;
 }
-.filesize a:not(:hover) .fnfull, .filesize a:hover .fntrunc {
+.filename:hover > .fntrunc,
+.filename:not(:hover) > .fnfull {
   display: none;
 }
 img[md5], img[md5] + img {
