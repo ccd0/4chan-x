@@ -1856,7 +1856,7 @@
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('[name=pwd]').value,
         recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response
+        recaptcha_response_field: response + ' '
       };
       qr.status({
         progress: '...'
