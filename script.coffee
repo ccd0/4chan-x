@@ -109,8 +109,8 @@ config =
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
-  fileInfoR: '%l, %s, %r'
-  fileInfoT: '%l, %s, %r'
+  fileInfoR: '%l (%s, %r)'
+  fileInfoT: '%l (%s, %r)'
   favicon: 'ferongr'
   hotkeys:
     openOptions:     ['ctrl+o', 'Open Options']
