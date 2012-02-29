@@ -2931,29 +2931,22 @@
   FileInfo = {
     init: function() {
       if (g.BOARD === 'f') return;
-      FileInfo.ffConf = ['fileInfoR', 'fileInfoT'];
-      FileInfo.ffMtrs = [/%([BKlLMnNrs])/g, /%([BKlMrs])/g];
-      FileInfo.ffRgex = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/];
-      this.parse = function(node) {
-        var filename, link, resolution, size, unit, _, _ref;
-        FileInfo.ffType = node.childNodes.length > 3 ? 0 : 1;
-        _ref = node.innerHTML.match(FileInfo.ffRgex[FileInfo.ffType]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
-        return {
-          link: link,
-          size: size,
-          unit: unit,
-          resolution: resolution,
-          filename: filename
-        };
-      };
       FileInfo.funks = FileInfo.setFormats();
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var node;
+      var filename, link, node, resolution, size, unit, _, _ref;
       if (root.className === 'inline' || !(node = $('.filesize', root))) return;
-      FileInfo.data = FileInfo.parse(node);
-      return node.innerHTML = FileInfo.funks[FileInfo.ffType](FileInfo) + ' ';
+      FileInfo.ffType = node.childElementCount === 2 ? 0 : 1;
+      _ref = node.innerHTML.match(FileInfo.ffRgex[FileInfo.ffType]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
+      FileInfo.data = {
+        link: link,
+        size: size,
+        unit: unit,
+        resolution: resolution,
+        filename: filename
+      };
+      return node.innerHTML = FileInfo.funks[FileInfo.ffType](FileInfo);
     },
     setFormats: function() {
       var code, i, _results;
@@ -2993,6 +2986,9 @@
       }
       return "" + size + " " + unitT;
     },
+    ffConf: ['fileInfoR', 'fileInfoT'],
+    ffMtrs: [/%([BKlLMnNrs])/g, /%([BKlMrs])/g],
+    ffRgex: [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/],
     formatters: {
       B: function() {
         return FileInfo.convertUnit('B');

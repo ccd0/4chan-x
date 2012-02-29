@@ -2398,26 +2398,20 @@ Time =
 FileInfo =
   init: ->
     return if g.BOARD is 'f'
-    FileInfo.ffConf = [ 'fileInfoR', 'fileInfoT' ]
-    FileInfo.ffMtrs = [ /%([BKlLMnNrs])/g, /%([BKlMrs])/g ]
-    FileInfo.ffRgex = [ /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/,
-                          /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/ ]
-    @parse = (node) ->
-      FileInfo.ffType = if node.childNodes.length > 3 then 0 else 1
-      [_, link, size, unit, resolution, filename] =
-        node.innerHTML.match FileInfo.ffRgex[FileInfo.ffType]
-      link      : link
-      size      : size
-      unit      : unit
-      resolution: resolution
-      filename  : filename
-
     FileInfo.funks = FileInfo.setFormats()
     g.callbacks.push @node
   node: (root) ->
     return if root.className is 'inline' or not node = $ '.filesize', root
-    FileInfo.data = FileInfo.parse node
-    node.innerHTML  = FileInfo.funks[FileInfo.ffType](FileInfo) + ' '
+    FileInfo.ffType = if node.childElementCount is 2 then 0 else 1
+    [_, link, size, unit, resolution, filename] =
+      node.innerHTML.match FileInfo.ffRgex[FileInfo.ffType]
+    FileInfo.data =
+      link:       link
+      size:       size
+      unit:       unit
+      resolution: resolution
+      filename:   filename
+    node.innerHTML = FileInfo.funks[FileInfo.ffType] FileInfo
   setFormats: ->
     for i in [0..1]
       code = conf[FileInfo.ffConf[i]].replace FileInfo.ffMtrs[i], (s, c) ->
@@ -2430,8 +2424,8 @@ FileInfo =
     size  = FileInfo.data.size
     unitF = FileInfo.data.unit
     if unitF isnt unitT
-      units = [ 'B', 'KB', 'MB' ]
-      i     = units.indexOf(unitF) - units.indexOf(unitT)
+      units = ['B', 'KB', 'MB']
+      i     = units.indexOf(unitF) - units.indexOf unitT
       unitT = 'Bytes' if unitT is 'B'
       if i > 0
         size *= 1024 while i-- > 0
@@ -2440,19 +2434,33 @@ FileInfo =
       if size < 1 and size.toString().length > size.toFixed(2).length
         size = size.toFixed 2
     "#{size} #{unitT}"
+  ffConf: [
+    'fileInfoR'
+    'fileInfoT'
+  ]
+  ffMtrs: [
+    /%([BKlLMnNrs])/g
+    /%([BKlMrs])/g
+  ]
+  ffRgex: [
+    /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/
+    /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/
+  ]
   formatters:
     B: -> FileInfo.convertUnit 'B'
     K: -> FileInfo.convertUnit 'KB'
-    l: -> if FileInfo.ffType is 0
-            FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.formatters.n() + '<'
-          else
-            FileInfo.data.link
+    l: ->
+      if FileInfo.ffType is 0
+        FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.formatters.n() + '<'
+      else
+        FileInfo.data.link
     L: -> FileInfo.data.link.replace />\d+\.\w+</, '>' + FileInfo.data.filename + '<'
     M: -> FileInfo.convertUnit 'MB'
-    n: -> if (ext = FileInfo.data.filename.lastIndexOf '.') > 38
-           '<span class=fnfull>' + FileInfo.data.filename + '</span><span class=fntrunc>' + FileInfo.data.filename.substr(0, 32) + ' (...)' + FileInfo.data.filename.substr(ext) + '</span>'
-          else
-            FileInfo.data.filename
+    n: ->
+      if (ext = FileInfo.data.filename.lastIndexOf '.') > 38
+       '<span class=fnfull>' + FileInfo.data.filename + '</span><span class=fntrunc>' + FileInfo.data.filename.substr(0, 32) + ' (...)' + FileInfo.data.filename.substr(ext) + '</span>'
+      else
+        FileInfo.data.filename
     N: -> FileInfo.data.filename
     r: -> FileInfo.data.resolution
     s: -> "#{FileInfo.data.size} #{FileInfo.data.unit}"
