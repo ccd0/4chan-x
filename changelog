@@ -10,6 +10,7 @@ master
   Fix stubs if poster has unique ID.
 - Mayhem
   You can now filter or highlight admin/mod posts.
+  New sauce parameter. $4: Current board.
 
 2.27.1
 - Mayhem

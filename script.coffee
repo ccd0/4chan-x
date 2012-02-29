@@ -104,8 +104,8 @@ config =
     '#http://imgur.com/upload?url=$2'
     '#http://omploader.org/upload?url1=$2'
     '# "View Same" in archives:'
-    '#http://archive.foolz.us/a/image/$3/'
-    '#http://archive.installgentoo.net/g/image/$3'
+    '#http://archive.foolz.us/$4/image/$3/'
+    '#http://archive.installgentoo.net/$4/image/$3'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
@@ -1723,10 +1723,11 @@ options =
   <div>
     <div class=warning><code>Sauce</code> is disabled.</div>
     Lines starting with a <code>#</code> will be ignored.
-    <ul>These variables will be replaced by the corresponding url:
-      <li>$1: Thumbnail.</li>
-      <li>$2: Full image.</li>
+    <ul>These parameters will be replaced by their corresponding values:
+      <li>$1: Thumbnail url.</li>
+      <li>$2: Full image url.</li>
       <li>$3: MD5 hash.</li>
+      <li>$4: Current board.</li>
     </ul>
     <textarea name=sauces id=sauces></textarea>
   </div>
@@ -2282,14 +2283,16 @@ sauce =
 
   funk: (link) ->
     domain = link.match(/(\w+)\.\w+\//)[1]
-    href   = link.replace /(\$\d)/, (fragment) ->
-      switch fragment
+    href   = link.replace /(\$\d)/g, (parameter) ->
+      switch parameter
         when '$1'
           "http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '"
         when '$2'
           "' + img.href + '"
         when '$3'
           "' + img.firstChild.getAttribute('md5').replace(/\=*$/, '') + '"
+        when '$4'
+          g.BOARD
     href = Function 'img', "return '#{href}'"
     (img) ->
       $.el 'a',

@@ -148,7 +148,7 @@
       filesize: [''].join('\n'),
       md5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/a/image/$3/', '#http://archive.installgentoo.net/g/image/$3'].join('\n'),
+    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/$4/image/$3/', '#http://archive.installgentoo.net/$4/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     fileInfoR: '%l, %s, %r',
@@ -2125,10 +2125,11 @@
   <div>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
     Lines starting with a <code>#</code> will be ignored.\
-    <ul>These variables will be replaced by the corresponding url:\
-      <li>$1: Thumbnail.</li>\
-      <li>$2: Full image.</li>\
+    <ul>These parameters will be replaced by their corresponding values:\
+      <li>$1: Thumbnail url.</li>\
+      <li>$2: Full image url.</li>\
       <li>$3: MD5 hash.</li>\
+      <li>$4: Current board.</li>\
     </ul>\
     <textarea name=sauces id=sauces></textarea>\
   </div>\
@@ -2771,14 +2772,16 @@
     funk: function(link) {
       var domain, href;
       domain = link.match(/(\w+)\.\w+\//)[1];
-      href = link.replace(/(\$\d)/, function(fragment) {
-        switch (fragment) {
+      href = link.replace(/(\$\d)/g, function(parameter) {
+        switch (parameter) {
           case '$1':
             return "http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '";
           case '$2':
             return "' + img.href + '";
           case '$3':
             return "' + img.firstChild.getAttribute('md5').replace(/\=*$/, '') + '";
+          case '$4':
+            return g.BOARD;
         }
       });
       href = Function('img', "return '" + href + "'");
