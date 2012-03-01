@@ -148,11 +148,11 @@
       filesize: [''].join('\n'),
       md5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/a/image/$3/', '#http://archive.installgentoo.net/g/image/$3'].join('\n'),
+    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/$4/image/$3/', '#http://archive.installgentoo.net/$4/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
-    fileInfoR: '%l, %s, %r',
-    fileInfoT: '%l, %s, %r',
+    fileInfoR: '%l (%s, %r)',
+    fileInfoT: '%l (%s, %r)',
     favicon: 'ferongr',
     hotkeys: {
       openOptions: ['ctrl+o', 'Open Options'],
@@ -584,7 +584,11 @@
           return false;
         }
         if (hl) {
-          $.addClass(root, hl);
+          if (isOP) {
+            $.addClass(root, hl);
+          } else {
+            $.addClass(root.parentNode, hl);
+          }
           if (isOP && top && !g.REPLY) {
             thisThread = root.parentNode;
             if (firstThread = $('div[class=op]')) {
@@ -660,8 +664,10 @@
       return false;
     },
     dimensions: function(root) {
-      var span;
-      if (span = $('.filesize', root)) return span.textContent.match(/\d+x\d+/)[0];
+      var match, span;
+      if ((span = $('.filesize', root)) && (match = span.textContent.match(/\d+x\d+/))) {
+        return match[0];
+      }
       return false;
     },
     filesize: function(root) {
@@ -1698,7 +1704,7 @@
       }
     },
     dialog: function() {
-      var e, fileInput, input, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
+      var e, event, fileInput, input, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
       qr.el = ui.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
@@ -1774,12 +1780,13 @@
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         name = _ref2[_j];
         input = $("[name=" + name + "]", qr.el);
-        $.on(input, 'keyup', function() {
-          return qr.selected[this.name] = this.value;
-        });
-        $.on(input, 'change', function() {
-          return qr.selected[this.name] = this.value;
-        });
+        _ref3 = ['textInput', 'keyup', 'change', 'paste'];
+        for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
+          event = _ref3[_k];
+          $.on(input, event, function() {
+            return qr.selected[this.name] = this.value;
+          });
+        }
       }
       $.sync('qr.persona', function(persona) {
         var key, val, _results;
@@ -1856,7 +1863,7 @@
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('[name=pwd]').value,
         recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response
+        recaptcha_response_field: response + ' '
       };
       qr.status({
         progress: '...'
@@ -2119,10 +2126,11 @@
   <div>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
     Lines starting with a <code>#</code> will be ignored.\
-    <ul>These variables will be replaced by the corresponding url:\
-      <li>$1: Thumbnail.</li>\
-      <li>$2: Full image.</li>\
+    <ul>These parameters will be replaced by their corresponding values:\
+      <li>$1: Thumbnail url.</li>\
+      <li>$2: Full image url.</li>\
       <li>$3: MD5 hash.</li>\
+      <li>$4: Current board.</li>\
     </ul>\
     <textarea name=sauces id=sauces></textarea>\
   </div>\
@@ -2173,7 +2181,7 @@
       <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>\
       <li>Link: %l (lowercase L)</li>\
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>\
-      <li>Resolution: %r (Displays PDF on /po/, for PDF\'s)</li>\
+      <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>\
       Reply File Info Formatting\
       <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>\
       <li>All thread formatters also work for reply formatting.</li>\
@@ -2312,16 +2320,19 @@
       return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
     },
     fileInfo: function() {
-      FileInfo.ffType = this.name === 'fileInfoR' ? 0 : 1;
+      var type;
+      type = this.name === 'fileInfoR' ? 0 : 1;
       FileInfo.data = {
         link: '<a href="javascript:;">1329791824.png</a>',
         size: 996,
         unit: 'KB',
         resolution: '1366x768',
-        filename: 'Untitled.png'
+        fullname: '[a.f.k.] Sayonara Zetsubou Sensei - 09.avi_snapshot_03.34_[2011.02.20_06.58.00].jpg',
+        shortname: '[a.f.k.] Sayonara Zetsubou Sen(...).jpg',
+        type: type
       };
-      FileInfo.funks = FileInfo.setFormats();
-      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[FileInfo.ffType](FileInfo);
+      FileInfo.setFormats();
+      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[type](FileInfo);
     },
     favicon: function() {
       Favicon["switch"]();
@@ -2765,14 +2776,16 @@
     funk: function(link) {
       var domain, href;
       domain = link.match(/(\w+)\.\w+\//)[1];
-      href = link.replace(/(\$\d)/, function(fragment) {
-        switch (fragment) {
+      href = link.replace(/(\$\d)/g, function(parameter) {
+        switch (parameter) {
           case '$1':
             return "http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '";
           case '$2':
             return "' + img.href + '";
           case '$3':
             return "' + img.firstChild.getAttribute('md5').replace(/\=*$/, '') + '";
+          case '$4':
+            return g.BOARD;
         }
       });
       href = Function('img', "return '" + href + "'");
@@ -2819,7 +2832,7 @@
       Time.foo();
       chanOffset = 5 - new Date().getTimezoneOffset() / 60;
       if ($.isDST()) chanOffset--;
-      this.parse = Date.parse('10/11/11(Tue)18:53' === 1318351980000) ? function(node) {
+      this.parse = Date.parse('10/11/11(Tue)18:53') === 1318351980000 ? function(node) {
         return new Date(Date.parse(node.textContent) + chanOffset * HOUR);
       } : function(node) {
         var day, hour, min, month, year, _, _ref;
@@ -2834,7 +2847,7 @@
     node: function(root) {
       var node, time;
       if (root.className === 'inline') return;
-      node = $('.posttime', root);
+      node = $('.posttime', root) || $('span[id]', root).previousSibling;
       Time.date = Time.parse(node);
       time = $.el('time', {
         textContent: ' ' + Time.funk(Time) + ' '
@@ -2921,49 +2934,47 @@
   FileInfo = {
     init: function() {
       if (g.BOARD === 'f') return;
-      FileInfo.ffConf = ['fileInfoR', 'fileInfoT'];
-      FileInfo.ffMtrs = [/%([BKlLMnNrs])/g, /%([BKlMrs])/g];
-      FileInfo.ffRgex = [/File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF),\s<span\stitle=\"([^\"]+)\">/, /File:\s(<a.+<\/a>)-\((?:Spoiler Image,\s)?([\d\.]+)\s([BKM]{1,2}),\s(\d+x\d+|PDF)\)/];
-      this.parse = function(node) {
-        var filename, link, resolution, size, unit, _, _ref;
-        FileInfo.ffType = node.childNodes.length > 3 ? 0 : 1;
-        _ref = node.innerHTML.match(FileInfo.ffRgex[FileInfo.ffType]), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], filename = _ref[5];
-        return {
-          link: link,
-          size: size,
-          unit: unit,
-          resolution: resolution,
-          filename: filename
-        };
-      };
-      FileInfo.funks = FileInfo.setFormats();
+      this.setFormats();
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var node;
+      var fullname, link, node, regexp, resolution, shortname, size, type, unit, _, _ref;
       if (root.className === 'inline' || !(node = $('.filesize', root))) return;
-      FileInfo.data = FileInfo.parse(node);
-      return node.innerHTML = FileInfo.funks[FileInfo.ffType](FileInfo) + ' ';
+      type = node.childElementCount === 2 ? 0 : 1;
+      regexp = type ? /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/ : /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF), <span title="(.+)">([^<]+)/;
+      _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], fullname = _ref[5], shortname = _ref[6];
+      FileInfo.data = {
+        link: link,
+        size: size,
+        unit: unit,
+        resolution: resolution,
+        fullname: fullname,
+        shortname: shortname,
+        type: type
+      };
+      return node.innerHTML = FileInfo.funks[type](FileInfo);
     },
     setFormats: function() {
-      var code, i, _results;
-      _results = [];
+      var code, format, funks, i, param;
+      funks = [];
       for (i = 0; i <= 1; i++) {
-        code = conf[FileInfo.ffConf[i]].replace(FileInfo.ffMtrs[i], function(s, c) {
+        format = i ? conf['fileInfoT'] : conf['fileInfoR'];
+        param = i ? /%([BKlMrs])/g : /%([BKlLMnNrs])/g;
+        code = format.replace(param, function(s, c) {
           if (c in FileInfo.formatters) {
-            return "' + FileInfo.formatters." + c + "() + '";
+            return "' + f.formatters." + c + "() + '";
           } else {
             return s;
           }
         });
-        _results.push(Function('FileInfo', "return '" + code + "'"));
+        funks.push(Function('f', "return '" + code + "'"));
       }
-      return _results;
+      return this.funks = funks;
     },
     convertUnit: function(unitT) {
       var i, size, unitF, units;
-      size = FileInfo.data.size;
-      unitF = FileInfo.data.unit;
+      size = this.data.size;
+      unitF = this.data.unit;
       if (unitF !== unitT) {
         units = ['B', 'KB', 'MB'];
         i = units.indexOf(unitF) - units.indexOf(unitT);
@@ -2984,41 +2995,40 @@
       return "" + size + " " + unitT;
     },
     formatters: {
+      l: function() {
+        if (FileInfo.data.type === 0) {
+          return FileInfo.data.link.replace(/>\d+\.\w+</, ">" + (this.n()) + "<");
+        } else {
+          return FileInfo.data.link;
+        }
+      },
+      L: function() {
+        return FileInfo.data.link.replace(/>\d+\.\w+</, ">" + FileInfo.data.fullname + "<");
+      },
+      n: function() {
+        if (FileInfo.data.fullname === FileInfo.data.shortname) {
+          return FileInfo.data.fullname;
+        } else {
+          return "<span class=filename><span class=fnfull>" + FileInfo.data.fullname + "</span><span class=fntrunc>" + FileInfo.data.shortname + "</span></span>";
+        }
+      },
+      N: function() {
+        return FileInfo.data.fullname;
+      },
+      s: function() {
+        return "" + FileInfo.data.size + " " + FileInfo.data.unit;
+      },
       B: function() {
         return FileInfo.convertUnit('B');
       },
       K: function() {
         return FileInfo.convertUnit('KB');
       },
-      l: function() {
-        if (FileInfo.ffType === 0) {
-          return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + FileInfo.formatters.n() + '<');
-        } else {
-          return FileInfo.data.link;
-        }
-      },
-      L: function() {
-        return FileInfo.data.link.replace(/>\d+\.\w+</, '>' + FileInfo.data.filename + '<');
-      },
       M: function() {
         return FileInfo.convertUnit('MB');
       },
-      n: function() {
-        var ext;
-        if ((ext = FileInfo.data.filename.lastIndexOf('.')) > 38) {
-          return '<span class=fnfull>' + FileInfo.data.filename + '</span><span class=fntrunc>' + FileInfo.data.filename.substr(0, 32) + ' (...)' + FileInfo.data.filename.substr(ext) + '</span>';
-        } else {
-          return FileInfo.data.filename;
-        }
-      },
-      N: function() {
-        return FileInfo.data.filename;
-      },
       r: function() {
         return FileInfo.data.resolution;
-      },
-      s: function() {
-        return "" + FileInfo.data.size + " " + FileInfo.data.unit;
       }
     }
   };
@@ -3556,10 +3566,16 @@
       return g.callbacks.push(this.node);
     },
     node: function(root) {
-      var src, thumb;
+      var img, src, thumb;
       if (root.hidden || !(thumb = $('img[md5]', root))) return;
       src = thumb.parentNode.href;
-      if (/gif$/.test(src) && !/spoiler/.test(src)) return thumb.src = src;
+      if (/gif$/.test(src) && !/spoiler/.test(src)) {
+        img = $.el('img');
+        $.on(img, 'load', function() {
+          return thumb.src = src;
+        });
+        return img.src = src;
+      }
     }
   };
 
@@ -4120,7 +4136,8 @@ td.replyhider {\
   float: left;\
   pointer-events: none;\
 }\
-.filesize a:not(:hover) .fnfull, .filesize a:hover .fntrunc {\
+.filename:hover > .fntrunc,\
+.filename:not(:hover) > .fnfull {\
   display: none;\
 }\
 img[md5], img[md5] + img {\
@@ -4262,7 +4279,8 @@ td > .filesize > img[md5] {\
 .filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
   background: none;\
 }\
-.filter_highlight {\
+.filter_highlight.op,\
+.filter_highlight > td[id] {\
   box-shadow: -5px 0 rgba(255,0,0,0.5);\
 }\
 .filtered {\
