@@ -81,8 +81,28 @@ HEADER  = """
 
 """
 
-INFILE  = 'script.coffee'
-OUTFILE = '4chan_x.user.js'
+CAKEFILE  = 'Cakefile'
+INFILE    = 'script.coffee'
+OUTFILE   = '4chan_x.user.js'
+CHANGELOG = 'changelog'
+LATEST    = 'latest.js'
+
+option '-v', '--version [version]', 'Upgrade version.'
+
+task 'upgrade', (options) ->
+  {version} = options
+  unless version
+    return
+  fs.writeFile LATEST, "postMessage({version:'#{version}'},'*')"
+  for file in [CAKEFILE, INFILE]
+    data = fs.readFileSync file, 'utf8'
+    fs.writeFile file, data.replace(/^VERSION = .+/m, "VERSION = '#{version}'")
+  data = fs.readFileSync CHANGELOG, 'utf8'
+  fs.writeFile CHANGELOG, data.replace('master', "master\n\n#{version}")
+  exec 'cake build'
+  exec "git commit -am 'Release #{version}.'"
+  exec "git tag -a #{version} -m '#{version}'"
+  exec "git tag -af stable -m '#{version}'"
 
 task 'build', ->
   exec 'coffee --print script.coffee', (err, stdout, stderr) ->
