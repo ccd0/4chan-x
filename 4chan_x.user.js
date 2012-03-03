@@ -3843,7 +3843,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var MutationObserver, form, nodes, observer;
+      var MutationObserver, form, nav, nodes, observer, _i, _len, _ref;
       if (d.title === '4chan - 404') {
         redirect.init();
         return;
@@ -3851,6 +3851,11 @@
       if (!$.id('navtopr')) return;
       $.addClass(d.body, "chanx_" + (VERSION.match(/\.(\d+)/)[1]));
       $.addClass(d.body, engine);
+      _ref = ['navtop', 'navbot'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        nav = _ref[_i];
+        $.addClass($("a[href$='/" + g.BOARD + "/']", $.id(nav)), 'current');
+      }
       form = $('form[name=delform]');
       threading.thread(form.firstElementChild);
       Favicon.init();

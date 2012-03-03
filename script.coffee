@@ -3141,6 +3141,8 @@ Main =
       return
     $.addClass d.body, "chanx_#{VERSION.match(/\.(\d+)/)[1]}"
     $.addClass d.body, engine
+    for nav in ['navtop', 'navbot']
+      $.addClass $("a[href$='/#{g.BOARD}/']", $.id nav), 'current'
     form = $ 'form[name=delform]'
     threading.thread form.firstElementChild
     Favicon.init()
