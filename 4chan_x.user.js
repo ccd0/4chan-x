@@ -633,7 +633,7 @@
     },
     uniqueid: function(post) {
       var uniqueid;
-      if (uniqueid = $('.posteruid', post)) return uniqueid.textContent;
+      if (uniqueid = $('.posteruid', post.el)) return uniqueid.textContent;
       return false;
     },
     tripcode: function(post) {

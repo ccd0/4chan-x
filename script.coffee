@@ -557,7 +557,7 @@ filter =
     name = if post.isOP then $ '.postername', post.el else $ '.commentpostername', post.el
     name.textContent
   uniqueid: (post) ->
-    if uniqueid = $ '.posteruid', post
+    if uniqueid = $ '.posteruid', post.el
       return uniqueid.textContent
     false
   tripcode: (post) ->
