@@ -2509,9 +2509,11 @@ quoteBacklink =
         $.on link, 'click', quoteInline.toggle
       unless (container = $ '.container', el) and container.parentNode is el
         container = $.el 'span', className: 'container'
+        $.add container, [$.tn(' '), link]
         root = $('.reportbutton', el) or $('span[id]', el)
         $.after root, container
-      $.add container, [$.tn(' '), link]
+      else
+        $.add container, [$.tn(' '), link]
     return
 
 quoteInline =

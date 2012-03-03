@@ -3087,10 +3087,12 @@
           container = $.el('span', {
             className: 'container'
           });
+          $.add(container, [$.tn(' '), link]);
           root = $('.reportbutton', el) || $('span[id]', el);
           $.after(root, container);
+        } else {
+          $.add(container, [$.tn(' '), link]);
         }
-        $.add(container, [$.tn(' '), link]);
       }
     }
   };
