@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, FileInfo, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base;
+  var $, $$, DAY, Favicon, FileInfo, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteCT, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base;
 
   config = {
     main: {
@@ -766,7 +766,7 @@
       if (conf['Quote Preview']) quotePreview.node(bq);
       if (conf['Quote Inline']) quoteInline.node(bq);
       if (conf['Indicate OP quote']) quoteOP.node(bq);
-      if (conf['Indicate Cross-thread Quotes']) return quoteDR.node(bq);
+      if (conf['Indicate Cross-thread Quotes']) return quoteCT.node(bq);
     }
   };
 
@@ -3337,7 +3337,7 @@
     }
   };
 
-  quoteDR = {
+  quoteCT = {
     init: function() {
       return g.callbacks.push(this.node);
     },
@@ -3844,7 +3844,7 @@
       if (conf['Quote Preview']) quotePreview.init();
       if (conf['Quote Backlinks']) quoteBacklink.init();
       if (conf['Indicate OP quote']) quoteOP.init();
-      if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
+      if (conf['Indicate Cross-thread Quotes']) quoteCT.init();
       return $.ready(Main.ready);
     },
     ready: function() {

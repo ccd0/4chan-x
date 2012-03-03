@@ -652,7 +652,7 @@ expandComment =
     if conf['Indicate OP quote']
       quoteOP.node bq
     if conf['Indicate Cross-thread Quotes']
-      quoteDR.node bq
+      quoteCT.node bq
 
 expandThread =
   init: ->
@@ -2705,7 +2705,7 @@ quoteOP =
         $.add quote, $.tn '\u00A0(OP)'
     return
 
-quoteDR =
+quoteCT =
   init: ->
     g.callbacks.push @node
   node: (post) ->
@@ -3138,7 +3138,7 @@ Main =
       quoteOP.init()
 
     if conf['Indicate Cross-thread Quotes']
-      quoteDR.init()
+      quoteCT.init()
 
     $.ready Main.ready
 
