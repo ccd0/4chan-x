@@ -759,7 +759,8 @@
       $.replace(a.parentNode.parentNode, bq);
       if (conf['Quote Preview']) quotePreview.node(bq);
       if (conf['Quote Inline']) quoteInline.node(bq);
-      return quoteIndicators.node(bq);
+      if (conf['Indicate OP quote']) quoteOP.node(bq);
+      if (conf['Indicate Cross-thread Quotes']) return quoteDR.node(bq);
     }
   };
 
@@ -3587,7 +3588,7 @@
     },
     node: function(post) {
       var img, src;
-      if (post.root.hidden || post.img) return;
+      if (post.root.hidden || !post.img) return;
       src = post.img.parentNode.href;
       if (/gif$/.test(src) && !/spoiler/.test(src)) {
         img = $.el('img');

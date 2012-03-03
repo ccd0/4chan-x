@@ -641,7 +641,10 @@ expandComment =
       quotePreview.node bq
     if conf['Quote Inline']
       quoteInline.node bq
-    quoteIndicators.node bq
+    if conf['Indicate OP quote']
+      quoteOP.node bq
+    if conf['Indicate Cross-thread Quotes']
+      quoteDR.node bq
 
 expandThread =
   init: ->
@@ -2892,7 +2895,7 @@ imgGif =
   init: ->
     g.callbacks.push @node
   node: (post) ->
-    return if post.root.hidden or post.img
+    return if post.root.hidden or not post.img
     src = post.img.parentNode.href
     if /gif$/.test(src) and !/spoiler/.test src
       img = $.el 'img'
