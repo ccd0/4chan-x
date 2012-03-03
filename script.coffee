@@ -3220,7 +3220,7 @@ Main =
         id:        $('input', node).name
         threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
         isOP:      klass is 'op'
-        isInlined: /\binlined\b/.test klass
+        isInlined: /\binline\b/.test klass
         filesize:  $ '.filesize', node
         img:       $ 'img[md5]', node
         quotes:    $$ '.quotelink', node
