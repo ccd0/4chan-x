@@ -51,10 +51,11 @@
  *
  * CONTRIBUTORS
  *
+ * noface - unique ID fixes
  * desuwa - Firefox filename upload fix
  * seaweed - bottom padding for image hover
  * e000 - cooldown sanity check
- * ahokadesuka - scroll back when unexpanding images
+ * ahodesuka - scroll back when unexpanding images, file info formatting
  * Shou- - pentadactyl fixes
  * ferongr - new favicons
  * xat- - new favicons
