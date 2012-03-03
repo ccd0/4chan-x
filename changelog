@@ -1,6 +1,8 @@
 master
 - Mayhem
   General performance improvements.
+- noface
+  Add unique ID to filter.
 
 2.28.0
 - ahodesuka
@@ -12,7 +14,6 @@ master
 - noface
   Update imagelimit for /mlp/.
   Fix stubs if poster has unique ID.
-  Add unique ID to filter.
 - Mayhem
   You can now filter or highlight admin/mod posts.
   New sauce parameter. $4: Current board.
