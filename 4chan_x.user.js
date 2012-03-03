@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, DAY, Favicon, FileInfo, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteIndicators, quoteInline, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base;
+  var $, $$, DAY, Favicon, FileInfo, HOUR, MINUTE, Main, NAMESPACE, SECOND, Time, VERSION, anonymize, conf, config, d, engine, expandComment, expandThread, filter, flatten, g, getTitle, imgExpand, imgGif, imgHover, key, keybinds, log, nav, options, qr, quoteBacklink, quoteDR, quoteInline, quoteOP, quotePreview, redirect, replyHiding, reportButton, revealSpoilers, sauce, strikethroughQuotes, threadHiding, threadStats, threading, titlePost, ui, unread, updater, val, watcher, _base;
 
   config = {
     main: {
@@ -575,8 +575,9 @@
       if (Object.keys(this.filters).length) return g.callbacks.push(this.node);
     },
     createFilter: function(regexp, op, hl, top) {
-      return function(root, value, isOP) {
-        var firstThread, thisThread;
+      return function(post, value) {
+        var el, firstThread, isOP, thisThread;
+        el = post.el, isOP = post.isOP;
         if (isOP && op === 'no' || !isOP && op === 'only') return false;
         if (typeof regexp === 'string') {
           if (regexp !== value) return false;
@@ -585,12 +586,12 @@
         }
         if (hl) {
           if (isOP) {
-            $.addClass(root, hl);
+            $.addClass(el, hl);
           } else {
-            $.addClass(root.parentNode, hl);
+            $.addClass(el.parentNode, hl);
           }
           if (isOP && top && !g.REPLY) {
-            thisThread = root.parentNode;
+            thisThread = el.parentNode;
             if (firstThread = $('div[class=op]')) {
               $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
             }
@@ -598,86 +599,85 @@
           return false;
         }
         if (isOP) {
-          if (!g.REPLY) threadHiding.hideHide(root.parentNode);
+          if (!g.REPLY) threadHiding.hideHide(el.parentNode);
         } else {
-          replyHiding.hideHide(root);
+          replyHiding.hideHide(el);
         }
         return true;
       };
     },
-    node: function(root) {
-      var Filter, isOP, key, klass, value, _i, _len, _ref;
-      klass = root.className;
-      if (/\binlined\b/.test(klass)) return;
-      if (!(isOP = klass === 'op')) root = $('td[id]', root);
+    node: function(post) {
+      var Filter, key, value, _i, _len, _ref;
+      if (post.isInlined) return;
       for (key in filter.filters) {
-        value = filter[key](root, isOP);
+        value = filter[key](post);
         if (value === false) continue;
         _ref = filter.filters[key];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           Filter = _ref[_i];
-          if (Filter(root, value, isOP)) return;
+          if (Filter(post, value)) return;
         }
       }
     },
-    name: function(root, isOP) {
+    name: function(post) {
       var name;
-      name = isOP ? $('.postername', root) : $('.commentpostername', root);
+      name = post.isOP ? $('.postername', post.el) : $('.commentpostername', post.el);
       return name.textContent;
     },
-    tripcode: function(root) {
+    tripcode: function(post) {
       var trip;
-      if (trip = $('.postertrip', root)) return trip.textContent;
+      if (trip = $('.postertrip', post.el)) return trip.textContent;
       return false;
     },
-    mod: function(root, isOP) {
+    mod: function(post) {
       var mod;
-      if (mod = (isOP ? $('.commentpostername', root) : $('.commentpostername ~ .commentpostername', root))) {
+      if (mod = (post.isOP ? $('.commentpostername', post.el) : $('.commentpostername ~ .commentpostername', post.el))) {
         return mod.textContent;
       }
       return false;
     },
-    email: function(root) {
+    email: function(post) {
       var mail;
-      if (mail = $('.linkmail', root)) return mail.href;
+      if (mail = $('.linkmail', post.el)) return mail.href;
       return false;
     },
-    subject: function(root, isOP) {
+    subject: function(post) {
       var sub;
-      sub = isOP ? $('.filetitle', root) : $('.replytitle', root);
+      sub = post.isOP ? $('.filetitle', post.el) : $('.replytitle', post.el);
       return sub.textContent;
     },
-    comment: function(root) {
-      var data, i, len, nodes, text;
+    comment: function(post) {
+      var data, i, nodes, text, _ref;
       text = [];
-      nodes = d.evaluate('.//br|.//text()', root.lastChild, null, 7, null);
-      i = 0;
-      len = nodes.snapshotLength;
-      while (i < len) {
-        text.push((data = nodes.snapshotItem(i++).data) ? data : '\n');
+      nodes = d.evaluate('.//br|.//text()', post.bq, null, 7, null);
+      for (i = 0, _ref = nodes.snapshotLength; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
+        text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
       return text.join('');
     },
-    filename: function(root) {
+    filename: function(post) {
       var file;
-      if (file = $('.filesize > span', root)) return file.title;
+      if (file = $('span', post.filesize)) return file.title;
       return false;
     },
-    dimensions: function(root) {
-      var match, span;
-      if ((span = $('.filesize', root)) && (match = span.textContent.match(/\d+x\d+/))) {
+    dimensions: function(post) {
+      var filesize, match;
+      filesize = post.filesize;
+      if (filesize && (match = filesize.textContent.match(/\d+x\d+/))) {
         return match[0];
       }
       return false;
     },
-    filesize: function(root) {
+    filesize: function(post) {
       var img;
-      if (img = $('img[md5]', root)) return img.alt;
+      img = post.img;
+      if (img) return img.alt;
       return false;
     },
-    md5: function(root) {
+    md5: function(post) {
       var img;
-      if (img = $('img[md5]', root)) return img.getAttribute('md5');
+      img = post.img;
+      if (img) return img.getAttribute('md5');
       return false;
     }
   };
@@ -686,15 +686,15 @@
     init: function() {
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
+    node: function(post) {
       var el, quote, _i, _len, _ref;
-      if (root.className === 'inline') return;
-      _ref = $$('.quotelink', root);
+      if (post.isInlined) return;
+      _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if ((el = $.id(quote.hash.slice(1))) && el.parentNode.parentNode.parentNode.hidden) {
           $.addClass(quote, 'filtered');
-          if (conf['Recursive Filtering']) root.hidden = true;
+          if (conf['Recursive Filtering']) post.root.hidden = true;
         }
       }
     }
@@ -866,9 +866,10 @@
     init: function() {
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
+    node: function(post) {
       var a, dd, id, reply;
-      if (!(dd = $('.doubledash', root))) return;
+      if (post["class"]) return;
+      dd = $('.doubledash', post.root);
       dd.className = 'replyhider';
       a = $.el('a', {
         textContent: '[ - ]',
@@ -1312,8 +1313,8 @@
       $.on(d, 'dragstart', qr.drag);
       return $.on(d, 'dragend', qr.drag);
     },
-    node: function(root) {
-      return $.on($('.quotejs + .quotejs', root), 'click', qr.quote);
+    node: function(post) {
+      return $.on($('.quotejs + .quotejs', post.el), 'click', qr.quote);
     },
     open: function() {
       if (qr.el) {
@@ -2745,11 +2746,11 @@
     init: function() {
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
+    node: function(post) {
       var name, trip;
-      name = $('.commentpostername, .postername', root);
+      name = $('.commentpostername, .postername', post.el);
       name.textContent = 'Anonymous';
-      if (trip = $('.postertrip', root)) {
+      if (trip = $('.postertrip', post.el)) {
         if (trip.parentNode.nodeName === 'A') {
           return $.rm(trip.parentNode);
         } else {
@@ -2797,17 +2798,18 @@
         });
       };
     },
-    node: function(root) {
-      var img, link, nodes, span, _i, _len, _ref;
-      if (root.className === 'inline' || !(span = $('.filesize', root))) return;
-      img = span.nextElementSibling.nextElementSibling;
+    node: function(post) {
+      var img, link, nodes, _i, _len, _ref;
+      img = post.img;
+      if (post["class"] === 'inline' || !img) return;
+      img = img.parentNode;
       nodes = [];
       _ref = sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
         nodes.push($.tn(' '), link(img));
       }
-      return $.add(span, nodes);
+      return $.add(post.filesize, nodes);
     }
   };
 
@@ -2815,11 +2817,12 @@
     init: function() {
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
+    node: function(post) {
       var img;
-      if (!(img = $('img[alt^=Spoil]', root)) || root.className === 'inline') {
-        return;
-      }
+      img = {
+        post: post
+      };
+      if (!(img && /^Spoil/.test(img.alt)) || post["class"] === 'inline') return;
       img.removeAttribute('height');
       img.removeAttribute('width');
       return img.src = "http://thumbs.4chan.org" + (img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg'));
@@ -2844,10 +2847,10 @@
       };
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
+    node: function(post) {
       var node, time;
-      if (root.className === 'inline') return;
-      node = $('.posttime', root) || $('span[id]', root).previousSibling;
+      if (post["class"] === 'inline') return;
+      node = $('.posttime', post.el) || $('span[id]', post.el).previousSibling;
       Time.date = Time.parse(node);
       time = $.el('time', {
         textContent: ' ' + Time.funk(Time) + ' '
@@ -2937,9 +2940,9 @@
       this.setFormats();
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
+    node: function(post) {
       var fullname, link, node, regexp, resolution, shortname, size, type, unit, _, _ref;
-      if (root.className === 'inline' || !(node = $('.filesize', root))) return;
+      if (post["class"] === 'inline' || !(node = post.filesize)) return;
       type = node.childElementCount === 2 ? 0 : 1;
       regexp = type ? /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/ : /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF), <span title="(.+)">([^<]+)/;
       _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], fullname = _ref[5], shortname = _ref[6];
@@ -3059,20 +3062,19 @@
       quoteBacklink.funk = Function('id', "return '" + format + "'");
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
-      var a, container, el, id, link, qid, quote, quotes, _i, _len, _ref;
-      if (/\binline\b/.test(root.className)) return;
+    node: function(post) {
+      var a, container, el, link, qid, quote, quotes, root, _i, _len, _ref;
+      if (post.isInlined) return;
       quotes = {};
-      _ref = $$('.quotelink', root);
+      _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (qid = quote.hash.slice(1)) quotes[qid] = true;
       }
-      id = $('input', root).name;
       a = $.el('a', {
-        href: "#" + id,
-        className: root.hidden ? 'filtered backlink' : 'backlink',
-        textContent: quoteBacklink.funk(id)
+        href: "#" + post.id,
+        className: post.root.hidden ? 'filtered backlink' : 'backlink',
+        textContent: quoteBacklink.funk(post.id)
       });
       for (qid in quotes) {
         if (!(el = $.id(qid)) || el.className === 'op' && !conf['OP Backlinks']) {
@@ -3097,9 +3099,9 @@
     init: function() {
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
+    node: function(post) {
       var quote, _i, _len, _ref;
-      _ref = $$('.quotelink, .backlink', root);
+      _ref = post.quotes.concat(post.backlinks);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (!quote.hash) continue;
@@ -3223,9 +3225,9 @@
     init: function() {
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
+    node: function(post) {
       var quote, _i, _len, _ref;
-      _ref = $$('.quotelink, .backlink', root);
+      _ref = post.quotes.concat(post.backlinks);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (quote.hash) $.on(quote, 'mouseover', quotePreview.mouseover);
@@ -3301,24 +3303,36 @@
     }
   };
 
-  quoteIndicators = {
+  quoteOP = {
     init: function() {
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
-      var hash, path, quote, tid, _i, _len, _ref;
-      if (root.className === 'inline') return;
-      tid = g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', root).firstChild.id;
-      _ref = $$('.quotelink', root);
+    node: function(post) {
+      var quote, _i, _len, _ref;
+      if (post["class"] === 'inline') return;
+      _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!(hash = quote.hash.slice(1))) continue;
-        if (conf['Indicate OP quote'] && hash === tid) {
+        if (quote.hash.slice(1) === post.threadId) {
           $.add(quote, $.tn('\u00A0(OP)'));
-          continue;
         }
-        path = quote.pathname;
-        if (conf['Indicate Cross-thread Quotes'] && path.lastIndexOf("/" + tid) === -1 && path.indexOf("/" + g.BOARD + "/") === 0) {
+      }
+    }
+  };
+
+  quoteDR = {
+    init: function() {
+      return g.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var path, quote, _i, _len, _ref;
+      if (post["class"] === 'inline') return;
+      _ref = post.quotes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if (!quote.hash) continue;
+        path = quote.pathname.split('/');
+        if (path[1] === g.BOARD && path[3] !== post.threadId) {
           $.add(quote, $.tn('\u00A0(Cross-thread)'));
         }
       }
@@ -3329,16 +3343,15 @@
     init: function() {
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
-      var a, span;
-      if (!(a = $('.reportbutton', root))) {
-        span = $('span[id]', root);
+    node: function(post) {
+      var a;
+      if (!(a = $('.reportbutton', post.el))) {
         a = $.el('a', {
           className: 'reportbutton',
           innerHTML: '[&nbsp;!&nbsp;]',
           href: 'javascript:;'
         });
-        $.after(span, [$.tn(' '), a]);
+        $.after($('span[id]', post.el), [$.tn(' '), a]);
       }
       return $.on(a, 'click', reportButton.report);
     },
@@ -3372,11 +3385,11 @@
       })();
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
+    node: function(post) {
       var imgcount;
-      if (/\binline\b/.test(root.className)) return;
+      if (post.isInlined) return;
       $.id('postcount').textContent = ++threadStats.posts;
-      if (!$('img[md5]', root)) return;
+      if (!post.img) return;
       imgcount = $.id('imagecount');
       imgcount.textContent = ++threadStats.images;
       if (threadStats.images > threadStats.imgLimit) {
@@ -3393,9 +3406,9 @@
       return g.callbacks.push(this.node);
     },
     replies: [],
-    node: function(root) {
-      if (root.hidden || root.className) return;
-      unread.replies.push(root);
+    node: function(post) {
+      if (post.root.hidden || post["class"]) return;
+      unread.replies.push(post.root);
       return unread.update();
     },
     scroll: function() {
@@ -3530,10 +3543,9 @@
     init: function() {
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
-      var thumb;
-      if (!(thumb = $('img[md5]', root))) return;
-      return $.on(thumb, 'mouseover', imgHover.mouseover);
+    node: function(post) {
+      if (!post.img) return;
+      return $.on(post.img, 'mouseover', imgHover.mouseover);
     },
     mouseover: function() {
       ui.el = $.el('img', {
@@ -3565,14 +3577,14 @@
     init: function() {
       return g.callbacks.push(this.node);
     },
-    node: function(root) {
-      var img, src, thumb;
-      if (root.hidden || !(thumb = $('img[md5]', root))) return;
-      src = thumb.parentNode.href;
+    node: function(post) {
+      var img, src;
+      if (post.root.hidden || post.img) return;
+      src = post.img.parentNode.href;
       if (/gif$/.test(src) && !/spoiler/.test(src)) {
         img = $.el('img');
         $.on(img, 'load', function() {
-          return thumb.src = src;
+          return post.img.src = src;
         });
         return img.src = src;
       }
@@ -3584,12 +3596,12 @@
       g.callbacks.push(this.node);
       return imgExpand.dialog();
     },
-    node: function(root) {
-      var a, thumb;
-      if (!(thumb = $('img[md5]', root))) return;
-      a = thumb.parentNode;
+    node: function(post) {
+      var a;
+      if (!post.img) return;
+      a = post.img.parentNode;
       $.on(a, 'click', imgExpand.cb.toggle);
-      if (imgExpand.on && !root.hidden && root.className !== 'inline') {
+      if (imgExpand.on && !post.root.hidden && post["class"] !== 'inline') {
         return imgExpand.expand(a.firstChild);
       }
     },
@@ -3814,9 +3826,8 @@
       if (conf['Quote Inline']) quoteInline.init();
       if (conf['Quote Preview']) quotePreview.init();
       if (conf['Quote Backlinks']) quoteBacklink.init();
-      if (conf['Indicate OP quote'] || conf['Indicate Cross-thread Quotes']) {
-        quoteIndicators.init();
-      }
+      if (conf['Indicate OP quote']) quoteOP.init();
+      if (conf['Indicate Cross-thread Quotes']) quoteDR.init();
       return $.ready(Main.ready);
     },
     ready: function() {
@@ -3880,14 +3891,33 @@
       }
     },
     node: function(nodes, notify) {
-      var callback, node, _i, _j, _len, _len2, _ref;
+      var callback, klass, node, post, posts, _i, _j, _k, _len, _len2, _len3, _ref;
+      posts = [];
+      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+        node = nodes[_i];
+        klass = node.className;
+        posts.push({
+          root: node,
+          el: klass === 'op' ? node : $('td[id]', node),
+          "class": klass,
+          id: $('input', node).name,
+          threadId: g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id,
+          isOP: klass === 'op',
+          isInlined: /\binlined\b/.test(klass),
+          filesize: $('.filesize', node),
+          img: $('img[md5]', node),
+          quotes: $$('.quotelink', node),
+          backlinks: $$('.backlink', node),
+          bq: node.lastChild
+        });
+      }
       _ref = g.callbacks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        callback = _ref[_i];
+      for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
+        callback = _ref[_j];
         try {
-          for (_j = 0, _len2 = nodes.length; _j < _len2; _j++) {
-            node = nodes[_j];
-            callback(node);
+          for (_k = 0, _len3 = posts.length; _k < _len3; _k++) {
+            post = posts[_k];
+            callback(post);
           }
         } catch (err) {
           if (notify) {

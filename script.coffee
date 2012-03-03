@@ -499,7 +499,8 @@ filter =
       g.callbacks.push @node
 
   createFilter: (regexp, op, hl, top) ->
-    (root, value, isOP) ->
+    (post, value) ->
+      {el, isOP} = post
       if isOP and op is 'no' or !isOP and op is 'only'
         return false
       if typeof regexp is 'string'
@@ -510,12 +511,12 @@ filter =
         return false
       if hl
         if isOP
-          $.addClass root, hl
+          $.addClass el, hl
         else
-          $.addClass root.parentNode, hl
+          $.addClass el.parentNode, hl
         if isOP and top and not g.REPLY
           # Put the highlighted OPs' threads on top of the board pages...
-          thisThread = root.parentNode
+          thisThread = el.parentNode
           # ...before the first non highlighted thread.
           if firstThread = $ 'div[class=op]'
             $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
@@ -523,78 +524,76 @@ filter =
         return false
       if isOP
         unless g.REPLY
-          threadHiding.hideHide root.parentNode
+          threadHiding.hideHide el.parentNode
       else
-        replyHiding.hideHide root
+        replyHiding.hideHide el
       true
 
-  node: (root) ->
-    klass = root.className
-    return if /\binlined\b/.test klass
-    unless isOP = klass is 'op'
-      root = $ 'td[id]', root
+  node: (post) ->
+    return if post.isInlined
     for key of filter.filters
-      value = filter[key] root, isOP
+      value = filter[key] post
       if value is false
         # Continue if there's nothing to filter (no tripcode for example).
         continue
       for Filter in filter.filters[key]
-        if Filter root, value, isOP
+        if Filter post, value
           return
 
-  name: (root, isOP) ->
-    name = if isOP then $ '.postername', root else $ '.commentpostername', root
+  name: (post) ->
+    name = if post.isOP then $ '.postername', post.el else $ '.commentpostername', post.el
     name.textContent
-  tripcode: (root) ->
-    if trip = $ '.postertrip', root
+  tripcode: (post) ->
+    if trip = $ '.postertrip', post.el
       return trip.textContent
     false
-  mod: (root, isOP) ->
-    if mod = (if isOP then $ '.commentpostername', root else $ '.commentpostername ~ .commentpostername', root)
+  mod: (post) ->
+    if mod = (if post.isOP then $ '.commentpostername', post.el else $ '.commentpostername ~ .commentpostername', post.el)
       return mod.textContent
     false
-  email: (root) ->
-    if mail = $ '.linkmail', root
+  email: (post) ->
+    if mail = $ '.linkmail', post.el
       return mail.href
     false
-  subject: (root, isOP) ->
-    sub = if isOP then $ '.filetitle', root else $ '.replytitle', root
+  subject: (post) ->
+    sub = if post.isOP then $ '.filetitle', post.el else $ '.replytitle', post.el
     sub.textContent
-  comment: (root) ->
+  comment: (post) ->
     text = []
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 7
-    nodes = d.evaluate './/br|.//text()', root.lastChild, null, 7, null
-    i = 0
-    len = nodes.snapshotLength
-    while i < len
-      text.push if data = nodes.snapshotItem(i++).data then data else '\n'
+    nodes = d.evaluate './/br|.//text()', post.bq, null, 7, null
+    for i in [0...nodes.snapshotLength]
+      text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
-  filename: (root) ->
-    if file = $ '.filesize > span', root
+  filename: (post) ->
+    if file = $ 'span', post.filesize
       return file.title
     false
-  dimensions: (root) ->
-    if (span = $ '.filesize', root) and match = span.textContent.match /\d+x\d+/
+  dimensions: (post) ->
+    {filesize} = post
+    if filesize and match = filesize.textContent.match /\d+x\d+/
       return match[0]
     return false
-  filesize: (root) ->
-    if img = $ 'img[md5]', root
+  filesize: (post) ->
+    {img} = post
+    if img
       return img.alt
     false
-  md5: (root) ->
-    if img = $ 'img[md5]', root
+  md5: (post) ->
+    {img} = post
+    if img
       return img.getAttribute 'md5'
     false
 
 strikethroughQuotes =
   init: ->
     g.callbacks.push @node
-  node: (root) ->
-    return if root.className is 'inline'
-    for quote in $$ '.quotelink', root
+  node: (post) ->
+    return if post.isInlined
+    for quote in post.quotes
       if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
         $.addClass quote, 'filtered'
-        root.hidden = true if conf['Recursive Filtering']
+        post.root.hidden = true if conf['Recursive Filtering']
     return
 
 expandComment =
@@ -711,8 +710,9 @@ replyHiding =
   init: ->
     g.callbacks.push @node
 
-  node: (root) ->
-    return unless dd = $ '.doubledash', root
+  node: (post) ->
+    return if post.class
+    dd = $ '.doubledash', post.root
     dd.className = 'replyhider'
     a = $.el 'a',
       textContent: '[ - ]'
@@ -755,8 +755,8 @@ replyHiding =
 
     if conf['Show Stubs']
       name = $('.commentpostername', reply).textContent
-      uid = $('.posteruid', reply)?.textContent or ''
-      trip = $('.postertrip', reply)?.textContent or ''
+      uid  = $('.posteruid',         reply)?.textContent or ''
+      trip = $('.postertrip',        reply)?.textContent or ''
 
       div = $.el 'div',
         className: 'stub'
@@ -1037,8 +1037,8 @@ qr =
     $.on d, 'dragstart', qr.drag
     $.on d, 'dragend',   qr.drag
 
-  node: (root) ->
-    $.on $('.quotejs + .quotejs', root), 'click', qr.quote
+  node: (post) ->
+    $.on $('.quotejs + .quotejs', post.el), 'click', qr.quote
 
   open: ->
     if qr.el
@@ -2264,10 +2264,10 @@ watcher =
 anonymize =
   init: ->
     g.callbacks.push @node
-  node: (root) ->
-    name = $ '.commentpostername, .postername', root
+  node: (post) ->
+    name = $ '.commentpostername, .postername', post.el
     name.textContent = 'Anonymous'
-    if trip = $ '.postertrip', root
+    if trip = $ '.postertrip', post.el
       if trip.parentNode.nodeName is 'A'
         $.rm trip.parentNode
       else
@@ -2302,19 +2302,22 @@ sauce =
         target: '_blank'
         textContent: domain
 
-  node: (root) ->
-    return if root.className is 'inline' or not span = $ '.filesize', root
-    img = span.nextElementSibling.nextElementSibling
+  node: (post) ->
+    {img} = post
+    return if post.class is 'inline' or not img
+    img   = img.parentNode
     nodes = []
     for link in sauce.links
       nodes.push $.tn(' '), link img
-    $.add span, nodes
+    $.add post.filesize, nodes
 
 revealSpoilers =
   init: ->
     g.callbacks.push @node
-  node: (root) ->
-    return if not (img = $ 'img[alt^=Spoil]', root) or root.className is 'inline'
+  node: (post) ->
+    img = {post}
+    if not (img and /^Spoil/.test img.alt) or post.class is 'inline'
+      return
     img.removeAttribute 'height'
     img.removeAttribute 'width'
     img.src = "http://thumbs.4chan.org#{img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg')}"
@@ -2341,10 +2344,10 @@ Time =
           new Date year, month, day, hour, min
 
     g.callbacks.push @node
-  node: (root) ->
-    return if root.className is 'inline'
+  node: (post) ->
+    return if post.class is 'inline'
     # .posttime exists on every board except /f/
-    node = $('.posttime', root) or $('span[id]', root).previousSibling
+    node = $('.posttime', post.el) or $('span[id]', post.el).previousSibling
     Time.date = Time.parse node
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
@@ -2402,8 +2405,8 @@ FileInfo =
     return if g.BOARD is 'f'
     @setFormats()
     g.callbacks.push @node
-  node: (root) ->
-    return if root.className is 'inline' or not node = $ '.filesize', root
+  node: (post) ->
+    return if post.class is 'inline' or not node = post.filesize
     type   = if node.childElementCount is 2 then 0 else 1
     regexp =
       if type
@@ -2484,20 +2487,18 @@ quoteBacklink =
     format = conf['backlink'].replace /%id/g, "' + id + '"
     quoteBacklink.funk = Function 'id', "return '#{format}'"
     g.callbacks.push @node
-  node: (root) ->
-    return if /\binline\b/.test root.className
+  node: (post) ->
+    return if post.isInlined
     quotes = {}
-    for quote in $$ '.quotelink', root
+    for quote in post.quotes
       # Don't process >>>/b/.
       if qid = quote.hash[1..]
         # Duplicate quotes get overwritten.
         quotes[qid] = true
-    # OP or reply id.
-    id = $('input', root).name
     a = $.el 'a',
-      href: "##{id}"
-      className: if root.hidden then 'filtered backlink' else 'backlink'
-      textContent: quoteBacklink.funk id
+      href: "##{post.id}"
+      className: if post.root.hidden then 'filtered backlink' else 'backlink'
+      textContent: quoteBacklink.funk post.id
     for qid of quotes
       # Don't backlink the OP.
       continue if !(el = $.id qid) or el.className is 'op' and !conf['OP Backlinks']
@@ -2516,8 +2517,8 @@ quoteBacklink =
 quoteInline =
   init: ->
     g.callbacks.push @node
-  node: (root) ->
-    for quote in $$ '.quotelink, .backlink', root
+  node: (post) ->
+    for quote in post.quotes.concat post.backlinks
       continue unless quote.hash
       quote.removeAttribute 'onclick'
       $.on quote, 'click', quoteInline.toggle
@@ -2608,8 +2609,8 @@ quoteInline =
 quotePreview =
   init: ->
     g.callbacks.push @node
-  node: (root) ->
-    for quote in $$ '.quotelink, .backlink', root
+  node: (post) ->
+    for quote in post.quotes.concat post.backlinks
       $.on quote, 'mouseover', quotePreview.mouseover if quote.hash
     return
   mouseover: (e) ->
@@ -2668,23 +2669,29 @@ quotePreview =
     if conf['File Info Formatting']
       FileInfo.node qp
 
-quoteIndicators =
+quoteOP =
   init: ->
     g.callbacks.push @node
-  node: (root) ->
-    return if root.className is 'inline'
-    # We use contains() so that it works with hidden threads
-    tid = g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', root).firstChild.id
-    for quote in $$ '.quotelink', root
-      unless hash = quote.hash[1..]
-        continue
-      if conf['Indicate OP quote'] and hash is tid
+  node: (post) ->
+    return if post.class is 'inline'
+    for quote in post.quotes
+      if quote.hash[1..] is post.threadId
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(OP)'
+    return
+
+quoteDR =
+  init: ->
+    g.callbacks.push @node
+  node: (post) ->
+    return if post.class is 'inline'
+    for quote in post.quotes
+      unless quote.hash
+        # Make sure this isn't a link to the board we're on.
         continue
-      path = quote.pathname
-      #if quote leads to a different thread id and is located on the same board (index 0)
-      if conf['Indicate Cross-thread Quotes'] and path.lastIndexOf("/#{tid}") is -1 and path.indexOf("/#{g.BOARD}/") is 0
+      path = quote.pathname.split '/'
+      # If quote leads to a different thread id and is located on the same board.
+      if path[1] is g.BOARD and path[3] isnt post.threadId
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(Cross-thread)'
     return
@@ -2692,14 +2699,13 @@ quoteIndicators =
 reportButton =
   init: ->
     g.callbacks.push @node
-  node: (root) ->
-    if not a = $ '.reportbutton', root
-      span = $ 'span[id]', root
+  node: (post) ->
+    if not a = $ '.reportbutton', post.el
       a = $.el 'a',
         className: 'reportbutton'
         innerHTML: '[&nbsp;!&nbsp;]'
         href: 'javascript:;'
-      $.after span, [$.tn(' '), a]
+      $.after $('span[id]', post.el), [$.tn(' '), a]
     $.on a, 'click', reportButton.report
   report: ->
     url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
@@ -2722,10 +2728,10 @@ threadStats =
         else
           151
     g.callbacks.push @node
-  node: (root) ->
-    return if /\binline\b/.test root.className
+  node: (post) ->
+    return if post.isInlined
     $.id('postcount').textContent = ++threadStats.posts
-    return unless $ 'img[md5]', root
+    return unless post.img
     imgcount = $.id 'imagecount'
     imgcount.textContent = ++threadStats.images
     if threadStats.images > threadStats.imgLimit
@@ -2740,9 +2746,9 @@ unread =
 
   replies: []
 
-  node: (root) ->
-    return if root.hidden or root.className
-    unread.replies.push root
+  node: (post) ->
+    return if post.root.hidden or post.class
+    unread.replies.push post.root
     unread.update()
 
   scroll: ->
@@ -2848,9 +2854,9 @@ redirect =
 imgHover =
   init: ->
     g.callbacks.push @node
-  node: (root) ->
-    return unless thumb = $ 'img[md5]', root
-    $.on thumb, 'mouseover', imgHover.mouseover
+  node: (post) ->
+    return unless post.img
+    $.on post.img, 'mouseover', imgHover.mouseover
   mouseover: ->
     ui.el = $.el 'img'
       id: 'ihover'
@@ -2874,14 +2880,14 @@ imgHover =
 imgGif =
   init: ->
     g.callbacks.push @node
-  node: (root) ->
-    return if root.hidden or !thumb = $ 'img[md5]', root
-    src = thumb.parentNode.href
+  node: (post) ->
+    return if post.root.hidden or post.img
+    src = post.img.parentNode.href
     if /gif$/.test(src) and !/spoiler/.test src
       img = $.el 'img'
       $.on img, 'load', ->
         # Replace the thumbnail once the GIF has finished loading.
-        thumb.src = src
+        post.img.src = src
       img.src = src
 
 imgExpand =
@@ -2889,11 +2895,11 @@ imgExpand =
     g.callbacks.push @node
     imgExpand.dialog()
 
-  node: (root) ->
-    return unless thumb = $ 'img[md5]', root
-    a = thumb.parentNode
+  node: (post) ->
+    return unless post.img
+    a = post.img.parentNode
     $.on a, 'click', imgExpand.cb.toggle
-    if imgExpand.on and !root.hidden and root.className isnt 'inline'
+    if imgExpand.on and !post.root.hidden and post.class isnt 'inline'
       imgExpand.expand a.firstChild
   cb:
     toggle: (e) ->
@@ -3103,8 +3109,11 @@ Main =
     if conf['Quote Backlinks']
       quoteBacklink.init()
 
-    if conf['Indicate OP quote'] or conf['Indicate Cross-thread Quotes']
-      quoteIndicators.init()
+    if conf['Indicate OP quote']
+      quoteOP.init()
+
+    if conf['Indicate Cross-thread Quotes']
+      quoteDR.init()
 
     $.ready Main.ready
 
@@ -3162,7 +3171,6 @@ Main =
       if conf['Index Navigation']
         nav.init()
 
-
     nodes = $$ '.op, a + table', form
     Main.node nodes, true
 
@@ -3191,9 +3199,25 @@ Main =
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   node: (nodes, notify) ->
+    posts = []
+    for node in nodes
+      klass = node.className
+      posts.push
+        root:      node
+        el:        if klass is 'op' then node else $ 'td[id]', node
+        class:     klass
+        id:        $('input', node).name
+        threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
+        isOP:      klass is 'op'
+        isInlined: /\binlined\b/.test klass
+        filesize:  $ '.filesize', node
+        img:       $ 'img[md5]', node
+        quotes:    $$ '.quotelink', node
+        backlinks: $$ '.backlink', node
+        bq:        node.lastChild
     for callback in g.callbacks
       try
-        callback node for node in nodes
+        callback post for post in posts
       catch err
         alert "4chan X error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
     return
