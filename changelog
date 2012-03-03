@@ -12,6 +12,7 @@ master
 - noface
   Update imagelimit for /mlp/.
   Fix stubs if poster has unique ID.
+  Add unique ID to filter.
 - Mayhem
   You can now filter or highlight admin/mod posts.
   New sauce parameter. $4: Current board.

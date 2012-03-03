@@ -138,6 +138,7 @@
     },
     filter: {
       name: ['# Filter any namefags:', '#/^(?!Anonymous$)/'].join('\n'),
+      uniqueid: ['# Filter a specific ID:', '#/Txhvk1Tl/'].join('\n'),
       tripcode: ['# Filter any tripfags', '#/^!/'].join('\n'),
       mod: ['# Set a custom class for mods:', '#/Mod$/;highlight:mod;op:yes', '# Set a custom class for moot:', '#/Admin$/;highlight:moot;op:yes'].join('\n'),
       email: ['# Filter any e-mails that are not `sage` on /a/ and /jp/:', '#/^(?!sage$)/;boards:a,jp'].join('\n'),
@@ -629,6 +630,11 @@
       var name;
       name = post.isOP ? $('.postername', post.el) : $('.commentpostername', post.el);
       return name.textContent;
+    },
+    uniqueid: function(post) {
+      var uniqueid;
+      if (uniqueid = $('.posteruid', post)) return uniqueid.textContent;
+      return false;
     },
     tripcode: function(post) {
       var trip;
@@ -2158,6 +2164,7 @@
       <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>\
     </ul>\
     <p>Name:<br><textarea name=name></textarea></p>\
+    <p>Unique ID:<br><textarea name=uniqueid></textarea></p>\
     <p>Tripcode:<br><textarea name=tripcode></textarea></p>\
     <p>Admin/Mod:<br><textarea name=mod></textarea></p>\
     <p>E-mail:<br><textarea name=email></textarea></p>\
