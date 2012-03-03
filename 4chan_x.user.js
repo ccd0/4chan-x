@@ -3843,7 +3843,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var MutationObserver, form, nav, nodes, observer, _i, _len, _ref;
+      var MutationObserver, form, navList, nodes, observer, _i, _len, _ref;
       if (d.title === '4chan - 404') {
         redirect.init();
         return;
@@ -3853,8 +3853,8 @@
       $.addClass(d.body, engine);
       _ref = ['navtop', 'navbot'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        nav = _ref[_i];
-        $.addClass($("a[href$='/" + g.BOARD + "/']", $.id(nav)), 'current');
+        navList = _ref[_i];
+        $.addClass($("a[href$='/" + g.BOARD + "/']", $.id(navList)), 'current');
       }
       form = $('form[name=delform]');
       threading.thread(form.firstElementChild);
