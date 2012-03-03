@@ -641,18 +641,23 @@ expandComment =
         if reply.id == replyID
           bq = $ 'blockquote', reply
           break
-    for quote in $$ '.quotelink', bq
+    quotes = $$ '.quotelink', bq
+    for quote in quotes
       if quote.getAttribute('href') is quote.hash
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
-    $.replace a.parentNode.parentNode, bq
+    $.replace $.x('ancestor::blockquote', a), bq
+    post =
+      threadId:  threadID
+      quotes:    quotes
+      backlinks: []
     if conf['Quote Preview']
-      quotePreview.node bq
+      quotePreview.node post
     if conf['Quote Inline']
-      quoteInline.node bq
+      quoteInline.node post
     if conf['Indicate OP quote']
-      quoteOP.node bq
+      quoteOP.node post
     if conf['Indicate Cross-thread Quotes']
-      quoteCT.node bq
+      quoteCT.node post
 
 expandThread =
   init: ->

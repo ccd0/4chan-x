@@ -735,7 +735,7 @@
       }));
     },
     parse: function(req, a, threadID, replyID) {
-      var body, bq, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
+      var body, bq, post, quote, quotes, reply, _i, _j, _len, _len2, _ref;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
@@ -755,18 +755,23 @@
           }
         }
       }
-      _ref2 = $$('.quotelink', bq);
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        quote = _ref2[_j];
+      quotes = $$('.quotelink', bq);
+      for (_j = 0, _len2 = quotes.length; _j < _len2; _j++) {
+        quote = quotes[_j];
         if (quote.getAttribute('href') === quote.hash) {
           quote.pathname = "/" + g.BOARD + "/res/" + threadID;
         }
       }
-      $.replace(a.parentNode.parentNode, bq);
-      if (conf['Quote Preview']) quotePreview.node(bq);
-      if (conf['Quote Inline']) quoteInline.node(bq);
-      if (conf['Indicate OP quote']) quoteOP.node(bq);
-      if (conf['Indicate Cross-thread Quotes']) return quoteCT.node(bq);
+      $.replace($.x('ancestor::blockquote', a), bq);
+      post = {
+        threadId: threadID,
+        quotes: quotes,
+        backlinks: []
+      };
+      if (conf['Quote Preview']) quotePreview.node(post);
+      if (conf['Quote Inline']) quoteInline.node(post);
+      if (conf['Indicate OP quote']) quoteOP.node(post);
+      if (conf['Indicate Cross-thread Quotes']) return quoteCT.node(post);
     }
   };
 
