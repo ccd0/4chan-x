@@ -516,6 +516,7 @@ filter =
 
   node: (post) ->
     return if post.isInlined
+    {isOP, el} = post
     for key of filter.filters
       value = filter[key] post
       if value is false
@@ -524,7 +525,6 @@ filter =
       for Filter in filter.filters[key]
         unless result = Filter value, isOP
           continue
-        {isOP, el} = post
 
         # Hide
         if result is true
@@ -570,7 +570,7 @@ filter =
   comment: (post) ->
     text = []
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 7
-    nodes = d.evaluate './/br|.//text()', post.bq, null, 7, null
+    nodes = d.evaluate './/br|.//text()', post.el.lastChild, null, 7, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
@@ -3139,7 +3139,7 @@ Main =
       return
     if not $.id 'navtopr'
       return
-    $.addClass d.body, "chanx_#{VERSION.match(/\.(\d+)/)[1]}"
+    $.addClass d.body, "chanx_#{VERSION.split('.')[1]}"
     $.addClass d.body, engine
     for nav in ['navtop', 'navbot']
       $.addClass $("a[href$='/#{g.BOARD}/']", $.id nav), 'current'
@@ -3232,7 +3232,6 @@ Main =
         img:       $ 'img[md5]', node
         quotes:    $$ '.quotelink', node
         backlinks: $$ '.backlink', node
-        bq:        node.lastChild
     for callback in g.callbacks
       try
         callback post for post in posts

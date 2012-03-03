@@ -591,6 +591,7 @@
     node: function(post) {
       var Filter, el, firstThread, isOP, key, result, thisThread, value, _i, _len, _ref;
       if (post.isInlined) return;
+      isOP = post.isOP, el = post.el;
       for (key in filter.filters) {
         value = filter[key](post);
         if (value === false) continue;
@@ -598,7 +599,6 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           Filter = _ref[_i];
           if (!(result = Filter(value, isOP))) continue;
-          isOP = post.isOP, el = post.el;
           if (result === true) {
             if (isOP) {
               if (!g.REPLY) {
@@ -655,7 +655,7 @@
     comment: function(post) {
       var data, i, nodes, text, _ref;
       text = [];
-      nodes = d.evaluate('.//br|.//text()', post.bq, null, 7, null);
+      nodes = d.evaluate('.//br|.//text()', post.el.lastChild, null, 7, null);
       for (i = 0, _ref = nodes.snapshotLength; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
@@ -3849,7 +3849,7 @@
         return;
       }
       if (!$.id('navtopr')) return;
-      $.addClass(d.body, "chanx_" + (VERSION.match(/\.(\d+)/)[1]));
+      $.addClass(d.body, "chanx_" + (VERSION.split('.')[1]));
       $.addClass(d.body, engine);
       _ref = ['navtop', 'navbot'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3924,8 +3924,7 @@
           filesize: $('.filesize', node),
           img: $('img[md5]', node),
           quotes: $$('.quotelink', node),
-          backlinks: $$('.backlink', node),
-          bq: node.lastChild
+          backlinks: $$('.backlink', node)
         });
       }
       _ref = g.callbacks;
