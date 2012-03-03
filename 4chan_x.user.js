@@ -2836,9 +2836,7 @@
     },
     node: function(post) {
       var img;
-      img = {
-        post: post
-      };
+      img = post.img;
       if (!(img && /^Spoil/.test(img.alt)) || post["class"] === 'inline') return;
       img.removeAttribute('height');
       img.removeAttribute('width');

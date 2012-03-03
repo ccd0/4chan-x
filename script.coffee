@@ -61,7 +61,7 @@ config =
     uniqueid: [
       '# Filter a specific ID:'
       '#/Txhvk1Tl/'
-    ].join '\n'	
+    ].join '\n'
     tripcode: [
       '# Filter any tripfags'
       '#/^!/'
@@ -2338,7 +2338,7 @@ revealSpoilers =
   init: ->
     g.callbacks.push @node
   node: (post) ->
-    img = {post}
+    {img} = post
     if not (img and /^Spoil/.test img.alt) or post.class is 'inline'
       return
     img.removeAttribute 'height'
