@@ -1,6 +1,8 @@
 master
 - Mayhem
   General performance improvements.
+- noface
+  Add unique ID to filter.
 
 2.28.0
 - ahodesuka
