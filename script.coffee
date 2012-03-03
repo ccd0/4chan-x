@@ -499,34 +499,19 @@ filter =
       g.callbacks.push @node
 
   createFilter: (regexp, op, hl, top) ->
-    (post, value) ->
-      {el, isOP} = post
-      if isOP and op is 'no' or !isOP and op is 'only'
-        return false
+    test =
       if typeof regexp is 'string'
         # MD5 checking
-        if regexp isnt value
-          return false
-      else unless regexp.test value
+        (value) -> regexp is value
+      else
+        (value) -> regexp.test value
+    (value, isOP) ->
+      if isOP and op is 'no' or !isOP and op is 'only'
+        return false
+      unless test value
         return false
       if hl
-        if isOP
-          $.addClass el, hl
-        else
-          $.addClass el.parentNode, hl
-        if isOP and top and not g.REPLY
-          # Put the highlighted OPs' threads on top of the board pages...
-          thisThread = el.parentNode
-          # ...before the first non highlighted thread.
-          if firstThread = $ 'div[class=op]'
-            $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
-        # Continue the filter lookup to add more classes or hide it.
-        return false
-      if isOP
-        unless g.REPLY
-          threadHiding.hideHide el.parentNode
-      else
-        replyHiding.hideHide el
+        return [hl, top]
       true
 
   node: (post) ->
@@ -537,8 +522,32 @@ filter =
         # Continue if there's nothing to filter (no tripcode for example).
         continue
       for Filter in filter.filters[key]
-        if Filter post, value
+        unless result = Filter value, isOP
+          continue
+        {isOP, el} = post
+
+        # Hide
+        if result is true
+          if isOP
+            unless g.REPLY
+              threadHiding.hideHide post.el.parentNode
+            else
+              continue
+          else
+            replyHiding.hideHide post.el
           return
+
+        # Highlight
+        if isOP
+          $.addClass el, result[0]
+        else
+          $.addClass el.parentNode, result[0]
+        if isOP and result[1] and not g.REPLY
+          # Put the highlighted OPs' threads on top of the board pages...
+          thisThread = el.parentNode
+          # ...before the first non highlighted thread.
+          if firstThread = $ 'div[class=op]'
+            $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
 
   name: (post) ->
     name = if post.isOP then $ '.postername', post.el else $ '.commentpostername', post.el

@@ -575,39 +575,21 @@
       if (Object.keys(this.filters).length) return g.callbacks.push(this.node);
     },
     createFilter: function(regexp, op, hl, top) {
-      return function(post, value) {
-        var el, firstThread, isOP, thisThread;
-        el = post.el, isOP = post.isOP;
+      var test;
+      test = typeof regexp === 'string' ? function(value) {
+        return regexp === value;
+      } : function(value) {
+        return regexp.test(value);
+      };
+      return function(value, isOP) {
         if (isOP && op === 'no' || !isOP && op === 'only') return false;
-        if (typeof regexp === 'string') {
-          if (regexp !== value) return false;
-        } else if (!regexp.test(value)) {
-          return false;
-        }
-        if (hl) {
-          if (isOP) {
-            $.addClass(el, hl);
-          } else {
-            $.addClass(el.parentNode, hl);
-          }
-          if (isOP && top && !g.REPLY) {
-            thisThread = el.parentNode;
-            if (firstThread = $('div[class=op]')) {
-              $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
-            }
-          }
-          return false;
-        }
-        if (isOP) {
-          if (!g.REPLY) threadHiding.hideHide(el.parentNode);
-        } else {
-          replyHiding.hideHide(el);
-        }
+        if (!test(value)) return false;
+        if (hl) return [hl, top];
         return true;
       };
     },
     node: function(post) {
-      var Filter, key, value, _i, _len, _ref;
+      var Filter, el, firstThread, isOP, key, result, thisThread, value, _i, _len, _ref;
       if (post.isInlined) return;
       for (key in filter.filters) {
         value = filter[key](post);
@@ -615,7 +597,31 @@
         _ref = filter.filters[key];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           Filter = _ref[_i];
-          if (Filter(post, value)) return;
+          if (!(result = Filter(value, isOP))) continue;
+          isOP = post.isOP, el = post.el;
+          if (result === true) {
+            if (isOP) {
+              if (!g.REPLY) {
+                threadHiding.hideHide(post.el.parentNode);
+              } else {
+                continue;
+              }
+            } else {
+              replyHiding.hideHide(post.el);
+            }
+            return;
+          }
+          if (isOP) {
+            $.addClass(el, result[0]);
+          } else {
+            $.addClass(el.parentNode, result[0]);
+          }
+          if (isOP && result[1] && !g.REPLY) {
+            thisThread = el.parentNode;
+            if (firstThread = $('div[class=op]')) {
+              $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
+            }
+          }
         }
       }
     },
