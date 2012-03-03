@@ -653,11 +653,11 @@ expandComment =
     if conf['Quote Preview']
       quotePreview.node post
     if conf['Quote Inline']
-      quoteInline.node post
+      quoteInline.node  post
     if conf['Indicate OP quote']
-      quoteOP.node post
+      quoteOP.node      post
     if conf['Indicate Cross-thread Quotes']
-      quoteCT.node post
+      quoteCT.node      post
 
 expandThread =
   init: ->
@@ -2692,12 +2692,16 @@ quotePreview =
           html = reply.innerHTML
           break
     qp.innerHTML = html
+    post =
+      root:     qp
+      filesize: $ '.filesize', qp
+      img:      $ 'img[md5]',  qp
     if conf['Image Auto-Gif']
-      imgGif.node   qp
+      imgGif.node   post
     if conf['Time Formatting']
-      Time.node     qp
+      Time.node     post
     if conf['File Info Formatting']
-      FileInfo.node qp
+      FileInfo.node post
 
 quoteOP =
   init: ->
@@ -3242,10 +3246,10 @@ Main =
         threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
         isOP:      klass is 'op'
         isInlined: /\binline\b/.test klass
-        filesize:  $ '.filesize', node
-        img:       $ 'img[md5]', node
+        filesize:  $ '.filesize',   node
+        img:       $ 'img[md5]',    node
         quotes:    $$ '.quotelink', node
-        backlinks: $$ '.backlink', node
+        backlinks: $$ '.backlink',  node
     for callback in g.callbacks
       try
         callback post for post in posts

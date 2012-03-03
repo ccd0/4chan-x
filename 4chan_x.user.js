@@ -3296,7 +3296,7 @@
       return $.off(this, 'click', quotePreview.mouseout);
     },
     parse: function(req, id, threadID) {
-      var body, html, op, qp, reply, _i, _len, _ref;
+      var body, html, op, post, qp, reply, _i, _len, _ref;
       if (!((qp = ui.el) && (qp.innerHTML === ("Loading " + id + "...")))) return;
       if (req.status !== 200) {
         qp.textContent = "" + req.status + " " + req.statusText;
@@ -3319,9 +3319,14 @@
         }
       }
       qp.innerHTML = html;
-      if (conf['Image Auto-Gif']) imgGif.node(qp);
-      if (conf['Time Formatting']) Time.node(qp);
-      if (conf['File Info Formatting']) return FileInfo.node(qp);
+      post = {
+        root: qp,
+        filesize: $('.filesize', qp),
+        img: $('img[md5]', qp)
+      };
+      if (conf['Image Auto-Gif']) imgGif.node(post);
+      if (conf['Time Formatting']) Time.node(post);
+      if (conf['File Info Formatting']) return FileInfo.node(post);
     }
   };
 
