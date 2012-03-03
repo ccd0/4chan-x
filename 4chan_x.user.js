@@ -1265,7 +1265,7 @@
 
   qr = {
     init: function() {
-      var form, iframe, link, loadChecking, script;
+      var form, iframe, link, loadChecking;
       if (!$.id('recaptcha_challenge_field_holder')) return;
       if (conf['Hide Original Post Form']) {
         link = $.el('h1', {
@@ -1306,11 +1306,14 @@
         });
         $.add(d.head, iframe);
       }
-      script = $.el('script', {
-        textContent: 'Recaptcha.focus_response_field=function(){}'
+      setTimeout(function() {
+        var script;
+        script = $.el('script', {
+          textContent: 'Recaptcha.focus_response_field=function(){}'
+        });
+        $.add(d.head, script);
+        return $.rm(script);
       });
-      $.add(d.head, script);
-      $.rm(script);
       if (conf['Persistent QR']) {
         qr.dialog();
         if (conf['Auto Hide QR']) qr.hide();

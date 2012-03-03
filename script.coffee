@@ -1036,10 +1036,12 @@ qr =
       $.on iframe, 'load', -> if @src isnt 'about:blank' then setTimeout loadChecking, 500, @
       $.add d.head, iframe
 
-    # Prevent original captcha input from being focused on reload.
-    script = $.el 'script', textContent: 'Recaptcha.focus_response_field=function(){}'
-    $.add d.head, script
-    $.rm script
+    # This is extemely slow, execute is asynchronously.
+    setTimeout ->
+      # Prevent original captcha input from being focused on reload.
+      script = $.el 'script', textContent: 'Recaptcha.focus_response_field=function(){}'
+      $.add d.head, script
+      $.rm script
 
     if conf['Persistent QR']
       qr.dialog()
