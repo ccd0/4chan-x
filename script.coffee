@@ -2324,11 +2324,13 @@ sauce =
         when '$4'
           g.BOARD
     href = Function 'img', "return '#{href}'"
+    el = $.el 'a',
+      target: '_blank'
+      textContent: domain
     (img) ->
-      $.el 'a',
-        href: href img
-        target: '_blank'
-        textContent: domain
+      a = el.cloneNode true
+      a.href = href img
+      a
 
   node: (post) ->
     {img} = post

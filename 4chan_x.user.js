@@ -2798,7 +2798,7 @@
       return g.callbacks.push(this.node);
     },
     funk: function(link) {
-      var domain, href;
+      var domain, el, href;
       domain = link.match(/(\w+)\.\w+\//)[1];
       href = link.replace(/(\$\d)/g, function(parameter) {
         switch (parameter) {
@@ -2813,12 +2813,15 @@
         }
       });
       href = Function('img', "return '" + href + "'");
+      el = $.el('a', {
+        target: '_blank',
+        textContent: domain
+      });
       return function(img) {
-        return $.el('a', {
-          href: href(img),
-          target: '_blank',
-          textContent: domain
-        });
+        var a;
+        a = el.cloneNode(true);
+        a.href = href(img);
+        return a;
       };
     },
     node: function(post) {
