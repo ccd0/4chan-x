@@ -92,7 +92,9 @@ option '-v', '--version [version]', 'Upgrade version.'
 
 task 'upgrade', (options) ->
   {version} = options
-  return unless version
+  unless version
+    console.warn 'Version argument not specified. Exiting.'
+    return
   regexp = RegExp VERSION, 'g'
   for file in [CAKEFILE, INFILE, OUTFILE, LATEST]
     data = fs.readFileSync file, 'utf8'
