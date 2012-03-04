@@ -92,14 +92,13 @@ option '-v', '--version [version]', 'Upgrade version.'
 
 task 'upgrade', (options) ->
   {version} = options
-  unless version
-    return
+  return unless version
   regexp = RegExp VERSION, 'g'
   for file in [CAKEFILE, INFILE, OUTFILE, LATEST]
     data = fs.readFileSync file, 'utf8'
-    fs.writeFileSync file, data.replace(regexp, version)
+    fs.writeFileSync file, data.replace regexp, version
   data = fs.readFileSync CHANGELOG, 'utf8'
-  fs.writeFileSync CHANGELOG, data.replace('master', "master\n\n#{version}")
+  fs.writeFileSync CHANGELOG, data.replace 'master', "master\n\n#{version}"
   exec "git commit -am 'Release #{version}.' && git tag -a #{version} -m '#{version}' && git tag -af stable -m '#{version}'"
 
 task 'build', ->
