@@ -3313,7 +3313,7 @@ Main =
     for mutation in mutations
       for addedNode in mutation.addedNodes
         nodes.push Main.preParse addedNode if addedNode.nodeName is 'TABLE'
-    Main.node nodes if posts.length
+    Main.node nodes if nodes.length
   listener: (e) ->
     {target} = e
     Main.node [Main.preParse target] if target.nodeName is 'TABLE'

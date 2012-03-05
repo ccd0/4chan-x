@@ -4021,7 +4021,7 @@
           if (addedNode.nodeName === 'TABLE') nodes.push(Main.preParse(addedNode));
         }
       }
-      if (posts.length) return Main.node(nodes);
+      if (nodes.length) return Main.node(nodes);
     },
     listener: function(e) {
       var target;
