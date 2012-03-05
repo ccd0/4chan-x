@@ -297,7 +297,9 @@ $.extend $,
       else
         req.callbacks.push cb
     else
-      req = $.ajax url, onload: (-> cb.call @ for cb in @callbacks)
+      req = $.ajax url,
+        onload:  -> cb.call @ for cb in @callbacks
+        onabort: -> delete $.cache.requests[url]
       req.callbacks = [cb]
       $.cache.requests[url] = req
   cb:
@@ -681,16 +683,17 @@ expandThread =
     pathname = "/#{g.BOARD}/res/#{threadID}"
     a = $ '.omittedposts', thread
 
+    # \u00d7 is &times;
+
     switch a.textContent[0]
       when '+'
         $('.op .container', thread)?.textContent = ''
-        a.textContent = a.textContent.replace '+', 'X Loading...'
+        a.textContent = a.textContent.replace '+', '\u00d7 Loading...'
         $.cache pathname, (-> expandThread.parse @, pathname, thread, a)
 
-      when 'X'
-        a.textContent = a.textContent.replace 'X Loading...', '+'
-        #FIXME this will kill all callbacks
-        $.cache[pathname].abort()
+      when '\u00d7'
+        a.textContent = a.textContent.replace '\u00d7 Loading...', '+'
+        $.cache.requests[pathname].abort()
 
       when '-'
         a.textContent = a.textContent.replace '-', '+'
@@ -712,7 +715,7 @@ expandThread =
       $.off a, 'click', expandThread.cb.toggle
       return
 
-    a.textContent = a.textContent.replace 'X Loading...', '-'
+    a.textContent = a.textContent.replace '\u00d7 Loading...', '-'
 
     body = $.el 'body',
       innerHTML: req.responseText

@@ -362,7 +362,7 @@
         }
       } else {
         req = $.ajax(url, {
-          onload: (function() {
+          onload: function() {
             var cb, _i, _len, _ref, _results;
             _ref = this.callbacks;
             _results = [];
@@ -371,7 +371,10 @@
               _results.push(cb.call(this));
             }
             return _results;
-          })
+          },
+          onabort: function() {
+            return delete $.cache.requests[url];
+          }
         });
         req.callbacks = [cb];
         return $.cache.requests[url] = req;
@@ -811,13 +814,13 @@
       switch (a.textContent[0]) {
         case '+':
           if ((_ref = $('.op .container', thread)) != null) _ref.textContent = '';
-          a.textContent = a.textContent.replace('+', 'X Loading...');
+          a.textContent = a.textContent.replace('+', '\u00d7 Loading...');
           return $.cache(pathname, (function() {
             return expandThread.parse(this, pathname, thread, a);
           }));
-        case 'X':
-          a.textContent = a.textContent.replace('X Loading...', '+');
-          return $.cache[pathname].abort();
+        case '\u00d7':
+          a.textContent = a.textContent.replace('\u00d7 Loading...', '+');
+          return $.cache.requests[pathname].abort();
         case '-':
           a.textContent = a.textContent.replace('-', '+');
           num = (function() {
@@ -855,7 +858,7 @@
         $.off(a, 'click', expandThread.cb.toggle);
         return;
       }
-      a.textContent = a.textContent.replace('X Loading...', '-');
+      a.textContent = a.textContent.replace('\u00d7 Loading...', '-');
       body = $.el('body', {
         innerHTML: req.responseText
       });
