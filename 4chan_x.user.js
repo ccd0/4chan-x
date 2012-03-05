@@ -1969,6 +1969,9 @@
       } else {
         qr.close();
       }
+      if (g.REPLY && conf['Thread Updater'] && conf['Auto Update This']) {
+        updater.update();
+      }
       qr.status();
       return qr.resetFileInput();
     },
@@ -2517,9 +2520,6 @@
         input = _ref[_i];
         if (input.type === 'checkbox') {
           $.on(input, 'click', $.cb.checked);
-          $.on(input, 'click', function() {
-            return conf[this.name] = this.checked;
-          });
           if (input.name === 'Scroll BG') {
             $.on(input, 'click', updater.cb.scrollBG);
             updater.cb.scrollBG.call(input);
@@ -2530,6 +2530,7 @@
           } else if (input.name === 'Auto Update This') {
             $.on(input, 'click', updater.cb.autoUpdate);
             updater.cb.autoUpdate.call(input);
+            conf[input.name] = input.checked;
           }
         } else if (input.name === 'Interval') {
           $.on(input, 'change', function() {

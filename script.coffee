@@ -1602,6 +1602,9 @@ qr =
     else
       qr.close()
 
+    if g.REPLY and conf['Thread Updater'] and conf['Auto Update This']
+      updater.update()
+
     qr.status()
     qr.resetFileInput()
 
@@ -2082,7 +2085,6 @@ updater =
     for input in $$ 'input', dialog
       if input.type is 'checkbox'
         $.on input, 'click', $.cb.checked
-        $.on input, 'click', -> conf[@name] = @checked
         if input.name is 'Scroll BG'
           $.on input, 'click', updater.cb.scrollBG
           updater.cb.scrollBG.call input
@@ -2092,6 +2094,8 @@ updater =
         else if input.name is 'Auto Update This'
           $.on input, 'click', updater.cb.autoUpdate
           updater.cb.autoUpdate.call input
+          # Required for the QR's update after posting.
+          conf[input.name] = input.checked
       else if input.name is 'Interval'
         $.on input, 'change', -> conf['Interval'] = @value = parseInt(@value, 10) or conf['Interval']
         $.on input, 'change', $.cb.value
