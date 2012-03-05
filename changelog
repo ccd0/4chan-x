@@ -3,7 +3,7 @@ master
   General performance improvements.
   Threads will now be updated instantly after posting through the QR.
   Your own posts will not count toward the unread count after posting through the QR.
-  QR thumbnails of high-res pictures will not slow down with anymore.
+  QR thumbnails of high-res pictures will not slow down anymore.
 - noface
   Add unique ID to filter.
 
