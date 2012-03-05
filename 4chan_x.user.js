@@ -448,6 +448,9 @@
     off: function(el, eventType, handler) {
       return el.removeEventListener(eventType, handler, false);
     },
+    open: function(url) {
+      return (GM_openInTab || window.open)(url, '_blank');
+    },
     isDST: function() {
       /*
             http://en.wikipedia.org/wiki/Eastern_Time_Zone
@@ -1149,12 +1152,11 @@
       return $('textarea', qr.el).focus();
     },
     open: function(thread, tab) {
-      var id, open, url;
+      var id, url;
       id = thread.firstChild.id;
       url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
       if (tab) {
-        open = GM_openInTab || window.open;
-        return open(url, "_blank");
+        return $.open(url);
       } else {
         return location.href = url;
       }
@@ -1911,7 +1913,7 @@
       return qr.message.send(post);
     },
     response: function(html) {
-      var b, doc, err, node, open, persona, postNumber, reply, thread, _, _ref;
+      var b, doc, err, node, persona, postNumber, reply, thread, _, _ref;
       doc = $.el('a', {
         innerHTML: html
       });
@@ -1960,8 +1962,7 @@
         qr.cooldown.auto = qr.replies.length > 1;
         qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
         if (conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto) {
-          open = GM_openInTab || window.open;
-          open("http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber, "_blank");
+          $.open("http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber);
         }
       }
       if (conf['Persistent QR'] || qr.cooldown.auto) {

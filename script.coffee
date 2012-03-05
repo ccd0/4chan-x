@@ -349,6 +349,8 @@ $.extend $,
     el.addEventListener eventType, handler, false
   off: (el, eventType, handler) ->
     el.removeEventListener eventType, handler, false
+  open: (url) ->
+    (GM_openInTab or window.open) url, '_blank'
   isDST: ->
     ###
       http://en.wikipedia.org/wiki/Eastern_Time_Zone
@@ -920,8 +922,7 @@ keybinds =
     id = thread.firstChild.id
     url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab
-      open = GM_openInTab or window.open
-      open url, "_blank"
+      $.open url
     else
       location.href = url
 
@@ -1594,8 +1595,7 @@ qr =
       qr.cooldown.auto = qr.replies.length > 1
       qr.cooldown.set if /sage/i.test reply.email then 60 else 30
       if conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto
-        open = GM_openInTab or window.open
-        open "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}", "_blank"
+        $.open "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}"
 
     if conf['Persistent QR'] or qr.cooldown.auto
       reply.rm()
