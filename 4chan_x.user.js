@@ -1569,18 +1569,52 @@
       }
 
       _Class.prototype.setFile = function(file) {
-        var url;
+        var fileUrl, img, url,
+          _this = this;
         this.file = file;
         this.el.title = file.name;
+        if (qr.spoiler) $('label', this.el).hidden = false;
         if (file.type === 'application/pdf') {
           this.el.style.backgroundImage = null;
           return;
         }
-        if (qr.spoiler) $('label', this.el).hidden = false;
         url = window.URL || window.webkitURL;
         url.revokeObjectURL(this.url);
-        this.url = url.createObjectURL(file);
-        return this.el.style.backgroundImage = "url(" + this.url + ")";
+        fileUrl = url.createObjectURL(file);
+        img = $.el('img');
+        $.on(img, 'load', function() {
+          var bb, c, data, i, l, s, ui8a;
+          s = 90 * 3;
+          if (img.height < s || img.width < s) {
+            _this.url = fileUrl;
+            _this.el.style.backgroundImage = "url(" + _this.url + ")";
+            return;
+          }
+          if (img.height <= img.width) {
+            img.width = s / img.height * img.width;
+            img.height = s;
+          } else {
+            img.height = s / img.width * img.height;
+            img.width = s;
+          }
+          c = $.el('canvas');
+          c.height = img.height;
+          c.width = img.width;
+          c.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
+          data = atob(c.toDataURL().split(',')[1]);
+          l = data.length;
+          ui8a = new Uint8Array(l);
+          for (i = 0; 0 <= l ? i < l : i > l; 0 <= l ? i++ : i--) {
+            ui8a[i] = data.charCodeAt(i);
+          }
+          bb = new (window.MozBlobBuilder || window.WebKitBlobBuilder)();
+          bb.append(ui8a.buffer);
+          _this.url = url.createObjectURL(bb.getBlob('image/png'));
+          _this.el.style.backgroundImage = "url(" + _this.url + ")";
+          console.log(_this.url);
+          return url.revokeObjectURL(fileUrl);
+        });
+        return img.src = fileUrl;
       };
 
       _Class.prototype.select = function() {

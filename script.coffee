@@ -1268,14 +1268,54 @@ qr =
       qr.replies.push @
     setFile: (@file) ->
       @el.title = file.name
+      $('label', @el).hidden = false if qr.spoiler
       if file.type is 'application/pdf'
         @el.style.backgroundImage = null
         return
-      $('label', @el).hidden = false if qr.spoiler
       url = window.URL or window.webkitURL
       url.revokeObjectURL @url
-      @url = url.createObjectURL file
-      @el.style.backgroundImage = "url(#{@url})"
+
+      # Create a redimensioned thumbnail.
+      fileUrl = url.createObjectURL file
+      img     = $.el 'img'
+
+      $.on img, 'load', =>
+        # Generate thumbnails only if they're really big.
+        # Resized pictures through canvases look like ass,
+        # so we generate thumbnails `s` times bigger then expected
+        # to avoid crappy resized quality.
+        s = 90*3
+        if img.height < s or img.width < s
+          @url = fileUrl
+          @el.style.backgroundImage = "url(#{@url})"
+          return
+        if img.height <= img.width
+          img.width  = s / img.height * img.width
+          img.height = s
+        else
+          img.height = s / img.width  * img.height
+          img.width  = s
+        c = $.el 'canvas'
+        c.height = img.height
+        c.width  = img.width
+        c.getContext('2d').drawImage img, 0, 0, img.width, img.height
+        # Support for toBlob fucking when?
+        data = atob c.toDataURL().split(',')[1]
+
+        # DataUrl to Binary code from Aeosynth's 4chan X repo
+        l = data.length
+        ui8a = new Uint8Array l
+        for i in  [0...l]
+          ui8a[i] = data.charCodeAt i
+        bb = new (window.MozBlobBuilder or window.WebKitBlobBuilder)()
+        bb.append ui8a.buffer
+
+        @url = url.createObjectURL bb.getBlob 'image/png'
+        @el.style.backgroundImage = "url(#{@url})"
+        console.log @url
+        url.revokeObjectURL fileUrl
+
+      img.src = fileUrl
     select: ->
       qr.selected?.el.id = null
       qr.selected = @
