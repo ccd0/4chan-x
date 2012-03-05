@@ -3934,7 +3934,7 @@
         klass = node.className;
         posts.push({
           root: node,
-          el: klass === 'op' ? node : $('td[id]', node),
+          el: klass === 'op' ? node : node.firstChild.firstChild.lastChild,
           "class": klass,
           id: $('input', node).name,
           threadId: g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id,

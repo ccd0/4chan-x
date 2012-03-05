@@ -3242,7 +3242,7 @@ Main =
       klass = node.className
       posts.push
         root:      node
-        el:        if klass is 'op' then node else $ 'td[id]', node
+        el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
         class:     klass
         id:        $('input', node).name
         threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
