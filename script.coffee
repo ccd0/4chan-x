@@ -3240,19 +3240,17 @@ Main =
 
   preParse: (node) ->
     klass = node.className
-    post  =
-      root:      node
-      el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
-      class:     klass
-      threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
-      isOP:      klass is 'op'
-      isInlined: /\binline\b/.test klass
-      filesize:  $ '.filesize',   node
-      img:       $ 'img[md5]',    node
-      quotes:    $$ '.quotelink', node
-      backlinks: $$ '.backlink',  node
-    post.id = post.el.id
-    post
+    root:      node
+    el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
+    class:     klass
+    id:        $('input', node).name
+    threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
+    isOP:      klass is 'op'
+    isInlined: /\binline\b/.test klass
+    filesize:  $ '.filesize',   node
+    img:       $ 'img[md5]',    node
+    quotes:    $$ '.quotelink', node
+    backlinks: $$ '.backlink',  node
   node: (nodes, notify) ->
     for callback in g.callbacks
       try

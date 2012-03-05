@@ -3932,12 +3932,13 @@
       }
     },
     preParse: function(node) {
-      var klass, post;
+      var klass;
       klass = node.className;
-      post = {
+      return {
         root: node,
         el: klass === 'op' ? node : node.firstChild.firstChild.lastChild,
         "class": klass,
+        id: $('input', node).name,
         threadId: g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id,
         isOP: klass === 'op',
         isInlined: /\binline\b/.test(klass),
@@ -3946,8 +3947,6 @@
         quotes: $$('.quotelink', node),
         backlinks: $$('.backlink', node)
       };
-      post.id = post.el.id;
-      return post;
     },
     node: function(nodes, notify) {
       var callback, node, _i, _j, _len, _len2, _ref;
