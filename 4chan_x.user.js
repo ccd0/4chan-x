@@ -972,7 +972,7 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var o, range, selEnd, selStart, ta, thread, valEnd, valMid, valStart, value, _ref, _ref2;
+      var o, range, selEnd, selStart, ta, thread, value, _ref, _ref2;
       if (!(key = Keybinds.keyCode(e)) || /TEXTAREA|INPUT/.test(e.target.nodeName) && !(e.altKey || e.ctrlKey || e.keyCode === 27)) {
         return;
       }
@@ -994,11 +994,8 @@
           value = ta.value;
           selStart = ta.selectionStart;
           selEnd = ta.selectionEnd;
-          valStart = value.slice(0, selStart) + '[spoiler]';
-          valMid = value.slice(selStart, selEnd);
-          valEnd = '[/spoiler]' + value.slice(selEnd);
-          ta.value = valStart + valMid + valEnd;
-          range = valStart.length + valMid.length;
+          ta.value = value.slice(0, selStart) + '[spoiler]' + value.slice(selStart, selEnd) + '[/spoiler]' + value.slice(selEnd);
+          range = 9 + selEnd;
           ta.setSelectionRange(range, range);
           break;
         case conf.zero:
@@ -1449,7 +1446,7 @@
       }
     },
     quote: function(e) {
-      var caretPos, id, s, sel, ta, text, _ref;
+      var caretPos, id, range, s, sel, ta, text, _ref;
       if (e != null) e.preventDefault();
       qr.open();
       if (!g.REPLY) {
@@ -1464,9 +1461,11 @@
       }
       ta = $('textarea', qr.el);
       caretPos = ta.selectionStart;
-      qr.selected.el.lastChild.textContent = qr.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd, ta.value.length);
+      qr.selected.el.lastChild.textContent = qr.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       ta.focus();
-      return ta.selectionEnd = ta.selectionStart = caretPos + text.length;
+      ta.selectionEnd = ta.selectionStart = caretPos + text.length;
+      range = caretPos + text.length;
+      return ta.setSelectionRange(range, range);
     },
     drag: function(e) {
       var i;

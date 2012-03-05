@@ -826,18 +826,19 @@ Keybinds =
           qr.close()
       when conf.spoiler
         ta = e.target
-        return unless ta.nodeName is 'TEXTAREA'
+        return if ta.nodeName isnt 'TEXTAREA'
 
         value    = ta.value
         selStart = ta.selectionStart
         selEnd   = ta.selectionEnd
 
-        valStart = value[0...selStart] + '[spoiler]'
-        valMid   = value[selStart...selEnd]
-        valEnd   = '[/spoiler]' + value[selEnd..]
+        ta.value =
+          value[...selStart] +
+          '[spoiler]' + value[selStart...selEnd] + '[/spoiler]' +
+          value[selEnd..]
+        range = 9 + selEnd
 
-        ta.value = valStart + valMid + valEnd
-        range = valStart.length + valMid.length
+        # Move the caret to the end of the selection.
         ta.setSelectionRange range, range
       when conf.zero
         window.location = "/#{g.BOARD}/0#0"
@@ -1182,10 +1183,12 @@ qr =
     qr.selected.el.lastChild.textContent =
       qr.selected.com =
         ta.value =
-          ta.value[0...caretPos] + text + ta.value[ta.selectionEnd...ta.value.length]
+          ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
     ta.focus()
     # Move the caret to the end of the new quote.
     ta.selectionEnd = ta.selectionStart = caretPos + text.length
+    range = caretPos + text.length
+    ta.setSelectionRange range, range
 
   drag: (e) ->
     # Let it drag anything from the page.
