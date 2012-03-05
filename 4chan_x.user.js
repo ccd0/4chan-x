@@ -3862,7 +3862,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var MutationObserver, form, navList, nodes, observer, _i, _len, _ref;
+      var MutationObserver, form, navList, node, nodes, observer, _i, _j, _len, _len2, _ref, _ref2;
       if (d.title === '4chan - 404') {
         redirect.init();
         return;
@@ -3894,7 +3894,12 @@
         if (conf['Comment Expansion']) expandComment.init();
         if (conf['Index Navigation']) nav.init();
       }
-      nodes = $$('.op, a + table', form);
+      nodes = [];
+      _ref2 = $$('.op, a + table', form);
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        node = _ref2[_j];
+        nodes.push(Main.preParse(node));
+      }
       Main.node(nodes, true);
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
@@ -3926,33 +3931,33 @@
         return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + version + "/4chan_x.user.js";
       }
     },
+    preParse: function(node) {
+      var klass, post;
+      klass = node.className;
+      post = {
+        root: node,
+        el: klass === 'op' ? node : node.firstChild.firstChild.lastChild,
+        "class": klass,
+        threadId: g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id,
+        isOP: klass === 'op',
+        isInlined: /\binline\b/.test(klass),
+        filesize: $('.filesize', node),
+        img: $('img[md5]', node),
+        quotes: $$('.quotelink', node),
+        backlinks: $$('.backlink', node)
+      };
+      post.id = post.el.id;
+      return post;
+    },
     node: function(nodes, notify) {
-      var callback, klass, node, post, posts, _i, _j, _k, _len, _len2, _len3, _ref;
-      posts = [];
-      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-        node = nodes[_i];
-        klass = node.className;
-        posts.push({
-          root: node,
-          el: klass === 'op' ? node : node.firstChild.firstChild.lastChild,
-          "class": klass,
-          id: $('input', node).name,
-          threadId: g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id,
-          isOP: klass === 'op',
-          isInlined: /\binline\b/.test(klass),
-          filesize: $('.filesize', node),
-          img: $('img[md5]', node),
-          quotes: $$('.quotelink', node),
-          backlinks: $$('.backlink', node)
-        });
-      }
+      var callback, node, _i, _j, _len, _len2, _ref;
       _ref = g.callbacks;
-      for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
-        callback = _ref[_j];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
         try {
-          for (_k = 0, _len3 = posts.length; _k < _len3; _k++) {
-            post = posts[_k];
-            callback(post);
+          for (_j = 0, _len2 = nodes.length; _j < _len2; _j++) {
+            node = nodes[_j];
+            callback(node);
           }
         } catch (err) {
           if (notify) {
@@ -3969,15 +3974,15 @@
         _ref = mutation.addedNodes;
         for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
           addedNode = _ref[_j];
-          if (addedNode.nodeName === 'TABLE') nodes.push(addedNode);
+          if (addedNode.nodeName === 'TABLE') nodes.push(Main.preParse(addedNode));
         }
       }
-      if (nodes.length) return Main.node(nodes);
+      if (posts.length) return Main.node(nodes);
     },
     listener: function(e) {
       var target;
       target = e.target;
-      if (target.nodeName === 'TABLE') return Main.node([target]);
+      if (target.nodeName === 'TABLE') return Main.node([Main.preParse(target)]);
     },
     css: '\
 /* dialog styling */\

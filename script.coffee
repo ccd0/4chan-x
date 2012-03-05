@@ -3209,7 +3209,9 @@ Main =
       if conf['Index Navigation']
         nav.init()
 
-    nodes = $$ '.op, a + table', form
+    nodes = []
+    for node in $$ '.op, a + table', form
+      nodes.push Main.preParse node
     Main.node nodes, true
 
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
@@ -3236,25 +3238,25 @@ Main =
     if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
+  preParse: (node) ->
+    klass = node.className
+    post  =
+      root:      node
+      el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
+      class:     klass
+      threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
+      isOP:      klass is 'op'
+      isInlined: /\binline\b/.test klass
+      filesize:  $ '.filesize',   node
+      img:       $ 'img[md5]',    node
+      quotes:    $$ '.quotelink', node
+      backlinks: $$ '.backlink',  node
+    post.id = post.el.id
+    post
   node: (nodes, notify) ->
-    posts = []
-    for node in nodes
-      klass = node.className
-      posts.push
-        root:      node
-        el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
-        class:     klass
-        id:        $('input', node).name
-        threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
-        isOP:      klass is 'op'
-        isInlined: /\binline\b/.test klass
-        filesize:  $ '.filesize',   node
-        img:       $ 'img[md5]',    node
-        quotes:    $$ '.quotelink', node
-        backlinks: $$ '.backlink',  node
     for callback in g.callbacks
       try
-        callback post for post in posts
+        callback node for node in nodes
       catch err
         alert "4chan X error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
     return
@@ -3262,11 +3264,11 @@ Main =
     nodes = []
     for mutation in mutations
       for addedNode in mutation.addedNodes
-        nodes.push addedNode if addedNode.nodeName is 'TABLE'
-    Main.node nodes if nodes.length
+        nodes.push Main.preParse addedNode if addedNode.nodeName is 'TABLE'
+    Main.node nodes if posts.length
   listener: (e) ->
     {target} = e
-    Main.node [target] if target.nodeName is 'TABLE'
+    Main.node [Main.preParse target] if target.nodeName is 'TABLE'
 
   css: '
 /* dialog styling */
