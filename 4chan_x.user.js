@@ -1969,6 +1969,9 @@
       } else {
         qr.close();
       }
+      if (g.REPLY && (conf['Unread Count'] || conf['Unread Favicon'])) {
+        unread.foresee.push(postNumber);
+      }
       if (g.REPLY && conf['Thread Updater'] && conf['Auto Update This']) {
         updater.update();
       }
@@ -3438,7 +3441,13 @@
       return g.callbacks.push(this.node);
     },
     replies: [],
+    foresee: [],
     node: function(post) {
+      var index;
+      if ((index = unread.foresee.indexOf(post.id)) !== -1) {
+        unread.foresee.splice(index, 1);
+        return;
+      }
       if (post.root.hidden || post["class"]) return;
       unread.replies.push(post.root);
       return unread.update();

@@ -1602,6 +1602,8 @@ qr =
     else
       qr.close()
 
+    if g.REPLY and (conf['Unread Count'] or conf['Unread Favicon'])
+      unread.foresee.push postNumber
     if g.REPLY and conf['Thread Updater'] and conf['Auto Update This']
       updater.update()
 
@@ -2785,8 +2787,12 @@ unread =
     g.callbacks.push @node
 
   replies: []
+  foresee: []
 
   node: (post) ->
+    if (index = unread.foresee.indexOf post.id) isnt -1
+      unread.foresee.splice index, 1
+      return
     return if post.root.hidden or post.class
     unread.replies.push post.root
     unread.update()

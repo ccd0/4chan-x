@@ -2,6 +2,7 @@ master
 - Mayhem
   General performance improvements.
   Threads will now be updated instantly after posting through the QR.
+  Your own posts will not count toward the unread count after posting through the QR.
 - noface
   Add unique ID to filter.
 
