@@ -888,9 +888,9 @@ Keybinds =
         Keybinds.open thread, true
       # Reply Navigation
       when conf.nextReply
-        Keybinds.hl.next thread
+        Keybinds.hl +1, thread
       when conf.previousReply
-        Keybinds.hl.prev thread
+        Keybinds.hl -1, thread
       when conf.hide
         ThreadHiding.toggle thread
       else
@@ -943,45 +943,40 @@ Keybinds =
     else
       location.href = url
 
-  hl:
-    next: (thread) ->
-      if td = $ 'td.replyhl', thread
-        td.className = 'reply'
-        rect = td.getBoundingClientRect()
-        if rect.top > 0 and rect.bottom < d.body.clientHeight #you're fully visible
-          next = $.x 'following::td[@class="reply"]', td
-          return if $.x('ancestor::div[@class="thread"]', next) isnt thread
-          rect = next.getBoundingClientRect()
-          if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the next
-            next.className = 'replyhl'
-          return
+  hl: (delta, thread) ->
+    if td = $ '.replyhl', thread
+      td.className = 'reply'
+      td.removeAttribute 'tabindex'
+      rect = td.getBoundingClientRect()
+      if rect.bottom >= 0 and rect.top <= d.body.clientHeight # We're at least partially visible
+        next =
+          if delta is +1
+            $.x 'following::td[@class="reply"]', td
+          else
+            $.x 'preceding::td[@class="reply"]', td
+      unless next
+        td.className = 'replyhl'
+        td.tabIndex  = 0
+        next.focus()
+        return
+      return unless g.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
+      rect = next.getBoundingClientRect()
+      if rect.top < 0 or rect.bottom > d.body.clientHeight
+        next.scrollIntoView delta is -1
+      next.className = 'replyhl'
+      next.tabIndex  = 0
+      next.focus()
+      return
 
-      replies = $$ 'td.reply', thread
-      for reply in replies
-        top = reply.getBoundingClientRect().top
-        if top > 0
-          reply.className = 'replyhl'
-          return
-
-    prev: (thread) ->
-      if td = $ 'td.replyhl', thread
-        td.className = 'reply'
-        rect = td.getBoundingClientRect()
-        if rect.top > 0 and rect.bottom < d.body.clientHeight #you're fully visible
-          prev = $.x 'preceding::td[@class="reply"][1]', td
-          rect = prev.getBoundingClientRect()
-          if rect.top > 0 and rect.bottom < d.body.clientHeight #and so is the prev
-            prev.className = 'replyhl'
-          return
-
-      replies = $$ 'td.reply', thread
-      replies.reverse()
-      height = d.body.clientHeight
-      for reply in replies
-        bot = reply.getBoundingClientRect().bottom
-        if bot < height
-          reply.className = 'replyhl'
-          return
+    replies = $$ '.reply', thread
+    replies.reverse() if delta is -1
+    for reply in replies
+      rect = reply.getBoundingClientRect()
+      if delta is +1 and rect.top >= 0 or delta is -1 and rect.bottom <= d.body.clientHeight
+        reply.className = 'replyhl'
+        reply.tabIndex  = 0
+        reply.focus()
+        return
 
 Nav =
   # ◀ ▶
@@ -1013,8 +1008,6 @@ Nav =
     else
       Nav.scroll +1
 
-  threads: []
-
   getThread: (full) ->
     Nav.threads = $$ '.thread:not([hidden])'
     for thread, i in Nav.threads
@@ -1024,7 +1017,7 @@ Nav =
         if full
           return [thread, i, rect]
         return thread
-    return null
+    return $ 'form[name=delform]'
 
   scroll: (delta) ->
     [thread, i, rect] = Nav.getThread true

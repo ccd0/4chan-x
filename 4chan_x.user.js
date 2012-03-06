@@ -1050,10 +1050,10 @@
           Keybinds.open(thread, true);
           break;
         case conf.nextReply:
-          Keybinds.hl.next(thread);
+          Keybinds.hl(+1, thread);
           break;
         case conf.previousReply:
-          Keybinds.hl.prev(thread);
+          Keybinds.hl(-1, thread);
           break;
         case conf.hide:
           ThreadHiding.toggle(thread);
@@ -1159,56 +1159,43 @@
         return location.href = url;
       }
     },
-    hl: {
-      next: function(thread) {
-        var next, rect, replies, reply, td, top, _i, _len;
-        if (td = $('td.replyhl', thread)) {
-          td.className = 'reply';
-          rect = td.getBoundingClientRect();
-          if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-            next = $.x('following::td[@class="reply"]', td);
-            if ($.x('ancestor::div[@class="thread"]', next) !== thread) return;
-            rect = next.getBoundingClientRect();
-            if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-              next.className = 'replyhl';
-            }
-            return;
-          }
+    hl: function(delta, thread) {
+      var next, rect, replies, reply, td, _i, _len;
+      if (td = $('.replyhl', thread)) {
+        td.className = 'reply';
+        td.removeAttribute('tabindex');
+        rect = td.getBoundingClientRect();
+        if (rect.bottom >= 0 && rect.top <= d.body.clientHeight) {
+          next = delta === +1 ? $.x('following::td[@class="reply"]', td) : $.x('preceding::td[@class="reply"]', td);
         }
-        replies = $$('td.reply', thread);
-        for (_i = 0, _len = replies.length; _i < _len; _i++) {
-          reply = replies[_i];
-          top = reply.getBoundingClientRect().top;
-          if (top > 0) {
-            reply.className = 'replyhl';
-            return;
-          }
+        if (!next) {
+          td.className = 'replyhl';
+          td.tabIndex = 0;
+          next.focus();
+          return;
         }
-      },
-      prev: function(thread) {
-        var bot, height, prev, rect, replies, reply, td, _i, _len;
-        if (td = $('td.replyhl', thread)) {
-          td.className = 'reply';
-          rect = td.getBoundingClientRect();
-          if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-            prev = $.x('preceding::td[@class="reply"][1]', td);
-            rect = prev.getBoundingClientRect();
-            if (rect.top > 0 && rect.bottom < d.body.clientHeight) {
-              prev.className = 'replyhl';
-            }
-            return;
-          }
+        if (!(g.REPLY || $.x('ancestor::div[@class="thread"]', next) === thread)) {
+          return;
         }
-        replies = $$('td.reply', thread);
-        replies.reverse();
-        height = d.body.clientHeight;
-        for (_i = 0, _len = replies.length; _i < _len; _i++) {
-          reply = replies[_i];
-          bot = reply.getBoundingClientRect().bottom;
-          if (bot < height) {
-            reply.className = 'replyhl';
-            return;
-          }
+        rect = next.getBoundingClientRect();
+        if (rect.top < 0 || rect.bottom > d.body.clientHeight) {
+          next.scrollIntoView(delta === -1);
+        }
+        next.className = 'replyhl';
+        next.tabIndex = 0;
+        next.focus();
+        return;
+      }
+      replies = $$('.reply', thread);
+      if (delta === -1) replies.reverse();
+      for (_i = 0, _len = replies.length; _i < _len; _i++) {
+        reply = replies[_i];
+        rect = reply.getBoundingClientRect();
+        if (delta === +1 && rect.top >= 0 || delta === -1 && rect.bottom <= d.body.clientHeight) {
+          reply.className = 'replyhl';
+          reply.tabIndex = 0;
+          reply.focus();
+          return;
         }
       }
     }
@@ -1247,7 +1234,6 @@
         return Nav.scroll(+1);
       }
     },
-    threads: [],
     getThread: function(full) {
       var bottom, i, rect, thread, _len, _ref;
       Nav.threads = $$('.thread:not([hidden])');
@@ -1261,7 +1247,7 @@
           return thread;
         }
       }
-      return null;
+      return $('form[name=delform]');
     },
     scroll: function(delta) {
       var i, rect, thread, top, _ref, _ref2;
