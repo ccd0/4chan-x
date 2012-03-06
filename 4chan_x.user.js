@@ -1602,6 +1602,15 @@
         return img.src = fileUrl;
       };
 
+      _Class.prototype.rmFile = function() {
+        qr.resetFileInput();
+        delete this.file;
+        this.el.title = null;
+        this.el.style.backgroundImage = null;
+        if (qr.spoiler) $('label', this.el).hidden = true;
+        return (window.URL || window.webkitURL).revokeObjectURL(this.url);
+      };
+
       _Class.prototype.select = function() {
         var data, rectEl, rectList, _i, _len, _ref, _ref2;
         if ((_ref = qr.selected) != null) _ref.el.id = null;
@@ -1760,7 +1769,7 @@
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>\
   <div class=captcha title=Reload><img></div>\
   <div><input title=Verification class=field autocomplete=off size=1></div>\
-  <div><input type=file multiple size=16><input type=submit></div>\
+  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>\
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\
   <div class=warning></div>\
 </form>');
@@ -1816,6 +1825,9 @@
         return qr.selected.el.lastChild.textContent = this.value;
       });
       $.on(fileInput, 'change', qr.fileInput);
+      $.on(fileInput, 'click', function(e) {
+        if (e.shiftKey) return qr.selected.rmFile() || e.preventDefault();
+      });
       $.on(spoiler.firstChild, 'change', function() {
         return $('input', qr.selected.el).click();
       });

@@ -3,7 +3,8 @@ master
   General performance improvements.
   Threads will now be updated instantly after posting through the QR.
   Your own posts will not count toward the unread count after posting through the QR.
-  QR thumbnails of high-res pictures will not slow down anymore.
+  Performance issues are now lessened with QR thumbnails of high-res pictures.
+  You can now use Shift+Click on the file input to remove the selected reply's file.
   Reply navigation keybinds will now scroll as you navigate.
 - noface
   Add unique ID to filter.

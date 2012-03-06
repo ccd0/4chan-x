@@ -1327,6 +1327,13 @@ qr =
         url.revokeObjectURL fileUrl
 
       img.src = fileUrl
+    rmFile: ->
+      qr.resetFileInput()
+      delete @file
+      @el.title = null
+      @el.style.backgroundImage = null
+      $('label', @el).hidden = true if qr.spoiler
+      (window.URL or window.webkitURL).revokeObjectURL @url
     select: ->
       qr.selected?.el.id = null
       qr.selected = @
@@ -1442,7 +1449,7 @@ qr =
   <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
   <div class=captcha title=Reload><img></div>
   <div><input title=Verification class=field autocomplete=off size=1></div>
-  <div><input type=file multiple size=16><input type=submit></div>
+  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
   <div class=warning></div>
 </form>'
@@ -1488,6 +1495,7 @@ qr =
     $.on $('form',      qr.el), 'submit',    qr.submit
     $.on $('textarea',  qr.el), 'keyup',     -> qr.selected.el.lastChild.textContent = @value
     $.on fileInput,             'change',    qr.fileInput
+    $.on fileInput,             'click',     (e) -> if e.shiftKey then qr.selected.rmFile() or e.preventDefault()
     $.on spoiler.firstChild,    'change',    -> $('input', qr.selected.el).click()
     $.on $('.warning',  qr.el), 'click',     qr.cleanError
 
