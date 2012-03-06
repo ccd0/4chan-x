@@ -2367,11 +2367,9 @@ Anonymize =
   node: (post) ->
     name = $ '.commentpostername, .postername', post.el
     name.textContent = 'Anonymous'
-    if trip = $ '.postertrip', post.el
-      if trip.parentNode.nodeName is 'A'
-        $.rm trip.parentNode
-      else
-        $.rm trip
+    node = name.nextElementSibling
+    if node.className is 'postertrip' or node.nodeName is 'A'
+      $.rm node
 
 Sauce =
   init: ->
@@ -2806,13 +2804,14 @@ QuoteCT =
 
 ReportButton =
   init: ->
+    @a = $.el 'a',
+      className: 'reportbutton'
+      innerHTML: '[&nbsp;!&nbsp;]'
+      href: 'javascript:;'
     g.callbacks.push @node
   node: (post) ->
-    if not a = $ '.reportbutton', post.el
-      a = $.el 'a',
-        className: 'reportbutton'
-        innerHTML: '[&nbsp;!&nbsp;]'
-        href: 'javascript:;'
+    unless a = $ '.reportbutton', post.el
+      a = ReportButton.a.cloneNode true
       $.after $('span[id]', post.el), [$.tn(' '), a]
     $.on a, 'click', ReportButton.report
   report: ->
@@ -2882,7 +2881,7 @@ Unread =
     if conf['Unread Count']
       d.title = "(#{count}) #{@title}"
 
-    unless conf['Unread Favicon'] and count < 2 or forceUpdate
+    unless conf['Unread Favicon'] and (count < 2 or forceUpdate)
       return
 
     Favicon.el.href =
@@ -3012,7 +3011,7 @@ ImageExpand =
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
     if ImageExpand.on and !post.root.hidden and post.class isnt 'inline'
-      ImageExpand.expand a.firstChild
+      ImageExpand.expand post.img
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0

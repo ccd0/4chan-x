@@ -2810,15 +2810,12 @@
       return g.callbacks.push(this.node);
     },
     node: function(post) {
-      var name, trip;
+      var name, node;
       name = $('.commentpostername, .postername', post.el);
       name.textContent = 'Anonymous';
-      if (trip = $('.postertrip', post.el)) {
-        if (trip.parentNode.nodeName === 'A') {
-          return $.rm(trip.parentNode);
-        } else {
-          return $.rm(trip);
-        }
+      node = name.nextElementSibling;
+      if (node.className === 'postertrip' || node.nodeName === 'A') {
+        return $.rm(node);
       }
     }
   };
@@ -3412,16 +3409,17 @@
 
   ReportButton = {
     init: function() {
+      this.a = $.el('a', {
+        className: 'reportbutton',
+        innerHTML: '[&nbsp;!&nbsp;]',
+        href: 'javascript:;'
+      });
       return g.callbacks.push(this.node);
     },
     node: function(post) {
       var a;
       if (!(a = $('.reportbutton', post.el))) {
-        a = $.el('a', {
-          className: 'reportbutton',
-          innerHTML: '[&nbsp;!&nbsp;]',
-          href: 'javascript:;'
-        });
+        a = ReportButton.a.cloneNode(true);
         $.after($('span[id]', post.el), [$.tn(' '), a]);
       }
       return $.on(a, 'click', ReportButton.report);
@@ -3506,7 +3504,7 @@
       if (!g.REPLY) return;
       count = this.replies.length;
       if (conf['Unread Count']) d.title = "(" + count + ") " + this.title;
-      if (!(conf['Unread Favicon'] && count < 2 || forceUpdate)) return;
+      if (!(conf['Unread Favicon'] && (count < 2 || forceUpdate))) return;
       Favicon.el.href = g.dead ? count ? Favicon.unreadDead : Favicon.dead : count ? Favicon.unread : Favicon["default"];
       return $.add(d.head, Favicon.el);
     }
@@ -3679,7 +3677,7 @@
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
       if (ImageExpand.on && !post.root.hidden && post["class"] !== 'inline') {
-        return ImageExpand.expand(a.firstChild);
+        return ImageExpand.expand(post.img);
       }
     },
     cb: {
