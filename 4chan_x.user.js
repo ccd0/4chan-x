@@ -4214,9 +4214,6 @@ a[href="javascript:;"] {\
   color: #000;\
   outline: none;\
 }\
-.forwardlink {\
-  color: #34345C;\
-}\
 textarea.field {\
   min-height: 120px;\
 }\
@@ -4407,6 +4404,9 @@ td > .filesize > img[md5] {\
 }\
 .filtered {\
   text-decoration: line-through;\
+}\
+.quotelink.forwardlink {\
+  color: #ef5411;\
 }\
 '
   };
