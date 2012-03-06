@@ -2714,7 +2714,7 @@ QuotePreview =
         replyID = $.x('preceding-sibling::input', @parentNode).name
         for quote in $$ '.quotelink', qp
           if quote.hash[1..] is replyID
-            $.addClass quote, 'forwardlink'
+            quote.className = 'forwardlink'
     else
       qp.textContent = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]', @).firstChild.id

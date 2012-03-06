@@ -3315,7 +3315,7 @@
           _ref = $$('.quotelink', qp);
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             quote = _ref[_i];
-            if (quote.hash.slice(1) === replyID) $.addClass(quote, 'forwardlink');
+            if (quote.hash.slice(1) === replyID) quote.className = 'forwardlink';
           }
         }
       } else {
