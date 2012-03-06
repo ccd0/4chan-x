@@ -2620,9 +2620,11 @@ QuoteInline =
   init: ->
     g.callbacks.push @node
   node: (post) ->
-    for quote in post.quotes.concat post.backlinks
+    for quote in post.quotes
       continue unless quote.hash
       quote.removeAttribute 'onclick'
+      $.on quote, 'click', QuoteInline.toggle
+    for quote in post.backlinks
       $.on quote, 'click', QuoteInline.toggle
     return
   toggle: (e) ->
@@ -2712,8 +2714,10 @@ QuotePreview =
   init: ->
     g.callbacks.push @node
   node: (post) ->
-    for quote in post.quotes.concat post.backlinks
+    for quote in post.quotes
       $.on quote, 'mouseover', QuotePreview.mouseover if quote.hash
+    for quote in post.backlinks
+      $.on quote, 'mouseover', QuotePreview.mouseover
     return
   mouseover: (e) ->
     return if /\binlined\b/.test @className
@@ -3324,8 +3328,8 @@ Main =
     isInlined: /\binline\b/.test klass
     filesize:  $ '.filesize',   node
     img:       $ 'img[md5]',    node
-    quotes:    $$ '.quotelink', node
-    backlinks: $$ '.backlink',  node
+    quotes:    node.getElementsByClassName 'quotelink'
+    backlinks: node.getElementsByClassName 'backlink'
   node: (nodes, notify) ->
     for callback in g.callbacks
       try

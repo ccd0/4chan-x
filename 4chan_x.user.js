@@ -3163,12 +3163,17 @@
       return g.callbacks.push(this.node);
     },
     node: function(post) {
-      var quote, _i, _len, _ref;
-      _ref = post.quotes.concat(post.backlinks);
+      var quote, _i, _j, _len, _len2, _ref, _ref2;
+      _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (!quote.hash) continue;
         quote.removeAttribute('onclick');
+        $.on(quote, 'click', QuoteInline.toggle);
+      }
+      _ref2 = post.backlinks;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        quote = _ref2[_j];
         $.on(quote, 'click', QuoteInline.toggle);
       }
     },
@@ -3289,11 +3294,16 @@
       return g.callbacks.push(this.node);
     },
     node: function(post) {
-      var quote, _i, _len, _ref;
-      _ref = post.quotes.concat(post.backlinks);
+      var quote, _i, _j, _len, _len2, _ref, _ref2;
+      _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (quote.hash) $.on(quote, 'mouseover', QuotePreview.mouseover);
+      }
+      _ref2 = post.backlinks;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        quote = _ref2[_j];
+        $.on(quote, 'mouseover', QuotePreview.mouseover);
       }
     },
     mouseover: function(e) {
@@ -3988,8 +3998,8 @@
         isInlined: /\binline\b/.test(klass),
         filesize: $('.filesize', node),
         img: $('img[md5]', node),
-        quotes: $$('.quotelink', node),
-        backlinks: $$('.backlink', node)
+        quotes: node.getElementsByClassName('quotelink'),
+        backlinks: node.getElementsByClassName('backlink')
       };
     },
     node: function(nodes, notify) {
