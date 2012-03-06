@@ -3717,6 +3717,9 @@ td > .filesize > img[md5] {
 .filtered {
   text-decoration: line-through;
 }
+.quotelink.forwardlink {
+  color: #ef5411;
+}
 '
 
 Main.init()
