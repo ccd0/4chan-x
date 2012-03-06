@@ -1611,7 +1611,6 @@
           bb.append(ui8a.buffer);
           _this.url = url.createObjectURL(bb.getBlob('image/png'));
           _this.el.style.backgroundImage = "url(" + _this.url + ")";
-          console.log(_this.url);
           return url.revokeObjectURL(fileUrl);
         });
         return img.src = fileUrl;
@@ -2155,12 +2154,12 @@
           textContent: '4chan X',
           href: 'javascript:;'
         });
-        $.on(a, 'click', this.dialog);
+        $.on(a, 'click', Options.dialog);
         $.replace(home.firstElementChild, a);
       }
       if (!$.get('firstrun')) {
         $.set('firstrun', true);
-        return this.dialog();
+        return Options.dialog();
       }
     },
     dialog: function() {
@@ -4244,7 +4243,7 @@ textarea.field {\
 .warning {\
   color: red;\
 }\
-td.replyhider {\
+.replyhider {\
   vertical-align: top;\
 }\
 \

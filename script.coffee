@@ -1319,7 +1319,6 @@ qr =
 
         @url = url.createObjectURL bb.getBlob 'image/png'
         @el.style.backgroundImage = "url(#{@url})"
-        console.log @url
         url.revokeObjectURL fileUrl
 
       img.src = fileUrl
@@ -1770,11 +1769,11 @@ Options =
       a = $.el 'a',
         textContent: '4chan X'
         href: 'javascript:;'
-      $.on a, 'click', @dialog
+      $.on a, 'click', Options.dialog
       $.replace home.firstElementChild, a
     unless $.get 'firstrun'
       $.set 'firstrun', true
-      @dialog()
+      Options.dialog()
 
   dialog: ->
     dialog = $.el 'div'
@@ -3541,7 +3540,7 @@ textarea.field {
 .warning {
   color: red;
 }
-td.replyhider {
+.replyhider {
   vertical-align: top;
 }
 
