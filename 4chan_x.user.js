@@ -2691,14 +2691,14 @@
     },
     update: function() {
       var url, _ref;
-      this.timer.textContent = 0;
-      if ((_ref = this.request) != null) _ref.abort();
+      Updater.timer.textContent = 0;
+      if ((_ref = Updater.request) != null) _ref.abort();
       url = location.pathname + '?' + Date.now();
-      return this.request = $.ajax(url, {
-        onload: this.cb.update
+      return Updater.request = $.ajax(url, {
+        onload: Updater.cb.update
       }, {
         headers: {
-          'If-Modified-Since': this.lastModified
+          'If-Modified-Since': Updater.lastModified
         }
       });
     }

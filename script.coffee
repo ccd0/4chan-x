@@ -2251,12 +2251,12 @@ Updater =
     @update()
 
   update: ->
-    @timer.textContent = 0
-    @request?.abort()
+    Updater.timer.textContent = 0
+    Updater.request?.abort()
     #fool the cache
     url = location.pathname + '?' + Date.now()
-    @request = $.ajax url, onload: @cb.update,
-      headers: 'If-Modified-Since': @lastModified
+    Updater.request = $.ajax url, onload: Updater.cb.update,
+      headers: 'If-Modified-Since': Updater.lastModified
 
 Watcher =
   init: ->
