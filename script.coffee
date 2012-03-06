@@ -1456,7 +1456,9 @@ qr =
           'application/pdf'
         else
           "image/#{type}"
-    qr.mimeTypes     = mimeTypes.split ', '
+    qr.mimeTypes = mimeTypes.split ', '
+    # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
+    qr.mimeTypes.push ''
     fileInput        = $ '[type=file]', qr.el
     fileInput.max    = $('[name=MAX_FILE_SIZE]').value
     fileInput.accept = mimeTypes

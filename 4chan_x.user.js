@@ -1795,6 +1795,7 @@
         }
       });
       qr.mimeTypes = mimeTypes.split(', ');
+      qr.mimeTypes.push('');
       fileInput = $('[type=file]', qr.el);
       fileInput.max = $('[name=MAX_FILE_SIZE]').value;
       fileInput.accept = mimeTypes;
