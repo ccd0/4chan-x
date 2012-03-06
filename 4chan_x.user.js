@@ -1843,7 +1843,10 @@
         for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
           event = _ref3[_k];
           $.on(input, event, function() {
-            return qr.selected[this.name] = this.value;
+            qr.selected[this.name] = this.value;
+            if (qr.cooldown.auto && qr.selected === qr.replies[0] && parseInt(qr.status.input.value.match(/\d+/)) < 6) {
+              return qr.cooldown.auto = false;
+            }
           });
         }
       }

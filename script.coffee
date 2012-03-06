@@ -1491,7 +1491,12 @@ qr =
     for name in ['name', 'email', 'sub', 'com']
       input = $ "[name=#{name}]", qr.el
       for event in ['textInput', 'keyup', 'change', 'paste']
-        $.on input, event, -> qr.selected[@name] = @value
+        $.on input, event, ->
+          qr.selected[@name] = @value
+          # Disable auto-posting if you're typing in the first reply
+          # during the last 5 seconds of the cooldown.
+          if qr.cooldown.auto and qr.selected is qr.replies[0] and parseInt(qr.status.input.value.match /\d+/) < 6
+            qr.cooldown.auto = false
     # sync between tabs
     $.sync 'qr.persona', (persona) ->
       return unless qr.el.hidden
