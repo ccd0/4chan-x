@@ -157,28 +157,28 @@
     fileInfoT: '%l (%s, %r)',
     favicon: 'ferongr',
     hotkeys: {
+      openQR: ['i', 'Open QR with post number inserted'],
+      openEmptyQR: ['I', 'Open QR without post number inserted'],
       openOptions: ['ctrl+o', 'Open Options'],
       close: ['Esc', 'Close Options or QR'],
       spoiler: ['ctrl+s', 'Quick spoiler'],
-      openQR: ['i', 'Open QR with post number inserted'],
-      openEmptyQR: ['I', 'Open QR without post number inserted'],
       submit: ['alt+s', 'Submit post'],
-      nextReply: ['J', 'Select next reply'],
-      previousReply: ['K', 'Select previous reply'],
-      nextThread: ['n', 'See next thread'],
-      previousThread: ['p', 'See previous thread'],
-      nextPage: ['L', 'Jump to the next page'],
-      previousPage: ['H', 'Jump to the previous page'],
-      zero: ['0', 'Jump to page 0'],
-      openThreadTab: ['o', 'Open thread in current tab'],
-      openThread: ['O', 'Open thread in new tab'],
-      expandThread: ['e', 'Expand thread'],
       watch: ['w', 'Watch thread'],
-      hide: ['x', 'Hide thread'],
+      update: ['u', 'Update now'],
+      unreadCountTo0: ['z', 'Reset unread status'],
       expandImage: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
-      update: ['u', 'Update now'],
-      unreadCountTo0: ['z', 'Reset unread status']
+      zero: ['0', 'Jump to page 0'],
+      nextPage: ['L', 'Jump to the next page'],
+      previousPage: ['H', 'Jump to the previous page'],
+      nextThread: ['n', 'See next thread'],
+      previousThread: ['p', 'See previous thread'],
+      expandThread: ['e', 'Expand thread'],
+      openThreadTab: ['o', 'Open thread in current tab'],
+      openThread: ['O', 'Open thread in new tab'],
+      nextReply: ['J', 'Select next reply'],
+      previousReply: ['K', 'Select previous reply'],
+      hide: ['x', 'Hide thread']
     },
     updater: {
       checkbox: {
@@ -978,6 +978,12 @@
       }
       thread = Nav.getThread();
       switch (key) {
+        case conf.openQR:
+          Keybinds.qr(thread, true);
+          break;
+        case conf.openEmptyQR:
+          Keybinds.qr(thread);
+          break;
         case conf.openOptions:
           if (!$.id('overlay')) Options.dialog();
           break;
@@ -987,6 +993,9 @@
           } else if (qr.el) {
             qr.close();
           }
+          break;
+        case conf.submit:
+          if (qr.el && !qr.status()) qr.submit();
           break;
         case conf.spoiler:
           ta = e.target;
@@ -998,52 +1007,24 @@
           range = 9 + selEnd;
           ta.setSelectionRange(range, range);
           break;
-        case conf.zero:
-          window.location = "/" + g.BOARD + "/0#0";
-          break;
-        case conf.openEmptyQR:
-          Keybinds.qr(thread);
-          break;
-        case conf.openQR:
-          Keybinds.qr(thread, true);
-          break;
-        case conf.nextReply:
-          Keybinds.hl.next(thread);
-          break;
-        case conf.previousReply:
-          Keybinds.hl.prev(thread);
-          break;
-        case conf.expandAllImages:
-          Keybinds.img(thread, true);
-          break;
-        case conf.openThread:
-          Keybinds.open(thread);
-          break;
-        case conf.expandThread:
-          ExpandThread.toggle(thread);
-          break;
-        case conf.expandImage:
-          Keybinds.img(thread);
-          break;
-        case conf.nextThread:
-          if (g.REPLY) return;
-          Nav.scroll(+1);
-          break;
-        case conf.openThreadTab:
-          Keybinds.open(thread, true);
-          break;
-        case conf.previousThread:
-          if (g.REPLY) return;
-          Nav.scroll(-1);
+        case conf.watch:
+          Watcher.toggle(thread);
           break;
         case conf.update:
           Updater.update();
           break;
-        case conf.watch:
-          Watcher.toggle(thread);
+        case conf.unreadCountTo0:
+          Unread.replies = [];
+          Unread.update();
           break;
-        case conf.hide:
-          ThreadHiding.toggle(thread);
+        case conf.expandImage:
+          Keybinds.img(thread);
+          break;
+        case conf.expandAllImages:
+          Keybinds.img(thread, true);
+          break;
+        case conf.zero:
+          window.location = "/" + g.BOARD + "/0#0";
           break;
         case conf.nextPage:
           if ((_ref = $('input[value=Next]')) != null) _ref.click();
@@ -1051,12 +1032,31 @@
         case conf.previousPage:
           if ((_ref2 = $('input[value=Previous]')) != null) _ref2.click();
           break;
-        case conf.submit:
-          if (qr.el && !qr.status()) qr.submit();
+        case conf.nextThread:
+          if (g.REPLY) return;
+          Nav.scroll(+1);
           break;
-        case conf.unreadCountTo0:
-          Unread.replies = [];
-          Unread.update();
+        case conf.previousThread:
+          if (g.REPLY) return;
+          Nav.scroll(-1);
+          break;
+        case conf.expandThread:
+          ExpandThread.toggle(thread);
+          break;
+        case conf.openThread:
+          Keybinds.open(thread);
+          break;
+        case conf.openThreadTab:
+          Keybinds.open(thread, true);
+          break;
+        case conf.nextReply:
+          Keybinds.hl.next(thread);
+          break;
+        case conf.previousReply:
+          Keybinds.hl.prev(thread);
+          break;
+        case conf.hide:
+          ThreadHiding.toggle(thread);
           break;
         default:
           return;

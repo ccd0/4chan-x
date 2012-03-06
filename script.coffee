@@ -117,28 +117,34 @@ config =
   fileInfoT: '%l (%s, %r)'
   favicon: 'ferongr'
   hotkeys:
+    # QR & Options
+    openQR:          ['i',      'Open QR with post number inserted']
+    openEmptyQR:     ['I',      'Open QR without post number inserted']
     openOptions:     ['ctrl+o', 'Open Options']
     close:           ['Esc',    'Close Options or QR']
     spoiler:         ['ctrl+s', 'Quick spoiler']
-    openQR:          ['i',      'Open QR with post number inserted']
-    openEmptyQR:     ['I',      'Open QR without post number inserted']
     submit:          ['alt+s',  'Submit post']
-    nextReply:       ['J',      'Select next reply']
-    previousReply:   ['K',      'Select previous reply']
-    nextThread:      ['n',      'See next thread']
-    previousThread:  ['p',      'See previous thread']
-    nextPage:        ['L',      'Jump to the next page']
-    previousPage:    ['H',      'Jump to the previous page']
-    zero:            ['0',      'Jump to page 0']
-    openThreadTab:   ['o',      'Open thread in current tab']
-    openThread:      ['O',      'Open thread in new tab']
-    expandThread:    ['e',      'Expand thread']
+    # Thread related
     watch:           ['w',      'Watch thread']
-    hide:            ['x',      'Hide thread']
-    expandImage:     ['m',      'Expand selected image']
-    expandAllImages: ['M',      'Expand all images']
     update:          ['u',      'Update now']
     unreadCountTo0:  ['z',      'Reset unread status']
+    # Images
+    expandImage:     ['m',      'Expand selected image']
+    expandAllImages: ['M',      'Expand all images']
+    # Board Navigation
+    zero:            ['0',      'Jump to page 0']
+    nextPage:        ['L',      'Jump to the next page']
+    previousPage:    ['H',      'Jump to the previous page']
+    # Thread Navigation
+    nextThread:      ['n',      'See next thread']
+    previousThread:  ['p',      'See previous thread']
+    expandThread:    ['e',      'Expand thread']
+    openThreadTab:   ['o',      'Open thread in current tab']
+    openThread:      ['O',      'Open thread in new tab']
+    # Reply Navigation
+    nextReply:       ['J',      'Select next reply']
+    previousReply:   ['K',      'Select previous reply']
+    hide:            ['x',      'Hide thread']
   updater:
     checkbox:
       'Scrolling':   [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
@@ -817,6 +823,11 @@ Keybinds =
 
     thread = Nav.getThread()
     switch key
+      # QR & Options
+      when conf.openQR
+        Keybinds.qr thread, true
+      when conf.openEmptyQR
+        Keybinds.qr thread
       when conf.openOptions
         Options.dialog() unless $.id 'overlay'
       when conf.close
@@ -824,6 +835,8 @@ Keybinds =
           Options.close.call o
         else if qr.el
           qr.close()
+      when conf.submit
+        qr.submit() if qr.el and !qr.status()
       when conf.spoiler
         ta = e.target
         return if ta.nodeName isnt 'TEXTAREA'
@@ -836,51 +849,50 @@ Keybinds =
           value[...selStart] +
           '[spoiler]' + value[selStart...selEnd] + '[/spoiler]' +
           value[selEnd..]
-        range = 9 + selEnd
 
+        range = 9 + selEnd
         # Move the caret to the end of the selection.
         ta.setSelectionRange range, range
-      when conf.zero
-        window.location = "/#{g.BOARD}/0#0"
-      when conf.openEmptyQR
-        Keybinds.qr thread
-      when conf.openQR
-        Keybinds.qr thread, true
-      when conf.nextReply
-        Keybinds.hl.next thread
-      when conf.previousReply
-        Keybinds.hl.prev thread
-      when conf.expandAllImages
-        Keybinds.img thread, true
-      when conf.openThread
-        Keybinds.open thread
-      when conf.expandThread
-        ExpandThread.toggle thread
-      when conf.expandImage
-        Keybinds.img thread
-      when conf.nextThread
-        return if g.REPLY
-        Nav.scroll +1
-      when conf.openThreadTab
-        Keybinds.open thread, true
-      when conf.previousThread
-        return if g.REPLY
-        Nav.scroll -1
-      when conf.update
-        Updater.update()
+      # Thread related
       when conf.watch
         Watcher.toggle thread
-      when conf.hide
-        ThreadHiding.toggle thread
+      when conf.update
+        Updater.update()
+      when conf.unreadCountTo0
+        Unread.replies = []
+        Unread.update()
+      # Images
+      when conf.expandImage
+        Keybinds.img thread
+      when conf.expandAllImages
+        Keybinds.img thread, true
+      # Board Navigation
+      when conf.zero
+        window.location = "/#{g.BOARD}/0#0"
       when conf.nextPage
         $('input[value=Next]')?.click()
       when conf.previousPage
         $('input[value=Previous]')?.click()
-      when conf.submit
-        qr.submit() if qr.el and !qr.status()
-      when conf.unreadCountTo0
-        Unread.replies = []
-        Unread.update()
+      # Thread Navigation
+      when conf.nextThread
+        return if g.REPLY
+        Nav.scroll +1
+      when conf.previousThread
+        return if g.REPLY
+        Nav.scroll -1
+      when conf.expandThread
+        ExpandThread.toggle thread
+      when conf.openThread
+        Keybinds.open thread
+      when conf.openThreadTab
+        Keybinds.open thread, true
+      # Reply Navigation
+      when conf.nextReply
+        Keybinds.hl.next thread
+      when conf.previousReply
+        Keybinds.hl.prev thread
+      when conf.hide
+        ThreadHiding.toggle thread
       else
         return
     e.preventDefault()
