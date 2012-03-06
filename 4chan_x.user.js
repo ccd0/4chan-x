@@ -3986,21 +3986,22 @@
       }
     },
     preParse: function(node) {
-      var klass;
+      var klass, post;
       klass = node.className;
-      return {
+      post = {
         root: node,
         el: klass === 'op' ? node : node.firstChild.firstChild.lastChild,
         "class": klass,
-        id: $('input', node).name,
+        id: node.getElementsByTagName('input')[0].name,
         threadId: g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id,
         isOP: klass === 'op',
         isInlined: /\binline\b/.test(klass),
-        filesize: $('.filesize', node),
-        img: $('img[md5]', node),
+        filesize: node.getElementsByClassName('filesize')[0] || false,
         quotes: node.getElementsByClassName('quotelink'),
         backlinks: node.getElementsByClassName('backlink')
       };
+      post.img = post.filesize ? node.getElementsByTagName('img')[0] : false;
+      return post;
     },
     node: function(nodes, notify) {
       var callback, node, _i, _j, _len, _len2, _ref;

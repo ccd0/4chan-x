@@ -3319,17 +3319,19 @@ Main =
 
   preParse: (node) ->
     klass = node.className
-    root:      node
-    el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
-    class:     klass
-    id:        $('input', node).name
-    threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
-    isOP:      klass is 'op'
-    isInlined: /\binline\b/.test klass
-    filesize:  $ '.filesize',   node
-    img:       $ 'img[md5]',    node
-    quotes:    node.getElementsByClassName 'quotelink'
-    backlinks: node.getElementsByClassName 'backlink'
+    post =
+      root:      node
+      el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
+      class:     klass
+      id:        node.getElementsByTagName('input')[0].name
+      threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
+      isOP:      klass is 'op'
+      isInlined: /\binline\b/.test klass
+      filesize:  node.getElementsByClassName('filesize')[0] or false
+      quotes:    node.getElementsByClassName 'quotelink'
+      backlinks: node.getElementsByClassName 'backlink'
+    post.img = if post.filesize then node.getElementsByTagName('img')[0] else false
+    post
   node: (nodes, notify) ->
     for callback in g.callbacks
       try
