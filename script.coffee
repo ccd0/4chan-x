@@ -2719,7 +2719,7 @@ QuotePreview =
         replyID = $.x('preceding-sibling::input', @parentNode).name
         for quote in $$ '.quotelink', qp
           if quote.hash[1..] is replyID
-            quote.className = 'forwardlink'
+            $.addClass quote, 'forwardlink'
     else
       qp.textContent = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]', @).firstChild.id
@@ -3513,6 +3513,9 @@ a[href="javascript:;"] {
   border-color: #999;
   color: #000;
   outline: none;
+}
+.forwardlink {
+  color: #34345C;
 }
 textarea.field {
   min-height: 120px;

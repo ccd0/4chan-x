@@ -3318,7 +3318,7 @@
           _ref = $$('.quotelink', qp);
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             quote = _ref[_i];
-            if (quote.hash.slice(1) === replyID) quote.className = 'forwardlink';
+            if (quote.hash.slice(1) === replyID) $.addClass(quote, 'forwardlink');
           }
         }
       } else {
@@ -4213,6 +4213,9 @@ a[href="javascript:;"] {\
   border-color: #999;\
   color: #000;\
   outline: none;\
+}\
+.forwardlink {\
+  color: #34345C;\
 }\
 textarea.field {\
   min-height: 120px;\
