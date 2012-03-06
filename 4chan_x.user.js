@@ -1167,24 +1167,24 @@
         rect = td.getBoundingClientRect();
         if (rect.bottom >= 0 && rect.top <= d.body.clientHeight) {
           next = delta === +1 ? $.x('following::td[@class="reply"]', td) : $.x('preceding::td[@class="reply"]', td);
-        }
-        if (!next) {
-          td.className = 'replyhl';
-          td.tabIndex = 0;
+          if (!next) {
+            td.className = 'replyhl';
+            td.tabIndex = 0;
+            td.focus();
+            return;
+          }
+          if (!(g.REPLY || $.x('ancestor::div[@class="thread"]', next) === thread)) {
+            return;
+          }
+          rect = next.getBoundingClientRect();
+          if (rect.top < 0 || rect.bottom > d.body.clientHeight) {
+            next.scrollIntoView(delta === -1);
+          }
+          next.className = 'replyhl';
+          next.tabIndex = 0;
           next.focus();
           return;
         }
-        if (!(g.REPLY || $.x('ancestor::div[@class="thread"]', next) === thread)) {
-          return;
-        }
-        rect = next.getBoundingClientRect();
-        if (rect.top < 0 || rect.bottom > d.body.clientHeight) {
-          next.scrollIntoView(delta === -1);
-        }
-        next.className = 'replyhl';
-        next.tabIndex = 0;
-        next.focus();
-        return;
       }
       replies = $$('.reply', thread);
       if (delta === -1) replies.reverse();

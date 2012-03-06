@@ -954,19 +954,19 @@ Keybinds =
             $.x 'following::td[@class="reply"]', td
           else
             $.x 'preceding::td[@class="reply"]', td
-      unless next
-        td.className = 'replyhl'
-        td.tabIndex  = 0
+        unless next
+          td.className = 'replyhl'
+          td.tabIndex  = 0
+          td.focus()
+          return
+        return unless g.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
+        rect = next.getBoundingClientRect()
+        if rect.top < 0 or rect.bottom > d.body.clientHeight
+          next.scrollIntoView delta is -1
+        next.className = 'replyhl'
+        next.tabIndex  = 0
         next.focus()
         return
-      return unless g.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
-      rect = next.getBoundingClientRect()
-      if rect.top < 0 or rect.bottom > d.body.clientHeight
-        next.scrollIntoView delta is -1
-      next.className = 'replyhl'
-      next.tabIndex  = 0
-      next.focus()
-      return
 
     replies = $$ '.reply', thread
     replies.reverse() if delta is -1
