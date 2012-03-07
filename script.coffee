@@ -1068,8 +1068,9 @@ qr =
       $.rm script
 
     if conf['Persistent QR']
-      qr.dialog()
-      qr.hide() if conf['Auto Hide QR']
+      setTimeout ->
+        qr.dialog()
+        qr.hide() if conf['Auto Hide QR']
     $.on d, 'dragover',  qr.dragOver
     $.on d, 'drop',      qr.dropFile
     $.on d, 'dragstart', qr.drag

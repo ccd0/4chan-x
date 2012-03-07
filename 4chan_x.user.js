@@ -1313,8 +1313,10 @@
         return $.rm(script);
       });
       if (conf['Persistent QR']) {
-        qr.dialog();
-        if (conf['Auto Hide QR']) qr.hide();
+        setTimeout(function() {
+          qr.dialog();
+          if (conf['Auto Hide QR']) return qr.hide();
+        });
       }
       $.on(d, 'dragover', qr.dragOver);
       $.on(d, 'drop', qr.dropFile);
