@@ -593,7 +593,8 @@ Filter =
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
   filename: (post) ->
-    if file = $ 'span', post.filesize
+    {filesize} = post
+    if filesize and file = $ 'span', filesize
       return file.title
     false
   dimensions: (post) ->
@@ -745,22 +746,21 @@ ExpandThread =
 
 ReplyHiding =
   init: ->
+    @a = $.el 'a',
+      textContent: '[ - ]'
+      href: 'javascript:;'
     g.callbacks.push @node
 
   node: (post) ->
     return if post.class
-    dd = $ '.doubledash', post.root
+    dd = post.el.previousSibling
     dd.className = 'replyhider'
-    a = $.el 'a',
-      textContent: '[ - ]'
-      href: 'javascript:;'
+    a = ReplyHiding.a.cloneNode true
     $.on a, 'click', ReplyHiding.cb.hide
     $.replace dd.firstChild, a
 
-    reply = dd.nextSibling
-    id = reply.id
-    if id of g.hiddenReplies
-      ReplyHiding.hide reply
+    if post.id of g.hiddenReplies
+      ReplyHiding.hide post.el
 
   cb:
     hide: ->
@@ -2365,6 +2365,7 @@ Anonymize =
   init: ->
     g.callbacks.push @node
   node: (post) ->
+    return if post.class is 'inline'
     name = $ '.commentpostername, .postername', post.el
     name.textContent = 'Anonymous'
     node = name.nextElementSibling

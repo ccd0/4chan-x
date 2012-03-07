@@ -675,8 +675,9 @@
       return text.join('');
     },
     filename: function(post) {
-      var file;
-      if (file = $('span', post.filesize)) return file.title;
+      var file, filesize;
+      filesize = post.filesize;
+      if (filesize && (file = $('span', filesize))) return file.title;
       return false;
     },
     dimensions: function(post) {
@@ -887,22 +888,21 @@
 
   ReplyHiding = {
     init: function() {
-      return g.callbacks.push(this.node);
-    },
-    node: function(post) {
-      var a, dd, id, reply;
-      if (post["class"]) return;
-      dd = $('.doubledash', post.root);
-      dd.className = 'replyhider';
-      a = $.el('a', {
+      this.a = $.el('a', {
         textContent: '[ - ]',
         href: 'javascript:;'
       });
+      return g.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var a, dd;
+      if (post["class"]) return;
+      dd = post.el.previousSibling;
+      dd.className = 'replyhider';
+      a = ReplyHiding.a.cloneNode(true);
       $.on(a, 'click', ReplyHiding.cb.hide);
       $.replace(dd.firstChild, a);
-      reply = dd.nextSibling;
-      id = reply.id;
-      if (id in g.hiddenReplies) return ReplyHiding.hide(reply);
+      if (post.id in g.hiddenReplies) return ReplyHiding.hide(post.el);
     },
     cb: {
       hide: function() {
@@ -2811,6 +2811,7 @@
     },
     node: function(post) {
       var name, node;
+      if (post["class"] === 'inline') return;
       name = $('.commentpostername, .postername', post.el);
       name.textContent = 'Anonymous';
       node = name.nextElementSibling;
