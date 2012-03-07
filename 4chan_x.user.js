@@ -3509,11 +3509,22 @@
       Unread.replies = Unread.replies.slice(i);
       return Unread.update();
     },
+    setTitle: function(count) {
+      if (this.scheduled) {
+        clearTimeout(this.scheduled);
+        delete Unread.scheduled;
+        this.setTitle(count);
+        return;
+      }
+      return this.scheduled = setTimeout((function() {
+        return d.title = "(" + count + ") " + Unread.title;
+      }), 5);
+    },
     update: function(forceUpdate) {
       var count;
       if (!g.REPLY) return;
       count = this.replies.length;
-      if (conf['Unread Count']) d.title = "(" + count + ") " + this.title;
+      if (conf['Unread Count']) this.setTitle(count);
       if (!(conf['Unread Favicon'] && (count < 2 || forceUpdate))) return;
       Favicon.el.href = g.dead ? count ? Favicon.unreadDead : Favicon.dead : count ? Favicon.unread : Favicon["default"];
       return $.add(d.head, Favicon.el);

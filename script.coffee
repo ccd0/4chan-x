@@ -2877,13 +2877,23 @@ Unread =
     Unread.replies = Unread.replies[i..]
     Unread.update()
 
+  setTitle: (count) ->
+    if @scheduled
+      clearTimeout @scheduled
+      delete Unread.scheduled
+      @setTitle count
+      return
+    @scheduled = setTimeout (->
+      d.title = "(#{count}) #{Unread.title}"
+    ), 5
+
   update: (forceUpdate) ->
     return unless g.REPLY
 
     count = @replies.length
 
     if conf['Unread Count']
-      d.title = "(#{count}) #{@title}"
+      @setTitle count
 
     unless conf['Unread Favicon'] and (count < 2 or forceUpdate)
       return
