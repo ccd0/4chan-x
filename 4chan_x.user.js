@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, conf, config, d, engine, flatten, g, key, log, qr, ui, val, _base;
+  var $, $$, Anonymize, AutoGif, DAY, DeadQuotes, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, conf, config, d, engine, flatten, g, key, log, qr, ui, val, _base;
 
   config = {
     main: {
@@ -132,6 +132,7 @@
         'Quote Highlighting': [true, 'Highlight the previewed post'],
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
         'Quote Preview': [true, 'Show quote content on hover'],
+        'Resurrect Quotes': [true, 'Bring dead links back to life'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
         'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes'],
         'Forward Hiding': [true, 'Hide original posts of inlined backlinks']
@@ -402,9 +403,6 @@
       if (root == null) root = d.body;
       return d.evaluate(path, root, null, 8, null).singleNodeValue;
     },
-    replace: function(root, el) {
-      return root.parentNode.replaceChild(el, root);
-    },
     addClass: function(el, className) {
       return el.classList.add(className);
     },
@@ -438,6 +436,9 @@
     },
     before: function(root, el) {
       return root.parentNode.insertBefore($.nodes(el), root);
+    },
+    replace: function(root, el) {
+      return root.parentNode.replaceChild($.nodes(el), root);
     },
     el: function(tag, properties) {
       var el;
@@ -776,7 +777,8 @@
       if (conf['Quote Preview']) QuotePreview.node(post);
       if (conf['Quote Inline']) QuoteInline.node(post);
       if (conf['Indicate OP quote']) QuoteOP.node(post);
-      if (conf['Indicate Cross-thread Quotes']) return QuoteCT.node(post);
+      if (conf['Indicate Cross-thread Quotes']) QuoteCT.node(post);
+      if (conf['Resurrect Quotes']) return DeadQuotes.node(post);
     }
   };
 
@@ -3417,6 +3419,31 @@
     }
   };
 
+  DeadQuotes = {
+    init: function() {
+      return g.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var data, i, index, node, nodes, quote, snapshot, text, _ref;
+      if (post["class"] === 'inline') return;
+      snapshot = d.evaluate('.//*[not(self::a) and contains(text(),">>")]/text()', post.el.lastChild, null, 7, null);
+      for (i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
+        node = snapshot.snapshotItem(i);
+        data = node.data;
+        if (!(quote = data.match(/>>(\d+)/))) continue;
+        index = data.indexOf(quote[0]);
+        nodes = [];
+        if (text = data.slice(0, index)) nodes.push($.tn(text));
+        nodes.push($.el('a', {
+          textContent: "" + quote[0] + "\u00A0(Dead)",
+          href: "#" + quote[1]
+        }));
+        if (text = data.slice(index + quote[0].length)) nodes.push($.tn(text));
+        $.replace(node, nodes);
+      }
+    }
+  };
+
   ReportButton = {
     init: function() {
       this.a = $.el('a', {
@@ -3913,6 +3940,7 @@
       if (conf['Quote Backlinks']) QuoteBacklink.init();
       if (conf['Indicate OP quote']) QuoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) QuoteCT.init();
+      if (conf['Resurrect Quotes']) DeadQuotes.init();
       return $.ready(Main.ready);
     },
     ready: function() {

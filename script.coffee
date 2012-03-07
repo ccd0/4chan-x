@@ -50,6 +50,7 @@ config =
       'Quote Highlighting':           [true,  'Highlight the previewed post']
       'Quote Inline':                 [true,  'Show quoted post inline on quote click']
       'Quote Preview':                [true,  'Show quote content on hover']
+      'Resurrect Quotes':             [true,  'Bring dead links back to life']
       'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes']
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
@@ -324,8 +325,6 @@ $.extend $,
     # XPathResult.ANY_UNORDERED_NODE_TYPE is 8
     d.evaluate(path, root, null, 8, null).
       singleNodeValue
-  replace: (root, el) ->
-    root.parentNode.replaceChild el, root
   addClass: (el, className) ->
     el.classList.add className
   removeClass: (el, className) ->
@@ -349,6 +348,8 @@ $.extend $,
     root.parentNode.insertBefore $.nodes(el), root.nextSibling
   before: (root, el) ->
     root.parentNode.insertBefore $.nodes(el), root
+  replace: (root, el) ->
+    root.parentNode.replaceChild $.nodes(el), root
   el: (tag, properties) ->
     el = d.createElement tag
     $.extend el, properties if properties
@@ -669,6 +670,8 @@ ExpandComment =
       QuoteOP.node      post
     if conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
+    if conf['Resurrect Quotes']
+      DeadQuotes.node   post
 
 ExpandThread =
   init: ->
@@ -2806,6 +2809,35 @@ QuoteCT =
         $.add quote, $.tn '\u00A0(Cross-thread)'
     return
 
+DeadQuotes =
+  init: ->
+    g.callbacks.push @node
+  node: (post) ->
+    return if post.class is 'inline'
+    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 7
+
+    # We need to make sure we can quotify multiple links per text node
+    # We need to make sure that we don't try to quotify text like `>>text`
+
+    snapshot = d.evaluate './/*[not(self::a) and contains(text(),">>")]/text()', post.el.lastChild, null, 7, null
+    for i in [0...snapshot.snapshotLength]
+      node = snapshot.snapshotItem i
+      data = node.data
+      unless quote = data.match />>(\d+)/
+        continue
+      index = data.indexOf quote[0]
+      nodes = []
+      if text = data[0...index]
+        nodes.push $.tn text
+      nodes.push $.el 'a',
+        # \u00A0 is nbsp
+        textContent: "#{quote[0]}\u00A0(Dead)"
+        href: "##{quote[1]}" # Here be archive link
+      if text = data[index + quote[0].length...]
+        nodes.push $.tn text
+      $.replace node, nodes
+    return
+
 ReportButton =
   init: ->
     @a = $.el 'a',
@@ -3229,6 +3261,9 @@ Main =
 
     if conf['Indicate Cross-thread Quotes']
       QuoteCT.init()
+
+    if conf['Resurrect Quotes']
+      DeadQuotes.init()
 
     $.ready Main.ready
 
