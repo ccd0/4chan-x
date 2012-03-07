@@ -2835,6 +2835,7 @@ DeadQuotes =
         # \u00A0 is nbsp
         textContent: "#{quote[0]}\u00A0(Dead)"
         href: "##{quote[1]}" # Here be archive link
+        className: if $.id quote[1] then 'quotelink' else null
       if text = data[index + quote[0].length...]
         nodes.push $.tn text
       $.replace node, nodes
@@ -3259,6 +3260,9 @@ Main =
     if conf['Report Button']
       ReportButton.init()
 
+    if conf['Resurrect Quotes']
+      DeadQuotes.init()
+
     if conf['Quote Inline']
       QuoteInline.init()
 
@@ -3273,9 +3277,6 @@ Main =
 
     if conf['Indicate Cross-thread Quotes']
       QuoteCT.init()
-
-    if conf['Resurrect Quotes']
-      DeadQuotes.init()
 
     $.ready Main.ready
 

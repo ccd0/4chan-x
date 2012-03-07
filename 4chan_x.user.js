@@ -3439,7 +3439,8 @@
         if (text = data.slice(0, index)) nodes.push($.tn(text));
         nodes.push($.el('a', {
           textContent: "" + quote[0] + "\u00A0(Dead)",
-          href: "#" + quote[1]
+          href: "#" + quote[1],
+          className: $.id(quote[1]) ? 'quotelink' : null
         }));
         if (text = data.slice(index + quote[0].length)) nodes.push($.tn(text));
         $.replace(node, nodes);
@@ -3949,12 +3950,12 @@
       if (conf['Image Auto-Gif']) AutoGif.init();
       if (conf['Image Hover']) ImageHover.init();
       if (conf['Report Button']) ReportButton.init();
+      if (conf['Resurrect Quotes']) DeadQuotes.init();
       if (conf['Quote Inline']) QuoteInline.init();
       if (conf['Quote Preview']) QuotePreview.init();
       if (conf['Quote Backlinks']) QuoteBacklink.init();
       if (conf['Indicate OP quote']) QuoteOP.init();
       if (conf['Indicate Cross-thread Quotes']) QuoteCT.init();
-      if (conf['Resurrect Quotes']) DeadQuotes.init();
       return $.ready(Main.ready);
     },
     ready: function() {
