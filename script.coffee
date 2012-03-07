@@ -172,7 +172,7 @@ conf = {}
 ) null, config
 
 NAMESPACE = '4chan_x.'
-VERSION = '2.28.0'
+VERSION = '2.28.1'
 SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
@@ -594,7 +594,8 @@ Filter =
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
   filename: (post) ->
-    if file = $ 'span', post.filesize
+    {filesize} = post
+    if filesize and file = $ 'span', filesize
       return file.title
     false
   dimensions: (post) ->
@@ -748,22 +749,21 @@ ExpandThread =
 
 ReplyHiding =
   init: ->
+    @a = $.el 'a',
+      textContent: '[ - ]'
+      href: 'javascript:;'
     g.callbacks.push @node
 
   node: (post) ->
     return if post.class
-    dd = $ '.doubledash', post.root
+    dd = post.el.previousSibling
     dd.className = 'replyhider'
-    a = $.el 'a',
-      textContent: '[ - ]'
-      href: 'javascript:;'
+    a = ReplyHiding.a.cloneNode true
     $.on a, 'click', ReplyHiding.cb.hide
     $.replace dd.firstChild, a
 
-    reply = dd.nextSibling
-    id = reply.id
-    if id of g.hiddenReplies
-      ReplyHiding.hide reply
+    if post.id of g.hiddenReplies
+      ReplyHiding.hide post.el
 
   cb:
     hide: ->
@@ -1071,8 +1071,9 @@ qr =
       $.rm script
 
     if conf['Persistent QR']
-      qr.dialog()
-      qr.hide() if conf['Auto Hide QR']
+      setTimeout ->
+        qr.dialog()
+        qr.hide() if conf['Auto Hide QR']
     $.on d, 'dragover',  qr.dragOver
     $.on d, 'drop',      qr.dropFile
     $.on d, 'dragstart', qr.drag
@@ -2368,6 +2369,7 @@ Anonymize =
   init: ->
     g.callbacks.push @node
   node: (post) ->
+    return if post.class is 'inline'
     name = $ '.commentpostername, .postername', post.el
     name.textContent = 'Anonymous'
     node = name.nextElementSibling
@@ -2909,13 +2911,23 @@ Unread =
     Unread.replies = Unread.replies[i..]
     Unread.update()
 
+  setTitle: (count) ->
+    if @scheduled
+      clearTimeout @scheduled
+      delete Unread.scheduled
+      @setTitle count
+      return
+    @scheduled = setTimeout (->
+      d.title = "(#{count}) #{Unread.title}"
+    ), 5
+
   update: (forceUpdate) ->
     return unless g.REPLY
 
     count = @replies.length
 
     if conf['Unread Count']
-      d.title = "(#{count}) #{@title}"
+      @setTitle count
 
     unless conf['Unread Favicon'] and (count < 2 or forceUpdate)
       return

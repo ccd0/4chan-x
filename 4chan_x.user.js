@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.28.0
+// @version        2.28.1
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -20,7 +20,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.28.0
+ * 4chan X 2.28.1
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -212,7 +212,7 @@
 
   NAMESPACE = '4chan_x.';
 
-  VERSION = '2.28.0';
+  VERSION = '2.28.1';
 
   SECOND = 1000;
 
@@ -676,8 +676,9 @@
       return text.join('');
     },
     filename: function(post) {
-      var file;
-      if (file = $('span', post.filesize)) return file.title;
+      var file, filesize;
+      filesize = post.filesize;
+      if (filesize && (file = $('span', filesize))) return file.title;
       return false;
     },
     dimensions: function(post) {
@@ -889,22 +890,21 @@
 
   ReplyHiding = {
     init: function() {
-      return g.callbacks.push(this.node);
-    },
-    node: function(post) {
-      var a, dd, id, reply;
-      if (post["class"]) return;
-      dd = $('.doubledash', post.root);
-      dd.className = 'replyhider';
-      a = $.el('a', {
+      this.a = $.el('a', {
         textContent: '[ - ]',
         href: 'javascript:;'
       });
+      return g.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var a, dd;
+      if (post["class"]) return;
+      dd = post.el.previousSibling;
+      dd.className = 'replyhider';
+      a = ReplyHiding.a.cloneNode(true);
       $.on(a, 'click', ReplyHiding.cb.hide);
       $.replace(dd.firstChild, a);
-      reply = dd.nextSibling;
-      id = reply.id;
-      if (id in g.hiddenReplies) return ReplyHiding.hide(reply);
+      if (post.id in g.hiddenReplies) return ReplyHiding.hide(post.el);
     },
     cb: {
       hide: function() {
@@ -1315,8 +1315,10 @@
         return $.rm(script);
       });
       if (conf['Persistent QR']) {
-        qr.dialog();
-        if (conf['Auto Hide QR']) qr.hide();
+        setTimeout(function() {
+          qr.dialog();
+          if (conf['Auto Hide QR']) return qr.hide();
+        });
       }
       $.on(d, 'dragover', qr.dragOver);
       $.on(d, 'drop', qr.dropFile);
@@ -2813,6 +2815,7 @@
     },
     node: function(post) {
       var name, node;
+      if (post["class"] === 'inline') return;
       name = $('.commentpostername, .postername', post.el);
       name.textContent = 'Anonymous';
       node = name.nextElementSibling;
@@ -3536,11 +3539,22 @@
       Unread.replies = Unread.replies.slice(i);
       return Unread.update();
     },
+    setTitle: function(count) {
+      if (this.scheduled) {
+        clearTimeout(this.scheduled);
+        delete Unread.scheduled;
+        this.setTitle(count);
+        return;
+      }
+      return this.scheduled = setTimeout((function() {
+        return d.title = "(" + count + ") " + Unread.title;
+      }), 5);
+    },
     update: function(forceUpdate) {
       var count;
       if (!g.REPLY) return;
       count = this.replies.length;
-      if (conf['Unread Count']) d.title = "(" + count + ") " + this.title;
+      if (conf['Unread Count']) this.setTitle(count);
       if (!(conf['Unread Favicon'] && (count < 2 || forceUpdate))) return;
       Favicon.el.href = g.dead ? count ? Favicon.unreadDead : Favicon.dead : count ? Favicon.unread : Favicon["default"];
       return $.add(d.head, Favicon.el);
