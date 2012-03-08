@@ -1031,6 +1031,10 @@ Nav =
 qr =
   init: ->
     return unless $.id 'recaptcha_challenge_field_holder'
+    g.callbacks.push @node
+    setTimeout @asyncInit
+
+  asyncInit: ->
     if conf['Hide Original Post Form']
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on $('a', link), 'click', ->
@@ -1038,7 +1042,6 @@ qr =
         $('textarea', qr.el).focus()
       form = d.forms[0]
       $.before form, link
-    g.callbacks.push @node
 
     # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
     if /chrome/i.test navigator.userAgent
@@ -1056,17 +1059,14 @@ qr =
       $.on iframe, 'load', -> if @src isnt 'about:blank' then setTimeout loadChecking, 500, @
       $.add d.head, iframe
 
-    # This is extemely slow, execute is asynchronously.
-    setTimeout ->
-      # Prevent original captcha input from being focused on reload.
-      script = $.el 'script', textContent: 'Recaptcha.focus_response_field=function(){}'
-      $.add d.head, script
-      $.rm script
+    # Prevent original captcha input from being focused on reload.
+    script = $.el 'script', textContent: 'Recaptcha.focus_response_field=function(){}'
+    $.add d.head, script
+    $.rm script
 
     if conf['Persistent QR']
-      setTimeout ->
-        qr.dialog()
-        qr.hide() if conf['Auto Hide QR']
+      qr.dialog()
+      qr.hide() if conf['Auto Hide QR']
     $.on d, 'dragover',  qr.dragOver
     $.on d, 'drop',      qr.dropFile
     $.on d, 'dragstart', qr.drag
@@ -2054,7 +2054,7 @@ ThreadHiding =
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     for thread in $$ '.thread'
       op = thread.firstChild
-      a = $.el 'a',
+      a  = $.el 'a',
         textContent: '[ - ]'
         href: 'javascript:;'
       $.on a, 'click', ThreadHiding.cb.hide
@@ -3266,20 +3266,20 @@ Main =
       ImageExpand.init()
 
     if conf['Thread Watcher']
-      Watcher.init()
+      setTimeout -> Watcher.init()
 
     if conf['Keybinds']
-      Keybinds.init()
+      setTimeout -> Keybinds.init()
 
     if g.REPLY
       if conf['Thread Updater']
-        Updater.init()
+        setTimeout -> Updater.init()
 
       if conf['Thread Stats']
         ThreadStats.init()
 
       if conf['Reply Navigation']
-        Nav.init()
+        setTimeout -> Nav.init()
 
       if conf['Post in Title']
         TitlePost.init()
@@ -3289,16 +3289,16 @@ Main =
 
     else #not reply
       if conf['Thread Hiding']
-        ThreadHiding.init()
+        setTimeout -> ThreadHiding.init()
 
       if conf['Thread Expansion']
-        ExpandThread.init()
+        setTimeout -> ExpandThread.init()
 
       if conf['Comment Expansion']
-        ExpandComment.init()
+        setTimeout -> ExpandComment.init()
 
       if conf['Index Navigation']
-        Nav.init()
+        setTimeout -> Nav.init()
 
     nodes = []
     for node in $$ '.op, a + table', form

@@ -1258,8 +1258,12 @@
 
   qr = {
     init: function() {
-      var form, iframe, link, loadChecking;
       if (!$.id('recaptcha_challenge_field_holder')) return;
+      g.callbacks.push(this.node);
+      return setTimeout(this.asyncInit);
+    },
+    asyncInit: function() {
+      var form, iframe, link, loadChecking, script;
       if (conf['Hide Original Post Form']) {
         link = $.el('h1', {
           innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Quick Reply' : 'New Thread') + "</a>"
@@ -1271,7 +1275,6 @@
         form = d.forms[0];
         $.before(form, link);
       }
-      g.callbacks.push(this.node);
       if (/chrome/i.test(navigator.userAgent)) {
         qr.status({
           ready: true
@@ -1299,19 +1302,14 @@
         });
         $.add(d.head, iframe);
       }
-      setTimeout(function() {
-        var script;
-        script = $.el('script', {
-          textContent: 'Recaptcha.focus_response_field=function(){}'
-        });
-        $.add(d.head, script);
-        return $.rm(script);
+      script = $.el('script', {
+        textContent: 'Recaptcha.focus_response_field=function(){}'
       });
+      $.add(d.head, script);
+      $.rm(script);
       if (conf['Persistent QR']) {
-        setTimeout(function() {
-          qr.dialog();
-          if (conf['Auto Hide QR']) return qr.hide();
-        });
+        qr.dialog();
+        if (conf['Auto Hide QR']) qr.hide();
       }
       $.on(d, 'dragover', qr.dragOver);
       $.on(d, 'drop', qr.dropFile);
@@ -3948,19 +3946,51 @@
       Favicon.init();
       if (conf['Quick Reply']) qr.init();
       if (conf['Image Expansion']) ImageExpand.init();
-      if (conf['Thread Watcher']) Watcher.init();
-      if (conf['Keybinds']) Keybinds.init();
+      if (conf['Thread Watcher']) {
+        setTimeout(function() {
+          return Watcher.init();
+        });
+      }
+      if (conf['Keybinds']) {
+        setTimeout(function() {
+          return Keybinds.init();
+        });
+      }
       if (g.REPLY) {
-        if (conf['Thread Updater']) Updater.init();
+        if (conf['Thread Updater']) {
+          setTimeout(function() {
+            return Updater.init();
+          });
+        }
         if (conf['Thread Stats']) ThreadStats.init();
-        if (conf['Reply Navigation']) Nav.init();
+        if (conf['Reply Navigation']) {
+          setTimeout(function() {
+            return Nav.init();
+          });
+        }
         if (conf['Post in Title']) TitlePost.init();
         if (conf['Unread Count'] || conf['Unread Favicon']) Unread.init();
       } else {
-        if (conf['Thread Hiding']) ThreadHiding.init();
-        if (conf['Thread Expansion']) ExpandThread.init();
-        if (conf['Comment Expansion']) ExpandComment.init();
-        if (conf['Index Navigation']) Nav.init();
+        if (conf['Thread Hiding']) {
+          setTimeout(function() {
+            return ThreadHiding.init();
+          });
+        }
+        if (conf['Thread Expansion']) {
+          setTimeout(function() {
+            return ExpandThread.init();
+          });
+        }
+        if (conf['Comment Expansion']) {
+          setTimeout(function() {
+            return ExpandComment.init();
+          });
+        }
+        if (conf['Index Navigation']) {
+          setTimeout(function() {
+            return Nav.init();
+          });
+        }
       }
       nodes = [];
       _ref2 = $$('.op, a + table', form);
