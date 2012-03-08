@@ -335,7 +335,7 @@ $.extend $,
   tn: (s) ->
     d.createTextNode s
   nodes: (nodes) ->
-    unless nodes instanceof Array
+    if nodes instanceof Node
       return nodes
     frag = d.createDocumentFragment()
     for node in nodes

@@ -419,7 +419,7 @@
     },
     nodes: function(nodes) {
       var frag, node, _i, _len;
-      if (!(nodes instanceof Array)) return nodes;
+      if (nodes instanceof Node) return nodes;
       frag = d.createDocumentFragment();
       for (_i = 0, _len = nodes.length; _i < _len; _i++) {
         node = nodes[_i];
