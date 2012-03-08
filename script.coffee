@@ -449,10 +449,6 @@ $.extend $,
       name = NAMESPACE + name
       localStorage[name] = JSON.stringify value
 
-#load values from localStorage
-for key, val of conf
-  conf[key] = $.get key, val
-
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
@@ -3142,6 +3138,10 @@ Main =
       g.THREAD_ID = pathname[2]
     else
       g.PAGENUM = parseInt(temp) or 0
+
+    #load values from localStorage
+    for key, val of conf
+      conf[key] = $.get key, val
 
     $.on window, 'message', Main.message
 

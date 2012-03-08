@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, conf, config, d, engine, flatten, g, key, log, qr, ui, val, _base;
+  var $, $$, Anonymize, AutoGif, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, conf, config, d, engine, flatten, g, log, qr, ui, _base;
 
   config = {
     main: {
@@ -534,11 +534,6 @@
     }
   });
 
-  for (key in conf) {
-    val = conf[key];
-    conf[key] = $.get(key, val);
-  }
-
   $$ = function(selector, root) {
     if (root == null) root = d.body;
     return Array.prototype.slice.call(root.querySelectorAll(selector));
@@ -972,7 +967,7 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var o, range, selEnd, selStart, ta, thread, value, _ref, _ref2;
+      var key, o, range, selEnd, selStart, ta, thread, value, _ref, _ref2;
       if (!(key = Keybinds.keyCode(e)) || /TEXTAREA|INPUT/.test(e.target.nodeName) && !(e.altKey || e.ctrlKey || e.keyCode === 27)) {
         return;
       }
@@ -1064,7 +1059,7 @@
       return e.preventDefault();
     },
     keyCode: function(e) {
-      var c, kc;
+      var c, kc, key;
       key = (function() {
         switch (kc = e.keyCode) {
           case 8:
@@ -2372,6 +2367,7 @@
       return g.hiddenReplies = {};
     },
     keybind: function(e) {
+      var key;
       if (e.keyCode === 9) return;
       e.preventDefault();
       e.stopPropagation();
@@ -3837,7 +3833,7 @@
 
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, now, path, pathname, temp, timestamp, _ref;
+      var cutoff, hiddenThreads, id, key, now, path, pathname, temp, timestamp, val, _ref;
       path = location.pathname;
       pathname = path.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
@@ -3846,6 +3842,10 @@
         g.THREAD_ID = pathname[2];
       } else {
         g.PAGENUM = parseInt(temp) || 0;
+      }
+      for (key in conf) {
+        val = conf[key];
+        conf[key] = $.get(key, val);
       }
       $.on(window, 'message', Main.message);
       switch (location.hostname) {
