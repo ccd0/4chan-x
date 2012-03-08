@@ -4059,7 +4059,7 @@
           }
         } catch (err) {
           if (notify) {
-            alert("4chan X error: " + err.message + "\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n" + err.stack);
+            alert("4chan X (" + VERSION + ") error: " + err.message + "\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n" + err.stack);
           }
         }
       }
