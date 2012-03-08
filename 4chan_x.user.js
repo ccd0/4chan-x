@@ -386,7 +386,7 @@
         return conf[this.name] = this.checked;
       },
       value: function() {
-        $.set(this.name, this.value);
+        $.set(this.name, this.value.trim());
         return conf[this.name] = this.value;
       }
     },

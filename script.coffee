@@ -313,7 +313,7 @@ $.extend $,
       $.set @name, @checked
       conf[@name] = @checked
     value: ->
-      $.set @name, @value
+      $.set @name, @value.trim()
       conf[@name] = @value
   addStyle: (css) ->
     style = $.el 'style',
