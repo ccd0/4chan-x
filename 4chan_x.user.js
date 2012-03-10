@@ -605,7 +605,7 @@
           if (result === true) {
             if (isOP) {
               if (!g.REPLY) {
-                ThreadHiding.hideHide(post.el.parentNode);
+                ThreadHiding.hide(post.el.parentNode);
               } else {
                 continue;
               }
@@ -1051,7 +1051,7 @@
           Keybinds.hl(-1, thread);
           break;
         case conf.hide:
-          ThreadHiding.toggle(thread);
+          if (/\bthread\b/.test(thread.className)) ThreadHiding.toggle(thread);
           break;
         default:
           return;
@@ -2443,10 +2443,9 @@
 
   ThreadHiding = {
     init: function() {
-      var a, hiddenThreads, op, thread, _i, _len, _ref, _results;
+      var a, hiddenThreads, op, thread, _i, _len, _ref;
       hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       _ref = $$('.thread');
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
         op = thread.firstChild;
@@ -2454,83 +2453,62 @@
           textContent: '[ - ]',
           href: 'javascript:;'
         });
-        $.on(a, 'click', ThreadHiding.cb.hide);
+        $.on(a, 'click', ThreadHiding.cb);
         $.prepend(op, a);
-        if (op.id in hiddenThreads) {
-          _results.push(ThreadHiding.hideHide(thread));
-        } else {
-          _results.push(void 0);
-        }
+        if (op.id in hiddenThreads) ThreadHiding.hide(thread);
       }
-      return _results;
     },
-    cb: {
-      hide: function() {
-        var thread;
-        thread = this.parentNode.parentNode;
-        return ThreadHiding.hide(thread);
-      },
-      show: function() {
-        var thread;
-        thread = this.parentNode.parentNode;
-        return ThreadHiding.show(thread);
-      }
+    cb: function() {
+      return ThreadHiding.toggle(this.parentNode.parentNode);
     },
     toggle: function(thread) {
-      if (/\bstub\b/.test(thread.className) || thread.hidden) {
-        return ThreadHiding.show(thread);
+      var hiddenThreads, id;
+      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      id = $('.op', thread).id;
+      if (thread.hidden || /\bstub\b/.test(thread.className)) {
+        ThreadHiding.show(thread);
+        delete hiddenThreads[id];
       } else {
-        return ThreadHiding.hide(thread);
+        ThreadHiding.hide(thread);
+        hiddenThreads[id] = Date.now();
       }
+      return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
     hide: function(thread) {
-      var hiddenThreads, id;
-      ThreadHiding.hideHide(thread);
-      id = thread.firstChild.id;
-      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-      hiddenThreads[id] = Date.now();
-      return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
-    },
-    hideHide: function(thread) {
-      var a, div, name, num, span, text, trip, uid, _ref, _ref2;
-      if (conf['Show Stubs']) {
-        if (/stub/.test(thread.className)) return;
-        if (span = $('.omittedposts', thread)) {
-          num = Number(span.textContent.match(/\d+/)[0]);
-        } else {
-          num = 0;
-        }
-        num += $$('table', thread).length;
-        text = num === 1 ? "1 reply" : "" + num + " replies";
-        name = $('.postername', thread).textContent;
-        uid = ((_ref = $('.posteruid', thread)) != null ? _ref.textContent : void 0) || '';
-        trip = ((_ref2 = $('.postername + .postertrip', thread)) != null ? _ref2.textContent : void 0) || '';
-        a = $.el('a', {
-          innerHTML: "<span>[ + ]</span> " + name + uid + trip + " (" + text + ")",
-          href: 'javascript:;'
-        });
-        $.on(a, 'click', ThreadHiding.cb.show);
-        div = $.el('div', {
-          className: 'block'
-        });
-        $.add(div, a);
-        $.add(thread, div);
-        return $.addClass(thread, 'stub');
-      } else {
+      var a, div, name, num, op, span, text, trip, uid, _ref, _ref2;
+      if (!conf['Show Stubs']) {
         thread.hidden = true;
-        return thread.nextSibling.hidden = true;
+        thread.nextSibling.hidden = true;
+        return;
       }
+      if (/\bstub\b/.test(thread.className)) return;
+      num = 0;
+      if (span = $('.omittedposts', thread)) {
+        num = Number(span.textContent.match(/\d+/)[0]);
+      }
+      num += $$('.op ~ table', thread).length;
+      text = num === 1 ? '1 reply' : "" + num + " replies";
+      op = $('.op', thread);
+      name = $('.postername', op).textContent;
+      uid = ((_ref = $('.posteruid', op)) != null ? _ref.textContent : void 0) || '';
+      trip = ((_ref2 = $('.postertrip', op)) != null ? _ref2.textContent : void 0) || '';
+      a = $.el('a', {
+        innerHTML: "<span>[ + ]</span> " + name + " " + uid + " " + trip + " (" + text + ")",
+        href: 'javascript:;'
+      });
+      $.on(a, 'click', ThreadHiding.cb);
+      div = $.el('div', {
+        className: 'block'
+      });
+      $.add(div, a);
+      $.prepend(thread, div);
+      return $.addClass(thread, 'stub');
     },
-    show: function(thread) {
-      var hiddenThreads, id;
-      $.rm($('div.block', thread));
+    show: function(thread, id) {
+      $.rm($('.block', thread));
       $.removeClass(thread, 'stub');
       thread.hidden = false;
-      thread.nextSibling.hidden = false;
-      id = thread.firstChild.id;
-      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-      delete hiddenThreads[id];
-      return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
+      return thread.nextSibling.hidden = false;
     }
   };
 
@@ -4097,7 +4075,9 @@ a[href="javascript:;"] {\
   text-decoration: none;\
 }\
 \
-.thread.stub > :not(.block),\
+.block ~ .op,\
+.block ~ .omittedposts,\
+.block ~ table,\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
 #qp > input, #qp .inline, .forwarded {\

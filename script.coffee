@@ -540,7 +540,7 @@ Filter =
         if result is true
           if isOP
             unless g.REPLY
-              ThreadHiding.hideHide post.el.parentNode
+              ThreadHiding.hide post.el.parentNode
             else
               continue
           else
@@ -888,7 +888,7 @@ Keybinds =
       when conf.previousReply
         Keybinds.hl -1, thread
       when conf.hide
-        ThreadHiding.toggle thread
+        ThreadHiding.toggle thread if /\bthread\b/.test thread.className
       else
         return
     e.preventDefault()
@@ -2057,74 +2057,62 @@ ThreadHiding =
       a  = $.el 'a',
         textContent: '[ - ]'
         href: 'javascript:;'
-      $.on a, 'click', ThreadHiding.cb.hide
+      $.on a, 'click', ThreadHiding.cb
       $.prepend op, a
 
       if op.id of hiddenThreads
-        ThreadHiding.hideHide thread
+        ThreadHiding.hide thread
+    return
 
-  cb:
-    hide: ->
-      thread = @parentNode.parentNode
-      ThreadHiding.hide thread
-    show: ->
-      thread = @parentNode.parentNode
-      ThreadHiding.show thread
+  cb: ->
+    ThreadHiding.toggle @parentNode.parentNode
 
   toggle: (thread) ->
-    if /\bstub\b/.test(thread.className) or thread.hidden
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    id = $('.op', thread).id
+    if thread.hidden or /\bstub\b/.test thread.className
       ThreadHiding.show thread
+      delete hiddenThreads[id]
     else
       ThreadHiding.hide thread
-
-  hide: (thread) ->
-    ThreadHiding.hideHide thread
-
-    id = thread.firstChild.id
-
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    hiddenThreads[id] = Date.now()
+      hiddenThreads[id] = Date.now()
     $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
-  hideHide: (thread) ->
-    if conf['Show Stubs']
-      return if /stub/.test thread.className #already hidden by filter
-      if span = $ '.omittedposts', thread
-        num = Number span.textContent.match(/\d+/)[0]
-      else
-        num = 0
-      num += $$('table', thread).length
-      text = if num is 1 then "1 reply" else "#{num} replies"
-      name = $('.postername', thread).textContent
-      uid  = $('.posteruid', thread)?.textContent or ''
-      trip = $('.postername + .postertrip', thread)?.textContent or ''
-
-      a = $.el 'a',
-        innerHTML: "<span>[ + ]</span> #{name}#{uid}#{trip} (#{text})"
-        href: 'javascript:;'
-      $.on a, 'click', ThreadHiding.cb.show
-
-      div = $.el 'div',
-        className: 'block'
-
-      $.add div, a
-      $.add thread, div
-      $.addClass thread, 'stub'
-    else
+  hide: (thread) ->
+    unless conf['Show Stubs']
       thread.hidden = true
       thread.nextSibling.hidden = true
+      return
 
-  show: (thread) ->
-    $.rm $ 'div.block', thread
+    return if /\bstub\b/.test thread.className # already hidden by filter
+
+    num  = 0
+    if span = $ '.omittedposts', thread
+      num = Number span.textContent.match(/\d+/)[0]
+    num += $$('.op ~ table', thread).length
+    text = if num is 1 then '1 reply' else "#{num} replies"
+    op   = $ '.op', thread
+    name = $('.postername', op).textContent
+    uid  = $('.posteruid',  op)?.textContent or ''
+    trip = $('.postertrip', op)?.textContent or ''
+
+    a = $.el 'a',
+      innerHTML: "<span>[ + ]</span> #{name} #{uid} #{trip} (#{text})"
+      href: 'javascript:;'
+    $.on a, 'click', ThreadHiding.cb
+
+    div = $.el 'div',
+      className: 'block'
+
+    $.add div, a
+    $.prepend thread, div
+    $.addClass thread, 'stub'
+
+  show: (thread, id) ->
+    $.rm $ '.block', thread
     $.removeClass thread, 'stub'
     thread.hidden = false
     thread.nextSibling.hidden = false
-
-    id = thread.firstChild.id
-
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    delete hiddenThreads[id]
-    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
 Updater =
   init: ->
@@ -3376,7 +3364,9 @@ a[href="javascript:;"] {
   text-decoration: none;
 }
 
-.thread.stub > :not(.block),
+.block ~ .op,
+.block ~ .omittedposts,
+.block ~ table,
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
 #qp > input, #qp .inline, .forwarded {
