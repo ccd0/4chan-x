@@ -544,7 +544,7 @@ Filter =
             else
               continue
           else
-            ReplyHiding.hideHide post.el
+            ReplyHiding.hide post.root
           return
 
         # Highlight
@@ -742,70 +742,55 @@ ExpandThread =
 
 ReplyHiding =
   init: ->
-    @a = $.el 'a',
-      textContent: '[ - ]'
-      href: 'javascript:;'
+    @td = $.el 'td',
+      noWrap: true
+      className: 'replyhider'
+      innerHTML: '<a href="javascript:;">[ - ]</a>'
     g.callbacks.push @node
 
   node: (post) ->
     return if post.class
-    dd = post.el.previousSibling
-    dd.className = 'replyhider'
-    a = ReplyHiding.a.cloneNode true
-    $.on a, 'click', ReplyHiding.cb.hide
-    $.replace dd.firstChild, a
+    td = ReplyHiding.td.cloneNode true
+    $.on td.firstChild, 'click', ReplyHiding.toggle
+    $.replace post.el.previousSibling, td
 
     if post.id of g.hiddenReplies
-      ReplyHiding.hide post.el
+      ReplyHiding.hide post.root
 
-  cb:
-    hide: ->
-      reply = @parentNode.nextSibling
-      ReplyHiding.hide reply
-
-    show: ->
-      div = @parentNode
-      table = div.nextSibling
-      ReplyHiding.show table
-
-      $.rm div
-
-  hide: (reply) ->
-    ReplyHiding.hideHide reply
-
-    id = reply.id
-    for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
-      $.addClass quote, 'filtered'
-
-    g.hiddenReplies[id] = Date.now()
+  toggle: ->
+    parent = @parentNode
+    if parent.className is 'replyhider'
+      ReplyHiding.hide parent.parentNode.parentNode.parentNode
+      id = parent.nextSibling.id
+      for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
+        $.addClass quote, 'filtered'
+      g.hiddenReplies[id] = Date.now()
+    else
+      table = parent.nextSibling
+      table.hidden = false
+      $.rm parent
+      id = table.firstChild.firstChild.lastChild.id
+      for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
+        $.removeClass quote, 'filtered'
+      delete g.hiddenReplies[id]
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-  hideHide: (reply) ->
-    table = reply.parentNode.parentNode.parentNode
-    return if table.hidden #already hidden by filter
+  hide: (table) ->
+    return if table.hidden # already hidden by filter
 
     table.hidden = true
 
-    if conf['Show Stubs']
-      name = $('.commentpostername', reply).textContent
-      uid  = $('.posteruid',         reply)?.textContent or ''
-      trip = $('.postertrip',        reply)?.textContent or ''
+    return unless conf['Show Stubs']
 
-      div = $.el 'div',
-        className: 'stub'
-        innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{uid} #{trip}</a>"
-      $.on $('a', div), 'click', ReplyHiding.cb.show
-      $.before table, div
+    name = $('td[id] > .commentpostername', table).textContent
+    uid  = $('td[id] > .posteruid',         table)?.textContent or ''
+    trip = $('td[id] > .postertrip',        table)?.textContent or ''
 
-  show: (table) ->
-    table.hidden = false
-
-    id = $('td[id]', table).id
-    for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
-      $.removeClass quote, 'filtered'
-
-    delete g.hiddenReplies[id]
-    $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+    div  = $.el 'div',
+      className: 'stub'
+      innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{uid} #{trip}</a>"
+    $.on div.firstChild, 'click', ReplyHiding.toggle
+    $.before table, div
 
 Keybinds =
   init: ->

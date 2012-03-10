@@ -610,7 +610,7 @@
                 continue;
               }
             } else {
-              ReplyHiding.hideHide(post.el);
+              ReplyHiding.hide(post.root);
             }
             return;
           }
@@ -883,76 +883,61 @@
 
   ReplyHiding = {
     init: function() {
-      this.a = $.el('a', {
-        textContent: '[ - ]',
-        href: 'javascript:;'
+      this.td = $.el('td', {
+        noWrap: true,
+        className: 'replyhider',
+        innerHTML: '<a href="javascript:;">[ - ]</a>'
       });
       return g.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, dd;
+      var td;
       if (post["class"]) return;
-      dd = post.el.previousSibling;
-      dd.className = 'replyhider';
-      a = ReplyHiding.a.cloneNode(true);
-      $.on(a, 'click', ReplyHiding.cb.hide);
-      $.replace(dd.firstChild, a);
-      if (post.id in g.hiddenReplies) return ReplyHiding.hide(post.el);
+      td = ReplyHiding.td.cloneNode(true);
+      $.on(td.firstChild, 'click', ReplyHiding.toggle);
+      $.replace(post.el.previousSibling, td);
+      if (post.id in g.hiddenReplies) return ReplyHiding.hide(post.root);
     },
-    cb: {
-      hide: function() {
-        var reply;
-        reply = this.parentNode.nextSibling;
-        return ReplyHiding.hide(reply);
-      },
-      show: function() {
-        var div, table;
-        div = this.parentNode;
-        table = div.nextSibling;
-        ReplyHiding.show(table);
-        return $.rm(div);
+    toggle: function() {
+      var id, parent, quote, table, _i, _j, _len, _len2, _ref, _ref2;
+      parent = this.parentNode;
+      if (parent.className === 'replyhider') {
+        ReplyHiding.hide(parent.parentNode.parentNode.parentNode);
+        id = parent.nextSibling.id;
+        _ref = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          $.addClass(quote, 'filtered');
+        }
+        g.hiddenReplies[id] = Date.now();
+      } else {
+        table = parent.nextSibling;
+        table.hidden = false;
+        $.rm(parent);
+        id = table.firstChild.firstChild.lastChild.id;
+        _ref2 = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          quote = _ref2[_j];
+          $.removeClass(quote, 'filtered');
+        }
+        delete g.hiddenReplies[id];
       }
-    },
-    hide: function(reply) {
-      var id, quote, _i, _len, _ref;
-      ReplyHiding.hideHide(reply);
-      id = reply.id;
-      _ref = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        $.addClass(quote, 'filtered');
-      }
-      g.hiddenReplies[id] = Date.now();
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
-    hideHide: function(reply) {
-      var div, name, table, trip, uid, _ref, _ref2;
-      table = reply.parentNode.parentNode.parentNode;
+    hide: function(table) {
+      var div, name, trip, uid, _ref, _ref2;
       if (table.hidden) return;
       table.hidden = true;
-      if (conf['Show Stubs']) {
-        name = $('.commentpostername', reply).textContent;
-        uid = ((_ref = $('.posteruid', reply)) != null ? _ref.textContent : void 0) || '';
-        trip = ((_ref2 = $('.postertrip', reply)) != null ? _ref2.textContent : void 0) || '';
-        div = $.el('div', {
-          className: 'stub',
-          innerHTML: "<a href=javascript:;><span>[ + ]</span> " + name + " " + uid + " " + trip + "</a>"
-        });
-        $.on($('a', div), 'click', ReplyHiding.cb.show);
-        return $.before(table, div);
-      }
-    },
-    show: function(table) {
-      var id, quote, _i, _len, _ref;
-      table.hidden = false;
-      id = $('td[id]', table).id;
-      _ref = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        $.removeClass(quote, 'filtered');
-      }
-      delete g.hiddenReplies[id];
-      return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
+      if (!conf['Show Stubs']) return;
+      name = $('td[id] > .commentpostername', table).textContent;
+      uid = ((_ref = $('td[id] > .posteruid', table)) != null ? _ref.textContent : void 0) || '';
+      trip = ((_ref2 = $('td[id] > .postertrip', table)) != null ? _ref2.textContent : void 0) || '';
+      div = $.el('div', {
+        className: 'stub',
+        innerHTML: "<a href=javascript:;><span>[ + ]</span> " + name + " " + uid + " " + trip + "</a>"
+      });
+      $.on(div.firstChild, 'click', ReplyHiding.toggle);
+      return $.before(table, div);
     }
   };
 
