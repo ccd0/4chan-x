@@ -741,7 +741,7 @@
         a.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      doc = d.implementation.createHTMLDocument();
+      doc = d.implementation.createHTMLDocument(null);
       doc.documentElement.innerHTML = req.responseText;
       bq = threadID === replyID ? $('blockquote', doc) : $('blockquote', doc.getElementById(replyID));
       $.replace(a.parentNode.parentNode, bq);
@@ -3190,7 +3190,7 @@
         inline.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      doc = d.implementation.createHTMLDocument();
+      doc = d.implementation.createHTMLDocument(null);
       doc.documentElement.innerHTML = req.responseText;
       node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
       newInline = QuoteInline.table(id, node.innerHTML);
@@ -3282,7 +3282,7 @@
         qp.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      doc = d.implementation.createHTMLDocument();
+      doc = d.implementation.createHTMLDocument(null);
       doc.documentElement.innerHTML = req.responseText;
       node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
       qp.innerHTML = node.innerHTML;

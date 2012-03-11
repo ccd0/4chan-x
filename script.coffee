@@ -637,7 +637,7 @@ ExpandComment =
       a.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument()
+    doc = d.implementation.createHTMLDocument null
     doc.documentElement.innerHTML = req.responseText
 
     bq =
@@ -2644,7 +2644,7 @@ QuoteInline =
       inline.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument()
+    doc = d.implementation.createHTMLDocument null
     doc.documentElement.innerHTML = req.responseText
 
     node =
@@ -2716,7 +2716,7 @@ QuotePreview =
       qp.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument()
+    doc = d.implementation.createHTMLDocument null
     doc.documentElement.innerHTML = req.responseText
 
     node =
