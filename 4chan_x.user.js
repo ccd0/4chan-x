@@ -3186,32 +3186,19 @@
       }
     },
     parse: function(req, pathname, id, threadID, inline) {
-      var body, href, html, link, newInline, op, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
+      var doc, href, link, newInline, node, quote, _i, _len, _ref;
       if (!inline.parentNode) return;
       if (req.status !== 200) {
         inline.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      body = $.el('body', {
-        innerHTML: req.responseText
-      });
-      if (id === threadID) {
-        op = Threading.op($('body > form', body).firstChild);
-        html = op.innerHTML;
-      } else {
-        _ref = $$('.reply', body);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          reply = _ref[_i];
-          if (reply.id === id) {
-            html = reply.innerHTML;
-            break;
-          }
-        }
-      }
-      newInline = QuoteInline.table(id, html);
-      _ref2 = $$('.quotelink', newInline);
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        quote = _ref2[_j];
+      doc = d.implementation.createHTMLDocument();
+      doc.documentElement.innerHTML = req.responseText;
+      node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
+      newInline = QuoteInline.table(id, node.innerHTML);
+      _ref = $$('.quotelink', newInline);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
         if ((href = quote.getAttribute('href')) === quote.hash) {
           quote.pathname = pathname;
         } else if (!g.REPLY && href !== quote.href) {
@@ -3291,29 +3278,16 @@
       return $.off(this, 'click', QuotePreview.mouseout);
     },
     parse: function(req, id, threadID) {
-      var body, html, op, post, qp, reply, _i, _len, _ref;
-      if (!((qp = ui.el) && (qp.innerHTML === ("Loading " + id + "...")))) return;
+      var doc, node, post, qp;
+      if (!((qp = ui.el) && qp.innerHTML === ("Loading " + id + "..."))) return;
       if (req.status !== 200) {
         qp.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      body = $.el('body', {
-        innerHTML: req.responseText
-      });
-      if (id === threadID) {
-        op = Threading.op($('body > form', body).firstChild);
-        html = op.innerHTML;
-      } else {
-        _ref = $$('.reply', body);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          reply = _ref[_i];
-          if (reply.id === id) {
-            html = reply.innerHTML;
-            break;
-          }
-        }
-      }
-      qp.innerHTML = html;
+      doc = d.implementation.createHTMLDocument();
+      doc.documentElement.innerHTML = req.responseText;
+      node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
+      qp.innerHTML = node.innerHTML;
       post = {
         root: qp,
         filesize: $('.filesize', qp),

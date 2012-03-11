@@ -2646,19 +2646,17 @@ QuoteInline =
       inline.textContent = "#{req.status} #{req.statusText}"
       return
 
-    body = $.el 'body',
-      innerHTML: req.responseText
-    if id is threadID #OP
-      op = Threading.op $('body > form', body).firstChild
-      html = op.innerHTML
-    else
-      for reply in $$ '.reply', body
-        if reply.id == id
-          html = reply.innerHTML
-          break
-    newInline = QuoteInline.table id, html
+    doc = d.implementation.createHTMLDocument()
+    doc.documentElement.innerHTML = req.responseText
+
+    node =
+      if id is threadID #OP
+        Threading.op $('body > form', doc).firstChild
+      else
+        doc.getElementById id
+    newInline = QuoteInline.table id, node.innerHTML
     for quote in $$ '.quotelink', newInline
-      if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
+      if (href = quote.getAttribute 'href') is quote.hash #add pathname to normal quotes
         quote.pathname = pathname
       else if !g.REPLY and href isnt quote.href #fix x-thread links, not x-board ones
         quote.href = "res/#{href}"
@@ -2714,23 +2712,21 @@ QuotePreview =
     $.off @, 'mouseout',  QuotePreview.mouseout
     $.off @, 'click',     QuotePreview.mouseout
   parse: (req, id, threadID) ->
-    return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")
+    return unless (qp = ui.el) and qp.innerHTML is "Loading #{id}..."
 
     if req.status isnt 200
       qp.textContent = "#{req.status} #{req.statusText}"
       return
 
-    body = $.el 'body',
-      innerHTML: req.responseText
-    if id is threadID #OP
-      op = Threading.op $('body > form', body).firstChild
-      html = op.innerHTML
-    else
-      for reply in $$ '.reply', body
-        if reply.id == id
-          html = reply.innerHTML
-          break
-    qp.innerHTML = html
+    doc = d.implementation.createHTMLDocument()
+    doc.documentElement.innerHTML = req.responseText
+
+    node =
+      if id is threadID #OP
+        Threading.op $('body > form', doc).firstChild
+      else
+        doc.getElementById id
+    qp.innerHTML = node.innerHTML
     post =
       root:     qp
       filesize: $ '.filesize', qp
