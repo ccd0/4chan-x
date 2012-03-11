@@ -4379,7 +4379,7 @@ td > .filesize > img[md5] {\
   text-decoration: line-through;\
 }\
 .quotelink.forwardlink {\
-  color: #ef5411;\
+  color: #2C2C63;\
 }\
 '
   };
