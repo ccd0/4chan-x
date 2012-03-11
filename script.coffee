@@ -617,7 +617,7 @@ StrikethroughQuotes =
     for quote in post.quotes
       if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
         $.addClass quote, 'filtered'
-        post.root.hidden = true if conf['Recursive Filtering']
+        ReplyHiding.hide post.root if conf['Recursive Filtering']
     return
 
 ExpandComment =

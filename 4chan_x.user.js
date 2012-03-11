@@ -709,7 +709,7 @@
         quote = _ref[_i];
         if ((el = $.id(quote.hash.slice(1))) && el.parentNode.parentNode.parentNode.hidden) {
           $.addClass(quote, 'filtered');
-          if (conf['Recursive Filtering']) post.root.hidden = true;
+          if (conf['Recursive Filtering']) ReplyHiding.hide(post.root);
         }
       }
     }
