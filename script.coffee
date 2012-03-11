@@ -2051,7 +2051,7 @@ ThreadHiding =
   toggle: (thread) ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     id = $('.op', thread).id
-    if thread.hidden or /\bstub\b/.test thread.className
+    if thread.hidden or thread.firstChild.className is 'block'
       ThreadHiding.show thread
       delete hiddenThreads[id]
     else
@@ -2065,7 +2065,7 @@ ThreadHiding =
       thread.nextSibling.hidden = true
       return
 
-    return if /\bstub\b/.test thread.className # already hidden by filter
+    return if thread.firstChild.className is 'block' # already hidden by filter
 
     num  = 0
     if span = $ '.omittedposts', thread
@@ -2087,11 +2087,9 @@ ThreadHiding =
 
     $.add div, a
     $.prepend thread, div
-    $.addClass thread, 'stub'
 
   show: (thread, id) ->
     $.rm $ '.block', thread
-    $.removeClass thread, 'stub'
     thread.hidden = false
     thread.nextSibling.hidden = false
 
@@ -2712,7 +2710,7 @@ QuotePreview =
     $.off @, 'mouseout',  QuotePreview.mouseout
     $.off @, 'click',     QuotePreview.mouseout
   parse: (req, id, threadID) ->
-    return unless (qp = ui.el) and qp.innerHTML is "Loading #{id}..."
+    return unless (qp = ui.el) and qp.textContent is "Loading #{id}..."
 
     if req.status isnt 200
       qp.textContent = "#{req.status} #{req.statusText}"
@@ -3297,7 +3295,7 @@ Main =
       el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
       class:     klass
       id:        node.getElementsByTagName('input')[0].name
-      threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
+      threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).firstChild.id
       isOP:      klass is 'op'
       isInlined: /\binline\b/.test klass
       filesize:  node.getElementsByClassName('filesize')[0] or false

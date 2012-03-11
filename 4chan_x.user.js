@@ -2438,7 +2438,7 @@
       var hiddenThreads, id;
       hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       id = $('.op', thread).id;
-      if (thread.hidden || /\bstub\b/.test(thread.className)) {
+      if (thread.hidden || thread.firstChild.className === 'block') {
         ThreadHiding.show(thread);
         delete hiddenThreads[id];
       } else {
@@ -2454,7 +2454,7 @@
         thread.nextSibling.hidden = true;
         return;
       }
-      if (/\bstub\b/.test(thread.className)) return;
+      if (thread.firstChild.className === 'block') return;
       num = 0;
       if (span = $('.omittedposts', thread)) {
         num = Number(span.textContent.match(/\d+/)[0]);
@@ -2474,12 +2474,10 @@
         className: 'block'
       });
       $.add(div, a);
-      $.prepend(thread, div);
-      return $.addClass(thread, 'stub');
+      return $.prepend(thread, div);
     },
     show: function(thread, id) {
       $.rm($('.block', thread));
-      $.removeClass(thread, 'stub');
       thread.hidden = false;
       return thread.nextSibling.hidden = false;
     }
@@ -3279,7 +3277,7 @@
     },
     parse: function(req, id, threadID) {
       var doc, node, post, qp;
-      if (!((qp = ui.el) && qp.innerHTML === ("Loading " + id + "..."))) return;
+      if (!((qp = ui.el) && qp.textContent === ("Loading " + id + "..."))) return;
       if (req.status !== 200) {
         qp.textContent = "" + req.status + " " + req.statusText;
         return;
@@ -3958,7 +3956,7 @@
         el: klass === 'op' ? node : node.firstChild.firstChild.lastChild,
         "class": klass,
         id: node.getElementsByTagName('input')[0].name,
-        threadId: g.THREAD_ID || $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id,
+        threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).firstChild.id,
         isOP: klass === 'op',
         isInlined: /\binline\b/.test(klass),
         filesize: node.getElementsByClassName('filesize')[0] || false,
