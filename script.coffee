@@ -1020,6 +1020,7 @@ qr =
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on $('a', link), 'click', ->
         qr.open()
+        $('select', qr.el).value = 'new' unless g.REPLY
         $('textarea', qr.el).focus()
       form = d.forms[0]
       $.before form, link

@@ -1243,6 +1243,7 @@
         });
         $.on($('a', link), 'click', function() {
           qr.open();
+          if (!g.REPLY) $('select', qr.el).value = 'new';
           return $('textarea', qr.el).focus();
         });
         form = d.forms[0];
