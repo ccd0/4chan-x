@@ -917,9 +917,9 @@
       if (table.hidden) return;
       table.hidden = true;
       if (!conf['Show Stubs']) return;
-      name = $('td[id] > .commentpostername', table).textContent;
-      uid = ((_ref = $('td[id] > .posteruid', table)) != null ? _ref.textContent : void 0) || '';
-      trip = ((_ref2 = $('td[id] > .postertrip', table)) != null ? _ref2.textContent : void 0) || '';
+      name = $('.commentpostername', table).textContent;
+      uid = ((_ref = $('.posteruid', table)) != null ? _ref.textContent : void 0) || '';
+      trip = ((_ref2 = $('.postertrip', table)) != null ? _ref2.textContent : void 0) || '';
       div = $.el('div', {
         className: 'stub',
         innerHTML: "<a href=javascript:;><span>[ + ]</span> " + name + " " + uid + " " + trip + "</a>"
