@@ -736,29 +736,17 @@
       }));
     },
     parse: function(req, a, threadID, replyID) {
-      var body, bq, post, quote, quotes, reply, _i, _j, _len, _len2, _ref;
+      var bq, doc, post, quote, quotes, _i, _len;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      body = $.el('body', {
-        innerHTML: req.responseText
-      });
-      if (threadID === replyID) {
-        bq = $('blockquote', body);
-      } else {
-        _ref = $$('td[id]', body);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          reply = _ref[_i];
-          if (reply.id === replyID) {
-            bq = $('blockquote', reply);
-            break;
-          }
-        }
-      }
+      doc = d.implementation.createHTMLDocument();
+      doc.documentElement.innerHTML = req.responseText;
+      bq = threadID === replyID ? $('blockquote', doc) : $('blockquote', doc.getElementById(replyID));
       quotes = $$('.quotelink', bq);
-      for (_j = 0, _len2 = quotes.length; _j < _len2; _j++) {
-        quote = quotes[_j];
+      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+        quote = quotes[_i];
         if (quote.getAttribute('href') === quote.hash) {
           quote.pathname = "/" + g.BOARD + "/res/" + threadID;
         }

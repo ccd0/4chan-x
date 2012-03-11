@@ -637,18 +637,14 @@ ExpandComment =
       a.textContent = "#{req.status} #{req.statusText}"
       return
 
-    body = $.el 'body',
-      innerHTML: req.responseText
+    doc = d.implementation.createHTMLDocument()
+    doc.documentElement.innerHTML = req.responseText
 
-    if threadID is replyID #OP
-      bq = $ 'blockquote', body
-    else
-      #css selectors don't like ids starting with numbers,
-      # getElementById only works for root document.
-      for reply in $$ 'td[id]', body
-        if reply.id == replyID
-          bq = $ 'blockquote', reply
-          break
+    bq =
+      if threadID is replyID # OP
+        $ 'blockquote', doc
+      else
+        $ 'blockquote', doc.getElementById replyID
     quotes = $$ '.quotelink', bq
     for quote in quotes
       if quote.getAttribute('href') is quote.hash
