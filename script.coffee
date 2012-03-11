@@ -314,7 +314,7 @@ $.extend $,
       $.set @name, @checked
       conf[@name] = @checked
     value: ->
-      $.set @name, @value
+      $.set @name, @value.trim()
       conf[@name] = @value
   addStyle: (css) ->
     style = $.el 'style',
@@ -334,7 +334,7 @@ $.extend $,
   tn: (s) ->
     d.createTextNode s
   nodes: (nodes) ->
-    unless nodes instanceof Array
+    if nodes instanceof Node
       return nodes
     frag = d.createDocumentFragment()
     for node in nodes
@@ -450,10 +450,6 @@ $.extend $,
       name = NAMESPACE + name
       localStorage[name] = JSON.stringify value
 
-#load values from localStorage
-for key, val of conf
-  conf[key] = $.get key, val
-
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
@@ -545,11 +541,11 @@ Filter =
         if result is true
           if isOP
             unless g.REPLY
-              ThreadHiding.hideHide post.el.parentNode
+              ThreadHiding.hide post.el.parentNode
             else
               continue
           else
-            ReplyHiding.hideHide post.el
+            ReplyHiding.hide post.root
           return
 
         # Highlight
@@ -622,7 +618,7 @@ StrikethroughQuotes =
     for quote in post.quotes
       if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
         $.addClass quote, 'filtered'
-        post.root.hidden = true if conf['Recursive Filtering']
+        ReplyHiding.hide post.root if conf['Recursive Filtering']
     return
 
 ExpandComment =
@@ -642,23 +638,19 @@ ExpandComment =
       a.textContent = "#{req.status} #{req.statusText}"
       return
 
-    body = $.el 'body',
-      innerHTML: req.responseText
+    doc = d.implementation.createHTMLDocument null
+    doc.documentElement.innerHTML = req.responseText
 
-    if threadID is replyID #OP
-      bq = $ 'blockquote', body
-    else
-      #css selectors don't like ids starting with numbers,
-      # getElementById only works for root document.
-      for reply in $$ 'td[id]', body
-        if reply.id == replyID
-          bq = $ 'blockquote', reply
-          break
+    bq =
+      if threadID is replyID # OP
+        $ 'blockquote', doc
+      else
+        $ 'blockquote', doc.getElementById replyID
+    $.replace a.parentNode.parentNode, bq
     quotes = $$ '.quotelink', bq
     for quote in quotes
       if quote.getAttribute('href') is quote.hash
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
-    $.replace a.parentNode.parentNode, bq
     post =
       threadId:  threadID
       quotes:    quotes
@@ -749,70 +741,55 @@ ExpandThread =
 
 ReplyHiding =
   init: ->
-    @a = $.el 'a',
-      textContent: '[ - ]'
-      href: 'javascript:;'
+    @td = $.el 'td',
+      noWrap: true
+      className: 'replyhider'
+      innerHTML: '<a href="javascript:;">[ - ]</a>'
     g.callbacks.push @node
 
   node: (post) ->
     return if post.class
-    dd = post.el.previousSibling
-    dd.className = 'replyhider'
-    a = ReplyHiding.a.cloneNode true
-    $.on a, 'click', ReplyHiding.cb.hide
-    $.replace dd.firstChild, a
+    td = ReplyHiding.td.cloneNode true
+    $.on td.firstChild, 'click', ReplyHiding.toggle
+    $.replace post.el.previousSibling, td
 
     if post.id of g.hiddenReplies
-      ReplyHiding.hide post.el
+      ReplyHiding.hide post.root
 
-  cb:
-    hide: ->
-      reply = @parentNode.nextSibling
-      ReplyHiding.hide reply
-
-    show: ->
-      div = @parentNode
-      table = div.nextSibling
-      ReplyHiding.show table
-
-      $.rm div
-
-  hide: (reply) ->
-    ReplyHiding.hideHide reply
-
-    id = reply.id
-    for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
-      $.addClass quote, 'filtered'
-
-    g.hiddenReplies[id] = Date.now()
+  toggle: ->
+    parent = @parentNode
+    if parent.className is 'replyhider'
+      ReplyHiding.hide parent.parentNode.parentNode.parentNode
+      id = parent.nextSibling.id
+      for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
+        $.addClass quote, 'filtered'
+      g.hiddenReplies[id] = Date.now()
+    else
+      table = parent.nextSibling
+      table.hidden = false
+      $.rm parent
+      id = table.firstChild.firstChild.lastChild.id
+      for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
+        $.removeClass quote, 'filtered'
+      delete g.hiddenReplies[id]
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-  hideHide: (reply) ->
-    table = reply.parentNode.parentNode.parentNode
-    return if table.hidden #already hidden by filter
+  hide: (table) ->
+    return if table.hidden # already hidden by filter
 
     table.hidden = true
 
-    if conf['Show Stubs']
-      name = $('.commentpostername', reply).textContent
-      uid  = $('.posteruid',         reply)?.textContent or ''
-      trip = $('.postertrip',        reply)?.textContent or ''
+    return unless conf['Show Stubs']
 
-      div = $.el 'div',
-        className: 'stub'
-        innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{uid} #{trip}</a>"
-      $.on $('a', div), 'click', ReplyHiding.cb.show
-      $.before table, div
+    name = $('td[id] > .commentpostername', table).textContent
+    uid  = $('td[id] > .posteruid',         table)?.textContent or ''
+    trip = $('td[id] > .postertrip',        table)?.textContent or ''
 
-  show: (table) ->
-    table.hidden = false
-
-    id = $('td[id]', table).id
-    for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
-      $.removeClass quote, 'filtered'
-
-    delete g.hiddenReplies[id]
-    $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+    div  = $.el 'div',
+      className: 'stub'
+      innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{uid} #{trip}</a>"
+    $.on div.firstChild, 'click', ReplyHiding.toggle
+    $.before table, div
 
 Keybinds =
   init: ->
@@ -895,7 +872,7 @@ Keybinds =
       when conf.previousReply
         Keybinds.hl -1, thread
       when conf.hide
-        ThreadHiding.toggle thread
+        ThreadHiding.toggle thread if /\bthread\b/.test thread.className
       else
         return
     e.preventDefault()
@@ -1038,14 +1015,18 @@ Nav =
 qr =
   init: ->
     return unless $.id 'recaptcha_challenge_field_holder'
+    g.callbacks.push @node
+    setTimeout @asyncInit
+
+  asyncInit: ->
     if conf['Hide Original Post Form']
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on $('a', link), 'click', ->
         qr.open()
+        $('select', qr.el).value = 'new' unless g.REPLY
         $('textarea', qr.el).focus()
       form = d.forms[0]
       $.before form, link
-    g.callbacks.push @node
 
     # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
     if /chrome/i.test navigator.userAgent
@@ -1063,17 +1044,14 @@ qr =
       $.on iframe, 'load', -> if @src isnt 'about:blank' then setTimeout loadChecking, 500, @
       $.add d.head, iframe
 
-    # This is extemely slow, execute is asynchronously.
-    setTimeout ->
-      # Prevent original captcha input from being focused on reload.
-      script = $.el 'script', textContent: 'Recaptcha.focus_response_field=function(){}'
-      $.add d.head, script
-      $.rm script
+    # Prevent original captcha input from being focused on reload.
+    script = $.el 'script', textContent: 'Recaptcha.focus_response_field=function(){}'
+    $.add d.head, script
+    $.rm script
 
     if conf['Persistent QR']
-      setTimeout ->
-        qr.dialog()
-        qr.hide() if conf['Auto Hide QR']
+      qr.dialog()
+      qr.hide() if conf['Auto Hide QR']
     $.on d, 'dragover',  qr.dragOver
     $.on d, 'drop',      qr.dropFile
     $.on d, 'dragstart', qr.drag
@@ -2061,77 +2039,63 @@ ThreadHiding =
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     for thread in $$ '.thread'
       op = thread.firstChild
-      a = $.el 'a',
+      a  = $.el 'a',
         textContent: '[ - ]'
         href: 'javascript:;'
-      $.on a, 'click', ThreadHiding.cb.hide
+      $.on a, 'click', ThreadHiding.cb
       $.prepend op, a
 
       if op.id of hiddenThreads
-        ThreadHiding.hideHide thread
+        ThreadHiding.hide thread
+    return
 
-  cb:
-    hide: ->
-      thread = @parentNode.parentNode
-      ThreadHiding.hide thread
-    show: ->
-      thread = @parentNode.parentNode
-      ThreadHiding.show thread
+  cb: ->
+    ThreadHiding.toggle @parentNode.parentNode
 
   toggle: (thread) ->
-    if /\bstub\b/.test(thread.className) or thread.hidden
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    id = $('.op', thread).id
+    if thread.hidden or thread.firstChild.className is 'block'
       ThreadHiding.show thread
+      delete hiddenThreads[id]
     else
       ThreadHiding.hide thread
+      hiddenThreads[id] = Date.now()
+    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
   hide: (thread) ->
-    ThreadHiding.hideHide thread
-
-    id = thread.firstChild.id
-
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    hiddenThreads[id] = Date.now()
-    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
-
-  hideHide: (thread) ->
-    if conf['Show Stubs']
-      return if /stub/.test thread.className #already hidden by filter
-      if span = $ '.omittedposts', thread
-        num = Number span.textContent.match(/\d+/)[0]
-      else
-        num = 0
-      num += $$('table', thread).length
-      text = if num is 1 then "1 reply" else "#{num} replies"
-      name = $('.postername', thread).textContent
-      uid  = $('.posteruid', thread)?.textContent or ''
-      trip = $('.postername + .postertrip', thread)?.textContent or ''
-
-      a = $.el 'a',
-        innerHTML: "<span>[ + ]</span> #{name}#{uid}#{trip} (#{text})"
-        href: 'javascript:;'
-      $.on a, 'click', ThreadHiding.cb.show
-
-      div = $.el 'div',
-        className: 'block'
-
-      $.add div, a
-      $.add thread, div
-      $.addClass thread, 'stub'
-    else
+    unless conf['Show Stubs']
       thread.hidden = true
       thread.nextSibling.hidden = true
+      return
 
-  show: (thread) ->
-    $.rm $ 'div.block', thread
-    $.removeClass thread, 'stub'
+    return if thread.firstChild.className is 'block' # already hidden by filter
+
+    num  = 0
+    if span = $ '.omittedposts', thread
+      num = Number span.textContent.match(/\d+/)[0]
+    num += $$('.op ~ table', thread).length
+    text = if num is 1 then '1 reply' else "#{num} replies"
+    op   = $ '.op', thread
+    name = $('.postername', op).textContent
+    uid  = $('.posteruid',  op)?.textContent or ''
+    trip = $('.postertrip', op)?.textContent or ''
+
+    a = $.el 'a',
+      innerHTML: "<span>[ + ]</span> #{name} #{uid} #{trip} (#{text})"
+      href: 'javascript:;'
+    $.on a, 'click', ThreadHiding.cb
+
+    div = $.el 'div',
+      className: 'block'
+
+    $.add div, a
+    $.prepend thread, div
+
+  show: (thread, id) ->
+    $.rm $ '.block', thread
     thread.hidden = false
     thread.nextSibling.hidden = false
-
-    id = thread.firstChild.id
-
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    delete hiddenThreads[id]
-    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
 Updater =
   init: ->
@@ -2236,22 +2200,18 @@ Updater =
       body = $.el 'body',
         innerHTML: @responseText
 
-      id = $('td[id]', Updater.br.previousElementSibling)?.id or 0
+      id = $('input', Updater.br.previousElementSibling).name
       nodes = []
       for reply in $$('.reply', body).reverse()
-        if reply.id <= id #make sure to not insert older posts
-          break
+        break if reply.id <= id #make sure to not insert older posts
         nodes.push reply.parentNode.parentNode.parentNode #table
 
       newPosts = nodes.length
       scroll = conf['Scrolling'] && Updater.scrollBG() && newPosts &&
         Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25
       if conf['Verbose']
-        Updater.count.textContent = '+' + newPosts
-        if newPosts is 0
-          Updater.count.className = null
-        else
-          Updater.count.className = 'new'
+        Updater.count.textContent = "+#{newPosts}"
+        Updater.count.className = if newPosts then 'new' else null
 
       $.before Updater.br, nodes.reverse()
       if scroll
@@ -2688,19 +2648,17 @@ QuoteInline =
       inline.textContent = "#{req.status} #{req.statusText}"
       return
 
-    body = $.el 'body',
-      innerHTML: req.responseText
-    if id is threadID #OP
-      op = Threading.op $('body > form', body).firstChild
-      html = op.innerHTML
-    else
-      for reply in $$ '.reply', body
-        if reply.id == id
-          html = reply.innerHTML
-          break
-    newInline = QuoteInline.table id, html
+    doc = d.implementation.createHTMLDocument null
+    doc.documentElement.innerHTML = req.responseText
+
+    node =
+      if id is threadID #OP
+        Threading.op $('body > form', doc).firstChild
+      else
+        doc.getElementById id
+    newInline = QuoteInline.table id, node.innerHTML
     for quote in $$ '.quotelink', newInline
-      if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
+      if (href = quote.getAttribute 'href') is quote.hash #add pathname to normal quotes
         quote.pathname = pathname
       else if !g.REPLY and href isnt quote.href #fix x-thread links, not x-board ones
         quote.href = "res/#{href}"
@@ -2756,23 +2714,21 @@ QuotePreview =
     $.off @, 'mouseout',  QuotePreview.mouseout
     $.off @, 'click',     QuotePreview.mouseout
   parse: (req, id, threadID) ->
-    return unless (qp = ui.el) and (qp.innerHTML is "Loading #{id}...")
+    return unless (qp = ui.el) and qp.textContent is "Loading #{id}..."
 
     if req.status isnt 200
       qp.textContent = "#{req.status} #{req.statusText}"
       return
 
-    body = $.el 'body',
-      innerHTML: req.responseText
-    if id is threadID #OP
-      op = Threading.op $('body > form', body).firstChild
-      html = op.innerHTML
-    else
-      for reply in $$ '.reply', body
-        if reply.id == id
-          html = reply.innerHTML
-          break
-    qp.innerHTML = html
+    doc = d.implementation.createHTMLDocument null
+    doc.documentElement.innerHTML = req.responseText
+
+    node =
+      if id is threadID #OP
+        Threading.op $('body > form', doc).firstChild
+      else
+        doc.getElementById id
+    qp.innerHTML = node.innerHTML
     post =
       root:     qp
       filesize: $ '.filesize', qp
@@ -3176,6 +3132,10 @@ Main =
     else
       g.PAGENUM = parseInt(temp) or 0
 
+    #load values from localStorage
+    for key, val of conf
+      conf[key] = $.get key, val
+
     $.on window, 'message', Main.message
 
     switch location.hostname
@@ -3302,20 +3262,20 @@ Main =
       ImageExpand.init()
 
     if conf['Thread Watcher']
-      Watcher.init()
+      setTimeout -> Watcher.init()
 
     if conf['Keybinds']
-      Keybinds.init()
+      setTimeout -> Keybinds.init()
 
     if g.REPLY
       if conf['Thread Updater']
-        Updater.init()
+        setTimeout -> Updater.init()
 
       if conf['Thread Stats']
         ThreadStats.init()
 
       if conf['Reply Navigation']
-        Nav.init()
+        setTimeout -> Nav.init()
 
       if conf['Post in Title']
         TitlePost.init()
@@ -3325,16 +3285,16 @@ Main =
 
     else #not reply
       if conf['Thread Hiding']
-        ThreadHiding.init()
+        setTimeout -> ThreadHiding.init()
 
       if conf['Thread Expansion']
-        ExpandThread.init()
+        setTimeout -> ExpandThread.init()
 
       if conf['Comment Expansion']
-        ExpandComment.init()
+        setTimeout -> ExpandComment.init()
 
       if conf['Index Navigation']
-        Nav.init()
+        setTimeout -> Nav.init()
 
     nodes = []
     for node in $$ '.op, a + table', form
@@ -3372,7 +3332,7 @@ Main =
       el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
       class:     klass
       id:        node.getElementsByTagName('input')[0].name
-      threadId:  g.THREAD_ID or $.x('ancestor::div[contains(@class,"thread")]', node).firstChild.id
+      threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).firstChild.id
       isOP:      klass is 'op'
       isInlined: /\binline\b/.test klass
       filesize:  node.getElementsByClassName('filesize')[0] or false
@@ -3385,7 +3345,7 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "4chan X error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
+        alert "4chan X (#{VERSION}) error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []
@@ -3412,7 +3372,9 @@ a[href="javascript:;"] {
   text-decoration: none;
 }
 
-.thread.stub > :not(.block),
+.block ~ .op,
+.block ~ .omittedposts,
+.block ~ table,
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
 #qp > input, #qp .inline, .forwarded {
