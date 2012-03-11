@@ -645,11 +645,11 @@ ExpandComment =
         $ 'blockquote', doc
       else
         $ 'blockquote', doc.getElementById replyID
+    $.replace a.parentNode.parentNode, bq
     quotes = $$ '.quotelink', bq
     for quote in quotes
       if quote.getAttribute('href') is quote.hash
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
-    $.replace a.parentNode.parentNode, bq
     post =
       threadId:  threadID
       quotes:    quotes
@@ -2198,22 +2198,18 @@ Updater =
       body = $.el 'body',
         innerHTML: @responseText
 
-      id = $('td[id]', Updater.br.previousElementSibling)?.id or 0
+      id = $('input', Updater.br.previousElementSibling).name
       nodes = []
       for reply in $$('.reply', body).reverse()
-        if reply.id <= id #make sure to not insert older posts
-          break
+        break if reply.id <= id #make sure to not insert older posts
         nodes.push reply.parentNode.parentNode.parentNode #table
 
       newPosts = nodes.length
       scroll = conf['Scrolling'] && Updater.scrollBG() && newPosts &&
         Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25
       if conf['Verbose']
-        Updater.count.textContent = '+' + newPosts
-        if newPosts is 0
-          Updater.count.className = null
-        else
-          Updater.count.className = 'new'
+        Updater.count.textContent = "+#{newPosts}"
+        Updater.count.className = if newPosts then 'new' else null
 
       $.before Updater.br, nodes.reverse()
       if scroll

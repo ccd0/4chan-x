@@ -744,6 +744,7 @@
       doc = d.implementation.createHTMLDocument();
       doc.documentElement.innerHTML = req.responseText;
       bq = threadID === replyID ? $('blockquote', doc) : $('blockquote', doc.getElementById(replyID));
+      $.replace(a.parentNode.parentNode, bq);
       quotes = $$('.quotelink', bq);
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
@@ -751,7 +752,6 @@
           quote.pathname = "/" + g.BOARD + "/res/" + threadID;
         }
       }
-      $.replace(a.parentNode.parentNode, bq);
       post = {
         threadId: threadID,
         quotes: quotes,
@@ -2559,7 +2559,7 @@
         };
       },
       update: function() {
-        var body, id, newPosts, nodes, reply, scroll, _i, _len, _ref, _ref2;
+        var body, id, newPosts, nodes, reply, scroll, _i, _len, _ref;
         if (this.status === 404) {
           Updater.timer.textContent = '';
           Updater.count.textContent = 404;
@@ -2598,23 +2598,19 @@
         body = $.el('body', {
           innerHTML: this.responseText
         });
-        id = ((_ref = $('td[id]', Updater.br.previousElementSibling)) != null ? _ref.id : void 0) || 0;
+        id = $('input', Updater.br.previousElementSibling).name;
         nodes = [];
-        _ref2 = $$('.reply', body).reverse();
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          reply = _ref2[_i];
+        _ref = $$('.reply', body).reverse();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          reply = _ref[_i];
           if (reply.id <= id) break;
           nodes.push(reply.parentNode.parentNode.parentNode);
         }
         newPosts = nodes.length;
         scroll = conf['Scrolling'] && Updater.scrollBG() && newPosts && Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25;
         if (conf['Verbose']) {
-          Updater.count.textContent = '+' + newPosts;
-          if (newPosts === 0) {
-            Updater.count.className = null;
-          } else {
-            Updater.count.className = 'new';
-          }
+          Updater.count.textContent = "+" + newPosts;
+          Updater.count.className = newPosts ? 'new' : null;
         }
         $.before(Updater.br, nodes.reverse());
         if (scroll) return Updater.br.previousSibling.scrollIntoView();
