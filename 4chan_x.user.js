@@ -754,15 +754,16 @@
         }
       }
       post = {
+        el: bq.parentNode,
         threadId: threadID,
-        quotes: quotes,
+        quotes: bq.getElementsByClassName('quotelink'),
         backlinks: []
       };
+      if (conf['Resurrect Quotes']) DeadQuotes.node(post);
       if (conf['Quote Preview']) QuotePreview.node(post);
       if (conf['Quote Inline']) QuoteInline.node(post);
       if (conf['Indicate OP quote']) QuoteOP.node(post);
-      if (conf['Indicate Cross-thread Quotes']) QuoteCT.node(post);
-      if (conf['Resurrect Quotes']) return DeadQuotes.node(post);
+      if (conf['Indicate Cross-thread Quotes']) return QuoteCT.node(post);
     }
   };
 
