@@ -838,21 +838,21 @@
       }
     },
     parse: function(req, pathname, thread, a) {
-      var body, href, link, next, nodes, quote, reply, _i, _j, _len, _len2, _ref, _ref2;
+      var doc, href, link, next, nodes, quote, reply, table, _i, _j, _len, _len2, _ref, _ref2;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', ExpandThread.cb.toggle);
         return;
       }
       a.textContent = a.textContent.replace('\u00d7 Loading...', '-');
-      body = $.el('body', {
-        innerHTML: req.responseText
-      });
+      doc = d.implementation.createHTMLDocument(null);
+      doc.documentElement.innerHTML = req.responseText;
       nodes = [];
-      _ref = $$('.reply', body);
+      _ref = $$('.reply', doc);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reply = _ref[_i];
-        _ref2 = $$('.quotelink', reply);
+        table = d.importNode(reply.parentNode.parentNode.parentNode);
+        _ref2 = $$('.quotelink', table);
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
           if ((href = quote.getAttribute('href')) === quote.hash) {
@@ -861,10 +861,10 @@
             quote.href = "res/" + href;
           }
         }
-        link = $('.quotejs', reply);
+        link = $('.quotejs', table);
         link.href = "res/" + thread.firstChild.id + "#" + reply.id;
         link.nextSibling.href = "res/" + thread.firstChild.id + "#q" + reply.id;
-        nodes.push(reply.parentNode.parentNode.parentNode);
+        nodes.push(table);
       }
       while ((next = a.nextSibling) && !next.clear) {
         $.rm(next);
@@ -2562,7 +2562,7 @@
         };
       },
       update: function() {
-        var body, id, newPosts, nodes, reply, scroll, _i, _len, _ref;
+        var doc, id, newPosts, nodes, reply, scroll, _i, _len, _ref;
         if (this.status === 404) {
           Updater.timer.textContent = '';
           Updater.count.textContent = 404;
@@ -2598,12 +2598,11 @@
           return;
         }
         Updater.lastModified = this.getResponseHeader('Last-Modified');
-        body = $.el('body', {
-          innerHTML: this.responseText
-        });
+        doc = d.implementation.createHTMLDocument(null);
+        doc.documentElement.innerHTML = this.responseText;
         id = $('input', Updater.br.previousElementSibling).name;
         nodes = [];
-        _ref = $$('.reply', body).reverse();
+        _ref = $$('.reply', doc).reverse();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           reply = _ref[_i];
           if (reply.id <= id) break;

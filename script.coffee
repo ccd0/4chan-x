@@ -721,20 +721,21 @@ ExpandThread =
 
     a.textContent = a.textContent.replace '\u00d7 Loading...', '-'
 
-    body = $.el 'body',
-      innerHTML: req.responseText
+    doc = d.implementation.createHTMLDocument null
+    doc.documentElement.innerHTML = req.responseText
 
     nodes = []
-    for reply in $$ '.reply', body
-      for quote in $$ '.quotelink', reply
+    for reply in $$ '.reply', doc
+      table = d.importNode reply.parentNode.parentNode.parentNode
+      for quote in $$ '.quotelink', table
         if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
           quote.pathname = pathname
         else if href isnt quote.href #fix x-thread links, not x-board ones
           quote.href = "res/#{href}"
-      link = $ '.quotejs', reply
+      link = $ '.quotejs', table
       link.href = "res/#{thread.firstChild.id}##{reply.id}"
       link.nextSibling.href = "res/#{thread.firstChild.id}#q#{reply.id}"
-      nodes.push reply.parentNode.parentNode.parentNode
+      nodes.push table
     # eat everything, then replace with fresh full posts
     while (next = a.nextSibling) and not next.clear #br[clear]
       $.rm next
@@ -2201,12 +2202,12 @@ Updater =
         return
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
-      body = $.el 'body',
-        innerHTML: @responseText
+      doc = d.implementation.createHTMLDocument null
+      doc.documentElement.innerHTML = @responseText
 
       id = $('input', Updater.br.previousElementSibling).name
       nodes = []
-      for reply in $$('.reply', body).reverse()
+      for reply in $$('.reply', doc).reverse()
         break if reply.id <= id #make sure to not insert older posts
         nodes.push reply.parentNode.parentNode.parentNode #table
 
