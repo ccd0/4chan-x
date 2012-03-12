@@ -781,9 +781,9 @@ ReplyHiding =
 
     return unless conf['Show Stubs']
 
-    name = $('td[id] > .commentpostername', table).textContent
-    uid  = $('td[id] > .posteruid',         table)?.textContent or ''
-    trip = $('td[id] > .postertrip',        table)?.textContent or ''
+    name = $('.commentpostername', table).textContent
+    uid  = $('.posteruid',         table)?.textContent or ''
+    trip = $('.postertrip',        table)?.textContent or ''
 
     div  = $.el 'div',
       className: 'stub'
@@ -3756,7 +3756,7 @@ td > .filesize > img[md5] {
   text-decoration: line-through;
 }
 .quotelink.forwardlink {
-  color: #ef5411;
+  color: #2C2C63;
 }
 '
 
