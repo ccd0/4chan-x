@@ -659,7 +659,7 @@ ExpandComment =
       quotes:    quotes
       backlinks: []
     if conf['Resurrect Quotes']
-      DeadQuotes.node   post
+      Quotify.node   post
     if conf['Quote Preview']
       QuotePreview.node post
     if conf['Quote Inline']
@@ -2771,7 +2771,7 @@ QuoteCT =
         $.add quote, $.tn '\u00A0(Cross-thread)'
     return
 
-DeadQuotes =
+Quotify =
   init: ->
     g.callbacks.push @node
   node: (post) ->
@@ -3247,7 +3247,7 @@ Main =
       ReportButton.init()
 
     if conf['Resurrect Quotes']
-      DeadQuotes.init()
+      Quotify.init()
 
     if conf['Quote Inline']
       QuoteInline.init()

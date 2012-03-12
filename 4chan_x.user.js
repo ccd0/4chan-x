@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, DAY, DeadQuotes, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, conf, config, d, engine, flatten, g, log, qr, ui, _base;
+  var $, $$, Anonymize, AutoGif, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, conf, config, d, engine, flatten, g, log, qr, ui, _base;
 
   config = {
     main: {
@@ -761,7 +761,7 @@
         quotes: quotes,
         backlinks: []
       };
-      if (conf['Resurrect Quotes']) DeadQuotes.node(post);
+      if (conf['Resurrect Quotes']) Quotify.node(post);
       if (conf['Quote Preview']) QuotePreview.node(post);
       if (conf['Quote Inline']) QuoteInline.node(post);
       if (conf['Indicate OP quote']) QuoteOP.node(post);
@@ -3340,7 +3340,7 @@
     }
   };
 
-  DeadQuotes = {
+  Quotify = {
     init: function() {
       return g.callbacks.push(this.node);
     },
@@ -3885,7 +3885,7 @@
       if (conf['Image Auto-Gif']) AutoGif.init();
       if (conf['Image Hover']) ImageHover.init();
       if (conf['Report Button']) ReportButton.init();
-      if (conf['Resurrect Quotes']) DeadQuotes.init();
+      if (conf['Resurrect Quotes']) Quotify.init();
       if (conf['Quote Inline']) QuoteInline.init();
       if (conf['Quote Preview']) QuotePreview.init();
       if (conf['Quote Backlinks']) QuoteBacklink.init();
