@@ -584,7 +584,7 @@ Filter =
     sub.textContent
   comment: (post) ->
     text = []
-    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 7
+    # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE is 7
     nodes = d.evaluate './/br|.//text()', post.el.lastChild, null, 7, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
@@ -2772,28 +2772,50 @@ DeadQuotes =
     g.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
-    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 7
 
-    # We need to make sure we can quotify multiple links per text node
-    # We need to make sure that we don't try to quotify text like `>>text`
+    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
+    # Get all the text nodes that are not inside an anchor.
+    snapshot = d.evaluate './/text()[not(ancestor::a)]', post.el.lastChild, null, 6, null
 
-    snapshot = d.evaluate './/*[not(self::a) and contains(text(),">>")]/text()', post.el.lastChild, null, 7, null
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
       data = node.data
-      unless quote = data.match />>(\d+)/
+
+      unless quotes = data.match />>(\d+|>\/[a-z\d]+\/\d+)/g
+        # Only accept nodes with potentially valid links
         continue
-      index = data.indexOf quote[0]
+
       nodes = []
-      if text = data[0...index]
-        nodes.push $.tn text
-      nodes.push $.el 'a',
-        # \u00A0 is nbsp
-        textContent: "#{quote[0]}\u00A0(Dead)"
-        href: "##{quote[1]}" # Here be archive link
-        className: if $.id quote[1] then 'quotelink' else null
-      if text = data[index + quote[0].length...]
-        nodes.push $.tn text
+
+      for quote in quotes
+        index   = data.indexOf quote
+        if text = data[...index]
+          # Potential text before this valid quote.
+          nodes.push $.tn text
+
+        id = quote.match(/\d+$/)[0]
+        board = if m = quote.match /^>>>\/([a-z\d]+)/ then m[1] else g.BOARD
+        if board is g.BOARD and $.id id
+          href = "##{id}"
+          className = 'quotelink'
+        else
+          # TODO manage links if board is archived
+          # Here be archive link
+          href  = "#"
+          className = null
+
+        nodes.push $.el 'a',
+          # \u00A0 is nbsp
+          textContent: "#{quote}\u00A0(Dead)"
+          href: href
+          className: className
+
+        data = data[index + quote.length..]
+
+      if data
+        # Potential text after the last valid quote.
+        nodes.push $.tn data
+
       $.replace node, nodes
     return
 
