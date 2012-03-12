@@ -642,24 +642,21 @@ ExpandComment =
     doc.documentElement.innerHTML = req.responseText
 
     Threading.op $('body > form', doc).firstChild
-    bq = doc.getElementById(replyID).lastChild
-
-    # Add the bq in a temporary element to fix quote.hashes
+    # Import the node to fix quote.hashes
     # as they're empty when in a different document.
-    tmp = $.el 'div'
-    $.add tmp, bq
+    node = d.importNode doc.getElementById replyID
 
-    quotes = bq.getElementsByClassName 'quotelink'
+    quotes = node.getElementsByClassName 'quotelink'
     for quote in quotes
       if quote.hash is quote.getAttribute 'href'
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
     post =
-      el:        bq.parentNode
+      el:        node
       threadId:  threadID
       quotes:    quotes
       backlinks: []
     if conf['Resurrect Quotes']
-      Quotify.node   post
+      Quotify.node      post
     if conf['Quote Preview']
       QuotePreview.node post
     if conf['Quote Inline']
@@ -668,7 +665,7 @@ ExpandComment =
       QuoteOP.node      post
     if conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
-    $.replace a.parentNode.parentNode, bq
+    $.replace a.parentNode.parentNode, node.lastChild
 
 ExpandThread =
   init: ->

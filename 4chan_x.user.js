@@ -737,7 +737,7 @@
       }));
     },
     parse: function(req, a, threadID, replyID) {
-      var bq, doc, post, quote, quotes, tmp, _i, _len;
+      var doc, node, post, quote, quotes, _i, _len;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
@@ -745,10 +745,8 @@
       doc = d.implementation.createHTMLDocument(null);
       doc.documentElement.innerHTML = req.responseText;
       Threading.op($('body > form', doc).firstChild);
-      bq = doc.getElementById(replyID).lastChild;
-      tmp = $.el('div');
-      $.add(tmp, bq);
-      quotes = bq.getElementsByClassName('quotelink');
+      node = d.importNode(doc.getElementById(replyID));
+      quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
         if (quote.hash === quote.getAttribute('href')) {
@@ -756,7 +754,7 @@
         }
       }
       post = {
-        el: bq.parentNode,
+        el: node,
         threadId: threadID,
         quotes: quotes,
         backlinks: []
@@ -766,7 +764,7 @@
       if (conf['Quote Inline']) QuoteInline.node(post);
       if (conf['Indicate OP quote']) QuoteOP.node(post);
       if (conf['Indicate Cross-thread Quotes']) QuoteCT.node(post);
-      return $.replace(a.parentNode.parentNode, bq);
+      return $.replace(a.parentNode.parentNode, node.lastChild);
     }
   };
 
