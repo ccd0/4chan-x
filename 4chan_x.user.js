@@ -3358,7 +3358,7 @@
           index = data.indexOf(quote);
           if (text = data.slice(0, index)) nodes.push($.tn(text));
           id = quote.match(/\d+$/)[0];
-          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : g.BOARD;
+          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.quotejs', post.el).pathname.split('/')[1];
           if (board === g.BOARD && $.id(id)) {
             href = "#" + id;
             className = 'quotelink';

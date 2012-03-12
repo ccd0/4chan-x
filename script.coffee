@@ -2801,7 +2801,12 @@ Quotify =
           nodes.push $.tn text
 
         id = quote.match(/\d+$/)[0]
-        board = if m = quote.match /^>>>\/([a-z\d]+)/ then m[1] else g.BOARD
+        board =
+          if m = quote.match /^>>>\/([a-z\d]+)/
+            m[1]
+          else
+            # Get the post's board, whether it's inlined or not.
+            $('.quotejs', post.el).pathname.split('/')[1]
         if board is g.BOARD and $.id id
           href = "##{id}"
           className = 'quotelink'
