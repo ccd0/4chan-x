@@ -1489,7 +1489,10 @@ qr =
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
       input = $ "[name=#{name}]", qr.el
-      for event in ['textInput', 'keyup', 'change', 'paste']
+      for event in ['input', 'keyup', 'change', 'paste']
+        # The input event replaces keyup, change and paste events.
+        # Firefox 12 will support the input event.
+        # Oprah?
         $.on input, event, ->
           qr.selected[@name] = @value
           # Disable auto-posting if you're typing in the first reply
