@@ -2806,9 +2806,7 @@ Quotify =
           href = "##{id}"
           className = 'quotelink'
         else
-          # TODO manage links if board is archived
-          # Here be archive link
-          href = "#"
+          href = Redirect.thread board, id, 'post'
           className = null
 
         nodes.push $.el 'a',
@@ -2982,19 +2980,22 @@ Redirect =
     switch href[3]
       when 'a', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
-  thread: ->
-    return unless conf['404 Redirect']
+  thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
+    return unless conf['404 Redirect'] or mode is 'post'
     switch g.BOARD
       when 'a', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
-        "http://archive.foolz.us/#{g.BOARD}/thread/#{g.THREAD_ID}/"
+        "http://archive.foolz.us/#{board}/thread/#{id}/"
       when 'lit'
-        "http://fuuka.warosu.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
+        "http://fuuka.warosu.org/#{board}/#{mode}/#{id}"
       when 'diy', 'g', 'sci'
-        "http://archive.installgentoo.net/#{g.BOARD}/thread/#{g.THREAD_ID}"
+        "http://archive.installgentoo.net/#{board}/#{mode}/#{id}"
       when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'r9k', 'soc', 'sp', 'toy', 'trv', 'vp', 'x'
-        "http://archive.no-ip.org/#{g.BOARD}/thread/#{g.THREAD_ID}"
+        "http://archive.no-ip.org/#{board}/#{mode}/#{id}"
       else
-        "http://boards.4chan.org/#{g.BOARD}/"
+        if mode is 'thread'
+          "http://boards.4chan.org/#{board}/"
+        else
+          null
 
 ImageHover =
   init: ->

@@ -3363,7 +3363,7 @@
             href = "#" + id;
             className = 'quotelink';
           } else {
-            href = "#";
+            href = Redirect.thread(board, id, 'post');
             className = null;
           }
           nodes.push($.el('a', {
@@ -3550,8 +3550,11 @@
           return "http://archive.foolz.us/" + href[3] + "/full_image/" + href[5];
       }
     },
-    thread: function() {
-      if (!conf['404 Redirect']) return;
+    thread: function(board, id, mode) {
+      if (board == null) board = g.BOARD;
+      if (id == null) id = g.THREAD_ID;
+      if (mode == null) mode = 'thread';
+      if (!(conf['404 Redirect'] || mode === 'post')) return;
       switch (g.BOARD) {
         case 'a':
         case 'jp':
@@ -3561,13 +3564,13 @@
         case 'u':
         case 'v':
         case 'vg':
-          return "http://archive.foolz.us/" + g.BOARD + "/thread/" + g.THREAD_ID + "/";
+          return "http://archive.foolz.us/" + board + "/thread/" + id + "/";
         case 'lit':
-          return "http://fuuka.warosu.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
+          return "http://fuuka.warosu.org/" + board + "/" + mode + "/" + id;
         case 'diy':
         case 'g':
         case 'sci':
-          return "http://archive.installgentoo.net/" + g.BOARD + "/thread/" + g.THREAD_ID;
+          return "http://archive.installgentoo.net/" + board + "/" + mode + "/" + id;
         case '3':
         case 'adv':
         case 'an':
@@ -3590,9 +3593,13 @@
         case 'trv':
         case 'vp':
         case 'x':
-          return "http://archive.no-ip.org/" + g.BOARD + "/thread/" + g.THREAD_ID;
+          return "http://archive.no-ip.org/" + board + "/" + mode + "/" + id;
         default:
-          return "http://boards.4chan.org/" + g.BOARD + "/";
+          if (mode === 'thread') {
+            return "http://boards.4chan.org/" + board + "/";
+          } else {
+            return null;
+          }
       }
     }
   };
