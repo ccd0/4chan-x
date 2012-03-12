@@ -1806,7 +1806,7 @@
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         name = _ref2[_j];
         input = $("[name=" + name + "]", qr.el);
-        _ref3 = ['textInput', 'keyup', 'change', 'paste'];
+        _ref3 = ['input', 'keyup', 'change', 'paste'];
         for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
           event = _ref3[_k];
           $.on(input, event, function() {
