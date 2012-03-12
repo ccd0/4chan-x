@@ -132,7 +132,7 @@
         'Quote Highlighting': [true, 'Highlight the previewed post'],
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
         'Quote Preview': [true, 'Show quote content on hover'],
-        'Resurrect Quotes': [true, 'Bring dead links back to life'],
+        'Resurrect Quotes': [true, 'Linkify dead quotes to archives'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
         'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes'],
         'Forward Hiding': [true, 'Hide original posts of inlined backlinks']
@@ -3364,7 +3364,7 @@
             className = 'quotelink';
           } else {
             href = Redirect.thread(board, id, 'post');
-            className = null;
+            className = 'deadlink';
           }
           nodes.push($.el('a', {
             textContent: "" + quote + "\u00A0(Dead)",
