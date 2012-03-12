@@ -641,20 +641,22 @@ ExpandComment =
     doc = d.implementation.createHTMLDocument null
     doc.documentElement.innerHTML = req.responseText
 
-    bq =
-      if threadID is replyID # OP
-        $ 'blockquote', doc
-      else
-        $ 'blockquote', doc.getElementById replyID
-    $.replace a.parentNode.parentNode, bq
-    quotes = $$ '.quotelink', bq
+    Threading.op $('body > form', doc).firstChild
+    bq = doc.getElementById(replyID).lastChild
+
+    # Add the bq in a temporary element to fix quote.hashes
+    # as they're empty when in a different document.
+    tmp = $.el 'div'
+    $.add tmp, bq
+
+    quotes = bq.getElementsByClassName 'quotelink'
     for quote in quotes
-      if quote.getAttribute('href') is quote.hash
+      if quote.hash is quote.getAttribute 'href'
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
     post =
       el:        bq.parentNode
       threadId:  threadID
-      quotes:    bq.getElementsByClassName 'quotelink'
+      quotes:    quotes
       backlinks: []
     if conf['Resurrect Quotes']
       DeadQuotes.node   post
@@ -666,6 +668,7 @@ ExpandComment =
       QuoteOP.node      post
     if conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
+    $.replace a.parentNode.parentNode, bq
 
 ExpandThread =
   init: ->
@@ -2782,7 +2785,7 @@ DeadQuotes =
       node = snapshot.snapshotItem i
       data = node.data
 
-      unless quotes = data.match />>(\d+|>\/[a-z\d]+\/\d+)/g
+      unless quotes = data.match />>(>\/[a-z\d]+\/)?\d+/g
         # Only accept nodes with potentially valid links
         continue
 
@@ -2802,7 +2805,7 @@ DeadQuotes =
         else
           # TODO manage links if board is archived
           # Here be archive link
-          href  = "#"
+          href = "#"
           className = null
 
         nodes.push $.el 'a',

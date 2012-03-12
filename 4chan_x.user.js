@@ -737,33 +737,36 @@
       }));
     },
     parse: function(req, a, threadID, replyID) {
-      var bq, doc, post, quote, quotes, _i, _len;
+      var bq, doc, post, quote, quotes, tmp, _i, _len;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
       }
       doc = d.implementation.createHTMLDocument(null);
       doc.documentElement.innerHTML = req.responseText;
-      bq = threadID === replyID ? $('blockquote', doc) : $('blockquote', doc.getElementById(replyID));
-      $.replace(a.parentNode.parentNode, bq);
-      quotes = $$('.quotelink', bq);
+      Threading.op($('body > form', doc).firstChild);
+      bq = doc.getElementById(replyID).lastChild;
+      tmp = $.el('div');
+      $.add(tmp, bq);
+      quotes = bq.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
-        if (quote.getAttribute('href') === quote.hash) {
+        if (quote.hash === quote.getAttribute('href')) {
           quote.pathname = "/" + g.BOARD + "/res/" + threadID;
         }
       }
       post = {
         el: bq.parentNode,
         threadId: threadID,
-        quotes: bq.getElementsByClassName('quotelink'),
+        quotes: quotes,
         backlinks: []
       };
       if (conf['Resurrect Quotes']) DeadQuotes.node(post);
       if (conf['Quote Preview']) QuotePreview.node(post);
       if (conf['Quote Inline']) QuoteInline.node(post);
       if (conf['Indicate OP quote']) QuoteOP.node(post);
-      if (conf['Indicate Cross-thread Quotes']) return QuoteCT.node(post);
+      if (conf['Indicate Cross-thread Quotes']) QuoteCT.node(post);
+      return $.replace(a.parentNode.parentNode, bq);
     }
   };
 
@@ -3348,7 +3351,7 @@
       for (i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
         node = snapshot.snapshotItem(i);
         data = node.data;
-        if (!(quotes = data.match(/>>(\d+|>\/[a-z\d]+\/\d+)/g))) continue;
+        if (!(quotes = data.match(/>>(>\/[a-z\d]+\/)?\d+/g))) continue;
         nodes = [];
         for (_i = 0, _len = quotes.length; _i < _len; _i++) {
           quote = quotes[_i];
