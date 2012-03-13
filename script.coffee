@@ -2577,6 +2577,8 @@ QuoteBacklink =
         $.on link, 'mouseover', QuotePreview.mouseover
       if conf['Quote Inline']
         $.on link, 'click', QuoteInline.toggle
+      else
+        link.setAttribute 'onclick', "replyhl('#{post.id}');"
       unless (container = $ '.container', el) and container.parentNode is el
         container = $.el 'span', className: 'container'
         $.add container, [$.tn(' '), link]

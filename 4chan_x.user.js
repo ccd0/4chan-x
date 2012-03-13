@@ -3089,7 +3089,11 @@
         }
         link = a.cloneNode(true);
         if (conf['Quote Preview']) $.on(link, 'mouseover', QuotePreview.mouseover);
-        if (conf['Quote Inline']) $.on(link, 'click', QuoteInline.toggle);
+        if (conf['Quote Inline']) {
+          $.on(link, 'click', QuoteInline.toggle);
+        } else {
+          link.setAttribute('onclick', "replyhl('" + post.id + "');");
+        }
         if (!((container = $('.container', el)) && container.parentNode === el)) {
           container = $.el('span', {
             className: 'container'
