@@ -3408,6 +3408,7 @@ a[href="javascript:;"] {
 .block ~ .op,
 .block ~ .omittedposts,
 .block ~ table,
+.block ~ br,
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
 #qp > input, #qp .inline, .forwarded {
