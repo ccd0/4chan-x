@@ -3650,7 +3650,7 @@
       var img, src;
       if (post.root.hidden || !post.img) return;
       src = post.img.parentNode.href;
-      if (/gif$/.test(src) && !/spoiler/.test(src)) {
+      if (/gif$/.test(src) && !/spoiler/.test(post.img.src)) {
         img = $.el('img');
         $.on(img, 'load', function() {
           return post.img.src = src;
@@ -4301,14 +4301,14 @@ img[md5], img[md5] + img {\
   width: 100%;\
 }\
 /* revealed spoilers do not have height/width,\
-   this fixed "expanded" auto-gifs */\
+   this fixes "expanded" auto-gifs */\
 img[md5] {\
-  max-height: 251px;\
-  max-width: 251px;\
-}\
-td > .filesize > img[md5] {\
   max-height: 126px;\
   max-width: 126px;\
+}\
+.filesize:first-child ~ a > img[md5] {\
+  max-height: 251px;\
+  max-width: 251px;\
 }\
 \
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {\
