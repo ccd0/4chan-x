@@ -2183,7 +2183,6 @@ Updater =
         Unread.update true
         qr.message.send req: 'abort'
         qr.status()
-        Favicon.update()
         return
 
       Updater.retryCoef = 10

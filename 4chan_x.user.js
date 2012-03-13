@@ -2579,7 +2579,6 @@
             req: 'abort'
           });
           qr.status();
-          Favicon.update();
           return;
         }
         Updater.retryCoef = 10;
