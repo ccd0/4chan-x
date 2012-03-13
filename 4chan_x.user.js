@@ -3342,7 +3342,7 @@
       return g.callbacks.push(this.node);
     },
     node: function(post) {
-      var board, className, data, href, i, id, index, m, node, nodes, quote, quotes, snapshot, text, _i, _len, _ref;
+      var board, className, data, href, i, id, index, m, node, nodes, quote, quotes, snapshot, target, text, _i, _len, _ref;
       if (post["class"] === 'inline') return;
       snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastChild, null, 6, null);
       for (i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
@@ -3359,14 +3359,17 @@
           if (board === g.BOARD && $.id(id)) {
             href = "#" + id;
             className = 'quotelink';
+            target = null;
           } else {
             href = Redirect.thread(board, id, 'post');
             className = 'deadlink';
+            target = '_blank';
           }
           nodes.push($.el('a', {
             textContent: "" + quote + "\u00A0(Dead)",
             href: href,
-            className: className
+            className: className,
+            target: target
           }));
           data = data.slice(index + quote.length);
         }
