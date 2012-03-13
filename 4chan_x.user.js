@@ -3344,7 +3344,7 @@
     node: function(post) {
       var board, className, data, href, i, id, index, m, node, nodes, quote, quotes, snapshot, text, _i, _len, _ref;
       if (post["class"] === 'inline') return;
-      snapshot = d.evaluate('.//text()[not(ancestor::a)]', post.el.lastChild, null, 6, null);
+      snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastChild, null, 6, null);
       for (i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
         node = snapshot.snapshotItem(i);
         data = node.data;

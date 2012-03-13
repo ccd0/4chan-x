@@ -2780,7 +2780,7 @@ Quotify =
 
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()[not(ancestor::a)]', post.el.lastChild, null, 6, null
+    snapshot = d.evaluate './/text()[not(parent::a)]', post.el.lastChild, null, 6, null
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
