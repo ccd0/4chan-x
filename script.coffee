@@ -110,7 +110,7 @@ config =
     '#http://omploader.org/upload?url1=$2'
     '# "View Same" in archives:'
     '#http://archive.foolz.us/$4/image/$3/'
-    '#http://archive.installgentoo.net/$4/image/$3'
+    '#https://archive.installgentoo.net/$4/image/$3'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
@@ -2995,7 +2995,7 @@ Redirect =
       when 'lit'
         "http://fuuka.warosu.org/#{board}/#{mode}/#{id}"
       when 'diy', 'g', 'sci'
-        "http://archive.installgentoo.net/#{board}/#{mode}/#{id}"
+        "https://archive.installgentoo.net/#{board}/#{mode}/#{id}"
       when '3', 'adv', 'an', 'ck', 'co', 'fa', 'fit', 'int', 'k', 'mu', 'n', 'o', 'p', 'po', 'pol', 'r9k', 'soc', 'sp', 'toy', 'trv', 'vp', 'x'
         "http://archive.no-ip.org/#{board}/#{mode}/#{id}"
       else
