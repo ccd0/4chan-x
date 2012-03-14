@@ -3854,7 +3854,7 @@
           return;
       }
       $.ready(Options.init);
-      if (conf['Quick Reply'] && conf['Hide Original Post Form']) {
+      if (conf['Quick Reply'] && conf['Hide Original Post Form'] && g.board !== 'f') {
         Main.css += 'form[name=post] { display: none; }';
       }
       Main.addStyle();
