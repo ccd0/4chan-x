@@ -3638,12 +3638,12 @@ img[md5], img[md5] + img {
 /* revealed spoilers do not have height/width,
    this fixes "expanded" auto-gifs */
 img[md5] {
-  max-height: 126px;
-  max-width: 126px;
-}
-.filesize:first-child ~ a > img[md5] {
   max-height: 251px;
   max-width: 251px;
+}
+input ~ a > img[md5] {
+  max-height: 126px;
+  max-width: 126px;
 }
 
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {
