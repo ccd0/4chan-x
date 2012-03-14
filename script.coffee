@@ -3194,7 +3194,7 @@ Main =
 
     $.ready Options.init
 
-    if conf['Quick Reply'] and conf['Hide Original Post Form'] and g.board isnt 'f'
+    if conf['Quick Reply'] and conf['Hide Original Post Form'] and g.BOARD isnt 'f'
       Main.css += 'form[name=post] { display: none; }'
 
     Main.addStyle()
