@@ -15,6 +15,7 @@ HEADER  = """
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://images.4chan.org/*
+// @include        https://sys.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @include        http://www.4chan.org/*
 // @run-at         document-start

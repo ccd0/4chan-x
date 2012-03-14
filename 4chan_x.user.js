@@ -8,6 +8,7 @@
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        http://images.4chan.org/*
+// @include        https://sys.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @include        http://www.4chan.org/*
 // @run-at         document-start
@@ -1260,7 +1261,7 @@
       } else {
         iframe = $.el('iframe', {
           id: 'iframe',
-          src: 'http://sys.4chan.org/robots.txt'
+          src: 'https://sys.4chan.org/robots.txt'
         });
         $.on(iframe, 'error', function() {
           return this.src = this.src;
@@ -1269,7 +1270,7 @@
           if (!qr.status.ready) {
             iframe.src = 'about:blank';
             return setTimeout((function() {
-              return iframe.src = 'http://sys.4chan.org/robots.txt';
+              return iframe.src = 'https://sys.4chan.org/robots.txt';
             }), 100);
           }
         };
@@ -2020,7 +2021,7 @@
       },
       post: function(data) {
         var boundary, callbacks, form, i, name, opts, parts, toBin, url, val;
-        url = "http://sys.4chan.org/" + data.board + "/post";
+        url = "https://sys.4chan.org/" + data.board + "/post";
         delete data.board;
         if (engine === 'gecko' && data.upfile) {
           if (!data.binary) {

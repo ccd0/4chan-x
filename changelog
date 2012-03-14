@@ -1,4 +1,6 @@
 master
+- Mayhem
+  Update posting support to use https with sys.4chan.org according to 4chan's latest change. This fixes the 'referer' error.
 
 2.29.0
 - Mayhem
