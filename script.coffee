@@ -728,7 +728,7 @@ ExpandThread =
     for reply in $$ '.reply', doc
       table = d.importNode reply.parentNode.parentNode.parentNode
       for quote in $$ '.quotelink', table
-        if (href = quote.getAttribute('href')) is quote.hash #add pathname to normal quotes
+        if (href = quote.getAttribute 'href') is quote.hash #add pathname to normal quotes
           quote.pathname = pathname
         else if href isnt quote.href #fix x-thread links, not x-board ones
           quote.href = "res/#{href}"
@@ -2806,21 +2806,19 @@ Quotify =
           else
             # Get the post's board, whether it's inlined or not.
             $('.quotejs', post.el).pathname.split('/')[1]
-        if board is g.BOARD and $.id id
-          href = "##{id}"
-          className = 'quotelink'
-          target = null
-        else
-          href = Redirect.thread board, id, 'post'
-          className = 'deadlink'
-          target = '_blank'
 
-        nodes.push $.el 'a',
+        nodes.push a = $.el 'a',
           # \u00A0 is nbsp
           textContent: "#{quote}\u00A0(Dead)"
-          href: href
-          className: className
-          target: target
+
+        if board is g.BOARD and $.id id
+          a.href      = "##{id}"
+          a.className = 'quotelink'
+          a.setAttribute 'onclick', "replyhl('#{id}');"
+        else
+          a.href      = Redirect.thread board, id, 'post'
+          a.className = 'deadlink'
+          a.target    = '_blank'
 
         data = data[index + quote.length..]
 

@@ -3346,7 +3346,7 @@
       return g.callbacks.push(this.node);
     },
     node: function(post) {
-      var board, className, data, href, i, id, index, m, node, nodes, quote, quotes, snapshot, target, text, _i, _len, _ref;
+      var a, board, data, i, id, index, m, node, nodes, quote, quotes, snapshot, text, _i, _len, _ref;
       if (post["class"] === 'inline') return;
       snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastChild, null, 6, null);
       for (i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
@@ -3360,21 +3360,18 @@
           if (text = data.slice(0, index)) nodes.push($.tn(text));
           id = quote.match(/\d+$/)[0];
           board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.quotejs', post.el).pathname.split('/')[1];
-          if (board === g.BOARD && $.id(id)) {
-            href = "#" + id;
-            className = 'quotelink';
-            target = null;
-          } else {
-            href = Redirect.thread(board, id, 'post');
-            className = 'deadlink';
-            target = '_blank';
-          }
-          nodes.push($.el('a', {
-            textContent: "" + quote + "\u00A0(Dead)",
-            href: href,
-            className: className,
-            target: target
+          nodes.push(a = $.el('a', {
+            textContent: "" + quote + "\u00A0(Dead)"
           }));
+          if (board === g.BOARD && $.id(id)) {
+            a.href = "#" + id;
+            a.className = 'quotelink';
+            a.setAttribute('onclick', "replyhl('" + id + "');");
+          } else {
+            a.href = Redirect.thread(board, id, 'post');
+            a.className = 'deadlink';
+            a.target = '_blank';
+          }
           data = data.slice(index + quote.length);
         }
         if (data) nodes.push($.tn(data));
