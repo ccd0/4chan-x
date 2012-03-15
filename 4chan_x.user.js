@@ -4299,12 +4299,12 @@ img[md5], img[md5] + img {\
 /* revealed spoilers do not have height/width,\
    this fixes "expanded" auto-gifs */\
 img[md5] {\
-  max-height: 251px;\
-  max-width: 251px;\
+  max-height: 252px;\
+  max-width: 252px;\
 }\
 input ~ a > img[md5] {\
-  max-height: 126px;\
-  max-width: 126px;\
+  max-height: 127px;\
+  max-width: 127px;\
 }\
 \
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {\
