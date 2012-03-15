@@ -919,7 +919,7 @@ Keybinds =
 
   open: (thread, tab) ->
     id = thread.firstChild.id
-    url = "http://boards.4chan.org/#{g.BOARD}/res/#{id}"
+    url = "//boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab
       $.open url
     else
@@ -1648,7 +1648,7 @@ qr =
       qr.cooldown.auto = qr.replies.length > 1
       qr.cooldown.set if /sage/i.test reply.email then 60 else 30
       if conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto
-        $.open "http://boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}"
+        $.open "//boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}"
 
     if conf['Persistent QR'] or qr.cooldown.auto
       reply.rm()
@@ -2389,7 +2389,7 @@ RevealSpoilers =
       return
     img.removeAttribute 'height'
     img.removeAttribute 'width'
-    img.src = "http://thumbs.4chan.org#{img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg')}"
+    img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg')}"
 
 Time =
   init: ->
@@ -2842,7 +2842,7 @@ ReportButton =
       $.after $('span[id]', post.el), [$.tn(' '), a]
     $.on a, 'click', ReportButton.report
   report: ->
-    url = "http://sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
+    url = "//sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
     id  = Date.now()
     set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
@@ -2998,7 +2998,7 @@ Redirect =
         "http://archive.no-ip.org/#{board}/#{mode}/#{id}"
       else
         if mode is 'thread'
-          "http://boards.4chan.org/#{board}/"
+          "//boards.4chan.org/#{board}/"
         else
           null
 

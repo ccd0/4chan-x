@@ -6,11 +6,10 @@
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @copyright      2012 Nicolas Stepien <stepien.nicolas@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
-// @include        http://boards.4chan.org/*
-// @include        http://images.4chan.org/*
-// @include        https://sys.4chan.org/*
-// @include        http://sys.4chan.org/*
-// @include        http://www.4chan.org/*
+// @include        http*://boards.4chan.org/*
+// @include        http*://images.4chan.org/*
+// @include        http*://sys.4chan.org/*
+// @include        http*://www.4chan.org/*
 // @run-at         document-start
 // @updateURL      https://raw.github.com/MayhemYDG/4chan-x/stable/4chan_x.user.js
 // @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
@@ -1125,7 +1124,7 @@
     open: function(thread, tab) {
       var id, url;
       id = thread.firstChild.id;
-      url = "http://boards.4chan.org/" + g.BOARD + "/res/" + id;
+      url = "//boards.4chan.org/" + g.BOARD + "/res/" + id;
       if (tab) {
         return $.open(url);
       } else {
@@ -1971,7 +1970,7 @@
         qr.cooldown.auto = qr.replies.length > 1;
         qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
         if (conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto) {
-          $.open("http://boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber);
+          $.open("//boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber);
         }
       }
       if (conf['Persistent QR'] || qr.cooldown.auto) {
@@ -2832,7 +2831,7 @@
       if (!(img && /^Spoil/.test(img.alt)) || post["class"] === 'inline') return;
       img.removeAttribute('height');
       img.removeAttribute('width');
-      return img.src = "http://thumbs.4chan.org" + (img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg'));
+      return img.src = "//thumbs.4chan.org" + (img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg'));
     }
   };
 
@@ -3399,7 +3398,7 @@
     },
     report: function() {
       var id, set, url;
-      url = "http://sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + ($.x('preceding-sibling::input', this).name);
+      url = "//sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + ($.x('preceding-sibling::input', this).name);
       id = Date.now();
       set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
       return window.open(url, id, set);
@@ -3597,7 +3596,7 @@
           return "http://archive.no-ip.org/" + board + "/" + mode + "/" + id;
         default:
           if (mode === 'thread') {
-            return "http://boards.4chan.org/" + board + "/";
+            return "//boards.4chan.org/" + board + "/";
           } else {
             return null;
           }
