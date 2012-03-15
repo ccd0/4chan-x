@@ -1885,7 +1885,7 @@
         Watcher.watch(threadID);
       }
       post = {
-        board: g.BOARD,
+        postURL: $('form[name=post]').action,
         resto: threadID,
         name: reply.name,
         email: reply.email,
@@ -2020,8 +2020,8 @@
       },
       post: function(data) {
         var boundary, callbacks, form, i, name, opts, parts, toBin, url, val;
-        url = "https://sys.4chan.org/" + data.board + "/post";
-        delete data.board;
+        url = data.postURL;
+        delete data.postURL;
         if (engine === 'gecko' && data.upfile) {
           if (!data.binary) {
             toBin = function(data, name, val) {
@@ -2050,7 +2050,7 @@
                 toBin(data, name, val);
               }
             }
-            data.board = url.split('/')[3];
+            data.postURL = url;
             data.binary = true;
             return;
           }

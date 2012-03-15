@@ -1563,7 +1563,7 @@ qr =
       Watcher.watch threadID
 
     post =
-      board:   g.BOARD
+      postURL: $('form[name=post]').action
       resto:   threadID
       name:    reply.name
       email:   reply.email
@@ -1694,9 +1694,9 @@ qr =
 
     post: (data) ->
 
-      url = "https://sys.4chan.org/#{data.board}/post"
+      url = data.postURL
       # Do not append these values to the form.
-      delete data.board
+      delete data.postURL
 
       # File with filename upload fix from desuwa
       if engine is 'gecko' and data.upfile
@@ -1722,8 +1722,8 @@ qr =
                 i--
             else
               toBin data, name, val
-          data.board  = url.split('/')[3]
-          data.binary = true
+          data.postURL = url
+          data.binary  = true
           return
 
         delete data.binary
