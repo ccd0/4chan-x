@@ -260,12 +260,12 @@ $.extend = (object, properties) ->
 
 NAMESPACE = '4chan_x.'
 VERSION = '2.29.1'
-SECOND = 1000
-MINUTE = 60*SECOND
-HOUR   = 60*MINUTE
-DAY    = 24*HOUR
 
 $.extend $,
+  SECOND: 1000
+  MINUTE: 60*$.SECOND
+  HOUR  : 60*$.MINUTE
+  DAY   : 24*$.HOUR
   log:
     # XXX GreaseMonkey can't into console.log.bind
     console.log.bind? console
@@ -1138,7 +1138,7 @@ QR =
     set: (seconds) ->
       return unless Conf['Cooldown']
       QR.cooldown.count seconds
-      $.set "/#{Main.BOARD}/cooldown", Date.now() + seconds*SECOND
+      $.set "/#{Main.BOARD}/cooldown", Date.now() + seconds*$.SECOND
     count: (seconds) ->
       return unless 0 <= seconds <= 60
       setTimeout QR.cooldown.count, 1000, seconds-1
@@ -1391,7 +1391,7 @@ QR =
       @reload()
     load: ->
       # Timeout is available at RecaptchaState.timeout in seconds.
-      @timeout  = Date.now() + 26*MINUTE
+      @timeout  = Date.now() + 26*$.MINUTE
       challenge = @challenge.firstChild.value
       @img.alt  = challenge
       @img.src  = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
@@ -2400,7 +2400,7 @@ Time =
 
     @parse =
       if Date.parse('10/11/11(Tue)18:53') is 1318351980000
-        (node) -> new Date Date.parse(node.textContent) + chanOffset*HOUR
+        (node) -> new Date Date.parse(node.textContent) + chanOffset*$.HOUR
       else # Firefox and Opera do not parse 4chan's time format correctly
         (node) ->
           [_, month, day, year, hour, min] =
@@ -3196,15 +3196,15 @@ Main =
     Main.addStyle()
 
     now = Date.now()
-    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
+    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*$.HOUR
       $.ready -> $.add $.d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
     Main.hiddenReplies = $.get "hiddenReplies/#{Main.BOARD}/", {}
-    if $.get('lastChecked', 0) < now - 1*DAY
+    if $.get('lastChecked', 0) < now - 1*$.DAY
       $.set 'lastChecked', now
 
-      cutoff = now - 7*DAY
+      cutoff = now - 7*$.DAY
       hiddenThreads = $.get "hiddenThreads/#{Main.BOARD}/", {}
 
       for id, timestamp of hiddenThreads

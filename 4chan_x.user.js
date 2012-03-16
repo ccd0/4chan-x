@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, VERSION, Watcher, flatten, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, VERSION, Watcher, flatten, _base;
 
   Config = {
     main: {
@@ -298,15 +298,11 @@
 
   VERSION = '2.29.1';
 
-  SECOND = 1000;
-
-  MINUTE = 60 * SECOND;
-
-  HOUR = 60 * MINUTE;
-
-  DAY = 24 * HOUR;
-
   $.extend($, {
+    SECOND: 1000,
+    MINUTE: 60 * $.SECOND,
+    HOUR: 60 * $.MINUTE,
+    DAY: 24 * $.HOUR,
     log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
     d: document,
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
@@ -1384,7 +1380,7 @@
       set: function(seconds) {
         if (!Conf['Cooldown']) return;
         QR.cooldown.count(seconds);
-        return $.set("/" + Main.BOARD + "/cooldown", Date.now() + seconds * SECOND);
+        return $.set("/" + Main.BOARD + "/cooldown", Date.now() + seconds * $.SECOND);
       },
       count: function(seconds) {
         if (!((0 <= seconds && seconds <= 60))) return;
@@ -1686,7 +1682,7 @@
       },
       load: function() {
         var challenge;
-        this.timeout = Date.now() + 26 * MINUTE;
+        this.timeout = Date.now() + 26 * $.MINUTE;
         challenge = this.challenge.firstChild.value;
         this.img.alt = challenge;
         this.img.src = "http://www.google.com/recaptcha/api/image?c=" + challenge;
@@ -2835,7 +2831,7 @@
       chanOffset = 5 - new Date().getTimezoneOffset() / 60;
       if ($.isDST()) chanOffset--;
       this.parse = Date.parse('10/11/11(Tue)18:53') === 1318351980000 ? function(node) {
-        return new Date(Date.parse(node.textContent) + chanOffset * HOUR);
+        return new Date(Date.parse(node.textContent) + chanOffset * $.HOUR);
       } : function(node) {
         var day, hour, min, month, year, _, _ref;
         _ref = node.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
@@ -3849,7 +3845,7 @@
       }
       Main.addStyle();
       now = Date.now();
-      if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
+      if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * $.HOUR) {
         $.ready(function() {
           return $.add($.d.head, $.el('script', {
             src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
@@ -3858,9 +3854,9 @@
         $.set('lastUpdate', now);
       }
       Main.hiddenReplies = $.get("hiddenReplies/" + Main.BOARD + "/", {});
-      if ($.get('lastChecked', 0) < now - 1 * DAY) {
+      if ($.get('lastChecked', 0) < now - 1 * $.DAY) {
         $.set('lastChecked', now);
-        cutoff = now - 7 * DAY;
+        cutoff = now - 7 * $.DAY;
         hiddenThreads = $.get("hiddenThreads/" + Main.BOARD + "/", {});
         for (id in hiddenThreads) {
           timestamp = hiddenThreads[id];
