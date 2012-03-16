@@ -369,11 +369,11 @@ $.extend $,
       0200 EDT (UTC-04) = 0600 UTC
     ###
 
-    D = new Date()
-    date  = D.getUTCDate()
-    day   = D.getUTCDay()
-    hours = D.getUTCHours()
-    month = D.getUTCMonth()
+    d = new Date()
+    date  = d.getUTCDate()
+    day   = d.getUTCDay()
+    hours = d.getUTCHours()
+    month = d.getUTCMonth()
 
     #this is the easy part
     if month < 2 or 10 < month

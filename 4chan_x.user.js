@@ -455,12 +455,12 @@
             0200 EST (UTC-05) = 0700 UTC
             0200 EDT (UTC-04) = 0600 UTC
       */
-      var D, date, day, hours, month, sunday;
-      D = new Date();
-      date = D.getUTCDate();
-      day = D.getUTCDay();
-      hours = D.getUTCHours();
-      month = D.getUTCMonth();
+      var d, date, day, hours, month, sunday;
+      d = new Date();
+      date = d.getUTCDate();
+      day = d.getUTCDay();
+      hours = d.getUTCHours();
+      month = d.getUTCMonth();
       if (month < 2 || 10 < month) return false;
       if ((2 < month && month < 10)) return true;
       sunday = date - day;
