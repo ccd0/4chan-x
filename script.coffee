@@ -815,10 +815,10 @@ Keybinds =
       when conf.close
         if o = $.id 'overlay'
           Options.close.call o
-        else if qr.el
-          qr.close()
+        else if QR.el
+          QR.close()
       when conf.submit
-        qr.submit() if qr.el and !qr.status()
+        QR.submit() if QR.el and !QR.status()
       when conf.spoiler
         ta = e.target
         return if ta.nodeName isnt 'TEXTAREA'
@@ -912,10 +912,10 @@ Keybinds =
 
   qr: (thread, quote) ->
     if quote
-      qr.quote.call $ '.quotejs + .quotejs', $('.replyhl', thread) or thread
+      QR.quote.call $ '.quotejs + .quotejs', $('.replyhl', thread) or thread
     else
-      qr.open()
-    $('textarea', qr.el).focus()
+      QR.open()
+    $('textarea', QR.el).focus()
 
   open: (thread, tab) ->
     id = thread.firstChild.id
@@ -1014,7 +1014,7 @@ Nav =
     {top} = Nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
 
-qr =
+QR =
   init: ->
     return unless $.id 'recaptcha_challenge_field_holder'
     g.callbacks.push @node
@@ -1024,15 +1024,15 @@ qr =
     if conf['Hide Original Post Form']
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on $('a', link), 'click', ->
-        qr.open()
-        $('select', qr.el).value = 'new' unless g.REPLY
-        $('textarea', qr.el).focus()
+        QR.open()
+        $('select', QR.el).value = 'new' unless g.REPLY
+        $('textarea', QR.el).focus()
       form = d.forms[0]
       $.before form, link
 
     # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
     if /chrome/i.test navigator.userAgent
-      qr.status ready: true
+      QR.status ready: true
     else
       iframe = $.el 'iframe',
         id: 'iframe'
@@ -1040,7 +1040,7 @@ qr =
       $.on iframe, 'error', -> @src = @src
       # Greasemonkey ghetto fix
       loadChecking = (iframe) ->
-        unless qr.status.ready
+        unless QR.status.ready
           iframe.src = 'about:blank'
           setTimeout (-> iframe.src = 'https://sys.4chan.org/robots.txt'), 100
       $.on iframe, 'load', -> if @src isnt 'about:blank' then setTimeout loadChecking, 500, @
@@ -1052,78 +1052,78 @@ qr =
     $.rm script
 
     if conf['Persistent QR']
-      qr.dialog()
-      qr.hide() if conf['Auto Hide QR']
-    $.on d, 'dragover',  qr.dragOver
-    $.on d, 'drop',      qr.dropFile
-    $.on d, 'dragstart', qr.drag
-    $.on d, 'dragend',   qr.drag
+      QR.dialog()
+      QR.hide() if conf['Auto Hide QR']
+    $.on d, 'dragover',  QR.dragOver
+    $.on d, 'drop',      QR.dropFile
+    $.on d, 'dragstart', QR.drag
+    $.on d, 'dragend',   QR.drag
 
   node: (post) ->
-    $.on $('.quotejs + .quotejs', post.el), 'click', qr.quote
+    $.on $('.quotejs + .quotejs', post.el), 'click', QR.quote
 
   open: ->
-    if qr.el
-      qr.el.hidden = false
-      qr.unhide()
+    if QR.el
+      QR.el.hidden = false
+      QR.unhide()
     else
-      qr.dialog()
+      QR.dialog()
   close: ->
-    qr.el.hidden = true
-    qr.message.send req: 'abort'
+    QR.el.hidden = true
+    QR.message.send req: 'abort'
     d.activeElement.blur()
-    $.removeClass qr.el, 'dump'
-    for i in qr.replies
-      qr.replies[0].rm()
-    qr.cooldown.auto = false
-    qr.status()
-    qr.resetFileInput()
+    $.removeClass QR.el, 'dump'
+    for i in QR.replies
+      QR.replies[0].rm()
+    QR.cooldown.auto = false
+    QR.status()
+    QR.resetFileInput()
     if not conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
       spoiler.click()
-    qr.cleanError()
+    QR.cleanError()
   hide: ->
     d.activeElement.blur()
-    $.addClass qr.el, 'autohide'
+    $.addClass QR.el, 'autohide'
     $.id('autohide').checked = true
   unhide: ->
-    $.removeClass qr.el, 'autohide'
+    $.removeClass QR.el, 'autohide'
     $.id('autohide').checked = false
   toggleHide: ->
-    @checked and qr.hide() or qr.unhide()
+    @checked and QR.hide() or QR.unhide()
 
   error: (err, node) ->
-    el = $ '.warning', qr.el
+    el = $ '.warning', QR.el
     el.textContent = err
     $.replace el.firstChild, node if node
-    qr.open()
+    QR.open()
     if /captcha|verification/i.test err
       # Focus the captcha input on captcha error.
-      $('[autocomplete]', qr.el).focus()
+      $('[autocomplete]', QR.el).focus()
     alert err if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
-    $('.warning', qr.el).textContent = null
+    $('.warning', QR.el).textContent = null
 
   status: (data={}) ->
     if data.ready
-      qr.status.ready  = true
-      qr.status.banned = data.banned
-    else unless qr.status.ready
+      QR.status.ready  = true
+      QR.status.banned = data.banned
+    else unless QR.status.ready
       value    = 'Loading'
       disabled = true
     if g.dead
       value    = 404
       disabled = true
-      qr.cooldown.auto = false
-    else if qr.status.banned
+      QR.cooldown.auto = false
+    else if QR.status.banned
       value    = 'Banned'
       disabled = true
     else
       # do not cancel `value = 'Loading'` once the cooldown is over
-      value = qr.cooldown.seconds or data.progress or value
-    return unless qr.el
-    {input} = qr.status
+      value = QR.cooldown.seconds or data.progress or value
+    return unless QR.el
+    {input} = QR.status
     input.value =
-      if qr.cooldown.auto and conf['Cooldown']
+      if QR.cooldown.auto and conf['Cooldown']
         if value then "Auto #{value}" else 'Auto'
       else
         value or 'Submit'
@@ -1132,29 +1132,29 @@ qr =
   cooldown:
     init: ->
       return unless conf['Cooldown']
-      qr.cooldown.start $.get "/#{g.BOARD}/cooldown", 0
-      $.sync "/#{g.BOARD}/cooldown", qr.cooldown.start
+      QR.cooldown.start $.get "/#{g.BOARD}/cooldown", 0
+      $.sync "/#{g.BOARD}/cooldown", QR.cooldown.start
     start: (timeout) ->
       seconds = Math.floor (timeout - Date.now()) / 1000
-      qr.cooldown.count seconds
+      QR.cooldown.count seconds
     set: (seconds) ->
       return unless conf['Cooldown']
-      qr.cooldown.count seconds
+      QR.cooldown.count seconds
       $.set "/#{g.BOARD}/cooldown", Date.now() + seconds*SECOND
     count: (seconds) ->
       return unless 0 <= seconds <= 60
-      setTimeout qr.cooldown.count, 1000, seconds-1
-      qr.cooldown.seconds = seconds
+      setTimeout QR.cooldown.count, 1000, seconds-1
+      QR.cooldown.seconds = seconds
       if seconds is 0
         $.delete "/#{g.BOARD}/cooldown"
-        qr.submit() if qr.cooldown.auto
-      qr.status()
+        QR.submit() if QR.cooldown.auto
+      QR.status()
 
   quote: (e) ->
     e?.preventDefault()
-    qr.open()
+    QR.open()
     unless g.REPLY
-      $('select', qr.el).value = $.x('ancestor::div[@class="thread"]', @).firstChild.id
+      $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).firstChild.id
 
     # Make sure we get the correct number, even with XXX censors
     id = @previousElementSibling.hash[1..]
@@ -1165,12 +1165,12 @@ qr =
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
-    ta = $ 'textarea', qr.el
+    ta = $ 'textarea', QR.el
     caretPos = ta.selectionStart
     # Replace selection for text.
     # onchange event isn't triggered, save value.
-    qr.selected.el.lastChild.textContent =
-      qr.selected.com =
+    QR.selected.el.lastChild.textContent =
+      QR.selected.com =
         ta.value =
           ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
     ta.focus()
@@ -1182,8 +1182,8 @@ qr =
   drag: (e) ->
     # Let it drag anything from the page.
     i = if e.type is 'dragstart' then 'off' else 'on'
-    $[i] d, 'dragover', qr.dragOver
-    $[i] d, 'drop',     qr.dropFile
+    $[i] d, 'dragover', QR.dragOver
+    $[i] d, 'drop',     QR.dropFile
   dragOver: (e) ->
     e.preventDefault()
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
@@ -1191,47 +1191,47 @@ qr =
     # Let it only handle files from the desktop.
     return unless e.dataTransfer.files.length
     e.preventDefault()
-    qr.open()
-    qr.fileInput.call e.dataTransfer
-    $.addClass qr.el, 'dump'
+    QR.open()
+    QR.fileInput.call e.dataTransfer
+    $.addClass QR.el, 'dump'
   fileInput: ->
-    qr.cleanError()
+    QR.cleanError()
     # Set or change current reply's file.
     if @files.length is 1
       file = @files[0]
       if file.size > @max
-        qr.error 'File too large.'
-        qr.resetFileInput()
-      else if -1 is qr.mimeTypes.indexOf file.type
-        qr.error 'Unsupported file type.'
-        qr.resetFileInput()
+        QR.error 'File too large.'
+        QR.resetFileInput()
+      else if -1 is QR.mimeTypes.indexOf file.type
+        QR.error 'Unsupported file type.'
+        QR.resetFileInput()
       else
-        qr.selected.setFile file
+        QR.selected.setFile file
       return
     # Create new replies with these files.
     for file in @files
       if file.size > @max
-        qr.error "File #{file.name} is too large."
+        QR.error "File #{file.name} is too large."
         break
-      else if -1 is qr.mimeTypes.indexOf file.type
-        qr.error "#{file.name}: Unsupported file type."
+      else if -1 is QR.mimeTypes.indexOf file.type
+        QR.error "#{file.name}: Unsupported file type."
         break
-      unless qr.replies[qr.replies.length - 1].file
+      unless QR.replies[QR.replies.length - 1].file
         # set last reply's file
-        qr.replies[qr.replies.length - 1].setFile file
+        QR.replies[QR.replies.length - 1].setFile file
       else
-        new qr.reply().setFile file
-    $.addClass qr.el, 'dump'
-    qr.resetFileInput() # reset input
+        new QR.reply().setFile file
+    $.addClass QR.el, 'dump'
+    QR.resetFileInput() # reset input
   resetFileInput: ->
-    $('[type=file]', qr.el).value = null
+    $('[type=file]', QR.el).value = null
 
   replies: []
   reply: class
     constructor: ->
       # set values, or null, to avoid 'undefined' values in inputs
-      prev     = qr.replies[qr.replies.length-1]
-      persona  = $.get 'qr.persona', {}
+      prev     = QR.replies[QR.replies.length-1]
+      persona  = $.get 'QR.persona', {}
       @name    = if prev then prev.name else persona.name or null
       @email   = if prev and !/^sage$/.test prev.email then prev.email   else persona.email or null
       @sub     = if prev and conf['Remember Subject']  then prev.sub     else if conf['Remember Subject'] then persona.sub else null
@@ -1252,7 +1252,7 @@ qr =
       $.on $('input',   @el), 'change', (e) =>
         @spoiler = e.target.checked
         $.id('spoiler').checked = @spoiler if @el.id is 'selected'
-      $.before $('#addReply', qr.el), @el
+      $.before $('#addReply', QR.el), @el
 
       $.on @el, 'dragstart', @dragStart
       $.on @el, 'dragenter', @dragEnter
@@ -1261,10 +1261,10 @@ qr =
       $.on @el, 'dragend',   @dragEnd
       $.on @el, 'drop',      @drop
 
-      qr.replies.push @
+      QR.replies.push @
     setFile: (@file) ->
       @el.title = file.name
-      $('label', @el).hidden = false if qr.spoiler
+      $('label', @el).hidden = false if QR.spoiler
       if file.type is 'application/pdf'
         @el.style.backgroundImage = null
         return
@@ -1312,15 +1312,15 @@ qr =
 
       img.src = fileUrl
     rmFile: ->
-      qr.resetFileInput()
+      QR.resetFileInput()
       delete @file
       @el.title = null
       @el.style.backgroundImage = null
-      $('label', @el).hidden = true if qr.spoiler
+      $('label', @el).hidden = true if QR.spoiler
       (window.URL or window.webkitURL).revokeObjectURL @url
     select: ->
-      qr.selected?.el.id = null
-      qr.selected = @
+      QR.selected?.el.id = null
+      QR.selected = @
       @el.id = 'selected'
       # Scroll the list to center the focused reply.
       rectEl   = @el.getBoundingClientRect()
@@ -1328,8 +1328,8 @@ qr =
       @el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
       # Load this reply's values.
       for data in ['name', 'email', 'sub', 'com']
-        $("[name=#{data}]", qr.el).value = @[data]
-      $('#spoiler', qr.el).checked = @spoiler
+        $("[name=#{data}]", QR.el).value = @[data]
+      $('#spoiler', QR.el).checked = @spoiler
     dragStart: ->
       $.addClass    @, 'drag'
     dragEnter: ->
@@ -1348,28 +1348,28 @@ qr =
         $.after  @, el
       else
         $.before @, el
-      reply = qr.replies.splice(oldIndex, 1)[0]
-      qr.replies.splice newIndex, 0, reply
+      reply = QR.replies.splice(oldIndex, 1)[0]
+      QR.replies.splice newIndex, 0, reply
     dragEnd: ->
       $.removeClass @, 'drag'
       if el = $ '.over', @parentNode
         $.removeClass el, 'over'
     rm: ->
-      qr.resetFileInput()
+      QR.resetFileInput()
       $.rm @el
-      index = qr.replies.indexOf @
-      if qr.replies.length is 1
-        new qr.reply().select()
+      index = QR.replies.indexOf @
+      if QR.replies.length is 1
+        new QR.reply().select()
       else if @el.id is 'selected'
-        (qr.replies[index-1] or qr.replies[index+1]).select()
-      qr.replies.splice index, 1
+        (QR.replies[index-1] or QR.replies[index+1]).select()
+      QR.replies.splice index, 1
       (window.URL or window.webkitURL).revokeObjectURL @url
       delete @
 
   captcha:
     init: ->
-      @img       = $ '.captcha > img', qr.el
-      @input     = $ '[autocomplete]', qr.el
+      @img       = $ '.captcha > img', QR.el
+      @input     = $ '[autocomplete]', QR.el
       @challenge = $.id 'recaptcha_challenge_field_holder'
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
@@ -1410,9 +1410,9 @@ qr =
     reload: (focus) ->
       window.location = 'javascript:Recaptcha.reload()'
       # Focus if we meant to.
-      qr.captcha.input.focus() if focus
+      QR.captcha.input.focus() if focus
     keydown: (e) ->
-      c = qr.captcha
+      c = QR.captcha
       if e.keyCode is 8 and not c.input.value
         c.reload()
       else if e.keyCode is 13 and e.shiftKey
@@ -1422,7 +1422,7 @@ qr =
       e.preventDefault()
 
   dialog: ->
-    qr.el = ui.dialog 'qr', 'top:0;right:0;', '
+    QR.el = ui.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
   <span> <a class=close title=Close>&times;</a></span>
@@ -1439,9 +1439,9 @@ qr =
 </form>'
 
     if conf['Remember QR size'] and engine is 'gecko'
-      $.on ta = $('textarea', qr.el), 'mouseup', ->
-        $.set 'qr.size', @style.cssText
-      ta.style.cssText = $.get 'qr.size', ''
+      $.on ta = $('textarea', QR.el), 'mouseup', ->
+        $.set 'QR.size', @style.cssText
+      ta.style.cssText = $.get 'QR.size', ''
 
     # Allow only this board's supported files.
     mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
@@ -1452,78 +1452,78 @@ qr =
           'application/pdf'
         else
           "image/#{type}"
-    qr.mimeTypes = mimeTypes.split ', '
+    QR.mimeTypes = mimeTypes.split ', '
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
-    qr.mimeTypes.push ''
-    fileInput        = $ '[type=file]', qr.el
+    QR.mimeTypes.push ''
+    fileInput        = $ '[type=file]', QR.el
     fileInput.max    = $('[name=MAX_FILE_SIZE]').value
     fileInput.accept = mimeTypes
 
-    qr.spoiler     = !!$ '#com_submit + label'
-    spoiler        = $ '#spoilerLabel', qr.el
-    spoiler.hidden = !qr.spoiler
+    QR.spoiler     = !!$ '#com_submit + label'
+    spoiler        = $ '#spoilerLabel', QR.el
+    spoiler.hidden = !QR.spoiler
 
     unless g.REPLY
       # Make a list with visible threads and an option to create a new one.
       threads = '<option value=new>New thread</option>'
       for thread in $$ '.op'
         threads += "<option value=#{thread.id}>Thread #{thread.id}</option>"
-      $.prepend $('.move > span', qr.el), $.el 'select'
+      $.prepend $('.move > span', QR.el), $.el 'select'
         innerHTML: threads
         title: 'Create a new thread / Reply to a thread'
-      $.on $('select',  qr.el), 'mousedown', (e) -> e.stopPropagation()
-    $.on $('#autohide', qr.el), 'change',    qr.toggleHide
-    $.on $('.close',    qr.el), 'click',     qr.close
-    $.on $('#dump',     qr.el), 'click',     -> qr.el.classList.toggle 'dump'
-    $.on $('#addReply', qr.el), 'click',     -> new qr.reply().select()
-    $.on $('form',      qr.el), 'submit',    qr.submit
-    $.on $('textarea',  qr.el), 'keyup',     -> qr.selected.el.lastChild.textContent = @value
-    $.on fileInput,             'change',    qr.fileInput
-    $.on fileInput,             'click',     (e) -> if e.shiftKey then qr.selected.rmFile() or e.preventDefault()
-    $.on spoiler.firstChild,    'change',    -> $('input', qr.selected.el).click()
-    $.on $('.warning',  qr.el), 'click',     qr.cleanError
+      $.on $('select',  QR.el), 'mousedown', (e) -> e.stopPropagation()
+    $.on $('#autohide', QR.el), 'change',    QR.toggleHide
+    $.on $('.close',    QR.el), 'click',     QR.close
+    $.on $('#dump',     QR.el), 'click',     -> QR.el.classList.toggle 'dump'
+    $.on $('#addReply', QR.el), 'click',     -> new QR.reply().select()
+    $.on $('form',      QR.el), 'submit',    QR.submit
+    $.on $('textarea',  QR.el), 'keyup',     -> QR.selected.el.lastChild.textContent = @value
+    $.on fileInput,             'change',    QR.fileInput
+    $.on fileInput,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
+    $.on spoiler.firstChild,    'change',    -> $('input', QR.selected.el).click()
+    $.on $('.warning',  QR.el), 'click',     QR.cleanError
 
-    new qr.reply().select()
+    new QR.reply().select()
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
-      input = $ "[name=#{name}]", qr.el
+      input = $ "[name=#{name}]", QR.el
       for event in ['input', 'keyup', 'change', 'paste']
         # The input event replaces keyup, change and paste events.
         # Firefox 12 will support the input event.
         # Oprah?
         $.on input, event, ->
-          qr.selected[@name] = @value
+          QR.selected[@name] = @value
           # Disable auto-posting if you're typing in the first reply
           # during the last 5 seconds of the cooldown.
-          if qr.cooldown.auto and qr.selected is qr.replies[0] and parseInt(qr.status.input.value.match /\d+/) < 6
-            qr.cooldown.auto = false
+          if QR.cooldown.auto and QR.selected is QR.replies[0] and parseInt(QR.status.input.value.match /\d+/) < 6
+            QR.cooldown.auto = false
     # sync between tabs
-    $.sync 'qr.persona', (persona) ->
-      return unless qr.el.hidden
+    $.sync 'QR.persona', (persona) ->
+      return unless QR.el.hidden
       for key, val of persona
-        qr.selected[key] = val
-        $("[name=#{key}]", qr.el).value = val
+        QR.selected[key] = val
+        $("[name=#{key}]", QR.el).value = val
 
-    qr.status.input = $ '[type=submit]', qr.el
-    qr.status()
-    qr.cooldown.init()
-    qr.captcha.init()
-    $.add d.body, qr.el
+    QR.status.input = $ '[type=submit]', QR.el
+    QR.status()
+    QR.cooldown.init()
+    QR.captcha.init()
+    $.add d.body, QR.el
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
     e = d.createEvent 'CustomEvent'
     e.initEvent 'QRDialogCreation', true, false
-    qr.el.dispatchEvent e
+    QR.el.dispatchEvent e
 
   submit: (e) ->
     e?.preventDefault()
-    if qr.cooldown.seconds
-      qr.cooldown.auto = !qr.cooldown.auto
-      qr.status()
+    if QR.cooldown.seconds
+      QR.cooldown.auto = !QR.cooldown.auto
+      QR.status()
       return
-    qr.message.send req: 'abort'
-    reply = qr.replies[0]
+    QR.message.send req: 'abort'
+    reply = QR.replies[0]
 
     # prevent errors
     unless reply.com or reply.file
@@ -1538,27 +1538,27 @@ qr =
         challenge = captcha.challenge
         response  = captcha.response
       else
-        challenge   = qr.captcha.img.alt
-        if response = qr.captcha.input.value then qr.captcha.reload()
+        challenge   = QR.captcha.img.alt
+        if response = QR.captcha.input.value then QR.captcha.reload()
       $.set 'captchas', captchas
-      qr.captcha.count captchas.length
+      QR.captcha.count captchas.length
       unless response
         err = 'No valid captcha.'
 
     if err
       # stop auto-posting
-      qr.cooldown.auto = false
-      qr.status()
-      qr.error err
+      QR.cooldown.auto = false
+      QR.status()
+      QR.error err
       return
-    qr.cleanError()
+    QR.cleanError()
 
-    threadID = g.THREAD_ID or $('select', qr.el).value
+    threadID = g.THREAD_ID or $('select', QR.el).value
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
-    qr.cooldown.auto = qr.replies.length > 1
-    if conf['Auto Hide QR'] and not qr.cooldown.auto
-      qr.hide()
+    QR.cooldown.auto = QR.replies.length > 1
+    if conf['Auto Hide QR'] and not QR.cooldown.auto
+      QR.hide()
     if conf['Thread Watcher'] and conf['Auto Watch Reply'] and threadID isnt 'new'
       Watcher.watch threadID
 
@@ -1578,7 +1578,7 @@ qr =
 
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
-    qr.status progress: '...'
+    QR.status progress: '...'
 
     if engine is 'gecko' and reply.file
       # https://bugzilla.mozilla.org/show_bug.cgi?id=673742
@@ -1591,21 +1591,21 @@ qr =
         file.name   = reply.file.name
         file.type   = reply.file.type
         post.upfile = file
-        qr.message.send post
+        QR.message.send post
       reader.readAsBinaryString reply.file
       return
 
     # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
     if /chrome/i.test navigator.userAgent
-      qr.message.post post
+      QR.message.post post
       return
-    qr.message.send post
+    QR.message.send post
 
   response: (html) ->
     doc = $.el 'a', innerHTML: html
     # Check for ban.
     if $('title', doc).textContent is '4chan - Banned'
-      qr.status ready: true, banned: true
+      QR.status ready: true, banned: true
       return
     unless b = $ 'td b', doc
       err = 'Connection error with sys.4chan.org.'
@@ -1618,24 +1618,24 @@ qr =
     if err
       if /captcha|verification/i.test(err) or err is 'Connection error with sys.4chan.org.'
         # Enable auto-post if we have some cached captchas.
-        qr.cooldown.auto = !!$.get('captchas', []).length
+        QR.cooldown.auto = !!$.get('captchas', []).length
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
-        qr.cooldown.set 2
+        QR.cooldown.set 2
       else # stop auto-posting
-        qr.cooldown.auto = false
-      qr.status()
-      qr.error err, node
+        QR.cooldown.auto = false
+      QR.status()
+      QR.error err, node
       return
 
-    reply = qr.replies[0]
+    reply = QR.replies[0]
 
-    persona = $.get 'qr.persona', {}
+    persona = $.get 'QR.persona', {}
     persona =
       name:  reply.name
       email: if /^sage$/.test reply.email then persona.email else reply.email
       sub:   if conf['Remember Subject']  then reply.sub     else null
-    $.set 'qr.persona', persona
+    $.set 'QR.persona', persona
 
     [_, thread, postNumber] = b.lastChild.textContent.match /thread:(\d+),no:(\d+)/
     if thread is '0' # new thread
@@ -1645,31 +1645,31 @@ qr =
       location.pathname = "/#{g.BOARD}/res/#{postNumber}"
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
-      qr.cooldown.auto = qr.replies.length > 1
-      qr.cooldown.set if /sage/i.test reply.email then 60 else 30
-      if conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto
+      QR.cooldown.auto = QR.replies.length > 1
+      QR.cooldown.set if /sage/i.test reply.email then 60 else 30
+      if conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
         $.open "//boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}"
 
-    if conf['Persistent QR'] or qr.cooldown.auto
+    if conf['Persistent QR'] or QR.cooldown.auto
       reply.rm()
     else
-      qr.close()
+      QR.close()
 
     if g.REPLY and (conf['Unread Count'] or conf['Unread Favicon'])
       Unread.foresee.push postNumber
     if g.REPLY and conf['Thread Updater'] and conf['Auto Update This']
       Updater.update()
 
-    qr.status()
-    qr.resetFileInput()
+    QR.status()
+    QR.resetFileInput()
 
   message:
     send: (data) ->
       # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
       if /chrome/i.test navigator.userAgent
-        qr.message.receive data
+        QR.message.receive data
         return
-      data.qr = true
+      data.QR = true
       host = location.hostname
       window =
         if host is 'boards.4chan.org'
@@ -1680,17 +1680,17 @@ qr =
     receive: (data) ->
       req = data.req
       delete data.req
-      delete data.qr
+      delete data.QR
       switch req
         when 'abort'
-          qr.ajax?.abort()
-          qr.message.send req: 'status'
+          QR.ajax?.abort()
+          QR.message.send req: 'status'
         when 'response' # xhr response
-          qr.response data.html
+          QR.response data.html
         when 'status'
-          qr.status data
+          QR.status data
         else
-          qr.message.post data # Reply object: we're posting
+          QR.message.post data # Reply object: we're posting
 
     post: (data) ->
 
@@ -1709,7 +1709,7 @@ qr =
             r.onload = ->
               data[name] = r.result
               unless --i
-                qr.message.post data
+                QR.message.post data
             r.readAsBinaryString bb.getBlob 'text/plain'
           i = Object.keys(data).length
           for name, val of data
@@ -1744,7 +1744,7 @@ qr =
 
       callbacks =
         onload: ->
-          qr.message.send
+          QR.message.send
             req:  'response'
             html: @response
       opts =
@@ -1752,11 +1752,11 @@ qr =
         type: 'post'
         upCallbacks:
           onload: ->
-            qr.message.send
+            QR.message.send
               req:      'status'
               progress: '...'
           onprogress: (e) ->
-            qr.message.send
+            QR.message.send
               req:      'status'
               progress: "#{Math.round e.loaded / e.total * 100}%"
       if boundary
@@ -1764,11 +1764,11 @@ qr =
           'Content-Type': 'multipart/form-data;boundary=' + boundary
 
       try
-        qr.ajax = $.ajax url, callbacks, opts
+        QR.ajax = $.ajax url, callbacks, opts
       catch e
         # CORS disabled error: redirecting to banned page ;_;
         if e.name is 'NETWORK_ERR'
-          qr.message.send req: 'status', ready: true, banned: true
+          QR.message.send req: 'status', ready: true, banned: true
 
 Options =
   init: ->
@@ -2181,8 +2181,8 @@ Updater =
         else
           d.title = d.title.match(/^.+-/)[0] + ' 404'
         Unread.update true
-        qr.message.send req: 'abort'
-        qr.status()
+        QR.message.send req: 'abort'
+        QR.status()
         return
 
       Updater.retryCoef = 10
@@ -3176,7 +3176,7 @@ Main =
     switch location.hostname
       when 'sys.4chan.org'
         if path is '/robots.txt'
-          qr.message.send req: 'status', ready: true
+          QR.message.send req: 'status', ready: true
         else if /report/.test location.search
           $.ready ->
             $.on $.id('recaptcha_response_field'), 'keydown', (e) ->
@@ -3184,7 +3184,7 @@ Main =
         return
       when 'www.4chan.org'
         if path is '/banned'
-          qr.message.send req: 'status', ready: true, banned: true
+          QR.message.send req: 'status', ready: true, banned: true
         return
       when 'images.4chan.org'
         $.ready -> Redirect.init() if d.title is '4chan - 404'
@@ -3291,7 +3291,7 @@ Main =
 
     # Major features.
     if conf['Quick Reply']
-      qr.init()
+      QR.init()
 
     if conf['Image Expansion']
       ImageExpand.init()
@@ -3353,8 +3353,8 @@ Main =
 
   message: (e) ->
     {data} = e
-    if data.qr
-      qr.message.receive data
+    if data.QR
+      QR.message.receive data
       return
     {version} = data
     if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'

@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, conf, config, d, engine, flatten, g, log, qr, ui, _base;
+  var $, $$, Anonymize, AutoGif, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, conf, config, d, engine, flatten, g, log, ui, _base;
 
   config = {
     main: {
@@ -962,12 +962,12 @@
         case conf.close:
           if (o = $.id('overlay')) {
             Options.close.call(o);
-          } else if (qr.el) {
-            qr.close();
+          } else if (QR.el) {
+            QR.close();
           }
           break;
         case conf.submit:
-          if (qr.el && !qr.status()) qr.submit();
+          if (QR.el && !QR.status()) QR.submit();
           break;
         case conf.spoiler:
           ta = e.target;
@@ -1115,11 +1115,11 @@
     },
     qr: function(thread, quote) {
       if (quote) {
-        qr.quote.call($('.quotejs + .quotejs', $('.replyhl', thread) || thread));
+        QR.quote.call($('.quotejs + .quotejs', $('.replyhl', thread) || thread));
       } else {
-        qr.open();
+        QR.open();
       }
-      return $('textarea', qr.el).focus();
+      return $('textarea', QR.el).focus();
     },
     open: function(thread, tab) {
       var id, url;
@@ -1233,7 +1233,7 @@
     }
   };
 
-  qr = {
+  QR = {
     init: function() {
       if (!$.id('recaptcha_challenge_field_holder')) return;
       g.callbacks.push(this.node);
@@ -1246,15 +1246,15 @@
           innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Quick Reply' : 'New Thread') + "</a>"
         });
         $.on($('a', link), 'click', function() {
-          qr.open();
-          if (!g.REPLY) $('select', qr.el).value = 'new';
-          return $('textarea', qr.el).focus();
+          QR.open();
+          if (!g.REPLY) $('select', QR.el).value = 'new';
+          return $('textarea', QR.el).focus();
         });
         form = d.forms[0];
         $.before(form, link);
       }
       if (/chrome/i.test(navigator.userAgent)) {
-        qr.status({
+        QR.status({
           ready: true
         });
       } else {
@@ -1266,7 +1266,7 @@
           return this.src = this.src;
         });
         loadChecking = function(iframe) {
-          if (!qr.status.ready) {
+          if (!QR.status.ready) {
             iframe.src = 'about:blank';
             return setTimeout((function() {
               return iframe.src = 'https://sys.4chan.org/robots.txt';
@@ -1286,130 +1286,130 @@
       $.add(d.head, script);
       $.rm(script);
       if (conf['Persistent QR']) {
-        qr.dialog();
-        if (conf['Auto Hide QR']) qr.hide();
+        QR.dialog();
+        if (conf['Auto Hide QR']) QR.hide();
       }
-      $.on(d, 'dragover', qr.dragOver);
-      $.on(d, 'drop', qr.dropFile);
-      $.on(d, 'dragstart', qr.drag);
-      return $.on(d, 'dragend', qr.drag);
+      $.on(d, 'dragover', QR.dragOver);
+      $.on(d, 'drop', QR.dropFile);
+      $.on(d, 'dragstart', QR.drag);
+      return $.on(d, 'dragend', QR.drag);
     },
     node: function(post) {
-      return $.on($('.quotejs + .quotejs', post.el), 'click', qr.quote);
+      return $.on($('.quotejs + .quotejs', post.el), 'click', QR.quote);
     },
     open: function() {
-      if (qr.el) {
-        qr.el.hidden = false;
-        return qr.unhide();
+      if (QR.el) {
+        QR.el.hidden = false;
+        return QR.unhide();
       } else {
-        return qr.dialog();
+        return QR.dialog();
       }
     },
     close: function() {
       var i, spoiler, _i, _len, _ref;
-      qr.el.hidden = true;
-      qr.message.send({
+      QR.el.hidden = true;
+      QR.message.send({
         req: 'abort'
       });
       d.activeElement.blur();
-      $.removeClass(qr.el, 'dump');
-      _ref = qr.replies;
+      $.removeClass(QR.el, 'dump');
+      _ref = QR.replies;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         i = _ref[_i];
-        qr.replies[0].rm();
+        QR.replies[0].rm();
       }
-      qr.cooldown.auto = false;
-      qr.status();
-      qr.resetFileInput();
+      QR.cooldown.auto = false;
+      QR.status();
+      QR.resetFileInput();
       if (!conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
         spoiler.click();
       }
-      return qr.cleanError();
+      return QR.cleanError();
     },
     hide: function() {
       d.activeElement.blur();
-      $.addClass(qr.el, 'autohide');
+      $.addClass(QR.el, 'autohide');
       return $.id('autohide').checked = true;
     },
     unhide: function() {
-      $.removeClass(qr.el, 'autohide');
+      $.removeClass(QR.el, 'autohide');
       return $.id('autohide').checked = false;
     },
     toggleHide: function() {
-      return this.checked && qr.hide() || qr.unhide();
+      return this.checked && QR.hide() || QR.unhide();
     },
     error: function(err, node) {
       var el;
-      el = $('.warning', qr.el);
+      el = $('.warning', QR.el);
       el.textContent = err;
       if (node) $.replace(el.firstChild, node);
-      qr.open();
-      if (/captcha|verification/i.test(err)) $('[autocomplete]', qr.el).focus();
+      QR.open();
+      if (/captcha|verification/i.test(err)) $('[autocomplete]', QR.el).focus();
       if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
         return alert(err);
       }
     },
     cleanError: function() {
-      return $('.warning', qr.el).textContent = null;
+      return $('.warning', QR.el).textContent = null;
     },
     status: function(data) {
       var disabled, input, value;
       if (data == null) data = {};
       if (data.ready) {
-        qr.status.ready = true;
-        qr.status.banned = data.banned;
-      } else if (!qr.status.ready) {
+        QR.status.ready = true;
+        QR.status.banned = data.banned;
+      } else if (!QR.status.ready) {
         value = 'Loading';
         disabled = true;
       }
       if (g.dead) {
         value = 404;
         disabled = true;
-        qr.cooldown.auto = false;
-      } else if (qr.status.banned) {
+        QR.cooldown.auto = false;
+      } else if (QR.status.banned) {
         value = 'Banned';
         disabled = true;
       } else {
-        value = qr.cooldown.seconds || data.progress || value;
+        value = QR.cooldown.seconds || data.progress || value;
       }
-      if (!qr.el) return;
-      input = qr.status.input;
-      input.value = qr.cooldown.auto && conf['Cooldown'] ? value ? "Auto " + value : 'Auto' : value || 'Submit';
+      if (!QR.el) return;
+      input = QR.status.input;
+      input.value = QR.cooldown.auto && conf['Cooldown'] ? value ? "Auto " + value : 'Auto' : value || 'Submit';
       return input.disabled = disabled || false;
     },
     cooldown: {
       init: function() {
         if (!conf['Cooldown']) return;
-        qr.cooldown.start($.get("/" + g.BOARD + "/cooldown", 0));
-        return $.sync("/" + g.BOARD + "/cooldown", qr.cooldown.start);
+        QR.cooldown.start($.get("/" + g.BOARD + "/cooldown", 0));
+        return $.sync("/" + g.BOARD + "/cooldown", QR.cooldown.start);
       },
       start: function(timeout) {
         var seconds;
         seconds = Math.floor((timeout - Date.now()) / 1000);
-        return qr.cooldown.count(seconds);
+        return QR.cooldown.count(seconds);
       },
       set: function(seconds) {
         if (!conf['Cooldown']) return;
-        qr.cooldown.count(seconds);
+        QR.cooldown.count(seconds);
         return $.set("/" + g.BOARD + "/cooldown", Date.now() + seconds * SECOND);
       },
       count: function(seconds) {
         if (!((0 <= seconds && seconds <= 60))) return;
-        setTimeout(qr.cooldown.count, 1000, seconds - 1);
-        qr.cooldown.seconds = seconds;
+        setTimeout(QR.cooldown.count, 1000, seconds - 1);
+        QR.cooldown.seconds = seconds;
         if (seconds === 0) {
           $["delete"]("/" + g.BOARD + "/cooldown");
-          if (qr.cooldown.auto) qr.submit();
+          if (QR.cooldown.auto) QR.submit();
         }
-        return qr.status();
+        return QR.status();
       }
     },
     quote: function(e) {
       var caretPos, id, range, s, sel, ta, text, _ref;
       if (e != null) e.preventDefault();
-      qr.open();
+      QR.open();
       if (!g.REPLY) {
-        $('select', qr.el).value = $.x('ancestor::div[@class="thread"]', this).firstChild.id;
+        $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', this).firstChild.id;
       }
       id = this.previousElementSibling.hash.slice(1);
       text = ">>" + id + "\n";
@@ -1418,9 +1418,9 @@
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
-      ta = $('textarea', qr.el);
+      ta = $('textarea', QR.el);
       caretPos = ta.selectionStart;
-      qr.selected.el.lastChild.textContent = qr.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
+      QR.selected.el.lastChild.textContent = QR.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       ta.focus();
       ta.selectionEnd = ta.selectionStart = caretPos + text.length;
       range = caretPos + text.length;
@@ -1429,8 +1429,8 @@
     drag: function(e) {
       var i;
       i = e.type === 'dragstart' ? 'off' : 'on';
-      $[i](d, 'dragover', qr.dragOver);
-      return $[i](d, 'drop', qr.dropFile);
+      $[i](d, 'dragover', QR.dragOver);
+      return $[i](d, 'drop', QR.dropFile);
     },
     dragOver: function(e) {
       e.preventDefault();
@@ -1439,23 +1439,23 @@
     dropFile: function(e) {
       if (!e.dataTransfer.files.length) return;
       e.preventDefault();
-      qr.open();
-      qr.fileInput.call(e.dataTransfer);
-      return $.addClass(qr.el, 'dump');
+      QR.open();
+      QR.fileInput.call(e.dataTransfer);
+      return $.addClass(QR.el, 'dump');
     },
     fileInput: function() {
       var file, _i, _len, _ref;
-      qr.cleanError();
+      QR.cleanError();
       if (this.files.length === 1) {
         file = this.files[0];
         if (file.size > this.max) {
-          qr.error('File too large.');
-          qr.resetFileInput();
-        } else if (-1 === qr.mimeTypes.indexOf(file.type)) {
-          qr.error('Unsupported file type.');
-          qr.resetFileInput();
+          QR.error('File too large.');
+          QR.resetFileInput();
+        } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
+          QR.error('Unsupported file type.');
+          QR.resetFileInput();
         } else {
-          qr.selected.setFile(file);
+          QR.selected.setFile(file);
         }
         return;
       }
@@ -1463,23 +1463,23 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         file = _ref[_i];
         if (file.size > this.max) {
-          qr.error("File " + file.name + " is too large.");
+          QR.error("File " + file.name + " is too large.");
           break;
-        } else if (-1 === qr.mimeTypes.indexOf(file.type)) {
-          qr.error("" + file.name + ": Unsupported file type.");
+        } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
+          QR.error("" + file.name + ": Unsupported file type.");
           break;
         }
-        if (!qr.replies[qr.replies.length - 1].file) {
-          qr.replies[qr.replies.length - 1].setFile(file);
+        if (!QR.replies[QR.replies.length - 1].file) {
+          QR.replies[QR.replies.length - 1].setFile(file);
         } else {
-          new qr.reply().setFile(file);
+          new QR.reply().setFile(file);
         }
       }
-      $.addClass(qr.el, 'dump');
-      return qr.resetFileInput();
+      $.addClass(QR.el, 'dump');
+      return QR.resetFileInput();
     },
     resetFileInput: function() {
-      return $('[type=file]', qr.el).value = null;
+      return $('[type=file]', QR.el).value = null;
     },
     replies: [],
     reply: (function() {
@@ -1487,8 +1487,8 @@
       function _Class() {
         var persona, prev,
           _this = this;
-        prev = qr.replies[qr.replies.length - 1];
-        persona = $.get('qr.persona', {});
+        prev = QR.replies[QR.replies.length - 1];
+        persona = $.get('QR.persona', {});
         this.name = prev ? prev.name : persona.name || null;
         this.email = prev && !/^sage$/.test(prev.email) ? prev.email : persona.email || null;
         this.sub = prev && conf['Remember Subject'] ? prev.sub : conf['Remember Subject'] ? persona.sub : null;
@@ -1517,14 +1517,14 @@
             return $.id('spoiler').checked = _this.spoiler;
           }
         });
-        $.before($('#addReply', qr.el), this.el);
+        $.before($('#addReply', QR.el), this.el);
         $.on(this.el, 'dragstart', this.dragStart);
         $.on(this.el, 'dragenter', this.dragEnter);
         $.on(this.el, 'dragleave', this.dragLeave);
         $.on(this.el, 'dragover', this.dragOver);
         $.on(this.el, 'dragend', this.dragEnd);
         $.on(this.el, 'drop', this.drop);
-        qr.replies.push(this);
+        QR.replies.push(this);
       }
 
       _Class.prototype.setFile = function(file) {
@@ -1532,7 +1532,7 @@
           _this = this;
         this.file = file;
         this.el.title = file.name;
-        if (qr.spoiler) $('label', this.el).hidden = false;
+        if (QR.spoiler) $('label', this.el).hidden = false;
         if (file.type === 'application/pdf') {
           this.el.style.backgroundImage = null;
           return;
@@ -1576,18 +1576,18 @@
       };
 
       _Class.prototype.rmFile = function() {
-        qr.resetFileInput();
+        QR.resetFileInput();
         delete this.file;
         this.el.title = null;
         this.el.style.backgroundImage = null;
-        if (qr.spoiler) $('label', this.el).hidden = true;
+        if (QR.spoiler) $('label', this.el).hidden = true;
         return (window.URL || window.webkitURL).revokeObjectURL(this.url);
       };
 
       _Class.prototype.select = function() {
         var data, rectEl, rectList, _i, _len, _ref, _ref2;
-        if ((_ref = qr.selected) != null) _ref.el.id = null;
-        qr.selected = this;
+        if ((_ref = QR.selected) != null) _ref.el.id = null;
+        QR.selected = this;
         this.el.id = 'selected';
         rectEl = this.el.getBoundingClientRect();
         rectList = this.el.parentNode.getBoundingClientRect();
@@ -1595,9 +1595,9 @@
         _ref2 = ['name', 'email', 'sub', 'com'];
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           data = _ref2[_i];
-          $("[name=" + data + "]", qr.el).value = this[data];
+          $("[name=" + data + "]", QR.el).value = this[data];
         }
-        return $('#spoiler', qr.el).checked = this.spoiler;
+        return $('#spoiler', QR.el).checked = this.spoiler;
       };
 
       _Class.prototype.dragStart = function() {
@@ -1630,8 +1630,8 @@
         } else {
           $.before(this, el);
         }
-        reply = qr.replies.splice(oldIndex, 1)[0];
-        return qr.replies.splice(newIndex, 0, reply);
+        reply = QR.replies.splice(oldIndex, 1)[0];
+        return QR.replies.splice(newIndex, 0, reply);
       };
 
       _Class.prototype.dragEnd = function() {
@@ -1642,15 +1642,15 @@
 
       _Class.prototype.rm = function() {
         var index;
-        qr.resetFileInput();
+        QR.resetFileInput();
         $.rm(this.el);
-        index = qr.replies.indexOf(this);
-        if (qr.replies.length === 1) {
-          new qr.reply().select();
+        index = QR.replies.indexOf(this);
+        if (QR.replies.length === 1) {
+          new QR.reply().select();
         } else if (this.el.id === 'selected') {
-          (qr.replies[index - 1] || qr.replies[index + 1]).select();
+          (QR.replies[index - 1] || QR.replies[index + 1]).select();
         }
-        qr.replies.splice(index, 1);
+        QR.replies.splice(index, 1);
         (window.URL || window.webkitURL).revokeObjectURL(this.url);
         return delete this;
       };
@@ -1661,8 +1661,8 @@
     captcha: {
       init: function() {
         var _this = this;
-        this.img = $('.captcha > img', qr.el);
-        this.input = $('[autocomplete]', qr.el);
+        this.img = $('.captcha > img', QR.el);
+        this.input = $('[autocomplete]', QR.el);
         this.challenge = $.id('recaptcha_challenge_field_holder');
         $.on(this.img.parentNode, 'click', this.reload);
         $.on(this.input, 'keydown', this.keydown);
@@ -1714,11 +1714,11 @@
       },
       reload: function(focus) {
         window.location = 'javascript:Recaptcha.reload()';
-        if (focus) return qr.captcha.input.focus();
+        if (focus) return QR.captcha.input.focus();
       },
       keydown: function(e) {
         var c;
-        c = qr.captcha;
+        c = QR.captcha;
         if (e.keyCode === 8 && !c.input.value) {
           c.reload();
         } else if (e.keyCode === 13 && e.shiftKey) {
@@ -1731,7 +1731,7 @@
     },
     dialog: function() {
       var e, event, fileInput, input, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
-      qr.el = ui.dialog('qr', 'top:0;right:0;', '\
+      QR.el = ui.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
   <span> <a class=close title=Close>&times;</a></span>\
@@ -1747,10 +1747,10 @@
   <div class=warning></div>\
 </form>');
       if (conf['Remember QR size'] && engine === 'gecko') {
-        $.on(ta = $('textarea', qr.el), 'mouseup', function() {
-          return $.set('qr.size', this.style.cssText);
+        $.on(ta = $('textarea', QR.el), 'mouseup', function() {
+          return $.set('QR.size', this.style.cssText);
         });
-        ta.style.cssText = $.get('qr.size', '');
+        ta.style.cssText = $.get('QR.size', '');
       }
       mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
@@ -1762,14 +1762,14 @@
             return "image/" + type;
         }
       });
-      qr.mimeTypes = mimeTypes.split(', ');
-      qr.mimeTypes.push('');
-      fileInput = $('[type=file]', qr.el);
+      QR.mimeTypes = mimeTypes.split(', ');
+      QR.mimeTypes.push('');
+      fileInput = $('[type=file]', QR.el);
       fileInput.max = $('[name=MAX_FILE_SIZE]').value;
       fileInput.accept = mimeTypes;
-      qr.spoiler = !!$('#com_submit + label');
-      spoiler = $('#spoilerLabel', qr.el);
-      spoiler.hidden = !qr.spoiler;
+      QR.spoiler = !!$('#com_submit + label');
+      spoiler = $('#spoilerLabel', QR.el);
+      spoiler.hidden = !QR.spoiler;
       if (!g.REPLY) {
         threads = '<option value=new>New thread</option>';
         _ref = $$('.op');
@@ -1777,82 +1777,82 @@
           thread = _ref[_i];
           threads += "<option value=" + thread.id + ">Thread " + thread.id + "</option>";
         }
-        $.prepend($('.move > span', qr.el), $.el('select', {
+        $.prepend($('.move > span', QR.el), $.el('select', {
           innerHTML: threads,
           title: 'Create a new thread / Reply to a thread'
         }));
-        $.on($('select', qr.el), 'mousedown', function(e) {
+        $.on($('select', QR.el), 'mousedown', function(e) {
           return e.stopPropagation();
         });
       }
-      $.on($('#autohide', qr.el), 'change', qr.toggleHide);
-      $.on($('.close', qr.el), 'click', qr.close);
-      $.on($('#dump', qr.el), 'click', function() {
-        return qr.el.classList.toggle('dump');
+      $.on($('#autohide', QR.el), 'change', QR.toggleHide);
+      $.on($('.close', QR.el), 'click', QR.close);
+      $.on($('#dump', QR.el), 'click', function() {
+        return QR.el.classList.toggle('dump');
       });
-      $.on($('#addReply', qr.el), 'click', function() {
-        return new qr.reply().select();
+      $.on($('#addReply', QR.el), 'click', function() {
+        return new QR.reply().select();
       });
-      $.on($('form', qr.el), 'submit', qr.submit);
-      $.on($('textarea', qr.el), 'keyup', function() {
-        return qr.selected.el.lastChild.textContent = this.value;
+      $.on($('form', QR.el), 'submit', QR.submit);
+      $.on($('textarea', QR.el), 'keyup', function() {
+        return QR.selected.el.lastChild.textContent = this.value;
       });
-      $.on(fileInput, 'change', qr.fileInput);
+      $.on(fileInput, 'change', QR.fileInput);
       $.on(fileInput, 'click', function(e) {
-        if (e.shiftKey) return qr.selected.rmFile() || e.preventDefault();
+        if (e.shiftKey) return QR.selected.rmFile() || e.preventDefault();
       });
       $.on(spoiler.firstChild, 'change', function() {
-        return $('input', qr.selected.el).click();
+        return $('input', QR.selected.el).click();
       });
-      $.on($('.warning', qr.el), 'click', qr.cleanError);
-      new qr.reply().select();
+      $.on($('.warning', QR.el), 'click', QR.cleanError);
+      new QR.reply().select();
       _ref2 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         name = _ref2[_j];
-        input = $("[name=" + name + "]", qr.el);
+        input = $("[name=" + name + "]", QR.el);
         _ref3 = ['input', 'keyup', 'change', 'paste'];
         for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
           event = _ref3[_k];
           $.on(input, event, function() {
-            qr.selected[this.name] = this.value;
-            if (qr.cooldown.auto && qr.selected === qr.replies[0] && parseInt(qr.status.input.value.match(/\d+/)) < 6) {
-              return qr.cooldown.auto = false;
+            QR.selected[this.name] = this.value;
+            if (QR.cooldown.auto && QR.selected === QR.replies[0] && parseInt(QR.status.input.value.match(/\d+/)) < 6) {
+              return QR.cooldown.auto = false;
             }
           });
         }
       }
-      $.sync('qr.persona', function(persona) {
+      $.sync('QR.persona', function(persona) {
         var key, val, _results;
-        if (!qr.el.hidden) return;
+        if (!QR.el.hidden) return;
         _results = [];
         for (key in persona) {
           val = persona[key];
-          qr.selected[key] = val;
-          _results.push($("[name=" + key + "]", qr.el).value = val);
+          QR.selected[key] = val;
+          _results.push($("[name=" + key + "]", QR.el).value = val);
         }
         return _results;
       });
-      qr.status.input = $('[type=submit]', qr.el);
-      qr.status();
-      qr.cooldown.init();
-      qr.captcha.init();
-      $.add(d.body, qr.el);
+      QR.status.input = $('[type=submit]', QR.el);
+      QR.status();
+      QR.cooldown.init();
+      QR.captcha.init();
+      $.add(d.body, QR.el);
       e = d.createEvent('CustomEvent');
       e.initEvent('QRDialogCreation', true, false);
-      return qr.el.dispatchEvent(e);
+      return QR.el.dispatchEvent(e);
     },
     submit: function(e) {
       var captcha, captchas, challenge, err, file, m, post, reader, reply, response, threadID;
       if (e != null) e.preventDefault();
-      if (qr.cooldown.seconds) {
-        qr.cooldown.auto = !qr.cooldown.auto;
-        qr.status();
+      if (QR.cooldown.seconds) {
+        QR.cooldown.auto = !QR.cooldown.auto;
+        QR.status();
         return;
       }
-      qr.message.send({
+      QR.message.send({
         req: 'abort'
       });
-      reply = qr.replies[0];
+      reply = QR.replies[0];
       if (!(reply.com || reply.file)) {
         err = 'No file selected.';
       } else {
@@ -1864,23 +1864,23 @@
           challenge = captcha.challenge;
           response = captcha.response;
         } else {
-          challenge = qr.captcha.img.alt;
-          if (response = qr.captcha.input.value) qr.captcha.reload();
+          challenge = QR.captcha.img.alt;
+          if (response = QR.captcha.input.value) QR.captcha.reload();
         }
         $.set('captchas', captchas);
-        qr.captcha.count(captchas.length);
+        QR.captcha.count(captchas.length);
         if (!response) err = 'No valid captcha.';
       }
       if (err) {
-        qr.cooldown.auto = false;
-        qr.status();
-        qr.error(err);
+        QR.cooldown.auto = false;
+        QR.status();
+        QR.error(err);
         return;
       }
-      qr.cleanError();
-      threadID = g.THREAD_ID || $('select', qr.el).value;
-      qr.cooldown.auto = qr.replies.length > 1;
-      if (conf['Auto Hide QR'] && !qr.cooldown.auto) qr.hide();
+      QR.cleanError();
+      threadID = g.THREAD_ID || $('select', QR.el).value;
+      QR.cooldown.auto = QR.replies.length > 1;
+      if (conf['Auto Hide QR'] && !QR.cooldown.auto) QR.hide();
       if (conf['Thread Watcher'] && conf['Auto Watch Reply'] && threadID !== 'new') {
         Watcher.watch(threadID);
       }
@@ -1898,7 +1898,7 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
-      qr.status({
+      QR.status({
         progress: '...'
       });
       if (engine === 'gecko' && reply.file) {
@@ -1909,16 +1909,16 @@
           file.name = reply.file.name;
           file.type = reply.file.type;
           post.upfile = file;
-          return qr.message.send(post);
+          return QR.message.send(post);
         };
         reader.readAsBinaryString(reply.file);
         return;
       }
       if (/chrome/i.test(navigator.userAgent)) {
-        qr.message.post(post);
+        QR.message.post(post);
         return;
       }
-      return qr.message.send(post);
+      return QR.message.send(post);
     },
     response: function(html) {
       var b, doc, err, node, persona, postNumber, reply, thread, _, _ref;
@@ -1926,7 +1926,7 @@
         innerHTML: html
       });
       if ($('title', doc).textContent === '4chan - Banned') {
-        qr.status({
+        QR.status({
           ready: true,
           banned: true
         });
@@ -1943,23 +1943,23 @@
       }
       if (err) {
         if (/captcha|verification/i.test(err) || err === 'Connection error with sys.4chan.org.') {
-          qr.cooldown.auto = !!$.get('captchas', []).length;
-          qr.cooldown.set(2);
+          QR.cooldown.auto = !!$.get('captchas', []).length;
+          QR.cooldown.set(2);
         } else {
-          qr.cooldown.auto = false;
+          QR.cooldown.auto = false;
         }
-        qr.status();
-        qr.error(err, node);
+        QR.status();
+        QR.error(err, node);
         return;
       }
-      reply = qr.replies[0];
-      persona = $.get('qr.persona', {});
+      reply = QR.replies[0];
+      persona = $.get('QR.persona', {});
       persona = {
         name: reply.name,
         email: /^sage$/.test(reply.email) ? persona.email : reply.email,
         sub: conf['Remember Subject'] ? reply.sub : null
       };
-      $.set('qr.persona', persona);
+      $.set('QR.persona', persona);
       _ref = b.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], postNumber = _ref[2];
       if (thread === '0') {
         if (conf['Thread Watcher'] && conf['Auto Watch']) {
@@ -1967,16 +1967,16 @@
         }
         location.pathname = "/" + g.BOARD + "/res/" + postNumber;
       } else {
-        qr.cooldown.auto = qr.replies.length > 1;
-        qr.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
-        if (conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto) {
+        QR.cooldown.auto = QR.replies.length > 1;
+        QR.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
+        if (conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
           $.open("//boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber);
         }
       }
-      if (conf['Persistent QR'] || qr.cooldown.auto) {
+      if (conf['Persistent QR'] || QR.cooldown.auto) {
         reply.rm();
       } else {
-        qr.close();
+        QR.close();
       }
       if (g.REPLY && (conf['Unread Count'] || conf['Unread Favicon'])) {
         Unread.foresee.push(postNumber);
@@ -1984,17 +1984,17 @@
       if (g.REPLY && conf['Thread Updater'] && conf['Auto Update This']) {
         Updater.update();
       }
-      qr.status();
-      return qr.resetFileInput();
+      QR.status();
+      return QR.resetFileInput();
     },
     message: {
       send: function(data) {
         var host, window;
         if (/chrome/i.test(navigator.userAgent)) {
-          qr.message.receive(data);
+          QR.message.receive(data);
           return;
         }
-        data.qr = true;
+        data.QR = true;
         host = location.hostname;
         window = host === 'boards.4chan.org' ? $.id('iframe').contentWindow : parent;
         return window.postMessage(data, '*');
@@ -2003,19 +2003,19 @@
         var req, _ref;
         req = data.req;
         delete data.req;
-        delete data.qr;
+        delete data.QR;
         switch (req) {
           case 'abort':
-            if ((_ref = qr.ajax) != null) _ref.abort();
-            return qr.message.send({
+            if ((_ref = QR.ajax) != null) _ref.abort();
+            return QR.message.send({
               req: 'status'
             });
           case 'response':
-            return qr.response(data.html);
+            return QR.response(data.html);
           case 'status':
-            return qr.status(data);
+            return QR.status(data);
           default:
-            return qr.message.post(data);
+            return QR.message.post(data);
         }
       },
       post: function(data) {
@@ -2031,7 +2031,7 @@
               r = new FileReader();
               r.onload = function() {
                 data[name] = r.result;
-                if (!--i) return qr.message.post(data);
+                if (!--i) return QR.message.post(data);
               };
               return r.readAsBinaryString(bb.getBlob('text/plain'));
             };
@@ -2075,7 +2075,7 @@
         }
         callbacks = {
           onload: function() {
-            return qr.message.send({
+            return QR.message.send({
               req: 'response',
               html: this.response
             });
@@ -2086,13 +2086,13 @@
           type: 'post',
           upCallbacks: {
             onload: function() {
-              return qr.message.send({
+              return QR.message.send({
                 req: 'status',
                 progress: '...'
               });
             },
             onprogress: function(e) {
-              return qr.message.send({
+              return QR.message.send({
                 req: 'status',
                 progress: "" + (Math.round(e.loaded / e.total * 100)) + "%"
               });
@@ -2105,10 +2105,10 @@
           };
         }
         try {
-          return qr.ajax = $.ajax(url, callbacks, opts);
+          return QR.ajax = $.ajax(url, callbacks, opts);
         } catch (e) {
           if (e.name === 'NETWORK_ERR') {
-            return qr.message.send({
+            return QR.message.send({
               req: 'status',
               ready: true,
               banned: true
@@ -2575,10 +2575,10 @@
             d.title = d.title.match(/^.+-/)[0] + ' 404';
           }
           Unread.update(true);
-          qr.message.send({
+          QR.message.send({
             req: 'abort'
           });
-          qr.status();
+          QR.status();
           return;
         }
         Updater.retryCoef = 10;
@@ -3821,7 +3821,7 @@
       switch (location.hostname) {
         case 'sys.4chan.org':
           if (path === '/robots.txt') {
-            qr.message.send({
+            QR.message.send({
               req: 'status',
               ready: true
             });
@@ -3837,7 +3837,7 @@
           return;
         case 'www.4chan.org':
           if (path === '/banned') {
-            qr.message.send({
+            QR.message.send({
               req: 'status',
               ready: true,
               banned: true
@@ -3917,7 +3917,7 @@
       form = $('form[name=delform]');
       Threading.thread(form.firstElementChild);
       Favicon.init();
-      if (conf['Quick Reply']) qr.init();
+      if (conf['Quick Reply']) QR.init();
       if (conf['Image Expansion']) ImageExpand.init();
       if (conf['Thread Watcher']) {
         setTimeout(function() {
@@ -3993,8 +3993,8 @@
     message: function(e) {
       var data, version;
       data = e.data;
-      if (data.qr) {
-        qr.message.receive(data);
+      if (data.QR) {
+        QR.message.receive(data);
         return;
       }
       version = data.version;
