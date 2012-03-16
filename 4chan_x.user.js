@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, VERSION, Watcher, flatten, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, Watcher, flatten, _base;
 
   Config = {
     main: {
@@ -215,7 +215,7 @@
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
-      el.style.cssText = (saved = localStorage["" + NAMESPACE + id + ".position"]) ? saved : position;
+      el.style.cssText = (saved = localStorage["" + Main.namespace + id + ".position"]) ? saved : position;
       el.querySelector('.move').addEventListener('mousedown', UI.dragstart, false);
       return el;
     },
@@ -248,7 +248,7 @@
     dragend: function() {
       var el;
       el = UI.el;
-      localStorage["" + NAMESPACE + el.id + ".position"] = el.style.cssText;
+      localStorage["" + Main.namespace + el.id + ".position"] = el.style.cssText;
       $.d.removeEventListener('mousemove', UI.drag, false);
       return $.d.removeEventListener('mouseup', UI.dragend, false);
     },
@@ -294,10 +294,6 @@
     }
   };
 
-  NAMESPACE = '4chan_x.';
-
-  VERSION = '2.29.1';
-
   $.extend($, {
     SECOND: 1000,
     MINUTE: 60 * $.SECOND,
@@ -317,7 +313,9 @@
     },
     sync: function(key, cb) {
       return $.on(window, 'storage', function(e) {
-        if (e.key === ("" + NAMESPACE + key)) return cb(JSON.parse(e.newValue));
+        if (e.key === ("" + Main.namespace + key)) {
+          return cb(JSON.parse(e.newValue));
+        }
       });
     },
     id: function(id) {
@@ -487,12 +485,12 @@
 
   $.extend($, typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null ? {
     "delete": function(name) {
-      name = NAMESPACE + name;
+      name = Main.namespace + name;
       return GM_deleteValue(name);
     },
     get: function(name, defaultValue) {
       var value;
-      name = NAMESPACE + name;
+      name = Main.namespace + name;
       if (value = GM_getValue(name)) {
         return JSON.parse(value);
       } else {
@@ -500,18 +498,18 @@
       }
     },
     set: function(name, value) {
-      name = NAMESPACE + name;
+      name = Main.namespace + name;
       localStorage[name] = JSON.stringify(value);
       return GM_setValue(name, JSON.stringify(value));
     }
   } : {
     "delete": function(name) {
-      name = NAMESPACE + name;
+      name = Main.namespace + name;
       return delete localStorage[name];
     },
     get: function(name, defaultValue) {
       var value;
-      name = NAMESPACE + name;
+      name = Main.namespace + name;
       if (value = localStorage[name]) {
         return JSON.parse(value);
       } else {
@@ -519,7 +517,7 @@
       }
     },
     set: function(name, value) {
-      name = NAMESPACE + name;
+      name = Main.namespace + name;
       return localStorage[name] = JSON.stringify(value);
     }
   });
@@ -2134,7 +2132,7 @@
         innerHTML: '<div id=optionsbar>\
   <div id=credits>\
     <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>\
-    | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + VERSION + '</a>\
+    | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + Main.version + '</a>\
     | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>\
   </div>\
   <div>\
@@ -3896,7 +3894,7 @@
         return;
       }
       if (!$.id('navtopr')) return;
-      $.addClass($.d.body, "chanx_" + (VERSION.split('.')[1]));
+      $.addClass($.d.body, "chanx_" + (Main.version.split('.')[1]));
       $.addClass($.d.body, $.engine);
       _ref = ['navtop', 'navbot'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3987,7 +3985,7 @@
         return;
       }
       version = data.version;
-      if (version && version !== VERSION && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
+      if (version && version !== Main.version && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
         return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + version + "/4chan_x.user.js";
       }
     },
@@ -4021,7 +4019,7 @@
           }
         } catch (err) {
           if (notify) {
-            alert("4chan X (" + VERSION + ") error: " + err.message + "\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n" + err.stack);
+            alert("4chan X (" + Main.version + ") error: " + err.message + "\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n" + err.stack);
           }
         }
       }
@@ -4044,6 +4042,8 @@
       target = e.target;
       if (target.nodeName === 'TABLE') return Main.node([Main.preParse(target)]);
     },
+    namespace: '4chan_x.',
+    version: '2.29.1',
     callbacks: [],
     css: '\
 /* dialog styling */\

@@ -173,7 +173,7 @@ UI =
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
-    el.style.cssText = if saved = localStorage["#{NAMESPACE}#{id}.position"] then saved else position
+    el.style.cssText = if saved = localStorage["#{Main.namespace}#{id}.position"] then saved else position
     el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
@@ -215,7 +215,7 @@ UI =
     #var a, b;
     #a = (b = c.b, c).a;
     {el} = UI
-    localStorage["#{NAMESPACE}#{el.id}.position"] = el.style.cssText
+    localStorage["#{Main.namespace}#{el.id}.position"] = el.style.cssText
     $.d.removeEventListener 'mousemove', UI.drag, false
     $.d.removeEventListener 'mouseup',   UI.dragend, false
   hover: (e) ->
@@ -258,9 +258,6 @@ $.extend = (object, properties) ->
     object[key] = val
   return
 
-NAMESPACE = '4chan_x.'
-VERSION = '2.29.1'
-
 $.extend $,
   SECOND: 1000
   MINUTE: 60*$.SECOND
@@ -282,7 +279,7 @@ $.extend $,
     $.on $.d, 'DOMContentLoaded', cb
   sync: (key, cb) ->
     $.on window, 'storage', (e) ->
-      cb JSON.parse e.newValue if e.key is "#{NAMESPACE}#{key}"
+      cb JSON.parse e.newValue if e.key is "#{Main.namespace}#{key}"
   id: (id) ->
     $.d.getElementById id
   ajax: (url, callbacks, opts={}) ->
@@ -421,31 +418,31 @@ $.cache.requests = {}
 $.extend $,
   if GM_deleteValue?
     delete: (name) ->
-      name = NAMESPACE + name
+      name = Main.namespace + name
       GM_deleteValue name
     get: (name, defaultValue) ->
-      name = NAMESPACE + name
+      name = Main.namespace + name
       if value = GM_getValue name
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      name = NAMESPACE + name
+      name = Main.namespace + name
       # for `storage` events
       localStorage[name] = JSON.stringify value
       GM_setValue name, JSON.stringify value
   else
     delete: (name) ->
-      name = NAMESPACE + name
+      name = Main.namespace + name
       delete localStorage[name]
     get: (name, defaultValue) ->
-      name = NAMESPACE + name
+      name = Main.namespace + name
       if value = localStorage[name]
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      name = NAMESPACE + name
+      name = Main.namespace + name
       localStorage[name] = JSON.stringify value
 
 $$ = (selector, root=$.d.body) ->
@@ -1787,7 +1784,7 @@ Options =
       innerHTML: '<div id=optionsbar>
   <div id=credits>
     <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>
-    | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + VERSION + '</a>
+    | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + Main.version + '</a>
     | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>
   </div>
   <div>
@@ -3279,7 +3276,7 @@ Main =
       return
     unless $.id 'navtopr'
       return
-    $.addClass $.d.body, "chanx_#{VERSION.split('.')[1]}"
+    $.addClass $.d.body, "chanx_#{Main.version.split('.')[1]}"
     $.addClass $.d.body, $.engine
     for nav in ['navtop', 'navbot']
       $.addClass $("a[href$='/#{Main.BOARD}/']", $.id nav), 'current'
@@ -3355,7 +3352,7 @@ Main =
       QR.message.receive data
       return
     {version} = data
-    if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
+    if version and version isnt Main.version and confirm 'An updated version of 4chan X is available, would you like to install it now?'
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
@@ -3378,7 +3375,7 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "4chan X (#{VERSION}) error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
+        alert "4chan X (#{Main.version}) error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []
@@ -3390,6 +3387,8 @@ Main =
     {target} = e
     Main.node [Main.preParse target] if target.nodeName is 'TABLE'
 
+  namespace: '4chan_x.'
+  version: '2.29.1'
   callbacks: []
   css: '
 /* dialog styling */
