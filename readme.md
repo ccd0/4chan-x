@@ -7,4 +7,16 @@
 - Clone 4chan X.
 - `cd` into it and build with `cake build`.
 - For development (continuous builds), run `cake dev &`. Kill the process with `killall node`.
-- Upgrade version with `cake -v VERSION upgrade`.
+
+# Releasing
+
+- Upgrade version with `cake -v VERSION upgrade`. Note that this is only used to
+release new 4chan x versions, and is not needed or wanted in pull requests.
+
+# Contributing
+
+- Edit the changelog
+- Edit the CoffeeScript source
+- Build the JavaScript
+- Fork the repo
+- Send a pull request
