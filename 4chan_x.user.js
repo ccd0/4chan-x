@@ -73,9 +73,9 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, conf, config, d, engine, flatten, g, log, ui, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, d, engine, flatten, g, log, ui, _base;
 
-  config = {
+  Config = {
     main: {
       Enhancing: {
         '404 Redirect': [true, 'Redirect dead threads and images'],
@@ -194,21 +194,21 @@
 
   log = typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0;
 
-  conf = {};
+  Conf = {};
 
   (flatten = function(parent, obj) {
     var key, val;
     if (obj instanceof Array) {
-      conf[parent] = obj[0];
+      Conf[parent] = obj[0];
     } else if (typeof obj === 'object') {
       for (key in obj) {
         val = obj[key];
         flatten(key, val);
       }
     } else {
-      conf[parent] = obj;
+      Conf[parent] = obj;
     }
-  })(null, config);
+  })(null, Config);
 
   NAMESPACE = '4chan_x.';
 
@@ -384,11 +384,11 @@
     cb: {
       checked: function() {
         $.set(this.name, this.checked);
-        return conf[this.name] = this.checked;
+        return Conf[this.name] = this.checked;
       },
       value: function() {
         $.set(this.name, this.value.trim());
-        return conf[this.name] = this.value;
+        return Conf[this.name] = this.value;
       }
     },
     addStyle: function(css) {
@@ -544,9 +544,9 @@
     filters: {},
     init: function() {
       var boards, filter, hl, key, op, regexp, top, _i, _len, _ref, _ref2, _ref3, _ref4, _ref5;
-      for (key in config.filter) {
+      for (key in Config.filter) {
         this.filters[key] = [];
-        _ref = conf[key].split('\n');
+        _ref = Conf[key].split('\n');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           filter = _ref[_i];
           if (filter[0] === '#') continue;
@@ -710,7 +710,7 @@
         quote = _ref[_i];
         if ((el = $.id(quote.hash.slice(1))) && el.parentNode.parentNode.parentNode.hidden) {
           $.addClass(quote, 'filtered');
-          if (conf['Recursive Filtering']) ReplyHiding.hide(post.root);
+          if (Conf['Recursive Filtering']) ReplyHiding.hide(post.root);
         }
       }
     }
@@ -759,11 +759,11 @@
         quotes: quotes,
         backlinks: []
       };
-      if (conf['Resurrect Quotes']) Quotify.node(post);
-      if (conf['Quote Preview']) QuotePreview.node(post);
-      if (conf['Quote Inline']) QuoteInline.node(post);
-      if (conf['Indicate OP quote']) QuoteOP.node(post);
-      if (conf['Indicate Cross-thread Quotes']) QuoteCT.node(post);
+      if (Conf['Resurrect Quotes']) Quotify.node(post);
+      if (Conf['Quote Preview']) QuotePreview.node(post);
+      if (Conf['Quote Inline']) QuoteInline.node(post);
+      if (Conf['Indicate OP quote']) QuoteOP.node(post);
+      if (Conf['Indicate Cross-thread Quotes']) QuoteCT.node(post);
       return $.replace(a.parentNode.parentNode, node.lastChild);
     }
   };
@@ -920,7 +920,7 @@
       var div, name, trip, uid, _ref, _ref2;
       if (table.hidden) return;
       table.hidden = true;
-      if (!conf['Show Stubs']) return;
+      if (!Conf['Show Stubs']) return;
       name = $('.commentpostername', table).textContent;
       uid = ((_ref = $('.posteruid', table)) != null ? _ref.textContent : void 0) || '';
       trip = ((_ref2 = $('.postertrip', table)) != null ? _ref2.textContent : void 0) || '';
@@ -950,26 +950,26 @@
       }
       thread = Nav.getThread();
       switch (key) {
-        case conf.openQR:
+        case Conf.openQR:
           Keybinds.qr(thread, true);
           break;
-        case conf.openEmptyQR:
+        case Conf.openEmptyQR:
           Keybinds.qr(thread);
           break;
-        case conf.openOptions:
+        case Conf.openOptions:
           if (!$.id('overlay')) Options.dialog();
           break;
-        case conf.close:
+        case Conf.close:
           if (o = $.id('overlay')) {
             Options.close.call(o);
           } else if (QR.el) {
             QR.close();
           }
           break;
-        case conf.submit:
+        case Conf.submit:
           if (QR.el && !QR.status()) QR.submit();
           break;
-        case conf.spoiler:
+        case Conf.spoiler:
           ta = e.target;
           if (ta.nodeName !== 'TEXTAREA') return;
           value = ta.value;
@@ -979,55 +979,55 @@
           range = 9 + selEnd;
           ta.setSelectionRange(range, range);
           break;
-        case conf.watch:
+        case Conf.watch:
           Watcher.toggle(thread);
           break;
-        case conf.update:
+        case Conf.update:
           Updater.update();
           break;
-        case conf.unreadCountTo0:
+        case Conf.unreadCountTo0:
           Unread.replies = [];
           Unread.update();
           break;
-        case conf.expandImage:
+        case Conf.expandImage:
           Keybinds.img(thread);
           break;
-        case conf.expandAllImages:
+        case Conf.expandAllImages:
           Keybinds.img(thread, true);
           break;
-        case conf.zero:
+        case Conf.zero:
           window.location = "/" + g.BOARD + "/0#0";
           break;
-        case conf.nextPage:
+        case Conf.nextPage:
           if ((_ref = $('input[value=Next]')) != null) _ref.click();
           break;
-        case conf.previousPage:
+        case Conf.previousPage:
           if ((_ref2 = $('input[value=Previous]')) != null) _ref2.click();
           break;
-        case conf.nextThread:
+        case Conf.nextThread:
           if (g.REPLY) return;
           Nav.scroll(+1);
           break;
-        case conf.previousThread:
+        case Conf.previousThread:
           if (g.REPLY) return;
           Nav.scroll(-1);
           break;
-        case conf.expandThread:
+        case Conf.expandThread:
           ExpandThread.toggle(thread);
           break;
-        case conf.openThread:
+        case Conf.openThread:
           Keybinds.open(thread);
           break;
-        case conf.openThreadTab:
+        case Conf.openThreadTab:
           Keybinds.open(thread, true);
           break;
-        case conf.nextReply:
+        case Conf.nextReply:
           Keybinds.hl(+1, thread);
           break;
-        case conf.previousReply:
+        case Conf.previousReply:
           Keybinds.hl(-1, thread);
           break;
-        case conf.hide:
+        case Conf.hide:
           if (/\bthread\b/.test(thread.className)) ThreadHiding.toggle(thread);
           break;
         default:
@@ -1241,7 +1241,7 @@
     },
     asyncInit: function() {
       var form, iframe, link, loadChecking, script;
-      if (conf['Hide Original Post Form']) {
+      if (Conf['Hide Original Post Form']) {
         link = $.el('h1', {
           innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Quick Reply' : 'New Thread') + "</a>"
         });
@@ -1285,9 +1285,9 @@
       });
       $.add(d.head, script);
       $.rm(script);
-      if (conf['Persistent QR']) {
+      if (Conf['Persistent QR']) {
         QR.dialog();
-        if (conf['Auto Hide QR']) QR.hide();
+        if (Conf['Auto Hide QR']) QR.hide();
       }
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
@@ -1321,7 +1321,7 @@
       QR.cooldown.auto = false;
       QR.status();
       QR.resetFileInput();
-      if (!conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
+      if (!Conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
         spoiler.click();
       }
       return QR.cleanError();
@@ -1374,12 +1374,12 @@
       }
       if (!QR.el) return;
       input = QR.status.input;
-      input.value = QR.cooldown.auto && conf['Cooldown'] ? value ? "Auto " + value : 'Auto' : value || 'Submit';
+      input.value = QR.cooldown.auto && Conf['Cooldown'] ? value ? "Auto " + value : 'Auto' : value || 'Submit';
       return input.disabled = disabled || false;
     },
     cooldown: {
       init: function() {
-        if (!conf['Cooldown']) return;
+        if (!Conf['Cooldown']) return;
         QR.cooldown.start($.get("/" + g.BOARD + "/cooldown", 0));
         return $.sync("/" + g.BOARD + "/cooldown", QR.cooldown.start);
       },
@@ -1389,7 +1389,7 @@
         return QR.cooldown.count(seconds);
       },
       set: function(seconds) {
-        if (!conf['Cooldown']) return;
+        if (!Conf['Cooldown']) return;
         QR.cooldown.count(seconds);
         return $.set("/" + g.BOARD + "/cooldown", Date.now() + seconds * SECOND);
       },
@@ -1491,8 +1491,8 @@
         persona = $.get('QR.persona', {});
         this.name = prev ? prev.name : persona.name || null;
         this.email = prev && !/^sage$/.test(prev.email) ? prev.email : persona.email || null;
-        this.sub = prev && conf['Remember Subject'] ? prev.sub : conf['Remember Subject'] ? persona.sub : null;
-        this.spoiler = prev && conf['Remember Spoiler'] ? prev.spoiler : false;
+        this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona.sub : null;
+        this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
         this.com = null;
         this.el = $.el('a', {
           className: 'preview',
@@ -1746,7 +1746,7 @@
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\
   <div class=warning></div>\
 </form>');
-      if (conf['Remember QR size'] && engine === 'gecko') {
+      if (Conf['Remember QR size'] && engine === 'gecko') {
         $.on(ta = $('textarea', QR.el), 'mouseup', function() {
           return $.set('QR.size', this.style.cssText);
         });
@@ -1880,8 +1880,8 @@
       QR.cleanError();
       threadID = g.THREAD_ID || $('select', QR.el).value;
       QR.cooldown.auto = QR.replies.length > 1;
-      if (conf['Auto Hide QR'] && !QR.cooldown.auto) QR.hide();
-      if (conf['Thread Watcher'] && conf['Auto Watch Reply'] && threadID !== 'new') {
+      if (Conf['Auto Hide QR'] && !QR.cooldown.auto) QR.hide();
+      if (Conf['Thread Watcher'] && Conf['Auto Watch Reply'] && threadID !== 'new') {
         Watcher.watch(threadID);
       }
       post = {
@@ -1957,31 +1957,31 @@
       persona = {
         name: reply.name,
         email: /^sage$/.test(reply.email) ? persona.email : reply.email,
-        sub: conf['Remember Subject'] ? reply.sub : null
+        sub: Conf['Remember Subject'] ? reply.sub : null
       };
       $.set('QR.persona', persona);
       _ref = b.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], postNumber = _ref[2];
       if (thread === '0') {
-        if (conf['Thread Watcher'] && conf['Auto Watch']) {
+        if (Conf['Thread Watcher'] && Conf['Auto Watch']) {
           $.set('autoWatch', postNumber);
         }
         location.pathname = "/" + g.BOARD + "/res/" + postNumber;
       } else {
         QR.cooldown.auto = QR.replies.length > 1;
         QR.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
-        if (conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
+        if (Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
           $.open("//boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber);
         }
       }
-      if (conf['Persistent QR'] || QR.cooldown.auto) {
+      if (Conf['Persistent QR'] || QR.cooldown.auto) {
         reply.rm();
       } else {
         QR.close();
       }
-      if (g.REPLY && (conf['Unread Count'] || conf['Unread Favicon'])) {
+      if (g.REPLY && (Conf['Unread Count'] || Conf['Unread Favicon'])) {
         Unread.foresee.push(postNumber);
       }
-      if (g.REPLY && conf['Thread Updater'] && conf['Auto Update This']) {
+      if (g.REPLY && Conf['Thread Updater'] && Conf['Auto Update This']) {
         Updater.update();
       }
       QR.status();
@@ -2247,7 +2247,7 @@
   </div>\
 </div>'
       });
-      _ref = config.main;
+      _ref = Config.main;
       for (key in _ref) {
         obj = _ref[key];
         ul = $.el('ul', {
@@ -2255,7 +2255,7 @@
         });
         for (key in obj) {
           arr = obj[key];
-          checked = conf[key] ? 'checked' : '';
+          checked = Conf[key] ? 'checked' : '';
           description = arr[1];
           li = $.el('li', {
             innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
@@ -2275,13 +2275,13 @@
       _ref2 = $$('textarea', dialog);
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         ta = _ref2[_i];
-        ta.textContent = conf[ta.name];
+        ta.textContent = Conf[ta.name];
         $.on(ta, 'change', $.cb.value);
       }
-      (back = $('[name=backlink]', dialog)).value = conf['backlink'];
-      (time = $('[name=time]', dialog)).value = conf['time'];
-      (fileInfoR = $('[name=fileInfoR]', dialog)).value = conf['fileInfoR'];
-      (fileInfoT = $('[name=fileInfoT]', dialog)).value = conf['fileInfoT'];
+      (back = $('[name=backlink]', dialog)).value = Conf['backlink'];
+      (time = $('[name=time]', dialog)).value = Conf['time'];
+      (fileInfoR = $('[name=fileInfoR]', dialog)).value = Conf['fileInfoR'];
+      (fileInfoT = $('[name=fileInfoT]', dialog)).value = Conf['fileInfoT'];
       $.on(back, 'keyup', $.cb.value);
       $.on(back, 'keyup', Options.backlink);
       $.on(time, 'keyup', $.cb.value);
@@ -2291,17 +2291,17 @@
       $.on(fileInfoT, 'keyup', $.cb.value);
       $.on(fileInfoT, 'keyup', Options.fileInfo);
       favicon = $('select', dialog);
-      favicon.value = conf['favicon'];
+      favicon.value = Conf['favicon'];
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', Options.favicon);
-      _ref3 = config.hotkeys;
+      _ref3 = Config.hotkeys;
       for (key in _ref3) {
         arr = _ref3[key];
         tr = $.el('tr', {
           innerHTML: "<td>" + arr[1] + "</td><td><input name=" + key + "></td>"
         });
         input = $('input', tr);
-        input.value = conf[key];
+        input.value = Conf[key];
         $.on(input, 'keydown', Options.keybind);
         $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
@@ -2310,7 +2310,7 @@
       for (_j = 0, _len2 = _ref4.length; _j < _len2; _j++) {
         indicator = _ref4[_j];
         key = indicator.firstChild.textContent;
-        indicator.hidden = conf[key];
+        indicator.hidden = Conf[key];
         indicators[key] = indicator;
         $.on($("[name='" + key + "']", dialog), 'click', function() {
           return indicators[this.name].hidden = this.checked;
@@ -2357,7 +2357,7 @@
       return $.id('timePreview').textContent = Time.funk(Time);
     },
     backlink: function() {
-      return $.id('backlinkPreview').textContent = conf['backlink'].replace(/%id/, '123456789');
+      return $.id('backlinkPreview').textContent = Conf['backlink'].replace(/%id/, '123456789');
     },
     fileInfo: function() {
       var type;
@@ -2454,7 +2454,7 @@
     },
     hide: function(thread) {
       var a, div, name, num, op, span, text, trip, uid, _ref, _ref2;
-      if (!conf['Show Stubs']) {
+      if (!Conf['Show Stubs']) {
         thread.hidden = true;
         thread.nextSibling.hidden = true;
         return;
@@ -2491,15 +2491,15 @@
   Updater = {
     init: function() {
       var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
-      html = "<div class=move><span id=count></span> <span id=timer>-" + conf['Interval'] + "</span></div>";
-      checkbox = config.updater.checkbox;
+      html = "<div class=move><span id=count></span> <span id=timer>-" + Conf['Interval'] + "</span></div>";
+      checkbox = Config.updater.checkbox;
       for (name in checkbox) {
         title = checkbox[name][1];
-        checked = conf[name] ? 'checked' : '';
+        checked = Conf[name] ? 'checked' : '';
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
-      checked = conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + conf['Interval'] + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
+      checked = Conf['Auto Update'] ? 'checked' : '';
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + Conf['Interval'] + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
       dialog = ui.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
@@ -2519,11 +2519,11 @@
           } else if (input.name === 'Auto Update This') {
             $.on(input, 'click', this.cb.autoUpdate);
             this.cb.autoUpdate.call(input);
-            conf[input.name] = input.checked;
+            Conf[input.name] = input.checked;
           }
         } else if (input.name === 'Interval') {
           $.on(input, 'change', function() {
-            return conf['Interval'] = this.value = parseInt(this.value, 10) || conf['Interval'];
+            return Conf['Interval'] = this.value = parseInt(this.value, 10) || Conf['Interval'];
           });
           $.on(input, 'change', $.cb.value);
         } else if (input.type === 'button') {
@@ -2536,7 +2536,7 @@
     },
     cb: {
       verbose: function() {
-        if (conf['Verbose']) {
+        if (Conf['Verbose']) {
           Updater.count.textContent = '+0';
           return Updater.timer.hidden = false;
         } else {
@@ -2569,7 +2569,7 @@
           Updater.count.className = 'warning';
           clearTimeout(Updater.timeoutID);
           g.dead = true;
-          if (conf['Unread Count']) {
+          if (Conf['Unread Count']) {
             Unread.title = Unread.title.match(/^.+-/)[0] + ' 404';
           } else {
             d.title = d.title.match(/^.+-/)[0] + ' 404';
@@ -2582,7 +2582,7 @@
           return;
         }
         Updater.retryCoef = 10;
-        Updater.timer.textContent = '-' + conf['Interval'];
+        Updater.timer.textContent = '-' + Conf['Interval'];
         /*
               Status Code 304: Not modified
               By sending the `If-Modified-Since` header we get a proper status code, and no response.
@@ -2590,7 +2590,7 @@
               and won't load images and scripts when parsing the response.
         */
         if (this.status === 304) {
-          if (conf['Verbose']) {
+          if (Conf['Verbose']) {
             Updater.count.textContent = '+0';
             Updater.count.className = null;
           }
@@ -2608,8 +2608,8 @@
           nodes.push(reply.parentNode.parentNode.parentNode);
         }
         newPosts = nodes.length;
-        scroll = conf['Scrolling'] && Updater.scrollBG() && newPosts && Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25;
-        if (conf['Verbose']) {
+        scroll = Conf['Scrolling'] && Updater.scrollBG() && newPosts && Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25;
+        if (Conf['Verbose']) {
           Updater.count.textContent = "+" + newPosts;
           Updater.count.className = newPosts ? 'new' : null;
         }
@@ -2770,7 +2770,7 @@
       var link, _i, _len, _ref;
       if (g.BOARD === 'f') return;
       this.links = [];
-      _ref = conf['sauces'].split('\n');
+      _ref = Conf['sauces'].split('\n');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
         if (link[0] === '#') continue;
@@ -2865,7 +2865,7 @@
     },
     foo: function() {
       var code;
-      code = conf['time'].replace(/%([A-Za-z])/g, function(s, c) {
+      code = Conf['time'].replace(/%([A-Za-z])/g, function(s, c) {
         if (c in Time.formatters) {
           return "' + Time.formatters." + c + "() + '";
         } else {
@@ -2967,7 +2967,7 @@
       var code, format, funks, i, param;
       funks = [];
       for (i = 0; i <= 1; i++) {
-        format = i ? conf['fileInfoT'] : conf['fileInfoR'];
+        format = i ? Conf['fileInfoT'] : Conf['fileInfoR'];
         param = i ? /%([BKlMrs])/g : /%([BKlLMnNrs])/g;
         code = format.replace(param, function(s, c) {
           if (c in FileInfo.formatters) {
@@ -3064,7 +3064,7 @@
   QuoteBacklink = {
     init: function() {
       var format;
-      format = conf['backlink'].replace(/%id/g, "' + id + '");
+      format = Conf['backlink'].replace(/%id/g, "' + id + '");
       this.funk = Function('id', "return '" + format + "'");
       return g.callbacks.push(this.node);
     },
@@ -3083,12 +3083,12 @@
         textContent: QuoteBacklink.funk(post.id)
       });
       for (qid in quotes) {
-        if (!(el = $.id(qid)) || el.className === 'op' && !conf['OP Backlinks']) {
+        if (!(el = $.id(qid)) || el.className === 'op' && !Conf['OP Backlinks']) {
           continue;
         }
         link = a.cloneNode(true);
-        if (conf['Quote Preview']) $.on(link, 'mouseover', QuotePreview.mouseover);
-        if (conf['Quote Inline']) {
+        if (Conf['Quote Preview']) $.on(link, 'mouseover', QuotePreview.mouseover);
+        if (Conf['Quote Inline']) {
           $.on(link, 'click', QuoteInline.toggle);
         } else {
           link.setAttribute('onclick', "replyhl('" + post.id + "');");
@@ -3152,7 +3152,7 @@
         }
         if (/\bbacklink\b/.test(q.className)) {
           $.after(q.parentNode, inline);
-          if (conf['Forward Hiding']) {
+          if (Conf['Forward Hiding']) {
             table = $.x('ancestor::table', el);
             $.addClass(table, 'forwarded');
             ++table.title || (table.title = 1);
@@ -3178,7 +3178,7 @@
       var inlined, table, _i, _len, _ref;
       table = $.x("following::*[@id='i" + id + "']", q);
       $.rm(table);
-      if (!conf['Forward Hiding']) return;
+      if (!Conf['Forward Hiding']) return;
       _ref = $$('.backlink.inlined', table);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         inlined = _ref[_i];
@@ -3253,7 +3253,7 @@
       id = this.hash.slice(1);
       if (el = $.id(id)) {
         qp.innerHTML = el.innerHTML;
-        if (conf['Quote Highlighting']) $.addClass(el, 'qphl');
+        if (Conf['Quote Highlighting']) $.addClass(el, 'qphl');
         if (/\bbacklink\b/.test(this.className)) {
           replyID = $.x('preceding-sibling::input', this.parentNode).name;
           _ref = $$('.quotelink', qp);
@@ -3298,9 +3298,9 @@
         filesize: $('.filesize', qp),
         img: $('img[md5]', qp)
       };
-      if (conf['Image Auto-Gif']) AutoGif.node(post);
-      if (conf['Time Formatting']) Time.node(post);
-      if (conf['File Info Formatting']) return FileInfo.node(post);
+      if (Conf['Image Auto-Gif']) AutoGif.node(post);
+      if (Conf['Time Formatting']) Time.node(post);
+      if (Conf['File Info Formatting']) return FileInfo.node(post);
     }
   };
 
@@ -3486,8 +3486,8 @@
       var count;
       if (!g.REPLY) return;
       count = this.replies.length;
-      if (conf['Unread Count']) this.setTitle(count);
-      if (!(conf['Unread Favicon'] && (count < 2 || forceUpdate))) return;
+      if (Conf['Unread Count']) this.setTitle(count);
+      if (!(Conf['Unread Favicon'] && (count < 2 || forceUpdate))) return;
       Favicon.el.href = g.dead ? count ? Favicon.unreadDead : Favicon.dead : count ? Favicon.unread : Favicon["default"];
       return $.add(d.head, Favicon.el);
     }
@@ -3504,7 +3504,7 @@
       return this["switch"]();
     },
     "switch": function() {
-      switch (conf['favicon']) {
+      switch (Conf['favicon']) {
         case 'ferongr':
           this.unreadDead = 'data:unreadDead;base64,R0lGODlhEAAQAOMHAOgLAnMFAL8AAOgLAukMA/+AgP+rq////////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
           this.unreadSFW = 'data:unreadSFW;base64,R0lGODlhEAAQAOMHAADX8QBwfgC2zADX8QDY8nnl8qLp8v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
@@ -3539,7 +3539,7 @@
     },
     image: function(href) {
       href = href.split('/');
-      if (!conf['404 Redirect']) return;
+      if (!Conf['404 Redirect']) return;
       switch (href[3]) {
         case 'a':
         case 'jp':
@@ -3554,7 +3554,7 @@
       if (board == null) board = g.BOARD;
       if (id == null) id = g.THREAD_ID;
       if (mode == null) mode = 'thread';
-      if (!(conf['404 Redirect'] || mode === 'post')) return;
+      if (!(Conf['404 Redirect'] || mode === 'post')) return;
       switch (g.BOARD) {
         case 'a':
         case 'jp':
@@ -3683,7 +3683,7 @@
         ImageExpand.on = this.checked;
         if (ImageExpand.on) {
           thumbs = $$('img[md5]');
-          if (conf['Expand From Current']) {
+          if (Conf['Expand From Current']) {
             for (i = 0, _len = thumbs.length; i < _len; i++) {
               thumb = thumbs[i];
               if (thumb.getBoundingClientRect().top > 0) break;
@@ -3813,9 +3813,9 @@
       } else {
         g.PAGENUM = parseInt(temp) || 0;
       }
-      for (key in conf) {
-        val = conf[key];
-        conf[key] = $.get(key, val);
+      for (key in Conf) {
+        val = Conf[key];
+        Conf[key] = $.get(key, val);
       }
       $.on(window, 'message', Main.message);
       switch (location.hostname) {
@@ -3851,12 +3851,12 @@
           return;
       }
       $.ready(Options.init);
-      if (conf['Quick Reply'] && conf['Hide Original Post Form'] && g.BOARD !== 'f') {
+      if (Conf['Quick Reply'] && Conf['Hide Original Post Form'] && g.BOARD !== 'f') {
         Main.css += 'form[name=post] { display: none; }';
       }
       Main.addStyle();
       now = Date.now();
-      if (conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
+      if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
         $.ready(function() {
           return $.add(d.head, $.el('script', {
             src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
@@ -3881,23 +3881,23 @@
         $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
         $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
       }
-      if (conf['Filter']) Filter.init();
-      if (conf['Reply Hiding']) ReplyHiding.init();
-      if (conf['Filter'] || conf['Reply Hiding']) StrikethroughQuotes.init();
-      if (conf['Anonymize']) Anonymize.init();
-      if (conf['Time Formatting']) Time.init();
-      if (conf['File Info Formatting']) FileInfo.init();
-      if (conf['Sauce']) Sauce.init();
-      if (conf['Reveal Spoilers']) RevealSpoilers.init();
-      if (conf['Image Auto-Gif']) AutoGif.init();
-      if (conf['Image Hover']) ImageHover.init();
-      if (conf['Report Button']) ReportButton.init();
-      if (conf['Resurrect Quotes']) Quotify.init();
-      if (conf['Quote Inline']) QuoteInline.init();
-      if (conf['Quote Preview']) QuotePreview.init();
-      if (conf['Quote Backlinks']) QuoteBacklink.init();
-      if (conf['Indicate OP quote']) QuoteOP.init();
-      if (conf['Indicate Cross-thread Quotes']) QuoteCT.init();
+      if (Conf['Filter']) Filter.init();
+      if (Conf['Reply Hiding']) ReplyHiding.init();
+      if (Conf['Filter'] || Conf['Reply Hiding']) StrikethroughQuotes.init();
+      if (Conf['Anonymize']) Anonymize.init();
+      if (Conf['Time Formatting']) Time.init();
+      if (Conf['File Info Formatting']) FileInfo.init();
+      if (Conf['Sauce']) Sauce.init();
+      if (Conf['Reveal Spoilers']) RevealSpoilers.init();
+      if (Conf['Image Auto-Gif']) AutoGif.init();
+      if (Conf['Image Hover']) ImageHover.init();
+      if (Conf['Report Button']) ReportButton.init();
+      if (Conf['Resurrect Quotes']) Quotify.init();
+      if (Conf['Quote Inline']) QuoteInline.init();
+      if (Conf['Quote Preview']) QuotePreview.init();
+      if (Conf['Quote Backlinks']) QuoteBacklink.init();
+      if (Conf['Indicate OP quote']) QuoteOP.init();
+      if (Conf['Indicate Cross-thread Quotes']) QuoteCT.init();
       return $.ready(Main.ready);
     },
     ready: function() {
@@ -3917,49 +3917,49 @@
       form = $('form[name=delform]');
       Threading.thread(form.firstElementChild);
       Favicon.init();
-      if (conf['Quick Reply']) QR.init();
-      if (conf['Image Expansion']) ImageExpand.init();
-      if (conf['Thread Watcher']) {
+      if (Conf['Quick Reply']) QR.init();
+      if (Conf['Image Expansion']) ImageExpand.init();
+      if (Conf['Thread Watcher']) {
         setTimeout(function() {
           return Watcher.init();
         });
       }
-      if (conf['Keybinds']) {
+      if (Conf['Keybinds']) {
         setTimeout(function() {
           return Keybinds.init();
         });
       }
       if (g.REPLY) {
-        if (conf['Thread Updater']) {
+        if (Conf['Thread Updater']) {
           setTimeout(function() {
             return Updater.init();
           });
         }
-        if (conf['Thread Stats']) ThreadStats.init();
-        if (conf['Reply Navigation']) {
+        if (Conf['Thread Stats']) ThreadStats.init();
+        if (Conf['Reply Navigation']) {
           setTimeout(function() {
             return Nav.init();
           });
         }
-        if (conf['Post in Title']) TitlePost.init();
-        if (conf['Unread Count'] || conf['Unread Favicon']) Unread.init();
+        if (Conf['Post in Title']) TitlePost.init();
+        if (Conf['Unread Count'] || Conf['Unread Favicon']) Unread.init();
       } else {
-        if (conf['Thread Hiding']) {
+        if (Conf['Thread Hiding']) {
           setTimeout(function() {
             return ThreadHiding.init();
           });
         }
-        if (conf['Thread Expansion']) {
+        if (Conf['Thread Expansion']) {
           setTimeout(function() {
             return ExpandThread.init();
           });
         }
-        if (conf['Comment Expansion']) {
+        if (Conf['Comment Expansion']) {
           setTimeout(function() {
             return ExpandComment.init();
           });
         }
-        if (conf['Index Navigation']) {
+        if (Conf['Index Navigation']) {
           setTimeout(function() {
             return Nav.init();
           });

@@ -1,4 +1,4 @@
-config =
+Config =
   main:
     Enhancing:
       '404 Redirect':                 [true,  'Redirect dead threads and images']
@@ -159,17 +159,17 @@ config =
 log = console.log.bind? console
 
 # flatten the config
-conf = {}
+Conf = {}
 (flatten = (parent, obj) ->
   if obj instanceof Array
-    conf[parent] = obj[0]
+    Conf[parent] = obj[0]
   else if typeof obj is 'object'
     for key, val of obj
       flatten key, val
   else # string or number
-    conf[parent] = obj
+    Conf[parent] = obj
   return
-) null, config
+) null, Config
 
 NAMESPACE = '4chan_x.'
 VERSION = '2.29.1'
@@ -312,10 +312,10 @@ $.extend $,
   cb:
     checked: ->
       $.set @name, @checked
-      conf[@name] = @checked
+      Conf[@name] = @checked
     value: ->
       $.set @name, @value.trim()
-      conf[@name] = @value
+      Conf[@name] = @value
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
@@ -456,9 +456,9 @@ $$ = (selector, root=d.body) ->
 Filter =
   filters: {}
   init: ->
-    for key of config.filter
+    for key of Config.filter
       @filters[key] = []
-      for filter in conf[key].split '\n'
+      for filter in Conf[key].split '\n'
         continue if filter[0] is '#'
 
         unless regexp = filter.match /\/(.+)\/(\w*)/
@@ -618,7 +618,7 @@ StrikethroughQuotes =
     for quote in post.quotes
       if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
         $.addClass quote, 'filtered'
-        ReplyHiding.hide post.root if conf['Recursive Filtering']
+        ReplyHiding.hide post.root if Conf['Recursive Filtering']
     return
 
 ExpandComment =
@@ -655,15 +655,15 @@ ExpandComment =
       threadId:  threadID
       quotes:    quotes
       backlinks: []
-    if conf['Resurrect Quotes']
+    if Conf['Resurrect Quotes']
       Quotify.node      post
-    if conf['Quote Preview']
+    if Conf['Quote Preview']
       QuotePreview.node post
-    if conf['Quote Inline']
+    if Conf['Quote Inline']
       QuoteInline.node  post
-    if conf['Indicate OP quote']
+    if Conf['Indicate OP quote']
       QuoteOP.node      post
-    if conf['Indicate Cross-thread Quotes']
+    if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
     $.replace a.parentNode.parentNode, node.lastChild
 
@@ -781,7 +781,7 @@ ReplyHiding =
 
     table.hidden = true
 
-    return unless conf['Show Stubs']
+    return unless Conf['Show Stubs']
 
     name = $('.commentpostername', table).textContent
     uid  = $('.posteruid',         table)?.textContent or ''
@@ -806,20 +806,20 @@ Keybinds =
     thread = Nav.getThread()
     switch key
       # QR & Options
-      when conf.openQR
+      when Conf.openQR
         Keybinds.qr thread, true
-      when conf.openEmptyQR
+      when Conf.openEmptyQR
         Keybinds.qr thread
-      when conf.openOptions
+      when Conf.openOptions
         Options.dialog() unless $.id 'overlay'
-      when conf.close
+      when Conf.close
         if o = $.id 'overlay'
           Options.close.call o
         else if QR.el
           QR.close()
-      when conf.submit
+      when Conf.submit
         QR.submit() if QR.el and !QR.status()
-      when conf.spoiler
+      when Conf.spoiler
         ta = e.target
         return if ta.nodeName isnt 'TEXTAREA'
 
@@ -836,44 +836,44 @@ Keybinds =
         # Move the caret to the end of the selection.
         ta.setSelectionRange range, range
       # Thread related
-      when conf.watch
+      when Conf.watch
         Watcher.toggle thread
-      when conf.update
+      when Conf.update
         Updater.update()
-      when conf.unreadCountTo0
+      when Conf.unreadCountTo0
         Unread.replies = []
         Unread.update()
       # Images
-      when conf.expandImage
+      when Conf.expandImage
         Keybinds.img thread
-      when conf.expandAllImages
+      when Conf.expandAllImages
         Keybinds.img thread, true
       # Board Navigation
-      when conf.zero
+      when Conf.zero
         window.location = "/#{g.BOARD}/0#0"
-      when conf.nextPage
+      when Conf.nextPage
         $('input[value=Next]')?.click()
-      when conf.previousPage
+      when Conf.previousPage
         $('input[value=Previous]')?.click()
       # Thread Navigation
-      when conf.nextThread
+      when Conf.nextThread
         return if g.REPLY
         Nav.scroll +1
-      when conf.previousThread
+      when Conf.previousThread
         return if g.REPLY
         Nav.scroll -1
-      when conf.expandThread
+      when Conf.expandThread
         ExpandThread.toggle thread
-      when conf.openThread
+      when Conf.openThread
         Keybinds.open thread
-      when conf.openThreadTab
+      when Conf.openThreadTab
         Keybinds.open thread, true
       # Reply Navigation
-      when conf.nextReply
+      when Conf.nextReply
         Keybinds.hl +1, thread
-      when conf.previousReply
+      when Conf.previousReply
         Keybinds.hl -1, thread
-      when conf.hide
+      when Conf.hide
         ThreadHiding.toggle thread if /\bthread\b/.test thread.className
       else
         return
@@ -1021,7 +1021,7 @@ QR =
     setTimeout @asyncInit
 
   asyncInit: ->
-    if conf['Hide Original Post Form']
+    if Conf['Hide Original Post Form']
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on $('a', link), 'click', ->
         QR.open()
@@ -1051,9 +1051,9 @@ QR =
     $.add d.head, script
     $.rm script
 
-    if conf['Persistent QR']
+    if Conf['Persistent QR']
       QR.dialog()
-      QR.hide() if conf['Auto Hide QR']
+      QR.hide() if Conf['Auto Hide QR']
     $.on d, 'dragover',  QR.dragOver
     $.on d, 'drop',      QR.dropFile
     $.on d, 'dragstart', QR.drag
@@ -1078,7 +1078,7 @@ QR =
     QR.cooldown.auto = false
     QR.status()
     QR.resetFileInput()
-    if not conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
+    if not Conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
       spoiler.click()
     QR.cleanError()
   hide: ->
@@ -1123,7 +1123,7 @@ QR =
     return unless QR.el
     {input} = QR.status
     input.value =
-      if QR.cooldown.auto and conf['Cooldown']
+      if QR.cooldown.auto and Conf['Cooldown']
         if value then "Auto #{value}" else 'Auto'
       else
         value or 'Submit'
@@ -1131,14 +1131,14 @@ QR =
 
   cooldown:
     init: ->
-      return unless conf['Cooldown']
+      return unless Conf['Cooldown']
       QR.cooldown.start $.get "/#{g.BOARD}/cooldown", 0
       $.sync "/#{g.BOARD}/cooldown", QR.cooldown.start
     start: (timeout) ->
       seconds = Math.floor (timeout - Date.now()) / 1000
       QR.cooldown.count seconds
     set: (seconds) ->
-      return unless conf['Cooldown']
+      return unless Conf['Cooldown']
       QR.cooldown.count seconds
       $.set "/#{g.BOARD}/cooldown", Date.now() + seconds*SECOND
     count: (seconds) ->
@@ -1234,8 +1234,8 @@ QR =
       persona  = $.get 'QR.persona', {}
       @name    = if prev then prev.name else persona.name or null
       @email   = if prev and !/^sage$/.test prev.email then prev.email   else persona.email or null
-      @sub     = if prev and conf['Remember Subject']  then prev.sub     else if conf['Remember Subject'] then persona.sub else null
-      @spoiler = if prev and conf['Remember Spoiler']  then prev.spoiler else false
+      @sub     = if prev and Conf['Remember Subject']  then prev.sub     else if Conf['Remember Subject'] then persona.sub else null
+      @spoiler = if prev and Conf['Remember Spoiler']  then prev.spoiler else false
       @com = null
 
       @el = $.el 'a',
@@ -1438,7 +1438,7 @@ QR =
   <div class=warning></div>
 </form>'
 
-    if conf['Remember QR size'] and engine is 'gecko'
+    if Conf['Remember QR size'] and engine is 'gecko'
       $.on ta = $('textarea', QR.el), 'mouseup', ->
         $.set 'QR.size', @style.cssText
       ta.style.cssText = $.get 'QR.size', ''
@@ -1557,9 +1557,9 @@ QR =
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1
-    if conf['Auto Hide QR'] and not QR.cooldown.auto
+    if Conf['Auto Hide QR'] and not QR.cooldown.auto
       QR.hide()
-    if conf['Thread Watcher'] and conf['Auto Watch Reply'] and threadID isnt 'new'
+    if Conf['Thread Watcher'] and Conf['Auto Watch Reply'] and threadID isnt 'new'
       Watcher.watch threadID
 
     post =
@@ -1634,12 +1634,12 @@ QR =
     persona =
       name:  reply.name
       email: if /^sage$/.test reply.email then persona.email else reply.email
-      sub:   if conf['Remember Subject']  then reply.sub     else null
+      sub:   if Conf['Remember Subject']  then reply.sub     else null
     $.set 'QR.persona', persona
 
     [_, thread, postNumber] = b.lastChild.textContent.match /thread:(\d+),no:(\d+)/
     if thread is '0' # new thread
-      if conf['Thread Watcher'] and conf['Auto Watch']
+      if Conf['Thread Watcher'] and Conf['Auto Watch']
         $.set 'autoWatch', postNumber
       # auto-noko
       location.pathname = "/#{g.BOARD}/res/#{postNumber}"
@@ -1647,17 +1647,17 @@ QR =
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       QR.cooldown.auto = QR.replies.length > 1
       QR.cooldown.set if /sage/i.test reply.email then 60 else 30
-      if conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
+      if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
         $.open "//boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}"
 
-    if conf['Persistent QR'] or QR.cooldown.auto
+    if Conf['Persistent QR'] or QR.cooldown.auto
       reply.rm()
     else
       QR.close()
 
-    if g.REPLY and (conf['Unread Count'] or conf['Unread Favicon'])
+    if g.REPLY and (Conf['Unread Count'] or Conf['Unread Favicon'])
       Unread.foresee.push postNumber
-    if g.REPLY and conf['Thread Updater'] and conf['Auto Update This']
+    if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
       Updater.update()
 
     QR.status()
@@ -1892,11 +1892,11 @@ Options =
 </div>'
 
     #main
-    for key, obj of config.main
+    for key, obj of Config.main
       ul = $.el 'ul',
         textContent: key
       for key, arr of obj
-        checked = if conf[key] then 'checked' else ''
+        checked = if Conf[key] then 'checked' else ''
         description = arr[1]
         li = $.el 'li',
           innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
@@ -1913,14 +1913,14 @@ Options =
 
     #filter & sauce
     for ta in $$ 'textarea', dialog
-      ta.textContent = conf[ta.name]
+      ta.textContent = Conf[ta.name]
       $.on ta, 'change', $.cb.value
 
     #rice
-    (back         = $ '[name=backlink]',     dialog).value = conf['backlink']
-    (time         = $ '[name=time]',         dialog).value = conf['time']
-    (fileInfoR = $ '[name=fileInfoR]', dialog).value = conf['fileInfoR']
-    (fileInfoT = $ '[name=fileInfoT]', dialog).value = conf['fileInfoT']
+    (back         = $ '[name=backlink]',     dialog).value = Conf['backlink']
+    (time         = $ '[name=time]',         dialog).value = Conf['time']
+    (fileInfoR = $ '[name=fileInfoR]', dialog).value = Conf['fileInfoR']
+    (fileInfoT = $ '[name=fileInfoT]', dialog).value = Conf['fileInfoT']
     $.on back, 'keyup', $.cb.value
     $.on back, 'keyup', Options.backlink
     $.on time, 'keyup', $.cb.value
@@ -1930,16 +1930,16 @@ Options =
     $.on fileInfoT, 'keyup', $.cb.value
     $.on fileInfoT, 'keyup', Options.fileInfo
     favicon = $ 'select', dialog
-    favicon.value = conf['favicon']
+    favicon.value = Conf['favicon']
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
 
     #keybinds
-    for key, arr of config.hotkeys
+    for key, arr of Config.hotkeys
       tr = $.el 'tr',
         innerHTML: "<td>#{arr[1]}</td><td><input name=#{key}></td>"
       input = $ 'input', tr
-      input.value = conf[key]
+      input.value = Conf[key]
       $.on input, 'keydown', Options.keybind
       $.add $('#keybinds_tab + div tbody', dialog), tr
 
@@ -1947,7 +1947,7 @@ Options =
     indicators = {}
     for indicator in $$ '.warning', dialog
       key = indicator.firstChild.textContent
-      indicator.hidden = conf[key]
+      indicator.hidden = Conf[key]
       indicators[key] = indicator
       $.on $("[name='#{key}']", dialog), 'click', ->
         indicators[@name].hidden = @checked
@@ -1988,7 +1988,7 @@ Options =
     Time.date = new Date()
     $.id('timePreview').textContent = Time.funk Time
   backlink: ->
-    $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
+    $.id('backlinkPreview').textContent = Conf['backlink'].replace /%id/, '123456789'
   fileInfo: ->
     type = if @name is 'fileInfoR' then 0 else 1
     FileInfo.data =
@@ -2069,7 +2069,7 @@ ThreadHiding =
     $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
   hide: (thread) ->
-    unless conf['Show Stubs']
+    unless Conf['Show Stubs']
       thread.hidden = true
       thread.nextSibling.hidden = true
       return
@@ -2104,17 +2104,17 @@ ThreadHiding =
 
 Updater =
   init: ->
-    html = "<div class=move><span id=count></span> <span id=timer>-#{conf['Interval']}</span></div>"
-    {checkbox} = config.updater
+    html = "<div class=move><span id=count></span> <span id=timer>-#{Conf['Interval']}</span></div>"
+    {checkbox} = Config.updater
     for name of checkbox
       title = checkbox[name][1]
-      checked = if conf[name] then 'checked' else ''
+      checked = if Conf[name] then 'checked' else ''
       html += "<div><label title='#{title}'>#{name}<input name='#{name}' type=checkbox #{checked}></label></div>"
 
-    checked = if conf['Auto Update'] then 'checked' else ''
+    checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input name=Interval value=#{conf['Interval']} type=text></label></div>
+      <div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} type=text></label></div>
       <div><input value='Update Now' type=button></div>"
 
     dialog = ui.dialog 'updater', 'bottom: 0; right: 0;', html
@@ -2136,9 +2136,9 @@ Updater =
           $.on input, 'click', @cb.autoUpdate
           @cb.autoUpdate.call input
           # Required for the QR's update after posting.
-          conf[input.name] = input.checked
+          Conf[input.name] = input.checked
       else if input.name is 'Interval'
-        $.on input, 'change', -> conf['Interval'] = @value = parseInt(@value, 10) or conf['Interval']
+        $.on input, 'change', -> Conf['Interval'] = @value = parseInt(@value, 10) or Conf['Interval']
         $.on input, 'change', $.cb.value
       else if input.type is 'button'
         $.on input, 'click', @update
@@ -2150,7 +2150,7 @@ Updater =
 
   cb:
     verbose: ->
-      if conf['Verbose']
+      if Conf['Verbose']
         Updater.count.textContent = '+0'
         Updater.timer.hidden = false
       else
@@ -2176,7 +2176,7 @@ Updater =
         Updater.count.className   = 'warning'
         clearTimeout Updater.timeoutID
         g.dead = true
-        if conf['Unread Count']
+        if Conf['Unread Count']
           Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
         else
           d.title = d.title.match(/^.+-/)[0] + ' 404'
@@ -2186,7 +2186,7 @@ Updater =
         return
 
       Updater.retryCoef = 10
-      Updater.timer.textContent = '-' + conf['Interval']
+      Updater.timer.textContent = '-' + Conf['Interval']
 
       ###
       Status Code 304: Not modified
@@ -2195,7 +2195,7 @@ Updater =
       and won't load images and scripts when parsing the response.
       ###
       if @status is 304
-        if conf['Verbose']
+        if Conf['Verbose']
           Updater.count.textContent = '+0'
           Updater.count.className = null
         return
@@ -2211,9 +2211,9 @@ Updater =
         nodes.push reply.parentNode.parentNode.parentNode #table
 
       newPosts = nodes.length
-      scroll = conf['Scrolling'] && Updater.scrollBG() && newPosts &&
+      scroll = Conf['Scrolling'] && Updater.scrollBG() && newPosts &&
         Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25
-      if conf['Verbose']
+      if Conf['Verbose']
         Updater.count.textContent = "+#{newPosts}"
         Updater.count.className = if newPosts then 'new' else null
 
@@ -2344,7 +2344,7 @@ Sauce =
   init: ->
     return if g.BOARD is 'f'
     @links = []
-    for link in conf['sauces'].split '\n'
+    for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
       @links.push @createSauceLink link
     return unless @links.length
@@ -2422,7 +2422,7 @@ Time =
       textContent: ' ' + Time.funk(Time) + ' '
     $.replace node, time
   foo: ->
-    code = conf['time'].replace /%([A-Za-z])/g, (s, c) ->
+    code = Conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
         "' + Time.formatters.#{c}() + '"
       else
@@ -2496,7 +2496,7 @@ FileInfo =
   setFormats: ->
     funks = []
     for i in [0..1]
-      format = if i then conf['fileInfoT'] else conf['fileInfoR']
+      format = if i then Conf['fileInfoT'] else Conf['fileInfoR']
       param  = if i then /%([BKlMrs])/g    else /%([BKlLMnNrs])/g
       code   = format.replace param, (s, c) ->
         if c of FileInfo.formatters
@@ -2553,7 +2553,7 @@ TitlePost =
 
 QuoteBacklink =
   init: ->
-    format = conf['backlink'].replace /%id/g, "' + id + '"
+    format = Conf['backlink'].replace /%id/g, "' + id + '"
     @funk  = Function 'id', "return '#{format}'"
     g.callbacks.push @node
   node: (post) ->
@@ -2570,11 +2570,11 @@ QuoteBacklink =
       textContent: QuoteBacklink.funk post.id
     for qid of quotes
       # Don't backlink the OP.
-      continue if !(el = $.id qid) or el.className is 'op' and !conf['OP Backlinks']
+      continue if !(el = $.id qid) or el.className is 'op' and !Conf['OP Backlinks']
       link = a.cloneNode true
-      if conf['Quote Preview']
+      if Conf['Quote Preview']
         $.on link, 'mouseover', QuotePreview.mouseover
-      if conf['Quote Inline']
+      if Conf['Quote Inline']
         $.on link, 'click', QuoteInline.toggle
       else
         link.setAttribute 'onclick', "replyhl('#{post.id}');"
@@ -2618,7 +2618,7 @@ QuoteInline =
         Unread.update()
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
-        if conf['Forward Hiding']
+        if Conf['Forward Hiding']
           table = $.x 'ancestor::table', el
           $.addClass table, 'forwarded'
           # Will only unhide if there's no inlined backlinks of it anymore.
@@ -2639,7 +2639,7 @@ QuoteInline =
     #select the corresponding table or loading td
     table = $.x "following::*[@id='i#{id}']", q
     $.rm table
-    return unless conf['Forward Hiding']
+    return unless Conf['Forward Hiding']
     for inlined in $$ '.backlink.inlined', table
       table = $.x 'ancestor::table', $.id inlined.hash[1..]
       $.removeClass table, 'forwarded' unless --table.title
@@ -2698,7 +2698,7 @@ QuotePreview =
     id = @hash[1..]
     if el = $.id id
       qp.innerHTML = el.innerHTML
-      $.addClass el, 'qphl' if conf['Quote Highlighting']
+      $.addClass el, 'qphl' if Conf['Quote Highlighting']
       if /\bbacklink\b/.test @className
         replyID = $.x('preceding-sibling::input', @parentNode).name
         for quote in $$ '.quotelink', qp
@@ -2739,11 +2739,11 @@ QuotePreview =
       root:     qp
       filesize: $ '.filesize', qp
       img:      $ 'img[md5]',  qp
-    if conf['Image Auto-Gif']
+    if Conf['Image Auto-Gif']
       AutoGif.node   post
-    if conf['Time Formatting']
+    if Conf['Time Formatting']
       Time.node     post
-    if conf['File Info Formatting']
+    if Conf['File Info Formatting']
       FileInfo.node post
 
 QuoteOP =
@@ -2915,10 +2915,10 @@ Unread =
 
     count = @replies.length
 
-    if conf['Unread Count']
+    if Conf['Unread Count']
       @setTitle count
 
-    unless conf['Unread Favicon'] and (count < 2 or forceUpdate)
+    unless Conf['Unread Favicon'] and (count < 2 or forceUpdate)
       return
 
     Favicon.el.href =
@@ -2948,7 +2948,7 @@ Favicon =
     @switch()
 
   switch: ->
-    switch conf['favicon']
+    switch Conf['favicon']
       when 'ferongr'
         @unreadDead = 'data:unreadDead;base64,R0lGODlhEAAQAOMHAOgLAnMFAL8AAOgLAukMA/+AgP+rq////////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw=='
         @unreadSFW  = 'data:unreadSFW;base64,R0lGODlhEAAQAOMHAADX8QBwfgC2zADX8QDY8nnl8qLp8v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw=='
@@ -2981,12 +2981,12 @@ Redirect =
   image: (href) ->
     href = href.split '/'
     # Do not use g.BOARD, the image url can originate from a cross-quote.
-    return unless conf['404 Redirect']
+    return unless Conf['404 Redirect']
     switch href[3]
       when 'a', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
   thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
-    return unless conf['404 Redirect'] or mode is 'post'
+    return unless Conf['404 Redirect'] or mode is 'post'
     switch g.BOARD
       when 'a', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
         "http://archive.foolz.us/#{board}/thread/#{id}/"
@@ -3061,7 +3061,7 @@ ImageExpand =
       ImageExpand.on = @checked
       if ImageExpand.on #expand
         thumbs = $$ 'img[md5]'
-        if conf['Expand From Current']
+        if Conf['Expand From Current']
           for thumb, i in thumbs
             if thumb.getBoundingClientRect().top > 0
               break
@@ -3168,8 +3168,8 @@ Main =
       g.PAGENUM = parseInt(temp) or 0
 
     #load values from localStorage
-    for key, val of conf
-      conf[key] = $.get key, val
+    for key, val of Conf
+      Conf[key] = $.get key, val
 
     $.on window, 'message', Main.message
 
@@ -3192,13 +3192,13 @@ Main =
 
     $.ready Options.init
 
-    if conf['Quick Reply'] and conf['Hide Original Post Form'] and g.BOARD isnt 'f'
+    if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
       Main.css += 'form[name=post] { display: none; }'
 
     Main.addStyle()
 
     now = Date.now()
-    if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
+    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
       $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
@@ -3222,55 +3222,55 @@ Main =
 
 
     #major features
-    if conf['Filter']
+    if Conf['Filter']
       Filter.init()
 
-    if conf['Reply Hiding']
+    if Conf['Reply Hiding']
       ReplyHiding.init()
 
-    if conf['Filter'] or conf['Reply Hiding']
+    if Conf['Filter'] or Conf['Reply Hiding']
       StrikethroughQuotes.init()
 
-    if conf['Anonymize']
+    if Conf['Anonymize']
       Anonymize.init()
 
-    if conf['Time Formatting']
+    if Conf['Time Formatting']
       Time.init()
 
-    if conf['File Info Formatting']
+    if Conf['File Info Formatting']
       FileInfo.init()
 
-    if conf['Sauce']
+    if Conf['Sauce']
       Sauce.init()
 
-    if conf['Reveal Spoilers']
+    if Conf['Reveal Spoilers']
       RevealSpoilers.init()
 
-    if conf['Image Auto-Gif']
+    if Conf['Image Auto-Gif']
       AutoGif.init()
 
-    if conf['Image Hover']
+    if Conf['Image Hover']
       ImageHover.init()
 
-    if conf['Report Button']
+    if Conf['Report Button']
       ReportButton.init()
 
-    if conf['Resurrect Quotes']
+    if Conf['Resurrect Quotes']
       Quotify.init()
 
-    if conf['Quote Inline']
+    if Conf['Quote Inline']
       QuoteInline.init()
 
-    if conf['Quote Preview']
+    if Conf['Quote Preview']
       QuotePreview.init()
 
-    if conf['Quote Backlinks']
+    if Conf['Quote Backlinks']
       QuoteBacklink.init()
 
-    if conf['Indicate OP quote']
+    if Conf['Indicate OP quote']
       QuoteOP.init()
 
-    if conf['Indicate Cross-thread Quotes']
+    if Conf['Indicate Cross-thread Quotes']
       QuoteCT.init()
 
     $.ready Main.ready
@@ -3290,45 +3290,45 @@ Main =
     Favicon.init()
 
     # Major features.
-    if conf['Quick Reply']
+    if Conf['Quick Reply']
       QR.init()
 
-    if conf['Image Expansion']
+    if Conf['Image Expansion']
       ImageExpand.init()
 
-    if conf['Thread Watcher']
+    if Conf['Thread Watcher']
       setTimeout -> Watcher.init()
 
-    if conf['Keybinds']
+    if Conf['Keybinds']
       setTimeout -> Keybinds.init()
 
     if g.REPLY
-      if conf['Thread Updater']
+      if Conf['Thread Updater']
         setTimeout -> Updater.init()
 
-      if conf['Thread Stats']
+      if Conf['Thread Stats']
         ThreadStats.init()
 
-      if conf['Reply Navigation']
+      if Conf['Reply Navigation']
         setTimeout -> Nav.init()
 
-      if conf['Post in Title']
+      if Conf['Post in Title']
         TitlePost.init()
 
-      if conf['Unread Count'] or conf['Unread Favicon']
+      if Conf['Unread Count'] or Conf['Unread Favicon']
         Unread.init()
 
     else #not reply
-      if conf['Thread Hiding']
+      if Conf['Thread Hiding']
         setTimeout -> ThreadHiding.init()
 
-      if conf['Thread Expansion']
+      if Conf['Thread Expansion']
         setTimeout -> ExpandThread.init()
 
-      if conf['Comment Expansion']
+      if Conf['Comment Expansion']
         setTimeout -> ExpandComment.init()
 
-      if conf['Index Navigation']
+      if Conf['Index Navigation']
         setTimeout -> Nav.init()
 
     nodes = []
