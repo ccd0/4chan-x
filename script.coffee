@@ -154,10 +154,6 @@ Config =
       'Auto Update': [true,  'Automatically fetch new posts']
     'Interval': 30
 
-# XXX Chrome can't into {log} = console
-# XXX GreaseMonkey can't into console.log.bind
-log = console.log.bind? console
-
 # flatten the config
 Conf = {}
 (flatten = (parent, obj) ->
@@ -272,6 +268,8 @@ $.extend = (object, properties) ->
   return
 
 $.extend $,
+  # XXX GreaseMonkey can't into console.log.bind
+  log: console.log.bind? console
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
       # Execute the functions in parallel.

@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, d, engine, flatten, log, ui, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, d, engine, flatten, ui, _base;
 
   Config = {
     main: {
@@ -191,8 +191,6 @@
       'Interval': 30
     }
   };
-
-  log = typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0;
 
   Conf = {};
 
@@ -313,6 +311,7 @@
   };
 
   $.extend($, {
+    log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
     ready: function(fc) {
       var cb;
       if (/interactive|complete/.test(d.readyState)) return setTimeout(fc);
