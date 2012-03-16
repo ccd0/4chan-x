@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, Watcher, flatten, _base;
+  var $, $$, Anonymize, AutoGif, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, Watcher, _base;
 
   Config = {
     main: {
@@ -191,22 +191,6 @@
       'Interval': 30
     }
   };
-
-  Conf = {};
-
-  (flatten = function(parent, obj) {
-    var key, val;
-    if (obj instanceof Array) {
-      Conf[parent] = obj[0];
-    } else if (typeof obj === 'object') {
-      for (key in obj) {
-        val = obj[key];
-        flatten(key, val);
-      }
-    } else {
-      Conf[parent] = obj;
-    }
-  })(null, Config);
 
   UI = {
     dialog: function(id, position, html) {
@@ -3790,7 +3774,21 @@
 
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, key, now, path, pathname, temp, timestamp, val, _ref;
+      var Conf, cutoff, flatten, hiddenThreads, id, key, now, path, pathname, temp, timestamp, val, _ref;
+      Conf = {};
+      (flatten = function(parent, obj) {
+        var key, val;
+        if (obj instanceof Array) {
+          Conf[parent] = obj[0];
+        } else if (typeof obj === 'object') {
+          for (key in obj) {
+            val = obj[key];
+            flatten(key, val);
+          }
+        } else {
+          Conf[parent] = obj;
+        }
+      })(null, Config);
       path = location.pathname;
       pathname = path.slice(1).split('/');
       Main.BOARD = pathname[0], temp = pathname[1];
