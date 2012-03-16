@@ -247,9 +247,9 @@ $.extend = (object, properties) ->
 
 $.extend $,
   SECOND: 1000
-  MINUTE: 60*$.SECOND
-  HOUR  : 60*$.MINUTE
-  DAY   : 24*$.HOUR
+  MINUTE: 1000*60
+  HOUR  : 1000*60*60
+  DAY   : 1000*60*60*24
   log:
     # XXX GreaseMonkey can't into console.log.bind
     console.log.bind? console
