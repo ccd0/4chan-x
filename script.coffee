@@ -175,45 +175,45 @@ HOUR   = 60*MINUTE
 DAY    = 24*HOUR
 d = document
 
-ui =
+UI =
   dialog: (id, position, html) ->
     el = d.createElement 'div'
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
     el.style.cssText = if saved = localStorage["#{NAMESPACE}#{id}.position"] then saved else position
-    el.querySelector('.move').addEventListener 'mousedown', ui.dragstart, false
+    el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection
     e.preventDefault()
-    ui.el = el = @parentNode
-    d.addEventListener 'mousemove', ui.drag, false
-    d.addEventListener 'mouseup',   ui.dragend, false
+    UI.el = el = @parentNode
+    d.addEventListener 'mousemove', UI.drag, false
+    d.addEventListener 'mouseup',   UI.dragend, false
     #distance from pointer to el edge is constant; calculate it here.
     # XXX opera reports el.offsetLeft / el.offsetTop as 0
     rect = el.getBoundingClientRect()
-    ui.dx = e.clientX - rect.left
-    ui.dy = e.clientY - rect.top
+    UI.dx = e.clientX - rect.left
+    UI.dy = e.clientY - rect.top
     #factor out el from document dimensions
-    ui.width  = d.body.clientWidth  - el.offsetWidth
-    ui.height = d.body.clientHeight - el.offsetHeight
+    UI.width  = d.body.clientWidth  - el.offsetWidth
+    UI.height = d.body.clientHeight - el.offsetHeight
   drag: (e) ->
-    left = e.clientX - ui.dx
-    top = e.clientY - ui.dy
+    left = e.clientX - UI.dx
+    top = e.clientY - UI.dy
     left =
       if left < 10 then 0
-      else if ui.width - left < 10 then null
+      else if UI.width - left < 10 then null
       else left
     top =
       if top < 10 then 0
-      else if ui.height - top < 10 then null
+      else if UI.height - top < 10 then null
       else top
     right = if left is null then 0 else null
     bottom = if top is null then 0 else null
     #using null instead of '' is 4% faster
     #these 4 statements are 40% faster than 1 style.cssText
-    {style} = ui.el
+    {style} = UI.el
     style.top    = top
     style.right  = right
     style.bottom = bottom
@@ -222,13 +222,13 @@ ui =
     #$ coffee -bpe '{a} = {b} = c'
     #var a, b;
     #a = (b = c.b, c).a;
-    {el} = ui
+    {el} = UI
     localStorage["#{NAMESPACE}#{el.id}.position"] = el.style.cssText
-    d.removeEventListener 'mousemove', ui.drag, false
-    d.removeEventListener 'mouseup',   ui.dragend, false
+    d.removeEventListener 'mousemove', UI.drag, false
+    d.removeEventListener 'mouseup',   UI.dragend, false
   hover: (e) ->
     {clientX, clientY} = e
-    {el} = ui
+    {el} = UI
     {style} = el
     {clientHeight, clientWidth} = d.body
     height = el.offsetHeight
@@ -250,8 +250,8 @@ ui =
       style.right = clientWidth - clientX + 45
 
   hoverend: ->
-    $.rm ui.el
-    delete ui.el
+    $.rm UI.el
+    delete UI.el
 
 ###
 loosely follows the jquery api:
@@ -1418,7 +1418,7 @@ QR =
       e.preventDefault()
 
   dialog: ->
-    QR.el = ui.dialog 'qr', 'top:0;right:0;', '
+    QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
   <span> <a class=close title=Close>&times;</a></span>
@@ -2113,7 +2113,7 @@ Updater =
       <div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} type=text></label></div>
       <div><input value='Update Now' type=button></div>"
 
-    dialog = ui.dialog 'updater', 'bottom: 0; right: 0;', html
+    dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
     @count = $ '#count', dialog
     @timer = $ '#timer', dialog
@@ -2245,7 +2245,7 @@ Updater =
 Watcher =
   init: ->
     html = '<div class=move>Thread Watcher</div>'
-    @dialog = ui.dialog 'watcher', 'top: 50px; left: 0px;', html
+    @dialog = UI.dialog 'watcher', 'top: 50px; left: 0px;', html
     $.add d.body, @dialog
 
     #add watch buttons
@@ -2686,7 +2686,7 @@ QuotePreview =
     return
   mouseover: (e) ->
     return if /\binlined\b/.test @className
-    qp = ui.el = $.el 'div',
+    qp = UI.el = $.el 'div',
       id: 'qp'
       className: 'reply dialog'
     $.add d.body, qp
@@ -2704,19 +2704,19 @@ QuotePreview =
       qp.textContent = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]', @).firstChild.id
       $.cache @pathname, (-> QuotePreview.parse @, id, threadID)
-      ui.hover e
-    $.on @, 'mousemove', ui.hover
+      UI.hover e
+    $.on @, 'mousemove', UI.hover
     $.on @, 'mouseout',  QuotePreview.mouseout
     $.on @, 'click',     QuotePreview.mouseout
   mouseout: ->
     if el = $.id @hash[1..]
       $.removeClass el, 'qphl'
-    ui.hoverend()
-    $.off @, 'mousemove', ui.hover
+    UI.hoverend()
+    $.off @, 'mousemove', UI.hover
     $.off @, 'mouseout',  QuotePreview.mouseout
     $.off @, 'click',     QuotePreview.mouseout
   parse: (req, id, threadID) ->
-    return unless (qp = ui.el) and qp.textContent is "Loading #{id}..."
+    return unless (qp = UI.el) and qp.textContent is "Loading #{id}..."
 
     if req.status isnt 200
       qp.textContent = "#{req.status} #{req.statusText}"
@@ -2845,7 +2845,7 @@ ReportButton =
 
 ThreadStats =
   init: ->
-    dialog = ui.dialog 'stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>'
+    dialog = UI.dialog 'stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>'
     dialog.className = 'dialog'
     $.add d.body, dialog
     @posts = @images = 0
@@ -3005,23 +3005,23 @@ ImageHover =
     return unless post.img
     $.on post.img, 'mouseover', ImageHover.mouseover
   mouseover: ->
-    ui.el = $.el 'img'
+    UI.el = $.el 'img'
       id: 'ihover'
       src: @parentNode.href
-    $.add d.body, ui.el
-    $.on ui.el, 'load',      ImageHover.load
-    $.on @,     'mousemove', ui.hover
+    $.add d.body, UI.el
+    $.on UI.el, 'load',      ImageHover.load
+    $.on @,     'mousemove', UI.hover
     $.on @,     'mouseout',  ImageHover.mouseout
   load: ->
-    return if @ isnt ui.el
+    return if @ isnt UI.el
     # 'Fake' mousemove event by giving required values.
     {style} = @
-    ui.hover
+    UI.hover
       clientX: - 45 + parseInt style.left
       clientY:  120 + parseInt style.top
   mouseout: ->
-    ui.hoverend()
-    $.off @, 'mousemove', ui.hover
+    UI.hoverend()
+    $.off @, 'mousemove', UI.hover
     $.off @, 'mouseout',  ImageHover.mouseout
 
 AutoGif =

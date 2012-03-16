@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, Unread, Updater, VERSION, Watcher, d, flatten, ui, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, VERSION, Watcher, d, flatten, _base;
 
   Config = {
     main: {
@@ -222,7 +222,7 @@
 
   d = document;
 
-  ui = {
+  UI = {
     dialog: function(id, position, html) {
       var el, saved;
       el = d.createElement('div');
@@ -230,30 +230,30 @@
       el.innerHTML = html;
       el.id = id;
       el.style.cssText = (saved = localStorage["" + NAMESPACE + id + ".position"]) ? saved : position;
-      el.querySelector('.move').addEventListener('mousedown', ui.dragstart, false);
+      el.querySelector('.move').addEventListener('mousedown', UI.dragstart, false);
       return el;
     },
     dragstart: function(e) {
       var el, rect;
       e.preventDefault();
-      ui.el = el = this.parentNode;
-      d.addEventListener('mousemove', ui.drag, false);
-      d.addEventListener('mouseup', ui.dragend, false);
+      UI.el = el = this.parentNode;
+      d.addEventListener('mousemove', UI.drag, false);
+      d.addEventListener('mouseup', UI.dragend, false);
       rect = el.getBoundingClientRect();
-      ui.dx = e.clientX - rect.left;
-      ui.dy = e.clientY - rect.top;
-      ui.width = d.body.clientWidth - el.offsetWidth;
-      return ui.height = d.body.clientHeight - el.offsetHeight;
+      UI.dx = e.clientX - rect.left;
+      UI.dy = e.clientY - rect.top;
+      UI.width = d.body.clientWidth - el.offsetWidth;
+      return UI.height = d.body.clientHeight - el.offsetHeight;
     },
     drag: function(e) {
       var bottom, left, right, style, top;
-      left = e.clientX - ui.dx;
-      top = e.clientY - ui.dy;
-      left = left < 10 ? 0 : ui.width - left < 10 ? null : left;
-      top = top < 10 ? 0 : ui.height - top < 10 ? null : top;
+      left = e.clientX - UI.dx;
+      top = e.clientY - UI.dy;
+      left = left < 10 ? 0 : UI.width - left < 10 ? null : left;
+      top = top < 10 ? 0 : UI.height - top < 10 ? null : top;
       right = left === null ? 0 : null;
       bottom = top === null ? 0 : null;
-      style = ui.el.style;
+      style = UI.el.style;
       style.top = top;
       style.right = right;
       style.bottom = bottom;
@@ -261,15 +261,15 @@
     },
     dragend: function() {
       var el;
-      el = ui.el;
+      el = UI.el;
       localStorage["" + NAMESPACE + el.id + ".position"] = el.style.cssText;
-      d.removeEventListener('mousemove', ui.drag, false);
-      return d.removeEventListener('mouseup', ui.dragend, false);
+      d.removeEventListener('mousemove', UI.drag, false);
+      return d.removeEventListener('mouseup', UI.dragend, false);
     },
     hover: function(e) {
       var clientHeight, clientWidth, clientX, clientY, el, height, style, top, _ref;
       clientX = e.clientX, clientY = e.clientY;
-      el = ui.el;
+      el = UI.el;
       style = el.style;
       _ref = d.body, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
       height = el.offsetHeight;
@@ -284,8 +284,8 @@
       }
     },
     hoverend: function() {
-      $.rm(ui.el);
-      return delete ui.el;
+      $.rm(UI.el);
+      return delete UI.el;
     }
   };
 
@@ -1724,7 +1724,7 @@
     },
     dialog: function() {
       var e, event, fileInput, input, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
-      QR.el = ui.dialog('qr', 'top:0;right:0;', '\
+      QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
   <span> <a class=close title=Close>&times;</a></span>\
@@ -2493,7 +2493,7 @@
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
       html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + Conf['Interval'] + " type=text></label></div>      <div><input value='Update Now' type=button></div>";
-      dialog = ui.dialog('updater', 'bottom: 0; right: 0;', html);
+      dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
       this.br = $('br[clear]');
@@ -2647,7 +2647,7 @@
     init: function() {
       var favicon, html, input, inputs, _i, _len;
       html = '<div class=move>Thread Watcher</div>';
-      this.dialog = ui.dialog('watcher', 'top: 50px; left: 0px;', html);
+      this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', html);
       $.add(d.body, this.dialog);
       inputs = $$('.op > input');
       for (_i = 0, _len = inputs.length; _i < _len; _i++) {
@@ -3238,7 +3238,7 @@
     mouseover: function(e) {
       var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
       if (/\binlined\b/.test(this.className)) return;
-      qp = ui.el = $.el('div', {
+      qp = UI.el = $.el('div', {
         id: 'qp',
         className: 'reply dialog'
       });
@@ -3261,23 +3261,23 @@
         $.cache(this.pathname, (function() {
           return QuotePreview.parse(this, id, threadID);
         }));
-        ui.hover(e);
+        UI.hover(e);
       }
-      $.on(this, 'mousemove', ui.hover);
+      $.on(this, 'mousemove', UI.hover);
       $.on(this, 'mouseout', QuotePreview.mouseout);
       return $.on(this, 'click', QuotePreview.mouseout);
     },
     mouseout: function() {
       var el;
       if (el = $.id(this.hash.slice(1))) $.removeClass(el, 'qphl');
-      ui.hoverend();
-      $.off(this, 'mousemove', ui.hover);
+      UI.hoverend();
+      $.off(this, 'mousemove', UI.hover);
       $.off(this, 'mouseout', QuotePreview.mouseout);
       return $.off(this, 'click', QuotePreview.mouseout);
     },
     parse: function(req, id, threadID) {
       var doc, node, post, qp;
-      if (!((qp = ui.el) && qp.textContent === ("Loading " + id + "..."))) return;
+      if (!((qp = UI.el) && qp.textContent === ("Loading " + id + "..."))) return;
       if (req.status !== 200) {
         qp.textContent = "" + req.status + " " + req.statusText;
         return;
@@ -3401,7 +3401,7 @@
   ThreadStats = {
     init: function() {
       var dialog;
-      dialog = ui.dialog('stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>');
+      dialog = UI.dialog('stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>');
       dialog.className = 'dialog';
       $.add(d.body, dialog);
       this.posts = this.images = 0;
@@ -3606,27 +3606,27 @@
       return $.on(post.img, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function() {
-      ui.el = $.el('img', {
+      UI.el = $.el('img', {
         id: 'ihover',
         src: this.parentNode.href
       });
-      $.add(d.body, ui.el);
-      $.on(ui.el, 'load', ImageHover.load);
-      $.on(this, 'mousemove', ui.hover);
+      $.add(d.body, UI.el);
+      $.on(UI.el, 'load', ImageHover.load);
+      $.on(this, 'mousemove', UI.hover);
       return $.on(this, 'mouseout', ImageHover.mouseout);
     },
     load: function() {
       var style;
-      if (this !== ui.el) return;
+      if (this !== UI.el) return;
       style = this.style;
-      return ui.hover({
+      return UI.hover({
         clientX: -45 + parseInt(style.left),
         clientY: 120 + parseInt(style.top)
       });
     },
     mouseout: function() {
-      ui.hoverend();
-      $.off(this, 'mousemove', ui.hover);
+      UI.hoverend();
+      $.off(this, 'mousemove', UI.hover);
       return $.off(this, 'mouseout', ImageHover.mouseout);
     }
   };
