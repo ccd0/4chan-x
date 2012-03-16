@@ -179,7 +179,6 @@ HOUR   = 60*MINUTE
 DAY    = 24*HOUR
 engine = /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
 d = document
-g = callbacks: []
 
 ui =
   dialog: (id, position, html) ->
@@ -471,7 +470,7 @@ Filter =
         # and it's not specifically applicable to the current board.
         # Defaults to global.
         boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
-        if boards isnt 'global' and boards.split(',').indexOf(g.BOARD) is -1
+        if boards isnt 'global' and boards.split(',').indexOf(Main.BOARD) is -1
           continue
 
         try
@@ -507,7 +506,7 @@ Filter =
         delete @filters[key]
 
     if Object.keys(@filters).length
-      g.callbacks.push @node
+      Main.callbacks.push @node
 
   createFilter: (regexp, op, hl, top) ->
     test =
@@ -540,7 +539,7 @@ Filter =
         # Hide
         if result is true
           if isOP
-            unless g.REPLY
+            unless Main.REPLY
               ThreadHiding.hide post.el.parentNode
             else
               continue
@@ -553,7 +552,7 @@ Filter =
           $.addClass el, result[0]
         else
           $.addClass el.parentNode, result[0]
-        if isOP and result[1] and not g.REPLY
+        if isOP and result[1] and not Main.REPLY
           # Put the highlighted OPs' threads on top of the board pages...
           thisThread = el.parentNode
           # ...before the first non highlighted thread.
@@ -612,7 +611,7 @@ Filter =
 
 StrikethroughQuotes =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined
     for quote in post.quotes
@@ -649,7 +648,7 @@ ExpandComment =
     quotes = node.getElementsByClassName 'quotelink'
     for quote in quotes
       if quote.hash is quote.getAttribute 'href'
-        quote.pathname = "/#{g.BOARD}/res/#{threadID}"
+        quote.pathname = "/#{Main.BOARD}/res/#{threadID}"
     post =
       el:        node
       threadId:  threadID
@@ -684,7 +683,7 @@ ExpandThread =
 
   toggle: (thread) ->
     threadID = thread.firstChild.id
-    pathname = "/#{g.BOARD}/res/#{threadID}"
+    pathname = "/#{Main.BOARD}/res/#{threadID}"
     a = $ '.omittedposts', thread
 
     # \u00d7 is &times;
@@ -702,7 +701,7 @@ ExpandThread =
       when '-'
         a.textContent = a.textContent.replace '-', '+'
         #goddamit moot
-        num = switch g.BOARD
+        num = switch Main.BOARD
           when 'b', 'vg' then 3
           when 't' then 1
           else 5
@@ -747,7 +746,7 @@ ReplyHiding =
       noWrap: true
       className: 'replyhider'
       innerHTML: '<a href="javascript:;">[ - ]</a>'
-    g.callbacks.push @node
+    Main.callbacks.push @node
 
   node: (post) ->
     return if post.class
@@ -755,7 +754,7 @@ ReplyHiding =
     $.on td.firstChild, 'click', ReplyHiding.toggle
     $.replace post.el.previousSibling, td
 
-    if post.id of g.hiddenReplies
+    if post.id of Main.hiddenReplies
       ReplyHiding.hide post.root
 
   toggle: ->
@@ -765,7 +764,7 @@ ReplyHiding =
       id = parent.nextSibling.id
       for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
         $.addClass quote, 'filtered'
-      g.hiddenReplies[id] = Date.now()
+      Main.hiddenReplies[id] = Date.now()
     else
       table = parent.nextSibling
       table.hidden = false
@@ -773,8 +772,8 @@ ReplyHiding =
       id = table.firstChild.firstChild.lastChild.id
       for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
         $.removeClass quote, 'filtered'
-      delete g.hiddenReplies[id]
-    $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+      delete Main.hiddenReplies[id]
+    $.set "hiddenReplies/#{Main.BOARD}/", Main.hiddenReplies
 
   hide: (table) ->
     return if table.hidden # already hidden by filter
@@ -850,17 +849,17 @@ Keybinds =
         Keybinds.img thread, true
       # Board Navigation
       when Conf.zero
-        window.location = "/#{g.BOARD}/0#0"
+        window.location = "/#{Main.BOARD}/0#0"
       when Conf.nextPage
         $('input[value=Next]')?.click()
       when Conf.previousPage
         $('input[value=Previous]')?.click()
       # Thread Navigation
       when Conf.nextThread
-        return if g.REPLY
+        return if Main.REPLY
         Nav.scroll +1
       when Conf.previousThread
-        return if g.REPLY
+        return if Main.REPLY
         Nav.scroll -1
       when Conf.expandThread
         ExpandThread.toggle thread
@@ -919,7 +918,7 @@ Keybinds =
 
   open: (thread, tab) ->
     id = thread.firstChild.id
-    url = "//boards.4chan.org/#{g.BOARD}/res/#{id}"
+    url = "//boards.4chan.org/#{Main.BOARD}/res/#{id}"
     if tab
       $.open url
     else
@@ -941,7 +940,7 @@ Keybinds =
           td.tabIndex  = 0
           td.focus()
           return
-        return unless g.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
+        return unless Main.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
         rect = next.getBoundingClientRect()
         if rect.top < 0 or rect.bottom > d.body.clientHeight
           next.scrollIntoView delta is -1
@@ -979,13 +978,13 @@ Nav =
     $.add d.body, span
 
   prev: ->
-    if g.REPLY
+    if Main.REPLY
       window.scrollTo 0, 0
     else
       Nav.scroll -1
 
   next: ->
-    if g.REPLY
+    if Main.REPLY
       window.scrollTo 0, d.body.scrollHeight
     else
       Nav.scroll +1
@@ -1017,15 +1016,15 @@ Nav =
 QR =
   init: ->
     return unless $.id 'recaptcha_challenge_field_holder'
-    g.callbacks.push @node
+    Main.callbacks.push @node
     setTimeout @asyncInit
 
   asyncInit: ->
     if Conf['Hide Original Post Form']
-      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
+      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if Main.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on $('a', link), 'click', ->
         QR.open()
-        $('select', QR.el).value = 'new' unless g.REPLY
+        $('select', QR.el).value = 'new' unless Main.REPLY
         $('textarea', QR.el).focus()
       form = d.forms[0]
       $.before form, link
@@ -1110,7 +1109,7 @@ QR =
     else unless QR.status.ready
       value    = 'Loading'
       disabled = true
-    if g.dead
+    if Main.dead
       value    = 404
       disabled = true
       QR.cooldown.auto = false
@@ -1132,28 +1131,28 @@ QR =
   cooldown:
     init: ->
       return unless Conf['Cooldown']
-      QR.cooldown.start $.get "/#{g.BOARD}/cooldown", 0
-      $.sync "/#{g.BOARD}/cooldown", QR.cooldown.start
+      QR.cooldown.start $.get "/#{Main.BOARD}/cooldown", 0
+      $.sync "/#{Main.BOARD}/cooldown", QR.cooldown.start
     start: (timeout) ->
       seconds = Math.floor (timeout - Date.now()) / 1000
       QR.cooldown.count seconds
     set: (seconds) ->
       return unless Conf['Cooldown']
       QR.cooldown.count seconds
-      $.set "/#{g.BOARD}/cooldown", Date.now() + seconds*SECOND
+      $.set "/#{Main.BOARD}/cooldown", Date.now() + seconds*SECOND
     count: (seconds) ->
       return unless 0 <= seconds <= 60
       setTimeout QR.cooldown.count, 1000, seconds-1
       QR.cooldown.seconds = seconds
       if seconds is 0
-        $.delete "/#{g.BOARD}/cooldown"
+        $.delete "/#{Main.BOARD}/cooldown"
         QR.submit() if QR.cooldown.auto
       QR.status()
 
   quote: (e) ->
     e?.preventDefault()
     QR.open()
-    unless g.REPLY
+    unless Main.REPLY
       $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).firstChild.id
 
     # Make sure we get the correct number, even with XXX censors
@@ -1463,7 +1462,7 @@ QR =
     spoiler        = $ '#spoilerLabel', QR.el
     spoiler.hidden = !QR.spoiler
 
-    unless g.REPLY
+    unless Main.REPLY
       # Make a list with visible threads and an option to create a new one.
       threads = '<option value=new>New thread</option>'
       for thread in $$ '.op'
@@ -1553,7 +1552,7 @@ QR =
       return
     QR.cleanError()
 
-    threadID = g.THREAD_ID or $('select', QR.el).value
+    threadID = Main.THREAD_ID or $('select', QR.el).value
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1
@@ -1642,22 +1641,22 @@ QR =
       if Conf['Thread Watcher'] and Conf['Auto Watch']
         $.set 'autoWatch', postNumber
       # auto-noko
-      location.pathname = "/#{g.BOARD}/res/#{postNumber}"
+      location.pathname = "/#{Main.BOARD}/res/#{postNumber}"
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       QR.cooldown.auto = QR.replies.length > 1
       QR.cooldown.set if /sage/i.test reply.email then 60 else 30
-      if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
-        $.open "//boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}"
+      if Conf['Open Reply in New Tab'] && !Main.REPLY && !QR.cooldown.auto
+        $.open "//boards.4chan.org/#{Main.BOARD}/res/#{thread}##{postNumber}"
 
     if Conf['Persistent QR'] or QR.cooldown.auto
       reply.rm()
     else
       QR.close()
 
-    if g.REPLY and (Conf['Unread Count'] or Conf['Unread Favicon'])
+    if Main.REPLY and (Conf['Unread Count'] or Conf['Unread Favicon'])
       Unread.foresee.push postNumber
-    if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
+    if Main.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
       Updater.update()
 
     QR.status()
@@ -1904,8 +1903,8 @@ Options =
         $.add ul, li
       $.add $('#main_tab + div', dialog), ul
 
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
+    hiddenThreads = $.get "hiddenThreads/#{Main.BOARD}/", {}
+    hiddenNum = Object.keys(Main.hiddenReplies).length + Object.keys(hiddenThreads).length
     li = $.el 'li',
       innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have \"Show Stubs\" disabled."
     $.on $('button', li), 'click', Options.clearHidden
@@ -1972,10 +1971,10 @@ Options =
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
     # not the number of posts actually hidden on the page.
-    $.delete "hiddenReplies/#{g.BOARD}/"
-    $.delete "hiddenThreads/#{g.BOARD}/"
+    $.delete "hiddenReplies/#{Main.BOARD}/"
+    $.delete "hiddenThreads/#{Main.BOARD}/"
     @textContent = "hidden: 0"
-    g.hiddenReplies = {}
+    Main.hiddenReplies = {}
   keybind: (e) ->
     return if e.keyCode is 9
     e.preventDefault()
@@ -2023,7 +2022,7 @@ Threading =
   thread: (node) ->
     node = Threading.op node
 
-    return if g.REPLY
+    return if Main.REPLY
 
     nodes = []
     until node.nodeName is 'HR'
@@ -2041,7 +2040,7 @@ Threading =
 
 ThreadHiding =
   init: ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    hiddenThreads = $.get "hiddenThreads/#{Main.BOARD}/", {}
     for thread in $$ '.thread'
       op = thread.firstChild
       a  = $.el 'a',
@@ -2058,7 +2057,7 @@ ThreadHiding =
     ThreadHiding.toggle @parentNode.parentNode
 
   toggle: (thread) ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    hiddenThreads = $.get "hiddenThreads/#{Main.BOARD}/", {}
     id = $('.op', thread).id
     if thread.hidden or thread.firstChild.className is 'block'
       ThreadHiding.show thread
@@ -2066,7 +2065,7 @@ ThreadHiding =
     else
       ThreadHiding.hide thread
       hiddenThreads[id] = Date.now()
-    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
+    $.set "hiddenThreads/#{Main.BOARD}/", hiddenThreads
 
   hide: (thread) ->
     unless Conf['Show Stubs']
@@ -2175,7 +2174,7 @@ Updater =
         Updater.count.textContent = 404
         Updater.count.className   = 'warning'
         clearTimeout Updater.timeoutID
-        g.dead = true
+        Main.dead = true
         if Conf['Unread Count']
           Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
         else
@@ -2260,8 +2259,8 @@ Watcher =
       $.on favicon, 'click', @cb.toggle
       $.before input, favicon
 
-    if g.THREAD_ID is $.get 'autoWatch', 0
-      @watch g.THREAD_ID
+    if Main.THREAD_ID is $.get 'autoWatch', 0
+      @watch Main.THREAD_ID
       $.delete 'autoWatch'
     else
       #populate watcher, display watch buttons
@@ -2290,7 +2289,7 @@ Watcher =
       $.rm div
     $.add Watcher.dialog, nodes
 
-    watchedBoard = watched[g.BOARD] or {}
+    watchedBoard = watched[Main.BOARD] or {}
     for favicon in $$ '.favicon'
       id = favicon.nextSibling.name
       if id of watchedBoard
@@ -2308,7 +2307,7 @@ Watcher =
 
   toggle: (thread) ->
     id = $('.favicon + input', thread).name
-    Watcher.watch(id) or Watcher.unwatch id, g.BOARD
+    Watcher.watch(id) or Watcher.unwatch id, Main.BOARD
 
   unwatch: (id, board) ->
     watched = $.get 'watched', {}
@@ -2321,9 +2320,9 @@ Watcher =
     return false if $('.favicon', thread).src is Favicon.default
 
     watched = $.get 'watched', {}
-    watched[g.BOARD] or= {}
-    watched[g.BOARD][id] =
-      href: "/#{g.BOARD}/res/#{id}"
+    watched[Main.BOARD] or= {}
+    watched[Main.BOARD][id] =
+      href: "/#{Main.BOARD}/res/#{id}"
       textContent: GetTitle thread
     $.set 'watched', watched
     Watcher.refresh()
@@ -2331,7 +2330,7 @@ Watcher =
 
 Anonymize =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
     name = $ '.commentpostername, .postername', post.el
@@ -2342,13 +2341,13 @@ Anonymize =
 
 Sauce =
   init: ->
-    return if g.BOARD is 'f'
+    return if Main.BOARD is 'f'
     @links = []
     for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
       @links.push @createSauceLink link
     return unless @links.length
-    g.callbacks.push @node
+    Main.callbacks.push @node
 
   createSauceLink: (link) ->
     domain = link.match(/(\w+)\.\w+\//)[1]
@@ -2361,7 +2360,7 @@ Sauce =
         when '$3'
           "' + img.firstChild.getAttribute('md5').replace(/\=*$/, '') + '"
         when '$4'
-          g.BOARD
+          Main.BOARD
     href = Function 'img', "return '#{href}'"
     el = $.el 'a',
       target: '_blank'
@@ -2382,7 +2381,7 @@ Sauce =
 
 RevealSpoilers =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     {img} = post
     if not (img and /^Spoil/.test img.alt) or post.class is 'inline'
@@ -2412,7 +2411,7 @@ Time =
           hour = chanOffset + Number hour
           new Date year, month, day, hour, min
 
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
     # .posttime exists on every board except /f/
@@ -2471,9 +2470,9 @@ Time =
 
 FileInfo =
   init: ->
-    return if g.BOARD is 'f'
+    return if Main.BOARD is 'f'
     @setFormats()
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline' or not node = post.filesize
     type   = if node.childElementCount is 2 then 0 else 1
@@ -2545,7 +2544,7 @@ GetTitle = (thread) ->
     if not el.textContent
       el = $ '.postername', thread
   span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
-  "/#{g.BOARD}/ - #{span.textContent}"
+  "/#{Main.BOARD}/ - #{span.textContent}"
 
 TitlePost =
   init: ->
@@ -2555,7 +2554,7 @@ QuoteBacklink =
   init: ->
     format = Conf['backlink'].replace /%id/g, "' + id + '"
     @funk  = Function 'id', "return '#{format}'"
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined
     quotes = {}
@@ -2589,7 +2588,7 @@ QuoteBacklink =
 
 QuoteInline =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     for quote in post.quotes
       continue unless quote.hash
@@ -2666,7 +2665,7 @@ QuoteInline =
     for quote in $$ '.quotelink', newInline
       if (href = quote.getAttribute 'href') is quote.hash #add pathname to normal quotes
         quote.pathname = pathname
-      else if !g.REPLY and href isnt quote.href #fix x-thread links, not x-board ones
+      else if !Main.REPLY and href isnt quote.href #fix x-thread links, not x-board ones
         quote.href = "res/#{href}"
     link = $ '.quotejs', newInline
     link.href = "#{pathname}##{id}"
@@ -2681,7 +2680,7 @@ QuoteInline =
 
 QuotePreview =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     for quote in post.quotes
       $.on quote, 'mouseover', QuotePreview.mouseover if quote.hash
@@ -2748,7 +2747,7 @@ QuotePreview =
 
 QuoteOP =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
     for quote in post.quotes
@@ -2759,7 +2758,7 @@ QuoteOP =
 
 QuoteCT =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
     for quote in post.quotes
@@ -2768,14 +2767,14 @@ QuoteCT =
         continue
       path = quote.pathname.split '/'
       # If quote leads to a different thread id and is located on the same board.
-      if path[1] is g.BOARD and path[3] isnt post.threadId
+      if path[1] is Main.BOARD and path[3] isnt post.threadId
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(Cross-thread)'
     return
 
 Quotify =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
 
@@ -2811,7 +2810,7 @@ Quotify =
           # \u00A0 is nbsp
           textContent: "#{quote}\u00A0(Dead)"
 
-        if board is g.BOARD and $.id id
+        if board is Main.BOARD and $.id id
           a.href      = "##{id}"
           a.className = 'quotelink'
           a.setAttribute 'onclick', "replyhl('#{id}');"
@@ -2835,14 +2834,14 @@ ReportButton =
       className: 'reportbutton'
       innerHTML: '[&nbsp;!&nbsp;]'
       href: 'javascript:;'
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     unless a = $ '.reportbutton', post.el
       a = ReportButton.a.cloneNode true
       $.after $('span[id]', post.el), [$.tn(' '), a]
     $.on a, 'click', ReportButton.report
   report: ->
-    url = "//sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
+    url = "//sys.4chan.org/#{Main.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
     id  = Date.now()
     set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
@@ -2854,14 +2853,14 @@ ThreadStats =
     $.add d.body, dialog
     @posts = @images = 0
     @imgLimit =
-      switch g.BOARD
+      switch Main.BOARD
         when 'a', 'mlp', 'v'
           251
         when 'vg'
           501
         else
           151
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined
     $.id('postcount').textContent = ++ThreadStats.posts
@@ -2876,7 +2875,7 @@ Unread =
     @title = d.title
     @update()
     $.on window, 'scroll', Unread.scroll
-    g.callbacks.push @node
+    Main.callbacks.push @node
 
   replies: []
   foresee: []
@@ -2911,7 +2910,7 @@ Unread =
     ), 5
 
   update: (forceUpdate) ->
-    return unless g.REPLY
+    return unless Main.REPLY
 
     count = @replies.length
 
@@ -2922,7 +2921,7 @@ Unread =
       return
 
     Favicon.el.href =
-      if g.dead
+      if Main.dead
         if count
           Favicon.unreadDead
         else
@@ -2975,19 +2974,19 @@ Redirect =
     url =
       if location.hostname is 'images.4chan.org'
         @image location.href
-      else if /^\d+$/.test g.THREAD_ID
+      else if /^\d+$/.test Main.THREAD_ID
         @thread()
     location.href = url if url
   image: (href) ->
     href = href.split '/'
-    # Do not use g.BOARD, the image url can originate from a cross-quote.
+    # Do not use Main.BOARD, the image url can originate from a cross-quote.
     return unless Conf['404 Redirect']
     switch href[3]
       when 'a', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
-  thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
+  thread: (board=Main.BOARD, id=Main.THREAD_ID, mode='thread') ->
     return unless Conf['404 Redirect'] or mode is 'post'
-    switch g.BOARD
+    switch Main.BOARD
       when 'a', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
         "http://archive.foolz.us/#{board}/thread/#{id}/"
       when 'lit'
@@ -3004,7 +3003,7 @@ Redirect =
 
 ImageHover =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return unless post.img
     $.on post.img, 'mouseover', ImageHover.mouseover
@@ -3030,7 +3029,7 @@ ImageHover =
 
 AutoGif =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.root.hidden or not post.img
     src = post.img.parentNode.href
@@ -3043,7 +3042,7 @@ AutoGif =
 
 ImageExpand =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
     @dialog()
 
   node: (post) ->
@@ -3125,7 +3124,7 @@ ImageExpand =
     ImageExpand.contract thumb
     $.rm @
     unless @src.split('/')[2] is 'images.4chan.org' and url = Redirect.image href
-      return if g.dead
+      return if Main.dead
       # CloudFlare may cache banned pages instead of images.
       # This will fool CloudFlare's cache.
       url = href + '?' + Date.now()
@@ -3160,12 +3159,12 @@ Main =
   init: ->
     path = location.pathname
     pathname = path[1..].split '/'
-    [g.BOARD, temp] = pathname
+    [Main.BOARD, temp] = pathname
     if temp is 'res'
-      g.REPLY = true
-      g.THREAD_ID = pathname[2]
+      Main.REPLY = true
+      Main.THREAD_ID = pathname[2]
     else
-      g.PAGENUM = parseInt(temp) or 0
+      Main.PAGENUM = parseInt(temp) or 0
 
     #load values from localStorage
     for key, val of Conf
@@ -3192,7 +3191,7 @@ Main =
 
     $.ready Options.init
 
-    if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
+    if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and Main.BOARD isnt 'f'
       Main.css += 'form[name=post] { display: none; }'
 
     Main.addStyle()
@@ -3202,23 +3201,23 @@ Main =
       $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
-    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
+    Main.hiddenReplies = $.get "hiddenReplies/#{Main.BOARD}/", {}
     if $.get('lastChecked', 0) < now - 1*DAY
       $.set 'lastChecked', now
 
       cutoff = now - 7*DAY
-      hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+      hiddenThreads = $.get "hiddenThreads/#{Main.BOARD}/", {}
 
       for id, timestamp of hiddenThreads
         if timestamp < cutoff
           delete hiddenThreads[id]
 
-      for id, timestamp of g.hiddenReplies
+      for id, timestamp of Main.hiddenReplies
         if timestamp < cutoff
-          delete g.hiddenReplies[id]
+          delete Main.hiddenReplies[id]
 
-      $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
-      $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+      $.set "hiddenThreads/#{Main.BOARD}/", hiddenThreads
+      $.set "hiddenReplies/#{Main.BOARD}/", Main.hiddenReplies
 
 
     #major features
@@ -3284,7 +3283,7 @@ Main =
     $.addClass d.body, "chanx_#{VERSION.split('.')[1]}"
     $.addClass d.body, engine
     for nav in ['navtop', 'navbot']
-      $.addClass $("a[href$='/#{g.BOARD}/']", $.id nav), 'current'
+      $.addClass $("a[href$='/#{Main.BOARD}/']", $.id nav), 'current'
     form = $ 'form[name=delform]'
     Threading.thread form.firstElementChild
     Favicon.init()
@@ -3302,7 +3301,7 @@ Main =
     if Conf['Keybinds']
       setTimeout -> Keybinds.init()
 
-    if g.REPLY
+    if Main.REPLY
       if Conf['Thread Updater']
         setTimeout -> Updater.init()
 
@@ -3367,7 +3366,7 @@ Main =
       el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
       class:     klass
       id:        node.getElementsByTagName('input')[0].name
-      threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).firstChild.id
+      threadId:  Main.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).firstChild.id
       isOP:      klass is 'op'
       isInlined: /\binline\b/.test klass
       filesize:  node.getElementsByClassName('filesize')[0] or false
@@ -3376,7 +3375,7 @@ Main =
     post.img = if post.filesize then node.getElementsByTagName('img')[0] else false
     post
   node: (nodes, notify) ->
-    for callback in g.callbacks
+    for callback in Main.callbacks
       try
         callback node for node in nodes
       catch err
@@ -3392,6 +3391,7 @@ Main =
     {target} = e
     Main.node [Main.preParse target] if target.nodeName is 'TABLE'
 
+  callbacks: []
   css: '
 /* dialog styling */
 .dialog {
