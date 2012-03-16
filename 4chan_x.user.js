@@ -310,6 +310,7 @@
 
   $.extend($, {
     log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
+    engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     ready: function(fc) {
       var cb;
       if (/interactive|complete/.test(d.readyState)) return setTimeout(fc);
@@ -1739,7 +1740,7 @@
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\
   <div class=warning></div>\
 </form>');
-      if (Conf['Remember QR size'] && Main.engine === 'gecko') {
+      if (Conf['Remember QR size'] && $.engine === 'gecko') {
         $.on(ta = $('textarea', QR.el), 'mouseup', function() {
           return $.set('QR.size', this.style.cssText);
         });
@@ -1894,7 +1895,7 @@
       QR.status({
         progress: '...'
       });
-      if (Main.engine === 'gecko' && reply.file) {
+      if ($.engine === 'gecko' && reply.file) {
         file = {};
         reader = new FileReader();
         reader.onload = function() {
@@ -2015,7 +2016,7 @@
         var boundary, callbacks, form, i, name, opts, parts, toBin, url, val;
         url = data.postURL;
         delete data.postURL;
-        if (Main.engine === 'gecko' && data.upfile) {
+        if ($.engine === 'gecko' && data.upfile) {
           if (!data.binary) {
             toBin = function(data, name, val) {
               var bb, r;
@@ -3762,7 +3763,7 @@
         url = href + '?' + Date.now();
       }
       timeoutID = setTimeout(ImageExpand.expand, 10000, thumb, url);
-      if (!(Main.engine === 'webkit' && url.split('/')[2] === 'images.4chan.org')) {
+      if (!($.engine === 'webkit' && url.split('/')[2] === 'images.4chan.org')) {
         return;
       }
       return $.ajax(url, {
@@ -3901,7 +3902,7 @@
       }
       if (!$.id('navtopr')) return;
       $.addClass(d.body, "chanx_" + (VERSION.split('.')[1]));
-      $.addClass(d.body, Main.engine);
+      $.addClass(d.body, $.engine);
       _ref = ['navtop', 'navbot'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         nav = _ref[_i];
@@ -4048,7 +4049,6 @@
       target = e.target;
       if (target.nodeName === 'TABLE') return Main.node([Main.preParse(target)]);
     },
-    engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     callbacks: [],
     css: '\
 /* dialog styling */\
