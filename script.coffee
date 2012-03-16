@@ -173,7 +173,6 @@ SECOND = 1000
 MINUTE = 60*SECOND
 HOUR   = 60*MINUTE
 DAY    = 24*HOUR
-engine = /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
 d = document
 
 ui =
@@ -1435,7 +1434,7 @@ QR =
   <div class=warning></div>
 </form>'
 
-    if Conf['Remember QR size'] and engine is 'gecko'
+    if Conf['Remember QR size'] and Main.engine is 'gecko'
       $.on ta = $('textarea', QR.el), 'mouseup', ->
         $.set 'QR.size', @style.cssText
       ta.style.cssText = $.get 'QR.size', ''
@@ -1577,7 +1576,7 @@ QR =
     # Provide some feedback that we're starting to submit.
     QR.status progress: '...'
 
-    if engine is 'gecko' and reply.file
+    if Main.engine is 'gecko' and reply.file
       # https://bugzilla.mozilla.org/show_bug.cgi?id=673742
       # We plan to allow postMessaging Files and FileLists across origins,
       # that just needs a more in depth security review.
@@ -1696,7 +1695,7 @@ QR =
       delete data.postURL
 
       # File with filename upload fix from desuwa
-      if engine is 'gecko' and data.upfile
+      if Main.engine is 'gecko' and data.upfile
         # All of this is fucking retarded.
         unless data.binary
           toBin = (data, name, val) ->
@@ -3130,7 +3129,7 @@ ImageExpand =
     timeoutID = setTimeout ImageExpand.expand, 10000, thumb, url
     # Only Chrome let userscript break through cross domain requests.
     # Don't check it 404s in the archivers.
-    return unless engine is 'webkit' and url.split('/')[2] is 'images.4chan.org'
+    return unless Main.engine is 'webkit' and url.split('/')[2] is 'images.4chan.org'
     $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
 
@@ -3279,7 +3278,7 @@ Main =
     unless $.id 'navtopr'
       return
     $.addClass d.body, "chanx_#{VERSION.split('.')[1]}"
-    $.addClass d.body, engine
+    $.addClass d.body, Main.engine
     for nav in ['navtop', 'navbot']
       $.addClass $("a[href$='/#{Main.BOARD}/']", $.id nav), 'current'
     form = $ 'form[name=delform]'
@@ -3389,6 +3388,7 @@ Main =
     {target} = e
     Main.node [Main.preParse target] if target.nodeName is 'TABLE'
 
+  engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   callbacks: []
   css: '
 /* dialog styling */
