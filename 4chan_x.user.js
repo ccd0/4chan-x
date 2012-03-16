@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, VERSION, Watcher, d, flatten, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, DAY, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, HOUR, ImageExpand, ImageHover, Keybinds, MINUTE, Main, NAMESPACE, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, SECOND, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, VERSION, Watcher, flatten, _base;
 
   Config = {
     main: {
@@ -208,24 +208,10 @@
     }
   })(null, Config);
 
-  NAMESPACE = '4chan_x.';
-
-  VERSION = '2.29.1';
-
-  SECOND = 1000;
-
-  MINUTE = 60 * SECOND;
-
-  HOUR = 60 * MINUTE;
-
-  DAY = 24 * HOUR;
-
-  d = document;
-
   UI = {
     dialog: function(id, position, html) {
       var el, saved;
-      el = d.createElement('div');
+      el = $.d.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
@@ -237,13 +223,13 @@
       var el, rect;
       e.preventDefault();
       UI.el = el = this.parentNode;
-      d.addEventListener('mousemove', UI.drag, false);
-      d.addEventListener('mouseup', UI.dragend, false);
+      $.d.addEventListener('mousemove', UI.drag, false);
+      $.d.addEventListener('mouseup', UI.dragend, false);
       rect = el.getBoundingClientRect();
       UI.dx = e.clientX - rect.left;
       UI.dy = e.clientY - rect.top;
-      UI.width = d.body.clientWidth - el.offsetWidth;
-      return UI.height = d.body.clientHeight - el.offsetHeight;
+      UI.width = $.d.body.clientWidth - el.offsetWidth;
+      return UI.height = $.d.body.clientHeight - el.offsetHeight;
     },
     drag: function(e) {
       var bottom, left, right, style, top;
@@ -263,15 +249,15 @@
       var el;
       el = UI.el;
       localStorage["" + NAMESPACE + el.id + ".position"] = el.style.cssText;
-      d.removeEventListener('mousemove', UI.drag, false);
-      return d.removeEventListener('mouseup', UI.dragend, false);
+      $.d.removeEventListener('mousemove', UI.drag, false);
+      return $.d.removeEventListener('mouseup', UI.dragend, false);
     },
     hover: function(e) {
       var clientHeight, clientWidth, clientX, clientY, el, height, style, top, _ref;
       clientX = e.clientX, clientY = e.clientY;
       el = UI.el;
       style = el.style;
-      _ref = d.body, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
+      _ref = $.d.body, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
       height = el.offsetHeight;
       top = clientY - 120;
       style.top = clientHeight <= height || top <= 0 ? 0 : top + height >= clientHeight ? clientHeight - height : top;
@@ -296,7 +282,7 @@
   */
 
   $ = function(selector, root) {
-    if (root == null) root = d.body;
+    if (root == null) root = $.d.body;
     return root.querySelector(selector);
   };
 
@@ -308,17 +294,30 @@
     }
   };
 
+  NAMESPACE = '4chan_x.';
+
+  VERSION = '2.29.1';
+
+  SECOND = 1000;
+
+  MINUTE = 60 * SECOND;
+
+  HOUR = 60 * MINUTE;
+
+  DAY = 24 * HOUR;
+
   $.extend($, {
     log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
+    d: document,
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     ready: function(fc) {
       var cb;
-      if (/interactive|complete/.test(d.readyState)) return setTimeout(fc);
+      if (/interactive|complete/.test($.d.readyState)) return setTimeout(fc);
       cb = function() {
-        $.off(d, 'DOMContentLoaded', cb);
+        $.off($.d, 'DOMContentLoaded', cb);
         return fc();
       };
-      return $.on(d, 'DOMContentLoaded', cb);
+      return $.on($.d, 'DOMContentLoaded', cb);
     },
     sync: function(key, cb) {
       return $.on(window, 'storage', function(e) {
@@ -326,7 +325,7 @@
       });
     },
     id: function(id) {
-      return d.getElementById(id);
+      return $.d.getElementById(id);
     },
     ajax: function(url, callbacks, opts) {
       var form, headers, key, r, type, upCallbacks, val;
@@ -390,12 +389,12 @@
       style = $.el('style', {
         textContent: css
       });
-      $.add(d.head, style);
+      $.add($.d.head, style);
       return style;
     },
     x: function(path, root) {
-      if (root == null) root = d.body;
-      return d.evaluate(path, root, null, 8, null).singleNodeValue;
+      if (root == null) root = $.d.body;
+      return $.d.evaluate(path, root, null, 8, null).singleNodeValue;
     },
     addClass: function(el, className) {
       return el.classList.add(className);
@@ -407,12 +406,12 @@
       return el.parentNode.removeChild(el);
     },
     tn: function(s) {
-      return d.createTextNode(s);
+      return $.d.createTextNode(s);
     },
     nodes: function(nodes) {
       var frag, node, _i, _len;
       if (nodes instanceof Node) return nodes;
-      frag = d.createDocumentFragment();
+      frag = $.d.createDocumentFragment();
       for (_i = 0, _len = nodes.length; _i < _len; _i++) {
         node = nodes[_i];
         frag.appendChild(node);
@@ -436,7 +435,7 @@
     },
     el: function(tag, properties) {
       var el;
-      el = d.createElement(tag);
+      el = $.d.createElement(tag);
       if (properties) $.extend(el, properties);
       return el;
     },
@@ -530,7 +529,7 @@
   });
 
   $$ = function(selector, root) {
-    if (root == null) root = d.body;
+    if (root == null) root = $.d.body;
     return Array.prototype.slice.call(root.querySelectorAll(selector));
   };
 
@@ -658,7 +657,7 @@
     comment: function(post) {
       var data, i, nodes, text, _ref;
       text = [];
-      nodes = d.evaluate('.//br|.//text()', post.el.lastChild, null, 7, null);
+      nodes = $.d.evaluate('.//br|.//text()', post.el.lastChild, null, 7, null);
       for (i = 0, _ref = nodes.snapshotLength; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
@@ -736,10 +735,10 @@
         a.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      doc = d.implementation.createHTMLDocument(null);
+      doc = $.d.implementation.createHTMLDocument(null);
       doc.documentElement.innerHTML = req.responseText;
       Threading.op($('body > form', doc).firstChild);
-      node = d.importNode(doc.getElementById(replyID));
+      node = $.d.importNode(doc.getElementById(replyID));
       quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
@@ -839,13 +838,13 @@
         return;
       }
       a.textContent = a.textContent.replace('\u00d7 Loading...', '-');
-      doc = d.implementation.createHTMLDocument(null);
+      doc = $.d.implementation.createHTMLDocument(null);
       doc.documentElement.innerHTML = req.responseText;
       nodes = [];
       _ref = $$('.reply', doc);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reply = _ref[_i];
-        table = d.importNode(reply.parentNode.parentNode.parentNode);
+        table = $.d.importNode(reply.parentNode.parentNode.parentNode);
         _ref2 = $$('.quotelink', table);
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
@@ -935,7 +934,7 @@
         node = _ref[_i];
         node.removeAttribute('accesskey');
       }
-      return $.on(d, 'keydown', Keybinds.keydown);
+      return $.on($.d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
       var key, o, range, selEnd, selStart, ta, thread, value, _ref, _ref2;
@@ -1131,7 +1130,7 @@
         td.className = 'reply';
         td.removeAttribute('tabindex');
         rect = td.getBoundingClientRect();
-        if (rect.bottom >= 0 && rect.top <= d.body.clientHeight) {
+        if (rect.bottom >= 0 && rect.top <= $.d.body.clientHeight) {
           next = delta === +1 ? $.x('following::td[@class="reply"]', td) : $.x('preceding::td[@class="reply"]', td);
           if (!next) {
             td.className = 'replyhl';
@@ -1143,7 +1142,7 @@
             return;
           }
           rect = next.getBoundingClientRect();
-          if (rect.top < 0 || rect.bottom > d.body.clientHeight) {
+          if (rect.top < 0 || rect.bottom > $.d.body.clientHeight) {
             next.scrollIntoView(delta === -1);
           }
           next.className = 'replyhl';
@@ -1157,7 +1156,7 @@
       for (_i = 0, _len = replies.length; _i < _len; _i++) {
         reply = replies[_i];
         rect = reply.getBoundingClientRect();
-        if (delta === +1 && rect.top >= 0 || delta === -1 && rect.bottom <= d.body.clientHeight) {
+        if (delta === +1 && rect.top >= 0 || delta === -1 && rect.bottom <= $.d.body.clientHeight) {
           reply.className = 'replyhl';
           reply.tabIndex = 0;
           reply.focus();
@@ -1184,7 +1183,7 @@
       $.on(prev, 'click', this.prev);
       $.on(next, 'click', this.next);
       $.add(span, [prev, $.tn(' '), next]);
-      return $.add(d.body, span);
+      return $.add($.d.body, span);
     },
     prev: function() {
       if (Main.REPLY) {
@@ -1195,7 +1194,7 @@
     },
     next: function() {
       if (Main.REPLY) {
-        return window.scrollTo(0, d.body.scrollHeight);
+        return window.scrollTo(0, $.d.body.scrollHeight);
       } else {
         return Nav.scroll(+1);
       }
@@ -1244,7 +1243,7 @@
           if (!Main.REPLY) $('select', QR.el).value = 'new';
           return $('textarea', QR.el).focus();
         });
-        form = d.forms[0];
+        form = $.d.forms[0];
         $.before(form, link);
       }
       if (/chrome/i.test(navigator.userAgent)) {
@@ -1272,21 +1271,21 @@
             return setTimeout(loadChecking, 500, this);
           }
         });
-        $.add(d.head, iframe);
+        $.add($.d.head, iframe);
       }
       script = $.el('script', {
         textContent: 'Recaptcha.focus_response_field=function(){}'
       });
-      $.add(d.head, script);
+      $.add($.d.head, script);
       $.rm(script);
       if (Conf['Persistent QR']) {
         QR.dialog();
         if (Conf['Auto Hide QR']) QR.hide();
       }
-      $.on(d, 'dragover', QR.dragOver);
-      $.on(d, 'drop', QR.dropFile);
-      $.on(d, 'dragstart', QR.drag);
-      return $.on(d, 'dragend', QR.drag);
+      $.on($.d, 'dragover', QR.dragOver);
+      $.on($.d, 'drop', QR.dropFile);
+      $.on($.d, 'dragstart', QR.drag);
+      return $.on($.d, 'dragend', QR.drag);
     },
     node: function(post) {
       return $.on($('.quotejs + .quotejs', post.el), 'click', QR.quote);
@@ -1305,7 +1304,7 @@
       QR.message.send({
         req: 'abort'
       });
-      d.activeElement.blur();
+      $.d.activeElement.blur();
       $.removeClass(QR.el, 'dump');
       _ref = QR.replies;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1321,7 +1320,7 @@
       return QR.cleanError();
     },
     hide: function() {
-      d.activeElement.blur();
+      $.d.activeElement.blur();
       $.addClass(QR.el, 'autohide');
       return $.id('autohide').checked = true;
     },
@@ -1339,7 +1338,7 @@
       if (node) $.replace(el.firstChild, node);
       QR.open();
       if (/captcha|verification/i.test(err)) $('[autocomplete]', QR.el).focus();
-      if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
+      if ($.d.hidden || $.d.oHidden || $.d.mozHidden || $.d.webkitHidden) {
         return alert(err);
       }
     },
@@ -1423,8 +1422,8 @@
     drag: function(e) {
       var i;
       i = e.type === 'dragstart' ? 'off' : 'on';
-      $[i](d, 'dragover', QR.dragOver);
-      return $[i](d, 'drop', QR.dropFile);
+      $[i]($.d, 'dragover', QR.dragOver);
+      return $[i]($.d, 'drop', QR.dropFile);
     },
     dragOver: function(e) {
       e.preventDefault();
@@ -1830,8 +1829,8 @@
       QR.status();
       QR.cooldown.init();
       QR.captcha.init();
-      $.add(d.body, QR.el);
-      e = d.createEvent('CustomEvent');
+      $.add($.d.body, QR.el);
+      e = $.d.createEvent('CustomEvent');
       e.initEvent('QRDialogCreation', true, false);
       return QR.el.dispatchEvent(e);
     },
@@ -1888,7 +1887,7 @@
         upfile: reply.file,
         spoiler: reply.spoiler,
         mode: 'regist',
-        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('[name=pwd]').value,
+        pwd: (m = $.d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('[name=pwd]').value,
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
@@ -2318,8 +2317,8 @@
         return e.stopPropagation();
       });
       $.add(overlay, dialog);
-      $.add(d.body, overlay);
-      d.body.style.setProperty('overflow', 'hidden', null);
+      $.add($.d.body, overlay);
+      $.d.body.style.setProperty('overflow', 'hidden', null);
       Options.backlink.call(back);
       Options.time.call(time);
       Options.fileInfo.call(fileInfoR);
@@ -2328,7 +2327,7 @@
     },
     close: function() {
       $.rm(this);
-      return d.body.style.removeProperty('overflow');
+      return $.d.body.style.removeProperty('overflow');
     },
     clearHidden: function() {
       $["delete"]("hiddenReplies/" + Main.BOARD + "/");
@@ -2524,7 +2523,7 @@
           $.on(input, 'click', this.update);
         }
       }
-      $.add(d.body, dialog);
+      $.add($.d.body, dialog);
       this.retryCoef = 10;
       return this.lastModified = 0;
     },
@@ -2552,7 +2551,7 @@
         return Updater.scrollBG = this.checked ? function() {
           return true;
         } : function() {
-          return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
+          return !($.d.hidden || $.d.oHidden || $.d.mozHidden || $.d.webkitHidden);
         };
       },
       update: function() {
@@ -2566,7 +2565,7 @@
           if (Conf['Unread Count']) {
             Unread.title = Unread.title.match(/^.+-/)[0] + ' 404';
           } else {
-            d.title = d.title.match(/^.+-/)[0] + ' 404';
+            $.d.title = $.d.title.match(/^.+-/)[0] + ' 404';
           }
           Unread.update(true);
           QR.message.send({
@@ -2591,7 +2590,7 @@
           return;
         }
         Updater.lastModified = this.getResponseHeader('Last-Modified');
-        doc = d.implementation.createHTMLDocument(null);
+        doc = $.d.implementation.createHTMLDocument(null);
         doc.documentElement.innerHTML = this.responseText;
         id = $('input', Updater.br.previousElementSibling).name;
         nodes = [];
@@ -2602,7 +2601,7 @@
           nodes.push(reply.parentNode.parentNode.parentNode);
         }
         newPosts = nodes.length;
-        scroll = Conf['Scrolling'] && Updater.scrollBG() && newPosts && Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25;
+        scroll = Conf['Scrolling'] && Updater.scrollBG() && newPosts && Updater.br.previousElementSibling.getBoundingClientRect().bottom - $.d.body.clientHeight < 25;
         if (Conf['Verbose']) {
           Updater.count.textContent = "+" + newPosts;
           Updater.count.className = newPosts ? 'new' : null;
@@ -2649,7 +2648,7 @@
       var favicon, html, input, inputs, _i, _len;
       html = '<div class=move>Thread Watcher</div>';
       this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', html);
-      $.add(d.body, this.dialog);
+      $.add($.d.body, this.dialog);
       inputs = $$('.op > input');
       for (_i = 0, _len = inputs.length; _i < _len; _i++) {
         input = inputs[_i];
@@ -3051,7 +3050,7 @@
 
   TitlePost = {
     init: function() {
-      return d.title = GetTitle();
+      return $.d.title = GetTitle();
     }
   };
 
@@ -3191,7 +3190,7 @@
         inline.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      doc = d.implementation.createHTMLDocument(null);
+      doc = $.d.implementation.createHTMLDocument(null);
       doc.documentElement.innerHTML = req.responseText;
       node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
       newInline = QuoteInline.table(id, node.innerHTML);
@@ -3243,7 +3242,7 @@
         id: 'qp',
         className: 'reply dialog'
       });
-      $.add(d.body, qp);
+      $.add($.d.body, qp);
       id = this.hash.slice(1);
       if (el = $.id(id)) {
         qp.innerHTML = el.innerHTML;
@@ -3283,7 +3282,7 @@
         qp.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      doc = d.implementation.createHTMLDocument(null);
+      doc = $.d.implementation.createHTMLDocument(null);
       doc.documentElement.innerHTML = req.responseText;
       node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
       qp.innerHTML = node.innerHTML;
@@ -3341,7 +3340,7 @@
     node: function(post) {
       var a, board, data, i, id, index, m, node, nodes, quote, quotes, snapshot, text, _i, _len, _ref;
       if (post["class"] === 'inline') return;
-      snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastChild, null, 6, null);
+      snapshot = $.d.evaluate('.//text()[not(parent::a)]', post.el.lastChild, null, 6, null);
       for (i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
         node = snapshot.snapshotItem(i);
         data = node.data;
@@ -3404,7 +3403,7 @@
       var dialog;
       dialog = UI.dialog('stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>');
       dialog.className = 'dialog';
-      $.add(d.body, dialog);
+      $.add($.d.body, dialog);
       this.posts = this.images = 0;
       this.imgLimit = (function() {
         switch (Main.BOARD) {
@@ -3435,7 +3434,7 @@
 
   Unread = {
     init: function() {
-      this.title = d.title;
+      this.title = $.d.title;
       this.update();
       $.on(window, 'scroll', Unread.scroll);
       return Main.callbacks.push(this.node);
@@ -3454,7 +3453,7 @@
     },
     scroll: function() {
       var bottom, height, i, reply, _len, _ref;
-      height = d.body.clientHeight;
+      height = $.d.body.clientHeight;
       _ref = Unread.replies;
       for (i = 0, _len = _ref.length; i < _len; i++) {
         reply = _ref[i];
@@ -3473,7 +3472,7 @@
         return;
       }
       return this.scheduled = setTimeout((function() {
-        return d.title = "(" + count + ") " + Unread.title;
+        return $.d.title = "(" + count + ") " + Unread.title;
       }), 5);
     },
     update: function(forceUpdate) {
@@ -3483,14 +3482,14 @@
       if (Conf['Unread Count']) this.setTitle(count);
       if (!(Conf['Unread Favicon'] && (count < 2 || forceUpdate))) return;
       Favicon.el.href = Main.dead ? count ? Favicon.unreadDead : Favicon.dead : count ? Favicon.unread : Favicon["default"];
-      return $.add(d.head, Favicon.el);
+      return $.add($.d.head, Favicon.el);
     }
   };
 
   Favicon = {
     init: function() {
       var href;
-      this.el = $('link[rel="shortcut icon"]', d.head);
+      this.el = $('link[rel="shortcut icon"]', $.d.head);
       this.el.type = 'image/x-icon';
       href = this.el.href;
       this.SFW = /ws.ico$/.test(href);
@@ -3611,7 +3610,7 @@
         id: 'ihover',
         src: this.parentNode.href
       });
-      $.add(d.body, UI.el);
+      $.add($.d.body, UI.el);
       $.on(UI.el, 'load', ImageHover.load);
       $.on(this, 'mousemove', UI.hover);
       return $.on(this, 'mouseout', ImageHover.mouseout);
@@ -3726,8 +3725,8 @@
       thumb = a.firstChild;
       if (thumb.hidden) {
         rect = a.getBoundingClientRect();
-        if (rect.top < 0) d.body.scrollTop += rect.top - 42;
-        if (rect.left < 0) d.body.scrollLeft += rect.left;
+        if (rect.top < 0) $.d.body.scrollTop += rect.top - 42;
+        if (rect.left < 0) $.d.body.scrollLeft += rect.left;
         return ImageExpand.contract(thumb);
       } else {
         return ImageExpand.expand(thumb);
@@ -3791,7 +3790,7 @@
       return $.prepend(form, controls);
     },
     resize: function() {
-      return ImageExpand.style.textContent = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
+      return ImageExpand.style.textContent = ".fitheight img[md5] + img {max-height:" + $.d.body.clientHeight + "px;}";
     }
   };
 
@@ -3840,7 +3839,7 @@
           return;
         case 'images.4chan.org':
           $.ready(function() {
-            if (d.title === '4chan - 404') return Redirect.init();
+            if ($.d.title === '4chan - 404') return Redirect.init();
           });
           return;
       }
@@ -3852,7 +3851,7 @@
       now = Date.now();
       if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * HOUR) {
         $.ready(function() {
-          return $.add(d.head, $.el('script', {
+          return $.add($.d.head, $.el('script', {
             src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
           }));
         });
@@ -3896,13 +3895,13 @@
     },
     ready: function() {
       var MutationObserver, form, nav, node, nodes, observer, _i, _j, _len, _len2, _ref, _ref2;
-      if (d.title === '4chan - 404') {
+      if ($.d.title === '4chan - 404') {
         Redirect.init();
         return;
       }
       if (!$.id('navtopr')) return;
-      $.addClass(d.body, "chanx_" + (VERSION.split('.')[1]));
-      $.addClass(d.body, $.engine);
+      $.addClass($.d.body, "chanx_" + (VERSION.split('.')[1]));
+      $.addClass($.d.body, $.engine);
       _ref = ['navtop', 'navbot'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         nav = _ref[_i];
@@ -3977,11 +3976,11 @@
       }
     },
     addStyle: function() {
-      $.off(d, 'DOMNodeInserted', Main.addStyle);
-      if (d.head) {
+      $.off($.d, 'DOMNodeInserted', Main.addStyle);
+      if ($.d.head) {
         return $.addStyle(Main.css);
       } else {
-        return $.on(d, 'DOMNodeInserted', Main.addStyle);
+        return $.on($.d, 'DOMNodeInserted', Main.addStyle);
       }
     },
     message: function(e) {
