@@ -592,6 +592,7 @@
     node: function(post) {
       var el, filter, firstThread, isOP, key, result, thisThread, value, _i, _len, _ref;
       if (post.isInlined) return;
+      post.isOP = post["class"] === 'op';
       isOP = post.isOP, el = post.el;
       for (key in Filter.filters) {
         value = Filter[key](post);
@@ -4008,7 +4009,6 @@
         "class": klass,
         id: node.getElementsByTagName('input')[0].name,
         threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).firstChild.id,
-        isOP: klass === 'op',
         isInlined: /\binline\b/.test(klass),
         filesize: node.getElementsByClassName('filesize')[0] || false,
         quotes: node.getElementsByClassName('quotelink'),

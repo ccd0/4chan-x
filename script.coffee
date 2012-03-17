@@ -524,6 +524,7 @@ Filter =
 
   node: (post) ->
     return if post.isInlined
+    post.isOP = post.class is 'op'
     {isOP, el} = post
     for key of Filter.filters
       value = Filter[key] post
@@ -3365,7 +3366,6 @@ Main =
       class:     klass
       id:        node.getElementsByTagName('input')[0].name
       threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).firstChild.id
-      isOP:      klass is 'op'
       isInlined: /\binline\b/.test klass
       filesize:  node.getElementsByClassName('filesize')[0] or false
       quotes:    node.getElementsByClassName 'quotelink'
