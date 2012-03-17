@@ -15,8 +15,8 @@ release new 4chan x versions, and is not needed or wanted in pull requests.
 
 # Contributing
 
-- Edit the changelog
 - Edit the CoffeeScript source
 - Build the JavaScript
+- If the edits affect regular users, edit the changelog
 - Fork the repo
 - Send a pull request
