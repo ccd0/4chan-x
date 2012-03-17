@@ -3798,8 +3798,6 @@
       if (temp === 'res') {
         g.REPLY = true;
         g.THREAD_ID = pathname[2];
-      } else {
-        g.PAGENUM = parseInt(temp) || 0;
       }
       for (key in Conf) {
         val = Conf[key];

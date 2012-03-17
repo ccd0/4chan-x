@@ -3161,8 +3161,6 @@ Main =
     if temp is 'res'
       g.REPLY = true
       g.THREAD_ID = pathname[2]
-    else
-      g.PAGENUM = parseInt(temp) or 0
 
     #load values from localStorage
     for key, val of Conf
