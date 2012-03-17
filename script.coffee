@@ -154,6 +154,19 @@ Config =
       'Auto Update': [true,  'Automatically fetch new posts']
     'Interval': 30
 
+# flatten the config
+Conf = {}
+(flatten = (parent, obj) ->
+  if obj instanceof Array
+    Conf[parent] = obj[0]
+  else if typeof obj is 'object'
+    for key, val of obj
+      flatten key, val
+  else # string or number
+    Conf[parent] = obj
+  return
+) null, Config
+
 d = document
 g = {}
 
@@ -3142,19 +3155,6 @@ ImageExpand =
 
 Main =
   init: ->
-    # flatten the config
-    Conf = {}
-    (flatten = (parent, obj) ->
-      if obj instanceof Array
-        Conf[parent] = obj[0]
-      else if typeof obj is 'object'
-        for key, val of obj
-          flatten key, val
-      else # string or number
-        Conf[parent] = obj
-      return
-    ) null, Config
-
     path = location.pathname
     pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname

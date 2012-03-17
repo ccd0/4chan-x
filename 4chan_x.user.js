@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, Watcher, d, flatten, g, _base;
 
   Config = {
     main: {
@@ -191,6 +191,22 @@
       'Interval': 30
     }
   };
+
+  Conf = {};
+
+  (flatten = function(parent, obj) {
+    var key, val;
+    if (obj instanceof Array) {
+      Conf[parent] = obj[0];
+    } else if (typeof obj === 'object') {
+      for (key in obj) {
+        val = obj[key];
+        flatten(key, val);
+      }
+    } else {
+      Conf[parent] = obj;
+    }
+  })(null, Config);
 
   d = document;
 
@@ -3777,21 +3793,7 @@
 
   Main = {
     init: function() {
-      var Conf, cutoff, flatten, hiddenThreads, id, key, now, path, pathname, temp, timestamp, val, _ref;
-      Conf = {};
-      (flatten = function(parent, obj) {
-        var key, val;
-        if (obj instanceof Array) {
-          Conf[parent] = obj[0];
-        } else if (typeof obj === 'object') {
-          for (key in obj) {
-            val = obj[key];
-            flatten(key, val);
-          }
-        } else {
-          Conf[parent] = obj;
-        }
-      })(null, Config);
+      var cutoff, hiddenThreads, id, key, now, path, pathname, temp, timestamp, val, _ref;
       path = location.pathname;
       pathname = path.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
