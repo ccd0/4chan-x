@@ -434,21 +434,18 @@ $.extend $,
     set: (name, value) ->
       name = NAMESPACE + name
       # for `storage` events
-      localStorage[name] = JSON.stringify value
+      localStorage.setItem name, JSON.stringify value
       GM_setValue name, JSON.stringify value
   else
     delete: (name) ->
-      name = NAMESPACE + name
-      delete localStorage[name]
+      localStorage.removeItem NAMESPACE + name
     get: (name, defaultValue) ->
-      name = NAMESPACE + name
-      if value = localStorage[name]
+      if value = localStorage.getItem NAMESPACE + name
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      name = NAMESPACE + name
-      localStorage[name] = JSON.stringify value
+      localStorage.setItem NAMESPACE + name, JSON.stringify value
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector

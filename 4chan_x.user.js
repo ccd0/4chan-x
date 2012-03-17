@@ -512,26 +512,23 @@
     },
     set: function(name, value) {
       name = NAMESPACE + name;
-      localStorage[name] = JSON.stringify(value);
+      localStorage.setItem(name, JSON.stringify(value));
       return GM_setValue(name, JSON.stringify(value));
     }
   } : {
     "delete": function(name) {
-      name = NAMESPACE + name;
-      return delete localStorage[name];
+      return localStorage.removeItem(NAMESPACE + name);
     },
     get: function(name, defaultValue) {
       var value;
-      name = NAMESPACE + name;
-      if (value = localStorage[name]) {
+      if (value = localStorage.getItem(NAMESPACE + name)) {
         return JSON.parse(value);
       } else {
         return defaultValue;
       }
     },
     set: function(name, value) {
-      name = NAMESPACE + name;
-      return localStorage[name] = JSON.stringify(value);
+      return localStorage.setItem(NAMESPACE + name, JSON.stringify(value));
     }
   });
 
