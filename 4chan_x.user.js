@@ -905,7 +905,7 @@
         table.hidden = false;
         $.rm(parent);
         id = table.firstChild.firstChild.lastChild.id;
-        _ref2 = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
+        _ref2 = $$(".quotelink[href$='#" + id + "'], .backlink[href='#" + id + "']");
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
           $.removeClass(quote, 'filtered');

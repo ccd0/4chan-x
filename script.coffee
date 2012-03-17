@@ -524,7 +524,7 @@ Filter =
 
   node: (post) ->
     return if post.isInlined
-    post.isOP = post.class is 'op'
+    post.isOP  = post.class is 'op'
     {isOP, el} = post
     for key of Filter.filters
       value = Filter[key] post
@@ -769,7 +769,7 @@ ReplyHiding =
       table.hidden = false
       $.rm parent
       id = table.firstChild.firstChild.lastChild.id
-      for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
+      for quote in $$ ".quotelink[href$='##{id}'], .backlink[href='##{id}']"
         $.removeClass quote, 'filtered'
       delete g.hiddenReplies[id]
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
