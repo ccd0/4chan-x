@@ -2349,7 +2349,7 @@ Sauce =
 
   createSauceLink: (link) ->
     domain = link.match(/(\w+)\.\w+\//)[1]
-    href   = link.replace /(\d)/g, (parameter) ->
+    href   = link.replace /(\$\d)/g, (parameter) ->
       switch parameter
         when '$1'
           "http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '"

@@ -2772,7 +2772,7 @@
     createSauceLink: function(link) {
       var domain, el, href;
       domain = link.match(/(\w+)\.\w+\//)[1];
-      href = link.replace(/(\d)/g, function(parameter) {
+      href = link.replace(/(\$\d)/g, function(parameter) {
         switch (parameter) {
           case '$1':
             return "http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '";
