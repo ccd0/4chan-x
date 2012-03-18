@@ -2847,7 +2847,7 @@
         var day, hour, min, month, year, _, _ref;
         _ref = node.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
         year = "20" + year;
-        month -= 1;
+        month--;
         hour = chanOffset + Number(hour);
         return new Date(year, month, day, hour, min);
       };
@@ -2861,6 +2861,7 @@
       time = $.el('time', {
         textContent: ' ' + Time.funk(Time) + ' '
       });
+      time.setAttribute('datetime', Time.date.toISOString());
       return $.replace(node, time);
     },
     foo: function() {

@@ -2408,7 +2408,7 @@ Time =
           [_, month, day, year, hour, min] =
             node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
           year = "20#{year}"
-          month -= 1 #months start at 0
+          month-- # Months start at 0
           hour = chanOffset + Number hour
           new Date year, month, day, hour, min
 
@@ -2420,6 +2420,8 @@ Time =
     Time.date = Time.parse node
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
+    # Set the datetime attribute, ISO'd.
+    time.setAttribute 'datetime', Time.date.toISOString()
     $.replace node, time
   foo: ->
     code = conf['time'].replace /%([A-Za-z])/g, (s, c) ->
