@@ -2426,7 +2426,7 @@
       _ref = $$('.thread');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
-        op = thread.firstChild;
+        op = $('.op', thread);
         a = $.el('a', {
           textContent: '[ - ]',
           href: 'javascript:;'
@@ -4069,10 +4069,7 @@ a[href="javascript:;"] {\
   text-decoration: none;\
 }\
 \
-.block ~ .op,\
-.block ~ .omittedposts,\
-.block ~ table,\
-.block ~ br,\
+.block ~ *,\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
 #qp > input, #qp .inline, .forwarded {\

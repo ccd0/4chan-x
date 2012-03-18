@@ -2043,7 +2043,7 @@ ThreadHiding =
   init: ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     for thread in $$ '.thread'
-      op = thread.firstChild
+      op = $ '.op', thread
       a  = $.el 'a',
         textContent: '[ - ]'
         href: 'javascript:;'
@@ -3406,10 +3406,7 @@ a[href="javascript:;"] {
   text-decoration: none;
 }
 
-.block ~ .op,
-.block ~ .omittedposts,
-.block ~ table,
-.block ~ br,
+.block ~ *,
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
 #qp > input, #qp .inline, .forwarded {
