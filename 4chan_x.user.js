@@ -735,7 +735,7 @@
       }));
     },
     parse: function(req, a, threadID, replyID) {
-      var doc, node, post, quote, quotes, _i, _len;
+      var doc, href, node, post, quote, quotes, _i, _len;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
@@ -747,8 +747,10 @@
       quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
-        if (quote.hash === quote.getAttribute('href')) {
+        if (quote.hash === (href = quote.getAttribute('href'))) {
           quote.pathname = "/" + g.BOARD + "/res/" + threadID;
+        } else if (href !== quote.href) {
+          quote.href = "res/" + href;
         }
       }
       post = {
@@ -853,7 +855,7 @@
         _ref2 = $$('.quotelink', table);
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
-          if ((href = quote.getAttribute('href')) === quote.hash) {
+          if (quote.hash === (href = quote.getAttribute('href'))) {
             quote.pathname = pathname;
           } else if (href !== quote.href) {
             quote.href = "res/" + href;

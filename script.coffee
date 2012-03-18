@@ -646,8 +646,10 @@ ExpandComment =
 
     quotes = node.getElementsByClassName 'quotelink'
     for quote in quotes
-      if quote.hash is quote.getAttribute 'href'
+      if quote.hash is href = quote.getAttribute 'href' # Add pathname to in-thread quotes
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
+      else if href isnt quote.href # Fix cross-thread links, not cross-board ones
+        quote.href = "res/#{href}"
     post =
       el:        node
       threadId:  threadID
@@ -726,9 +728,9 @@ ExpandThread =
     for reply in $$ '.reply', doc
       table = d.importNode reply.parentNode.parentNode.parentNode
       for quote in $$ '.quotelink', table
-        if (href = quote.getAttribute 'href') is quote.hash #add pathname to normal quotes
+        if quote.hash is href = quote.getAttribute 'href' # Add pathname to in-thread quotes
           quote.pathname = pathname
-        else if href isnt quote.href #fix x-thread links, not x-board ones
+        else if href isnt quote.href # Fix cross-thread links, not cross-board ones
           quote.href = "res/#{href}"
       link = $ '.quotejs', table
       link.href = "res/#{thread.firstChild.id}##{reply.id}"
