@@ -1747,6 +1747,9 @@ qr =
           qr.message.send
             req:  'response'
             html: @response
+        onerror: ->
+          # CORS disabled error: redirecting to banned page ;_;
+          qr.message.send req: 'status', ready: true, banned: true
       opts =
         form: form
         type: 'post'
@@ -1763,12 +1766,7 @@ qr =
         opts.headers =
           'Content-Type': 'multipart/form-data;boundary=' + boundary
 
-      try
-        qr.ajax = $.ajax url, callbacks, opts
-      catch e
-        # CORS disabled error: redirecting to banned page ;_;
-        if e.name is 'NETWORK_ERR'
-          qr.message.send req: 'status', ready: true, banned: true
+      qr.ajax = $.ajax url, callbacks, opts
 
 Options =
   init: ->

@@ -2079,6 +2079,13 @@
               req: 'response',
               html: this.response
             });
+          },
+          onerror: function() {
+            return qr.message.send({
+              req: 'status',
+              ready: true,
+              banned: true
+            });
           }
         };
         opts = {
@@ -2104,17 +2111,7 @@
             'Content-Type': 'multipart/form-data;boundary=' + boundary
           };
         }
-        try {
-          return qr.ajax = $.ajax(url, callbacks, opts);
-        } catch (e) {
-          if (e.name === 'NETWORK_ERR') {
-            return qr.message.send({
-              req: 'status',
-              ready: true,
-              banned: true
-            });
-          }
-        }
+        return qr.ajax = $.ajax(url, callbacks, opts);
       }
     }
   };
