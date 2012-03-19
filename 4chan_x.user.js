@@ -2945,21 +2945,23 @@
       return g.callbacks.push(this.node);
     },
     node: function(post) {
-      var fullname, link, node, regexp, resolution, shortname, size, type, unit, _, _ref;
+      var data, link, node, regexp, resolution, size, span, unit, _, _ref;
       if (post["class"] === 'inline' || !(node = post.filesize)) return;
-      type = node.childElementCount === 2 ? 0 : 1;
-      regexp = type ? /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/ : /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF), <span title="(.+)">([^<]+)/;
-      _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], fullname = _ref[5], shortname = _ref[6];
-      FileInfo.data = {
+      regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/;
+      _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4];
+      data = {
         link: link,
         size: size,
         unit: unit,
-        resolution: resolution,
-        fullname: fullname,
-        shortname: shortname,
-        type: type
+        resolution: resolution
       };
-      return node.innerHTML = FileInfo.funks[type](FileInfo);
+      if (span = $('span', node)) {
+        data.fullname = span.title;
+        data.shortname = span.textContent;
+      }
+      data.type = +(!span);
+      FileInfo.data = data;
+      return node.innerHTML = FileInfo.funks[data.type](FileInfo);
     },
     setFormats: function() {
       var code, format, funks, i, param;

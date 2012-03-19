@@ -2476,23 +2476,20 @@ FileInfo =
     g.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline' or not node = post.filesize
-    type   = if node.childElementCount is 2 then 0 else 1
-    regexp =
-      if type
-        /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/
-      else
-        /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF), <span title="(.+)">([^<]+)/
-    [_, link, size, unit, resolution, fullname, shortname] =
+    regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/
+    [_, link, size, unit, resolution] =
       node.innerHTML.match regexp
-    FileInfo.data =
+    data =
       link:       link
       size:       size
       unit:       unit
       resolution: resolution
-      fullname:   fullname
-      shortname:  shortname
-      type:       type
-    node.innerHTML = FileInfo.funks[type] FileInfo
+    if span = $ 'span', node
+      data.fullname  = span.title
+      data.shortname = span.textContent
+    data.type      = +!span
+    FileInfo.data  = data
+    node.innerHTML = FileInfo.funks[data.type] FileInfo
   setFormats: ->
     funks = []
     for i in [0..1]
