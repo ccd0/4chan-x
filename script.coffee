@@ -1,4 +1,4 @@
-config =
+Config =
   main:
     Enhancing:
       '404 Redirect':                 [true,  'Redirect dead threads and images']
@@ -154,72 +154,49 @@ config =
       'Auto Update': [true,  'Automatically fetch new posts']
     'Interval': 30
 
-# XXX Chrome can't into {log} = console
-# XXX GreaseMonkey can't into console.log.bind
-log = console.log.bind? console
-
-# flatten the config
-conf = {}
-(flatten = (parent, obj) ->
-  if obj instanceof Array
-    conf[parent] = obj[0]
-  else if typeof obj is 'object'
-    for key, val of obj
-      flatten key, val
-  else # string or number
-    conf[parent] = obj
-  return
-) null, config
-
-NAMESPACE = '4chan_x.'
-VERSION = '2.29.1'
-SECOND = 1000
-MINUTE = 60*SECOND
-HOUR   = 60*MINUTE
-DAY    = 24*HOUR
-engine = /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
+Conf = {}
 d = document
-g = callbacks: []
+g = {}
 
-ui =
+UI =
   dialog: (id, position, html) ->
     el = d.createElement 'div'
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id = id
-    el.style.cssText = if saved = localStorage["#{NAMESPACE}#{id}.position"] then saved else position
-    el.querySelector('.move').addEventListener 'mousedown', ui.dragstart, false
+    el.style.cssText = if saved = localStorage["#{Main.namespace}#{id}.position"] then saved else position
+    el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection
     e.preventDefault()
-    ui.el = el = @parentNode
-    d.addEventListener 'mousemove', ui.drag, false
-    d.addEventListener 'mouseup',   ui.dragend, false
+    UI.el = el = @parentNode
+    d.addEventListener 'mousemove', UI.drag, false
+    d.addEventListener 'mouseup',   UI.dragend, false
     #distance from pointer to el edge is constant; calculate it here.
     # XXX opera reports el.offsetLeft / el.offsetTop as 0
     rect = el.getBoundingClientRect()
-    ui.dx = e.clientX - rect.left
-    ui.dy = e.clientY - rect.top
+    UI.dx = e.clientX - rect.left
+    UI.dy = e.clientY - rect.top
     #factor out el from document dimensions
-    ui.width  = d.body.clientWidth  - el.offsetWidth
-    ui.height = d.body.clientHeight - el.offsetHeight
+    UI.width  = d.body.clientWidth  - el.offsetWidth
+    UI.height = d.body.clientHeight - el.offsetHeight
   drag: (e) ->
-    left = e.clientX - ui.dx
-    top = e.clientY - ui.dy
+    left = e.clientX - UI.dx
+    top = e.clientY - UI.dy
     left =
       if left < 10 then 0
-      else if ui.width - left < 10 then null
+      else if UI.width - left < 10 then null
       else left
     top =
       if top < 10 then 0
-      else if ui.height - top < 10 then null
+      else if UI.height - top < 10 then null
       else top
     right = if left is null then 0 else null
     bottom = if top is null then 0 else null
     #using null instead of '' is 4% faster
     #these 4 statements are 40% faster than 1 style.cssText
-    {style} = ui.el
+    {style} = UI.el
     style.top    = top
     style.right  = right
     style.bottom = bottom
@@ -228,13 +205,13 @@ ui =
     #$ coffee -bpe '{a} = {b} = c'
     #var a, b;
     #a = (b = c.b, c).a;
-    {el} = ui
-    localStorage["#{NAMESPACE}#{el.id}.position"] = el.style.cssText
-    d.removeEventListener 'mousemove', ui.drag, false
-    d.removeEventListener 'mouseup',   ui.dragend, false
+    {el} = UI
+    localStorage["#{Main.namespace}#{el.id}.position"] = el.style.cssText
+    d.removeEventListener 'mousemove', UI.drag, false
+    d.removeEventListener 'mouseup',   UI.dragend, false
   hover: (e) ->
     {clientX, clientY} = e
-    {el} = ui
+    {el} = UI
     {style} = el
     {clientHeight, clientWidth} = d.body
     height = el.offsetHeight
@@ -256,8 +233,8 @@ ui =
       style.right = clientWidth - clientX + 45
 
   hoverend: ->
-    $.rm ui.el
-    delete ui.el
+    $.rm UI.el
+    delete UI.el
 
 ###
 loosely follows the jquery api:
@@ -273,6 +250,14 @@ $.extend = (object, properties) ->
   return
 
 $.extend $,
+  SECOND: 1000
+  MINUTE: 1000*60
+  HOUR  : 1000*60*60
+  DAY   : 1000*60*60*24
+  log:
+    # XXX GreaseMonkey can't into console.log.bind
+    console.log.bind? console
+  engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
       # Execute the functions in parallel.
@@ -284,7 +269,7 @@ $.extend $,
     $.on d, 'DOMContentLoaded', cb
   sync: (key, cb) ->
     $.on window, 'storage', (e) ->
-      cb JSON.parse e.newValue if e.key is "#{NAMESPACE}#{key}"
+      cb JSON.parse e.newValue if e.key is "#{Main.namespace}#{key}"
   id: (id) ->
     d.getElementById id
   ajax: (url, callbacks, opts={}) ->
@@ -312,10 +297,10 @@ $.extend $,
   cb:
     checked: ->
       $.set @name, @checked
-      conf[@name] = @checked
+      Conf[@name] = @checked
     value: ->
       $.set @name, @value.trim()
-      conf[@name] = @value
+      Conf[@name] = @value
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
@@ -423,29 +408,29 @@ $.cache.requests = {}
 $.extend $,
   if GM_deleteValue?
     delete: (name) ->
-      name = NAMESPACE + name
+      name = Main.namespace + name
       GM_deleteValue name
     get: (name, defaultValue) ->
-      name = NAMESPACE + name
+      name = Main.namespace + name
       if value = GM_getValue name
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      name = NAMESPACE + name
+      name = Main.namespace + name
       # for `storage` events
       localStorage.setItem name, JSON.stringify value
       GM_setValue name, JSON.stringify value
   else
     delete: (name) ->
-      localStorage.removeItem NAMESPACE + name
+      localStorage.removeItem Main.namespace + name
     get: (name, defaultValue) ->
-      if value = localStorage.getItem NAMESPACE + name
+      if value = localStorage.getItem Main.namespace + name
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      localStorage.setItem NAMESPACE + name, JSON.stringify value
+      localStorage.setItem Main.namespace + name, JSON.stringify value
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
@@ -453,9 +438,9 @@ $$ = (selector, root=d.body) ->
 Filter =
   filters: {}
   init: ->
-    for key of config.filter
+    for key of Config.filter
       @filters[key] = []
-      for filter in conf[key].split '\n'
+      for filter in Conf[key].split '\n'
         continue if filter[0] is '#'
 
         unless regexp = filter.match /\/(.+)\/(\w*)/
@@ -504,7 +489,7 @@ Filter =
         delete @filters[key]
 
     if Object.keys(@filters).length
-      g.callbacks.push @node
+      Main.callbacks.push @node
 
   createFilter: (regexp, op, hl, top) ->
     test =
@@ -610,13 +595,13 @@ Filter =
 
 StrikethroughQuotes =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined
     for quote in post.quotes
       if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
         $.addClass quote, 'filtered'
-        ReplyHiding.hide post.root if conf['Recursive Filtering']
+        ReplyHiding.hide post.root if Conf['Recursive Filtering']
     return
 
 ExpandComment =
@@ -655,15 +640,15 @@ ExpandComment =
       threadId:  threadID
       quotes:    quotes
       backlinks: []
-    if conf['Resurrect Quotes']
+    if Conf['Resurrect Quotes']
       Quotify.node      post
-    if conf['Quote Preview']
+    if Conf['Quote Preview']
       QuotePreview.node post
-    if conf['Quote Inline']
+    if Conf['Quote Inline']
       QuoteInline.node  post
-    if conf['Indicate OP quote']
+    if Conf['Indicate OP quote']
       QuoteOP.node      post
-    if conf['Indicate Cross-thread Quotes']
+    if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
     $.replace a.parentNode.parentNode, node.lastChild
 
@@ -747,7 +732,7 @@ ReplyHiding =
       noWrap: true
       className: 'replyhider'
       innerHTML: '<a href="javascript:;">[ - ]</a>'
-    g.callbacks.push @node
+    Main.callbacks.push @node
 
   node: (post) ->
     return if post.class
@@ -781,7 +766,7 @@ ReplyHiding =
 
     table.hidden = true
 
-    return unless conf['Show Stubs']
+    return unless Conf['Show Stubs']
 
     name = $('.commentpostername', table).textContent
     uid  = $('.posteruid',         table)?.textContent or ''
@@ -806,20 +791,20 @@ Keybinds =
     thread = Nav.getThread()
     switch key
       # QR & Options
-      when conf.openQR
+      when Conf.openQR
         Keybinds.qr thread, true
-      when conf.openEmptyQR
+      when Conf.openEmptyQR
         Keybinds.qr thread
-      when conf.openOptions
+      when Conf.openOptions
         Options.dialog() unless $.id 'overlay'
-      when conf.close
+      when Conf.close
         if o = $.id 'overlay'
           Options.close.call o
-        else if qr.el
-          qr.close()
-      when conf.submit
-        qr.submit() if qr.el and !qr.status()
-      when conf.spoiler
+        else if QR.el
+          QR.close()
+      when Conf.submit
+        QR.submit() if QR.el and !QR.status()
+      when Conf.spoiler
         ta = e.target
         return if ta.nodeName isnt 'TEXTAREA'
 
@@ -836,44 +821,44 @@ Keybinds =
         # Move the caret to the end of the selection.
         ta.setSelectionRange range, range
       # Thread related
-      when conf.watch
+      when Conf.watch
         Watcher.toggle thread
-      when conf.update
+      when Conf.update
         Updater.update()
-      when conf.unreadCountTo0
+      when Conf.unreadCountTo0
         Unread.replies = []
         Unread.update()
       # Images
-      when conf.expandImage
+      when Conf.expandImage
         Keybinds.img thread
-      when conf.expandAllImages
+      when Conf.expandAllImages
         Keybinds.img thread, true
       # Board Navigation
-      when conf.zero
+      when Conf.zero
         window.location = "/#{g.BOARD}/0#0"
-      when conf.nextPage
+      when Conf.nextPage
         $('input[value=Next]')?.click()
-      when conf.previousPage
+      when Conf.previousPage
         $('input[value=Previous]')?.click()
       # Thread Navigation
-      when conf.nextThread
+      when Conf.nextThread
         return if g.REPLY
         Nav.scroll +1
-      when conf.previousThread
+      when Conf.previousThread
         return if g.REPLY
         Nav.scroll -1
-      when conf.expandThread
+      when Conf.expandThread
         ExpandThread.toggle thread
-      when conf.openThread
+      when Conf.openThread
         Keybinds.open thread
-      when conf.openThreadTab
+      when Conf.openThreadTab
         Keybinds.open thread, true
       # Reply Navigation
-      when conf.nextReply
+      when Conf.nextReply
         Keybinds.hl +1, thread
-      when conf.previousReply
+      when Conf.previousReply
         Keybinds.hl -1, thread
-      when conf.hide
+      when Conf.hide
         ThreadHiding.toggle thread if /\bthread\b/.test thread.className
       else
         return
@@ -912,10 +897,10 @@ Keybinds =
 
   qr: (thread, quote) ->
     if quote
-      qr.quote.call $ '.quotejs + .quotejs', $('.replyhl', thread) or thread
+      QR.quote.call $ '.quotejs + .quotejs', $('.replyhl', thread) or thread
     else
-      qr.open()
-    $('textarea', qr.el).focus()
+      QR.open()
+    $('textarea', QR.el).focus()
 
   open: (thread, tab) ->
     id = thread.firstChild.id
@@ -1014,25 +999,25 @@ Nav =
     {top} = Nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
 
-qr =
+QR =
   init: ->
     return unless $.id 'recaptcha_challenge_field_holder'
-    g.callbacks.push @node
+    Main.callbacks.push @node
     setTimeout @asyncInit
 
   asyncInit: ->
-    if conf['Hide Original Post Form']
+    if Conf['Hide Original Post Form']
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on $('a', link), 'click', ->
-        qr.open()
-        $('select', qr.el).value = 'new' unless g.REPLY
-        $('textarea', qr.el).focus()
+        QR.open()
+        $('select', QR.el).value = 'new' unless g.REPLY
+        $('textarea', QR.el).focus()
       form = d.forms[0]
       $.before form, link
 
     # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
     if /chrome/i.test navigator.userAgent
-      qr.status ready: true
+      QR.status ready: true
     else
       iframe = $.el 'iframe',
         id: 'iframe'
@@ -1040,7 +1025,7 @@ qr =
       $.on iframe, 'error', -> @src = @src
       # Greasemonkey ghetto fix
       loadChecking = (iframe) ->
-        unless qr.status.ready
+        unless QR.status.ready
           iframe.src = 'about:blank'
           setTimeout (-> iframe.src = 'https://sys.4chan.org/robots.txt'), 100
       $.on iframe, 'load', -> if @src isnt 'about:blank' then setTimeout loadChecking, 500, @
@@ -1051,79 +1036,79 @@ qr =
     $.add d.head, script
     $.rm script
 
-    if conf['Persistent QR']
-      qr.dialog()
-      qr.hide() if conf['Auto Hide QR']
-    $.on d, 'dragover',  qr.dragOver
-    $.on d, 'drop',      qr.dropFile
-    $.on d, 'dragstart', qr.drag
-    $.on d, 'dragend',   qr.drag
+    if Conf['Persistent QR']
+      QR.dialog()
+      QR.hide() if Conf['Auto Hide QR']
+    $.on d, 'dragover',  QR.dragOver
+    $.on d, 'drop',      QR.dropFile
+    $.on d, 'dragstart', QR.drag
+    $.on d, 'dragend',   QR.drag
 
   node: (post) ->
-    $.on $('.quotejs + .quotejs', post.el), 'click', qr.quote
+    $.on $('.quotejs + .quotejs', post.el), 'click', QR.quote
 
   open: ->
-    if qr.el
-      qr.el.hidden = false
-      qr.unhide()
+    if QR.el
+      QR.el.hidden = false
+      QR.unhide()
     else
-      qr.dialog()
+      QR.dialog()
   close: ->
-    qr.el.hidden = true
-    qr.message.send req: 'abort'
+    QR.el.hidden = true
+    QR.message.send req: 'abort'
     d.activeElement.blur()
-    $.removeClass qr.el, 'dump'
-    for i in qr.replies
-      qr.replies[0].rm()
-    qr.cooldown.auto = false
-    qr.status()
-    qr.resetFileInput()
-    if not conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
+    $.removeClass QR.el, 'dump'
+    for i in QR.replies
+      QR.replies[0].rm()
+    QR.cooldown.auto = false
+    QR.status()
+    QR.resetFileInput()
+    if not Conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
       spoiler.click()
-    qr.cleanError()
+    QR.cleanError()
   hide: ->
     d.activeElement.blur()
-    $.addClass qr.el, 'autohide'
+    $.addClass QR.el, 'autohide'
     $.id('autohide').checked = true
   unhide: ->
-    $.removeClass qr.el, 'autohide'
+    $.removeClass QR.el, 'autohide'
     $.id('autohide').checked = false
   toggleHide: ->
-    @checked and qr.hide() or qr.unhide()
+    @checked and QR.hide() or QR.unhide()
 
   error: (err, node) ->
-    el = $ '.warning', qr.el
+    el = $ '.warning', QR.el
     el.textContent = err
     $.replace el.firstChild, node if node
-    qr.open()
+    QR.open()
     if /captcha|verification/i.test err
       # Focus the captcha input on captcha error.
-      $('[autocomplete]', qr.el).focus()
+      $('[autocomplete]', QR.el).focus()
     alert err if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
-    $('.warning', qr.el).textContent = null
+    $('.warning', QR.el).textContent = null
 
   status: (data={}) ->
     if data.ready
-      qr.status.ready  = true
-      qr.status.banned = data.banned
-    else unless qr.status.ready
+      QR.status.ready  = true
+      QR.status.banned = data.banned
+    else unless QR.status.ready
       value    = 'Loading'
       disabled = true
     if g.dead
       value    = 404
       disabled = true
-      qr.cooldown.auto = false
-    else if qr.status.banned
+      QR.cooldown.auto = false
+    else if QR.status.banned
       value    = 'Banned'
       disabled = true
     else
       # do not cancel `value = 'Loading'` once the cooldown is over
-      value = qr.cooldown.seconds or data.progress or value
-    return unless qr.el
-    {input} = qr.status
+      value = QR.cooldown.seconds or data.progress or value
+    return unless QR.el
+    {input} = QR.status
     input.value =
-      if qr.cooldown.auto and conf['Cooldown']
+      if QR.cooldown.auto and Conf['Cooldown']
         if value then "Auto #{value}" else 'Auto'
       else
         value or 'Submit'
@@ -1131,30 +1116,30 @@ qr =
 
   cooldown:
     init: ->
-      return unless conf['Cooldown']
-      qr.cooldown.start $.get "/#{g.BOARD}/cooldown", 0
-      $.sync "/#{g.BOARD}/cooldown", qr.cooldown.start
+      return unless Conf['Cooldown']
+      QR.cooldown.start $.get "/#{g.BOARD}/cooldown", 0
+      $.sync "/#{g.BOARD}/cooldown", QR.cooldown.start
     start: (timeout) ->
       seconds = Math.floor (timeout - Date.now()) / 1000
-      qr.cooldown.count seconds
+      QR.cooldown.count seconds
     set: (seconds) ->
-      return unless conf['Cooldown']
-      qr.cooldown.count seconds
-      $.set "/#{g.BOARD}/cooldown", Date.now() + seconds*SECOND
+      return unless Conf['Cooldown']
+      QR.cooldown.count seconds
+      $.set "/#{g.BOARD}/cooldown", Date.now() + seconds*$.SECOND
     count: (seconds) ->
       return unless 0 <= seconds <= 60
-      setTimeout qr.cooldown.count, 1000, seconds-1
-      qr.cooldown.seconds = seconds
+      setTimeout QR.cooldown.count, 1000, seconds-1
+      QR.cooldown.seconds = seconds
       if seconds is 0
         $.delete "/#{g.BOARD}/cooldown"
-        qr.submit() if qr.cooldown.auto
-      qr.status()
+        QR.submit() if QR.cooldown.auto
+      QR.status()
 
   quote: (e) ->
     e?.preventDefault()
-    qr.open()
+    QR.open()
     unless g.REPLY
-      $('select', qr.el).value = $.x('ancestor::div[@class="thread"]', @).firstChild.id
+      $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).firstChild.id
 
     # Make sure we get the correct number, even with XXX censors
     id = @previousElementSibling.hash[1..]
@@ -1165,12 +1150,12 @@ qr =
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
-    ta = $ 'textarea', qr.el
+    ta = $ 'textarea', QR.el
     caretPos = ta.selectionStart
     # Replace selection for text.
     # onchange event isn't triggered, save value.
-    qr.selected.el.lastChild.textContent =
-      qr.selected.com =
+    QR.selected.el.lastChild.textContent =
+      QR.selected.com =
         ta.value =
           ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
     ta.focus()
@@ -1182,8 +1167,8 @@ qr =
   drag: (e) ->
     # Let it drag anything from the page.
     i = if e.type is 'dragstart' then 'off' else 'on'
-    $[i] d, 'dragover', qr.dragOver
-    $[i] d, 'drop',     qr.dropFile
+    $[i] d, 'dragover', QR.dragOver
+    $[i] d, 'drop',     QR.dropFile
   dragOver: (e) ->
     e.preventDefault()
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
@@ -1191,51 +1176,51 @@ qr =
     # Let it only handle files from the desktop.
     return unless e.dataTransfer.files.length
     e.preventDefault()
-    qr.open()
-    qr.fileInput.call e.dataTransfer
-    $.addClass qr.el, 'dump'
+    QR.open()
+    QR.fileInput.call e.dataTransfer
+    $.addClass QR.el, 'dump'
   fileInput: ->
-    qr.cleanError()
+    QR.cleanError()
     # Set or change current reply's file.
     if @files.length is 1
       file = @files[0]
       if file.size > @max
-        qr.error 'File too large.'
-        qr.resetFileInput()
-      else if -1 is qr.mimeTypes.indexOf file.type
-        qr.error 'Unsupported file type.'
-        qr.resetFileInput()
+        QR.error 'File too large.'
+        QR.resetFileInput()
+      else if -1 is QR.mimeTypes.indexOf file.type
+        QR.error 'Unsupported file type.'
+        QR.resetFileInput()
       else
-        qr.selected.setFile file
+        QR.selected.setFile file
       return
     # Create new replies with these files.
     for file in @files
       if file.size > @max
-        qr.error "File #{file.name} is too large."
+        QR.error "File #{file.name} is too large."
         break
-      else if -1 is qr.mimeTypes.indexOf file.type
-        qr.error "#{file.name}: Unsupported file type."
+      else if -1 is QR.mimeTypes.indexOf file.type
+        QR.error "#{file.name}: Unsupported file type."
         break
-      unless qr.replies[qr.replies.length - 1].file
+      unless QR.replies[QR.replies.length - 1].file
         # set last reply's file
-        qr.replies[qr.replies.length - 1].setFile file
+        QR.replies[QR.replies.length - 1].setFile file
       else
-        new qr.reply().setFile file
-    $.addClass qr.el, 'dump'
-    qr.resetFileInput() # reset input
+        new QR.reply().setFile file
+    $.addClass QR.el, 'dump'
+    QR.resetFileInput() # reset input
   resetFileInput: ->
-    $('[type=file]', qr.el).value = null
+    $('[type=file]', QR.el).value = null
 
   replies: []
   reply: class
     constructor: ->
       # set values, or null, to avoid 'undefined' values in inputs
-      prev     = qr.replies[qr.replies.length-1]
-      persona  = $.get 'qr.persona', {}
+      prev     = QR.replies[QR.replies.length-1]
+      persona  = $.get 'QR.persona', {}
       @name    = if prev then prev.name else persona.name or null
       @email   = if prev and !/^sage$/.test prev.email then prev.email   else persona.email or null
-      @sub     = if prev and conf['Remember Subject']  then prev.sub     else if conf['Remember Subject'] then persona.sub else null
-      @spoiler = if prev and conf['Remember Spoiler']  then prev.spoiler else false
+      @sub     = if prev and Conf['Remember Subject']  then prev.sub     else if Conf['Remember Subject'] then persona.sub else null
+      @spoiler = if prev and Conf['Remember Spoiler']  then prev.spoiler else false
       @com = null
 
       @el = $.el 'a',
@@ -1252,7 +1237,7 @@ qr =
       $.on $('input',   @el), 'change', (e) =>
         @spoiler = e.target.checked
         $.id('spoiler').checked = @spoiler if @el.id is 'selected'
-      $.before $('#addReply', qr.el), @el
+      $.before $('#addReply', QR.el), @el
 
       $.on @el, 'dragstart', @dragStart
       $.on @el, 'dragenter', @dragEnter
@@ -1261,10 +1246,10 @@ qr =
       $.on @el, 'dragend',   @dragEnd
       $.on @el, 'drop',      @drop
 
-      qr.replies.push @
+      QR.replies.push @
     setFile: (@file) ->
       @el.title = file.name
-      $('label', @el).hidden = false if qr.spoiler
+      $('label', @el).hidden = false if QR.spoiler
       if file.type is 'application/pdf'
         @el.style.backgroundImage = null
         return
@@ -1312,15 +1297,15 @@ qr =
 
       img.src = fileUrl
     rmFile: ->
-      qr.resetFileInput()
+      QR.resetFileInput()
       delete @file
       @el.title = null
       @el.style.backgroundImage = null
-      $('label', @el).hidden = true if qr.spoiler
+      $('label', @el).hidden = true if QR.spoiler
       (window.URL or window.webkitURL).revokeObjectURL @url
     select: ->
-      qr.selected?.el.id = null
-      qr.selected = @
+      QR.selected?.el.id = null
+      QR.selected = @
       @el.id = 'selected'
       # Scroll the list to center the focused reply.
       rectEl   = @el.getBoundingClientRect()
@@ -1328,8 +1313,8 @@ qr =
       @el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
       # Load this reply's values.
       for data in ['name', 'email', 'sub', 'com']
-        $("[name=#{data}]", qr.el).value = @[data]
-      $('#spoiler', qr.el).checked = @spoiler
+        $("[name=#{data}]", QR.el).value = @[data]
+      $('#spoiler', QR.el).checked = @spoiler
     dragStart: ->
       $.addClass    @, 'drag'
     dragEnter: ->
@@ -1348,28 +1333,28 @@ qr =
         $.after  @, el
       else
         $.before @, el
-      reply = qr.replies.splice(oldIndex, 1)[0]
-      qr.replies.splice newIndex, 0, reply
+      reply = QR.replies.splice(oldIndex, 1)[0]
+      QR.replies.splice newIndex, 0, reply
     dragEnd: ->
       $.removeClass @, 'drag'
       if el = $ '.over', @parentNode
         $.removeClass el, 'over'
     rm: ->
-      qr.resetFileInput()
+      QR.resetFileInput()
       $.rm @el
-      index = qr.replies.indexOf @
-      if qr.replies.length is 1
-        new qr.reply().select()
+      index = QR.replies.indexOf @
+      if QR.replies.length is 1
+        new QR.reply().select()
       else if @el.id is 'selected'
-        (qr.replies[index-1] or qr.replies[index+1]).select()
-      qr.replies.splice index, 1
+        (QR.replies[index-1] or QR.replies[index+1]).select()
+      QR.replies.splice index, 1
       (window.URL or window.webkitURL).revokeObjectURL @url
       delete @
 
   captcha:
     init: ->
-      @img       = $ '.captcha > img', qr.el
-      @input     = $ '[autocomplete]', qr.el
+      @img       = $ '.captcha > img', QR.el
+      @input     = $ '[autocomplete]', QR.el
       @challenge = $.id 'recaptcha_challenge_field_holder'
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
@@ -1393,7 +1378,7 @@ qr =
       @reload()
     load: ->
       # Timeout is available at RecaptchaState.timeout in seconds.
-      @timeout  = Date.now() + 26*MINUTE
+      @timeout  = Date.now() + 26*$.MINUTE
       challenge = @challenge.firstChild.value
       @img.alt  = challenge
       @img.src  = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
@@ -1410,9 +1395,9 @@ qr =
     reload: (focus) ->
       window.location = 'javascript:Recaptcha.reload()'
       # Focus if we meant to.
-      qr.captcha.input.focus() if focus
+      QR.captcha.input.focus() if focus
     keydown: (e) ->
-      c = qr.captcha
+      c = QR.captcha
       if e.keyCode is 8 and not c.input.value
         c.reload()
       else if e.keyCode is 13 and e.shiftKey
@@ -1422,7 +1407,7 @@ qr =
       e.preventDefault()
 
   dialog: ->
-    qr.el = ui.dialog 'qr', 'top:0;right:0;', '
+    QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
   <span> <a class=close title=Close>&times;</a></span>
@@ -1438,10 +1423,10 @@ qr =
   <div class=warning></div>
 </form>'
 
-    if conf['Remember QR size'] and engine is 'gecko'
-      $.on ta = $('textarea', qr.el), 'mouseup', ->
-        $.set 'qr.size', @style.cssText
-      ta.style.cssText = $.get 'qr.size', ''
+    if Conf['Remember QR size'] and $.engine is 'gecko'
+      $.on ta = $('textarea', QR.el), 'mouseup', ->
+        $.set 'QR.size', @style.cssText
+      ta.style.cssText = $.get 'QR.size', ''
 
     # Allow only this board's supported files.
     mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
@@ -1452,78 +1437,78 @@ qr =
           'application/pdf'
         else
           "image/#{type}"
-    qr.mimeTypes = mimeTypes.split ', '
+    QR.mimeTypes = mimeTypes.split ', '
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
-    qr.mimeTypes.push ''
-    fileInput        = $ '[type=file]', qr.el
+    QR.mimeTypes.push ''
+    fileInput        = $ '[type=file]', QR.el
     fileInput.max    = $('[name=MAX_FILE_SIZE]').value
     fileInput.accept = mimeTypes
 
-    qr.spoiler     = !!$ '#com_submit + label'
-    spoiler        = $ '#spoilerLabel', qr.el
-    spoiler.hidden = !qr.spoiler
+    QR.spoiler     = !!$ '#com_submit + label'
+    spoiler        = $ '#spoilerLabel', QR.el
+    spoiler.hidden = !QR.spoiler
 
     unless g.REPLY
       # Make a list with visible threads and an option to create a new one.
       threads = '<option value=new>New thread</option>'
       for thread in $$ '.op'
         threads += "<option value=#{thread.id}>Thread #{thread.id}</option>"
-      $.prepend $('.move > span', qr.el), $.el 'select'
+      $.prepend $('.move > span', QR.el), $.el 'select'
         innerHTML: threads
         title: 'Create a new thread / Reply to a thread'
-      $.on $('select',  qr.el), 'mousedown', (e) -> e.stopPropagation()
-    $.on $('#autohide', qr.el), 'change',    qr.toggleHide
-    $.on $('.close',    qr.el), 'click',     qr.close
-    $.on $('#dump',     qr.el), 'click',     -> qr.el.classList.toggle 'dump'
-    $.on $('#addReply', qr.el), 'click',     -> new qr.reply().select()
-    $.on $('form',      qr.el), 'submit',    qr.submit
-    $.on $('textarea',  qr.el), 'keyup',     -> qr.selected.el.lastChild.textContent = @value
-    $.on fileInput,             'change',    qr.fileInput
-    $.on fileInput,             'click',     (e) -> if e.shiftKey then qr.selected.rmFile() or e.preventDefault()
-    $.on spoiler.firstChild,    'change',    -> $('input', qr.selected.el).click()
-    $.on $('.warning',  qr.el), 'click',     qr.cleanError
+      $.on $('select',  QR.el), 'mousedown', (e) -> e.stopPropagation()
+    $.on $('#autohide', QR.el), 'change',    QR.toggleHide
+    $.on $('.close',    QR.el), 'click',     QR.close
+    $.on $('#dump',     QR.el), 'click',     -> QR.el.classList.toggle 'dump'
+    $.on $('#addReply', QR.el), 'click',     -> new QR.reply().select()
+    $.on $('form',      QR.el), 'submit',    QR.submit
+    $.on $('textarea',  QR.el), 'keyup',     -> QR.selected.el.lastChild.textContent = @value
+    $.on fileInput,             'change',    QR.fileInput
+    $.on fileInput,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
+    $.on spoiler.firstChild,    'change',    -> $('input', QR.selected.el).click()
+    $.on $('.warning',  QR.el), 'click',     QR.cleanError
 
-    new qr.reply().select()
+    new QR.reply().select()
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
-      input = $ "[name=#{name}]", qr.el
+      input = $ "[name=#{name}]", QR.el
       for event in ['input', 'keyup', 'change', 'paste']
         # The input event replaces keyup, change and paste events.
         # Firefox 12 will support the input event.
         # Oprah?
         $.on input, event, ->
-          qr.selected[@name] = @value
+          QR.selected[@name] = @value
           # Disable auto-posting if you're typing in the first reply
           # during the last 5 seconds of the cooldown.
-          if qr.cooldown.auto and qr.selected is qr.replies[0] and parseInt(qr.status.input.value.match /\d+/) < 6
-            qr.cooldown.auto = false
+          if QR.cooldown.auto and QR.selected is QR.replies[0] and parseInt(QR.status.input.value.match /\d+/) < 6
+            QR.cooldown.auto = false
     # sync between tabs
-    $.sync 'qr.persona', (persona) ->
-      return unless qr.el.hidden
+    $.sync 'QR.persona', (persona) ->
+      return unless QR.el.hidden
       for key, val of persona
-        qr.selected[key] = val
-        $("[name=#{key}]", qr.el).value = val
+        QR.selected[key] = val
+        $("[name=#{key}]", QR.el).value = val
 
-    qr.status.input = $ '[type=submit]', qr.el
-    qr.status()
-    qr.cooldown.init()
-    qr.captcha.init()
-    $.add d.body, qr.el
+    QR.status.input = $ '[type=submit]', QR.el
+    QR.status()
+    QR.cooldown.init()
+    QR.captcha.init()
+    $.add d.body, QR.el
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
     e = d.createEvent 'CustomEvent'
     e.initEvent 'QRDialogCreation', true, false
-    qr.el.dispatchEvent e
+    QR.el.dispatchEvent e
 
   submit: (e) ->
     e?.preventDefault()
-    if qr.cooldown.seconds
-      qr.cooldown.auto = !qr.cooldown.auto
-      qr.status()
+    if QR.cooldown.seconds
+      QR.cooldown.auto = !QR.cooldown.auto
+      QR.status()
       return
-    qr.message.send req: 'abort'
-    reply = qr.replies[0]
+    QR.message.send req: 'abort'
+    reply = QR.replies[0]
 
     # prevent errors
     unless reply.com or reply.file
@@ -1538,28 +1523,28 @@ qr =
         challenge = captcha.challenge
         response  = captcha.response
       else
-        challenge   = qr.captcha.img.alt
-        if response = qr.captcha.input.value then qr.captcha.reload()
+        challenge   = QR.captcha.img.alt
+        if response = QR.captcha.input.value then QR.captcha.reload()
       $.set 'captchas', captchas
-      qr.captcha.count captchas.length
+      QR.captcha.count captchas.length
       unless response
         err = 'No valid captcha.'
 
     if err
       # stop auto-posting
-      qr.cooldown.auto = false
-      qr.status()
-      qr.error err
+      QR.cooldown.auto = false
+      QR.status()
+      QR.error err
       return
-    qr.cleanError()
+    QR.cleanError()
 
-    threadID = g.THREAD_ID or $('select', qr.el).value
+    threadID = g.THREAD_ID or $('select', QR.el).value
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
-    qr.cooldown.auto = qr.replies.length > 1
-    if conf['Auto Hide QR'] and not qr.cooldown.auto
-      qr.hide()
-    if conf['Thread Watcher'] and conf['Auto Watch Reply'] and threadID isnt 'new'
+    QR.cooldown.auto = QR.replies.length > 1
+    if Conf['Auto Hide QR'] and not QR.cooldown.auto
+      QR.hide()
+    if Conf['Thread Watcher'] and Conf['Auto Watch Reply'] and threadID isnt 'new'
       Watcher.watch threadID
 
     post =
@@ -1578,9 +1563,9 @@ qr =
 
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
-    qr.status progress: '...'
+    QR.status progress: '...'
 
-    if engine is 'gecko' and reply.file
+    if $.engine is 'gecko' and reply.file
       # https://bugzilla.mozilla.org/show_bug.cgi?id=673742
       # We plan to allow postMessaging Files and FileLists across origins,
       # that just needs a more in depth security review.
@@ -1591,21 +1576,21 @@ qr =
         file.name   = reply.file.name
         file.type   = reply.file.type
         post.upfile = file
-        qr.message.send post
+        QR.message.send post
       reader.readAsBinaryString reply.file
       return
 
     # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
     if /chrome/i.test navigator.userAgent
-      qr.message.post post
+      QR.message.post post
       return
-    qr.message.send post
+    QR.message.send post
 
   response: (html) ->
     doc = $.el 'a', innerHTML: html
     # Check for ban.
     if $('title', doc).textContent is '4chan - Banned'
-      qr.status ready: true, banned: true
+      QR.status ready: true, banned: true
       return
     unless b = $ 'td b', doc
       err = 'Connection error with sys.4chan.org.'
@@ -1618,58 +1603,58 @@ qr =
     if err
       if /captcha|verification/i.test(err) or err is 'Connection error with sys.4chan.org.'
         # Enable auto-post if we have some cached captchas.
-        qr.cooldown.auto = !!$.get('captchas', []).length
+        QR.cooldown.auto = !!$.get('captchas', []).length
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
-        qr.cooldown.set 2
+        QR.cooldown.set 2
       else # stop auto-posting
-        qr.cooldown.auto = false
-      qr.status()
-      qr.error err, node
+        QR.cooldown.auto = false
+      QR.status()
+      QR.error err, node
       return
 
-    reply = qr.replies[0]
+    reply = QR.replies[0]
 
-    persona = $.get 'qr.persona', {}
+    persona = $.get 'QR.persona', {}
     persona =
       name:  reply.name
       email: if /^sage$/.test reply.email then persona.email else reply.email
-      sub:   if conf['Remember Subject']  then reply.sub     else null
-    $.set 'qr.persona', persona
+      sub:   if Conf['Remember Subject']  then reply.sub     else null
+    $.set 'QR.persona', persona
 
     [_, thread, postNumber] = b.lastChild.textContent.match /thread:(\d+),no:(\d+)/
     if thread is '0' # new thread
-      if conf['Thread Watcher'] and conf['Auto Watch']
+      if Conf['Thread Watcher'] and Conf['Auto Watch']
         $.set 'autoWatch', postNumber
       # auto-noko
       location.pathname = "/#{g.BOARD}/res/#{postNumber}"
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
-      qr.cooldown.auto = qr.replies.length > 1
-      qr.cooldown.set if /sage/i.test reply.email then 60 else 30
-      if conf['Open Reply in New Tab'] && !g.REPLY && !qr.cooldown.auto
+      QR.cooldown.auto = QR.replies.length > 1
+      QR.cooldown.set if /sage/i.test reply.email then 60 else 30
+      if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
         $.open "//boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}"
 
-    if conf['Persistent QR'] or qr.cooldown.auto
+    if Conf['Persistent QR'] or QR.cooldown.auto
       reply.rm()
     else
-      qr.close()
+      QR.close()
 
-    if g.REPLY and (conf['Unread Count'] or conf['Unread Favicon'])
+    if g.REPLY and (Conf['Unread Count'] or Conf['Unread Favicon'])
       Unread.foresee.push postNumber
-    if g.REPLY and conf['Thread Updater'] and conf['Auto Update This']
+    if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
       Updater.update()
 
-    qr.status()
-    qr.resetFileInput()
+    QR.status()
+    QR.resetFileInput()
 
   message:
     send: (data) ->
       # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
       if /chrome/i.test navigator.userAgent
-        qr.message.receive data
+        QR.message.receive data
         return
-      data.qr = true
+      data.QR = true
       host = location.hostname
       window =
         if host is 'boards.4chan.org'
@@ -1680,17 +1665,17 @@ qr =
     receive: (data) ->
       req = data.req
       delete data.req
-      delete data.qr
+      delete data.QR
       switch req
         when 'abort'
-          qr.ajax?.abort()
-          qr.message.send req: 'status'
+          QR.ajax?.abort()
+          QR.message.send req: 'status'
         when 'response' # xhr response
-          qr.response data.html
+          QR.response data.html
         when 'status'
-          qr.status data
+          QR.status data
         else
-          qr.message.post data # Reply object: we're posting
+          QR.message.post data # Reply object: we're posting
 
     post: (data) ->
 
@@ -1699,7 +1684,7 @@ qr =
       delete data.postURL
 
       # File with filename upload fix from desuwa
-      if engine is 'gecko' and data.upfile
+      if $.engine is 'gecko' and data.upfile
         # All of this is fucking retarded.
         unless data.binary
           toBin = (data, name, val) ->
@@ -1709,7 +1694,7 @@ qr =
             r.onload = ->
               data[name] = r.result
               unless --i
-                qr.message.post data
+                QR.message.post data
             r.readAsBinaryString bb.getBlob 'text/plain'
           i = Object.keys(data).length
           for name, val of data
@@ -1744,29 +1729,29 @@ qr =
 
       callbacks =
         onload: ->
-          qr.message.send
+          QR.message.send
             req:  'response'
             html: @response
         onerror: ->
           # CORS disabled error: redirecting to banned page ;_;
-          qr.message.send req: 'status', ready: true, banned: true
+          QR.message.send req: 'status', ready: true, banned: true
       opts =
         form: form
         type: 'post'
         upCallbacks:
           onload: ->
-            qr.message.send
+            QR.message.send
               req:      'status'
               progress: '...'
           onprogress: (e) ->
-            qr.message.send
+            QR.message.send
               req:      'status'
               progress: "#{Math.round e.loaded / e.total * 100}%"
       if boundary
         opts.headers =
           'Content-Type': 'multipart/form-data;boundary=' + boundary
 
-      qr.ajax = $.ajax url, callbacks, opts
+      QR.ajax = $.ajax url, callbacks, opts
 
 Options =
   init: ->
@@ -1787,7 +1772,7 @@ Options =
       innerHTML: '<div id=optionsbar>
   <div id=credits>
     <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>
-    | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + VERSION + '</a>
+    | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + Main.version + '</a>
     | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>
   </div>
   <div>
@@ -1890,11 +1875,11 @@ Options =
 </div>'
 
     #main
-    for key, obj of config.main
+    for key, obj of Config.main
       ul = $.el 'ul',
         textContent: key
       for key, arr of obj
-        checked = if conf[key] then 'checked' else ''
+        checked = if Conf[key] then 'checked' else ''
         description = arr[1]
         li = $.el 'li',
           innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
@@ -1911,14 +1896,14 @@ Options =
 
     #filter & sauce
     for ta in $$ 'textarea', dialog
-      ta.textContent = conf[ta.name]
+      ta.textContent = Conf[ta.name]
       $.on ta, 'change', $.cb.value
 
     #rice
-    (back         = $ '[name=backlink]',     dialog).value = conf['backlink']
-    (time         = $ '[name=time]',         dialog).value = conf['time']
-    (fileInfoR = $ '[name=fileInfoR]', dialog).value = conf['fileInfoR']
-    (fileInfoT = $ '[name=fileInfoT]', dialog).value = conf['fileInfoT']
+    (back         = $ '[name=backlink]',     dialog).value = Conf['backlink']
+    (time         = $ '[name=time]',         dialog).value = Conf['time']
+    (fileInfoR = $ '[name=fileInfoR]', dialog).value = Conf['fileInfoR']
+    (fileInfoT = $ '[name=fileInfoT]', dialog).value = Conf['fileInfoT']
     $.on back, 'keyup', $.cb.value
     $.on back, 'keyup', Options.backlink
     $.on time, 'keyup', $.cb.value
@@ -1928,16 +1913,16 @@ Options =
     $.on fileInfoT, 'keyup', $.cb.value
     $.on fileInfoT, 'keyup', Options.fileInfo
     favicon = $ 'select', dialog
-    favicon.value = conf['favicon']
+    favicon.value = Conf['favicon']
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
 
     #keybinds
-    for key, arr of config.hotkeys
+    for key, arr of Config.hotkeys
       tr = $.el 'tr',
         innerHTML: "<td>#{arr[1]}</td><td><input name=#{key}></td>"
       input = $ 'input', tr
-      input.value = conf[key]
+      input.value = Conf[key]
       $.on input, 'keydown', Options.keybind
       $.add $('#keybinds_tab + div tbody', dialog), tr
 
@@ -1945,7 +1930,7 @@ Options =
     indicators = {}
     for indicator in $$ '.warning', dialog
       key = indicator.firstChild.textContent
-      indicator.hidden = conf[key]
+      indicator.hidden = Conf[key]
       indicators[key] = indicator
       $.on $("[name='#{key}']", dialog), 'click', ->
         indicators[@name].hidden = @checked
@@ -1986,7 +1971,7 @@ Options =
     Time.date = new Date()
     $.id('timePreview').textContent = Time.funk Time
   backlink: ->
-    $.id('backlinkPreview').textContent = conf['backlink'].replace /%id/, '123456789'
+    $.id('backlinkPreview').textContent = Conf['backlink'].replace /%id/, '123456789'
   fileInfo: ->
     type = if @name is 'fileInfoR' then 0 else 1
     FileInfo.data =
@@ -2067,7 +2052,7 @@ ThreadHiding =
     $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
   hide: (thread) ->
-    unless conf['Show Stubs']
+    unless Conf['Show Stubs']
       thread.hidden = true
       thread.nextSibling.hidden = true
       return
@@ -2102,20 +2087,20 @@ ThreadHiding =
 
 Updater =
   init: ->
-    html = "<div class=move><span id=count></span> <span id=timer>-#{conf['Interval']}</span></div>"
-    {checkbox} = config.updater
+    html = "<div class=move><span id=count></span> <span id=timer>-#{Conf['Interval']}</span></div>"
+    {checkbox} = Config.updater
     for name of checkbox
       title = checkbox[name][1]
-      checked = if conf[name] then 'checked' else ''
+      checked = if Conf[name] then 'checked' else ''
       html += "<div><label title='#{title}'>#{name}<input name='#{name}' type=checkbox #{checked}></label></div>"
 
-    checked = if conf['Auto Update'] then 'checked' else ''
+    checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input name=Interval value=#{conf['Interval']} type=text></label></div>
+      <div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} type=text></label></div>
       <div><input value='Update Now' type=button></div>"
 
-    dialog = ui.dialog 'updater', 'bottom: 0; right: 0;', html
+    dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
     @count = $ '#count', dialog
     @timer = $ '#timer', dialog
@@ -2134,9 +2119,9 @@ Updater =
           $.on input, 'click', @cb.autoUpdate
           @cb.autoUpdate.call input
           # Required for the QR's update after posting.
-          conf[input.name] = input.checked
+          Conf[input.name] = input.checked
       else if input.name is 'Interval'
-        $.on input, 'change', -> conf['Interval'] = @value = parseInt(@value, 10) or conf['Interval']
+        $.on input, 'change', -> Conf['Interval'] = @value = parseInt(@value, 10) or Conf['Interval']
         $.on input, 'change', $.cb.value
       else if input.type is 'button'
         $.on input, 'click', @update
@@ -2148,7 +2133,7 @@ Updater =
 
   cb:
     verbose: ->
-      if conf['Verbose']
+      if Conf['Verbose']
         Updater.count.textContent = '+0'
         Updater.timer.hidden = false
       else
@@ -2174,17 +2159,17 @@ Updater =
         Updater.count.className   = 'warning'
         clearTimeout Updater.timeoutID
         g.dead = true
-        if conf['Unread Count']
+        if Conf['Unread Count']
           Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
         else
           d.title = d.title.match(/^.+-/)[0] + ' 404'
         Unread.update true
-        qr.message.send req: 'abort'
-        qr.status()
+        QR.message.send req: 'abort'
+        QR.status()
         return
 
       Updater.retryCoef = 10
-      Updater.timer.textContent = '-' + conf['Interval']
+      Updater.timer.textContent = '-' + Conf['Interval']
 
       ###
       Status Code 304: Not modified
@@ -2193,7 +2178,7 @@ Updater =
       and won't load images and scripts when parsing the response.
       ###
       if @status is 304
-        if conf['Verbose']
+        if Conf['Verbose']
           Updater.count.textContent = '+0'
           Updater.count.className = null
         return
@@ -2209,9 +2194,9 @@ Updater =
         nodes.push reply.parentNode.parentNode.parentNode #table
 
       newPosts = nodes.length
-      scroll = conf['Scrolling'] && Updater.scrollBG() && newPosts &&
+      scroll = Conf['Scrolling'] && Updater.scrollBG() && newPosts &&
         Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25
-      if conf['Verbose']
+      if Conf['Verbose']
         Updater.count.textContent = "+#{newPosts}"
         Updater.count.className = if newPosts then 'new' else null
 
@@ -2247,7 +2232,7 @@ Updater =
 Watcher =
   init: ->
     html = '<div class=move>Thread Watcher</div>'
-    @dialog = ui.dialog 'watcher', 'top: 50px; left: 0px;', html
+    @dialog = UI.dialog 'watcher', 'top: 50px; left: 0px;', html
     $.add d.body, @dialog
 
     #add watch buttons
@@ -2329,7 +2314,7 @@ Watcher =
 
 Anonymize =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
     name = $ '.commentpostername, .postername', post.el
@@ -2342,11 +2327,11 @@ Sauce =
   init: ->
     return if g.BOARD is 'f'
     @links = []
-    for link in conf['sauces'].split '\n'
+    for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
       @links.push @createSauceLink link
     return unless @links.length
-    g.callbacks.push @node
+    Main.callbacks.push @node
 
   createSauceLink: (link) ->
     domain = link.match(/(\w+)\.\w+\//)[1]
@@ -2380,7 +2365,7 @@ Sauce =
 
 RevealSpoilers =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     {img} = post
     if not (img and /^Spoil/.test img.alt) or post.class is 'inline'
@@ -2400,7 +2385,7 @@ Time =
 
     @parse =
       if Date.parse('10/11/11(Tue)18:53') is 1318351980000
-        (node) -> new Date Date.parse(node.textContent) + chanOffset*HOUR
+        (node) -> new Date Date.parse(node.textContent) + chanOffset*$.HOUR
       else # Firefox and Opera do not parse 4chan's time format correctly
         (node) ->
           [_, month, day, year, hour, min] =
@@ -2410,7 +2395,7 @@ Time =
           hour = chanOffset + Number hour
           new Date year, month, day, hour, min
 
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
     # .posttime exists on every board except /f/
@@ -2422,7 +2407,7 @@ Time =
     time.setAttribute 'datetime', Time.date.toISOString()
     $.replace node, time
   foo: ->
-    code = conf['time'].replace /%([A-Za-z])/g, (s, c) ->
+    code = Conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
         "' + Time.formatters.#{c}() + '"
       else
@@ -2473,7 +2458,7 @@ FileInfo =
   init: ->
     return if g.BOARD is 'f'
     @setFormats()
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline' or not node = post.filesize
     regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/
@@ -2493,7 +2478,7 @@ FileInfo =
   setFormats: ->
     funks = []
     for i in [0..1]
-      format = if i then conf['fileInfoT'] else conf['fileInfoR']
+      format = if i then Conf['fileInfoT'] else Conf['fileInfoR']
       param  = if i then /%([BKlMrs])/g    else /%([BKlLMnNrs])/g
       code   = format.replace param, (s, c) ->
         if c of FileInfo.formatters
@@ -2550,9 +2535,9 @@ TitlePost =
 
 QuoteBacklink =
   init: ->
-    format = conf['backlink'].replace /%id/g, "' + id + '"
+    format = Conf['backlink'].replace /%id/g, "' + id + '"
     @funk  = Function 'id', "return '#{format}'"
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined
     quotes = {}
@@ -2567,11 +2552,11 @@ QuoteBacklink =
       textContent: QuoteBacklink.funk post.id
     for qid of quotes
       # Don't backlink the OP.
-      continue if !(el = $.id qid) or el.className is 'op' and !conf['OP Backlinks']
+      continue if !(el = $.id qid) or el.className is 'op' and !Conf['OP Backlinks']
       link = a.cloneNode true
-      if conf['Quote Preview']
+      if Conf['Quote Preview']
         $.on link, 'mouseover', QuotePreview.mouseover
-      if conf['Quote Inline']
+      if Conf['Quote Inline']
         $.on link, 'click', QuoteInline.toggle
       else
         link.setAttribute 'onclick', "replyhl('#{post.id}');"
@@ -2586,7 +2571,7 @@ QuoteBacklink =
 
 QuoteInline =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     for quote in post.quotes
       continue unless quote.hash
@@ -2615,7 +2600,7 @@ QuoteInline =
         Unread.update()
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
-        if conf['Forward Hiding']
+        if Conf['Forward Hiding']
           table = $.x 'ancestor::table', el
           $.addClass table, 'forwarded'
           # Will only unhide if there's no inlined backlinks of it anymore.
@@ -2636,7 +2621,7 @@ QuoteInline =
     #select the corresponding table or loading td
     table = $.x "following::*[@id='i#{id}']", q
     $.rm table
-    return unless conf['Forward Hiding']
+    return unless Conf['Forward Hiding']
     for inlined in $$ '.backlink.inlined', table
       table = $.x 'ancestor::table', $.id inlined.hash[1..]
       $.removeClass table, 'forwarded' unless --table.title
@@ -2678,7 +2663,7 @@ QuoteInline =
 
 QuotePreview =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     for quote in post.quotes
       $.on quote, 'mouseover', QuotePreview.mouseover if quote.hash
@@ -2687,7 +2672,7 @@ QuotePreview =
     return
   mouseover: (e) ->
     return if /\binlined\b/.test @className
-    qp = ui.el = $.el 'div',
+    qp = UI.el = $.el 'div',
       id: 'qp'
       className: 'reply dialog'
     $.add d.body, qp
@@ -2695,7 +2680,7 @@ QuotePreview =
     id = @hash[1..]
     if el = $.id id
       qp.innerHTML = el.innerHTML
-      $.addClass el, 'qphl' if conf['Quote Highlighting']
+      $.addClass el, 'qphl' if Conf['Quote Highlighting']
       if /\bbacklink\b/.test @className
         replyID = $.x('preceding-sibling::input', @parentNode).name
         for quote in $$ '.quotelink', qp
@@ -2705,19 +2690,19 @@ QuotePreview =
       qp.textContent = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]', @).firstChild.id
       $.cache @pathname, (-> QuotePreview.parse @, id, threadID)
-      ui.hover e
-    $.on @, 'mousemove', ui.hover
+      UI.hover e
+    $.on @, 'mousemove', UI.hover
     $.on @, 'mouseout',  QuotePreview.mouseout
     $.on @, 'click',     QuotePreview.mouseout
   mouseout: ->
     if el = $.id @hash[1..]
       $.removeClass el, 'qphl'
-    ui.hoverend()
-    $.off @, 'mousemove', ui.hover
+    UI.hoverend()
+    $.off @, 'mousemove', UI.hover
     $.off @, 'mouseout',  QuotePreview.mouseout
     $.off @, 'click',     QuotePreview.mouseout
   parse: (req, id, threadID) ->
-    return unless (qp = ui.el) and qp.textContent is "Loading #{id}..."
+    return unless (qp = UI.el) and qp.textContent is "Loading #{id}..."
 
     if req.status isnt 200
       qp.textContent = "#{req.status} #{req.statusText}"
@@ -2736,16 +2721,16 @@ QuotePreview =
       root:     qp
       filesize: $ '.filesize', qp
       img:      $ 'img[md5]',  qp
-    if conf['Image Auto-Gif']
+    if Conf['Image Auto-Gif']
       AutoGif.node   post
-    if conf['Time Formatting']
+    if Conf['Time Formatting']
       Time.node     post
-    if conf['File Info Formatting']
+    if Conf['File Info Formatting']
       FileInfo.node post
 
 QuoteOP =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
     for quote in post.quotes
@@ -2756,7 +2741,7 @@ QuoteOP =
 
 QuoteCT =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
     for quote in post.quotes
@@ -2772,7 +2757,7 @@ QuoteCT =
 
 Quotify =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
 
@@ -2832,7 +2817,7 @@ ReportButton =
       className: 'reportbutton'
       innerHTML: '[&nbsp;!&nbsp;]'
       href: 'javascript:;'
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     unless a = $ '.reportbutton', post.el
       a = ReportButton.a.cloneNode true
@@ -2846,7 +2831,7 @@ ReportButton =
 
 ThreadStats =
   init: ->
-    dialog = ui.dialog 'stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>'
+    dialog = UI.dialog 'stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>'
     dialog.className = 'dialog'
     $.add d.body, dialog
     @posts = @images = 0
@@ -2858,7 +2843,7 @@ ThreadStats =
           501
         else
           151
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined
     $.id('postcount').textContent = ++ThreadStats.posts
@@ -2873,7 +2858,7 @@ Unread =
     @title = d.title
     @update()
     $.on window, 'scroll', Unread.scroll
-    g.callbacks.push @node
+    Main.callbacks.push @node
 
   replies: []
   foresee: []
@@ -2912,10 +2897,10 @@ Unread =
 
     count = @replies.length
 
-    if conf['Unread Count']
+    if Conf['Unread Count']
       @setTitle count
 
-    unless conf['Unread Favicon'] and (count < 2 or forceUpdate)
+    unless Conf['Unread Favicon'] and (count < 2 or forceUpdate)
       return
 
     Favicon.el.href =
@@ -2945,7 +2930,7 @@ Favicon =
     @switch()
 
   switch: ->
-    switch conf['favicon']
+    switch Conf['favicon']
       when 'ferongr'
         @unreadDead = 'data:unreadDead;base64,R0lGODlhEAAQAOMHAOgLAnMFAL8AAOgLAukMA/+AgP+rq////////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw=='
         @unreadSFW  = 'data:unreadSFW;base64,R0lGODlhEAAQAOMHAADX8QBwfgC2zADX8QDY8nnl8qLp8v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw=='
@@ -2978,12 +2963,12 @@ Redirect =
   image: (href) ->
     href = href.split '/'
     # Do not use g.BOARD, the image url can originate from a cross-quote.
-    return unless conf['404 Redirect']
+    return unless Conf['404 Redirect']
     switch href[3]
       when 'a', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
   thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
-    return unless conf['404 Redirect'] or mode is 'post'
+    return unless Conf['404 Redirect'] or mode is 'post'
     switch g.BOARD
       when 'a', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
         "http://archive.foolz.us/#{board}/thread/#{id}/"
@@ -3001,33 +2986,33 @@ Redirect =
 
 ImageHover =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return unless post.img
     $.on post.img, 'mouseover', ImageHover.mouseover
   mouseover: ->
-    ui.el = $.el 'img'
+    UI.el = $.el 'img'
       id: 'ihover'
       src: @parentNode.href
-    $.add d.body, ui.el
-    $.on ui.el, 'load',      ImageHover.load
-    $.on @,     'mousemove', ui.hover
+    $.add d.body, UI.el
+    $.on UI.el, 'load',      ImageHover.load
+    $.on @,     'mousemove', UI.hover
     $.on @,     'mouseout',  ImageHover.mouseout
   load: ->
-    return if @ isnt ui.el
+    return if @ isnt UI.el
     # 'Fake' mousemove event by giving required values.
     {style} = @
-    ui.hover
+    UI.hover
       clientX: - 45 + parseInt style.left
       clientY:  120 + parseInt style.top
   mouseout: ->
-    ui.hoverend()
-    $.off @, 'mousemove', ui.hover
+    UI.hoverend()
+    $.off @, 'mousemove', UI.hover
     $.off @, 'mouseout',  ImageHover.mouseout
 
 AutoGif =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
   node: (post) ->
     return if post.root.hidden or not post.img
     src = post.img.parentNode.href
@@ -3040,7 +3025,7 @@ AutoGif =
 
 ImageExpand =
   init: ->
-    g.callbacks.push @node
+    Main.callbacks.push @node
     @dialog()
 
   node: (post) ->
@@ -3058,7 +3043,7 @@ ImageExpand =
       ImageExpand.on = @checked
       if ImageExpand.on #expand
         thumbs = $$ 'img[md5]'
-        if conf['Expand From Current']
+        if Conf['Expand From Current']
           for thumb, i in thumbs
             if thumb.getBoundingClientRect().top > 0
               break
@@ -3130,7 +3115,7 @@ ImageExpand =
     timeoutID = setTimeout ImageExpand.expand, 10000, thumb, url
     # Only Chrome let userscript break through cross domain requests.
     # Don't check it 404s in the archivers.
-    return unless engine is 'webkit' and url.split('/')[2] is 'images.4chan.org'
+    return unless $.engine is 'webkit' and url.split('/')[2] is 'images.4chan.org'
     $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
 
@@ -3155,25 +3140,25 @@ ImageExpand =
 
 Main =
   init: ->
+    Main.flatten null, Config
+
     path = location.pathname
     pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname
     if temp is 'res'
       g.REPLY = true
       g.THREAD_ID = pathname[2]
-    else
-      g.PAGENUM = parseInt(temp) or 0
 
     #load values from localStorage
-    for key, val of conf
-      conf[key] = $.get key, val
+    for key, val of Conf
+      Conf[key] = $.get key, val
 
     $.on window, 'message', Main.message
 
     switch location.hostname
       when 'sys.4chan.org'
         if path is '/robots.txt'
-          qr.message.send req: 'status', ready: true
+          QR.message.send req: 'status', ready: true
         else if /report/.test location.search
           $.ready ->
             $.on $.id('recaptcha_response_field'), 'keydown', (e) ->
@@ -3181,7 +3166,7 @@ Main =
         return
       when 'www.4chan.org'
         if path is '/banned'
-          qr.message.send req: 'status', ready: true, banned: true
+          QR.message.send req: 'status', ready: true, banned: true
         return
       when 'images.4chan.org'
         $.ready -> Redirect.init() if d.title is '4chan - 404'
@@ -3189,21 +3174,21 @@ Main =
 
     $.ready Options.init
 
-    if conf['Quick Reply'] and conf['Hide Original Post Form'] and g.BOARD isnt 'f'
+    if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
       Main.css += 'form[name=post] { display: none; }'
 
     Main.addStyle()
 
     now = Date.now()
-    if conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*HOUR
+    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*$.HOUR
       $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
-    if $.get('lastChecked', 0) < now - 1*DAY
+    if $.get('lastChecked', 0) < now - 1*$.DAY
       $.set 'lastChecked', now
 
-      cutoff = now - 7*DAY
+      cutoff = now - 7*$.DAY
       hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
 
       for id, timestamp of hiddenThreads
@@ -3219,55 +3204,55 @@ Main =
 
 
     #major features
-    if conf['Filter']
+    if Conf['Filter']
       Filter.init()
 
-    if conf['Reply Hiding']
+    if Conf['Reply Hiding']
       ReplyHiding.init()
 
-    if conf['Filter'] or conf['Reply Hiding']
+    if Conf['Filter'] or Conf['Reply Hiding']
       StrikethroughQuotes.init()
 
-    if conf['Anonymize']
+    if Conf['Anonymize']
       Anonymize.init()
 
-    if conf['Time Formatting']
+    if Conf['Time Formatting']
       Time.init()
 
-    if conf['File Info Formatting']
+    if Conf['File Info Formatting']
       FileInfo.init()
 
-    if conf['Sauce']
+    if Conf['Sauce']
       Sauce.init()
 
-    if conf['Reveal Spoilers']
+    if Conf['Reveal Spoilers']
       RevealSpoilers.init()
 
-    if conf['Image Auto-Gif']
+    if Conf['Image Auto-Gif']
       AutoGif.init()
 
-    if conf['Image Hover']
+    if Conf['Image Hover']
       ImageHover.init()
 
-    if conf['Report Button']
+    if Conf['Report Button']
       ReportButton.init()
 
-    if conf['Resurrect Quotes']
+    if Conf['Resurrect Quotes']
       Quotify.init()
 
-    if conf['Quote Inline']
+    if Conf['Quote Inline']
       QuoteInline.init()
 
-    if conf['Quote Preview']
+    if Conf['Quote Preview']
       QuotePreview.init()
 
-    if conf['Quote Backlinks']
+    if Conf['Quote Backlinks']
       QuoteBacklink.init()
 
-    if conf['Indicate OP quote']
+    if Conf['Indicate OP quote']
       QuoteOP.init()
 
-    if conf['Indicate Cross-thread Quotes']
+    if Conf['Indicate Cross-thread Quotes']
       QuoteCT.init()
 
     $.ready Main.ready
@@ -3278,8 +3263,8 @@ Main =
       return
     unless $.id 'navtopr'
       return
-    $.addClass d.body, "chanx_#{VERSION.split('.')[1]}"
-    $.addClass d.body, engine
+    $.addClass d.body, "chanx_#{Main.version.split('.')[1]}"
+    $.addClass d.body, $.engine
     for nav in ['navtop', 'navbot']
       $.addClass $("a[href$='/#{g.BOARD}/']", $.id nav), 'current'
     form = $ 'form[name=delform]'
@@ -3287,45 +3272,45 @@ Main =
     Favicon.init()
 
     # Major features.
-    if conf['Quick Reply']
-      qr.init()
+    if Conf['Quick Reply']
+      QR.init()
 
-    if conf['Image Expansion']
+    if Conf['Image Expansion']
       ImageExpand.init()
 
-    if conf['Thread Watcher']
+    if Conf['Thread Watcher']
       setTimeout -> Watcher.init()
 
-    if conf['Keybinds']
+    if Conf['Keybinds']
       setTimeout -> Keybinds.init()
 
     if g.REPLY
-      if conf['Thread Updater']
+      if Conf['Thread Updater']
         setTimeout -> Updater.init()
 
-      if conf['Thread Stats']
+      if Conf['Thread Stats']
         ThreadStats.init()
 
-      if conf['Reply Navigation']
+      if Conf['Reply Navigation']
         setTimeout -> Nav.init()
 
-      if conf['Post in Title']
+      if Conf['Post in Title']
         TitlePost.init()
 
-      if conf['Unread Count'] or conf['Unread Favicon']
+      if Conf['Unread Count'] or Conf['Unread Favicon']
         Unread.init()
 
     else #not reply
-      if conf['Thread Hiding']
+      if Conf['Thread Hiding']
         setTimeout -> ThreadHiding.init()
 
-      if conf['Thread Expansion']
+      if Conf['Thread Expansion']
         setTimeout -> ExpandThread.init()
 
-      if conf['Comment Expansion']
+      if Conf['Comment Expansion']
         setTimeout -> ExpandComment.init()
 
-      if conf['Index Navigation']
+      if Conf['Index Navigation']
         setTimeout -> Nav.init()
 
     nodes = []
@@ -3341,6 +3326,16 @@ Main =
     else
       $.on form, 'DOMNodeInserted', Main.listener
 
+  flatten: (parent, obj) ->
+    if obj instanceof Array
+      Conf[parent] = obj[0]
+    else if typeof obj is 'object'
+      for key, val of obj
+        Main.flatten key, val
+    else # string or number
+      Conf[parent] = obj
+    return
+
   addStyle: ->
     $.off d, 'DOMNodeInserted', Main.addStyle
     if d.head
@@ -3350,11 +3345,11 @@ Main =
 
   message: (e) ->
     {data} = e
-    if data.qr
-      qr.message.receive data
+    if data.QR
+      QR.message.receive data
       return
     {version} = data
-    if version and version isnt VERSION and confirm 'An updated version of 4chan X is available, would you like to install it now?'
+    if version and version isnt Main.version and confirm 'An updated version of 4chan X is available, would you like to install it now?'
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
@@ -3372,11 +3367,11 @@ Main =
     post.img = if post.filesize then node.getElementsByTagName('img')[0] else false
     post
   node: (nodes, notify) ->
-    for callback in g.callbacks
+    for callback in Main.callbacks
       try
         callback node for node in nodes
       catch err
-        alert "4chan X (#{VERSION}) error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
+        alert "4chan X (#{Main.version}) error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []
@@ -3388,6 +3383,9 @@ Main =
     {target} = e
     Main.node [Main.preParse target] if target.nodeName is 'TABLE'
 
+  namespace: '4chan_x.'
+  version: '2.29.1'
+  callbacks: []
   css: '
 /* dialog styling */
 .dialog {
