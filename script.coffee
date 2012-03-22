@@ -431,21 +431,18 @@ $.extend $,
     set: (name, value) ->
       name = Main.namespace + name
       # for `storage` events
-      localStorage[name] = JSON.stringify value
+      localStorage.setItem name, JSON.stringify value
       GM_setValue name, JSON.stringify value
   else
     delete: (name) ->
-      name = Main.namespace + name
-      delete localStorage[name]
+      localStorage.removeItem Main.namespace + name
     get: (name, defaultValue) ->
-      name = Main.namespace + name
-      if value = localStorage[name]
+      if value = localStorage.getItem Main.namespace + name
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      name = Main.namespace + name
-      localStorage[name] = JSON.stringify value
+      localStorage.setItem Main.namespace + name, JSON.stringify value
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
@@ -524,6 +521,7 @@ Filter =
 
   node: (post) ->
     return if post.isInlined
+    post.isOP  = post.class is 'op'
     {isOP, el} = post
     for key of Filter.filters
       value = Filter[key] post
@@ -645,8 +643,10 @@ ExpandComment =
 
     quotes = node.getElementsByClassName 'quotelink'
     for quote in quotes
-      if quote.hash is quote.getAttribute 'href'
+      if quote.hash is href = quote.getAttribute 'href' # Add pathname to in-thread quotes
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
+      else if href isnt quote.href # Fix cross-thread links, not cross-board ones
+        quote.href = "res/#{href}"
     post =
       el:        node
       threadId:  threadID
@@ -725,9 +725,9 @@ ExpandThread =
     for reply in $$ '.reply', doc
       table = d.importNode reply.parentNode.parentNode.parentNode
       for quote in $$ '.quotelink', table
-        if (href = quote.getAttribute 'href') is quote.hash #add pathname to normal quotes
+        if quote.hash is href = quote.getAttribute 'href' # Add pathname to in-thread quotes
           quote.pathname = pathname
-        else if href isnt quote.href #fix x-thread links, not x-board ones
+        else if href isnt quote.href # Fix cross-thread links, not cross-board ones
           quote.href = "res/#{href}"
       link = $ '.quotejs', table
       link.href = "res/#{thread.firstChild.id}##{reply.id}"
@@ -768,7 +768,7 @@ ReplyHiding =
       table.hidden = false
       $.rm parent
       id = table.firstChild.firstChild.lastChild.id
-      for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
+      for quote in $$ ".quotelink[href$='##{id}'], .backlink[href='##{id}']"
         $.removeClass quote, 'filtered'
       delete g.hiddenReplies[id]
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
@@ -1744,6 +1744,9 @@ QR =
           QR.message.send
             req:  'response'
             html: @response
+        onerror: ->
+          # CORS disabled error: redirecting to banned page ;_;
+          QR.message.send req: 'status', ready: true, banned: true
       opts =
         form: form
         type: 'post'
@@ -1760,12 +1763,7 @@ QR =
         opts.headers =
           'Content-Type': 'multipart/form-data;boundary=' + boundary
 
-      try
-        QR.ajax = $.ajax url, callbacks, opts
-      catch e
-        # CORS disabled error: redirecting to banned page ;_;
-        if e.name is 'NETWORK_ERR'
-          QR.message.send req: 'status', ready: true, banned: true
+      QR.ajax = $.ajax url, callbacks, opts
 
 Options =
   init: ->
@@ -2040,7 +2038,7 @@ ThreadHiding =
   init: ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     for thread in $$ '.thread'
-      op = thread.firstChild
+      op = $ '.op', thread
       a  = $.el 'a',
         textContent: '[ - ]'
         href: 'javascript:;'
@@ -2405,7 +2403,7 @@ Time =
           [_, month, day, year, hour, min] =
             node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
           year = "20#{year}"
-          month -= 1 #months start at 0
+          month-- # Months start at 0
           hour = chanOffset + Number hour
           new Date year, month, day, hour, min
 
@@ -2417,6 +2415,8 @@ Time =
     Time.date = Time.parse node
     time = $.el 'time',
       textContent: ' ' + Time.funk(Time) + ' '
+    # Set the datetime attribute, ISO'd.
+    time.setAttribute 'datetime', Time.date.toISOString()
     $.replace node, time
   foo: ->
     code = Conf['time'].replace /%([A-Za-z])/g, (s, c) ->
@@ -2473,23 +2473,20 @@ FileInfo =
     Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline' or not node = post.filesize
-    type   = if node.childElementCount is 2 then 0 else 1
-    regexp =
-      if type
-        /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/
-      else
-        /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF), <span title="(.+)">([^<]+)/
-    [_, link, size, unit, resolution, fullname, shortname] =
+    regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/
+    [_, link, size, unit, resolution] =
       node.innerHTML.match regexp
-    FileInfo.data =
+    data =
       link:       link
       size:       size
       unit:       unit
       resolution: resolution
-      fullname:   fullname
-      shortname:  shortname
-      type:       type
-    node.innerHTML = FileInfo.funks[type] FileInfo
+    if span = $ 'span', node
+      data.fullname  = span.title
+      data.shortname = span.textContent
+    data.type      = +!span
+    FileInfo.data  = data
+    node.innerHTML = FileInfo.funks[data.type] FileInfo
   setFormats: ->
     funks = []
     for i in [0..1]
@@ -3363,7 +3360,6 @@ Main =
       class:     klass
       id:        node.getElementsByTagName('input')[0].name
       threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).firstChild.id
-      isOP:      klass is 'op'
       isInlined: /\binline\b/.test klass
       filesize:  node.getElementsByClassName('filesize')[0] or false
       quotes:    node.getElementsByClassName 'quotelink'
@@ -3405,10 +3401,7 @@ a[href="javascript:;"] {
   text-decoration: none;
 }
 
-.block ~ .op,
-.block ~ .omittedposts,
-.block ~ table,
-.block ~ br,
+.block ~ *,
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
 #qp > input, #qp .inline, .forwarded {
@@ -3634,12 +3627,12 @@ img[md5], img[md5] + img {
 /* revealed spoilers do not have height/width,
    this fixes "expanded" auto-gifs */
 img[md5] {
-  max-height: 251px;
-  max-width: 251px;
+  max-height: 252px;
+  max-width: 252px;
 }
 input ~ a > img[md5] {
-  max-height: 126px;
-  max-width: 126px;
+  max-height: 127px;
+  max-width: 127px;
 }
 
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {

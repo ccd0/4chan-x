@@ -502,26 +502,23 @@
     },
     set: function(name, value) {
       name = Main.namespace + name;
-      localStorage[name] = JSON.stringify(value);
+      localStorage.setItem(name, JSON.stringify(value));
       return GM_setValue(name, JSON.stringify(value));
     }
   } : {
     "delete": function(name) {
-      name = Main.namespace + name;
-      return delete localStorage[name];
+      return localStorage.removeItem(Main.namespace + name);
     },
     get: function(name, defaultValue) {
       var value;
-      name = Main.namespace + name;
-      if (value = localStorage[name]) {
+      if (value = localStorage.getItem(Main.namespace + name)) {
         return JSON.parse(value);
       } else {
         return defaultValue;
       }
     },
     set: function(name, value) {
-      name = Main.namespace + name;
-      return localStorage[name] = JSON.stringify(value);
+      return localStorage.setItem(Main.namespace + name, JSON.stringify(value));
     }
   });
 
@@ -585,6 +582,7 @@
     node: function(post) {
       var el, filter, firstThread, isOP, key, result, thisThread, value, _i, _len, _ref;
       if (post.isInlined) return;
+      post.isOP = post["class"] === 'op';
       isOP = post.isOP, el = post.el;
       for (key in Filter.filters) {
         value = Filter[key](post);
@@ -727,7 +725,7 @@
       }));
     },
     parse: function(req, a, threadID, replyID) {
-      var doc, node, post, quote, quotes, _i, _len;
+      var doc, href, node, post, quote, quotes, _i, _len;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
@@ -739,8 +737,10 @@
       quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
-        if (quote.hash === quote.getAttribute('href')) {
+        if (quote.hash === (href = quote.getAttribute('href'))) {
           quote.pathname = "/" + g.BOARD + "/res/" + threadID;
+        } else if (href !== quote.href) {
+          quote.href = "res/" + href;
         }
       }
       post = {
@@ -845,7 +845,7 @@
         _ref2 = $$('.quotelink', table);
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
-          if ((href = quote.getAttribute('href')) === quote.hash) {
+          if (quote.hash === (href = quote.getAttribute('href'))) {
             quote.pathname = pathname;
           } else if (href !== quote.href) {
             quote.href = "res/" + href;
@@ -897,7 +897,7 @@
         table.hidden = false;
         $.rm(parent);
         id = table.firstChild.firstChild.lastChild.id;
-        _ref2 = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
+        _ref2 = $$(".quotelink[href$='#" + id + "'], .backlink[href='#" + id + "']");
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           quote = _ref2[_j];
           $.removeClass(quote, 'filtered');
@@ -2069,6 +2069,13 @@
               req: 'response',
               html: this.response
             });
+          },
+          onerror: function() {
+            return QR.message.send({
+              req: 'status',
+              ready: true,
+              banned: true
+            });
           }
         };
         opts = {
@@ -2094,17 +2101,7 @@
             'Content-Type': 'multipart/form-data;boundary=' + boundary
           };
         }
-        try {
-          return QR.ajax = $.ajax(url, callbacks, opts);
-        } catch (e) {
-          if (e.name === 'NETWORK_ERR') {
-            return QR.message.send({
-              req: 'status',
-              ready: true,
-              banned: true
-            });
-          }
-        }
+        return QR.ajax = $.ajax(url, callbacks, opts);
       }
     }
   };
@@ -2416,7 +2413,7 @@
       _ref = $$('.thread');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
-        op = thread.firstChild;
+        op = $('.op', thread);
         a = $.el('a', {
           textContent: '[ - ]',
           href: 'javascript:;'
@@ -2837,7 +2834,7 @@
         var day, hour, min, month, year, _, _ref;
         _ref = node.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
         year = "20" + year;
-        month -= 1;
+        month--;
         hour = chanOffset + Number(hour);
         return new Date(year, month, day, hour, min);
       };
@@ -2851,6 +2848,7 @@
       time = $.el('time', {
         textContent: ' ' + Time.funk(Time) + ' '
       });
+      time.setAttribute('datetime', Time.date.toISOString());
       return $.replace(node, time);
     },
     foo: function() {
@@ -2937,21 +2935,23 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var fullname, link, node, regexp, resolution, shortname, size, type, unit, _, _ref;
+      var data, link, node, regexp, resolution, size, span, unit, _, _ref;
       if (post["class"] === 'inline' || !(node = post.filesize)) return;
-      type = node.childElementCount === 2 ? 0 : 1;
-      regexp = type ? /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/ : /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF), <span title="(.+)">([^<]+)/;
-      _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4], fullname = _ref[5], shortname = _ref[6];
-      FileInfo.data = {
+      regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/;
+      _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4];
+      data = {
         link: link,
         size: size,
         unit: unit,
-        resolution: resolution,
-        fullname: fullname,
-        shortname: shortname,
-        type: type
+        resolution: resolution
       };
-      return node.innerHTML = FileInfo.funks[type](FileInfo);
+      if (span = $('span', node)) {
+        data.fullname = span.title;
+        data.shortname = span.textContent;
+      }
+      data.type = +(!span);
+      FileInfo.data = data;
+      return node.innerHTML = FileInfo.funks[data.type](FileInfo);
     },
     setFormats: function() {
       var code, format, funks, i, param;
@@ -3999,7 +3999,6 @@
         "class": klass,
         id: node.getElementsByTagName('input')[0].name,
         threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).firstChild.id,
-        isOP: klass === 'op',
         isInlined: /\binline\b/.test(klass),
         filesize: node.getElementsByClassName('filesize')[0] || false,
         quotes: node.getElementsByClassName('quotelink'),
@@ -4061,10 +4060,7 @@ a[href="javascript:;"] {\
   text-decoration: none;\
 }\
 \
-.block ~ .op,\
-.block ~ .omittedposts,\
-.block ~ table,\
-.block ~ br,\
+.block ~ *,\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
 #qp > input, #qp .inline, .forwarded {\
@@ -4290,12 +4286,12 @@ img[md5], img[md5] + img {\
 /* revealed spoilers do not have height/width,\
    this fixes "expanded" auto-gifs */\
 img[md5] {\
-  max-height: 251px;\
-  max-width: 251px;\
+  max-height: 252px;\
+  max-width: 252px;\
 }\
 input ~ a > img[md5] {\
-  max-height: 126px;\
-  max-width: 126px;\
+  max-height: 127px;\
+  max-width: 127px;\
 }\
 \
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {\
