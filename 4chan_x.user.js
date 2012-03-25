@@ -1226,7 +1226,7 @@
       return setTimeout(this.asyncInit);
     },
     asyncInit: function() {
-      var form, iframe, link, loadChecking, script;
+      var form, iframe, link, loadChecking, script, src;
       if (Conf['Hide Original Post Form']) {
         link = $.el('h1', {
           innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Quick Reply' : 'New Thread') + "</a>"
@@ -1244,9 +1244,10 @@
           ready: true
         });
       } else {
+        src = "http" + (/^https/.test(form.action) ? 's' : '') + "://sys.4chan.org/robots.txt";
         iframe = $.el('iframe', {
           id: 'iframe',
-          src: 'https://sys.4chan.org/robots.txt'
+          src: src
         });
         $.on(iframe, 'error', function() {
           return this.src = this.src;
@@ -1255,7 +1256,7 @@
           if (!QR.status.ready) {
             iframe.src = 'about:blank';
             return setTimeout((function() {
-              return iframe.src = 'https://sys.4chan.org/robots.txt';
+              return iframe.src = src;
             }), 100);
           }
         };

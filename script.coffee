@@ -1023,15 +1023,16 @@ QR =
     if /chrome/i.test navigator.userAgent
       QR.status ready: true
     else
+      src = "http#{if /^https/.test form.action then 's' else ''}://sys.4chan.org/robots.txt"
       iframe = $.el 'iframe',
         id: 'iframe'
-        src: 'https://sys.4chan.org/robots.txt'
+        src: src
       $.on iframe, 'error', -> @src = @src
       # Greasemonkey ghetto fix
       loadChecking = (iframe) ->
         unless QR.status.ready
           iframe.src = 'about:blank'
-          setTimeout (-> iframe.src = 'https://sys.4chan.org/robots.txt'), 100
+          setTimeout (-> iframe.src = src), 100
       $.on iframe, 'load', -> if @src isnt 'about:blank' then setTimeout loadChecking, 500, @
       $.add d.head, iframe
 
