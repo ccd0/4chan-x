@@ -3531,7 +3531,7 @@
       if (id == null) id = g.THREAD_ID;
       if (mode == null) mode = 'thread';
       if (!(Conf['404 Redirect'] || mode === 'post')) return;
-      switch (g.BOARD) {
+      switch (board) {
         case 'a':
         case 'jp':
         case 'm':
@@ -3540,7 +3540,7 @@
         case 'u':
         case 'v':
         case 'vg':
-          return "http://archive.foolz.us/" + board + "/thread/" + id + "/";
+          return "http://archive.foolz.us/" + board + "/" + mode + "/" + id + "/";
         case 'lit':
           return "http://fuuka.warosu.org/" + board + "/" + mode + "/" + id;
         case 'diy':

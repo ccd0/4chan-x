@@ -2969,9 +2969,9 @@ Redirect =
         "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
   thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
     return unless Conf['404 Redirect'] or mode is 'post'
-    switch g.BOARD
+    switch board
       when 'a', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
-        "http://archive.foolz.us/#{board}/thread/#{id}/"
+        "http://archive.foolz.us/#{board}/#{mode}/#{id}/"
       when 'lit'
         "http://fuuka.warosu.org/#{board}/#{mode}/#{id}"
       when 'diy', 'g', 'sci'
