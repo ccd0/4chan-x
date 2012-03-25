@@ -422,11 +422,21 @@
       if (properties) $.extend(el, properties);
       return el;
     },
-    on: function(el, eventType, handler) {
-      return el.addEventListener(eventType, handler, false);
+    on: function(el, events, handler) {
+      var event, _i, _len, _ref;
+      _ref = events.split(' ');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event = _ref[_i];
+        el.addEventListener(event, handler, false);
+      }
     },
-    off: function(el, eventType, handler) {
-      return el.removeEventListener(eventType, handler, false);
+    off: function(el, events, handler) {
+      var event, _i, _len, _ref;
+      _ref = events.split(' ');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event = _ref[_i];
+        el.removeEventListener(event, handler, false);
+      }
     },
     open: function(url) {
       return (GM_openInTab || window.open)(url, '_blank');
@@ -1267,8 +1277,7 @@
       }
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
-      $.on(d, 'dragstart', QR.drag);
-      return $.on(d, 'dragend', QR.drag);
+      return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function(post) {
       return $.on($('.quotejs + .quotejs', post.el), 'click', QR.quote);
@@ -1706,7 +1715,7 @@
       }
     },
     dialog: function() {
-      var e, event, fileInput, input, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
+      var e, fileInput, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len2, _ref, _ref2;
       QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
@@ -1785,17 +1794,12 @@
       _ref2 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         name = _ref2[_j];
-        input = $("[name=" + name + "]", QR.el);
-        _ref3 = ['input', 'keyup', 'change', 'paste'];
-        for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-          event = _ref3[_k];
-          $.on(input, event, function() {
-            QR.selected[this.name] = this.value;
-            if (QR.cooldown.auto && QR.selected === QR.replies[0] && parseInt(QR.status.input.value.match(/\d+/)) < 6) {
-              return QR.cooldown.auto = false;
-            }
-          });
-        }
+        $.on($("[name=" + name + "]", QR.el), 'input keyup change paste', function() {
+          QR.selected[this.name] = this.value;
+          if (QR.cooldown.auto && QR.selected === QR.replies[0] && parseInt(QR.status.input.value.match(/\d+/)) < 6) {
+            return QR.cooldown.auto = false;
+          }
+        });
       }
       $.sync('QR.persona', function(persona) {
         var key, val, _results;
@@ -3247,16 +3251,14 @@
         UI.hover(e);
       }
       $.on(this, 'mousemove', UI.hover);
-      $.on(this, 'mouseout', QuotePreview.mouseout);
-      return $.on(this, 'click', QuotePreview.mouseout);
+      return $.on(this, 'mouseout click', QuotePreview.mouseout);
     },
     mouseout: function() {
       var el;
       if (el = $.id(this.hash.slice(1))) $.removeClass(el, 'qphl');
       UI.hoverend();
       $.off(this, 'mousemove', UI.hover);
-      $.off(this, 'mouseout', QuotePreview.mouseout);
-      return $.off(this, 'click', QuotePreview.mouseout);
+      return $.off(this, 'mouseout click', QuotePreview.mouseout);
     },
     parse: function(req, id, threadID) {
       var doc, node, post, qp;

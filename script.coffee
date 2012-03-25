@@ -339,10 +339,14 @@ $.extend $,
     el = d.createElement tag
     $.extend el, properties if properties
     el
-  on: (el, eventType, handler) ->
-    el.addEventListener eventType, handler, false
-  off: (el, eventType, handler) ->
-    el.removeEventListener eventType, handler, false
+  on: (el, events, handler) ->
+    for event in events.split ' '
+      el.addEventListener event, handler, false
+    return
+  off: (el, events, handler) ->
+    for event in events.split ' '
+      el.removeEventListener event, handler, false
+    return
   open: (url) ->
     (GM_openInTab or window.open) url, '_blank'
   isDST: ->
@@ -1039,10 +1043,9 @@ QR =
     if Conf['Persistent QR']
       QR.dialog()
       QR.hide() if Conf['Auto Hide QR']
-    $.on d, 'dragover',  QR.dragOver
-    $.on d, 'drop',      QR.dropFile
-    $.on d, 'dragstart', QR.drag
-    $.on d, 'dragend',   QR.drag
+    $.on d, 'dragover',          QR.dragOver
+    $.on d, 'drop',              QR.dropFile
+    $.on d, 'dragstart dragend', QR.drag
 
   node: (post) ->
     $.on $('.quotejs + .quotejs', post.el), 'click', QR.quote
@@ -1471,17 +1474,15 @@ QR =
     new QR.reply().select()
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
-      input = $ "[name=#{name}]", QR.el
-      for event in ['input', 'keyup', 'change', 'paste']
-        # The input event replaces keyup, change and paste events.
-        # Firefox 12 will support the input event.
-        # Oprah?
-        $.on input, event, ->
-          QR.selected[@name] = @value
-          # Disable auto-posting if you're typing in the first reply
-          # during the last 5 seconds of the cooldown.
-          if QR.cooldown.auto and QR.selected is QR.replies[0] and parseInt(QR.status.input.value.match /\d+/) < 6
-            QR.cooldown.auto = false
+      # The input event replaces keyup, change and paste events.
+      # Firefox 12 will support the input event.
+      # Oprah?
+      $.on $("[name=#{name}]", QR.el), 'input keyup change paste', ->
+        QR.selected[@name] = @value
+        # Disable auto-posting if you're typing in the first reply
+        # during the last 5 seconds of the cooldown.
+        if QR.cooldown.auto and QR.selected is QR.replies[0] and parseInt(QR.status.input.value.match /\d+/) < 6
+          QR.cooldown.auto = false
     # sync between tabs
     $.sync 'QR.persona', (persona) ->
       return unless QR.el.hidden
@@ -2691,16 +2692,14 @@ QuotePreview =
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]', @).firstChild.id
       $.cache @pathname, (-> QuotePreview.parse @, id, threadID)
       UI.hover e
-    $.on @, 'mousemove', UI.hover
-    $.on @, 'mouseout',  QuotePreview.mouseout
-    $.on @, 'click',     QuotePreview.mouseout
+    $.on @, 'mousemove',      UI.hover
+    $.on @, 'mouseout click', QuotePreview.mouseout
   mouseout: ->
     if el = $.id @hash[1..]
       $.removeClass el, 'qphl'
     UI.hoverend()
     $.off @, 'mousemove', UI.hover
-    $.off @, 'mouseout',  QuotePreview.mouseout
-    $.off @, 'click',     QuotePreview.mouseout
+    $.off @, 'mouseout click', QuotePreview.mouseout
   parse: (req, id, threadID) ->
     return unless (qp = UI.el) and qp.textContent is "Loading #{id}..."
 
