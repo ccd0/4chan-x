@@ -626,7 +626,7 @@ ExpandComment =
       return
 
     doc = d.implementation.createHTMLDocument null
-    doc.documentElement.innerHTML = req.responseText
+    doc.documentElement.innerHTML = req.response
 
     Threading.op $('body > form', doc).firstChild
     # Import the node to fix quote.hashes
@@ -711,7 +711,7 @@ ExpandThread =
     a.textContent = a.textContent.replace '\u00d7 Loading...', '-'
 
     doc = d.implementation.createHTMLDocument null
-    doc.documentElement.innerHTML = req.responseText
+    doc.documentElement.innerHTML = req.response
 
     nodes = []
     for reply in $$ '.reply', doc
@@ -2194,7 +2194,7 @@ Updater =
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
       doc = d.implementation.createHTMLDocument null
-      doc.documentElement.innerHTML = @responseText
+      doc.documentElement.innerHTML = @response
 
       id = $('input', Updater.br.previousElementSibling).name
       nodes = []
@@ -2646,7 +2646,7 @@ QuoteInline =
       return
 
     doc = d.implementation.createHTMLDocument null
-    doc.documentElement.innerHTML = req.responseText
+    doc.documentElement.innerHTML = req.response
 
     node =
       if id is threadID #OP
@@ -2720,7 +2720,7 @@ QuotePreview =
       return
 
     doc = d.implementation.createHTMLDocument null
-    doc.documentElement.innerHTML = req.responseText
+    doc.documentElement.innerHTML = req.response
 
     node =
       if id is threadID #OP

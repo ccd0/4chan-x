@@ -727,7 +727,7 @@
         return;
       }
       doc = d.implementation.createHTMLDocument(null);
-      doc.documentElement.innerHTML = req.responseText;
+      doc.documentElement.innerHTML = req.response;
       Threading.op($('body > form', doc).firstChild);
       node = d.importNode(doc.getElementById(replyID));
       quotes = node.getElementsByClassName('quotelink');
@@ -832,7 +832,7 @@
       }
       a.textContent = a.textContent.replace('\u00d7 Loading...', '-');
       doc = d.implementation.createHTMLDocument(null);
-      doc.documentElement.innerHTML = req.responseText;
+      doc.documentElement.innerHTML = req.response;
       nodes = [];
       _ref = $$('.reply', doc);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2583,7 +2583,7 @@
         }
         Updater.lastModified = this.getResponseHeader('Last-Modified');
         doc = d.implementation.createHTMLDocument(null);
-        doc.documentElement.innerHTML = this.responseText;
+        doc.documentElement.innerHTML = this.response;
         id = $('input', Updater.br.previousElementSibling).name;
         nodes = [];
         _ref = $$('.reply', doc).reverse();
@@ -3186,7 +3186,7 @@
         return;
       }
       doc = d.implementation.createHTMLDocument(null);
-      doc.documentElement.innerHTML = req.responseText;
+      doc.documentElement.innerHTML = req.response;
       node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
       newInline = QuoteInline.table(id, node.innerHTML);
       _ref = $$('.quotelink', newInline);
@@ -3275,7 +3275,7 @@
         return;
       }
       doc = d.implementation.createHTMLDocument(null);
-      doc.documentElement.innerHTML = req.responseText;
+      doc.documentElement.innerHTML = req.response;
       node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
       qp.innerHTML = node.innerHTML;
       post = {
