@@ -3231,7 +3231,7 @@
       }
     },
     mouseover: function(e) {
-      var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
+      var el, id, node, qp, quote, replyID, threadID, _i, _len, _ref;
       if (/\binlined\b/.test(this.className)) return;
       qp = UI.el = $.el('div', {
         id: 'qp',
@@ -3242,13 +3242,12 @@
       if (el = $.id(id)) {
         qp.innerHTML = el.innerHTML;
         if (Conf['Quote Highlighting']) $.addClass(el, 'qphl');
-        if (/\bbacklink\b/.test(this.className)) {
-          replyID = $.x('preceding-sibling::input', this.parentNode).name;
-          _ref = $$('.quotelink', qp);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            quote = _ref[_i];
-            if (quote.hash.slice(1) === replyID) $.addClass(quote, 'forwardlink');
-          }
+        node = /\bbacklink\b/.test(this.className) ? this.parentNode : $.x('ancestor::blockquote', this);
+        replyID = $.x('preceding-sibling::input', node).name;
+        _ref = $$('.quotelink, .backlink', qp);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          if (quote.hash.slice(1) === replyID) $.addClass(quote, 'forwardlink');
         }
       } else {
         qp.textContent = "Loading " + id + "...";
@@ -4427,8 +4426,9 @@ input ~ a > img[md5] {\
 .filtered {\
   text-decoration: line-through;\
 }\
-.quotelink.forwardlink {\
-  color: #2C2C63;\
+.quotelink.forwardlink,\
+.backlink.forwardlink {\
+  color: #4C4CA9;\
 }\
 '
   };

@@ -2690,11 +2690,15 @@ QuotePreview =
     if el = $.id id
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl' if Conf['Quote Highlighting']
-      if /\bbacklink\b/.test @className
-        replyID = $.x('preceding-sibling::input', @parentNode).name
-        for quote in $$ '.quotelink', qp
-          if quote.hash[1..] is replyID
-            $.addClass quote, 'forwardlink'
+      node =
+        if /\bbacklink\b/.test @className
+          @parentNode
+        else
+          $.x 'ancestor::blockquote', @
+      replyID = $.x('preceding-sibling::input', node).name
+      for quote in $$ '.quotelink, .backlink', qp
+        if quote.hash[1..] is replyID
+          $.addClass quote, 'forwardlink'
     else
       qp.textContent = "Loading #{id}..."
       threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]', @).firstChild.id
@@ -3767,8 +3771,9 @@ input ~ a > img[md5] {
 .filtered {
   text-decoration: line-through;
 }
-.quotelink.forwardlink {
-  color: #2C2C63;
+.quotelink.forwardlink,
+.backlink.forwardlink {
+  color: #4C4CA9;
 }
 '
 
