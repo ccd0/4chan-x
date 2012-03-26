@@ -439,7 +439,7 @@
       }
     },
     open: function(url) {
-      return (GM_openInTab || window.open)(url, '_blank');
+      return (GM_openInTab || window.open)(location.protocol + url, '_blank');
     },
     isDST: function() {
       /*
