@@ -1592,7 +1592,7 @@ QR =
     doc = $.el 'a', innerHTML: html
     # Check for ban.
     if $('title', doc).textContent is '4chan - Banned'
-      QR.status ready: true, banned: true
+      QR.message.receive req: 'banned'
       return
     unless b = $ 'td b', doc
       err = 'Connection error with sys.4chan.org.'
@@ -1676,6 +1676,13 @@ QR =
           QR.response data.html
         when 'status'
           QR.status data
+        when 'banned'
+          QR.error 'You are banned.', $.el 'a',
+            href: 'http://www.4chan.org/banned'
+            target: '_blank'
+            textContent: 'You are banned.'
+          # Disable iframe reloading
+          QR.status ready: true, banned: true
         else
           QR.message.post data # Reply object: we're posting
 
@@ -1736,7 +1743,7 @@ QR =
             html: @response
         onerror: ->
           # CORS disabled error: redirecting to banned page ;_;
-          QR.message.send req: 'status', ready: true, banned: true
+          QR.message.send req: 'banned'
       opts =
         form: form
         type: 'post'
@@ -3166,7 +3173,7 @@ Main =
         return
       when 'www.4chan.org'
         if path is '/banned'
-          QR.message.send req: 'status', ready: true, banned: true
+          QR.message.send req: 'banned'
         return
       when 'images.4chan.org'
         $.ready -> Redirect.init() if d.title is '4chan - 404'

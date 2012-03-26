@@ -1907,9 +1907,8 @@
         innerHTML: html
       });
       if ($('title', doc).textContent === '4chan - Banned') {
-        QR.status({
-          ready: true,
-          banned: true
+        QR.message.receive({
+          req: 'banned'
         });
         return;
       }
@@ -1995,6 +1994,16 @@
             return QR.response(data.html);
           case 'status':
             return QR.status(data);
+          case 'banned':
+            QR.error('You are banned.', $.el('a', {
+              href: 'http://www.4chan.org/banned',
+              target: '_blank',
+              textContent: 'You are banned.'
+            }));
+            return QR.status({
+              ready: true,
+              banned: true
+            });
           default:
             return QR.message.post(data);
         }
@@ -2063,9 +2072,7 @@
           },
           onerror: function() {
             return QR.message.send({
-              req: 'status',
-              ready: true,
-              banned: true
+              req: 'banned'
             });
           }
         };
@@ -3816,9 +3823,7 @@
         case 'www.4chan.org':
           if (path === '/banned') {
             QR.message.send({
-              req: 'status',
-              ready: true,
-              banned: true
+              req: 'banned'
             });
           }
           return;
