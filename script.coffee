@@ -2879,8 +2879,8 @@ Unread =
       Unread.foresee.splice index, 1
       return
     return if post.root.hidden or post.class
-    Unread.replies.push post.root
-    Unread.update()
+    count = Unread.replies.push post.root
+    Unread.update count is 1
 
   scroll: ->
     height = d.body.clientHeight
@@ -2891,7 +2891,7 @@ Unread =
     return if i is 0
 
     Unread.replies = Unread.replies[i..]
-    Unread.update()
+    Unread.update Unread.replies.length is 0
 
   setTitle: (count) ->
     if @scheduled
@@ -2903,7 +2903,7 @@ Unread =
       d.title = "(#{count}) #{Unread.title}"
     ), 5
 
-  update: (forceUpdate) ->
+  update: (updateFavicon) ->
     return unless g.REPLY
 
     count = @replies.length
@@ -2911,8 +2911,11 @@ Unread =
     if Conf['Unread Count']
       @setTitle count
 
-    unless Conf['Unread Favicon'] and (count < 2 or forceUpdate)
+    unless Conf['Unread Favicon'] and updateFavicon
       return
+
+    if $.engine is 'presto'
+      $.rm Favicon.el
 
     Favicon.el.href =
       if g.dead
@@ -2929,7 +2932,8 @@ Unread =
     #`favicon.href = href` doesn't work on Firefox
     #`favicon.href = href` isn't enough on Opera
     #Opera won't always update the favicon if the href didn't not change
-    $.add d.head, Favicon.el
+    unless $.engine is 'webkit'
+      $.add d.head, Favicon.el
 
 Favicon =
   init: ->

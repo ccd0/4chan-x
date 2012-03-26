@@ -3434,14 +3434,14 @@
     replies: [],
     foresee: [],
     node: function(post) {
-      var index;
+      var count, index;
       if ((index = Unread.foresee.indexOf(post.id)) !== -1) {
         Unread.foresee.splice(index, 1);
         return;
       }
       if (post.root.hidden || post["class"]) return;
-      Unread.replies.push(post.root);
-      return Unread.update();
+      count = Unread.replies.push(post.root);
+      return Unread.update(count === 1);
     },
     scroll: function() {
       var bottom, height, i, reply, _len, _ref;
@@ -3454,7 +3454,7 @@
       }
       if (i === 0) return;
       Unread.replies = Unread.replies.slice(i);
-      return Unread.update();
+      return Unread.update(Unread.replies.length === 0);
     },
     setTitle: function(count) {
       if (this.scheduled) {
@@ -3467,14 +3467,15 @@
         return d.title = "(" + count + ") " + Unread.title;
       }), 5);
     },
-    update: function(forceUpdate) {
+    update: function(updateFavicon) {
       var count;
       if (!g.REPLY) return;
       count = this.replies.length;
       if (Conf['Unread Count']) this.setTitle(count);
-      if (!(Conf['Unread Favicon'] && (count < 2 || forceUpdate))) return;
+      if (!(Conf['Unread Favicon'] && updateFavicon)) return;
+      if ($.engine === 'presto') $.rm(Favicon.el);
       Favicon.el.href = g.dead ? count ? Favicon.unreadDead : Favicon.dead : count ? Favicon.unread : Favicon["default"];
-      return $.add(d.head, Favicon.el);
+      if ($.engine !== 'webkit') return $.add(d.head, Favicon.el);
     }
   };
 
