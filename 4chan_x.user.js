@@ -973,7 +973,7 @@
           break;
         case Conf.unreadCountTo0:
           Unread.replies = [];
-          Unread.update();
+          Unread.update(true);
           break;
         case Conf.expandImage:
           Keybinds.img(thread);
@@ -3136,7 +3136,7 @@
         inline = QuoteInline.table(id, el.innerHTML);
         if ((i = Unread.replies.indexOf(el.parentNode.parentNode.parentNode)) !== -1) {
           Unread.replies.splice(i, 1);
-          Unread.update();
+          Unread.update(true);
         }
         if (/\bbacklink\b/.test(q.className)) {
           $.after(q.parentNode, inline);
