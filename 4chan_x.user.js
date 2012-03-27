@@ -438,9 +438,6 @@
         el.removeEventListener(event, handler, false);
       }
     },
-    open: function(url) {
-      return (GM_openInTab || window.open)(location.protocol + url, '_blank');
-    },
     isDST: function() {
       /*
             http://en.wikipedia.org/wiki/Eastern_Time_Zone
@@ -496,6 +493,9 @@
         return defaultValue;
       }
     },
+    open: function(url) {
+      return GM_openInTab(location.protocol + url);
+    },
     set: function(name, value) {
       name = Main.namespace + name;
       localStorage.setItem(name, JSON.stringify(value));
@@ -515,6 +515,9 @@
     },
     set: function(name, value) {
       return localStorage.setItem(Main.namespace + name, JSON.stringify(value));
+    },
+    open: function(url) {
+      return window.open(location.protocol + url, '_blank');
     }
   });
 
