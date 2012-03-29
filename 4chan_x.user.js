@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.29.1
+// @version        2.29.2
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -20,7 +20,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.29.1
+ * 4chan X 2.29.2
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -4051,7 +4051,7 @@
       if (target.nodeName === 'TABLE') return Main.node([Main.preParse(target)]);
     },
     namespace: '4chan_x.',
-    version: '2.29.1',
+    version: '2.29.2',
     callbacks: [],
     css: '\
 /* dialog styling */\

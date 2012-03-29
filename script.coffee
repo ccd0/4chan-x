@@ -3399,7 +3399,7 @@ Main =
     Main.node [Main.preParse target] if target.nodeName is 'TABLE'
 
   namespace: '4chan_x.'
-  version: '2.29.1'
+  version: '2.29.2'
   callbacks: []
   css: '
 /* dialog styling */
