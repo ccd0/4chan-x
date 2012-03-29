@@ -1676,11 +1676,16 @@ QR =
           QR.response data.html
         when 'status'
           QR.status data
-        when 'banned'
+        when 'connection error'
           QR.error '_', $.el 'a',
             href: '//www.4chan.org/banned'
             target: '_blank'
             textContent: 'Connection error, or you are banned.'
+        when 'banned'
+          QR.error '_', $.el 'a',
+            href: '//www.4chan.org/banned'
+            target: '_blank'
+            textContent: 'You are banned.'
           # Disable iframe reloading
           QR.status ready: true, banned: true
         else
@@ -1742,8 +1747,9 @@ QR =
             req:  'response'
             html: @response
         onerror: ->
+          # Connection error, or
           # CORS disabled error: redirecting to banned page ;_;
-          QR.message.send req: 'banned'
+          QR.message.send req: 'connection error'
       opts =
         form: form
         type: 'post'

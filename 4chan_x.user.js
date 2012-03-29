@@ -1994,11 +1994,17 @@
             return QR.response(data.html);
           case 'status':
             return QR.status(data);
+          case 'connection error':
+            return QR.error('_', $.el('a', {
+              href: '//www.4chan.org/banned',
+              target: '_blank',
+              textContent: 'Connection error, or you are banned.'
+            }));
           case 'banned':
             QR.error('_', $.el('a', {
               href: '//www.4chan.org/banned',
               target: '_blank',
-              textContent: 'Connection error, or you are banned.'
+              textContent: 'You are banned.'
             }));
             return QR.status({
               ready: true,
@@ -2072,7 +2078,7 @@
           },
           onerror: function() {
             return QR.message.send({
-              req: 'banned'
+              req: 'connection error'
             });
           }
         };
