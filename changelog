@@ -1,6 +1,6 @@
 master
 - Mayhem
-  Now works when using https.
+  Add HTTPS support.
   Ban support improvements and fixes.
 
 2.29.1
