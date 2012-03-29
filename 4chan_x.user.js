@@ -1227,6 +1227,7 @@
     },
     asyncInit: function() {
       var form, iframe, link, loadChecking, script, src;
+      form = $('form[name=post]');
       if (Conf['Hide Original Post Form']) {
         link = $.el('h1', {
           innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Quick Reply' : 'New Thread') + "</a>"
@@ -1236,7 +1237,6 @@
           if (!g.REPLY) $('select', QR.el).value = 'new';
           return $('textarea', QR.el).focus();
         });
-        form = d.forms[0];
         $.before(form, link);
       }
       if (/chrome/i.test(navigator.userAgent)) {

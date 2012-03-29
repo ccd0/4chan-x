@@ -1010,13 +1010,13 @@ QR =
     setTimeout @asyncInit
 
   asyncInit: ->
+    form = $ 'form[name=post]'
     if Conf['Hide Original Post Form']
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on $('a', link), 'click', ->
         QR.open()
         $('select', QR.el).value = 'new' unless g.REPLY
         $('textarea', QR.el).focus()
-      form = d.forms[0]
       $.before form, link
 
     # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
