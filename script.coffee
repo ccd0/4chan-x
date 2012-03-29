@@ -1677,10 +1677,10 @@ QR =
         when 'status'
           QR.status data
         when 'banned'
-          QR.error 'You are banned.', $.el 'a',
-            href: 'http://www.4chan.org/banned'
+          QR.error '_', $.el 'a',
+            href: '//www.4chan.org/banned'
             target: '_blank'
-            textContent: 'You are banned.'
+            textContent: 'Connection error, or you are banned.'
           # Disable iframe reloading
           QR.status ready: true, banned: true
         else

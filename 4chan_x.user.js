@@ -1995,10 +1995,10 @@
           case 'status':
             return QR.status(data);
           case 'banned':
-            QR.error('You are banned.', $.el('a', {
-              href: 'http://www.4chan.org/banned',
+            QR.error('_', $.el('a', {
+              href: '//www.4chan.org/banned',
               target: '_blank',
-              textContent: 'You are banned.'
+              textContent: 'Connection error, or you are banned.'
             }));
             return QR.status({
               ready: true,
