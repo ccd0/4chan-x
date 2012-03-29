@@ -3884,7 +3884,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var MutationObserver, form, nav, observer, _i, _len, _ref;
+      var MutationObserver, form, nav, node, nodes, observer, _i, _j, _len, _len2, _ref, _ref2;
       if (d.title === '4chan - 404') {
         Redirect.init();
         return;
@@ -3948,7 +3948,13 @@
           });
         }
       }
-      Main.node($$('.op, a + table', form), true);
+      nodes = [];
+      _ref2 = $$('.op, a + table', form);
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        node = _ref2[_j];
+        nodes.push(Main.preParse(node));
+      }
+      Main.node(nodes, true);
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
         return observer.observe(form, {
@@ -4017,7 +4023,7 @@
         try {
           for (_j = 0, _len2 = nodes.length; _j < _len2; _j++) {
             node = nodes[_j];
-            callback(Main.preParse(node));
+            callback(node);
           }
         } catch (err) {
           if (notify) {
@@ -4034,7 +4040,7 @@
         _ref = mutation.addedNodes;
         for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
           addedNode = _ref[_j];
-          if (addedNode.nodeName === 'TABLE') nodes.push(addedNode);
+          if (addedNode.nodeName === 'TABLE') nodes.push(Main.preParse(addedNode));
         }
       }
       if (nodes.length) return Main.node(nodes);
@@ -4042,7 +4048,7 @@
     listener: function(e) {
       var target;
       target = e.target;
-      if (target.nodeName === 'TABLE') return Main.node([target]);
+      if (target.nodeName === 'TABLE') return Main.node([Main.preParse(target)]);
     },
     namespace: '4chan_x.',
     version: '2.29.1',

@@ -3328,7 +3328,10 @@ Main =
       if Conf['Index Navigation']
         setTimeout -> Nav.init()
 
-    Main.node $$('.op, a + table', form), true
+    nodes = []
+    for node in $$ '.op, a + table', form
+      nodes.push Main.preParse node
+    Main.node nodes, true
 
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
       observer = new MutationObserver Main.observer
@@ -3381,7 +3384,7 @@ Main =
   node: (nodes, notify) ->
     for callback in Main.callbacks
       try
-        callback Main.preParse node for node in nodes
+        callback node for node in nodes
       catch err
         alert "4chan X (#{Main.version}) error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
     return
@@ -3389,11 +3392,11 @@ Main =
     nodes = []
     for mutation in mutations
       for addedNode in mutation.addedNodes
-        nodes.push addedNode if addedNode.nodeName is 'TABLE'
+        nodes.push Main.preParse addedNode if addedNode.nodeName is 'TABLE'
     Main.node nodes if nodes.length
   listener: (e) ->
     {target} = e
-    Main.node [target] if target.nodeName is 'TABLE'
+    Main.node [Main.preParse target] if target.nodeName is 'TABLE'
 
   namespace: '4chan_x.'
   version: '2.29.1'
