@@ -1959,6 +1959,7 @@
         $.replace(home.firstElementChild, a);
       }
       if (!$.get('firstrun')) {
+        if (!Favicon.el) Favicon.init();
         $.set('firstrun', true);
         return Options.dialog();
       }
@@ -3320,6 +3321,7 @@
   Favicon = {
     init: function() {
       var href;
+      if (this.el) return;
       this.el = $('link[rel="shortcut icon"]', d.head);
       this.el.type = 'image/x-icon';
       href = this.el.href;
