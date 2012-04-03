@@ -625,7 +625,7 @@ ExpandComment =
       a.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument null
+    doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
     Threading.op $('body > form', doc).firstChild
@@ -710,7 +710,7 @@ ExpandThread =
 
     a.textContent = a.textContent.replace '\u00d7 Loading...', '-'
 
-    doc = d.implementation.createHTMLDocument null
+    doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
     nodes = []
@@ -1566,7 +1566,7 @@ QR =
     QR.ajax = $.ajax $('form[name=post]').action, callbacks, opts
 
   response: (html) ->
-    doc = d.implementation.createHTMLDocument null
+    doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = html
     # Check for ban.
     if doc.title is '4chan - Banned'
@@ -2067,7 +2067,7 @@ Updater =
         return
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
-      doc = d.implementation.createHTMLDocument null
+      doc = d.implementation.createHTMLDocument ''
       doc.documentElement.innerHTML = @response
 
       id = $('input', Updater.br.previousElementSibling).name
@@ -2519,7 +2519,7 @@ QuoteInline =
       inline.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument null
+    doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
     node =
@@ -2593,7 +2593,7 @@ QuotePreview =
       qp.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument null
+    doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
     node =
