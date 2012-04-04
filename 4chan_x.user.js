@@ -1820,6 +1820,9 @@
       if (Conf['Thread Watcher'] && Conf['Auto Watch Reply'] && threadID !== 'new') {
         Watcher.watch(threadID);
       }
+      if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
+        d.activeElement.blur();
+      }
       QR.status({
         progress: '...'
       });

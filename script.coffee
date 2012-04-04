@@ -1520,6 +1520,9 @@ QR =
       QR.hide()
     if Conf['Thread Watcher'] and Conf['Auto Watch Reply'] and threadID isnt 'new'
       Watcher.watch threadID
+    if not QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
+      # Unfocus the focused element if it is one within the QR and we're not auto-posting.
+      d.activeElement.blur()
 
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
