@@ -371,10 +371,10 @@ code {
         <b>*nix</b>: Download all images in a thread with this shell function (add it to your <code>.bashrc</code>):
       </p>
 <pre>dta() {
-wget -O - $1 |
-grep -Eo 'http://images.4chan.org/[^"]+' |
-uniq |
-xargs wget
+  wget -O - $1 |
+  grep -Eo 'images.4chan.org/[^"]+' |
+  uniq |
+  xargs wget
 }</pre>
     </section>
   </body>
