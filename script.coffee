@@ -2905,6 +2905,7 @@ ImageHover =
 
 AutoGif =
   init: ->
+    return if g.BOARD is 'gif'
     Main.callbacks.push @node
   node: (post) ->
     return if post.root.hidden or not post.img
