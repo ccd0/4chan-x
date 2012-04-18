@@ -1,6 +1,16 @@
 master
 - Mayhem
-  Now works when using https.
+  Auto-GIF will not run in /gif/.
+
+2.29.3
+- Mayhem
+  Update Quick Reply posting method, this fixes compatibility for uncommon browsers such as
+    Opera Mobile 12 and Luakit for example.
+
+2.29.2
+- Mayhem
+  Add HTTPS support.
+  Ban support improvements and fixes.
 
 2.29.1
 - Mayhem

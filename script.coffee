@@ -627,7 +627,7 @@ ExpandComment =
       a.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument null
+    doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
     Threading.op $('body > form', doc).firstChild
@@ -712,7 +712,7 @@ ExpandThread =
 
     a.textContent = a.textContent.replace '\u00d7 Loading...', '-'
 
-    doc = d.implementation.createHTMLDocument null
+    doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
     nodes = []
@@ -833,7 +833,7 @@ Keybinds =
         Updater.update()
       when Conf.unreadCountTo0
         Unread.replies = []
-        Unread.update()
+        Unread.update true
       # Images
       when Conf.expandImage
         Keybinds.img thread
@@ -1014,32 +1014,15 @@ QR =
   asyncInit: ->
     if Conf['Hide Original Post Form']
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
-      $.on $('a', link), 'click', ->
+      $.on link.firstChild, 'click', ->
         QR.open()
         $('select', QR.el).value = 'new' unless g.REPLY
         $('textarea', QR.el).focus()
-      form = d.forms[0]
-      $.before form, link
-
-    # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
-    if /chrome/i.test navigator.userAgent
-      QR.status ready: true
-    else
-      src = "http#{if /^https/.test form.action then 's' else ''}://sys.4chan.org/robots.txt"
-      iframe = $.el 'iframe',
-        id: 'iframe'
-        src: src
-      $.on iframe, 'error', -> @src = @src
-      # Greasemonkey ghetto fix
-      loadChecking = (iframe) ->
-        unless QR.status.ready
-          iframe.src = 'about:blank'
-          setTimeout (-> iframe.src = src), 100
-      $.on iframe, 'load', -> if @src isnt 'about:blank' then setTimeout loadChecking, 500, @
-      $.add d.head, iframe
+      $.before $('form[name=post]'), link
 
     # Prevent original captcha input from being focused on reload.
-    script = $.el 'script', textContent: 'Recaptcha.focus_response_field=function(){}'
+    script = $.el 'script',
+      textContent: 'Recaptcha.focus_response_field=function(){}'
     $.add d.head, script
     $.rm script
 
@@ -1061,7 +1044,7 @@ QR =
       QR.dialog()
   close: ->
     QR.el.hidden = true
-    QR.message.send req: 'abort'
+    QR.abort()
     d.activeElement.blur()
     $.removeClass QR.el, 'dump'
     for i in QR.replies
@@ -1095,22 +1078,11 @@ QR =
     $('.warning', QR.el).textContent = null
 
   status: (data={}) ->
-    if data.ready
-      QR.status.ready  = true
-      QR.status.banned = data.banned
-    else unless QR.status.ready
-      value    = 'Loading'
-      disabled = true
     if g.dead
       value    = 404
       disabled = true
       QR.cooldown.auto = false
-    else if QR.status.banned
-      value    = 'Banned'
-      disabled = true
-    else
-      # do not cancel `value = 'Loading'` once the cooldown is over
-      value = QR.cooldown.seconds or data.progress or value
+    value = QR.cooldown.seconds or data.progress or value
     return unless QR.el
     {input} = QR.status
     input.value =
@@ -1511,7 +1483,7 @@ QR =
       QR.cooldown.auto = !QR.cooldown.auto
       QR.status()
       return
-    QR.message.send req: 'abort'
+    QR.abort()
     reply = QR.replies[0]
 
     # prevent errors
@@ -1550,9 +1522,15 @@ QR =
       QR.hide()
     if Conf['Thread Watcher'] and Conf['Auto Watch Reply'] and threadID isnt 'new'
       Watcher.watch threadID
+    if not QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
+      # Unfocus the focused element if it is one within the QR and we're not auto-posting.
+      d.activeElement.blur()
+
+    # Starting to upload might take some time.
+    # Provide some feedback that we're starting to submit.
+    QR.status progress: '...'
 
     post =
-      postURL: $('form[name=post]').action
       resto:   threadID
       name:    reply.name
       email:   reply.email
@@ -1565,36 +1543,42 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
-    # Starting to upload might take some time.
-    # Provide some feedback that we're starting to submit.
-    QR.status progress: '...'
+    form = new FormData()
+    for name, val of post
+      form.append name, val if val
 
-    if $.engine is 'gecko' and reply.file
-      # https://bugzilla.mozilla.org/show_bug.cgi?id=673742
-      # We plan to allow postMessaging Files and FileLists across origins,
-      # that just needs a more in depth security review.
-      file = {}
-      reader = new FileReader()
-      reader.onload = ->
-        file.buffer = @result
-        file.name   = reply.file.name
-        file.type   = reply.file.type
-        post.upfile = file
-        QR.message.send post
-      reader.readAsBinaryString reply.file
-      return
+    callbacks =
+      onload: ->
+        QR.response @response
+      onerror: ->
+        # Connection error, or
+        # CORS disabled error on www.4chan.org/banned
+        QR.error '_', $.el 'a',
+          href: '//www.4chan.org/banned'
+          target: '_blank'
+          textContent: 'Connection error, or you are banned.'
+    opts =
+      form: form
+      type: 'POST'
+      upCallbacks:
+        onload: ->
+          # Upload done, waiting for response.
+          QR.status progress: '...'
+        onprogress: (e) ->
+          # Uploading...
+          QR.status progress: "#{Math.round e.loaded / e.total * 100}%"
 
-    # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
-    if /chrome/i.test navigator.userAgent
-      QR.message.post post
-      return
-    QR.message.send post
+    QR.ajax = $.ajax $('form[name=post]').action, callbacks, opts
 
   response: (html) ->
-    doc = $.el 'a', innerHTML: html
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = html
     # Check for ban.
-    if $('title', doc).textContent is '4chan - Banned'
-      QR.message.receive req: 'banned'
+    if doc.title is '4chan - Banned'
+      QR.error '_', $.el 'a',
+        href: '//www.4chan.org/banned'
+        target: '_blank'
+        textContent: 'You are banned.'
       return
     unless b = $ 'td b', doc
       err = 'Connection error with sys.4chan.org.'
@@ -1652,117 +1636,9 @@ QR =
     QR.status()
     QR.resetFileInput()
 
-  message:
-    send: (data) ->
-      # CORS is ignored for content script on Chrome, but not Safari/Oprah/Firefox.
-      if /chrome/i.test navigator.userAgent
-        QR.message.receive data
-        return
-      data.QR = true
-      host = location.hostname
-      window =
-        if host is 'boards.4chan.org'
-          $.id('iframe').contentWindow
-        else
-          parent
-      window.postMessage data, '*'
-    receive: (data) ->
-      req = data.req
-      delete data.req
-      delete data.QR
-      switch req
-        when 'abort'
-          QR.ajax?.abort()
-          QR.message.send req: 'status'
-        when 'response' # xhr response
-          QR.response data.html
-        when 'status'
-          QR.status data
-        when 'banned'
-          QR.error 'You are banned.', $.el 'a',
-            href: 'http://www.4chan.org/banned'
-            target: '_blank'
-            textContent: 'You are banned.'
-          # Disable iframe reloading
-          QR.status ready: true, banned: true
-        else
-          QR.message.post data # Reply object: we're posting
-
-    post: (data) ->
-
-      url = data.postURL
-      # Do not append these values to the form.
-      delete data.postURL
-
-      # File with filename upload fix from desuwa
-      if $.engine is 'gecko' and data.upfile
-        # All of this is fucking retarded.
-        unless data.binary
-          toBin = (data, name, val) ->
-            bb = new MozBlobBuilder()
-            bb.append val
-            r = new FileReader()
-            r.onload = ->
-              data[name] = r.result
-              unless --i
-                QR.message.post data
-            r.readAsBinaryString bb.getBlob 'text/plain'
-          i = Object.keys(data).length
-          for name, val of data
-            if typeof val is 'object' # File. toBin the filename.
-              toBin data.upfile, 'name', data.upfile.name
-            else if typeof val is 'boolean'
-              if val
-                toBin data, name, String val
-              else
-                i--
-            else
-              toBin data, name, val
-          data.postURL = url
-          data.binary  = true
-          return
-
-        delete data.binary
-
-        boundary = '-------------SMCD' + Date.now();
-        parts = []
-        parts.push 'Content-Disposition: form-data; name="upfile"; filename="' + data.upfile.name + '"\r\n' + 'Content-Type: ' + data.upfile.type + '\r\n\r\n' + data.upfile.buffer + '\r\n'
-        delete data.upfile
-
-        for name, val of data
-          parts.push 'Content-Disposition: form-data; name="' + name + '"\r\n\r\n' + val + '\r\n' if val
-        form = '--' + boundary + '\r\n' + parts.join('--' + boundary + '\r\n') + '--' + boundary + '--\r\n'
-
-      else
-        form = new FormData()
-        for name, val of data
-          form.append name, val if val
-
-      callbacks =
-        onload: ->
-          QR.message.send
-            req:  'response'
-            html: @response
-        onerror: ->
-          # CORS disabled error: redirecting to banned page ;_;
-          QR.message.send req: 'banned'
-      opts =
-        form: form
-        type: 'post'
-        upCallbacks:
-          onload: ->
-            QR.message.send
-              req:      'status'
-              progress: '...'
-          onprogress: (e) ->
-            QR.message.send
-              req:      'status'
-              progress: "#{Math.round e.loaded / e.total * 100}%"
-      if boundary
-        opts.headers =
-          'Content-Type': 'multipart/form-data;boundary=' + boundary
-
-      QR.ajax = $.ajax url, callbacks, opts
+  abort: ->
+    QR.ajax?.abort()
+    QR.status()
 
 Options =
   init: ->
@@ -1773,6 +1649,8 @@ Options =
       $.on a, 'click', Options.dialog
       $.replace home.firstElementChild, a
     unless $.get 'firstrun'
+      # Prevent race conditions
+      Favicon.init() unless Favicon.el
       $.set 'firstrun', true
       Options.dialog()
 
@@ -2175,8 +2053,7 @@ Updater =
         else
           d.title = d.title.match(/^.+-/)[0] + ' 404'
         Unread.update true
-        QR.message.send req: 'abort'
-        QR.status()
+        QR.abort()
         return
 
       Updater.retryCoef = 10
@@ -2195,7 +2072,7 @@ Updater =
         return
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
-      doc = d.implementation.createHTMLDocument null
+      doc = d.implementation.createHTMLDocument ''
       doc.documentElement.innerHTML = @response
 
       id = $('input', Updater.br.previousElementSibling).name
@@ -2608,7 +2485,7 @@ QuoteInline =
       inline = QuoteInline.table id, el.innerHTML
       if (i = Unread.replies.indexOf el.parentNode.parentNode.parentNode) isnt -1
         Unread.replies.splice i, 1
-        Unread.update()
+        Unread.update true
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, inline
         if Conf['Forward Hiding']
@@ -2647,7 +2524,7 @@ QuoteInline =
       inline.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument null
+    doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
     node =
@@ -2721,7 +2598,7 @@ QuotePreview =
       qp.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument null
+    doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
     node =
@@ -2939,6 +2816,7 @@ Unread =
 
 Favicon =
   init: ->
+    return if @el # Prevent race condition with options first run
     @el = $ 'link[rel="shortcut icon"]', d.head
     @el.type = 'image/x-icon'
     {href} = @el
@@ -3029,6 +2907,7 @@ ImageHover =
 
 AutoGif =
   init: ->
+    return if g.BOARD is 'gif'
     Main.callbacks.push @node
   node: (post) ->
     return if post.root.hidden or not post.img
@@ -3174,16 +3053,10 @@ Main =
 
     switch location.hostname
       when 'sys.4chan.org'
-        if path is '/robots.txt'
-          QR.message.send req: 'status', ready: true
-        else if /report/.test location.search
+        if /report/.test location.search
           $.ready ->
             $.on $.id('recaptcha_response_field'), 'keydown', (e) ->
               window.location = 'javascript:Recaptcha.reload()' if e.keyCode is 8 and not e.target.value
-        return
-      when 'www.4chan.org'
-        if path is '/banned'
-          QR.message.send req: 'banned'
         return
       when 'images.4chan.org'
         $.ready -> Redirect.init() if d.title is '4chan - 404'
@@ -3361,11 +3234,7 @@ Main =
       $.on d, 'DOMNodeInserted', Main.addStyle
 
   message: (e) ->
-    {data} = e
-    if data.QR
-      QR.message.receive data
-      return
-    {version} = data
+    {version} = e.data
     if version and version isnt Main.version and confirm 'An updated version of 4chan X is available, would you like to install it now?'
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
@@ -3401,7 +3270,7 @@ Main =
     Main.node [Main.preParse target] if target.nodeName is 'TABLE'
 
   namespace: '4chan_x.'
-  version: '2.29.1'
+  version: '2.29.3'
   callbacks: []
   css: '
 /* dialog styling */
