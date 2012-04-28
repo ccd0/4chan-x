@@ -513,8 +513,8 @@ Filter =
 
   node: (post) ->
     return if post.isInlined
-    post.isOP  = post.class is 'op'
-    {isOP, el} = post
+    isOP = post.class is 'op'
+    {el} = post
     for key of Filter.filters
       value = Filter[key] post
       if value is false
@@ -537,20 +537,20 @@ Filter =
 
         # Highlight
         if isOP
-          $.addClass el, result[0]
-        else
           $.addClass el.parentNode, result[0]
+        else
+          $.addClass el, result[0]
         if isOP and result[1] and not g.REPLY
           # Put the highlighted OPs' threads on top of the board pages...
-          thisThread = el.parentNode
+          thisThread = el.parentNode.parentNode
           # ...before the first non highlighted thread.
-          if firstThread = $ 'div[class=op]'
+          if firstThread = $ 'div[class="postContainer opContainer"]'
             $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
 
   name: (post) ->
-    name = if post.isOP then $ '.postername', post.el else $ '.commentpostername', post.el
-    name.textContent
+    $('.name', post.el).textContent or false
   uniqueid: (post) ->
+    # NEW FORMAT ???
     if uid = $ '.posteruid', post.el
       return uid.textContent
     false
@@ -559,31 +559,30 @@ Filter =
       return trip.textContent
     false
   mod: (post) ->
-    if mod = (if post.isOP then $ '.commentpostername', post.el else $ '.commentpostername ~ .commentpostername', post.el)
+    if mod = $ '.capcode', post.el
       return mod.textContent
     false
   email: (post) ->
-    if mail = $ '.linkmail', post.el
+    if mail = $ '.useremail', post.el
       return mail.href
     false
   subject: (post) ->
-    sub = if post.isOP then $ '.filetitle', post.el else $ '.replytitle', post.el
-    sub.textContent
+    $('.subject', post.el).textContent or false
   comment: (post) ->
     text = []
     # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE is 7
-    nodes = d.evaluate './/br|.//text()', post.el.lastChild, null, 7, null
+    nodes = d.evaluate './/br|.//text()', post.el.lastElementChild, null, 7, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
   filename: (post) ->
-    {filesize} = post
-    if filesize and file = $ 'span', filesize
+    {fileinfo} = post
+    if fileinfo and file = $ 'span', fileinfo
       return file.title
     false
   dimensions: (post) ->
-    {filesize} = post
-    if filesize and match = filesize.textContent.match /\d+x\d+/
+    {fileinfo} = post
+    if fileinfo and match = fileinfo.textContent.match /\d+x\d+/
       return match[0]
     false
   filesize: (post) ->
@@ -594,7 +593,7 @@ Filter =
   md5: (post) ->
     {img} = post
     if img
-      return img.getAttribute 'md5'
+      return img.dataset.md5
     false
 
 StrikethroughQuotes =
@@ -895,7 +894,7 @@ Keybinds =
     if all
       $.id('imageExpand').click()
     else
-      thumb = $ 'img[md5]', $('.replyhl', thread) or thread
+      thumb = $ 'img[data-md5]', $('.replyhl', thread) or thread
       ImageExpand.toggle thumb.parentNode
 
   qr: (thread, quote) ->
@@ -2220,10 +2219,9 @@ RevealSpoilers =
     Main.callbacks.push @node
   node: (post) ->
     {img} = post
-    if not (img and /^Spoil/.test img.alt) or post.class is 'inline'
+    if not (img and /\bimgspoiler\b/.test img.parentNode.className) or post.class is 'inline'
       return
-    img.removeAttribute 'height'
-    img.removeAttribute 'width'
+    img.removeAttribute 'style'
     img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg')}"
 
 Time =
@@ -2237,11 +2235,11 @@ Time =
 
     @parse =
       if Date.parse('10/11/11(Tue)18:53') is 1318351980000
-        (node) -> new Date Date.parse(node.textContent) + chanOffset*$.HOUR
+        (text) -> new Date Date.parse(text) + chanOffset*$.HOUR
       else # Firefox and Opera do not parse 4chan's time format correctly
-        (node) ->
+        (text) ->
           [_, month, day, year, hour, min] =
-            node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
+            text.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
           year = "20#{year}"
           month-- # Months start at 0
           hour = chanOffset + Number hour
@@ -2251,13 +2249,11 @@ Time =
   node: (post) ->
     return if post.class is 'inline'
     # .posttime exists on every board except /f/
-    node = $('.posttime', post.el) or $('span[id]', post.el).previousSibling
-    Time.date = Time.parse node
-    time = $.el 'time',
-      textContent: ' ' + Time.funk(Time) + ' '
+    node              = $ '.dateTime', post.el
+    Time.date         = Time.parse node.textContent
+    node.textContent  = Time.funk(Time)
     # Set the datetime attribute, ISO'd.
-    time.setAttribute 'datetime', Time.date.toISOString()
-    $.replace node, time
+    node.dataset.time = Time.date.toISOString()
   foo: ->
     code = Conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
@@ -2566,8 +2562,8 @@ QuotePreview =
     qp.innerHTML = node.innerHTML
     post =
       root:     qp
-      filesize: $ '.filesize', qp
-      img:      $ 'img[md5]',  qp
+      filesize: $ '.filesize',     qp
+      img:      $ 'img[data-md5]', qp
     if Conf['Image Auto-Gif']
       AutoGif.node   post
     if Conf['Time Formatting']
@@ -2581,7 +2577,7 @@ QuoteOP =
   node: (post) ->
     return if post.class is 'inline'
     for quote in post.quotes
-      if quote.hash[1..] is post.threadId
+      if quote.hash[2..] is post.threadId
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(OP)'
     return
@@ -2610,7 +2606,7 @@ Quotify =
 
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()[not(parent::a)]', post.el.lastChild, null, 6, null
+    snapshot = d.evaluate './/text()[not(parent::a)]', post.el.lastElementChild, null, 6, null
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
@@ -2715,7 +2711,7 @@ Unread =
       Unread.foresee.splice index, 1
       return
     return if post.root.hidden or post.class
-    count = Unread.replies.push post.root
+    count = Unread.replies.push post.el
     Unread.update count is 1
 
   scroll: ->
@@ -2895,7 +2891,7 @@ ImageExpand =
     all: ->
       ImageExpand.on = @checked
       if ImageExpand.on #expand
-        thumbs = $$ 'img[md5]'
+        thumbs = $$ 'img[data-md5]'
         if Conf['Expand From Current']
           for thumb, i in thumbs
             if thumb.getBoundingClientRect().top > 0
@@ -2904,7 +2900,7 @@ ImageExpand =
         for thumb in thumbs
           ImageExpand.expand thumb
       else #contract
-        for thumb in $$ 'img[md5][hidden]'
+        for thumb in $$ 'img[data-md5][hidden]'
           ImageExpand.contract thumb
       return
     typeChange: ->
@@ -2985,11 +2981,10 @@ ImageExpand =
     $.on select, 'change', ImageExpand.cb.typeChange
     $.on $('input', controls), 'click', ImageExpand.cb.all
 
-    form = $ 'body > form'
-    $.prepend form, controls
+    $.prepend $.id('delform'), controls
 
   resize: ->
-    ImageExpand.style.textContent = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
+    ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:#{d.body.clientHeight}px;}"
 
 Main =
   init: ->
@@ -3197,17 +3192,21 @@ Main =
 
   preParse: (node) ->
     klass = node.className
-    post =
+    post  =
       root:      node.parentNode
       el:        node
       class:     klass
       id:        node.id[1..]
       threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
       isInlined: /\binline\b/.test klass
-      fileinfo:  node.getElementsByClassName('fileInfo')[0] or false
       quotes:    node.getElementsByClassName 'quotelink'
       backlinks: node.getElementsByClassName 'backlink'
-    post.img = if post.filesize then node.getElementsByTagName('img')[0] else false
+    if file = $ '.file', node
+      post.fileinfo = file.firstElementChild
+      post.img      = file.lastElementChild.firstElementChild
+    else
+      post.fileinfo = false
+      post.img      = false
     post
   node: (nodes, notify) ->
     for callback in Main.callbacks
@@ -3220,11 +3219,13 @@ Main =
     nodes = []
     for mutation in mutations
       for addedNode in mutation.addedNodes
-        nodes.push Main.preParse addedNode if addedNode.nodeName is 'TABLE'
+        if addedNode.nodeName is 'DIV' and /\bpostContainer\b/.test addedNode.className
+          nodes.push Main.preParse addedNode
     Main.node nodes if nodes.length
   listener: (e) ->
     {target} = e
-    Main.node [Main.preParse target] if target.nodeName is 'TABLE'
+    if target.nodeName is 'DIV' and /\bpostContainer\b/.test addedNode.className
+      Main.node [Main.preParse target]
 
   namespace: '4chan_x.'
   version: '2.29.3'
@@ -3460,23 +3461,23 @@ textarea.field {
 .filename:not(:hover) > .fnfull {
   display: none;
 }
-img[md5], img[md5] + img {
+img[data-md5], img[data-md5] + img {
   pointer-events: all;
 }
-.fitwidth img[md5] + img {
+.fitwidth img[data-md5] + img {
   max-width: 100%;
 }
-.gecko  > .fitwidth img[md5] + img,
-.presto > .fitwidth img[md5] + img {
+.gecko  > .fitwidth img[data-md5] + img,
+.presto > .fitwidth img[data-md5] + img {
   width: 100%;
 }
 /* revealed spoilers do not have height/width,
    this fixes "expanded" auto-gifs */
-img[md5] {
+img[data-md5] {
   max-height: 252px;
   max-width: 252px;
 }
-input ~ a > img[md5] {
+input ~ a > img[data-md5] {
   max-height: 127px;
   max-width: 127px;
 }

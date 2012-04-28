@@ -621,8 +621,8 @@
       if (post.isInlined) {
         return;
       }
-      post.isOP = post["class"] === 'op';
-      isOP = post.isOP, el = post.el;
+      isOP = post["class"] === 'op';
+      el = post.el;
       for (key in Filter.filters) {
         value = Filter[key](post);
         if (value === false) {
@@ -647,13 +647,13 @@
             return;
           }
           if (isOP) {
-            $.addClass(el, result[0]);
-          } else {
             $.addClass(el.parentNode, result[0]);
+          } else {
+            $.addClass(el, result[0]);
           }
           if (isOP && result[1] && !g.REPLY) {
-            thisThread = el.parentNode;
-            if (firstThread = $('div[class=op]')) {
+            thisThread = el.parentNode.parentNode;
+            if (firstThread = $('div[class="postContainer opContainer"]')) {
               $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
             }
           }
@@ -661,9 +661,7 @@
       }
     },
     name: function(post) {
-      var name;
-      name = post.isOP ? $('.postername', post.el) : $('.commentpostername', post.el);
-      return name.textContent;
+      return $('.name', post.el).textContent || false;
     },
     uniqueid: function(post) {
       var uid;
@@ -681,44 +679,42 @@
     },
     mod: function(post) {
       var mod;
-      if (mod = (post.isOP ? $('.commentpostername', post.el) : $('.commentpostername ~ .commentpostername', post.el))) {
+      if (mod = $('.capcode', post.el)) {
         return mod.textContent;
       }
       return false;
     },
     email: function(post) {
       var mail;
-      if (mail = $('.linkmail', post.el)) {
+      if (mail = $('.useremail', post.el)) {
         return mail.href;
       }
       return false;
     },
     subject: function(post) {
-      var sub;
-      sub = post.isOP ? $('.filetitle', post.el) : $('.replytitle', post.el);
-      return sub.textContent;
+      return $('.subject', post.el).textContent || false;
     },
     comment: function(post) {
       var data, i, nodes, text, _i, _ref;
       text = [];
-      nodes = d.evaluate('.//br|.//text()', post.el.lastChild, null, 7, null);
+      nodes = d.evaluate('.//br|.//text()', post.el.lastElementChild, null, 7, null);
       for (i = _i = 0, _ref = nodes.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
       return text.join('');
     },
     filename: function(post) {
-      var file, filesize;
-      filesize = post.filesize;
-      if (filesize && (file = $('span', filesize))) {
+      var file, fileinfo;
+      fileinfo = post.fileinfo;
+      if (fileinfo && (file = $('span', fileinfo))) {
         return file.title;
       }
       return false;
     },
     dimensions: function(post) {
-      var filesize, match;
-      filesize = post.filesize;
-      if (filesize && (match = filesize.textContent.match(/\d+x\d+/))) {
+      var fileinfo, match;
+      fileinfo = post.fileinfo;
+      if (fileinfo && (match = fileinfo.textContent.match(/\d+x\d+/))) {
         return match[0];
       }
       return false;
@@ -735,7 +731,7 @@
       var img;
       img = post.img;
       if (img) {
-        return img.getAttribute('md5');
+        return img.dataset.md5;
       }
       return false;
     }
@@ -1197,7 +1193,7 @@
       if (all) {
         return $.id('imageExpand').click();
       } else {
-        thumb = $('img[md5]', $('.replyhl', thread) || thread);
+        thumb = $('img[data-md5]', $('.replyhl', thread) || thread);
         return ImageExpand.toggle(thumb.parentNode);
       }
     },
@@ -2807,11 +2803,10 @@
     node: function(post) {
       var img;
       img = post.img;
-      if (!(img && /^Spoil/.test(img.alt)) || post["class"] === 'inline') {
+      if (!(img && /\bimgspoiler\b/.test(img.parentNode.className)) || post["class"] === 'inline') {
         return;
       }
-      img.removeAttribute('height');
-      img.removeAttribute('width');
+      img.removeAttribute('style');
       return img.src = "//thumbs.4chan.org" + (img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg'));
     }
   };
@@ -2824,11 +2819,11 @@
       if ($.isDST()) {
         chanOffset--;
       }
-      this.parse = Date.parse('10/11/11(Tue)18:53') === 1318351980000 ? function(node) {
-        return new Date(Date.parse(node.textContent) + chanOffset * $.HOUR);
-      } : function(node) {
+      this.parse = Date.parse('10/11/11(Tue)18:53') === 1318351980000 ? function(text) {
+        return new Date(Date.parse(text) + chanOffset * $.HOUR);
+      } : function(text) {
         var day, hour, min, month, year, _, _ref;
-        _ref = node.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
+        _ref = text.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
         year = "20" + year;
         month--;
         hour = chanOffset + Number(hour);
@@ -2837,17 +2832,14 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var node, time;
+      var node;
       if (post["class"] === 'inline') {
         return;
       }
-      node = $('.posttime', post.el) || $('span[id]', post.el).previousSibling;
-      Time.date = Time.parse(node);
-      time = $.el('time', {
-        textContent: ' ' + Time.funk(Time) + ' '
-      });
-      time.setAttribute('datetime', Time.date.toISOString());
-      return $.replace(node, time);
+      node = $('.dateTime', post.el);
+      Time.date = Time.parse(node.textContent);
+      node.textContent = Time.funk(Time);
+      return node.dataset.time = Time.date.toISOString();
     },
     foo: function() {
       var code;
@@ -3320,7 +3312,7 @@
       post = {
         root: qp,
         filesize: $('.filesize', qp),
-        img: $('img[md5]', qp)
+        img: $('img[data-md5]', qp)
       };
       if (Conf['Image Auto-Gif']) {
         AutoGif.node(post);
@@ -3346,7 +3338,7 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (quote.hash.slice(1) === post.threadId) {
+        if (quote.hash.slice(2) === post.threadId) {
           $.add(quote, $.tn('\u00A0(OP)'));
         }
       }
@@ -3385,7 +3377,7 @@
       if (post["class"] === 'inline') {
         return;
       }
-      snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastChild, null, 6, null);
+      snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastElementChild, null, 6, null);
       for (i = _i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         node = snapshot.snapshotItem(i);
         data = node.data;
@@ -3505,7 +3497,7 @@
       if (post.root.hidden || post["class"]) {
         return;
       }
-      count = Unread.replies.push(post.root);
+      count = Unread.replies.push(post.el);
       return Unread.update(count === 1);
     },
     scroll: function() {
@@ -3773,7 +3765,7 @@
         var i, thumb, thumbs, _i, _j, _k, _len, _len1, _len2, _ref;
         ImageExpand.on = this.checked;
         if (ImageExpand.on) {
-          thumbs = $$('img[md5]');
+          thumbs = $$('img[data-md5]');
           if (Conf['Expand From Current']) {
             for (i = _i = 0, _len = thumbs.length; _i < _len; i = ++_i) {
               thumb = thumbs[i];
@@ -3788,7 +3780,7 @@
             ImageExpand.expand(thumb);
           }
         } else {
-          _ref = $$('img[md5][hidden]');
+          _ref = $$('img[data-md5][hidden]');
           for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
             thumb = _ref[_k];
             ImageExpand.contract(thumb);
@@ -3886,7 +3878,7 @@
       });
     },
     dialog: function() {
-      var controls, form, imageType, select;
+      var controls, imageType, select;
       controls = $.el('div', {
         id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
@@ -3898,11 +3890,10 @@
       $.on(select, 'change', $.cb.value);
       $.on(select, 'change', ImageExpand.cb.typeChange);
       $.on($('input', controls), 'click', ImageExpand.cb.all);
-      form = $('body > form');
-      return $.prepend(form, controls);
+      return $.prepend($.id('delform'), controls);
     },
     resize: function() {
-      return ImageExpand.style.textContent = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
+      return ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:" + d.body.clientHeight + "px;}";
     }
   };
 
@@ -4154,7 +4145,7 @@
       }
     },
     preParse: function(node) {
-      var klass, post;
+      var file, klass, post;
       klass = node.className;
       post = {
         root: node.parentNode,
@@ -4163,11 +4154,16 @@
         id: node.id.slice(1),
         threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
         isInlined: /\binline\b/.test(klass),
-        fileinfo: node.getElementsByClassName('fileInfo')[0] || false,
         quotes: node.getElementsByClassName('quotelink'),
         backlinks: node.getElementsByClassName('backlink')
       };
-      post.img = post.filesize ? node.getElementsByTagName('img')[0] : false;
+      if (file = $('.file', node)) {
+        post.fileinfo = file.firstElementChild;
+        post.img = file.lastElementChild.firstElementChild;
+      } else {
+        post.fileinfo = false;
+        post.img = false;
+      }
       return post;
     },
     node: function(nodes, notify) {
@@ -4195,7 +4191,7 @@
         _ref = mutation.addedNodes;
         for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
           addedNode = _ref[_j];
-          if (addedNode.nodeName === 'TABLE') {
+          if (addedNode.nodeName === 'DIV' && /\bpostContainer\b/.test(addedNode.className)) {
             nodes.push(Main.preParse(addedNode));
           }
         }
@@ -4207,7 +4203,7 @@
     listener: function(e) {
       var target;
       target = e.target;
-      if (target.nodeName === 'TABLE') {
+      if (target.nodeName === 'DIV' && /\bpostContainer\b/.test(addedNode.className)) {
         return Main.node([Main.preParse(target)]);
       }
     },
@@ -4445,23 +4441,23 @@ textarea.field {\
 .filename:not(:hover) > .fnfull {\
   display: none;\
 }\
-img[md5], img[md5] + img {\
+img[data-md5], img[data-md5] + img {\
   pointer-events: all;\
 }\
-.fitwidth img[md5] + img {\
+.fitwidth img[data-md5] + img {\
   max-width: 100%;\
 }\
-.gecko  > .fitwidth img[md5] + img,\
-.presto > .fitwidth img[md5] + img {\
+.gecko  > .fitwidth img[data-md5] + img,\
+.presto > .fitwidth img[data-md5] + img {\
   width: 100%;\
 }\
 /* revealed spoilers do not have height/width,\
    this fixes "expanded" auto-gifs */\
-img[md5] {\
+img[data-md5] {\
   max-height: 252px;\
   max-width: 252px;\
 }\
-input ~ a > img[md5] {\
+input ~ a > img[data-md5] {\
   max-height: 127px;\
   max-width: 127px;\
 }\
