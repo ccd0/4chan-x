@@ -628,7 +628,6 @@ ExpandComment =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
-    Threading.op $('body > form', doc).firstChild
     # Import the node to fix quote.hashes
     # as they're empty when in a different document.
     node = d.importNode doc.getElementById replyID
@@ -1014,9 +1013,9 @@ QR =
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on link.firstChild, 'click', ->
         QR.open()
-        $('select', QR.el).value = 'new' unless g.REPLY
+        $('select',   QR.el).value = 'new' unless g.REPLY
         $('textarea', QR.el).focus()
-      $.before $('form[name=post]'), link
+      $.before $.id('postForm'), link
 
     # Prevent original captcha input from being focused on reload.
     script = $.el 'script',
@@ -1405,7 +1404,7 @@ QR =
       ta.style.cssText = $.get 'QR.size', ''
 
     # Allow only this board's supported files.
-    mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
+    mimeTypes = $('ul.rules').firstElementChild.textContent.match(/: (.+) /)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
         when 'jpg'
           'image/jpeg'
@@ -1875,39 +1874,6 @@ Options =
     Favicon.switch()
     Unread.update true
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
-
-Threading =
-  op: (node) ->
-    nodes = []
-    until node.nodeName is 'BLOCKQUOTE'
-      nodes.push node
-      node = node.nextSibling
-    nodes.push node # Add the blockquote.
-    node = node.nextSibling
-    op = $.el 'div',
-      className: 'op'
-    $.add op, nodes
-    op.id = $('input', op).name
-    $.before node, op
-
-  thread: (node) ->
-    node = Threading.op node
-
-    return if g.REPLY
-
-    nodes = []
-    until node.nodeName is 'HR'
-      nodes.push node
-      node = node.nextElementSibling # Skip text nodes.
-    div = $.el 'div',
-      className: 'thread'
-    $.add div, nodes
-    $.before node, div
-
-    node = node.nextElementSibling
-    # {N,}SFW
-    unless node.align or node.nodeName is 'CENTER'
-      Threading.thread node
 
 ThreadHiding =
   init: ->
@@ -2407,13 +2373,14 @@ FileInfo =
     r: -> FileInfo.data.resolution
 
 GetTitle = (thread) ->
-  el = $ '.filetitle', thread
-  if not el.textContent
-    el = $ 'blockquote', thread
-    if not el.textContent
-      el = $ '.postername', thread
+  op = $ '.op', thread
+  el = $ '.subject', op
+  unless el.textContent
+    el = $ 'blockquote', op
+    unless el.textContent
+      el = $ '.nameBlock', op
   span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
-  "/#{g.BOARD}/ - #{span.textContent}"
+  "/#{g.BOARD}/ - #{span.textContent.trim()}"
 
 TitlePost =
   init: ->
@@ -2525,11 +2492,7 @@ QuoteInline =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
-    node =
-      if id is threadID #OP
-        Threading.op $('body > form', doc).firstChild
-      else
-        doc.getElementById id
+    node = doc.getElementById id
     newInline = QuoteInline.table id, node.innerHTML
     for quote in $$ '.quotelink', newInline
       if (href = quote.getAttribute 'href') is quote.hash #add pathname to normal quotes
@@ -2599,11 +2562,7 @@ QuotePreview =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
-    node =
-      if id is threadID #OP
-        Threading.op $('body > form', doc).firstChild
-      else
-        doc.getElementById id
+    node = doc.getElementById id
     qp.innerHTML = node.innerHTML
     post =
       root:     qp
@@ -3043,11 +3002,9 @@ Main =
       g.REPLY = true
       g.THREAD_ID = pathname[2]
 
-    #load values from localStorage
+    # Load values from localStorage.
     for key, val of Conf
       Conf[key] = $.get key, val
-
-    $.on window, 'message', Main.message
 
     switch location.hostname
       when 'sys.4chan.org'
@@ -3063,12 +3020,13 @@ Main =
     $.ready Options.init
 
     if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
-      Main.css += 'form[name=post] { display: none; }'
+      Main.css += '#postForm { display: none; }'
 
     Main.addStyle()
 
     now = Date.now()
     if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*$.HOUR
+      $.on window, 'message', Main.message
       $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
@@ -3153,10 +3111,10 @@ Main =
       return
     $.addClass d.body, "chanx_#{Main.version.split('.')[1]}"
     $.addClass d.body, $.engine
-    for nav in ['navtop', 'navbot']
-      $.addClass $("a[href$='/#{g.BOARD}/']", $.id nav), 'current'
-    form = $ 'form[name=delform]'
-    Threading.thread form.firstElementChild
+    for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
+      if a = $ "a[href$='/#{g.BOARD}/']", $.id nav
+        # Gotta make it work in temporary boards.
+        $.addClass a, 'current'
     Favicon.init()
 
     # Major features.
@@ -3201,18 +3159,19 @@ Main =
       if Conf['Index Navigation']
         setTimeout -> Nav.init()
 
+    board = $ '.board'
     nodes = []
-    for node in $$ '.op, a + table', form
+    for node in $$ '.post', board
       nodes.push Main.preParse node
     Main.node nodes, true
 
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
       observer = new MutationObserver Main.observer
-      observer.observe form,
+      observer.observe board,
         childList: true
         subtree:   true
     else
-      $.on form, 'DOMNodeInserted', Main.listener
+      $.on board, 'DOMNodeInserted', Main.listener
 
   flatten: (parent, obj) ->
     if obj instanceof Array
@@ -3239,13 +3198,13 @@ Main =
   preParse: (node) ->
     klass = node.className
     post =
-      root:      node
-      el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
+      root:      node.parentNode
+      el:        node
       class:     klass
-      id:        node.getElementsByTagName('input')[0].name
-      threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).firstChild.id
+      id:        node.id[1..]
+      threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
       isInlined: /\binline\b/.test klass
-      filesize:  node.getElementsByClassName('filesize')[0] or false
+      fileinfo:  node.getElementsByClassName('fileInfo')[0] or false
       quotes:    node.getElementsByClassName 'quotelink'
       backlinks: node.getElementsByClassName 'backlink'
     post.img = if post.filesize then node.getElementsByTagName('img')[0] else false
@@ -3292,6 +3251,9 @@ a[href="javascript:;"] {
   display: none;
 }
 
+h1 {
+  text-align: center;
+}
 .autohide:not(:hover) > form {
   display: none;
 }

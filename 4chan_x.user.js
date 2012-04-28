@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -791,7 +791,6 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      Threading.op($('body > form', doc).firstChild);
       node = d.importNode(doc.getElementById(replyID));
       quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
@@ -1347,7 +1346,7 @@
           }
           return $('textarea', QR.el).focus();
         });
-        $.before($('form[name=post]'), link);
+        $.before($.id('postForm'), link);
       }
       script = $.el('script', {
         textContent: 'Recaptcha.focus_response_field=function(){}'
@@ -1841,7 +1840,7 @@
         });
         ta.style.cssText = $.get('QR.size', '');
       }
-      mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
+      mimeTypes = $('ul.rules').firstElementChild.textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
             return 'image/jpeg';
@@ -2376,46 +2375,6 @@
       Favicon["switch"]();
       Unread.update(true);
       return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "> <img src=" + Favicon.unreadNSFW + "> <img src=" + Favicon.unreadDead + ">";
-    }
-  };
-
-  Threading = {
-    op: function(node) {
-      var nodes, op;
-      nodes = [];
-      while (node.nodeName !== 'BLOCKQUOTE') {
-        nodes.push(node);
-        node = node.nextSibling;
-      }
-      nodes.push(node);
-      node = node.nextSibling;
-      op = $.el('div', {
-        className: 'op'
-      });
-      $.add(op, nodes);
-      op.id = $('input', op).name;
-      return $.before(node, op);
-    },
-    thread: function(node) {
-      var div, nodes;
-      node = Threading.op(node);
-      if (g.REPLY) {
-        return;
-      }
-      nodes = [];
-      while (node.nodeName !== 'HR') {
-        nodes.push(node);
-        node = node.nextElementSibling;
-      }
-      div = $.el('div', {
-        className: 'thread'
-      });
-      $.add(div, nodes);
-      $.before(node, div);
-      node = node.nextElementSibling;
-      if (!(node.align || node.nodeName === 'CENTER')) {
-        return Threading.thread(node);
-      }
     }
   };
 
@@ -3078,18 +3037,19 @@
   };
 
   GetTitle = function(thread) {
-    var el, span;
-    el = $('.filetitle', thread);
+    var el, op, span;
+    op = $('.op', thread);
+    el = $('.subject', op);
     if (!el.textContent) {
-      el = $('blockquote', thread);
+      el = $('blockquote', op);
       if (!el.textContent) {
-        el = $('.postername', thread);
+        el = $('.nameBlock', op);
       }
     }
     span = $.el('span', {
       innerHTML: el.innerHTML.replace(/<br>/g, ' ')
     });
-    return "/" + g.BOARD + "/ - " + span.textContent;
+    return "/" + g.BOARD + "/ - " + (span.textContent.trim());
   };
 
   TitlePost = {
@@ -3254,7 +3214,7 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
+      node = doc.getElementById(id);
       newInline = QuoteInline.table(id, node.innerHTML);
       _ref = $$('.quotelink', newInline);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3355,7 +3315,7 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
+      node = doc.getElementById(id);
       qp.innerHTML = node.innerHTML;
       post = {
         root: qp,
@@ -3961,7 +3921,6 @@
         val = Conf[key];
         Conf[key] = $.get(key, val);
       }
-      $.on(window, 'message', Main.message);
       switch (location.hostname) {
         case 'sys.4chan.org':
           if (/report/.test(location.search)) {
@@ -3984,11 +3943,12 @@
       }
       $.ready(Options.init);
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form'] && g.BOARD !== 'f') {
-        Main.css += 'form[name=post] { display: none; }';
+        Main.css += '#postForm { display: none; }';
       }
       Main.addStyle();
       now = Date.now();
       if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * $.HOUR) {
+        $.on(window, 'message', Main.message);
         $.ready(function() {
           return $.add(d.head, $.el('script', {
             src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
@@ -4071,7 +4031,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var MutationObserver, form, nav, node, nodes, observer, _i, _j, _len, _len1, _ref, _ref1;
+      var MutationObserver, a, board, nav, node, nodes, observer, _i, _j, _len, _len1, _ref, _ref1;
       if (d.title === '4chan - 404') {
         Redirect.init();
         return;
@@ -4081,13 +4041,13 @@
       }
       $.addClass(d.body, "chanx_" + (Main.version.split('.')[1]));
       $.addClass(d.body, $.engine);
-      _ref = ['navtop', 'navbot'];
+      _ref = ['boardNavDesktop', 'boardNavDesktopFoot'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         nav = _ref[_i];
-        $.addClass($("a[href$='/" + g.BOARD + "/']", $.id(nav)), 'current');
+        if (a = $("a[href$='/" + g.BOARD + "/']", $.id(nav))) {
+          $.addClass(a, 'current');
+        }
       }
-      form = $('form[name=delform]');
-      Threading.thread(form.firstElementChild);
       Favicon.init();
       if (Conf['Quick Reply']) {
         QR.init();
@@ -4147,8 +4107,9 @@
           });
         }
       }
+      board = $('.board');
       nodes = [];
-      _ref1 = $$('.op, a + table', form);
+      _ref1 = $$('.post', board);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         node = _ref1[_j];
         nodes.push(Main.preParse(node));
@@ -4156,12 +4117,12 @@
       Main.node(nodes, true);
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
-        return observer.observe(form, {
+        return observer.observe(board, {
           childList: true,
           subtree: true
         });
       } else {
-        return $.on(form, 'DOMNodeInserted', Main.listener);
+        return $.on(board, 'DOMNodeInserted', Main.listener);
       }
     },
     flatten: function(parent, obj) {
@@ -4196,13 +4157,13 @@
       var klass, post;
       klass = node.className;
       post = {
-        root: node,
-        el: klass === 'op' ? node : node.firstChild.firstChild.lastChild,
+        root: node.parentNode,
+        el: node,
         "class": klass,
-        id: node.getElementsByTagName('input')[0].name,
-        threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).firstChild.id,
+        id: node.id.slice(1),
+        threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
         isInlined: /\binline\b/.test(klass),
-        filesize: node.getElementsByClassName('filesize')[0] || false,
+        fileinfo: node.getElementsByClassName('fileInfo')[0] || false,
         quotes: node.getElementsByClassName('quotelink'),
         backlinks: node.getElementsByClassName('backlink')
       };
@@ -4275,6 +4236,9 @@ a[href="javascript:;"] {\
   display: none;\
 }\
 \
+h1 {\
+  text-align: center;\
+}\
 .autohide:not(:hover) > form {\
   display: none;\
 }\
