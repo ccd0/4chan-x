@@ -2629,7 +2629,7 @@ Quotify =
             m[1]
           else
             # Get the post's board, whether it's inlined or not.
-            $('.quotejs', post.el).pathname.split('/')[1]
+            $('.postNum.desktop', post.el).firstElementChild.pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
           # \u00A0 is nbsp
