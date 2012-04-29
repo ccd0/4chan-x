@@ -2723,10 +2723,9 @@
       if (post["class"] === 'inline') {
         return;
       }
-      name = $('.commentpostername, .postername', post.el);
+      name = $('.name', post.el);
       name.textContent = 'Anonymous';
-      node = name.nextElementSibling;
-      if (node.className === 'postertrip' || node.nodeName === 'A') {
+      if (node = name.nextElementSibling) {
         return $.rm(node);
       }
     }

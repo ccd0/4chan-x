@@ -2168,10 +2168,9 @@ Anonymize =
     Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
-    name = $ '.commentpostername, .postername', post.el
+    name = $ '.name', post.el
     name.textContent = 'Anonymous'
-    node = name.nextElementSibling
-    if node.className is 'postertrip' or node.nodeName is 'A'
+    if node = name.nextElementSibling
       $.rm node
 
 Sauce =
