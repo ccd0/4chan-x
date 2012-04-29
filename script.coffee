@@ -2087,8 +2087,7 @@ Watcher =
     $.add d.body, @dialog
 
     #add watch buttons
-    inputs = $$ '.op > input'
-    for input in inputs
+    for input in $$ '.op input'
       favicon = $.el 'img',
         className: 'favicon'
       $.on favicon, 'click', @cb.toggle

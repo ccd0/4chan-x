@@ -2615,13 +2615,13 @@
 
   Watcher = {
     init: function() {
-      var favicon, html, input, inputs, _i, _len;
+      var favicon, html, input, _i, _len, _ref;
       html = '<div class=move>Thread Watcher</div>';
       this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', html);
       $.add(d.body, this.dialog);
-      inputs = $$('.op > input');
-      for (_i = 0, _len = inputs.length; _i < _len; _i++) {
-        input = inputs[_i];
+      _ref = $$('.op input');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
         favicon = $.el('img', {
           className: 'favicon'
         });
