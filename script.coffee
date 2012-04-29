@@ -2391,16 +2391,16 @@ QuoteBacklink =
     quotes = {}
     for quote in post.quotes
       # Don't process >>>/b/.
-      if qid = quote.hash[1..]
+      if qid = quote.hash[2..]
         # Duplicate quotes get overwritten.
         quotes[qid] = true
     a = $.el 'a',
-      href: "##{post.id}"
+      href: "#p#{post.id}"
       className: if post.root.hidden then 'filtered backlink' else 'backlink'
       textContent: QuoteBacklink.funk post.id
     for qid of quotes
       # Don't backlink the OP.
-      continue if !(el = $.id qid) or el.className is 'op' and !Conf['OP Backlinks']
+      continue if !(el = $.id "pi#{qid}") or /\bop\b/.test(el.parentNode.className) and !Conf['OP Backlinks']
       link = a.cloneNode true
       if Conf['Quote Preview']
         $.on link, 'mouseover', QuotePreview.mouseover
@@ -2410,11 +2410,8 @@ QuoteBacklink =
         link.setAttribute 'onclick', "replyhl('#{post.id}');"
       unless (container = $ '.container', el) and container.parentNode is el
         container = $.el 'span', className: 'container'
-        $.add container, [$.tn(' '), link]
-        root = $('.reportbutton', el) or $('span[id]', el)
-        $.after root, container
-      else
-        $.add container, [$.tn(' '), link]
+        $.add el, container
+      $.add container, [$.tn(' '), link]
     return
 
 QuoteInline =

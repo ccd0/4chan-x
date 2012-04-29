@@ -3058,7 +3058,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, container, el, link, qid, quote, quotes, root, _i, _len, _ref;
+      var a, container, el, link, qid, quote, quotes, _i, _len, _ref;
       if (post.isInlined) {
         return;
       }
@@ -3066,17 +3066,17 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (qid = quote.hash.slice(1)) {
+        if (qid = quote.hash.slice(2)) {
           quotes[qid] = true;
         }
       }
       a = $.el('a', {
-        href: "#" + post.id,
+        href: "#p" + post.id,
         className: post.root.hidden ? 'filtered backlink' : 'backlink',
         textContent: QuoteBacklink.funk(post.id)
       });
       for (qid in quotes) {
-        if (!(el = $.id(qid)) || el.className === 'op' && !Conf['OP Backlinks']) {
+        if (!(el = $.id("pi" + qid)) || /\bop\b/.test(el.parentNode.className) && !Conf['OP Backlinks']) {
           continue;
         }
         link = a.cloneNode(true);
@@ -3092,12 +3092,9 @@
           container = $.el('span', {
             className: 'container'
           });
-          $.add(container, [$.tn(' '), link]);
-          root = $('.reportbutton', el) || $('span[id]', el);
-          $.after(root, container);
-        } else {
-          $.add(container, [$.tn(' '), link]);
+          $.add(el, container);
         }
+        $.add(container, [$.tn(' '), link]);
       }
     }
   };
