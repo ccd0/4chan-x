@@ -1030,7 +1030,7 @@ QR =
     $.on d, 'dragstart dragend', QR.drag
 
   node: (post) ->
-    $.on $('.quotejs + .quotejs', post.el), 'click', QR.quote
+    $.on $('.postInfo > .postNum > a:last-child', post.el), 'click', QR.quote
 
   open: ->
     if QR.el
@@ -1113,14 +1113,14 @@ QR =
     e?.preventDefault()
     QR.open()
     unless g.REPLY
-      $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).firstChild.id
+      $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).id[1..]
 
     # Make sure we get the correct number, even with XXX censors
-    id = @previousElementSibling.hash[1..]
+    id   = @hash[2..]
     text = ">>#{id}\n"
 
     sel = window.getSelection()
-    if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote/preceding-sibling::input', sel.anchorNode)?.name
+    if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id[1..]
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
@@ -1425,8 +1425,9 @@ QR =
     unless g.REPLY
       # Make a list with visible threads and an option to create a new one.
       threads = '<option value=new>New thread</option>'
-      for thread in $$ '.op'
-        threads += "<option value=#{thread.id}>Thread #{thread.id}</option>"
+      for thread in $$ '.thread'
+        id = thread.id[1..]
+        threads += "<option value=#{id}>Thread #{id}</option>"
       $.prepend $('.move > span', QR.el), $.el 'select'
         innerHTML: threads
         title: 'Create a new thread / Reply to a thread'

@@ -1360,7 +1360,7 @@
       return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function(post) {
-      return $.on($('.quotejs + .quotejs', post.el), 'click', QR.quote);
+      return $.on($('.postInfo > .postNum > a:last-child', post.el), 'click', QR.quote);
     },
     open: function() {
       if (QR.el) {
@@ -1479,12 +1479,12 @@
       }
       QR.open();
       if (!g.REPLY) {
-        $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', this).firstChild.id;
+        $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', this).id.slice(1);
       }
-      id = this.previousElementSibling.hash.slice(1);
+      id = this.hash.slice(2);
       text = ">>" + id + "\n";
       sel = window.getSelection();
-      if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote/preceding-sibling::input', sel.anchorNode)) != null ? _ref.name : void 0)) {
+      if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.slice(1) : void 0)) {
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
@@ -1814,7 +1814,7 @@
       }
     },
     dialog: function() {
-      var e, fileInput, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+      var e, fileInput, id, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
       QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
@@ -1856,10 +1856,11 @@
       spoiler.hidden = !QR.spoiler;
       if (!g.REPLY) {
         threads = '<option value=new>New thread</option>';
-        _ref = $$('.op');
+        _ref = $$('.thread');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           thread = _ref[_i];
-          threads += "<option value=" + thread.id + ">Thread " + thread.id + "</option>";
+          id = thread.id.slice(1);
+          threads += "<option value=" + id + ">Thread " + id + "</option>";
         }
         $.prepend($('.move > span', QR.el), $.el('select', {
           innerHTML: threads,
