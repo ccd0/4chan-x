@@ -2835,7 +2835,7 @@
       if (post["class"] === 'inline') {
         return;
       }
-      node = $('.dateTime', post.el);
+      node = $('.postInfo > .dateTime', post.el);
       Time.date = Time.parse(node.textContent);
       node.textContent = Time.funk(Time);
       return node.dataset.time = Time.date.toISOString();

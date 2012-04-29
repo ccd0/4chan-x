@@ -2247,8 +2247,7 @@ Time =
     Main.callbacks.push @node
   node: (post) ->
     return if post.class is 'inline'
-    # .posttime exists on every board except /f/
-    node              = $ '.dateTime', post.el
+    node              = $ '.postInfo > .dateTime', post.el
     Time.date         = Time.parse node.textContent
     node.textContent  = Time.funk(Time)
     # Set the datetime attribute, ISO'd.
