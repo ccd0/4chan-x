@@ -2663,7 +2663,7 @@ ReportButton =
   node: (post) ->
     unless a = $ '.reportbutton', post.el
       a = ReportButton.a.cloneNode true
-      $.after $('span[id]', post.el), [$.tn(' '), a]
+      $.add $('.postInfo', post.el), a
     $.on a, 'click', ReportButton.report
   report: ->
     url = "//sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"

@@ -3427,7 +3427,7 @@
       var a;
       if (!(a = $('.reportbutton', post.el))) {
         a = ReportButton.a.cloneNode(true);
-        $.after($('span[id]', post.el), [$.tn(' '), a]);
+        $.add($('.postInfo', post.el), a);
       }
       return $.on(a, 'click', ReportButton.report);
     },
