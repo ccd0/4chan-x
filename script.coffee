@@ -576,13 +576,13 @@ Filter =
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
   filename: (post) ->
-    {fileinfo} = post
-    if fileinfo and file = $ 'span', fileinfo
+    {fileInfo} = post
+    if fileInfo and file = $ 'span', fileInfo
       return file.title
     false
   dimensions: (post) ->
-    {fileinfo} = post
-    if fileinfo and match = fileinfo.textContent.match /\d+x\d+/
+    {fileInfo} = post
+    if fileInfo and match = fileInfo.textContent.match /\d+x\d+/
       return match[0]
     false
   filesize: (post) ->
@@ -2211,7 +2211,7 @@ Sauce =
     for link in Sauce.links
       # \u00A0 is nbsp
       nodes.push $.tn('\u00A0'), link img
-    $.add post.fileinfo, nodes
+    $.add post.fileInfo, nodes
 
 RevealSpoilers =
   init: ->
@@ -3200,12 +3200,13 @@ Main =
       isInlined: /\binline\b/.test klass
       quotes:    node.getElementsByClassName 'quotelink'
       backlinks: node.getElementsByClassName 'backlink'
-    if file = $ '.file', node
-      post.fileinfo = file.firstElementChild
-      post.img      = file.lastElementChild.firstElementChild
-    else
-      post.fileinfo = false
-      post.img      = false
+      fileInfo:  false
+      img:       false
+    if fileInfo = $ '.fileInfo', node
+      img = fileInfo.nextElementSibling.firstElementChild
+      if img.alt isnt 'File deleted.'
+        post.fileInfo = fileInfo
+        post.img      = img
     post
   node: (nodes, notify) ->
     for callback in Main.callbacks

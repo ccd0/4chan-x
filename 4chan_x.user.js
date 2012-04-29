@@ -704,17 +704,17 @@
       return text.join('');
     },
     filename: function(post) {
-      var file, fileinfo;
-      fileinfo = post.fileinfo;
-      if (fileinfo && (file = $('span', fileinfo))) {
+      var file, fileInfo;
+      fileInfo = post.fileInfo;
+      if (fileInfo && (file = $('span', fileInfo))) {
         return file.title;
       }
       return false;
     },
     dimensions: function(post) {
-      var fileinfo, match;
-      fileinfo = post.fileinfo;
-      if (fileinfo && (match = fileinfo.textContent.match(/\d+x\d+/))) {
+      var fileInfo, match;
+      fileInfo = post.fileInfo;
+      if (fileInfo && (match = fileInfo.textContent.match(/\d+x\d+/))) {
         return match[0];
       }
       return false;
@@ -2791,7 +2791,7 @@
         link = _ref[_i];
         nodes.push($.tn('\u00A0'), link(img));
       }
-      return $.add(post.fileinfo, nodes);
+      return $.add(post.fileInfo, nodes);
     }
   };
 
@@ -4144,7 +4144,7 @@
       }
     },
     preParse: function(node) {
-      var file, klass, post;
+      var fileInfo, img, klass, post;
       klass = node.className;
       post = {
         root: node.parentNode,
@@ -4154,14 +4154,16 @@
         threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
         isInlined: /\binline\b/.test(klass),
         quotes: node.getElementsByClassName('quotelink'),
-        backlinks: node.getElementsByClassName('backlink')
+        backlinks: node.getElementsByClassName('backlink'),
+        fileInfo: false,
+        img: false
       };
-      if (file = $('.file', node)) {
-        post.fileinfo = file.firstElementChild;
-        post.img = file.lastElementChild.firstElementChild;
-      } else {
-        post.fileinfo = false;
-        post.img = false;
+      if (fileInfo = $('.fileInfo', node)) {
+        img = fileInfo.nextElementSibling.firstElementChild;
+        if (img.alt !== 'File deleted.') {
+          post.fileInfo = fileInfo;
+          post.img = img;
+        }
       }
       return post;
     },
