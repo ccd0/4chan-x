@@ -2762,7 +2762,7 @@
           case '$2':
             return "' + img.href + '";
           case '$3':
-            return "' + img.firstChild.getAttribute('md5').replace(/\=*$/, '') + '";
+            return "' + img.firstChild.dataset.md5.replace(/\=*$/, '') + '";
           case '$4':
             return g.BOARD;
         }
@@ -2790,9 +2790,9 @@
       _ref = Sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
-        nodes.push($.tn(' '), link(img));
+        nodes.push($.tn('\u00A0'), link(img));
       }
-      return $.add(post.filesize, nodes);
+      return $.add(post.fileinfo, nodes);
     }
   };
 

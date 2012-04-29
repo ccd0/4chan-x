@@ -2193,7 +2193,7 @@ Sauce =
         when '$2'
           "' + img.href + '"
         when '$3'
-          "' + img.firstChild.getAttribute('md5').replace(/\=*$/, '') + '"
+          "' + img.firstChild.dataset.md5.replace(/\=*$/, '') + '"
         when '$4'
           g.BOARD
     href = Function 'img', "return '#{href}'"
@@ -2211,8 +2211,9 @@ Sauce =
     img   = img.parentNode
     nodes = []
     for link in Sauce.links
-      nodes.push $.tn(' '), link img
-    $.add post.filesize, nodes
+      # \u00A0 is nbsp
+      nodes.push $.tn('\u00A0'), link img
+    $.add post.fileinfo, nodes
 
 RevealSpoilers =
   init: ->
