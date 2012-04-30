@@ -3137,7 +3137,7 @@ Main =
 
     board = $ '.board'
     nodes = []
-    for node in $$ '.post', board
+    for node in $$ '.postContainer', board
       nodes.push Main.preParse node
     Main.node nodes, true
 
@@ -3172,19 +3172,20 @@ Main =
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
-    klass = node.className
+    el    = $ '.post', node
+    klass = el.className
     post  =
-      root:      node.parentNode
-      el:        node
+      root:      node
+      el:        el
       class:     klass
-      id:        node.id[1..]
+      id:        el.id[1..]
       threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
       isInlined: /\binline\b/.test klass
-      quotes:    node.getElementsByClassName 'quotelink'
-      backlinks: node.getElementsByClassName 'backlink'
+      quotes:    el.getElementsByClassName 'quotelink'
+      backlinks: el.getElementsByClassName 'backlink'
       fileInfo:  false
       img:       false
-    if fileInfo = $ '.fileInfo', node
+    if fileInfo = $ '.fileInfo', el
       img = fileInfo.nextElementSibling.firstElementChild
       if img.alt isnt 'File deleted.'
         post.fileInfo = fileInfo

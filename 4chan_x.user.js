@@ -4072,7 +4072,7 @@
       }
       board = $('.board');
       nodes = [];
-      _ref1 = $$('.post', board);
+      _ref1 = $$('.postContainer', board);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         node = _ref1[_j];
         nodes.push(Main.preParse(node));
@@ -4117,21 +4117,22 @@
       }
     },
     preParse: function(node) {
-      var fileInfo, img, klass, post;
-      klass = node.className;
+      var el, fileInfo, img, klass, post;
+      el = $('.post', node);
+      klass = el.className;
       post = {
-        root: node.parentNode,
-        el: node,
+        root: node,
+        el: el,
         "class": klass,
-        id: node.id.slice(1),
+        id: el.id.slice(1),
         threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
         isInlined: /\binline\b/.test(klass),
-        quotes: node.getElementsByClassName('quotelink'),
-        backlinks: node.getElementsByClassName('backlink'),
+        quotes: el.getElementsByClassName('quotelink'),
+        backlinks: el.getElementsByClassName('backlink'),
         fileInfo: false,
         img: false
       };
-      if (fileInfo = $('.fileInfo', node)) {
+      if (fileInfo = $('.fileInfo', el)) {
         img = fileInfo.nextElementSibling.firstElementChild;
         if (img.alt !== 'File deleted.') {
           post.fileInfo = fileInfo;
