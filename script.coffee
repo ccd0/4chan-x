@@ -609,14 +609,13 @@ StrikethroughQuotes =
 
 ExpandComment =
   init: ->
-    for a in $$ '.abbr > a'
-      $.on a, 'click', ExpandComment.expand
+    for a in $$ '.abbr'
+      $.on a.firstElementChild, 'click', ExpandComment.expand
     return
   expand: (e) ->
     e.preventDefault()
-    [_, threadID, replyID] = @href.match /(\d+)#(\d+)/
+    [_, threadID, replyID] = @href.match /(\d+)#p(\d+)/
     @textContent = "Loading #{replyID}..."
-    threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
     a = @
     $.cache @pathname, (-> ExpandComment.parse @, a, threadID, replyID)
   parse: (req, a, threadID, replyID) ->
@@ -629,12 +628,15 @@ ExpandComment =
 
     # Import the node to fix quote.hashes
     # as they're empty when in a different document.
-    node = d.importNode doc.getElementById replyID
+    node = d.importNode doc.getElementById "m#{replyID}"
 
     quotes = node.getElementsByClassName 'quotelink'
     for quote in quotes
       if quote.hash is href = quote.getAttribute 'href' # Add pathname to in-thread quotes
         quote.pathname = "/#{g.BOARD}/res/#{threadID}"
+      # NEW HTML ???
+      # OP quotes have different href attribute than normal quotes.
+      # Waiting for a reply from moot.
       else if href isnt quote.href # Fix cross-thread links, not cross-board ones
         quote.href = "res/#{href}"
     post =
@@ -652,7 +654,7 @@ ExpandComment =
       QuoteOP.node      post
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
-    $.replace a.parentNode.parentNode, node.lastChild
+    $.replace a.parentNode.parentNode, node
 
 ExpandThread =
   init: ->

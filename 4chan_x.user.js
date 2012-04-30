@@ -762,18 +762,17 @@
   ExpandComment = {
     init: function() {
       var a, _i, _len, _ref;
-      _ref = $$('.abbr > a');
+      _ref = $$('.abbr');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        $.on(a, 'click', ExpandComment.expand);
+        $.on(a.firstElementChild, 'click', ExpandComment.expand);
       }
     },
     expand: function(e) {
       var a, replyID, threadID, _, _ref;
       e.preventDefault();
-      _ref = this.href.match(/(\d+)#(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
+      _ref = this.href.match(/(\d+)#p(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
       this.textContent = "Loading " + replyID + "...";
-      threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
       a = this;
       return $.cache(this.pathname, (function() {
         return ExpandComment.parse(this, a, threadID, replyID);
@@ -787,7 +786,7 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      node = d.importNode(doc.getElementById(replyID));
+      node = d.importNode(doc.getElementById("m" + replyID));
       quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
@@ -818,7 +817,7 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      return $.replace(a.parentNode.parentNode, node.lastChild);
+      return $.replace(a.parentNode.parentNode, node);
     }
   };
 
