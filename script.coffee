@@ -550,7 +550,7 @@ Filter =
   name: (post) ->
     $('.name', post.el).textContent or false
   uniqueid: (post) ->
-    # NEW FORMAT ???
+    # NEW HTML ???
     if uid = $ '.posteruid', post.el
       return uid.textContent
     false
@@ -656,29 +656,24 @@ ExpandComment =
 
 ExpandThread =
   init: ->
-    for span in $$ '.omittedposts'
+    for span in $$ '.summary'
       a = $.el 'a',
         textContent: "+ #{span.textContent}"
-        className: 'omittedposts'
+        className: 'summary desktop'
         href: 'javascript:;'
-      $.on a, 'click', ExpandThread.cb.toggle
+      $.on a, 'click', -> ExpandThread.toggle @parentNode
       $.replace span, a
 
-  cb:
-    toggle: ->
-      thread = @parentNode
-      ExpandThread.toggle thread
-
   toggle: (thread) ->
-    threadID = thread.firstChild.id
-    pathname = "/#{g.BOARD}/res/#{threadID}"
-    a = $ '.omittedposts', thread
+    pathname = "/#{g.BOARD}/res/#{thread.id[1..]}"
+    a = $ '.summary', thread
 
     # \u00d7 is &times;
 
     switch a.textContent[0]
       when '+'
-        $('.op .container', thread)?.textContent = ''
+        if container = $ '.container', thread.firstElementChild
+          $.rm container
         a.textContent = a.textContent.replace '+', '\u00d7 Loading...'
         $.cache pathname, (-> ExpandThread.parse @, pathname, thread, a)
 
@@ -693,11 +688,11 @@ ExpandThread =
           when 'b', 'vg' then 3
           when 't' then 1
           else 5
-        table = $.x "following::br[@clear]/preceding::table[#{num}]", a
-        while (prev = table.previousSibling) and (prev.nodeName isnt 'A')
-          $.rm prev
-        for backlink in $$ '.backlink', $ '.op', thread
-          $.rm backlink if !$.id backlink.hash[1..]
+        div = $.x "following-sibling::div[last()]/preceding-sibling::div[#{num - 1}]", a
+        while (next = a.nextSibling) and next isnt div
+          $.rm next
+        for backlink in $$ '.backlink', a.previousElementSibling
+          $.rm backlink unless $.id backlink.hash[1..]
 
 
   parse: (req, pathname, thread, a) ->
@@ -711,22 +706,28 @@ ExpandThread =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
-    nodes = []
-    for reply in $$ '.reply', doc
-      table = d.importNode reply.parentNode.parentNode.parentNode
-      for quote in $$ '.quotelink', table
-        if quote.hash is href = quote.getAttribute 'href' # Add pathname to in-thread quotes
+    threadID = thread.id[1..]
+    nodes    = []
+    for reply in $$ '.replyContainer', doc
+      reply = d.importNode reply
+      for quote in $$ '.quotelink', reply
+        href = quote.getAttribute 'href'
+        if quote.hash is href # Add pathname to in-thread quotes
           quote.pathname = pathname
+        # NEW HTML ???
+        # OP quotes have different href attribute than normal quotes.
+        # Waiting for a reply from moot.
         else if href isnt quote.href # Fix cross-thread links, not cross-board ones
           quote.href = "res/#{href}"
-      link = $ '.quotejs', table
-      link.href = "res/#{thread.firstChild.id}##{reply.id}"
-      link.nextSibling.href = "res/#{thread.firstChild.id}#q#{reply.id}"
-      nodes.push table
+      id = reply.firstElementChild.id[2..]
+      link = $('.postNum.desktop', reply).firstElementChild
+      link.href = "res/#{threadID}#p#{id}"
+      link.nextSibling.href = "res/#{threadID}#q#{id}"
+      nodes.push reply
     # eat everything, then replace with fresh full posts
-    while (next = a.nextSibling) and not next.clear #br[clear]
+    while next = a.nextSibling
       $.rm next
-    $.before next, nodes
+    $.after a, nodes
 
 ReplyHiding =
   init: ->
@@ -3220,7 +3221,7 @@ Main =
       Main.node [Main.preParse target]
 
   namespace: '4chan_x.'
-  version: '2.29.3'
+  version: '2.29.4'
   callbacks: []
   css: '
 /* dialog styling */

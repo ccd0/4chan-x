@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.29.3
+// @version        2.29.4
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.29.3
+ * 4chan X 2.29.4
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -825,36 +825,30 @@
   ExpandThread = {
     init: function() {
       var a, span, _i, _len, _ref, _results;
-      _ref = $$('.omittedposts');
+      _ref = $$('.summary');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         span = _ref[_i];
         a = $.el('a', {
           textContent: "+ " + span.textContent,
-          className: 'omittedposts',
+          className: 'summary desktop',
           href: 'javascript:;'
         });
-        $.on(a, 'click', ExpandThread.cb.toggle);
+        $.on(a, 'click', function() {
+          return ExpandThread.toggle(this.parentNode);
+        });
         _results.push($.replace(span, a));
       }
       return _results;
     },
-    cb: {
-      toggle: function() {
-        var thread;
-        thread = this.parentNode;
-        return ExpandThread.toggle(thread);
-      }
-    },
     toggle: function(thread) {
-      var a, backlink, num, pathname, prev, table, threadID, _i, _len, _ref, _ref1, _results;
-      threadID = thread.firstChild.id;
-      pathname = "/" + g.BOARD + "/res/" + threadID;
-      a = $('.omittedposts', thread);
+      var a, backlink, container, div, next, num, pathname, _i, _len, _ref, _results;
+      pathname = "/" + g.BOARD + "/res/" + thread.id.slice(1);
+      a = $('.summary', thread);
       switch (a.textContent[0]) {
         case '+':
-          if ((_ref = $('.op .container', thread)) != null) {
-            _ref.textContent = '';
+          if (container = $('.container', thread.firstElementChild)) {
+            $.rm(container);
           }
           a.textContent = a.textContent.replace('+', '\u00d7 Loading...');
           return $.cache(pathname, (function() {
@@ -876,14 +870,14 @@
                 return 5;
             }
           })();
-          table = $.x("following::br[@clear]/preceding::table[" + num + "]", a);
-          while ((prev = table.previousSibling) && (prev.nodeName !== 'A')) {
-            $.rm(prev);
+          div = $.x("following-sibling::div[last()]/preceding-sibling::div[" + (num - 1) + "]", a);
+          while ((next = a.nextSibling) && next !== div) {
+            $.rm(next);
           }
-          _ref1 = $$('.backlink', $('.op', thread));
+          _ref = $$('.backlink', a.previousElementSibling);
           _results = [];
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            backlink = _ref1[_i];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            backlink = _ref[_i];
             if (!$.id(backlink.hash.slice(1))) {
               _results.push($.rm(backlink));
             } else {
@@ -894,7 +888,7 @@
       }
     },
     parse: function(req, pathname, thread, a) {
-      var doc, href, link, next, nodes, quote, reply, table, _i, _j, _len, _len1, _ref, _ref1;
+      var doc, href, id, link, next, nodes, quote, reply, threadID, _i, _j, _len, _len1, _ref, _ref1;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', ExpandThread.cb.toggle);
@@ -903,29 +897,32 @@
       a.textContent = a.textContent.replace('\u00d7 Loading...', '-');
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
+      threadID = thread.id.slice(1);
       nodes = [];
-      _ref = $$('.reply', doc);
+      _ref = $$('.replyContainer', doc);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reply = _ref[_i];
-        table = d.importNode(reply.parentNode.parentNode.parentNode);
-        _ref1 = $$('.quotelink', table);
+        reply = d.importNode(reply);
+        _ref1 = $$('.quotelink', reply);
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           quote = _ref1[_j];
-          if (quote.hash === (href = quote.getAttribute('href'))) {
+          href = quote.getAttribute('href');
+          if (quote.hash === href) {
             quote.pathname = pathname;
           } else if (href !== quote.href) {
             quote.href = "res/" + href;
           }
         }
-        link = $('.quotejs', table);
-        link.href = "res/" + thread.firstChild.id + "#" + reply.id;
-        link.nextSibling.href = "res/" + thread.firstChild.id + "#q" + reply.id;
-        nodes.push(table);
+        id = reply.firstElementChild.id.slice(2);
+        link = $('.postNum.desktop', reply).firstElementChild;
+        link.href = "res/" + threadID + "#p" + id;
+        link.nextSibling.href = "res/" + threadID + "#q" + id;
+        nodes.push(reply);
       }
-      while ((next = a.nextSibling) && !next.clear) {
+      while (next = a.nextSibling) {
         $.rm(next);
       }
-      return $.before(next, nodes);
+      return $.after(a, nodes);
     }
   };
 
@@ -4206,7 +4203,7 @@
       }
     },
     namespace: '4chan_x.',
-    version: '2.29.3',
+    version: '2.29.4',
     callbacks: [],
     css: '\
 /* dialog styling */\
