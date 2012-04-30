@@ -1030,7 +1030,7 @@ QR =
     $.on d, 'dragstart dragend', QR.drag
 
   node: (post) ->
-    $.on $('.postInfo > .postNum > a:last-child', post.el), 'click', QR.quote
+    $.on $('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote
 
   open: ->
     if QR.el
@@ -1116,7 +1116,7 @@ QR =
       $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).id[1..]
 
     # Make sure we get the correct number, even with XXX censors
-    id   = @hash[2..]
+    id   = @parentNode.parentNode.id[2..]
     text = ">>#{id}\n"
 
     sel = window.getSelection()
@@ -2518,22 +2518,17 @@ QuotePreview =
       className: 'reply dialog'
     $.add d.body, qp
 
-    id = @hash[1..]
-    if el = $.id id
+    id = @hash[2..]
+    if el = $.id "p#{id}"
       qp.innerHTML = el.innerHTML
       $.addClass el, 'qphl' if Conf['Quote Highlighting']
-      node =
-        if /\bbacklink\b/.test @className
-          @parentNode
-        else
-          $.x 'ancestor::blockquote', @
-      replyID = $.x('preceding-sibling::input', node).name
+      replyID = $.x('ancestor::div[contains(@class,"post")]', @).id
       for quote in $$ '.quotelink, .backlink', qp
         if quote.hash[1..] is replyID
           $.addClass quote, 'forwardlink'
     else
       qp.textContent = "Loading #{id}..."
-      threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]', @).firstChild.id
+      threadID = @pathname.split('/').pop()
       $.cache @pathname, (-> QuotePreview.parse @, id, threadID)
       UI.hover e
     $.on @, 'mousemove',      UI.hover
@@ -2554,10 +2549,10 @@ QuotePreview =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
-    node = doc.getElementById id
+    node = doc.getElementById "p#{id}"
     qp.innerHTML = node.innerHTML
     post =
-      root:     qp
+      el:       qp
       filesize: $ '.filesize',     qp
       img:      $ 'img[data-md5]', qp
     if Conf['Image Auto-Gif']

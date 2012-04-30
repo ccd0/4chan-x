@@ -1360,7 +1360,7 @@
       return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function(post) {
-      return $.on($('.postInfo > .postNum > a:last-child', post.el), 'click', QR.quote);
+      return $.on($('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote);
     },
     open: function() {
       if (QR.el) {
@@ -1481,7 +1481,7 @@
       if (!g.REPLY) {
         $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', this).id.slice(1);
       }
-      id = this.hash.slice(2);
+      id = this.parentNode.parentNode.id.slice(2);
       text = ">>" + id + "\n";
       sel = window.getSelection();
       if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.slice(1) : void 0)) {
@@ -3249,7 +3249,7 @@
       }
     },
     mouseover: function(e) {
-      var el, id, node, qp, quote, replyID, threadID, _i, _len, _ref;
+      var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
       if (/\binlined\b/.test(this.className)) {
         return;
       }
@@ -3258,14 +3258,13 @@
         className: 'reply dialog'
       });
       $.add(d.body, qp);
-      id = this.hash.slice(1);
-      if (el = $.id(id)) {
+      id = this.hash.slice(2);
+      if (el = $.id("p" + id)) {
         qp.innerHTML = el.innerHTML;
         if (Conf['Quote Highlighting']) {
           $.addClass(el, 'qphl');
         }
-        node = /\bbacklink\b/.test(this.className) ? this.parentNode : $.x('ancestor::blockquote', this);
-        replyID = $.x('preceding-sibling::input', node).name;
+        replyID = $.x('ancestor::div[contains(@class,"post")]', this).id;
         _ref = $$('.quotelink, .backlink', qp);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
@@ -3275,7 +3274,7 @@
         }
       } else {
         qp.textContent = "Loading " + id + "...";
-        threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]', this).firstChild.id;
+        threadID = this.pathname.split('/').pop();
         $.cache(this.pathname, (function() {
           return QuotePreview.parse(this, id, threadID);
         }));
@@ -3304,10 +3303,10 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      node = doc.getElementById(id);
+      node = doc.getElementById("p" + id);
       qp.innerHTML = node.innerHTML;
       post = {
-        root: qp,
+        el: qp,
         filesize: $('.filesize', qp),
         img: $('img[data-md5]', qp)
       };
