@@ -1841,7 +1841,7 @@
         });
         ta.style.cssText = $.get('QR.size', '');
       }
-      mimeTypes = $('.rules').firstChild.textContent.match(/: (.+) /)[1].toLowerCase().replace(/\w+/g, function(type) {
+      mimeTypes = $('.rules').firstElementChild.textContent.match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
             return 'image/jpeg';
