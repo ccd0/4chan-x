@@ -528,7 +528,7 @@ Filter =
         if result is true
           if isOP
             unless g.REPLY
-              ThreadHiding.hide post.el.parentNode
+              ThreadHiding.hide post.root.parentNode
             else
               continue
           else
@@ -1879,24 +1879,24 @@ ThreadHiding =
   init: ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     for thread in $$ '.thread'
-      op = $ '.op', thread
       a  = $.el 'a',
-        textContent: '[ - ]'
+        className: 'hide_thread_button'
+        innerHTML: '<span>[ - ]</span>'
         href: 'javascript:;'
       $.on a, 'click', ThreadHiding.cb
-      $.prepend op, a
+      $.prepend thread, a
 
-      if op.id of hiddenThreads
+      if thread.id[1..] of hiddenThreads
         ThreadHiding.hide thread
     return
 
   cb: ->
-    ThreadHiding.toggle @parentNode.parentNode
+    ThreadHiding.toggle @parentNode
 
   toggle: (thread) ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    id = $('.op', thread).id
-    if thread.hidden or thread.firstChild.className is 'block'
+    id = thread.id[1..]
+    if thread.hidden or /\bhidden_thread\b/.test thread.firstChild.className
       ThreadHiding.show thread
       delete hiddenThreads[id]
     else
@@ -1907,36 +1907,29 @@ ThreadHiding =
   hide: (thread) ->
     unless Conf['Show Stubs']
       thread.hidden = true
-      thread.nextSibling.hidden = true
+      thread.nextElementSibling.hidden = true
       return
 
     return if thread.firstChild.className is 'block' # already hidden by filter
 
-    num  = 0
-    if span = $ '.omittedposts', thread
-      num = Number span.textContent.match(/\d+/)[0]
-    num += $$('.op ~ table', thread).length
-    text = if num is 1 then '1 reply' else "#{num} replies"
-    op   = $ '.op', thread
-    name = $('.postername', op).textContent
-    uid  = $('.posteruid',  op)?.textContent or ''
-    trip = $('.postertrip', op)?.textContent or ''
+    num     = 0
+    if span = $ '.summary', thread
+      num   = Number span.textContent.match /\d+/
+    num    += $$('.opContainer ~ .replyContainer', thread).length
+    text    = if num is 1 then '1 reply' else "#{num} replies"
+    opInfo  = $('.op > .postInfo > .nameBlock', thread).textContent
 
-    a = $.el 'a',
-      innerHTML: "<span>[ + ]</span> #{name} #{uid} #{trip} (#{text})"
-      href: 'javascript:;'
-    $.on a, 'click', ThreadHiding.cb
+    a = $ '.hide_thread_button', thread
+    $.addClass a, 'hidden_thread'
+    a.firstChild.textContent = '[ + ]'
+    $.add a, $.tn " #{opInfo} (#{text})"
 
-    div = $.el 'div',
-      className: 'block'
-
-    $.add div, a
-    $.prepend thread, div
-
-  show: (thread, id) ->
-    $.rm $ '.block', thread
+  show: (thread) ->
+    a = $ '.hide_thread_button', thread
+    $.removeClass a, 'hidden_thread'
+    a.innerHTML = '<span>[ - ]</span>'
     thread.hidden = false
-    thread.nextSibling.hidden = false
+    thread.nextElementSibling.hidden = false
 
 Updater =
   init: ->
@@ -3134,7 +3127,7 @@ Main =
 
     else #not reply
       if Conf['Thread Hiding']
-        setTimeout -> ThreadHiding.init()
+        ThreadHiding.init()
 
       if Conf['Thread Expansion']
         setTimeout -> ExpandThread.init()
@@ -3237,11 +3230,15 @@ a[href="javascript:;"] {
   text-decoration: none;
 }
 
-.block ~ *,
+.hide_thread_button {
+  float: left;
+}
+
+.hidden_thread ~ *,
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
 #qp > input, #qp .inline, .forwarded {
-  display: none;
+  display: none !important;
 }
 
 h1 {

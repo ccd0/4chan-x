@@ -637,7 +637,7 @@
           if (result === true) {
             if (isOP) {
               if (!g.REPLY) {
-                ThreadHiding.hide(post.el.parentNode);
+                ThreadHiding.hide(post.root.parentNode);
               } else {
                 continue;
               }
@@ -2369,31 +2369,31 @@
 
   ThreadHiding = {
     init: function() {
-      var a, hiddenThreads, op, thread, _i, _len, _ref;
+      var a, hiddenThreads, thread, _i, _len, _ref;
       hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       _ref = $$('.thread');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
-        op = $('.op', thread);
         a = $.el('a', {
-          textContent: '[ - ]',
+          className: 'hide_thread_button',
+          innerHTML: '<span>[ - ]</span>',
           href: 'javascript:;'
         });
         $.on(a, 'click', ThreadHiding.cb);
-        $.prepend(op, a);
-        if (op.id in hiddenThreads) {
+        $.prepend(thread, a);
+        if (thread.id.slice(1) in hiddenThreads) {
           ThreadHiding.hide(thread);
         }
       }
     },
     cb: function() {
-      return ThreadHiding.toggle(this.parentNode.parentNode);
+      return ThreadHiding.toggle(this.parentNode);
     },
     toggle: function(thread) {
       var hiddenThreads, id;
       hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-      id = $('.op', thread).id;
-      if (thread.hidden || thread.firstChild.className === 'block') {
+      id = thread.id.slice(1);
+      if (thread.hidden || /\bhidden_thread\b/.test(thread.firstChild.className)) {
         ThreadHiding.show(thread);
         delete hiddenThreads[id];
       } else {
@@ -2403,40 +2403,34 @@
       return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
     hide: function(thread) {
-      var a, div, name, num, op, span, text, trip, uid, _ref, _ref1;
+      var a, num, opInfo, span, text;
       if (!Conf['Show Stubs']) {
         thread.hidden = true;
-        thread.nextSibling.hidden = true;
+        thread.nextElementSibling.hidden = true;
         return;
       }
       if (thread.firstChild.className === 'block') {
         return;
       }
       num = 0;
-      if (span = $('.omittedposts', thread)) {
-        num = Number(span.textContent.match(/\d+/)[0]);
+      if (span = $('.summary', thread)) {
+        num = Number(span.textContent.match(/\d+/));
       }
-      num += $$('.op ~ table', thread).length;
+      num += $$('.opContainer ~ .replyContainer', thread).length;
       text = num === 1 ? '1 reply' : "" + num + " replies";
-      op = $('.op', thread);
-      name = $('.postername', op).textContent;
-      uid = ((_ref = $('.posteruid', op)) != null ? _ref.textContent : void 0) || '';
-      trip = ((_ref1 = $('.postertrip', op)) != null ? _ref1.textContent : void 0) || '';
-      a = $.el('a', {
-        innerHTML: "<span>[ + ]</span> " + name + " " + uid + " " + trip + " (" + text + ")",
-        href: 'javascript:;'
-      });
-      $.on(a, 'click', ThreadHiding.cb);
-      div = $.el('div', {
-        className: 'block'
-      });
-      $.add(div, a);
-      return $.prepend(thread, div);
+      opInfo = $('.op > .postInfo > .nameBlock', thread).textContent;
+      a = $('.hide_thread_button', thread);
+      $.addClass(a, 'hidden_thread');
+      a.firstChild.textContent = '[ + ]';
+      return $.add(a, $.tn(" " + opInfo + " (" + text + ")"));
     },
-    show: function(thread, id) {
-      $.rm($('.block', thread));
+    show: function(thread) {
+      var a;
+      a = $('.hide_thread_button', thread);
+      $.removeClass(a, 'hidden_thread');
+      a.innerHTML = '<span>[ - ]</span>';
       thread.hidden = false;
-      return thread.nextSibling.hidden = false;
+      return thread.nextElementSibling.hidden = false;
     }
   };
 
@@ -4066,9 +4060,7 @@
         }
       } else {
         if (Conf['Thread Hiding']) {
-          setTimeout(function() {
-            return ThreadHiding.init();
-          });
+          ThreadHiding.init();
         }
         if (Conf['Thread Expansion']) {
           setTimeout(function() {
@@ -4215,11 +4207,15 @@ a[href="javascript:;"] {\
   text-decoration: none;\
 }\
 \
-.block ~ *,\
+.hide_thread_button {\
+  float: left;\
+}\
+\
+.hidden_thread ~ *,\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
 #qp > input, #qp .inline, .forwarded {\
-  display: none;\
+  display: none !important;\
 }\
 \
 h1 {\
