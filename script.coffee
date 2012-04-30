@@ -730,55 +730,52 @@ ExpandThread =
 
 ReplyHiding =
   init: ->
-    @td = $.el 'td',
-      noWrap: true
-      className: 'replyhider'
-      innerHTML: '<a href="javascript:;">[ - ]</a>'
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.class
-    td = ReplyHiding.td.cloneNode true
-    $.on td.firstChild, 'click', ReplyHiding.toggle
-    $.replace post.el.previousSibling, td
+    return if post.isInlined or /\bop\b/.test post.class
+    button = post.el.previousElementSibling
+    button.innerHTML = '<a href="javascript:;">[ - ]</a>'
+    $.addClass button, 'hide_reply_button'
+    $.on button.firstChild, 'click', ReplyHiding.toggle
 
     if post.id of g.hiddenReplies
-      ReplyHiding.hide post.root
+      ReplyHiding.hide post.root.firstElementChild
 
   toggle: ->
-    parent = @parentNode
-    if parent.className is 'replyhider'
-      ReplyHiding.hide parent.parentNode.parentNode.parentNode
-      id = parent.nextSibling.id
-      for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
-        $.addClass quote, 'filtered'
-      g.hiddenReplies[id] = Date.now()
-    else
-      table = parent.nextSibling
-      table.hidden = false
-      $.rm parent
-      id = table.firstChild.firstChild.lastChild.id
-      for quote in $$ ".quotelink[href$='##{id}'], .backlink[href='##{id}']"
+    button = @parentNode
+    id     = button.id[2..]
+    quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href='#p#{id}']"
+    if /\bhidden_reply\b/.test button.className
+      ReplyHiding.show button
+      for quote in quotes
         $.removeClass quote, 'filtered'
       delete g.hiddenReplies[id]
+    else
+      ReplyHiding.hide button
+      for quote in quotes
+        $.addClass quote, 'filtered'
+      g.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-  hide: (table) ->
-    return if table.hidden # already hidden by filter
+  hide: (button) ->
+    return if /\bhidden_reply\b/.test button.className # already hidden once by filter
+    $.addClass button, 'hidden_reply'
 
-    table.hidden = true
+    unless Conf['Show Stubs']
+      button.hidden = true
+      return
 
-    return unless Conf['Show Stubs']
+    button.firstChild.textContent = "[ + ] #{$('.nameBlock', button.nextElementSibling).textContent}"
 
-    name = $('.commentpostername', table).textContent
-    uid  = $('.posteruid',         table)?.textContent or ''
-    trip = $('.postertrip',        table)?.textContent or ''
+  show: (button) ->
+    $.removeClass button, 'hidden_reply'
 
-    div  = $.el 'div',
-      className: 'stub'
-      innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{uid} #{trip}</a>"
-    $.on div.firstChild, 'click', ReplyHiding.toggle
-    $.before table, div
+    unless Conf['Show Stubs']
+      button.hidden = false
+      return
+
+    button.firstChild.textContent = '[ - ]'
 
 Keybinds =
   init: ->
@@ -3233,8 +3230,12 @@ a[href="javascript:;"] {
 .hide_thread_button {
   float: left;
 }
+.hide_reply_button.hidden_reply {
+  float: none;
+}
 
 .hidden_thread ~ *,
+.hidden_reply + .reply,
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
 #qp > input, #qp .inline, .forwarded {

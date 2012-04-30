@@ -923,69 +923,61 @@
 
   ReplyHiding = {
     init: function() {
-      this.td = $.el('td', {
-        noWrap: true,
-        className: 'replyhider',
-        innerHTML: '<a href="javascript:;">[ - ]</a>'
-      });
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var td;
-      if (post["class"]) {
+      var button;
+      if (post.isInlined || /\bop\b/.test(post["class"])) {
         return;
       }
-      td = ReplyHiding.td.cloneNode(true);
-      $.on(td.firstChild, 'click', ReplyHiding.toggle);
-      $.replace(post.el.previousSibling, td);
+      button = post.el.previousElementSibling;
+      button.innerHTML = '<a href="javascript:;">[ - ]</a>';
+      $.addClass(button, 'hide_reply_button');
+      $.on(button.firstChild, 'click', ReplyHiding.toggle);
       if (post.id in g.hiddenReplies) {
-        return ReplyHiding.hide(post.root);
+        return ReplyHiding.hide(post.root.firstElementChild);
       }
     },
     toggle: function() {
-      var id, parent, quote, table, _i, _j, _len, _len1, _ref, _ref1;
-      parent = this.parentNode;
-      if (parent.className === 'replyhider') {
-        ReplyHiding.hide(parent.parentNode.parentNode.parentNode);
-        id = parent.nextSibling.id;
-        _ref = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          quote = _ref[_i];
-          $.addClass(quote, 'filtered');
-        }
-        g.hiddenReplies[id] = Date.now();
-      } else {
-        table = parent.nextSibling;
-        table.hidden = false;
-        $.rm(parent);
-        id = table.firstChild.firstChild.lastChild.id;
-        _ref1 = $$(".quotelink[href$='#" + id + "'], .backlink[href='#" + id + "']");
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          quote = _ref1[_j];
+      var button, id, quote, quotes, _i, _j, _len, _len1;
+      button = this.parentNode;
+      id = button.id.slice(2);
+      quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href='#p" + id + "']");
+      if (/\bhidden_reply\b/.test(button.className)) {
+        ReplyHiding.show(button);
+        for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+          quote = quotes[_i];
           $.removeClass(quote, 'filtered');
         }
         delete g.hiddenReplies[id];
+      } else {
+        ReplyHiding.hide(button);
+        for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
+          quote = quotes[_j];
+          $.addClass(quote, 'filtered');
+        }
+        g.hiddenReplies[id] = Date.now();
       }
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
-    hide: function(table) {
-      var div, name, trip, uid, _ref, _ref1;
-      if (table.hidden) {
+    hide: function(button) {
+      if (/\bhidden_reply\b/.test(button.className)) {
         return;
       }
-      table.hidden = true;
+      $.addClass(button, 'hidden_reply');
       if (!Conf['Show Stubs']) {
+        button.hidden = true;
         return;
       }
-      name = $('.commentpostername', table).textContent;
-      uid = ((_ref = $('.posteruid', table)) != null ? _ref.textContent : void 0) || '';
-      trip = ((_ref1 = $('.postertrip', table)) != null ? _ref1.textContent : void 0) || '';
-      div = $.el('div', {
-        className: 'stub',
-        innerHTML: "<a href=javascript:;><span>[ + ]</span> " + name + " " + uid + " " + trip + "</a>"
-      });
-      $.on(div.firstChild, 'click', ReplyHiding.toggle);
-      return $.before(table, div);
+      return button.firstChild.textContent = "[ + ] " + ($('.nameBlock', button.nextElementSibling).textContent);
+    },
+    show: function(button) {
+      $.removeClass(button, 'hidden_reply');
+      if (!Conf['Show Stubs']) {
+        button.hidden = false;
+        return;
+      }
+      return button.firstChild.textContent = '[ - ]';
     }
   };
 
@@ -4210,8 +4202,12 @@ a[href="javascript:;"] {\
 .hide_thread_button {\
   float: left;\
 }\
+.hide_reply_button.hidden_reply {\
+  float: none;\
+}\
 \
 .hidden_thread ~ *,\
+.hidden_reply + .reply,\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
 #qp > input, #qp .inline, .forwarded {\
