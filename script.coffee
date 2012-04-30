@@ -513,7 +513,7 @@ Filter =
 
   node: (post) ->
     return if post.isInlined
-    isOP = post.class is 'op'
+    isOP = /\bop\b/.test post.class
     {el} = post
     for key of Filter.filters
       value = Filter[key] post
@@ -536,10 +536,7 @@ Filter =
           return
 
         # Highlight
-        if isOP
-          $.addClass el.parentNode, result[0]
-        else
-          $.addClass el, result[0]
+        $.addClass (if isOP then post.root.parentNode else post.root), result[0]
         if isOP and result[1] and not g.REPLY
           # Put the highlighted OPs' threads on top of the board pages...
           thisThread = el.parentNode.parentNode
@@ -3595,8 +3592,8 @@ input ~ a > img[data-md5] {
 .filetitle, .replytitle, .postername, .commentpostername, .postertrip {
   background: none;
 }
-.filter_highlight.op,
-.filter_highlight > td[id] {
+.filter_highlight.thread,
+.filter_highlight > .reply {
   box-shadow: -5px 0 rgba(255,0,0,0.5);
 }
 .filtered {

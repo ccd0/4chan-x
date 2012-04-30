@@ -621,7 +621,7 @@
       if (post.isInlined) {
         return;
       }
-      isOP = post["class"] === 'op';
+      isOP = /\bop\b/.test(post["class"]);
       el = post.el;
       for (key in Filter.filters) {
         value = Filter[key](post);
@@ -646,11 +646,7 @@
             }
             return;
           }
-          if (isOP) {
-            $.addClass(el.parentNode, result[0]);
-          } else {
-            $.addClass(el, result[0]);
-          }
+          $.addClass((isOP ? post.root.parentNode : post.root), result[0]);
           if (isOP && result[1] && !g.REPLY) {
             thisThread = el.parentNode.parentNode;
             if (firstThread = $('div[class="postContainer opContainer"]')) {
@@ -4574,8 +4570,8 @@ input ~ a > img[data-md5] {\
 .filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
   background: none;\
 }\
-.filter_highlight.op,\
-.filter_highlight > td[id] {\
+.filter_highlight.thread,\
+.filter_highlight > .reply {\
   box-shadow: -5px 0 rgba(255,0,0,0.5);\
 }\
 .filtered {\
