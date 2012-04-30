@@ -541,11 +541,11 @@ Filter =
           # Put the highlighted OPs' threads on top of the board pages...
           thisThread = el.parentNode.parentNode
           # ...before the first non highlighted thread.
-          if firstThread = $ 'div[class="postContainer opContainer"]'
+          if firstThread = $ 'div[class=thread]'
             $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
 
   name: (post) ->
-    $('.name', post.el).textContent or false
+    $('.name', post.el).textContent
   uniqueid: (post) ->
     # NEW HTML ???
     if uid = $ '.posteruid', post.el
@@ -574,7 +574,7 @@ Filter =
     text.join ''
   filename: (post) ->
     {fileInfo} = post
-    if fileInfo and file = $ 'span', fileInfo
+    if fileInfo and file = $ '.fileText > span', fileInfo
       return file.title
     false
   dimensions: (post) ->

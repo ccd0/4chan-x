@@ -649,7 +649,7 @@
           $.addClass((isOP ? post.root.parentNode : post.root), result[0]);
           if (isOP && result[1] && !g.REPLY) {
             thisThread = el.parentNode.parentNode;
-            if (firstThread = $('div[class="postContainer opContainer"]')) {
+            if (firstThread = $('div[class=thread]')) {
               $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
             }
           }
@@ -657,7 +657,7 @@
       }
     },
     name: function(post) {
-      return $('.name', post.el).textContent || false;
+      return $('.name', post.el).textContent;
     },
     uniqueid: function(post) {
       var uid;
@@ -702,7 +702,7 @@
     filename: function(post) {
       var file, fileInfo;
       fileInfo = post.fileInfo;
-      if (fileInfo && (file = $('span', fileInfo))) {
+      if (fileInfo && (file = $('.fileText > span', fileInfo))) {
         return file.title;
       }
       return false;
