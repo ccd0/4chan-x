@@ -614,7 +614,7 @@ ExpandComment =
     [_, threadID, replyID] = @href.match /(\d+)#p(\d+)/
     @textContent = "Loading #{replyID}..."
     a = @
-    $.cache @pathname, (-> ExpandComment.parse @, a, threadID, replyID)
+    $.cache @pathname, -> ExpandComment.parse @, a, threadID, replyID
   parse: (req, a, threadID, replyID) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
@@ -629,13 +629,9 @@ ExpandComment =
 
     quotes = node.getElementsByClassName 'quotelink'
     for quote in quotes
-      if quote.hash is href = quote.getAttribute 'href' # Add pathname to in-thread quotes
-        quote.pathname = "/#{g.BOARD}/res/#{threadID}"
-      # NEW HTML ???
-      # OP quotes have different href attribute than normal quotes.
-      # Waiting for a reply from moot.
-      else if href isnt quote.href # Fix cross-thread links, not cross-board ones
-        quote.href = "res/#{href}"
+      href = quote.getAttribute 'href'
+      continue if href[0] is '/' # Cross-board quote
+      quote.href = "res/#{href}" # Fix pathnames
     post =
       el:        node
       threadId:  threadID
@@ -674,7 +670,7 @@ ExpandThread =
         if container = $ '.container', thread.firstElementChild
           $.rm container
         a.textContent = a.textContent.replace '+', '\u00d7 Loading...'
-        $.cache pathname, (-> ExpandThread.parse @, pathname, thread, a)
+        $.cache pathname, -> ExpandThread.parse @, pathname, thread, a
 
       when '\u00d7'
         a.textContent = a.textContent.replace '\u00d7 Loading...', '+'
@@ -711,13 +707,8 @@ ExpandThread =
       reply = d.importNode reply
       for quote in $$ '.quotelink', reply
         href = quote.getAttribute 'href'
-        if quote.hash is href # Add pathname to in-thread quotes
-          quote.pathname = pathname
-        # NEW HTML ???
-        # OP quotes have different href attribute than normal quotes.
-        # Waiting for a reply from moot.
-        else if href isnt quote.href # Fix cross-thread links, not cross-board ones
-          quote.href = "res/#{href}"
+        continue if href[0] is '/' # Cross-board quote
+        quote.href = "res/#{href}" # Fix pathnames
       id = reply.firstElementChild.id[2..]
       link = $('.postNum.desktop', reply).firstElementChild
       link.href = "res/#{threadID}#p#{id}"

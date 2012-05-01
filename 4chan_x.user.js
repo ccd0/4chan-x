@@ -770,9 +770,9 @@
       _ref = this.href.match(/(\d+)#p(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
       this.textContent = "Loading " + replyID + "...";
       a = this;
-      return $.cache(this.pathname, (function() {
+      return $.cache(this.pathname, function() {
         return ExpandComment.parse(this, a, threadID, replyID);
-      }));
+      });
     },
     parse: function(req, a, threadID, replyID) {
       var doc, href, node, post, quote, quotes, _i, _len;
@@ -786,11 +786,11 @@
       quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
-        if (quote.hash === (href = quote.getAttribute('href'))) {
-          quote.pathname = "/" + g.BOARD + "/res/" + threadID;
-        } else if (href !== quote.href) {
-          quote.href = "res/" + href;
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
         }
+        quote.href = "res/" + href;
       }
       post = {
         el: node,
@@ -846,9 +846,9 @@
             $.rm(container);
           }
           a.textContent = a.textContent.replace('+', '\u00d7 Loading...');
-          return $.cache(pathname, (function() {
+          return $.cache(pathname, function() {
             return ExpandThread.parse(this, pathname, thread, a);
-          }));
+          });
         case '\u00d7':
           a.textContent = a.textContent.replace('\u00d7 Loading...', '+');
           return $.cache.requests[pathname].abort();
@@ -902,11 +902,10 @@
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           quote = _ref1[_j];
           href = quote.getAttribute('href');
-          if (quote.hash === href) {
-            quote.pathname = pathname;
-          } else if (href !== quote.href) {
-            quote.href = "res/" + href;
+          if (href[0] === '/') {
+            continue;
           }
+          quote.href = "res/" + href;
         }
         id = reply.firstElementChild.id.slice(2);
         link = $('.postNum.desktop', reply).firstElementChild;
