@@ -735,8 +735,8 @@ ReplyHiding =
   node: (post) ->
     return if post.isInlined or /\bop\b/.test post.class
     button = post.el.previousElementSibling
-    button.innerHTML = '<a href="javascript:;">[ - ]</a>'
     $.addClass button, 'hide_reply_button'
+    button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
     $.on button.firstChild, 'click', ReplyHiding.toggle
 
     if post.id of g.hiddenReplies
@@ -766,7 +766,8 @@ ReplyHiding =
       button.hidden = true
       return
 
-    button.firstChild.textContent = "[ + ] #{$('.nameBlock', button.nextElementSibling).textContent}"
+    button.firstChild.firstChild.textContent = '[ + ]'
+    $.add button.firstChild, $.tn " #{$('.nameBlock', button.nextElementSibling).textContent}"
 
   show: (button) ->
     $.removeClass button, 'hidden_reply'
@@ -775,7 +776,7 @@ ReplyHiding =
       button.hidden = false
       return
 
-    button.firstChild.textContent = '[ - ]'
+    button.firstChild.innerHTML = '<span>[ - ]</span>'
 
 Keybinds =
   init: ->

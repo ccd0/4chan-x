@@ -931,8 +931,8 @@
         return;
       }
       button = post.el.previousElementSibling;
-      button.innerHTML = '<a href="javascript:;">[ - ]</a>';
       $.addClass(button, 'hide_reply_button');
+      button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
       $.on(button.firstChild, 'click', ReplyHiding.toggle);
       if (post.id in g.hiddenReplies) {
         return ReplyHiding.hide(post.root.firstElementChild);
@@ -969,7 +969,8 @@
         button.hidden = true;
         return;
       }
-      return button.firstChild.textContent = "[ + ] " + ($('.nameBlock', button.nextElementSibling).textContent);
+      button.firstChild.firstChild.textContent = '[ + ]';
+      return $.add(button.firstChild, $.tn(" " + ($('.nameBlock', button.nextElementSibling).textContent)));
     },
     show: function(button) {
       $.removeClass(button, 'hidden_reply');
@@ -977,7 +978,7 @@
         button.hidden = false;
         return;
       }
-      return button.firstChild.textContent = '[ - ]';
+      return button.firstChild.innerHTML = '<span>[ - ]</span>';
     }
   };
 
