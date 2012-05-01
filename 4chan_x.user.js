@@ -943,7 +943,7 @@
       button = this.parentNode;
       id = button.id.slice(2);
       quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href='#p" + id + "']");
-      if (/\bhidden_reply\b/.test(button.className)) {
+      if (button.nextElementSibling.hidden) {
         ReplyHiding.show(button);
         for (_i = 0, _len = quotes.length; _i < _len; _i++) {
           quote = quotes[_i];
@@ -961,9 +961,10 @@
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
     hide: function(button) {
-      if (/\bhidden_reply\b/.test(button.className)) {
+      if (button.nextElementSibling.hidden) {
         return;
       }
+      button.nextElementSibling.hidden = true;
       $.addClass(button, 'hidden_reply');
       if (!Conf['Show Stubs']) {
         button.hidden = true;
@@ -973,6 +974,7 @@
       return $.add(button.firstChild, $.tn(" " + ($('.nameBlock', button.nextElementSibling).textContent)));
     },
     show: function(button) {
+      button.nextElementSibling.hidden = false;
       $.removeClass(button, 'hidden_reply');
       if (!Conf['Show Stubs']) {
         button.hidden = false;
@@ -4209,7 +4211,7 @@ a[href="javascript:;"] {\
 }\
 \
 .hidden_thread ~ *,\
-.hidden_reply + .reply,\
+.reply[hidden],\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
 #qp > input, #qp .inline, .forwarded {\

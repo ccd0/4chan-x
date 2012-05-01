@@ -746,7 +746,7 @@ ReplyHiding =
     button = @parentNode
     id     = button.id[2..]
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href='#p#{id}']"
-    if /\bhidden_reply\b/.test button.className
+    if button.nextElementSibling.hidden
       ReplyHiding.show button
       for quote in quotes
         $.removeClass quote, 'filtered'
@@ -759,7 +759,8 @@ ReplyHiding =
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   hide: (button) ->
-    return if /\bhidden_reply\b/.test button.className # already hidden once by filter
+    return if button.nextElementSibling.hidden # already hidden once by filter
+    button.nextElementSibling.hidden = true
     $.addClass button, 'hidden_reply'
 
     unless Conf['Show Stubs']
@@ -770,6 +771,7 @@ ReplyHiding =
     $.add button.firstChild, $.tn " #{$('.nameBlock', button.nextElementSibling).textContent}"
 
   show: (button) ->
+    button.nextElementSibling.hidden = false
     $.removeClass button, 'hidden_reply'
 
     unless Conf['Show Stubs']
@@ -3237,7 +3239,7 @@ a[href="javascript:;"] {
 }
 
 .hidden_thread ~ *,
-.hidden_reply + .reply,
+.reply[hidden],
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
 #qp > input, #qp .inline, .forwarded {
