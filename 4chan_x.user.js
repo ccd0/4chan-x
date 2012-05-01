@@ -922,6 +922,73 @@
     }
   };
 
+  ThreadHiding = {
+    init: function() {
+      var a, hiddenThreads, thread, _i, _len, _ref;
+      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      _ref = $$('.thread');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        thread = _ref[_i];
+        a = $.el('a', {
+          className: 'hide_thread_button',
+          innerHTML: '<span>[ - ]</span>',
+          href: 'javascript:;'
+        });
+        $.on(a, 'click', ThreadHiding.cb);
+        $.prepend(thread, a);
+        if (thread.id.slice(1) in hiddenThreads) {
+          ThreadHiding.hide(thread);
+        }
+      }
+    },
+    cb: function() {
+      return ThreadHiding.toggle(this.parentNode);
+    },
+    toggle: function(thread) {
+      var hiddenThreads, id;
+      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      id = thread.id.slice(1);
+      if (thread.hidden || /\bhidden_thread\b/.test(thread.firstChild.className)) {
+        ThreadHiding.show(thread);
+        delete hiddenThreads[id];
+      } else {
+        ThreadHiding.hide(thread);
+        hiddenThreads[id] = Date.now();
+      }
+      return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
+    },
+    hide: function(thread) {
+      var a, num, opInfo, span, text;
+      if (!Conf['Show Stubs']) {
+        thread.hidden = true;
+        thread.nextElementSibling.hidden = true;
+        return;
+      }
+      if (thread.firstChild.className === 'block') {
+        return;
+      }
+      num = 0;
+      if (span = $('.summary', thread)) {
+        num = Number(span.textContent.match(/\d+/));
+      }
+      num += $$('.opContainer ~ .replyContainer', thread).length;
+      text = num === 1 ? '1 reply' : "" + num + " replies";
+      opInfo = $('.op > .postInfo > .nameBlock', thread).textContent;
+      a = $('.hide_thread_button', thread);
+      $.addClass(a, 'hidden_thread');
+      a.firstChild.textContent = '[ + ]';
+      return $.add(a, $.tn(" " + opInfo + " (" + text + ")"));
+    },
+    show: function(thread) {
+      var a;
+      a = $('.hide_thread_button', thread);
+      $.removeClass(a, 'hidden_thread');
+      a.innerHTML = '<span>[ - ]</span>';
+      thread.hidden = false;
+      return thread.nextElementSibling.hidden = false;
+    }
+  };
+
   ReplyHiding = {
     init: function() {
       return Main.callbacks.push(this.node);
@@ -2370,73 +2437,6 @@
       Favicon["switch"]();
       Unread.update(true);
       return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "> <img src=" + Favicon.unreadNSFW + "> <img src=" + Favicon.unreadDead + ">";
-    }
-  };
-
-  ThreadHiding = {
-    init: function() {
-      var a, hiddenThreads, thread, _i, _len, _ref;
-      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-      _ref = $$('.thread');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        thread = _ref[_i];
-        a = $.el('a', {
-          className: 'hide_thread_button',
-          innerHTML: '<span>[ - ]</span>',
-          href: 'javascript:;'
-        });
-        $.on(a, 'click', ThreadHiding.cb);
-        $.prepend(thread, a);
-        if (thread.id.slice(1) in hiddenThreads) {
-          ThreadHiding.hide(thread);
-        }
-      }
-    },
-    cb: function() {
-      return ThreadHiding.toggle(this.parentNode);
-    },
-    toggle: function(thread) {
-      var hiddenThreads, id;
-      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-      id = thread.id.slice(1);
-      if (thread.hidden || /\bhidden_thread\b/.test(thread.firstChild.className)) {
-        ThreadHiding.show(thread);
-        delete hiddenThreads[id];
-      } else {
-        ThreadHiding.hide(thread);
-        hiddenThreads[id] = Date.now();
-      }
-      return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
-    },
-    hide: function(thread) {
-      var a, num, opInfo, span, text;
-      if (!Conf['Show Stubs']) {
-        thread.hidden = true;
-        thread.nextElementSibling.hidden = true;
-        return;
-      }
-      if (thread.firstChild.className === 'block') {
-        return;
-      }
-      num = 0;
-      if (span = $('.summary', thread)) {
-        num = Number(span.textContent.match(/\d+/));
-      }
-      num += $$('.opContainer ~ .replyContainer', thread).length;
-      text = num === 1 ? '1 reply' : "" + num + " replies";
-      opInfo = $('.op > .postInfo > .nameBlock', thread).textContent;
-      a = $('.hide_thread_button', thread);
-      $.addClass(a, 'hidden_thread');
-      a.firstChild.textContent = '[ + ]';
-      return $.add(a, $.tn(" " + opInfo + " (" + text + ")"));
-    },
-    show: function(thread) {
-      var a;
-      a = $('.hide_thread_button', thread);
-      $.removeClass(a, 'hidden_thread');
-      a.innerHTML = '<span>[ - ]</span>';
-      thread.hidden = false;
-      return thread.nextElementSibling.hidden = false;
     }
   };
 

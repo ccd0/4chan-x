@@ -719,6 +719,62 @@ ExpandThread =
       $.rm next
     $.after a, nodes
 
+ThreadHiding =
+  init: ->
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    for thread in $$ '.thread'
+      a  = $.el 'a',
+        className: 'hide_thread_button'
+        innerHTML: '<span>[ - ]</span>'
+        href: 'javascript:;'
+      $.on a, 'click', ThreadHiding.cb
+      $.prepend thread, a
+
+      if thread.id[1..] of hiddenThreads
+        ThreadHiding.hide thread
+    return
+
+  cb: ->
+    ThreadHiding.toggle @parentNode
+
+  toggle: (thread) ->
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    id = thread.id[1..]
+    if thread.hidden or /\bhidden_thread\b/.test thread.firstChild.className
+      ThreadHiding.show thread
+      delete hiddenThreads[id]
+    else
+      ThreadHiding.hide thread
+      hiddenThreads[id] = Date.now()
+    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
+
+  hide: (thread) ->
+    unless Conf['Show Stubs']
+      thread.hidden = true
+      thread.nextElementSibling.hidden = true
+      return
+
+    return if thread.firstChild.className is 'block' # already hidden by filter
+
+    num     = 0
+    if span = $ '.summary', thread
+      num   = Number span.textContent.match /\d+/
+    num    += $$('.opContainer ~ .replyContainer', thread).length
+    text    = if num is 1 then '1 reply' else "#{num} replies"
+    opInfo  = $('.op > .postInfo > .nameBlock', thread).textContent
+
+    a = $ '.hide_thread_button', thread
+    $.addClass a, 'hidden_thread'
+    a.firstChild.textContent = '[ + ]'
+    $.add a, $.tn " #{opInfo} (#{text})"
+
+  show: (thread) ->
+    a = $ '.hide_thread_button', thread
+    $.removeClass a, 'hidden_thread'
+    a.innerHTML = '<span>[ - ]</span>'
+    thread.hidden = false
+    thread.nextElementSibling.hidden = false
+
 ReplyHiding =
   init: ->
     Main.callbacks.push @node
@@ -1870,62 +1926,6 @@ Options =
     Favicon.switch()
     Unread.update true
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
-
-ThreadHiding =
-  init: ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    for thread in $$ '.thread'
-      a  = $.el 'a',
-        className: 'hide_thread_button'
-        innerHTML: '<span>[ - ]</span>'
-        href: 'javascript:;'
-      $.on a, 'click', ThreadHiding.cb
-      $.prepend thread, a
-
-      if thread.id[1..] of hiddenThreads
-        ThreadHiding.hide thread
-    return
-
-  cb: ->
-    ThreadHiding.toggle @parentNode
-
-  toggle: (thread) ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    id = thread.id[1..]
-    if thread.hidden or /\bhidden_thread\b/.test thread.firstChild.className
-      ThreadHiding.show thread
-      delete hiddenThreads[id]
-    else
-      ThreadHiding.hide thread
-      hiddenThreads[id] = Date.now()
-    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
-
-  hide: (thread) ->
-    unless Conf['Show Stubs']
-      thread.hidden = true
-      thread.nextElementSibling.hidden = true
-      return
-
-    return if thread.firstChild.className is 'block' # already hidden by filter
-
-    num     = 0
-    if span = $ '.summary', thread
-      num   = Number span.textContent.match /\d+/
-    num    += $$('.opContainer ~ .replyContainer', thread).length
-    text    = if num is 1 then '1 reply' else "#{num} replies"
-    opInfo  = $('.op > .postInfo > .nameBlock', thread).textContent
-
-    a = $ '.hide_thread_button', thread
-    $.addClass a, 'hidden_thread'
-    a.firstChild.textContent = '[ + ]'
-    $.add a, $.tn " #{opInfo} (#{text})"
-
-  show: (thread) ->
-    a = $ '.hide_thread_button', thread
-    $.removeClass a, 'hidden_thread'
-    a.innerHTML = '<span>[ - ]</span>'
-    thread.hidden = false
-    thread.nextElementSibling.hidden = false
 
 Updater =
   init: ->
