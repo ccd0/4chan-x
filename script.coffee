@@ -1944,9 +1944,9 @@ Updater =
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
-    @count = $ '#count', dialog
-    @timer = $ '#timer', dialog
-    @br    = $ 'br[clear]'
+    @count  = $ '#count', dialog
+    @timer  = $ '#timer', dialog
+    @thread = $ '.thread'
 
     for input in $$ 'input', dialog
       if input.type is 'checkbox'
@@ -2010,7 +2010,7 @@ Updater =
         return
 
       Updater.retryCoef = 10
-      Updater.timer.textContent = '-' + Conf['Interval']
+      Updater.timer.textContent = "-#{Conf['Interval']}"
 
       ###
       Status Code 304: Not modified
@@ -2021,29 +2021,30 @@ Updater =
       if @status is 304
         if Conf['Verbose']
           Updater.count.textContent = '+0'
-          Updater.count.className = null
+          Updater.count.className   = null
         return
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
       doc = d.implementation.createHTMLDocument ''
       doc.documentElement.innerHTML = @response
 
-      id = $('input', Updater.br.previousElementSibling).name
+      lastPost = Updater.thread.lastElementChild
+      id = lastPost.id[2..]
       nodes = []
-      for reply in $$('.reply', doc).reverse()
-        break if reply.id <= id #make sure to not insert older posts
-        nodes.push reply.parentNode.parentNode.parentNode #table
+      for reply in $$('.replyContainer', doc).reverse()
+        break if reply.id[2..] <= id #make sure to not insert older posts
+        nodes.push reply
 
-      newPosts = nodes.length
-      scroll = Conf['Scrolling'] && Updater.scrollBG() && newPosts &&
-        Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25
+      count  = nodes.length
+      scroll = Conf['Scrolling'] && Updater.scrollBG() && count &&
+        lastPost.getBoundingClientRect().bottom - d.body.clientHeight < 25
       if Conf['Verbose']
-        Updater.count.textContent = "+#{newPosts}"
-        Updater.count.className = if newPosts then 'new' else null
+        Updater.count.textContent = "+#{count}"
+        Updater.count.className   = if count then 'new' else null
 
-      $.before Updater.br, nodes.reverse()
+      $.add Updater.thread, nodes.reverse()
       if scroll
-        Updater.br.previousSibling.scrollIntoView()
+        nodes[0].scrollIntoView()
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000

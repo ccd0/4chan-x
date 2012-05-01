@@ -2455,7 +2455,7 @@
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
-      this.br = $('br[clear]');
+      this.thread = $('.thread');
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
@@ -2514,7 +2514,7 @@
         };
       },
       update: function() {
-        var doc, id, newPosts, nodes, reply, scroll, _i, _len, _ref;
+        var count, doc, id, lastPost, nodes, reply, scroll, _i, _len, _ref;
         if (this.status === 404) {
           Updater.timer.textContent = '';
           Updater.count.textContent = 404;
@@ -2531,7 +2531,7 @@
           return;
         }
         Updater.retryCoef = 10;
-        Updater.timer.textContent = '-' + Conf['Interval'];
+        Updater.timer.textContent = "-" + Conf['Interval'];
         /*
               Status Code 304: Not modified
               By sending the `If-Modified-Since` header we get a proper status code, and no response.
@@ -2549,25 +2549,26 @@
         Updater.lastModified = this.getResponseHeader('Last-Modified');
         doc = d.implementation.createHTMLDocument('');
         doc.documentElement.innerHTML = this.response;
-        id = $('input', Updater.br.previousElementSibling).name;
+        lastPost = Updater.thread.lastElementChild;
+        id = lastPost.id.slice(2);
         nodes = [];
-        _ref = $$('.reply', doc).reverse();
+        _ref = $$('.replyContainer', doc).reverse();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           reply = _ref[_i];
-          if (reply.id <= id) {
+          if (reply.id.slice(2) <= id) {
             break;
           }
-          nodes.push(reply.parentNode.parentNode.parentNode);
+          nodes.push(reply);
         }
-        newPosts = nodes.length;
-        scroll = Conf['Scrolling'] && Updater.scrollBG() && newPosts && Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25;
+        count = nodes.length;
+        scroll = Conf['Scrolling'] && Updater.scrollBG() && count && lastPost.getBoundingClientRect().bottom - d.body.clientHeight < 25;
         if (Conf['Verbose']) {
-          Updater.count.textContent = "+" + newPosts;
-          Updater.count.className = newPosts ? 'new' : null;
+          Updater.count.textContent = "+" + count;
+          Updater.count.className = count ? 'new' : null;
         }
-        $.before(Updater.br, nodes.reverse());
+        $.add(Updater.thread, nodes.reverse());
         if (scroll) {
-          return Updater.br.previousSibling.scrollIntoView();
+          return nodes[0].scrollIntoView();
         }
       }
     },
