@@ -667,7 +667,7 @@ ExpandThread =
 
     switch a.textContent[0]
       when '+'
-        if container = $ '.container', thread.firstElementChild
+        if container = $ '.container', a.previousElementSibling
           $.rm container
         a.textContent = a.textContent.replace '+', '\u00d7 Loading...'
         $.cache pathname, -> ExpandThread.parse @, pathname, thread, a
@@ -683,12 +683,12 @@ ExpandThread =
           when 'b', 'vg' then 3
           when 't' then 1
           else 5
-        div = $.x "following-sibling::div[last()]/preceding-sibling::div[#{num - 1}]", a
-        while (next = a.nextSibling) and next isnt div
-          $.rm next
+        replies = $$ '.replyContainer', thread
+        replies.splice replies.length - num, num
+        for reply in replies
+          $.rm reply
         for backlink in $$ '.backlink', a.previousElementSibling
           $.rm backlink unless $.id backlink.hash[1..]
-
 
   parse: (req, pathname, thread, a) ->
     if req.status isnt 200
@@ -3171,7 +3171,7 @@ Main =
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
-    el    = node.lastElementChild
+    el    = $ '.post', node
     klass = el.className
     post  =
       root:      node

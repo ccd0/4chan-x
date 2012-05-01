@@ -837,12 +837,12 @@
       return _results;
     },
     toggle: function(thread) {
-      var a, backlink, container, div, next, num, pathname, _i, _len, _ref, _results;
+      var a, backlink, container, num, pathname, replies, reply, _i, _j, _len, _len1, _ref, _results;
       pathname = "/" + g.BOARD + "/res/" + thread.id.slice(1);
       a = $('.summary', thread);
       switch (a.textContent[0]) {
         case '+':
-          if (container = $('.container', thread.firstElementChild)) {
+          if (container = $('.container', a.previousElementSibling)) {
             $.rm(container);
           }
           a.textContent = a.textContent.replace('+', '\u00d7 Loading...');
@@ -865,14 +865,16 @@
                 return 5;
             }
           })();
-          div = $.x("following-sibling::div[last()]/preceding-sibling::div[" + (num - 1) + "]", a);
-          while ((next = a.nextSibling) && next !== div) {
-            $.rm(next);
+          replies = $$('.replyContainer', thread);
+          replies.splice(replies.length - num, num);
+          for (_i = 0, _len = replies.length; _i < _len; _i++) {
+            reply = replies[_i];
+            $.rm(reply);
           }
           _ref = $$('.backlink', a.previousElementSibling);
           _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            backlink = _ref[_i];
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            backlink = _ref[_j];
             if (!$.id(backlink.hash.slice(1))) {
               _results.push($.rm(backlink));
             } else {
@@ -4130,7 +4132,7 @@
     },
     preParse: function(node) {
       var el, fileInfo, img, klass, post;
-      el = node.lastElementChild;
+      el = $('.post', node);
       klass = el.className;
       post = {
         root: node,
