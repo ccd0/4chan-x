@@ -599,9 +599,9 @@ StrikethroughQuotes =
   node: (post) ->
     return if post.isInlined
     for quote in post.quotes
-      if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
+      if (el = $.id quote.hash[1..]) and el.hidden
         $.addClass quote, 'filtered'
-        ReplyHiding.hide post.root if Conf['Recursive Filtering']
+        ReplyHiding.hide post.root.firstElementChild if Conf['Recursive Filtering']
     return
 
 ExpandComment =

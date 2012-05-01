@@ -745,10 +745,10 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if ((el = $.id(quote.hash.slice(1))) && el.parentNode.parentNode.parentNode.hidden) {
+        if ((el = $.id(quote.hash.slice(1))) && el.hidden) {
           $.addClass(quote, 'filtered');
           if (Conf['Recursive Filtering']) {
-            ReplyHiding.hide(post.root);
+            ReplyHiding.hide(post.root.firstElementChild);
           }
         }
       }
