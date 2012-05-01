@@ -514,7 +514,7 @@ Filter =
   node: (post) ->
     return if post.isInlined
     isOP = /\bop\b/.test post.class
-    {el} = post
+    {root} = post
     for key of Filter.filters
       value = Filter[key] post
       if value is false
@@ -528,18 +528,18 @@ Filter =
         if result is true
           if isOP
             unless g.REPLY
-              ThreadHiding.hide post.root.parentNode
+              ThreadHiding.hide root.parentNode
             else
               continue
           else
-            ReplyHiding.hide post.root
+            ReplyHiding.hide root
           return
 
         # Highlight
-        $.addClass (if isOP then post.root.parentNode else post.root), result[0]
+        $.addClass (if isOP then root.parentNode else root), result[0]
         if isOP and result[1] and not g.REPLY
           # Put the highlighted OPs' threads on top of the board pages...
-          thisThread = el.parentNode.parentNode
+          thisThread = root.parentNode
           # ...before the first non highlighted thread.
           if firstThread = $ 'div[class=thread]'
             $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
@@ -601,7 +601,7 @@ StrikethroughQuotes =
     for quote in post.quotes
       if (el = $.id quote.hash[1..]) and el.hidden
         $.addClass quote, 'filtered'
-        ReplyHiding.hide post.root.firstElementChild if Conf['Recursive Filtering']
+        ReplyHiding.hide post.root if Conf['Recursive Filtering']
     return
 
 ExpandComment =
@@ -725,51 +725,56 @@ ReplyHiding =
 
   node: (post) ->
     return if post.isInlined or /\bop\b/.test post.class
-    button = post.el.previousElementSibling
+    button = post.root.firstElementChild
     $.addClass button, 'hide_reply_button'
     button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
     $.on button.firstChild, 'click', ReplyHiding.toggle
 
     if post.id of g.hiddenReplies
-      ReplyHiding.hide post.root.firstElementChild
+      ReplyHiding.hide post.root
 
   toggle: ->
     button = @parentNode
-    id     = button.id[2..]
+    root   = button.parentNode
+    id     = root.id[2..]
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href='#p#{id}']"
-    if button.nextElementSibling.hidden
-      ReplyHiding.show button
+    if /\bstub\b/.test button.className
+      ReplyHiding.show root
       for quote in quotes
         $.removeClass quote, 'filtered'
       delete g.hiddenReplies[id]
     else
-      ReplyHiding.hide button
+      ReplyHiding.hide root
       for quote in quotes
         $.addClass quote, 'filtered'
       g.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-  hide: (button) ->
-    return if button.nextElementSibling.hidden # already hidden once by filter
-    button.nextElementSibling.hidden = true
-    $.addClass button, 'hidden_reply'
+  hide: (root) ->
+    button = root.firstElementChild
+    return if button.hidden # already hidden once by filter
+    button.hidden = true
+    el = root.lastElementChild
+    el.hidden = true
 
-    unless Conf['Show Stubs']
-      button.hidden = true
-      return
+    return unless Conf['Show Stubs']
 
-    button.firstChild.firstChild.textContent = '[ + ]'
-    $.add button.firstChild, $.tn " #{$('.nameBlock', button.nextElementSibling).textContent}"
+    stub = $.el 'div',
+      className: 'hide_reply_button stub'
+      innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
+    $.add stub.firstChild, $.tn $('.nameBlock', el).textContent
+    $.on  stub.firstChild, 'click', ReplyHiding.toggle
+    $.after button, stub
 
-  show: (button) ->
-    button.nextElementSibling.hidden = false
-    $.removeClass button, 'hidden_reply'
+  show: (root) ->
+    el     = root.lastElementChild
+    button = root.firstElementChild
+    el.hidden = false
+    button.hidden = false
 
-    unless Conf['Show Stubs']
-      button.hidden = false
-      return
+    return unless Conf['Show Stubs']
 
-    button.firstChild.innerHTML = '<span>[ - ]</span>'
+    $.rm button.nextElementSibling
 
 Keybinds =
   init: ->
@@ -2203,7 +2208,7 @@ RevealSpoilers =
     Main.callbacks.push @node
   node: (post) ->
     {img} = post
-    if not (img and /\bimgspoiler\b/.test img.parentNode.className) or post.class is 'inline'
+    if not (img and /^Spoiler/.test img.alt) or post.class is 'inline'
       return
     img.removeAttribute 'style'
     img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg')}"
@@ -3166,7 +3171,7 @@ Main =
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
-    el    = $ '.post', node
+    el    = node.lastElementChild
     klass = el.className
     post  =
       root:      node

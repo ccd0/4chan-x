@@ -617,12 +617,12 @@
       };
     },
     node: function(post) {
-      var el, filter, firstThread, isOP, key, result, thisThread, value, _i, _len, _ref;
+      var filter, firstThread, isOP, key, result, root, thisThread, value, _i, _len, _ref;
       if (post.isInlined) {
         return;
       }
       isOP = /\bop\b/.test(post["class"]);
-      el = post.el;
+      root = post.root;
       for (key in Filter.filters) {
         value = Filter[key](post);
         if (value === false) {
@@ -637,18 +637,18 @@
           if (result === true) {
             if (isOP) {
               if (!g.REPLY) {
-                ThreadHiding.hide(post.root.parentNode);
+                ThreadHiding.hide(root.parentNode);
               } else {
                 continue;
               }
             } else {
-              ReplyHiding.hide(post.root);
+              ReplyHiding.hide(root);
             }
             return;
           }
-          $.addClass((isOP ? post.root.parentNode : post.root), result[0]);
+          $.addClass((isOP ? root.parentNode : root), result[0]);
           if (isOP && result[1] && !g.REPLY) {
-            thisThread = el.parentNode.parentNode;
+            thisThread = root.parentNode;
             if (firstThread = $('div[class=thread]')) {
               $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
             }
@@ -748,7 +748,7 @@
         if ((el = $.id(quote.hash.slice(1))) && el.hidden) {
           $.addClass(quote, 'filtered');
           if (Conf['Recursive Filtering']) {
-            ReplyHiding.hide(post.root.firstElementChild);
+            ReplyHiding.hide(post.root);
           }
         }
       }
@@ -929,28 +929,29 @@
       if (post.isInlined || /\bop\b/.test(post["class"])) {
         return;
       }
-      button = post.el.previousElementSibling;
+      button = post.root.firstElementChild;
       $.addClass(button, 'hide_reply_button');
       button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
       $.on(button.firstChild, 'click', ReplyHiding.toggle);
       if (post.id in g.hiddenReplies) {
-        return ReplyHiding.hide(post.root.firstElementChild);
+        return ReplyHiding.hide(post.root);
       }
     },
     toggle: function() {
-      var button, id, quote, quotes, _i, _j, _len, _len1;
+      var button, id, quote, quotes, root, _i, _j, _len, _len1;
       button = this.parentNode;
-      id = button.id.slice(2);
+      root = button.parentNode;
+      id = root.id.slice(2);
       quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href='#p" + id + "']");
-      if (button.nextElementSibling.hidden) {
-        ReplyHiding.show(button);
+      if (/\bstub\b/.test(button.className)) {
+        ReplyHiding.show(root);
         for (_i = 0, _len = quotes.length; _i < _len; _i++) {
           quote = quotes[_i];
           $.removeClass(quote, 'filtered');
         }
         delete g.hiddenReplies[id];
       } else {
-        ReplyHiding.hide(button);
+        ReplyHiding.hide(root);
         for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
           quote = quotes[_j];
           $.addClass(quote, 'filtered');
@@ -959,27 +960,36 @@
       }
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
-    hide: function(button) {
-      if (button.nextElementSibling.hidden) {
+    hide: function(root) {
+      var button, el, stub;
+      button = root.firstElementChild;
+      if (button.hidden) {
         return;
       }
-      button.nextElementSibling.hidden = true;
-      $.addClass(button, 'hidden_reply');
+      button.hidden = true;
+      el = root.lastElementChild;
+      el.hidden = true;
       if (!Conf['Show Stubs']) {
-        button.hidden = true;
         return;
       }
-      button.firstChild.firstChild.textContent = '[ + ]';
-      return $.add(button.firstChild, $.tn(" " + ($('.nameBlock', button.nextElementSibling).textContent)));
+      stub = $.el('div', {
+        className: 'hide_reply_button stub',
+        innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
+      });
+      $.add(stub.firstChild, $.tn($('.nameBlock', el).textContent));
+      $.on(stub.firstChild, 'click', ReplyHiding.toggle);
+      return $.after(button, stub);
     },
-    show: function(button) {
-      button.nextElementSibling.hidden = false;
-      $.removeClass(button, 'hidden_reply');
+    show: function(root) {
+      var button, el;
+      el = root.lastElementChild;
+      button = root.firstElementChild;
+      el.hidden = false;
+      button.hidden = false;
       if (!Conf['Show Stubs']) {
-        button.hidden = false;
         return;
       }
-      return button.firstChild.innerHTML = '<span>[ - ]</span>';
+      return $.rm(button.nextElementSibling);
     }
   };
 
@@ -2783,7 +2793,7 @@
     node: function(post) {
       var img;
       img = post.img;
-      if (!(img && /\bimgspoiler\b/.test(img.parentNode.className)) || post["class"] === 'inline') {
+      if (!(img && /^Spoiler/.test(img.alt)) || post["class"] === 'inline') {
         return;
       }
       img.removeAttribute('style');
@@ -4120,7 +4130,7 @@
     },
     preParse: function(node) {
       var el, fileInfo, img, klass, post;
-      el = $('.post', node);
+      el = node.lastElementChild;
       klass = el.className;
       post = {
         root: node,
