@@ -3052,7 +3052,7 @@
       }
       a = $.el('a', {
         href: "#p" + post.id,
-        className: post.root.hidden ? 'filtered backlink' : 'backlink',
+        className: post.el.hidden ? 'filtered backlink' : 'backlink',
         textContent: QuoteBacklink.funk(post.id)
       });
       for (qid in quotes) {
@@ -3373,7 +3373,7 @@
             textContent: "" + quote + "\u00A0(Dead)"
           }));
           if (board === g.BOARD && $.id(id)) {
-            a.href = "#" + id;
+            a.href = "#p" + id;
             a.className = 'quotelink';
             a.setAttribute('onclick', "replyhl('" + id + "');");
           } else {

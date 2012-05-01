@@ -2380,7 +2380,7 @@ QuoteBacklink =
         quotes[qid] = true
     a = $.el 'a',
       href: "#p#{post.id}"
-      className: if post.root.hidden then 'filtered backlink' else 'backlink'
+      className: if post.el.hidden then 'filtered backlink' else 'backlink'
       textContent: QuoteBacklink.funk post.id
     for qid of quotes
       # Don't backlink the OP.
