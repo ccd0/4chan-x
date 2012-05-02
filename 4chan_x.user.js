@@ -1071,7 +1071,7 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var key, o, range, selEnd, selStart, ta, thread, value, _ref, _ref1;
+      var key, link, o, range, selEnd, selStart, ta, thread, value;
       if (!(key = Keybinds.keyCode(e)) || /TEXTAREA|INPUT/.test(e.target.nodeName) && !(e.altKey || e.ctrlKey || e.keyCode === 27)) {
         return;
       }
@@ -1132,13 +1132,13 @@
           window.location = "/" + g.BOARD + "/0#0";
           break;
         case Conf.nextPage:
-          if ((_ref = $('input[value=Next]')) != null) {
-            _ref.click();
+          if (link = $('link[rel=next]', d.head)) {
+            window.location = link.href;
           }
           break;
         case Conf.previousPage:
-          if ((_ref1 = $('input[value=Previous]')) != null) {
-            _ref1.click();
+          if (link = $('link[rel=prev]', d.head)) {
+            window.location.href = link.href;
           }
           break;
         case Conf.nextThread:

@@ -888,9 +888,11 @@ Keybinds =
       when Conf.zero
         window.location = "/#{g.BOARD}/0#0"
       when Conf.nextPage
-        $('input[value=Next]')?.click()
+        if link = $ 'link[rel=next]', d.head
+          window.location = link.href
       when Conf.previousPage
-        $('input[value=Previous]')?.click()
+        if link = $ 'link[rel=prev]', d.head
+          window.location.href = link.href
       # Thread Navigation
       when Conf.nextThread
         return if g.REPLY
