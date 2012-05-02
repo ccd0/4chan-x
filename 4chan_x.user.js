@@ -3710,17 +3710,18 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var img, src;
-      if (post.root.hidden || !post.img) {
+      var gif, img, src;
+      img = post.img;
+      if (post.root.hidden || !img) {
         return;
       }
-      src = post.img.parentNode.href;
-      if (/gif$/.test(src) && !/spoiler/.test(post.img.src)) {
-        img = $.el('img');
-        $.on(img, 'load', function() {
-          return post.img.src = src;
+      src = img.parentNode.href;
+      if (/gif$/.test(src) && !/spoiler/.test(img.src)) {
+        gif = $.el('img');
+        $.on(gif, 'load', function() {
+          return img.src = src;
         });
-        return img.src = src;
+        return gif.src = src;
       }
     }
   };

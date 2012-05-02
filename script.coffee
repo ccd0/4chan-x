@@ -2845,14 +2845,15 @@ AutoGif =
     return if g.BOARD is 'gif'
     Main.callbacks.push @node
   node: (post) ->
-    return if post.root.hidden or not post.img
-    src = post.img.parentNode.href
-    if /gif$/.test(src) and !/spoiler/.test post.img.src
-      img = $.el 'img'
-      $.on img, 'load', ->
+    {img} = post
+    return if post.root.hidden or not img
+    src = img.parentNode.href
+    if /gif$/.test(src) and !/spoiler/.test img.src
+      gif = $.el 'img'
+      $.on gif, 'load', ->
         # Replace the thumbnail once the GIF has finished loading.
-        post.img.src = src
-      img.src = src
+        img.src = src
+      gif.src = src
 
 ImageExpand =
   init: ->
