@@ -2846,7 +2846,7 @@ AutoGif =
     Main.callbacks.push @node
   node: (post) ->
     {img} = post
-    return if post.root.hidden or not img
+    return if post.el.hidden or not img
     src = img.parentNode.href
     if /gif$/.test(src) and !/spoiler/.test img.src
       gif = $.el 'img'
@@ -2864,7 +2864,7 @@ ImageExpand =
     return unless post.img
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
-    if ImageExpand.on and !post.root.hidden and post.class isnt 'inline'
+    if ImageExpand.on and !post.el.hidden and post.class isnt 'inline'
       ImageExpand.expand post.img
   cb:
     toggle: (e) ->

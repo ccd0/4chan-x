@@ -3712,7 +3712,7 @@
     node: function(post) {
       var gif, img, src;
       img = post.img;
-      if (post.root.hidden || !img) {
+      if (post.el.hidden || !img) {
         return;
       }
       src = img.parentNode.href;
@@ -3738,7 +3738,7 @@
       }
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
-      if (ImageExpand.on && !post.root.hidden && post["class"] !== 'inline') {
+      if (ImageExpand.on && !post.el.hidden && post["class"] !== 'inline') {
         return ImageExpand.expand(post.img);
       }
     },
