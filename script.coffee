@@ -2691,12 +2691,14 @@ Unread =
     if (index = Unread.foresee.indexOf post.id) isnt -1
       Unread.foresee.splice index, 1
       return
-    return if post.root.hidden or post.class
-    count = Unread.replies.push post.el
+    {el} = post
+    # new HTML ???
+    return if el.hidden # or inlined/OP
+    count = Unread.replies.push el
     Unread.update count is 1
 
   scroll: ->
-    height = d.body.clientHeight
+    height = d.documentElement.clientHeight
     for reply, i in Unread.replies
       {bottom} = reply.getBoundingClientRect()
       if bottom > height #post is not completely read

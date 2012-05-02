@@ -3478,20 +3478,21 @@
     replies: [],
     foresee: [],
     node: function(post) {
-      var count, index;
+      var count, el, index;
       if ((index = Unread.foresee.indexOf(post.id)) !== -1) {
         Unread.foresee.splice(index, 1);
         return;
       }
-      if (post.root.hidden || post["class"]) {
+      el = post.el;
+      if (el.hidden) {
         return;
       }
-      count = Unread.replies.push(post.el);
+      count = Unread.replies.push(el);
       return Unread.update(count === 1);
     },
     scroll: function() {
       var bottom, height, i, reply, _i, _len, _ref;
-      height = d.body.clientHeight;
+      height = d.documentElement.clientHeight;
       _ref = Unread.replies;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         reply = _ref[i];
