@@ -217,22 +217,21 @@
       rect = el.getBoundingClientRect();
       UI.dx = e.clientX - rect.left;
       UI.dy = e.clientY - rect.top;
-      UI.width = d.body.clientWidth - el.offsetWidth;
-      return UI.height = d.body.clientHeight - el.offsetHeight;
+      UI.width = d.documentElement.clientWidth - rect.width;
+      return UI.height = d.documentElement.clientHeight - rect.height;
     },
     drag: function(e) {
-      var bottom, left, right, style, top;
+      var left, style, top;
       left = e.clientX - UI.dx;
       top = e.clientY - UI.dy;
-      left = left < 10 ? 0 : UI.width - left < 10 ? null : left;
-      top = top < 10 ? 0 : UI.height - top < 10 ? null : top;
-      right = left === null ? 0 : null;
-      bottom = top === null ? 0 : null;
+      left = left < 10 ? '0px' : UI.width - left < 10 ? null : left + 'px';
+      top = top < 10 ? '0px' : UI.height - top < 10 ? null : top + 'px';
       style = UI.el.style;
+      $.log(left, top);
+      style.left = left;
       style.top = top;
-      style.right = right;
-      style.bottom = bottom;
-      return style.left = left;
+      style.right = left === null ? '0px' : null;
+      return style.bottom = top === null ? '0px' : null;
     },
     dragend: function() {
       var el;
@@ -242,20 +241,19 @@
       return d.removeEventListener('mouseup', UI.dragend, false);
     },
     hover: function(e) {
-      var clientHeight, clientWidth, clientX, clientY, el, height, style, top, _ref;
+      var clientHeight, clientWidth, clientX, clientY, height, style, top, _ref;
       clientX = e.clientX, clientY = e.clientY;
-      el = UI.el;
-      style = el.style;
-      _ref = d.body, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
-      height = el.offsetHeight;
+      style = UI.el.style;
+      _ref = d.documentElement, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
+      height = UI.el.offsetHeight;
       top = clientY - 120;
-      style.top = clientHeight <= height || top <= 0 ? 0 : top + height >= clientHeight ? clientHeight - height : top;
+      style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
       if (clientX <= clientWidth - 400) {
-        style.left = clientX + 45;
+        style.left = clientX + 45 + 'px';
         return style.right = null;
       } else {
         style.left = null;
-        return style.right = clientWidth - clientX + 45;
+        return style.right = clientWidth - clientX + 45 + 'px';
       }
     },
     hoverend: function() {
@@ -1286,7 +1284,7 @@
         td.className = 'reply';
         td.removeAttribute('tabindex');
         rect = td.getBoundingClientRect();
-        if (rect.bottom >= 0 && rect.top <= d.body.clientHeight) {
+        if (rect.bottom >= 0 && rect.top <= d.documentElement.clientHeight) {
           next = delta === +1 ? $.x('following::td[@class="reply"]', td) : $.x('preceding::td[@class="reply"]', td);
           if (!next) {
             td.className = 'replyhl';
@@ -1298,7 +1296,7 @@
             return;
           }
           rect = next.getBoundingClientRect();
-          if (rect.top < 0 || rect.bottom > d.body.clientHeight) {
+          if (rect.top < 0 || rect.bottom > d.documentElement.clientHeight) {
             next.scrollIntoView(delta === -1);
           }
           next.className = 'replyhl';
@@ -1314,7 +1312,7 @@
       for (_i = 0, _len = replies.length; _i < _len; _i++) {
         reply = replies[_i];
         rect = reply.getBoundingClientRect();
-        if (delta === +1 && rect.top >= 0 || delta === -1 && rect.bottom <= d.body.clientHeight) {
+        if (delta === +1 && rect.top >= 0 || delta === -1 && rect.bottom <= d.documentElement.clientHeight) {
           reply.className = 'replyhl';
           reply.tabIndex = 0;
           reply.focus();
@@ -2561,7 +2559,7 @@
           nodes.push(reply);
         }
         count = nodes.length;
-        scroll = Conf['Scrolling'] && Updater.scrollBG() && count && lastPost.getBoundingClientRect().bottom - d.body.clientHeight < 25;
+        scroll = Conf['Scrolling'] && Updater.scrollBG() && count && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         if (Conf['Verbose']) {
           Updater.count.textContent = "+" + count;
           Updater.count.className = count ? 'new' : null;
@@ -3883,7 +3881,7 @@
       return $.prepend($.id('delform'), controls);
     },
     resize: function() {
-      return ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:" + d.body.clientHeight + "px;}";
+      return ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:" + d.documentElement.clientHeight + "px;}";
     }
   };
 

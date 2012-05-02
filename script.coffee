@@ -175,32 +175,30 @@ UI =
     d.addEventListener 'mouseup',   UI.dragend, false
     #distance from pointer to el edge is constant; calculate it here.
     # XXX opera reports el.offsetLeft / el.offsetTop as 0
-    rect = el.getBoundingClientRect()
-    UI.dx = e.clientX - rect.left
-    UI.dy = e.clientY - rect.top
-    #factor out el from document dimensions
-    UI.width  = d.body.clientWidth  - el.offsetWidth
-    UI.height = d.body.clientHeight - el.offsetHeight
+    rect      = el.getBoundingClientRect()
+    UI.dx     = e.clientX - rect.left
+    UI.dy     = e.clientY - rect.top
+    UI.width  = d.documentElement.clientWidth  - rect.width
+    UI.height = d.documentElement.clientHeight - rect.height
   drag: (e) ->
     left = e.clientX - UI.dx
-    top = e.clientY - UI.dy
+    top  = e.clientY - UI.dy
     left =
-      if left < 10 then 0
+      if left < 10 then '0px'
       else if UI.width - left < 10 then null
-      else left
+      else left + 'px'
     top =
-      if top < 10 then 0
+      if top < 10 then '0px'
       else if UI.height - top < 10 then null
-      else top
-    right = if left is null then 0 else null
-    bottom = if top is null then 0 else null
+      else top + 'px'
     #using null instead of '' is 4% faster
     #these 4 statements are 40% faster than 1 style.cssText
     {style} = UI.el
-    style.top    = top
-    style.right  = right
-    style.bottom = bottom
+    $.log left, top
     style.left   = left
+    style.top    = top
+    style.right  = if left is null then '0px' else null
+    style.bottom = if top  is null then '0px' else null
   dragend: ->
     #$ coffee -bpe '{a} = {b} = c'
     #var a, b;
@@ -211,26 +209,25 @@ UI =
     d.removeEventListener 'mouseup',   UI.dragend, false
   hover: (e) ->
     {clientX, clientY} = e
-    {el} = UI
-    {style} = el
-    {clientHeight, clientWidth} = d.body
-    height = el.offsetHeight
+    {style} = UI.el
+    {clientHeight, clientWidth} = d.documentElement
+    height = UI.el.offsetHeight
 
     top = clientY - 120
     style.top =
       if clientHeight <= height or top <= 0
-        0
+        '0px'
       else if top + height >= clientHeight
-        clientHeight - height
+        clientHeight - height + 'px'
       else
-        top
+        top + 'px'
 
     if clientX <= clientWidth - 400
-      style.left  = clientX + 45
+      style.left  = clientX + 45 + 'px'
       style.right = null
     else
       style.left  = null
-      style.right = clientWidth - clientX + 45
+      style.right = clientWidth - clientX + 45 + 'px'
 
   hoverend: ->
     $.rm UI.el
@@ -969,7 +966,7 @@ Keybinds =
       td.className = 'reply'
       td.removeAttribute 'tabindex'
       rect = td.getBoundingClientRect()
-      if rect.bottom >= 0 and rect.top <= d.body.clientHeight # We're at least partially visible
+      if rect.bottom >= 0 and rect.top <= d.documentElement.clientHeight # We're at least partially visible
         next =
           if delta is +1
             $.x 'following::td[@class="reply"]', td
@@ -982,7 +979,7 @@ Keybinds =
           return
         return unless g.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
         rect = next.getBoundingClientRect()
-        if rect.top < 0 or rect.bottom > d.body.clientHeight
+        if rect.top < 0 or rect.bottom > d.documentElement.clientHeight
           next.scrollIntoView delta is -1
         next.className = 'replyhl'
         next.tabIndex  = 0
@@ -993,7 +990,7 @@ Keybinds =
     replies.reverse() if delta is -1
     for reply in replies
       rect = reply.getBoundingClientRect()
-      if delta is +1 and rect.top >= 0 or delta is -1 and rect.bottom <= d.body.clientHeight
+      if delta is +1 and rect.top >= 0 or delta is -1 and rect.bottom <= d.documentElement.clientHeight
         reply.className = 'replyhl'
         reply.tabIndex  = 0
         reply.focus()
@@ -2037,7 +2034,7 @@ Updater =
 
       count  = nodes.length
       scroll = Conf['Scrolling'] && Updater.scrollBG() && count &&
-        lastPost.getBoundingClientRect().bottom - d.body.clientHeight < 25
+        lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       if Conf['Verbose']
         Updater.count.textContent = "+#{count}"
         Updater.count.className   = if count then 'new' else null
@@ -2967,7 +2964,7 @@ ImageExpand =
     $.prepend $.id('delform'), controls
 
   resize: ->
-    ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:#{d.body.clientHeight}px;}"
+    ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:#{d.documentElement.clientHeight}px;}"
 
 Main =
   init: ->
