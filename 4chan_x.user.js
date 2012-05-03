@@ -3236,7 +3236,7 @@
       }
       qp = UI.el = $.el('div', {
         id: 'qp',
-        className: 'reply dialog'
+        className: 'reply dialog post'
       });
       $.add(d.body, qp);
       id = this.hash.slice(2);
@@ -3245,11 +3245,11 @@
         if (Conf['Quote Highlighting']) {
           $.addClass(el, 'qphl');
         }
-        replyID = $.x('ancestor::div[contains(@class,"post")]', this).id;
+        replyID = $.x('ancestor::div[contains(@class,"postContainer")]', this).id.slice(2);
         _ref = $$('.quotelink, .backlink', qp);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          if (quote.hash.slice(1) === replyID) {
+          if (quote.hash.slice(2) === replyID) {
             $.addClass(quote, 'forwardlink');
           }
         }
@@ -3273,7 +3273,7 @@
       return $.off(this, 'mouseout click', QuotePreview.mouseout);
     },
     parse: function(req, id) {
-      var doc, node, post, qp;
+      var doc, fileInfo, img, node, post, qp;
       if (!((qp = UI.el) && qp.textContent === ("Loading " + id + "..."))) {
         return;
       }
@@ -3286,10 +3286,15 @@
       node = doc.getElementById("p" + id);
       qp.innerHTML = node.innerHTML;
       post = {
-        el: qp,
-        filesize: $('.filesize', qp),
-        img: $('img[data-md5]', qp)
+        el: qp
       };
+      if (fileInfo = $('.fileInfo', qp)) {
+        img = fileInfo.nextElementSibling.firstElementChild;
+        if (img.alt !== 'File deleted.') {
+          post.fileInfo = fileInfo;
+          post.img = img;
+        }
+      }
       if (Conf['Image Auto-Gif']) {
         AutoGif.node(post);
       }
@@ -3780,7 +3785,7 @@
           case 'fit screen':
             klass = 'fitwidth fitheight';
         }
-        $('body > form').className = klass;
+        $.id('delform').className = klass;
         if (/\bfitheight\b/.test(klass)) {
           $.on(window, 'resize', ImageExpand.resize);
           if (!ImageExpand.style) {
@@ -4192,8 +4197,9 @@
     callbacks: [],
     css: '\
 /* dialog styling */\
-.dialog {\
+.dialog.reply {\
   border: 1px solid rgba(0,0,0,.25);\
+  padding: 0;\
 }\
 .move {\
   cursor: move;\
@@ -4204,27 +4210,25 @@ label, .favicon {\
 a[href="javascript:;"] {\
   text-decoration: none;\
 }\
+.warning {\
+  color: red;\
+}\
 \
 .hide_thread_button {\
   float: left;\
 }\
-.hide_reply_button.hidden_reply {\
-  float: none;\
-}\
 \
 .hidden_thread ~ *,\
-.reply[hidden],\
+[hidden],\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
-#qp > input, #qp .inline, .forwarded {\
+.autohide:not(:hover) > form,\
+#qp input, #qp .inline, .forwarded {\
   display: none !important;\
 }\
 \
 h1 {\
   text-align: center;\
-}\
-.autohide:not(:hover) > form {\
-  display: none;\
 }\
 #qr > .move {\
   min-width: 300px;\
@@ -4365,6 +4369,8 @@ h1 {\
 }\
 .field {\
   border: 1px solid #CCC;\
+  box-sizing: border-box;\
+  -moz-box-sizing: border-box;\
   color: #333;\
   font: 13px sans-serif;\
   margin: 0;\
@@ -4388,6 +4394,7 @@ textarea.field {\
   min-height: 120px;\
 }\
 .field:only-child {\
+  display: block;\
   min-width: 100%;\
 }\
 .captcha {\
@@ -4397,6 +4404,7 @@ textarea.field {\
   text-align: center;\
 }\
 .captcha > img {\
+  display: block;\
   height: 57px;\
   width: 300px;\
 }\
@@ -4411,41 +4419,21 @@ textarea.field {\
   width: 30%;\
 }\
 \
-.new {\
-  background: lime;\
-}\
-.warning {\
-  color: red;\
-}\
-.replyhider {\
-  vertical-align: top;\
-}\
-\
-.filesize + br + a {\
-  float: left;\
-  pointer-events: none;\
-}\
 .fileText:hover .fntrunc,\
 .fileText:not(:hover) .fnfull {\
   display: none;\
 }\
-img[data-md5], img[data-md5] + img {\
-  pointer-events: all;\
-}\
 .fitwidth img[data-md5] + img {\
   max-width: 100%;\
 }\
-.gecko  > .fitwidth img[data-md5] + img,\
-.presto > .fitwidth img[data-md5] + img {\
-  width: 100%;\
-}\
+\
 /* revealed spoilers do not have height/width,\
    this fixes "expanded" auto-gifs */\
-img[data-md5] {\
+.op > div > a > img[data-md5] {\
   max-height: 252px;\
   max-width: 252px;\
 }\
-input ~ a > img[data-md5] {\
+.reply > div > a > img[data-md5] {\
   max-height: 127px;\
   max-width: 127px;\
 }\
@@ -4498,18 +4486,20 @@ input ~ a > img[data-md5] {\
 #options label {\
   text-decoration: underline;\
 }\
-#content > div {\
+#content {\
   height: 450px;\
   overflow: auto;\
 }\
 #content textarea {\
+  box-sizing: border-box;\
+  -moz-box-sizing: border-box;\
   margin: 0;\
   min-height: 100px;\
   resize: vertical;\
   width: 100%;\
 }\
 #sauces {\
-  height: 320px;\
+  height: 300px;\
 }\
 \
 #updater {\
@@ -4522,9 +4512,8 @@ input ~ a > img[data-md5] {\
   border: none;\
   background: transparent;\
 }\
-\
-#stats {\
-  border: none;\
+.new {\
+  background: lime;\
 }\
 \
 #watcher {\
@@ -4548,10 +4537,7 @@ input ~ a > img[data-md5] {\
   text-decoration: underline;\
 }\
 \
-#qp {\
-  padding-bottom: 5px;\
-}\
-#qp > a > img {\
+#qp img {\
   max-height: 300px;\
   max-width: 500px;\
 }\
@@ -4561,23 +4547,26 @@ input ~ a > img[data-md5] {\
 .inlined {\
   opacity: .5;\
 }\
-.inline .reply {\
+.inline {\
+  overflow: hidden;\
   background-color: rgba(255, 255, 255, 0.15);\
   border: 1px solid rgba(128, 128, 128, 0.5);\
 }\
-.filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
+.inline .post {\
   background: none;\
+  border: none;\
 }\
 .filter_highlight.thread,\
 .filter_highlight > .reply {\
   box-shadow: -5px 0 rgba(255,0,0,0.5);\
 }\
 .filtered {\
-  text-decoration: line-through;\
+  text-decoration: underline line-through;\
 }\
 .quotelink.forwardlink,\
 .backlink.forwardlink {\
-  color: #4C4CA9;\
+  text-decoration: none;\
+  border-bottom: 1px dashed;\
 }\
 '
   };
