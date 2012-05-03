@@ -1779,7 +1779,7 @@ Options =
     <div class=warning><code>File Info Formatting</code> is disabled.</div>
     <ul>
       File Info Formatting
-      <li><input type=text name=fileInfo> : <span id=fileInfoPreview></span></li>
+      <li><input type=text name=fileInfo> : <span id=fileInfoPreview class=fileText></span></li>
       <li>Link (with original file name): %l (lowercase L, truncated), %L (untruncated)</li>
       <li>Original file name: %n (Truncated), %N (Untruncated)</li>
       <li>Spoiler indicator: %p</li>
