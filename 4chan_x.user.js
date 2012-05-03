@@ -227,7 +227,6 @@
       left = left < 10 ? '0px' : UI.width - left < 10 ? null : left + 'px';
       top = top < 10 ? '0px' : UI.height - top < 10 ? null : top + 'px';
       style = UI.el.style;
-      $.log(left, top);
       style.left = left;
       style.top = top;
       style.right = left === null ? '0px' : null;
@@ -619,7 +618,7 @@
       if (post.isInlined) {
         return;
       }
-      isOP = /\bop\b/.test(post["class"]);
+      isOP = post.id === post.threadId;
       root = post.root;
       for (key in Filter.filters) {
         value = Filter[key](post);
@@ -907,8 +906,8 @@
           }
           quote.href = "res/" + href;
         }
-        id = reply.firstElementChild.id.slice(2);
-        link = $('.postNum.desktop', reply).firstElementChild;
+        id = reply.id.slice(2);
+        link = $('.postInfo > .postNum > a:first-child', reply);
         link.href = "res/" + threadID + "#p" + id;
         link.nextSibling.href = "res/" + threadID + "#q" + id;
         nodes.push(reply);
@@ -2453,7 +2452,7 @@
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
-      this.thread = $('.thread');
+      this.thread = $.id("t" + g.THREAD_ID);
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
@@ -2712,7 +2711,7 @@
     },
     node: function(post) {
       var name, node;
-      if (post["class"] === 'inline') {
+      if (post.isInlined && !post.isCrosspost) {
         return;
       }
       name = $('.name', post.el);
@@ -2773,7 +2772,7 @@
     node: function(post) {
       var img, link, nodes, _i, _len, _ref;
       img = post.img;
-      if (post["class"] === 'inline' || !img) {
+      if (post.isInlined && !post.isCrosspost || !img) {
         return;
       }
       img = img.parentNode;
@@ -2794,7 +2793,7 @@
     node: function(post) {
       var img;
       img = post.img;
-      if (!(img && /^Spoiler/.test(img.alt)) || post["class"] === 'inline') {
+      if (!(img && /^Spoiler/.test(img.alt)) || post.isInlined && !post.isCrosspost) {
         return;
       }
       img.removeAttribute('style');
@@ -2824,7 +2823,7 @@
     },
     node: function(post) {
       var node;
-      if (post["class"] === 'inline') {
+      if (post.isInlined && !post.isCrosspost) {
         return;
       }
       node = $('.postInfo > .dateTime', post.el);
@@ -2919,7 +2918,7 @@
     },
     node: function(post) {
       var data, link, node, regexp, resolution, size, span, unit, _, _ref;
-      if (post["class"] === 'inline' || !(node = post.filesize)) {
+      if (post.isInlined && !post.isCrosspost || !(node = post.filesize)) {
         return;
       }
       regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/;
@@ -3207,7 +3206,7 @@
       link = $('.postInfo > .postNum > a:first-child', newInline);
       link.href = "" + pathname + "#p" + id;
       link.nextSibling.href = "" + pathname + "#q" + id;
-      $.addClass(newInline, 'crossquote');
+      $.addClass(newInline, 'crosspost');
       return $.replace(inline, newInline);
     },
     clone: function(id, el) {
@@ -3324,7 +3323,7 @@
     },
     node: function(post) {
       var quote, _i, _len, _ref;
-      if (post["class"] === 'inline') {
+      if (post.isInlined && !post.isCrosspost) {
         return;
       }
       _ref = post.quotes;
@@ -3343,7 +3342,7 @@
     },
     node: function(post) {
       var path, quote, _i, _len, _ref;
-      if (post["class"] === 'inline') {
+      if (post.isInlined && !post.isCrosspost) {
         return;
       }
       _ref = post.quotes;
@@ -3366,7 +3365,7 @@
     },
     node: function(post) {
       var a, board, data, i, id, index, m, node, nodes, quote, quotes, snapshot, text, _i, _j, _len, _ref;
-      if (post["class"] === 'inline') {
+      if (post.isInlined && !post.isCrosspost) {
         return;
       }
       snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastElementChild, null, 6, null);
@@ -3384,7 +3383,7 @@
             nodes.push($.tn(text));
           }
           id = quote.match(/\d+$/)[0];
-          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postNum.desktop', post.el).firstElementChild.pathname.split('/')[1];
+          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postInfo > .postNum > a:first-child', post.el).pathname.split('/')[1];
           nodes.push(a = $.el('a', {
             textContent: "" + quote + "\u00A0(Dead)"
           }));
@@ -3487,7 +3486,7 @@
         return;
       }
       el = post.el;
-      if (el.hidden) {
+      if (el.hidden || /\bop\b/.test(post["class"]) || post.isInlined) {
         return;
       }
       count = Unread.replies.push(el);
@@ -3743,7 +3742,7 @@
       }
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
-      if (ImageExpand.on && !post.el.hidden && post["class"] !== 'inline') {
+      if (ImageExpand.on && !post.el.hidden) {
         return ImageExpand.expand(post.img);
       }
     },
@@ -4147,6 +4146,7 @@
         id: el.id.slice(1),
         threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
         isInlined: /\binline\b/.test(klass),
+        isCrosspost: /\bcrosspost\b/.test(klass),
         quotes: el.getElementsByClassName('quotelink'),
         backlinks: el.getElementsByClassName('backlink'),
         fileInfo: false,

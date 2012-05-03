@@ -194,7 +194,6 @@ UI =
     #using null instead of '' is 4% faster
     #these 4 statements are 40% faster than 1 style.cssText
     {style} = UI.el
-    $.log left, top
     style.left   = left
     style.top    = top
     style.right  = if left is null then '0px' else null
@@ -510,7 +509,7 @@ Filter =
 
   node: (post) ->
     return if post.isInlined
-    isOP = /\bop\b/.test post.class
+    isOP = post.id is post.threadId
     {root} = post
     for key of Filter.filters
       value = Filter[key] post
@@ -706,8 +705,8 @@ ExpandThread =
         href = quote.getAttribute 'href'
         continue if href[0] is '/' # Cross-board quote
         quote.href = "res/#{href}" # Fix pathnames
-      id = reply.firstElementChild.id[2..]
-      link = $('.postNum.desktop', reply).firstElementChild
+      id = reply.id[2..]
+      link = $ '.postInfo > .postNum > a:first-child', reply
       link.href = "res/#{threadID}#p#{id}"
       link.nextSibling.href = "res/#{threadID}#q#{id}"
       nodes.push reply
@@ -1945,7 +1944,7 @@ Updater =
 
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
-    @thread = $ '.thread'
+    @thread = $.id "t#{g.THREAD_ID}"
 
     for input in $$ 'input', dialog
       if input.type is 'checkbox'
@@ -2156,7 +2155,7 @@ Anonymize =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline'
+    return if post.isInlined and not post.isCrosspost
     name = $ '.name', post.el
     name.textContent = 'Anonymous'
     if node = name.nextElementSibling
@@ -2195,7 +2194,7 @@ Sauce =
 
   node: (post) ->
     {img} = post
-    return if post.class is 'inline' or not img
+    return if post.isInlined and not post.isCrosspost or not img
     img   = img.parentNode
     nodes = []
     for link in Sauce.links
@@ -2208,10 +2207,10 @@ RevealSpoilers =
     Main.callbacks.push @node
   node: (post) ->
     {img} = post
-    if not (img and /^Spoiler/.test img.alt) or post.class is 'inline'
+    if not (img and /^Spoiler/.test img.alt) or post.isInlined and not post.isCrosspost
       return
     img.removeAttribute 'style'
-    img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg')}"
+    img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace /src(\/\d+).+$/, 'thumb$1s.jpg'}"
 
 Time =
   init: ->
@@ -2236,7 +2235,7 @@ Time =
 
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline'
+    return if post.isInlined and not post.isCrosspost
     node              = $ '.postInfo > .dateTime', post.el
     Time.date         = Time.parse node.textContent
     node.textContent  = Time.funk(Time)
@@ -2296,7 +2295,7 @@ FileInfo =
     @setFormats()
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline' or not node = post.filesize
+    return if post.isInlined and not post.isCrosspost or not node = post.filesize
     regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/
     [_, link, size, unit, resolution] =
       node.innerHTML.match regexp
@@ -2482,7 +2481,7 @@ QuoteInline =
     link = $ '.postInfo > .postNum > a:first-child', newInline
     link.href = "#{pathname}#p#{id}"
     link.nextSibling.href = "#{pathname}#q#{id}"
-    $.addClass newInline, 'crossquote'
+    $.addClass newInline, 'crosspost'
     $.replace inline, newInline
 
   clone: (id, el) ->
@@ -2558,7 +2557,7 @@ QuoteOP =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline'
+    return if post.isInlined and not post.isCrosspost
     for quote in post.quotes
       if quote.hash[2..] is post.threadId
         # \u00A0 is nbsp
@@ -2569,7 +2568,7 @@ QuoteCT =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline'
+    return if post.isInlined and not post.isCrosspost
     for quote in post.quotes
       unless quote.hash
         # Make sure this isn't a link to the board we're on.
@@ -2585,7 +2584,7 @@ Quotify =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline'
+    return if post.isInlined and not post.isCrosspost
 
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
@@ -2613,7 +2612,7 @@ Quotify =
             m[1]
           else
             # Get the post's board, whether it's inlined or not.
-            $('.postNum.desktop', post.el).firstElementChild.pathname.split('/')[1]
+            $('.postInfo > .postNum > a:first-child', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
           # \u00A0 is nbsp
@@ -2695,7 +2694,7 @@ Unread =
       return
     {el} = post
     # new HTML ???
-    return if el.hidden # or inlined/OP
+    return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
     count = Unread.replies.push el
     Unread.update count is 1
 
@@ -2867,7 +2866,7 @@ ImageExpand =
     return unless post.img
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
-    if ImageExpand.on and !post.el.hidden and post.class isnt 'inline'
+    if ImageExpand.on and !post.el.hidden
       ImageExpand.expand post.img
   cb:
     toggle: (e) ->
@@ -3180,16 +3179,17 @@ Main =
     el    = $ '.post', node
     klass = el.className
     post  =
-      root:      node
-      el:        el
-      class:     klass
-      id:        el.id[1..]
-      threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
-      isInlined: /\binline\b/.test klass
-      quotes:    el.getElementsByClassName 'quotelink'
-      backlinks: el.getElementsByClassName 'backlink'
-      fileInfo:  false
-      img:       false
+      root:        node
+      el:          el
+      class:       klass
+      id:          el.id[1..]
+      threadId:    g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
+      isInlined:   /\binline\b/.test klass
+      isCrosspost: /\bcrosspost\b/.test klass
+      quotes:      el.getElementsByClassName 'quotelink'
+      backlinks:   el.getElementsByClassName 'backlink'
+      fileInfo:    false
+      img:         false
     if fileInfo = $ '.fileInfo', el
       img = fileInfo.nextElementSibling.firstElementChild
       if img.alt isnt 'File deleted.'
