@@ -3402,7 +3402,7 @@
     },
     node: function(post) {
       var a;
-      if (!(a = $('.reportbutton', post.el))) {
+      if (!(a = $('.report_button', post.el))) {
         a = ReportButton.a.cloneNode(true);
         $.add($('.postInfo', post.el), a);
       }
@@ -4121,17 +4121,17 @@
       }
     },
     preParse: function(node) {
-      var el, fileInfo, img, klass, post;
+      var el, fileInfo, img, post, rootClass;
+      rootClass = node.className;
       el = $('.post', node);
-      klass = el.className;
       post = {
         root: node,
         el: el,
-        "class": klass,
+        "class": el.className,
         id: el.id.slice(1),
         threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
-        isInlined: /\binline\b/.test(klass),
-        isCrosspost: /\bcrosspost\b/.test(klass),
+        isInlined: /\binline\b/.test(rootClass),
+        isCrosspost: /\bcrosspost\b/.test(rootClass),
         quotes: el.getElementsByClassName('quotelink'),
         backlinks: el.getElementsByClassName('backlink'),
         fileInfo: false,

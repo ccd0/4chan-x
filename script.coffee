@@ -2625,7 +2625,7 @@ ReportButton =
       href: 'javascript:;'
     Main.callbacks.push @node
   node: (post) ->
-    unless a = $ '.reportbutton', post.el
+    unless a = $ '.report_button', post.el
       a = ReportButton.a.cloneNode true
       $.add $('.postInfo', post.el), a
     $.on a, 'click', ReportButton.report
@@ -3157,16 +3157,16 @@ Main =
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
-    el    = $ '.post', node
-    klass = el.className
-    post  =
+    rootClass = node.className
+    el   = $ '.post', node
+    post =
       root:        node
       el:          el
-      class:       klass
+      class:       el.className
       id:          el.id[1..]
       threadId:    g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
-      isInlined:   /\binline\b/.test klass
-      isCrosspost: /\bcrosspost\b/.test klass
+      isInlined:   /\binline\b/.test rootClass
+      isCrosspost: /\bcrosspost\b/.test rootClass
       quotes:      el.getElementsByClassName 'quotelink'
       backlinks:   el.getElementsByClassName 'backlink'
       fileInfo:    false
