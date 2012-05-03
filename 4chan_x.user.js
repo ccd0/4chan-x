@@ -153,8 +153,7 @@
     sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/$4/image/$3/', '#https://archive.installgentoo.net/$4/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
-    fileInfoR: '%l (%s, %r)',
-    fileInfoT: '%l (%s, %r)',
+    fileInfo: '%l (%p%s, %r)',
     favicon: 'ferongr',
     hotkeys: {
       openQR: ['i', 'Open QR with post number inserted'],
@@ -2190,7 +2189,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, fileInfoR, fileInfoT, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var arr, back, checked, description, dialog, favicon, fileInfo, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2268,16 +2267,13 @@
     </ul>\
     <div class=warning><code>File Info Formatting</code> is disabled.</div>\
     <ul>\
-      Thread File Info Formatting\
-      <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>\
-      <li>Link: %l (lowercase L)</li>\
+      File Info Formatting\
+      <li><input type=text name=fileInfo> : <span id=fileInfoPreview></span></li>\
+      <li>Link (with original file name): %l (lowercase L, truncated), %L (untruncated)</li>\
+      <li>Original file name: %n (Truncated), %N (Untruncated)</li>\
+      <li>Spoiler indicator: %p</li>\
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>\
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>\
-      Reply File Info Formatting\
-      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>\
-      <li>All thread formatters also work for reply formatting.</li>\
-      <li>Link (with original file name): %l (lowercase L)(Truncated), %L (Untruncated)</li>\
-      <li>Original file name: %n (Truncated), %N (Untruncated)</li>\
     </ul>\
     <div class=warning><code>Unread Favicon</code> is disabled.</div>\
     Unread favicons<br>\
@@ -2332,16 +2328,13 @@
       }
       (back = $('[name=backlink]', dialog)).value = Conf['backlink'];
       (time = $('[name=time]', dialog)).value = Conf['time'];
-      (fileInfoR = $('[name=fileInfoR]', dialog)).value = Conf['fileInfoR'];
-      (fileInfoT = $('[name=fileInfoT]', dialog)).value = Conf['fileInfoT'];
+      (fileInfo = $('[name=fileInfo]', dialog)).value = Conf['fileInfo'];
       $.on(back, 'keyup', $.cb.value);
       $.on(back, 'keyup', Options.backlink);
       $.on(time, 'keyup', $.cb.value);
       $.on(time, 'keyup', Options.time);
-      $.on(fileInfoR, 'keyup', $.cb.value);
-      $.on(fileInfoR, 'keyup', Options.fileInfo);
-      $.on(fileInfoT, 'keyup', $.cb.value);
-      $.on(fileInfoT, 'keyup', Options.fileInfo);
+      $.on(fileInfo, 'keyup', $.cb.value);
+      $.on(fileInfo, 'keyup', Options.fileInfo);
       favicon = $('select', dialog);
       favicon.value = Conf['favicon'];
       $.on(favicon, 'change', $.cb.value);
@@ -2380,8 +2373,7 @@
       d.body.style.setProperty('overflow', 'hidden', null);
       Options.backlink.call(back);
       Options.time.call(time);
-      Options.fileInfo.call(fileInfoR);
-      Options.fileInfo.call(fileInfoT);
+      Options.fileInfo.call(fileInfo);
       return Options.favicon.call(favicon);
     },
     close: function() {
@@ -2416,19 +2408,17 @@
       return $.id('backlinkPreview').textContent = Conf['backlink'].replace(/%id/, '123456789');
     },
     fileInfo: function() {
-      var type;
-      type = this.name === 'fileInfoR' ? 0 : 1;
       FileInfo.data = {
-        link: '<a href="javascript:;">1329791824.png</a>',
-        size: 996,
+        link: 'javascript:;',
+        spoiler: true,
+        size: '276',
         unit: 'KB',
-        resolution: '1366x768',
-        fullname: '[a.f.k.] Sayonara Zetsubou Sensei - 09.avi_snapshot_03.34_[2011.02.20_06.58.00].jpg',
-        shortname: '[a.f.k.] Sayonara Zetsubou Sen(...).jpg',
-        type: type
+        resolution: '1280x720',
+        fullname: 'd9bb2efc98dd0df141a94399ff5880b7.jpg',
+        shortname: 'd9bb2efc98dd0df141a94399ff5880(...).jpg'
       };
       FileInfo.setFormats();
-      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[type](FileInfo);
+      return $.id('fileInfoPreview').innerHTML = FileInfo.funk(FileInfo);
     },
     favicon: function() {
       Favicon["switch"]();
@@ -2917,42 +2907,34 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var data, link, node, regexp, resolution, size, span, unit, _, _ref;
-      if (post.isInlined && !post.isCrosspost || !(node = post.filesize)) {
+      var alt, node, span;
+      if (post.isInlined && !post.isCrosspost || !post.fileInfo) {
         return;
       }
-      regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/;
-      _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4];
-      data = {
-        link: link,
-        size: size,
-        unit: unit,
-        resolution: resolution
+      node = post.fileInfo.firstElementChild;
+      alt = post.img.alt;
+      span = $('span', node);
+      FileInfo.data = {
+        link: post.img.parentNode.href,
+        spoiler: /^Spoiler/.test(alt),
+        size: alt.match(/\d+/)[0],
+        unit: alt.match(/\w+$/)[0],
+        resolution: span.previousSibling.textContent.match(/\d+x\d+|PDF/)[0],
+        fullname: span.title,
+        shortname: span.textContent
       };
-      if (span = $('span', node)) {
-        data.fullname = span.title;
-        data.shortname = span.textContent;
-      }
-      data.type = +(!span);
-      FileInfo.data = data;
-      return node.innerHTML = FileInfo.funks[data.type](FileInfo);
+      return node.innerHTML = FileInfo.funk(FileInfo);
     },
     setFormats: function() {
-      var code, format, funks, i, param, _i;
-      funks = [];
-      for (i = _i = 0; _i <= 1; i = ++_i) {
-        format = i ? Conf['fileInfoT'] : Conf['fileInfoR'];
-        param = i ? /%([BKlMrs])/g : /%([BKlLMnNrs])/g;
-        code = format.replace(param, function(s, c) {
-          if (c in FileInfo.formatters) {
-            return "' + f.formatters." + c + "() + '";
-          } else {
-            return s;
-          }
-        });
-        funks.push(Function('f', "return '" + code + "'"));
-      }
-      return this.funks = funks;
+      var code;
+      code = Conf['fileInfo'].replace(/%([BKlLMnNprs])/g, function(s, c) {
+        if (c in FileInfo.formatters) {
+          return "' + f.formatters." + c + "() + '";
+        } else {
+          return s;
+        }
+      });
+      return this.funk = Function('f', "return '" + code + "'");
     },
     convertUnit: function(unitT) {
       var i, size, unitF, units;
@@ -2981,24 +2963,27 @@
     },
     formatters: {
       l: function() {
-        if (FileInfo.data.type === 0) {
-          return FileInfo.data.link.replace(/>\d+\.\w+</, ">" + (this.n()) + "<");
-        } else {
-          return FileInfo.data.link;
-        }
+        return "<a href=" + FileInfo.data.link + " target=_blank>" + (this.n()) + "</a>";
       },
       L: function() {
-        return FileInfo.data.link.replace(/>\d+\.\w+</, ">" + FileInfo.data.fullname + "<");
+        return "<a href=" + FileInfo.data.link + " target=_blank>" + (this.N()) + "</a>";
       },
       n: function() {
         if (FileInfo.data.fullname === FileInfo.data.shortname) {
           return FileInfo.data.fullname;
         } else {
-          return "<span class=filename><span class=fnfull>" + FileInfo.data.fullname + "</span><span class=fntrunc>" + FileInfo.data.shortname + "</span></span>";
+          return "<span class=fntrunc>" + FileInfo.data.shortname + "</span><span class=fnfull>" + FileInfo.data.fullname + "</span>";
         }
       },
       N: function() {
         return FileInfo.data.fullname;
+      },
+      p: function() {
+        if (FileInfo.data.spoiler) {
+          return 'Spoiler, ';
+        } else {
+          return '';
+        }
       },
       s: function() {
         return "" + FileInfo.data.size + " " + FileInfo.data.unit;
@@ -4440,8 +4425,8 @@ textarea.field {\
   float: left;\
   pointer-events: none;\
 }\
-.filename:hover > .fntrunc,\
-.filename:not(:hover) > .fnfull {\
+.fileText:hover .fntrunc,\
+.fileText:not(:hover) .fnfull {\
   display: none;\
 }\
 img[data-md5], img[data-md5] + img {\

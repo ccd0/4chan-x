@@ -114,8 +114,7 @@ Config =
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
-  fileInfoR: '%l (%s, %r)'
-  fileInfoT: '%l (%s, %r)'
+  fileInfo: '%l (%p%s, %r)'
   favicon: 'ferongr'
   hotkeys:
     # QR & Options
@@ -1779,16 +1778,13 @@ Options =
     </ul>
     <div class=warning><code>File Info Formatting</code> is disabled.</div>
     <ul>
-      Thread File Info Formatting
-      <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>
-      <li>Link: %l (lowercase L)</li>
+      File Info Formatting
+      <li><input type=text name=fileInfo> : <span id=fileInfoPreview></span></li>
+      <li>Link (with original file name): %l (lowercase L, truncated), %L (untruncated)</li>
+      <li>Original file name: %n (Truncated), %N (Untruncated)</li>
+      <li>Spoiler indicator: %p</li>
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>
-      Reply File Info Formatting
-      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>
-      <li>All thread formatters also work for reply formatting.</li>
-      <li>Link (with original file name): %l (lowercase L)(Truncated), %L (Untruncated)</li>
-      <li>Original file name: %n (Truncated), %N (Untruncated)</li>
     </ul>
     <div class=warning><code>Unread Favicon</code> is disabled.</div>
     Unread favicons<br>
@@ -1836,18 +1832,15 @@ Options =
       $.on ta, 'change', $.cb.value
 
     #rice
-    (back         = $ '[name=backlink]',     dialog).value = Conf['backlink']
-    (time         = $ '[name=time]',         dialog).value = Conf['time']
-    (fileInfoR = $ '[name=fileInfoR]', dialog).value = Conf['fileInfoR']
-    (fileInfoT = $ '[name=fileInfoT]', dialog).value = Conf['fileInfoT']
+    (back         = $ '[name=backlink]', dialog).value = Conf['backlink']
+    (time         = $ '[name=time]',     dialog).value = Conf['time']
+    (fileInfo     = $ '[name=fileInfo]', dialog).value = Conf['fileInfo']
     $.on back, 'keyup', $.cb.value
     $.on back, 'keyup', Options.backlink
     $.on time, 'keyup', $.cb.value
     $.on time, 'keyup', Options.time
-    $.on fileInfoR, 'keyup', $.cb.value
-    $.on fileInfoR, 'keyup', Options.fileInfo
-    $.on fileInfoT, 'keyup', $.cb.value
-    $.on fileInfoT, 'keyup', Options.fileInfo
+    $.on fileInfo, 'keyup', $.cb.value
+    $.on fileInfo, 'keyup', Options.fileInfo
     favicon = $ 'select', dialog
     favicon.value = Conf['favicon']
     $.on favicon, 'change', $.cb.value
@@ -1880,8 +1873,7 @@ Options =
 
     Options.backlink.call back
     Options.time.call     time
-    Options.fileInfo.call fileInfoR
-    Options.fileInfo.call fileInfoT
+    Options.fileInfo.call fileInfo
     Options.favicon.call  favicon
 
   close: ->
@@ -1909,17 +1901,16 @@ Options =
   backlink: ->
     $.id('backlinkPreview').textContent = Conf['backlink'].replace /%id/, '123456789'
   fileInfo: ->
-    type = if @name is 'fileInfoR' then 0 else 1
     FileInfo.data =
-      link:       '<a href="javascript:;">1329791824.png</a>'
-      size:       996
+      link:       'javascript:;'
+      spoiler:    true
+      size:       '276'
       unit:       'KB'
-      resolution: '1366x768'
-      fullname:   '[a.f.k.] Sayonara Zetsubou Sensei - 09.avi_snapshot_03.34_[2011.02.20_06.58.00].jpg'
-      shortname:  '[a.f.k.] Sayonara Zetsubou Sen(...).jpg'
-      type:       type
+      resolution: '1280x720'
+      fullname:   'd9bb2efc98dd0df141a94399ff5880b7.jpg'
+      shortname:  'd9bb2efc98dd0df141a94399ff5880(...).jpg'
     FileInfo.setFormats()
-    $.id("#{@name}Preview").innerHTML = FileInfo.funks[type] FileInfo
+    $.id('fileInfoPreview').innerHTML = FileInfo.funk FileInfo
   favicon: ->
     Favicon.switch()
     Unread.update true
@@ -2295,33 +2286,26 @@ FileInfo =
     @setFormats()
     Main.callbacks.push @node
   node: (post) ->
-    return if post.isInlined and not post.isCrosspost or not node = post.filesize
-    regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/
-    [_, link, size, unit, resolution] =
-      node.innerHTML.match regexp
-    data =
-      link:       link
-      size:       size
-      unit:       unit
-      resolution: resolution
-    if span = $ 'span', node
-      data.fullname  = span.title
-      data.shortname = span.textContent
-    data.type      = +!span
-    FileInfo.data  = data
-    node.innerHTML = FileInfo.funks[data.type] FileInfo
+    return if post.isInlined and not post.isCrosspost or not post.fileInfo
+    node = post.fileInfo.firstElementChild
+    alt  = post.img.alt
+    span = $ 'span', node
+    FileInfo.data =
+      link:       post.img.parentNode.href
+      spoiler:    /^Spoiler/.test alt
+      size:       alt.match(/\d+/)[0]
+      unit:       alt.match(/\w+$/)[0]
+      resolution: span.previousSibling.textContent.match(/\d+x\d+|PDF/)[0]
+      fullname:   span.title
+      shortname:  span.textContent
+    node.innerHTML = FileInfo.funk FileInfo
   setFormats: ->
-    funks = []
-    for i in [0..1]
-      format = if i then Conf['fileInfoT'] else Conf['fileInfoR']
-      param  = if i then /%([BKlMrs])/g    else /%([BKlLMnNrs])/g
-      code   = format.replace param, (s, c) ->
-        if c of FileInfo.formatters
-          "' + f.formatters.#{c}() + '"
-        else
-          s
-      funks.push Function 'f', "return '#{code}'"
-    @funks = funks
+    code = Conf['fileInfo'].replace /%([BKlLMnNprs])/g, (s, c) ->
+      if c of FileInfo.formatters
+        "' + f.formatters.#{c}() + '"
+      else
+        s
+    @funk = Function 'f', "return '#{code}'"
   convertUnit: (unitT) ->
     size  = @data.size
     unitF = @data.unit
@@ -2337,18 +2321,15 @@ FileInfo =
         size = size.toFixed 2
     "#{size} #{unitT}"
   formatters:
-    l: ->
-      if FileInfo.data.type is 0
-        FileInfo.data.link.replace />\d+\.\w+</, ">#{@n()}<"
-      else
-        FileInfo.data.link
-    L: -> FileInfo.data.link.replace />\d+\.\w+</, ">#{FileInfo.data.fullname}<"
+    l: -> "<a href=#{FileInfo.data.link} target=_blank>#{@n()}</a>"
+    L: -> "<a href=#{FileInfo.data.link} target=_blank>#{@N()}</a>"
     n: ->
       if FileInfo.data.fullname is FileInfo.data.shortname
         FileInfo.data.fullname
       else
-        "<span class=filename><span class=fnfull>#{FileInfo.data.fullname}</span><span class=fntrunc>#{FileInfo.data.shortname}</span></span>"
+        "<span class=fntrunc>#{FileInfo.data.shortname}</span><span class=fnfull>#{FileInfo.data.fullname}</span>"
     N: -> FileInfo.data.fullname
+    p: -> if FileInfo.data.spoiler then 'Spoiler, ' else ''
     s: -> "#{FileInfo.data.size} #{FileInfo.data.unit}"
     B: -> FileInfo.convertUnit 'B'
     K: -> FileInfo.convertUnit 'KB'
@@ -3453,8 +3434,8 @@ textarea.field {
   float: left;
   pointer-events: none;
 }
-.filename:hover > .fntrunc,
-.filename:not(:hover) > .fnfull {
+.fileText:hover .fntrunc,
+.fileText:not(:hover) .fnfull {
   display: none;
 }
 img[data-md5], img[data-md5] + img {
