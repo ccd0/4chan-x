@@ -2417,53 +2417,53 @@ QuoteInline =
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
-    id = @hash[1..]
+    id = @hash[2..]
     if /\binlined\b/.test @className
       QuoteInline.rm @, id
     else
-      return if $.x "ancestor::*[@id='#{id}']", @
+      return if $.x "ancestor::div[contains(@id,'p#{id}')]", @
       QuoteInline.add @, id
     @classList.toggle 'inlined'
 
   add: (q, id) ->
-    root = if q.parentNode.nodeName is 'FONT' then q.parentNode else if q.nextSibling then q.nextSibling else q
-    if el = $.id id
-      inline = QuoteInline.table id, el.innerHTML
-      if (i = Unread.replies.indexOf el.parentNode.parentNode.parentNode) isnt -1
+    root  = $.x 'ancestor::*[parent::blockquote]', q
+    if el = $.id "p#{id}"
+      $.removeClass el, 'qphl'
+      clonePost = QuoteInline.clone id, el
+      if /\bbacklink\b/.test q.className
+        $.after q.parentNode, clonePost
+        if Conf['Forward Hiding']
+          $.addClass el.parentNode, 'forwarded'
+          # Will only unhide if there's no inlined backlinks of it anymore.
+          ++el.dataset.forwarded or el.dataset.forwarded = 1
+      else
+        $.after root, clonePost
+      if (i = Unread.replies.indexOf el) isnt -1
         Unread.replies.splice i, 1
         Unread.update true
-      if /\bbacklink\b/.test q.className
-        $.after q.parentNode, inline
-        if Conf['Forward Hiding']
-          table = $.x 'ancestor::table', el
-          $.addClass table, 'forwarded'
-          # Will only unhide if there's no inlined backlinks of it anymore.
-          ++table.title or table.title = 1
-        return
-      $.after root, inline
-    else
-      inline = $.el 'td',
-        className: 'reply inline'
-        id: "i#{id}"
-        innerHTML: "Loading #{id}..."
-      $.after root, inline
-      {pathname} = q
-      threadID = pathname.split('/').pop()
-      $.cache pathname, (-> QuoteInline.parse @, pathname, id, threadID, inline)
+      return
+
+    inline = $.el 'div',
+      className: 'inline'
+      id: "i#{id}"
+      textContent: "Loading #{id}..."
+    $.after root, inline
+    {pathname} = q
+    $.cache pathname, -> QuoteInline.parse @, pathname, id, inline
 
   rm: (q, id) ->
-    #select the corresponding table or loading td
-    table = $.x "following::*[@id='i#{id}']", q
-    $.rm table
+    # select the corresponding inlined quote or loading quote
+    div = $.x "following::div[@id='i_pc#{id}']", q
+    $.rm div
     return unless Conf['Forward Hiding']
-    for inlined in $$ '.backlink.inlined', table
-      table = $.x 'ancestor::table', $.id inlined.hash[1..]
-      $.removeClass table, 'forwarded' unless --table.title
+    for inlined in $$ '.backlink.inlined', div
+      div = $.id inlined.hash[1..]
+      $.removeClass div.parentNode, 'forwarded' unless --div.dataset.forwarded
     if /\bbacklink\b/.test q.className
-      table = $.x 'ancestor::table', $.id id
-      $.removeClass table, 'forwarded' unless --table.title
+      div = $.id "p#{id}"
+      $.removeClass div.parentNode, 'forwarded' unless --div.dataset.forwarded
 
-  parse: (req, pathname, id, threadID, inline) ->
+  parse: (req, pathname, id, inline) ->
     return unless inline.parentNode
 
     if req.status isnt 200
@@ -2473,23 +2473,27 @@ QuoteInline =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
-    node = doc.getElementById id
-    newInline = QuoteInline.table id, node.innerHTML
+    node = doc.getElementById "p#{id}"
+    newInline = QuoteInline.clone id, node
     for quote in $$ '.quotelink', newInline
-      if (href = quote.getAttribute 'href') is quote.hash #add pathname to normal quotes
-        quote.pathname = pathname
-      else if !g.REPLY and href isnt quote.href #fix x-thread links, not x-board ones
-        quote.href = "res/#{href}"
-    link = $ '.quotejs', newInline
-    link.href = "#{pathname}##{id}"
+      href = quote.getAttribute 'href'
+      continue if href[0] is '/' # Cross-board quote
+      quote.href = "res/#{href}" # Fix pathnames
+    link = $ '.postInfo > .postNum > a:first-child', newInline
+    link.href = "#{pathname}#p#{id}"
     link.nextSibling.href = "#{pathname}#q#{id}"
     $.addClass newInline, 'crossquote'
     $.replace inline, newInline
-  table: (id, html) ->
-    $.el 'table',
-      className: 'inline'
-      id: "i#{id}"
-      innerHTML: "<tbody><tr><td class=reply>#{html}</td></tr></tbody>"
+
+  clone: (id, el) ->
+    clone = $.el 'div',
+      className: 'postContainer inline'
+      id: "i_pc#{id}"
+    $.add clone, el.cloneNode true
+    for node in $$ '[id]', clone
+      # Don't mess with other features
+      node.id = "i_#{node.id}"
+    clone
 
 QuotePreview =
   init: ->
@@ -2517,18 +2521,17 @@ QuotePreview =
           $.addClass quote, 'forwardlink'
     else
       qp.textContent = "Loading #{id}..."
-      threadID = @pathname.split('/').pop()
-      $.cache @pathname, (-> QuotePreview.parse @, id, threadID)
+      $.cache @pathname, -> QuotePreview.parse @, id
       UI.hover e
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
   mouseout: ->
+    UI.hoverend()
     if el = $.id @hash[1..]
       $.removeClass el, 'qphl'
-    UI.hoverend()
     $.off @, 'mousemove', UI.hover
     $.off @, 'mouseout click', QuotePreview.mouseout
-  parse: (req, id, threadID) ->
+  parse: (req, id) ->
     return unless (qp = UI.el) and qp.textContent is "Loading #{id}..."
 
     if req.status isnt 200
@@ -2637,7 +2640,7 @@ Quotify =
 ReportButton =
   init: ->
     @a = $.el 'a',
-      className: 'reportbutton'
+      className: 'report_button'
       innerHTML: '[&nbsp;!&nbsp;]'
       href: 'javascript:;'
     Main.callbacks.push @node

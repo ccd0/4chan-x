@@ -3117,11 +3117,11 @@
         return;
       }
       e.preventDefault();
-      id = this.hash.slice(1);
+      id = this.hash.slice(2);
       if (/\binlined\b/.test(this.className)) {
         QuoteInline.rm(this, id);
       } else {
-        if ($.x("ancestor::*[@id='" + id + "']", this)) {
+        if ($.x("ancestor::div[contains(@id,'p" + id + "')]", this)) {
           return;
         }
         QuoteInline.add(this, id);
@@ -3129,61 +3129,60 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var el, i, inline, pathname, root, table, threadID;
-      root = q.parentNode.nodeName === 'FONT' ? q.parentNode : q.nextSibling ? q.nextSibling : q;
-      if (el = $.id(id)) {
-        inline = QuoteInline.table(id, el.innerHTML);
-        if ((i = Unread.replies.indexOf(el.parentNode.parentNode.parentNode)) !== -1) {
+      var clonePost, el, i, inline, pathname, root;
+      root = $.x('ancestor::*[parent::blockquote]', q);
+      if (el = $.id("p" + id)) {
+        $.removeClass(el, 'qphl');
+        clonePost = QuoteInline.clone(id, el);
+        if (/\bbacklink\b/.test(q.className)) {
+          $.after(q.parentNode, clonePost);
+          if (Conf['Forward Hiding']) {
+            $.addClass(el.parentNode, 'forwarded');
+            ++el.dataset.forwarded || (el.dataset.forwarded = 1);
+          }
+        } else {
+          $.after(root, clonePost);
+        }
+        if ((i = Unread.replies.indexOf(el)) !== -1) {
           Unread.replies.splice(i, 1);
           Unread.update(true);
         }
-        if (/\bbacklink\b/.test(q.className)) {
-          $.after(q.parentNode, inline);
-          if (Conf['Forward Hiding']) {
-            table = $.x('ancestor::table', el);
-            $.addClass(table, 'forwarded');
-            ++table.title || (table.title = 1);
-          }
-          return;
-        }
-        return $.after(root, inline);
-      } else {
-        inline = $.el('td', {
-          className: 'reply inline',
-          id: "i" + id,
-          innerHTML: "Loading " + id + "..."
-        });
-        $.after(root, inline);
-        pathname = q.pathname;
-        threadID = pathname.split('/').pop();
-        return $.cache(pathname, (function() {
-          return QuoteInline.parse(this, pathname, id, threadID, inline);
-        }));
+        return;
       }
+      inline = $.el('div', {
+        className: 'inline',
+        id: "i" + id,
+        textContent: "Loading " + id + "..."
+      });
+      $.after(root, inline);
+      pathname = q.pathname;
+      return $.cache(pathname, function() {
+        return QuoteInline.parse(this, pathname, id, inline);
+      });
     },
     rm: function(q, id) {
-      var inlined, table, _i, _len, _ref;
-      table = $.x("following::*[@id='i" + id + "']", q);
-      $.rm(table);
+      var div, inlined, _i, _len, _ref;
+      div = $.x("following::div[@id='i_pc" + id + "']", q);
+      $.rm(div);
       if (!Conf['Forward Hiding']) {
         return;
       }
-      _ref = $$('.backlink.inlined', table);
+      _ref = $$('.backlink.inlined', div);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         inlined = _ref[_i];
-        table = $.x('ancestor::table', $.id(inlined.hash.slice(1)));
-        if (!--table.title) {
-          $.removeClass(table, 'forwarded');
+        div = $.id(inlined.hash.slice(1));
+        if (!--div.dataset.forwarded) {
+          $.removeClass(div.parentNode, 'forwarded');
         }
       }
       if (/\bbacklink\b/.test(q.className)) {
-        table = $.x('ancestor::table', $.id(id));
-        if (!--table.title) {
-          return $.removeClass(table, 'forwarded');
+        div = $.id("p" + id);
+        if (!--div.dataset.forwarded) {
+          return $.removeClass(div.parentNode, 'forwarded');
         }
       }
     },
-    parse: function(req, pathname, id, threadID, inline) {
+    parse: function(req, pathname, id, inline) {
       var doc, href, link, newInline, node, quote, _i, _len, _ref;
       if (!inline.parentNode) {
         return;
@@ -3194,29 +3193,36 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      node = doc.getElementById(id);
-      newInline = QuoteInline.table(id, node.innerHTML);
+      node = doc.getElementById("p" + id);
+      newInline = QuoteInline.clone(id, node);
       _ref = $$('.quotelink', newInline);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if ((href = quote.getAttribute('href')) === quote.hash) {
-          quote.pathname = pathname;
-        } else if (!g.REPLY && href !== quote.href) {
-          quote.href = "res/" + href;
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
         }
+        quote.href = "res/" + href;
       }
-      link = $('.quotejs', newInline);
-      link.href = "" + pathname + "#" + id;
+      link = $('.postInfo > .postNum > a:first-child', newInline);
+      link.href = "" + pathname + "#p" + id;
       link.nextSibling.href = "" + pathname + "#q" + id;
       $.addClass(newInline, 'crossquote');
       return $.replace(inline, newInline);
     },
-    table: function(id, html) {
-      return $.el('table', {
-        className: 'inline',
-        id: "i" + id,
-        innerHTML: "<tbody><tr><td class=reply>" + html + "</td></tr></tbody>"
+    clone: function(id, el) {
+      var clone, node, _i, _len, _ref;
+      clone = $.el('div', {
+        className: 'postContainer inline',
+        id: "i_pc" + id
       });
+      $.add(clone, el.cloneNode(true));
+      _ref = $$('[id]', clone);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i];
+        node.id = "i_" + node.id;
+      }
+      return clone;
     }
   };
 
@@ -3240,7 +3246,7 @@
       }
     },
     mouseover: function(e) {
-      var el, id, qp, quote, replyID, threadID, _i, _len, _ref;
+      var el, id, qp, quote, replyID, _i, _len, _ref;
       if (/\binlined\b/.test(this.className)) {
         return;
       }
@@ -3265,10 +3271,9 @@
         }
       } else {
         qp.textContent = "Loading " + id + "...";
-        threadID = this.pathname.split('/').pop();
-        $.cache(this.pathname, (function() {
-          return QuotePreview.parse(this, id, threadID);
-        }));
+        $.cache(this.pathname, function() {
+          return QuotePreview.parse(this, id);
+        });
         UI.hover(e);
       }
       $.on(this, 'mousemove', UI.hover);
@@ -3276,14 +3281,14 @@
     },
     mouseout: function() {
       var el;
+      UI.hoverend();
       if (el = $.id(this.hash.slice(1))) {
         $.removeClass(el, 'qphl');
       }
-      UI.hoverend();
       $.off(this, 'mousemove', UI.hover);
       return $.off(this, 'mouseout click', QuotePreview.mouseout);
     },
-    parse: function(req, id, threadID) {
+    parse: function(req, id) {
       var doc, node, post, qp;
       if (!((qp = UI.el) && qp.textContent === ("Loading " + id + "..."))) {
         return;
@@ -3405,7 +3410,7 @@
   ReportButton = {
     init: function() {
       this.a = $.el('a', {
-        className: 'reportbutton',
+        className: 'report_button',
         innerHTML: '[&nbsp;!&nbsp;]',
         href: 'javascript:;'
       });
