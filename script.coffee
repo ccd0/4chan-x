@@ -2149,8 +2149,10 @@ Anonymize =
     return if post.isInlined and not post.isCrosspost
     name = $ '.name', post.el
     name.textContent = 'Anonymous'
-    if node = name.nextElementSibling
-      $.rm node
+    if (trip = name.nextElementSibling) and trip.className is 'postertrip'
+      $.rm trip
+    if (parent = name.parentNode).className is 'useremail' and not /^sage$/i.test parent.pathname
+      $.replace parent, name
 
 Sauce =
   init: ->
@@ -2677,7 +2679,6 @@ Unread =
       Unread.foresee.splice index, 1
       return
     {el} = post
-    # new HTML ???
     return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
     count = Unread.replies.push el
     Unread.update count is 1

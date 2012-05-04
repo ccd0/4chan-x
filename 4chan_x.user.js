@@ -2700,14 +2700,17 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var name, node;
+      var name, parent, trip;
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
       name = $('.name', post.el);
       name.textContent = 'Anonymous';
-      if (node = name.nextElementSibling) {
-        return $.rm(node);
+      if ((trip = name.nextElementSibling) && trip.className === 'postertrip') {
+        $.rm(trip);
+      }
+      if ((parent = name.parentNode).className === 'useremail' && !/^sage$/i.test(parent.pathname)) {
+        return $.replace(parent, name);
       }
     }
   };
