@@ -556,7 +556,7 @@ Filter =
     false
   email: (post) ->
     if mail = $ '.useremail', post.el
-      return mail.href
+      return mail.pathname
     false
   subject: (post) ->
     $('.subject', post.el).textContent or false

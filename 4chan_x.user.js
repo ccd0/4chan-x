@@ -679,7 +679,7 @@
     email: function(post) {
       var mail;
       if (mail = $('.useremail', post.el)) {
-        return mail.href;
+        return mail.pathname;
       }
       return false;
     },
