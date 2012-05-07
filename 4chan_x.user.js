@@ -1854,7 +1854,7 @@
             return "image/" + type;
         }
       });
-      QR.mimeTypes = mimeTypes.split(', ');
+      QR.mimeTypes = mimeTypes.replace(/\s+/g, '').split(',');
       QR.mimeTypes.push('');
       fileInput = $('[type=file]', QR.el);
       fileInput.max = $('[name=MAX_FILE_SIZE]').value;
