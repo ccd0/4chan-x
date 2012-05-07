@@ -1451,7 +1451,7 @@ QR =
       ta.style.cssText = $.get 'QR.size', ''
 
     # Allow only this board's supported files.
-    mimeTypes = $('ul.rules').firstElementChild.textContent.match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
+    mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
         when 'jpg'
           'image/jpeg'
@@ -3202,7 +3202,7 @@ Main =
       Main.node [Main.preParse target]
 
   namespace: '4chan_x.'
-  version: '2.29.4'
+  version: '2.29.5'
   callbacks: []
   css: '
 /* dialog styling */
