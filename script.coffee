@@ -533,11 +533,11 @@ Filter =
         # Highlight
         $.addClass (if isOP then root.parentNode else root), result[0]
         if isOP and result[1] and not g.REPLY
-          # Put the highlighted OPs' threads on top of the board pages...
+          # Put the highlighted OPs' thread on top of the board page...
           thisThread = root.parentNode
           # ...before the first non highlighted thread.
           if firstThread = $ 'div[class=thread]'
-            $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
+            $.before firstThread, [thisThread, thisThread.nextElementSibling]
 
   name: (post) ->
     $('.name', post.el).textContent
@@ -662,10 +662,8 @@ ExpandThread =
 
     switch a.textContent[0]
       when '+'
-        if container = $ '.container', a.previousElementSibling
-          $.rm container
         a.textContent = a.textContent.replace '+', '\u00d7 Loading...'
-        $.cache pathname, -> ExpandThread.parse @, pathname, thread, a
+        $.cache pathname, -> ExpandThread.parse @, thread, a
 
       when '\u00d7'
         a.textContent = a.textContent.replace '\u00d7 Loading...', '+'
@@ -684,8 +682,9 @@ ExpandThread =
           $.rm reply
         for backlink in $$ '.backlink', a.previousElementSibling
           $.rm backlink unless $.id backlink.hash[1..]
+    return
 
-  parse: (req, pathname, thread, a) ->
+  parse: (req, thread, a) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
       $.off a, 'click', ExpandThread.cb.toggle
@@ -710,8 +709,10 @@ ExpandThread =
       link.nextSibling.href = "res/#{threadID}#q#{id}"
       nodes.push reply
     # eat everything, then replace with fresh full posts
-    while next = a.nextSibling
-      $.rm next
+    for post in $$ '.summary ~ .replyContainer', a.parentNode
+      $.rm post
+    for backlink in $$ '.backlink', a.previousElementSibling
+      $.rm backlink unless $.id backlink.hash[1..]
     $.after a, nodes
 
 ThreadHiding =
@@ -1123,12 +1124,12 @@ QR =
     $('.warning', QR.el).textContent = null
 
   status: (data={}) ->
+    return unless QR.el
     if g.dead
       value    = 404
       disabled = true
       QR.cooldown.auto = false
     value = QR.cooldown.seconds or data.progress or value
-    return unless QR.el
     {input} = QR.status
     input.value =
       if QR.cooldown.auto and Conf['Cooldown']
@@ -1163,13 +1164,12 @@ QR =
     QR.open()
     unless g.REPLY
       $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).id[1..]
-
     # Make sure we get the correct number, even with XXX censors
-    id   = @parentNode.parentNode.id[2..]
+    id   = @previousSibling.hash[2..]
     text = ">>#{id}\n"
 
     sel = window.getSelection()
-    if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id[1..]
+    if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id.match(/\d+$/)[0]
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
@@ -1183,7 +1183,6 @@ QR =
           ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
     ta.focus()
     # Move the caret to the end of the new quote.
-    ta.selectionEnd = ta.selectionStart = caretPos + text.length
     range = caretPos + text.length
     ta.setSelectionRange range, range
 
@@ -1404,7 +1403,7 @@ QR =
       @timeout  = Date.now() + 26*$.MINUTE
       challenge = @challenge.firstChild.value
       @img.alt  = challenge
-      @img.src  = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
+      @img.src  = "//www.google.com/recaptcha/api/image?c=#{challenge}"
       @input.value = null
     count: (count) ->
       @input.placeholder = switch count
@@ -1463,11 +1462,11 @@ QR =
     QR.mimeTypes = mimeTypes.split ', '
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
-    fileInput        = $ '[type=file]', QR.el
-    fileInput.max    = $('[name=MAX_FILE_SIZE]').value
+    fileInput        = $ 'input[type=file]', QR.el
+    fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
     fileInput.accept = mimeTypes
 
-    QR.spoiler     = !!$ '#com_submit + label'
+    QR.spoiler     = !!$ 'input[name=spoiler]'
     spoiler        = $ '#spoilerLabel', QR.el
     spoiler.hidden = !QR.spoiler
 
@@ -1502,7 +1501,7 @@ QR =
         QR.selected[@name] = @value
         # Disable auto-posting if you're typing in the first reply
         # during the last 5 seconds of the cooldown.
-        if QR.cooldown.auto and QR.selected is QR.replies[0] and parseInt(QR.status.input.value.match /\d+/) < 6
+        if QR.cooldown.auto and QR.selected is QR.replies[0] and 0 < QR.cooldown.seconds < 6
           QR.cooldown.auto = false
     # sync between tabs
     $.sync 'QR.persona', (persona) ->
@@ -1511,7 +1510,7 @@ QR =
         QR.selected[key] = val
         $("[name=#{key}]", QR.el).value = val
 
-    QR.status.input = $ '[type=submit]', QR.el
+    QR.status.input = $ 'input[type=submit]', QR.el
     QR.status()
     QR.cooldown.init()
     QR.captcha.init()
@@ -1585,7 +1584,7 @@ QR =
       upfile:  reply.file
       spoiler: reply.spoiler
       mode:    'regist'
-      pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('[name=pwd]').value
+      pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
@@ -1614,7 +1613,7 @@ QR =
           # Uploading...
           QR.status progress: "#{Math.round e.loaded / e.total * 100}%"
 
-    QR.ajax = $.ajax $('form[name=post]').action, callbacks, opts
+    QR.ajax = $.ajax $.id('postForm').parentNode.action, callbacks, opts
 
   response: (html) ->
     doc = d.implementation.createHTMLDocument ''
@@ -3192,12 +3191,12 @@ Main =
     nodes = []
     for mutation in mutations
       for addedNode in mutation.addedNodes
-        if addedNode.nodeName is 'DIV' and /\bpostContainer\b/.test addedNode.className
+        if /\bpostContainer\b/.test addedNode.className
           nodes.push Main.preParse addedNode
     Main.node nodes if nodes.length
   listener: (e) ->
     {target} = e
-    if target.nodeName is 'DIV' and /\bpostContainer\b/.test addedNode.className
+    if /\bpostContainer\b/.test addedNode.className
       Main.node [Main.preParse target]
 
   namespace: '4chan_x.'

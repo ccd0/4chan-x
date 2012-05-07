@@ -646,7 +646,7 @@
           if (isOP && result[1] && !g.REPLY) {
             thisThread = root.parentNode;
             if (firstThread = $('div[class=thread]')) {
-              $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
+              $.before(firstThread, [thisThread, thisThread.nextElementSibling]);
             }
           }
         }
@@ -833,21 +833,20 @@
       return _results;
     },
     toggle: function(thread) {
-      var a, backlink, container, num, pathname, replies, reply, _i, _j, _len, _len1, _ref, _results;
+      var a, backlink, num, pathname, replies, reply, _i, _j, _len, _len1, _ref;
       pathname = "/" + g.BOARD + "/res/" + thread.id.slice(1);
       a = $('.summary', thread);
       switch (a.textContent[0]) {
         case '+':
-          if (container = $('.container', a.previousElementSibling)) {
-            $.rm(container);
-          }
           a.textContent = a.textContent.replace('+', '\u00d7 Loading...');
-          return $.cache(pathname, function() {
-            return ExpandThread.parse(this, pathname, thread, a);
+          $.cache(pathname, function() {
+            return ExpandThread.parse(this, thread, a);
           });
+          break;
         case '\u00d7':
           a.textContent = a.textContent.replace('\u00d7 Loading...', '+');
-          return $.cache.requests[pathname].abort();
+          $.cache.requests[pathname].abort();
+          break;
         case '-':
           a.textContent = a.textContent.replace('-', '+');
           num = (function() {
@@ -868,20 +867,16 @@
             $.rm(reply);
           }
           _ref = $$('.backlink', a.previousElementSibling);
-          _results = [];
           for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
             backlink = _ref[_j];
             if (!$.id(backlink.hash.slice(1))) {
-              _results.push($.rm(backlink));
-            } else {
-              _results.push(void 0);
+              $.rm(backlink);
             }
           }
-          return _results;
       }
     },
-    parse: function(req, pathname, thread, a) {
-      var doc, href, id, link, next, nodes, quote, reply, threadID, _i, _j, _len, _len1, _ref, _ref1;
+    parse: function(req, thread, a) {
+      var backlink, doc, href, id, link, nodes, post, quote, reply, threadID, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', ExpandThread.cb.toggle);
@@ -911,8 +906,17 @@
         link.nextSibling.href = "res/" + threadID + "#q" + id;
         nodes.push(reply);
       }
-      while (next = a.nextSibling) {
-        $.rm(next);
+      _ref2 = $$('.summary ~ .replyContainer', a.parentNode);
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        post = _ref2[_k];
+        $.rm(post);
+      }
+      _ref3 = $$('.backlink', a.previousElementSibling);
+      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+        backlink = _ref3[_l];
+        if (!$.id(backlink.hash.slice(1))) {
+          $.rm(backlink);
+        }
       }
       return $.after(a, nodes);
     }
@@ -1485,15 +1489,15 @@
       if (data == null) {
         data = {};
       }
+      if (!QR.el) {
+        return;
+      }
       if (g.dead) {
         value = 404;
         disabled = true;
         QR.cooldown.auto = false;
       }
       value = QR.cooldown.seconds || data.progress || value;
-      if (!QR.el) {
-        return;
-      }
       input = QR.status.input;
       input.value = QR.cooldown.auto && Conf['Cooldown'] ? value ? "Auto " + value : 'Auto' : value || 'Submit';
       return input.disabled = disabled || false;
@@ -1542,10 +1546,10 @@
       if (!g.REPLY) {
         $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', this).id.slice(1);
       }
-      id = this.parentNode.parentNode.id.slice(2);
+      id = this.previousSibling.hash.slice(2);
       text = ">>" + id + "\n";
       sel = window.getSelection();
-      if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.slice(1) : void 0)) {
+      if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
@@ -1553,7 +1557,6 @@
       caretPos = ta.selectionStart;
       QR.selected.el.lastChild.textContent = QR.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       ta.focus();
-      ta.selectionEnd = ta.selectionStart = caretPos + text.length;
       range = caretPos + text.length;
       return ta.setSelectionRange(range, range);
     },
@@ -1839,7 +1842,7 @@
         this.timeout = Date.now() + 26 * $.MINUTE;
         challenge = this.challenge.firstChild.value;
         this.img.alt = challenge;
-        this.img.src = "http://www.google.com/recaptcha/api/image?c=" + challenge;
+        this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
         return this.input.value = null;
       },
       count: function(count) {
@@ -1909,10 +1912,10 @@
       });
       QR.mimeTypes = mimeTypes.split(', ');
       QR.mimeTypes.push('');
-      fileInput = $('[type=file]', QR.el);
-      fileInput.max = $('[name=MAX_FILE_SIZE]').value;
+      fileInput = $('input[type=file]', QR.el);
+      fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
       fileInput.accept = mimeTypes;
-      QR.spoiler = !!$('#com_submit + label');
+      QR.spoiler = !!$('input[name=spoiler]');
       spoiler = $('#spoilerLabel', QR.el);
       spoiler.hidden = !QR.spoiler;
       if (!g.REPLY) {
@@ -1958,8 +1961,9 @@
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         name = _ref1[_j];
         $.on($("[name=" + name + "]", QR.el), 'input keyup change paste', function() {
+          var _ref2;
           QR.selected[this.name] = this.value;
-          if (QR.cooldown.auto && QR.selected === QR.replies[0] && parseInt(QR.status.input.value.match(/\d+/)) < 6) {
+          if (QR.cooldown.auto && QR.selected === QR.replies[0] && (0 < (_ref2 = QR.cooldown.seconds) && _ref2 < 6)) {
             return QR.cooldown.auto = false;
           }
         });
@@ -1977,7 +1981,7 @@
         }
         return _results;
       });
-      QR.status.input = $('[type=submit]', QR.el);
+      QR.status.input = $('input[type=submit]', QR.el);
       QR.status();
       QR.cooldown.init();
       QR.captcha.init();
@@ -2050,7 +2054,7 @@
         upfile: reply.file,
         spoiler: reply.spoiler,
         mode: 'regist',
-        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('[name=pwd]').value,
+        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
@@ -2089,7 +2093,7 @@
           }
         }
       };
-      return QR.ajax = $.ajax($('form[name=post]').action, callbacks, opts);
+      return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
       var b, doc, err, node, persona, postNumber, reply, thread, _, _ref;
@@ -4179,7 +4183,7 @@
         _ref = mutation.addedNodes;
         for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
           addedNode = _ref[_j];
-          if (addedNode.nodeName === 'DIV' && /\bpostContainer\b/.test(addedNode.className)) {
+          if (/\bpostContainer\b/.test(addedNode.className)) {
             nodes.push(Main.preParse(addedNode));
           }
         }
@@ -4191,7 +4195,7 @@
     listener: function(e) {
       var target;
       target = e.target;
-      if (target.nodeName === 'DIV' && /\bpostContainer\b/.test(addedNode.className)) {
+      if (/\bpostContainer\b/.test(addedNode.className)) {
         return Main.node([Main.preParse(target)]);
       }
     },
