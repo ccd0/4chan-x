@@ -1415,7 +1415,7 @@ QR =
           'application/pdf'
         else
           "image/#{type}"
-    QR.mimeTypes = mimeTypes.replace(/\s+/g, '').split ','
+    QR.mimeTypes = mimeTypes.split ', '
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
     fileInput        = $ '[type=file]', QR.el
