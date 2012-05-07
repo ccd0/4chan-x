@@ -2370,7 +2370,7 @@ QuoteBacklink =
       textContent: QuoteBacklink.funk post.id
     for qid of quotes
       # Don't backlink the OP.
-      continue if !(el = $.id "pi#{qid}") or /\bop\b/.test(el.parentNode.className) and !Conf['OP Backlinks']
+      continue if !(el = $.id "pi#{qid}") or !Conf['OP Backlinks'] and /\bop\b/.test el.parentNode.className
       link = a.cloneNode true
       if Conf['Quote Preview']
         $.on link, 'mouseover', QuotePreview.mouseover
@@ -2378,8 +2378,10 @@ QuoteBacklink =
         $.on link, 'click', QuoteInline.toggle
       else
         link.setAttribute 'onclick', "replyhl('#{post.id}');"
-      unless (container = $ '.container', el) and container.parentNode is el
-        container = $.el 'span', className: 'container'
+      unless container = $.id "blc#{qid}"
+        container = $.el 'span',
+          className: 'container'
+          id: "blc#{qid}"
         $.add el, container
       $.add container, [$.tn(' '), link]
     return

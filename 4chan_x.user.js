@@ -3058,7 +3058,7 @@
         textContent: QuoteBacklink.funk(post.id)
       });
       for (qid in quotes) {
-        if (!(el = $.id("pi" + qid)) || /\bop\b/.test(el.parentNode.className) && !Conf['OP Backlinks']) {
+        if (!(el = $.id("pi" + qid)) || !Conf['OP Backlinks'] && /\bop\b/.test(el.parentNode.className)) {
           continue;
         }
         link = a.cloneNode(true);
@@ -3070,9 +3070,10 @@
         } else {
           link.setAttribute('onclick', "replyhl('" + post.id + "');");
         }
-        if (!((container = $('.container', el)) && container.parentNode === el)) {
+        if (!(container = $.id("blc" + qid))) {
           container = $.el('span', {
-            className: 'container'
+            className: 'container',
+            id: "blc" + qid
           });
           $.add(el, container);
         }
