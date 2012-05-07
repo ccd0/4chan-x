@@ -2048,7 +2048,7 @@ Updater =
 
   retry: ->
     @count.textContent = 'Retry'
-    @count.className = ''
+    @count.className = null
     @update()
 
   update: ->
@@ -2663,7 +2663,7 @@ ThreadStats =
     imgcount = $.id 'imagecount'
     imgcount.textContent = ++ThreadStats.images
     if ThreadStats.images > ThreadStats.imgLimit
-      imgcount.className = 'warning'
+      $.addClass imgcount, 'warning'
 
 Unread =
   init: ->

@@ -2578,7 +2578,7 @@
     },
     retry: function() {
       this.count.textContent = 'Retry';
-      this.count.className = '';
+      this.count.className = null;
       return this.update();
     },
     update: function() {
@@ -3463,7 +3463,7 @@
       imgcount = $.id('imagecount');
       imgcount.textContent = ++ThreadStats.images;
       if (ThreadStats.images > ThreadStats.imgLimit) {
-        return imgcount.className = 'warning';
+        return $.addClass(imgcount, 'warning');
       }
     }
   };
