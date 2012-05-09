@@ -1287,7 +1287,7 @@
         post.removeAttribute('tabindex');
         rect = post.getBoundingClientRect();
         if (rect.bottom >= 0 && rect.top <= d.documentElement.clientHeight) {
-          next = delta === +1 ? $.x('parent::div/following-sibling::div/div[contains(@class,"reply")]', post) : $.x('parent::div/preceding-sibling::div/div[contains(@class,"reply")]', post);
+          next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? post.parentNode.nextElementSibling : post.parentNode.previousElementSibling);
           if (!next) {
             this.focus(post);
             return;

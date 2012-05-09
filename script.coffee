@@ -968,11 +968,8 @@ Keybinds =
       post.removeAttribute 'tabindex'
       rect = post.getBoundingClientRect()
       if rect.bottom >= 0 and rect.top <= d.documentElement.clientHeight # We're at least partially visible
-        next =
-          if delta is +1
-            $.x 'parent::div/following-sibling::div/div[contains(@class,"reply")]', post
-          else
-            $.x 'parent::div/preceding-sibling::div/div[contains(@class,"reply")]', post
+        next = $.x 'child::div[contains(@class,"post reply")]',
+          if delta is +1 then post.parentNode.nextElementSibling else post.parentNode.previousElementSibling
         unless next
           @focus post
           return
