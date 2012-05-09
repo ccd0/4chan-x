@@ -885,7 +885,7 @@ Keybinds =
         Keybinds.img thread, true
       # Board Navigation
       when Conf.zero
-        window.location = "/#{g.BOARD}/0#0"
+        window.location = "/#{g.BOARD}/0#delform"
       when Conf.nextPage
         if link = $ 'link[rel=next]', d.head
           window.location = link.href

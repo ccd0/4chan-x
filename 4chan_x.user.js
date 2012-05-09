@@ -1131,7 +1131,7 @@
           Keybinds.img(thread, true);
           break;
         case Conf.zero:
-          window.location = "/" + g.BOARD + "/0#0";
+          window.location = "/" + g.BOARD + "/0#delform";
           break;
         case Conf.nextPage:
           if (link = $('link[rel=next]', d.head)) {
