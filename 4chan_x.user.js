@@ -3691,29 +3691,6 @@
         case 'g':
         case 'sci':
           return "https://archive.installgentoo.net/" + board + "/" + mode + "/" + id;
-        case '3':
-        case 'adv':
-        case 'an':
-        case 'ck':
-        case 'co':
-        case 'fa':
-        case 'fit':
-        case 'int':
-        case 'k':
-        case 'mu':
-        case 'n':
-        case 'o':
-        case 'p':
-        case 'po':
-        case 'pol':
-        case 'r9k':
-        case 'soc':
-        case 'sp':
-        case 'toy':
-        case 'trv':
-        case 'vp':
-        case 'x':
-          return "http://archive.no-ip.org/" + board + "/" + mode + "/" + id;
         default:
           if (mode === 'thread') {
             return "//boards.4chan.org/" + board + "/";
