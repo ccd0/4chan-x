@@ -1,5 +1,9 @@
 master
 
+2.29.5
+- Mayhem
+  Fix QR filetype checking on /w/.
+
 2.29.4
 - Mayhem
   Auto-GIF will not run in /gif/.

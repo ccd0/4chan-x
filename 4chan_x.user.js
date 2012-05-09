@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.29.4
+// @version        2.29.5
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.29.4
+ * 4chan X 2.29.5
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -1841,7 +1841,7 @@
         });
         ta.style.cssText = $.get('QR.size', '');
       }
-      mimeTypes = $('.rules').firstElementChild.textContent.match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
+      mimeTypes = $('.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
             return 'image/jpeg';
@@ -4251,7 +4251,7 @@
       }
     },
     namespace: '4chan_x.',
-    version: '2.29.4',
+    version: '2.29.5',
     callbacks: [],
     css: '\
 /* dialog styling */\
