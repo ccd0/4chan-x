@@ -1258,13 +1258,13 @@
       if (all) {
         return $.id('imageExpand').click();
       } else {
-        thumb = $('img[data-md5]', $('.replyhl', thread) || thread);
+        thumb = $('img[data-md5]', $('.post.highlight', thread) || thread);
         return ImageExpand.toggle(thumb.parentNode);
       }
     },
     qr: function(thread, quote) {
       if (quote) {
-        QR.quote.call($('.quotejs + .quotejs', $('.replyhl', thread) || thread));
+        QR.quote.call($('.postInfo > .postNum > a[title="Quote this post"]', $('.post.highlight', thread) || thread));
       } else {
         QR.open();
       }
@@ -1272,7 +1272,7 @@
     },
     open: function(thread, tab) {
       var id, url;
-      id = thread.firstChild.id;
+      id = thread.id.slice(1);
       url = "//boards.4chan.org/" + g.BOARD + "/res/" + id;
       if (tab) {
         return $.open(url);
@@ -1281,17 +1281,15 @@
       }
     },
     hl: function(delta, thread) {
-      var next, rect, replies, reply, td, _i, _len;
-      if (td = $('.replyhl', thread)) {
-        td.className = 'reply';
-        td.removeAttribute('tabindex');
-        rect = td.getBoundingClientRect();
+      var next, post, rect, replies, reply, _i, _len;
+      if (post = $('.reply.highlight', thread)) {
+        $.removeClass(post, 'highlight');
+        post.removeAttribute('tabindex');
+        rect = post.getBoundingClientRect();
         if (rect.bottom >= 0 && rect.top <= d.documentElement.clientHeight) {
-          next = delta === +1 ? $.x('following::td[@class="reply"]', td) : $.x('preceding::td[@class="reply"]', td);
+          next = delta === +1 ? $.x('parent::div/following-sibling::div/div[contains(@class,"reply")]', post) : $.x('parent::div/preceding-sibling::div/div[contains(@class,"reply")]', post);
           if (!next) {
-            td.className = 'replyhl';
-            td.tabIndex = 0;
-            td.focus();
+            this.focus(post);
             return;
           }
           if (!(g.REPLY || $.x('ancestor::div[@class="thread"]', next) === thread)) {
@@ -1301,9 +1299,7 @@
           if (rect.top < 0 || rect.bottom > d.documentElement.clientHeight) {
             next.scrollIntoView(delta === -1);
           }
-          next.className = 'replyhl';
-          next.tabIndex = 0;
-          next.focus();
+          this.focus(next);
           return;
         }
       }
@@ -1315,12 +1311,15 @@
         reply = replies[_i];
         rect = reply.getBoundingClientRect();
         if (delta === +1 && rect.top >= 0 || delta === -1 && rect.bottom <= d.documentElement.clientHeight) {
-          reply.className = 'replyhl';
-          reply.tabIndex = 0;
-          reply.focus();
+          this.focus(reply);
           return;
         }
       }
+    },
+    focus: function(post) {
+      $.addClass(post, 'highlight');
+      post.tabIndex = 0;
+      return post.focus();
     }
   };
 
@@ -1372,7 +1371,7 @@
           return thread;
         }
       }
-      return $('form[name=delform]');
+      return $('.board');
     },
     scroll: function(delta) {
       var i, rect, thread, top, _ref, _ref1;

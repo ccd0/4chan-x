@@ -944,18 +944,18 @@ Keybinds =
     if all
       $.id('imageExpand').click()
     else
-      thumb = $ 'img[data-md5]', $('.replyhl', thread) or thread
+      thumb = $ 'img[data-md5]', $('.post.highlight', thread) or thread
       ImageExpand.toggle thumb.parentNode
 
   qr: (thread, quote) ->
     if quote
-      QR.quote.call $ '.quotejs + .quotejs', $('.replyhl', thread) or thread
+      QR.quote.call $ '.postInfo > .postNum > a[title="Quote this post"]', $('.post.highlight', thread) or thread
     else
       QR.open()
     $('textarea', QR.el).focus()
 
   open: (thread, tab) ->
-    id = thread.firstChild.id
+    id = thread.id[1..]
     url = "//boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab
       $.open url
@@ -963,28 +963,24 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
-    if td = $ '.replyhl', thread
-      td.className = 'reply'
-      td.removeAttribute 'tabindex'
-      rect = td.getBoundingClientRect()
+    if post = $ '.reply.highlight', thread
+      $.removeClass post, 'highlight'
+      post.removeAttribute 'tabindex'
+      rect = post.getBoundingClientRect()
       if rect.bottom >= 0 and rect.top <= d.documentElement.clientHeight # We're at least partially visible
         next =
           if delta is +1
-            $.x 'following::td[@class="reply"]', td
+            $.x 'parent::div/following-sibling::div/div[contains(@class,"reply")]', post
           else
-            $.x 'preceding::td[@class="reply"]', td
+            $.x 'parent::div/preceding-sibling::div/div[contains(@class,"reply")]', post
         unless next
-          td.className = 'replyhl'
-          td.tabIndex  = 0
-          td.focus()
+          @focus post
           return
         return unless g.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
         rect = next.getBoundingClientRect()
         if rect.top < 0 or rect.bottom > d.documentElement.clientHeight
           next.scrollIntoView delta is -1
-        next.className = 'replyhl'
-        next.tabIndex  = 0
-        next.focus()
+        @focus next
         return
 
     replies = $$ '.reply', thread
@@ -992,10 +988,13 @@ Keybinds =
     for reply in replies
       rect = reply.getBoundingClientRect()
       if delta is +1 and rect.top >= 0 or delta is -1 and rect.bottom <= d.documentElement.clientHeight
-        reply.className = 'replyhl'
-        reply.tabIndex  = 0
-        reply.focus()
+        @focus reply
         return
+
+  focus: (post) ->
+    $.addClass post, 'highlight'
+    post.tabIndex = 0
+    post.focus()
 
 Nav =
   # ◀ ▶
@@ -1036,7 +1035,7 @@ Nav =
         if full
           return [thread, i, rect]
         return thread
-    return $ 'form[name=delform]'
+    return $ '.board'
 
   scroll: (delta) ->
     [thread, i, rect] = Nav.getThread true
