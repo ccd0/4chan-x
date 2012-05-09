@@ -347,6 +347,8 @@ $.extend $,
     for event in events.split ' '
       el.removeEventListener event, handler, false
     return
+  open: (url) ->
+    (GM_openInTab or window.open) url, '_blank'
   isDST: ->
     ###
       http://en.wikipedia.org/wiki/Eastern_Time_Zone
@@ -418,8 +420,6 @@ $.extend $,
         JSON.parse value
       else
         defaultValue
-    open: (url) ->
-      GM_openInTab location.protocol + url
     set: (name, value) ->
       name = Main.namespace + name
       # for `storage` events
@@ -435,8 +435,6 @@ $.extend $,
         defaultValue
     set: (name, value) ->
       localStorage.setItem Main.namespace + name, JSON.stringify value
-    open: (url) ->
-      window.open location.protocol + url, '_blank'
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
