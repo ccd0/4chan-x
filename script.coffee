@@ -2421,9 +2421,11 @@ QuoteInline =
           ++el.dataset.forwarded or el.dataset.forwarded = 1
       else
         $.after root, clonePost
-      if (i = Unread.replies.indexOf el) isnt -1
-        Unread.replies.splice i, 1
-        Unread.update true
+      for reply, i in Unread.replies
+        if reply.el is el
+          Unread.replies.splice i, 1
+          Unread.update true
+          break
       return
 
     inline = $.el 'div',
@@ -2628,14 +2630,34 @@ QuoteThreading =
     Main.callbacks.push @node
   node: (post) ->
     {quotes} = post
-    pc = prev = null
+    {replies} = Unread
     for quote in quotes
+      read = true
       id = quote.hash[2..]
-      continue if (id is post.threadId) or (id >= post.id) or !(pc = $ "#pc#{id}")
-      return if prev and (prev != pc)
-      prev = pc
+      continue if id is post.id
+      for reply, i in replies
+        if id is reply.id
+          read = false
+          break
+      continue if read
+      return if prev and (prev != reply)
+      prev = reply
+      j = i
 
-    pc?.appendChild post.root
+    return unless prev
+
+    reply = prev
+    reply.root.appendChild post.root
+    prev = post.root.previousElementSibling
+    if /postContainer/.test prev.className
+      id = prev.id[2..]
+      for reply, k in replies[j+1..]
+        break if reply.id is id
+      j += 1 + k
+
+    replies.pop()
+    replies.splice j, 0, post
+
 
 ReportButton =
   init: ->
@@ -2695,13 +2717,13 @@ Unread =
       return
     {el} = post
     return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
-    count = Unread.replies.push el
+    count = Unread.replies.push post
     Unread.update count is 1
 
   scroll: ->
     height = d.documentElement.clientHeight
     for reply, i in Unread.replies
-      {bottom} = reply.getBoundingClientRect()
+      {bottom} = reply.root.getBoundingClientRect()
       if bottom > height #post is not completely read
         break
     return if i is 0

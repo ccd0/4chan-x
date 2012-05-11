@@ -3122,7 +3122,7 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var clonePost, el, i, inline, pathname, root;
+      var clonePost, el, i, inline, pathname, reply, root, _i, _len, _ref;
       root = $.x('ancestor::*[parent::blockquote]', q);
       if (el = $.id("p" + id)) {
         $.removeClass(el, 'qphl');
@@ -3136,9 +3136,14 @@
         } else {
           $.after(root, clonePost);
         }
-        if ((i = Unread.replies.indexOf(el)) !== -1) {
-          Unread.replies.splice(i, 1);
-          Unread.update(true);
+        _ref = Unread.replies;
+        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+          reply = _ref[i];
+          if (reply.el === el) {
+            Unread.replies.splice(i, 1);
+            Unread.update(true);
+            break;
+          }
         }
         return;
       }
@@ -3410,21 +3415,51 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var id, pc, prev, quote, quotes, _i, _len;
+      var i, id, j, k, prev, quote, quotes, read, replies, reply, _i, _j, _k, _len, _len1, _len2, _ref;
       quotes = post.quotes;
-      pc = prev = null;
+      replies = Unread.replies;
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
+        read = true;
         id = quote.hash.slice(2);
-        if ((id === post.threadId) || (id >= post.id) || !(pc = $("#pc" + id))) {
+        if (id === post.id) {
           continue;
         }
-        if (prev && (prev !== pc)) {
+        for (i = _j = 0, _len1 = replies.length; _j < _len1; i = ++_j) {
+          reply = replies[i];
+          if (id === reply.id) {
+            read = false;
+            break;
+          }
+        }
+        if (read) {
+          continue;
+        }
+        if (prev && (prev !== reply)) {
           return;
         }
-        prev = pc;
+        prev = reply;
+        j = i;
       }
-      return pc != null ? pc.appendChild(post.root) : void 0;
+      if (!prev) {
+        return;
+      }
+      reply = prev;
+      reply.root.appendChild(post.root);
+      prev = post.root.previousElementSibling;
+      if (/postContainer/.test(prev.className)) {
+        id = prev.id.slice(2);
+        _ref = replies.slice(j + 1);
+        for (k = _k = 0, _len2 = _ref.length; _k < _len2; k = ++_k) {
+          reply = _ref[k];
+          if (reply.id === id) {
+            break;
+          }
+        }
+        j += 1 + k;
+      }
+      replies.pop();
+      return replies.splice(j, 0, post);
     }
   };
 
@@ -3511,7 +3546,7 @@
       if (el.hidden || /\bop\b/.test(post["class"]) || post.isInlined) {
         return;
       }
-      count = Unread.replies.push(el);
+      count = Unread.replies.push(post);
       return Unread.update(count === 1);
     },
     scroll: function() {
@@ -3520,7 +3555,7 @@
       _ref = Unread.replies;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         reply = _ref[i];
-        bottom = reply.getBoundingClientRect().bottom;
+        bottom = reply.root.getBoundingClientRect().bottom;
         if (bottom > height) {
           break;
         }
