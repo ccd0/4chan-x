@@ -3085,9 +3085,6 @@ Main =
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.init()
 
-    if Conf['Quote Threading']
-      QuoteThreading.init()
-
     $.ready Main.ready
 
   ready: ->
@@ -3132,6 +3129,9 @@ Main =
 
       if Conf['Unread Count'] or Conf['Unread Favicon']
         Unread.init()
+
+      if Conf['Quote Threading']
+        QuoteThreading.init()
 
     else #not reply
       if Conf['Thread Hiding']

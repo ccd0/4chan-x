@@ -4020,9 +4020,6 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.init();
       }
-      if (Conf['Quote Threading']) {
-        QuoteThreading.init();
-      }
       return $.ready(Main.ready);
     },
     ready: function() {
@@ -4079,6 +4076,9 @@
         }
         if (Conf['Unread Count'] || Conf['Unread Favicon']) {
           Unread.init();
+        }
+        if (Conf['Quote Threading']) {
+          QuoteThreading.init();
         }
       } else {
         if (Conf['Thread Hiding']) {
