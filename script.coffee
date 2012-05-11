@@ -54,6 +54,7 @@ Config =
       'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes']
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
+      'Quote Threading':              [false, 'Thread convsersations']
   filter:
     name: [
       '# Filter any namefags:'
@@ -2619,6 +2620,20 @@ Quotify =
       $.replace node, nodes
     return
 
+QuoteThreading =
+  init: ->
+    Main.callbacks.push @node
+  node: (post) ->
+    {quotes} = post
+    pc = prev = null
+    for quote in quotes
+      id = quote.hash[2..]
+      continue if (id is post.threadId) or (id >= post.id) or !(pc = $ "#pc#{id}")
+      return if prev and (prev != pc)
+      prev = pc
+
+    pc?.appendChild post.root
+
 ReportButton =
   init: ->
     @a = $.el 'a',
@@ -3069,6 +3084,9 @@ Main =
 
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.init()
+
+    if Conf['Quote Threading']
+      QuoteThreading.init()
 
     $.ready Main.ready
 
@@ -3579,6 +3597,11 @@ textarea.field {
 .backlink.forwardlink {
   text-decoration: none;
   border-bottom: 1px dashed;
+}
+
+.replyContainer > .replyContainer {
+  margin-left: 20px;
+  border-left: 1px solid black;
 }
 '
 

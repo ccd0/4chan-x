@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -134,7 +134,8 @@
         'Resurrect Quotes': [true, 'Linkify dead quotes to archives'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
         'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes'],
-        'Forward Hiding': [true, 'Hide original posts of inlined backlinks']
+        'Forward Hiding': [true, 'Hide original posts of inlined backlinks'],
+        'Quote Threading': [false, 'Thread convsersations']
       }
     },
     filter: {
@@ -3403,6 +3404,29 @@
     }
   };
 
+  QuoteThreading = {
+    init: function() {
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var id, pc, prev, quote, quotes, _i, _len;
+      quotes = post.quotes;
+      pc = prev = null;
+      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+        quote = quotes[_i];
+        id = quote.hash.slice(2);
+        if ((id === post.threadId) || (id >= post.id) || !(pc = $("#pc" + id))) {
+          continue;
+        }
+        if (prev && (prev !== pc)) {
+          return;
+        }
+        prev = pc;
+      }
+      return pc != null ? pc.appendChild(post.root) : void 0;
+    }
+  };
+
   ReportButton = {
     init: function() {
       this.a = $.el('a', {
@@ -3996,6 +4020,9 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.init();
       }
+      if (Conf['Quote Threading']) {
+        QuoteThreading.init();
+      }
       return $.ready(Main.ready);
     },
     ready: function() {
@@ -4561,6 +4588,11 @@ textarea.field {\
 .backlink.forwardlink {\
   text-decoration: none;\
   border-bottom: 1px dashed;\
+}\
+\
+.replyContainer > .replyContainer {\
+  margin-left: 20px;\
+  border-left: 1px solid black;\
 }\
 '
   };
