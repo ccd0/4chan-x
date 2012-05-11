@@ -810,17 +810,17 @@ ReplyHiding =
     {root, el} = post
     button = $ '.sideArrows', root
     return if button.hidden # already hidden once by filter
-    button.hidden = true
-    el.hidden = true
-
-    return unless Conf['Show Stubs']
+    #XXX FIXME change filter also
 
     stub = $.el 'div',
       className: 'hide_reply_button stub'
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
     $.add stub.firstChild, $.tn $('.nameBlock', el).textContent
     $.on  stub.firstChild, 'click', ReplyHiding.toggle
-    $.after button, stub
+    $.before button, stub
+
+    if !Conf['Show Stubs']
+      stub.hidden = true
 
   show: (post) ->
     {el, root} = post
@@ -830,7 +830,7 @@ ReplyHiding =
 
     return unless Conf['Show Stubs']
 
-    $.rm button.nextElementSibling
+    $.rm button.previousElementSibling
 
 Keybinds =
   init: ->
@@ -3606,6 +3606,9 @@ textarea.field {
 .replyContainer > .replyContainer {
   margin-left: 20px;
   border-left: 1px solid black;
+}
+.stub ~ * {
+  display: none !important;
 }
 '
 

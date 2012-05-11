@@ -1040,18 +1040,16 @@
       if (button.hidden) {
         return;
       }
-      button.hidden = true;
-      el.hidden = true;
-      if (!Conf['Show Stubs']) {
-        return;
-      }
       stub = $.el('div', {
         className: 'hide_reply_button stub',
         innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
       });
       $.add(stub.firstChild, $.tn($('.nameBlock', el).textContent));
       $.on(stub.firstChild, 'click', ReplyHiding.toggle);
-      return $.after(button, stub);
+      $.before(button, stub);
+      if (!Conf['Show Stubs']) {
+        return stub.hidden = true;
+      }
     },
     show: function(post) {
       var button, el, root;
@@ -1062,7 +1060,7 @@
       if (!Conf['Show Stubs']) {
         return;
       }
-      return $.rm(button.nextElementSibling);
+      return $.rm(button.previousElementSibling);
     }
   };
 
@@ -4597,6 +4595,9 @@ textarea.field {\
 .replyContainer > .replyContainer {\
   margin-left: 20px;\
   border-left: 1px solid black;\
+}\
+.stub ~ * {\
+  display: none !important;\
 }\
 '
   };
