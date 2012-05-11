@@ -996,33 +996,35 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var button;
-      if (post.isInlined || /\bop\b/.test(post["class"])) {
+      var button, id, isInlined, klass, root;
+      id = post.id, isInlined = post.isInlined, klass = post.klass, root = post.root;
+      if (isInlined || /\bop\b/.test(klass)) {
         return;
       }
-      button = post.root.firstElementChild;
+      button = $('.sideArrows', root);
       $.addClass(button, 'hide_reply_button');
       button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
       $.on(button.firstChild, 'click', ReplyHiding.toggle);
-      if (post.id in g.hiddenReplies) {
-        return ReplyHiding.hide(post.root);
+      if (id in g.hiddenReplies) {
+        return ReplyHiding.hide(post);
       }
     },
     toggle: function() {
-      var button, id, quote, quotes, root, _i, _j, _len, _len1;
+      var button, id, post, quote, quotes, root, _i, _j, _len, _len1;
       button = this.parentNode;
       root = button.parentNode;
-      id = root.id.slice(2);
+      post = Main.preParse(root);
+      id = post.id;
       quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href='#p" + id + "']");
       if (/\bstub\b/.test(button.className)) {
-        ReplyHiding.show(root);
+        ReplyHiding.show(post);
         for (_i = 0, _len = quotes.length; _i < _len; _i++) {
           quote = quotes[_i];
           $.removeClass(quote, 'filtered');
         }
         delete g.hiddenReplies[id];
       } else {
-        ReplyHiding.hide(root);
+        ReplyHiding.hide(post);
         for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
           quote = quotes[_j];
           $.addClass(quote, 'filtered');
@@ -1031,14 +1033,14 @@
       }
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
-    hide: function(root) {
-      var button, el, stub;
-      button = root.firstElementChild;
+    hide: function(post) {
+      var button, el, root, stub;
+      root = post.root, el = post.el;
+      button = $('.sideArrows', root);
       if (button.hidden) {
         return;
       }
       button.hidden = true;
-      el = root.lastElementChild;
       el.hidden = true;
       if (!Conf['Show Stubs']) {
         return;
@@ -1051,10 +1053,10 @@
       $.on(stub.firstChild, 'click', ReplyHiding.toggle);
       return $.after(button, stub);
     },
-    show: function(root) {
-      var button, el;
-      el = root.lastElementChild;
-      button = root.firstElementChild;
+    show: function(post) {
+      var button, el, root;
+      el = post.el, root = post.root;
+      button = $('.sideArrows', root);
       el.hidden = false;
       button.hidden = false;
       if (!Conf['Show Stubs']) {
@@ -4155,6 +4157,7 @@
         root: node,
         el: el,
         "class": el.className,
+        klass: el.className,
         id: el.id.slice(1),
         threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
         isInlined: /\binline\b/.test(rootClass),

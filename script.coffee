@@ -777,37 +777,40 @@ ReplyHiding =
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.isInlined or /\bop\b/.test post.class
-    button = post.root.firstElementChild
+    {id, isInlined, klass, root} = post
+    return if isInlined or /\bop\b/.test klass
+    button = $ '.sideArrows', root
     $.addClass button, 'hide_reply_button'
     button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
     $.on button.firstChild, 'click', ReplyHiding.toggle
 
-    if post.id of g.hiddenReplies
-      ReplyHiding.hide post.root
+    if id of g.hiddenReplies
+      ReplyHiding.hide post
 
   toggle: ->
     button = @parentNode
     root   = button.parentNode
-    id     = root.id[2..]
+    post   = Main.preParse root
+    {id} = post
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href='#p#{id}']"
+
     if /\bstub\b/.test button.className
-      ReplyHiding.show root
+      ReplyHiding.show post
       for quote in quotes
         $.removeClass quote, 'filtered'
       delete g.hiddenReplies[id]
     else
-      ReplyHiding.hide root
+      ReplyHiding.hide post
       for quote in quotes
         $.addClass quote, 'filtered'
       g.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-  hide: (root) ->
-    button = root.firstElementChild
+  hide: (post) ->
+    {root, el} = post
+    button = $ '.sideArrows', root
     return if button.hidden # already hidden once by filter
     button.hidden = true
-    el = root.lastElementChild
     el.hidden = true
 
     return unless Conf['Show Stubs']
@@ -819,9 +822,9 @@ ReplyHiding =
     $.on  stub.firstChild, 'click', ReplyHiding.toggle
     $.after button, stub
 
-  show: (root) ->
-    el     = root.lastElementChild
-    button = root.firstElementChild
+  show: (post) ->
+    {el, root} = post
+    button = $ '.sideArrows', root
     el.hidden = false
     button.hidden = false
 
@@ -3189,6 +3192,7 @@ Main =
       root:        node
       el:          el
       class:       el.className
+      klass:       el.className
       id:          el.id[1..]
       threadId:    g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
       isInlined:   /\binline\b/.test rootClass
