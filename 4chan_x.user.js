@@ -3410,56 +3410,86 @@
     }
   };
 
+  /*
+  QuoteThreading =
+    init: ->
+      Main.callbacks.push @node
+    node: (post) ->
+      {quotes} = post
+      {replies} = Unread
+      for quote in quotes
+        read = true
+        id = quote.hash[2..]
+        continue if id is post.id
+        for reply, i in replies
+          if id is reply.id
+            read = false
+            break
+        continue if read
+        return if prev and (prev != reply)
+        prev = reply
+        j = i
+  
+      return unless prev
+  
+      reply = prev
+      reply.root.appendChild post.root
+      prev = post.root.previousElementSibling
+      if /postContainer/.test prev.className
+        id = prev.id[2..]
+        for reply, k in replies[j+1..]
+          break if reply.id is id
+        j += 1 + k
+  
+      replies.pop()
+      replies.splice j, 0, post
+  */
+
+
   QuoteThreading = {
     init: function() {
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var i, id, j, k, prev, quote, quotes, read, replies, reply, _i, _j, _k, _len, _len1, _len2, _ref;
-      quotes = post.quotes;
+      var id, keys, next, pEl, pid, preply, prev, qid, qreply, quote, quotes, replies, reply, uniq, _i, _len;
+      quotes = post.quotes, id = post.id;
       replies = Unread.replies;
+      uniq = {};
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
-        read = true;
-        id = quote.hash.slice(2);
-        if (id === post.id) {
+        qid = quote.hash.slice(2);
+        if (!(qid < id)) {
           continue;
         }
-        for (i = _j = 0, _len1 = replies.length; _j < _len1; i = ++_j) {
-          reply = replies[i];
-          if (id === reply.id) {
-            read = false;
-            break;
-          }
+        if (qid in replies) {
+          uniq[qid] = true;
         }
-        if (read) {
-          continue;
-        }
-        if (prev && (prev !== reply)) {
-          return;
-        }
-        prev = reply;
-        j = i;
       }
-      if (!prev) {
+      keys = Object.keys(uniq);
+      if (keys.length !== 1) {
         return;
       }
-      reply = prev;
-      reply.root.appendChild(post.root);
-      prev = post.root.previousElementSibling;
-      if (/postContainer/.test(prev.className)) {
-        id = prev.id.slice(2);
-        _ref = replies.slice(j + 1);
-        for (k = _k = 0, _len2 = _ref.length; _k < _len2; k = ++_k) {
-          reply = _ref[k];
-          if (reply.id === id) {
-            break;
-          }
-        }
-        j += 1 + k;
+      qid = keys[0];
+      qreply = replies[qid];
+      reply = replies[id];
+      $.add(qreply.el.parentNode, reply.el.parentNode);
+      pEl = reply.el.parentNode.previousElementSibling;
+      if (/postContainer/.test(pEl.className)) {
+        pid = pEl.id.slice(2);
+        preply = replies[pid];
+      } else {
+        pid = qid;
+        preply = qreply;
       }
-      replies.pop();
-      return replies.splice(j, 0, post);
+      prev = reply.prev, next = reply.next;
+      if (preply === prev) {
+        return;
+      }
+      prev.next = next;
+      next = preply.next;
+      preply.next = reply;
+      reply.next = next;
+      return Unread.replies = replies;
     }
   };
 
@@ -3534,10 +3564,13 @@
       $.on(window, 'scroll', Unread.scroll);
       return Main.callbacks.push(this.node);
     },
-    replies: [],
     foresee: [],
+    replies: {
+      first: null,
+      last: null
+    },
     node: function(post) {
-      var count, el, index;
+      var el, index, replies, reply, _ref;
       if ((index = Unread.foresee.indexOf(post.id)) !== -1) {
         Unread.foresee.splice(index, 1);
         return;
@@ -3546,25 +3579,43 @@
       if (el.hidden || /\bop\b/.test(post["class"]) || post.isInlined) {
         return;
       }
-      count = Unread.replies.push(post);
-      return Unread.update(count === 1);
+      replies = Unread.replies;
+      reply = replies[post.id] = {
+        prev: replies.last,
+        next: null,
+        el: el,
+        id: post.id
+      };
+      if ((_ref = reply.prev) != null) {
+        _ref.next = reply;
+      }
+      replies.last = reply;
+      if (!replies.first) {
+        replies.first = reply;
+      }
+      return Unread.update(1);
     },
     scroll: function() {
-      var bottom, height, i, reply, _i, _len, _ref;
+      var bottom, first, height, next, replies, update;
       height = d.documentElement.clientHeight;
-      _ref = Unread.replies;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        reply = _ref[i];
-        bottom = reply.root.getBoundingClientRect().bottom;
+      replies = Unread.replies;
+      first = replies.first;
+      update = false;
+      while (first) {
+        bottom = first.el.getBoundingClientRect().bottom;
         if (bottom > height) {
           break;
         }
+        update = true;
+        next = first.next;
+        delete replies[first.id];
+        first = next;
       }
-      if (i === 0) {
-        return;
+      replies.first = first;
+      Unread.replies = replies;
+      if (update) {
+        return Unread.update(0);
       }
-      Unread.replies = Unread.replies.slice(i);
-      return Unread.update(Unread.replies.length === 0);
     },
     setTitle: function(count) {
       if (this.scheduled) {
@@ -3577,16 +3628,16 @@
         return d.title = "(" + count + ") " + Unread.title;
       }), 5);
     },
-    update: function(updateFavicon) {
+    update: function(updateCount) {
       var count;
       if (!g.REPLY) {
         return;
       }
-      count = this.replies.length;
+      count = Object.keys(this.replies).length - 2;
       if (Conf['Unread Count']) {
         this.setTitle(count);
       }
-      if (!(Conf['Unread Favicon'] && updateFavicon)) {
+      if (!(Conf['Unread Favicon'] && count === updateCount)) {
         return;
       }
       if ($.engine === 'presto') {
