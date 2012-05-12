@@ -348,7 +348,7 @@ $.extend $,
       el.removeEventListener event, handler, false
     return
   open: (url) ->
-    (GM_openInTab or window.open) url, '_blank'
+    (GM_openInTab or window.open) location.protocol + url, '_blank'
   isDST: ->
     ###
       http://en.wikipedia.org/wiki/Eastern_Time_Zone
