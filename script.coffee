@@ -528,7 +528,7 @@ Filter =
             else
               continue
           else
-            ReplyHiding.hide root
+            ReplyHiding.hide post
           return
 
         # Highlight
