@@ -114,8 +114,7 @@ Config =
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
-  fileInfoR: '%l (%s, %r)'
-  fileInfoT: '%l (%s, %r)'
+  fileInfo: '%l (%p%s, %r)'
   favicon: 'ferongr'
   hotkeys:
     # QR & Options
@@ -175,32 +174,29 @@ UI =
     d.addEventListener 'mouseup',   UI.dragend, false
     #distance from pointer to el edge is constant; calculate it here.
     # XXX opera reports el.offsetLeft / el.offsetTop as 0
-    rect = el.getBoundingClientRect()
-    UI.dx = e.clientX - rect.left
-    UI.dy = e.clientY - rect.top
-    #factor out el from document dimensions
-    UI.width  = d.body.clientWidth  - el.offsetWidth
-    UI.height = d.body.clientHeight - el.offsetHeight
+    rect      = el.getBoundingClientRect()
+    UI.dx     = e.clientX - rect.left
+    UI.dy     = e.clientY - rect.top
+    UI.width  = d.documentElement.clientWidth  - rect.width
+    UI.height = d.documentElement.clientHeight - rect.height
   drag: (e) ->
     left = e.clientX - UI.dx
-    top = e.clientY - UI.dy
+    top  = e.clientY - UI.dy
     left =
-      if left < 10 then 0
+      if left < 10 then '0px'
       else if UI.width - left < 10 then null
-      else left
+      else left + 'px'
     top =
-      if top < 10 then 0
+      if top < 10 then '0px'
       else if UI.height - top < 10 then null
-      else top
-    right = if left is null then 0 else null
-    bottom = if top is null then 0 else null
+      else top + 'px'
     #using null instead of '' is 4% faster
     #these 4 statements are 40% faster than 1 style.cssText
     {style} = UI.el
-    style.top    = top
-    style.right  = right
-    style.bottom = bottom
     style.left   = left
+    style.top    = top
+    style.right  = if left is null then '0px' else null
+    style.bottom = if top  is null then '0px' else null
   dragend: ->
     #$ coffee -bpe '{a} = {b} = c'
     #var a, b;
@@ -211,26 +207,25 @@ UI =
     d.removeEventListener 'mouseup',   UI.dragend, false
   hover: (e) ->
     {clientX, clientY} = e
-    {el} = UI
-    {style} = el
-    {clientHeight, clientWidth} = d.body
-    height = el.offsetHeight
+    {style} = UI.el
+    {clientHeight, clientWidth} = d.documentElement
+    height = UI.el.offsetHeight
 
     top = clientY - 120
     style.top =
       if clientHeight <= height or top <= 0
-        0
+        '0px'
       else if top + height >= clientHeight
-        clientHeight - height
+        clientHeight - height + 'px'
       else
-        top
+        top + 'px'
 
     if clientX <= clientWidth - 400
-      style.left  = clientX + 45
+      style.left  = clientX + 45 + 'px'
       style.right = null
     else
       style.left  = null
-      style.right = clientWidth - clientX + 45
+      style.right = clientWidth - clientX + 45 + 'px'
 
   hoverend: ->
     $.rm UI.el
@@ -513,8 +508,8 @@ Filter =
 
   node: (post) ->
     return if post.isInlined
-    post.isOP  = post.class is 'op'
-    {isOP, el} = post
+    isOP = post.id is post.threadId
+    {root} = post
     for key of Filter.filters
       value = Filter[key] post
       if value is false
@@ -528,62 +523,57 @@ Filter =
         if result is true
           if isOP
             unless g.REPLY
-              ThreadHiding.hide post.el.parentNode
+              ThreadHiding.hide root.parentNode
             else
               continue
           else
-            ReplyHiding.hide post.root
+            ReplyHiding.hide root
           return
 
         # Highlight
-        if isOP
-          $.addClass el, result[0]
-        else
-          $.addClass el.parentNode, result[0]
+        $.addClass (if isOP then root.parentNode else root), result[0]
         if isOP and result[1] and not g.REPLY
-          # Put the highlighted OPs' threads on top of the board pages...
-          thisThread = el.parentNode
+          # Put the highlighted OPs' thread on top of the board page...
+          thisThread = root.parentNode
           # ...before the first non highlighted thread.
-          if firstThread = $ 'div[class=op]'
-            $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
+          if firstThread = $ 'div[class=thread]'
+            $.before firstThread, [thisThread, thisThread.nextElementSibling]
 
   name: (post) ->
-    name = if post.isOP then $ '.postername', post.el else $ '.commentpostername', post.el
-    name.textContent
+    $('.name', post.el).textContent
   uniqueid: (post) ->
     if uid = $ '.posteruid', post.el
-      return uid.textContent
+      return uid.textContent[5...-1]
     false
   tripcode: (post) ->
     if trip = $ '.postertrip', post.el
       return trip.textContent
     false
   mod: (post) ->
-    if mod = (if post.isOP then $ '.commentpostername', post.el else $ '.commentpostername ~ .commentpostername', post.el)
+    if mod = $ '.capcode', post.el
       return mod.textContent
     false
   email: (post) ->
-    if mail = $ '.linkmail', post.el
-      return mail.href
+    if mail = $ '.useremail', post.el
+      return mail.pathname
     false
   subject: (post) ->
-    sub = if post.isOP then $ '.filetitle', post.el else $ '.replytitle', post.el
-    sub.textContent
+    $('.subject', post.el).textContent or false
   comment: (post) ->
     text = []
     # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE is 7
-    nodes = d.evaluate './/br|.//text()', post.el.lastChild, null, 7, null
+    nodes = d.evaluate './/br|.//text()', post.el.lastElementChild, null, 7, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
   filename: (post) ->
-    {filesize} = post
-    if filesize and file = $ 'span', filesize
+    {fileInfo} = post
+    if fileInfo and file = $ '.fileText > span', fileInfo
       return file.title
     false
   dimensions: (post) ->
-    {filesize} = post
-    if filesize and match = filesize.textContent.match /\d+x\d+/
+    {fileInfo} = post
+    if fileInfo and match = fileInfo.textContent.match /\d+x\d+/
       return match[0]
     false
   filesize: (post) ->
@@ -594,7 +584,7 @@ Filter =
   md5: (post) ->
     {img} = post
     if img
-      return img.getAttribute 'md5'
+      return img.dataset.md5
     false
 
 StrikethroughQuotes =
@@ -603,23 +593,22 @@ StrikethroughQuotes =
   node: (post) ->
     return if post.isInlined
     for quote in post.quotes
-      if (el = $.id quote.hash[1..]) and el.parentNode.parentNode.parentNode.hidden
+      if (el = $.id quote.hash[1..]) and el.hidden
         $.addClass quote, 'filtered'
         ReplyHiding.hide post.root if Conf['Recursive Filtering']
     return
 
 ExpandComment =
   init: ->
-    for a in $$ '.abbr > a'
-      $.on a, 'click', ExpandComment.expand
+    for a in $$ '.abbr'
+      $.on a.firstElementChild, 'click', ExpandComment.expand
     return
   expand: (e) ->
     e.preventDefault()
-    [_, threadID, replyID] = @href.match /(\d+)#(\d+)/
+    [_, threadID, replyID] = @href.match /(\d+)#p(\d+)/
     @textContent = "Loading #{replyID}..."
-    threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]/div', @).id
     a = @
-    $.cache @pathname, (-> ExpandComment.parse @, a, threadID, replyID)
+    $.cache @pathname, -> ExpandComment.parse @, a, threadID, replyID
   parse: (req, a, threadID, replyID) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
@@ -628,17 +617,15 @@ ExpandComment =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
-    Threading.op $('body > form', doc).firstChild
     # Import the node to fix quote.hashes
     # as they're empty when in a different document.
-    node = d.importNode doc.getElementById replyID
+    node = d.importNode doc.getElementById "m#{replyID}"
 
     quotes = node.getElementsByClassName 'quotelink'
     for quote in quotes
-      if quote.hash is href = quote.getAttribute 'href' # Add pathname to in-thread quotes
-        quote.pathname = "/#{g.BOARD}/res/#{threadID}"
-      else if href isnt quote.href # Fix cross-thread links, not cross-board ones
-        quote.href = "res/#{href}"
+      href = quote.getAttribute 'href'
+      continue if href[0] is '/' # Cross-board quote
+      quote.href = "res/#{href}" # Fix pathnames
     post =
       el:        node
       threadId:  threadID
@@ -654,35 +641,28 @@ ExpandComment =
       QuoteOP.node      post
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
-    $.replace a.parentNode.parentNode, node.lastChild
+    $.replace a.parentNode.parentNode, node
 
 ExpandThread =
   init: ->
-    for span in $$ '.omittedposts'
+    for span in $$ '.summary'
       a = $.el 'a',
         textContent: "+ #{span.textContent}"
-        className: 'omittedposts'
+        className: 'summary desktop'
         href: 'javascript:;'
-      $.on a, 'click', ExpandThread.cb.toggle
+      $.on a, 'click', -> ExpandThread.toggle @parentNode
       $.replace span, a
 
-  cb:
-    toggle: ->
-      thread = @parentNode
-      ExpandThread.toggle thread
-
   toggle: (thread) ->
-    threadID = thread.firstChild.id
-    pathname = "/#{g.BOARD}/res/#{threadID}"
-    a = $ '.omittedposts', thread
+    pathname = "/#{g.BOARD}/res/#{thread.id[1..]}"
+    a = $ '.summary', thread
 
     # \u00d7 is &times;
 
     switch a.textContent[0]
       when '+'
-        $('.op .container', thread)?.textContent = ''
         a.textContent = a.textContent.replace '+', '\u00d7 Loading...'
-        $.cache pathname, (-> ExpandThread.parse @, pathname, thread, a)
+        $.cache pathname, -> ExpandThread.parse @, thread, a
 
       when '\u00d7'
         a.textContent = a.textContent.replace '\u00d7 Loading...', '+'
@@ -695,14 +675,15 @@ ExpandThread =
           when 'b', 'vg' then 3
           when 't' then 1
           else 5
-        table = $.x "following::br[@clear]/preceding::table[#{num}]", a
-        while (prev = table.previousSibling) and (prev.nodeName isnt 'A')
-          $.rm prev
-        for backlink in $$ '.backlink', $ '.op', thread
-          $.rm backlink if !$.id backlink.hash[1..]
+        replies = $$ '.replyContainer', thread
+        replies.splice replies.length - num, num
+        for reply in replies
+          $.rm reply
+        for backlink in $$ '.backlink', a.previousElementSibling
+          $.rm backlink unless $.id backlink.hash[1..]
+    return
 
-
-  parse: (req, pathname, thread, a) ->
+  parse: (req, thread, a) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
       $.off a, 'click', ExpandThread.cb.toggle
@@ -713,74 +694,138 @@ ExpandThread =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
-    nodes = []
-    for reply in $$ '.reply', doc
-      table = d.importNode reply.parentNode.parentNode.parentNode
-      for quote in $$ '.quotelink', table
-        if quote.hash is href = quote.getAttribute 'href' # Add pathname to in-thread quotes
-          quote.pathname = pathname
-        else if href isnt quote.href # Fix cross-thread links, not cross-board ones
-          quote.href = "res/#{href}"
-      link = $ '.quotejs', table
-      link.href = "res/#{thread.firstChild.id}##{reply.id}"
-      link.nextSibling.href = "res/#{thread.firstChild.id}#q#{reply.id}"
-      nodes.push table
+    threadID = thread.id[1..]
+    nodes    = []
+    for reply in $$ '.replyContainer', doc
+      reply = d.importNode reply
+      for quote in $$ '.quotelink', reply
+        href = quote.getAttribute 'href'
+        continue if href[0] is '/' # Cross-board quote
+        quote.href = "res/#{href}" # Fix pathnames
+      id = reply.id[2..]
+      link = $ '.postInfo > .postNum > a:first-child', reply
+      link.href = "res/#{threadID}#p#{id}"
+      link.nextSibling.href = "res/#{threadID}#q#{id}"
+      nodes.push reply
     # eat everything, then replace with fresh full posts
-    while (next = a.nextSibling) and not next.clear #br[clear]
-      $.rm next
-    $.before next, nodes
+    for post in $$ '.summary ~ .replyContainer', a.parentNode
+      $.rm post
+    for backlink in $$ '.backlink', a.previousElementSibling
+      $.rm backlink unless $.id backlink.hash[1..]
+    $.after a, nodes
+
+ThreadHiding =
+  init: ->
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    for thread in $$ '.thread'
+      a  = $.el 'a',
+        className: 'hide_thread_button'
+        innerHTML: '<span>[ - ]</span>'
+        href: 'javascript:;'
+      $.on a, 'click', ThreadHiding.cb
+      $.prepend thread, a
+
+      if thread.id[1..] of hiddenThreads
+        ThreadHiding.hide thread
+    return
+
+  cb: ->
+    ThreadHiding.toggle @parentNode
+
+  toggle: (thread) ->
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    id = thread.id[1..]
+    if thread.hidden or /\bhidden_thread\b/.test thread.firstChild.className
+      ThreadHiding.show thread
+      delete hiddenThreads[id]
+    else
+      ThreadHiding.hide thread
+      hiddenThreads[id] = Date.now()
+    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
+
+  hide: (thread) ->
+    unless Conf['Show Stubs']
+      thread.hidden = true
+      thread.nextElementSibling.hidden = true
+      return
+
+    return if thread.firstChild.className is 'block' # already hidden by filter
+
+    num     = 0
+    if span = $ '.summary', thread
+      num   = Number span.textContent.match /\d+/
+    num    += $$('.opContainer ~ .replyContainer', thread).length
+    text    = if num is 1 then '1 reply' else "#{num} replies"
+    opInfo  = $('.op > .postInfo > .nameBlock', thread).textContent
+
+    a = $ '.hide_thread_button', thread
+    $.addClass a, 'hidden_thread'
+    a.firstChild.textContent = '[ + ]'
+    $.add a, $.tn " #{opInfo} (#{text})"
+
+  show: (thread) ->
+    a = $ '.hide_thread_button', thread
+    $.removeClass a, 'hidden_thread'
+    a.innerHTML = '<span>[ - ]</span>'
+    thread.hidden = false
+    thread.nextElementSibling.hidden = false
 
 ReplyHiding =
   init: ->
-    @td = $.el 'td',
-      noWrap: true
-      className: 'replyhider'
-      innerHTML: '<a href="javascript:;">[ - ]</a>'
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.class
-    td = ReplyHiding.td.cloneNode true
-    $.on td.firstChild, 'click', ReplyHiding.toggle
-    $.replace post.el.previousSibling, td
+    return if post.isInlined or /\bop\b/.test post.class
+    button = post.root.firstElementChild
+    $.addClass button, 'hide_reply_button'
+    button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
+    $.on button.firstChild, 'click', ReplyHiding.toggle
 
     if post.id of g.hiddenReplies
       ReplyHiding.hide post.root
 
   toggle: ->
-    parent = @parentNode
-    if parent.className is 'replyhider'
-      ReplyHiding.hide parent.parentNode.parentNode.parentNode
-      id = parent.nextSibling.id
-      for quote in $$ ".quotelink[href='##{id}'], .backlink[href='##{id}']"
-        $.addClass quote, 'filtered'
-      g.hiddenReplies[id] = Date.now()
-    else
-      table = parent.nextSibling
-      table.hidden = false
-      $.rm parent
-      id = table.firstChild.firstChild.lastChild.id
-      for quote in $$ ".quotelink[href$='##{id}'], .backlink[href='##{id}']"
+    button = @parentNode
+    root   = button.parentNode
+    id     = root.id[2..]
+    quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href='#p#{id}']"
+    if /\bstub\b/.test button.className
+      ReplyHiding.show root
+      for quote in quotes
         $.removeClass quote, 'filtered'
       delete g.hiddenReplies[id]
+    else
+      ReplyHiding.hide root
+      for quote in quotes
+        $.addClass quote, 'filtered'
+      g.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-  hide: (table) ->
-    return if table.hidden # already hidden by filter
-
-    table.hidden = true
+  hide: (root) ->
+    button = root.firstElementChild
+    return if button.hidden # already hidden once by filter
+    button.hidden = true
+    el = root.lastElementChild
+    el.hidden = true
 
     return unless Conf['Show Stubs']
 
-    name = $('.commentpostername', table).textContent
-    uid  = $('.posteruid',         table)?.textContent or ''
-    trip = $('.postertrip',        table)?.textContent or ''
+    stub = $.el 'div',
+      className: 'hide_reply_button stub'
+      innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
+    $.add stub.firstChild, $.tn $('.nameBlock', el).textContent
+    $.on  stub.firstChild, 'click', ReplyHiding.toggle
+    $.after button, stub
 
-    div  = $.el 'div',
-      className: 'stub'
-      innerHTML: "<a href=javascript:;><span>[ + ]</span> #{name} #{uid} #{trip}</a>"
-    $.on div.firstChild, 'click', ReplyHiding.toggle
-    $.before table, div
+  show: (root) ->
+    el     = root.lastElementChild
+    button = root.firstElementChild
+    el.hidden = false
+    button.hidden = false
+
+    return unless Conf['Show Stubs']
+
+    $.rm button.nextElementSibling
 
 Keybinds =
   init: ->
@@ -839,11 +884,13 @@ Keybinds =
         Keybinds.img thread, true
       # Board Navigation
       when Conf.zero
-        window.location = "/#{g.BOARD}/0#0"
+        window.location = "/#{g.BOARD}/0#delform"
       when Conf.nextPage
-        $('input[value=Next]')?.click()
+        if link = $ 'link[rel=next]', d.head
+          window.location = link.href
       when Conf.previousPage
-        $('input[value=Previous]')?.click()
+        if link = $ 'link[rel=prev]', d.head
+          window.location.href = link.href
       # Thread Navigation
       when Conf.nextThread
         return if g.REPLY
@@ -896,18 +943,18 @@ Keybinds =
     if all
       $.id('imageExpand').click()
     else
-      thumb = $ 'img[md5]', $('.replyhl', thread) or thread
+      thumb = $ 'img[data-md5]', $('.post.highlight', thread) or thread
       ImageExpand.toggle thumb.parentNode
 
   qr: (thread, quote) ->
     if quote
-      QR.quote.call $ '.quotejs + .quotejs', $('.replyhl', thread) or thread
+      QR.quote.call $ '.postInfo > .postNum > a[title="Quote this post"]', $('.post.highlight', thread) or thread
     else
       QR.open()
     $('textarea', QR.el).focus()
 
   open: (thread, tab) ->
-    id = thread.firstChild.id
+    id = thread.id[1..]
     url = "//boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab
       $.open url
@@ -915,39 +962,35 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
-    if td = $ '.replyhl', thread
-      td.className = 'reply'
-      td.removeAttribute 'tabindex'
-      rect = td.getBoundingClientRect()
-      if rect.bottom >= 0 and rect.top <= d.body.clientHeight # We're at least partially visible
-        next =
-          if delta is +1
-            $.x 'following::td[@class="reply"]', td
-          else
-            $.x 'preceding::td[@class="reply"]', td
+    if post = $ '.reply.highlight', thread
+      $.removeClass post, 'highlight'
+      post.removeAttribute 'tabindex'
+      rect = post.getBoundingClientRect()
+      if rect.bottom >= 0 and rect.top <= d.documentElement.clientHeight # We're at least partially visible
+        next = $.x 'child::div[contains(@class,"post reply")]',
+          if delta is +1 then post.parentNode.nextElementSibling else post.parentNode.previousElementSibling
         unless next
-          td.className = 'replyhl'
-          td.tabIndex  = 0
-          td.focus()
+          @focus post
           return
         return unless g.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
         rect = next.getBoundingClientRect()
-        if rect.top < 0 or rect.bottom > d.body.clientHeight
+        if rect.top < 0 or rect.bottom > d.documentElement.clientHeight
           next.scrollIntoView delta is -1
-        next.className = 'replyhl'
-        next.tabIndex  = 0
-        next.focus()
+        @focus next
         return
 
     replies = $$ '.reply', thread
     replies.reverse() if delta is -1
     for reply in replies
       rect = reply.getBoundingClientRect()
-      if delta is +1 and rect.top >= 0 or delta is -1 and rect.bottom <= d.body.clientHeight
-        reply.className = 'replyhl'
-        reply.tabIndex  = 0
-        reply.focus()
+      if delta is +1 and rect.top >= 0 or delta is -1 and rect.bottom <= d.documentElement.clientHeight
+        @focus reply
         return
+
+  focus: (post) ->
+    $.addClass post, 'highlight'
+    post.tabIndex = 0
+    post.focus()
 
 Nav =
   # ◀ ▶
@@ -988,7 +1031,7 @@ Nav =
         if full
           return [thread, i, rect]
         return thread
-    return $ 'form[name=delform]'
+    return $ '.board'
 
   scroll: (delta) ->
     [thread, i, rect] = Nav.getThread true
@@ -1014,9 +1057,9 @@ QR =
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on link.firstChild, 'click', ->
         QR.open()
-        $('select', QR.el).value = 'new' unless g.REPLY
+        $('select',   QR.el).value = 'new' unless g.REPLY
         $('textarea', QR.el).focus()
-      $.before $('form[name=post]'), link
+      $.before $.id('postForm'), link
 
     # Prevent original captcha input from being focused on reload.
     script = $.el 'script',
@@ -1032,7 +1075,7 @@ QR =
     $.on d, 'dragstart dragend', QR.drag
 
   node: (post) ->
-    $.on $('.quotejs + .quotejs', post.el), 'click', QR.quote
+    $.on $('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote
 
   open: ->
     if QR.el
@@ -1076,12 +1119,12 @@ QR =
     $('.warning', QR.el).textContent = null
 
   status: (data={}) ->
+    return unless QR.el
     if g.dead
       value    = 404
       disabled = true
       QR.cooldown.auto = false
     value = QR.cooldown.seconds or data.progress or value
-    return unless QR.el
     {input} = QR.status
     input.value =
       if QR.cooldown.auto and Conf['Cooldown']
@@ -1115,14 +1158,13 @@ QR =
     e?.preventDefault()
     QR.open()
     unless g.REPLY
-      $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).firstChild.id
-
+      $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).id[1..]
     # Make sure we get the correct number, even with XXX censors
-    id = @previousElementSibling.hash[1..]
+    id   = @previousSibling.hash[2..]
     text = ">>#{id}\n"
 
     sel = window.getSelection()
-    if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote/preceding-sibling::input', sel.anchorNode)?.name
+    if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id.match(/\d+$/)[0]
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
@@ -1136,7 +1178,6 @@ QR =
           ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
     ta.focus()
     # Move the caret to the end of the new quote.
-    ta.selectionEnd = ta.selectionStart = caretPos + text.length
     range = caretPos + text.length
     ta.setSelectionRange range, range
 
@@ -1357,7 +1398,7 @@ QR =
       @timeout  = Date.now() + 26*$.MINUTE
       challenge = @challenge.firstChild.value
       @img.alt  = challenge
-      @img.src  = "http://www.google.com/recaptcha/api/image?c=#{challenge}"
+      @img.src  = "//www.google.com/recaptcha/api/image?c=#{challenge}"
       @input.value = null
     count: (count) ->
       @input.placeholder = switch count
@@ -1405,7 +1446,7 @@ QR =
       ta.style.cssText = $.get 'QR.size', ''
 
     # Allow only this board's supported files.
-    mimeTypes = $('.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
+    mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
         when 'jpg'
           'image/jpeg'
@@ -1416,19 +1457,20 @@ QR =
     QR.mimeTypes = mimeTypes.split ', '
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
-    fileInput        = $ '[type=file]', QR.el
-    fileInput.max    = $('[name=MAX_FILE_SIZE]').value
+    fileInput        = $ 'input[type=file]', QR.el
+    fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
     fileInput.accept = mimeTypes
 
-    QR.spoiler     = !!$ '#com_submit + label'
+    QR.spoiler     = !!$ 'input[name=spoiler]'
     spoiler        = $ '#spoilerLabel', QR.el
     spoiler.hidden = !QR.spoiler
 
     unless g.REPLY
       # Make a list with visible threads and an option to create a new one.
       threads = '<option value=new>New thread</option>'
-      for thread in $$ '.op'
-        threads += "<option value=#{thread.id}>Thread #{thread.id}</option>"
+      for thread in $$ '.thread'
+        id = thread.id[1..]
+        threads += "<option value=#{id}>Thread #{id}</option>"
       $.prepend $('.move > span', QR.el), $.el 'select'
         innerHTML: threads
         title: 'Create a new thread / Reply to a thread'
@@ -1454,7 +1496,7 @@ QR =
         QR.selected[@name] = @value
         # Disable auto-posting if you're typing in the first reply
         # during the last 5 seconds of the cooldown.
-        if QR.cooldown.auto and QR.selected is QR.replies[0] and parseInt(QR.status.input.value.match /\d+/) < 6
+        if QR.cooldown.auto and QR.selected is QR.replies[0] and 0 < QR.cooldown.seconds < 6
           QR.cooldown.auto = false
     # sync between tabs
     $.sync 'QR.persona', (persona) ->
@@ -1463,7 +1505,7 @@ QR =
         QR.selected[key] = val
         $("[name=#{key}]", QR.el).value = val
 
-    QR.status.input = $ '[type=submit]', QR.el
+    QR.status.input = $ 'input[type=submit]', QR.el
     QR.status()
     QR.cooldown.init()
     QR.captcha.init()
@@ -1537,7 +1579,7 @@ QR =
       upfile:  reply.file
       spoiler: reply.spoiler
       mode:    'regist'
-      pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('[name=pwd]').value
+      pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
@@ -1566,7 +1608,7 @@ QR =
           # Uploading...
           QR.status progress: "#{Math.round e.loaded / e.total * 100}%"
 
-    QR.ajax = $.ajax $('form[name=post]').action, callbacks, opts
+    QR.ajax = $.ajax $.id('postForm').parentNode.action, callbacks, opts
 
   response: (html) ->
     doc = d.implementation.createHTMLDocument ''
@@ -1730,16 +1772,13 @@ Options =
     </ul>
     <div class=warning><code>File Info Formatting</code> is disabled.</div>
     <ul>
-      Thread File Info Formatting
-      <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>
-      <li>Link: %l (lowercase L)</li>
+      File Info Formatting
+      <li><input type=text name=fileInfo> : <span id=fileInfoPreview class=fileText></span></li>
+      <li>Link (with original file name): %l (lowercase L, truncated), %L (untruncated)</li>
+      <li>Original file name: %n (Truncated), %N (Untruncated)</li>
+      <li>Spoiler indicator: %p</li>
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>
-      Reply File Info Formatting
-      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>
-      <li>All thread formatters also work for reply formatting.</li>
-      <li>Link (with original file name): %l (lowercase L)(Truncated), %L (Untruncated)</li>
-      <li>Original file name: %n (Truncated), %N (Untruncated)</li>
     </ul>
     <div class=warning><code>Unread Favicon</code> is disabled.</div>
     Unread favicons<br>
@@ -1787,18 +1826,15 @@ Options =
       $.on ta, 'change', $.cb.value
 
     #rice
-    (back         = $ '[name=backlink]',     dialog).value = Conf['backlink']
-    (time         = $ '[name=time]',         dialog).value = Conf['time']
-    (fileInfoR = $ '[name=fileInfoR]', dialog).value = Conf['fileInfoR']
-    (fileInfoT = $ '[name=fileInfoT]', dialog).value = Conf['fileInfoT']
+    (back         = $ '[name=backlink]', dialog).value = Conf['backlink']
+    (time         = $ '[name=time]',     dialog).value = Conf['time']
+    (fileInfo     = $ '[name=fileInfo]', dialog).value = Conf['fileInfo']
     $.on back, 'keyup', $.cb.value
     $.on back, 'keyup', Options.backlink
     $.on time, 'keyup', $.cb.value
     $.on time, 'keyup', Options.time
-    $.on fileInfoR, 'keyup', $.cb.value
-    $.on fileInfoR, 'keyup', Options.fileInfo
-    $.on fileInfoT, 'keyup', $.cb.value
-    $.on fileInfoT, 'keyup', Options.fileInfo
+    $.on fileInfo, 'keyup', $.cb.value
+    $.on fileInfo, 'keyup', Options.fileInfo
     favicon = $ 'select', dialog
     favicon.value = Conf['favicon']
     $.on favicon, 'change', $.cb.value
@@ -1831,8 +1867,7 @@ Options =
 
     Options.backlink.call back
     Options.time.call     time
-    Options.fileInfo.call fileInfoR
-    Options.fileInfo.call fileInfoT
+    Options.fileInfo.call fileInfo
     Options.favicon.call  favicon
 
   close: ->
@@ -1860,117 +1895,20 @@ Options =
   backlink: ->
     $.id('backlinkPreview').textContent = Conf['backlink'].replace /%id/, '123456789'
   fileInfo: ->
-    type = if @name is 'fileInfoR' then 0 else 1
     FileInfo.data =
-      link:       '<a href="javascript:;">1329791824.png</a>'
-      size:       996
+      link:       'javascript:;'
+      spoiler:    true
+      size:       '276'
       unit:       'KB'
-      resolution: '1366x768'
-      fullname:   '[a.f.k.] Sayonara Zetsubou Sensei - 09.avi_snapshot_03.34_[2011.02.20_06.58.00].jpg'
-      shortname:  '[a.f.k.] Sayonara Zetsubou Sen(...).jpg'
-      type:       type
+      resolution: '1280x720'
+      fullname:   'd9bb2efc98dd0df141a94399ff5880b7.jpg'
+      shortname:  'd9bb2efc98dd0df141a94399ff5880(...).jpg'
     FileInfo.setFormats()
-    $.id("#{@name}Preview").innerHTML = FileInfo.funks[type] FileInfo
+    $.id('fileInfoPreview').innerHTML = FileInfo.funk FileInfo
   favicon: ->
     Favicon.switch()
     Unread.update true
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
-
-Threading =
-  op: (node) ->
-    nodes = []
-    until node.nodeName is 'BLOCKQUOTE'
-      nodes.push node
-      node = node.nextSibling
-    nodes.push node # Add the blockquote.
-    node = node.nextSibling
-    op = $.el 'div',
-      className: 'op'
-    $.add op, nodes
-    op.id = $('input', op).name
-    $.before node, op
-
-  thread: (node) ->
-    node = Threading.op node
-
-    return if g.REPLY
-
-    nodes = []
-    until node.nodeName is 'HR'
-      nodes.push node
-      node = node.nextElementSibling # Skip text nodes.
-    div = $.el 'div',
-      className: 'thread'
-    $.add div, nodes
-    $.before node, div
-
-    node = node.nextElementSibling
-    # {N,}SFW
-    unless node.align or node.nodeName is 'CENTER'
-      Threading.thread node
-
-ThreadHiding =
-  init: ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    for thread in $$ '.thread'
-      op = $ '.op', thread
-      a  = $.el 'a',
-        textContent: '[ - ]'
-        href: 'javascript:;'
-      $.on a, 'click', ThreadHiding.cb
-      $.prepend op, a
-
-      if op.id of hiddenThreads
-        ThreadHiding.hide thread
-    return
-
-  cb: ->
-    ThreadHiding.toggle @parentNode.parentNode
-
-  toggle: (thread) ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    id = $('.op', thread).id
-    if thread.hidden or thread.firstChild.className is 'block'
-      ThreadHiding.show thread
-      delete hiddenThreads[id]
-    else
-      ThreadHiding.hide thread
-      hiddenThreads[id] = Date.now()
-    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
-
-  hide: (thread) ->
-    unless Conf['Show Stubs']
-      thread.hidden = true
-      thread.nextSibling.hidden = true
-      return
-
-    return if thread.firstChild.className is 'block' # already hidden by filter
-
-    num  = 0
-    if span = $ '.omittedposts', thread
-      num = Number span.textContent.match(/\d+/)[0]
-    num += $$('.op ~ table', thread).length
-    text = if num is 1 then '1 reply' else "#{num} replies"
-    op   = $ '.op', thread
-    name = $('.postername', op).textContent
-    uid  = $('.posteruid',  op)?.textContent or ''
-    trip = $('.postertrip', op)?.textContent or ''
-
-    a = $.el 'a',
-      innerHTML: "<span>[ + ]</span> #{name} #{uid} #{trip} (#{text})"
-      href: 'javascript:;'
-    $.on a, 'click', ThreadHiding.cb
-
-    div = $.el 'div',
-      className: 'block'
-
-    $.add div, a
-    $.prepend thread, div
-
-  show: (thread, id) ->
-    $.rm $ '.block', thread
-    thread.hidden = false
-    thread.nextSibling.hidden = false
 
 Updater =
   init: ->
@@ -1989,9 +1927,9 @@ Updater =
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
-    @count = $ '#count', dialog
-    @timer = $ '#timer', dialog
-    @br    = $ 'br[clear]'
+    @count  = $ '#count', dialog
+    @timer  = $ '#timer', dialog
+    @thread = $.id "t#{g.THREAD_ID}"
 
     for input in $$ 'input', dialog
       if input.type is 'checkbox'
@@ -2055,7 +1993,7 @@ Updater =
         return
 
       Updater.retryCoef = 10
-      Updater.timer.textContent = '-' + Conf['Interval']
+      Updater.timer.textContent = "-#{Conf['Interval']}"
 
       ###
       Status Code 304: Not modified
@@ -2066,29 +2004,30 @@ Updater =
       if @status is 304
         if Conf['Verbose']
           Updater.count.textContent = '+0'
-          Updater.count.className = null
+          Updater.count.className   = null
         return
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
       doc = d.implementation.createHTMLDocument ''
       doc.documentElement.innerHTML = @response
 
-      id = $('input', Updater.br.previousElementSibling).name
+      lastPost = Updater.thread.lastElementChild
+      id = lastPost.id[2..]
       nodes = []
-      for reply in $$('.reply', doc).reverse()
-        break if reply.id <= id #make sure to not insert older posts
-        nodes.push reply.parentNode.parentNode.parentNode #table
+      for reply in $$('.replyContainer', doc).reverse()
+        break if reply.id[2..] <= id #make sure to not insert older posts
+        nodes.push reply
 
-      newPosts = nodes.length
-      scroll = Conf['Scrolling'] && Updater.scrollBG() && newPosts &&
-        Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25
+      count  = nodes.length
+      scroll = Conf['Scrolling'] && Updater.scrollBG() && count &&
+        lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       if Conf['Verbose']
-        Updater.count.textContent = "+#{newPosts}"
-        Updater.count.className = if newPosts then 'new' else null
+        Updater.count.textContent = "+#{count}"
+        Updater.count.className   = if count then 'new' else null
 
-      $.before Updater.br, nodes.reverse()
+      $.add Updater.thread, nodes.reverse()
       if scroll
-        Updater.br.previousSibling.scrollIntoView()
+        nodes[0].scrollIntoView()
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000
@@ -2104,7 +2043,7 @@ Updater =
 
   retry: ->
     @count.textContent = 'Retry'
-    @count.className = ''
+    @count.className = null
     @update()
 
   update: ->
@@ -2122,8 +2061,7 @@ Watcher =
     $.add d.body, @dialog
 
     #add watch buttons
-    inputs = $$ '.op > input'
-    for input in inputs
+    for input in $$ '.op input'
       favicon = $.el 'img',
         className: 'favicon'
       $.on favicon, 'click', @cb.toggle
@@ -2202,12 +2140,13 @@ Anonymize =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline'
-    name = $ '.commentpostername, .postername', post.el
+    return if post.isInlined and not post.isCrosspost
+    name = $ '.name', post.el
     name.textContent = 'Anonymous'
-    node = name.nextElementSibling
-    if node.className is 'postertrip' or node.nodeName is 'A'
-      $.rm node
+    if (trip = name.nextElementSibling) and trip.className is 'postertrip'
+      $.rm trip
+    if (parent = name.parentNode).className is 'useremail' and not /^sage$/i.test parent.pathname
+      $.replace parent, name
 
 Sauce =
   init: ->
@@ -2228,7 +2167,7 @@ Sauce =
         when '$2'
           "' + img.href + '"
         when '$3'
-          "' + img.firstChild.getAttribute('md5').replace(/\=*$/, '') + '"
+          "' + img.firstChild.dataset.md5.replace(/\=*$/, '') + '"
         when '$4'
           g.BOARD
     href = Function 'img', "return '#{href}'"
@@ -2242,23 +2181,23 @@ Sauce =
 
   node: (post) ->
     {img} = post
-    return if post.class is 'inline' or not img
+    return if post.isInlined and not post.isCrosspost or not img
     img   = img.parentNode
     nodes = []
     for link in Sauce.links
-      nodes.push $.tn(' '), link img
-    $.add post.filesize, nodes
+      # \u00A0 is nbsp
+      nodes.push $.tn('\u00A0'), link img
+    $.add post.fileInfo, nodes
 
 RevealSpoilers =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
     {img} = post
-    if not (img and /^Spoil/.test img.alt) or post.class is 'inline'
+    if not (img and /^Spoiler/.test img.alt) or post.isInlined and not post.isCrosspost
       return
-    img.removeAttribute 'height'
-    img.removeAttribute 'width'
-    img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg')}"
+    img.removeAttribute 'style'
+    img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace /src(\/\d+).+$/, 'thumb$1s.jpg'}"
 
 Time =
   init: ->
@@ -2271,11 +2210,11 @@ Time =
 
     @parse =
       if Date.parse('10/11/11(Tue)18:53') is 1318351980000
-        (node) -> new Date Date.parse(node.textContent) + chanOffset*$.HOUR
+        (text) -> new Date Date.parse(text) + chanOffset*$.HOUR
       else # Firefox and Opera do not parse 4chan's time format correctly
-        (node) ->
+        (text) ->
           [_, month, day, year, hour, min] =
-            node.textContent.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
+            text.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
           year = "20#{year}"
           month-- # Months start at 0
           hour = chanOffset + Number hour
@@ -2283,15 +2222,10 @@ Time =
 
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline'
-    # .posttime exists on every board except /f/
-    node = $('.posttime', post.el) or $('span[id]', post.el).previousSibling
-    Time.date = Time.parse node
-    time = $.el 'time',
-      textContent: ' ' + Time.funk(Time) + ' '
-    # Set the datetime attribute, ISO'd.
-    time.setAttribute 'datetime', Time.date.toISOString()
-    $.replace node, time
+    return if post.isInlined and not post.isCrosspost
+    node              = $ '.postInfo > .dateTime', post.el
+    Time.date         = Time.parse node.textContent
+    node.textContent  = Time.funk(Time)
   foo: ->
     code = Conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
@@ -2346,33 +2280,26 @@ FileInfo =
     @setFormats()
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline' or not node = post.filesize
-    regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/
-    [_, link, size, unit, resolution] =
-      node.innerHTML.match regexp
-    data =
-      link:       link
-      size:       size
-      unit:       unit
-      resolution: resolution
-    if span = $ 'span', node
-      data.fullname  = span.title
-      data.shortname = span.textContent
-    data.type      = +!span
-    FileInfo.data  = data
-    node.innerHTML = FileInfo.funks[data.type] FileInfo
+    return if post.isInlined and not post.isCrosspost or not post.fileInfo
+    node = post.fileInfo.firstElementChild
+    alt  = post.img.alt
+    span = $ 'span', node
+    FileInfo.data =
+      link:       post.img.parentNode.href
+      spoiler:    /^Spoiler/.test alt
+      size:       alt.match(/\d+/)[0]
+      unit:       alt.match(/\w+$/)[0]
+      resolution: span.previousSibling.textContent.match(/\d+x\d+|PDF/)[0]
+      fullname:   span.title
+      shortname:  span.textContent
+    node.innerHTML = FileInfo.funk FileInfo
   setFormats: ->
-    funks = []
-    for i in [0..1]
-      format = if i then Conf['fileInfoT'] else Conf['fileInfoR']
-      param  = if i then /%([BKlMrs])/g    else /%([BKlLMnNrs])/g
-      code   = format.replace param, (s, c) ->
-        if c of FileInfo.formatters
-          "' + f.formatters.#{c}() + '"
-        else
-          s
-      funks.push Function 'f', "return '#{code}'"
-    @funks = funks
+    code = Conf['fileInfo'].replace /%([BKlLMnNprs])/g, (s, c) ->
+      if c of FileInfo.formatters
+        "' + f.formatters.#{c}() + '"
+      else
+        s
+    @funk = Function 'f', "return '#{code}'"
   convertUnit: (unitT) ->
     size  = @data.size
     unitF = @data.unit
@@ -2388,18 +2315,15 @@ FileInfo =
         size = size.toFixed 2
     "#{size} #{unitT}"
   formatters:
-    l: ->
-      if FileInfo.data.type is 0
-        FileInfo.data.link.replace />\d+\.\w+</, ">#{@n()}<"
-      else
-        FileInfo.data.link
-    L: -> FileInfo.data.link.replace />\d+\.\w+</, ">#{FileInfo.data.fullname}<"
+    l: -> "<a href=#{FileInfo.data.link} target=_blank>#{@n()}</a>"
+    L: -> "<a href=#{FileInfo.data.link} target=_blank>#{@N()}</a>"
     n: ->
       if FileInfo.data.fullname is FileInfo.data.shortname
         FileInfo.data.fullname
       else
-        "<span class=filename><span class=fnfull>#{FileInfo.data.fullname}</span><span class=fntrunc>#{FileInfo.data.shortname}</span></span>"
+        "<span class=fntrunc>#{FileInfo.data.shortname}</span><span class=fnfull>#{FileInfo.data.fullname}</span>"
     N: -> FileInfo.data.fullname
+    p: -> if FileInfo.data.spoiler then 'Spoiler, ' else ''
     s: -> "#{FileInfo.data.size} #{FileInfo.data.unit}"
     B: -> FileInfo.convertUnit 'B'
     K: -> FileInfo.convertUnit 'KB'
@@ -2407,13 +2331,14 @@ FileInfo =
     r: -> FileInfo.data.resolution
 
 GetTitle = (thread) ->
-  el = $ '.filetitle', thread
-  if not el.textContent
-    el = $ 'blockquote', thread
-    if not el.textContent
-      el = $ '.postername', thread
+  op = $ '.op', thread
+  el = $ '.subject', op
+  unless el.textContent
+    el = $ 'blockquote', op
+    unless el.textContent
+      el = $ '.nameBlock', op
   span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
-  "/#{g.BOARD}/ - #{span.textContent}"
+  "/#{g.BOARD}/ - #{span.textContent.trim()}"
 
 TitlePost =
   init: ->
@@ -2429,16 +2354,16 @@ QuoteBacklink =
     quotes = {}
     for quote in post.quotes
       # Don't process >>>/b/.
-      if qid = quote.hash[1..]
+      if qid = quote.hash[2..]
         # Duplicate quotes get overwritten.
         quotes[qid] = true
     a = $.el 'a',
-      href: "##{post.id}"
-      className: if post.root.hidden then 'filtered backlink' else 'backlink'
+      href: "#p#{post.id}"
+      className: if post.el.hidden then 'filtered backlink' else 'backlink'
       textContent: QuoteBacklink.funk post.id
     for qid of quotes
       # Don't backlink the OP.
-      continue if !(el = $.id qid) or el.className is 'op' and !Conf['OP Backlinks']
+      continue if !(el = $.id "pi#{qid}") or !Conf['OP Backlinks'] and /\bop\b/.test el.parentNode.className
       link = a.cloneNode true
       if Conf['Quote Preview']
         $.on link, 'mouseover', QuotePreview.mouseover
@@ -2446,13 +2371,12 @@ QuoteBacklink =
         $.on link, 'click', QuoteInline.toggle
       else
         link.setAttribute 'onclick', "replyhl('#{post.id}');"
-      unless (container = $ '.container', el) and container.parentNode is el
-        container = $.el 'span', className: 'container'
-        $.add container, [$.tn(' '), link]
-        root = $('.reportbutton', el) or $('span[id]', el)
-        $.after root, container
-      else
-        $.add container, [$.tn(' '), link]
+      unless container = $.id "blc#{qid}"
+        container = $.el 'span',
+          className: 'container'
+          id: "blc#{qid}"
+        $.add el, container
+      $.add container, [$.tn(' '), link]
     return
 
 QuoteInline =
@@ -2469,53 +2393,56 @@ QuoteInline =
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
-    id = @hash[1..]
+    id = @hash[2..]
     if /\binlined\b/.test @className
       QuoteInline.rm @, id
     else
-      return if $.x "ancestor::*[@id='#{id}']", @
+      return if $.x "ancestor::div[contains(@id,'p#{id}')]", @
       QuoteInline.add @, id
     @classList.toggle 'inlined'
 
   add: (q, id) ->
-    root = if q.parentNode.nodeName is 'FONT' then q.parentNode else if q.nextSibling then q.nextSibling else q
-    if el = $.id id
-      inline = QuoteInline.table id, el.innerHTML
-      if (i = Unread.replies.indexOf el.parentNode.parentNode.parentNode) isnt -1
+    root  = $.x 'ancestor::*[parent::blockquote]', q
+    if el = $.id "p#{id}"
+      if /\bop\b/.test el.className
+        $.removeClass el.parentNode, 'qphl'
+      else
+        $.removeClass el, 'qphl'
+      clonePost = QuoteInline.clone id, el
+      if /\bbacklink\b/.test q.className
+        $.after q.parentNode, clonePost
+        if Conf['Forward Hiding']
+          $.addClass el.parentNode, 'forwarded'
+          # Will only unhide if there's no inlined backlinks of it anymore.
+          ++el.dataset.forwarded or el.dataset.forwarded = 1
+      else
+        $.after root, clonePost
+      if (i = Unread.replies.indexOf el) isnt -1
         Unread.replies.splice i, 1
         Unread.update true
-      if /\bbacklink\b/.test q.className
-        $.after q.parentNode, inline
-        if Conf['Forward Hiding']
-          table = $.x 'ancestor::table', el
-          $.addClass table, 'forwarded'
-          # Will only unhide if there's no inlined backlinks of it anymore.
-          ++table.title or table.title = 1
-        return
-      $.after root, inline
-    else
-      inline = $.el 'td',
-        className: 'reply inline'
-        id: "i#{id}"
-        innerHTML: "Loading #{id}..."
-      $.after root, inline
-      {pathname} = q
-      threadID = pathname.split('/').pop()
-      $.cache pathname, (-> QuoteInline.parse @, pathname, id, threadID, inline)
+      return
+
+    inline = $.el 'div',
+      className: 'inline'
+      id: "i#{id}"
+      textContent: "Loading #{id}..."
+    $.after root, inline
+    {pathname} = q
+    $.cache pathname, -> QuoteInline.parse @, pathname, id, inline
 
   rm: (q, id) ->
-    #select the corresponding table or loading td
-    table = $.x "following::*[@id='i#{id}']", q
-    $.rm table
+    # select the corresponding inlined quote or loading quote
+    div = $.x "following::div[@id='i_pc#{id}']", q
+    $.rm div
     return unless Conf['Forward Hiding']
-    for inlined in $$ '.backlink.inlined', table
-      table = $.x 'ancestor::table', $.id inlined.hash[1..]
-      $.removeClass table, 'forwarded' unless --table.title
+    for inlined in $$ '.backlink.inlined', div
+      div = $.id inlined.hash[1..]
+      $.removeClass div.parentNode, 'forwarded' unless --div.dataset.forwarded
     if /\bbacklink\b/.test q.className
-      table = $.x 'ancestor::table', $.id id
-      $.removeClass table, 'forwarded' unless --table.title
+      div = $.id "p#{id}"
+      $.removeClass div.parentNode, 'forwarded' unless --div.dataset.forwarded
 
-  parse: (req, pathname, id, threadID, inline) ->
+  parse: (req, pathname, id, inline) ->
     return unless inline.parentNode
 
     if req.status isnt 200
@@ -2525,27 +2452,27 @@ QuoteInline =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
-    node =
-      if id is threadID #OP
-        Threading.op $('body > form', doc).firstChild
-      else
-        doc.getElementById id
-    newInline = QuoteInline.table id, node.innerHTML
+    node = doc.getElementById "p#{id}"
+    newInline = QuoteInline.clone id, node
     for quote in $$ '.quotelink', newInline
-      if (href = quote.getAttribute 'href') is quote.hash #add pathname to normal quotes
-        quote.pathname = pathname
-      else if !g.REPLY and href isnt quote.href #fix x-thread links, not x-board ones
-        quote.href = "res/#{href}"
-    link = $ '.quotejs', newInline
-    link.href = "#{pathname}##{id}"
+      href = quote.getAttribute 'href'
+      continue if href[0] is '/' # Cross-board quote
+      quote.href = "res/#{href}" # Fix pathnames
+    link = $ '.postInfo > .postNum > a:first-child', newInline
+    link.href = "#{pathname}#p#{id}"
     link.nextSibling.href = "#{pathname}#q#{id}"
-    $.addClass newInline, 'crossquote'
+    $.addClass newInline, 'crosspost'
     $.replace inline, newInline
-  table: (id, html) ->
-    $.el 'table',
-      className: 'inline'
-      id: "i#{id}"
-      innerHTML: "<tbody><tr><td class=reply>#{html}</td></tr></tbody>"
+
+  clone: (id, el) ->
+    clone = $.el 'div',
+      className: 'postContainer inline'
+      id: "i_pc#{id}"
+    $.add clone, el.cloneNode true
+    for node in $$ '[id]', clone
+      # Don't mess with other features
+      node.id = "i_#{node.id}"
+    clone
 
 QuotePreview =
   init: ->
@@ -2560,36 +2487,37 @@ QuotePreview =
     return if /\binlined\b/.test @className
     qp = UI.el = $.el 'div',
       id: 'qp'
-      className: 'reply dialog'
+      className: 'reply dialog post'
     $.add d.body, qp
 
-    id = @hash[1..]
-    if el = $.id id
+    id = @hash[2..]
+    if el = $.id "p#{id}"
       qp.innerHTML = el.innerHTML
-      $.addClass el, 'qphl' if Conf['Quote Highlighting']
-      node =
-        if /\bbacklink\b/.test @className
-          @parentNode
+      if Conf['Quote Highlighting']
+        if /\bop\b/.test el.className
+          $.addClass el.parentNode, 'qphl'
         else
-          $.x 'ancestor::blockquote', @
-      replyID = $.x('preceding-sibling::input', node).name
+          $.addClass el, 'qphl'
+      replyID = $.x('ancestor::div[contains(@class,"postContainer")]', @).id[2..]
       for quote in $$ '.quotelink, .backlink', qp
-        if quote.hash[1..] is replyID
+        if quote.hash[2..] is replyID
           $.addClass quote, 'forwardlink'
     else
       qp.textContent = "Loading #{id}..."
-      threadID = @pathname.split('/').pop() or $.x('ancestor::div[@class="thread"]', @).firstChild.id
-      $.cache @pathname, (-> QuotePreview.parse @, id, threadID)
+      $.cache @pathname, -> QuotePreview.parse @, id
       UI.hover e
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
   mouseout: ->
-    if el = $.id @hash[1..]
-      $.removeClass el, 'qphl'
     UI.hoverend()
+    if el = $.id @hash[1..]
+      if /\bop\b/.test el.className
+        $.removeClass el.parentNode, 'qphl'
+      else
+        $.removeClass el, 'qphl'
     $.off @, 'mousemove', UI.hover
     $.off @, 'mouseout click', QuotePreview.mouseout
-  parse: (req, id, threadID) ->
+  parse: (req, id) ->
     return unless (qp = UI.el) and qp.textContent is "Loading #{id}..."
 
     if req.status isnt 200
@@ -2599,16 +2527,15 @@ QuotePreview =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
-    node =
-      if id is threadID #OP
-        Threading.op $('body > form', doc).firstChild
-      else
-        doc.getElementById id
+    node = doc.getElementById "p#{id}"
     qp.innerHTML = node.innerHTML
     post =
-      root:     qp
-      filesize: $ '.filesize', qp
-      img:      $ 'img[md5]',  qp
+      el: qp
+    if fileInfo = $ '.fileInfo', qp
+      img = fileInfo.nextElementSibling.firstElementChild
+      if img.alt isnt 'File deleted.'
+        post.fileInfo = fileInfo
+        post.img      = img
     if Conf['Image Auto-Gif']
       AutoGif.node   post
     if Conf['Time Formatting']
@@ -2620,9 +2547,9 @@ QuoteOP =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline'
+    return if post.isInlined and not post.isCrosspost
     for quote in post.quotes
-      if quote.hash[1..] is post.threadId
+      if quote.hash[2..] is post.threadId
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(OP)'
     return
@@ -2631,7 +2558,7 @@ QuoteCT =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline'
+    return if post.isInlined and not post.isCrosspost
     for quote in post.quotes
       unless quote.hash
         # Make sure this isn't a link to the board we're on.
@@ -2647,11 +2574,11 @@ Quotify =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    return if post.class is 'inline'
+    return if post.isInlined and not post.isCrosspost
 
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()[not(parent::a)]', post.el.lastChild, null, 6, null
+    snapshot = d.evaluate './/text()[not(parent::a)]', post.el.lastElementChild, null, 6, null
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
@@ -2675,14 +2602,14 @@ Quotify =
             m[1]
           else
             # Get the post's board, whether it's inlined or not.
-            $('.quotejs', post.el).pathname.split('/')[1]
+            $('.postInfo > .postNum > a:first-child', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
           # \u00A0 is nbsp
           textContent: "#{quote}\u00A0(Dead)"
 
         if board is g.BOARD and $.id id
-          a.href      = "##{id}"
+          a.href      = "#p#{id}"
           a.className = 'quotelink'
           a.setAttribute 'onclick', "replyhl('#{id}');"
         else
@@ -2702,14 +2629,14 @@ Quotify =
 ReportButton =
   init: ->
     @a = $.el 'a',
-      className: 'reportbutton'
+      className: 'report_button'
       innerHTML: '[&nbsp;!&nbsp;]'
       href: 'javascript:;'
     Main.callbacks.push @node
   node: (post) ->
-    unless a = $ '.reportbutton', post.el
+    unless a = $ '.report_button', post.el
       a = ReportButton.a.cloneNode true
-      $.after $('span[id]', post.el), [$.tn(' '), a]
+      $.add $('.postInfo', post.el), a
     $.on a, 'click', ReportButton.report
   report: ->
     url = "//sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
@@ -2739,7 +2666,7 @@ ThreadStats =
     imgcount = $.id 'imagecount'
     imgcount.textContent = ++ThreadStats.images
     if ThreadStats.images > ThreadStats.imgLimit
-      imgcount.className = 'warning'
+      $.addClass imgcount, 'warning'
 
 Unread =
   init: ->
@@ -2755,12 +2682,13 @@ Unread =
     if (index = Unread.foresee.indexOf post.id) isnt -1
       Unread.foresee.splice index, 1
       return
-    return if post.root.hidden or post.class
-    count = Unread.replies.push post.root
+    {el} = post
+    return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
+    count = Unread.replies.push el
     Unread.update count is 1
 
   scroll: ->
-    height = d.body.clientHeight
+    height = d.documentElement.clientHeight
     for reply, i in Unread.replies
       {bottom} = reply.getBoundingClientRect()
       if bottom > height #post is not completely read
@@ -2915,14 +2843,15 @@ AutoGif =
     return if g.BOARD is 'gif'
     Main.callbacks.push @node
   node: (post) ->
-    return if post.root.hidden or not post.img
-    src = post.img.parentNode.href
-    if /gif$/.test(src) and !/spoiler/.test post.img.src
-      img = $.el 'img'
-      $.on img, 'load', ->
+    {img} = post
+    return if post.el.hidden or not img
+    src = img.parentNode.href
+    if /gif$/.test(src) and !/spoiler/.test img.src
+      gif = $.el 'img'
+      $.on gif, 'load', ->
         # Replace the thumbnail once the GIF has finished loading.
-        post.img.src = src
-      img.src = src
+        img.src = src
+      gif.src = src
 
 ImageExpand =
   init: ->
@@ -2933,7 +2862,7 @@ ImageExpand =
     return unless post.img
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
-    if ImageExpand.on and !post.root.hidden and post.class isnt 'inline'
+    if ImageExpand.on and !post.el.hidden
       ImageExpand.expand post.img
   cb:
     toggle: (e) ->
@@ -2943,7 +2872,7 @@ ImageExpand =
     all: ->
       ImageExpand.on = @checked
       if ImageExpand.on #expand
-        thumbs = $$ 'img[md5]'
+        thumbs = $$ 'img[data-md5]'
         if Conf['Expand From Current']
           for thumb, i in thumbs
             if thumb.getBoundingClientRect().top > 0
@@ -2952,7 +2881,7 @@ ImageExpand =
         for thumb in thumbs
           ImageExpand.expand thumb
       else #contract
-        for thumb in $$ 'img[md5][hidden]'
+        for thumb in $$ 'img[data-md5][hidden]'
           ImageExpand.contract thumb
       return
     typeChange: ->
@@ -2965,7 +2894,7 @@ ImageExpand =
           klass = 'fitheight'
         when 'fit screen'
           klass = 'fitwidth fitheight'
-      $('body > form').className = klass
+      $.id('delform').className = klass
       if /\bfitheight\b/.test klass
         $.on window, 'resize', ImageExpand.resize
         unless ImageExpand.style
@@ -3033,11 +2962,10 @@ ImageExpand =
     $.on select, 'change', ImageExpand.cb.typeChange
     $.on $('input', controls), 'click', ImageExpand.cb.all
 
-    form = $ 'body > form'
-    $.prepend form, controls
+    $.prepend $.id('delform'), controls
 
   resize: ->
-    ImageExpand.style.textContent = ".fitheight img[md5] + img {max-height:#{d.body.clientHeight}px;}"
+    ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:#{d.documentElement.clientHeight}px;}"
 
 Main =
   init: ->
@@ -3050,11 +2978,9 @@ Main =
       g.REPLY = true
       g.THREAD_ID = pathname[2]
 
-    #load values from localStorage
+    # Load values from localStorage.
     for key, val of Conf
       Conf[key] = $.get key, val
-
-    $.on window, 'message', Main.message
 
     switch location.hostname
       when 'sys.4chan.org'
@@ -3070,12 +2996,13 @@ Main =
     $.ready Options.init
 
     if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
-      Main.css += 'form[name=post] { display: none; }'
+      Main.css += '#postForm { display: none; }'
 
     Main.addStyle()
 
     now = Date.now()
     if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*$.HOUR
+      $.on window, 'message', Main.message
       $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
@@ -3160,10 +3087,10 @@ Main =
       return
     $.addClass d.body, "chanx_#{Main.version.split('.')[1]}"
     $.addClass d.body, $.engine
-    for nav in ['navtop', 'navbot']
-      $.addClass $("a[href$='/#{g.BOARD}/']", $.id nav), 'current'
-    form = $ 'form[name=delform]'
-    Threading.thread form.firstElementChild
+    for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
+      if a = $ "a[href$='/#{g.BOARD}/']", $.id nav
+        # Gotta make it work in temporary boards.
+        $.addClass a, 'current'
     Favicon.init()
 
     # Major features.
@@ -3197,7 +3124,7 @@ Main =
 
     else #not reply
       if Conf['Thread Hiding']
-        setTimeout -> ThreadHiding.init()
+        ThreadHiding.init()
 
       if Conf['Thread Expansion']
         setTimeout -> ExpandThread.init()
@@ -3208,18 +3135,19 @@ Main =
       if Conf['Index Navigation']
         setTimeout -> Nav.init()
 
+    board = $ '.board'
     nodes = []
-    for node in $$ '.op, a + table', form
+    for node in $$ '.postContainer', board
       nodes.push Main.preParse node
     Main.node nodes, true
 
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
       observer = new MutationObserver Main.observer
-      observer.observe form,
+      observer.observe board,
         childList: true
         subtree:   true
     else
-      $.on form, 'DOMNodeInserted', Main.listener
+      $.on board, 'DOMNodeInserted', Main.listener
 
   flatten: (parent, obj) ->
     if obj instanceof Array
@@ -3244,18 +3172,25 @@ Main =
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
-    klass = node.className
+    rootClass = node.className
+    el   = $ '.post', node
     post =
-      root:      node
-      el:        if klass is 'op' then node else node.firstChild.firstChild.lastChild
-      class:     klass
-      id:        node.getElementsByTagName('input')[0].name
-      threadId:  g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).firstChild.id
-      isInlined: /\binline\b/.test klass
-      filesize:  node.getElementsByClassName('filesize')[0] or false
-      quotes:    node.getElementsByClassName 'quotelink'
-      backlinks: node.getElementsByClassName 'backlink'
-    post.img = if post.filesize then node.getElementsByTagName('img')[0] else false
+      root:        node
+      el:          el
+      class:       el.className
+      id:          el.id[1..]
+      threadId:    g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
+      isInlined:   /\binline\b/.test rootClass
+      isCrosspost: /\bcrosspost\b/.test rootClass
+      quotes:      el.getElementsByClassName 'quotelink'
+      backlinks:   el.getElementsByClassName 'backlink'
+      fileInfo:    false
+      img:         false
+    if fileInfo = $ '.fileInfo', el
+      img = fileInfo.nextElementSibling.firstElementChild
+      if img.alt isnt 'File deleted.'
+        post.fileInfo = fileInfo
+        post.img      = img
     post
   node: (nodes, notify) ->
     for callback in Main.callbacks
@@ -3268,19 +3203,22 @@ Main =
     nodes = []
     for mutation in mutations
       for addedNode in mutation.addedNodes
-        nodes.push Main.preParse addedNode if addedNode.nodeName is 'TABLE'
+        if /\bpostContainer\b/.test addedNode.className
+          nodes.push Main.preParse addedNode
     Main.node nodes if nodes.length
   listener: (e) ->
     {target} = e
-    Main.node [Main.preParse target] if target.nodeName is 'TABLE'
+    if /\bpostContainer\b/.test addedNode.className
+      Main.node [Main.preParse target]
 
   namespace: '4chan_x.'
   version: '2.29.5'
   callbacks: []
   css: '
 /* dialog styling */
-.dialog {
+.dialog.reply {
   border: 1px solid rgba(0,0,0,.25);
+  padding: 0;
 }
 .move {
   cursor: move;
@@ -3291,16 +3229,25 @@ label, .favicon {
 a[href="javascript:;"] {
   text-decoration: none;
 }
-
-.block ~ *,
-#content > [name=tab]:not(:checked) + div,
-#updater:not(:hover) > :not(.move),
-#qp > input, #qp .inline, .forwarded {
-  display: none;
+.warning {
+  color: red;
 }
 
-.autohide:not(:hover) > form {
-  display: none;
+.hide_thread_button {
+  float: left;
+}
+
+.hidden_thread ~ *,
+[hidden],
+#content > [name=tab]:not(:checked) + div,
+#updater:not(:hover) > :not(.move),
+.autohide:not(:hover) > form,
+#qp input, #qp .inline, .forwarded {
+  display: none !important;
+}
+
+h1 {
+  text-align: center;
 }
 #qr > .move {
   min-width: 300px;
@@ -3441,6 +3388,8 @@ a[href="javascript:;"] {
 }
 .field {
   border: 1px solid #CCC;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
   color: #333;
   font: 13px sans-serif;
   margin: 0;
@@ -3464,6 +3413,7 @@ textarea.field {
   min-height: 120px;
 }
 .field:only-child {
+  display: block;
   min-width: 100%;
 }
 .captcha {
@@ -3473,6 +3423,7 @@ textarea.field {
   text-align: center;
 }
 .captcha > img {
+  display: block;
   height: 57px;
   width: 300px;
 }
@@ -3487,41 +3438,21 @@ textarea.field {
   width: 30%;
 }
 
-.new {
-  background: lime;
-}
-.warning {
-  color: red;
-}
-.replyhider {
-  vertical-align: top;
-}
-
-.filesize + br + a {
-  float: left;
-  pointer-events: none;
-}
-.filename:hover > .fntrunc,
-.filename:not(:hover) > .fnfull {
+.fileText:hover .fntrunc,
+.fileText:not(:hover) .fnfull {
   display: none;
 }
-img[md5], img[md5] + img {
-  pointer-events: all;
-}
-.fitwidth img[md5] + img {
+.fitwidth img[data-md5] + img {
   max-width: 100%;
 }
-.gecko  > .fitwidth img[md5] + img,
-.presto > .fitwidth img[md5] + img {
-  width: 100%;
-}
+
 /* revealed spoilers do not have height/width,
    this fixes "expanded" auto-gifs */
-img[md5] {
+.op > div > a > img[data-md5] {
   max-height: 252px;
   max-width: 252px;
 }
-input ~ a > img[md5] {
+.reply > div > a > img[data-md5] {
   max-height: 127px;
   max-width: 127px;
 }
@@ -3574,18 +3505,20 @@ input ~ a > img[md5] {
 #options label {
   text-decoration: underline;
 }
-#content > div {
+#content {
   height: 450px;
   overflow: auto;
 }
 #content textarea {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
   margin: 0;
   min-height: 100px;
   resize: vertical;
   width: 100%;
 }
 #sauces {
-  height: 320px;
+  height: 300px;
 }
 
 #updater {
@@ -3598,9 +3531,8 @@ input ~ a > img[md5] {
   border: none;
   background: transparent;
 }
-
-#stats {
-  border: none;
+.new {
+  background: lime;
 }
 
 #watcher {
@@ -3624,36 +3556,44 @@ input ~ a > img[md5] {
   text-decoration: underline;
 }
 
-#qp {
-  padding-bottom: 5px;
-}
-#qp > a > img {
+#qp img {
   max-height: 300px;
   max-width: 500px;
 }
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
 }
+.qphl.opContainer {
+  outline-offset: -2px;
+}
+div.opContainer {
+  display: block !important;
+}
 .inlined {
   opacity: .5;
 }
-.inline .reply {
+.inline {
+  overflow: hidden;
   background-color: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(128, 128, 128, 0.5);
 }
-.filetitle, .replytitle, .postername, .commentpostername, .postertrip {
+.inline .post {
   background: none;
+  border: none;
 }
-.filter_highlight.op,
-.filter_highlight > td[id] {
+.filter_highlight.thread > .opContainer {
+  box-shadow: inset 5px 0 rgba(255,0,0,0.5);
+}
+.filter_highlight > .reply {
   box-shadow: -5px 0 rgba(255,0,0,0.5);
 }
 .filtered {
-  text-decoration: line-through;
+  text-decoration: underline line-through;
 }
 .quotelink.forwardlink,
 .backlink.forwardlink {
-  color: #4C4CA9;
+  text-decoration: none;
+  border-bottom: 1px dashed;
 }
 '
 

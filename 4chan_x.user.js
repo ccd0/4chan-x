@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Threading, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -153,8 +153,7 @@
     sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/$4/image/$3/', '#https://archive.installgentoo.net/$4/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
-    fileInfoR: '%l (%s, %r)',
-    fileInfoT: '%l (%s, %r)',
+    fileInfo: '%l (%p%s, %r)',
     favicon: 'ferongr',
     hotkeys: {
       openQR: ['i', 'Open QR with post number inserted'],
@@ -217,22 +216,20 @@
       rect = el.getBoundingClientRect();
       UI.dx = e.clientX - rect.left;
       UI.dy = e.clientY - rect.top;
-      UI.width = d.body.clientWidth - el.offsetWidth;
-      return UI.height = d.body.clientHeight - el.offsetHeight;
+      UI.width = d.documentElement.clientWidth - rect.width;
+      return UI.height = d.documentElement.clientHeight - rect.height;
     },
     drag: function(e) {
-      var bottom, left, right, style, top;
+      var left, style, top;
       left = e.clientX - UI.dx;
       top = e.clientY - UI.dy;
-      left = left < 10 ? 0 : UI.width - left < 10 ? null : left;
-      top = top < 10 ? 0 : UI.height - top < 10 ? null : top;
-      right = left === null ? 0 : null;
-      bottom = top === null ? 0 : null;
+      left = left < 10 ? '0px' : UI.width - left < 10 ? null : left + 'px';
+      top = top < 10 ? '0px' : UI.height - top < 10 ? null : top + 'px';
       style = UI.el.style;
+      style.left = left;
       style.top = top;
-      style.right = right;
-      style.bottom = bottom;
-      return style.left = left;
+      style.right = left === null ? '0px' : null;
+      return style.bottom = top === null ? '0px' : null;
     },
     dragend: function() {
       var el;
@@ -242,20 +239,19 @@
       return d.removeEventListener('mouseup', UI.dragend, false);
     },
     hover: function(e) {
-      var clientHeight, clientWidth, clientX, clientY, el, height, style, top, _ref;
+      var clientHeight, clientWidth, clientX, clientY, height, style, top, _ref;
       clientX = e.clientX, clientY = e.clientY;
-      el = UI.el;
-      style = el.style;
-      _ref = d.body, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
-      height = el.offsetHeight;
+      style = UI.el.style;
+      _ref = d.documentElement, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
+      height = UI.el.offsetHeight;
       top = clientY - 120;
-      style.top = clientHeight <= height || top <= 0 ? 0 : top + height >= clientHeight ? clientHeight - height : top;
+      style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
       if (clientX <= clientWidth - 400) {
-        style.left = clientX + 45;
+        style.left = clientX + 45 + 'px';
         return style.right = null;
       } else {
         style.left = null;
-        return style.right = clientWidth - clientX + 45;
+        return style.right = clientWidth - clientX + 45 + 'px';
       }
     },
     hoverend: function() {
@@ -617,12 +613,12 @@
       };
     },
     node: function(post) {
-      var el, filter, firstThread, isOP, key, result, thisThread, value, _i, _len, _ref;
+      var filter, firstThread, isOP, key, result, root, thisThread, value, _i, _len, _ref;
       if (post.isInlined) {
         return;
       }
-      post.isOP = post["class"] === 'op';
-      isOP = post.isOP, el = post.el;
+      isOP = post.id === post.threadId;
+      root = post.root;
       for (key in Filter.filters) {
         value = Filter[key](post);
         if (value === false) {
@@ -637,38 +633,32 @@
           if (result === true) {
             if (isOP) {
               if (!g.REPLY) {
-                ThreadHiding.hide(post.el.parentNode);
+                ThreadHiding.hide(root.parentNode);
               } else {
                 continue;
               }
             } else {
-              ReplyHiding.hide(post.root);
+              ReplyHiding.hide(root);
             }
             return;
           }
-          if (isOP) {
-            $.addClass(el, result[0]);
-          } else {
-            $.addClass(el.parentNode, result[0]);
-          }
+          $.addClass((isOP ? root.parentNode : root), result[0]);
           if (isOP && result[1] && !g.REPLY) {
-            thisThread = el.parentNode;
-            if (firstThread = $('div[class=op]')) {
-              $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
+            thisThread = root.parentNode;
+            if (firstThread = $('div[class=thread]')) {
+              $.before(firstThread, [thisThread, thisThread.nextElementSibling]);
             }
           }
         }
       }
     },
     name: function(post) {
-      var name;
-      name = post.isOP ? $('.postername', post.el) : $('.commentpostername', post.el);
-      return name.textContent;
+      return $('.name', post.el).textContent;
     },
     uniqueid: function(post) {
       var uid;
       if (uid = $('.posteruid', post.el)) {
-        return uid.textContent;
+        return uid.textContent.slice(5, -1);
       }
       return false;
     },
@@ -681,44 +671,42 @@
     },
     mod: function(post) {
       var mod;
-      if (mod = (post.isOP ? $('.commentpostername', post.el) : $('.commentpostername ~ .commentpostername', post.el))) {
+      if (mod = $('.capcode', post.el)) {
         return mod.textContent;
       }
       return false;
     },
     email: function(post) {
       var mail;
-      if (mail = $('.linkmail', post.el)) {
-        return mail.href;
+      if (mail = $('.useremail', post.el)) {
+        return mail.pathname;
       }
       return false;
     },
     subject: function(post) {
-      var sub;
-      sub = post.isOP ? $('.filetitle', post.el) : $('.replytitle', post.el);
-      return sub.textContent;
+      return $('.subject', post.el).textContent || false;
     },
     comment: function(post) {
       var data, i, nodes, text, _i, _ref;
       text = [];
-      nodes = d.evaluate('.//br|.//text()', post.el.lastChild, null, 7, null);
+      nodes = d.evaluate('.//br|.//text()', post.el.lastElementChild, null, 7, null);
       for (i = _i = 0, _ref = nodes.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
       return text.join('');
     },
     filename: function(post) {
-      var file, filesize;
-      filesize = post.filesize;
-      if (filesize && (file = $('span', filesize))) {
+      var file, fileInfo;
+      fileInfo = post.fileInfo;
+      if (fileInfo && (file = $('.fileText > span', fileInfo))) {
         return file.title;
       }
       return false;
     },
     dimensions: function(post) {
-      var filesize, match;
-      filesize = post.filesize;
-      if (filesize && (match = filesize.textContent.match(/\d+x\d+/))) {
+      var fileInfo, match;
+      fileInfo = post.fileInfo;
+      if (fileInfo && (match = fileInfo.textContent.match(/\d+x\d+/))) {
         return match[0];
       }
       return false;
@@ -735,7 +723,7 @@
       var img;
       img = post.img;
       if (img) {
-        return img.getAttribute('md5');
+        return img.dataset.md5;
       }
       return false;
     }
@@ -753,7 +741,7 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if ((el = $.id(quote.hash.slice(1))) && el.parentNode.parentNode.parentNode.hidden) {
+        if ((el = $.id(quote.hash.slice(1))) && el.hidden) {
           $.addClass(quote, 'filtered');
           if (Conf['Recursive Filtering']) {
             ReplyHiding.hide(post.root);
@@ -766,22 +754,21 @@
   ExpandComment = {
     init: function() {
       var a, _i, _len, _ref;
-      _ref = $$('.abbr > a');
+      _ref = $$('.abbr');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        $.on(a, 'click', ExpandComment.expand);
+        $.on(a.firstElementChild, 'click', ExpandComment.expand);
       }
     },
     expand: function(e) {
       var a, replyID, threadID, _, _ref;
       e.preventDefault();
-      _ref = this.href.match(/(\d+)#(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
+      _ref = this.href.match(/(\d+)#p(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
       this.textContent = "Loading " + replyID + "...";
-      threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]/div', this).id;
       a = this;
-      return $.cache(this.pathname, (function() {
+      return $.cache(this.pathname, function() {
         return ExpandComment.parse(this, a, threadID, replyID);
-      }));
+      });
     },
     parse: function(req, a, threadID, replyID) {
       var doc, href, node, post, quote, quotes, _i, _len;
@@ -791,16 +778,15 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      Threading.op($('body > form', doc).firstChild);
-      node = d.importNode(doc.getElementById(replyID));
+      node = d.importNode(doc.getElementById("m" + replyID));
       quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
-        if (quote.hash === (href = quote.getAttribute('href'))) {
-          quote.pathname = "/" + g.BOARD + "/res/" + threadID;
-        } else if (href !== quote.href) {
-          quote.href = "res/" + href;
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
         }
+        quote.href = "res/" + href;
       }
       post = {
         el: node,
@@ -823,51 +809,44 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      return $.replace(a.parentNode.parentNode, node.lastChild);
+      return $.replace(a.parentNode.parentNode, node);
     }
   };
 
   ExpandThread = {
     init: function() {
       var a, span, _i, _len, _ref, _results;
-      _ref = $$('.omittedposts');
+      _ref = $$('.summary');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         span = _ref[_i];
         a = $.el('a', {
           textContent: "+ " + span.textContent,
-          className: 'omittedposts',
+          className: 'summary desktop',
           href: 'javascript:;'
         });
-        $.on(a, 'click', ExpandThread.cb.toggle);
+        $.on(a, 'click', function() {
+          return ExpandThread.toggle(this.parentNode);
+        });
         _results.push($.replace(span, a));
       }
       return _results;
     },
-    cb: {
-      toggle: function() {
-        var thread;
-        thread = this.parentNode;
-        return ExpandThread.toggle(thread);
-      }
-    },
     toggle: function(thread) {
-      var a, backlink, num, pathname, prev, table, threadID, _i, _len, _ref, _ref1, _results;
-      threadID = thread.firstChild.id;
-      pathname = "/" + g.BOARD + "/res/" + threadID;
-      a = $('.omittedposts', thread);
+      var a, backlink, num, pathname, replies, reply, _i, _j, _len, _len1, _ref;
+      pathname = "/" + g.BOARD + "/res/" + thread.id.slice(1);
+      a = $('.summary', thread);
       switch (a.textContent[0]) {
         case '+':
-          if ((_ref = $('.op .container', thread)) != null) {
-            _ref.textContent = '';
-          }
           a.textContent = a.textContent.replace('+', '\u00d7 Loading...');
-          return $.cache(pathname, (function() {
-            return ExpandThread.parse(this, pathname, thread, a);
-          }));
+          $.cache(pathname, function() {
+            return ExpandThread.parse(this, thread, a);
+          });
+          break;
         case '\u00d7':
           a.textContent = a.textContent.replace('\u00d7 Loading...', '+');
-          return $.cache.requests[pathname].abort();
+          $.cache.requests[pathname].abort();
+          break;
         case '-':
           a.textContent = a.textContent.replace('-', '+');
           num = (function() {
@@ -881,25 +860,23 @@
                 return 5;
             }
           })();
-          table = $.x("following::br[@clear]/preceding::table[" + num + "]", a);
-          while ((prev = table.previousSibling) && (prev.nodeName !== 'A')) {
-            $.rm(prev);
+          replies = $$('.replyContainer', thread);
+          replies.splice(replies.length - num, num);
+          for (_i = 0, _len = replies.length; _i < _len; _i++) {
+            reply = replies[_i];
+            $.rm(reply);
           }
-          _ref1 = $$('.backlink', $('.op', thread));
-          _results = [];
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            backlink = _ref1[_i];
+          _ref = $$('.backlink', a.previousElementSibling);
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            backlink = _ref[_j];
             if (!$.id(backlink.hash.slice(1))) {
-              _results.push($.rm(backlink));
-            } else {
-              _results.push(void 0);
+              $.rm(backlink);
             }
           }
-          return _results;
       }
     },
-    parse: function(req, pathname, thread, a) {
-      var doc, href, link, next, nodes, quote, reply, table, _i, _j, _len, _len1, _ref, _ref1;
+    parse: function(req, thread, a) {
+      var backlink, doc, href, id, link, nodes, post, quote, reply, threadID, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', ExpandThread.cb.toggle);
@@ -908,97 +885,180 @@
       a.textContent = a.textContent.replace('\u00d7 Loading...', '-');
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
+      threadID = thread.id.slice(1);
       nodes = [];
-      _ref = $$('.reply', doc);
+      _ref = $$('.replyContainer', doc);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reply = _ref[_i];
-        table = d.importNode(reply.parentNode.parentNode.parentNode);
-        _ref1 = $$('.quotelink', table);
+        reply = d.importNode(reply);
+        _ref1 = $$('.quotelink', reply);
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           quote = _ref1[_j];
-          if (quote.hash === (href = quote.getAttribute('href'))) {
-            quote.pathname = pathname;
-          } else if (href !== quote.href) {
-            quote.href = "res/" + href;
+          href = quote.getAttribute('href');
+          if (href[0] === '/') {
+            continue;
           }
+          quote.href = "res/" + href;
         }
-        link = $('.quotejs', table);
-        link.href = "res/" + thread.firstChild.id + "#" + reply.id;
-        link.nextSibling.href = "res/" + thread.firstChild.id + "#q" + reply.id;
-        nodes.push(table);
+        id = reply.id.slice(2);
+        link = $('.postInfo > .postNum > a:first-child', reply);
+        link.href = "res/" + threadID + "#p" + id;
+        link.nextSibling.href = "res/" + threadID + "#q" + id;
+        nodes.push(reply);
       }
-      while ((next = a.nextSibling) && !next.clear) {
-        $.rm(next);
+      _ref2 = $$('.summary ~ .replyContainer', a.parentNode);
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        post = _ref2[_k];
+        $.rm(post);
       }
-      return $.before(next, nodes);
+      _ref3 = $$('.backlink', a.previousElementSibling);
+      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+        backlink = _ref3[_l];
+        if (!$.id(backlink.hash.slice(1))) {
+          $.rm(backlink);
+        }
+      }
+      return $.after(a, nodes);
+    }
+  };
+
+  ThreadHiding = {
+    init: function() {
+      var a, hiddenThreads, thread, _i, _len, _ref;
+      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      _ref = $$('.thread');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        thread = _ref[_i];
+        a = $.el('a', {
+          className: 'hide_thread_button',
+          innerHTML: '<span>[ - ]</span>',
+          href: 'javascript:;'
+        });
+        $.on(a, 'click', ThreadHiding.cb);
+        $.prepend(thread, a);
+        if (thread.id.slice(1) in hiddenThreads) {
+          ThreadHiding.hide(thread);
+        }
+      }
+    },
+    cb: function() {
+      return ThreadHiding.toggle(this.parentNode);
+    },
+    toggle: function(thread) {
+      var hiddenThreads, id;
+      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      id = thread.id.slice(1);
+      if (thread.hidden || /\bhidden_thread\b/.test(thread.firstChild.className)) {
+        ThreadHiding.show(thread);
+        delete hiddenThreads[id];
+      } else {
+        ThreadHiding.hide(thread);
+        hiddenThreads[id] = Date.now();
+      }
+      return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
+    },
+    hide: function(thread) {
+      var a, num, opInfo, span, text;
+      if (!Conf['Show Stubs']) {
+        thread.hidden = true;
+        thread.nextElementSibling.hidden = true;
+        return;
+      }
+      if (thread.firstChild.className === 'block') {
+        return;
+      }
+      num = 0;
+      if (span = $('.summary', thread)) {
+        num = Number(span.textContent.match(/\d+/));
+      }
+      num += $$('.opContainer ~ .replyContainer', thread).length;
+      text = num === 1 ? '1 reply' : "" + num + " replies";
+      opInfo = $('.op > .postInfo > .nameBlock', thread).textContent;
+      a = $('.hide_thread_button', thread);
+      $.addClass(a, 'hidden_thread');
+      a.firstChild.textContent = '[ + ]';
+      return $.add(a, $.tn(" " + opInfo + " (" + text + ")"));
+    },
+    show: function(thread) {
+      var a;
+      a = $('.hide_thread_button', thread);
+      $.removeClass(a, 'hidden_thread');
+      a.innerHTML = '<span>[ - ]</span>';
+      thread.hidden = false;
+      return thread.nextElementSibling.hidden = false;
     }
   };
 
   ReplyHiding = {
     init: function() {
-      this.td = $.el('td', {
-        noWrap: true,
-        className: 'replyhider',
-        innerHTML: '<a href="javascript:;">[ - ]</a>'
-      });
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var td;
-      if (post["class"]) {
+      var button;
+      if (post.isInlined || /\bop\b/.test(post["class"])) {
         return;
       }
-      td = ReplyHiding.td.cloneNode(true);
-      $.on(td.firstChild, 'click', ReplyHiding.toggle);
-      $.replace(post.el.previousSibling, td);
+      button = post.root.firstElementChild;
+      $.addClass(button, 'hide_reply_button');
+      button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
+      $.on(button.firstChild, 'click', ReplyHiding.toggle);
       if (post.id in g.hiddenReplies) {
         return ReplyHiding.hide(post.root);
       }
     },
     toggle: function() {
-      var id, parent, quote, table, _i, _j, _len, _len1, _ref, _ref1;
-      parent = this.parentNode;
-      if (parent.className === 'replyhider') {
-        ReplyHiding.hide(parent.parentNode.parentNode.parentNode);
-        id = parent.nextSibling.id;
-        _ref = $$(".quotelink[href='#" + id + "'], .backlink[href='#" + id + "']");
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          quote = _ref[_i];
-          $.addClass(quote, 'filtered');
-        }
-        g.hiddenReplies[id] = Date.now();
-      } else {
-        table = parent.nextSibling;
-        table.hidden = false;
-        $.rm(parent);
-        id = table.firstChild.firstChild.lastChild.id;
-        _ref1 = $$(".quotelink[href$='#" + id + "'], .backlink[href='#" + id + "']");
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          quote = _ref1[_j];
+      var button, id, quote, quotes, root, _i, _j, _len, _len1;
+      button = this.parentNode;
+      root = button.parentNode;
+      id = root.id.slice(2);
+      quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href='#p" + id + "']");
+      if (/\bstub\b/.test(button.className)) {
+        ReplyHiding.show(root);
+        for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+          quote = quotes[_i];
           $.removeClass(quote, 'filtered');
         }
         delete g.hiddenReplies[id];
+      } else {
+        ReplyHiding.hide(root);
+        for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
+          quote = quotes[_j];
+          $.addClass(quote, 'filtered');
+        }
+        g.hiddenReplies[id] = Date.now();
       }
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
-    hide: function(table) {
-      var div, name, trip, uid, _ref, _ref1;
-      if (table.hidden) {
+    hide: function(root) {
+      var button, el, stub;
+      button = root.firstElementChild;
+      if (button.hidden) {
         return;
       }
-      table.hidden = true;
+      button.hidden = true;
+      el = root.lastElementChild;
+      el.hidden = true;
       if (!Conf['Show Stubs']) {
         return;
       }
-      name = $('.commentpostername', table).textContent;
-      uid = ((_ref = $('.posteruid', table)) != null ? _ref.textContent : void 0) || '';
-      trip = ((_ref1 = $('.postertrip', table)) != null ? _ref1.textContent : void 0) || '';
-      div = $.el('div', {
-        className: 'stub',
-        innerHTML: "<a href=javascript:;><span>[ + ]</span> " + name + " " + uid + " " + trip + "</a>"
+      stub = $.el('div', {
+        className: 'hide_reply_button stub',
+        innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
       });
-      $.on(div.firstChild, 'click', ReplyHiding.toggle);
-      return $.before(table, div);
+      $.add(stub.firstChild, $.tn($('.nameBlock', el).textContent));
+      $.on(stub.firstChild, 'click', ReplyHiding.toggle);
+      return $.after(button, stub);
+    },
+    show: function(root) {
+      var button, el;
+      el = root.lastElementChild;
+      button = root.firstElementChild;
+      el.hidden = false;
+      button.hidden = false;
+      if (!Conf['Show Stubs']) {
+        return;
+      }
+      return $.rm(button.nextElementSibling);
     }
   };
 
@@ -1013,7 +1073,7 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var key, o, range, selEnd, selStart, ta, thread, value, _ref, _ref1;
+      var key, link, o, range, selEnd, selStart, ta, thread, value;
       if (!(key = Keybinds.keyCode(e)) || /TEXTAREA|INPUT/.test(e.target.nodeName) && !(e.altKey || e.ctrlKey || e.keyCode === 27)) {
         return;
       }
@@ -1071,16 +1131,16 @@
           Keybinds.img(thread, true);
           break;
         case Conf.zero:
-          window.location = "/" + g.BOARD + "/0#0";
+          window.location = "/" + g.BOARD + "/0#delform";
           break;
         case Conf.nextPage:
-          if ((_ref = $('input[value=Next]')) != null) {
-            _ref.click();
+          if (link = $('link[rel=next]', d.head)) {
+            window.location = link.href;
           }
           break;
         case Conf.previousPage:
-          if ((_ref1 = $('input[value=Previous]')) != null) {
-            _ref1.click();
+          if (link = $('link[rel=prev]', d.head)) {
+            window.location.href = link.href;
           }
           break;
         case Conf.nextThread:
@@ -1198,13 +1258,13 @@
       if (all) {
         return $.id('imageExpand').click();
       } else {
-        thumb = $('img[md5]', $('.replyhl', thread) || thread);
+        thumb = $('img[data-md5]', $('.post.highlight', thread) || thread);
         return ImageExpand.toggle(thumb.parentNode);
       }
     },
     qr: function(thread, quote) {
       if (quote) {
-        QR.quote.call($('.quotejs + .quotejs', $('.replyhl', thread) || thread));
+        QR.quote.call($('.postInfo > .postNum > a[title="Quote this post"]', $('.post.highlight', thread) || thread));
       } else {
         QR.open();
       }
@@ -1212,7 +1272,7 @@
     },
     open: function(thread, tab) {
       var id, url;
-      id = thread.firstChild.id;
+      id = thread.id.slice(1);
       url = "//boards.4chan.org/" + g.BOARD + "/res/" + id;
       if (tab) {
         return $.open(url);
@@ -1221,29 +1281,25 @@
       }
     },
     hl: function(delta, thread) {
-      var next, rect, replies, reply, td, _i, _len;
-      if (td = $('.replyhl', thread)) {
-        td.className = 'reply';
-        td.removeAttribute('tabindex');
-        rect = td.getBoundingClientRect();
-        if (rect.bottom >= 0 && rect.top <= d.body.clientHeight) {
-          next = delta === +1 ? $.x('following::td[@class="reply"]', td) : $.x('preceding::td[@class="reply"]', td);
+      var next, post, rect, replies, reply, _i, _len;
+      if (post = $('.reply.highlight', thread)) {
+        $.removeClass(post, 'highlight');
+        post.removeAttribute('tabindex');
+        rect = post.getBoundingClientRect();
+        if (rect.bottom >= 0 && rect.top <= d.documentElement.clientHeight) {
+          next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? post.parentNode.nextElementSibling : post.parentNode.previousElementSibling);
           if (!next) {
-            td.className = 'replyhl';
-            td.tabIndex = 0;
-            td.focus();
+            this.focus(post);
             return;
           }
           if (!(g.REPLY || $.x('ancestor::div[@class="thread"]', next) === thread)) {
             return;
           }
           rect = next.getBoundingClientRect();
-          if (rect.top < 0 || rect.bottom > d.body.clientHeight) {
+          if (rect.top < 0 || rect.bottom > d.documentElement.clientHeight) {
             next.scrollIntoView(delta === -1);
           }
-          next.className = 'replyhl';
-          next.tabIndex = 0;
-          next.focus();
+          this.focus(next);
           return;
         }
       }
@@ -1254,13 +1310,16 @@
       for (_i = 0, _len = replies.length; _i < _len; _i++) {
         reply = replies[_i];
         rect = reply.getBoundingClientRect();
-        if (delta === +1 && rect.top >= 0 || delta === -1 && rect.bottom <= d.body.clientHeight) {
-          reply.className = 'replyhl';
-          reply.tabIndex = 0;
-          reply.focus();
+        if (delta === +1 && rect.top >= 0 || delta === -1 && rect.bottom <= d.documentElement.clientHeight) {
+          this.focus(reply);
           return;
         }
       }
+    },
+    focus: function(post) {
+      $.addClass(post, 'highlight');
+      post.tabIndex = 0;
+      return post.focus();
     }
   };
 
@@ -1312,7 +1371,7 @@
           return thread;
         }
       }
-      return $('form[name=delform]');
+      return $('.board');
     },
     scroll: function(delta) {
       var i, rect, thread, top, _ref, _ref1;
@@ -1347,7 +1406,7 @@
           }
           return $('textarea', QR.el).focus();
         });
-        $.before($('form[name=post]'), link);
+        $.before($.id('postForm'), link);
       }
       script = $.el('script', {
         textContent: 'Recaptcha.focus_response_field=function(){}'
@@ -1365,7 +1424,7 @@
       return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function(post) {
-      return $.on($('.quotejs + .quotejs', post.el), 'click', QR.quote);
+      return $.on($('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote);
     },
     open: function() {
       if (QR.el) {
@@ -1429,15 +1488,15 @@
       if (data == null) {
         data = {};
       }
+      if (!QR.el) {
+        return;
+      }
       if (g.dead) {
         value = 404;
         disabled = true;
         QR.cooldown.auto = false;
       }
       value = QR.cooldown.seconds || data.progress || value;
-      if (!QR.el) {
-        return;
-      }
       input = QR.status.input;
       input.value = QR.cooldown.auto && Conf['Cooldown'] ? value ? "Auto " + value : 'Auto' : value || 'Submit';
       return input.disabled = disabled || false;
@@ -1484,12 +1543,12 @@
       }
       QR.open();
       if (!g.REPLY) {
-        $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', this).firstChild.id;
+        $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', this).id.slice(1);
       }
-      id = this.previousElementSibling.hash.slice(1);
+      id = this.previousSibling.hash.slice(2);
       text = ">>" + id + "\n";
       sel = window.getSelection();
-      if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote/preceding-sibling::input', sel.anchorNode)) != null ? _ref.name : void 0)) {
+      if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
@@ -1497,7 +1556,6 @@
       caretPos = ta.selectionStart;
       QR.selected.el.lastChild.textContent = QR.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       ta.focus();
-      ta.selectionEnd = ta.selectionStart = caretPos + text.length;
       range = caretPos + text.length;
       return ta.setSelectionRange(range, range);
     },
@@ -1783,7 +1841,7 @@
         this.timeout = Date.now() + 26 * $.MINUTE;
         challenge = this.challenge.firstChild.value;
         this.img.alt = challenge;
-        this.img.src = "http://www.google.com/recaptcha/api/image?c=" + challenge;
+        this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
         return this.input.value = null;
       },
       count: function(count) {
@@ -1819,7 +1877,7 @@
       }
     },
     dialog: function() {
-      var e, fileInput, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+      var e, fileInput, id, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
       QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
@@ -1841,7 +1899,7 @@
         });
         ta.style.cssText = $.get('QR.size', '');
       }
-      mimeTypes = $('.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
+      mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
             return 'image/jpeg';
@@ -1853,18 +1911,19 @@
       });
       QR.mimeTypes = mimeTypes.split(', ');
       QR.mimeTypes.push('');
-      fileInput = $('[type=file]', QR.el);
-      fileInput.max = $('[name=MAX_FILE_SIZE]').value;
+      fileInput = $('input[type=file]', QR.el);
+      fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
       fileInput.accept = mimeTypes;
-      QR.spoiler = !!$('#com_submit + label');
+      QR.spoiler = !!$('input[name=spoiler]');
       spoiler = $('#spoilerLabel', QR.el);
       spoiler.hidden = !QR.spoiler;
       if (!g.REPLY) {
         threads = '<option value=new>New thread</option>';
-        _ref = $$('.op');
+        _ref = $$('.thread');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           thread = _ref[_i];
-          threads += "<option value=" + thread.id + ">Thread " + thread.id + "</option>";
+          id = thread.id.slice(1);
+          threads += "<option value=" + id + ">Thread " + id + "</option>";
         }
         $.prepend($('.move > span', QR.el), $.el('select', {
           innerHTML: threads,
@@ -1901,8 +1960,9 @@
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         name = _ref1[_j];
         $.on($("[name=" + name + "]", QR.el), 'input keyup change paste', function() {
+          var _ref2;
           QR.selected[this.name] = this.value;
-          if (QR.cooldown.auto && QR.selected === QR.replies[0] && parseInt(QR.status.input.value.match(/\d+/)) < 6) {
+          if (QR.cooldown.auto && QR.selected === QR.replies[0] && (0 < (_ref2 = QR.cooldown.seconds) && _ref2 < 6)) {
             return QR.cooldown.auto = false;
           }
         });
@@ -1920,7 +1980,7 @@
         }
         return _results;
       });
-      QR.status.input = $('[type=submit]', QR.el);
+      QR.status.input = $('input[type=submit]', QR.el);
       QR.status();
       QR.cooldown.init();
       QR.captcha.init();
@@ -1993,7 +2053,7 @@
         upfile: reply.file,
         spoiler: reply.spoiler,
         mode: 'regist',
-        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('[name=pwd]').value,
+        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
@@ -2032,7 +2092,7 @@
           }
         }
       };
-      return QR.ajax = $.ajax($('form[name=post]').action, callbacks, opts);
+      return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
       var b, doc, err, node, persona, postNumber, reply, thread, _, _ref;
@@ -2132,7 +2192,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, fileInfoR, fileInfoT, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var arr, back, checked, description, dialog, favicon, fileInfo, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2210,16 +2270,13 @@
     </ul>\
     <div class=warning><code>File Info Formatting</code> is disabled.</div>\
     <ul>\
-      Thread File Info Formatting\
-      <li><input type=text name=fileInfoT> : <span id=fileInfoTPreview></span></li>\
-      <li>Link: %l (lowercase L)</li>\
+      File Info Formatting\
+      <li><input type=text name=fileInfo> : <span id=fileInfoPreview class=fileText></span></li>\
+      <li>Link (with original file name): %l (lowercase L, truncated), %L (untruncated)</li>\
+      <li>Original file name: %n (Truncated), %N (Untruncated)</li>\
+      <li>Spoiler indicator: %p</li>\
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>\
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>\
-      Reply File Info Formatting\
-      <li><input type=text name=fileInfoR> : <span id=fileInfoRPreview></span></li>\
-      <li>All thread formatters also work for reply formatting.</li>\
-      <li>Link (with original file name): %l (lowercase L)(Truncated), %L (Untruncated)</li>\
-      <li>Original file name: %n (Truncated), %N (Untruncated)</li>\
     </ul>\
     <div class=warning><code>Unread Favicon</code> is disabled.</div>\
     Unread favicons<br>\
@@ -2274,16 +2331,13 @@
       }
       (back = $('[name=backlink]', dialog)).value = Conf['backlink'];
       (time = $('[name=time]', dialog)).value = Conf['time'];
-      (fileInfoR = $('[name=fileInfoR]', dialog)).value = Conf['fileInfoR'];
-      (fileInfoT = $('[name=fileInfoT]', dialog)).value = Conf['fileInfoT'];
+      (fileInfo = $('[name=fileInfo]', dialog)).value = Conf['fileInfo'];
       $.on(back, 'keyup', $.cb.value);
       $.on(back, 'keyup', Options.backlink);
       $.on(time, 'keyup', $.cb.value);
       $.on(time, 'keyup', Options.time);
-      $.on(fileInfoR, 'keyup', $.cb.value);
-      $.on(fileInfoR, 'keyup', Options.fileInfo);
-      $.on(fileInfoT, 'keyup', $.cb.value);
-      $.on(fileInfoT, 'keyup', Options.fileInfo);
+      $.on(fileInfo, 'keyup', $.cb.value);
+      $.on(fileInfo, 'keyup', Options.fileInfo);
       favicon = $('select', dialog);
       favicon.value = Conf['favicon'];
       $.on(favicon, 'change', $.cb.value);
@@ -2322,8 +2376,7 @@
       d.body.style.setProperty('overflow', 'hidden', null);
       Options.backlink.call(back);
       Options.time.call(time);
-      Options.fileInfo.call(fileInfoR);
-      Options.fileInfo.call(fileInfoT);
+      Options.fileInfo.call(fileInfo);
       return Options.favicon.call(favicon);
     },
     close: function() {
@@ -2358,137 +2411,22 @@
       return $.id('backlinkPreview').textContent = Conf['backlink'].replace(/%id/, '123456789');
     },
     fileInfo: function() {
-      var type;
-      type = this.name === 'fileInfoR' ? 0 : 1;
       FileInfo.data = {
-        link: '<a href="javascript:;">1329791824.png</a>',
-        size: 996,
+        link: 'javascript:;',
+        spoiler: true,
+        size: '276',
         unit: 'KB',
-        resolution: '1366x768',
-        fullname: '[a.f.k.] Sayonara Zetsubou Sensei - 09.avi_snapshot_03.34_[2011.02.20_06.58.00].jpg',
-        shortname: '[a.f.k.] Sayonara Zetsubou Sen(...).jpg',
-        type: type
+        resolution: '1280x720',
+        fullname: 'd9bb2efc98dd0df141a94399ff5880b7.jpg',
+        shortname: 'd9bb2efc98dd0df141a94399ff5880(...).jpg'
       };
       FileInfo.setFormats();
-      return $.id("" + this.name + "Preview").innerHTML = FileInfo.funks[type](FileInfo);
+      return $.id('fileInfoPreview').innerHTML = FileInfo.funk(FileInfo);
     },
     favicon: function() {
       Favicon["switch"]();
       Unread.update(true);
       return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "> <img src=" + Favicon.unreadNSFW + "> <img src=" + Favicon.unreadDead + ">";
-    }
-  };
-
-  Threading = {
-    op: function(node) {
-      var nodes, op;
-      nodes = [];
-      while (node.nodeName !== 'BLOCKQUOTE') {
-        nodes.push(node);
-        node = node.nextSibling;
-      }
-      nodes.push(node);
-      node = node.nextSibling;
-      op = $.el('div', {
-        className: 'op'
-      });
-      $.add(op, nodes);
-      op.id = $('input', op).name;
-      return $.before(node, op);
-    },
-    thread: function(node) {
-      var div, nodes;
-      node = Threading.op(node);
-      if (g.REPLY) {
-        return;
-      }
-      nodes = [];
-      while (node.nodeName !== 'HR') {
-        nodes.push(node);
-        node = node.nextElementSibling;
-      }
-      div = $.el('div', {
-        className: 'thread'
-      });
-      $.add(div, nodes);
-      $.before(node, div);
-      node = node.nextElementSibling;
-      if (!(node.align || node.nodeName === 'CENTER')) {
-        return Threading.thread(node);
-      }
-    }
-  };
-
-  ThreadHiding = {
-    init: function() {
-      var a, hiddenThreads, op, thread, _i, _len, _ref;
-      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-      _ref = $$('.thread');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        thread = _ref[_i];
-        op = $('.op', thread);
-        a = $.el('a', {
-          textContent: '[ - ]',
-          href: 'javascript:;'
-        });
-        $.on(a, 'click', ThreadHiding.cb);
-        $.prepend(op, a);
-        if (op.id in hiddenThreads) {
-          ThreadHiding.hide(thread);
-        }
-      }
-    },
-    cb: function() {
-      return ThreadHiding.toggle(this.parentNode.parentNode);
-    },
-    toggle: function(thread) {
-      var hiddenThreads, id;
-      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-      id = $('.op', thread).id;
-      if (thread.hidden || thread.firstChild.className === 'block') {
-        ThreadHiding.show(thread);
-        delete hiddenThreads[id];
-      } else {
-        ThreadHiding.hide(thread);
-        hiddenThreads[id] = Date.now();
-      }
-      return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
-    },
-    hide: function(thread) {
-      var a, div, name, num, op, span, text, trip, uid, _ref, _ref1;
-      if (!Conf['Show Stubs']) {
-        thread.hidden = true;
-        thread.nextSibling.hidden = true;
-        return;
-      }
-      if (thread.firstChild.className === 'block') {
-        return;
-      }
-      num = 0;
-      if (span = $('.omittedposts', thread)) {
-        num = Number(span.textContent.match(/\d+/)[0]);
-      }
-      num += $$('.op ~ table', thread).length;
-      text = num === 1 ? '1 reply' : "" + num + " replies";
-      op = $('.op', thread);
-      name = $('.postername', op).textContent;
-      uid = ((_ref = $('.posteruid', op)) != null ? _ref.textContent : void 0) || '';
-      trip = ((_ref1 = $('.postertrip', op)) != null ? _ref1.textContent : void 0) || '';
-      a = $.el('a', {
-        innerHTML: "<span>[ + ]</span> " + name + " " + uid + " " + trip + " (" + text + ")",
-        href: 'javascript:;'
-      });
-      $.on(a, 'click', ThreadHiding.cb);
-      div = $.el('div', {
-        className: 'block'
-      });
-      $.add(div, a);
-      return $.prepend(thread, div);
-    },
-    show: function(thread, id) {
-      $.rm($('.block', thread));
-      thread.hidden = false;
-      return thread.nextSibling.hidden = false;
     }
   };
 
@@ -2507,7 +2445,7 @@
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
-      this.br = $('br[clear]');
+      this.thread = $.id("t" + g.THREAD_ID);
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
@@ -2566,7 +2504,7 @@
         };
       },
       update: function() {
-        var doc, id, newPosts, nodes, reply, scroll, _i, _len, _ref;
+        var count, doc, id, lastPost, nodes, reply, scroll, _i, _len, _ref;
         if (this.status === 404) {
           Updater.timer.textContent = '';
           Updater.count.textContent = 404;
@@ -2583,7 +2521,7 @@
           return;
         }
         Updater.retryCoef = 10;
-        Updater.timer.textContent = '-' + Conf['Interval'];
+        Updater.timer.textContent = "-" + Conf['Interval'];
         /*
               Status Code 304: Not modified
               By sending the `If-Modified-Since` header we get a proper status code, and no response.
@@ -2601,25 +2539,26 @@
         Updater.lastModified = this.getResponseHeader('Last-Modified');
         doc = d.implementation.createHTMLDocument('');
         doc.documentElement.innerHTML = this.response;
-        id = $('input', Updater.br.previousElementSibling).name;
+        lastPost = Updater.thread.lastElementChild;
+        id = lastPost.id.slice(2);
         nodes = [];
-        _ref = $$('.reply', doc).reverse();
+        _ref = $$('.replyContainer', doc).reverse();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           reply = _ref[_i];
-          if (reply.id <= id) {
+          if (reply.id.slice(2) <= id) {
             break;
           }
-          nodes.push(reply.parentNode.parentNode.parentNode);
+          nodes.push(reply);
         }
-        newPosts = nodes.length;
-        scroll = Conf['Scrolling'] && Updater.scrollBG() && newPosts && Updater.br.previousElementSibling.getBoundingClientRect().bottom - d.body.clientHeight < 25;
+        count = nodes.length;
+        scroll = Conf['Scrolling'] && Updater.scrollBG() && count && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         if (Conf['Verbose']) {
-          Updater.count.textContent = "+" + newPosts;
-          Updater.count.className = newPosts ? 'new' : null;
+          Updater.count.textContent = "+" + count;
+          Updater.count.className = count ? 'new' : null;
         }
-        $.before(Updater.br, nodes.reverse());
+        $.add(Updater.thread, nodes.reverse());
         if (scroll) {
-          return Updater.br.previousSibling.scrollIntoView();
+          return nodes[0].scrollIntoView();
         }
       }
     },
@@ -2638,7 +2577,7 @@
     },
     retry: function() {
       this.count.textContent = 'Retry';
-      this.count.className = '';
+      this.count.className = null;
       return this.update();
     },
     update: function() {
@@ -2660,13 +2599,13 @@
 
   Watcher = {
     init: function() {
-      var favicon, html, input, inputs, _i, _len;
+      var favicon, html, input, _i, _len, _ref;
       html = '<div class=move>Thread Watcher</div>';
       this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', html);
       $.add(d.body, this.dialog);
-      inputs = $$('.op > input');
-      for (_i = 0, _len = inputs.length; _i < _len; _i++) {
-        input = inputs[_i];
+      _ref = $$('.op input');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
         favicon = $.el('img', {
           className: 'favicon'
         });
@@ -2764,15 +2703,17 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var name, node;
-      if (post["class"] === 'inline') {
+      var name, parent, trip;
+      if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      name = $('.commentpostername, .postername', post.el);
+      name = $('.name', post.el);
       name.textContent = 'Anonymous';
-      node = name.nextElementSibling;
-      if (node.className === 'postertrip' || node.nodeName === 'A') {
-        return $.rm(node);
+      if ((trip = name.nextElementSibling) && trip.className === 'postertrip') {
+        $.rm(trip);
+      }
+      if ((parent = name.parentNode).className === 'useremail' && !/^sage$/i.test(parent.pathname)) {
+        return $.replace(parent, name);
       }
     }
   };
@@ -2807,7 +2748,7 @@
           case '$2':
             return "' + img.href + '";
           case '$3':
-            return "' + img.firstChild.getAttribute('md5').replace(/\=*$/, '') + '";
+            return "' + img.firstChild.dataset.md5.replace(/\=*$/, '') + '";
           case '$4':
             return g.BOARD;
         }
@@ -2827,7 +2768,7 @@
     node: function(post) {
       var img, link, nodes, _i, _len, _ref;
       img = post.img;
-      if (post["class"] === 'inline' || !img) {
+      if (post.isInlined && !post.isCrosspost || !img) {
         return;
       }
       img = img.parentNode;
@@ -2835,9 +2776,9 @@
       _ref = Sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
-        nodes.push($.tn(' '), link(img));
+        nodes.push($.tn('\u00A0'), link(img));
       }
-      return $.add(post.filesize, nodes);
+      return $.add(post.fileInfo, nodes);
     }
   };
 
@@ -2848,11 +2789,10 @@
     node: function(post) {
       var img;
       img = post.img;
-      if (!(img && /^Spoil/.test(img.alt)) || post["class"] === 'inline') {
+      if (!(img && /^Spoiler/.test(img.alt)) || post.isInlined && !post.isCrosspost) {
         return;
       }
-      img.removeAttribute('height');
-      img.removeAttribute('width');
+      img.removeAttribute('style');
       return img.src = "//thumbs.4chan.org" + (img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg'));
     }
   };
@@ -2865,11 +2805,11 @@
       if ($.isDST()) {
         chanOffset--;
       }
-      this.parse = Date.parse('10/11/11(Tue)18:53') === 1318351980000 ? function(node) {
-        return new Date(Date.parse(node.textContent) + chanOffset * $.HOUR);
-      } : function(node) {
+      this.parse = Date.parse('10/11/11(Tue)18:53') === 1318351980000 ? function(text) {
+        return new Date(Date.parse(text) + chanOffset * $.HOUR);
+      } : function(text) {
         var day, hour, min, month, year, _, _ref;
-        _ref = node.textContent.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
+        _ref = text.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
         year = "20" + year;
         month--;
         hour = chanOffset + Number(hour);
@@ -2878,17 +2818,13 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var node, time;
-      if (post["class"] === 'inline') {
+      var node;
+      if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      node = $('.posttime', post.el) || $('span[id]', post.el).previousSibling;
-      Time.date = Time.parse(node);
-      time = $.el('time', {
-        textContent: ' ' + Time.funk(Time) + ' '
-      });
-      time.setAttribute('datetime', Time.date.toISOString());
-      return $.replace(node, time);
+      node = $('.postInfo > .dateTime', post.el);
+      Time.date = Time.parse(node.textContent);
+      return node.textContent = Time.funk(Time);
     },
     foo: function() {
       var code;
@@ -2976,42 +2912,34 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var data, link, node, regexp, resolution, size, span, unit, _, _ref;
-      if (post["class"] === 'inline' || !(node = post.filesize)) {
+      var alt, node, span;
+      if (post.isInlined && !post.isCrosspost || !post.fileInfo) {
         return;
       }
-      regexp = /^File: (<.+>)-\((?:Spoiler Image, )?([\d\.]+) (\w+), (\d+x\d+|PDF)/;
-      _ref = node.innerHTML.match(regexp), _ = _ref[0], link = _ref[1], size = _ref[2], unit = _ref[3], resolution = _ref[4];
-      data = {
-        link: link,
-        size: size,
-        unit: unit,
-        resolution: resolution
+      node = post.fileInfo.firstElementChild;
+      alt = post.img.alt;
+      span = $('span', node);
+      FileInfo.data = {
+        link: post.img.parentNode.href,
+        spoiler: /^Spoiler/.test(alt),
+        size: alt.match(/\d+/)[0],
+        unit: alt.match(/\w+$/)[0],
+        resolution: span.previousSibling.textContent.match(/\d+x\d+|PDF/)[0],
+        fullname: span.title,
+        shortname: span.textContent
       };
-      if (span = $('span', node)) {
-        data.fullname = span.title;
-        data.shortname = span.textContent;
-      }
-      data.type = +(!span);
-      FileInfo.data = data;
-      return node.innerHTML = FileInfo.funks[data.type](FileInfo);
+      return node.innerHTML = FileInfo.funk(FileInfo);
     },
     setFormats: function() {
-      var code, format, funks, i, param, _i;
-      funks = [];
-      for (i = _i = 0; _i <= 1; i = ++_i) {
-        format = i ? Conf['fileInfoT'] : Conf['fileInfoR'];
-        param = i ? /%([BKlMrs])/g : /%([BKlLMnNrs])/g;
-        code = format.replace(param, function(s, c) {
-          if (c in FileInfo.formatters) {
-            return "' + f.formatters." + c + "() + '";
-          } else {
-            return s;
-          }
-        });
-        funks.push(Function('f', "return '" + code + "'"));
-      }
-      return this.funks = funks;
+      var code;
+      code = Conf['fileInfo'].replace(/%([BKlLMnNprs])/g, function(s, c) {
+        if (c in FileInfo.formatters) {
+          return "' + f.formatters." + c + "() + '";
+        } else {
+          return s;
+        }
+      });
+      return this.funk = Function('f', "return '" + code + "'");
     },
     convertUnit: function(unitT) {
       var i, size, unitF, units;
@@ -3040,24 +2968,27 @@
     },
     formatters: {
       l: function() {
-        if (FileInfo.data.type === 0) {
-          return FileInfo.data.link.replace(/>\d+\.\w+</, ">" + (this.n()) + "<");
-        } else {
-          return FileInfo.data.link;
-        }
+        return "<a href=" + FileInfo.data.link + " target=_blank>" + (this.n()) + "</a>";
       },
       L: function() {
-        return FileInfo.data.link.replace(/>\d+\.\w+</, ">" + FileInfo.data.fullname + "<");
+        return "<a href=" + FileInfo.data.link + " target=_blank>" + (this.N()) + "</a>";
       },
       n: function() {
         if (FileInfo.data.fullname === FileInfo.data.shortname) {
           return FileInfo.data.fullname;
         } else {
-          return "<span class=filename><span class=fnfull>" + FileInfo.data.fullname + "</span><span class=fntrunc>" + FileInfo.data.shortname + "</span></span>";
+          return "<span class=fntrunc>" + FileInfo.data.shortname + "</span><span class=fnfull>" + FileInfo.data.fullname + "</span>";
         }
       },
       N: function() {
         return FileInfo.data.fullname;
+      },
+      p: function() {
+        if (FileInfo.data.spoiler) {
+          return 'Spoiler, ';
+        } else {
+          return '';
+        }
       },
       s: function() {
         return "" + FileInfo.data.size + " " + FileInfo.data.unit;
@@ -3078,18 +3009,19 @@
   };
 
   GetTitle = function(thread) {
-    var el, span;
-    el = $('.filetitle', thread);
+    var el, op, span;
+    op = $('.op', thread);
+    el = $('.subject', op);
     if (!el.textContent) {
-      el = $('blockquote', thread);
+      el = $('blockquote', op);
       if (!el.textContent) {
-        el = $('.postername', thread);
+        el = $('.nameBlock', op);
       }
     }
     span = $.el('span', {
       innerHTML: el.innerHTML.replace(/<br>/g, ' ')
     });
-    return "/" + g.BOARD + "/ - " + span.textContent;
+    return "/" + g.BOARD + "/ - " + (span.textContent.trim());
   };
 
   TitlePost = {
@@ -3106,7 +3038,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, container, el, link, qid, quote, quotes, root, _i, _len, _ref;
+      var a, container, el, link, qid, quote, quotes, _i, _len, _ref;
       if (post.isInlined) {
         return;
       }
@@ -3114,17 +3046,17 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (qid = quote.hash.slice(1)) {
+        if (qid = quote.hash.slice(2)) {
           quotes[qid] = true;
         }
       }
       a = $.el('a', {
-        href: "#" + post.id,
-        className: post.root.hidden ? 'filtered backlink' : 'backlink',
+        href: "#p" + post.id,
+        className: post.el.hidden ? 'filtered backlink' : 'backlink',
         textContent: QuoteBacklink.funk(post.id)
       });
       for (qid in quotes) {
-        if (!(el = $.id(qid)) || el.className === 'op' && !Conf['OP Backlinks']) {
+        if (!(el = $.id("pi" + qid)) || !Conf['OP Backlinks'] && /\bop\b/.test(el.parentNode.className)) {
           continue;
         }
         link = a.cloneNode(true);
@@ -3136,16 +3068,14 @@
         } else {
           link.setAttribute('onclick', "replyhl('" + post.id + "');");
         }
-        if (!((container = $('.container', el)) && container.parentNode === el)) {
+        if (!(container = $.id("blc" + qid))) {
           container = $.el('span', {
-            className: 'container'
+            className: 'container',
+            id: "blc" + qid
           });
-          $.add(container, [$.tn(' '), link]);
-          root = $('.reportbutton', el) || $('span[id]', el);
-          $.after(root, container);
-        } else {
-          $.add(container, [$.tn(' '), link]);
+          $.add(el, container);
         }
+        $.add(container, [$.tn(' '), link]);
       }
     }
   };
@@ -3177,11 +3107,11 @@
         return;
       }
       e.preventDefault();
-      id = this.hash.slice(1);
+      id = this.hash.slice(2);
       if (/\binlined\b/.test(this.className)) {
         QuoteInline.rm(this, id);
       } else {
-        if ($.x("ancestor::*[@id='" + id + "']", this)) {
+        if ($.x("ancestor::div[contains(@id,'p" + id + "')]", this)) {
           return;
         }
         QuoteInline.add(this, id);
@@ -3189,61 +3119,64 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var el, i, inline, pathname, root, table, threadID;
-      root = q.parentNode.nodeName === 'FONT' ? q.parentNode : q.nextSibling ? q.nextSibling : q;
-      if (el = $.id(id)) {
-        inline = QuoteInline.table(id, el.innerHTML);
-        if ((i = Unread.replies.indexOf(el.parentNode.parentNode.parentNode)) !== -1) {
+      var clonePost, el, i, inline, pathname, root;
+      root = $.x('ancestor::*[parent::blockquote]', q);
+      if (el = $.id("p" + id)) {
+        if (/\bop\b/.test(el.className)) {
+          $.removeClass(el.parentNode, 'qphl');
+        } else {
+          $.removeClass(el, 'qphl');
+        }
+        clonePost = QuoteInline.clone(id, el);
+        if (/\bbacklink\b/.test(q.className)) {
+          $.after(q.parentNode, clonePost);
+          if (Conf['Forward Hiding']) {
+            $.addClass(el.parentNode, 'forwarded');
+            ++el.dataset.forwarded || (el.dataset.forwarded = 1);
+          }
+        } else {
+          $.after(root, clonePost);
+        }
+        if ((i = Unread.replies.indexOf(el)) !== -1) {
           Unread.replies.splice(i, 1);
           Unread.update(true);
         }
-        if (/\bbacklink\b/.test(q.className)) {
-          $.after(q.parentNode, inline);
-          if (Conf['Forward Hiding']) {
-            table = $.x('ancestor::table', el);
-            $.addClass(table, 'forwarded');
-            ++table.title || (table.title = 1);
-          }
-          return;
-        }
-        return $.after(root, inline);
-      } else {
-        inline = $.el('td', {
-          className: 'reply inline',
-          id: "i" + id,
-          innerHTML: "Loading " + id + "..."
-        });
-        $.after(root, inline);
-        pathname = q.pathname;
-        threadID = pathname.split('/').pop();
-        return $.cache(pathname, (function() {
-          return QuoteInline.parse(this, pathname, id, threadID, inline);
-        }));
+        return;
       }
+      inline = $.el('div', {
+        className: 'inline',
+        id: "i" + id,
+        textContent: "Loading " + id + "..."
+      });
+      $.after(root, inline);
+      pathname = q.pathname;
+      return $.cache(pathname, function() {
+        return QuoteInline.parse(this, pathname, id, inline);
+      });
     },
     rm: function(q, id) {
-      var inlined, table, _i, _len, _ref;
-      table = $.x("following::*[@id='i" + id + "']", q);
-      $.rm(table);
+      var div, inlined, _i, _len, _ref;
+      div = $.x("following::div[@id='i_pc" + id + "']", q);
+      $.rm(div);
       if (!Conf['Forward Hiding']) {
         return;
       }
-      _ref = $$('.backlink.inlined', table);
+      _ref = $$('.backlink.inlined', div);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         inlined = _ref[_i];
-        table = $.x('ancestor::table', $.id(inlined.hash.slice(1)));
-        if (!--table.title) {
-          $.removeClass(table, 'forwarded');
+        div = $.id(inlined.hash.slice(1));
+        if (!--div.dataset.forwarded) {
+          $.removeClass(div.parentNode, 'forwarded');
         }
       }
       if (/\bbacklink\b/.test(q.className)) {
-        table = $.x('ancestor::table', $.id(id));
-        if (!--table.title) {
-          return $.removeClass(table, 'forwarded');
+        div = $.id("p" + id);
+        if (!--div.dataset.forwarded) {
+          return $.removeClass(div.parentNode, 'forwarded');
         }
       }
     },
-    parse: function(req, pathname, id, threadID, inline) {
+    parse: function(req, pathname, id, inline) {
       var doc, href, link, newInline, node, quote, _i, _len, _ref;
       if (!inline.parentNode) {
         return;
@@ -3254,29 +3187,36 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
-      newInline = QuoteInline.table(id, node.innerHTML);
+      node = doc.getElementById("p" + id);
+      newInline = QuoteInline.clone(id, node);
       _ref = $$('.quotelink', newInline);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if ((href = quote.getAttribute('href')) === quote.hash) {
-          quote.pathname = pathname;
-        } else if (!g.REPLY && href !== quote.href) {
-          quote.href = "res/" + href;
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
         }
+        quote.href = "res/" + href;
       }
-      link = $('.quotejs', newInline);
-      link.href = "" + pathname + "#" + id;
+      link = $('.postInfo > .postNum > a:first-child', newInline);
+      link.href = "" + pathname + "#p" + id;
       link.nextSibling.href = "" + pathname + "#q" + id;
-      $.addClass(newInline, 'crossquote');
+      $.addClass(newInline, 'crosspost');
       return $.replace(inline, newInline);
     },
-    table: function(id, html) {
-      return $.el('table', {
-        className: 'inline',
-        id: "i" + id,
-        innerHTML: "<tbody><tr><td class=reply>" + html + "</td></tr></tbody>"
+    clone: function(id, el) {
+      var clone, node, _i, _len, _ref;
+      clone = $.el('div', {
+        className: 'postContainer inline',
+        id: "i_pc" + id
       });
+      $.add(clone, el.cloneNode(true));
+      _ref = $$('[id]', clone);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i];
+        node.id = "i_" + node.id;
+      }
+      return clone;
     }
   };
 
@@ -3300,36 +3240,38 @@
       }
     },
     mouseover: function(e) {
-      var el, id, node, qp, quote, replyID, threadID, _i, _len, _ref;
+      var el, id, qp, quote, replyID, _i, _len, _ref;
       if (/\binlined\b/.test(this.className)) {
         return;
       }
       qp = UI.el = $.el('div', {
         id: 'qp',
-        className: 'reply dialog'
+        className: 'reply dialog post'
       });
       $.add(d.body, qp);
-      id = this.hash.slice(1);
-      if (el = $.id(id)) {
+      id = this.hash.slice(2);
+      if (el = $.id("p" + id)) {
         qp.innerHTML = el.innerHTML;
         if (Conf['Quote Highlighting']) {
-          $.addClass(el, 'qphl');
+          if (/\bop\b/.test(el.className)) {
+            $.addClass(el.parentNode, 'qphl');
+          } else {
+            $.addClass(el, 'qphl');
+          }
         }
-        node = /\bbacklink\b/.test(this.className) ? this.parentNode : $.x('ancestor::blockquote', this);
-        replyID = $.x('preceding-sibling::input', node).name;
+        replyID = $.x('ancestor::div[contains(@class,"postContainer")]', this).id.slice(2);
         _ref = $$('.quotelink, .backlink', qp);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          if (quote.hash.slice(1) === replyID) {
+          if (quote.hash.slice(2) === replyID) {
             $.addClass(quote, 'forwardlink');
           }
         }
       } else {
         qp.textContent = "Loading " + id + "...";
-        threadID = this.pathname.split('/').pop() || $.x('ancestor::div[@class="thread"]', this).firstChild.id;
-        $.cache(this.pathname, (function() {
-          return QuotePreview.parse(this, id, threadID);
-        }));
+        $.cache(this.pathname, function() {
+          return QuotePreview.parse(this, id);
+        });
         UI.hover(e);
       }
       $.on(this, 'mousemove', UI.hover);
@@ -3337,15 +3279,19 @@
     },
     mouseout: function() {
       var el;
-      if (el = $.id(this.hash.slice(1))) {
-        $.removeClass(el, 'qphl');
-      }
       UI.hoverend();
+      if (el = $.id(this.hash.slice(1))) {
+        if (/\bop\b/.test(el.className)) {
+          $.removeClass(el.parentNode, 'qphl');
+        } else {
+          $.removeClass(el, 'qphl');
+        }
+      }
       $.off(this, 'mousemove', UI.hover);
       return $.off(this, 'mouseout click', QuotePreview.mouseout);
     },
-    parse: function(req, id, threadID) {
-      var doc, node, post, qp;
+    parse: function(req, id) {
+      var doc, fileInfo, img, node, post, qp;
       if (!((qp = UI.el) && qp.textContent === ("Loading " + id + "..."))) {
         return;
       }
@@ -3355,13 +3301,18 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      node = id === threadID ? Threading.op($('body > form', doc).firstChild) : doc.getElementById(id);
+      node = doc.getElementById("p" + id);
       qp.innerHTML = node.innerHTML;
       post = {
-        root: qp,
-        filesize: $('.filesize', qp),
-        img: $('img[md5]', qp)
+        el: qp
       };
+      if (fileInfo = $('.fileInfo', qp)) {
+        img = fileInfo.nextElementSibling.firstElementChild;
+        if (img.alt !== 'File deleted.') {
+          post.fileInfo = fileInfo;
+          post.img = img;
+        }
+      }
       if (Conf['Image Auto-Gif']) {
         AutoGif.node(post);
       }
@@ -3380,13 +3331,13 @@
     },
     node: function(post) {
       var quote, _i, _len, _ref;
-      if (post["class"] === 'inline') {
+      if (post.isInlined && !post.isCrosspost) {
         return;
       }
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (quote.hash.slice(1) === post.threadId) {
+        if (quote.hash.slice(2) === post.threadId) {
           $.add(quote, $.tn('\u00A0(OP)'));
         }
       }
@@ -3399,7 +3350,7 @@
     },
     node: function(post) {
       var path, quote, _i, _len, _ref;
-      if (post["class"] === 'inline') {
+      if (post.isInlined && !post.isCrosspost) {
         return;
       }
       _ref = post.quotes;
@@ -3422,10 +3373,10 @@
     },
     node: function(post) {
       var a, board, data, i, id, index, m, node, nodes, quote, quotes, snapshot, text, _i, _j, _len, _ref;
-      if (post["class"] === 'inline') {
+      if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastChild, null, 6, null);
+      snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastElementChild, null, 6, null);
       for (i = _i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         node = snapshot.snapshotItem(i);
         data = node.data;
@@ -3440,12 +3391,12 @@
             nodes.push($.tn(text));
           }
           id = quote.match(/\d+$/)[0];
-          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.quotejs', post.el).pathname.split('/')[1];
+          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postInfo > .postNum > a:first-child', post.el).pathname.split('/')[1];
           nodes.push(a = $.el('a', {
             textContent: "" + quote + "\u00A0(Dead)"
           }));
           if (board === g.BOARD && $.id(id)) {
-            a.href = "#" + id;
+            a.href = "#p" + id;
             a.className = 'quotelink';
             a.setAttribute('onclick', "replyhl('" + id + "');");
           } else {
@@ -3466,7 +3417,7 @@
   ReportButton = {
     init: function() {
       this.a = $.el('a', {
-        className: 'reportbutton',
+        className: 'report_button',
         innerHTML: '[&nbsp;!&nbsp;]',
         href: 'javascript:;'
       });
@@ -3474,9 +3425,9 @@
     },
     node: function(post) {
       var a;
-      if (!(a = $('.reportbutton', post.el))) {
+      if (!(a = $('.report_button', post.el))) {
         a = ReportButton.a.cloneNode(true);
-        $.after($('span[id]', post.el), [$.tn(' '), a]);
+        $.add($('.postInfo', post.el), a);
       }
       return $.on(a, 'click', ReportButton.report);
     },
@@ -3522,7 +3473,7 @@
       imgcount = $.id('imagecount');
       imgcount.textContent = ++ThreadStats.images;
       if (ThreadStats.images > ThreadStats.imgLimit) {
-        return imgcount.className = 'warning';
+        return $.addClass(imgcount, 'warning');
       }
     }
   };
@@ -3537,20 +3488,21 @@
     replies: [],
     foresee: [],
     node: function(post) {
-      var count, index;
+      var count, el, index;
       if ((index = Unread.foresee.indexOf(post.id)) !== -1) {
         Unread.foresee.splice(index, 1);
         return;
       }
-      if (post.root.hidden || post["class"]) {
+      el = post.el;
+      if (el.hidden || /\bop\b/.test(post["class"]) || post.isInlined) {
         return;
       }
-      count = Unread.replies.push(post.root);
+      count = Unread.replies.push(el);
       return Unread.update(count === 1);
     },
     scroll: function() {
       var bottom, height, i, reply, _i, _len, _ref;
-      height = d.body.clientHeight;
+      height = d.documentElement.clientHeight;
       _ref = Unread.replies;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         reply = _ref[i];
@@ -3757,17 +3709,18 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var img, src;
-      if (post.root.hidden || !post.img) {
+      var gif, img, src;
+      img = post.img;
+      if (post.el.hidden || !img) {
         return;
       }
-      src = post.img.parentNode.href;
-      if (/gif$/.test(src) && !/spoiler/.test(post.img.src)) {
-        img = $.el('img');
-        $.on(img, 'load', function() {
-          return post.img.src = src;
+      src = img.parentNode.href;
+      if (/gif$/.test(src) && !/spoiler/.test(img.src)) {
+        gif = $.el('img');
+        $.on(gif, 'load', function() {
+          return img.src = src;
         });
-        return img.src = src;
+        return gif.src = src;
       }
     }
   };
@@ -3784,7 +3737,7 @@
       }
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
-      if (ImageExpand.on && !post.root.hidden && post["class"] !== 'inline') {
+      if (ImageExpand.on && !post.el.hidden) {
         return ImageExpand.expand(post.img);
       }
     },
@@ -3800,7 +3753,7 @@
         var i, thumb, thumbs, _i, _j, _k, _len, _len1, _len2, _ref;
         ImageExpand.on = this.checked;
         if (ImageExpand.on) {
-          thumbs = $$('img[md5]');
+          thumbs = $$('img[data-md5]');
           if (Conf['Expand From Current']) {
             for (i = _i = 0, _len = thumbs.length; _i < _len; i = ++_i) {
               thumb = thumbs[i];
@@ -3815,7 +3768,7 @@
             ImageExpand.expand(thumb);
           }
         } else {
-          _ref = $$('img[md5][hidden]');
+          _ref = $$('img[data-md5][hidden]');
           for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
             thumb = _ref[_k];
             ImageExpand.contract(thumb);
@@ -3837,7 +3790,7 @@
           case 'fit screen':
             klass = 'fitwidth fitheight';
         }
-        $('body > form').className = klass;
+        $.id('delform').className = klass;
         if (/\bfitheight\b/.test(klass)) {
           $.on(window, 'resize', ImageExpand.resize);
           if (!ImageExpand.style) {
@@ -3913,7 +3866,7 @@
       });
     },
     dialog: function() {
-      var controls, form, imageType, select;
+      var controls, imageType, select;
       controls = $.el('div', {
         id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
@@ -3925,11 +3878,10 @@
       $.on(select, 'change', $.cb.value);
       $.on(select, 'change', ImageExpand.cb.typeChange);
       $.on($('input', controls), 'click', ImageExpand.cb.all);
-      form = $('body > form');
-      return $.prepend(form, controls);
+      return $.prepend($.id('delform'), controls);
     },
     resize: function() {
-      return ImageExpand.style.textContent = ".fitheight img[md5] + img {max-height:" + d.body.clientHeight + "px;}";
+      return ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:" + d.documentElement.clientHeight + "px;}";
     }
   };
 
@@ -3948,7 +3900,6 @@
         val = Conf[key];
         Conf[key] = $.get(key, val);
       }
-      $.on(window, 'message', Main.message);
       switch (location.hostname) {
         case 'sys.4chan.org':
           if (/report/.test(location.search)) {
@@ -3971,11 +3922,12 @@
       }
       $.ready(Options.init);
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form'] && g.BOARD !== 'f') {
-        Main.css += 'form[name=post] { display: none; }';
+        Main.css += '#postForm { display: none; }';
       }
       Main.addStyle();
       now = Date.now();
       if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * $.HOUR) {
+        $.on(window, 'message', Main.message);
         $.ready(function() {
           return $.add(d.head, $.el('script', {
             src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
@@ -4058,7 +4010,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var MutationObserver, form, nav, node, nodes, observer, _i, _j, _len, _len1, _ref, _ref1;
+      var MutationObserver, a, board, nav, node, nodes, observer, _i, _j, _len, _len1, _ref, _ref1;
       if (d.title === '4chan - 404') {
         Redirect.init();
         return;
@@ -4068,13 +4020,13 @@
       }
       $.addClass(d.body, "chanx_" + (Main.version.split('.')[1]));
       $.addClass(d.body, $.engine);
-      _ref = ['navtop', 'navbot'];
+      _ref = ['boardNavDesktop', 'boardNavDesktopFoot'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         nav = _ref[_i];
-        $.addClass($("a[href$='/" + g.BOARD + "/']", $.id(nav)), 'current');
+        if (a = $("a[href$='/" + g.BOARD + "/']", $.id(nav))) {
+          $.addClass(a, 'current');
+        }
       }
-      form = $('form[name=delform]');
-      Threading.thread(form.firstElementChild);
       Favicon.init();
       if (Conf['Quick Reply']) {
         QR.init();
@@ -4114,9 +4066,7 @@
         }
       } else {
         if (Conf['Thread Hiding']) {
-          setTimeout(function() {
-            return ThreadHiding.init();
-          });
+          ThreadHiding.init();
         }
         if (Conf['Thread Expansion']) {
           setTimeout(function() {
@@ -4134,8 +4084,9 @@
           });
         }
       }
+      board = $('.board');
       nodes = [];
-      _ref1 = $$('.op, a + table', form);
+      _ref1 = $$('.postContainer', board);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         node = _ref1[_j];
         nodes.push(Main.preParse(node));
@@ -4143,12 +4094,12 @@
       Main.node(nodes, true);
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
-        return observer.observe(form, {
+        return observer.observe(board, {
           childList: true,
           subtree: true
         });
       } else {
-        return $.on(form, 'DOMNodeInserted', Main.listener);
+        return $.on(board, 'DOMNodeInserted', Main.listener);
       }
     },
     flatten: function(parent, obj) {
@@ -4180,20 +4131,29 @@
       }
     },
     preParse: function(node) {
-      var klass, post;
-      klass = node.className;
+      var el, fileInfo, img, post, rootClass;
+      rootClass = node.className;
+      el = $('.post', node);
       post = {
         root: node,
-        el: klass === 'op' ? node : node.firstChild.firstChild.lastChild,
-        "class": klass,
-        id: node.getElementsByTagName('input')[0].name,
-        threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).firstChild.id,
-        isInlined: /\binline\b/.test(klass),
-        filesize: node.getElementsByClassName('filesize')[0] || false,
-        quotes: node.getElementsByClassName('quotelink'),
-        backlinks: node.getElementsByClassName('backlink')
+        el: el,
+        "class": el.className,
+        id: el.id.slice(1),
+        threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
+        isInlined: /\binline\b/.test(rootClass),
+        isCrosspost: /\bcrosspost\b/.test(rootClass),
+        quotes: el.getElementsByClassName('quotelink'),
+        backlinks: el.getElementsByClassName('backlink'),
+        fileInfo: false,
+        img: false
       };
-      post.img = post.filesize ? node.getElementsByTagName('img')[0] : false;
+      if (fileInfo = $('.fileInfo', el)) {
+        img = fileInfo.nextElementSibling.firstElementChild;
+        if (img.alt !== 'File deleted.') {
+          post.fileInfo = fileInfo;
+          post.img = img;
+        }
+      }
       return post;
     },
     node: function(nodes, notify) {
@@ -4221,7 +4181,7 @@
         _ref = mutation.addedNodes;
         for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
           addedNode = _ref[_j];
-          if (addedNode.nodeName === 'TABLE') {
+          if (/\bpostContainer\b/.test(addedNode.className)) {
             nodes.push(Main.preParse(addedNode));
           }
         }
@@ -4233,7 +4193,7 @@
     listener: function(e) {
       var target;
       target = e.target;
-      if (target.nodeName === 'TABLE') {
+      if (/\bpostContainer\b/.test(addedNode.className)) {
         return Main.node([Main.preParse(target)]);
       }
     },
@@ -4242,8 +4202,9 @@
     callbacks: [],
     css: '\
 /* dialog styling */\
-.dialog {\
+.dialog.reply {\
   border: 1px solid rgba(0,0,0,.25);\
+  padding: 0;\
 }\
 .move {\
   cursor: move;\
@@ -4254,16 +4215,25 @@ label, .favicon {\
 a[href="javascript:;"] {\
   text-decoration: none;\
 }\
-\
-.block ~ *,\
-#content > [name=tab]:not(:checked) + div,\
-#updater:not(:hover) > :not(.move),\
-#qp > input, #qp .inline, .forwarded {\
-  display: none;\
+.warning {\
+  color: red;\
 }\
 \
-.autohide:not(:hover) > form {\
-  display: none;\
+.hide_thread_button {\
+  float: left;\
+}\
+\
+.hidden_thread ~ *,\
+[hidden],\
+#content > [name=tab]:not(:checked) + div,\
+#updater:not(:hover) > :not(.move),\
+.autohide:not(:hover) > form,\
+#qp input, #qp .inline, .forwarded {\
+  display: none !important;\
+}\
+\
+h1 {\
+  text-align: center;\
 }\
 #qr > .move {\
   min-width: 300px;\
@@ -4404,6 +4374,8 @@ a[href="javascript:;"] {\
 }\
 .field {\
   border: 1px solid #CCC;\
+  box-sizing: border-box;\
+  -moz-box-sizing: border-box;\
   color: #333;\
   font: 13px sans-serif;\
   margin: 0;\
@@ -4427,6 +4399,7 @@ textarea.field {\
   min-height: 120px;\
 }\
 .field:only-child {\
+  display: block;\
   min-width: 100%;\
 }\
 .captcha {\
@@ -4436,6 +4409,7 @@ textarea.field {\
   text-align: center;\
 }\
 .captcha > img {\
+  display: block;\
   height: 57px;\
   width: 300px;\
 }\
@@ -4450,41 +4424,21 @@ textarea.field {\
   width: 30%;\
 }\
 \
-.new {\
-  background: lime;\
-}\
-.warning {\
-  color: red;\
-}\
-.replyhider {\
-  vertical-align: top;\
-}\
-\
-.filesize + br + a {\
-  float: left;\
-  pointer-events: none;\
-}\
-.filename:hover > .fntrunc,\
-.filename:not(:hover) > .fnfull {\
+.fileText:hover .fntrunc,\
+.fileText:not(:hover) .fnfull {\
   display: none;\
 }\
-img[md5], img[md5] + img {\
-  pointer-events: all;\
-}\
-.fitwidth img[md5] + img {\
+.fitwidth img[data-md5] + img {\
   max-width: 100%;\
 }\
-.gecko  > .fitwidth img[md5] + img,\
-.presto > .fitwidth img[md5] + img {\
-  width: 100%;\
-}\
+\
 /* revealed spoilers do not have height/width,\
    this fixes "expanded" auto-gifs */\
-img[md5] {\
+.op > div > a > img[data-md5] {\
   max-height: 252px;\
   max-width: 252px;\
 }\
-input ~ a > img[md5] {\
+.reply > div > a > img[data-md5] {\
   max-height: 127px;\
   max-width: 127px;\
 }\
@@ -4537,18 +4491,20 @@ input ~ a > img[md5] {\
 #options label {\
   text-decoration: underline;\
 }\
-#content > div {\
+#content {\
   height: 450px;\
   overflow: auto;\
 }\
 #content textarea {\
+  box-sizing: border-box;\
+  -moz-box-sizing: border-box;\
   margin: 0;\
   min-height: 100px;\
   resize: vertical;\
   width: 100%;\
 }\
 #sauces {\
-  height: 320px;\
+  height: 300px;\
 }\
 \
 #updater {\
@@ -4561,9 +4517,8 @@ input ~ a > img[md5] {\
   border: none;\
   background: transparent;\
 }\
-\
-#stats {\
-  border: none;\
+.new {\
+  background: lime;\
 }\
 \
 #watcher {\
@@ -4587,36 +4542,44 @@ input ~ a > img[md5] {\
   text-decoration: underline;\
 }\
 \
-#qp {\
-  padding-bottom: 5px;\
-}\
-#qp > a > img {\
+#qp img {\
   max-height: 300px;\
   max-width: 500px;\
 }\
 .qphl {\
   outline: 2px solid rgba(216, 94, 49, .7);\
 }\
+.qphl.opContainer {\
+  outline-offset: -2px;\
+}\
+div.opContainer {\
+  display: block !important;\
+}\
 .inlined {\
   opacity: .5;\
 }\
-.inline .reply {\
+.inline {\
+  overflow: hidden;\
   background-color: rgba(255, 255, 255, 0.15);\
   border: 1px solid rgba(128, 128, 128, 0.5);\
 }\
-.filetitle, .replytitle, .postername, .commentpostername, .postertrip {\
+.inline .post {\
   background: none;\
+  border: none;\
 }\
-.filter_highlight.op,\
-.filter_highlight > td[id] {\
+.filter_highlight.thread > .opContainer {\
+  box-shadow: inset 5px 0 rgba(255,0,0,0.5);\
+}\
+.filter_highlight > .reply {\
   box-shadow: -5px 0 rgba(255,0,0,0.5);\
 }\
 .filtered {\
-  text-decoration: line-through;\
+  text-decoration: underline line-through;\
 }\
 .quotelink.forwardlink,\
 .backlink.forwardlink {\
-  color: #4C4CA9;\
+  text-decoration: none;\
+  border-bottom: 1px dashed;\
 }\
 '
   };
