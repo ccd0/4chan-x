@@ -2625,41 +2625,6 @@ Quotify =
       $.replace node, nodes
     return
 
-###
-QuoteThreading =
-  init: ->
-    Main.callbacks.push @node
-  node: (post) ->
-    {quotes} = post
-    {replies} = Unread
-    for quote in quotes
-      read = true
-      id = quote.hash[2..]
-      continue if id is post.id
-      for reply, i in replies
-        if id is reply.id
-          read = false
-          break
-      continue if read
-      return if prev and (prev != reply)
-      prev = reply
-      j = i
-
-    return unless prev
-
-    reply = prev
-    reply.root.appendChild post.root
-    prev = post.root.previousElementSibling
-    if /postContainer/.test prev.className
-      id = prev.id[2..]
-      for reply, k in replies[j+1..]
-        break if reply.id is id
-      j += 1 + k
-
-    replies.pop()
-    replies.splice j, 0, post
-###
-
 QuoteThreading =
   init: ->
     Main.callbacks.push @node
@@ -2680,7 +2645,7 @@ QuoteThreading =
         uniq[qid] = true
 
     keys = Object.keys uniq
-    return unless keys.length is 1
+    return unless keys.length is 1 #multiple posts quoted, bail
 
     qid = keys[0]
     qreply = replies[qid]
@@ -2688,7 +2653,7 @@ QuoteThreading =
 
     $.add qreply.el.parentNode, reply.el.parentNode
     pEl = reply.el.parentNode.previousElementSibling
-    if /postContainer/.test pEl.className
+    if /postContainer/.test pEl.className #we're not the first threaded post
       pid = pEl.id[2..]
       preply = replies[pid]
     else
@@ -2696,7 +2661,7 @@ QuoteThreading =
       preply = qreply
 
     {prev, next} = reply
-    return if preply is prev
+    return if preply is prev #order has not been changed; don't change anything
     prev.next = next
 
     {next} = preply

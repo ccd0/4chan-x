@@ -3410,42 +3410,6 @@
     }
   };
 
-  /*
-  QuoteThreading =
-    init: ->
-      Main.callbacks.push @node
-    node: (post) ->
-      {quotes} = post
-      {replies} = Unread
-      for quote in quotes
-        read = true
-        id = quote.hash[2..]
-        continue if id is post.id
-        for reply, i in replies
-          if id is reply.id
-            read = false
-            break
-        continue if read
-        return if prev and (prev != reply)
-        prev = reply
-        j = i
-  
-      return unless prev
-  
-      reply = prev
-      reply.root.appendChild post.root
-      prev = post.root.previousElementSibling
-      if /postContainer/.test prev.className
-        id = prev.id[2..]
-        for reply, k in replies[j+1..]
-          break if reply.id is id
-        j += 1 + k
-  
-      replies.pop()
-      replies.splice j, 0, post
-  */
-
-
   QuoteThreading = {
     init: function() {
       return Main.callbacks.push(this.node);
