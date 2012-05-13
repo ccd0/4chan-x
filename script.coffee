@@ -3583,7 +3583,9 @@ div.opContainer {
   background: none;
   border: none;
 }
-.filter_highlight.thread,
+.filter_highlight.thread > .opContainer {
+  box-shadow: inset 5px 0 rgba(255,0,0,0.5);
+}
 .filter_highlight > .reply {
   box-shadow: -5px 0 rgba(255,0,0,0.5);
 }
