@@ -3461,6 +3461,9 @@
         return;
       }
       prev.next = next;
+      if (next != null) {
+        next.prev = prev;
+      }
       next = preply.next;
       preply.next = reply;
       reply.next = next;
@@ -3545,7 +3548,7 @@
       last: null
     },
     node: function(post) {
-      var el, index, replies, reply, _ref;
+      var el, index, replies, reply;
       if ((index = Unread.foresee.indexOf(post.id)) !== -1) {
         Unread.foresee.splice(index, 1);
         return;
@@ -3561,13 +3564,12 @@
         el: el,
         id: post.id
       };
-      if ((_ref = reply.prev) != null) {
-        _ref.next = reply;
-      }
-      replies.last = reply;
-      if (!replies.first) {
+      if (replies.first) {
+        reply.prev.next = reply;
+      } else {
         replies.first = reply;
       }
+      replies.last = reply;
       return Unread.update(1);
     },
     scroll: function() {

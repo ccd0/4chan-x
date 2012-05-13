@@ -2670,6 +2670,7 @@ QuoteThreading =
     {prev, next} = reply
     return if preply is prev #order has not been changed; don't change anything
     prev.next = next
+    next?.prev = prev
 
     {next} = preply
     preply.next = reply
@@ -2743,10 +2744,11 @@ Unread =
       next: null
       el: el
       id: post.id
-    reply.prev?.next = reply
-    replies.last = reply
-    unless replies.first
+    if replies.first
+      reply.prev.next = reply
+    else
       replies.first = reply
+    replies.last = reply
 
     Unread.update 1
 
