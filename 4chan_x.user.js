@@ -4193,7 +4193,7 @@
     listener: function(e) {
       var target;
       target = e.target;
-      if (/\bpostContainer\b/.test(addedNode.className)) {
+      if (/\bpostContainer\b/.test(target.className)) {
         return Main.node([Main.preParse(target)]);
       }
     },

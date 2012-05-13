@@ -3208,7 +3208,7 @@ Main =
     Main.node nodes if nodes.length
   listener: (e) ->
     {target} = e
-    if /\bpostContainer\b/.test addedNode.className
+    if /\bpostContainer\b/.test target.className
       Main.node [Main.preParse target]
 
   namespace: '4chan_x.'
