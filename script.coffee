@@ -54,6 +54,7 @@ Config =
       'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes']
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
+      'Quote Threading':              [false, 'Thread convsersations']
   filter:
     name: [
       '# Filter any namefags:'
@@ -157,6 +158,9 @@ Conf = {}
 d = document
 g = {}
 
+# XXX GreaseMonkey can't into console.log.bind
+log = console.log.bind? console
+
 UI =
   dialog: (id, position, html) ->
     el = d.createElement 'div'
@@ -249,9 +253,6 @@ $.extend $,
   MINUTE: 1000*60
   HOUR  : 1000*60*60
   DAY   : 1000*60*60*24
-  log:
-    # XXX GreaseMonkey can't into console.log.bind
-    console.log.bind? console
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
@@ -527,7 +528,7 @@ Filter =
             else
               continue
           else
-            ReplyHiding.hide root
+            ReplyHiding.hide post
           return
 
         # Highlight
@@ -775,57 +776,60 @@ ReplyHiding =
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.isInlined or /\bop\b/.test post.class
-    button = post.root.firstElementChild
+    {id, isInlined, klass, root} = post
+    return if isInlined or /\bop\b/.test klass
+    button = $ '.sideArrows', root
     $.addClass button, 'hide_reply_button'
     button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
     $.on button.firstChild, 'click', ReplyHiding.toggle
 
-    if post.id of g.hiddenReplies
-      ReplyHiding.hide post.root
+    if id of g.hiddenReplies
+      ReplyHiding.hide post
 
   toggle: ->
     button = @parentNode
     root   = button.parentNode
-    id     = root.id[2..]
+    post   = Main.preParse root
+    {id} = post
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href='#p#{id}']"
+
     if /\bstub\b/.test button.className
-      ReplyHiding.show root
+      ReplyHiding.show post
       for quote in quotes
         $.removeClass quote, 'filtered'
       delete g.hiddenReplies[id]
     else
-      ReplyHiding.hide root
+      ReplyHiding.hide post
       for quote in quotes
         $.addClass quote, 'filtered'
       g.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-  hide: (root) ->
-    button = root.firstElementChild
+  hide: (post) ->
+    {root, el} = post
+    button = $ '.sideArrows', root
     return if button.hidden # already hidden once by filter
-    button.hidden = true
-    el = root.lastElementChild
-    el.hidden = true
-
-    return unless Conf['Show Stubs']
+    #XXX FIXME change filter also
 
     stub = $.el 'div',
       className: 'hide_reply_button stub'
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
     $.add stub.firstChild, $.tn $('.nameBlock', el).textContent
     $.on  stub.firstChild, 'click', ReplyHiding.toggle
-    $.after button, stub
+    $.before button, stub
 
-  show: (root) ->
-    el     = root.lastElementChild
-    button = root.firstElementChild
+    if !Conf['Show Stubs']
+      stub.hidden = true
+
+  show: (post) ->
+    {el, root} = post
+    button = $ '.sideArrows', root
     el.hidden = false
     button.hidden = false
 
     return unless Conf['Show Stubs']
 
-    $.rm button.nextElementSibling
+    $.rm button.previousElementSibling
 
 Keybinds =
   init: ->
@@ -2417,9 +2421,11 @@ QuoteInline =
           ++el.dataset.forwarded or el.dataset.forwarded = 1
       else
         $.after root, clonePost
-      if (i = Unread.replies.indexOf el) isnt -1
-        Unread.replies.splice i, 1
-        Unread.update true
+      for reply, i in Unread.replies
+        if reply.el is el
+          Unread.replies.splice i, 1
+          Unread.update true
+          break
       return
 
     inline = $.el 'div',
@@ -2626,6 +2632,40 @@ Quotify =
       $.replace node, nodes
     return
 
+QuoteThreading =
+  init: ->
+    Main.callbacks.push @node
+  node: (post) ->
+    {quotes} = post
+    {replies} = Unread
+    for quote in quotes
+      read = true
+      id = quote.hash[2..]
+      continue if id is post.id
+      for reply, i in replies
+        if id is reply.id
+          read = false
+          break
+      continue if read
+      return if prev and (prev != reply)
+      prev = reply
+      j = i
+
+    return unless prev
+
+    reply = prev
+    reply.root.appendChild post.root
+    prev = post.root.previousElementSibling
+    if /postContainer/.test prev.className
+      id = prev.id[2..]
+      for reply, k in replies[j+1..]
+        break if reply.id is id
+      j += 1 + k
+
+    replies.pop()
+    replies.splice j, 0, post
+
+
 ReportButton =
   init: ->
     @a = $.el 'a',
@@ -2684,13 +2724,13 @@ Unread =
       return
     {el} = post
     return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
-    count = Unread.replies.push el
+    count = Unread.replies.push post
     Unread.update count is 1
 
   scroll: ->
     height = d.documentElement.clientHeight
     for reply, i in Unread.replies
-      {bottom} = reply.getBoundingClientRect()
+      {bottom} = reply.root.getBoundingClientRect()
       if bottom > height #post is not completely read
         break
     return if i is 0
@@ -3122,6 +3162,9 @@ Main =
       if Conf['Unread Count'] or Conf['Unread Favicon']
         Unread.init()
 
+      if Conf['Quote Threading']
+        QuoteThreading.init()
+
     else #not reply
       if Conf['Thread Hiding']
         ThreadHiding.init()
@@ -3178,6 +3221,7 @@ Main =
       root:        node
       el:          el
       class:       el.className
+      klass:       el.className
       id:          el.id[1..]
       threadId:    g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
       isInlined:   /\binline\b/.test rootClass
@@ -3594,6 +3638,14 @@ div.opContainer {
 .backlink.forwardlink {
   text-decoration: none;
   border-bottom: 1px dashed;
+}
+
+.replyContainer > .replyContainer {
+  margin-left: 20px;
+  border-left: 1px solid black;
+}
+.stub ~ * {
+  display: none !important;
 }
 '
 

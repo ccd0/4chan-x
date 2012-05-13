@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, log, _base;
 
   Config = {
     main: {
@@ -134,7 +134,8 @@
         'Resurrect Quotes': [true, 'Linkify dead quotes to archives'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
         'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes'],
-        'Forward Hiding': [true, 'Hide original posts of inlined backlinks']
+        'Forward Hiding': [true, 'Hide original posts of inlined backlinks'],
+        'Quote Threading': [false, 'Thread convsersations']
       }
     },
     filter: {
@@ -195,6 +196,8 @@
   d = document;
 
   g = {};
+
+  log = typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0;
 
   UI = {
     dialog: function(id, position, html) {
@@ -287,7 +290,6 @@
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
     DAY: 1000 * 60 * 60 * 24,
-    log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     ready: function(fc) {
       var cb;
@@ -638,7 +640,7 @@
                 continue;
               }
             } else {
-              ReplyHiding.hide(root);
+              ReplyHiding.hide(post);
             }
             return;
           }
@@ -994,33 +996,35 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var button;
-      if (post.isInlined || /\bop\b/.test(post["class"])) {
+      var button, id, isInlined, klass, root;
+      id = post.id, isInlined = post.isInlined, klass = post.klass, root = post.root;
+      if (isInlined || /\bop\b/.test(klass)) {
         return;
       }
-      button = post.root.firstElementChild;
+      button = $('.sideArrows', root);
       $.addClass(button, 'hide_reply_button');
       button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
       $.on(button.firstChild, 'click', ReplyHiding.toggle);
-      if (post.id in g.hiddenReplies) {
-        return ReplyHiding.hide(post.root);
+      if (id in g.hiddenReplies) {
+        return ReplyHiding.hide(post);
       }
     },
     toggle: function() {
-      var button, id, quote, quotes, root, _i, _j, _len, _len1;
+      var button, id, post, quote, quotes, root, _i, _j, _len, _len1;
       button = this.parentNode;
       root = button.parentNode;
-      id = root.id.slice(2);
+      post = Main.preParse(root);
+      id = post.id;
       quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href='#p" + id + "']");
       if (/\bstub\b/.test(button.className)) {
-        ReplyHiding.show(root);
+        ReplyHiding.show(post);
         for (_i = 0, _len = quotes.length; _i < _len; _i++) {
           quote = quotes[_i];
           $.removeClass(quote, 'filtered');
         }
         delete g.hiddenReplies[id];
       } else {
-        ReplyHiding.hide(root);
+        ReplyHiding.hide(post);
         for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
           quote = quotes[_j];
           $.addClass(quote, 'filtered');
@@ -1029,16 +1033,11 @@
       }
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
-    hide: function(root) {
-      var button, el, stub;
-      button = root.firstElementChild;
+    hide: function(post) {
+      var button, el, root, stub;
+      root = post.root, el = post.el;
+      button = $('.sideArrows', root);
       if (button.hidden) {
-        return;
-      }
-      button.hidden = true;
-      el = root.lastElementChild;
-      el.hidden = true;
-      if (!Conf['Show Stubs']) {
         return;
       }
       stub = $.el('div', {
@@ -1047,18 +1046,21 @@
       });
       $.add(stub.firstChild, $.tn($('.nameBlock', el).textContent));
       $.on(stub.firstChild, 'click', ReplyHiding.toggle);
-      return $.after(button, stub);
+      $.before(button, stub);
+      if (!Conf['Show Stubs']) {
+        return stub.hidden = true;
+      }
     },
-    show: function(root) {
-      var button, el;
-      el = root.lastElementChild;
-      button = root.firstElementChild;
+    show: function(post) {
+      var button, el, root;
+      el = post.el, root = post.root;
+      button = $('.sideArrows', root);
       el.hidden = false;
       button.hidden = false;
       if (!Conf['Show Stubs']) {
         return;
       }
-      return $.rm(button.nextElementSibling);
+      return $.rm(button.previousElementSibling);
     }
   };
 
@@ -3119,7 +3121,7 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var clonePost, el, i, inline, pathname, root;
+      var clonePost, el, i, inline, pathname, reply, root, _i, _len, _ref;
       root = $.x('ancestor::*[parent::blockquote]', q);
       if (el = $.id("p" + id)) {
         if (/\bop\b/.test(el.className)) {
@@ -3137,9 +3139,14 @@
         } else {
           $.after(root, clonePost);
         }
-        if ((i = Unread.replies.indexOf(el)) !== -1) {
-          Unread.replies.splice(i, 1);
-          Unread.update(true);
+        _ref = Unread.replies;
+        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+          reply = _ref[i];
+          if (reply.el === el) {
+            Unread.replies.splice(i, 1);
+            Unread.update(true);
+            break;
+          }
         }
         return;
       }
@@ -3414,6 +3421,59 @@
     }
   };
 
+  QuoteThreading = {
+    init: function() {
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var i, id, j, k, prev, quote, quotes, read, replies, reply, _i, _j, _k, _len, _len1, _len2, _ref;
+      quotes = post.quotes;
+      replies = Unread.replies;
+      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+        quote = quotes[_i];
+        read = true;
+        id = quote.hash.slice(2);
+        if (id === post.id) {
+          continue;
+        }
+        for (i = _j = 0, _len1 = replies.length; _j < _len1; i = ++_j) {
+          reply = replies[i];
+          if (id === reply.id) {
+            read = false;
+            break;
+          }
+        }
+        if (read) {
+          continue;
+        }
+        if (prev && (prev !== reply)) {
+          return;
+        }
+        prev = reply;
+        j = i;
+      }
+      if (!prev) {
+        return;
+      }
+      reply = prev;
+      reply.root.appendChild(post.root);
+      prev = post.root.previousElementSibling;
+      if (/postContainer/.test(prev.className)) {
+        id = prev.id.slice(2);
+        _ref = replies.slice(j + 1);
+        for (k = _k = 0, _len2 = _ref.length; _k < _len2; k = ++_k) {
+          reply = _ref[k];
+          if (reply.id === id) {
+            break;
+          }
+        }
+        j += 1 + k;
+      }
+      replies.pop();
+      return replies.splice(j, 0, post);
+    }
+  };
+
   ReportButton = {
     init: function() {
       this.a = $.el('a', {
@@ -3497,7 +3557,7 @@
       if (el.hidden || /\bop\b/.test(post["class"]) || post.isInlined) {
         return;
       }
-      count = Unread.replies.push(el);
+      count = Unread.replies.push(post);
       return Unread.update(count === 1);
     },
     scroll: function() {
@@ -3506,7 +3566,7 @@
       _ref = Unread.replies;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         reply = _ref[i];
-        bottom = reply.getBoundingClientRect().bottom;
+        bottom = reply.root.getBoundingClientRect().bottom;
         if (bottom > height) {
           break;
         }
@@ -4064,6 +4124,9 @@
         if (Conf['Unread Count'] || Conf['Unread Favicon']) {
           Unread.init();
         }
+        if (Conf['Quote Threading']) {
+          QuoteThreading.init();
+        }
       } else {
         if (Conf['Thread Hiding']) {
           ThreadHiding.init();
@@ -4138,6 +4201,7 @@
         root: node,
         el: el,
         "class": el.className,
+        klass: el.className,
         id: el.id.slice(1),
         threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
         isInlined: /\binline\b/.test(rootClass),
@@ -4580,6 +4644,14 @@ div.opContainer {\
 .backlink.forwardlink {\
   text-decoration: none;\
   border-bottom: 1px dashed;\
+}\
+\
+.replyContainer > .replyContainer {\
+  margin-left: 20px;\
+  border-left: 1px solid black;\
+}\
+.stub ~ * {\
+  display: none !important;\
 }\
 '
   };
