@@ -2824,8 +2824,7 @@
       }
       node = $('.postInfo > .dateTime', post.el);
       Time.date = Time.parse(node.textContent);
-      node.textContent = Time.funk(Time);
-      return node.dataset.time = Time.date.toISOString();
+      return node.textContent = Time.funk(Time);
     },
     foo: function() {
       var code;

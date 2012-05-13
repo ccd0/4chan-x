@@ -2226,8 +2226,6 @@ Time =
     node              = $ '.postInfo > .dateTime', post.el
     Time.date         = Time.parse node.textContent
     node.textContent  = Time.funk(Time)
-    # Set the datetime attribute, ISO'd.
-    node.dataset.time = Time.date.toISOString()
   foo: ->
     code = Conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
