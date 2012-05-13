@@ -1,6 +1,33 @@
 master
+
+2.30.1
 - Mayhem
-  Now works when using https.
+  Fix 4chan X not affecting fetched posts on Firefox Stable and Opera.
+
+2.30.0
+- Mayhem
+  Support 4chan's new HTML.
+  Add Spoiler indicator option in File Info Formatting
+  Remove archive.no-ip.org archive redirections.
+
+2.29.5
+- Mayhem
+  Fix QR filetype checking on /w/.
+
+2.29.4
+- Mayhem
+  Auto-GIF will not run in /gif/.
+  Fix QR filetype checking.
+
+2.29.3
+- Mayhem
+  Update Quick Reply posting method, this fixes compatibility for uncommon browsers such as
+    Opera Mobile 12 and Luakit for example.
+
+2.29.2
+- Mayhem
+  Add HTTPS support.
+  Ban support improvements and fixes.
 
 2.29.1
 - Mayhem
