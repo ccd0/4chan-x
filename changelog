@@ -1,6 +1,8 @@
 master
+
+2.30.1
 - Mayhem
-  Fix 4chan X not affecting fetched posts.
+  Fix 4chan X not affecting fetched posts on Firefox Stable and Opera.
 
 2.30.0
 - Mayhem
