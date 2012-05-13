@@ -542,9 +542,8 @@ Filter =
   name: (post) ->
     $('.name', post.el).textContent
   uniqueid: (post) ->
-    # NEW HTML ???
     if uid = $ '.posteruid', post.el
-      return uid.textContent
+      return uid.textContent[5...-1]
     false
   tripcode: (post) ->
     if trip = $ '.postertrip', post.el

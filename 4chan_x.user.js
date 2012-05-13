@@ -658,7 +658,7 @@
     uniqueid: function(post) {
       var uid;
       if (uid = $('.posteruid', post.el)) {
-        return uid.textContent;
+        return uid.textContent.slice(5, -1);
       }
       return false;
     },
