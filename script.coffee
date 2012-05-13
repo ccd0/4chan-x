@@ -2636,35 +2636,46 @@ QuoteThreading =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    {quotes} = post
+    #hash table + linked list
+    #array implementation is very awkward - mid-array inserts, loop to find
+    #quoted post, loop to find inserted post(!), loop to find distance from
+    #threaded post to thread root
+
+    {quotes, id} = post
     {replies} = Unread
+
+    uniq = {}
     for quote in quotes
-      read = true
-      id = quote.hash[2..]
-      continue if id is post.id
-      for reply, i in replies
-        if id is reply.id
-          read = false
-          break
-      continue if read
-      return if prev and (prev != reply)
-      prev = reply
-      j = i
+      qid = quote.hash[2..]
+      continue unless qid < id
+      if qid of replies
+        uniq[qid] = true
 
-    return unless prev
+    keys = Object.keys uniq
+    return unless keys.length is 1 #multiple posts quoted, bail
 
-    reply = prev
-    reply.root.appendChild post.root
-    prev = post.root.previousElementSibling
-    if /postContainer/.test prev.className
-      id = prev.id[2..]
-      for reply, k in replies[j+1..]
-        break if reply.id is id
-      j += 1 + k
+    qid = keys[0]
+    qreply = replies[qid]
+    reply = replies[id]
 
-    replies.pop()
-    replies.splice j, 0, post
+    $.add qreply.el.parentNode, reply.el.parentNode
+    pEl = reply.el.parentNode.previousElementSibling
+    if /postContainer/.test pEl.className #we're not the first threaded post
+      pid = pEl.id[2..]
+      preply = replies[pid]
+    else
+      pid = qid
+      preply = qreply
 
+    {prev, next} = reply
+    return if preply is prev #order has not been changed; don't change anything
+    prev.next = next
+
+    {next} = preply
+    preply.next = reply
+    reply.next = next
+
+    Unread.replies = replies
 
 ReportButton =
   init: ->
@@ -2715,8 +2726,10 @@ Unread =
     $.on window, 'scroll', Unread.scroll
     Main.callbacks.push @node
 
-  replies: []
   foresee: []
+  replies:
+    first: null
+    last: null
 
   node: (post) ->
     if (index = Unread.foresee.indexOf post.id) isnt -1
@@ -2724,19 +2737,36 @@ Unread =
       return
     {el} = post
     return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
-    count = Unread.replies.push post
-    Unread.update count is 1
+    {replies} = Unread
+    reply = replies[post.id] =
+      prev: replies.last
+      next: null
+      el: el
+      id: post.id
+    reply.prev?.next = reply
+    replies.last = reply
+    unless replies.first
+      replies.first = reply
+
+    Unread.update 1
 
   scroll: ->
     height = d.documentElement.clientHeight
-    for reply, i in Unread.replies
-      {bottom} = reply.root.getBoundingClientRect()
+    {replies} = Unread
+    {first} = replies
+    update = false
+    while first
+      {bottom} = first.el.getBoundingClientRect()
       if bottom > height #post is not completely read
         break
-    return if i is 0
+      update = true
+      next = first.next
+      delete replies[first.id]
+      first = next
+    replies.first = first
+    Unread.replies = replies
 
-    Unread.replies = Unread.replies[i..]
-    Unread.update Unread.replies.length is 0
+    Unread.update(0) if update
 
   setTitle: (count) ->
     if @scheduled
@@ -2748,15 +2778,15 @@ Unread =
       d.title = "(#{count}) #{Unread.title}"
     ), 5
 
-  update: (updateFavicon) ->
+  update: (updateCount) ->
     return unless g.REPLY
 
-    count = @replies.length
+    count = Object.keys(@replies).length - 2
 
     if Conf['Unread Count']
       @setTitle count
 
-    unless Conf['Unread Favicon'] and updateFavicon
+    unless Conf['Unread Favicon'] and count is updateCount
       return
 
     if $.engine is 'presto'
