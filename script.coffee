@@ -2406,7 +2406,10 @@ QuoteInline =
   add: (q, id) ->
     root  = $.x 'ancestor::*[parent::blockquote]', q
     if el = $.id "p#{id}"
-      $.removeClass el, 'qphl'
+      if /\bop\b/.test el.className
+        $.removeClass el.parentNode, 'qphl'
+      else
+        $.removeClass el, 'qphl'
       clonePost = QuoteInline.clone id, el
       if /\bbacklink\b/.test q.className
         $.after q.parentNode, clonePost
@@ -2492,7 +2495,11 @@ QuotePreview =
     id = @hash[2..]
     if el = $.id "p#{id}"
       qp.innerHTML = el.innerHTML
-      $.addClass el, 'qphl' if Conf['Quote Highlighting']
+      if Conf['Quote Highlighting']
+        if /\bop\b/.test el.className
+          $.addClass el.parentNode, 'qphl'
+        else
+          $.addClass el, 'qphl'
       replyID = $.x('ancestor::div[contains(@class,"postContainer")]', @).id[2..]
       for quote in $$ '.quotelink, .backlink', qp
         if quote.hash[2..] is replyID
@@ -2506,7 +2513,10 @@ QuotePreview =
   mouseout: ->
     UI.hoverend()
     if el = $.id @hash[1..]
-      $.removeClass el, 'qphl'
+      if /\bop\b/.test el.className
+        $.removeClass el.parentNode, 'qphl'
+      else
+        $.removeClass el, 'qphl'
     $.off @, 'mousemove', UI.hover
     $.off @, 'mouseout click', QuotePreview.mouseout
   parse: (req, id) ->
@@ -3554,6 +3564,12 @@ textarea.field {
 }
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
+}
+.qphl.opContainer {
+  outline-offset: -2px;
+}
+div.opContainer {
+  display: block !important;
 }
 .inlined {
   opacity: .5;

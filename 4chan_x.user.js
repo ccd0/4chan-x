@@ -3123,7 +3123,11 @@
       var clonePost, el, i, inline, pathname, root;
       root = $.x('ancestor::*[parent::blockquote]', q);
       if (el = $.id("p" + id)) {
-        $.removeClass(el, 'qphl');
+        if (/\bop\b/.test(el.className)) {
+          $.removeClass(el.parentNode, 'qphl');
+        } else {
+          $.removeClass(el, 'qphl');
+        }
         clonePost = QuoteInline.clone(id, el);
         if (/\bbacklink\b/.test(q.className)) {
           $.after(q.parentNode, clonePost);
@@ -3250,7 +3254,11 @@
       if (el = $.id("p" + id)) {
         qp.innerHTML = el.innerHTML;
         if (Conf['Quote Highlighting']) {
-          $.addClass(el, 'qphl');
+          if (/\bop\b/.test(el.className)) {
+            $.addClass(el.parentNode, 'qphl');
+          } else {
+            $.addClass(el, 'qphl');
+          }
         }
         replyID = $.x('ancestor::div[contains(@class,"postContainer")]', this).id.slice(2);
         _ref = $$('.quotelink, .backlink', qp);
@@ -3274,7 +3282,11 @@
       var el;
       UI.hoverend();
       if (el = $.id(this.hash.slice(1))) {
-        $.removeClass(el, 'qphl');
+        if (/\bop\b/.test(el.className)) {
+          $.removeClass(el.parentNode, 'qphl');
+        } else {
+          $.removeClass(el, 'qphl');
+        }
       }
       $.off(this, 'mousemove', UI.hover);
       return $.off(this, 'mouseout click', QuotePreview.mouseout);
@@ -4537,6 +4549,12 @@ textarea.field {\
 }\
 .qphl {\
   outline: 2px solid rgba(216, 94, 49, .7);\
+}\
+.qphl.opContainer {\
+  outline-offset: -2px;\
+}\
+div.opContainer {\
+  display: block !important;\
 }\
 .inlined {\
   opacity: .5;\
