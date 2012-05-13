@@ -2,6 +2,7 @@ master
 
 2.30.0
 - Mayhem
+  Support 4chan's new HTML.
   Add Spoiler indicator option in File Info Formatting
   Remove archive.no-ip.org archive redirections.
 
