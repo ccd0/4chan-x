@@ -1712,6 +1712,7 @@ Options =
       <li>Year: %y</li>
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
       <li>Minutes: %M</li>
+      <li>Seconds: %S</li>
     </ul>
     <div class=warning><code>File Info Formatting</code> is disabled.</div>
     <ul>
@@ -2197,6 +2198,7 @@ Time =
     M: -> Time.zeroPad Time.date.getMinutes()
     p: -> if Time.date.getHours() < 12 then 'AM' else 'PM'
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
+    S: -> Time.zeroPad Time.date.getSeconds()
     y: -> Time.date.getFullYear() - 2000
 
 FileInfo =

@@ -1,4 +1,6 @@
 master
+- Mayhem
+  Add seconds as a supported Time Formatting specifier.
 
 2.30.1
 - Mayhem

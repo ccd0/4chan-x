@@ -2832,6 +2832,9 @@
           return 'pm';
         }
       },
+      S: function() {
+        return Time.zeroPad(Time.date.getSeconds());
+      },
       y: function() {
         return Time.date.getFullYear() - 2000;
       }
