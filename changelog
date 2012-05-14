@@ -1,4 +1,10 @@
 master
+- aeosynth
+  +feature: quote threading
+  +option: rollover: index nav transitions to page nav
+  allow auto-giffing of /gif/
+  allow reply highlighting to de-highlight
+  rm double highlighting of highlighted reply
 
 2.30.1
 - Mayhem
