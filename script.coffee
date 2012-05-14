@@ -3285,7 +3285,7 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "4chan X (#{Main.version}) error: #{err.message}\nhttp://aeosynth.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
+        alert "4chan X has experienced an error. To help fix this, please send the following snippet to:\nhttp://aeosynth.github.com/4chan-x/#bug-report\n\n#{err.message}\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []
