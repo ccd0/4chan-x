@@ -1683,8 +1683,6 @@ QR =
     else
       QR.close()
 
-    if g.REPLY and (Conf['Unread Count'] or Conf['Unread Favicon'])
-      Unread.foresee.push postNumber
     if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
       Updater.update()
 
@@ -2741,15 +2739,11 @@ Unread =
     $.on window, 'scroll', Unread.scroll
     Main.callbacks.push @node
 
-  foresee: []
   replies:
     first: null
     last: null
 
   node: (post) ->
-    if (index = Unread.foresee.indexOf post.id) isnt -1
-      Unread.foresee.splice index, 1
-      return
     {el} = post
     return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
     {replies} = Unread

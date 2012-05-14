@@ -2172,9 +2172,6 @@
       } else {
         QR.close();
       }
-      if (g.REPLY && (Conf['Unread Count'] || Conf['Unread Favicon'])) {
-        Unread.foresee.push(postNumber);
-      }
       if (g.REPLY && Conf['Thread Updater'] && Conf['Auto Update This']) {
         Updater.update();
       }
@@ -3564,17 +3561,12 @@
       $.on(window, 'scroll', Unread.scroll);
       return Main.callbacks.push(this.node);
     },
-    foresee: [],
     replies: {
       first: null,
       last: null
     },
     node: function(post) {
-      var el, index, replies, reply;
-      if ((index = Unread.foresee.indexOf(post.id)) !== -1) {
-        Unread.foresee.splice(index, 1);
-        return;
-      }
+      var el, replies, reply;
       el = post.el;
       if (el.hidden || /\bop\b/.test(post["class"]) || post.isInlined) {
         return;
