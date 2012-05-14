@@ -1,5 +1,8 @@
 master
+
+2.30.2
 - Mayhem
+  Various bug fixes.
   Add seconds as a supported Time Formatting specifier.
 
 2.30.1
