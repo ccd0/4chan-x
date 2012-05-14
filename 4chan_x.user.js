@@ -448,56 +448,6 @@
     },
     open: function(url) {
       return (GM_openInTab || window.open)(location.protocol + url, '_blank');
-    },
-    isDST: function() {
-      /*
-            http://en.wikipedia.org/wiki/Eastern_Time_Zone
-            Its UTC time offset is −5 hrs (UTC−05) during standard time and −4
-            hrs (UTC−04) during daylight saving time.
-      
-            Since 2007, the local time changes at 02:00 EST to 03:00 EDT on the second
-            Sunday in March and returns at 02:00 EDT to 01:00 EST on the first Sunday
-            in November, in the U.S. as well as in Canada.
-      
-            0200 EST (UTC-05) = 0700 UTC
-            0200 EDT (UTC-04) = 0600 UTC
-      */
-
-      var D, date, day, hours, month, sunday;
-      D = new Date();
-      date = D.getUTCDate();
-      day = D.getUTCDay();
-      hours = D.getUTCHours();
-      month = D.getUTCMonth();
-      if (month < 2 || 10 < month) {
-        return false;
-      }
-      if ((2 < month && month < 10)) {
-        return true;
-      }
-      sunday = date - day;
-      if (month === 2) {
-        if (sunday < 8) {
-          return false;
-        }
-        if (sunday < 15 && day === 0) {
-          if (hours < 7) {
-            return false;
-          }
-          return true;
-        }
-        return true;
-      }
-      if (sunday < 1) {
-        return true;
-      }
-      if (sunday < 8 && day === 0) {
-        if (hours < 6) {
-          return true;
-        }
-        return false;
-      }
-      return false;
     }
   });
 
@@ -2799,22 +2749,7 @@
 
   Time = {
     init: function() {
-      var chanOffset;
       Time.foo();
-      chanOffset = 5 - new Date().getTimezoneOffset() / 60;
-      if ($.isDST()) {
-        chanOffset--;
-      }
-      this.parse = Date.parse('10/11/11(Tue)18:53') === 1318351980000 ? function(text) {
-        return new Date(Date.parse(text) + chanOffset * $.HOUR);
-      } : function(text) {
-        var day, hour, min, month, year, _, _ref;
-        _ref = text.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
-        year = "20" + year;
-        month--;
-        hour = chanOffset + Number(hour);
-        return new Date(year, month, day, hour, min);
-      };
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -2823,7 +2758,7 @@
         return;
       }
       node = $('.postInfo > .dateTime', post.el);
-      Time.date = Time.parse(node.textContent);
+      Time.date = new Date(node.dataset.utc * 1000);
       return node.textContent = Time.funk(Time);
     },
     foo: function() {

@@ -344,63 +344,6 @@ $.extend $,
     return
   open: (url) ->
     (GM_openInTab or window.open) location.protocol + url, '_blank'
-  isDST: ->
-    ###
-      http://en.wikipedia.org/wiki/Eastern_Time_Zone
-      Its UTC time offset is −5 hrs (UTC−05) during standard time and −4
-      hrs (UTC−04) during daylight saving time.
-
-      Since 2007, the local time changes at 02:00 EST to 03:00 EDT on the second
-      Sunday in March and returns at 02:00 EDT to 01:00 EST on the first Sunday
-      in November, in the U.S. as well as in Canada.
-
-      0200 EST (UTC-05) = 0700 UTC
-      0200 EDT (UTC-04) = 0600 UTC
-    ###
-
-    D = new Date()
-    date  = D.getUTCDate()
-    day   = D.getUTCDay()
-    hours = D.getUTCHours()
-    month = D.getUTCMonth()
-
-    #this is the easy part
-    if month < 2 or 10 < month
-      return false
-    if 2 < month < 10
-      return true
-
-    # (sunday's date) = (today's date) - (number of days past sunday)
-    # date is not zero-indexed
-    sunday = date - day
-
-    if month is 2
-      #before second sunday
-      if sunday < 8
-        return false
-
-      #during second sunday
-      if sunday < 15 and day is 0
-        if hours < 7
-          return false
-        return true
-
-      #after second sunday
-      return true
-
-    #month is 10
-    # before first sunday
-    if sunday < 1
-      return true
-
-    # during first sunday
-    if sunday < 8 and day is 0
-      if hours < 6
-        return true
-      return false
-
-    #after first sunday
-    return false
 
 $.cache.requests = {}
 
@@ -2202,30 +2145,12 @@ RevealSpoilers =
 Time =
   init: ->
     Time.foo()
-
-    # GMT -8 is given as +480; would GMT +8 be -480 ?
-    chanOffset = 5 - new Date().getTimezoneOffset() / 60
-    # 4chan = EST = GMT -5
-    chanOffset-- if $.isDST()
-
-    @parse =
-      if Date.parse('10/11/11(Tue)18:53') is 1318351980000
-        (text) -> new Date Date.parse(text) + chanOffset*$.HOUR
-      else # Firefox and Opera do not parse 4chan's time format correctly
-        (text) ->
-          [_, month, day, year, hour, min] =
-            text.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
-          year = "20#{year}"
-          month-- # Months start at 0
-          hour = chanOffset + Number hour
-          new Date year, month, day, hour, min
-
     Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
-    node              = $ '.postInfo > .dateTime', post.el
-    Time.date         = Time.parse node.textContent
-    node.textContent  = Time.funk(Time)
+    node             = $ '.postInfo > .dateTime', post.el
+    Time.date        = new Date node.dataset.utc * 1000
+    node.textContent = Time.funk Time
   foo: ->
     code = Conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
