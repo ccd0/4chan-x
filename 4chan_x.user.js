@@ -778,7 +778,7 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      node = d.importNode(doc.getElementById("m" + replyID));
+      node = d.importNode(doc.getElementById("m" + replyID), true);
       quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
@@ -890,7 +890,7 @@
       _ref = $$('.replyContainer', doc);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reply = _ref[_i];
-        reply = d.importNode(reply);
+        reply = d.importNode(reply, true);
         _ref1 = $$('.quotelink', reply);
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           quote = _ref1[_j];

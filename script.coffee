@@ -619,7 +619,7 @@ ExpandComment =
 
     # Import the node to fix quote.hashes
     # as they're empty when in a different document.
-    node = d.importNode doc.getElementById "m#{replyID}"
+    node = d.importNode doc.getElementById("m#{replyID}"), true
 
     quotes = node.getElementsByClassName 'quotelink'
     for quote in quotes
@@ -697,7 +697,7 @@ ExpandThread =
     threadID = thread.id[1..]
     nodes    = []
     for reply in $$ '.replyContainer', doc
-      reply = d.importNode reply
+      reply = d.importNode reply, true
       for quote in $$ '.quotelink', reply
         href = quote.getAttribute 'href'
         continue if href[0] is '/' # Cross-board quote
