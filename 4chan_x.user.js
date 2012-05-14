@@ -3411,14 +3411,9 @@
       qreply = replies[qid];
       reply = replies[id];
       $.add(qreply.el.parentNode, reply.el.parentNode);
-      pEl = reply.el.parentNode.previousElementSibling;
-      if (/postContainer/.test(pEl.className)) {
-        pid = pEl.id.slice(2);
-        preply = replies[pid];
-      } else {
-        pid = qid;
-        preply = qreply;
-      }
+      pEl = $.x('preceding::div[contains(@class,"post reply")]/parent::div', reply.el.parentNode);
+      pid = pEl.id.slice(2);
+      preply = replies[pid];
       prev = reply.prev, next = reply.next;
       if (preply === prev) {
         return;

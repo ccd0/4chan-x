@@ -2604,13 +2604,9 @@ QuoteThreading =
     reply = replies[id]
 
     $.add qreply.el.parentNode, reply.el.parentNode
-    pEl = reply.el.parentNode.previousElementSibling
-    if /postContainer/.test pEl.className #we're not the first threaded post
-      pid = pEl.id[2..]
-      preply = replies[pid]
-    else
-      pid = qid
-      preply = qreply
+    pEl = $.x 'preceding::div[contains(@class,"post reply")]/parent::div', reply.el.parentNode
+    pid = pEl.id[2..]
+    preply = replies[pid]
 
     {prev, next} = reply
     return if preply is prev #order has not been changed; don't change anything
