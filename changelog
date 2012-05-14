@@ -1,5 +1,9 @@
 master
 
+3.0.1
+- aeosynth
+  fix thread updating, possibly
+
 3.0.0
 - aeosynth
   'Quote Threading':              [false, 'Thread convsersations']
