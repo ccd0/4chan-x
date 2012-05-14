@@ -4203,6 +4203,7 @@
     css: '\
 /* dialog styling */\
 .dialog.reply {\
+  display: block;\
   border: 1px solid rgba(0,0,0,.25);\
   padding: 0;\
 }\
