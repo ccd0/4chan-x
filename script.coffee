@@ -3323,6 +3323,7 @@ a[href="javascript:;"] {
   float: left;
 }
 
+.hidden_thread + div.opContainer, /* fucking moot specificity */
 .hidden_thread ~ *,
 [hidden],
 #content > [name=tab]:not(:checked) + div,

@@ -2,6 +2,7 @@ master
 - aeosynth
   +feature: quote threading
   +option: rollover: index nav transitions to page nav
+  fix thread hiding
   allow auto-giffing of /gif/
   allow reply highlighting to de-highlight
   rm double highlighting of highlighted reply
