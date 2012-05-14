@@ -3175,20 +3175,20 @@ Main =
       ImageExpand.init()
 
     if Conf['Thread Watcher']
-      setTimeout -> Watcher.init()
+      Watcher.init()
 
     if Conf['Keybinds']
-      setTimeout -> Keybinds.init()
+      Keybinds.init()
 
     if g.REPLY
       if Conf['Thread Updater']
-        setTimeout -> Updater.init()
+        Updater.init()
 
       if Conf['Thread Stats']
         ThreadStats.init()
 
       if Conf['Reply Navigation']
-        setTimeout -> Nav.init()
+        Nav.init()
 
       if Conf['Post in Title']
         TitlePost.init()
@@ -3204,13 +3204,13 @@ Main =
         ThreadHiding.init()
 
       if Conf['Thread Expansion']
-        setTimeout -> ExpandThread.init()
+        ExpandThread.init()
 
       if Conf['Comment Expansion']
-        setTimeout -> ExpandComment.init()
+        ExpandComment.init()
 
       if Conf['Index Navigation']
-        setTimeout -> Nav.init()
+        Nav.init()
 
     board = $ '.board'
     nodes = []

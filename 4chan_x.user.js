@@ -4114,28 +4114,20 @@
         ImageExpand.init();
       }
       if (Conf['Thread Watcher']) {
-        setTimeout(function() {
-          return Watcher.init();
-        });
+        Watcher.init();
       }
       if (Conf['Keybinds']) {
-        setTimeout(function() {
-          return Keybinds.init();
-        });
+        Keybinds.init();
       }
       if (g.REPLY) {
         if (Conf['Thread Updater']) {
-          setTimeout(function() {
-            return Updater.init();
-          });
+          Updater.init();
         }
         if (Conf['Thread Stats']) {
           ThreadStats.init();
         }
         if (Conf['Reply Navigation']) {
-          setTimeout(function() {
-            return Nav.init();
-          });
+          Nav.init();
         }
         if (Conf['Post in Title']) {
           TitlePost.init();
@@ -4151,19 +4143,13 @@
           ThreadHiding.init();
         }
         if (Conf['Thread Expansion']) {
-          setTimeout(function() {
-            return ExpandThread.init();
-          });
+          ExpandThread.init();
         }
         if (Conf['Comment Expansion']) {
-          setTimeout(function() {
-            return ExpandComment.init();
-          });
+          ExpandComment.init();
         }
         if (Conf['Index Navigation']) {
-          setTimeout(function() {
-            return Nav.init();
-          });
+          Nav.init();
         }
       }
       board = $('.board');
