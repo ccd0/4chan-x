@@ -2404,16 +2404,17 @@ QuoteInline =
   add: (q, id) ->
     # Can't use this because Firefox a shit:
     # root = $.x 'ancestor::*[parent::blockquote]', q
-    root   = q
-    while root.parentNode.nodeName isnt 'BLOCKQUOTE'
-      root = root.parentNode
-    if el  = $.id "p#{id}"
+    unless isBacklink = /\bbacklink\b/.test q.className
+      root   = q
+      while root.parentNode.nodeName isnt 'BLOCKQUOTE'
+        root = root.parentNode
+    if el = $.id "p#{id}"
       if /\bop\b/.test el.className
         $.removeClass el.parentNode, 'qphl'
       else
         $.removeClass el, 'qphl'
       clonePost = QuoteInline.clone id, el
-      if /\bbacklink\b/.test q.className
+      if isBacklink
         $.after q.parentNode, clonePost
         if Conf['Forward Hiding']
           $.addClass el.parentNode, 'forwarded'

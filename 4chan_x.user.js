@@ -3119,10 +3119,12 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var clonePost, el, i, inline, pathname, root;
-      root = q;
-      while (root.parentNode.nodeName !== 'BLOCKQUOTE') {
-        root = root.parentNode;
+      var clonePost, el, i, inline, isBacklink, pathname, root;
+      if (!(isBacklink = /\bbacklink\b/.test(q.className))) {
+        root = q;
+        while (root.parentNode.nodeName !== 'BLOCKQUOTE') {
+          root = root.parentNode;
+        }
       }
       if (el = $.id("p" + id)) {
         if (/\bop\b/.test(el.className)) {
@@ -3131,7 +3133,7 @@
           $.removeClass(el, 'qphl');
         }
         clonePost = QuoteInline.clone(id, el);
-        if (/\bbacklink\b/.test(q.className)) {
+        if (isBacklink) {
           $.after(q.parentNode, clonePost);
           if (Conf['Forward Hiding']) {
             $.addClass(el.parentNode, 'forwarded');
