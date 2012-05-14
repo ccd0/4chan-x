@@ -972,7 +972,7 @@ Keybinds =
         unless next
           @focus post
           return
-        return unless g.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
+        return unless g.REPLY or $.x('ancestor::div[parent::div[@class="board"]]', next) is thread
         rect = next.getBoundingClientRect()
         if rect.top < 0 or rect.bottom > d.documentElement.clientHeight
           next.scrollIntoView delta is -1
@@ -1158,7 +1158,7 @@ QR =
     e?.preventDefault()
     QR.open()
     unless g.REPLY
-      $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).id[1..]
+      $('select', QR.el).value = $.x('ancestor::div[parent::div[@class="board"]]', @).id[1..]
     # Make sure we get the correct number, even with XXX censors
     id   = @previousSibling.hash[2..]
     text = ">>#{id}\n"
@@ -3179,7 +3179,7 @@ Main =
       el:          el
       class:       el.className
       id:          el.id[1..]
-      threadId:    g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
+      threadId:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id[1..]
       isInlined:   /\binline\b/.test rootClass
       isCrosspost: /\bcrosspost\b/.test rootClass
       quotes:      el.getElementsByClassName 'quotelink'

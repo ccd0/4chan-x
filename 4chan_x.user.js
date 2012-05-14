@@ -1292,7 +1292,7 @@
             this.focus(post);
             return;
           }
-          if (!(g.REPLY || $.x('ancestor::div[@class="thread"]', next) === thread)) {
+          if (!(g.REPLY || $.x('ancestor::div[parent::div[@class="board"]]', next) === thread)) {
             return;
           }
           rect = next.getBoundingClientRect();
@@ -1543,7 +1543,7 @@
       }
       QR.open();
       if (!g.REPLY) {
-        $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', this).id.slice(1);
+        $('select', QR.el).value = $.x('ancestor::div[parent::div[@class="board"]]', this).id.slice(1);
       }
       id = this.previousSibling.hash.slice(2);
       text = ">>" + id + "\n";
@@ -4139,7 +4139,7 @@
         el: el,
         "class": el.className,
         id: el.id.slice(1),
-        threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
+        threadId: g.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.slice(1),
         isInlined: /\binline\b/.test(rootClass),
         isCrosspost: /\bcrosspost\b/.test(rootClass),
         quotes: el.getElementsByClassName('quotelink'),
