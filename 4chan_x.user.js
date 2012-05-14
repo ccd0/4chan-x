@@ -4,21 +4,21 @@
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright      2012 Nicolas Stepien <stepien.nicolas@gmail.com>
+// @copyright      2012 Nicolas Stepien <stepien.nicolas@gmail.com>, James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http*://boards.4chan.org/*
 // @include        http*://images.4chan.org/*
 // @include        http*://sys.4chan.org/*
 // @run-at         document-start
-// @updateURL      https://raw.github.com/MayhemYDG/4chan-x/stable/4chan_x.user.js
-// @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
+// @updateURL      https://raw.github.com/aeosynth/4chan-x/stable/4chan_x.user.js
+// @icon           http://aeosynth.github.com/4chan-x/favicon.gif
 // ==/UserScript==
 
 /* LICENSE
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
- * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
- * http://mayhemydg.github.com/4chan-x/
+ * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>, James Campos <james.r.campos@gmail.com>
+ * http://aeosynth.github.com/4chan-x/
  * 4chan X 2.30.1
  *
  * Permission is hereby granted, free of charge, to any person
@@ -46,10 +46,11 @@
  * 4chan X is written in CoffeeScript[1], and developed on GitHub[2].
  *
  * [1]: http://coffeescript.org/
- * [2]: https://github.com/MayhemYDG/4chan-x
+ * [2]: https://github.com/aeosynth/4chan-x
  *
  * CONTRIBUTORS
  *
+ * Mayhem - various features; maintenance
  * noface - unique ID fixes
  * desuwa - Firefox filename upload fix
  * seaweed - bottom padding for image hover
@@ -85,7 +86,7 @@
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
-        'Rollover': [true, 'Index navigation will navigate to prev / next page.'],
+        'Rollover': [true, 'Index navigation will fallback to page navigation.'],
         'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
         'Check for Updates': [true, 'Check for updated versions of 4chan X']
       },
@@ -2217,9 +2218,9 @@
         className: 'reply dialog',
         innerHTML: '<div id=optionsbar>\
   <div id=credits>\
-    <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>\
-    | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + Main.version + '</a>\
-    | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>\
+    <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>\
+    | <a target=_blank href=https://raw.github.com/aeosynth/4chan-x/master/changelog>' + Main.version + '</a>\
+    | <a target=_blank href=http://aeosynth.github.com/4chan-x/#bug-report>Issues</a>\
   </div>\
   <div>\
     <label for=main_tab>Main</label>\
@@ -4023,7 +4024,7 @@
         $.on(window, 'message', Main.message);
         $.ready(function() {
           return $.add(d.head, $.el('script', {
-            src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
+            src: 'https://raw.github.com/aeosynth/4chan-x/master/latest.js'
           }));
         });
         $.set('lastUpdate', now);
@@ -4209,7 +4210,7 @@
       var version;
       version = e.data.version;
       if (version && version !== Main.version && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
-        return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + version + "/4chan_x.user.js";
+        return window.location = "https://raw.github.com/aeosynth/4chan-x/" + version + "/4chan_x.user.js";
       }
     },
     preParse: function(node) {
@@ -4251,7 +4252,7 @@
           }
         } catch (err) {
           if (notify) {
-            alert("4chan X (" + Main.version + ") error: " + err.message + "\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n" + err.stack);
+            alert("4chan X (" + Main.version + ") error: " + err.message + "\nhttp://aeosynth.github.com/4chan-x/#bug-report\n\n" + err.stack);
           }
         }
       }

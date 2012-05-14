@@ -1715,9 +1715,9 @@ Options =
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
   <div id=credits>
-    <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>
-    | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + Main.version + '</a>
-    | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>
+    <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>
+    | <a target=_blank href=https://raw.github.com/aeosynth/4chan-x/master/changelog>' + Main.version + '</a>
+    | <a target=_blank href=http://aeosynth.github.com/4chan-x/#bug-report>Issues</a>
   </div>
   <div>
     <label for=main_tab>Main</label>
@@ -3087,7 +3087,7 @@ Main =
     now = Date.now()
     if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*$.HOUR
       $.on window, 'message', Main.message
-      $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
+      $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/aeosynth/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
 
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
@@ -3256,7 +3256,7 @@ Main =
   message: (e) ->
     {version} = e.data
     if version and version isnt Main.version and confirm 'An updated version of 4chan X is available, would you like to install it now?'
-      window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
+      window.location = "https://raw.github.com/aeosynth/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
     rootClass = node.className
@@ -3285,7 +3285,7 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "4chan X (#{Main.version}) error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
+        alert "4chan X (#{Main.version}) error: #{err.message}\nhttp://aeosynth.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []
