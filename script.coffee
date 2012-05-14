@@ -2042,7 +2042,8 @@ Updater =
         Updater.count.className   = if count then 'new' else null
 
       $.add Updater.thread, nodes.reverse()
-      Updater.lastPost = nodes[nodes.length - 1]
+      if lastPost = nodes[nodes.length - 1]
+        Updater.lastPost = lastPost
       if scroll
         nodes[0].scrollIntoView()
 
