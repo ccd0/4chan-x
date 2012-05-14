@@ -1,4 +1,6 @@
 master
+
+3.0.0
 - aeosynth
   'Quote Threading':              [false, 'Thread convsersations']
   'Rollover':                     [true,  'Index navigation will fallback to page navigation.']
