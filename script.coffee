@@ -346,63 +346,6 @@ $.extend $,
     return
   open: (url) ->
     (GM_openInTab or window.open) location.protocol + url, '_blank'
-  isDST: ->
-    ###
-      http://en.wikipedia.org/wiki/Eastern_Time_Zone
-      Its UTC time offset is −5 hrs (UTC−05) during standard time and −4
-      hrs (UTC−04) during daylight saving time.
-
-      Since 2007, the local time changes at 02:00 EST to 03:00 EDT on the second
-      Sunday in March and returns at 02:00 EDT to 01:00 EST on the first Sunday
-      in November, in the U.S. as well as in Canada.
-
-      0200 EST (UTC-05) = 0700 UTC
-      0200 EDT (UTC-04) = 0600 UTC
-    ###
-
-    D = new Date()
-    date  = D.getUTCDate()
-    day   = D.getUTCDay()
-    hours = D.getUTCHours()
-    month = D.getUTCMonth()
-
-    #this is the easy part
-    if month < 2 or 10 < month
-      return false
-    if 2 < month < 10
-      return true
-
-    # (sunday's date) = (today's date) - (number of days past sunday)
-    # date is not zero-indexed
-    sunday = date - day
-
-    if month is 2
-      #before second sunday
-      if sunday < 8
-        return false
-
-      #during second sunday
-      if sunday < 15 and day is 0
-        if hours < 7
-          return false
-        return true
-
-      #after second sunday
-      return true
-
-    #month is 10
-    # before first sunday
-    if sunday < 1
-      return true
-
-    # during first sunday
-    if sunday < 8 and day is 0
-      if hours < 6
-        return true
-      return false
-
-    #after first sunday
-    return false
 
 $.cache.requests = {}
 
@@ -557,7 +500,8 @@ Filter =
     false
   email: (post) ->
     if mail = $ '.useremail', post.el
-      return mail.pathname
+      # remove 'mailto:'
+      return mail.href[7..]
     false
   subject: (post) ->
     $('.subject', post.el).textContent or false
@@ -621,7 +565,7 @@ ExpandComment =
 
     # Import the node to fix quote.hashes
     # as they're empty when in a different document.
-    node = d.importNode doc.getElementById "m#{replyID}"
+    node = d.importNode doc.getElementById("m#{replyID}"), true
 
     quotes = node.getElementsByClassName 'quotelink'
     for quote in quotes
@@ -699,7 +643,7 @@ ExpandThread =
     threadID = thread.id[1..]
     nodes    = []
     for reply in $$ '.replyContainer', doc
-      reply = d.importNode reply
+      reply = d.importNode reply, true
       for quote in $$ '.quotelink', reply
         href = quote.getAttribute 'href'
         continue if href[0] is '/' # Cross-board quote
@@ -751,7 +695,7 @@ ThreadHiding =
       thread.nextElementSibling.hidden = true
       return
 
-    return if thread.firstChild.className is 'block' # already hidden by filter
+    return if thread.firstChild.className is 'hide_thread_button hidden_thread' # already hidden by filter
 
     num     = 0
     if span = $ '.summary', thread
@@ -976,7 +920,7 @@ Keybinds =
         axis = if delta is +1 then 'following' else 'preceding'
         next = $.x axis + '::div[contains(@class,"post reply")]', post
         return unless next
-        return unless g.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
+        return unless g.REPLY or $.x('ancestor::div[parent::div[@class="board"]]', next) is thread
         rect = next.getBoundingClientRect()
         if rect.top < 0 or rect.bottom > d.documentElement.clientHeight
           next.scrollIntoView delta is -1
@@ -1173,7 +1117,7 @@ QR =
     e?.preventDefault()
     QR.open()
     unless g.REPLY
-      $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', @).id[1..]
+      $('select', QR.el).value = $.x('ancestor::div[parent::div[@class="board"]]', @).id[1..]
     # Make sure we get the correct number, even with XXX censors
     id   = @previousSibling.hash[2..]
     text = ">>#{id}\n"
@@ -1697,7 +1641,7 @@ Options =
   init: ->
     for home in [$.id('navtopr'), $.id('navbotr')]
       a = $.el 'a',
-        textContent: '4chan X'
+        textContent: '4chan X Settings'
         href: 'javascript:;'
       $.on a, 'click', Options.dialog
       $.replace home.lastElementChild, a
@@ -1782,6 +1726,7 @@ Options =
       <li>Year: %y</li>
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
       <li>Minutes: %M</li>
+      <li>Seconds: %S</li>
     </ul>
     <div class=warning><code>File Info Formatting</code> is disabled.</div>
     <ul>
@@ -2140,7 +2085,7 @@ Watcher =
     Watcher.refresh()
 
   watch: (id) ->
-    thread = $.id id
+    thread = $.id "t#{id}"
     return false if $('.favicon', thread).src is Favicon.default
 
     watched = $.get 'watched', {}
@@ -2218,30 +2163,12 @@ RevealSpoilers =
 Time =
   init: ->
     Time.foo()
-
-    # GMT -8 is given as +480; would GMT +8 be -480 ?
-    chanOffset = 5 - new Date().getTimezoneOffset() / 60
-    # 4chan = EST = GMT -5
-    chanOffset-- if $.isDST()
-
-    @parse =
-      if Date.parse('10/11/11(Tue)18:53') is 1318351980000
-        (text) -> new Date Date.parse(text) + chanOffset*$.HOUR
-      else # Firefox and Opera do not parse 4chan's time format correctly
-        (text) ->
-          [_, month, day, year, hour, min] =
-            text.match /(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/
-          year = "20#{year}"
-          month-- # Months start at 0
-          hour = chanOffset + Number hour
-          new Date year, month, day, hour, min
-
     Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
-    node              = $ '.postInfo > .dateTime', post.el
-    Time.date         = Time.parse node.textContent
-    node.textContent  = Time.funk(Time)
+    node             = $ '.postInfo > .dateTime', post.el
+    Time.date        = new Date node.dataset.utc * 1000
+    node.textContent = Time.funk Time
   foo: ->
     code = Conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
@@ -2288,6 +2215,7 @@ Time =
     M: -> Time.zeroPad Time.date.getMinutes()
     p: -> if Time.date.getHours() < 12 then 'AM' else 'PM'
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
+    S: -> Time.zeroPad Time.date.getSeconds()
     y: -> Time.date.getFullYear() - 2000
 
 FileInfo =
@@ -2418,14 +2346,19 @@ QuoteInline =
     @classList.toggle 'inlined'
 
   add: (q, id) ->
-    root  = $.x 'ancestor::*[parent::blockquote]', q
+    # Can't use this because Firefox a shit:
+    # root = $.x 'ancestor::*[parent::blockquote]', q
+    unless isBacklink = /\bbacklink\b/.test q.className
+      root   = q
+      while root.parentNode.nodeName isnt 'BLOCKQUOTE'
+        root = root.parentNode
     if el = $.id "p#{id}"
       if /\bop\b/.test el.className
         $.removeClass el.parentNode, 'qphl'
       else
         $.removeClass el, 'qphl'
       clonePost = QuoteInline.clone id, el
-      if /\bbacklink\b/.test q.className
+      if isBacklink
         $.after q.parentNode, clonePost
         if Conf['Forward Hiding']
           $.addClass el.parentNode, 'forwarded'
@@ -2986,8 +2919,12 @@ ImageExpand =
     thumb = a.firstChild
     if thumb.hidden
       rect = a.getBoundingClientRect()
-      d.body.scrollTop += rect.top - 42 if rect.top < 0
-      d.body.scrollLeft += rect.left if rect.left < 0
+      if $.engine is 'webkit'
+        d.body.scrollTop  += rect.top - 42 if rect.top < 0
+        d.body.scrollLeft += rect.left     if rect.left < 0
+      else
+        d.documentElement.scrollTop  += rect.top - 42 if rect.top < 0
+        d.documentElement.scrollLeft += rect.left     if rect.left < 0
       ImageExpand.contract thumb
     else
       ImageExpand.expand thumb
@@ -3262,7 +3199,7 @@ Main =
       class:       el.className
       klass:       el.className
       id:          el.id[1..]
-      threadId:    g.THREAD_ID or $.x('ancestor::div[@class="thread"]', node).id[1..]
+      threadId:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id[1..]
       isInlined:   /\binline\b/.test rootClass
       isCrosspost: /\bcrosspost\b/.test rootClass
       quotes:      el.getElementsByClassName 'quotelink'
@@ -3300,6 +3237,7 @@ Main =
   css: '
 /* dialog styling */
 .dialog.reply {
+  display: block;
   border: 1px solid rgba(0,0,0,.25);
   padding: 0;
 }
@@ -3316,12 +3254,12 @@ a[href="javascript:;"] {
   color: red;
 }
 
-.hide_thread_button {
+.hide_thread_button:not(.hidden_thread) {
   float: left;
 }
 
-.hidden_thread + div.opContainer, /* fucking moot specificity */
 .hidden_thread ~ *,
+.hidden_thread + div.opContainer,
 [hidden],
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
@@ -3528,6 +3466,10 @@ textarea.field {
 }
 .fitwidth img[data-md5] + img {
   max-width: 100%;
+}
+.gecko  .fitwidth img[data-md5] + img,
+.presto .fitwidth img[data-md5] + img {
+  width: 100%;
 }
 
 /* revealed spoilers do not have height/width,

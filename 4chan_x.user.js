@@ -452,56 +452,6 @@
     },
     open: function(url) {
       return (GM_openInTab || window.open)(location.protocol + url, '_blank');
-    },
-    isDST: function() {
-      /*
-            http://en.wikipedia.org/wiki/Eastern_Time_Zone
-            Its UTC time offset is −5 hrs (UTC−05) during standard time and −4
-            hrs (UTC−04) during daylight saving time.
-      
-            Since 2007, the local time changes at 02:00 EST to 03:00 EDT on the second
-            Sunday in March and returns at 02:00 EDT to 01:00 EST on the first Sunday
-            in November, in the U.S. as well as in Canada.
-      
-            0200 EST (UTC-05) = 0700 UTC
-            0200 EDT (UTC-04) = 0600 UTC
-      */
-
-      var D, date, day, hours, month, sunday;
-      D = new Date();
-      date = D.getUTCDate();
-      day = D.getUTCDay();
-      hours = D.getUTCHours();
-      month = D.getUTCMonth();
-      if (month < 2 || 10 < month) {
-        return false;
-      }
-      if ((2 < month && month < 10)) {
-        return true;
-      }
-      sunday = date - day;
-      if (month === 2) {
-        if (sunday < 8) {
-          return false;
-        }
-        if (sunday < 15 && day === 0) {
-          if (hours < 7) {
-            return false;
-          }
-          return true;
-        }
-        return true;
-      }
-      if (sunday < 1) {
-        return true;
-      }
-      if (sunday < 8 && day === 0) {
-        if (hours < 6) {
-          return true;
-        }
-        return false;
-      }
-      return false;
     }
   });
 
@@ -683,7 +633,7 @@
     email: function(post) {
       var mail;
       if (mail = $('.useremail', post.el)) {
-        return mail.pathname;
+        return mail.href.slice(7);
       }
       return false;
     },
@@ -782,7 +732,7 @@
       }
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
-      node = d.importNode(doc.getElementById("m" + replyID));
+      node = d.importNode(doc.getElementById("m" + replyID), true);
       quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
@@ -894,7 +844,7 @@
       _ref = $$('.replyContainer', doc);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reply = _ref[_i];
-        reply = d.importNode(reply);
+        reply = d.importNode(reply, true);
         _ref1 = $$('.quotelink', reply);
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           quote = _ref1[_j];
@@ -968,7 +918,7 @@
         thread.nextElementSibling.hidden = true;
         return;
       }
-      if (thread.firstChild.className === 'block') {
+      if (thread.firstChild.className === 'hide_thread_button hidden_thread') {
         return;
       }
       num = 0;
@@ -1297,7 +1247,7 @@
           if (!next) {
             return;
           }
-          if (!(g.REPLY || $.x('ancestor::div[@class="thread"]', next) === thread)) {
+          if (!(g.REPLY || $.x('ancestor::div[parent::div[@class="board"]]', next) === thread)) {
             return;
           }
           rect = next.getBoundingClientRect();
@@ -1563,7 +1513,7 @@
       }
       QR.open();
       if (!g.REPLY) {
-        $('select', QR.el).value = $.x('ancestor::div[@class="thread"]', this).id.slice(1);
+        $('select', QR.el).value = $.x('ancestor::div[parent::div[@class="board"]]', this).id.slice(1);
       }
       id = this.previousSibling.hash.slice(2);
       text = ">>" + id + "\n";
@@ -2194,7 +2144,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         home = _ref[_i];
         a = $.el('a', {
-          textContent: '4chan X',
+          textContent: '4chan X Settings',
           href: 'javascript:;'
         });
         $.on(a, 'click', Options.dialog);
@@ -2284,6 +2234,7 @@
       <li>Year: %y</li>\
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>\
       <li>Minutes: %M</li>\
+      <li>Seconds: %S</li>\
     </ul>\
     <div class=warning><code>File Info Formatting</code> is disabled.</div>\
     <ul>\
@@ -2703,7 +2654,7 @@
     },
     watch: function(id) {
       var thread, watched, _name;
-      thread = $.id(id);
+      thread = $.id("t" + id);
       if ($('.favicon', thread).src === Favicon["default"]) {
         return false;
       }
@@ -2820,22 +2771,7 @@
 
   Time = {
     init: function() {
-      var chanOffset;
       Time.foo();
-      chanOffset = 5 - new Date().getTimezoneOffset() / 60;
-      if ($.isDST()) {
-        chanOffset--;
-      }
-      this.parse = Date.parse('10/11/11(Tue)18:53') === 1318351980000 ? function(text) {
-        return new Date(Date.parse(text) + chanOffset * $.HOUR);
-      } : function(text) {
-        var day, hour, min, month, year, _, _ref;
-        _ref = text.match(/(\d+)\/(\d+)\/(\d+)\(\w+\)(\d+):(\d+)/), _ = _ref[0], month = _ref[1], day = _ref[2], year = _ref[3], hour = _ref[4], min = _ref[5];
-        year = "20" + year;
-        month--;
-        hour = chanOffset + Number(hour);
-        return new Date(year, month, day, hour, min);
-      };
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -2844,7 +2780,7 @@
         return;
       }
       node = $('.postInfo > .dateTime', post.el);
-      Time.date = Time.parse(node.textContent);
+      Time.date = new Date(node.dataset.utc * 1000);
       return node.textContent = Time.funk(Time);
     },
     foo: function() {
@@ -2917,6 +2853,9 @@
         } else {
           return 'pm';
         }
+      },
+      S: function() {
+        return Time.zeroPad(Time.date.getSeconds());
       },
       y: function() {
         return Time.date.getFullYear() - 2000;
@@ -3140,8 +3079,13 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var clonePost, el, i, inline, pathname, reply, root, _i, _len, _ref;
-      root = $.x('ancestor::*[parent::blockquote]', q);
+      var clonePost, el, i, inline, isBacklink, pathname, reply, root, _i, _len, _ref;
+      if (!(isBacklink = /\bbacklink\b/.test(q.className))) {
+        root = q;
+        while (root.parentNode.nodeName !== 'BLOCKQUOTE') {
+          root = root.parentNode;
+        }
+      }
       if (el = $.id("p" + id)) {
         if (/\bop\b/.test(el.className)) {
           $.removeClass(el.parentNode, 'qphl');
@@ -3149,7 +3093,7 @@
           $.removeClass(el, 'qphl');
         }
         clonePost = QuoteInline.clone(id, el);
-        if (/\bbacklink\b/.test(q.className)) {
+        if (isBacklink) {
           $.after(q.parentNode, clonePost);
           if (Conf['Forward Hiding']) {
             $.addClass(el.parentNode, 'forwarded');
@@ -3895,11 +3839,20 @@
       thumb = a.firstChild;
       if (thumb.hidden) {
         rect = a.getBoundingClientRect();
-        if (rect.top < 0) {
-          d.body.scrollTop += rect.top - 42;
-        }
-        if (rect.left < 0) {
-          d.body.scrollLeft += rect.left;
+        if ($.engine === 'webkit') {
+          if (rect.top < 0) {
+            d.body.scrollTop += rect.top - 42;
+          }
+          if (rect.left < 0) {
+            d.body.scrollLeft += rect.left;
+          }
+        } else {
+          if (rect.top < 0) {
+            d.documentElement.scrollTop += rect.top - 42;
+          }
+          if (rect.left < 0) {
+            d.documentElement.scrollLeft += rect.left;
+          }
         }
         return ImageExpand.contract(thumb);
       } else {
@@ -4217,7 +4170,7 @@
         "class": el.className,
         klass: el.className,
         id: el.id.slice(1),
-        threadId: g.THREAD_ID || $.x('ancestor::div[@class="thread"]', node).id.slice(1),
+        threadId: g.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.slice(1),
         isInlined: /\binline\b/.test(rootClass),
         isCrosspost: /\bcrosspost\b/.test(rootClass),
         quotes: el.getElementsByClassName('quotelink'),
@@ -4281,6 +4234,7 @@
     css: '\
 /* dialog styling */\
 .dialog.reply {\
+  display: block;\
   border: 1px solid rgba(0,0,0,.25);\
   padding: 0;\
 }\
@@ -4297,12 +4251,12 @@ a[href="javascript:;"] {\
   color: red;\
 }\
 \
-.hide_thread_button {\
+.hide_thread_button:not(.hidden_thread) {\
   float: left;\
 }\
 \
-.hidden_thread + div.opContainer, /* fucking moot specificity */\
 .hidden_thread ~ *,\
+.hidden_thread + div.opContainer,\
 [hidden],\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
@@ -4509,6 +4463,10 @@ textarea.field {\
 }\
 .fitwidth img[data-md5] + img {\
   max-width: 100%;\
+}\
+.gecko  .fitwidth img[data-md5] + img,\
+.presto .fitwidth img[data-md5] + img {\
+  width: 100%;\
 }\
 \
 /* revealed spoilers do not have height/width,\
