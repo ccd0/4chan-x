@@ -1702,7 +1702,7 @@ Options =
         textContent: '4chan X'
         href: 'javascript:;'
       $.on a, 'click', Options.dialog
-      $.replace home.firstElementChild, a
+      $.replace home.lastElementChild, a
     unless $.get 'firstrun'
       # Prevent race conditions
       Favicon.init() unless Favicon.el

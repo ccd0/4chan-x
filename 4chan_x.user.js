@@ -2201,7 +2201,7 @@
           href: 'javascript:;'
         });
         $.on(a, 'click', Options.dialog);
-        $.replace(home.firstElementChild, a);
+        $.replace(home.lastElementChild, a);
       }
       if (!$.get('firstrun')) {
         if (!Favicon.el) {
