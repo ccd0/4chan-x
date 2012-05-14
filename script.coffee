@@ -1934,6 +1934,7 @@ Updater =
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
+    @lastPost = @thread.lastElementChild
 
     for input in $$ 'input', dialog
       if input.type is 'checkbox'
@@ -2015,7 +2016,7 @@ Updater =
       doc = d.implementation.createHTMLDocument ''
       doc.documentElement.innerHTML = @response
 
-      lastPost = Updater.thread.lastElementChild
+      {lastPost} = Updater
       id = lastPost.id[2..]
       nodes = []
       for reply in $$('.replyContainer', doc).reverse()
@@ -2030,6 +2031,7 @@ Updater =
         Updater.count.className   = if count then 'new' else null
 
       $.add Updater.thread, nodes.reverse()
+      Updater.lastPost = nodes[nodes.length - 1]
       if scroll
         nodes[0].scrollIntoView()
 

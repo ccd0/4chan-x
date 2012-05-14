@@ -2448,6 +2448,7 @@
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
       this.thread = $.id("t" + g.THREAD_ID);
+      this.lastPost = this.thread.lastElementChild;
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
@@ -2541,7 +2542,7 @@
         Updater.lastModified = this.getResponseHeader('Last-Modified');
         doc = d.implementation.createHTMLDocument('');
         doc.documentElement.innerHTML = this.response;
-        lastPost = Updater.thread.lastElementChild;
+        lastPost = Updater.lastPost;
         id = lastPost.id.slice(2);
         nodes = [];
         _ref = $$('.replyContainer', doc).reverse();
@@ -2559,6 +2560,7 @@
           Updater.count.className = count ? 'new' : null;
         }
         $.add(Updater.thread, nodes.reverse());
+        Updater.lastPost = nodes[nodes.length - 1];
         if (scroll) {
           return nodes[0].scrollIntoView();
         }
