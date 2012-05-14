@@ -3085,7 +3085,7 @@ Main =
     Main.addStyle()
 
     now = Date.now()
-    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*$.HOUR
+    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 1*$.DAY
       $.on window, 'message', Main.message
       $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/aeosynth/4chan-x/master/latest.js'
       $.set 'lastUpdate', now
