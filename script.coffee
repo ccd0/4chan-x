@@ -9,7 +9,7 @@ Config =
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
-      'Rollover':                     [true,  'Index navigation will navigate to prev / next page.']
+      'Rollover':                     [true,  'Index navigation will fallback to page navigation.']
       'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
       'Check for Updates':            [true,  'Check for updated versions of 4chan X']
     Filtering:

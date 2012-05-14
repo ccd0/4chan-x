@@ -1,7 +1,7 @@
 master
 - aeosynth
-  +feature: quote threading
-  +option: rollover: index nav transitions to page nav
+  'Quote Threading':              [false, 'Thread convsersations']
+  'Rollover':                     [true,  'Index navigation will fallback to page navigation.']
   fix thread hiding
   allow auto-giffing of /gif/
   allow reply highlighting to de-highlight
