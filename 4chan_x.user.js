@@ -1078,7 +1078,10 @@
           Updater.update();
           break;
         case Conf.unreadCountTo0:
-          Unread.replies = [];
+          Unread.replies = {
+            first: null,
+            last: null
+          };
           Unread.update(true);
           break;
         case Conf.expandImage:

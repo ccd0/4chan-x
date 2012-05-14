@@ -827,8 +827,10 @@ Keybinds =
       when Conf.update
         Updater.update()
       when Conf.unreadCountTo0
-        Unread.replies = []
-        Unread.update true
+        Unread.replies =
+          first: null
+          last: null
+        Unread.update 0
       # Images
       when Conf.expandImage
         Keybinds.img thread
@@ -3128,9 +3130,6 @@ Main =
     if Conf['Quick Reply']
       QR.init()
 
-    if Conf['Prefetch']
-      Prefetch.init()
-
     if Conf['Image Expansion']
       ImageExpand.init()
 
@@ -3141,6 +3140,9 @@ Main =
       Keybinds.init()
 
     if g.REPLY
+      if Conf['Prefetch']
+        Prefetch.init()
+
       if Conf['Thread Updater']
         Updater.init()
 
