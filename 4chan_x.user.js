@@ -3797,9 +3797,6 @@
 
   AutoGif = {
     init: function() {
-      if (g.BOARD === 'gif') {
-        return;
-      }
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
