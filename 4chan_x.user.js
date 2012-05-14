@@ -629,7 +629,7 @@
     email: function(post) {
       var mail;
       if (mail = $('.useremail', post.el)) {
-        return mail.pathname;
+        return mail.href.slice(7);
       }
       return false;
     },
@@ -2217,6 +2217,7 @@
       <li>Year: %y</li>\
       <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>\
       <li>Minutes: %M</li>\
+      <li>Seconds: %S</li>\
     </ul>\
     <div class=warning><code>File Info Formatting</code> is disabled.</div>\
     <ul>\

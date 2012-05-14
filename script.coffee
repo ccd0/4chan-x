@@ -498,7 +498,8 @@ Filter =
     false
   email: (post) ->
     if mail = $ '.useremail', post.el
-      return mail.pathname
+      # remove 'mailto:'
+      return mail.href[7..]
     false
   subject: (post) ->
     $('.subject', post.el).textContent or false
