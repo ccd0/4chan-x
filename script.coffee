@@ -2907,8 +2907,8 @@ ImageExpand =
     thumb = a.firstChild
     if thumb.hidden
       rect = a.getBoundingClientRect()
-      d.body.scrollTop += rect.top - 42 if rect.top < 0
-      d.body.scrollLeft += rect.left if rect.left < 0
+      d.documentElement.scrollTop += rect.top - 42 if rect.top < 0
+      d.documentElement.scrollLeft += rect.left if rect.left < 0
       ImageExpand.contract thumb
     else
       ImageExpand.expand thumb

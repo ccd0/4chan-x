@@ -3808,10 +3808,10 @@
       if (thumb.hidden) {
         rect = a.getBoundingClientRect();
         if (rect.top < 0) {
-          d.body.scrollTop += rect.top - 42;
+          d.documentElement.scrollTop += rect.top - 42;
         }
         if (rect.left < 0) {
-          d.body.scrollLeft += rect.left;
+          d.documentElement.scrollLeft += rect.left;
         }
         return ImageExpand.contract(thumb);
       } else {
