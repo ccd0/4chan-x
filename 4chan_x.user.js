@@ -979,6 +979,7 @@
       opInfo = $('.op > .postInfo > .nameBlock', thread).textContent;
       a = $('.hide_thread_button', thread);
       $.addClass(a, 'hidden_thread');
+      $.addClass(thread, 'hidden');
       a.firstChild.textContent = '[ + ]';
       return $.add(a, $.tn(" " + opInfo + " (" + text + ")"));
     },
@@ -986,6 +987,7 @@
       var a;
       a = $('.hide_thread_button', thread);
       $.removeClass(a, 'hidden_thread');
+      $.removeClass(thread, 'hidden');
       a.innerHTML = '<span>[ - ]</span>';
       thread.hidden = false;
       return thread.nextElementSibling.hidden = false;
@@ -1359,7 +1361,7 @@
     },
     getThread: function(full) {
       var bottom, i, rect, thread, _i, _len, _ref;
-      Nav.threads = $$('.thread:not([hidden])');
+      Nav.threads = $$('.thread:not(.hidden)');
       _ref = Nav.threads;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         thread = _ref[i];

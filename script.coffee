@@ -762,12 +762,14 @@ ThreadHiding =
 
     a = $ '.hide_thread_button', thread
     $.addClass a, 'hidden_thread'
+    $.addClass thread, 'hidden'
     a.firstChild.textContent = '[ + ]'
     $.add a, $.tn " #{opInfo} (#{text})"
 
   show: (thread) ->
     a = $ '.hide_thread_button', thread
     $.removeClass a, 'hidden_thread'
+    $.removeClass thread, 'hidden'
     a.innerHTML = '<span>[ - ]</span>'
     thread.hidden = false
     thread.nextElementSibling.hidden = false
@@ -1024,7 +1026,7 @@ Nav =
       Nav.scroll +1
 
   getThread: (full) ->
-    Nav.threads = $$ '.thread:not([hidden])'
+    Nav.threads = $$ '.thread:not(.hidden)'
     for thread, i in Nav.threads
       rect = thread.getBoundingClientRect()
       {bottom} = rect
