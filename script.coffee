@@ -26,6 +26,7 @@ Config =
       'Sauce':                        [true,  'Add sauce to images']
       'Reveal Spoilers':              [false, 'Replace spoiler thumbnails by the original thumbnail']
       'Expand From Current':          [false, 'Expand images from current position to thread end.']
+      'Prefetch':                     [false, 'Prefetch images.']
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
@@ -2861,6 +2862,24 @@ AutoGif =
         img.src = src
       gif.src = src
 
+Prefetch =
+  init: ->
+    @dialog()
+  dialog: ->
+    controls = $.el 'div',
+      id: 'prefetch'
+      innerHTML:
+        "<label>Prefetch Images<input type=checkbox id=prefetch></label>"
+    input = $ 'input', controls
+    $.on input, 'change', Prefetch.fetch
+
+    $.prepend $.id('delform'), controls
+
+  fetch: ->
+    for thumb in $$ 'a.fileThumb'
+      img = $.el 'img',
+        src: thumb.href
+
 ImageExpand =
   init: ->
     Main.callbacks.push @node
@@ -3108,6 +3127,9 @@ Main =
     # Major features.
     if Conf['Quick Reply']
       QR.init()
+
+    if Conf['Prefetch']
+      Prefetch.init()
 
     if Conf['Image Expansion']
       ImageExpand.init()

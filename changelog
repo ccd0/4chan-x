@@ -2,6 +2,9 @@ master
 - Mayhem
   Various bug fixes.
   Add seconds as a supported Time Formatting specifier.
+- aeosynth
+  'Prefetch':                     [false, 'Prefetch images.']
+  fix another thread updating bug
 
 3.0.1
 - aeosynth

@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, log, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, log, _base;
 
   Config = {
     main: {
@@ -104,7 +104,8 @@
         'Image Hover': [false, 'Show full image on mouseover'],
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail'],
-        'Expand From Current': [false, 'Expand images from current position to thread end.']
+        'Expand From Current': [false, 'Expand images from current position to thread end.'],
+        'Prefetch': [false, 'Prefetch images.']
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
@@ -3752,6 +3753,34 @@
     }
   };
 
+  Prefetch = {
+    init: function() {
+      return this.dialog();
+    },
+    dialog: function() {
+      var controls, input;
+      controls = $.el('div', {
+        id: 'prefetch',
+        innerHTML: "<label>Prefetch Images<input type=checkbox id=prefetch></label>"
+      });
+      input = $('input', controls);
+      $.on(input, 'change', Prefetch.fetch);
+      return $.prepend($.id('delform'), controls);
+    },
+    fetch: function() {
+      var img, thumb, _i, _len, _ref, _results;
+      _ref = $$('a.fileThumb');
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        thumb = _ref[_i];
+        _results.push(img = $.el('img', {
+          src: thumb.href
+        }));
+      }
+      return _results;
+    }
+  };
+
   ImageExpand = {
     init: function() {
       Main.callbacks.push(this.node);
@@ -4066,6 +4095,9 @@
       Favicon.init();
       if (Conf['Quick Reply']) {
         QR.init();
+      }
+      if (Conf['Prefetch']) {
+        Prefetch.init();
       }
       if (Conf['Image Expansion']) {
         ImageExpand.init();
