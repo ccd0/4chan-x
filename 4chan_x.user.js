@@ -4442,6 +4442,10 @@ textarea.field {\
 .fitwidth img[data-md5] + img {\
   max-width: 100%;\
 }\
+.gecko  .fitwidth img[data-md5] + img,\
+.presto .fitwidth img[data-md5] + img {\
+  width: 100%;\
+}\
 \
 /* revealed spoilers do not have height/width,\
    this fixes "expanded" auto-gifs */\
