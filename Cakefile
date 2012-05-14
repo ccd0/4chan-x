@@ -57,6 +57,7 @@ HEADER  = """
  *
  * CONTRIBUTORS
  *
+ * Mayhem - various features; maintenance
  * noface - unique ID fixes
  * desuwa - Firefox filename upload fix
  * seaweed - bottom padding for image hover
