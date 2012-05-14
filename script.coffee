@@ -1684,7 +1684,7 @@ Options =
   init: ->
     for home in [$.id('navtopr'), $.id('navbotr')]
       a = $.el 'a',
-        textContent: '4chan X'
+        textContent: '4chan X Settings'
         href: 'javascript:;'
       $.on a, 'click', Options.dialog
       $.replace home.firstElementChild, a

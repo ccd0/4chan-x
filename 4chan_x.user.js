@@ -2177,7 +2177,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         home = _ref[_i];
         a = $.el('a', {
-          textContent: '4chan X',
+          textContent: '4chan X Settings',
           href: 'javascript:;'
         });
         $.on(a, 'click', Options.dialog);
