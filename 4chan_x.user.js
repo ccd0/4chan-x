@@ -1286,7 +1286,6 @@
       var next, post, rect, replies, reply, _i, _len;
       if (post = $('.reply.highlight', thread)) {
         $.removeClass(post, 'highlight');
-        post.removeAttribute('tabindex');
         rect = post.getBoundingClientRect();
         if (rect.bottom >= 0 && rect.top <= d.documentElement.clientHeight) {
           next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? post.parentNode.nextElementSibling : post.parentNode.previousElementSibling);
@@ -1320,7 +1319,6 @@
     },
     focus: function(post) {
       $.addClass(post, 'highlight');
-      post.tabIndex = 0;
       return post.focus();
     }
   };

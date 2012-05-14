@@ -968,7 +968,6 @@ Keybinds =
   hl: (delta, thread) ->
     if post = $ '.reply.highlight', thread
       $.removeClass post, 'highlight'
-      post.removeAttribute 'tabindex'
       rect = post.getBoundingClientRect()
       if rect.bottom >= 0 and rect.top <= d.documentElement.clientHeight # We're at least partially visible
         next = $.x 'child::div[contains(@class,"post reply")]',
@@ -993,7 +992,6 @@ Keybinds =
 
   focus: (post) ->
     $.addClass post, 'highlight'
-    post.tabIndex = 0
     post.focus()
 
 Nav =
