@@ -749,7 +749,7 @@ ThreadHiding =
       thread.nextElementSibling.hidden = true
       return
 
-    return if thread.firstChild.className is 'block' # already hidden by filter
+    return if thread.firstChild.className is 'hide_thread_button hidden_thread' # already hidden by filter
 
     num     = 0
     if span = $ '.summary', thread
@@ -3238,11 +3238,12 @@ a[href="javascript:;"] {
   color: red;
 }
 
-.hide_thread_button {
+.hide_thread_button:not(.hidden_thread) {
   float: left;
 }
 
 .hidden_thread ~ *,
+.hidden_thread + div.opContainer,
 [hidden],
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
