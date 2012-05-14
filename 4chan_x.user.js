@@ -1283,14 +1283,14 @@
       }
     },
     hl: function(delta, thread) {
-      var next, post, rect, replies, reply, _i, _len;
+      var next, post, prop, rect, replies, reply, _i, _len;
       if (post = $('.reply.highlight', thread)) {
         $.removeClass(post, 'highlight');
         rect = post.getBoundingClientRect();
         if (rect.bottom >= 0 && rect.top <= d.documentElement.clientHeight) {
-          next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? post.parentNode.nextElementSibling : post.parentNode.previousElementSibling);
+          prop = (delta === +1 ? 'next' : 'previous') + 'ElementSibling';
+          next = $.x('child::div[contains(@class,"post reply")]', post.parentNode[prop]);
           if (!next) {
-            this.focus(post);
             return;
           }
           if (!(g.REPLY || $.x('ancestor::div[@class="thread"]', next) === thread)) {
