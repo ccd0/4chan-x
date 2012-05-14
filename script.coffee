@@ -2124,7 +2124,7 @@ Watcher =
     Watcher.refresh()
 
   watch: (id) ->
-    thread = $.id id
+    thread = $.id "t#{id}"
     return false if $('.favicon', thread).src is Favicon.default
 
     watched = $.get 'watched', {}

@@ -2682,7 +2682,7 @@
     },
     watch: function(id) {
       var thread, watched, _name;
-      thread = $.id(id);
+      thread = $.id("t" + id);
       if ($('.favicon', thread).src === Favicon["default"]) {
         return false;
       }
