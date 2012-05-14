@@ -85,6 +85,7 @@
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
+        'Rollover': [true, 'Index navigation will navigate to prev / next page.'],
         'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
         'Check for Updates': [true, 'Check for updated versions of 4chan X']
       },
@@ -1137,12 +1138,12 @@
           break;
         case Conf.nextPage:
           if (link = $('link[rel=next]', d.head)) {
-            window.location = link.href;
+            window.location = link.href + '#delform';
           }
           break;
         case Conf.previousPage:
           if (link = $('link[rel=prev]', d.head)) {
-            window.location.href = link.href;
+            window.location = link.href + '#delform';
           }
           break;
         case Conf.nextThread:
@@ -1374,9 +1375,25 @@
       return $('.board');
     },
     scroll: function(delta) {
-      var i, rect, thread, top, _ref, _ref1;
+      var i, link, rect, thread, top, _ref, _ref1;
       _ref = Nav.getThread(true), thread = _ref[0], i = _ref[1], rect = _ref[2];
       top = rect.top;
+      if (Conf['Rollover']) {
+        if ((delta === -1) && (i === 0)) {
+          if (link = $('link[rel=prev]', d.head)) {
+            window.location = link.href + '#delform';
+          } else {
+            window.location = "/" + g.BOARD + "/0#delform";
+          }
+          return;
+        }
+        if ((delta === +1) && ((i === Nav.threads.length - 1) || (innerHeight + pageYOffset === d.body.scrollHeight))) {
+          if (link = $('link[rel=next]', d.head)) {
+            window.location = link.href + '#delform';
+            return;
+          }
+        }
+      }
       if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
         i += delta;
       }

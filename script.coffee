@@ -9,6 +9,7 @@ Config =
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
+      'Rollover':                     [true,  'Index navigation will navigate to prev / next page.']
       'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
       'Check for Updates':            [true,  'Check for updated versions of 4chan X']
     Filtering:
@@ -891,10 +892,10 @@ Keybinds =
         window.location = "/#{g.BOARD}/0#delform"
       when Conf.nextPage
         if link = $ 'link[rel=next]', d.head
-          window.location = link.href
+          window.location = link.href + '#delform'
       when Conf.previousPage
         if link = $ 'link[rel=prev]', d.head
-          window.location.href = link.href
+          window.location = link.href + '#delform'
       # Thread Navigation
       when Conf.nextThread
         return if g.REPLY
@@ -1036,6 +1037,18 @@ Nav =
   scroll: (delta) ->
     [thread, i, rect] = Nav.getThread true
     {top} = rect
+
+    if Conf['Rollover']
+      if (delta is -1) and (i is 0)
+        if link = $ 'link[rel=prev]', d.head
+          window.location = link.href + '#delform'
+        else
+          window.location = "/#{g.BOARD}/0#delform"
+        return
+      if (delta is +1) and ( (i is Nav.threads.length - 1) or (innerHeight + pageYOffset == d.body.scrollHeight) )
+        if link = $ 'link[rel=next]', d.head
+          window.location = link.href + '#delform'
+          return
 
     #unless we're not at the beginning of the current thread
     # (and thus wanting to move to beginning)
