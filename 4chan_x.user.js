@@ -3120,7 +3120,10 @@
     },
     add: function(q, id) {
       var clonePost, el, i, inline, pathname, root;
-      root = $.x('ancestor::*[parent::blockquote]', q);
+      root = q;
+      while (root.parentNode.nodeName !== 'BLOCKQUOTE') {
+        root = root.parentNode;
+      }
       if (el = $.id("p" + id)) {
         if (/\bop\b/.test(el.className)) {
           $.removeClass(el.parentNode, 'qphl');
