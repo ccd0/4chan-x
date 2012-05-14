@@ -970,8 +970,8 @@ Keybinds =
       $.removeClass post, 'highlight'
       rect = post.getBoundingClientRect()
       if rect.bottom >= 0 and rect.top <= d.documentElement.clientHeight # We're at least partially visible
-        prop = (if delta is +1 then 'next' else 'previous') + 'ElementSibling'
-        next = $.x 'child::div[contains(@class,"post reply")]', post.parentNode[prop]
+        axis = if delta is +1 then 'following' else 'preceding'
+        next = $.x axis + '::div[contains(@class,"post reply")]', post
         return unless next
         return unless g.REPLY or $.x('ancestor::div[@class="thread"]', next) is thread
         rect = next.getBoundingClientRect()

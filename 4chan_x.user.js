@@ -1283,13 +1283,13 @@
       }
     },
     hl: function(delta, thread) {
-      var next, post, prop, rect, replies, reply, _i, _len;
+      var axis, next, post, rect, replies, reply, _i, _len;
       if (post = $('.reply.highlight', thread)) {
         $.removeClass(post, 'highlight');
         rect = post.getBoundingClientRect();
         if (rect.bottom >= 0 && rect.top <= d.documentElement.clientHeight) {
-          prop = (delta === +1 ? 'next' : 'previous') + 'ElementSibling';
-          next = $.x('child::div[contains(@class,"post reply")]', post.parentNode[prop]);
+          axis = delta === +1 ? 'following' : 'preceding';
+          next = $.x(axis + '::div[contains(@class,"post reply")]', post);
           if (!next) {
             return;
           }
