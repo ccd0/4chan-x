@@ -177,8 +177,8 @@
       nextThread: ['n', 'See next thread'],
       previousThread: ['p', 'See previous thread'],
       expandThread: ['e', 'Expand thread'],
-      openThreadTab: ['o', 'Open thread in current tab'],
-      openThread: ['O', 'Open thread in new tab'],
+      openThreadTab: ['o', 'Open thread in new tab'],
+      openThread: ['O', 'Open thread in current tab'],
       nextReply: ['J', 'Select next reply'],
       previousReply: ['K', 'Select previous reply'],
       hide: ['x', 'Hide thread']
@@ -1082,7 +1082,7 @@
             first: null,
             last: null
           };
-          Unread.update(true);
+          Unread.update(0);
           break;
         case Conf.expandImage:
           Keybinds.img(thread);
@@ -4099,9 +4099,6 @@
       if (Conf['Quick Reply']) {
         QR.init();
       }
-      if (Conf['Prefetch']) {
-        Prefetch.init();
-      }
       if (Conf['Image Expansion']) {
         ImageExpand.init();
       }
@@ -4112,6 +4109,9 @@
         Keybinds.init();
       }
       if (g.REPLY) {
+        if (Conf['Prefetch']) {
+          Prefetch.init();
+        }
         if (Conf['Thread Updater']) {
           Updater.init();
         }
