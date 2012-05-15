@@ -921,7 +921,7 @@ Keybinds =
       rect = post.getBoundingClientRect()
       if rect.bottom >= 0 and rect.top <= d.documentElement.clientHeight # We're at least partially visible
         axis = if delta is +1 then 'following' else 'preceding'
-        next = $.x axis + '::div[contains(@class,"post reply")]', post
+        next = $.x axis + '::div[contains(@class,"post reply")][1]', post
         return unless next
         return unless g.REPLY or $.x('ancestor::div[parent::div[@class="board"]]', next) is thread
         rect = next.getBoundingClientRect()
@@ -2609,7 +2609,7 @@ QuoteThreading =
     reply = replies[id]
 
     $.add qreply.el.parentNode, reply.el.parentNode
-    pEl = $.x 'preceding::div[contains(@class,"post reply")]/parent::div', reply.el.parentNode
+    pEl = $.x 'preceding::div[contains(@class,"post reply")][1]/parent::div', reply.el.parentNode
     pid = pEl.id[2..]
     preply = replies[pid]
 

@@ -1247,7 +1247,7 @@
         rect = post.getBoundingClientRect();
         if (rect.bottom >= 0 && rect.top <= d.documentElement.clientHeight) {
           axis = delta === +1 ? 'following' : 'preceding';
-          next = $.x(axis + '::div[contains(@class,"post reply")]', post);
+          next = $.x(axis + '::div[contains(@class,"post reply")][1]', post);
           if (!next) {
             return;
           }
@@ -3415,7 +3415,7 @@
       qreply = replies[qid];
       reply = replies[id];
       $.add(qreply.el.parentNode, reply.el.parentNode);
-      pEl = $.x('preceding::div[contains(@class,"post reply")]/parent::div', reply.el.parentNode);
+      pEl = $.x('preceding::div[contains(@class,"post reply")][1]/parent::div', reply.el.parentNode);
       pid = pEl.id.slice(2);
       preply = replies[pid];
       prev = reply.prev, next = reply.next;
