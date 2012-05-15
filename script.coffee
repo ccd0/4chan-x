@@ -830,7 +830,7 @@ Keybinds =
         Unread.replies =
           first: null
           last: null
-        Unread.update 0
+        Unread.update true
       # Images
       when Conf.expandImage
         Keybinds.img thread
@@ -2690,7 +2690,7 @@ Unread =
       replies.first = reply
     replies.last = reply
 
-    Unread.update 1
+    Unread.update Object.keys(replies).length is 3
 
   scroll: ->
     height = d.documentElement.clientHeight
@@ -2708,7 +2708,7 @@ Unread =
     replies.first = first
     Unread.replies = replies
 
-    Unread.update(0) if update
+    Unread.update Object.keys(replies).length is 2 if update
 
   setTitle: (count) ->
     if @scheduled
@@ -2720,7 +2720,7 @@ Unread =
       d.title = "(#{count}) #{Unread.title}"
     ), 5
 
-  update: (updateCount) ->
+  update: (updateFavicon) ->
     return unless g.REPLY
 
     count = Object.keys(@replies).length - 2
@@ -2728,7 +2728,7 @@ Unread =
     if Conf['Unread Count']
       @setTitle count
 
-    unless Conf['Unread Favicon'] and count is updateCount
+    unless Conf['Unread Favicon'] and updateFavicon
       return
 
     if $.engine is 'presto'

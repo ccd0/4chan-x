@@ -1082,7 +1082,7 @@
             first: null,
             last: null
           };
-          Unread.update(0);
+          Unread.update(true);
           break;
         case Conf.expandImage:
           Keybinds.img(thread);
@@ -3527,7 +3527,7 @@
         replies.first = reply;
       }
       replies.last = reply;
-      return Unread.update(1);
+      return Unread.update(Object.keys(replies).length === 3);
     },
     scroll: function() {
       var bottom, first, height, next, replies, update;
@@ -3548,7 +3548,7 @@
       replies.first = first;
       Unread.replies = replies;
       if (update) {
-        return Unread.update(0);
+        return Unread.update(Object.keys(replies).length === 2);
       }
     },
     setTitle: function(count) {
@@ -3562,7 +3562,7 @@
         return d.title = "(" + count + ") " + Unread.title;
       }), 5);
     },
-    update: function(updateCount) {
+    update: function(updateFavicon) {
       var count;
       if (!g.REPLY) {
         return;
@@ -3571,7 +3571,7 @@
       if (Conf['Unread Count']) {
         this.setTitle(count);
       }
-      if (!(Conf['Unread Favicon'] && count === updateCount)) {
+      if (!(Conf['Unread Favicon'] && updateFavicon)) {
         return;
       }
       if ($.engine === 'presto') {
