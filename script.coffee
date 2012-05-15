@@ -2878,14 +2878,20 @@ Prefetch =
       innerHTML:
         "<label>Prefetch Images<input type=checkbox id=prefetch></label>"
     input = $ 'input', controls
-    $.on input, 'change', Prefetch.fetch
+    $.on input, 'change', Prefetch.change
 
     $.prepend $.id('delform'), controls
 
-  fetch: ->
+  change: ->
+    $.off @, 'change', Prefetch.change
     for thumb in $$ 'a.fileThumb'
       img = $.el 'img',
         src: thumb.href
+    Main.callbacks.push Prefetch.node
+
+  node: (post) ->
+    img = $.el 'img',
+      src: post.img.parentNode.href
 
 ImageExpand =
   init: ->

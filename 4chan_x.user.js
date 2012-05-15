@@ -3769,20 +3769,26 @@
         innerHTML: "<label>Prefetch Images<input type=checkbox id=prefetch></label>"
       });
       input = $('input', controls);
-      $.on(input, 'change', Prefetch.fetch);
+      $.on(input, 'change', Prefetch.change);
       return $.prepend($.id('delform'), controls);
     },
-    fetch: function() {
-      var img, thumb, _i, _len, _ref, _results;
+    change: function() {
+      var img, thumb, _i, _len, _ref;
+      $.off(this, 'change', Prefetch.change);
       _ref = $$('a.fileThumb');
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thumb = _ref[_i];
-        _results.push(img = $.el('img', {
+        img = $.el('img', {
           src: thumb.href
-        }));
+        });
       }
-      return _results;
+      return Main.callbacks.push(Prefetch.node);
+    },
+    node: function(post) {
+      var img;
+      return img = $.el('img', {
+        src: post.img.parentNode.href
+      });
     }
   };
 
