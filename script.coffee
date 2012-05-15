@@ -3254,12 +3254,12 @@ Main =
     nodes = []
     for mutation in mutations
       for addedNode in mutation.addedNodes
-        if /\bpostContainer\b/.test addedNode.className
+        if (/\bpostContainer\b/.test addedNode.className) and not (/\bpostContainer\b/.test addedNode.parentNode.className)
           nodes.push Main.preParse addedNode
     Main.node nodes if nodes.length
   listener: (e) ->
     {target} = e
-    if /\bpostContainer\b/.test target.className
+    if (/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className)
       Main.node [Main.preParse target]
 
   namespace: '4chan_x.'

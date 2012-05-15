@@ -4250,7 +4250,7 @@
         _ref = mutation.addedNodes;
         for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
           addedNode = _ref[_j];
-          if (/\bpostContainer\b/.test(addedNode.className)) {
+          if ((/\bpostContainer\b/.test(addedNode.className)) && !(/\bpostContainer\b/.test(addedNode.parentNode.className))) {
             nodes.push(Main.preParse(addedNode));
           }
         }
@@ -4262,7 +4262,7 @@
     listener: function(e) {
       var target;
       target = e.target;
-      if (/\bpostContainer\b/.test(target.className)) {
+      if ((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) {
         return Main.node([Main.preParse(target)]);
       }
     },
