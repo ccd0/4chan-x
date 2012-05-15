@@ -2529,7 +2529,7 @@
           Updater.count.textContent = "+" + count;
           Updater.count.className = count ? 'new' : null;
         }
-        if (lastPost = nodes[nodes.length - 1]) {
+        if (lastPost = nodes[0]) {
           Updater.lastPost = lastPost;
         }
         $.add(Updater.thread, nodes.reverse());

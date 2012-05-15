@@ -1987,7 +1987,7 @@ Updater =
         Updater.count.textContent = "+#{count}"
         Updater.count.className   = if count then 'new' else null
 
-      if lastPost = nodes[nodes.length - 1]
+      if lastPost = nodes[0]
         Updater.lastPost = lastPost
       $.add Updater.thread, nodes.reverse()
       if scroll
