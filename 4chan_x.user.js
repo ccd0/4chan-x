@@ -2529,10 +2529,10 @@
           Updater.count.textContent = "+" + count;
           Updater.count.className = count ? 'new' : null;
         }
-        $.add(Updater.thread, nodes.reverse());
         if (lastPost = nodes[nodes.length - 1]) {
           Updater.lastPost = lastPost;
         }
+        $.add(Updater.thread, nodes.reverse());
         if (scroll) {
           return nodes[0].scrollIntoView();
         }
@@ -3423,8 +3423,10 @@
         return;
       }
       prev.next = next;
-      if (next != null) {
+      if (next) {
         next.prev = prev;
+      } else {
+        replies.last = prev;
       }
       next = preply.next;
       preply.next = reply;

@@ -1987,9 +1987,9 @@ Updater =
         Updater.count.textContent = "+#{count}"
         Updater.count.className   = if count then 'new' else null
 
-      $.add Updater.thread, nodes.reverse()
       if lastPost = nodes[nodes.length - 1]
         Updater.lastPost = lastPost
+      $.add Updater.thread, nodes.reverse()
       if scroll
         nodes[0].scrollIntoView()
 
@@ -2588,6 +2588,8 @@ QuoteThreading =
     #array implementation is very awkward - mid-array inserts, loop to find
     #quoted post, loop to find inserted post(!), loop to find distance from
     #threaded post to thread root
+    #
+    #of course, implementing your own data structure can be awkward...
 
     {quotes, id} = post
     {replies} = Unread
@@ -2614,7 +2616,10 @@ QuoteThreading =
     {prev, next} = reply
     return if preply is prev #order has not been changed; don't change anything
     prev.next = next
-    next?.prev = prev
+    if next
+      next.prev = prev
+    else
+      replies.last = prev
 
     {next} = preply
     preply.next = reply
