@@ -3203,7 +3203,7 @@
             $.addClass(el, 'qphl');
           }
         }
-        replyID = $.x('ancestor::div[contains(@class,"postContainer")]', this).id.slice(2);
+        replyID = $.x('ancestor::div[contains(@class,"postContainer")]', this).id.match(/\d+$/)[0];
         _ref = $$('.quotelink, .backlink', qp);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];

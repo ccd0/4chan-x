@@ -2431,7 +2431,7 @@ QuotePreview =
           $.addClass el.parentNode, 'qphl'
         else
           $.addClass el, 'qphl'
-      replyID = $.x('ancestor::div[contains(@class,"postContainer")]', @).id[2..]
+      replyID = $.x('ancestor::div[contains(@class,"postContainer")]', @).id.match(/\d+$/)[0]
       for quote in $$ '.quotelink, .backlink', qp
         if quote.hash[2..] is replyID
           $.addClass quote, 'forwardlink'
