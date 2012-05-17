@@ -384,17 +384,19 @@ $$ = (selector, root=d.body) ->
 Markdown =
   format: (text) ->
     tag_patterns =
-      bi: /(\*\*\*|___)(?=\S)([^\r\n]*?\S)\1/g
-      b: /(\*\*|__)(?=\S)([^\r\n]*?\S)\1/g
-      i: /(\*|_)(?=\S)([^\r\n]*?\S)\1/g
-      code: /(`)(?=\S)([^\r\n]*?\S)\1/g
+      bi:   /(\\?\*\*\*|___)(?=\S)(.*?\S)\\?\1/g,
+      b:    /(\\?\*\*|__)(?=\S)(.*?\S)\\?\1/g,
+      i:    /(\\?\*|_)(?=\S)(.*?\S)\\?\1/g,
+      code: /(\\?(?:```|`))(?=\S)([\s\S]*?\S)\\?\1/g
 
     for tag, pattern of tag_patterns
       text = text.replace pattern, Markdown.unicode_convert
     text
 
   unicode_convert: (str, tag, inner) ->
-    if tag is "_" or tag is "*"
+    if tag[0] is '\\'
+      return str.replace /\\/g, ''
+    else if tag is "_" or tag is "*"
       fmt = "i"
     else if tag is "__" or tag is "**"
       fmt = "b"

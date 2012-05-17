@@ -506,10 +506,10 @@
     format: function(text) {
       var pattern, tag, tag_patterns;
       tag_patterns = {
-        bi: /(\*\*\*|___)(?=\S)([^\r\n]*?\S)\1/g,
-        b: /(\*\*|__)(?=\S)([^\r\n]*?\S)\1/g,
-        i: /(\*|_)(?=\S)([^\r\n]*?\S)\1/g,
-        code: /(`)(?=\S)([^\r\n]*?\S)\1/g
+        bi: /(\\?\*\*\*|___)(?=\S)(.*?\S)\\?\1/g,
+        b: /(\\?\*\*|__)(?=\S)(.*?\S)\\?\1/g,
+        i: /(\\?\*|_)(?=\S)(.*?\S)\\?\1/g,
+        code: /(\\?(?:```|`))(?=\S)([\s\S]*?\S)\\?\1/g
       };
       for (tag in tag_patterns) {
         pattern = tag_patterns[tag];
@@ -519,7 +519,9 @@
     },
     unicode_convert: function(str, tag, inner) {
       var c, charcode, charcodes, codepoints, codes, fmt, i, unicode_text;
-      if (tag === "_" || tag === "*") {
+      if (tag[0] === '\\') {
+        return str.replace(/\\/g, '');
+      } else if (tag === "_" || tag === "*") {
         fmt = "i";
       } else if (tag === "__" || tag === "**") {
         fmt = "b";
