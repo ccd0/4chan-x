@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        3.1.0
+// @version        3.2.0
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>, James Campos <james.r.campos@gmail.com>
  * http://aeosynth.github.com/4chan-x/
- * 4chan X 3.1.0
+ * 4chan X 3.2.0
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -4378,7 +4378,7 @@
       }
     },
     namespace: '4chan_x.',
-    version: '3.1.0',
+    version: '3.2.0',
     callbacks: [],
     css: '\
 /* dialog styling */\

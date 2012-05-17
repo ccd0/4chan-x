@@ -1,4 +1,6 @@
 master
+
+3.2.0
 - Anorov
   'Markdown':                     [false, 'Code, italic, bold, italic bold - `, *, **, ***, respectively. _ can be used instead of *']
 
