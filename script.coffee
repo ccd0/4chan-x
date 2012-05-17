@@ -387,7 +387,7 @@ Markdown =
       bi:   /(\\?\*\*\*|___)(?=\S)(.*?\S)\\?\1/g,
       b:    /(\\?\*\*|__)(?=\S)(.*?\S)\\?\1/g,
       i:    /(\\?\*|_)(?=\S)(.*?\S)\\?\1/g,
-      code: /(\\?(?:```|`))(?=\S)([\s\S]*?\S)\\?\1/g
+      code: /(\\?(?:```|`))([\s\S]*?\S)\\?\1/g
 
     for tag, pattern of tag_patterns
       text = text.replace pattern, Markdown.unicode_convert
