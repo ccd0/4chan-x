@@ -420,7 +420,7 @@ Markdown =
       else if charcode >= 65 and charcode <= 90
         charcode - 65 + codepoints[fmt][1]
       else if charcode >= 97 and charcode <= 122
-        if charcode is 104 and tag is "i"
+        if charcode is 104 and fmt is "i"
           #http://blogs.msdn.com/b/michkap/archive/2006/04/21/580328.aspx
           #mathematical small h -> planck constant
           0x210E
@@ -430,7 +430,9 @@ Markdown =
         charcode
 
     unicode_text = codes.map(Markdown.ucs2_encode).join ""
-    unicode_text = unicode_text.replace(/\x20/g, "\xA0")  if fmt is "code"
+    if fmt is 'code'
+      unicode_text = unicode_text.replace /\x20/g, '\xA0'
+      unicode_text = unicode_text.replace /\n/g, '\xA0\n'
     unicode_text
 
   ucs2_encode: (value) ->

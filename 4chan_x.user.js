@@ -557,7 +557,7 @@
           } else if (charcode >= 65 && charcode <= 90) {
             _results.push(charcode - 65 + codepoints[fmt][1]);
           } else if (charcode >= 97 && charcode <= 122) {
-            if (charcode === 104 && tag === "i") {
+            if (charcode === 104 && fmt === "i") {
               _results.push(0x210E);
             } else {
               _results.push(charcode - 97 + codepoints[fmt][2]);
@@ -569,8 +569,9 @@
         return _results;
       })();
       unicode_text = codes.map(Markdown.ucs2_encode).join("");
-      if (fmt === "code") {
-        unicode_text = unicode_text.replace(/\x20/g, "\xA0");
+      if (fmt === 'code') {
+        unicode_text = unicode_text.replace(/\x20/g, '\xA0');
+        unicode_text = unicode_text.replace(/\n/g, '\xA0\n');
       }
       return unicode_text;
     },
