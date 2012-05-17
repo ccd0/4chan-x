@@ -2511,7 +2511,9 @@ QuoteInline =
     clone = $.el 'div',
       className: 'postContainer inline'
       id: "i_pc#{id}"
-    $.add clone, el.cloneNode true
+    post = el.cloneNode true
+    post.hidden = false
+    $.add clone, post
     for node in $$ '[id]', clone
       # Don't mess with other features
       node.id = "i_#{node.id}"
@@ -2541,7 +2543,7 @@ QuotePreview =
           $.addClass el.parentNode, 'qphl'
         else
           $.addClass el, 'qphl'
-      replyID = $.x('ancestor::div[contains(@class,"postContainer")]', @).id[2..]
+      replyID = $.x('ancestor::div[contains(@class,"postContainer")]', @).id.match(/\d+$/)[0]
       for quote in $$ '.quotelink, .backlink', qp
         if quote.hash[2..] is replyID
           $.addClass quote, 'forwardlink'
@@ -2651,7 +2653,7 @@ Quotify =
           # \u00A0 is nbsp
           textContent: "#{quote}\u00A0(Dead)"
 
-        if board is g.BOARD and $.id id
+        if board is g.BOARD and $.id "#p#{id}"
           a.href      = "#p#{id}"
           a.className = 'quotelink'
           a.setAttribute 'onclick', "replyhl('#{id}');"
@@ -3719,13 +3721,16 @@ div.opContainer {
   opacity: .5;
 }
 .inline {
-  overflow: hidden;
   background-color: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(128, 128, 128, 0.5);
+  display: table;
+  margin: 2px;
 }
 .inline .post {
   background: none;
   border: none;
+  margin: 0;
+  padding: 0;
 }
 .filter_highlight.thread > .opContainer {
   box-shadow: inset 5px 0 rgba(255,0,0,0.5);
