@@ -2192,12 +2192,12 @@ Anonymize =
     Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
-    name = $ '.name', post.el
-    name.textContent = 'Anonymous'
-    if (trip = name.nextElementSibling) and trip.className is 'postertrip'
-      $.rm trip
-    if (parent = name.parentNode).className is 'useremail' and not /^sage$/i.test parent.pathname
-      $.replace parent, name
+    for name in $$ '.name', post.el #we mobile now
+      name.textContent = 'Anonymous'
+      if (trip = name.nextElementSibling) and trip.className is 'postertrip'
+        $.rm trip
+      if (parent = name.parentNode).className is 'useremail' and not /^sage$/i.test parent.pathname
+        $.replace parent, name
 
 Sauce =
   init: ->

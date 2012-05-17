@@ -2790,18 +2790,25 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var name, parent, trip;
+      var name, parent, trip, _i, _len, _ref, _results;
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      name = $('.name', post.el);
-      name.textContent = 'Anonymous';
-      if ((trip = name.nextElementSibling) && trip.className === 'postertrip') {
-        $.rm(trip);
+      _ref = $$('.name', post.el);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        name = _ref[_i];
+        name.textContent = 'Anonymous';
+        if ((trip = name.nextElementSibling) && trip.className === 'postertrip') {
+          $.rm(trip);
+        }
+        if ((parent = name.parentNode).className === 'useremail' && !/^sage$/i.test(parent.pathname)) {
+          _results.push($.replace(parent, name));
+        } else {
+          _results.push(void 0);
+        }
       }
-      if ((parent = name.parentNode).className === 'useremail' && !/^sage$/i.test(parent.pathname)) {
-        return $.replace(parent, name);
-      }
+      return _results;
     }
   };
 
