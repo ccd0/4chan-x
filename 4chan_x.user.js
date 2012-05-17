@@ -509,7 +509,7 @@
         bi: /(\\?\*\*\*|___)(?=\S)(.*?\S)\\?\1/g,
         b: /(\\?\*\*|__)(?=\S)(.*?\S)\\?\1/g,
         i: /(\\?\*|_)(?=\S)(.*?\S)\\?\1/g,
-        code: /(\\?(?:```|`))([\s\S]*?\S)\\?\1/g
+        code: /(\\?`)([\s\S]+?)\\?\1/g
       };
       for (tag in tag_patterns) {
         pattern = tag_patterns[tag];
@@ -569,7 +569,7 @@
         return _results;
       })();
       unicode_text = codes.map(Markdown.ucs2_encode).join("");
-      if (tag === "code") {
+      if (fmt === "code") {
         unicode_text = unicode_text.replace(/\x20/g, "\xA0");
       }
       return unicode_text;

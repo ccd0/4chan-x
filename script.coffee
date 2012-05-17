@@ -387,7 +387,7 @@ Markdown =
       bi:   /(\\?\*\*\*|___)(?=\S)(.*?\S)\\?\1/g,
       b:    /(\\?\*\*|__)(?=\S)(.*?\S)\\?\1/g,
       i:    /(\\?\*|_)(?=\S)(.*?\S)\\?\1/g,
-      code: /(\\?(?:```|`))([\s\S]*?\S)\\?\1/g
+      code: /(\\?`)([\s\S]+?)\\?\1/g
 
     for tag, pattern of tag_patterns
       text = text.replace pattern, Markdown.unicode_convert
@@ -430,7 +430,7 @@ Markdown =
         charcode
 
     unicode_text = codes.map(Markdown.ucs2_encode).join ""
-    unicode_text = unicode_text.replace(/\x20/g, "\xA0")  if tag is "code"
+    unicode_text = unicode_text.replace(/\x20/g, "\xA0")  if fmt is "code"
     unicode_text
 
   ucs2_encode: (value) ->
