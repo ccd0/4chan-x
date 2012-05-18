@@ -1750,7 +1750,7 @@ Options =
       ul = $.el 'ul',
         textContent: key
       for key, arr of obj
-        checked = if Conf[key] then 'checked' else ''
+        checked = if $.get(key, Conf[key]) then 'checked' else ''
         description = arr[1]
         li = $.el 'li',
           innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
@@ -1767,13 +1767,13 @@ Options =
 
     #filter & sauce
     for ta in $$ 'textarea', dialog
-      ta.textContent = Conf[ta.name]
+      ta.textContent = $.get ta.name, Conf[ta.name]
       $.on ta, 'change', $.cb.value
 
     #rice
-    (back         = $ '[name=backlink]', dialog).value = Conf['backlink']
-    (time         = $ '[name=time]',     dialog).value = Conf['time']
-    (fileInfo     = $ '[name=fileInfo]', dialog).value = Conf['fileInfo']
+    (back     = $ '[name=backlink]', dialog).value = $.get 'backlink', Conf['backlink']
+    (time     = $ '[name=time]',     dialog).value = $.get 'time',     Conf['time']
+    (fileInfo = $ '[name=fileInfo]', dialog).value = $.get 'fileInfo', Conf['fileInfo']
     $.on back, 'keyup', $.cb.value
     $.on back, 'keyup', Options.backlink
     $.on time, 'keyup', $.cb.value
@@ -1781,7 +1781,7 @@ Options =
     $.on fileInfo, 'keyup', $.cb.value
     $.on fileInfo, 'keyup', Options.fileInfo
     favicon = $ 'select', dialog
-    favicon.value = Conf['favicon']
+    favicon.value = $.get 'favicon', Conf['favicon']
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
 
@@ -1790,7 +1790,7 @@ Options =
       tr = $.el 'tr',
         innerHTML: "<td>#{arr[1]}</td><td><input name=#{key}></td>"
       input = $ 'input', tr
-      input.value = Conf[key]
+      input.value = $.get key, Conf[key]
       $.on input, 'keydown', Options.keybind
       $.add $('#keybinds_tab + div tbody', dialog), tr
 
@@ -1798,7 +1798,7 @@ Options =
     indicators = {}
     for indicator in $$ '.warning', dialog
       key = indicator.firstChild.textContent
-      indicator.hidden = Conf[key]
+      indicator.hidden = $.get key, Conf[key]
       indicators[key] = indicator
       $.on $("[name='#{key}']", dialog), 'click', ->
         indicators[@name].hidden = @checked

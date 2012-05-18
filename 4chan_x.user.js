@@ -2257,7 +2257,7 @@
         });
         for (key in obj) {
           arr = obj[key];
-          checked = Conf[key] ? 'checked' : '';
+          checked = $.get(key, Conf[key]) ? 'checked' : '';
           description = arr[1];
           li = $.el('li', {
             innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
@@ -2277,12 +2277,12 @@
       _ref1 = $$('textarea', dialog);
       for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
         ta = _ref1[_i];
-        ta.textContent = Conf[ta.name];
+        ta.textContent = $.get(ta.name, Conf[ta.name]);
         $.on(ta, 'change', $.cb.value);
       }
-      (back = $('[name=backlink]', dialog)).value = Conf['backlink'];
-      (time = $('[name=time]', dialog)).value = Conf['time'];
-      (fileInfo = $('[name=fileInfo]', dialog)).value = Conf['fileInfo'];
+      (back = $('[name=backlink]', dialog)).value = $.get('backlink', Conf['backlink']);
+      (time = $('[name=time]', dialog)).value = $.get('time', Conf['time']);
+      (fileInfo = $('[name=fileInfo]', dialog)).value = $.get('fileInfo', Conf['fileInfo']);
       $.on(back, 'keyup', $.cb.value);
       $.on(back, 'keyup', Options.backlink);
       $.on(time, 'keyup', $.cb.value);
@@ -2290,7 +2290,7 @@
       $.on(fileInfo, 'keyup', $.cb.value);
       $.on(fileInfo, 'keyup', Options.fileInfo);
       favicon = $('select', dialog);
-      favicon.value = Conf['favicon'];
+      favicon.value = $.get('favicon', Conf['favicon']);
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', Options.favicon);
       _ref2 = Config.hotkeys;
@@ -2300,7 +2300,7 @@
           innerHTML: "<td>" + arr[1] + "</td><td><input name=" + key + "></td>"
         });
         input = $('input', tr);
-        input.value = Conf[key];
+        input.value = $.get(key, Conf[key]);
         $.on(input, 'keydown', Options.keybind);
         $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
@@ -2309,7 +2309,7 @@
       for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
         indicator = _ref3[_j];
         key = indicator.firstChild.textContent;
-        indicator.hidden = Conf[key];
+        indicator.hidden = $.get(key, Conf[key]);
         indicators[key] = indicator;
         $.on($("[name='" + key + "']", dialog), 'click', function() {
           return indicators[this.name].hidden = this.checked;
