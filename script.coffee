@@ -2099,7 +2099,8 @@ Sauce =
     @links = []
     for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
-      @links.push @createSauceLink link
+      # .trim() is there to fix Opera reading two different line breaks.
+      @links.push @createSauceLink link.trim()
     return unless @links.length
     Main.callbacks.push @node
 

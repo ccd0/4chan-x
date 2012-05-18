@@ -2682,7 +2682,7 @@
         if (link[0] === '#') {
           continue;
         }
-        this.links.push(this.createSauceLink(link));
+        this.links.push(this.createSauceLink(link.trim()));
       }
       if (!this.links.length) {
         return;
