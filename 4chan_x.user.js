@@ -2658,7 +2658,7 @@
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      name = $('.name', post.el);
+      name = $('.postInfo .name', post.el);
       name.textContent = 'Anonymous';
       if ((trip = name.nextElementSibling) && trip.className === 'postertrip') {
         $.rm(trip);

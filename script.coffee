@@ -2086,7 +2086,7 @@ Anonymize =
     Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
-    name = $ '.name', post.el
+    name = $ '.postInfo .name', post.el
     name.textContent = 'Anonymous'
     if (trip = name.nextElementSibling) and trip.className is 'postertrip'
       $.rm trip
@@ -2859,6 +2859,7 @@ ImageExpand =
   expand: (thumb, url) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     return if $.x 'ancestor-or-self::*[@hidden]', thumb
+
     thumb.hidden = true
     if img = thumb.nextSibling
       # Expand already loaded picture
