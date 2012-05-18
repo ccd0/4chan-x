@@ -3775,7 +3775,8 @@
     },
     contract: function(thumb) {
       thumb.hidden = false;
-      return thumb.nextSibling.hidden = true;
+      thumb.nextSibling.hidden = true;
+      return $.removeClass(thumb.parentNode.parentNode.parentNode, 'image_expanded');
     },
     expand: function(thumb, url) {
       var a, img;
@@ -3783,6 +3784,7 @@
         return;
       }
       thumb.hidden = true;
+      $.addClass(thumb.parentNode.parentNode.parentNode, 'image_expanded');
       if (img = thumb.nextSibling) {
         img.hidden = false;
         return;

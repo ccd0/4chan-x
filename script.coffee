@@ -2856,12 +2856,13 @@ ImageExpand =
   contract: (thumb) ->
     thumb.hidden = false
     thumb.nextSibling.hidden = true
+    $.removeClass thumb.parentNode.parentNode.parentNode, 'image_expanded'
 
   expand: (thumb, url) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     return if $.x 'ancestor-or-self::*[@hidden]', thumb
-
     thumb.hidden = true
+    $.addClass thumb.parentNode.parentNode.parentNode, 'image_expanded'
     if img = thumb.nextSibling
       # Expand already loaded picture
       img.hidden = false
