@@ -1471,8 +1471,10 @@ QR =
     QR.abort()
     reply = QR.replies[0]
 
+    threadID = g.THREAD_ID or $('select', QR.el).value
+
     # prevent errors
-    unless reply.com or reply.file
+    unless threadID is 'new' and reply.file or threadID isnt 'new' and (reply.com or reply.file)
       err = 'No file selected.'
     else
       # get oldest valid captcha
@@ -1498,8 +1500,6 @@ QR =
       QR.error err
       return
     QR.cleanError()
-
-    threadID = g.THREAD_ID or $('select', QR.el).value
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1

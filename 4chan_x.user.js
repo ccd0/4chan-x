@@ -1951,7 +1951,8 @@
       }
       QR.abort();
       reply = QR.replies[0];
-      if (!(reply.com || reply.file)) {
+      threadID = g.THREAD_ID || $('select', QR.el).value;
+      if (!(threadID === 'new' && reply.file || threadID !== 'new' && (reply.com || reply.file))) {
         err = 'No file selected.';
       } else {
         captchas = $.get('captchas', []);
@@ -1980,7 +1981,6 @@
         return;
       }
       QR.cleanError();
-      threadID = g.THREAD_ID || $('select', QR.el).value;
       QR.cooldown.auto = QR.replies.length > 1;
       if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
         QR.hide();
