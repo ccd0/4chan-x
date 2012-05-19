@@ -2113,7 +2113,7 @@ Sauce =
         when '$2'
           "' + img.href + '"
         when '$3'
-          "' + img.firstChild.dataset.md5.replace(/\=*$/, '') + '"
+          "' + encodeURIComponent(img.firstChild.dataset.md5) + '"
         when '$4'
           g.BOARD
     href = Function 'img', "return '#{href}'"

@@ -2699,7 +2699,7 @@
           case '$2':
             return "' + img.href + '";
           case '$3':
-            return "' + img.firstChild.dataset.md5.replace(/\=*$/, '') + '";
+            return "' + encodeURIComponent(img.firstChild.dataset.md5) + '";
           case '$4':
             return g.BOARD;
         }
