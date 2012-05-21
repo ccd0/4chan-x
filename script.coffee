@@ -406,8 +406,14 @@ Markdown =
 
     #Unicode codepoints for the characters '0', 'A', and 'a'
     #http://en.wikipedia.org/wiki/Mathematical_Alphanumeric_Symbols
-    #i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
-    #fucking moot
+    ###
+    i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
+    if charcode is 104 and fmt is "i"
+      #http://blogs.msdn.com/b/michkap/archive/2006/04/21/580328.aspx
+      #mathematical small h -> planck constant
+      0x210E
+    else
+    ###
     codepoints =
       i:    [ 48, 9398, 9424 ] #bubbles
       b:    [ 0x1D7CE, 0x1D400, 0x1D41A ] #MATHEMATICAL BOLD
@@ -422,12 +428,7 @@ Markdown =
       else if charcode >= 65 and charcode <= 90
         charcode - 65 + codepoints[fmt][1]
       else if charcode >= 97 and charcode <= 122
-        if charcode is 104 and fmt is "i"
-          #http://blogs.msdn.com/b/michkap/archive/2006/04/21/580328.aspx
-          #mathematical small h -> planck constant
-          0x210E
-        else
-          charcode - 97 + codepoints[fmt][2]
+        charcode - 97 + codepoints[fmt][2]
       else
         charcode
 

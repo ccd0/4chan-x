@@ -532,6 +532,15 @@
           fmt = "code";
         }
       }
+      /*
+          i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
+          if charcode is 104 and fmt is "i"
+            #http://blogs.msdn.com/b/michkap/archive/2006/04/21/580328.aspx
+            #mathematical small h -> planck constant
+            0x210E
+          else
+      */
+
       codepoints = {
         i: [48, 9398, 9424],
         b: [0x1D7CE, 0x1D400, 0x1D41A],
@@ -557,11 +566,7 @@
           } else if (charcode >= 65 && charcode <= 90) {
             _results.push(charcode - 65 + codepoints[fmt][1]);
           } else if (charcode >= 97 && charcode <= 122) {
-            if (charcode === 104 && fmt === "i") {
-              _results.push(0x210E);
-            } else {
-              _results.push(charcode - 97 + codepoints[fmt][2]);
-            }
+            _results.push(charcode - 97 + codepoints[fmt][2]);
           } else {
             _results.push(charcode);
           }
