@@ -2252,11 +2252,11 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         home = _ref[_i];
         a = $.el('a', {
-          textContent: '4chan X Settings',
+          textContent: '4chan X',
           href: 'javascript:;'
         });
         $.on(a, 'click', Options.dialog);
-        $.replace(home.lastElementChild, a);
+        $.replace(home.firstElementChild, a);
       }
       if (!$.get('firstrun')) {
         if (!Favicon.el) {

@@ -1724,10 +1724,10 @@ Options =
   init: ->
     for home in [$.id('navtopr'), $.id('navbotr')]
       a = $.el 'a',
-        textContent: '4chan X Settings'
+        textContent: '4chan X'
         href: 'javascript:;'
       $.on a, 'click', Options.dialog
-      $.replace home.lastElementChild, a
+      $.replace home.firstElementChild, a
     unless $.get 'firstrun'
       # Prevent race conditions
       Favicon.init() unless Favicon.el
