@@ -1099,11 +1099,8 @@ Nav =
 
 QR =
   init: ->
-    return unless $.id 'recaptcha_challenge_field_holder'
+    return unless $ '#postForm input[type=submit]'
     Main.callbacks.push @node
-    setTimeout @asyncInit
-
-  asyncInit: ->
     if Conf['Hide Original Post Form']
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on link.firstChild, 'click', ->
@@ -1111,12 +1108,6 @@ QR =
         $('select',   QR.el).value = 'new' unless g.REPLY
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
-
-    # Prevent original captcha input from being focused on reload.
-    script = $.el 'script',
-      textContent: 'Recaptcha.focus_response_field=function(){}'
-    $.add d.head, script
-    $.rm script
 
     if Conf['Persistent QR']
       QR.dialog()

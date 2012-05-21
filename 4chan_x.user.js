@@ -1473,14 +1473,11 @@
 
   QR = {
     init: function() {
-      if (!$.id('recaptcha_challenge_field_holder')) {
+      var link;
+      if (!$('#postForm input[type=submit]')) {
         return;
       }
       Main.callbacks.push(this.node);
-      return setTimeout(this.asyncInit);
-    },
-    asyncInit: function() {
-      var link, script;
       if (Conf['Hide Original Post Form']) {
         link = $.el('h1', {
           innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Quick Reply' : 'New Thread') + "</a>"
@@ -1494,11 +1491,6 @@
         });
         $.before($.id('postForm'), link);
       }
-      script = $.el('script', {
-        textContent: 'Recaptcha.focus_response_field=function(){}'
-      });
-      $.add(d.head, script);
-      $.rm(script);
       if (Conf['Persistent QR']) {
         QR.dialog();
         if (Conf['Auto Hide QR']) {
