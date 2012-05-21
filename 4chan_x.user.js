@@ -3190,6 +3190,9 @@
       if (/\binlined\b/.test(this.className)) {
         return;
       }
+      if (qp = $.id('qp')) {
+        $.rm(qp);
+      }
       qp = UI.el = $.el('div', {
         id: 'qp',
         className: 'post reply dialog'

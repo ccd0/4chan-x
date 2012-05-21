@@ -2422,6 +2422,8 @@ QuotePreview =
     return
   mouseover: (e) ->
     return if /\binlined\b/.test @className
+    if qp = $.id 'qp'
+      $.rm qp
     qp = UI.el = $.el 'div',
       id: 'qp'
       className: 'post reply dialog'
