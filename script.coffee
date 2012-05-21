@@ -475,7 +475,7 @@ Filter =
           return
 
         # Highlight
-        $.addClass (if isOP then root.parentNode else root), result[0]
+        $.addClass root, result[0]
         if isOP and result[1] and not g.REPLY
           # Put the highlighted OPs' thread on top of the board page...
           thisThread = root.parentNode
@@ -3533,7 +3533,7 @@ div.opContainer {
   margin: 0;
   padding: 0;
 }
-.filter_highlight.thread > .opContainer {
+.opContainer.filter_highlight {
   box-shadow: inset 5px 0 rgba(255,0,0,0.5);
 }
 .filter_highlight > .reply {

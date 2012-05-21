@@ -592,7 +592,7 @@
             }
             return;
           }
-          $.addClass((isOP ? root.parentNode : root), result[0]);
+          $.addClass(root, result[0]);
           if (isOP && result[1] && !g.REPLY) {
             thisThread = root.parentNode;
             if (firstThread = $('div[class=thread]')) {
@@ -4533,7 +4533,7 @@ div.opContainer {\
   margin: 0;\
   padding: 0;\
 }\
-.filter_highlight.thread > .opContainer {\
+.opContainer.filter_highlight {\
   box-shadow: inset 5px 0 rgba(255,0,0,0.5);\
 }\
 .filter_highlight > .reply {\
