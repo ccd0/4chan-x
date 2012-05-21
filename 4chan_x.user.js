@@ -1473,7 +1473,7 @@
 
   QR = {
     init: function() {
-      var link;
+      var link, script;
       if (!$('#postForm input[type=submit]')) {
         return;
       }
@@ -1491,6 +1491,11 @@
         });
         $.before($.id('postForm'), link);
       }
+      script = $.el('script', {
+        textContent: 'Recaptcha.focus_response_field=function(){}'
+      });
+      $.add(d.head, script);
+      $.rm(script);
       if (Conf['Persistent QR']) {
         QR.dialog();
         if (Conf['Auto Hide QR']) {

@@ -1109,6 +1109,12 @@ QR =
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 
+    # Prevent original captcha input from being focused on reload.
+    script = $.el 'script',
+      textContent: 'Recaptcha.focus_response_field=function(){}'
+    $.add d.head, script
+    $.rm script
+
     if Conf['Persistent QR']
       QR.dialog()
       QR.hide() if Conf['Auto Hide QR']
