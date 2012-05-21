@@ -533,7 +533,13 @@
         }
       }
       /*
-          i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
+            i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
+            b:    [ 0x1D7CE, 0x1D400, 0x1D41A ] #MATHEMATICAL BOLD
+            bi:   [ 0x1D7CE, 0x1D468, 0x1D482 ] #MATHEMATICAL BOLD ITALIC
+            code: [ 0x1D7F6, 0x1D670, 0x1D68A ] #MATHEMATICAL MONOSPACE
+            bi:   [ 48, 0x1d538, 0x1d552 ] #double struck
+            bi:   [ 48, 0x1d504, 0x1d51e ] #fraktur
+            bi:   [ 48, 0x1d49c, 0x1d4b6 ] #math script
           if charcode is 104 and fmt is "i"
             #http://blogs.msdn.com/b/michkap/archive/2006/04/21/580328.aspx
             #mathematical small h -> planck constant
@@ -543,9 +549,7 @@
 
       codepoints = {
         i: [48, 9398, 9424],
-        b: [0x1D7CE, 0x1D400, 0x1D41A],
-        bi: [0x1D7CE, 0x1D468, 0x1D482],
-        code: [0x1D7F6, 0x1D670, 0x1D68A]
+        b: [0xff10, 0xff21, 0xff41]
       };
       charcodes = (function() {
         var _i, _len, _results;
