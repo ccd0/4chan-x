@@ -406,9 +406,11 @@ Markdown =
 
     #Unicode codepoints for the characters '0', 'A', and 'a'
     #http://en.wikipedia.org/wiki/Mathematical_Alphanumeric_Symbols
+    #i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
+    #fucking moot
     codepoints =
+      i:    [ 48, 9398, 9424 ] #bubbles
       b:    [ 0x1D7CE, 0x1D400, 0x1D41A ] #MATHEMATICAL BOLD
-      i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
       bi:   [ 0x1D7CE, 0x1D468, 0x1D482 ] #MATHEMATICAL BOLD ITALIC
       code: [ 0x1D7F6, 0x1D670, 0x1D68A ] #MATHEMATICAL MONOSPACE
 
