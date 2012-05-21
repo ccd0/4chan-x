@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        3.2.3
+// @version        3.3.0
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>, James Campos <james.r.campos@gmail.com>
  * http://aeosynth.github.com/4chan-x/
- * 4chan X 3.2.3
+ * 4chan X 3.3.0
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Markdown, Nav, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, log, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, log, _base;
 
   Config = {
     main: {
@@ -126,8 +126,7 @@
         'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
-        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.'],
-        'Markdown': [false, 'Code, italic, bold, italic bold - `, *, **, ***, respectively. _ can be used instead of *']
+        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.']
       },
       Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
@@ -500,126 +499,6 @@
       root = d.body;
     }
     return Array.prototype.slice.call(root.querySelectorAll(selector));
-  };
-
-  Markdown = {
-    format: function(text) {
-      var pattern, tag, tag_patterns;
-      tag_patterns = {
-        bi: /(\\?\*\*\*|___)(?=\S)(.*?\S)\\?\1/g,
-        b: /(\\?\*\*|__)(?=\S)(.*?\S)\\?\1/g,
-        i: /(\\?\*|_)(?=\S)(.*?\S)\\?\1/g,
-        code: /(\\?`)([\s\S]+?)\\?\1/g
-      };
-      for (tag in tag_patterns) {
-        pattern = tag_patterns[tag];
-        text = text.replace(pattern, Markdown.unicode_convert);
-      }
-      return text;
-    },
-    unicode_convert: function(str, tag, inner) {
-      var c, charcode, charcodes, codepoints, codes, fmt, i, unicode_text;
-      if (tag[0] === '\\') {
-        return str.replace(/\\/g, '');
-      } else if (tag === "_" || tag === "*") {
-        fmt = "i";
-      } else if (tag === "__" || tag === "**") {
-        fmt = "b";
-      } else if (tag === "***" || tag === "___") {
-        fmt = "bi";
-      } else {
-        if (tag === "`" || tag === "```") {
-          fmt = "code";
-        }
-      }
-      /*
-            i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
-            b:    [ 0x1D7CE, 0x1D400, 0x1D41A ] #MATHEMATICAL BOLD
-            bi:   [ 0x1D7CE, 0x1D468, 0x1D482 ] #MATHEMATICAL BOLD ITALIC
-            code: [ 0x1D7F6, 0x1D670, 0x1D68A ] #MATHEMATICAL MONOSPACE
-            bi:   [ 48, 0x1d538, 0x1d552 ] #double struck
-            bi:   [ 48, 0x1d504, 0x1d51e ] #fraktur
-            bi:   [ 48, 0x1d49c, 0x1d4b6 ] #math script
-          if charcode is 104 and fmt is "i"
-            #http://blogs.msdn.com/b/michkap/archive/2006/04/21/580328.aspx
-            #mathematical small h -> planck constant
-            0x210E
-          else
-      */
-
-      codepoints = {
-        i: [48, 9398, 9424],
-        b: [0xff10, 0xff21, 0xff41]
-      };
-      charcodes = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (i = _i = 0, _len = inner.length; _i < _len; i = ++_i) {
-          c = inner[i];
-          _results.push(inner.charCodeAt(i));
-        }
-        return _results;
-      })();
-      codes = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = charcodes.length; _i < _len; _i++) {
-          charcode = charcodes[_i];
-          if (charcode >= 48 && charcode <= 57) {
-            _results.push(charcode - 48 + codepoints[fmt][0]);
-          } else if (charcode >= 65 && charcode <= 90) {
-            _results.push(charcode - 65 + codepoints[fmt][1]);
-          } else if (charcode >= 97 && charcode <= 122) {
-            _results.push(charcode - 97 + codepoints[fmt][2]);
-          } else {
-            _results.push(charcode);
-          }
-        }
-        return _results;
-      })();
-      unicode_text = codes.map(Markdown.ucs2_encode).join("");
-      if (fmt === 'code') {
-        unicode_text = unicode_text.replace(/\x20/g, '\xA0');
-        unicode_text = unicode_text.replace(/\n/g, '\xA0\n');
-      }
-      return unicode_text;
-    },
-    ucs2_encode: function(value) {
-      /*
-          From Punycode.js: https://github.com/bestiejs/punycode.js
-      
-          Copyright Mathias Bynens <http://mathiasbynens.be/>
-      
-          Permission is hereby granted, free of charge, to any person obtaining
-          a copy of this software and associated documentation files (the
-          "Software"), to deal in the Software without restriction, including
-          without limitation the rights to use, copy, modify, merge, publish,
-          distribute, sublicense, and/or sell copies of the Software, and to
-          permit persons to whom the Software is furnished to do so, subject to
-          the following conditions:
-      
-          The above copyright notice and this permission notice shall be
-          included in all copies or substantial portions of the Software.
-      
-          THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-          EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF`
-          MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-          NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-          LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-          OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-          WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-      */
-
-      var output;
-      output = "";
-      if (value > 0xFFFF) {
-        value -= 0x10000;
-        output += String.fromCharCode(value >>> 10 & 0x3FF | 0xD800);
-        value = 0xDC00 | value & 0x3FF;
-      }
-      output += String.fromCharCode(value);
-      return output;
-    }
   };
 
   Filter = {
@@ -2141,7 +2020,7 @@
         name: reply.name,
         email: reply.email,
         sub: reply.sub,
-        com: Conf['Markdown'] ? Markdown.format(reply.com) : reply.com,
+        com: reply.com,
         upfile: reply.file,
         spoiler: reply.spoiler,
         mode: 'regist',
@@ -4389,7 +4268,7 @@
       }
     },
     namespace: '4chan_x.',
-    version: '3.2.3',
+    version: '3.3.0',
     callbacks: [],
     css: '\
 /* dialog styling */\
