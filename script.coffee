@@ -2424,12 +2424,13 @@ QuotePreview =
     return if /\binlined\b/.test @className
     qp = UI.el = $.el 'div',
       id: 'qp'
-      className: 'reply dialog post'
+      className: 'post reply dialog'
     $.add d.body, qp
 
     id = @hash[2..]
     if el = $.id "p#{id}"
-      qp.innerHTML = el.innerHTML
+      qp.className += el.parentNode.className.replace /^.+(op|reply)Container/, ''
+      qp.innerHTML  = el.innerHTML
       if Conf['Quote Highlighting']
         if /\bop\b/.test el.className
           $.addClass el.parentNode, 'qphl'
@@ -2442,7 +2443,7 @@ QuotePreview =
     else
       qp.textContent = "Loading #{id}..."
       $.cache @pathname, -> QuotePreview.parse @, id
-      UI.hover e
+    UI.hover e
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
   mouseout: ->

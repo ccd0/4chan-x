@@ -3192,11 +3192,12 @@
       }
       qp = UI.el = $.el('div', {
         id: 'qp',
-        className: 'reply dialog post'
+        className: 'post reply dialog'
       });
       $.add(d.body, qp);
       id = this.hash.slice(2);
       if (el = $.id("p" + id)) {
+        qp.className += el.parentNode.className.replace(/^.+(op|reply)Container/, '');
         qp.innerHTML = el.innerHTML;
         if (Conf['Quote Highlighting']) {
           if (/\bop\b/.test(el.className)) {
@@ -3218,8 +3219,8 @@
         $.cache(this.pathname, function() {
           return QuotePreview.parse(this, id);
         });
-        UI.hover(e);
       }
+      UI.hover(e);
       $.on(this, 'mousemove', UI.hover);
       return $.on(this, 'mouseout click', QuotePreview.mouseout);
     },
