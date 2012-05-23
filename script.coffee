@@ -1535,7 +1535,7 @@ QR =
       name:    reply.name
       email:   reply.email
       sub:     reply.sub
-      com:     reply.com 
+      com:     reply.com
       upfile:  reply.file
       spoiler: reply.spoiler
       mode:    'regist'
@@ -1543,7 +1543,6 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
     
-    # ensure whitespace and indentation survives 4chan's posting process
     if Conf['Preserve Whitespace']
       post.com = post.com
         # tabs are converted to 8 spaces
@@ -1551,9 +1550,8 @@ QR =
         # spaces at the beginning of the line, or 2+ consecutive spaces
         # become non-breaking, using unicode U00A0. / /g is a coffeescript
         # syntax error, but is perfectly valid javascript, thus escaped.
-        .replace( /^ +| {2,}/gm, (it) -> 
+        .replace /^ +| {2,}/gm, (it) -> 
           it.replace `/ /g`, '\xa0' # change each space to nbsp
-        )
 
     form = new FormData()
     for name, val of post
