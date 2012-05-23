@@ -1534,14 +1534,24 @@ QR =
       name:    reply.name
       email:   reply.email
       sub:     reply.sub
-      com:     reply.com
+
+      # ensure whitespace and indentation survives 4chan's posting process
+      com:     
+        reply.com
+          # spaces at the beginning of the line, or 2+ consecutive spaces
+          # become non-breaking, using unicode U00A0. / /g is a coffeescript
+          # syntax error, but is perfectly valid javascript, thus escaped.
+          .replace( /^ +| {2,}/gm, (it) -> it.replace `/ /g`, '\xa0' )
+          # tabs are converted to 4 spaces, which is probably fine for anyone
+          .replace( /\t/g, '\xa0\xa0\xa0\xa0' )
+
       upfile:  reply.file
       spoiler: reply.spoiler
       mode:    'regist'
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
-
+    
     form = new FormData()
     for name, val of post
       form.append name, val if val

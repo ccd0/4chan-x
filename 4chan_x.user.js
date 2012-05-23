@@ -2020,7 +2020,9 @@
         name: reply.name,
         email: reply.email,
         sub: reply.sub,
-        com: reply.com,
+        com: reply.com.replace(/^ +| {2,}/gm, function(it) {
+          return it.replace(/ /g, '\xa0');
+        }).replace(/\t/g, '\xa0\xa0\xa0\xa0'),
         upfile: reply.file,
         spoiler: reply.spoiler,
         mode: 'regist',
