@@ -1,6 +1,4 @@
 master
-
-3.3.1
 - queue
   QR posting now preserves whitespace/indentation
   making code or ASCII art easier

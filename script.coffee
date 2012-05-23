@@ -46,6 +46,7 @@ Config =
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR.']
+      'Preserve Whitespace':          [true,  'Ensure original whitespace and indentation are preserved in posts']
     Quoting:
       'Quote Backlinks':              [true,  'Add quote backlinks']
       'OP Backlinks':                 [false, 'Add backlinks to the OP']
@@ -1534,17 +1535,7 @@ QR =
       name:    reply.name
       email:   reply.email
       sub:     reply.sub
-
-      # ensure whitespace and indentation survives 4chan's posting process
-      com:     
-        reply.com
-          # spaces at the beginning of the line, or 2+ consecutive spaces
-          # become non-breaking, using unicode U00A0. / /g is a coffeescript
-          # syntax error, but is perfectly valid javascript, thus escaped.
-          .replace( /^ +| {2,}/gm, (it) -> it.replace `/ /g`, '\xa0' )
-          # tabs are converted to 4 spaces, which is probably fine for anyone
-          .replace( /\t/g, '\xa0\xa0\xa0\xa0' )
-
+      com:     reply.com 
       upfile:  reply.file
       spoiler: reply.spoiler
       mode:    'regist'
@@ -1552,6 +1543,18 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
     
+    # ensure whitespace and indentation survives 4chan's posting process
+    if Conf['Preserve Whitespace']
+      post.com = post.com
+        # tabs are converted to 8 spaces
+        .replace( /\t/g, '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' )
+        # spaces at the beginning of the line, or 2+ consecutive spaces
+        # become non-breaking, using unicode U00A0. / /g is a coffeescript
+        # syntax error, but is perfectly valid javascript, thus escaped.
+        .replace( /^ +| {2,}/gm, (it) -> 
+          it.replace `/ /g`, '\xa0' # change each space to nbsp
+        )
+
     form = new FormData()
     for name, val of post
       form.append name, val if val
