@@ -2032,6 +2032,8 @@
       if (Conf['Preserve Whitespace']) {
         post.com = post.com.replace(/\t/g, '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0').replace(/^ +| {2,}/gm, function(it) {
           return it.replace(/ /g, '\xa0');
+        }).replace(/\n{3,}/g, function(it) {
+          return it.replace(/\n/g, '\n\x85');
         });
       }
       form = new FormData();

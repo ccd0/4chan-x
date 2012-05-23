@@ -1552,6 +1552,11 @@ QR =
         # syntax error, but is perfectly valid javascript, thus escaped.
         .replace /^ +| {2,}/gm, (it) -> 
           it.replace `/ /g`, '\xa0' # change each space to nbsp
+        # retain more than 3 newlines in a row by appending U0085, which
+        # prevents 4chan from collapsing the space, yet doesn't appear in
+        # the resulting HTML. 4chan allows <=2 newlines in a row already.
+        .replace /\n{3,}/g, (it) ->
+          it.replace /\n/g, '\n\x85' # NEL (Next Line)
 
     form = new FormData()
     for name, val of post
