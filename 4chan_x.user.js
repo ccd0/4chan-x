@@ -453,9 +453,6 @@
         event = _ref[_i];
         el.removeEventListener(event, handler, false);
       }
-    },
-    open: function(url) {
-      return (GM_openInTab || window.open)(location.protocol + url, '_blank');
     }
   });
 
@@ -479,6 +476,9 @@
       name = Main.namespace + name;
       localStorage.setItem(name, JSON.stringify(value));
       return GM_setValue(name, JSON.stringify(value));
+    },
+    open: function(url) {
+      return GM_openInTab(location.protocol + url);
     }
   } : {
     "delete": function(name) {
@@ -494,6 +494,9 @@
     },
     set: function(name, value) {
       return localStorage.setItem(Main.namespace + name, JSON.stringify(value));
+    },
+    open: function(url) {
+      return window.open(location.protocol + url, '_blank');
     }
   });
 
@@ -2170,7 +2173,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, fileInfo, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, ta, time, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var arr, back, checked, description, dialog, favicon, fileInfo, hiddenNum, hiddenThreads, indicator, indicators, input, key, left, li, obj, overlay, ta, time, top, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
       dialog = UI.dialog('options', null, '<div id=optionsbar>\
   <div id=credits>\
     <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>\
@@ -2346,8 +2349,16 @@
       $.add(d.body, overlay);
       dialog.style.visibility = 'hidden';
       $.add(d.body, dialog);
-      dialog.style.left = (window.innerWidth - dialog.getBoundingClientRect().width) / 2 + window.pageXOffset + 'px';
-      dialog.style.top = (window.innerHeight - dialog.getBoundingClientRect().height) / 2 + window.pageYOffset + 'px';
+      left = Math.floor((window.innerWidth - dialog.getBoundingClientRect().width) / 2 + window.pageXOffset);
+      top = Math.floor((window.innerHeight - dialog.getBoundingClientRect().height) / 2 + window.pageYOffset);
+      if (left < 0) {
+        left = 0;
+      }
+      if (top < 0) {
+        top = 0;
+      }
+      dialog.style.left = left;
+      dialog.style.top = top;
       dialog.style.visibility = 'visible';
       Options.backlink.call(back);
       Options.time.call(time);

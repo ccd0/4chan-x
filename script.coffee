@@ -346,8 +346,6 @@ $.extend $,
     for event in events.split ' '
       el.removeEventListener event, handler, false
     return
-  open: (url) ->
-    (GM_openInTab or window.open) location.protocol + url, '_blank'
 
 $.cache.requests = {}
 
@@ -367,6 +365,8 @@ $.extend $,
       # for `storage` events
       localStorage.setItem name, JSON.stringify value
       GM_setValue name, JSON.stringify value
+    open: (url) ->
+      GM_openInTab location.protocol + url
   else
     delete: (name) ->
       localStorage.removeItem Main.namespace + name
@@ -377,6 +377,8 @@ $.extend $,
         defaultValue
     set: (name, value) ->
       localStorage.setItem Main.namespace + name, JSON.stringify value
+    open: (url) ->
+      window.open location.protocol + url, '_blank'
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
@@ -1835,8 +1837,12 @@ Options =
     $.add d.body, overlay
     dialog.style.visibility = 'hidden'
     $.add d.body, dialog
-    dialog.style.left = (window.innerWidth  - dialog.getBoundingClientRect().width ) / 2 + window.pageXOffset + 'px'
-    dialog.style.top  = (window.innerHeight - dialog.getBoundingClientRect().height) / 2 + window.pageYOffset + 'px'
+    left = (window.innerWidth  - dialog.getBoundingClientRect().width ) / 2 + window.pageXOffset
+    top  = (window.innerHeight - dialog.getBoundingClientRect().height) / 2 + window.pageYOffset
+    left = 0 if left < 0
+    top  = 0 if top  < 0
+    dialog.style.left = left + 'px'
+    dialog.style.top  = top  + 'px'
     dialog.style.visibility = 'visible'
 
     Options.backlink.call back
