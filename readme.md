@@ -12,6 +12,6 @@
 
 - Edit the CoffeeScript source
 - Build the JavaScript
-- If the edits affect regular users, edit the changelog
+- Add a line to the changelog under `master` describing the changes
 - Fork the repo
 - Send a pull request
