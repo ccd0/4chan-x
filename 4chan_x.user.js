@@ -2350,7 +2350,7 @@
       });
       $.add(overlay, dialog);
       $.add(d.body, overlay);
-      d.body.style.setProperty('overflow', 'hidden', null);
+      d.body.style.setProperty('overflow', 'hidden', '!important');
       Options.backlink.call(back);
       Options.time.call(time);
       Options.fileInfo.call(fileInfo);
@@ -4577,7 +4577,7 @@ textarea.field {\
 }\
 #content {\
   height: 450px;\
-  overflow: auto;\
+  overflow-y: scroll;\
 }\
 #content textarea {\
   box-sizing: border-box;\
