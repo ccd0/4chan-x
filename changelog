@@ -2,6 +2,10 @@ master
 - queue
   QR posting now preserves whitespace/indentation
   making code or ASCII art easier
+- aeosynth
+  mv prefetch controls after imgexpand controls, instead of above
+  anonymize fetched quote previews
+  make the options dialog stationary, usable on opera mobile
 
 3.3.0
 - aeosynth
