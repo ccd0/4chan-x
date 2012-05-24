@@ -1837,7 +1837,6 @@ Options =
     $.on dialog,  'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
     $.add d.body, overlay
-    d.body.style.setProperty 'overflow', 'hidden', '!important'
 
     Options.backlink.call back
     Options.time.call     time
@@ -1846,7 +1845,6 @@ Options =
 
   close: ->
     $.rm this
-    d.body.style.removeProperty 'overflow'
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -3582,7 +3580,7 @@ textarea.field {
 }
 #content {
   height: 450px;
-  overflow-y: scroll;
+  overflow: auto;
 }
 #content textarea {
   box-sizing: border-box;

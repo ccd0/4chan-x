@@ -2350,15 +2350,13 @@
       });
       $.add(overlay, dialog);
       $.add(d.body, overlay);
-      d.body.style.setProperty('overflow', 'hidden', '!important');
       Options.backlink.call(back);
       Options.time.call(time);
       Options.fileInfo.call(fileInfo);
       return Options.favicon.call(favicon);
     },
     close: function() {
-      $.rm(this);
-      return d.body.style.removeProperty('overflow');
+      return $.rm(this);
     },
     clearHidden: function() {
       $["delete"]("hiddenReplies/" + g.BOARD + "/");
@@ -4577,7 +4575,7 @@ textarea.field {\
 }\
 #content {\
   height: 450px;\
-  overflow-y: scroll;\
+  overflow: auto;\
 }\
 #content textarea {\
   box-sizing: border-box;\
