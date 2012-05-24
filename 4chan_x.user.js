@@ -2349,16 +2349,16 @@
       $.add(d.body, overlay);
       dialog.style.visibility = 'hidden';
       $.add(d.body, dialog);
-      left = Math.floor((window.innerWidth - dialog.getBoundingClientRect().width) / 2 + window.pageXOffset);
-      top = Math.floor((window.innerHeight - dialog.getBoundingClientRect().height) / 2 + window.pageYOffset);
+      left = (window.innerWidth - dialog.getBoundingClientRect().width) / 2 + window.pageXOffset;
+      top = (window.innerHeight - dialog.getBoundingClientRect().height) / 2 + window.pageYOffset;
       if (left < 0) {
         left = 0;
       }
       if (top < 0) {
         top = 0;
       }
-      dialog.style.left = left;
-      dialog.style.top = top;
+      dialog.style.left = left + 'px';
+      dialog.style.top = top + 'px';
       dialog.style.visibility = 'visible';
       Options.backlink.call(back);
       Options.time.call(time);
@@ -3310,7 +3310,10 @@
         Time.node(post);
       }
       if (Conf['File Info Formatting']) {
-        return FileInfo.node(post);
+        FileInfo.node(post);
+      }
+      if (Conf['Anonymize']) {
+        return Anonymize.node(post);
       }
     }
   };

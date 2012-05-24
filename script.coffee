@@ -2518,6 +2518,8 @@ QuotePreview =
       Time.node     post
     if Conf['File Info Formatting']
       FileInfo.node post
+    if Conf['Anonymize']
+      Anonymize.node post
 
 QuoteOP =
   init: ->
