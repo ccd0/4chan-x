@@ -171,7 +171,7 @@ UI =
     el.innerHTML = html
     el.id = id
     el.style.cssText = if saved = localStorage["#{Main.namespace}#{id}.position"] then saved else position
-    el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
+    el.querySelector('.move')?.addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection
@@ -1668,10 +1668,8 @@ Options =
       Options.dialog()
 
   dialog: ->
-    dialog = $.el 'div'
-      id: 'options'
-      className: 'reply dialog'
-      innerHTML: '<div id=optionsbar>
+    dialog = UI.dialog 'options', null,
+      '<div id=optionsbar>
   <div id=credits>
     <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>
     | <a target=_blank href=https://raw.github.com/aeosynth/4chan-x/master/changelog>' + Main.version + '</a>
@@ -1834,9 +1832,12 @@ Options =
 
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', Options.close
-    $.on dialog,  'click', (e) -> e.stopPropagation()
-    $.add overlay, dialog
     $.add d.body, overlay
+    dialog.style.visibility = 'hidden'
+    $.add d.body, dialog
+    dialog.style.left = (window.innerWidth  - dialog.getBoundingClientRect().width ) / 2 + window.pageXOffset + 'px'
+    dialog.style.top  = (window.innerHeight - dialog.getBoundingClientRect().height) / 2 + window.pageYOffset + 'px'
+    dialog.style.visibility = 'visible'
 
     Options.backlink.call back
     Options.time.call     time
@@ -1844,7 +1845,8 @@ Options =
     Options.favicon.call  favicon
 
   close: ->
-    $.rm this
+    $.rm @nextSibling
+    $.rm @
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -3549,19 +3551,14 @@ textarea.field {
 #overlay {
   top: 0;
   right: 0;
-  left: 0;
-  bottom: 0;
-  text-align: center;
+  width: 100%;
+  height: 100%;
   background: rgba(0,0,0,.5);
   z-index: 1;
 }
-#overlay::after {
-  content: "";
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
-}
 #options {
+  z-index: 2;
+  position: absolute;
   display: inline-block;
   padding: 5px;
   text-align: left;
