@@ -1,4 +1,7 @@
 master
+- queue
+  QR posting now preserves whitespace/indentation
+  making code or ASCII art easier
 
 3.3.0
 - rm markdown (fuck you moot)
