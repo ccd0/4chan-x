@@ -3782,14 +3782,19 @@
       return this.dialog();
     },
     dialog: function() {
-      var controls, input;
-      controls = $.el('div', {
+      var controls, first, input;
+      controls = $.el('label', {
         id: 'prefetch',
-        innerHTML: "<label>Prefetch Images<input type=checkbox id=prefetch></label>"
+        innerHTML: "Prefetch Images<input type=checkbox id=prefetch>"
       });
       input = $('input', controls);
       $.on(input, 'change', Prefetch.change);
-      return $.prepend($.id('delform'), controls);
+      first = $.id('delform').firstElementChild;
+      if (first.id === 'imgControls') {
+        return $.after(first, controls);
+      } else {
+        return $.before(first, controls);
+      }
     },
     change: function() {
       var img, thumb, _i, _len, _ref;
@@ -3805,8 +3810,12 @@
     },
     node: function(post) {
       var img;
-      return img = $.el('img', {
-        src: post.img.parentNode.href
+      img = post.img;
+      if (!img) {
+        return;
+      }
+      return $.el('img', {
+        src: img.parentNode.href
       });
     }
   };
@@ -3964,7 +3973,7 @@
     },
     dialog: function() {
       var controls, imageType, select;
-      controls = $.el('div', {
+      controls = $.el('span', {
         id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
       });

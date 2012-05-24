@@ -2897,14 +2897,18 @@ Prefetch =
   init: ->
     @dialog()
   dialog: ->
-    controls = $.el 'div',
+    controls = $.el 'label',
       id: 'prefetch'
       innerHTML:
-        "<label>Prefetch Images<input type=checkbox id=prefetch></label>"
+        "Prefetch Images<input type=checkbox id=prefetch>"
     input = $ 'input', controls
     $.on input, 'change', Prefetch.change
 
-    $.prepend $.id('delform'), controls
+    first = $.id('delform').firstElementChild
+    if first.id is 'imgControls'
+      $.after first, controls
+    else
+      $.before first, controls
 
   change: ->
     $.off @, 'change', Prefetch.change
@@ -2914,8 +2918,10 @@ Prefetch =
     Main.callbacks.push Prefetch.node
 
   node: (post) ->
-    img = $.el 'img',
-      src: post.img.parentNode.href
+    {img} = post
+    return unless img
+    $.el 'img',
+      src: img.parentNode.href
 
 ImageExpand =
   init: ->
@@ -3020,7 +3026,7 @@ ImageExpand =
       type: 'head'
 
   dialog: ->
-    controls = $.el 'div',
+    controls = $.el 'span',
       id: 'imgControls'
       innerHTML:
         "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
