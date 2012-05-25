@@ -2744,7 +2744,7 @@ Redirect =
         "http://archive.foolz.us/#{board}/#{mode}/#{id}/"
       when 'lit'
         "http://fuuka.warosu.org/#{board}/#{mode}/#{id}"
-      when 'diy', 'g', 'sci'
+      when 'diy', 'g', 'k', 'sci'
         "https://archive.installgentoo.net/#{board}/#{mode}/#{id}"
       else
         if mode is 'thread'
