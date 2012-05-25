@@ -3345,7 +3345,7 @@
           nodes.push(a = $.el('a', {
             textContent: "" + quote + "\u00A0(Dead)"
           }));
-          if (board === g.BOARD && $.id("#p" + id)) {
+          if (board === g.BOARD && $.id("p" + id)) {
             a.href = "#p" + id;
             a.className = 'quotelink';
             a.setAttribute('onclick', "replyhl('" + id + "');");

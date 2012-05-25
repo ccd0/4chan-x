@@ -2548,7 +2548,7 @@ Quotify =
           # \u00A0 is nbsp
           textContent: "#{quote}\u00A0(Dead)"
 
-        if board is g.BOARD and $.id "#p#{id}"
+        if board is g.BOARD and $.id "p#{id}"
           a.href      = "#p#{id}"
           a.className = 'quotelink'
           a.setAttribute 'onclick', "replyhl('#{id}');"
