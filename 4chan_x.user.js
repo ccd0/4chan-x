@@ -3698,6 +3698,7 @@
           return "http://fuuka.warosu.org/" + board + "/" + mode + "/" + id;
         case 'diy':
         case 'g':
+        case 'k':
         case 'sci':
           return "https://archive.installgentoo.net/" + board + "/" + mode + "/" + id;
         default:
