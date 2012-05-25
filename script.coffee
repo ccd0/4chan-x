@@ -46,7 +46,6 @@ Config =
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR.']
-      'Preserve Whitespace':          [true,  'Ensure original whitespace and indentation are preserved in posts']
     Quoting:
       'Quote Backlinks':              [true,  'Add quote backlinks']
       'OP Backlinks':                 [false, 'Add backlinks to the OP']
@@ -1545,21 +1544,6 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
     
-    if Conf['Preserve Whitespace']
-      post.com = post.com
-        # tabs are converted to 8 spaces
-        .replace( /\t/g, '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' )
-        # spaces at the beginning of the line, or 2+ consecutive spaces
-        # become non-breaking, using unicode U00A0. / /g is a coffeescript
-        # syntax error, but is perfectly valid javascript, thus escaped.
-        .replace /^ +| {2,}/gm, (it) -> 
-          it.replace `/ /g`, '\xa0' # change each space to nbsp
-        # retain more than 3 newlines in a row by appending U0085, which
-        # prevents 4chan from collapsing the space, yet doesn't appear in
-        # the resulting HTML. 4chan allows <=2 newlines in a row already.
-        .replace /\n{3,}/g, (it) ->
-          it.replace /\n/g, '\n\x85' # NEL (Next Line)
-
     form = new FormData()
     for name, val of post
       form.append name, val if val
