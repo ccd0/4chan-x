@@ -1556,7 +1556,7 @@ QR =
     ###
     if Conf['Preserve Whitespace']
       post.com = post.com
-        .replace( /\t/g, '\x01 \x01 \x01 \x01 ' )
+        .replace( /\t/g, '        ' )
         .replace /^ +| {2,}/gm, (it) ->
           '\x01' + it.replace `/ /g`, ' \x01'
         .replace /\n{3,}/g, (it) ->

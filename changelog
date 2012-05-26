@@ -1,7 +1,9 @@
 master
+- aeosynth
+  tweak whitespace tabs
 
 3.6.2
--queue
+- queue
   whitespace preservation w/ invisible characters
 
 3.6.1

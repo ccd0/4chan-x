@@ -2045,7 +2045,7 @@
       */
 
       if (Conf['Preserve Whitespace']) {
-        post.com = post.com.replace(/\t/g, '\x01 \x01 \x01 \x01 ').replace(/^ +| {2,}/gm, function(it) {
+        post.com = post.com.replace(/\t/g, '        ').replace(/^ +| {2,}/gm, function(it) {
           return '\x01' + it.replace(/ /g, ' \x01');
         }).replace(/\n{3,}/g, function(it) {
           return it.replace(/\n/g, '\n\x01');
