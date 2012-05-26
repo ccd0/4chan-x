@@ -3289,7 +3289,7 @@ Main =
       Main.node [Main.preParse target]
 
   namespace: '4chan_x.'
-  version: '3.5.0'
+  version: '3.6.0'
   callbacks: []
   css: '
 /* dialog styling */
