@@ -138,7 +138,7 @@
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
         'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes'],
         'Forward Hiding': [true, 'Hide original posts of inlined backlinks'],
-        'Quote Threading': [false, 'Thread convsersations']
+        'Quote Threading': [false, 'Thread conversations']
       }
     },
     filter: {
