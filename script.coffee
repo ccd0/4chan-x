@@ -2735,12 +2735,12 @@ Redirect =
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     return unless Conf['404 Redirect']
     switch href[3]
-      when 'a', 'jp', 'm', 'tg', 'u', 'vg'
+      when 'a', 'co', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
   thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
     return unless Conf['404 Redirect'] or mode is 'post'
     switch board
-      when 'a', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
+      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
         "http://archive.foolz.us/#{board}/#{mode}/#{id}/"
       when 'lit'
         "http://fuuka.warosu.org/#{board}/#{mode}/#{id}"
