@@ -2036,9 +2036,9 @@
       };
       if (Conf['Preserve Whitespace']) {
         post.com = post.com.replace(/\t/g, '        ').replace(/^ +| {2,}/gm, function(it) {
-          return it.replace(/ /g, String.fromCharCode(12288));
+          return it.replace(/  /g, '▷ ');
         }).replace(/\n{3,}/g, function(it) {
-          return it.replace(/\n/g, '\n\x0b');
+          return it.replace(/\n/g, '\n▷');
         });
       }
       form = new FormData();

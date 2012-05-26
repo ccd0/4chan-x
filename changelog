@@ -1,4 +1,6 @@
 master
+- aeosynth + queue
+  fix whitespace preservation w/ visible characters
 
 3.6.0
 - aeosynth
