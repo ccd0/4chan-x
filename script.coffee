@@ -46,6 +46,7 @@ Config =
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR.']
+      'Preserve Whitespace':          [false, 'Preserve whitespace in posts using special characters']
     Quoting:
       'Quote Backlinks':              [true,  'Add quote backlinks']
       'OP Backlinks':                 [false, 'Add backlinks to the OP']
@@ -1544,6 +1545,15 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
     
+
+    if Conf['Preserve Whitespace']
+      post.com = post.com
+        .replace( /\t/g, '        ' )
+        .replace /^ +| {2,}/gm, (it) ->
+          it.replace `/ /g`, String.fromCharCode 12288
+        .replace /\n{3,}/g, (it) ->
+          it.replace /\n/g, '\n\x0b'
+
     form = new FormData()
     for name, val of post
       form.append name, val if val
