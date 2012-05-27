@@ -112,7 +112,8 @@ Config =
     '#http://imgur.com/upload?url=$2'
     '#http://omploader.org/upload?url1=$2'
     '# "View Same" in archives:'
-    '#http://archive.foolz.us/$4/image/$3/'
+    '#http://archive.foolz.us/search/image/$3/'
+    '#http://archive.foolz.us/$4/search/image/$3/'
     '#https://archive.installgentoo.net/$4/image/$3'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
@@ -483,7 +484,7 @@ Filter =
           return
 
         # Highlight
-        $.addClass (if isOP then root.parentNode else root), result[0]
+        $.addClass root, result[0]
         if isOP and result[1] and not Main.REPLY
           # Put the highlighted OPs' thread on top of the board page...
           thisThread = root.parentNode
@@ -1492,8 +1493,10 @@ QR =
     QR.abort()
     reply = QR.replies[0]
 
+    threadID = Main.THREAD_ID or $('select', QR.el).value
+
     # prevent errors
-    unless reply.com or reply.file
+    unless threadID is 'new' and reply.file or threadID isnt 'new' and (reply.com or reply.file)
       err = 'No file selected.'
     else
       # get oldest valid captcha
@@ -1519,8 +1522,6 @@ QR =
       QR.error err
       return
     QR.cleanError()
-
-    threadID = Main.THREAD_ID or $('select', QR.el).value
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1
@@ -2138,7 +2139,7 @@ Sauce =
         when '$2'
           "' + img.href + '"
         when '$3'
-          "' + img.firstChild.dataset.md5.replace(/\=*$/, '') + '"
+          "' + encodeURIComponent(img.firstChild.dataset.md5) + '"
         when '$4'
           Main.BOARD
     href = Function 'img', "return '#{href}'"
@@ -2448,14 +2449,17 @@ QuotePreview =
     return
   mouseover: (e) ->
     return if /\binlined\b/.test @className
+    if qp = $.id 'qp'
+      $.rm qp
     qp = UI.el = $.el 'div',
       id: 'qp'
-      className: 'reply dialog post'
+      className: 'post reply dialog'
     $.add d.body, qp
 
     id = @hash[2..]
     if el = $.id "p#{id}"
-      qp.innerHTML = el.innerHTML
+      qp.className += el.parentNode.className.replace /^.+(op|reply)Container/, ''
+      qp.innerHTML  = el.innerHTML
       if Conf['Quote Highlighting']
         if /\bop\b/.test el.className
           $.addClass el.parentNode, 'qphl'
@@ -2468,7 +2472,7 @@ QuotePreview =
     else
       qp.textContent = "Loading #{id}..."
       $.cache @pathname, -> QuotePreview.parse @, id
-      UI.hover e
+    UI.hover e
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
   mouseout: ->
@@ -2573,7 +2577,7 @@ Quotify =
           # \u00A0 is nbsp
           textContent: "#{quote}\u00A0(Dead)"
 
-        if board is Main.BOARD and $.id "#p#{id}"
+        if board is Main.BOARD and $.id "p#{id}"
           a.href      = "#p#{id}"
           a.className = 'quotelink'
           a.setAttribute 'onclick', "replyhl('#{id}');"
@@ -2822,12 +2826,12 @@ Redirect =
     # Do not use Main.BOARD, the image url can originate from a cross-quote.
     return unless Conf['404 Redirect']
     switch href[3]
-      when 'a', 'jp', 'm', 'tg', 'u', 'vg'
+      when 'a', 'co', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
   thread: (board=Main.BOARD, id=Main.THREAD_ID, mode='thread') ->
     return unless Conf['404 Redirect'] or mode is 'post'
     switch board
-      when 'a', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
+      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
         "http://archive.foolz.us/#{board}/#{mode}/#{id}/"
       when 'lit'
         "http://fuuka.warosu.org/#{board}/#{mode}/#{id}"
@@ -3679,7 +3683,7 @@ div.opContainer {
   margin: 0;
   padding: 0;
 }
-.filter_highlight.thread > .opContainer {
+.opContainer.filter_highlight {
   box-shadow: inset 5px 0 rgba(255,0,0,0.5);
 }
 .filter_highlight > .reply {

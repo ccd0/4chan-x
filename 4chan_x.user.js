@@ -154,7 +154,7 @@
       filesize: [''].join('\n'),
       md5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/$4/image/$3/', '#https://archive.installgentoo.net/$4/image/$3'].join('\n'),
+    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2', '#http://omploader.org/upload?url1=$2', '# "View Same" in archives:', '#http://archive.foolz.us/search/image/$3/', '#http://archive.foolz.us/$4/search/image/$3/', '#https://archive.installgentoo.net/$4/image/$3'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
@@ -608,7 +608,7 @@
             }
             return;
           }
-          $.addClass((isOP ? root.parentNode : root), result[0]);
+          $.addClass(root, result[0]);
           if (isOP && result[1] && !Main.REPLY) {
             thisThread = root.parentNode;
             if (firstThread = $('div[class=thread]')) {
@@ -1983,7 +1983,8 @@
       }
       QR.abort();
       reply = QR.replies[0];
-      if (!(reply.com || reply.file)) {
+      threadID = Main.THREAD_ID || $('select', QR.el).value;
+      if (!(threadID === 'new' && reply.file || threadID !== 'new' && (reply.com || reply.file))) {
         err = 'No file selected.';
       } else {
         captchas = $.get('captchas', []);
@@ -2012,7 +2013,6 @@
         return;
       }
       QR.cleanError();
-      threadID = Main.THREAD_ID || $('select', QR.el).value;
       QR.cooldown.auto = QR.replies.length > 1;
       if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
         QR.hide();
@@ -2733,7 +2733,7 @@
           case '$2':
             return "' + img.href + '";
           case '$3':
-            return "' + img.firstChild.dataset.md5.replace(/\=*$/, '') + '";
+            return "' + encodeURIComponent(img.firstChild.dataset.md5) + '";
           case '$4':
             return Main.BOARD;
         }
@@ -3229,13 +3229,17 @@
       if (/\binlined\b/.test(this.className)) {
         return;
       }
+      if (qp = $.id('qp')) {
+        $.rm(qp);
+      }
       qp = UI.el = $.el('div', {
         id: 'qp',
-        className: 'reply dialog post'
+        className: 'post reply dialog'
       });
       $.add(d.body, qp);
       id = this.hash.slice(2);
       if (el = $.id("p" + id)) {
+        qp.className += el.parentNode.className.replace(/^.+(op|reply)Container/, '');
         qp.innerHTML = el.innerHTML;
         if (Conf['Quote Highlighting']) {
           if (/\bop\b/.test(el.className)) {
@@ -3257,8 +3261,8 @@
         $.cache(this.pathname, function() {
           return QuotePreview.parse(this, id);
         });
-        UI.hover(e);
       }
+      UI.hover(e);
       $.on(this, 'mousemove', UI.hover);
       return $.on(this, 'mouseout click', QuotePreview.mouseout);
     },
@@ -3383,7 +3387,7 @@
           nodes.push(a = $.el('a', {
             textContent: "" + quote + "\u00A0(Dead)"
           }));
-          if (board === Main.BOARD && $.id("#p" + id)) {
+          if (board === Main.BOARD && $.id("p" + id)) {
             a.href = "#p" + id;
             a.className = 'quotelink';
             a.setAttribute('onclick', "replyhl('" + id + "');");
@@ -3663,6 +3667,7 @@
       }
       switch (href[3]) {
         case 'a':
+        case 'co':
         case 'jp':
         case 'm':
         case 'tg':
@@ -3686,6 +3691,7 @@
       }
       switch (board) {
         case 'a':
+        case 'co':
         case 'jp':
         case 'm':
         case 'tg':
@@ -4705,7 +4711,7 @@ div.opContainer {\
   margin: 0;\
   padding: 0;\
 }\
-.filter_highlight.thread > .opContainer {\
+.opContainer.filter_highlight {\
   box-shadow: inset 5px 0 rgba(255,0,0,0.5);\
 }\
 .filter_highlight > .reply {\

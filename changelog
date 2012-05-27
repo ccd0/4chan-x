@@ -1,4 +1,10 @@
 master
+- aeosynth
+  merge mayhem 2.30.4
+2.30.4
+- Mayhem
+  Add /co/ and /k/ archive redirection.
+  Fix quote resurrection of existing posts.
 
 3.7.0
 - aeosynth
