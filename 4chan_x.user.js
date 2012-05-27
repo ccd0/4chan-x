@@ -449,6 +449,14 @@
     },
     open: function(url) {
       return (GM_openInTab || window.open)(location.protocol + url, '_blank');
+    },
+    globalEval: function(code) {
+      var script;
+      script = $.el('script', {
+        textContent: code
+      });
+      $.add(d.head, script);
+      return $.rm(script);
     }
   });
 
@@ -760,7 +768,8 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      return $.replace(a.parentNode.parentNode, node);
+      $.replace(a.parentNode.parentNode, node);
+      return Main.prettify();
     }
   };
 
@@ -1356,7 +1365,7 @@
       return setTimeout(this.asyncInit);
     },
     asyncInit: function() {
-      var link, script;
+      var link;
       if (Conf['Hide Original Post Form']) {
         link = $.el('h1', {
           innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Quick Reply' : 'New Thread') + "</a>"
@@ -1370,11 +1379,7 @@
         });
         $.before($.id('postForm'), link);
       }
-      script = $.el('script', {
-        textContent: 'Recaptcha.focus_response_field=function(){}'
-      });
-      $.add(d.head, script);
-      $.rm(script);
+      $.globalEval('Recaptcha.focus_response_field=function(){}');
       if (Conf['Persistent QR']) {
         QR.dialog();
         if (Conf['Auto Hide QR']) {
@@ -3282,8 +3287,9 @@
         Time.node(post);
       }
       if (Conf['File Info Formatting']) {
-        return FileInfo.node(post);
+        FileInfo.node(post);
       }
+      return Main.prettify();
     }
   };
 
@@ -4060,6 +4066,7 @@
           });
         }
       }
+      Main.hasCodeTags = !!$('script[src="//static.4chan.org/js/prettify/prettify.js"]');
       board = $('.board');
       nodes = [];
       _ref1 = $$('.postContainer', board);
@@ -4148,6 +4155,7 @@
           }
         }
       }
+      Main.prettify();
     },
     observer: function(mutations) {
       var addedNode, mutation, nodes, _i, _j, _len, _len1, _ref;
@@ -4172,6 +4180,12 @@
       if (/\bpostContainer\b/.test(target.className)) {
         return Main.node([Main.preParse(target)]);
       }
+    },
+    prettify: function() {
+      if (!Main.hasCodeTags) {
+        return;
+      }
+      return $.globalEval('window.prettyPrint()');
     },
     namespace: '4chan_x.',
     version: '2.30.4',

@@ -346,6 +346,10 @@ $.extend $,
     return
   open: (url) ->
     (GM_openInTab or window.open) location.protocol + url, '_blank'
+  globalEval: (code) ->
+    script = $.el 'script', textContent: code
+    $.add d.head, script
+    $.rm script
 
 $.cache.requests = {}
 
@@ -588,6 +592,7 @@ ExpandComment =
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
     $.replace a.parentNode.parentNode, node
+    Main.prettify()
 
 ExpandThread =
   init: ->
@@ -1014,10 +1019,7 @@ QR =
       $.before $.id('postForm'), link
 
     # Prevent original captcha input from being focused on reload.
-    script = $.el 'script',
-      textContent: 'Recaptcha.focus_response_field=function(){}'
-    $.add d.head, script
-    $.rm script
+    $.globalEval 'Recaptcha.focus_response_field=function(){}'
 
     if Conf['Persistent QR']
       QR.dialog()
@@ -2489,6 +2491,7 @@ QuotePreview =
       Time.node     post
     if Conf['File Info Formatting']
       FileInfo.node post
+    Main.prettify()
 
 QuoteOP =
   init: ->
@@ -3088,6 +3091,8 @@ Main =
       if Conf['Index Navigation']
         setTimeout -> Nav.init()
 
+    Main.hasCodeTags = !! $ 'script[src="//static.4chan.org/js/prettify/prettify.js"]'
+
     board = $ '.board'
     nodes = []
     for node in $$ '.postContainer', board
@@ -3151,6 +3156,7 @@ Main =
         callback node for node in nodes
       catch err
         alert "4chan X (#{Main.version}) error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
+    Main.prettify()
     return
   observer: (mutations) ->
     nodes = []
@@ -3163,6 +3169,11 @@ Main =
     {target} = e
     if /\bpostContainer\b/.test target.className
       Main.node [Main.preParse target]
+
+  prettify: ->
+    return unless Main.hasCodeTags
+    # window.prettyPrintOne(html) does not preserve indentation
+    $.globalEval 'window.prettyPrint()'
 
   namespace: '4chan_x.'
   version: '2.30.4'
