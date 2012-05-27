@@ -251,6 +251,11 @@ $.extend = (object, properties) ->
   return
 
 $.extend $,
+  globalEval: (code) ->
+    script = $.el 'script',
+      textContent: "(#{code})()"
+    $.append d.head, script
+    $.remove script
   SECOND: 1000
   MINUTE: 1000*60
   HOUR  : 1000*60*60

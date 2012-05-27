@@ -291,6 +291,14 @@
   };
 
   $.extend($, {
+    globalEval: function(code) {
+      var script;
+      script = $.el('script', {
+        textContent: "(" + code + ")()"
+      });
+      $.append(d.head, script);
+      return $.remove(script);
+    },
     SECOND: 1000,
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
