@@ -1,5 +1,8 @@
 master
+
+3.8.0
 - aeosynth
+  fix thread highlighting of topmost thread
   merge mayhem 2.30.5
 - Mayhem
   Fix syntax highlighting in code of fetched posts on /g/.
