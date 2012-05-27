@@ -648,7 +648,7 @@
     comment: function(post) {
       var data, i, nodes, text, _i, _ref;
       text = [];
-      nodes = d.evaluate('.//br|.//text()', post.el.lastElementChild, null, 7, null);
+      nodes = d.evaluate('.//br|.//text()', post.blockquote, null, 7, null);
       for (i = _i = 0, _ref = nodes.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
@@ -3346,7 +3346,7 @@
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastElementChild, null, 6, null);
+      snapshot = d.evaluate('.//text()[not(parent::a)]', post.blockquote, null, 6, null);
       for (i = _i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         node = snapshot.snapshotItem(i);
         data = node.data;

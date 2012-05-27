@@ -512,7 +512,7 @@ Filter =
   comment: (post) ->
     text = []
     # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE is 7
-    nodes = d.evaluate './/br|.//text()', post.el.lastElementChild, null, 7, null
+    nodes = d.evaluate './/br|.//text()', post.blockquote, null, 7, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
@@ -2530,7 +2530,7 @@ Quotify =
 
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()[not(parent::a)]', post.el.lastElementChild, null, 6, null
+    snapshot = d.evaluate './/text()[not(parent::a)]', post.blockquote, null, 6, null
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
