@@ -777,10 +777,7 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      $.replace(a.parentNode.parentNode, node);
-      return postMessage({
-        pretty: true
-      }, '*');
+      return $.replace(a.parentNode.parentNode, node);
     }
   };
 
@@ -889,10 +886,7 @@
           $.rm(backlink);
         }
       }
-      $.after(a, nodes);
-      return postMessage({
-        pretty: true
-      }, '*');
+      return $.after(a, nodes);
     }
   };
 
@@ -2557,9 +2551,6 @@
           Updater.lastPost = lastPost;
         }
         $.add(Updater.thread, nodes.reverse());
-        postMessage({
-          pretty: true
-        }, '*');
         if (scroll) {
           return nodes[0].scrollIntoView();
         }
@@ -4205,23 +4196,6 @@
       } else if (Main.BOARD === 'sci') {
         return $.globalEval(Main.sci);
       }
-    },
-    g: function() {
-      /*
-          #http://www.math.union.edu/~dpvc/jsMath/authors/process.html
-          #>jsMath.Process() and jsMath.ProcessBeforeShowing() allow you to pass them an element whose content is to be processed.
-          #
-          #unfortunately, jsMath is not exposed, so we can't do that. we have access to `prettyPrint` and `prettyPrintOne`.
-          #ppO loses indentation for some reason (research needed), while calling pp on every post insert naturally
-          #freezes the browser when expanding large threads.
-          #
-          #so don't use the DOMNodeInserted event; instead explicitly invoke this with messages
-      */
-      return window.addEventListener('message', function(e) {
-        if (e.data.pretty) {
-          return window.prettyPrint();
-        }
-      });
     },
     sci: function() {
       $ = function(selector, root) {
