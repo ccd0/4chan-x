@@ -164,7 +164,8 @@
       openEmptyQR: ['I', 'Open QR without post number inserted'],
       openOptions: ['ctrl+o', 'Open Options'],
       close: ['Esc', 'Close Options or QR'],
-      spoiler: ['ctrl+s', 'Quick spoiler'],
+      spoiler: ['ctrl+s', 'Quick spoiler tags'],
+      code: ['alt+c', 'Quick code tags'],
       submit: ['alt+s', 'Submit post'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
@@ -289,14 +290,6 @@
   };
 
   $.extend($, {
-    globalEval: function(code) {
-      var script;
-      script = $.el('script', {
-        textContent: "(" + code + ")()"
-      });
-      $.add(d.head, script);
-      return $.rm(script);
-    },
     SECOND: 1000,
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
@@ -458,6 +451,14 @@
         event = _ref[_i];
         el.removeEventListener(event, handler, false);
       }
+    },
+    globalEval: function(code) {
+      var script;
+      script = $.el('script', {
+        textContent: code
+      });
+      $.add(d.head, script);
+      return $.rm(script);
     }
   });
 
@@ -655,7 +656,7 @@
     comment: function(post) {
       var data, i, nodes, text, _i, _ref;
       text = [];
-      nodes = d.evaluate('.//br|.//text()', post.el.lastElementChild, null, 7, null);
+      nodes = d.evaluate('.//br|.//text()', post.blockquote, null, 7, null);
       for (i = _i = 0, _ref = nodes.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
@@ -754,6 +755,7 @@
         }
         quote.href = "res/" + href;
       }
+      Main.prettify(node);
       post = {
         el: node,
         threadId: threadID,
@@ -1047,7 +1049,7 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var key, link, o, range, selEnd, selStart, ta, thread, value;
+      var key, link, o, ta, thread;
       if (!(key = Keybinds.keyCode(e)) || /TEXTAREA|INPUT/.test(e.target.nodeName) && !(e.altKey || e.ctrlKey || e.keyCode === 27)) {
         return;
       }
@@ -1081,12 +1083,14 @@
           if (ta.nodeName !== 'TEXTAREA') {
             return;
           }
-          value = ta.value;
-          selStart = ta.selectionStart;
-          selEnd = ta.selectionEnd;
-          ta.value = value.slice(0, selStart) + '[spoiler]' + value.slice(selStart, selEnd) + '[/spoiler]' + value.slice(selEnd);
-          range = 9 + selEnd;
-          ta.setSelectionRange(range, range);
+          Keybinds.tags('spoiler', ta);
+          break;
+        case Conf.code:
+          ta = e.target;
+          if (ta.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('code', ta);
           break;
         case Conf.watch:
           Watcher.toggle(thread);
@@ -1229,6 +1233,15 @@
         }
       }
       return key;
+    },
+    tags: function(tag, ta) {
+      var range, selEnd, selStart, value;
+      value = ta.value;
+      selStart = ta.selectionStart;
+      selEnd = ta.selectionEnd;
+      ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
+      range = ("[" + tag + "]").length + selEnd;
+      return ta.setSelectionRange(range, range);
     },
     img: function(thread, all) {
       var thumb;
@@ -1378,7 +1391,7 @@
 
   QR = {
     init: function() {
-      var link, script;
+      var link;
       if (!$('#postForm input[type=submit]')) {
         return;
       }
@@ -1396,11 +1409,7 @@
         });
         $.before($.id('postForm'), link);
       }
-      script = $.el('script', {
-        textContent: 'Recaptcha.focus_response_field=function(){}'
-      });
-      $.add(d.head, script);
-      $.rm(script);
+      $.globalEval('Recaptcha.focus_response_field=function(){}');
       if (Conf['Persistent QR']) {
         QR.dialog();
         if (Conf['Auto Hide QR']) {
@@ -3289,7 +3298,7 @@
       return $.off(this, 'mouseout click', QuotePreview.mouseout);
     },
     parse: function(req, id) {
-      var doc, fileInfo, img, node, post, qp;
+      var bq, doc, fileInfo, img, node, post, qp;
       if (!((qp = UI.el) && qp.textContent === ("Loading " + id + "..."))) {
         return;
       }
@@ -3301,6 +3310,9 @@
       doc.documentElement.innerHTML = req.response;
       node = doc.getElementById("p" + id);
       qp.innerHTML = node.innerHTML;
+      bq = $('blockquote', qp);
+      bq.id += '_qp';
+      Main.prettify(bq);
       post = {
         el: qp
       };
@@ -3377,7 +3389,7 @@
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      snapshot = d.evaluate('.//text()[not(parent::a)]', post.el.lastElementChild, null, 6, null);
+      snapshot = d.evaluate('.//text()[not(parent::a)]', post.blockquote, null, 6, null);
       for (i = _i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         node = snapshot.snapshotItem(i);
         data = node.data;
@@ -4170,6 +4182,7 @@
           Nav.init();
         }
       }
+      Main.hasCodeTags = !!$('script[src="//static.4chan.org/js/prettify/prettify.js"]');
       board = $('.board');
       nodes = [];
       _ref1 = $$('.postContainer', board);
@@ -4291,6 +4304,7 @@
         threadId: Main.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.slice(1),
         isInlined: /\binline\b/.test(rootClass),
         isCrosspost: /\bcrosspost\b/.test(rootClass),
+        blockquote: el.lastElementChild,
         quotes: el.getElementsByClassName('quotelink'),
         backlinks: el.getElementsByClassName('backlink'),
         fileInfo: false,
@@ -4303,6 +4317,7 @@
           post.img = img;
         }
       }
+      Main.prettify(post.blockquote);
       return post;
     },
     node: function(nodes, notify) {
@@ -4345,6 +4360,21 @@
       if ((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) {
         return Main.node([Main.preParse(target)]);
       }
+    },
+    prettify: function(bq) {
+      var code;
+      if (!Main.hasCodeTags) {
+        return;
+      }
+      code = function() {
+        var pre, _i, _len, _ref;
+        _ref = document.getElementById('_id_').getElementsByClassName('prettyprint');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          pre = _ref[_i];
+          pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\s/g, '&nbsp;'));
+        }
+      };
+      return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
     version: '3.7.2',

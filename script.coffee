@@ -126,7 +126,8 @@ Config =
     openEmptyQR:     ['I',      'Open QR without post number inserted']
     openOptions:     ['ctrl+o', 'Open Options']
     close:           ['Esc',    'Close Options or QR']
-    spoiler:         ['ctrl+s', 'Quick spoiler']
+    spoiler:         ['ctrl+s', 'Quick spoiler tags']
+    code:            ['alt+c',  'Quick code tags']
     submit:          ['alt+s',  'Submit post']
     # Thread related
     watch:           ['w',      'Watch thread']
@@ -251,11 +252,6 @@ $.extend = (object, properties) ->
   return
 
 $.extend $,
-  globalEval: (code) ->
-    script = $.el 'script',
-      textContent: "(#{code})()"
-    $.add d.head, script
-    $.rm script
   SECOND: 1000
   MINUTE: 1000*60
   HOUR  : 1000*60*60
@@ -350,6 +346,10 @@ $.extend $,
     for event in events.split ' '
       el.removeEventListener event, handler, false
     return
+  globalEval: (code) ->
+    script = $.el 'script', textContent: code
+    $.add d.head, script
+    $.rm script
 
 $.cache.requests = {}
 
@@ -516,7 +516,7 @@ Filter =
   comment: (post) ->
     text = []
     # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE is 7
-    nodes = d.evaluate './/br|.//text()', post.el.lastElementChild, null, 7, null
+    nodes = d.evaluate './/br|.//text()', post.blockquote, null, 7, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
@@ -580,6 +580,7 @@ ExpandComment =
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote
       quote.href = "res/#{href}" # Fix pathnames
+    Main.prettify node
     post =
       el:        node
       threadId:  threadID
@@ -819,19 +820,11 @@ Keybinds =
       when Conf.spoiler
         ta = e.target
         return if ta.nodeName isnt 'TEXTAREA'
-
-        value    = ta.value
-        selStart = ta.selectionStart
-        selEnd   = ta.selectionEnd
-
-        ta.value =
-          value[...selStart] +
-          '[spoiler]' + value[selStart...selEnd] + '[/spoiler]' +
-          value[selEnd..]
-
-        range = 9 + selEnd
-        # Move the caret to the end of the selection.
-        ta.setSelectionRange range, range
+        Keybinds.tags 'spoiler', ta
+      when Conf.code
+        ta = e.target
+        return if ta.nodeName isnt 'TEXTAREA'
+        Keybinds.tags 'code', ta
       # Thread related
       when Conf.watch
         Watcher.toggle thread
@@ -903,6 +896,20 @@ Keybinds =
       if e.altKey  then key = 'alt+' + key
       if e.ctrlKey then key = 'ctrl+' + key
     key
+
+  tags: (tag, ta) ->
+    value    = ta.value
+    selStart = ta.selectionStart
+    selEnd   = ta.selectionEnd
+
+    ta.value =
+      value[...selStart] +
+      "[#{tag}]" + value[selStart...selEnd] + "[/#{tag}]" +
+      value[selEnd..]
+
+    range = "[#{tag}]".length + selEnd
+    # Move the caret to the end of the selection.
+    ta.setSelectionRange range, range
 
   img: (thread, all) ->
     if all
@@ -1032,10 +1039,7 @@ QR =
       $.before $.id('postForm'), link
 
     # Prevent original captcha input from being focused on reload.
-    script = $.el 'script',
-      textContent: 'Recaptcha.focus_response_field=function(){}'
-    $.add d.head, script
-    $.rm script
+    $.globalEval 'Recaptcha.focus_response_field=function(){}'
 
     if Conf['Persistent QR']
       QR.dialog()
@@ -2500,6 +2504,9 @@ QuotePreview =
 
     node = doc.getElementById "p#{id}"
     qp.innerHTML = node.innerHTML
+    bq = $ 'blockquote', qp
+    bq.id += '_qp'
+    Main.prettify bq
     post =
       el: qp
     if fileInfo = $ '.fileInfo', qp
@@ -2551,7 +2558,7 @@ Quotify =
 
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()[not(parent::a)]', post.el.lastElementChild, null, 6, null
+    snapshot = d.evaluate './/text()[not(parent::a)]', post.blockquote, null, 6, null
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
@@ -3195,6 +3202,8 @@ Main =
       if Conf['Index Navigation']
         Nav.init()
 
+    Main.hasCodeTags = !! $ 'script[src="//static.4chan.org/js/prettify/prettify.js"]'
+
     board = $ '.board'
     nodes = []
     for node in $$ '.postContainer', board
@@ -3290,6 +3299,7 @@ Main =
       threadId:    Main.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id[1..]
       isInlined:   /\binline\b/.test rootClass
       isCrosspost: /\bcrosspost\b/.test rootClass
+      blockquote:  el.lastElementChild
       quotes:      el.getElementsByClassName 'quotelink'
       backlinks:   el.getElementsByClassName 'backlink'
       fileInfo:    false
@@ -3299,6 +3309,7 @@ Main =
       if img.alt isnt 'File deleted.'
         post.fileInfo = fileInfo
         post.img      = img
+    Main.prettify post.blockquote
     post
   node: (nodes, notify) ->
     for callback in Main.callbacks
@@ -3318,6 +3329,14 @@ Main =
     {target} = e
     if (/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className)
       Main.node [Main.preParse target]
+
+  prettify: (bq) ->
+    return unless Main.hasCodeTags
+    code = ->
+      for pre in document.getElementById('_id_').getElementsByClassName 'prettyprint'
+        pre.innerHTML = prettyPrintOne pre.innerHTML.replace /\s/g, '&nbsp;'
+      return
+    $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
   version: '3.7.2'
