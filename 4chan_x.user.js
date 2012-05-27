@@ -4027,21 +4027,11 @@
           });
           return;
       }
-      $.ready(Options.init);
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form'] && g.BOARD !== 'f') {
         Main.css += '#postForm { display: none; }';
       }
       Main.addStyle();
       now = Date.now();
-      if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 1 * $.DAY) {
-        $.on(window, 'message', Main.message);
-        $.ready(function() {
-          return $.add(d.head, $.el('script', {
-            src: 'https://raw.github.com/aeosynth/4chan-x/master/latest.js'
-          }));
-        });
-        $.set('lastUpdate', now);
-      }
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       if ($.get('lastChecked', 0) < now - 1 * $.DAY) {
         $.set('lastChecked', now);
@@ -4117,7 +4107,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var MutationObserver, a, board, nav, node, nodes, observer, _i, _j, _len, _len1, _ref, _ref1;
+      var MutationObserver, a, board, nav, node, nodes, now, observer, _i, _j, _len, _len1, _ref, _ref1;
       if (d.title === '4chan - 404') {
         Redirect.init();
         return;
@@ -4134,6 +4124,17 @@
           $.addClass(a, 'current');
         }
       }
+      now = Date.now();
+      if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 1 * $.DAY) {
+        $.on(window, 'message', Main.message);
+        $.ready(function() {
+          return $.add(d.head, $.el('script', {
+            src: 'https://raw.github.com/aeosynth/4chan-x/master/latest.js'
+          }));
+        });
+        $.set('lastUpdate', now);
+      }
+      Options.init();
       Favicon.init();
       if (Conf['Quick Reply']) {
         QR.init();

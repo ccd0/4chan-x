@@ -3058,19 +3058,12 @@ Main =
         $.ready -> Redirect.init() if d.title is '4chan - 404'
         return
 
-    $.ready Options.init
-
     if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
       Main.css += '#postForm { display: none; }'
 
     Main.addStyle()
 
     now = Date.now()
-    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 1*$.DAY
-      $.on window, 'message', Main.message
-      $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/aeosynth/4chan-x/master/latest.js'
-      $.set 'lastUpdate', now
-
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     if $.get('lastChecked', 0) < now - 1*$.DAY
       $.set 'lastChecked', now
@@ -3150,12 +3143,21 @@ Main =
       return
     unless $.id 'navtopr'
       return
+
     $.addClass d.body, "chanx_#{Main.version.split('.')[1]}"
     $.addClass d.body, $.engine
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
       if a = $ "a[href$='/#{g.BOARD}/']", $.id nav
         # Gotta make it work in temporary boards.
         $.addClass a, 'current'
+
+    now = Date.now()
+    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 1*$.DAY
+      $.on window, 'message', Main.message
+      $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/aeosynth/4chan-x/master/latest.js'
+      $.set 'lastUpdate', now
+
+    Options.init()
     Favicon.init()
 
     # Major features.
