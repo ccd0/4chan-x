@@ -1,5 +1,9 @@
 master
+
+3.7.1
 - aeosynth
+  fix /g/ code syntax highlighting on updated posts
+  fix /sci/ latex on updated posts
   merge mayhem 2.30.4
 2.30.4
 - Mayhem
