@@ -594,6 +594,7 @@ ExpandComment =
       QuoteOP.node      post
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
+
     $.replace a.parentNode.parentNode, node
 
 ExpandThread =
@@ -1923,11 +1924,6 @@ Updater =
     @retryCoef = 10
     @lastModified = 0
 
-    if Main.BOARD is 'g'
-      $.globalEval Updater.g
-    else if Main.BOARD is 'sci'
-      $.globalEval Updater.sci
-
   cb:
     verbose: ->
       if Conf['Verbose']
@@ -2027,22 +2023,6 @@ Updater =
     url = location.pathname + '?' + Date.now()
     Updater.request = $.ajax url, onload: Updater.cb.update,
       headers: 'If-Modified-Since': Updater.lastModified
-
-  g: ->
-    $ = (selector, root=document.body) ->
-      root.querySelector selector
-    $('.board').addEventListener 'DOMNodeInserted', (e) ->
-      {target} = e
-      if (/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className)
-        if pre = $ 'pre', e.target
-          pre.innerHTML = window.prettyPrintOne pre.innerHTML
-  sci: ->
-    $ = (selector, root=document.body) ->
-      root.querySelector selector
-    $('.board').addEventListener 'DOMNodeInserted', (e) ->
-      {target} = e
-      if (/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className)
-        jsMath.Process target
 
 Watcher =
   init: ->
@@ -3220,6 +3200,27 @@ Main =
         subtree:   true
     else
       $.on board, 'DOMNodeInserted', Main.listener
+
+    if Main.BOARD is 'g'
+      $.globalEval Main.g
+    else if Main.BOARD is 'sci'
+      $.globalEval Main.sci
+
+  g: ->
+    $ = (selector, root=document.body) ->
+      root.querySelector selector
+    $('.board').addEventListener 'DOMNodeInserted', (e) ->
+      {target} = e
+      if ((/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className)) or target.nodeName is 'BLOCKQUOTE'
+        if pre = $ 'pre', e.target
+          pre.innerHTML = window.prettyPrintOne pre.innerHTML
+  sci: ->
+    $ = (selector, root=document.body) ->
+      root.querySelector selector
+    $('.board').addEventListener 'DOMNodeInserted', (e) ->
+      {target} = e
+      if ((/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className)) or target.nodeName is 'BLOCKQUOTE'
+        jsMath.Process target
 
   pruneHidden: ->
     now = Date.now()

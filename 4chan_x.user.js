@@ -2456,12 +2456,7 @@
       }
       $.add(d.body, dialog);
       this.retryCoef = 10;
-      this.lastModified = 0;
-      if (Main.BOARD === 'g') {
-        return $.globalEval(Updater.g);
-      } else if (Main.BOARD === 'sci') {
-        return $.globalEval(Updater.sci);
-      }
+      return this.lastModified = 0;
     },
     cb: {
       verbose: function() {
@@ -2582,38 +2577,6 @@
       }, {
         headers: {
           'If-Modified-Since': Updater.lastModified
-        }
-      });
-    },
-    g: function() {
-      $ = function(selector, root) {
-        if (root == null) {
-          root = document.body;
-        }
-        return root.querySelector(selector);
-      };
-      return $('.board').addEventListener('DOMNodeInserted', function(e) {
-        var pre, target;
-        target = e.target;
-        if ((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) {
-          if (pre = $('pre', e.target)) {
-            return pre.innerHTML = window.prettyPrintOne(pre.innerHTML);
-          }
-        }
-      });
-    },
-    sci: function() {
-      $ = function(selector, root) {
-        if (root == null) {
-          root = document.body;
-        }
-        return root.querySelector(selector);
-      };
-      return $('.board').addEventListener('DOMNodeInserted', function(e) {
-        var target;
-        target = e.target;
-        if ((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) {
-          return jsMath.Process(target);
         }
       });
     }
@@ -4202,13 +4165,50 @@
       Main.node(nodes, true);
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
-        return observer.observe(board, {
+        observer.observe(board, {
           childList: true,
           subtree: true
         });
       } else {
-        return $.on(board, 'DOMNodeInserted', Main.listener);
+        $.on(board, 'DOMNodeInserted', Main.listener);
       }
+      if (Main.BOARD === 'g') {
+        return $.globalEval(Main.g);
+      } else if (Main.BOARD === 'sci') {
+        return $.globalEval(Main.sci);
+      }
+    },
+    g: function() {
+      $ = function(selector, root) {
+        if (root == null) {
+          root = document.body;
+        }
+        return root.querySelector(selector);
+      };
+      return $('.board').addEventListener('DOMNodeInserted', function(e) {
+        var pre, target;
+        target = e.target;
+        if (((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) || target.nodeName === 'BLOCKQUOTE') {
+          if (pre = $('pre', e.target)) {
+            return pre.innerHTML = window.prettyPrintOne(pre.innerHTML);
+          }
+        }
+      });
+    },
+    sci: function() {
+      $ = function(selector, root) {
+        if (root == null) {
+          root = document.body;
+        }
+        return root.querySelector(selector);
+      };
+      return $('.board').addEventListener('DOMNodeInserted', function(e) {
+        var target;
+        target = e.target;
+        if (((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) || target.nodeName === 'BLOCKQUOTE') {
+          return jsMath.Process(target);
+        }
+      });
     },
     pruneHidden: function() {
       var cutoff, hiddenThreads, id, now, timestamp, _ref;
