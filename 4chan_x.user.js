@@ -2456,7 +2456,12 @@
       }
       $.add(d.body, dialog);
       this.retryCoef = 10;
-      return this.lastModified = 0;
+      this.lastModified = 0;
+      if (Main.BOARD === 'g') {
+        return $.globalEval(Updater.g);
+      } else if (Main.BOARD === 'sci') {
+        return $.globalEval(Updater.sci);
+      }
     },
     cb: {
       verbose: function() {
@@ -2577,6 +2582,38 @@
       }, {
         headers: {
           'If-Modified-Since': Updater.lastModified
+        }
+      });
+    },
+    g: function() {
+      $ = function(selector, root) {
+        if (root == null) {
+          root = document.body;
+        }
+        return root.querySelector(selector);
+      };
+      return $('.board').addEventListener('DOMNodeInserted', function(e) {
+        var pre, target;
+        target = e.target;
+        if ((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) {
+          if (pre = $('pre', e.target)) {
+            return pre.innerHTML = window.prettyPrintOne(pre.innerHTML);
+          }
+        }
+      });
+    },
+    sci: function() {
+      $ = function(selector, root) {
+        if (root == null) {
+          root = document.body;
+        }
+        return root.querySelector(selector);
+      };
+      return $('.board').addEventListener('DOMNodeInserted', function(e) {
+        var target;
+        target = e.target;
+        if ((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) {
+          return jsMath.Process(target);
         }
       });
     }
@@ -4165,29 +4202,12 @@
       Main.node(nodes, true);
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
-        observer.observe(board, {
+        return observer.observe(board, {
           childList: true,
           subtree: true
         });
       } else {
-        $.on(board, 'DOMNodeInserted', Main.listener);
-      }
-      if ((Main.BOARD === 'g') && Conf['Thread Updater']) {
-        return $.globalEval(function() {
-          $ = function(selector, root) {
-            if (root == null) {
-              root = document.body;
-            }
-            return root.querySelector(selector);
-          };
-          return $('.board').addEventListener('DOMNodeInserted', function(e) {
-            var pre, target;
-            target = e.target;
-            if ((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className)) && (pre = $('pre', e.target))) {
-              return pre.innerHTML = window.prettyPrintOne(pre.innerHTML);
-            }
-          });
-        });
+        return $.on(board, 'DOMNodeInserted', Main.listener);
       }
     },
     pruneHidden: function() {
