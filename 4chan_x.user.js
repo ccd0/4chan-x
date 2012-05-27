@@ -4195,8 +4195,8 @@
         var pre, target;
         target = e.target;
         if (((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) || target.nodeName === 'BLOCKQUOTE') {
-          if (pre = $('pre', e.target)) {
-            return pre.innerHTML = window.prettyPrintOne(pre.innerHTML);
+          if (pre = $('pre', target)) {
+            return window.prettyPrint();
           }
         }
       });

@@ -3216,8 +3216,9 @@ Main =
     $('.board').addEventListener 'DOMNodeInserted', (e) ->
       {target} = e
       if ((/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className)) or target.nodeName is 'BLOCKQUOTE'
-        if pre = $ 'pre', e.target
-          pre.innerHTML = window.prettyPrintOne pre.innerHTML
+        if pre = $ 'pre', target
+          window.prettyPrint()
+          #pre.innerHTML = window.prettyPrintOne pre.innerHTML #this loses indentation for some reason
   sci: ->
     $ = (selector, root=document.body) ->
       root.querySelector selector
