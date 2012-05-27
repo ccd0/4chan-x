@@ -1653,8 +1653,6 @@ Options =
       $.on a, 'click', Options.dialog
       $.replace home.firstElementChild, a
     unless $.get 'firstrun'
-      # Prevent race conditions
-      Favicon.init() unless Favicon.el
       $.set 'firstrun', true
       Options.dialog()
 
@@ -2781,7 +2779,6 @@ Unread =
 
 Favicon =
   init: ->
-    return if @el # Prevent race condition with options first run
     @el = $ 'link[rel="shortcut icon"]', d.head
     @el.type = 'image/x-icon'
     {href} = @el
