@@ -294,8 +294,8 @@
       script = $.el('script', {
         textContent: "(" + code + ")()"
       });
-      $.append(d.head, script);
-      return $.remove(script);
+      $.add(d.head, script);
+      return $.rm(script);
     },
     SECOND: 1000,
     MINUTE: 1000 * 60,
@@ -4165,12 +4165,29 @@
       Main.node(nodes, true);
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
-        return observer.observe(board, {
+        observer.observe(board, {
           childList: true,
           subtree: true
         });
       } else {
-        return $.on(board, 'DOMNodeInserted', Main.listener);
+        $.on(board, 'DOMNodeInserted', Main.listener);
+      }
+      if ((Main.BOARD === 'g') && Conf['Thread Updater']) {
+        return $.globalEval(function() {
+          $ = function(selector, root) {
+            if (root == null) {
+              root = document.body;
+            }
+            return root.querySelector(selector);
+          };
+          return $('.board').addEventListener('DOMNodeInserted', function(e) {
+            var pre, target;
+            target = e.target;
+            if ((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className)) && (pre = $('pre', e.target))) {
+              return pre.innerHTML = window.prettyPrintOne(pre.innerHTML);
+            }
+          });
+        });
       }
     },
     pruneHidden: function() {

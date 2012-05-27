@@ -253,8 +253,8 @@ $.extend $,
   globalEval: (code) ->
     script = $.el 'script',
       textContent: "(#{code})()"
-    $.append d.head, script
-    $.remove script
+    $.add d.head, script
+    $.rm script
   SECOND: 1000
   MINUTE: 1000*60
   HOUR  : 1000*60*60
@@ -3199,6 +3199,16 @@ Main =
         subtree:   true
     else
       $.on board, 'DOMNodeInserted', Main.listener
+
+    if (Main.BOARD is 'g') and Conf['Thread Updater']
+      $.globalEval ->
+        $ = (selector, root=document.body) ->
+          root.querySelector selector
+
+        $('.board').addEventListener 'DOMNodeInserted', (e) ->
+          {target} = e
+          if (/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className) and (pre = $ 'pre', e.target)
+            pre.innerHTML = window.prettyPrintOne pre.innerHTML
 
   pruneHidden: ->
     now = Date.now()
