@@ -158,7 +158,6 @@ Config =
 
 Conf = {}
 d = document
-g = {}
 
 # XXX GreaseMonkey can't into console.log.bind
 log = console.log.bind? console
@@ -405,7 +404,7 @@ Filter =
         # and it's not specifically applicable to the current board.
         # Defaults to global.
         boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
-        if boards isnt 'global' and boards.split(',').indexOf(g.BOARD) is -1
+        if boards isnt 'global' and boards.split(',').indexOf(Main.BOARD) is -1
           continue
 
         try
@@ -475,7 +474,7 @@ Filter =
         # Hide
         if result is true
           if isOP
-            unless g.REPLY
+            unless Main.REPLY
               ThreadHiding.hide root.parentNode
             else
               continue
@@ -485,7 +484,7 @@ Filter =
 
         # Highlight
         $.addClass (if isOP then root.parentNode else root), result[0]
-        if isOP and result[1] and not g.REPLY
+        if isOP and result[1] and not Main.REPLY
           # Put the highlighted OPs' thread on top of the board page...
           thisThread = root.parentNode
           # ...before the first non highlighted thread.
@@ -608,7 +607,7 @@ ExpandThread =
       $.replace span, a
 
   toggle: (thread) ->
-    pathname = "/#{g.BOARD}/res/#{thread.id[1..]}"
+    pathname = "/#{Main.BOARD}/res/#{thread.id[1..]}"
     a = $ '.summary', thread
 
     # \u00d7 is &times;
@@ -625,7 +624,7 @@ ExpandThread =
       when '-'
         a.textContent = a.textContent.replace '-', '+'
         #goddamit moot
-        num = switch g.BOARD
+        num = switch Main.BOARD
           when 'b', 'vg' then 3
           when 't' then 1
           else 5
@@ -670,7 +669,7 @@ ExpandThread =
 
 ThreadHiding =
   init: ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    hiddenThreads = $.get "hiddenThreads/#{Main.BOARD}/", {}
     for thread in $$ '.thread'
       a  = $.el 'a',
         className: 'hide_thread_button'
@@ -687,7 +686,7 @@ ThreadHiding =
     ThreadHiding.toggle @parentNode
 
   toggle: (thread) ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    hiddenThreads = $.get "hiddenThreads/#{Main.BOARD}/", {}
     id = thread.id[1..]
     if thread.hidden or /\bhidden_thread\b/.test thread.firstChild.className
       ThreadHiding.show thread
@@ -695,7 +694,7 @@ ThreadHiding =
     else
       ThreadHiding.hide thread
       hiddenThreads[id] = Date.now()
-    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
+    $.set "hiddenThreads/#{Main.BOARD}/", hiddenThreads
 
   hide: (thread) ->
     unless Conf['Show Stubs']
@@ -738,7 +737,7 @@ ReplyHiding =
     button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
     $.on button.firstChild, 'click', ReplyHiding.toggle
 
-    if id of g.hiddenReplies
+    if id of Main.hiddenReplies
       ReplyHiding.hide post
 
   toggle: ->
@@ -752,13 +751,13 @@ ReplyHiding =
       ReplyHiding.show post
       for quote in quotes
         $.removeClass quote, 'filtered'
-      delete g.hiddenReplies[id]
+      delete Main.hiddenReplies[id]
     else
       ReplyHiding.hide post
       for quote in quotes
         $.addClass quote, 'filtered'
-      g.hiddenReplies[id] = Date.now()
-    $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+      Main.hiddenReplies[id] = Date.now()
+    $.set "hiddenReplies/#{Main.BOARD}/", Main.hiddenReplies
 
   hide: (post) ->
     {root, el} = post
@@ -845,7 +844,7 @@ Keybinds =
         Keybinds.img thread, true
       # Board Navigation
       when Conf.zero
-        window.location = "/#{g.BOARD}/0#delform"
+        window.location = "/#{Main.BOARD}/0#delform"
       when Conf.nextPage
         if link = $ 'link[rel=next]', d.head
           window.location = link.href + '#delform'
@@ -854,10 +853,10 @@ Keybinds =
           window.location = link.href + '#delform'
       # Thread Navigation
       when Conf.nextThread
-        return if g.REPLY
+        return if Main.REPLY
         Nav.scroll +1
       when Conf.previousThread
-        return if g.REPLY
+        return if Main.REPLY
         Nav.scroll -1
       when Conf.expandThread
         ExpandThread.toggle thread
@@ -916,7 +915,7 @@ Keybinds =
 
   open: (thread, tab) ->
     id = thread.id[1..]
-    url = "//boards.4chan.org/#{g.BOARD}/res/#{id}"
+    url = "//boards.4chan.org/#{Main.BOARD}/res/#{id}"
     if tab
       $.open url
     else
@@ -930,7 +929,7 @@ Keybinds =
         axis = if delta is +1 then 'following' else 'preceding'
         next = $.x axis + '::div[contains(@class,"post reply")][1]', post
         return unless next
-        return unless g.REPLY or $.x('ancestor::div[parent::div[@class="board"]]', next) is thread
+        return unless Main.REPLY or $.x('ancestor::div[parent::div[@class="board"]]', next) is thread
         rect = next.getBoundingClientRect()
         if rect.top < 0 or rect.bottom > d.documentElement.clientHeight
           next.scrollIntoView delta is -1
@@ -968,13 +967,13 @@ Nav =
     $.add d.body, span
 
   prev: ->
-    if g.REPLY
+    if Main.REPLY
       window.scrollTo 0, 0
     else
       Nav.scroll -1
 
   next: ->
-    if g.REPLY
+    if Main.REPLY
       window.scrollTo 0, d.body.scrollHeight
     else
       Nav.scroll +1
@@ -1005,7 +1004,7 @@ Nav =
         if link = $ 'link[rel=prev]', d.head
           window.location = link.href + '#delform'
         else
-          window.location = "/#{g.BOARD}/0#delform"
+          window.location = "/#{Main.BOARD}/0#delform"
         return
       if (delta is +1) and ( (i is Nav.threads.length) or (innerHeight + pageYOffset == d.body.scrollHeight) )
         if link = $ 'link[rel=next]', d.head
@@ -1020,10 +1019,10 @@ QR =
     return unless $ '#postForm input[type=submit]'
     Main.callbacks.push @node
     if Conf['Hide Original Post Form']
-      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
+      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if Main.REPLY then 'Quick Reply' else 'New Thread'}</a>"
       $.on link.firstChild, 'click', ->
         QR.open()
-        $('select',   QR.el).value = 'new' unless g.REPLY
+        $('select',   QR.el).value = 'new' unless Main.REPLY
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 
@@ -1086,7 +1085,7 @@ QR =
 
   status: (data={}) ->
     return unless QR.el
-    if g.dead
+    if Main.dead
       value    = 404
       disabled = true
       QR.cooldown.auto = false
@@ -1102,28 +1101,28 @@ QR =
   cooldown:
     init: ->
       return unless Conf['Cooldown']
-      QR.cooldown.start $.get "/#{g.BOARD}/cooldown", 0
-      $.sync "/#{g.BOARD}/cooldown", QR.cooldown.start
+      QR.cooldown.start $.get "/#{Main.BOARD}/cooldown", 0
+      $.sync "/#{Main.BOARD}/cooldown", QR.cooldown.start
     start: (timeout) ->
       seconds = Math.floor (timeout - Date.now()) / 1000
       QR.cooldown.count seconds
     set: (seconds) ->
       return unless Conf['Cooldown']
       QR.cooldown.count seconds
-      $.set "/#{g.BOARD}/cooldown", Date.now() + seconds*$.SECOND
+      $.set "/#{Main.BOARD}/cooldown", Date.now() + seconds*$.SECOND
     count: (seconds) ->
       return unless 0 <= seconds <= 60
       setTimeout QR.cooldown.count, 1000, seconds-1
       QR.cooldown.seconds = seconds
       if seconds is 0
-        $.delete "/#{g.BOARD}/cooldown"
+        $.delete "/#{Main.BOARD}/cooldown"
         QR.submit() if QR.cooldown.auto
       QR.status()
 
   quote: (e) ->
     e?.preventDefault()
     QR.open()
-    unless g.REPLY
+    unless Main.REPLY
       $('select', QR.el).value = $.x('ancestor::div[parent::div[@class="board"]]', @).id[1..]
     # Make sure we get the correct number, even with XXX censors
     id   = @previousSibling.hash[2..]
@@ -1431,7 +1430,7 @@ QR =
     spoiler        = $ '#spoilerLabel', QR.el
     spoiler.hidden = !QR.spoiler
 
-    unless g.REPLY
+    unless Main.REPLY
       # Make a list with visible threads and an option to create a new one.
       threads = '<option value=new>New thread</option>'
       for thread in $$ '.thread'
@@ -1520,7 +1519,7 @@ QR =
       return
     QR.cleanError()
 
-    threadID = g.THREAD_ID or $('select', QR.el).value
+    threadID = Main.THREAD_ID or $('select', QR.el).value
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1
@@ -1621,20 +1620,20 @@ QR =
       if Conf['Thread Watcher'] and Conf['Auto Watch']
         $.set 'autoWatch', postNumber
       # auto-noko
-      location.pathname = "/#{g.BOARD}/res/#{postNumber}"
+      location.pathname = "/#{Main.BOARD}/res/#{postNumber}"
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       QR.cooldown.auto = QR.replies.length > 1
       QR.cooldown.set if /sage/i.test reply.email then 60 else 30
-      if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
-        $.open "//boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}"
+      if Conf['Open Reply in New Tab'] && !Main.REPLY && !QR.cooldown.auto
+        $.open "//boards.4chan.org/#{Main.BOARD}/res/#{thread}##{postNumber}"
 
     if Conf['Persistent QR'] or QR.cooldown.auto
       reply.rm()
     else
       QR.close()
 
-    if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
+    if Main.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
       Updater.update()
 
     QR.status()
@@ -1774,8 +1773,8 @@ Options =
         $.add ul, li
       $.add $('#main_tab + div', dialog), ul
 
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
+    hiddenThreads = $.get "hiddenThreads/#{Main.BOARD}/", {}
+    hiddenNum = Object.keys(Main.hiddenReplies).length + Object.keys(hiddenThreads).length
     li = $.el 'li',
       innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have \"Show Stubs\" disabled."
     $.on $('button', li), 'click', Options.clearHidden
@@ -1844,10 +1843,10 @@ Options =
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
     # not the number of posts actually hidden on the page.
-    $.delete "hiddenReplies/#{g.BOARD}/"
-    $.delete "hiddenThreads/#{g.BOARD}/"
+    $.delete "hiddenReplies/#{Main.BOARD}/"
+    $.delete "hiddenThreads/#{Main.BOARD}/"
     @textContent = "hidden: 0"
-    g.hiddenReplies = {}
+    Main.hiddenReplies = {}
   keybind: (e) ->
     return if e.keyCode is 9
     e.preventDefault()
@@ -1896,7 +1895,7 @@ Updater =
 
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
-    @thread = $.id "t#{g.THREAD_ID}"
+    @thread = $.id "t#{Main.THREAD_ID}"
     @lastPost = @thread.lastElementChild
 
     for input in $$ 'input', dialog
@@ -1951,7 +1950,7 @@ Updater =
         Updater.count.textContent = 404
         Updater.count.className   = 'warning'
         clearTimeout Updater.timeoutID
-        g.dead = true
+        Main.dead = true
         if Conf['Unread Count']
           Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
         else
@@ -2037,8 +2036,8 @@ Watcher =
       $.on favicon, 'click', @cb.toggle
       $.before input, favicon
 
-    if g.THREAD_ID is $.get 'autoWatch', 0
-      @watch g.THREAD_ID
+    if Main.THREAD_ID is $.get 'autoWatch', 0
+      @watch Main.THREAD_ID
       $.delete 'autoWatch'
     else
       #populate watcher, display watch buttons
@@ -2067,7 +2066,7 @@ Watcher =
       $.rm div
     $.add Watcher.dialog, nodes
 
-    watchedBoard = watched[g.BOARD] or {}
+    watchedBoard = watched[Main.BOARD] or {}
     for favicon in $$ '.favicon'
       id = favicon.nextSibling.name
       if id of watchedBoard
@@ -2085,7 +2084,7 @@ Watcher =
 
   toggle: (thread) ->
     id = $('.favicon + input', thread).name
-    Watcher.watch(id) or Watcher.unwatch id, g.BOARD
+    Watcher.watch(id) or Watcher.unwatch id, Main.BOARD
 
   unwatch: (id, board) ->
     watched = $.get 'watched', {}
@@ -2098,9 +2097,9 @@ Watcher =
     return false if $('.favicon', thread).src is Favicon.default
 
     watched = $.get 'watched', {}
-    watched[g.BOARD] or= {}
-    watched[g.BOARD][id] =
-      href: "/#{g.BOARD}/res/#{id}"
+    watched[Main.BOARD] or= {}
+    watched[Main.BOARD][id] =
+      href: "/#{Main.BOARD}/res/#{id}"
       textContent: GetTitle thread
     $.set 'watched', watched
     Watcher.refresh()
@@ -2120,7 +2119,7 @@ Anonymize =
 
 Sauce =
   init: ->
-    return if g.BOARD is 'f'
+    return if Main.BOARD is 'f'
     @links = []
     for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
@@ -2140,7 +2139,7 @@ Sauce =
         when '$3'
           "' + img.firstChild.dataset.md5.replace(/\=*$/, '') + '"
         when '$4'
-          g.BOARD
+          Main.BOARD
     href = Function 'img', "return '#{href}'"
     el = $.el 'a',
       target: '_blank'
@@ -2230,7 +2229,7 @@ Time =
 
 FileInfo =
   init: ->
-    return if g.BOARD is 'f'
+    return if Main.BOARD is 'f'
     @setFormats()
     Main.callbacks.push @node
   node: (post) ->
@@ -2292,7 +2291,7 @@ GetTitle = (thread) ->
     unless el.textContent
       el = $ '.nameBlock', op
   span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
-  "/#{g.BOARD}/ - #{span.textContent.trim()}"
+  "/#{Main.BOARD}/ - #{span.textContent.trim()}"
 
 TitlePost =
   init: ->
@@ -2530,7 +2529,7 @@ QuoteCT =
         continue
       path = quote.pathname.split '/'
       # If quote leads to a different thread id and is located on the same board.
-      if path[1] is g.BOARD and path[3] isnt post.threadId
+      if path[1] is Main.BOARD and path[3] isnt post.threadId
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(Cross-thread)'
     return
@@ -2573,7 +2572,7 @@ Quotify =
           # \u00A0 is nbsp
           textContent: "#{quote}\u00A0(Dead)"
 
-        if board is g.BOARD and $.id "#p#{id}"
+        if board is Main.BOARD and $.id "#p#{id}"
           a.href      = "#p#{id}"
           a.className = 'quotelink'
           a.setAttribute 'onclick', "replyhl('#{id}');"
@@ -2651,7 +2650,7 @@ ReportButton =
       $.add $('.postInfo', post.el), a
     $.on a, 'click', ReportButton.report
   report: ->
-    url = "//sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
+    url = "//sys.4chan.org/#{Main.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
     id  = Date.now()
     set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
@@ -2663,7 +2662,7 @@ ThreadStats =
     $.add d.body, dialog
     @posts = @images = 0
     @imgLimit =
-      switch g.BOARD
+      switch Main.BOARD
         when 'a', 'mlp', 'v'
           251
         when 'vg'
@@ -2737,7 +2736,7 @@ Unread =
     ), 5
 
   update: (updateFavicon) ->
-    return unless g.REPLY
+    return unless Main.REPLY
 
     count = Object.keys(@replies).length - 2
 
@@ -2751,7 +2750,7 @@ Unread =
       $.rm Favicon.el
 
     Favicon.el.href =
-      if g.dead
+      if Main.dead
         if count
           Favicon.unreadDead
         else
@@ -2762,7 +2761,7 @@ Unread =
         else
           Favicon.default
 
-    if g.dead
+    if Main.dead
       $.addClass    Favicon.el, 'dead'
     else
       $.removeClass Favicon.el, 'dead'
@@ -2814,17 +2813,17 @@ Redirect =
     url =
       if location.hostname is 'images.4chan.org'
         @image location.href
-      else if /^\d+$/.test g.THREAD_ID
+      else if /^\d+$/.test Main.THREAD_ID
         @thread()
     location.href = url if url
   image: (href) ->
     href = href.split '/'
-    # Do not use g.BOARD, the image url can originate from a cross-quote.
+    # Do not use Main.BOARD, the image url can originate from a cross-quote.
     return unless Conf['404 Redirect']
     switch href[3]
       when 'a', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
-  thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
+  thread: (board=Main.BOARD, id=Main.THREAD_ID, mode='thread') ->
     return unless Conf['404 Redirect'] or mode is 'post'
     switch board
       when 'a', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
@@ -2999,7 +2998,7 @@ ImageExpand =
     ImageExpand.contract thumb
     $.rm @
     unless @src.split('/')[2] is 'images.4chan.org' and url = Redirect.image href
-      return if g.dead
+      return if Main.dead
       # CloudFlare may cache banned pages instead of images.
       # This will fool CloudFlare's cache.
       url = href + '?' + Date.now()
@@ -3039,10 +3038,10 @@ Main =
 
     path = location.pathname
     pathname = path[1..].split '/'
-    [g.BOARD, temp] = pathname
+    [Main.BOARD, temp] = pathname
     if temp is 'res'
-      g.REPLY = true
-      g.THREAD_ID = pathname[2]
+      Main.REPLY = true
+      Main.THREAD_ID = pathname[2]
 
     switch location.hostname
       when 'sys.4chan.org'
@@ -3057,7 +3056,7 @@ Main =
 
     Main.pruneHidden()
 
-    if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
+    if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and Main.BOARD isnt 'f'
       Main.css += '#postForm { display: none; }'
 
     Main.addStyle()
@@ -3126,7 +3125,7 @@ Main =
     $.addClass d.body, "chanx_#{Main.version.split('.')[1]}"
     $.addClass d.body, $.engine
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
-      if a = $ "a[href$='/#{g.BOARD}/']", $.id nav
+      if a = $ "a[href$='/#{Main.BOARD}/']", $.id nav
         # Gotta make it work in temporary boards.
         $.addClass a, 'current'
 
@@ -3152,7 +3151,7 @@ Main =
     if Conf['Keybinds']
       Keybinds.init()
 
-    if g.REPLY
+    if Main.REPLY
       if Conf['Prefetch']
         Prefetch.init()
 
@@ -3203,23 +3202,23 @@ Main =
 
   pruneHidden: ->
     now = Date.now()
-    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
+    Main.hiddenReplies = $.get "hiddenReplies/#{Main.BOARD}/", {}
     if $.get('lastChecked', 0) < now - 1*$.DAY
       $.set 'lastChecked', now
 
       cutoff = now - 7*$.DAY
-      hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+      hiddenThreads = $.get "hiddenThreads/#{Main.BOARD}/", {}
 
       for id, timestamp of hiddenThreads
         if timestamp < cutoff
           delete hiddenThreads[id]
 
-      for id, timestamp of g.hiddenReplies
+      for id, timestamp of Main.hiddenReplies
         if timestamp < cutoff
-          delete g.hiddenReplies[id]
+          delete Main.hiddenReplies[id]
 
-      $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
-      $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+      $.set "hiddenThreads/#{Main.BOARD}/", hiddenThreads
+      $.set "hiddenReplies/#{Main.BOARD}/", Main.hiddenReplies
 
   flatten: (parent, obj) ->
     if obj instanceof Array
@@ -3252,7 +3251,7 @@ Main =
       class:       el.className
       klass:       el.className
       id:          el.id[1..]
-      threadId:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id[1..]
+      threadId:    Main.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id[1..]
       isInlined:   /\binline\b/.test rootClass
       isCrosspost: /\bcrosspost\b/.test rootClass
       quotes:      el.getElementsByClassName 'quotelink'
