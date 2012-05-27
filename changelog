@@ -1,4 +1,6 @@
 master
+
+2.30.6
 - Mayhem
   Fix file size formatting always using integers.
 
