@@ -775,7 +775,10 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      return $.replace(a.parentNode.parentNode, node);
+      $.replace(a.parentNode.parentNode, node);
+      return postMessage({
+        pretty: true
+      }, '*');
     }
   };
 
@@ -884,7 +887,10 @@
           $.rm(backlink);
         }
       }
-      return $.after(a, nodes);
+      $.after(a, nodes);
+      return postMessage({
+        pretty: true
+      }, '*');
     }
   };
 
@@ -2542,6 +2548,9 @@
           Updater.lastPost = lastPost;
         }
         $.add(Updater.thread, nodes.reverse());
+        postMessage({
+          pretty: true
+        }, '*');
         if (scroll) {
           return nodes[0].scrollIntoView();
         }
@@ -4185,19 +4194,19 @@
       }
     },
     g: function() {
-      $ = function(selector, root) {
-        if (root == null) {
-          root = document.body;
-        }
-        return root.querySelector(selector);
-      };
-      return $('.board').addEventListener('DOMNodeInserted', function(e) {
-        var pre, target;
-        target = e.target;
-        if (((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) || target.nodeName === 'BLOCKQUOTE') {
-          if (pre = $('pre', target)) {
-            return window.prettyPrint();
-          }
+      /*
+          #http://www.math.union.edu/~dpvc/jsMath/authors/process.html
+          #>jsMath.Process() and jsMath.ProcessBeforeShowing() allow you to pass them an element whose content is to be processed.
+          #
+          #unfortunately, jsMath is not exposed, so we can't do that. we have access to `prettyPrint` and `prettyPrintOne`.
+          #ppO loses indentation for some reason (research needed), while calling pp on every post insert naturally
+          #freezes the browser when expanding large threads.
+          #
+          #so don't use the DOMNodeInserted event; instead explicitly invoke this with messages
+      */
+      return window.addEventListener('message', function(e) {
+        if (e.data.pretty) {
+          return window.prettyPrint();
         }
       });
     },

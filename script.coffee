@@ -597,6 +597,7 @@ ExpandComment =
       QuoteCT.node      post
 
     $.replace a.parentNode.parentNode, node
+    postMessage pretty: true, '*'
 
 ExpandThread =
   init: ->
@@ -668,6 +669,8 @@ ExpandThread =
     for backlink in $$ '.backlink', a.previousElementSibling
       $.rm backlink unless $.id backlink.hash[1..]
     $.after a, nodes
+
+    postMessage pretty: true, '*'
 
 ThreadHiding =
   init: ->
@@ -1997,6 +2000,7 @@ Updater =
       if lastPost = nodes[0]
         Updater.lastPost = lastPost
       $.add Updater.thread, nodes.reverse()
+      postMessage pretty: true, '*'
       if scroll
         nodes[0].scrollIntoView()
 
@@ -3211,14 +3215,19 @@ Main =
       $.globalEval Main.sci
 
   g: ->
-    $ = (selector, root=document.body) ->
-      root.querySelector selector
-    $('.board').addEventListener 'DOMNodeInserted', (e) ->
-      {target} = e
-      if ((/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className)) or target.nodeName is 'BLOCKQUOTE'
-        if pre = $ 'pre', target
-          window.prettyPrint()
-          #pre.innerHTML = window.prettyPrintOne pre.innerHTML #this loses indentation for some reason
+    ###
+    #http://www.math.union.edu/~dpvc/jsMath/authors/process.html
+    #>jsMath.Process() and jsMath.ProcessBeforeShowing() allow you to pass them an element whose content is to be processed.
+    #
+    #unfortunately, jsMath is not exposed, so we can't do that. we have access to `prettyPrint` and `prettyPrintOne`.
+    #ppO loses indentation for some reason (research needed), while calling pp on every post insert naturally
+    #freezes the browser when expanding large threads.
+    #
+    #so don't use the DOMNodeInserted event; instead explicitly invoke this with messages
+    ###
+    window.addEventListener 'message', (e) ->
+      if e.data.pretty
+        window.prettyPrint()
   sci: ->
     $ = (selector, root=document.body) ->
       root.querySelector selector
