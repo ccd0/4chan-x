@@ -580,7 +580,7 @@
       };
     },
     node: function(post) {
-      var filter, firstThread, isOP, key, result, root, thisThread, value, _i, _len, _ref;
+      var filter, isOP, key, result, root, value, _i, _len, _ref;
       if (post.isInlined) {
         return;
       }
@@ -610,12 +610,6 @@
             return;
           }
           $.addClass(root, result[0]);
-          if (isOP && result[1] && !Main.REPLY) {
-            thisThread = root.parentNode;
-            if (firstThread = $('div[class=thread]')) {
-              $.before(firstThread, [thisThread, thisThread.nextElementSibling]);
-            }
-          }
         }
       }
     },

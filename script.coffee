@@ -485,12 +485,6 @@ Filter =
 
         # Highlight
         $.addClass root, result[0]
-        if isOP and result[1] and not Main.REPLY
-          # Put the highlighted OPs' thread on top of the board page...
-          thisThread = root.parentNode
-          # ...before the first non highlighted thread.
-          if firstThread = $ 'div[class=thread]'
-            $.before firstThread, [thisThread, thisThread.nextElementSibling]
 
   name: (post) ->
     $('.name', post.el).textContent
