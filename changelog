@@ -1,5 +1,6 @@
 master
 
+2.30.5
 - Mayhem
   Fix syntax highlighting in code of fetched posts on /g/.
   Add quick [code] tags keybind (alt+c).
