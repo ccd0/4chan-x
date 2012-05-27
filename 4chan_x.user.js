@@ -455,7 +455,7 @@
     globalEval: function(code) {
       var script;
       script = $.el('script', {
-        textContent: code
+        textContent: "(" + code + ")()"
       });
       $.add(d.head, script);
       return $.rm(script);
@@ -4326,12 +4326,12 @@
               pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\s/g, '&nbsp;'));
             }
           };
-          return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
+          return $.globalEval(("" + code).replace('_id_', bq.id));
         case 'sci':
           code = function() {
             jsMath.Process(document.getElementById('_id_'));
           };
-          return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
+          return $.globalEval(("" + code).replace('_id_', bq.id));
       }
     },
     namespace: '4chan_x.',
