@@ -123,7 +123,8 @@ Config =
     openEmptyQR:     ['I',      'Open QR without post number inserted']
     openOptions:     ['ctrl+o', 'Open Options']
     close:           ['Esc',    'Close Options or QR']
-    spoiler:         ['ctrl+s', 'Quick spoiler']
+    spoiler:         ['ctrl+s', 'Quick spoiler tags']
+    code:            ['alt+c',  'Quick code tags']
     submit:          ['alt+s',  'Submit post']
     # Thread related
     watch:           ['w',      'Watch thread']
@@ -801,19 +802,11 @@ Keybinds =
       when Conf.spoiler
         ta = e.target
         return if ta.nodeName isnt 'TEXTAREA'
-
-        value    = ta.value
-        selStart = ta.selectionStart
-        selEnd   = ta.selectionEnd
-
-        ta.value =
-          value[...selStart] +
-          '[spoiler]' + value[selStart...selEnd] + '[/spoiler]' +
-          value[selEnd..]
-
-        range = 9 + selEnd
-        # Move the caret to the end of the selection.
-        ta.setSelectionRange range, range
+        Keybinds.tags 'spoiler', ta
+      when Conf.code
+        ta = e.target
+        return if ta.nodeName isnt 'TEXTAREA'
+        Keybinds.tags 'code', ta
       # Thread related
       when Conf.watch
         Watcher.toggle thread
@@ -883,6 +876,20 @@ Keybinds =
       if e.altKey  then key = 'alt+' + key
       if e.ctrlKey then key = 'ctrl+' + key
     key
+
+  tags: (tag, ta) ->
+    value    = ta.value
+    selStart = ta.selectionStart
+    selEnd   = ta.selectionEnd
+
+    ta.value =
+      value[...selStart] +
+      "[#{tag}]" + value[selStart...selEnd] + "[/#{tag}]" +
+      value[selEnd..]
+
+    range = "[#{tag}]".length + selEnd
+    # Move the caret to the end of the selection.
+    ta.setSelectionRange range, range
 
   img: (thread, all) ->
     if all

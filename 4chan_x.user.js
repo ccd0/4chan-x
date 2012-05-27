@@ -160,7 +160,8 @@
       openEmptyQR: ['I', 'Open QR without post number inserted'],
       openOptions: ['ctrl+o', 'Open Options'],
       close: ['Esc', 'Close Options or QR'],
-      spoiler: ['ctrl+s', 'Quick spoiler'],
+      spoiler: ['ctrl+s', 'Quick spoiler tags'],
+      code: ['alt+c', 'Quick code tags'],
       submit: ['alt+s', 'Submit post'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
@@ -1023,7 +1024,7 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var key, link, o, range, selEnd, selStart, ta, thread, value;
+      var key, link, o, ta, thread;
       if (!(key = Keybinds.keyCode(e)) || /TEXTAREA|INPUT/.test(e.target.nodeName) && !(e.altKey || e.ctrlKey || e.keyCode === 27)) {
         return;
       }
@@ -1057,12 +1058,14 @@
           if (ta.nodeName !== 'TEXTAREA') {
             return;
           }
-          value = ta.value;
-          selStart = ta.selectionStart;
-          selEnd = ta.selectionEnd;
-          ta.value = value.slice(0, selStart) + '[spoiler]' + value.slice(selStart, selEnd) + '[/spoiler]' + value.slice(selEnd);
-          range = 9 + selEnd;
-          ta.setSelectionRange(range, range);
+          Keybinds.tags('spoiler', ta);
+          break;
+        case Conf.code:
+          ta = e.target;
+          if (ta.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('code', ta);
           break;
         case Conf.watch:
           Watcher.toggle(thread);
@@ -1202,6 +1205,15 @@
         }
       }
       return key;
+    },
+    tags: function(tag, ta) {
+      var range, selEnd, selStart, value;
+      value = ta.value;
+      selStart = ta.selectionStart;
+      selEnd = ta.selectionEnd;
+      ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
+      range = ("[" + tag + "]").length + selEnd;
+      return ta.setSelectionRange(range, range);
     },
     img: function(thread, all) {
       var thumb;
