@@ -3988,7 +3988,7 @@
 
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, key, now, path, pathname, temp, timestamp, val, _ref;
+      var key, path, pathname, temp, val;
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
@@ -4021,28 +4021,7 @@
           });
           return;
       }
-      now = Date.now();
-      g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
-      if ($.get('lastChecked', 0) < now - 1 * $.DAY) {
-        $.set('lastChecked', now);
-        cutoff = now - 7 * $.DAY;
-        hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-        for (id in hiddenThreads) {
-          timestamp = hiddenThreads[id];
-          if (timestamp < cutoff) {
-            delete hiddenThreads[id];
-          }
-        }
-        _ref = g.hiddenReplies;
-        for (id in _ref) {
-          timestamp = _ref[id];
-          if (timestamp < cutoff) {
-            delete g.hiddenReplies[id];
-          }
-        }
-        $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
-        $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
-      }
+      Main.pruneHidden();
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form'] && g.BOARD !== 'f') {
         Main.css += '#postForm { display: none; }';
       }
@@ -4194,6 +4173,31 @@
         });
       } else {
         return $.on(board, 'DOMNodeInserted', Main.listener);
+      }
+    },
+    pruneHidden: function() {
+      var cutoff, hiddenThreads, id, now, timestamp, _ref;
+      now = Date.now();
+      g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
+      if ($.get('lastChecked', 0) < now - 1 * $.DAY) {
+        $.set('lastChecked', now);
+        cutoff = now - 7 * $.DAY;
+        hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+        for (id in hiddenThreads) {
+          timestamp = hiddenThreads[id];
+          if (timestamp < cutoff) {
+            delete hiddenThreads[id];
+          }
+        }
+        _ref = g.hiddenReplies;
+        for (id in _ref) {
+          timestamp = _ref[id];
+          if (timestamp < cutoff) {
+            delete g.hiddenReplies[id];
+          }
+        }
+        $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
+        return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
       }
     },
     flatten: function(parent, obj) {

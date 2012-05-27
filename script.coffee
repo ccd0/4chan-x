@@ -3055,24 +3055,7 @@ Main =
         $.ready -> Redirect.init() if d.title is '4chan - 404'
         return
 
-    now = Date.now()
-    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
-    if $.get('lastChecked', 0) < now - 1*$.DAY
-      $.set 'lastChecked', now
-
-      cutoff = now - 7*$.DAY
-      hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-
-      for id, timestamp of hiddenThreads
-        if timestamp < cutoff
-          delete hiddenThreads[id]
-
-      for id, timestamp of g.hiddenReplies
-        if timestamp < cutoff
-          delete g.hiddenReplies[id]
-
-      $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
-      $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+    Main.pruneHidden()
 
     if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
       Main.css += '#postForm { display: none; }'
@@ -3217,6 +3200,26 @@ Main =
         subtree:   true
     else
       $.on board, 'DOMNodeInserted', Main.listener
+
+  pruneHidden: ->
+    now = Date.now()
+    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
+    if $.get('lastChecked', 0) < now - 1*$.DAY
+      $.set 'lastChecked', now
+
+      cutoff = now - 7*$.DAY
+      hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+
+      for id, timestamp of hiddenThreads
+        if timestamp < cutoff
+          delete hiddenThreads[id]
+
+      for id, timestamp of g.hiddenReplies
+        if timestamp < cutoff
+          delete g.hiddenReplies[id]
+
+      $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
+      $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   flatten: (parent, obj) ->
     if obj instanceof Array
