@@ -126,8 +126,7 @@
         'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
-        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.'],
-        'Preserve Whitespace': [false, 'Preserve whitespace in posts using special characters']
+        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.']
       },
       Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
@@ -2034,23 +2033,6 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
-      /*
-          if Conf['Preserve Whitespace']
-            post.com = post.com
-              .replace( /\t/g, '        ' )
-              .replace /^ +| {2,}/gm, (it) ->
-                it.replace `/  /g`, '▷ '
-              .replace /\n{3,}/g, (it) ->
-                it.replace /\n/g, '\n▷'
-      */
-
-      if (Conf['Preserve Whitespace']) {
-        post.com = post.com.replace(/\t/g, '        ').replace(/^ +| {2,}/gm, function(it) {
-          return '\x01' + it.replace(/ /g, ' \x01');
-        }).replace(/\n{3,}/g, function(it) {
-          return it.replace(/\n/g, '\n\x01');
-        });
-      }
       form = new FormData();
       for (name in post) {
         val = post[name];

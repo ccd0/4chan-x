@@ -1,4 +1,6 @@
 master
+- aeosynth
+  rm whitespace preservation (ty based moot)
 
 3.6.3
 - aeosynth
