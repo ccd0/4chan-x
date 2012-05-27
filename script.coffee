@@ -3198,8 +3198,6 @@ Main =
       if Conf['Index Navigation']
         Nav.init()
 
-    Main.hasCodeTags = !! $ 'script[src="//static.4chan.org/js/prettify/prettify.js"]'
-
     board = $ '.board'
     nodes = []
     for node in $$ '.postContainer', board
@@ -3213,19 +3211,6 @@ Main =
         subtree:   true
     else
       $.on board, 'DOMNodeInserted', Main.listener
-
-    if Main.BOARD is 'g'
-      $.globalEval Main.g
-    else if Main.BOARD is 'sci'
-      $.globalEval Main.sci
-
-  sci: ->
-    $ = (selector, root=document.body) ->
-      root.querySelector selector
-    $('.board').addEventListener 'DOMNodeInserted', (e) ->
-      {target} = e
-      if ((/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className)) or target.nodeName is 'BLOCKQUOTE'
-        jsMath.Process target
 
   pruneHidden: ->
     now = Date.now()
@@ -3313,12 +3298,18 @@ Main =
       Main.node [Main.preParse target]
 
   prettify: (bq) ->
-    return unless Main.hasCodeTags
-    code = ->
-      for pre in document.getElementById('_id_').getElementsByClassName 'prettyprint'
-        pre.innerHTML = prettyPrintOne pre.innerHTML.replace /\s/g, '&nbsp;'
-      return
-    $.globalEval "(#{code})()".replace '_id_', bq.id
+    switch Main.BOARD
+      when 'g'
+        code = ->
+          for pre in document.getElementById('_id_').getElementsByClassName 'prettyprint'
+            pre.innerHTML = prettyPrintOne pre.innerHTML.replace /\s/g, '&nbsp;'
+          return
+        $.globalEval "(#{code})()".replace '_id_', bq.id
+      when 'sci'
+        code = ->
+          jsMath.Process document.getElementById '_id_'
+          return
+        $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
   version: '3.7.2'

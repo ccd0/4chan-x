@@ -4173,7 +4173,6 @@
           Nav.init();
         }
       }
-      Main.hasCodeTags = !!$('script[src="//static.4chan.org/js/prettify/prettify.js"]');
       board = $('.board');
       nodes = [];
       _ref1 = $$('.postContainer', board);
@@ -4184,33 +4183,13 @@
       Main.node(nodes, true);
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
-        observer.observe(board, {
+        return observer.observe(board, {
           childList: true,
           subtree: true
         });
       } else {
-        $.on(board, 'DOMNodeInserted', Main.listener);
+        return $.on(board, 'DOMNodeInserted', Main.listener);
       }
-      if (Main.BOARD === 'g') {
-        return $.globalEval(Main.g);
-      } else if (Main.BOARD === 'sci') {
-        return $.globalEval(Main.sci);
-      }
-    },
-    sci: function() {
-      $ = function(selector, root) {
-        if (root == null) {
-          root = document.body;
-        }
-        return root.querySelector(selector);
-      };
-      return $('.board').addEventListener('DOMNodeInserted', function(e) {
-        var target;
-        target = e.target;
-        if (((/\bpostContainer\b/.test(target.className)) && !(/\bpostContainer\b/.test(target.parentNode.className))) || target.nodeName === 'BLOCKQUOTE') {
-          return jsMath.Process(target);
-        }
-      });
     },
     pruneHidden: function() {
       var cutoff, hiddenThreads, id, now, timestamp, _ref;
@@ -4337,18 +4316,23 @@
     },
     prettify: function(bq) {
       var code;
-      if (!Main.hasCodeTags) {
-        return;
+      switch (Main.BOARD) {
+        case 'g':
+          code = function() {
+            var pre, _i, _len, _ref;
+            _ref = document.getElementById('_id_').getElementsByClassName('prettyprint');
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              pre = _ref[_i];
+              pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\s/g, '&nbsp;'));
+            }
+          };
+          return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
+        case 'sci':
+          code = function() {
+            jsMath.Process(document.getElementById('_id_'));
+          };
+          return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
       }
-      code = function() {
-        var pre, _i, _len, _ref;
-        _ref = document.getElementById('_id_').getElementsByClassName('prettyprint');
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          pre = _ref[_i];
-          pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\s/g, '&nbsp;'));
-        }
-      };
-      return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
     version: '3.7.2',
