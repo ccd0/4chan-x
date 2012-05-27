@@ -2478,6 +2478,7 @@ QuotePreview =
 
     node = doc.getElementById "p#{id}"
     qp.innerHTML = node.innerHTML
+    Main.prettify()
     post =
       el: qp
     if fileInfo = $ '.fileInfo', qp
@@ -2491,7 +2492,6 @@ QuotePreview =
       Time.node     post
     if Conf['File Info Formatting']
       FileInfo.node post
-    Main.prettify()
 
 QuoteOP =
   init: ->

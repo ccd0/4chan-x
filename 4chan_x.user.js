@@ -3270,6 +3270,7 @@
       doc.documentElement.innerHTML = req.response;
       node = doc.getElementById("p" + id);
       qp.innerHTML = node.innerHTML;
+      Main.prettify();
       post = {
         el: qp
       };
@@ -3287,9 +3288,8 @@
         Time.node(post);
       }
       if (Conf['File Info Formatting']) {
-        FileInfo.node(post);
+        return FileInfo.node(post);
       }
-      return Main.prettify();
     }
   };
 
