@@ -3033,16 +3033,16 @@ Main =
   init: ->
     Main.flatten null, Config
 
+    # Load values from localStorage.
+    for key, val of Conf
+      Conf[key] = $.get key, val
+
     path = location.pathname
     pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname
     if temp is 'res'
       g.REPLY = true
       g.THREAD_ID = pathname[2]
-
-    # Load values from localStorage.
-    for key, val of Conf
-      Conf[key] = $.get key, val
 
     switch location.hostname
       when 'sys.4chan.org'
@@ -3054,11 +3054,6 @@ Main =
       when 'images.4chan.org'
         $.ready -> Redirect.init() if d.title is '4chan - 404'
         return
-
-    if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
-      Main.css += '#postForm { display: none; }'
-
-    Main.addStyle()
 
     now = Date.now()
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
@@ -3079,6 +3074,10 @@ Main =
       $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
       $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
+    if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
+      Main.css += '#postForm { display: none; }'
+
+    Main.addStyle()
 
     #major features
     if Conf['Filter']

@@ -3990,16 +3990,16 @@
     init: function() {
       var cutoff, hiddenThreads, id, key, now, path, pathname, temp, timestamp, val, _ref;
       Main.flatten(null, Config);
+      for (key in Conf) {
+        val = Conf[key];
+        Conf[key] = $.get(key, val);
+      }
       path = location.pathname;
       pathname = path.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
       if (temp === 'res') {
         g.REPLY = true;
         g.THREAD_ID = pathname[2];
-      }
-      for (key in Conf) {
-        val = Conf[key];
-        Conf[key] = $.get(key, val);
       }
       switch (location.hostname) {
         case 'sys.4chan.org':
@@ -4021,10 +4021,6 @@
           });
           return;
       }
-      if (Conf['Quick Reply'] && Conf['Hide Original Post Form'] && g.BOARD !== 'f') {
-        Main.css += '#postForm { display: none; }';
-      }
-      Main.addStyle();
       now = Date.now();
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       if ($.get('lastChecked', 0) < now - 1 * $.DAY) {
@@ -4047,6 +4043,10 @@
         $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
         $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
       }
+      if (Conf['Quick Reply'] && Conf['Hide Original Post Form'] && g.BOARD !== 'f') {
+        Main.css += '#postForm { display: none; }';
+      }
+      Main.addStyle();
       if (Conf['Filter']) {
         Filter.init();
       }
