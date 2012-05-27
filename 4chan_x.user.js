@@ -747,6 +747,7 @@
         }
         quote.href = "res/" + href;
       }
+      Main.prettify(node);
       post = {
         el: node,
         threadId: threadID,
@@ -768,8 +769,7 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      $.replace(a.parentNode.parentNode, node);
-      return Main.prettify();
+      return $.replace(a.parentNode.parentNode, node);
     }
   };
 
@@ -3258,7 +3258,7 @@
       return $.off(this, 'mouseout click', QuotePreview.mouseout);
     },
     parse: function(req, id) {
-      var doc, fileInfo, img, node, post, qp;
+      var bq, doc, fileInfo, img, node, post, qp;
       if (!((qp = UI.el) && qp.textContent === ("Loading " + id + "..."))) {
         return;
       }
@@ -3270,7 +3270,9 @@
       doc.documentElement.innerHTML = req.response;
       node = doc.getElementById("p" + id);
       qp.innerHTML = node.innerHTML;
-      Main.prettify();
+      bq = $('blockquote', qp);
+      bq.id += '_qp';
+      Main.prettify(bq);
       post = {
         el: qp
       };
@@ -4125,6 +4127,7 @@
         threadId: g.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.slice(1),
         isInlined: /\binline\b/.test(rootClass),
         isCrosspost: /\bcrosspost\b/.test(rootClass),
+        blockquote: el.lastElementChild,
         quotes: el.getElementsByClassName('quotelink'),
         backlinks: el.getElementsByClassName('backlink'),
         fileInfo: false,
@@ -4137,6 +4140,7 @@
           post.img = img;
         }
       }
+      Main.prettify(post.blockquote);
       return post;
     },
     node: function(nodes, notify) {
@@ -4155,7 +4159,6 @@
           }
         }
       }
-      Main.prettify();
     },
     observer: function(mutations) {
       var addedNode, mutation, nodes, _i, _j, _len, _len1, _ref;
@@ -4181,11 +4184,20 @@
         return Main.node([Main.preParse(target)]);
       }
     },
-    prettify: function() {
+    prettify: function(bq) {
+      var code;
       if (!Main.hasCodeTags) {
         return;
       }
-      return $.globalEval('window.prettyPrint()');
+      code = function() {
+        var pre, _i, _len, _ref;
+        _ref = document.getElementById('_id_').getElementsByClassName('prettyprint');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          pre = _ref[_i];
+          pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\s/g, '&nbsp;'));
+        }
+      };
+      return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
     version: '2.30.4',

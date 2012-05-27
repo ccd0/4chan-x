@@ -576,6 +576,7 @@ ExpandComment =
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote
       quote.href = "res/#{href}" # Fix pathnames
+    Main.prettify node
     post =
       el:        node
       threadId:  threadID
@@ -592,7 +593,6 @@ ExpandComment =
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
     $.replace a.parentNode.parentNode, node
-    Main.prettify()
 
 ExpandThread =
   init: ->
@@ -2478,7 +2478,9 @@ QuotePreview =
 
     node = doc.getElementById "p#{id}"
     qp.innerHTML = node.innerHTML
-    Main.prettify()
+    bq = $ 'blockquote', qp
+    bq.id += '_qp'
+    Main.prettify bq
     post =
       el: qp
     if fileInfo = $ '.fileInfo', qp
@@ -3140,6 +3142,7 @@ Main =
       threadId:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id[1..]
       isInlined:   /\binline\b/.test rootClass
       isCrosspost: /\bcrosspost\b/.test rootClass
+      blockquote:  el.lastElementChild
       quotes:      el.getElementsByClassName 'quotelink'
       backlinks:   el.getElementsByClassName 'backlink'
       fileInfo:    false
@@ -3149,6 +3152,7 @@ Main =
       if img.alt isnt 'File deleted.'
         post.fileInfo = fileInfo
         post.img      = img
+    Main.prettify post.blockquote
     post
   node: (nodes, notify) ->
     for callback in Main.callbacks
@@ -3156,7 +3160,6 @@ Main =
         callback node for node in nodes
       catch err
         alert "4chan X (#{Main.version}) error: #{err.message}\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n#{err.stack}" if notify
-    Main.prettify()
     return
   observer: (mutations) ->
     nodes = []
@@ -3170,10 +3173,13 @@ Main =
     if /\bpostContainer\b/.test target.className
       Main.node [Main.preParse target]
 
-  prettify: ->
+  prettify: (bq) ->
     return unless Main.hasCodeTags
-    # window.prettyPrintOne(html) does not preserve indentation
-    $.globalEval 'window.prettyPrint()'
+    code = ->
+      for pre in document.getElementById('_id_').getElementsByClassName 'prettyprint'
+        pre.innerHTML = prettyPrintOne pre.innerHTML.replace /\s/g, '&nbsp;'
+      return
+    $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
   version: '2.30.4'
