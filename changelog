@@ -1,4 +1,6 @@
 master
+
+3.8.2
 - aeosynth
   fix expanding comments
   fix qp
