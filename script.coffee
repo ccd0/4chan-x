@@ -230,6 +230,7 @@ UI =
       style.right = clientWidth - clientX + 45 + 'px'
 
   hoverend: ->
+    return unless UI.el
     $.rm UI.el
     delete UI.el
 
@@ -2431,8 +2432,10 @@ QuotePreview =
     return
   mouseover: (e) ->
     return if /\binlined\b/.test @className
-    if qp = $.id 'qp'
-      $.rm qp
+
+    # Make sure to remove the previous UI.el
+    UI.hoverend()
+
     qp = UI.el = $.el 'div',
       id: 'qp'
       className: 'post reply dialog'
@@ -2771,6 +2774,9 @@ ImageHover =
     return unless post.img
     $.on post.img, 'mouseover', ImageHover.mouseover
   mouseover: ->
+    # Make sure to remove the previous UI.el
+    UI.hoverend()
+
     UI.el = $.el 'img'
       id: 'ihover'
       src: @parentNode.href

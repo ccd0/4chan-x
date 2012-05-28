@@ -256,6 +256,9 @@
       }
     },
     hoverend: function() {
+      if (!UI.el) {
+        return;
+      }
       $.rm(UI.el);
       return delete UI.el;
     }
@@ -3207,9 +3210,7 @@
       if (/\binlined\b/.test(this.className)) {
         return;
       }
-      if (qp = $.id('qp')) {
-        $.rm(qp);
-      }
+      UI.hoverend();
       qp = UI.el = $.el('div', {
         id: 'qp',
         className: 'post reply dialog'
@@ -3647,6 +3648,7 @@
       return $.on(post.img, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function() {
+      UI.hoverend();
       UI.el = $.el('img', {
         id: 'ihover',
         src: this.parentNode.href
