@@ -2226,7 +2226,7 @@ FileInfo =
     FileInfo.data =
       link:       post.img.parentNode.href
       spoiler:    /^Spoiler/.test alt
-      size:       parseFloat alt
+      size:       alt.match(/\d+\.?\d*/)[0]
       unit:       alt.match(/\w+$/)[0]
       resolution: span.previousSibling.textContent.match(/\d+x\d+|PDF/)[0]
       fullname:   span.title
