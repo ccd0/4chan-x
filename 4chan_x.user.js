@@ -387,7 +387,13 @@
       if (root == null) {
         root = d.body;
       }
-      return d.evaluate(path, root, null, 8, null).singleNodeValue;
+      return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
+    },
+    X: function(path, root) {
+      if (root == null) {
+        root = d.body;
+      }
+      return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT, null);
     },
     addClass: function(el, className) {
       return el.classList.add(className);
@@ -650,7 +656,7 @@
     comment: function(post) {
       var data, i, nodes, text, _i, _ref;
       text = [];
-      nodes = d.evaluate('.//br|.//text()', post.blockquote, null, 7, null);
+      nodes = d.evaluate('.//br|.//text()', post.blockquote, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
       for (i = _i = 0, _ref = nodes.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
@@ -3374,7 +3380,7 @@
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      snapshot = d.evaluate('.//text()[not(parent::a)]', post.blockquote, null, 6, null);
+      snapshot = $.X('.//text()[not(parent::a)]', post.blockquote);
       for (i = _i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         node = snapshot.snapshotItem(i);
         data = node.data;

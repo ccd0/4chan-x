@@ -306,9 +306,10 @@ $.extend $,
     $.add d.head, style
     style
   x: (path, root=d.body) ->
-    # XPathResult.ANY_UNORDERED_NODE_TYPE is 8
-    d.evaluate(path, root, null, 8, null).
+    d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
       singleNodeValue
+  X: (path, root=d.body) ->
+    d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT, null)
   addClass: (el, className) ->
     el.classList.add className
   removeClass: (el, className) ->
@@ -509,8 +510,7 @@ Filter =
     $('.subject', post.el).textContent or false
   comment: (post) ->
     text = []
-    # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE is 7
-    nodes = d.evaluate './/br|.//text()', post.blockquote, null, 7, null
+    nodes = d.evaluate './/br|.//text()', post.blockquote, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
@@ -2546,9 +2546,8 @@ Quotify =
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
 
-    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()[not(parent::a)]', post.blockquote, null, 6, null
+    snapshot = $.X './/text()[not(parent::a)]', post.blockquote
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
