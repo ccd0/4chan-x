@@ -393,7 +393,7 @@
       if (root == null) {
         root = d.body;
       }
-      return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT, null);
+      return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
     },
     addClass: function(el, className) {
       return el.classList.add(className);

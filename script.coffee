@@ -309,7 +309,7 @@ $.extend $,
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
       singleNodeValue
   X: (path, root=d.body) ->
-    d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT, null)
+    d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null)
   addClass: (el, className) ->
     el.classList.add className
   removeClass: (el, className) ->
