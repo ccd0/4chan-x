@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.30.6
+// @version        2.30.7
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.30.6
+ * 4chan X 2.30.7
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -4081,12 +4081,12 @@
       Main.hasCodeTags = !!$('script[src="//static.4chan.org/js/prettify/prettify.js"]');
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
-        return observer.observe(board, {
+        observer.observe(board, {
           childList: true,
           subtree: true
         });
       } else {
-        return $.on(board, 'DOMNodeInserted', Main.listener);
+        $.on(board, 'DOMNodeInserted', Main.listener);
       }
     },
     flatten: function(parent, obj) {
@@ -4202,7 +4202,7 @@
       return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '2.30.6',
+    version: '2.30.7',
     callbacks: [],
     css: '\
 /* dialog styling */\

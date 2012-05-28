@@ -1,5 +1,11 @@
 master
 
+2.30.7
+- aeosynth
+  Fix expanding comments on /g/.
+- Mayhem
+  Fix file size info in case of spoiler image.
+
 2.30.6
 - Mayhem
   Fix file size formatting always using integers.

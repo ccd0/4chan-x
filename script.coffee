@@ -3115,6 +3115,7 @@ Main =
         subtree:   true
     else
       $.on board, 'DOMNodeInserted', Main.listener
+    return
 
   flatten: (parent, obj) ->
     if obj instanceof Array
@@ -3189,7 +3190,7 @@ Main =
     $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.30.6'
+  version: '2.30.7'
   callbacks: []
   css: '
 /* dialog styling */
