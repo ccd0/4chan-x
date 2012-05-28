@@ -3248,7 +3248,6 @@
       $.add(d.body, qp);
       id = this.hash.slice(2);
       if (el = $.id("p" + id)) {
-        qp.className += el.parentNode.className.replace(/^.+(op|reply)Container/, '');
         qp.innerHTML = el.innerHTML;
         if (Conf['Quote Highlighting']) {
           if (/\bop\b/.test(el.className)) {
