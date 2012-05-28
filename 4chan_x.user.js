@@ -607,7 +607,7 @@
           $.addClass(root, result[0]);
           if (isOP && result[1] && !g.REPLY) {
             thisThread = root.parentNode;
-            if (firstThread = $('div[class=thread]')) {
+            if (firstThread = $('div[class="postContainer opContainer"]').parentNode) {
               $.before(firstThread, [thisThread, thisThread.nextElementSibling]);
             }
           }

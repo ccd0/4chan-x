@@ -486,7 +486,7 @@ Filter =
           # Put the highlighted OPs' thread on top of the board page...
           thisThread = root.parentNode
           # ...before the first non highlighted thread.
-          if firstThread = $ 'div[class=thread]'
+          if firstThread = $('div[class="postContainer opContainer"]').parentNode
             $.before firstThread, [thisThread, thisThread.nextElementSibling]
 
   name: (post) ->
