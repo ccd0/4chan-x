@@ -4180,6 +4180,7 @@
         nodes.push(Main.preParse(node));
       }
       Main.node(nodes, true);
+      Main.prettify = Main._prettify;
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
         return observer.observe(board, {
@@ -4313,7 +4314,8 @@
         return Main.node([Main.preParse(target)]);
       }
     },
-    prettify: function(bq) {
+    prettify: function() {},
+    _prettify: function(bq) {
       var code;
       switch (Main.BOARD) {
         case 'g':
@@ -4325,13 +4327,13 @@
               pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\s/g, '&nbsp;'));
             }
           };
-          return $.globalEval(("" + code).replace('_id_', bq.id));
+          break;
         case 'sci':
           code = function() {
             jsMath.Process(document.getElementById('_id_'));
           };
-          return $.globalEval(("" + code).replace('_id_', bq.id));
       }
+      return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
     version: '3.8.1',

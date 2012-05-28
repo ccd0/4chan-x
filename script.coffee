@@ -3195,6 +3195,7 @@ Main =
     for node in $$ '.postContainer', board
       nodes.push Main.preParse node
     Main.node nodes, true
+    Main.prettify = Main._prettify
 
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
       observer = new MutationObserver Main.observer
@@ -3289,7 +3290,8 @@ Main =
     if (/\bpostContainer\b/.test target.className) and not (/\bpostContainer\b/.test target.parentNode.className)
       Main.node [Main.preParse target]
 
-  prettify: (bq) ->
+  prettify: -> return
+  _prettify: (bq) ->
     switch Main.BOARD
       when 'g'
         code = ->
