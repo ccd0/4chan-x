@@ -1,4 +1,7 @@
 master
+- aeosynth
+  fix expanding comments
+  fix qp
 
 3.8.1
 - Mayhem
