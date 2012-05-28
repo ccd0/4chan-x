@@ -755,9 +755,8 @@
         }
         quote.href = "res/" + href;
       }
-      Main.prettify(node);
       post = {
-        el: node,
+        blockquote: node,
         threadId: threadID,
         quotes: quotes,
         backlinks: []
@@ -777,7 +776,8 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      return $.replace(a.parentNode.parentNode, node);
+      $.replace(a.parentNode.parentNode, node);
+      return Main.prettify(node);
     }
   };
 

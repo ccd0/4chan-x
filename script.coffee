@@ -574,12 +574,11 @@ ExpandComment =
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote
       quote.href = "res/#{href}" # Fix pathnames
-    Main.prettify node
     post =
-      el:        node
-      threadId:  threadID
-      quotes:    quotes
-      backlinks: []
+      blockquote: node
+      threadId:   threadID
+      quotes:     quotes
+      backlinks:  []
     if Conf['Resurrect Quotes']
       Quotify.node      post
     if Conf['Quote Preview']
@@ -592,6 +591,7 @@ ExpandComment =
       QuoteCT.node      post
 
     $.replace a.parentNode.parentNode, node
+    Main.prettify node
 
 ExpandThread =
   init: ->
