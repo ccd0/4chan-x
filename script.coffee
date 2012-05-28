@@ -3296,12 +3296,11 @@ Main =
           for pre in document.getElementById('_id_').getElementsByClassName 'prettyprint'
             pre.innerHTML = prettyPrintOne pre.innerHTML.replace /\s/g, '&nbsp;'
           return
-        $.globalEval "#{code}".replace '_id_', bq.id
       when 'sci'
         code = ->
           jsMath.Process document.getElementById '_id_'
           return
-        $.globalEval "#{code}".replace '_id_', bq.id
+    $.globalEval "#{code}".replace '_id_', bq.id
 
   namespace: '4chan_x.'
   version: '3.8.1'
