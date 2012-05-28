@@ -4070,7 +4070,6 @@
           });
         }
       }
-      Main.hasCodeTags = !!$('script[src="//static.4chan.org/js/prettify/prettify.js"]');
       board = $('.board');
       nodes = [];
       _ref1 = $$('.postContainer', board);
@@ -4079,6 +4078,7 @@
         nodes.push(Main.preParse(node));
       }
       Main.node(nodes, true);
+      Main.hasCodeTags = !!$('script[src="//static.4chan.org/js/prettify/prettify.js"]');
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
         observer = new MutationObserver(Main.observer);
         return observer.observe(board, {

@@ -3099,13 +3099,14 @@ Main =
       if Conf['Index Navigation']
         setTimeout -> Nav.init()
 
-    Main.hasCodeTags = !! $ 'script[src="//static.4chan.org/js/prettify/prettify.js"]'
-
     board = $ '.board'
     nodes = []
     for node in $$ '.postContainer', board
       nodes.push Main.preParse node
     Main.node nodes, true
+
+    # Execute these scripts on inserted posts, not page init.
+    Main.hasCodeTags = !! $ 'script[src="//static.4chan.org/js/prettify/prettify.js"]'
 
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
       observer = new MutationObserver Main.observer
