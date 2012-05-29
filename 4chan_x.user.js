@@ -819,13 +819,13 @@
       a = $('.summary', thread);
       switch (a.textContent[0]) {
         case '+':
-          a.textContent = a.textContent.replace('+', '\u00d7 Loading...');
+          a.textContent = a.textContent.replace('+', 'X Loading...');
           $.cache(pathname, function() {
             return ExpandThread.parse(this, thread, a);
           });
           break;
-        case '\u00d7':
-          a.textContent = a.textContent.replace('\u00d7 Loading...', '+');
+        case 'X':
+          a.textContent = a.textContent.replace('X Loading...', '+');
           $.cache.requests[pathname].abort();
           break;
         case '-':
@@ -863,7 +863,7 @@
         $.off(a, 'click', ExpandThread.cb.toggle);
         return;
       }
-      a.textContent = a.textContent.replace('\u00d7 Loading...', '-');
+      a.textContent = a.textContent.replace('X Loading...', '-');
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
       threadID = thread.id.slice(1);
@@ -1647,7 +1647,7 @@
           className: 'preview',
           draggable: true,
           href: 'javascript:;',
-          innerHTML: '<a class=remove>&times;</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+          innerHTML: '<a class=remove>X</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
         });
         $('input', this.el).checked = this.spoiler;
         $.on(this.el, 'click', function() {
@@ -1895,7 +1895,7 @@
       QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
-  <span> <a class=close title=Close>&times;</a></span>\
+  <span> <a class=close title=Close>X</a></span>\
 </div>\
 <form>\
   <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
@@ -2645,7 +2645,7 @@
         for (id in _ref) {
           props = _ref[id];
           x = $.el('a', {
-            textContent: '\u00d7',
+            textContent: 'X',
             href: 'javascript:;'
           });
           $.on(x, 'click', Watcher.cb.x);

@@ -616,15 +616,13 @@ ExpandThread =
     pathname = "/#{Main.BOARD}/res/#{thread.id[1..]}"
     a = $ '.summary', thread
 
-    # \u00d7 is &times;
-
     switch a.textContent[0]
       when '+'
-        a.textContent = a.textContent.replace '+', '\u00d7 Loading...'
+        a.textContent = a.textContent.replace '+', 'X Loading...'
         $.cache pathname, -> ExpandThread.parse @, thread, a
 
-      when '\u00d7'
-        a.textContent = a.textContent.replace '\u00d7 Loading...', '+'
+      when 'X'
+        a.textContent = a.textContent.replace 'X Loading...', '+'
         $.cache.requests[pathname].abort()
 
       when '-'
@@ -648,7 +646,7 @@ ExpandThread =
       $.off a, 'click', ExpandThread.cb.toggle
       return
 
-    a.textContent = a.textContent.replace '\u00d7 Loading...', '-'
+    a.textContent = a.textContent.replace 'X Loading...', '-'
 
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
@@ -1218,7 +1216,7 @@ QR =
         className: 'preview'
         draggable: true
         href: 'javascript:;'
-        innerHTML: '<a class=remove>&times;</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+        innerHTML: '<a class=remove>X</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
       $('input', @el).checked = @spoiler
       $.on @el,               'click',      => @select()
       $.on $('.remove', @el), 'click',  (e) =>
@@ -1402,7 +1400,7 @@ QR =
     QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
-  <span> <a class=close title=Close>&times;</a></span>
+  <span> <a class=close title=Close>X</a></span>
 </div>
 <form>
   <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
@@ -2064,8 +2062,7 @@ Watcher =
     for board of watched
       for id, props of watched[board]
         x = $.el 'a',
-          # \u00d7 is &times;
-          textContent: '\u00d7'
+          textContent: 'X'
           href: 'javascript:;'
         $.on x, 'click', Watcher.cb.x
         link = $.el 'a', props
