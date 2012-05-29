@@ -2443,7 +2443,10 @@ QuotePreview =
 
     id = @hash[2..]
     if el = $.id "p#{id}"
-      qp.className += el.parentNode.className.replace /^.+(op|reply)Container/, ''
+      for klass in el.parentNode.className.split ' '
+        # preserve highlight classes
+        unless /^((op|reply|post)Container|forwarded)$/.test klass
+          $.addClass qp, klass
       qp.innerHTML  = el.innerHTML
       if Conf['Quote Highlighting']
         if /\bop\b/.test el.className

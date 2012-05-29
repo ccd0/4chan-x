@@ -3206,7 +3206,7 @@
       }
     },
     mouseover: function(e) {
-      var el, id, qp, quote, replyID, _i, _len, _ref;
+      var el, id, klass, qp, quote, replyID, _i, _j, _len, _len1, _ref, _ref1;
       if (/\binlined\b/.test(this.className)) {
         return;
       }
@@ -3218,7 +3218,13 @@
       $.add(d.body, qp);
       id = this.hash.slice(2);
       if (el = $.id("p" + id)) {
-        qp.className += el.parentNode.className.replace(/^.+(op|reply)Container/, '');
+        _ref = el.parentNode.className.split(' ');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          klass = _ref[_i];
+          if (!/^((op|reply|post)Container|forwarded)$/.test(klass)) {
+            $.addClass(qp, klass);
+          }
+        }
         qp.innerHTML = el.innerHTML;
         if (Conf['Quote Highlighting']) {
           if (/\bop\b/.test(el.className)) {
@@ -3228,9 +3234,9 @@
           }
         }
         replyID = $.x('ancestor::div[contains(@class,"postContainer")]', this).id.match(/\d+$/)[0];
-        _ref = $$('.quotelink, .backlink', qp);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          quote = _ref[_i];
+        _ref1 = $$('.quotelink, .backlink', qp);
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          quote = _ref1[_j];
           if (quote.hash.slice(2) === replyID) {
             $.addClass(quote, 'forwardlink');
           }
