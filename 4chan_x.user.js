@@ -900,7 +900,8 @@
           $.rm(backlink);
         }
       }
-      return $.after(a, nodes);
+      $.after(a, nodes);
+      return Main.node(nodes);
     }
   };
 
