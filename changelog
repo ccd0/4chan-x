@@ -1,8 +1,10 @@
 master
+- Mayhem
+  Fix quote previewing of forward hidden posts.
 
 2.30.7
 - aeosynth
-  Fix expanding comments on /g/.
+  Fix expanding comments.
 - Mayhem
   Fix file size info in case of spoiler image.
 
