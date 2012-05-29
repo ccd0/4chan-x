@@ -289,6 +289,7 @@
   };
 
   $.extend($, {
+    NBSP: '\u00A0',
     SECOND: 1000,
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
@@ -2792,7 +2793,7 @@
       _ref = Sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
-        nodes.push($.tn('\u00A0'), link(img));
+        nodes.push($.tn($.NBSP), link(img));
       }
       return $.add(post.fileInfo, nodes);
     }
@@ -3378,7 +3379,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (quote.hash.slice(2) === post.threadId) {
-          $.add(quote, $.tn('\u00A0(OP)'));
+          $.add(quote, $.tn($.NBSP + '(OP)'));
         }
       }
     }
@@ -3401,7 +3402,7 @@
         }
         path = quote.pathname.split('/');
         if (path[1] === Main.BOARD && path[3] !== post.threadId) {
-          $.add(quote, $.tn('\u00A0(Cross-thread)'));
+          $.add(quote, $.tn($.NBSP + '(Cross-thread)'));
         }
       }
     }
@@ -3433,7 +3434,7 @@
           id = quote.match(/\d+$/)[0];
           board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postInfo > .postNum > a:first-child', post.el).pathname.split('/')[1];
           nodes.push(a = $.el('a', {
-            textContent: "" + quote + "\u00A0(Dead)"
+            textContent: "" + quote + $.NBSP + "(Dead)"
           }));
           if (board === Main.BOARD && $.id("p" + id)) {
             a.href = "#p" + id;

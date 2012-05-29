@@ -248,6 +248,7 @@ $.extend = (object, properties) ->
   return
 
 $.extend $,
+  NBSP: '\u00A0'
   SECOND: 1000
   MINUTE: 1000*60
   HOUR  : 1000*60*60
@@ -2165,8 +2166,7 @@ Sauce =
     img   = img.parentNode
     nodes = []
     for link in Sauce.links
-      # \u00A0 is nbsp
-      nodes.push $.tn('\u00A0'), link img
+      nodes.push $.tn($.NBSP), link img
     $.add post.fileInfo, nodes
 
 RevealSpoilers =
@@ -2545,8 +2545,7 @@ QuoteOP =
     return if post.isInlined and not post.isCrosspost
     for quote in post.quotes
       if quote.hash[2..] is post.threadId
-        # \u00A0 is nbsp
-        $.add quote, $.tn '\u00A0(OP)'
+        $.add quote, $.tn $.NBSP + '(OP)'
     return
 
 QuoteCT =
@@ -2561,8 +2560,7 @@ QuoteCT =
       path = quote.pathname.split '/'
       # If quote leads to a different thread id and is located on the same board.
       if path[1] is Main.BOARD and path[3] isnt post.threadId
-        # \u00A0 is nbsp
-        $.add quote, $.tn '\u00A0(Cross-thread)'
+        $.add quote, $.tn $.NBSP + '(Cross-thread)'
     return
 
 Quotify =
@@ -2599,8 +2597,7 @@ Quotify =
             $('.postInfo > .postNum > a:first-child', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
-          # \u00A0 is nbsp
-          textContent: "#{quote}\u00A0(Dead)"
+          textContent: "#{quote}#{$.NBSP}(Dead)"
 
         if board is Main.BOARD and $.id "p#{id}"
           a.href      = "#p#{id}"
