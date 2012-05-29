@@ -3422,7 +3422,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var id, keys, next, pEl, pid, preply, prev, qid, qreply, quote, quotes, replies, reply, uniq, _i, _len;
+      var id, keys, next, pEl, pid, preply, prev, qid, qreply, qroot, quote, quotes, replies, reply, threadContainer, uniq, _i, _len;
       quotes = post.quotes, id = post.id;
       replies = Unread.replies;
       uniq = {};
@@ -3443,7 +3443,15 @@
       qid = keys[0];
       qreply = replies[qid];
       reply = replies[id];
-      $.add(qreply.el.parentNode, reply.el.parentNode);
+      qroot = qreply.el.parentNode;
+      threadContainer = qroot.nextSibling;
+      if ((threadContainer != null ? threadContainer.className : void 0) !== 'threadContainer') {
+        threadContainer = $.el('div', {
+          className: 'threadContainer'
+        });
+        $.after(qroot, threadContainer);
+      }
+      $.add(threadContainer, reply.el.parentNode);
       pEl = $.x('preceding::div[contains(@class,"post reply")][1]/parent::div', reply.el.parentNode);
       pid = pEl.id.slice(2);
       preply = replies[pid];
@@ -3461,6 +3469,58 @@
       preply.next = reply;
       reply.next = next;
       return Unread.replies = replies;
+    },
+    dialog: function() {
+      var controls, input;
+      controls = $.el('label', {
+        id: 'thread',
+        "class": 'controls',
+        innerHTML: "Thread<input type=checkbox checked>"
+      });
+      input = $('input', controls);
+      $.on(input, 'click', QuoteThreading.toggle);
+      return $.prepend($.id('delform'), controls);
+    },
+    toggle: function() {
+      var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _results, _results1;
+      thread = $('.thread');
+      replies = $$('.replyContainer', thread);
+      if (this.checked) {
+        nodes = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = replies.length; _i < _len; _i++) {
+            reply = replies[_i];
+            _results.push(Main.preParse(reply));
+          }
+          return _results;
+        })();
+        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+          node = nodes[_i];
+          Unread.node(node);
+        }
+        _results = [];
+        for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
+          node = nodes[_j];
+          _results.push(QuoteThreading.node(node));
+        }
+        return _results;
+      } else {
+        replies.sort(function(a, b) {
+          var aID, bID;
+          aID = Number(a.id.slice(2));
+          bID = Number(b.id.slice(2));
+          return aID - bID;
+        });
+        $.add(thread, replies);
+        containers = $$('.threadContainer', thread);
+        _results1 = [];
+        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
+          container = containers[_k];
+          _results1.push($.rm(container));
+        }
+        return _results1;
+      }
     }
   };
 
@@ -4724,7 +4784,7 @@ div.opContainer {\
   border-bottom: 1px dashed;\
 }\
 \
-.replyContainer > .replyContainer {\
+.threadContainer {\
   margin-left: 20px;\
   border-left: 1px solid black;\
 }\
