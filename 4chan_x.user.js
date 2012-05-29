@@ -237,7 +237,8 @@
       el = UI.el;
       localStorage["" + Main.namespace + el.id + ".position"] = el.style.cssText;
       d.removeEventListener('mousemove', UI.drag, false);
-      return d.removeEventListener('mouseup', UI.dragend, false);
+      d.removeEventListener('mouseup', UI.dragend, false);
+      return delete UI.el;
     },
     hover: function(e) {
       var clientHeight, clientWidth, clientX, clientY, height, style, top, _ref;

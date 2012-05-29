@@ -207,6 +207,7 @@ UI =
     localStorage["#{Main.namespace}#{el.id}.position"] = el.style.cssText
     d.removeEventListener 'mousemove', UI.drag, false
     d.removeEventListener 'mouseup',   UI.dragend, false
+    delete UI.el
   hover: (e) ->
     {clientX, clientY} = e
     {style} = UI.el
