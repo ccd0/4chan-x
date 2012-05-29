@@ -419,19 +419,24 @@ Filter =
 
         # Filter OPs along with their threads, replies only, or both.
         # Defaults to replies only.
-        op = filter.match(/[^t]op:(yes|no|only)/)?[1].toLowerCase() or 'no'
+        op = filter.match(/[^t]op:(yes|no|only)/)?[1] or 'no'
+
+        # Overrule the `Show Stubs` setting.
+        # Defaults to stub showing.
+        stub = filter.match(/stub:(yes|no)/)?[1]
+        stub = stub is 'yes' and !Conf['Show Stubs'] or stub is 'no' and Conf['Show Stubs']
 
         # Highlight the post, or hide it.
         # If not specified, the highlight class will be filter_highlight.
         # Defaults to post hiding.
         if hl = /highlight/.test filter
-          hl  = filter.match(/highlight:(\w+)/)?[1].toLowerCase() or 'filter_highlight'
+          hl  = filter.match(/highlight:(\w+)/)?[1] or 'filter_highlight'
           # Put highlighted OP's thread on top of the board page or not.
           # Defaults to on top.
-          top = filter.match(/top:(yes|no)/)?[1].toLowerCase() or 'yes'
+          top = filter.match(/top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push @createFilter regexp, op, hl, top
+        @filters[key].push @createFilter regexp, op, stub, hl, top
 
       # Only execute filter types that contain valid filters.
       unless @filters[key].length
@@ -440,21 +445,24 @@ Filter =
     if Object.keys(@filters).length
       Main.callbacks.push @node
 
-  createFilter: (regexp, op, hl, top) ->
+  createFilter: (regexp, op, stub, hl, top) ->
     test =
       if typeof regexp is 'string'
         # MD5 checking
         (value) -> regexp is value
       else
         (value) -> regexp.test value
+    settings =
+      hide:  !hl
+      stub:  stub
+      class: hl
+      top:   top
     (value, isOP) ->
       if isOP and op is 'no' or !isOP and op is 'only'
         return false
       unless test value
         return false
-      if hl
-        return [hl, top]
-      true
+      settings
 
   node: (post) ->
     return if post.isInlined
@@ -470,19 +478,19 @@ Filter =
           continue
 
         # Hide
-        if result is true
+        if result.hide
           if isOP
             unless g.REPLY
-              ThreadHiding.hide root.parentNode
+              ThreadHiding.hide root.parentNode, result.stub
             else
               continue
           else
-            ReplyHiding.hide root
+            ReplyHiding.hide root, result.stub
           return
 
         # Highlight
-        $.addClass root, result[0]
-        if isOP and result[1] and not g.REPLY
+        $.addClass root, result.class
+        if isOP and result.top and not g.REPLY
           # Put the highlighted OPs' thread on top of the board page...
           thisThread = root.parentNode
           # ...before the first non highlighted thread.
@@ -670,7 +678,7 @@ ThreadHiding =
   init: ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     for thread in $$ '.thread'
-      a  = $.el 'a',
+      a = $.el 'a',
         className: 'hide_thread_button'
         innerHTML: '<span>[ - ]</span>'
         href: 'javascript:;'
@@ -695,13 +703,13 @@ ThreadHiding =
       hiddenThreads[id] = Date.now()
     $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
-  hide: (thread) ->
-    unless Conf['Show Stubs']
+  hide: (thread, invert_stub_conf) ->
+    unless Conf['Show Stubs'] isnt invert_stub_conf
       thread.hidden = true
       thread.nextElementSibling.hidden = true
       return
 
-    return if thread.firstChild.className is 'hide_thread_button hidden_thread' # already hidden by filter
+    return if /\bhidden_thread\b/.test thread.firstChild.className # already hidden once by the filter
 
     num     = 0
     if span = $ '.summary', thread
@@ -710,15 +718,17 @@ ThreadHiding =
     text    = if num is 1 then '1 reply' else "#{num} replies"
     opInfo  = $('.op > .postInfo > .nameBlock', thread).textContent
 
-    a = $ '.hide_thread_button', thread
-    $.addClass a, 'hidden_thread'
-    a.firstChild.textContent = '[ + ]'
+    a = $.el 'a',
+      className: 'hide_thread_button hidden_thread'
+      innerHTML: '<span>[ + ]</span>'
+      href: 'javascript:;'
     $.add a, $.tn " #{opInfo} (#{text})"
+    $.on a, 'click', ThreadHiding.cb
+    $.prepend thread, a
 
   show: (thread) ->
-    a = $ '.hide_thread_button', thread
-    $.removeClass a, 'hidden_thread'
-    a.innerHTML = '<span>[ - ]</span>'
+    if a = $ '.hidden_thread', thread
+      $.rm a
     thread.hidden = false
     thread.nextElementSibling.hidden = false
 
@@ -728,10 +738,10 @@ ReplyHiding =
 
   node: (post) ->
     return if post.isInlined or /\bop\b/.test post.class
-    button = post.root.firstElementChild
-    $.addClass button, 'hide_reply_button'
-    button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
-    $.on button.firstChild, 'click', ReplyHiding.toggle
+    side = $ '.sideArrows', post.root
+    $.addClass side, 'hide_reply_button'
+    side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
+    $.on side.firstChild, 'click', ReplyHiding.toggle
 
     if post.id of g.hiddenReplies
       ReplyHiding.hide post.root
@@ -753,31 +763,28 @@ ReplyHiding =
       g.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-  hide: (root) ->
-    button = root.firstElementChild
-    return if button.hidden # already hidden once by filter
-    button.hidden = true
-    el = root.lastElementChild
+  hide: (root, invert_stub_conf) ->
+    side = $ '.sideArrows', root
+    return if side.hidden # already hidden once by the filter
+    side.hidden = true
+    el = side.nextElementSibling
     el.hidden = true
 
-    return unless Conf['Show Stubs']
+    return unless Conf['Show Stubs'] isnt invert_stub_conf
 
     stub = $.el 'div',
       className: 'hide_reply_button stub'
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
-    $.add stub.firstChild, $.tn $('.nameBlock', el).textContent
-    $.on  stub.firstChild, 'click', ReplyHiding.toggle
-    $.after button, stub
+    a = stub.firstChild
+    $.add a, $.tn $('.nameBlock', el).textContent
+    $.on  a, 'click', ReplyHiding.toggle
+    $.prepend root, stub
 
   show: (root) ->
-    el     = root.lastElementChild
-    button = root.firstElementChild
-    el.hidden = false
-    button.hidden = false
-
-    return unless Conf['Show Stubs']
-
-    $.rm button.nextElementSibling
+    if stub = $ '.stub', root
+      $.rm stub
+    $('.sideArrows', root).hidden = false
+    $('.post',       root).hidden = false
 
 Keybinds =
   init: ->
@@ -1692,6 +1699,7 @@ Options =
     <ul>You can use these settings with each regular expression, separate them with semicolons:
       <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>
       <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>
+      <li>Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code></li>
       <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li>
       <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>
     </ul>

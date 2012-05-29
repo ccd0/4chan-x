@@ -511,7 +511,7 @@
   Filter = {
     filters: {},
     init: function() {
-      var boards, filter, hl, key, op, regexp, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4;
+      var boards, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       for (key in Config.filter) {
         this.filters[key] = [];
         _ref = Conf[key].split('\n');
@@ -538,13 +538,15 @@
             alert(e.message);
             continue;
           }
-          op = ((_ref2 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref2[1].toLowerCase() : void 0) || 'no';
+          op = ((_ref2 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref2[1] : void 0) || 'no';
+          stub = (_ref3 = filter.match(/stub:(yes|no)/)) != null ? _ref3[1] : void 0;
+          stub = stub === 'yes' && !Conf['Show Stubs'] || stub === 'no' && Conf['Show Stubs'];
           if (hl = /highlight/.test(filter)) {
-            hl = ((_ref3 = filter.match(/highlight:(\w+)/)) != null ? _ref3[1].toLowerCase() : void 0) || 'filter_highlight';
-            top = ((_ref4 = filter.match(/top:(yes|no)/)) != null ? _ref4[1].toLowerCase() : void 0) || 'yes';
+            hl = ((_ref4 = filter.match(/highlight:(\w+)/)) != null ? _ref4[1] : void 0) || 'filter_highlight';
+            top = ((_ref5 = filter.match(/top:(yes|no)/)) != null ? _ref5[1] : void 0) || 'yes';
             top = top === 'yes';
           }
-          this.filters[key].push(this.createFilter(regexp, op, hl, top));
+          this.filters[key].push(this.createFilter(regexp, op, stub, hl, top));
         }
         if (!this.filters[key].length) {
           delete this.filters[key];
@@ -554,12 +556,18 @@
         return Main.callbacks.push(this.node);
       }
     },
-    createFilter: function(regexp, op, hl, top) {
-      var test;
+    createFilter: function(regexp, op, stub, hl, top) {
+      var settings, test;
       test = typeof regexp === 'string' ? function(value) {
         return regexp === value;
       } : function(value) {
         return regexp.test(value);
+      };
+      settings = {
+        hide: !hl,
+        stub: stub,
+        "class": hl,
+        top: top
       };
       return function(value, isOP) {
         if (isOP && op === 'no' || !isOP && op === 'only') {
@@ -568,10 +576,7 @@
         if (!test(value)) {
           return false;
         }
-        if (hl) {
-          return [hl, top];
-        }
-        return true;
+        return settings;
       };
     },
     node: function(post) {
@@ -592,20 +597,20 @@
           if (!(result = filter(value, isOP))) {
             continue;
           }
-          if (result === true) {
+          if (result.hide) {
             if (isOP) {
               if (!g.REPLY) {
-                ThreadHiding.hide(root.parentNode);
+                ThreadHiding.hide(root.parentNode, result.stub);
               } else {
                 continue;
               }
             } else {
-              ReplyHiding.hide(root);
+              ReplyHiding.hide(root, result.stub);
             }
             return;
           }
-          $.addClass(root, result[0]);
-          if (isOP && result[1] && !g.REPLY) {
+          $.addClass(root, result["class"]);
+          if (isOP && result.top && !g.REPLY) {
             thisThread = root.parentNode;
             if (firstThread = $('div[class="postContainer opContainer"]').parentNode) {
               $.before(firstThread, [thisThread, thisThread.nextElementSibling]);
@@ -920,14 +925,14 @@
       }
       return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
-    hide: function(thread) {
+    hide: function(thread, invert_stub_conf) {
       var a, num, opInfo, span, text;
-      if (!Conf['Show Stubs']) {
+      if (Conf['Show Stubs'] === invert_stub_conf) {
         thread.hidden = true;
         thread.nextElementSibling.hidden = true;
         return;
       }
-      if (thread.firstChild.className === 'hide_thread_button hidden_thread') {
+      if (/\bhidden_thread\b/.test(thread.firstChild.className)) {
         return;
       }
       num = 0;
@@ -937,16 +942,20 @@
       num += $$('.opContainer ~ .replyContainer', thread).length;
       text = num === 1 ? '1 reply' : "" + num + " replies";
       opInfo = $('.op > .postInfo > .nameBlock', thread).textContent;
-      a = $('.hide_thread_button', thread);
-      $.addClass(a, 'hidden_thread');
-      a.firstChild.textContent = '[ + ]';
-      return $.add(a, $.tn(" " + opInfo + " (" + text + ")"));
+      a = $.el('a', {
+        className: 'hide_thread_button hidden_thread',
+        innerHTML: '<span>[ + ]</span>',
+        href: 'javascript:;'
+      });
+      $.add(a, $.tn(" " + opInfo + " (" + text + ")"));
+      $.on(a, 'click', ThreadHiding.cb);
+      return $.prepend(thread, a);
     },
     show: function(thread) {
       var a;
-      a = $('.hide_thread_button', thread);
-      $.removeClass(a, 'hidden_thread');
-      a.innerHTML = '<span>[ - ]</span>';
+      if (a = $('.hidden_thread', thread)) {
+        $.rm(a);
+      }
       thread.hidden = false;
       return thread.nextElementSibling.hidden = false;
     }
@@ -957,14 +966,14 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var button;
+      var side;
       if (post.isInlined || /\bop\b/.test(post["class"])) {
         return;
       }
-      button = post.root.firstElementChild;
-      $.addClass(button, 'hide_reply_button');
-      button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
-      $.on(button.firstChild, 'click', ReplyHiding.toggle);
+      side = $('.sideArrows', post.root);
+      $.addClass(side, 'hide_reply_button');
+      side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
+      $.on(side.firstChild, 'click', ReplyHiding.toggle);
       if (post.id in g.hiddenReplies) {
         return ReplyHiding.hide(post.root);
       }
@@ -992,36 +1001,34 @@
       }
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
-    hide: function(root) {
-      var button, el, stub;
-      button = root.firstElementChild;
-      if (button.hidden) {
+    hide: function(root, invert_stub_conf) {
+      var a, el, side, stub;
+      side = $('.sideArrows', root);
+      if (side.hidden) {
         return;
       }
-      button.hidden = true;
-      el = root.lastElementChild;
+      side.hidden = true;
+      el = side.nextElementSibling;
       el.hidden = true;
-      if (!Conf['Show Stubs']) {
+      if (Conf['Show Stubs'] === invert_stub_conf) {
         return;
       }
       stub = $.el('div', {
         className: 'hide_reply_button stub',
         innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
       });
-      $.add(stub.firstChild, $.tn($('.nameBlock', el).textContent));
-      $.on(stub.firstChild, 'click', ReplyHiding.toggle);
-      return $.after(button, stub);
+      a = stub.firstChild;
+      $.add(a, $.tn($('.nameBlock', el).textContent));
+      $.on(a, 'click', ReplyHiding.toggle);
+      return $.prepend(root, stub);
     },
     show: function(root) {
-      var button, el;
-      el = root.lastElementChild;
-      button = root.firstElementChild;
-      el.hidden = false;
-      button.hidden = false;
-      if (!Conf['Show Stubs']) {
-        return;
+      var stub;
+      if (stub = $('.stub', root)) {
+        $.rm(stub);
       }
-      return $.rm(button.nextElementSibling);
+      $('.sideArrows', root).hidden = false;
+      return $('.post', root).hidden = false;
     }
   };
 
@@ -2205,6 +2212,7 @@
     <ul>You can use these settings with each regular expression, separate them with semicolons:\
       <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>\
       <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>\
+      <li>Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code></li>\
       <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li>\
       <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>\
     </ul>\
