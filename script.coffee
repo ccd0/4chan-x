@@ -424,8 +424,13 @@ Filter =
 
         # Overrule the `Show Stubs` setting.
         # Defaults to stub showing.
-        stub = filter.match(/stub:(yes|no)/)?[1]
-        stub = stub is 'yes' and !Conf['Show Stubs'] or stub is 'no' and Conf['Show Stubs']
+        stub = switch filter.match(/stub:(yes|no)/)?[1]
+          when 'yes'
+            true
+          when 'no'
+            false
+          else
+            Conf['Show Stubs']
 
         # Highlight the post, or hide it.
         # If not specified, the highlight class will be filter_highlight.
@@ -704,8 +709,8 @@ ThreadHiding =
       hiddenThreads[id] = Date.now()
     $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
 
-  hide: (thread, invert_stub_conf) ->
-    unless Conf['Show Stubs'] isnt invert_stub_conf
+  hide: (thread, show_stub=Conf['Show Stubs']) ->
+    unless show_stub
       thread.hidden = true
       thread.nextElementSibling.hidden = true
       return
@@ -764,14 +769,14 @@ ReplyHiding =
       g.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-  hide: (root, invert_stub_conf) ->
+  hide: (root, show_stub=Conf['Show Stubs']) ->
     side = $ '.sideArrows', root
     return if side.hidden # already hidden once by the filter
     side.hidden = true
     el = side.nextElementSibling
     el.hidden = true
 
-    return unless Conf['Show Stubs'] isnt invert_stub_conf
+    return unless show_stub
 
     stub = $.el 'div',
       className: 'hide_reply_button stub'
@@ -3228,8 +3233,7 @@ a[href="javascript:;"] {
   float: left;
 }
 
-.hidden_thread ~ *,
-.hidden_thread + div.opContainer,
+.thread > .hidden_thread ~ *,
 [hidden],
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),

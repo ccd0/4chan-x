@@ -512,7 +512,7 @@
   Filter = {
     filters: {},
     init: function() {
-      var boards, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      var boards, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4;
       for (key in Config.filter) {
         this.filters[key] = [];
         _ref = Conf[key].split('\n');
@@ -540,11 +540,20 @@
             continue;
           }
           op = ((_ref2 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref2[1] : void 0) || 'no';
-          stub = (_ref3 = filter.match(/stub:(yes|no)/)) != null ? _ref3[1] : void 0;
-          stub = stub === 'yes' && !Conf['Show Stubs'] || stub === 'no' && Conf['Show Stubs'];
+          stub = (function() {
+            var _ref3;
+            switch ((_ref3 = filter.match(/stub:(yes|no)/)) != null ? _ref3[1] : void 0) {
+              case 'yes':
+                return true;
+              case 'no':
+                return false;
+              default:
+                return Conf['Show Stubs'];
+            }
+          })();
           if (hl = /highlight/.test(filter)) {
-            hl = ((_ref4 = filter.match(/highlight:(\w+)/)) != null ? _ref4[1] : void 0) || 'filter_highlight';
-            top = ((_ref5 = filter.match(/top:(yes|no)/)) != null ? _ref5[1] : void 0) || 'yes';
+            hl = ((_ref3 = filter.match(/highlight:(\w+)/)) != null ? _ref3[1] : void 0) || 'filter_highlight';
+            top = ((_ref4 = filter.match(/top:(yes|no)/)) != null ? _ref4[1] : void 0) || 'yes';
             top = top === 'yes';
           }
           this.filters[key].push(this.createFilter(regexp, op, stub, hl, top));
@@ -926,9 +935,12 @@
       }
       return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
-    hide: function(thread, invert_stub_conf) {
+    hide: function(thread, show_stub) {
       var a, num, opInfo, span, text;
-      if (Conf['Show Stubs'] === invert_stub_conf) {
+      if (show_stub == null) {
+        show_stub = Conf['Show Stubs'];
+      }
+      if (!show_stub) {
         thread.hidden = true;
         thread.nextElementSibling.hidden = true;
         return;
@@ -1002,8 +1014,11 @@
       }
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
-    hide: function(root, invert_stub_conf) {
+    hide: function(root, show_stub) {
       var a, el, side, stub;
+      if (show_stub == null) {
+        show_stub = Conf['Show Stubs'];
+      }
       side = $('.sideArrows', root);
       if (side.hidden) {
         return;
@@ -1011,7 +1026,7 @@
       side.hidden = true;
       el = side.nextElementSibling;
       el.hidden = true;
-      if (Conf['Show Stubs'] === invert_stub_conf) {
+      if (!show_stub) {
         return;
       }
       stub = $.el('div', {
@@ -4243,8 +4258,7 @@ a[href="javascript:;"] {\
   float: left;\
 }\
 \
-.hidden_thread ~ *,\
-.hidden_thread + div.opContainer,\
+.thread > .hidden_thread ~ *,\
 [hidden],\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
