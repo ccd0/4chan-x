@@ -4185,7 +4185,7 @@
           }
         } catch (err) {
           if (notify) {
-            alert("4chan X (" + Main.version + ") error: " + err.message + "\nhttp://mayhemydg.github.com/4chan-x/#bug-report\n\n" + err.stack);
+            alert("4chan X (" + Main.version + ") error: " + err.message + "\nReport the bug at mayhemydg.github.com/4chan-x/#bug-report\n\nURL: " + window.location + "\n" + err.stack);
           }
         }
       }
