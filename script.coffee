@@ -1025,7 +1025,7 @@ QR =
 
   asyncInit: ->
     if Conf['Hide Original Post Form']
-      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Quick Reply' else 'New Thread'}</a>"
+      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
       $.on link.firstChild, 'click', ->
         QR.open()
         $('select',   QR.el).value = 'new' unless g.REPLY

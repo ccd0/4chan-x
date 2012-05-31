@@ -1394,7 +1394,7 @@
       var link;
       if (Conf['Hide Original Post Form']) {
         link = $.el('h1', {
-          innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Quick Reply' : 'New Thread') + "</a>"
+          innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Reply to Thread' : 'Start a Thread') + "</a>"
         });
         $.on(link.firstChild, 'click', function() {
           QR.open();
