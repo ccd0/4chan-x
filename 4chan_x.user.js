@@ -3449,6 +3449,7 @@
       this.imgLimit = (function() {
         switch (g.BOARD) {
           case 'a':
+          case 'b':
           case 'mlp':
           case 'v':
             return 251;

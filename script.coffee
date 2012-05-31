@@ -2626,7 +2626,7 @@ ThreadStats =
     @posts = @images = 0
     @imgLimit =
       switch g.BOARD
-        when 'a', 'mlp', 'v'
+        when 'a', 'b', 'mlp', 'v'
           251
         when 'vg'
           501
