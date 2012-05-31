@@ -1458,19 +1458,21 @@
     toggleHide: function() {
       return this.checked && QR.hide() || QR.unhide();
     },
-    error: function(err, node) {
+    error: function(err) {
       var el;
       el = $('.warning', QR.el);
-      el.textContent = err;
-      if (node) {
-        $.replace(el.firstChild, node);
+      if (typeof err === 'string') {
+        el.textContent = err;
+      } else {
+        el.innerHTML = null;
+        $.add(el, err);
       }
       QR.open();
-      if (/captcha|verification/i.test(err)) {
+      if (/captcha|verification/i.test(el.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
       if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
-        return alert(err);
+        return alert(el.textContent);
       }
     },
     cleanError: function() {
@@ -2062,7 +2064,7 @@
           return QR.response(this.response);
         },
         onerror: function() {
-          return QR.error('_', $.el('a', {
+          return QR.error($.el('a', {
             href: '//www.4chan.org/banned',
             target: '_blank',
             textContent: 'Connection error, or you are banned.'
@@ -2088,25 +2090,22 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var b, doc, err, node, persona, postNumber, reply, thread, _, _ref;
+      var bs, doc, err, msg, persona, postNumber, reply, thread, _, _ref;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
-        QR.error('_', $.el('a', {
-          href: '//www.4chan.org/banned',
-          target: '_blank',
-          textContent: 'You are banned.'
-        }));
-        return;
-      }
-      if (!(b = $('td b', doc))) {
-        err = 'Connection error with sys.4chan.org.';
-      } else if (b.childElementCount) {
-        if (b.firstChild.tagName) {
-          node = b.firstChild;
-          node.target = '_blank';
+        bs = $$('b', doc);
+        err = $.el('span', {
+          innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
+        });
+      } else if (msg = doc.getElementById('errmsg')) {
+        err = msg.textContent;
+        if (msg.firstChild.tagName) {
+          err = msg.firstChild;
+          err.target = '_blank';
         }
-        err = b.firstChild.textContent;
+      } else if (!(msg = $('b', doc))) {
+        err = 'Connection error with sys.4chan.org.';
       }
       if (err) {
         if (/captcha|verification/i.test(err) || err === 'Connection error with sys.4chan.org.') {
@@ -2116,7 +2115,7 @@
           QR.cooldown.auto = false;
         }
         QR.status();
-        QR.error(err, node);
+        QR.error(err);
         return;
       }
       reply = QR.replies[0];
@@ -2127,7 +2126,7 @@
         sub: Conf['Remember Subject'] ? reply.sub : null
       };
       $.set('QR.persona', persona);
-      _ref = b.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], postNumber = _ref[2];
+      _ref = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], postNumber = _ref[2];
       if (thread === '0') {
         if (Conf['Thread Watcher'] && Conf['Auto Watch']) {
           $.set('autoWatch', postNumber);

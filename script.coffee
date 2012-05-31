@@ -1074,15 +1074,18 @@ QR =
   toggleHide: ->
     @checked and QR.hide() or QR.unhide()
 
-  error: (err, node) ->
+  error: (err) ->
     el = $ '.warning', QR.el
-    el.textContent = err
-    $.replace el.firstChild, node if node
+    if typeof err is 'string'
+      el.textContent = err
+    else
+      el.innerHTML = null
+      $.add el, err
     QR.open()
-    if /captcha|verification/i.test err
+    if /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
-    alert err if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+    alert el.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
     $('.warning', QR.el).textContent = null
 
@@ -1561,7 +1564,7 @@ QR =
       onerror: ->
         # Connection error, or
         # CORS disabled error on www.4chan.org/banned
-        QR.error '_', $.el 'a',
+        QR.error $.el 'a',
           href: '//www.4chan.org/banned'
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
@@ -1581,20 +1584,21 @@ QR =
   response: (html) ->
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = html
-    # Check for ban.
-    if doc.title is '4chan - Banned'
-      QR.error '_', $.el 'a',
-        href: '//www.4chan.org/banned'
-        target: '_blank'
-        textContent: 'You are banned.'
-      return
-    unless b = $ 'td b', doc
+    if doc.title is '4chan - Banned' # Ban/warn check
+      bs  = $$ 'b', doc
+      err = $.el 'span',
+        innerHTML:
+          if /^You were issued a warning/.test $('.boxcontent', doc).textContent.trim()
+            "You were issued a warning on #{bs[0].innerHTML} as #{bs[3].innerHTML}.<br>Warning reason: #{bs[1].innerHTML}"
+          else
+            "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
+    else if msg = doc.getElementById 'errmsg' # error!
+      err = msg.textContent
+      if msg.firstChild.tagName # duplicate image link
+        err = msg.firstChild
+        err.target = '_blank'
+    else unless msg = $ 'b', doc
       err = 'Connection error with sys.4chan.org.'
-    else if b.childElementCount # error!
-      if b.firstChild.tagName # duplicate image link
-        node = b.firstChild
-        node.target = '_blank'
-      err = b.firstChild.textContent
 
     if err
       if /captcha|verification/i.test(err) or err is 'Connection error with sys.4chan.org.'
@@ -1606,7 +1610,7 @@ QR =
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.status()
-      QR.error err, node
+      QR.error err
       return
 
     reply = QR.replies[0]
@@ -1618,7 +1622,7 @@ QR =
       sub:   if Conf['Remember Subject']  then reply.sub     else null
     $.set 'QR.persona', persona
 
-    [_, thread, postNumber] = b.lastChild.textContent.match /thread:(\d+),no:(\d+)/
+    [_, thread, postNumber] = msg.lastChild.textContent.match /thread:(\d+),no:(\d+)/
     if thread is '0' # new thread
       if Conf['Thread Watcher'] and Conf['Auto Watch']
         $.set 'autoWatch', postNumber
