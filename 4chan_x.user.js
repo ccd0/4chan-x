@@ -1405,7 +1405,6 @@
         });
         $.before($.id('postForm'), link);
       }
-      $.globalEval('Recaptcha.focus_response_field=function(){}');
       if (Conf['Persistent QR']) {
         QR.dialog();
         if (Conf['Auto Hide QR']) {
@@ -1853,7 +1852,7 @@
         return this.input.alt = count;
       },
       reload: function(focus) {
-        window.location = 'javascript:Recaptcha.reload()';
+        window.location = 'javascript:Recaptcha.reload("t")';
         if (focus) {
           return QR.captcha.input.focus();
         }

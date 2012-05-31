@@ -1032,9 +1032,6 @@ QR =
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 
-    # Prevent original captcha input from being focused on reload.
-    $.globalEval 'Recaptcha.focus_response_field=function(){}'
-
     if Conf['Persistent QR']
       QR.dialog()
       QR.hide() if Conf['Auto Hide QR']
@@ -1381,7 +1378,8 @@ QR =
           "Verification (#{count} cached captchas)"
       @input.alt = count # For XTRM RICE.
     reload: (focus) ->
-      window.location = 'javascript:Recaptcha.reload()'
+      # the "t" argument prevents the input from being focused
+      window.location = 'javascript:Recaptcha.reload("t")'
       # Focus if we meant to.
       QR.captcha.input.focus() if focus
     keydown: (e) ->
