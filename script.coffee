@@ -771,6 +771,8 @@ ReplyHiding =
     el = side.nextElementSibling
     el.hidden = true
 
+    $.addClass root, 'hidden'
+
     return unless show_stub
 
     stub = $.el 'div',
@@ -3124,6 +3126,8 @@ Main =
 
     if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and Main.BOARD isnt 'f'
       Main.css += '#postForm { display: none; }'
+    if Conf['Recursive Filtering']
+      Main.css += '.hidden + .threadContainer { display: none; }'
 
     Main.addStyle()
 

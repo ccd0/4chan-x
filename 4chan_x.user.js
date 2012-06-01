@@ -1028,6 +1028,7 @@
       side.hidden = true;
       el = side.nextElementSibling;
       el.hidden = true;
+      $.addClass(root, 'hidden');
       if (!show_stub) {
         return;
       }
@@ -4140,6 +4141,9 @@
       Main.pruneHidden();
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form'] && Main.BOARD !== 'f') {
         Main.css += '#postForm { display: none; }';
+      }
+      if (Conf['Recursive Filtering']) {
+        Main.css += '.hidden + .threadContainer { display: none; }';
       }
       Main.addStyle();
       if (Conf['Filter']) {
