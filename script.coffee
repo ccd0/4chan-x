@@ -3767,7 +3767,7 @@ div.opContainer {
   margin-left: 20px;
   border-left: 1px solid black;
 }
-.replyContainer.hidden + .threadContainer, .stub ~ * {
+.stub ~ * {
   display: none !important;
 }
 '
