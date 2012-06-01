@@ -622,7 +622,7 @@
                 continue;
               }
             } else {
-              ReplyHiding.hide(post, result.stub);
+              ReplyHiding.hide(post.root, result.stub);
             }
             return;
           }
@@ -988,8 +988,8 @@
       $.addClass(side, 'hide_reply_button');
       side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
       $.on(side.firstChild, 'click', ReplyHiding.toggle);
-      if (id in Main.hiddenReplies) {
-        return ReplyHiding.hide(post);
+      if (post.id in Main.hiddenReplies) {
+        return ReplyHiding.hide(post.root);
       }
     },
     toggle: function() {
@@ -1000,14 +1000,14 @@
       id = post.id;
       quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href='#p" + id + "']");
       if (/\bstub\b/.test(button.className)) {
-        ReplyHiding.show(post);
+        ReplyHiding.show(post.root);
         for (_i = 0, _len = quotes.length; _i < _len; _i++) {
           quote = quotes[_i];
           $.removeClass(quote, 'filtered');
         }
         delete Main.hiddenReplies[id];
       } else {
-        ReplyHiding.hide(post);
+        ReplyHiding.hide(post.root);
         for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
           quote = quotes[_j];
           $.addClass(quote, 'filtered');

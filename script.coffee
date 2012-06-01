@@ -490,7 +490,7 @@ Filter =
             else
               continue
           else
-            ReplyHiding.hide post, result.stub
+            ReplyHiding.hide post.root, result.stub
           return
 
         # Highlight
@@ -742,8 +742,8 @@ ReplyHiding =
     side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
     $.on side.firstChild, 'click', ReplyHiding.toggle
 
-    if id of Main.hiddenReplies
-      ReplyHiding.hide post
+    if post.id of Main.hiddenReplies
+      ReplyHiding.hide post.root
 
   toggle: ->
     button = @parentNode
@@ -753,12 +753,12 @@ ReplyHiding =
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href='#p#{id}']"
 
     if /\bstub\b/.test button.className
-      ReplyHiding.show post
+      ReplyHiding.show post.root
       for quote in quotes
         $.removeClass quote, 'filtered'
       delete Main.hiddenReplies[id]
     else
-      ReplyHiding.hide post
+      ReplyHiding.hide post.root
       for quote in quotes
         $.addClass quote, 'filtered'
       Main.hiddenReplies[id] = Date.now()
