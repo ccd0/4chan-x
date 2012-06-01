@@ -789,6 +789,8 @@ ReplyHiding =
     $('.sideArrows', root).hidden = false
     $('.post',       root).hidden = false
 
+    $.removeClass root, 'hidden'
+
 Keybinds =
   init: ->
     for node in $$ '[accesskey]'

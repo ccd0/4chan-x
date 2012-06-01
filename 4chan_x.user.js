@@ -1049,7 +1049,8 @@
         $.rm(stub);
       }
       $('.sideArrows', root).hidden = false;
-      return $('.post', root).hidden = false;
+      $('.post', root).hidden = false;
+      return $.removeClass(root, 'hidden');
     }
   };
 
