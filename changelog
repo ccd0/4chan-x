@@ -4,6 +4,9 @@ master
   Add a per filter stub setting.
   Fix quote previewing of forward hidden posts.
   Fix file size info in case of spoiler image.
+- aeosynth
+  fix recursive filtering w/ threaded quotes
+  use .threadContainer to help userstylers~
 
 3.8.2
 - aeosynth
