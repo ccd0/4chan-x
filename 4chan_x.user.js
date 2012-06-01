@@ -255,9 +255,6 @@
       }
     },
     hoverend: function() {
-      if (!UI.el) {
-        return;
-      }
       $.rm(UI.el);
       return delete UI.el;
     }
@@ -3230,7 +3227,15 @@
       if (/\binlined\b/.test(this.className)) {
         return;
       }
-      UI.hoverend();
+      if (qp = $.id('qp')) {
+        if (qp === UI.el) {
+          delete UI.el;
+        }
+        $.rm(qp);
+      }
+      if (UI.el) {
+        return;
+      }
       qp = UI.el = $.el('div', {
         id: 'qp',
         className: 'post reply dialog'
@@ -3675,19 +3680,28 @@
       return $.on(post.img, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function() {
-      UI.hoverend();
-      UI.el = $.el('img', {
+      var el;
+      if (el = $.id('ihover')) {
+        if (el === UI.el) {
+          delete UI.el;
+        }
+        $.rm(el);
+      }
+      if (UI.el) {
+        return;
+      }
+      el = UI.el = $.el('img', {
         id: 'ihover',
         src: this.parentNode.href
       });
-      $.add(d.body, UI.el);
-      $.on(UI.el, 'load', ImageHover.load);
+      $.add(d.body, el);
+      $.on(el, 'load', ImageHover.load);
       $.on(this, 'mousemove', UI.hover);
       return $.on(this, 'mouseout', ImageHover.mouseout);
     },
     load: function() {
       var style;
-      if (this !== UI.el) {
+      if (!this.parentNode) {
         return;
       }
       style = this.style;

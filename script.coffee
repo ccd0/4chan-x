@@ -225,9 +225,7 @@ UI =
     else
       style.left  = null
       style.right = clientWidth - clientX + 45 + 'px'
-
   hoverend: ->
-    return unless UI.el
     $.rm UI.el
     delete UI.el
 
@@ -2445,8 +2443,15 @@ QuotePreview =
   mouseover: (e) ->
     return if /\binlined\b/.test @className
 
-    # Make sure to remove the previous UI.el
-    UI.hoverend()
+    # Make sure to remove the previous qp
+    # in case it got stuck. Opera-only bug?
+    if qp = $.id 'qp'
+      if qp is UI.el
+        delete UI.el
+      $.rm qp
+
+    # Don't stop other elements from dragging
+    return if UI.el
 
     qp = UI.el = $.el 'div',
       id: 'qp'
@@ -2482,7 +2487,7 @@ QuotePreview =
         $.removeClass el.parentNode, 'qphl'
       else
         $.removeClass el, 'qphl'
-    $.off @, 'mousemove', UI.hover
+    $.off @, 'mousemove',      UI.hover
     $.off @, 'mouseout click', QuotePreview.mouseout
   parse: (req, id) ->
     return unless (qp = UI.el) and qp.textContent is "Loading #{id}..."
@@ -2789,18 +2794,25 @@ ImageHover =
     return unless post.img
     $.on post.img, 'mouseover', ImageHover.mouseover
   mouseover: ->
-    # Make sure to remove the previous UI.el
-    UI.hoverend()
+    # Make sure to remove the previous image hover
+    # in case it got stuck. Opera-only bug?
+    if el = $.id 'ihover'
+      if el is UI.el
+        delete UI.el
+      $.rm el
 
-    UI.el = $.el 'img'
+    # Don't stop other elements from dragging
+    return if UI.el
+
+    el = UI.el = $.el 'img'
       id: 'ihover'
       src: @parentNode.href
-    $.add d.body, UI.el
-    $.on UI.el, 'load',      ImageHover.load
-    $.on @,     'mousemove', UI.hover
-    $.on @,     'mouseout',  ImageHover.mouseout
+    $.add d.body, el
+    $.on el, 'load',      ImageHover.load
+    $.on @,  'mousemove', UI.hover
+    $.on @,  'mouseout',  ImageHover.mouseout
   load: ->
-    return if @ isnt UI.el
+    return unless @parentNode
     # 'Fake' mousemove event by giving required values.
     {style} = @
     UI.hover
