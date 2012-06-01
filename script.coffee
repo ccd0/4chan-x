@@ -171,7 +171,7 @@ UI =
     el.innerHTML = html
     el.id        = id
     el.style.cssText = localStorage.getItem("#{Main.namespace}#{id}.position") or position
-    el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
+    el.querySelector('.move')?.addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection

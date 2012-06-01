@@ -203,13 +203,15 @@
 
   UI = {
     dialog: function(id, position, html) {
-      var el;
+      var el, _ref;
       el = d.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
       el.style.cssText = localStorage.getItem("" + Main.namespace + id + ".position") || position;
-      el.querySelector('.move').addEventListener('mousedown', UI.dragstart, false);
+      if ((_ref = el.querySelector('.move')) != null) {
+        _ref.addEventListener('mousedown', UI.dragstart, false);
+      }
       return el;
     },
     dragstart: function(e) {
