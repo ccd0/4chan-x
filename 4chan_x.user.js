@@ -4358,7 +4358,6 @@
         root: node,
         el: el,
         "class": el.className,
-        klass: el.className,
         id: el.id.slice(1),
         threadId: Main.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.slice(1),
         isInlined: /\binline\b/.test(rootClass),

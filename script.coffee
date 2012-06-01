@@ -3324,7 +3324,6 @@ Main =
       root:        node
       el:          el
       class:       el.className
-      klass:       el.className
       id:          el.id[1..]
       threadId:    Main.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id[1..]
       isInlined:   /\binline\b/.test rootClass
