@@ -760,7 +760,9 @@ ReplyHiding =
     {root, el} = post
     button = $ '.sideArrows', root
     return if button.hidden # already hidden once by filter
-    #XXX FIXME change filter also
+
+    if Conf['Recursive Filtering']
+      $.addClass root, 'hidden'
 
     stub = $.el 'div',
       className: 'hide_reply_button stub'
@@ -774,6 +776,7 @@ ReplyHiding =
 
   show: (post) ->
     {el, root} = post
+    $.removeClass root, 'hidden'
     button = $ '.sideArrows', root
     el.hidden = false
     button.hidden = false
@@ -3728,7 +3731,7 @@ div.opContainer {
   margin-left: 20px;
   border-left: 1px solid black;
 }
-.stub ~ * {
+.replyContainer.hidden + .threadContainer, .stub ~ * {
   display: none !important;
 }
 '

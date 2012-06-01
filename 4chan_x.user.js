@@ -1008,6 +1008,9 @@
       if (button.hidden) {
         return;
       }
+      if (Conf['Recursive Filtering']) {
+        $.addClass(root, 'hidden');
+      }
       stub = $.el('div', {
         className: 'hide_reply_button stub',
         innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
@@ -1022,6 +1025,7 @@
     show: function(post) {
       var button, el, root;
       el = post.el, root = post.root;
+      $.removeClass(root, 'hidden');
       button = $('.sideArrows', root);
       el.hidden = false;
       button.hidden = false;
@@ -4788,7 +4792,7 @@ div.opContainer {\
   margin-left: 20px;\
   border-left: 1px solid black;\
 }\
-.stub ~ * {\
+.replyContainer.hidden + .threadContainer, .stub ~ * {\
   display: none !important;\
 }\
 '
