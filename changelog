@@ -1,4 +1,9 @@
 master
+- Mayhem
+  Fix some stub issues.
+  Add a per filter stub setting.
+  Fix quote previewing of forward hidden posts.
+  Fix file size info in case of spoiler image.
 
 3.8.2
 - aeosynth

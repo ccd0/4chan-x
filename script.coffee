@@ -169,15 +169,15 @@ UI =
     el = d.createElement 'div'
     el.className = 'reply dialog'
     el.innerHTML = html
-    el.id = id
-    el.style.cssText = if saved = localStorage["#{Main.namespace}#{id}.position"] then saved else position
-    el.querySelector('.move')?.addEventListener 'mousedown', UI.dragstart, false
+    el.id        = id
+    el.style.cssText = localStorage.getItem("#{Main.namespace}#{id}.position") or position
+    el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection
     e.preventDefault()
     UI.el = el = @parentNode
-    d.addEventListener 'mousemove', UI.drag, false
+    d.addEventListener 'mousemove', UI.drag,    false
     d.addEventListener 'mouseup',   UI.dragend, false
     #distance from pointer to el edge is constant; calculate it here.
     # XXX opera reports el.offsetLeft / el.offsetTop as 0
@@ -205,13 +205,10 @@ UI =
     style.right  = if left is null then '0px' else null
     style.bottom = if top  is null then '0px' else null
   dragend: ->
-    #$ coffee -bpe '{a} = {b} = c'
-    #var a, b;
-    #a = (b = c.b, c).a;
-    {el} = UI
-    localStorage["#{Main.namespace}#{el.id}.position"] = el.style.cssText
-    d.removeEventListener 'mousemove', UI.drag, false
+    localStorage.setItem "#{Main.namespace}#{UI.el.id}.position", UI.el.style.cssText
+    d.removeEventListener 'mousemove', UI.drag,    false
     d.removeEventListener 'mouseup',   UI.dragend, false
+    delete UI.el
   hover: (e) ->
     {clientX, clientY} = e
     {style} = UI.el
@@ -233,7 +230,6 @@ UI =
     else
       style.left  = null
       style.right = clientWidth - clientX + 45 + 'px'
-
   hoverend: ->
     $.rm UI.el
     delete UI.el
@@ -423,19 +419,29 @@ Filter =
 
         # Filter OPs along with their threads, replies only, or both.
         # Defaults to replies only.
-        op = filter.match(/[^t]op:(yes|no|only)/)?[1].toLowerCase() or 'no'
+        op = filter.match(/[^t]op:(yes|no|only)/)?[1] or 'no'
+
+        # Overrule the `Show Stubs` setting.
+        # Defaults to stub showing.
+        stub = switch filter.match(/stub:(yes|no)/)?[1]
+          when 'yes'
+            true
+          when 'no'
+            false
+          else
+            Conf['Show Stubs']
 
         # Highlight the post, or hide it.
         # If not specified, the highlight class will be filter_highlight.
         # Defaults to post hiding.
         if hl = /highlight/.test filter
-          hl  = filter.match(/highlight:(\w+)/)?[1].toLowerCase() or 'filter_highlight'
+          hl  = filter.match(/highlight:(\w+)/)?[1] or 'filter_highlight'
           # Put highlighted OP's thread on top of the board page or not.
           # Defaults to on top.
-          top = filter.match(/top:(yes|no)/)?[1].toLowerCase() or 'yes'
+          top = filter.match(/top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push @createFilter regexp, op, hl, top
+        @filters[key].push @createFilter regexp, op, stub, hl, top
 
       # Only execute filter types that contain valid filters.
       unless @filters[key].length
@@ -444,21 +450,24 @@ Filter =
     if Object.keys(@filters).length
       Main.callbacks.push @node
 
-  createFilter: (regexp, op, hl, top) ->
+  createFilter: (regexp, op, stub, hl, top) ->
     test =
       if typeof regexp is 'string'
         # MD5 checking
         (value) -> regexp is value
       else
         (value) -> regexp.test value
+    settings =
+      hide:  !hl
+      stub:  stub
+      class: hl
+      top:   top
     (value, isOP) ->
       if isOP and op is 'no' or !isOP and op is 'only'
         return false
       unless test value
         return false
-      if hl
-        return [hl, top]
-      true
+      settings
 
   node: (post) ->
     return if post.isInlined
@@ -474,14 +483,14 @@ Filter =
           continue
 
         # Hide
-        if result is true
+        if result.hide
           if isOP
             unless Main.REPLY
-              ThreadHiding.hide root.parentNode
+              ThreadHiding.hide root.parentNode, result.stub
             else
               continue
           else
-            ReplyHiding.hide post
+            ReplyHiding.hide post, result.stub
           return
 
         # Highlight
@@ -668,7 +677,7 @@ ThreadHiding =
   init: ->
     hiddenThreads = $.get "hiddenThreads/#{Main.BOARD}/", {}
     for thread in $$ '.thread'
-      a  = $.el 'a',
+      a = $.el 'a',
         className: 'hide_thread_button'
         innerHTML: '<span>[ - ]</span>'
         href: 'javascript:;'
@@ -693,13 +702,13 @@ ThreadHiding =
       hiddenThreads[id] = Date.now()
     $.set "hiddenThreads/#{Main.BOARD}/", hiddenThreads
 
-  hide: (thread) ->
-    unless Conf['Show Stubs']
+  hide: (thread, show_stub=Conf['Show Stubs']) ->
+    unless show_stub
       thread.hidden = true
       thread.nextElementSibling.hidden = true
       return
 
-    return if thread.firstChild.className is 'hide_thread_button hidden_thread' # already hidden by filter
+    return if /\bhidden_thread\b/.test thread.firstChild.className # already hidden once by the filter
 
     num     = 0
     if span = $ '.summary', thread
@@ -708,17 +717,17 @@ ThreadHiding =
     text    = if num is 1 then '1 reply' else "#{num} replies"
     opInfo  = $('.op > .postInfo > .nameBlock', thread).textContent
 
-    a = $ '.hide_thread_button', thread
-    $.addClass a, 'hidden_thread'
-    $.addClass thread, 'hidden'
-    a.firstChild.textContent = '[ + ]'
+    a = $.el 'a',
+      className: 'hide_thread_button hidden_thread'
+      innerHTML: '<span>[ + ]</span>'
+      href: 'javascript:;'
     $.add a, $.tn " #{opInfo} (#{text})"
+    $.on a, 'click', ThreadHiding.cb
+    $.prepend thread, a
 
   show: (thread) ->
-    a = $ '.hide_thread_button', thread
-    $.removeClass a, 'hidden_thread'
-    $.removeClass thread, 'hidden'
-    a.innerHTML = '<span>[ - ]</span>'
+    if a = $ '.hidden_thread', thread
+      $.rm a
     thread.hidden = false
     thread.nextElementSibling.hidden = false
 
@@ -727,12 +736,11 @@ ReplyHiding =
     Main.callbacks.push @node
 
   node: (post) ->
-    {id, isInlined, klass, root} = post
-    return if isInlined or /\bop\b/.test klass
-    button = $ '.sideArrows', root
-    $.addClass button, 'hide_reply_button'
-    button.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
-    $.on button.firstChild, 'click', ReplyHiding.toggle
+    return if post.isInlined or /\bop\b/.test post.class
+    side = $ '.sideArrows', post.root
+    $.addClass side, 'hide_reply_button'
+    side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
+    $.on side.firstChild, 'click', ReplyHiding.toggle
 
     if id of Main.hiddenReplies
       ReplyHiding.hide post
@@ -756,34 +764,28 @@ ReplyHiding =
       Main.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{Main.BOARD}/", Main.hiddenReplies
 
-  hide: (post) ->
-    {root, el} = post
-    button = $ '.sideArrows', root
-    return if button.hidden # already hidden once by filter
+  hide: (root, show_stub=Conf['Show Stubs']) ->
+    side = $ '.sideArrows', root
+    return if side.hidden # already hidden once by the filter
+    side.hidden = true
+    el = side.nextElementSibling
+    el.hidden = true
 
-    if Conf['Recursive Filtering']
-      $.addClass root, 'hidden'
+    return unless show_stub
 
     stub = $.el 'div',
       className: 'hide_reply_button stub'
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
-    $.add stub.firstChild, $.tn $('.nameBlock', el).textContent
-    $.on  stub.firstChild, 'click', ReplyHiding.toggle
-    $.before button, stub
+    a = stub.firstChild
+    $.add a, $.tn $('.nameBlock', el).textContent
+    $.on  a, 'click', ReplyHiding.toggle
+    $.prepend root, stub
 
-    if !Conf['Show Stubs']
-      stub.hidden = true
-
-  show: (post) ->
-    {el, root} = post
-    $.removeClass root, 'hidden'
-    button = $ '.sideArrows', root
-    el.hidden = false
-    button.hidden = false
-
-    return unless Conf['Show Stubs']
-
-    $.rm button.previousElementSibling
+  show: (root) ->
+    if stub = $ '.stub', root
+      $.rm stub
+    $('.sideArrows', root).hidden = false
+    $('.post',       root).hidden = false
 
 Keybinds =
   init: ->
@@ -1025,15 +1027,12 @@ QR =
     return unless $ '#postForm input[type=submit]'
     Main.callbacks.push @node
     if Conf['Hide Original Post Form']
-      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if Main.REPLY then 'Quick Reply' else 'New Thread'}</a>"
+      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if Main.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
       $.on link.firstChild, 'click', ->
         QR.open()
         $('select',   QR.el).value = 'new' unless Main.REPLY
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
-
-    # Prevent original captcha input from being focused on reload.
-    $.globalEval 'Recaptcha.focus_response_field=function(){}'
 
     if Conf['Persistent QR']
       QR.dialog()
@@ -1074,15 +1073,18 @@ QR =
   toggleHide: ->
     @checked and QR.hide() or QR.unhide()
 
-  error: (err, node) ->
+  error: (err) ->
     el = $ '.warning', QR.el
-    el.textContent = err
-    $.replace el.firstChild, node if node
+    if typeof err is 'string'
+      el.textContent = err
+    else
+      el.innerHTML = null
+      $.add el, err
     QR.open()
-    if /captcha|verification/i.test err
+    if /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
-    alert err if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+    alert el.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
     $('.warning', QR.el).textContent = null
 
@@ -1378,7 +1380,8 @@ QR =
           "Verification (#{count} cached captchas)"
       @input.alt = count # For XTRM RICE.
     reload: (focus) ->
-      window.location = 'javascript:Recaptcha.reload()'
+      # the "t" argument prevents the input from being focused
+      window.location = 'javascript:Recaptcha.reload("t")'
       # Focus if we meant to.
       QR.captcha.input.focus() if focus
     keydown: (e) ->
@@ -1561,7 +1564,7 @@ QR =
       onerror: ->
         # Connection error, or
         # CORS disabled error on www.4chan.org/banned
-        QR.error '_', $.el 'a',
+        QR.error $.el 'a',
           href: '//www.4chan.org/banned'
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
@@ -1581,20 +1584,21 @@ QR =
   response: (html) ->
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = html
-    # Check for ban.
-    if doc.title is '4chan - Banned'
-      QR.error '_', $.el 'a',
-        href: '//www.4chan.org/banned'
-        target: '_blank'
-        textContent: 'You are banned.'
-      return
-    unless b = $ 'td b', doc
+    if doc.title is '4chan - Banned' # Ban/warn check
+      bs  = $$ 'b', doc
+      err = $.el 'span',
+        innerHTML:
+          if /^You were issued a warning/.test $('.boxcontent', doc).textContent.trim()
+            "You were issued a warning on #{bs[0].innerHTML} as #{bs[3].innerHTML}.<br>Warning reason: #{bs[1].innerHTML}"
+          else
+            "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
+    else if msg = doc.getElementById 'errmsg' # error!
+      err = msg.textContent
+      if msg.firstChild.tagName # duplicate image link
+        err = msg.firstChild
+        err.target = '_blank'
+    else unless msg = $ 'b', doc
       err = 'Connection error with sys.4chan.org.'
-    else if b.childElementCount # error!
-      if b.firstChild.tagName # duplicate image link
-        node = b.firstChild
-        node.target = '_blank'
-      err = b.firstChild.textContent
 
     if err
       if /captcha|verification/i.test(err) or err is 'Connection error with sys.4chan.org.'
@@ -1606,7 +1610,7 @@ QR =
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.status()
-      QR.error err, node
+      QR.error err
       return
 
     reply = QR.replies[0]
@@ -1618,7 +1622,7 @@ QR =
       sub:   if Conf['Remember Subject']  then reply.sub     else null
     $.set 'QR.persona', persona
 
-    [_, thread, postNumber] = b.lastChild.textContent.match /thread:(\d+),no:(\d+)/
+    [_, thread, postNumber] = msg.lastChild.textContent.match /thread:(\d+),no:(\d+)/
     if thread is '0' # new thread
       if Conf['Thread Watcher'] and Conf['Auto Watch']
         $.set 'autoWatch', postNumber
@@ -1699,6 +1703,7 @@ Options =
     <ul>You can use these settings with each regular expression, separate them with semicolons:
       <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>
       <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>
+      <li>Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code></li>
       <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li>
       <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>
     </ul>
@@ -2243,7 +2248,7 @@ FileInfo =
     FileInfo.data =
       link:       post.img.parentNode.href
       spoiler:    /^Spoiler/.test alt
-      size:       parseFloat alt
+      size:       alt.match(/\d+\.?\d*/)[0]
       unit:       alt.match(/\w+$/)[0]
       resolution: span.previousSibling.textContent.match(/\d+x\d+|PDF/)[0]
       fullname:   span.title
@@ -2450,8 +2455,17 @@ QuotePreview =
     return
   mouseover: (e) ->
     return if /\binlined\b/.test @className
+
+    # Make sure to remove the previous qp
+    # in case it got stuck. Opera-only bug?
     if qp = $.id 'qp'
+      if qp is UI.el
+        delete UI.el
       $.rm qp
+
+    # Don't stop other elements from dragging
+    return if UI.el
+
     qp = UI.el = $.el 'div',
       id: 'qp'
       className: 'post reply dialog'
@@ -2459,6 +2473,10 @@ QuotePreview =
 
     id = @hash[2..]
     if el = $.id "p#{id}"
+      for klass in el.parentNode.className.split ' '
+        # preserve highlight classes
+        unless /^((op|reply|post)Container|forwarded)$/.test klass
+          $.addClass qp, klass
       qp.innerHTML  = el.innerHTML
       if Conf['Quote Highlighting']
         if /\bop\b/.test el.className
@@ -2482,7 +2500,7 @@ QuotePreview =
         $.removeClass el.parentNode, 'qphl'
       else
         $.removeClass el, 'qphl'
-    $.off @, 'mousemove', UI.hover
+    $.off @, 'mousemove',      UI.hover
     $.off @, 'mouseout click', QuotePreview.mouseout
   parse: (req, id) ->
     return unless (qp = UI.el) and qp.textContent is "Loading #{id}..."
@@ -2701,7 +2719,7 @@ ThreadStats =
     @posts = @images = 0
     @imgLimit =
       switch Main.BOARD
-        when 'a', 'mlp', 'v'
+        when 'a', 'b', 'mlp', 'v'
           251
         when 'vg'
           501
@@ -2883,15 +2901,25 @@ ImageHover =
     return unless post.img
     $.on post.img, 'mouseover', ImageHover.mouseover
   mouseover: ->
-    UI.el = $.el 'img'
+    # Make sure to remove the previous image hover
+    # in case it got stuck. Opera-only bug?
+    if el = $.id 'ihover'
+      if el is UI.el
+        delete UI.el
+      $.rm el
+
+    # Don't stop other elements from dragging
+    return if UI.el
+
+    el = UI.el = $.el 'img'
       id: 'ihover'
       src: @parentNode.href
-    $.add d.body, UI.el
-    $.on UI.el, 'load',      ImageHover.load
-    $.on @,     'mousemove', UI.hover
-    $.on @,     'mouseout',  ImageHover.mouseout
+    $.add d.body, el
+    $.on el, 'load',      ImageHover.load
+    $.on @,  'mousemove', UI.hover
+    $.on @,  'mouseout',  ImageHover.mouseout
   load: ->
-    return if @ isnt UI.el
+    return unless @parentNode
     # 'Fake' mousemove event by giving required values.
     {style} = @
     UI.hover
@@ -3231,6 +3259,9 @@ Main =
     Main.node nodes, true
     Main.prettify = Main._prettify
 
+    # Execute these scripts on inserted posts, not page init.
+    Main.hasCodeTags = !! $ 'script[src="//static.4chan.org/js/prettify/prettify.js"]'
+
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
       observer = new MutationObserver Main.observer
       observer.observe board,
@@ -3238,6 +3269,7 @@ Main =
         subtree:   true
     else
       $.on board, 'DOMNodeInserted', Main.listener
+    return
 
   pruneHidden: ->
     now = Date.now()
@@ -3310,7 +3342,7 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "4chan X has experienced an error. To help fix this, please send the following snippet to:\nhttp://aeosynth.github.com/4chan-x/#bug-report\n\n#{err.message}\n#{err.stack}" if notify
+        alert "4chan X (#{Main.version}) has experienced an error. You can help by sending this snippet to:\nhttps://github.com/aeosynth/4chan-x/issues\n\n#{window.location}\n#{err.message}\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []
@@ -3365,8 +3397,7 @@ a[href="javascript:;"] {
   float: left;
 }
 
-.hidden_thread ~ *,
-.hidden_thread + div.opContainer,
+.thread > .hidden_thread ~ *,
 [hidden],
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
