@@ -199,12 +199,12 @@
 
   UI = {
     dialog: function(id, position, html) {
-      var el, saved;
+      var el;
       el = d.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
-      el.style.cssText = (saved = localStorage["" + Main.namespace + id + ".position"]) ? saved : position;
+      el.style.cssText = localStorage.getItem("" + Main.namespace + id + ".position") || position;
       el.querySelector('.move').addEventListener('mousedown', UI.dragstart, false);
       return el;
     },
@@ -233,9 +233,7 @@
       return style.bottom = top === null ? '0px' : null;
     },
     dragend: function() {
-      var el;
-      el = UI.el;
-      localStorage["" + Main.namespace + el.id + ".position"] = el.style.cssText;
+      localStorage.setItem("" + Main.namespace + UI.el.id + ".position", UI.el.style.cssText);
       d.removeEventListener('mousemove', UI.drag, false);
       d.removeEventListener('mouseup', UI.dragend, false);
       return delete UI.el;

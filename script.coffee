@@ -164,15 +164,15 @@ UI =
     el = d.createElement 'div'
     el.className = 'reply dialog'
     el.innerHTML = html
-    el.id = id
-    el.style.cssText = if saved = localStorage["#{Main.namespace}#{id}.position"] then saved else position
+    el.id        = id
+    el.style.cssText = localStorage.getItem("#{Main.namespace}#{id}.position") or position
     el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection
     e.preventDefault()
     UI.el = el = @parentNode
-    d.addEventListener 'mousemove', UI.drag, false
+    d.addEventListener 'mousemove', UI.drag,    false
     d.addEventListener 'mouseup',   UI.dragend, false
     #distance from pointer to el edge is constant; calculate it here.
     # XXX opera reports el.offsetLeft / el.offsetTop as 0
@@ -200,12 +200,8 @@ UI =
     style.right  = if left is null then '0px' else null
     style.bottom = if top  is null then '0px' else null
   dragend: ->
-    #$ coffee -bpe '{a} = {b} = c'
-    #var a, b;
-    #a = (b = c.b, c).a;
-    {el} = UI
-    localStorage["#{Main.namespace}#{el.id}.position"] = el.style.cssText
-    d.removeEventListener 'mousemove', UI.drag, false
+    localStorage.setItem "#{Main.namespace}#{UI.el.id}.position", UI.el.style.cssText
+    d.removeEventListener 'mousemove', UI.drag,    false
     d.removeEventListener 'mouseup',   UI.dragend, false
     delete UI.el
   hover: (e) ->
