@@ -1203,7 +1203,7 @@ QR =
       @com = null
 
       @el = $.el 'a',
-        className: 'preview'
+        className: 'thumbnail'
         draggable: true
         href: 'javascript:;'
         innerHTML: '<a class=remove>&times;</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
@@ -1304,8 +1304,8 @@ QR =
       e.preventDefault()
       e.dataTransfer.dropEffect = 'move'
     drop: ->
-      el     = $ '.drag', @parentNode
-      index  = (el) -> Array::slice.call(el.parentNode.children).indexOf el
+      el    = $ '.drag', @parentNode
+      index = (el) -> Array::slice.call(el.parentNode.children).indexOf el
       oldIndex = index el
       newIndex = index @
       if oldIndex < newIndex
@@ -3305,7 +3305,7 @@ h1 {
   user-select: none;
 }
 #replies > div {
-  counter-reset: previews;
+  counter-reset: thumbnails;
   top: 0; right: 0; bottom: 0; left: 0;
   margin: 0; padding: 0;
   overflow: hidden;
@@ -3317,7 +3317,7 @@ h1 {
   overflow-x: auto;
   z-index: 1;
 }
-.preview {
+.thumbnail {
   background-color: rgba(0,0,0,.2) !important;
   background-position: 50% 20% !important;
   background-size: cover !important;
@@ -3333,21 +3333,21 @@ h1 {
   overflow: hidden;
   position: relative;
   text-shadow: 0 1px 1px #000;
-  -webkit-transition: .25s ease-in-out;
-  -moz-transition: .25s ease-in-out;
-  -o-transition: .25s ease-in-out;
-  transition: .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -o-transition: opacity .25s ease-in-out;
+  transition: opacity .25s ease-in-out;
   vertical-align: top;
 }
-.preview:hover, .preview:focus {
+.thumbnail:hover, .thumbnail:focus {
   opacity: .9;
 }
-.preview#selected {
+.thumbnail#selected {
   opacity: 1;
 }
-.preview::before {
-  counter-increment: previews;
-  content: counter(previews);
+.thumbnail::before {
+  counter-increment: thumbnails;
+  content: counter(thumbnails);
   color: #FFF;
   font-weight: 700;
   padding: 3px;
@@ -3356,13 +3356,13 @@ h1 {
   right: 0;
   text-shadow: 0 0 3px #000, 0 0 8px #000;
 }
-.preview.drag {
+.thumbnail.drag {
   box-shadow: 0 0 10px rgba(0,0,0,.5);
 }
-.preview.over {
+.thumbnail.over {
   border-color: #FFF;
 }
-.preview > span {
+.thumbnail > span {
   color: #FFF;
 }
 .remove {
@@ -3374,14 +3374,14 @@ h1 {
 .remove:hover::after {
   content: " Remove";
 }
-.preview > label {
+.thumbnail > label {
   background: rgba(0,0,0,.5);
   color: #FFF;
   right: 0; bottom: 0; left: 0;
   position: absolute;
   text-align: center;
 }
-.preview > label > input {
+.thumbnail > label > input {
   margin: 0;
 }
 #addReply {
