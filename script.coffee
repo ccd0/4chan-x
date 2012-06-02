@@ -2751,6 +2751,7 @@ Unread =
 
   node: (post) ->
     {el} = post
+    return if /\bop\b/.test(post.class) or post.isInlined
     #return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
     {replies} = Unread
     reply = replies[post.id] =
