@@ -3642,9 +3642,6 @@
     node: function(post) {
       var el, replies, reply;
       el = post.el;
-      if (el.hidden || /\bop\b/.test(post["class"]) || post.isInlined) {
-        return;
-      }
       replies = Unread.replies;
       reply = replies[post.id] = {
         prev: replies.last,
