@@ -3683,15 +3683,7 @@
       }
     },
     setTitle: function(count) {
-      if (this.scheduled) {
-        clearTimeout(this.scheduled);
-        delete Unread.scheduled;
-        this.setTitle(count);
-        return;
-      }
-      return this.scheduled = setTimeout((function() {
-        return d.title = "(" + count + ") " + Unread.title;
-      }), 5);
+      return d.title = "(" + count + ") " + Unread.title;
     },
     update: function(updateFavicon) {
       var count;

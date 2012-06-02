@@ -2785,14 +2785,7 @@ Unread =
     Unread.update Object.keys(replies).length is 2 if update
 
   setTitle: (count) ->
-    if @scheduled
-      clearTimeout @scheduled
-      delete Unread.scheduled
-      @setTitle count
-      return
-    @scheduled = setTimeout (->
-      d.title = "(#{count}) #{Unread.title}"
-    ), 5
+    d.title = "(#{count}) #{Unread.title}"
 
   update: (updateFavicon) ->
     return unless Main.REPLY
