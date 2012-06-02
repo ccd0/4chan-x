@@ -1,4 +1,6 @@
 master
+- aeosynth
+  fix threaded quotes double parsing
 
 3.9.0
 - Mayhem
