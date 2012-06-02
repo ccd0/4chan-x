@@ -4592,6 +4592,10 @@ textarea.field {\
   text-decoration: underline;\
 }\
 \
+#qp {\
+  margin: 0;\
+  padding: 1px 2px 5px;\
+}\
 #qp img {\
   max-height: 300px;\
   max-width: 500px;\
