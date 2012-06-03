@@ -805,7 +805,8 @@
         a = $.el('a', {
           textContent: "+ " + span.textContent,
           className: 'summary desktop',
-          href: 'javascript:;'
+          href: 'javascript:;',
+          title: 'Expand this thread'
         });
         $.on(a, 'click', function() {
           return ExpandThread.toggle(this.parentNode);
@@ -915,7 +916,8 @@
         a = $.el('a', {
           className: 'hide_thread_button',
           innerHTML: '<span>[ - ]</span>',
-          href: 'javascript:;'
+          href: 'javascript:;',
+          title: 'Hide this thread'
         });
         $.on(a, 'click', ThreadHiding.cb);
         $.prepend(thread, a);
@@ -990,7 +992,7 @@
       }
       side = $('.sideArrows', post.root);
       $.addClass(side, 'hide_reply_button');
-      side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
+      side.innerHTML = '<a title="Hide this post" href="javascript:;"><span>[ - ]</span></a>';
       $.on(side.firstChild, 'click', ReplyHiding.toggle);
       if (post.id in Main.hiddenReplies) {
         return ReplyHiding.hide(post.root);
@@ -3568,7 +3570,8 @@
       this.a = $.el('a', {
         className: 'report_button',
         innerHTML: '[&nbsp;!&nbsp;]',
-        href: 'javascript:;'
+        href: 'javascript:;',
+        title: 'Report this post'
       });
       return Main.callbacks.push(this.node);
     },
