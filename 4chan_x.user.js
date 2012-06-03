@@ -3660,8 +3660,14 @@
         case 'k':
         case 'sci':
           return "https://archive.installgentoo.net/" + board + "/" + mode + "/" + id;
+        case 'cgl':
+        case 'mu':
+        case 'w':
+          return "http://archive.rebeccablacktech.com/" + board + "/" + mode + "/" + id;
         case 'x':
           return "http://archive.xfiles.to/" + board + "/" + mode + "/" + id;
+        case 'e':
+          return "https://md401.homelinux.net/4chan/cgi-board.pl/" + board + "/" + mode + "/" + id;
         default:
           if (mode === 'thread') {
             return "//boards.4chan.org/" + board + "/";
