@@ -3329,9 +3329,11 @@ Main =
     Main.prettify post.blockquote
     post
   node: (nodes, notify) ->
+    parsed = []
+    parsed.push Main.preParse node for node in nodes
     for callback in Main.callbacks
       try
-        callback Main.preParse node for node in nodes
+        callback node for node in parsed
       catch err
         alert "4chan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/aeosynth/4chan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err.stack}" if notify
     return

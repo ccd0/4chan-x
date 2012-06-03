@@ -4369,14 +4369,19 @@
       return post;
     },
     node: function(nodes, notify) {
-      var callback, node, _i, _j, _len, _len1, _ref;
+      var callback, node, parsed, _i, _j, _k, _len, _len1, _len2, _ref;
+      parsed = [];
+      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+        node = nodes[_i];
+        parsed.push(Main.preParse(node));
+      }
       _ref = Main.callbacks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        callback = _ref[_i];
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        callback = _ref[_j];
         try {
-          for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
-            node = nodes[_j];
-            callback(Main.preParse(node));
+          for (_k = 0, _len2 = parsed.length; _k < _len2; _k++) {
+            node = parsed[_k];
+            callback(node);
           }
         } catch (err) {
           if (notify) {
