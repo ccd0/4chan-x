@@ -735,10 +735,11 @@
   ExpandComment = {
     init: function() {
       var a, _i, _len, _ref;
-      _ref = $$('.abbr');
+      _ref = $$('.abbr a');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        $.on(a.firstElementChild, 'click', ExpandComment.expand);
+        $.on(a, 'click', ExpandComment.expand);
+        a.title = 'Expand this comment';
       }
     },
     expand: function(e) {

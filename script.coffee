@@ -558,8 +558,9 @@ StrikethroughQuotes =
 
 ExpandComment =
   init: ->
-    for a in $$ '.abbr'
-      $.on a.firstElementChild, 'click', ExpandComment.expand
+    for a in $$ '.abbr a'
+      $.on a, 'click', ExpandComment.expand
+      a.title = 'Expand this comment'
     return
   expand: (e) ->
     e.preventDefault()
