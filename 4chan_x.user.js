@@ -398,7 +398,7 @@
     addClass: function(el, className) {
       return el.classList.add(className);
     },
-    removeClass: function(el, className) {
+    rmClass: function(el, className) {
       return el.classList.remove(className);
     },
     rm: function(el) {
@@ -1010,7 +1010,7 @@
         ReplyHiding.show(post.root);
         for (_i = 0, _len = quotes.length; _i < _len; _i++) {
           quote = quotes[_i];
-          $.removeClass(quote, 'filtered');
+          $.rmClass(quote, 'filtered');
         }
         delete Main.hiddenReplies[id];
       } else {
@@ -1055,7 +1055,7 @@
       }
       $('.sideArrows', root).hidden = false;
       $('.post', root).hidden = false;
-      return $.removeClass(root, 'hidden');
+      return $.rmClass(root, 'hidden');
     }
   };
 
@@ -1294,7 +1294,7 @@
     hl: function(delta, thread) {
       var axis, next, post, rect, replies, reply, _i, _len;
       if (post = $('.reply.highlight', thread)) {
-        $.removeClass(post, 'highlight');
+        $.rmClass(post, 'highlight');
         rect = post.getBoundingClientRect();
         if (rect.bottom >= 0 && rect.top <= d.documentElement.clientHeight) {
           axis = delta === +1 ? 'following' : 'preceding';
@@ -1456,7 +1456,7 @@
       QR.el.hidden = true;
       QR.abort();
       d.activeElement.blur();
-      $.removeClass(QR.el, 'dump');
+      $.rmClass(QR.el, 'dump');
       _ref = QR.replies;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         i = _ref[_i];
@@ -1476,7 +1476,7 @@
       return $.id('autohide').checked = true;
     },
     unhide: function() {
-      $.removeClass(QR.el, 'autohide');
+      $.rmClass(QR.el, 'autohide');
       return $.id('autohide').checked = false;
     },
     toggleHide: function() {
@@ -1769,7 +1769,7 @@
       };
 
       _Class.prototype.dragLeave = function() {
-        return $.removeClass(this, 'over');
+        return $.rmClass(this, 'over');
       };
 
       _Class.prototype.dragOver = function(e) {
@@ -1796,9 +1796,9 @@
 
       _Class.prototype.dragEnd = function() {
         var el;
-        $.removeClass(this, 'drag');
+        $.rmClass(this, 'drag');
         if (el = $('.over', this.parentNode)) {
-          return $.removeClass(el, 'over');
+          return $.rmClass(el, 'over');
         }
       };
 
@@ -3138,9 +3138,9 @@
       }
       if (el = $.id("p" + id)) {
         if (/\bop\b/.test(el.className)) {
-          $.removeClass(el.parentNode, 'qphl');
+          $.rmClass(el.parentNode, 'qphl');
         } else {
-          $.removeClass(el, 'qphl');
+          $.rmClass(el, 'qphl');
         }
         clonePost = QuoteInline.clone(id, el);
         if (isBacklink) {
@@ -3187,13 +3187,13 @@
         inlined = _ref[_i];
         div = $.id(inlined.hash.slice(1));
         if (!--div.dataset.forwarded) {
-          $.removeClass(div.parentNode, 'forwarded');
+          $.rmClass(div.parentNode, 'forwarded');
         }
       }
       if (/\bbacklink\b/.test(q.className)) {
         div = $.id("p" + id);
         if (!--div.dataset.forwarded) {
-          return $.removeClass(div.parentNode, 'forwarded');
+          return $.rmClass(div.parentNode, 'forwarded');
         }
       }
     },
@@ -3322,9 +3322,9 @@
       UI.hoverend();
       if (el = $.id(this.hash.slice(1))) {
         if (/\bop\b/.test(el.className)) {
-          $.removeClass(el.parentNode, 'qphl');
+          $.rmClass(el.parentNode, 'qphl');
         } else {
-          $.removeClass(el, 'qphl');
+          $.rmClass(el, 'qphl');
         }
       }
       $.off(this, 'mousemove', UI.hover);
@@ -3709,12 +3709,12 @@
       if (Main.dead) {
         $.addClass(Favicon.el, 'dead');
       } else {
-        $.removeClass(Favicon.el, 'dead');
+        $.rmClass(Favicon.el, 'dead');
       }
       if (count) {
         $.addClass(Favicon.el, 'unread');
       } else {
-        $.removeClass(Favicon.el, 'unread');
+        $.rmClass(Favicon.el, 'unread');
       }
       if ($.engine !== 'webkit') {
         return $.add(d.head, Favicon.el);
@@ -4044,7 +4044,7 @@
     contract: function(thumb) {
       thumb.hidden = false;
       thumb.nextSibling.hidden = true;
-      return $.removeClass(thumb.parentNode.parentNode.parentNode, 'image_expanded');
+      return $.rmClass(thumb.parentNode.parentNode.parentNode, 'image_expanded');
     },
     expand: function(thumb, url) {
       var a, img;

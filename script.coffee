@@ -309,7 +309,7 @@ $.extend $,
     d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null)
   addClass: (el, className) ->
     el.classList.add className
-  removeClass: (el, className) ->
+  rmClass: (el, className) ->
     el.classList.remove className
   rm: (el) ->
     el.parentNode.removeChild el
@@ -758,7 +758,7 @@ ReplyHiding =
     if /\bstub\b/.test button.className
       ReplyHiding.show post.root
       for quote in quotes
-        $.removeClass quote, 'filtered'
+        $.rmClass quote, 'filtered'
       delete Main.hiddenReplies[id]
     else
       ReplyHiding.hide post.root
@@ -792,7 +792,7 @@ ReplyHiding =
     $('.sideArrows', root).hidden = false
     $('.post',       root).hidden = false
 
-    $.removeClass root, 'hidden'
+    $.rmClass root, 'hidden'
 
 Keybinds =
   init: ->
@@ -938,7 +938,7 @@ Keybinds =
 
   hl: (delta, thread) ->
     if post = $ '.reply.highlight', thread
-      $.removeClass post, 'highlight'
+      $.rmClass post, 'highlight'
       rect = post.getBoundingClientRect()
       if rect.bottom >= 0 and rect.top <= d.documentElement.clientHeight # We're at least partially visible
         axis = if delta is +1 then 'following' else 'preceding'
@@ -1061,7 +1061,7 @@ QR =
     QR.el.hidden = true
     QR.abort()
     d.activeElement.blur()
-    $.removeClass QR.el, 'dump'
+    $.rmClass QR.el, 'dump'
     for i in QR.replies
       QR.replies[0].rm()
     QR.cooldown.auto = false
@@ -1075,7 +1075,7 @@ QR =
     $.addClass QR.el, 'autohide'
     $.id('autohide').checked = true
   unhide: ->
-    $.removeClass QR.el, 'autohide'
+    $.rmClass QR.el, 'autohide'
     $.id('autohide').checked = false
   toggleHide: ->
     @checked and QR.hide() or QR.unhide()
@@ -1314,7 +1314,7 @@ QR =
     dragEnter: ->
       $.addClass    @, 'over'
     dragLeave: ->
-      $.removeClass @, 'over'
+      $.rmClass @, 'over'
     dragOver: (e) ->
       e.preventDefault()
       e.dataTransfer.dropEffect = 'move'
@@ -1330,9 +1330,9 @@ QR =
       reply = QR.replies.splice(oldIndex, 1)[0]
       QR.replies.splice newIndex, 0, reply
     dragEnd: ->
-      $.removeClass @, 'drag'
+      $.rmClass @, 'drag'
       if el = $ '.over', @parentNode
-        $.removeClass el, 'over'
+        $.rmClass el, 'over'
     rm: ->
       QR.resetFileInput()
       $.rm @el
@@ -2379,9 +2379,9 @@ QuoteInline =
         root = root.parentNode
     if el = $.id "p#{id}"
       if /\bop\b/.test el.className
-        $.removeClass el.parentNode, 'qphl'
+        $.rmClass el.parentNode, 'qphl'
       else
-        $.removeClass el, 'qphl'
+        $.rmClass el, 'qphl'
       clonePost = QuoteInline.clone id, el
       if isBacklink
         $.after q.parentNode, clonePost
@@ -2414,10 +2414,10 @@ QuoteInline =
     return unless Conf['Forward Hiding']
     for inlined in $$ '.backlink.inlined', div
       div = $.id inlined.hash[1..]
-      $.removeClass div.parentNode, 'forwarded' unless --div.dataset.forwarded
+      $.rmClass div.parentNode, 'forwarded' unless --div.dataset.forwarded
     if /\bbacklink\b/.test q.className
       div = $.id "p#{id}"
-      $.removeClass div.parentNode, 'forwarded' unless --div.dataset.forwarded
+      $.rmClass div.parentNode, 'forwarded' unless --div.dataset.forwarded
 
   parse: (req, pathname, id, inline) ->
     return unless inline.parentNode
@@ -2507,9 +2507,9 @@ QuotePreview =
     UI.hoverend()
     if el = $.id @hash[1..]
       if /\bop\b/.test el.className
-        $.removeClass el.parentNode, 'qphl'
+        $.rmClass el.parentNode, 'qphl'
       else
-        $.removeClass el, 'qphl'
+        $.rmClass el, 'qphl'
     $.off @, 'mousemove',      UI.hover
     $.off @, 'mouseout click', QuotePreview.mouseout
   parse: (req, id) ->
@@ -2822,11 +2822,11 @@ Unread =
     if Main.dead
       $.addClass    Favicon.el, 'dead'
     else
-      $.removeClass Favicon.el, 'dead'
+      $.rmClass Favicon.el, 'dead'
     if count
       $.addClass    Favicon.el, 'unread'
     else
-      $.removeClass Favicon.el, 'unread'
+      $.rmClass Favicon.el, 'unread'
 
     #`favicon.href = href` doesn't work on Firefox
     #`favicon.href = href` isn't enough on Opera
@@ -3045,7 +3045,7 @@ ImageExpand =
   contract: (thumb) ->
     thumb.hidden = false
     thumb.nextSibling.hidden = true
-    $.removeClass thumb.parentNode.parentNode.parentNode, 'image_expanded'
+    $.rmClass thumb.parentNode.parentNode.parentNode, 'image_expanded'
 
   expand: (thumb, url) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
