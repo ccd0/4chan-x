@@ -4403,6 +4403,9 @@
           code = function() {
             jsMath.Process(document.getElementById('_id_'));
           };
+          break;
+        default:
+          return;
       }
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },

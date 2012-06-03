@@ -3348,6 +3348,8 @@ Main =
         code = ->
           jsMath.Process document.getElementById '_id_'
           return
+      else
+        return
     $.globalEval "#{code}".replace '_id_', bq.id
 
   namespace: '4chan_x.'
