@@ -4224,11 +4224,9 @@
       now = Date.now();
       if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 1 * $.DAY) {
         $.on(window, 'message', Main.message);
-        $.ready(function() {
-          return $.add(d.head, $.el('script', {
-            src: 'https://raw.github.com/aeosynth/4chan-x/master/latest.js'
-          }));
-        });
+        $.add(d.head, $.el('script', {
+          src: 'https://raw.github.com/aeosynth/4chan-x/master/latest.js'
+        }));
         $.set('lastUpdate', now);
       }
       Options.init();
