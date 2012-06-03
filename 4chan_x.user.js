@@ -1649,7 +1649,7 @@
         this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
         this.com = null;
         this.el = $.el('a', {
-          className: 'preview',
+          className: 'thumbnail',
           draggable: true,
           href: 'javascript:;',
           innerHTML: '<a class=remove>X</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
@@ -2088,6 +2088,7 @@
           return QR.response(this.response);
         },
         onerror: function() {
+          QR.status();
           return QR.error($.el('a', {
             href: '//www.4chan.org/banned',
             target: '_blank',
@@ -3814,6 +3815,8 @@
         case 'k':
         case 'sci':
           return "https://archive.installgentoo.net/" + board + "/" + mode + "/" + id;
+        case 'x':
+          return "http://archive.xfiles.to/" + board + "/" + mode + "/" + id;
         default:
           if (mode === 'thread') {
             return "//boards.4chan.org/" + board + "/";
@@ -4492,7 +4495,7 @@ h1 {\
   user-select: none;\
 }\
 #replies > div {\
-  counter-reset: previews;\
+  counter-reset: thumbnails;\
   top: 0; right: 0; bottom: 0; left: 0;\
   margin: 0; padding: 0;\
   overflow: hidden;\
@@ -4504,7 +4507,7 @@ h1 {\
   overflow-x: auto;\
   z-index: 1;\
 }\
-.preview {\
+.thumbnail {\
   background-color: rgba(0,0,0,.2) !important;\
   background-position: 50% 20% !important;\
   background-size: cover !important;\
@@ -4520,21 +4523,21 @@ h1 {\
   overflow: hidden;\
   position: relative;\
   text-shadow: 0 1px 1px #000;\
-  -webkit-transition: .25s ease-in-out;\
-  -moz-transition: .25s ease-in-out;\
-  -o-transition: .25s ease-in-out;\
-  transition: .25s ease-in-out;\
+  -webkit-transition: opacity .25s ease-in-out;\
+  -moz-transition: opacity .25s ease-in-out;\
+  -o-transition: opacity .25s ease-in-out;\
+  transition: opacity .25s ease-in-out;\
   vertical-align: top;\
 }\
-.preview:hover, .preview:focus {\
+.thumbnail:hover, .thumbnail:focus {\
   opacity: .9;\
 }\
-.preview#selected {\
+.thumbnail#selected {\
   opacity: 1;\
 }\
-.preview::before {\
-  counter-increment: previews;\
-  content: counter(previews);\
+.thumbnail::before {\
+  counter-increment: thumbnails;\
+  content: counter(thumbnails);\
   color: #FFF;\
   font-weight: 700;\
   padding: 3px;\
@@ -4543,13 +4546,13 @@ h1 {\
   right: 0;\
   text-shadow: 0 0 3px #000, 0 0 8px #000;\
 }\
-.preview.drag {\
+.thumbnail.drag {\
   box-shadow: 0 0 10px rgba(0,0,0,.5);\
 }\
-.preview.over {\
+.thumbnail.over {\
   border-color: #FFF;\
 }\
-.preview > span {\
+.thumbnail > span {\
   color: #FFF;\
 }\
 .remove {\
@@ -4561,14 +4564,14 @@ h1 {\
 .remove:hover::after {\
   content: " Remove";\
 }\
-.preview > label {\
+.thumbnail > label {\
   background: rgba(0,0,0,.5);\
   color: #FFF;\
   right: 0; bottom: 0; left: 0;\
   position: absolute;\
   text-align: center;\
 }\
-.preview > label > input {\
+.thumbnail > label > input {\
   margin: 0;\
 }\
 #addReply {\
@@ -4748,6 +4751,10 @@ textarea.field {\
   text-decoration: underline;\
 }\
 \
+#qp {\
+  margin: 0;\
+  padding: 1px 2px 5px;\
+}\
 #qp img {\
   max-height: 300px;\
   max-width: 500px;\
