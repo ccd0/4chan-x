@@ -3660,6 +3660,8 @@
         case 'k':
         case 'sci':
           return "https://archive.installgentoo.net/" + board + "/" + mode + "/" + id;
+        case 'x':
+          return "http://archive.xfiles.to/" + board + "/" + mode + "/" + id;
         default:
           if (mode === 'thread') {
             return "//boards.4chan.org/" + board + "/";

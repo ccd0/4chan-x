@@ -2782,6 +2782,8 @@ Redirect =
         "http://fuuka.warosu.org/#{board}/#{mode}/#{id}"
       when 'diy', 'g', 'k', 'sci'
         "https://archive.installgentoo.net/#{board}/#{mode}/#{id}"
+      when 'x'
+        "http://archive.xfiles.to/#{board}/#{mode}/#{id}"
       else
         if mode is 'thread'
           "//boards.4chan.org/#{board}/"
