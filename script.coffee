@@ -804,7 +804,7 @@ Keybinds =
     return unless key = Kebinds.keyCode e
     {target} = e
     if /TEXTAREA|INPUT/.test target.nodeName
-      return unless e.altKey or e.ctrlKey or e.keyCode is 27
+      return unless (key is 'Esc') or (/\+/.test key)
 
     thread = Nav.getThread()
     switch key

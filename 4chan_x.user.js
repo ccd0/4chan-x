@@ -1076,7 +1076,7 @@
       }
       target = e.target;
       if (/TEXTAREA|INPUT/.test(target.nodeName)) {
-        if (!(e.altKey || e.ctrlKey || e.keyCode === 27)) {
+        if (!((key === 'Esc') || (/\+/.test(key)))) {
           return;
         }
       }
