@@ -816,10 +816,10 @@ Keybinds =
         QR.submit() if QR.el and !QR.status()
       when Conf.spoiler
         return if target.nodeName isnt 'TEXTAREA'
-        Keybinds.tags 'spoiler', ta
+        Keybinds.tags 'spoiler', target
       when Conf.code
         return if target.nodeName isnt 'TEXTAREA'
-        Keybinds.tags 'code', ta
+        Keybinds.tags 'code', target
       # Thread related
       when Conf.watch
         Watcher.toggle thread

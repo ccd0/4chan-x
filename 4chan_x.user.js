@@ -1093,13 +1093,13 @@
           if (target.nodeName !== 'TEXTAREA') {
             return;
           }
-          Keybinds.tags('spoiler', ta);
+          Keybinds.tags('spoiler', target);
           break;
         case Conf.code:
           if (target.nodeName !== 'TEXTAREA') {
             return;
           }
-          Keybinds.tags('code', ta);
+          Keybinds.tags('code', target);
           break;
         case Conf.watch:
           Watcher.toggle(thread);
