@@ -801,7 +801,7 @@ Keybinds =
     $.on d, 'keydown',  Keybinds.keydown
 
   keydown: (e) ->
-    return unless key = Kebinds.keyCode e
+    return unless key = Keybinds.keyCode e
     {target} = e
     if /TEXTAREA|INPUT/.test target.nodeName
       return unless (key is 'Esc') or (/\+/.test key)

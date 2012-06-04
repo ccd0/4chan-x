@@ -1071,7 +1071,7 @@
     },
     keydown: function(e) {
       var key, link, o, target, thread;
-      if (!(key = Kebinds.keyCode(e))) {
+      if (!(key = Keybinds.keyCode(e))) {
         return;
       }
       target = e.target;
