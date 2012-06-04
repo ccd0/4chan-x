@@ -1054,9 +1054,15 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var key, link, o, ta, thread;
-      if (!(key = Keybinds.keyCode(e)) || /TEXTAREA|INPUT/.test(e.target.nodeName) && !(e.altKey || e.ctrlKey || e.keyCode === 27)) {
+      var key, link, o, target, thread;
+      if (!(key = Kebinds.keyCode(e))) {
         return;
+      }
+      target = e.target;
+      if (/TEXTAREA|INPUT/.test(target.nodeName)) {
+        if (!(e.altKey || e.ctrlKey || e.keyCode === 27)) {
+          return;
+        }
       }
       thread = Nav.getThread();
       switch (key) {
@@ -1084,15 +1090,13 @@
           }
           break;
         case Conf.spoiler:
-          ta = e.target;
-          if (ta.nodeName !== 'TEXTAREA') {
+          if (target.nodeName !== 'TEXTAREA') {
             return;
           }
           Keybinds.tags('spoiler', ta);
           break;
         case Conf.code:
-          ta = e.target;
-          if (ta.nodeName !== 'TEXTAREA') {
+          if (target.nodeName !== 'TEXTAREA') {
             return;
           }
           Keybinds.tags('code', ta);
