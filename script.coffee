@@ -1761,7 +1761,7 @@ Options =
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
     <div class=warning><code>Keybinds</code> are disabled.</div>
-    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>
+    <div>Allowed keys: Ctrl, Alt, Meta, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
     </tbody></table>
