@@ -801,8 +801,10 @@ Keybinds =
     $.on d, 'keydown',  Keybinds.keydown
 
   keydown: (e) ->
-    if not (key = Keybinds.keyCode(e)) or /TEXTAREA|INPUT/.test(e.target.nodeName) and not (e.altKey or e.ctrlKey or e.keyCode is 27)
-      return
+    return unless key = Kebinds.keyCode e
+    {target} = e
+    if /TEXTAREA|INPUT/.test target.nodeName
+      return unless e.altKey or e.ctrlKey or e.keyCode is 27
 
     thread = Nav.getThread()
     switch key
@@ -821,12 +823,10 @@ Keybinds =
       when Conf.submit
         QR.submit() if QR.el and !QR.status()
       when Conf.spoiler
-        ta = e.target
-        return if ta.nodeName isnt 'TEXTAREA'
+        return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'spoiler', ta
       when Conf.code
-        ta = e.target
-        return if ta.nodeName isnt 'TEXTAREA'
+        return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'code', ta
       # Thread related
       when Conf.watch
