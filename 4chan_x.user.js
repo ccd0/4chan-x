@@ -1237,6 +1237,9 @@
         if (e.ctrlKey) {
           key = 'ctrl+' + key;
         }
+        if (e.metaKey) {
+          key = 'meta+' + key;
+        }
       }
       return key;
     },

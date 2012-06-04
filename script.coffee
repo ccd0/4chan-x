@@ -886,8 +886,9 @@ Keybinds =
       else
         null
     if key
-      if e.altKey  then key = 'alt+' + key
+      if e.altKey  then key = 'alt+'  + key
       if e.ctrlKey then key = 'ctrl+' + key
+      if e.metaKey then key = 'meta+' + key
     key
 
   tags: (tag, ta) ->
