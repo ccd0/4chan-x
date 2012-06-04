@@ -2773,6 +2773,13 @@ Redirect =
     switch board
       when 'a', 'co', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{board}/full_image/#{filename}"
+      # these will work whenever https://github.com/eksopl/fuuka/issues/23 is done
+      # when 'cgl', 'g', 'w'
+      #   "http://archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
+      # when 'an', 'toy', 'x'
+      #   "http://archive.xfiles.to/#{board}/full_image/#{filename}"
+      # when 'e'
+      #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
     return unless Conf['404 Redirect'] or mode is 'post'
     switch board
@@ -2784,7 +2791,7 @@ Redirect =
         "https://archive.installgentoo.net/#{board}/#{mode}/#{id}"
       when 'cgl', 'mu', 'w'
         "http://archive.rebeccablacktech.com/#{board}/#{mode}/#{id}"
-      when 'x'
+      when 'an', 'toy', 'x'
         "http://archive.xfiles.to/#{board}/#{mode}/#{id}"
       when 'e'
         "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/#{mode}/#{id}"

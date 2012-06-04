@@ -3670,6 +3670,8 @@
         case 'mu':
         case 'w':
           return "http://archive.rebeccablacktech.com/" + board + "/" + mode + "/" + id;
+        case 'an':
+        case 'toy':
         case 'x':
           return "http://archive.xfiles.to/" + board + "/" + mode + "/" + id;
         case 'e':
