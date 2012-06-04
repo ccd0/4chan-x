@@ -1,5 +1,9 @@
 master
 
+2.31.5
+- Mayhem
+  Fix spoiler and code tag keybinds regression.
+
 2.31.4
 - Mayhem
   Add /an/ and /toy/ archive redirection.
