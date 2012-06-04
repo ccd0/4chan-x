@@ -2763,7 +2763,8 @@ Redirect =
   init: ->
     url =
       if location.hostname is 'images.4chan.org'
-        @image location.href
+        path = location.pathname.split '/'
+        @image path[1], path[3]
       else if /^\d+$/.test g.THREAD_ID
         @thread()
     location.href = url if url

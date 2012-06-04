@@ -3614,8 +3614,8 @@
 
   Redirect = {
     init: function() {
-      var url;
-      url = location.hostname === 'images.4chan.org' ? this.image(location.href) : /^\d+$/.test(g.THREAD_ID) ? this.thread() : void 0;
+      var path, url;
+      url = location.hostname === 'images.4chan.org' ? (path = location.pathname.split('/'), this.image(path[1], path[3])) : /^\d+$/.test(g.THREAD_ID) ? this.thread() : void 0;
       if (url) {
         return location.href = url;
       }
