@@ -1054,9 +1054,15 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var key, link, o, ta, thread;
-      if (!(key = Keybinds.keyCode(e)) || /TEXTAREA|INPUT/.test(e.target.nodeName) && !(e.altKey || e.ctrlKey || e.keyCode === 27)) {
+      var key, link, o, target, thread;
+      if (!(key = Keybinds.keyCode(e))) {
         return;
+      }
+      target = e.target;
+      if (/TEXTAREA|INPUT/.test(target.nodeName)) {
+        if (!((key === 'Esc') || (/\+/.test(key)))) {
+          return;
+        }
       }
       thread = Nav.getThread();
       switch (key) {
@@ -1084,15 +1090,13 @@
           }
           break;
         case Conf.spoiler:
-          ta = e.target;
-          if (ta.nodeName !== 'TEXTAREA') {
+          if (target.nodeName !== 'TEXTAREA') {
             return;
           }
           Keybinds.tags('spoiler', ta);
           break;
         case Conf.code:
-          ta = e.target;
-          if (ta.nodeName !== 'TEXTAREA') {
+          if (target.nodeName !== 'TEXTAREA') {
             return;
           }
           Keybinds.tags('code', ta);
@@ -1232,6 +1236,9 @@
         }
         if (e.ctrlKey) {
           key = 'ctrl+' + key;
+        }
+        if (e.metaKey) {
+          key = 'meta+' + key;
         }
       }
       return key;
@@ -2280,7 +2287,7 @@
   <input type=radio name=tab hidden id=keybinds_tab>\
   <div>\
     <div class=warning><code>Keybinds</code> are disabled.</div>\
-    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>\
+    <div>Allowed keys: Ctrl, Alt, Meta, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>\
     <table><tbody>\
       <tr><th>Actions</th><th>Keybinds</th></tr>\
     </tbody></table>\

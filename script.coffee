@@ -793,8 +793,10 @@ Keybinds =
     $.on d, 'keydown',  Keybinds.keydown
 
   keydown: (e) ->
-    if not (key = Keybinds.keyCode(e)) or /TEXTAREA|INPUT/.test(e.target.nodeName) and not (e.altKey or e.ctrlKey or e.keyCode is 27)
-      return
+    return unless key = Keybinds.keyCode e
+    {target} = e
+    if /TEXTAREA|INPUT/.test target.nodeName
+      return unless (key is 'Esc') or (/\+/.test key)
 
     thread = Nav.getThread()
     switch key
@@ -813,12 +815,10 @@ Keybinds =
       when Conf.submit
         QR.submit() if QR.el and !QR.status()
       when Conf.spoiler
-        ta = e.target
-        return if ta.nodeName isnt 'TEXTAREA'
+        return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'spoiler', ta
       when Conf.code
-        ta = e.target
-        return if ta.nodeName isnt 'TEXTAREA'
+        return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'code', ta
       # Thread related
       when Conf.watch
@@ -886,8 +886,9 @@ Keybinds =
       else
         null
     if key
-      if e.altKey  then key = 'alt+' + key
+      if e.altKey  then key = 'alt+'  + key
       if e.ctrlKey then key = 'ctrl+' + key
+      if e.metaKey then key = 'meta+' + key
     key
 
   tags: (tag, ta) ->
@@ -1760,7 +1761,7 @@ Options =
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
     <div class=warning><code>Keybinds</code> are disabled.</div>
-    <div>Allowed keys: Ctrl, Alt, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>
+    <div>Allowed keys: Ctrl, Alt, Meta, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>
     <table><tbody>
       <tr><th>Actions</th><th>Keybinds</th></tr>
     </tbody></table>
