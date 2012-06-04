@@ -2767,13 +2767,12 @@ Redirect =
       else if /^\d+$/.test g.THREAD_ID
         @thread()
     location.href = url if url
-  image: (href) ->
-    href = href.split '/'
+  image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     return unless Conf['404 Redirect']
-    switch href[3]
+    switch board
       when 'a', 'co', 'jp', 'm', 'tg', 'u', 'vg'
-        "http://archive.foolz.us/#{href[3]}/full_image/#{href[5]}"
+        "http://archive.foolz.us/#{board}/full_image/#{filename}"
   thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
     return unless Conf['404 Redirect'] or mode is 'post'
     switch board
@@ -2817,6 +2816,7 @@ ImageHover =
       src: @parentNode.href
     $.add d.body, el
     $.on el, 'load',      ImageHover.load
+    $.on el, 'error',     ImageHover.error
     $.on @,  'mousemove', UI.hover
     $.on @,  'mouseout',  ImageHover.mouseout
   load: ->
@@ -2826,6 +2826,20 @@ ImageHover =
     UI.hover
       clientX: - 45 + parseInt style.left
       clientY:  120 + parseInt style.top
+  error: ->
+    src = @src.replace(/\?\d+$/, '').split '/'
+    unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
+      return if g.dead
+      # CloudFlare may cache banned pages instead of images.
+      # This will fool CloudFlare's cache.
+      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}?#{Date.now()}"
+    # navigator.online is not x-browser/os yet
+    timeoutID = setTimeout (=> @src = url), 3000
+    # Only Chrome let userscript break through cross domain requests.
+    # Don't check it 404s in the archivers.
+    return unless $.engine is 'webkit' and src[2] is 'images.4chan.org'
+    $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
+      type: 'head'
   mouseout: ->
     UI.hoverend()
     $.off @, 'mousemove', UI.hover
@@ -2931,15 +2945,15 @@ ImageExpand =
     $.add a, img
 
   error: ->
-    href  = @parentNode.href
     thumb = @previousSibling
     ImageExpand.contract thumb
     $.rm @
-    unless @src.split('/')[2] is 'images.4chan.org' and url = Redirect.image href
+    src = @src.replace(/\?\d+$/, '').split '/'
+    unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
       return if g.dead
       # CloudFlare may cache banned pages instead of images.
       # This will fool CloudFlare's cache.
-      url = href + '?' + Date.now()
+      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}?#{Date.now()}"
     #navigator.online is not x-browser/os yet
     timeoutID = setTimeout ImageExpand.expand, 10000, thumb, url
     # Only Chrome let userscript break through cross domain requests.

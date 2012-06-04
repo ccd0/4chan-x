@@ -3620,12 +3620,11 @@
         return location.href = url;
       }
     },
-    image: function(href) {
-      href = href.split('/');
+    image: function(board, filename) {
       if (!Conf['404 Redirect']) {
         return;
       }
-      switch (href[3]) {
+      switch (board) {
         case 'a':
         case 'co':
         case 'jp':
@@ -3633,7 +3632,7 @@
         case 'tg':
         case 'u':
         case 'vg':
-          return "http://archive.foolz.us/" + href[3] + "/full_image/" + href[5];
+          return "http://archive.foolz.us/" + board + "/full_image/" + filename;
       }
     },
     thread: function(board, id, mode) {
@@ -3712,6 +3711,7 @@
       });
       $.add(d.body, el);
       $.on(el, 'load', ImageHover.load);
+      $.on(el, 'error', ImageHover.error);
       $.on(this, 'mousemove', UI.hover);
       return $.on(this, 'mouseout', ImageHover.mouseout);
     },
@@ -3724,6 +3724,32 @@
       return UI.hover({
         clientX: -45 + parseInt(style.left),
         clientY: 120 + parseInt(style.top)
+      });
+    },
+    error: function() {
+      var src, timeoutID, url,
+        _this = this;
+      src = this.src.replace(/\?\d+$/, '').split('/');
+      if (!(src[2] === 'images.4chan.org' && (url = Redirect.image(src[3], src[5])))) {
+        if (g.dead) {
+          return;
+        }
+        url = "//images.4chan.org/" + src[3] + "/src/" + src[5] + "?" + (Date.now());
+      }
+      timeoutID = setTimeout((function() {
+        return _this.src = url;
+      }), 3000);
+      if (!($.engine === 'webkit' && src[2] === 'images.4chan.org')) {
+        return;
+      }
+      return $.ajax(url, {
+        onreadystatechange: (function() {
+          if (this.status === 404) {
+            return clearTimeout(timeoutID);
+          }
+        })
+      }, {
+        type: 'head'
       });
     },
     mouseout: function() {
@@ -3883,16 +3909,16 @@
       return $.add(a, img);
     },
     error: function() {
-      var href, thumb, timeoutID, url;
-      href = this.parentNode.href;
+      var src, thumb, timeoutID, url;
       thumb = this.previousSibling;
       ImageExpand.contract(thumb);
       $.rm(this);
-      if (!(this.src.split('/')[2] === 'images.4chan.org' && (url = Redirect.image(href)))) {
+      src = this.src.replace(/\?\d+$/, '').split('/');
+      if (!(src[2] === 'images.4chan.org' && (url = Redirect.image(src[3], src[5])))) {
         if (g.dead) {
           return;
         }
-        url = href + '?' + Date.now();
+        url = "//images.4chan.org/" + src[3] + "/src/" + src[5] + "?" + (Date.now());
       }
       timeoutID = setTimeout(ImageExpand.expand, 10000, thumb, url);
       if (!($.engine === 'webkit' && url.split('/')[2] === 'images.4chan.org')) {
