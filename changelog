@@ -1,4 +1,8 @@
 master
+- Mayhem
+  Fix spoiler and code tag keybinds regression.
+  Add /an/ and /toy/ archive redirection.
+  Add /cgl/, /e/, /mu/ and /w/ archive redirection.
 
 3.9.3
 - Mayhem

@@ -1109,13 +1109,13 @@
           if (target.nodeName !== 'TEXTAREA') {
             return;
           }
-          Keybinds.tags('spoiler', ta);
+          Keybinds.tags('spoiler', target);
           break;
         case Conf.code:
           if (target.nodeName !== 'TEXTAREA') {
             return;
           }
-          Keybinds.tags('code', ta);
+          Keybinds.tags('code', target);
           break;
         case Conf.watch:
           Watcher.toggle(thread);
@@ -3769,18 +3769,17 @@
 
   Redirect = {
     init: function() {
-      var url;
-      url = location.hostname === 'images.4chan.org' ? this.image(location.href) : /^\d+$/.test(Main.THREAD_ID) ? this.thread() : void 0;
+      var path, url;
+      url = location.hostname === 'images.4chan.org' ? (path = location.pathname.split('/'), this.image(path[1], path[3])) : /^\d+$/.test(g.THREAD_ID) ? this.thread() : void 0;
       if (url) {
         return location.href = url;
       }
     },
-    image: function(href) {
-      href = href.split('/');
+    image: function(board, filename) {
       if (!Conf['404 Redirect']) {
         return;
       }
-      switch (href[3]) {
+      switch (board) {
         case 'a':
         case 'co':
         case 'jp':
@@ -3788,15 +3787,15 @@
         case 'tg':
         case 'u':
         case 'vg':
-          return "http://archive.foolz.us/" + href[3] + "/full_image/" + href[5];
+          return "http://archive.foolz.us/" + board + "/full_image/" + filename;
       }
     },
     thread: function(board, id, mode) {
       if (board == null) {
-        board = Main.BOARD;
+        board = g.BOARD;
       }
       if (id == null) {
-        id = Main.THREAD_ID;
+        id = g.THREAD_ID;
       }
       if (mode == null) {
         mode = 'thread';
@@ -3826,6 +3825,8 @@
         case 'mu':
         case 'w':
           return "http://archive.rebeccablacktech.com/" + board + "/" + mode + "/" + id;
+        case 'an':
+        case 'toy':
         case 'x':
           return "http://archive.xfiles.to/" + board + "/" + mode + "/" + id;
         case 'e':
@@ -3867,6 +3868,7 @@
       });
       $.add(d.body, el);
       $.on(el, 'load', ImageHover.load);
+      $.on(el, 'error', ImageHover.error);
       $.on(this, 'mousemove', UI.hover);
       return $.on(this, 'mouseout', ImageHover.mouseout);
     },
@@ -3879,6 +3881,32 @@
       return UI.hover({
         clientX: -45 + parseInt(style.left),
         clientY: 120 + parseInt(style.top)
+      });
+    },
+    error: function() {
+      var src, timeoutID, url,
+        _this = this;
+      src = this.src.replace(/\?\d+$/, '').split('/');
+      if (!(src[2] === 'images.4chan.org' && (url = Redirect.image(src[3], src[5])))) {
+        if (g.dead) {
+          return;
+        }
+        url = "//images.4chan.org/" + src[3] + "/src/" + src[5] + "?" + (Date.now());
+      }
+      timeoutID = setTimeout((function() {
+        return _this.src = url;
+      }), 3000);
+      if (!($.engine === 'webkit' && src[2] === 'images.4chan.org')) {
+        return;
+      }
+      return $.ajax(url, {
+        onreadystatechange: (function() {
+          if (this.status === 404) {
+            return clearTimeout(timeoutID);
+          }
+        })
+      }, {
+        type: 'head'
       });
     },
     mouseout: function() {
@@ -4078,16 +4106,16 @@
       return $.add(a, img);
     },
     error: function() {
-      var href, thumb, timeoutID, url;
-      href = this.parentNode.href;
+      var src, thumb, timeoutID, url;
       thumb = this.previousSibling;
       ImageExpand.contract(thumb);
       $.rm(this);
-      if (!(this.src.split('/')[2] === 'images.4chan.org' && (url = Redirect.image(href)))) {
+      src = this.src.replace(/\?\d+$/, '').split('/');
+      if (!(src[2] === 'images.4chan.org' && (url = Redirect.image(src[3], src[5])))) {
         if (Main.dead) {
           return;
         }
-        url = href + '?' + Date.now();
+        url = "//images.4chan.org/" + src[3] + "/src/" + src[5] + "?" + (Date.now());
       }
       timeoutID = setTimeout(ImageExpand.expand, 10000, thumb, url);
       if (!($.engine === 'webkit' && url.split('/')[2] === 'images.4chan.org')) {
