@@ -4651,6 +4651,9 @@ textarea.field {\
   margin: 2px;\
   padding: 2px;\
 }\
+div.opContainer {\
+  display: block !important;\
+}\
 .opContainer.filter_highlight {\
   box-shadow: inset 5px 0 rgba(255,0,0,0.5);\
 }\
