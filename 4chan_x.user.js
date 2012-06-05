@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -874,7 +874,7 @@
           quote.href = "res/" + href;
         }
         id = reply.id.slice(2);
-        link = $('.postInfo > .postNum > a:first-child', reply);
+        link = $('.postInfo > .postNum > a[title="Highlight this post"]', reply);
         link.href = "res/" + threadID + "#p" + id;
         link.nextSibling.href = "res/" + threadID + "#q" + id;
         nodes.push(reply);
@@ -2686,7 +2686,7 @@
       watched[_name = g.BOARD] || (watched[_name] = {});
       watched[g.BOARD][id] = {
         href: "/" + g.BOARD + "/res/" + id,
-        textContent: GetTitle(thread)
+        textContent: Get.title(thread)
       };
       $.set('watched', watched);
       Watcher.refresh();
@@ -2708,7 +2708,7 @@
       if ((trip = name.nextElementSibling) && trip.className === 'postertrip') {
         $.rm(trip);
       }
-      if ((parent = name.parentNode).className === 'useremail' && !/^sage$/i.test(parent.pathname)) {
+      if ((parent = name.parentNode).className === 'useremail' && !/^mailto:sage$/i.test(parent.href)) {
         return $.replace(parent, name);
       }
     }
@@ -2992,25 +2992,95 @@
     }
   };
 
-  GetTitle = function(thread) {
-    var el, op, span;
-    op = $('.op', thread);
-    el = $('.subject', op);
-    if (!el.textContent) {
-      el = $('blockquote', op);
-      if (!el.textContent) {
-        el = $('.nameBlock', op);
+  Get = {
+    post: function(board, threadID, postID, root, cb) {
+      var post;
+      if (board === g.BOARD && (post = $.id("pc" + postID))) {
+        $.add(root, Get.cleanPost(post.cloneNode(true)));
+        return;
       }
+      root.textContent = "Loading post No." + postID + "...";
+      if (threadID) {
+        return $.cache("/" + board + "/res/" + threadID, function() {
+          return Get.parsePost(this, board, threadID, postID, root, cb);
+        });
+      }
+    },
+    parsePost: function(req, board, threadID, postID, root, cb) {
+      var doc, href, link, pc, quote, status, _i, _len, _ref;
+      status = req.status;
+      if (status !== 200) {
+        root.textContent = status === 404 ? "Thread No." + threadID + " has not been found." : "Error " + req.status + ": " + req.statusText + ".";
+        return;
+      }
+      doc = d.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = req.response;
+      if (!(pc = doc.getElementById("pc" + postID))) {
+        root.textContent = "Post No." + postID + " has not been found.";
+        return;
+      }
+      pc = Get.cleanPost(d.importNode(pc, true));
+      _ref = $$('.quotelink', pc);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
+        }
+        quote.href = "/" + board + "/res/" + href;
+      }
+      link = $('.postInfo > .postNum > a[title="Highlight this post"]', pc);
+      link.href = "/" + board + "/res/" + threadID + "#p" + postID;
+      link.nextSibling.href = "/" + board + "/res/" + threadID + "#q" + postID;
+      $.replace(root.firstChild, pc);
+      if (cb) {
+        return cb();
+      }
+    },
+    parseArchivedPost: function(req, board, postID, root, cb) {},
+    cleanPost: function(root) {
+      var child, el, now, post, _i, _j, _len, _len1, _ref, _ref1;
+      post = $('.post', root);
+      _ref = Array.prototype.slice.call(root.childNodes);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        if (child !== post) {
+          $.rm(child);
+        }
+      }
+      now = Date.now();
+      _ref1 = $$('[id]', root);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        el = _ref1[_j];
+        el.id = "" + now + "_" + el.id;
+      }
+      $.rmClass(root, 'forwarded');
+      $.rmClass(root, 'qphl');
+      $.rmClass(post, 'highlight');
+      $.rmClass(post, 'qphl');
+      root.hidden = post.hidden = false;
+      return root;
+    },
+    title: function(thread) {
+      var el, op, span;
+      op = $('.op', thread);
+      el = $('.subject', op);
+      if (!el.textContent) {
+        el = $('blockquote', op);
+        if (!el.textContent) {
+          el = $('.nameBlock', op);
+        }
+      }
+      span = $.el('span', {
+        innerHTML: el.innerHTML.replace(/<br>/g, ' ')
+      });
+      return "/" + g.BOARD + "/ - " + (span.textContent.trim());
     }
-    span = $.el('span', {
-      innerHTML: el.innerHTML.replace(/<br>/g, ' ')
-    });
-    return "/" + g.BOARD + "/ - " + (span.textContent.trim());
   };
 
   TitlePost = {
     init: function() {
-      return d.title = GetTitle();
+      return d.title = Get.title();
     }
   };
 
@@ -3103,49 +3173,36 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var clonePost, el, i, inline, isBacklink, pathname, root;
+      var el, i, inline, isBacklink, path, root;
       if (!(isBacklink = /\bbacklink\b/.test(q.className))) {
         root = q;
         while (root.parentNode.nodeName !== 'BLOCKQUOTE') {
           root = root.parentNode;
         }
       }
-      if (el = $.id("p" + id)) {
-        if (/\bop\b/.test(el.className)) {
-          $.rmClass(el.parentNode, 'qphl');
-        } else {
-          $.rmClass(el, 'qphl');
-        }
-        clonePost = QuoteInline.clone(id, el);
-        if (isBacklink) {
-          $.after(q.parentNode, clonePost);
-          if (Conf['Forward Hiding']) {
-            $.addClass(el.parentNode, 'forwarded');
-            ++el.dataset.forwarded || (el.dataset.forwarded = 1);
-          }
-        } else {
-          $.after(root, clonePost);
-        }
-        if ((i = Unread.replies.indexOf(el)) !== -1) {
-          Unread.replies.splice(i, 1);
-          Unread.update(true);
-        }
+      path = q.pathname.split('/');
+      el = path[1] === g.BOARD ? $.id("p" + id) : false;
+      inline = $.el('div', {
+        id: "i" + id,
+        className: el ? 'inline' : 'inline crosspost'
+      });
+      $.after((isBacklink ? q.parentNode : root), inline);
+      Get.post(path[1], path[3], id, inline);
+      if (!el) {
         return;
       }
-      inline = $.el('div', {
-        className: 'inline',
-        id: "i" + id,
-        textContent: "Loading " + id + "..."
-      });
-      $.after(root, inline);
-      pathname = q.pathname;
-      return $.cache(pathname, function() {
-        return QuoteInline.parse(this, pathname, id, inline);
-      });
+      if (isBacklink && Conf['Forward Hiding']) {
+        $.addClass(el.parentNode, 'forwarded');
+        ++el.dataset.forwarded || (el.dataset.forwarded = 1);
+      }
+      if ((i = Unread.replies.indexOf(el)) !== -1) {
+        Unread.replies.splice(i, 1);
+        return Unread.update(true);
+      }
     },
     rm: function(q, id) {
       var div, inlined, _i, _len, _ref;
-      div = $.x("following::div[@id='i_pc" + id + "']", q);
+      div = $.x("following::div[@id='i" + id + "']", q);
       $.rm(div);
       if (!Conf['Forward Hiding']) {
         return;
@@ -3164,50 +3221,6 @@
           return $.rmClass(div.parentNode, 'forwarded');
         }
       }
-    },
-    parse: function(req, pathname, id, inline) {
-      var doc, href, link, newInline, node, quote, _i, _len, _ref;
-      if (!inline.parentNode) {
-        return;
-      }
-      if (req.status !== 200) {
-        inline.textContent = "" + req.status + " " + req.statusText;
-        return;
-      }
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = req.response;
-      node = doc.getElementById("p" + id);
-      newInline = QuoteInline.clone(id, node);
-      _ref = $$('.quotelink', newInline);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        href = quote.getAttribute('href');
-        if (href[0] === '/') {
-          continue;
-        }
-        quote.href = "res/" + href;
-      }
-      link = $('.postInfo > .postNum > a:first-child', newInline);
-      link.href = "" + pathname + "#p" + id;
-      link.nextSibling.href = "" + pathname + "#q" + id;
-      $.addClass(newInline, 'crosspost');
-      return $.replace(inline, newInline);
-    },
-    clone: function(id, el) {
-      var clone, node, post, _i, _len, _ref;
-      clone = $.el('div', {
-        className: 'postContainer inline',
-        id: "i_pc" + id
-      });
-      post = el.cloneNode(true);
-      post.hidden = false;
-      $.add(clone, post);
-      _ref = $$('[id]', clone);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        node = _ref[_i];
-        node.id = "i_" + node.id;
-      }
-      return clone;
     }
   };
 
@@ -3231,7 +3244,7 @@
       }
     },
     mouseover: function(e) {
-      var el, id, klass, qp, quote, replyID, _i, _j, _len, _len1, _ref, _ref1;
+      var el, id, parent, path, qp, quote, quoterID, _i, _len, _ref;
       if (/\binlined\b/.test(this.className)) {
         return;
       }
@@ -3244,21 +3257,39 @@
       if (UI.el) {
         return;
       }
+      path = this.pathname.split('/');
+      id = this.hash.slice(2);
       qp = UI.el = $.el('div', {
         id: 'qp',
-        className: 'post reply dialog'
+        className: 'reply dialog'
       });
+      UI.hover(e);
       $.add(d.body, qp);
-      id = this.hash.slice(2);
-      if (el = $.id("p" + id)) {
-        _ref = el.parentNode.className.split(' ');
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          klass = _ref[_i];
-          if (!/^((op|reply|post)Container|forwarded)$/.test(klass)) {
-            $.addClass(qp, klass);
+      Get.post(path[1], path[3], id, qp, function() {
+        var bq, fileInfo, img, post;
+        bq = $('blockquote', qp);
+        Main.prettify(bq);
+        post = {
+          el: qp
+        };
+        if (fileInfo = $('.fileInfo', qp)) {
+          img = fileInfo.nextElementSibling.firstElementChild;
+          if (img.alt !== 'File deleted.') {
+            post.fileInfo = fileInfo;
+            post.img = img;
           }
         }
-        qp.innerHTML = el.innerHTML;
+        if (Conf['Image Auto-Gif']) {
+          AutoGif.node(post);
+        }
+        if (Conf['Time Formatting']) {
+          Time.node(post);
+        }
+        if (Conf['File Info Formatting']) {
+          return FileInfo.node(post);
+        }
+      });
+      if (path[1] === g.BOARD && (el = $.id("p" + id))) {
         if (Conf['Quote Highlighting']) {
           if (/\bop\b/.test(el.className)) {
             $.addClass(el.parentNode, 'qphl');
@@ -3266,72 +3297,31 @@
             $.addClass(el, 'qphl');
           }
         }
-        replyID = $.x('ancestor::div[contains(@class,"postContainer")]', this).id.match(/\d+$/)[0];
-        _ref1 = $$('.quotelink, .backlink', qp);
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          quote = _ref1[_j];
-          if (quote.hash.slice(2) === replyID) {
+        parent = this.parentNode;
+        while (!parent.id) {
+          parent = parent.parentNode;
+        }
+        quoterID = parent.id.match(/\d+$/)[0];
+        _ref = $$('.quotelink, .backlink', qp);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          if (quote.hash.slice(2) === quoterID) {
             $.addClass(quote, 'forwardlink');
           }
         }
-      } else {
-        qp.textContent = "Loading " + id + "...";
-        $.cache(this.pathname, function() {
-          return QuotePreview.parse(this, id);
-        });
       }
-      UI.hover(e);
       $.on(this, 'mousemove', UI.hover);
       return $.on(this, 'mouseout click', QuotePreview.mouseout);
     },
-    mouseout: function() {
+    mouseout: function(e) {
       var el;
       UI.hoverend();
       if (el = $.id(this.hash.slice(1))) {
-        if (/\bop\b/.test(el.className)) {
-          $.rmClass(el.parentNode, 'qphl');
-        } else {
-          $.rmClass(el, 'qphl');
-        }
+        $.rmClass(el, 'qphl');
+        $.rmClass(el.parentNode, 'qphl');
       }
       $.off(this, 'mousemove', UI.hover);
       return $.off(this, 'mouseout click', QuotePreview.mouseout);
-    },
-    parse: function(req, id) {
-      var bq, doc, fileInfo, img, node, post, qp;
-      if (!((qp = UI.el) && qp.textContent === ("Loading " + id + "..."))) {
-        return;
-      }
-      if (req.status !== 200) {
-        qp.textContent = "" + req.status + " " + req.statusText;
-        return;
-      }
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = req.response;
-      node = doc.getElementById("p" + id);
-      qp.innerHTML = node.innerHTML;
-      bq = $('blockquote', qp);
-      bq.id += '_qp';
-      Main.prettify(bq);
-      post = {
-        el: qp
-      };
-      if (fileInfo = $('.fileInfo', qp)) {
-        img = fileInfo.nextElementSibling.firstElementChild;
-        if (img.alt !== 'File deleted.') {
-          post.fileInfo = fileInfo;
-          post.img = img;
-        }
-      }
-      if (Conf['Image Auto-Gif']) {
-        AutoGif.node(post);
-      }
-      if (Conf['Time Formatting']) {
-        Time.node(post);
-      }
-      if (Conf['File Info Formatting']) {
-        return FileInfo.node(post);
-      }
     }
   };
 
@@ -3401,7 +3391,7 @@
             nodes.push($.tn(text));
           }
           id = quote.match(/\d+$/)[0];
-          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postInfo > .postNum > a:first-child', post.el).pathname.split('/')[1];
+          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postInfo > .postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1];
           nodes.push(a = $.el('a', {
             textContent: "" + quote + "\u00A0(Dead)"
           }));
@@ -4203,17 +4193,17 @@
       }
     },
     preParse: function(node) {
-      var el, fileInfo, img, post, rootClass;
-      rootClass = node.className;
+      var el, fileInfo, img, parentClass, post;
+      parentClass = node.parentNode.className;
       el = $('.post', node);
       post = {
         root: node,
         el: el,
         "class": el.className,
-        id: el.id.slice(1),
-        threadId: g.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.slice(1),
-        isInlined: /\binline\b/.test(rootClass),
-        isCrosspost: /\bcrosspost\b/.test(rootClass),
+        id: el.id.match(/\d+$/)[0],
+        threadId: g.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0],
+        isInlined: /\binline\b/.test(parentClass),
+        isCrosspost: /\bcrosspost\b/.test(parentClass),
         blockquote: el.lastElementChild,
         quotes: el.getElementsByClassName('quotelink'),
         backlinks: el.getElementsByClassName('backlink'),
@@ -4637,8 +4627,12 @@ textarea.field {\
 }\
 \
 #qp {\
+  padding: 2px 2px 5px;\
+}\
+#qp .post {\
+  border: none;\
   margin: 0;\
-  padding: 1px 2px 5px;\
+  padding: 0;\
 }\
 #qp img {\
   max-height: 300px;\
@@ -4647,26 +4641,15 @@ textarea.field {\
 .qphl {\
   outline: 2px solid rgba(216, 94, 49, .7);\
 }\
-.qphl.opContainer {\
-  outline-offset: -2px;\
-}\
-div.opContainer {\
-  display: block !important;\
-}\
 .inlined {\
   opacity: .5;\
 }\
-.inline {\
+.inline .post {\
   background-color: rgba(255, 255, 255, 0.15);\
   border: 1px solid rgba(128, 128, 128, 0.5);\
   display: table;\
   margin: 2px;\
-}\
-.inline .post {\
-  background: none;\
-  border: none;\
-  margin: 0;\
-  padding: 0;\
+  padding: 2px;\
 }\
 .opContainer.filter_highlight {\
   box-shadow: inset 5px 0 rgba(255,0,0,0.5);\

@@ -663,7 +663,7 @@ ExpandThread =
         continue if href[0] is '/' # Cross-board quote
         quote.href = "res/#{href}" # Fix pathnames
       id = reply.id[2..]
-      link = $ '.postInfo > .postNum > a:first-child', reply
+      link = $ '.postInfo > .postNum > a[title="Highlight this post"]', reply
       link.href = "res/#{threadID}#p#{id}"
       link.nextSibling.href = "res/#{threadID}#q#{id}"
       nodes.push reply
@@ -2099,7 +2099,7 @@ Watcher =
     watched[g.BOARD] or= {}
     watched[g.BOARD][id] =
       href: "/#{g.BOARD}/res/#{id}"
-      textContent: GetTitle thread
+      textContent: Get.title thread
     $.set 'watched', watched
     Watcher.refresh()
     true
@@ -2113,7 +2113,7 @@ Anonymize =
     name.textContent = 'Anonymous'
     if (trip = name.nextElementSibling) and trip.className is 'postertrip'
       $.rm trip
-    if (parent = name.parentNode).className is 'useremail' and not /^sage$/i.test parent.pathname
+    if (parent = name.parentNode).className is 'useremail' and not /^mailto:sage$/i.test parent.href
       $.replace parent, name
 
 Sauce =
@@ -2282,19 +2282,87 @@ FileInfo =
     M: -> FileInfo.convertUnit 'MB'
     r: -> FileInfo.data.resolution
 
-GetTitle = (thread) ->
-  op = $ '.op', thread
-  el = $ '.subject', op
-  unless el.textContent
-    el = $ 'blockquote', op
+Get =
+  post: (board, threadID, postID, root, cb) ->
+    if board is g.BOARD and post = $.id "pc#{postID}"
+      $.add root, Get.cleanPost post.cloneNode true
+      return
+
+    root.textContent = "Loading post No.#{postID}..."
+    if threadID
+      $.cache "/#{board}/res/#{threadID}", ->
+        Get.parsePost @, board, threadID, postID, root, cb
+    # else if url = Redirect.???
+    #   $.cache url, ->
+    #     Get.parseArchivedPost @, board, postID, root, cb
+  parsePost: (req, board, threadID, postID, root, cb) ->
+    {status} = req
+    if status isnt 200
+      # thread can die by the time we check a post
+      # try archive if possible
+      # else
+      root.textContent =
+        if status is 404
+          "Thread No.#{threadID} has not been found."
+        else
+          "Error #{req.status}: #{req.statusText}."
+      return
+
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = req.response
+
+    unless pc = doc.getElementById "pc#{postID}"
+      # post can be deleted by the time we check for it
+      # try archive if possible
+      # else
+      root.textContent = "Post No.#{postID} has not been found."
+      return
+    pc = Get.cleanPost d.importNode pc, true
+
+    for quote in $$ '.quotelink', pc
+      href = quote.getAttribute 'href'
+      continue if href[0] is '/' # Cross-board quote, or board link
+      quote.href = "/#{board}/res/#{href}" # Fix pathnames
+    link = $ '.postInfo > .postNum > a[title="Highlight this post"]', pc
+    link.href = "/#{board}/res/#{threadID}#p#{postID}"
+    link.nextSibling.href = "/#{board}/res/#{threadID}#q#{postID}"
+
+    $.replace root.firstChild, pc
+    cb() if cb
+  parseArchivedPost: (req, board, postID, root, cb) ->
+    # $.replace root.firstChild,
+  cleanPost: (root) ->
+    post = $ '.post', root
+    for child in Array::slice.call root.childNodes
+      $.rm child unless child is post
+
+    # Don't mess with other features
+    now = Date.now()
+    for el in $$ '[id]', root
+      el.id = "#{now}_#{el.id}"
+
+    # $.rmClass post, 'opContainer'
+    # $.rmClass post, 'replyContainer'
+    $.rmClass root, 'forwarded'
+    $.rmClass root, 'qphl' # op
+    $.rmClass post, 'highlight'
+    $.rmClass post, 'qphl' # reply
+    root.hidden = post.hidden = false
+
+    root
+  title: (thread) ->
+    op = $ '.op', thread
+    el = $ '.subject', op
     unless el.textContent
-      el = $ '.nameBlock', op
-  span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
-  "/#{g.BOARD}/ - #{span.textContent.trim()}"
+      el = $ 'blockquote', op
+      unless el.textContent
+        el = $ '.nameBlock', op
+    span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
+    "/#{g.BOARD}/ - #{span.textContent.trim()}"
 
 TitlePost =
   init: ->
-    d.title = GetTitle()
+    d.title = Get.title()
 
 QuoteBacklink =
   init: ->
@@ -2357,39 +2425,33 @@ QuoteInline =
     # Can't use this because Firefox a shit:
     # root = $.x 'ancestor::*[parent::blockquote]', q
     unless isBacklink = /\bbacklink\b/.test q.className
-      root   = q
-      while root.parentNode.nodeName isnt 'BLOCKQUOTE'
+      root = q
+      until root.parentNode.nodeName is 'BLOCKQUOTE'
         root = root.parentNode
-    if el = $.id "p#{id}"
-      if /\bop\b/.test el.className
-        $.rmClass el.parentNode, 'qphl'
-      else
-        $.rmClass el, 'qphl'
-      clonePost = QuoteInline.clone id, el
-      if isBacklink
-        $.after q.parentNode, clonePost
-        if Conf['Forward Hiding']
-          $.addClass el.parentNode, 'forwarded'
-          # Will only unhide if there's no inlined backlinks of it anymore.
-          ++el.dataset.forwarded or el.dataset.forwarded = 1
-      else
-        $.after root, clonePost
-      if (i = Unread.replies.indexOf el) isnt -1
-        Unread.replies.splice i, 1
-        Unread.update true
-      return
 
+    path   = q.pathname.split '/'
+    el     = if path[1] is g.BOARD then $.id "p#{id}" else false
     inline = $.el 'div',
-      className: 'inline'
       id: "i#{id}"
-      textContent: "Loading #{id}..."
-    $.after root, inline
-    {pathname} = q
-    $.cache pathname, -> QuoteInline.parse @, pathname, id, inline
+      className: if el then 'inline' else 'inline crosspost'
+    $.after (if isBacklink then q.parentNode else root), inline
+    Get.post path[1], path[3], id, inline
+
+    return unless el
+
+    # Will only unhide if there's no inlined backlinks of it anymore.
+    if isBacklink and Conf['Forward Hiding']
+      $.addClass el.parentNode, 'forwarded'
+      ++el.dataset.forwarded or el.dataset.forwarded = 1
+
+    # Decrease the unread count if this post is in the array of unread reply.
+    if (i = Unread.replies.indexOf el) isnt -1
+      Unread.replies.splice i, 1
+      Unread.update true
 
   rm: (q, id) ->
     # select the corresponding inlined quote or loading quote
-    div = $.x "following::div[@id='i_pc#{id}']", q
+    div = $.x "following::div[@id='i#{id}']", q
     $.rm div
     return unless Conf['Forward Hiding']
     for inlined in $$ '.backlink.inlined', div
@@ -2398,40 +2460,6 @@ QuoteInline =
     if /\bbacklink\b/.test q.className
       div = $.id "p#{id}"
       $.rmClass div.parentNode, 'forwarded' unless --div.dataset.forwarded
-
-  parse: (req, pathname, id, inline) ->
-    return unless inline.parentNode
-
-    if req.status isnt 200
-      inline.textContent = "#{req.status} #{req.statusText}"
-      return
-
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = req.response
-
-    node = doc.getElementById "p#{id}"
-    newInline = QuoteInline.clone id, node
-    for quote in $$ '.quotelink', newInline
-      href = quote.getAttribute 'href'
-      continue if href[0] is '/' # Cross-board quote
-      quote.href = "res/#{href}" # Fix pathnames
-    link = $ '.postInfo > .postNum > a:first-child', newInline
-    link.href = "#{pathname}#p#{id}"
-    link.nextSibling.href = "#{pathname}#q#{id}"
-    $.addClass newInline, 'crosspost'
-    $.replace inline, newInline
-
-  clone: (id, el) ->
-    clone = $.el 'div',
-      className: 'postContainer inline'
-      id: "i_pc#{id}"
-    post = el.cloneNode true
-    post.hidden = false
-    $.add clone, post
-    for node in $$ '[id]', clone
-      # Don't mess with other features
-      node.id = "i_#{node.id}"
-    clone
 
 QuotePreview =
   init: ->
@@ -2455,70 +2483,53 @@ QuotePreview =
     # Don't stop other elements from dragging
     return if UI.el
 
-    qp = UI.el = $.el 'div',
+    path = @pathname.split '/'
+    id   = @hash[2..]
+    qp   = UI.el = $.el 'div',
       id: 'qp'
-      className: 'post reply dialog'
+      className: 'reply dialog'
+    UI.hover e
     $.add d.body, qp
+    Get.post path[1], path[3], id, qp, ->
+      bq = $ 'blockquote', qp
+      Main.prettify bq
+      post =
+        el: qp
+      if fileInfo = $ '.fileInfo', qp
+        img = fileInfo.nextElementSibling.firstElementChild
+        if img.alt isnt 'File deleted.'
+          post.fileInfo = fileInfo
+          post.img      = img
+      if Conf['Image Auto-Gif']
+        AutoGif.node   post
+      if Conf['Time Formatting']
+        Time.node     post
+      if Conf['File Info Formatting']
+        FileInfo.node post
 
-    id = @hash[2..]
-    if el = $.id "p#{id}"
-      for klass in el.parentNode.className.split ' '
-        # preserve highlight classes
-        unless /^((op|reply|post)Container|forwarded)$/.test klass
-          $.addClass qp, klass
-      qp.innerHTML  = el.innerHTML
+    if path[1] is g.BOARD and el = $.id "p#{id}"
       if Conf['Quote Highlighting']
         if /\bop\b/.test el.className
           $.addClass el.parentNode, 'qphl'
         else
           $.addClass el, 'qphl'
-      replyID = $.x('ancestor::div[contains(@class,"postContainer")]', @).id.match(/\d+$/)[0]
+      # can't use xpath because >firefox
+      parent = @parentNode
+      until parent.id
+        parent = parent.parentNode
+      quoterID = parent.id.match(/\d+$/)[0]
       for quote in $$ '.quotelink, .backlink', qp
-        if quote.hash[2..] is replyID
+        if quote.hash[2..] is quoterID
           $.addClass quote, 'forwardlink'
-    else
-      qp.textContent = "Loading #{id}..."
-      $.cache @pathname, -> QuotePreview.parse @, id
-    UI.hover e
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
-  mouseout: ->
+  mouseout: (e) ->
     UI.hoverend()
     if el = $.id @hash[1..]
-      if /\bop\b/.test el.className
-        $.rmClass el.parentNode, 'qphl'
-      else
-        $.rmClass el, 'qphl'
+      $.rmClass el,            'qphl' # reply
+      $.rmClass el.parentNode, 'qphl' # op
     $.off @, 'mousemove',      UI.hover
     $.off @, 'mouseout click', QuotePreview.mouseout
-  parse: (req, id) ->
-    return unless (qp = UI.el) and qp.textContent is "Loading #{id}..."
-
-    if req.status isnt 200
-      qp.textContent = "#{req.status} #{req.statusText}"
-      return
-
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = req.response
-
-    node = doc.getElementById "p#{id}"
-    qp.innerHTML = node.innerHTML
-    bq = $ 'blockquote', qp
-    bq.id += '_qp'
-    Main.prettify bq
-    post =
-      el: qp
-    if fileInfo = $ '.fileInfo', qp
-      img = fileInfo.nextElementSibling.firstElementChild
-      if img.alt isnt 'File deleted.'
-        post.fileInfo = fileInfo
-        post.img      = img
-    if Conf['Image Auto-Gif']
-      AutoGif.node   post
-    if Conf['Time Formatting']
-      Time.node     post
-    if Conf['File Info Formatting']
-      FileInfo.node post
 
 QuoteOP =
   init: ->
@@ -2579,7 +2590,7 @@ Quotify =
             m[1]
           else
             # Get the post's board, whether it's inlined or not.
-            $('.postInfo > .postNum > a:first-child', post.el).pathname.split('/')[1]
+            $('.postInfo > .postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
           # \u00A0 is nbsp
@@ -2592,6 +2603,7 @@ Quotify =
         else
           a.href      = Redirect.thread board, id, 'post'
           a.className = 'deadlink'
+          # a.className = if JSONable then 'quotelink deadlink' else 'deadlink'
           a.target    = '_blank'
 
         data = data[index + quote.length..]
@@ -3197,16 +3209,16 @@ Main =
       window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
-    rootClass = node.className
+    parentClass = node.parentNode.className
     el   = $ '.post', node
     post =
       root:        node
       el:          el
       class:       el.className
-      id:          el.id[1..]
-      threadId:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id[1..]
-      isInlined:   /\binline\b/.test rootClass
-      isCrosspost: /\bcrosspost\b/.test rootClass
+      id:          el.id.match(/\d+$/)[0]
+      threadId:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
+      isInlined:   /\binline\b/.test parentClass
+      isCrosspost: /\bcrosspost\b/.test parentClass
       blockquote:  el.lastElementChild
       quotes:      el.getElementsByClassName 'quotelink'
       backlinks:   el.getElementsByClassName 'backlink'
@@ -3597,8 +3609,12 @@ textarea.field {
 }
 
 #qp {
+  padding: 2px 2px 5px;
+}
+#qp .post {
+  border: none;
   margin: 0;
-  padding: 1px 2px 5px;
+  padding: 0;
 }
 #qp img {
   max-height: 300px;
@@ -3607,26 +3623,15 @@ textarea.field {
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
 }
-.qphl.opContainer {
-  outline-offset: -2px;
-}
-div.opContainer {
-  display: block !important;
-}
 .inlined {
   opacity: .5;
 }
-.inline {
+.inline .post {
   background-color: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(128, 128, 128, 0.5);
   display: table;
   margin: 2px;
-}
-.inline .post {
-  background: none;
-  border: none;
-  margin: 0;
-  padding: 0;
+  padding: 2px;
 }
 .opContainer.filter_highlight {
   box-shadow: inset 5px 0 rgba(255,0,0,0.5);
