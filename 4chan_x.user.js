@@ -492,7 +492,7 @@
       return GM_setValue(name, JSON.stringify(value));
     },
     open: function(url) {
-      return GM_openInTab(location.protocol + url);
+      return GM_openInTab(location.protocol + url, true);
     }
   } : {
     "delete": function(name) {

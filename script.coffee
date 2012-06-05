@@ -369,7 +369,9 @@ $.extend $,
       localStorage.setItem name, JSON.stringify value
       GM_setValue name, JSON.stringify value
     open: (url) ->
-      GM_openInTab location.protocol + url
+      #https://github.com/scriptish/scriptish/wiki/GM_openInTab
+      #string url, bool loadInBackground, bool reuseTab
+      GM_openInTab location.protocol + url, true
   else
     delete: (name) ->
       localStorage.removeItem Main.namespace + name
