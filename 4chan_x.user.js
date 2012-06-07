@@ -4851,12 +4851,18 @@ textarea.field {\
 .inlined {\
   opacity: .5;\
 }\
-.inline .post {\
+.inline {\
   background-color: rgba(255, 255, 255, 0.15);\
   border: 1px solid rgba(128, 128, 128, 0.5);\
   display: table;\
   margin: 2px;\
   padding: 2px;\
+}\
+.inline .post {\
+  background: none;\
+  border: none;\
+  margin: 0;\
+  padding: 0;\
 }\
 div.opContainer {\
   display: block !important;\
