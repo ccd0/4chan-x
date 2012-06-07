@@ -2292,30 +2292,34 @@ Get =
     if threadID
       $.cache "/#{board}/res/#{threadID}", ->
         Get.parsePost @, board, threadID, postID, root, cb
-    # else if url = Redirect.???
-    #   $.cache url, ->
-    #     Get.parseArchivedPost @, board, postID, root, cb
+    else if url = Redirect.post board, postID
+      $.cache url, ->
+        Get.parseArchivedPost @, board, postID, root, cb
   parsePost: (req, board, threadID, postID, root, cb) ->
     {status} = req
     if status isnt 200
-      # thread can die by the time we check a post
-      # try archive if possible
-      # else
-      root.textContent =
-        if status is 404
-          "Thread No.#{threadID} has not been found."
-        else
-          "Error #{req.status}: #{req.statusText}."
+      # The thread can die by the time we check a quote.
+      if url = Redirect.post board, postID
+        $.cache url, ->
+          Get.parseArchivedPost @, board, postID, root, cb
+      else
+        root.textContent =
+          if status is 404
+            "Thread No.#{threadID} has not been found."
+          else
+            "Error #{req.status}: #{req.statusText}."
       return
 
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
 
     unless pc = doc.getElementById "pc#{postID}"
-      # post can be deleted by the time we check for it
-      # try archive if possible
-      # else
-      root.textContent = "Post No.#{postID} has not been found."
+      # The post can be deleted by the time we check a quote.
+      if url = Redirect.post board, postID
+        $.cache url, ->
+          Get.parseArchivedPost @, board, postID, root, cb
+      else
+        root.textContent = "Post No.#{postID} has not been found."
       return
     pc = Get.cleanPost d.importNode pc, true
 
@@ -2330,7 +2334,169 @@ Get =
     $.replace root.firstChild, pc
     cb() if cb
   parseArchivedPost: (req, board, postID, root, cb) ->
-    # $.replace root.firstChild,
+    # unarchived
+    # >>>/a/1
+    # op
+    # >>>/a/66734868
+    # reply
+    # >>>/a/66718194
+    # reply with image and spoiler text
+    # >>>/v/142341606
+
+    data = JSON.parse req.response
+
+    if data.error
+      root.textContent = data.error
+      return
+
+    isOP = postID is data.thread_num
+
+    # post containers
+    pc = $.el 'div',
+      id: "pc#{}"
+      className: if isOP then 'postContainer opContainer' else 'postContainer replyContainer'
+    p  = $.el 'div',
+      id: "p#{postID}"
+      className: if isOP then 'post op' else 'post reply'
+    $.add pc, p
+
+
+    # post info (mobile)
+    piM = $.el 'div',
+      id: "pim#{postID}"
+      className: 'postInfoM mobile'
+      innerHTML: '' # XXX
+
+
+    # post info
+    pi = $.el 'div',
+      id: "pi#{postID}"
+      className: 'postInfo desktop'
+      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{data.timestamp}></span> <span class='postNum desktop'><a href='/#{board}/res/#{data.thread_num}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{data.thread_num}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
+    # time
+    time = $ '.dateTime', pi
+    date = new Date data.timestamp * 1000
+    time.textContent = date.toString() # XXX needs to be 4chan formatted
+    # subject
+    $('.subject', pi).textContent = data.title
+
+    nameBlock = $ '.nameBlock', pi
+    if data.email
+      email = $.el 'a',
+        className: 'useremail'
+        href: "mailto:#{data.email}"
+      $.add nameBlock, email
+      nameBlock = email
+    $.add nameBlock, $.el 'span',
+      className: 'name'
+      textContent: data.name
+    if data.trip
+      $.add nameBlock, [$.tn(' '), $.el('span', className: 'postertrip', textContent: data.trip)]
+    if data.capcode is 'A' # admin
+      $.add nameBlock, [
+        $.tn(' '),
+        $.el('strong', className: 'capcode capcodeAdmin', textContent: '## Admin')
+      ]
+      nameBlock = $ '.nameBlock', pi
+      $.addClass nameBlock, 'capcodeAdmin'
+      $.add nameBlock, [
+        $.tn(' '),
+        $.el('img'), src: '//static.4chan.org/image/adminicon.gif', alt: 'This user is the 4chan Administrator.', title: 'This user is the 4chan Administrator.', className: 'identityIcon'
+      ]
+    else if data.capcode is 'M' # mod
+      $.add nameBlock, [
+        $.tn(' '),
+        $.el('strong', className: 'capcode', textContent: '## Mod')
+      ]
+      nameBlock = $ '.nameBlock', pi
+      $.addClass nameBlock, 'capcodeMod'
+      $.add nameBlock, [
+        $.tn(' '),
+        $.el('img'), src: '//static.4chan.org/image/adminicon.gif', alt: 'This user is a 4chan Moderator.', title: 'This user is a 4chan Moderator.', className: 'identityIcon'
+      ]
+
+
+    # comment
+    bq = $.el 'blockquote',
+      id: "m#{postID}"
+      className: 'postMessage'
+      textContent: data.comment # set this first to convert text to HTML entities
+    # https://github.com/eksopl/fuuka/blob/master/Board/Yotsuba.pm#L413-452
+    # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
+    bq.innerHTML = bq.innerHTML.replace ///
+      \n
+      | \[/?b\]
+      | \[/?spoiler\]
+      | \[/?code\]
+      | \[/?moot\]
+      | \[/?banned\]
+      ///g, (text) ->
+        switch text
+          when '\n'
+            '<br>'
+          when '[b]'
+            '<b>'
+          when '[/b]'
+            '</b>'
+          when '[spoiler]'
+            '<span class=spoiler>'
+          when '[/spoiler]'
+            '</span>'
+          when '[code]'
+            '<pre class=prettyprint>'
+          when '[/code]'
+            '</pre>'
+          when '[moot]'
+            '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
+          when '[/moot]'
+            '</div>'
+          when '[banned]'
+            '<b style="color: red;">'
+          when '[/banned]'
+            '</b>'
+    bq.innerHTML = bq.innerHTML.replace /(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3'
+
+
+    $.add p, [piM, pi, bq]
+
+
+    # file
+    if data.media
+      file = $.el 'div',
+        id: "f#{postID}"
+        className: 'file'
+      filesize = data.media_size
+      unit     = 0 # Bytes
+      while filesize >= 1024
+        filesize /= 1024
+        unit++
+      # Keep the filesize as a float if the unit is in MBs.
+      # Remove trailing 0s.
+      filesize =
+      if unit > 1
+         (a * 100).toFixed() / 100
+      else
+        filesize.toFixed()
+      $.add file, $.el 'div',
+        className: 'fileInfo'
+        innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{filesize} #{['B', 'KB', 'MB', 'GB'][unit]}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
+      span = $ 'span[title]', file
+      span.title = data.media_filename
+      span.textContent =
+        if data.media_filename.length < 40
+          data.media_filename
+        else
+          "#{data.media_filename[...30]}(...)#{data.media_filename[-4...]}"
+      $.add file, $.el 'a',
+        className: 'fileThumb'
+        href: data.media_link or data.remote_media_link
+        target: '_blank'
+        innerHTML: "<img src=#{data.thumb_link} alt='#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize} #{['B', 'KB', 'MB', 'GB'][unit]}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
+      $.after (if isOP then $('.postInfoM', p) else $('.postInfo', p)), file
+
+
+    $.replace root.firstChild, pc
+    cb() if cb
   cleanPost: (root) ->
     post = $ '.post', root
     for child in Array::slice.call root.childNodes
@@ -2341,8 +2507,6 @@ Get =
     for el in $$ '[id]', root
       el.id = "#{now}_#{el.id}"
 
-    # $.rmClass post, 'opContainer'
-    # $.rmClass post, 'replyContainer'
     $.rmClass root, 'forwarded'
     $.rmClass root, 'qphl' # op
     $.rmClass post, 'highlight'
@@ -2404,7 +2568,7 @@ QuoteInline =
     Main.callbacks.push @node
   node: (post) ->
     for quote in post.quotes
-      continue unless quote.hash
+      continue unless quote.hash or /\bdeadlink\b/.test quote.className
       quote.removeAttribute 'onclick'
       $.on quote, 'click', QuoteInline.toggle
     for quote in post.backlinks
@@ -2413,7 +2577,7 @@ QuoteInline =
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
-    id = @hash[2..]
+    id = @dataset.id or @hash[2..]
     if /\binlined\b/.test @className
       QuoteInline.rm @, id
     else
@@ -2429,13 +2593,22 @@ QuoteInline =
       until root.parentNode.nodeName is 'BLOCKQUOTE'
         root = root.parentNode
 
-    path   = q.pathname.split '/'
-    el     = if path[1] is g.BOARD then $.id "p#{id}" else false
+    if q.host is 'boards.4chan.org'
+      path     = q.pathname.split '/'
+      board    = path[1]
+      threadID = path[3]
+      postID   = id
+    else
+      board    = q.dataset.board
+      threadID = 0
+      postID   = q.dataset.id
+
+    el = if board is g.BOARD then $.id "p#{postID}" else false
     inline = $.el 'div',
-      id: "i#{id}"
+      id: "i#{postID}"
       className: if el then 'inline' else 'inline crosspost'
     $.after (if isBacklink then q.parentNode else root), inline
-    Get.post path[1], path[3], id, inline
+    Get.post board, threadID, postID, inline
 
     return unless el
 
@@ -2466,7 +2639,7 @@ QuotePreview =
     Main.callbacks.push @node
   node: (post) ->
     for quote in post.quotes
-      $.on quote, 'mouseover', QuotePreview.mouseover if quote.hash
+      $.on quote, 'mouseover', QuotePreview.mouseover if quote.hash or /\bdeadlink\b/.test quote.className
     for quote in post.backlinks
       $.on quote, 'mouseover', QuotePreview.mouseover
     return
@@ -2483,18 +2656,27 @@ QuotePreview =
     # Don't stop other elements from dragging
     return if UI.el
 
-    path = @pathname.split '/'
-    id   = @hash[2..]
-    qp   = UI.el = $.el 'div',
+    if @host is 'boards.4chan.org'
+      path     = @pathname.split '/'
+      board    = path[1]
+      threadID = path[3]
+      postID   = @hash[2..]
+    else
+      board    = @dataset.board
+      threadID = 0
+      postID   = @dataset.id
+
+    qp = UI.el = $.el 'div',
       id: 'qp'
       className: 'reply dialog'
     UI.hover e
     $.add d.body, qp
-    Get.post path[1], path[3], id, qp, ->
+    Get.post board, threadID, postID, qp, ->
       bq = $ 'blockquote', qp
       Main.prettify bq
       post =
         el: qp
+        blockquote: bq
       if fileInfo = $ '.fileInfo', qp
         img = fileInfo.nextElementSibling.firstElementChild
         if img.alt isnt 'File deleted.'
@@ -2506,8 +2688,10 @@ QuotePreview =
         Time.node     post
       if Conf['File Info Formatting']
         FileInfo.node post
+      if Conf['Resurrect Quotes']
+        Quotify.node  post
 
-    if path[1] is g.BOARD and el = $.id "p#{id}"
+    if board is g.BOARD and el = $.id "p#{postID}"
       if Conf['Quote Highlighting']
         if /\bop\b/.test el.className
           $.addClass el.parentNode, 'qphl'
@@ -2603,8 +2787,11 @@ Quotify =
         else
           a.href      = Redirect.thread board, id, 'post'
           a.className = 'deadlink'
-          # a.className = if JSONable then 'quotelink deadlink' else 'deadlink'
           a.target    = '_blank'
+          if Redirect.post board, id
+            $.addClass a, 'quotelink'
+            a.dataset.board = board
+            a.dataset.id    = id
 
         data = data[index + quote.length..]
 
@@ -2793,6 +2980,10 @@ Redirect =
       #   "http://archive.xfiles.to/#{board}/full_image/#{filename}"
       # when 'e'
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
+  post: (board, postID) ->
+    switch board
+      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
+        "http://archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
   thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
     return unless Conf['404 Redirect'] or mode is 'post'
     switch board
