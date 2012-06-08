@@ -1970,7 +1970,7 @@
         return new QR.reply().select();
       });
       $.on($('form', QR.el), 'submit', QR.submit);
-      $.on($('textarea', QR.el), 'keyup', function() {
+      $.on($('textarea', QR.el), 'input', function() {
         return QR.selected.el.lastChild.textContent = this.value;
       });
       $.on(fileInput, 'change', QR.fileInput);
@@ -1987,7 +1987,7 @@
       _ref1 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         name = _ref1[_j];
-        $.on($("[name=" + name + "]", QR.el), 'input keyup change paste', function() {
+        $.on($("[name=" + name + "]", QR.el), 'input', function() {
           var _ref2;
           QR.selected[this.name] = this.value;
           if (QR.cooldown.auto && QR.selected === QR.replies[0] && (0 < (_ref2 = QR.cooldown.seconds) && _ref2 < 6)) {
@@ -2337,12 +2337,12 @@
       (back = $('[name=backlink]', dialog)).value = $.get('backlink', Conf['backlink']);
       (time = $('[name=time]', dialog)).value = $.get('time', Conf['time']);
       (fileInfo = $('[name=fileInfo]', dialog)).value = $.get('fileInfo', Conf['fileInfo']);
-      $.on(back, 'keyup', $.cb.value);
-      $.on(back, 'keyup', Options.backlink);
-      $.on(time, 'keyup', $.cb.value);
-      $.on(time, 'keyup', Options.time);
-      $.on(fileInfo, 'keyup', $.cb.value);
-      $.on(fileInfo, 'keyup', Options.fileInfo);
+      $.on(back, 'input', $.cb.value);
+      $.on(back, 'input', Options.backlink);
+      $.on(time, 'input', $.cb.value);
+      $.on(time, 'input', Options.time);
+      $.on(fileInfo, 'input', $.cb.value);
+      $.on(fileInfo, 'input', Options.fileInfo);
       favicon = $('select', dialog);
       favicon.value = $.get('favicon', Conf['favicon']);
       $.on(favicon, 'change', $.cb.value);
@@ -2478,10 +2478,10 @@
             Conf[input.name] = input.checked;
           }
         } else if (input.name === 'Interval') {
-          $.on(input, 'change', function() {
-            return Conf['Interval'] = this.value = parseInt(this.value, 10) || Conf['Interval'];
+          $.on(input, 'input', function() {
+            this.value = parseInt(this.value, 10) || Conf['Interval'];
+            return $.cb.value.call(this);
           });
-          $.on(input, 'change', $.cb.value);
         } else if (input.type === 'button') {
           $.on(input, 'click', this.update);
         }
