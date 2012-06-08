@@ -1472,20 +1472,13 @@ QR =
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
       # The input event replaces keyup, change and paste events.
-      # Firefox 12 will support the input event.
-      # Oprah?
+      # XXX Opera?
       $.on $("[name=#{name}]", QR.el), 'input keyup change paste', ->
         QR.selected[@name] = @value
         # Disable auto-posting if you're typing in the first reply
         # during the last 5 seconds of the cooldown.
         if QR.cooldown.auto and QR.selected is QR.replies[0] and 0 < QR.cooldown.seconds < 6
           QR.cooldown.auto = false
-    # sync between tabs
-    $.sync 'QR.persona', (persona) ->
-      return unless QR.el.hidden
-      for key, val of persona
-        QR.selected[key] = val
-        $("[name=#{key}]", QR.el).value = val
 
     QR.status.input = $ 'input[type=submit]', QR.el
     QR.status()
