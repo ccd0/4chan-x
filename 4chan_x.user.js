@@ -1963,19 +1963,6 @@
           }
         });
       }
-      $.sync('QR.persona', function(persona) {
-        var key, val, _results;
-        if (!QR.el.hidden) {
-          return;
-        }
-        _results = [];
-        for (key in persona) {
-          val = persona[key];
-          QR.selected[key] = val;
-          _results.push($("[name=" + key + "]", QR.el).value = val);
-        }
-        return _results;
-      });
       QR.status.input = $('input[type=submit]', QR.el);
       QR.status();
       QR.cooldown.init();
