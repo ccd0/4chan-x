@@ -2447,10 +2447,7 @@
             Conf[input.name] = input.checked;
           }
         } else if (input.name === 'Interval') {
-          $.on(input, 'input', function() {
-            this.value = parseInt(this.value, 10) || Conf['Interval'];
-            return $.cb.value.call(this);
-          });
+          $.on(input, 'input', this.cb.interval);
         } else if (input.type === 'button') {
           $.on(input, 'click', this.update);
         }
@@ -2460,6 +2457,12 @@
       return this.lastModified = 0;
     },
     cb: {
+      interval: function() {
+        var val;
+        val = parseInt(this.value, 10);
+        this.value = val > 0 ? val : 1;
+        return $.cb.value.call(this);
+      },
       verbose: function() {
         if (Conf['Verbose']) {
           Updater.count.textContent = '+0';
