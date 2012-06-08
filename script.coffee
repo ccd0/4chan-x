@@ -1444,7 +1444,7 @@ QR =
     $.on $('#dump',     QR.el), 'click',     -> QR.el.classList.toggle 'dump'
     $.on $('#addReply', QR.el), 'click',     -> new QR.reply().select()
     $.on $('form',      QR.el), 'submit',    QR.submit
-    $.on $('textarea',  QR.el), 'keyup',     -> QR.selected.el.lastChild.textContent = @value
+    $.on $('textarea',  QR.el), 'input',     -> QR.selected.el.lastChild.textContent = @value
     $.on fileInput,             'change',    QR.fileInput
     $.on fileInput,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
     $.on spoiler.firstChild,    'change',    -> $('input', QR.selected.el).click()
@@ -1454,8 +1454,8 @@ QR =
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
       # The input event replaces keyup, change and paste events.
-      # XXX Opera?
-      $.on $("[name=#{name}]", QR.el), 'input keyup change paste', ->
+      # XXX Does Opera support the `input` event?
+      $.on $("[name=#{name}]", QR.el), 'input', ->
         QR.selected[@name] = @value
         # Disable auto-posting if you're typing in the first reply
         # during the last 5 seconds of the cooldown.
@@ -1790,12 +1790,12 @@ Options =
     (back     = $ '[name=backlink]', dialog).value = $.get 'backlink', Conf['backlink']
     (time     = $ '[name=time]',     dialog).value = $.get 'time',     Conf['time']
     (fileInfo = $ '[name=fileInfo]', dialog).value = $.get 'fileInfo', Conf['fileInfo']
-    $.on back, 'keyup', $.cb.value
-    $.on back, 'keyup', Options.backlink
-    $.on time, 'keyup', $.cb.value
-    $.on time, 'keyup', Options.time
-    $.on fileInfo, 'keyup', $.cb.value
-    $.on fileInfo, 'keyup', Options.fileInfo
+    $.on back,     'input', $.cb.value
+    $.on back,     'input', Options.backlink
+    $.on time,     'input', $.cb.value
+    $.on time,     'input', Options.time
+    $.on fileInfo, 'input', $.cb.value
+    $.on fileInfo, 'input', Options.fileInfo
     favicon = $ 'select', dialog
     favicon.value = $.get 'favicon', Conf['favicon']
     $.on favicon, 'change', $.cb.value
@@ -1907,8 +1907,9 @@ Updater =
           # Required for the QR's update after posting.
           Conf[input.name] = input.checked
       else if input.name is 'Interval'
-        $.on input, 'change', -> Conf['Interval'] = @value = parseInt(@value, 10) or Conf['Interval']
-        $.on input, 'change', $.cb.value
+        $.on input, 'input', ->
+          @value = parseInt(@value, 10) or Conf['Interval']
+          $.cb.value.call @
       else if input.type is 'button'
         $.on input, 'click', @update
 
