@@ -1926,9 +1926,7 @@ Updater =
           # Required for the QR's update after posting.
           Conf[input.name] = input.checked
       else if input.name is 'Interval'
-        $.on input, 'input', ->
-          @value = parseInt(@value, 10) or Conf['Interval']
-          $.cb.value.call @
+        $.on input, 'input', @cb.interval
       else if input.type is 'button'
         $.on input, 'click', @update
 
@@ -1938,6 +1936,10 @@ Updater =
     @lastModified = 0
 
   cb:
+    interval: ->
+      val = parseInt @value, 10
+      @value = if val > 0 then val else 1
+      $.cb.value.call @
     verbose: ->
       if Conf['Verbose']
         Updater.count.textContent = '+0'
