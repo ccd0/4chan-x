@@ -1944,7 +1944,7 @@ Updater =
   cb:
     interval: ->
       val = parseInt @value, 10
-      @value = if val > 0 then val else 1
+      @value = if val > 0 then val else 30
       $.cb.value.call @
     verbose: ->
       if Conf['Verbose']

@@ -2493,7 +2493,7 @@
       interval: function() {
         var val;
         val = parseInt(this.value, 10);
-        this.value = val > 0 ? val : 1;
+        this.value = val > 0 ? val : 30;
         return $.cb.value.call(this);
       },
       verbose: function() {
