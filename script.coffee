@@ -498,7 +498,7 @@ Filter =
           return
 
         # Highlight
-        $.addClass root, result[0]
+        $.addClass root, result.class
 
   name: (post) ->
     $('.name', post.el).textContent

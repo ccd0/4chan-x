@@ -631,7 +631,7 @@
             }
             return;
           }
-          $.addClass(root, result[0]);
+          $.addClass(root, result["class"]);
         }
       }
     },
