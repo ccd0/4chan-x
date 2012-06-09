@@ -4263,7 +4263,7 @@
       if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 1 * $.DAY) {
         $.on(window, 'message', Main.message);
         $.add(d.head, $.el('script', {
-          src: 'https://raw.github.com/aeosynth/4chan-x/master/latest.js'
+          src: 'http://aeosynth.github.com/4chan-x/latest.js'
         }));
         $.set('lastUpdate', now);
       }

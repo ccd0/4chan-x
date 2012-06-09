@@ -101,7 +101,7 @@ task 'upgrade', (options) ->
     fs.writeFileSync file, data.replace regexp, version
   data = fs.readFileSync CHANGELOG, 'utf8'
   fs.writeFileSync CHANGELOG, data.replace 'master', "master\n\n#{version}"
-  exec "git commit -am 'Release #{version}.' && git tag -a #{version} -m '#{version}' && git tag -af stable -m '#{version}'"
+  exec "git commit -am 'Release #{version}.' && git tag -a #{version} -m '#{version}' && git tag -af stable -m '#{version}' && git checkout gh-pages && git checkout master latest.js && git commit -am 'latest.js #{version}' && git checkout master"
 
 task 'build', ->
   exec 'coffee --print script.coffee', (err, stdout, stderr) ->
