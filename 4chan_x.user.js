@@ -1866,11 +1866,13 @@
       },
       load: function() {
         var challenge;
-        this.timeout = Date.now() + 26 * $.MINUTE;
+        this.timeout = Date.now() + 4 * $.MINUTE;
         challenge = this.challenge.firstChild.value;
         this.img.alt = challenge;
         this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
-        return this.input.value = null;
+        this.input.value = null;
+        clearTimeout(this.timeoutID);
+        return this.timeoutID = setTimeout(this.reload, 4 * $.MINUTE);
       },
       count: function(count) {
         this.input.placeholder = (function() {

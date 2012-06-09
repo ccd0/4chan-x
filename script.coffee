@@ -1375,12 +1375,18 @@ QR =
       @count captchas.length
       @reload()
     load: ->
-      # Timeout is available at RecaptchaState.timeout in seconds.
-      @timeout  = Date.now() + 26*$.MINUTE
+      # Timeout was available at RecaptchaState.timeout in seconds.
+      # Timeout is now set by moot: 5 minutes.
+      # We use 5-1 minutes to give upload some time.
+      @timeout  = Date.now() + 4*$.MINUTE
       challenge = @challenge.firstChild.value
       @img.alt  = challenge
       @img.src  = "//www.google.com/recaptcha/api/image?c=#{challenge}"
       @input.value = null
+      # Refresh captchas every 4 minutes to avoid filling perished ones.
+      # This used to be done by the recaptcha script, but it doesn't take into account moot's custom value.
+      clearTimeout @timeoutID
+      @timeoutID = setTimeout @reload, 4*$.MINUTE
     count: (count) ->
       @input.placeholder = switch count
         when 0
