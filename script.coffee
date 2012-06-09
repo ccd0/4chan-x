@@ -614,7 +614,6 @@ ExpandThread =
         textContent: "+ #{span.textContent}"
         className: 'summary desktop'
         href: 'javascript:;'
-        title: 'Expand this thread'
       $.on a, 'click', -> ExpandThread.toggle @parentNode
       $.replace span, a
 
@@ -686,7 +685,6 @@ ThreadHiding =
         className: 'hide_thread_button'
         innerHTML: '<span>[ - ]</span>'
         href: 'javascript:;'
-        title: 'Hide this thread'
       $.on a, 'click', ThreadHiding.cb
       $.prepend thread, a
 
@@ -745,7 +743,7 @@ ReplyHiding =
     return if post.isInlined or /\bop\b/.test post.class
     side = $ '.sideArrows', post.root
     $.addClass side, 'hide_reply_button'
-    side.innerHTML = '<a title="Hide this post" href="javascript:;"><span>[ - ]</span></a>'
+    side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
     $.on side.firstChild, 'click', ReplyHiding.toggle
 
     if post.id of g.hiddenReplies
@@ -2712,7 +2710,6 @@ ReportButton =
       className: 'report_button'
       innerHTML: '[&nbsp;!&nbsp;]'
       href: 'javascript:;'
-      title: 'Report this post'
     Main.callbacks.push @node
   node: (post) ->
     unless a = $ '.report_button', post.el
