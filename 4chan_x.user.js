@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, log, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, DeleteButton, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, log, _base;
 
   Config = {
     main: {
@@ -83,6 +83,7 @@
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
         'Report Button': [true, 'Add report buttons'],
+        'Delete Button': [false, 'Add delete buttons'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -3565,6 +3566,29 @@
     }
   };
 
+  DeleteButton = {
+    init: function() {
+      this.a = $.el('a', {
+        className: 'delete_button',
+        innerHTML: '[&nbsp;X&nbsp;]',
+        href: 'javascript:;'
+      });
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var a;
+      if (!(a = $('.delete_button', post.el))) {
+        a = DeleteButton.a.cloneNode(true);
+        $.add($('.postInfo', post.el), a);
+      }
+      return $.on(a, 'click', DeleteButton["delete"]);
+    },
+    "delete": function() {
+      $.x('preceding-sibling::input', this).checked = true;
+      return $.id('delPassword').nextElementSibling.click();
+    }
+  };
+
   ReportButton = {
     init: function() {
       this.a = $.el('a', {
@@ -4216,6 +4240,9 @@
       }
       if (Conf['Report Button']) {
         ReportButton.init();
+      }
+      if (Conf['Report Button']) {
+        DeleteButton.init();
       }
       if (Conf['Resurrect Quotes']) {
         Quotify.init();
