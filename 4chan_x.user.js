@@ -3435,8 +3435,44 @@
       return $.on(a, 'click', DeleteButton["delete"]);
     },
     "delete": function() {
-      $.x('preceding-sibling::input', this).checked = true;
-      return $.id('delPassword').nextElementSibling.click();
+      var data, id, m, pwd;
+      if (m = d.cookie.match(/4chan_pass=([^;]+)/)) {
+        pwd = decodeURIComponent(m[1]);
+      } else {
+        this.textContent = 'Error: no password found';
+        return;
+      }
+      DeleteButton.el = this;
+      $.off(this, 'click', DeleteButton["delete"]);
+      this.textContent = 'Deleting...';
+      id = $.x('preceding-sibling::input', this).name;
+      data = new FormData();
+      data.append(id, 'delete');
+      data.append('mode', 'usrdel');
+      return $.ajax("https://sys.4chan.org/" + g.BOARD + "/imgboard.php", {
+        onload: DeleteButton.load,
+        onerror: DeleteButton.error
+      }, {
+        type: 'post',
+        form: data,
+        pwd: pwd
+      });
+    },
+    load: function() {
+      var doc, msg, tc;
+      doc = d.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = this.response;
+      if (doc.title === '4chan - Banned') {
+        tc = 'Banned!';
+      } else if (msg = doc.getElementById('errmsg')) {
+        tc = msg.textContent;
+      } else {
+        tc = 'Deleted';
+      }
+      return DeleteButton.el.textContent = tc;
+    },
+    error: function() {
+      return DeleteButton.el.textContent = 'Error';
     }
   };
 

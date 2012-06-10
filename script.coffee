@@ -2619,8 +2619,40 @@ DeleteButton =
       $.add $('.postInfo', post.el), a
     $.on a, 'click', DeleteButton.delete
   delete: ->
-    $.x('preceding-sibling::input', @).checked = true
-    $.id('delPassword').nextElementSibling.click()
+    if m = d.cookie.match(/4chan_pass=([^;]+)/)
+      pwd = decodeURIComponent m[1]
+    else
+      @textContent = 'Error: no password found'
+      return
+
+    DeleteButton.el = @
+    $.off @, 'click', DeleteButton.delete
+    @textContent = 'Deleting...'
+
+    id = $.x('preceding-sibling::input', @).name
+    data = new FormData()
+    data.append id, 'delete'
+    data.append 'mode', 'usrdel'
+    $.ajax "https://sys.4chan.org/#{g.BOARD}/imgboard.php", {
+        onload:  DeleteButton.load
+        onerror: DeleteButton.error
+      }, {
+        type: 'post'
+        form: data
+        pwd:  pwd
+      }
+  load: ->
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = @response
+    if doc.title is '4chan - Banned' # Ban/warn check
+      tc = 'Banned!'
+    else if msg = doc.getElementById 'errmsg' # error!
+      tc = msg.textContent
+    else
+      tc = 'Deleted'
+    DeleteButton.el.textContent = tc
+  error: ->
+    DeleteButton.el.textContent = 'Error'
 
 ReportButton =
   init: ->
