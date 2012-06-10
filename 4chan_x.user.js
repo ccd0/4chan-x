@@ -319,24 +319,41 @@
     id: function(id) {
       return d.getElementById(id);
     },
+    formData: function(arg) {
+      var fd, key, val;
+      if (arg instanceof HTMLElement) {
+        fd = new FormData(arg);
+      } else {
+        fd = new FormData();
+        for (key in arg) {
+          val = arg[key];
+          fd.append(key, val);
+        }
+      }
+      return fd;
+    },
     ajax: function(url, callbacks, opts) {
-      var form, headers, key, r, type, upCallbacks, val;
+      var data, headers, key, r, type, upCallbacks, val;
       if (opts == null) {
         opts = {};
       }
-      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
+      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, data = opts.data;
       r = new XMLHttpRequest();
-      r.open(type || 'get', url, true);
+      if (data) {
+        type || (type = 'post');
+      }
+      type || (type = 'get');
+      r.open(type, url, true);
       for (key in headers) {
         val = headers[key];
         r.setRequestHeader(key, val);
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
-      if (typeof form === 'string') {
-        r.sendAsBinary(form);
+      if (typeof data === 'string') {
+        r.sendAsBinary(data);
       } else {
-        r.send(form);
+        r.send(data);
       }
       return r;
     },
@@ -2005,7 +2022,7 @@
       return QR.el.dispatchEvent(e);
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, form, m, name, opts, post, reply, response, threadID, val;
+      var callbacks, captcha, captchas, challenge, data, err, m, opts, post, reply, response, threadID;
       if (e != null) {
         e.preventDefault();
       }
@@ -2072,13 +2089,7 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
-      form = new FormData();
-      for (name in post) {
-        val = post[name];
-        if (val) {
-          form.append(name, val);
-        }
-      }
+      data = $.formData(post);
       callbacks = {
         onload: function() {
           return QR.response(this.response);
@@ -2093,8 +2104,7 @@
         }
       };
       opts = {
-        form: form,
-        type: 'POST',
+        data: data,
         upCallbacks: {
           onload: function() {
             return QR.status({
@@ -3595,9 +3605,10 @@
       $.off(this, 'click', DeleteButton["delete"]);
       this.textContent = 'Deleting...';
       id = $.x('preceding-sibling::input', this).name;
-      data = new FormData();
+      data = $.formData({
+        mode: 'usrdel'
+      });
       data.append(id, 'delete');
-      data.append('mode', 'usrdel');
       return $.ajax("https://sys.4chan.org/" + g.BOARD + "/imgboard.php", {
         onload: DeleteButton.load,
         onerror: DeleteButton.error

@@ -270,15 +270,25 @@ $.extend $,
       cb JSON.parse e.newValue if e.key is "#{Main.namespace}#{key}"
   id: (id) ->
     d.getElementById id
+  formData: (arg) ->
+    if arg instanceof HTMLElement
+      fd = new FormData arg
+    else
+      fd = new FormData()
+      for key, val of arg
+        fd.append key, val
+    fd
   ajax: (url, callbacks, opts={}) ->
-    {type, headers, upCallbacks, form} = opts
+    {type, headers, upCallbacks, data} = opts
     r = new XMLHttpRequest()
-    r.open type or 'get', url, true
+    type or= 'post' if data
+    type or= 'get'
+    r.open type, url, true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    if typeof form is 'string' then r.sendAsBinary form else r.send form
+    if typeof data is 'string' then r.sendAsBinary data else r.send data
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -1561,10 +1571,8 @@ QR =
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
-    
-    form = new FormData()
-    for name, val of post
-      form.append name, val if val
+
+    data = $.formData post
 
     callbacks =
       onload: ->
@@ -1578,8 +1586,7 @@ QR =
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
     opts =
-      form: form
-      type: 'POST'
+      data: data
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
@@ -2728,9 +2735,8 @@ DeleteButton =
     @textContent = 'Deleting...'
 
     id = $.x('preceding-sibling::input', @).name
-    data = new FormData()
+    data = $.formData mode: 'usrdel'
     data.append id, 'delete'
-    data.append 'mode', 'usrdel'
     $.ajax "https://sys.4chan.org/#{g.BOARD}/imgboard.php", {
         onload:  DeleteButton.load
         onerror: DeleteButton.error
