@@ -311,11 +311,11 @@
       return d.getElementById(id);
     },
     ajax: function(url, callbacks, opts) {
-      var form, headers, key, r, type, upCallbacks, val;
+      var data, headers, key, r, type, upCallbacks, val;
       if (opts == null) {
         opts = {};
       }
-      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
+      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, data = opts.data;
       r = new XMLHttpRequest();
       r.open(type || 'get', url, true);
       for (key in headers) {
@@ -324,10 +324,10 @@
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
-      if (typeof form === 'string') {
-        r.sendAsBinary(form);
+      if (typeof data === 'string') {
+        r.sendAsBinary(data);
       } else {
-        r.send(form);
+        r.send(data);
       }
       return r;
     },
@@ -1975,7 +1975,7 @@
       return QR.el.dispatchEvent(e);
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, form, m, name, opts, post, reply, response, threadID, val;
+      var callbacks, captcha, captchas, challenge, data, err, m, name, opts, post, reply, response, threadID, val;
       if (e != null) {
         e.preventDefault();
       }
@@ -2042,11 +2042,11 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
-      form = new FormData();
+      data = new FormData();
       for (name in post) {
         val = post[name];
         if (val) {
-          form.append(name, val);
+          data.append(name, val);
         }
       }
       callbacks = {
@@ -2063,7 +2063,7 @@
         }
       };
       opts = {
-        form: form,
+        data: data,
         type: 'POST',
         upCallbacks: {
           onload: function() {

@@ -266,14 +266,14 @@ $.extend $,
   id: (id) ->
     d.getElementById id
   ajax: (url, callbacks, opts={}) ->
-    {type, headers, upCallbacks, form} = opts
+    {type, headers, upCallbacks, data} = opts
     r = new XMLHttpRequest()
     r.open type or 'get', url, true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    if typeof form is 'string' then r.sendAsBinary form else r.send form
+    if typeof data is 'string' then r.sendAsBinary data else r.send data
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -1546,9 +1546,9 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
-    form = new FormData()
+    data = new FormData()
     for name, val of post
-      form.append name, val if val
+      data.append name, val if val
 
     callbacks =
       onload: ->
@@ -1562,7 +1562,7 @@ QR =
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
     opts =
-      form: form
+      data: data
       type: 'POST'
       upCallbacks:
         onload: ->
