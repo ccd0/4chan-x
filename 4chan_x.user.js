@@ -4241,7 +4241,7 @@
       if (Conf['Report Button']) {
         ReportButton.init();
       }
-      if (Conf['Report Button']) {
+      if (Conf['Delete Button']) {
         DeleteButton.init();
       }
       if (Conf['Resurrect Quotes']) {
