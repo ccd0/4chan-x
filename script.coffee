@@ -6,6 +6,7 @@ Config =
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
       'Report Button':                [true,  'Add report buttons']
+      'Delete Button':                [false, 'Add delete buttons']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
@@ -2605,6 +2606,22 @@ Quotify =
       $.replace node, nodes
     return
 
+DeleteButton =
+  init: ->
+    @a = $.el 'a',
+      className: 'delete_button'
+      innerHTML: '[&nbsp;X&nbsp;]'
+      href: 'javascript:;'
+    Main.callbacks.push @node
+  node: (post) ->
+    unless a = $ '.delete_button', post.el
+      a = DeleteButton.a.cloneNode true
+      $.add $('.postInfo', post.el), a
+    $.on a, 'click', DeleteButton.delete
+  delete: ->
+    $.x('preceding-sibling::input', @).checked = true
+    $.id('delPassword').nextElementSibling.click()
+
 ReportButton =
   init: ->
     @a = $.el 'a',
@@ -3081,6 +3098,9 @@ Main =
 
     if Conf['Report Button']
       ReportButton.init()
+
+    if Conf['Delete Button']
+      DeleteButton.init()
 
     if Conf['Resurrect Quotes']
       Quotify.init()
