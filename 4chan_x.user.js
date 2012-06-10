@@ -317,7 +317,11 @@
       }
       type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, data = opts.data;
       r = new XMLHttpRequest();
-      r.open(type || 'get', url, true);
+      if (data) {
+        type || (type = 'post');
+      }
+      type || (type = 'get');
+      r.open(type, url, true);
       for (key in headers) {
         val = headers[key];
         r.setRequestHeader(key, val);
@@ -2064,7 +2068,6 @@
       };
       opts = {
         data: data,
-        type: 'POST',
         upCallbacks: {
           onload: function() {
             return QR.status({

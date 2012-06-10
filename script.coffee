@@ -268,7 +268,9 @@ $.extend $,
   ajax: (url, callbacks, opts={}) ->
     {type, headers, upCallbacks, data} = opts
     r = new XMLHttpRequest()
-    r.open type or 'get', url, true
+    type or= 'post' if data
+    type or= 'get'
+    r.open type, url, true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
@@ -1563,7 +1565,6 @@ QR =
           textContent: 'Connection error, or you are banned.'
     opts =
       data: data
-      type: 'POST'
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
