@@ -265,6 +265,14 @@ $.extend $,
       cb JSON.parse e.newValue if e.key is "#{Main.namespace}#{key}"
   id: (id) ->
     d.getElementById id
+  formData: (arg) ->
+    if arg instanceof HTMLElement
+      fd = new FormData arg
+    else
+      fd = new FormData()
+      for key, val of arg
+        fd.append key, val
+    fd
   ajax: (url, callbacks, opts={}) ->
     {type, headers, upCallbacks, data} = opts
     r = new XMLHttpRequest()
@@ -1548,9 +1556,7 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
-    data = new FormData()
-    for name, val of post
-      data.append name, val if val
+    data = $.formData post
 
     callbacks =
       onload: ->

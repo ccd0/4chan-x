@@ -310,6 +310,19 @@
     id: function(id) {
       return d.getElementById(id);
     },
+    formData: function(arg) {
+      var fd, key, val;
+      if (arg instanceof HTMLElement) {
+        fd = new FormData(arg);
+      } else {
+        fd = new FormData();
+        for (key in arg) {
+          val = arg[key];
+          fd.append(key, val);
+        }
+      }
+      return fd;
+    },
     ajax: function(url, callbacks, opts) {
       var data, headers, key, r, type, upCallbacks, val;
       if (opts == null) {
@@ -1979,7 +1992,7 @@
       return QR.el.dispatchEvent(e);
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, data, err, m, name, opts, post, reply, response, threadID, val;
+      var callbacks, captcha, captchas, challenge, data, err, m, opts, post, reply, response, threadID;
       if (e != null) {
         e.preventDefault();
       }
@@ -2046,13 +2059,7 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
-      data = new FormData();
-      for (name in post) {
-        val = post[name];
-        if (val) {
-          data.append(name, val);
-        }
-      }
+      data = $.formData(post);
       callbacks = {
         onload: function() {
           return QR.response(this.response);
