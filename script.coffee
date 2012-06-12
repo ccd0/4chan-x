@@ -2625,20 +2625,18 @@ DeleteButton =
       @textContent = 'Error: no password found'
       return
 
-    DeleteButton.el = @
     $.off @, 'click', DeleteButton.delete
     @textContent = 'Deleting...'
-
-    self = this
 
     id = $.x('preceding-sibling::input', @).name
     data = new FormData()
     data.append id, 'delete'
     data.append 'mode', 'usrdel'
     data.append 'pwd', pwd
+    self = this
     $.ajax "https://sys.4chan.org/#{g.BOARD}/imgboard.php", {
-        onload: -> DeleteButton.load self
-        onerror: DeleteButton.error
+        onload:  -> DeleteButton.load  self
+        onerror: -> DeleteButton.error self
       }, {
         type: 'post'
         form: data
@@ -2653,8 +2651,8 @@ DeleteButton =
     else
       tc = 'Deleted'
     self.textContent = tc
-  error: ->
-    DeleteButton.el.textContent = 'Error'
+  error: (self) ->
+    self.textContent = 'Error'
 
 ReportButton =
   init: ->

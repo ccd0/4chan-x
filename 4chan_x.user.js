@@ -3442,20 +3442,21 @@
         this.textContent = 'Error: no password found';
         return;
       }
-      DeleteButton.el = this;
       $.off(this, 'click', DeleteButton["delete"]);
       this.textContent = 'Deleting...';
-      self = this;
       id = $.x('preceding-sibling::input', this).name;
       data = new FormData();
       data.append(id, 'delete');
       data.append('mode', 'usrdel');
       data.append('pwd', pwd);
+      self = this;
       return $.ajax("https://sys.4chan.org/" + g.BOARD + "/imgboard.php", {
         onload: function() {
           return DeleteButton.load(self);
         },
-        onerror: DeleteButton.error
+        onerror: function() {
+          return DeleteButton.error(self);
+        }
       }, {
         type: 'post',
         form: data
@@ -3474,8 +3475,8 @@
       }
       return self.textContent = tc;
     },
-    error: function() {
-      return DeleteButton.el.textContent = 'Error';
+    error: function(self) {
+      return self.textContent = 'Error';
     }
   };
 
