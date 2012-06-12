@@ -3435,7 +3435,7 @@
       return $.on(a, 'click', DeleteButton["delete"]);
     },
     "delete": function() {
-      var data, id, m, pwd;
+      var data, id, m, pwd, self;
       if (m = d.cookie.match(/4chan_pass=([^;]+)/)) {
         pwd = decodeURIComponent(m[1]);
       } else {
@@ -3445,20 +3445,23 @@
       DeleteButton.el = this;
       $.off(this, 'click', DeleteButton["delete"]);
       this.textContent = 'Deleting...';
+      self = this;
       id = $.x('preceding-sibling::input', this).name;
       data = new FormData();
       data.append(id, 'delete');
       data.append('mode', 'usrdel');
       data.append('pwd', pwd);
       return $.ajax("https://sys.4chan.org/" + g.BOARD + "/imgboard.php", {
-        onload: DeleteButton.load,
+        onload: function() {
+          return DeleteButton.load(self);
+        },
         onerror: DeleteButton.error
       }, {
         type: 'post',
         form: data
       });
     },
-    load: function() {
+    load: function(self) {
       var doc, msg, tc;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = this.response;
@@ -3469,7 +3472,7 @@
       } else {
         tc = 'Deleted';
       }
-      return DeleteButton.el.textContent = tc;
+      return self.textContent = tc;
     },
     error: function() {
       return DeleteButton.el.textContent = 'Error';

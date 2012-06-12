@@ -2629,19 +2629,21 @@ DeleteButton =
     $.off @, 'click', DeleteButton.delete
     @textContent = 'Deleting...'
 
+    self = this
+
     id = $.x('preceding-sibling::input', @).name
     data = new FormData()
     data.append id, 'delete'
     data.append 'mode', 'usrdel'
     data.append 'pwd', pwd
     $.ajax "https://sys.4chan.org/#{g.BOARD}/imgboard.php", {
-        onload:  DeleteButton.load
+        onload: -> DeleteButton.load self
         onerror: DeleteButton.error
       }, {
         type: 'post'
         form: data
       }
-  load: ->
+  load: (self) ->
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = @response
     if doc.title is '4chan - Banned' # Ban/warn check
@@ -2650,7 +2652,7 @@ DeleteButton =
       tc = msg.textContent
     else
       tc = 'Deleted'
-    DeleteButton.el.textContent = tc
+    self.textContent = tc
   error: ->
     DeleteButton.el.textContent = 'Error'
 
