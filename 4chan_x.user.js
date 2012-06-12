@@ -3452,7 +3452,7 @@
       self = this;
       return $.ajax("https://sys.4chan.org/" + g.BOARD + "/imgboard.php", {
         onload: function() {
-          return DeleteButton.load(self);
+          return DeleteButton.load(self, this.response);
         },
         onerror: function() {
           return DeleteButton.error(self);
@@ -3462,10 +3462,10 @@
         form: data
       });
     },
-    load: function(self) {
+    load: function(self, html) {
       var doc, msg, tc;
       doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = this.response;
+      doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
         tc = 'Banned!';
       } else if (msg = doc.getElementById('errmsg')) {

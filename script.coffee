@@ -2635,15 +2635,15 @@ DeleteButton =
     data.append 'pwd', pwd
     self = this
     $.ajax "https://sys.4chan.org/#{g.BOARD}/imgboard.php", {
-        onload:  -> DeleteButton.load  self
+        onload:  -> DeleteButton.load  self, @response
         onerror: -> DeleteButton.error self
       }, {
         type: 'post'
         form: data
       }
-  load: (self) ->
+  load: (self, html) ->
     doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = @response
+    doc.documentElement.innerHTML = html
     if doc.title is '4chan - Banned' # Ban/warn check
       tc = 'Banned!'
     else if msg = doc.getElementById 'errmsg' # error!
