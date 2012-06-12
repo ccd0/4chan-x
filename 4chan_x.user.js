@@ -3449,13 +3449,13 @@
       data = new FormData();
       data.append(id, 'delete');
       data.append('mode', 'usrdel');
+      data.append('pwd', pwd);
       return $.ajax("https://sys.4chan.org/" + g.BOARD + "/imgboard.php", {
         onload: DeleteButton.load,
         onerror: DeleteButton.error
       }, {
         type: 'post',
-        form: data,
-        pwd: pwd
+        form: data
       });
     },
     load: function() {
