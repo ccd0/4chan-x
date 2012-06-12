@@ -4744,10 +4744,10 @@ div.opContainer {\
 }\
 /* \u00A0 is nbsp */\
 .delete_button::before {\
-  content: "[\u00A0"\
+  content: "[\\00a0"\
 }\
 .delete_button::after {\
-  content: "\u00A0]"\
+  content: "\\00a0]"\
 }\
 '
   };
