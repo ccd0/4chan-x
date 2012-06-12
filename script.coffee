@@ -276,14 +276,13 @@ $.extend $,
   ajax: (url, callbacks, opts={}) ->
     {type, headers, upCallbacks, data} = opts
     r = new XMLHttpRequest()
-    type or= 'post' if data
-    type or= 'get'
+    type or= data and 'post' or 'get'
     r.open type, url, true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    if typeof data is 'string' then r.sendAsBinary data else r.send data
+    r.send data
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]

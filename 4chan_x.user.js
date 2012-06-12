@@ -330,10 +330,7 @@
       }
       type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, data = opts.data;
       r = new XMLHttpRequest();
-      if (data) {
-        type || (type = 'post');
-      }
-      type || (type = 'get');
+      type || (type = data && 'post' || 'get');
       r.open(type, url, true);
       for (key in headers) {
         val = headers[key];
@@ -341,11 +338,7 @@
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
-      if (typeof data === 'string') {
-        r.sendAsBinary(data);
-      } else {
-        r.send(data);
-      }
+      r.send(data);
       return r;
     },
     cache: function(url, cb) {
