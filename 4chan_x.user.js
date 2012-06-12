@@ -3435,22 +3435,22 @@
       return $.on(a, 'click', DeleteButton["delete"]);
     },
     "delete": function() {
-      var data, id, m, pwd, self;
+      var board, data, id, m, pwd, self;
+      $.off(this, 'click', DeleteButton["delete"]);
+      this.textContent = 'Deleting...';
       if (m = d.cookie.match(/4chan_pass=([^;]+)/)) {
         pwd = decodeURIComponent(m[1]);
       } else {
-        this.textContent = 'Error: no password found';
-        return;
+        pwd = $.id('delPassword').value;
       }
-      $.off(this, 'click', DeleteButton["delete"]);
-      this.textContent = 'Deleting...';
       id = $.x('preceding-sibling::input', this).name;
+      board = $.x('preceding-sibling::span[1]/a', this).pathname.match(/\w+/)[0];
+      self = this;
       data = new FormData();
       data.append(id, 'delete');
       data.append('mode', 'usrdel');
       data.append('pwd', pwd);
-      self = this;
-      return $.ajax("https://sys.4chan.org/" + g.BOARD + "/imgboard.php", {
+      return $.ajax("https://sys.4chan.org/" + board + "/imgboard.php", {
         onload: function() {
           return DeleteButton.load(self, this.response);
         },

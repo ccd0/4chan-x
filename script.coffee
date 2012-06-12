@@ -2619,28 +2619,30 @@ DeleteButton =
       $.add $('.postInfo', post.el), a
     $.on a, 'click', DeleteButton.delete
   delete: ->
-    if m = d.cookie.match(/4chan_pass=([^;]+)/)
-      pwd = decodeURIComponent m[1]
-    else
-      @textContent = 'Error: no password found'
-      return
-
     $.off @, 'click', DeleteButton.delete
     @textContent = 'Deleting...'
 
+    if m = d.cookie.match(/4chan_pass=([^;]+)/)
+      pwd = decodeURIComponent m[1]
+    else
+      pwd = $.id('delPassword').value
     id = $.x('preceding-sibling::input', @).name
+    board = $.x('preceding-sibling::span[1]/a', @).pathname.match(/\w+/)[0]
+    self = this
+
     data = new FormData()
     data.append id, 'delete'
     data.append 'mode', 'usrdel'
     data.append 'pwd', pwd
-    self = this
-    $.ajax "https://sys.4chan.org/#{g.BOARD}/imgboard.php", {
+
+    $.ajax "https://sys.4chan.org/#{board}/imgboard.php", {
         onload:  -> DeleteButton.load  self, @response
         onerror: -> DeleteButton.error self
       }, {
         type: 'post'
         form: data
       }
+
   load: (self, html) ->
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = html
