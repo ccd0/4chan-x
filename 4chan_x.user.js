@@ -312,7 +312,7 @@
     },
     formData: function(arg) {
       var fd, key, val;
-      if (arg instanceof HTMLElement) {
+      if (arg instanceof HTMLFormElement) {
         fd = new FormData(arg);
       } else {
         fd = new FormData();

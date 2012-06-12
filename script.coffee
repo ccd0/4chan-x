@@ -266,7 +266,7 @@ $.extend $,
   id: (id) ->
     d.getElementById id
   formData: (arg) ->
-    if arg instanceof HTMLElement
+    if arg instanceof HTMLFormElement
       fd = new FormData arg
     else
       fd = new FormData()
