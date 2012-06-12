@@ -3421,7 +3421,7 @@
     init: function() {
       this.a = $.el('a', {
         className: 'delete_button',
-        innerHTML: '[&nbsp;X&nbsp;]',
+        innerHTML: '[&nbsp;&times;&nbsp;]',
         href: 'javascript:;'
       });
       return Main.callbacks.push(this.node);
