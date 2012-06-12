@@ -274,15 +274,15 @@ $.extend $,
         fd.append key, val
     fd
   ajax: (url, callbacks, opts={}) ->
-    {type, headers, upCallbacks, data} = opts
+    {type, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
-    type or= data and 'post' or 'get'
+    type or= form and 'post' or 'get'
     r.open type, url, true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    r.send data
+    r.send form
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -1569,7 +1569,7 @@ QR =
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
     opts =
-      data: data
+      form: data
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
