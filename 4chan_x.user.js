@@ -4738,11 +4738,12 @@ div.opContainer {\
   text-decoration: none;\
   border-bottom: 1px dashed;\
 }\
+/* \u00A0 is nbsp */\
 .delete_button::before {\
-  content: "[ "\
+  content: "[\u00A0"\
 }\
 .delete_button::after {\
-  content: " ]"\
+  content: "\u00A0]"\
 }\
 '
   };
