@@ -3421,7 +3421,7 @@
     init: function() {
       this.a = $.el('a', {
         className: 'delete_button',
-        innerHTML: '[&nbsp;&times;&nbsp;]',
+        innerHTML: '&times;',
         href: 'javascript:;'
       });
       return Main.callbacks.push(this.node);
@@ -4737,6 +4737,12 @@ div.opContainer {\
 .backlink.forwardlink {\
   text-decoration: none;\
   border-bottom: 1px dashed;\
+}\
+.delete_button::before {\
+  content: "[ "\
+}\
+.delete_button::after {\
+  content: " ]"\
 }\
 '
   };

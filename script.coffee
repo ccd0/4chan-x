@@ -2610,7 +2610,7 @@ DeleteButton =
   init: ->
     @a = $.el 'a',
       className: 'delete_button'
-      innerHTML: '[&nbsp;&times;&nbsp;]'
+      innerHTML: '&times;'
       href: 'javascript:;'
     Main.callbacks.push @node
   node: (post) ->
@@ -3695,6 +3695,12 @@ div.opContainer {
 .backlink.forwardlink {
   text-decoration: none;
   border-bottom: 1px dashed;
+}
+.delete_button::before {
+  content: "[ "
+}
+.delete_button::after {
+  content: " ]"
 }
 '
 
