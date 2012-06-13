@@ -2366,7 +2366,8 @@
       });
       $.add(overlay, dialog);
       $.add(d.body, overlay);
-      d.body.style.setProperty('overflow', 'hidden', null);
+      d.body.style.setProperty('width', "" + d.body.clientWidth + "px", null);
+      $.addClass(d.body, 'unscroll');
       Options.backlink.call(back);
       Options.time.call(time);
       Options.fileInfo.call(fileInfo);
@@ -2374,7 +2375,8 @@
     },
     close: function() {
       $.rm(this);
-      return d.body.style.removeProperty('overflow');
+      d.body.style.removeProperty('width');
+      return $.rmClass(d.body, 'unscroll');
     },
     clearHidden: function() {
       $["delete"]("hiddenReplies/" + g.BOARD + "/");
@@ -4623,6 +4625,13 @@ textarea.field {\
   right: 5px;\
 }\
 \
+body {\
+  box-sizing: border-box;\
+  -moz-box-sizing: border-box;\
+}\
+body.unscroll {\
+  overflow: hidden;\
+}\
 #overlay {\
   top: 0;\
   right: 0;\

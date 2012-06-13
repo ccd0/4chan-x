@@ -1838,7 +1838,8 @@ Options =
     $.on dialog,  'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
     $.add d.body, overlay
-    d.body.style.setProperty 'overflow', 'hidden', null
+    d.body.style.setProperty 'width', "#{d.body.clientWidth}px", null
+    $.addClass d.body, 'unscroll'
 
     Options.backlink.call back
     Options.time.call     time
@@ -1847,7 +1848,8 @@ Options =
 
   close: ->
     $.rm this
-    d.body.style.removeProperty 'overflow'
+    d.body.style.removeProperty 'width'
+    $.rmClass d.body, 'unscroll'
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -3578,6 +3580,13 @@ textarea.field {
   right: 5px;
 }
 
+body {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+body.unscroll {
+  overflow: hidden;
+}
 #overlay {
   top: 0;
   right: 0;
