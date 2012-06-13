@@ -2644,7 +2644,6 @@ DeleteButton =
         onload:  -> DeleteButton.load  self, @response
         onerror: -> DeleteButton.error self
       }, {
-        type: 'post'
         form: form
       }
 

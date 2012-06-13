@@ -3462,7 +3462,6 @@
           return DeleteButton.error(self);
         }
       }, {
-        type: 'post',
         form: form
       });
     },
