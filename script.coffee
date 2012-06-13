@@ -2622,7 +2622,7 @@ DeleteButton =
     $.off @, 'click', DeleteButton.delete
     @textContent = 'Deleting...'
 
-    if m = d.cookie.match(/4chan_pass=([^;]+)/)
+    if m = d.cookie.match /4chan_pass=([^;]+)/
       pwd = decodeURIComponent m[1]
     else
       pwd = $.id('delPassword').value
