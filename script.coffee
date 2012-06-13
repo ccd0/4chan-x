@@ -272,7 +272,7 @@ $.extend $,
     else
       fd = new FormData()
       for key, val of arg
-        fd.append key, val
+        fd.append key, val if val
     fd
   ajax: (url, callbacks, opts={}) ->
     {type, headers, upCallbacks, form} = opts
@@ -3314,7 +3314,7 @@ Main =
     $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.32.0'
+  version: '2.32.1'
   callbacks: []
   css: '
 /* dialog styling */

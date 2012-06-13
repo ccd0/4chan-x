@@ -1,5 +1,9 @@
 master
 
+2.32.1
+- Mayhem
+  Fix images uploaded as spoilers.
+
 2.32.0
 - aeosynth
   delete button
