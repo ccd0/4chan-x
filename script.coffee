@@ -356,6 +356,21 @@ $.extend $,
     script = $.el 'script', textContent: code
     $.add d.head, script
     $.rm script
+  bytesToString: (size) ->
+    unit = 0 # Bytes
+    while size >= 1024
+      size /= 1024
+      unit++
+    # Remove trailing 0s.
+    size =
+      if unit > 1
+        # Keep the size as a float if the size is greater than 2^20 B.
+        # Round to hundredth.
+        Math.round(a * 100) / 100
+      else
+        # Round to an integer otherwise.
+        Math.round size
+    "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
 
 $.cache.requests = {}
 
@@ -2477,21 +2492,10 @@ Get =
       file = $.el 'div',
         id: "f#{postID}"
         className: 'file'
-      filesize = data.media_size
-      unit     = 0 # Bytes
-      while filesize >= 1024
-        filesize /= 1024
-        unit++
-      # Keep the filesize as a float if the unit is in MBs.
-      # Remove trailing 0s.
-      filesize =
-      if unit > 1
-         (a * 100).toFixed() / 100
-      else
-        filesize.toFixed()
+      filesize = $.bytesToString data.media_size
       $.add file, $.el 'div',
         className: 'fileInfo'
-        innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{filesize} #{['B', 'KB', 'MB', 'GB'][unit]}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
+        innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{filesize}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
       span = $ 'span[title]', file
       span.title = data.media_filename
       span.textContent =
@@ -2503,7 +2507,7 @@ Get =
         className: 'fileThumb'
         href: data.media_link or data.remote_media_link
         target: '_blank'
-        innerHTML: "<img src=#{data.thumb_link} alt='#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize} #{['B', 'KB', 'MB', 'GB'][unit]}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
+        innerHTML: "<img src=#{data.thumb_link} alt='#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
       $.after (if isOP then $('.postInfoM', p) else $('.postInfo', p)), file
 
 

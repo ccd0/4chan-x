@@ -469,6 +469,16 @@
       });
       $.add(d.head, script);
       return $.rm(script);
+    },
+    bytesToString: function(size) {
+      var unit;
+      unit = 0;
+      while (size >= 1024) {
+        size /= 1024;
+        unit++;
+      }
+      size = unit > 1 ? Math.round(a * 100) / 100 : Math.round(size);
+      return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
     }
   });
 
@@ -3058,7 +3068,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, data, date, email, file, filesize, isOP, nameBlock, p, pc, pi, piM, span, time, unit;
+      var bq, data, date, email, file, filesize, isOP, nameBlock, p, pc, pi, piM, span, time;
       data = JSON.parse(req.response);
       if (data.error) {
         root.textContent = data.error;
@@ -3182,16 +3192,10 @@
           id: "f" + postID,
           className: 'file'
         });
-        filesize = data.media_size;
-        unit = 0;
-        while (filesize >= 1024) {
-          filesize /= 1024;
-          unit++;
-        }
-        filesize = unit > 1 ? (a * 100).toFixed() / 100 : filesize.toFixed();
+        filesize = $.bytesToString(data.media_size);
         $.add(file, $.el('div', {
           className: 'fileInfo',
-          innerHTML: "<span id=fT" + postID + " class=fileText>File: <a href='" + (data.media_link || data.remote_media_link) + "' target=_blank>" + data.media_orig + "</a>-(" + filesize + " " + ['B', 'KB', 'MB', 'GB'][unit] + ", " + data.media_w + "x" + data.media_h + ", <span title></span>)</span>"
+          innerHTML: "<span id=fT" + postID + " class=fileText>File: <a href='" + (data.media_link || data.remote_media_link) + "' target=_blank>" + data.media_orig + "</a>-(" + filesize + ", " + data.media_w + "x" + data.media_h + ", <span title></span>)</span>"
         }));
         span = $('span[title]', file);
         span.title = data.media_filename;
@@ -3200,7 +3204,7 @@
           className: 'fileThumb',
           href: data.media_link || data.remote_media_link,
           target: '_blank',
-          innerHTML: "<img src=" + data.thumb_link + " alt='" + (data.spoiler === '1' ? 'Spoiler Image, ' : '') + filesize + " " + ['B', 'KB', 'MB', 'GB'][unit] + "' data-md5=" + data.media_hash + " style='height: " + data.preview_h + "px; width: " + data.preview_w + "px;'>"
+          innerHTML: "<img src=" + data.thumb_link + " alt='" + (data.spoiler === '1' ? 'Spoiler Image, ' : '') + filesize + "' data-md5=" + data.media_hash + " style='height: " + data.preview_h + "px; width: " + data.preview_w + "px;'>"
         }));
         $.after((isOP ? $('.postInfoM', p) : $('.postInfo', p)), file);
       }
