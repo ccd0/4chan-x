@@ -1985,7 +1985,7 @@
       return QR.el.dispatchEvent(e);
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, data, err, m, opts, post, reply, response, threadID;
+      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, threadID;
       if (e != null) {
         e.preventDefault();
       }
@@ -2052,7 +2052,6 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
-      data = $.formData(post);
       callbacks = {
         onload: function() {
           return QR.response(this.response);
@@ -2067,7 +2066,7 @@
         }
       };
       opts = {
-        form: data,
+        form: $.formData(post),
         upCallbacks: {
           onload: function() {
             return QR.status({

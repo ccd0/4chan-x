@@ -1555,8 +1555,6 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
-    data = $.formData post
-
     callbacks =
       onload: ->
         QR.response @response
@@ -1569,7 +1567,7 @@ QR =
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
     opts =
-      form: data
+      form: $.formData post
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
