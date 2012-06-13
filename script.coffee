@@ -6,6 +6,7 @@ Config =
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
       'Report Button':                [true,  'Add report buttons']
+      'Delete Button':                [false, 'Add delete buttons']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
@@ -265,15 +266,24 @@ $.extend $,
       cb JSON.parse e.newValue if e.key is "#{Main.namespace}#{key}"
   id: (id) ->
     d.getElementById id
+  formData: (arg) ->
+    if arg instanceof HTMLFormElement
+      fd = new FormData arg
+    else
+      fd = new FormData()
+      for key, val of arg
+        fd.append key, val if val
+    fd
   ajax: (url, callbacks, opts={}) ->
     {type, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
-    r.open type or 'get', url, true
+    type or= form and 'post' or 'get'
+    r.open type, url, true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    if typeof form is 'string' then r.sendAsBinary form else r.send form
+    r.send form
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -554,7 +564,9 @@ StrikethroughQuotes =
     for quote in post.quotes
       if (el = $.id quote.hash[1..]) and el.hidden
         $.addClass quote, 'filtered'
-        ReplyHiding.hide post.root if Conf['Recursive Filtering']
+        if Conf['Recursive Filtering']
+          show_stub = !!$.x 'preceding-sibling::div[contains(@class,"stub")]', el
+          ReplyHiding.hide post.root, show_stub
     return
 
 ExpandComment =
@@ -905,6 +917,11 @@ Keybinds =
     # Move the caret to the end of the selection.
     ta.setSelectionRange range, range
 
+    # Fire the 'input' event
+    e = d.createEvent 'Event'
+    e.initEvent 'input', true, false
+    ta.dispatchEvent e
+
   img: (thread, all) ->
     if all
       $.id('imageExpand').click()
@@ -1134,15 +1151,16 @@ QR =
     ta = $ 'textarea', QR.el
     caretPos = ta.selectionStart
     # Replace selection for text.
-    # onchange event isn't triggered, save value.
-    QR.selected.el.lastChild.textContent =
-      QR.selected.com =
-        ta.value =
-          ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
+    ta.value = ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
     ta.focus()
     # Move the caret to the end of the new quote.
     range = caretPos + text.length
     ta.setSelectionRange range, range
+
+    # Fire the 'input' event
+    e = d.createEvent 'Event'
+    e.initEvent 'input', true, false
+    ta.dispatchEvent e
 
   drag: (e) ->
     # Let it drag anything from the page.
@@ -1358,7 +1376,8 @@ QR =
       @reload()
     load: ->
       # Timeout is available at RecaptchaState.timeout in seconds.
-      @timeout  = Date.now() + 26*$.MINUTE
+      # We use 5-1 minutes to give upload some time.
+      @timeout  = Date.now() + 4*$.MINUTE
       challenge = @challenge.firstChild.value
       @img.alt  = challenge
       @img.src  = "//www.google.com/recaptcha/api/image?c=#{challenge}"
@@ -1540,10 +1559,6 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
-    form = new FormData()
-    for name, val of post
-      form.append name, val if val
-
     callbacks =
       onload: ->
         QR.response @response
@@ -1556,8 +1571,7 @@ QR =
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
     opts =
-      form: form
-      type: 'POST'
+      form: $.formData post
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
@@ -1824,7 +1838,8 @@ Options =
     $.on dialog,  'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
     $.add d.body, overlay
-    d.body.style.setProperty 'overflow', 'hidden', null
+    d.body.style.setProperty 'width', "#{d.body.clientWidth}px", null
+    $.addClass d.body, 'unscroll'
 
     Options.backlink.call back
     Options.time.call     time
@@ -1833,7 +1848,8 @@ Options =
 
   close: ->
     $.rm this
-    d.body.style.removeProperty 'overflow'
+    d.body.style.removeProperty 'width'
+    $.rmClass d.body, 'unscroll'
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -1907,9 +1923,7 @@ Updater =
           # Required for the QR's update after posting.
           Conf[input.name] = input.checked
       else if input.name is 'Interval'
-        $.on input, 'input', ->
-          @value = parseInt(@value, 10) or Conf['Interval']
-          $.cb.value.call @
+        $.on input, 'input', @cb.interval
       else if input.type is 'button'
         $.on input, 'click', @update
 
@@ -1919,6 +1933,10 @@ Updater =
     @lastModified = 0
 
   cb:
+    interval: ->
+      val = parseInt @value, 10
+      @value = if val > 0 then val else 1
+      $.cb.value.call @
     verbose: ->
       if Conf['Verbose']
         Updater.count.textContent = '+0'
@@ -2796,6 +2814,58 @@ Quotify =
       $.replace node, nodes
     return
 
+DeleteButton =
+  init: ->
+    @a = $.el 'a',
+      className: 'delete_button'
+      innerHTML: '[&nbsp;&times;&nbsp;]'
+      href: 'javascript:;'
+    Main.callbacks.push @node
+  node: (post) ->
+    unless a = $ '.delete_button', post.el
+      a = DeleteButton.a.cloneNode true
+      $.add $('.postInfo', post.el), a
+    $.on a, 'click', DeleteButton.delete
+  delete: ->
+    $.off @, 'click', DeleteButton.delete
+    @textContent = 'Deleting...'
+
+    if m = d.cookie.match /4chan_pass=([^;]+)/
+      pwd = decodeURIComponent m[1]
+    else
+      pwd = $.id('delPassword').value
+    id = $.x('preceding-sibling::input', @).name
+    board = $.x('preceding-sibling::span[1]/a', @).pathname.match(/\w+/)[0]
+    self = this
+
+    o =
+      mode: 'usrdel'
+      pwd: pwd
+    o[id] = 'delete'
+    form = $.formData o
+
+    $.ajax "https://sys.4chan.org/#{board}/imgboard.php", {
+        onload:  -> DeleteButton.load  self, @response
+        onerror: -> DeleteButton.error self
+      }, {
+        form: form
+      }
+
+  load: (self, html) ->
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = html
+    if doc.title is '4chan - Banned' # Ban/warn check
+      s = 'Banned!'
+    else if msg = doc.getElementById 'errmsg' # error!
+      s = msg.textContent
+      $.on self, 'click', DeleteButton.delete
+    else
+      s = 'Deleted'
+    self.innerHTML = "[&nbsp;#{s}&nbsp;]"
+  error: (self) ->
+    self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]'
+    $.on self, 'click', DeleteButton.delete
+
 ReportButton =
   init: ->
     @a = $.el 'a',
@@ -2822,7 +2892,7 @@ ThreadStats =
     @posts = @images = 0
     @imgLimit =
       switch g.BOARD
-        when 'a', 'b', 'mlp', 'v'
+        when 'a', 'b', 'v', 'co', 'mlp'
           251
         when 'vg'
           501
@@ -3052,7 +3122,7 @@ ImageHover =
 
 AutoGif =
   init: ->
-    return if g.BOARD is 'gif'
+    return if g.BOARD in ['gif', 'wsg']
     Main.callbacks.push @node
   node: (post) ->
     {img} = post
@@ -3277,6 +3347,9 @@ Main =
     if Conf['Report Button']
       ReportButton.init()
 
+    if Conf['Delete Button']
+      DeleteButton.init()
+
     if Conf['Resurrect Quotes']
       Quotify.init()
 
@@ -3444,7 +3517,7 @@ Main =
     $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.31.5'
+  version: '2.32.1'
   callbacks: []
   css: '
 /* dialog styling */
@@ -3710,6 +3783,13 @@ textarea.field {
   right: 5px;
 }
 
+body {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+body.unscroll {
+  overflow: hidden;
+}
 #overlay {
   top: 0;
   right: 0;

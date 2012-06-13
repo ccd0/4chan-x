@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.31.5
+// @version        2.32.1
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.31.5
+ * 4chan X 2.32.1
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, DeleteButton, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -82,6 +82,7 @@
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
         'Report Button': [true, 'Add report buttons'],
+        'Delete Button': [false, 'Add delete buttons'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -310,6 +311,21 @@
     id: function(id) {
       return d.getElementById(id);
     },
+    formData: function(arg) {
+      var fd, key, val;
+      if (arg instanceof HTMLFormElement) {
+        fd = new FormData(arg);
+      } else {
+        fd = new FormData();
+        for (key in arg) {
+          val = arg[key];
+          if (val) {
+            fd.append(key, val);
+          }
+        }
+      }
+      return fd;
+    },
     ajax: function(url, callbacks, opts) {
       var form, headers, key, r, type, upCallbacks, val;
       if (opts == null) {
@@ -317,18 +333,15 @@
       }
       type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
       r = new XMLHttpRequest();
-      r.open(type || 'get', url, true);
+      type || (type = form && 'post' || 'get');
+      r.open(type, url, true);
       for (key in headers) {
         val = headers[key];
         r.setRequestHeader(key, val);
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
-      if (typeof form === 'string') {
-        r.sendAsBinary(form);
-      } else {
-        r.send(form);
-      }
+      r.send(form);
       return r;
     },
     cache: function(url, cb) {
@@ -706,7 +719,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var el, quote, _i, _len, _ref;
+      var el, quote, show_stub, _i, _len, _ref;
       if (post.isInlined) {
         return;
       }
@@ -716,7 +729,8 @@
         if ((el = $.id(quote.hash.slice(1))) && el.hidden) {
           $.addClass(quote, 'filtered');
           if (Conf['Recursive Filtering']) {
-            ReplyHiding.hide(post.root);
+            show_stub = !!$.x('preceding-sibling::div[contains(@class,"stub")]', el);
+            ReplyHiding.hide(post.root, show_stub);
           }
         }
       }
@@ -1244,13 +1258,16 @@
       return key;
     },
     tags: function(tag, ta) {
-      var range, selEnd, selStart, value;
+      var e, range, selEnd, selStart, value;
       value = ta.value;
       selStart = ta.selectionStart;
       selEnd = ta.selectionEnd;
       ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
       range = ("[" + tag + "]").length + selEnd;
-      return ta.setSelectionRange(range, range);
+      ta.setSelectionRange(range, range);
+      e = d.createEvent('Event');
+      e.initEvent('input', true, false);
+      return ta.dispatchEvent(e);
     },
     img: function(thread, all) {
       var thumb;
@@ -1550,10 +1567,13 @@
       }
       ta = $('textarea', QR.el);
       caretPos = ta.selectionStart;
-      QR.selected.el.lastChild.textContent = QR.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
+      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       ta.focus();
       range = caretPos + text.length;
-      return ta.setSelectionRange(range, range);
+      ta.setSelectionRange(range, range);
+      e = d.createEvent('Event');
+      e.initEvent('input', true, false);
+      return ta.dispatchEvent(e);
     },
     drag: function(e) {
       var i;
@@ -1834,7 +1854,7 @@
       },
       load: function() {
         var challenge;
-        this.timeout = Date.now() + 26 * $.MINUTE;
+        this.timeout = Date.now() + 4 * $.MINUTE;
         challenge = this.challenge.firstChild.value;
         this.img.alt = challenge;
         this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
@@ -1973,7 +1993,7 @@
       return QR.el.dispatchEvent(e);
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, form, m, name, opts, post, reply, response, threadID, val;
+      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, threadID;
       if (e != null) {
         e.preventDefault();
       }
@@ -2040,13 +2060,6 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
-      form = new FormData();
-      for (name in post) {
-        val = post[name];
-        if (val) {
-          form.append(name, val);
-        }
-      }
       callbacks = {
         onload: function() {
           return QR.response(this.response);
@@ -2061,8 +2074,7 @@
         }
       };
       opts = {
-        form: form,
-        type: 'POST',
+        form: $.formData(post),
         upCallbacks: {
           onload: function() {
             return QR.status({
@@ -2356,7 +2368,8 @@
       });
       $.add(overlay, dialog);
       $.add(d.body, overlay);
-      d.body.style.setProperty('overflow', 'hidden', null);
+      d.body.style.setProperty('width', "" + d.body.clientWidth + "px", null);
+      $.addClass(d.body, 'unscroll');
       Options.backlink.call(back);
       Options.time.call(time);
       Options.fileInfo.call(fileInfo);
@@ -2364,7 +2377,8 @@
     },
     close: function() {
       $.rm(this);
-      return d.body.style.removeProperty('overflow');
+      d.body.style.removeProperty('width');
+      return $.rmClass(d.body, 'unscroll');
     },
     clearHidden: function() {
       $["delete"]("hiddenReplies/" + g.BOARD + "/");
@@ -2447,10 +2461,7 @@
             Conf[input.name] = input.checked;
           }
         } else if (input.name === 'Interval') {
-          $.on(input, 'input', function() {
-            this.value = parseInt(this.value, 10) || Conf['Interval'];
-            return $.cb.value.call(this);
-          });
+          $.on(input, 'input', this.cb.interval);
         } else if (input.type === 'button') {
           $.on(input, 'click', this.update);
         }
@@ -2460,6 +2471,12 @@
       return this.lastModified = 0;
     },
     cb: {
+      interval: function() {
+        var val;
+        val = parseInt(this.value, 10);
+        this.value = val > 0 ? val : 1;
+        return $.cb.value.call(this);
+      },
       verbose: function() {
         if (Conf['Verbose']) {
           Updater.count.textContent = '+0';
@@ -3594,6 +3611,72 @@
     }
   };
 
+  DeleteButton = {
+    init: function() {
+      this.a = $.el('a', {
+        className: 'delete_button',
+        innerHTML: '[&nbsp;&times;&nbsp;]',
+        href: 'javascript:;'
+      });
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var a;
+      if (!(a = $('.delete_button', post.el))) {
+        a = DeleteButton.a.cloneNode(true);
+        $.add($('.postInfo', post.el), a);
+      }
+      return $.on(a, 'click', DeleteButton["delete"]);
+    },
+    "delete": function() {
+      var board, form, id, m, o, pwd, self;
+      $.off(this, 'click', DeleteButton["delete"]);
+      this.textContent = 'Deleting...';
+      if (m = d.cookie.match(/4chan_pass=([^;]+)/)) {
+        pwd = decodeURIComponent(m[1]);
+      } else {
+        pwd = $.id('delPassword').value;
+      }
+      id = $.x('preceding-sibling::input', this).name;
+      board = $.x('preceding-sibling::span[1]/a', this).pathname.match(/\w+/)[0];
+      self = this;
+      o = {
+        mode: 'usrdel',
+        pwd: pwd
+      };
+      o[id] = 'delete';
+      form = $.formData(o);
+      return $.ajax("https://sys.4chan.org/" + board + "/imgboard.php", {
+        onload: function() {
+          return DeleteButton.load(self, this.response);
+        },
+        onerror: function() {
+          return DeleteButton.error(self);
+        }
+      }, {
+        form: form
+      });
+    },
+    load: function(self, html) {
+      var doc, msg, s;
+      doc = d.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = html;
+      if (doc.title === '4chan - Banned') {
+        s = 'Banned!';
+      } else if (msg = doc.getElementById('errmsg')) {
+        s = msg.textContent;
+        $.on(self, 'click', DeleteButton["delete"]);
+      } else {
+        s = 'Deleted';
+      }
+      return self.innerHTML = "[&nbsp;" + s + "&nbsp;]";
+    },
+    error: function(self) {
+      self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]';
+      return $.on(self, 'click', DeleteButton["delete"]);
+    }
+  };
+
   ReportButton = {
     init: function() {
       this.a = $.el('a', {
@@ -3631,8 +3714,9 @@
         switch (g.BOARD) {
           case 'a':
           case 'b':
-          case 'mlp':
           case 'v':
+          case 'co':
+          case 'mlp':
             return 251;
           case 'vg':
             return 501;
@@ -3947,7 +4031,8 @@
 
   AutoGif = {
     init: function() {
-      if (g.BOARD === 'gif') {
+      var _ref;
+      if ((_ref = g.BOARD) === 'gif' || _ref === 'wsg') {
         return;
       }
       return Main.callbacks.push(this.node);
@@ -4244,6 +4329,9 @@
       if (Conf['Report Button']) {
         ReportButton.init();
       }
+      if (Conf['Delete Button']) {
+        DeleteButton.init();
+      }
       if (Conf['Resurrect Quotes']) {
         Quotify.init();
       }
@@ -4471,7 +4559,7 @@
       return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '2.31.5',
+    version: '2.32.1',
     callbacks: [],
     css: '\
 /* dialog styling */\
@@ -4737,6 +4825,13 @@ textarea.field {\
   right: 5px;\
 }\
 \
+body {\
+  box-sizing: border-box;\
+  -moz-box-sizing: border-box;\
+}\
+body.unscroll {\
+  overflow: hidden;\
+}\
 #overlay {\
   top: 0;\
   right: 0;\

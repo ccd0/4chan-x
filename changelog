@@ -1,5 +1,19 @@
 master
 
+2.32.1
+- Mayhem
+  Fix images uploaded as spoilers.
+
+2.32.0
+- aeosynth
+  delete button
+- Mayhem
+  Fix spoiler/code tag keybinds being ignored on post submission.
+
+2.31.6
+- Mayhem
+  Update captcha longevity to 5 minutes max, as according to 4chan's change.
+
 2.31.5
 - Mayhem
   Fix spoiler and code tag keybinds regression.
