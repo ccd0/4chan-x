@@ -2634,10 +2634,11 @@ DeleteButton =
     board = $.x('preceding-sibling::span[1]/a', @).pathname.match(/\w+/)[0]
     self = this
 
-    form = new FormData()
-    form.append id, 'delete'
-    form.append 'mode', 'usrdel'
-    form.append 'pwd', pwd
+    o =
+      mode: 'usrdel'
+      pwd: pwd
+    o[id] = 'delete'
+    form = $.formData o
 
     $.ajax "https://sys.4chan.org/#{board}/imgboard.php", {
         onload:  -> DeleteButton.load  self, @response
