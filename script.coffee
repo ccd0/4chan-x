@@ -3314,7 +3314,7 @@ Main =
     $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.31.6'
+  version: '2.32.0'
   callbacks: []
   css: '
 /* dialog styling */
