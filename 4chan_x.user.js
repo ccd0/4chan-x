@@ -3423,7 +3423,7 @@
     init: function() {
       this.a = $.el('a', {
         className: 'delete_button',
-        innerHTML: '&times;',
+        innerHTML: '[&nbsp;&times;&nbsp;]',
         href: 'javascript:;'
       });
       return Main.callbacks.push(this.node);
@@ -3462,26 +3462,25 @@
           return DeleteButton.error(self);
         }
       }, {
-        type: 'post',
         form: form
       });
     },
     load: function(self, html) {
-      var doc, msg, tc;
+      var doc, msg, s;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
-        tc = 'Banned!';
+        s = 'Banned!';
       } else if (msg = doc.getElementById('errmsg')) {
-        tc = msg.textContent;
+        s = msg.textContent;
         $.on(self, 'click', DeleteButton["delete"]);
       } else {
-        tc = 'Deleted';
+        s = 'Deleted';
       }
-      return self.textContent = tc;
+      return self.innerHTML = "[&nbsp;" + s + "&nbsp;]";
     },
     error: function(self) {
-      self.textContent = 'Connection error, please retry.';
+      self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]';
       return $.on(self, 'click', DeleteButton["delete"]);
     }
   };
@@ -4747,13 +4746,6 @@ div.opContainer {\
 .backlink.forwardlink {\
   text-decoration: none;\
   border-bottom: 1px dashed;\
-}\
-/* \\00A0 is nbsp */\
-.delete_button::before {\
-  content: "[\\00a0"\
-}\
-.delete_button::after {\
-  content: "\\00a0]"\
 }\
 '
   };
