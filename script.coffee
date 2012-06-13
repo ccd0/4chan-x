@@ -279,15 +279,15 @@ $.extend $,
         fd.append key, val
     fd
   ajax: (url, callbacks, opts={}) ->
-    {type, headers, upCallbacks, form} = opts
+    {type, headers, upCallbacks, data} = opts
     r = new XMLHttpRequest()
-    type or= form and 'post' or 'get'
+    type or= data and 'post' or 'get'
     r.open type, url, true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    r.send form
+    r.send data
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -1583,7 +1583,7 @@ QR =
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
     opts =
-      form: $.formData post
+      data: $.formData post
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
@@ -2722,7 +2722,7 @@ DeleteButton =
     $.on a, 'click', DeleteButton.delete
   delete: ->
     $.off @, 'click', DeleteButton.delete
-    @textContent = 'Deleting...'
+    @innerHTML = '[&nbsp;Deleting...&nbsp;]'
 
     if m = d.cookie.match /4chan_pass=([^;]+)/
       pwd = decodeURIComponent m[1]
@@ -2730,20 +2730,21 @@ DeleteButton =
       pwd = $.id('delPassword').value
     id = $.x('preceding-sibling::input', @).name
     board = $.x('preceding-sibling::span[1]/a', @).pathname.match(/\w+/)[0]
-    self = this
+    self = @
+
+    url = "https://sys.4chan.org/#{board}/imgboard.php"
+
+    callbacks =
+      onload:  -> DeleteButton.load  self, @response
+      onerror: -> DeleteButton.error self
 
     o =
       mode: 'usrdel'
       pwd: pwd
     o[id] = 'delete'
-    form = $.formData o
+    opts = data: $.formData o
 
-    $.ajax "https://sys.4chan.org/#{board}/imgboard.php", {
-        onload:  -> DeleteButton.load  self, @response
-        onerror: -> DeleteButton.error self
-      }, {
-        form: form
-      }
+    $.ajax url, callbacks, opts
 
   load: (self, html) ->
     doc = d.implementation.createHTMLDocument ''

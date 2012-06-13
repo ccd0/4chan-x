@@ -333,13 +333,13 @@
       return fd;
     },
     ajax: function(url, callbacks, opts) {
-      var form, headers, key, r, type, upCallbacks, val;
+      var data, headers, key, r, type, upCallbacks, val;
       if (opts == null) {
         opts = {};
       }
-      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
+      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, data = opts.data;
       r = new XMLHttpRequest();
-      type || (type = form && 'post' || 'get');
+      type || (type = data && 'post' || 'get');
       r.open(type, url, true);
       for (key in headers) {
         val = headers[key];
@@ -347,7 +347,7 @@
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
-      r.send(form);
+      r.send(data);
       return r;
     },
     cache: function(url, cb) {
@@ -2096,7 +2096,7 @@
         }
       };
       opts = {
-        form: $.formData(post),
+        data: $.formData(post),
         upCallbacks: {
           onload: function() {
             return QR.status({
@@ -3586,9 +3586,9 @@
       return $.on(a, 'click', DeleteButton["delete"]);
     },
     "delete": function() {
-      var board, form, id, m, o, pwd, self;
+      var board, callbacks, id, m, o, opts, pwd, self, url;
       $.off(this, 'click', DeleteButton["delete"]);
-      this.textContent = 'Deleting...';
+      this.innerHTML = '[&nbsp;Deleting...&nbsp;]';
       if (m = d.cookie.match(/4chan_pass=([^;]+)/)) {
         pwd = decodeURIComponent(m[1]);
       } else {
@@ -3597,22 +3597,24 @@
       id = $.x('preceding-sibling::input', this).name;
       board = $.x('preceding-sibling::span[1]/a', this).pathname.match(/\w+/)[0];
       self = this;
-      o = {
-        mode: 'usrdel',
-        pwd: pwd
-      };
-      o[id] = 'delete';
-      form = $.formData(o);
-      return $.ajax("https://sys.4chan.org/" + board + "/imgboard.php", {
+      url = "https://sys.4chan.org/" + board + "/imgboard.php";
+      callbacks = {
         onload: function() {
           return DeleteButton.load(self, this.response);
         },
         onerror: function() {
           return DeleteButton.error(self);
         }
-      }, {
-        form: form
-      });
+      };
+      o = {
+        mode: 'usrdel',
+        pwd: pwd
+      };
+      o[id] = 'delete';
+      opts = {
+        data: $.formData(o)
+      };
+      return $.ajax(url, callbacks, opts);
     },
     load: function(self, html) {
       var doc, msg, s;
