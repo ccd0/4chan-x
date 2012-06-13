@@ -311,6 +311,19 @@
     id: function(id) {
       return d.getElementById(id);
     },
+    formData: function(arg) {
+      var fd, key, val;
+      if (arg instanceof HTMLFormElement) {
+        fd = new FormData(arg);
+      } else {
+        fd = new FormData();
+        for (key in arg) {
+          val = arg[key];
+          fd.append(key, val);
+        }
+      }
+      return fd;
+    },
     ajax: function(url, callbacks, opts) {
       var form, headers, key, r, type, upCallbacks, val;
       if (opts == null) {
@@ -318,18 +331,15 @@
       }
       type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
       r = new XMLHttpRequest();
-      r.open(type || 'get', url, true);
+      type || (type = form && 'post' || 'get');
+      r.open(type, url, true);
       for (key in headers) {
         val = headers[key];
         r.setRequestHeader(key, val);
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
-      if (typeof form === 'string') {
-        r.sendAsBinary(form);
-      } else {
-        r.send(form);
-      }
+      r.send(form);
       return r;
     },
     cache: function(url, cb) {
@@ -1976,7 +1986,7 @@
       return QR.el.dispatchEvent(e);
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, form, m, name, opts, post, reply, response, threadID, val;
+      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, threadID;
       if (e != null) {
         e.preventDefault();
       }
@@ -2043,13 +2053,6 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
-      form = new FormData();
-      for (name in post) {
-        val = post[name];
-        if (val) {
-          form.append(name, val);
-        }
-      }
       callbacks = {
         onload: function() {
           return QR.response(this.response);
@@ -2064,8 +2067,7 @@
         }
       };
       opts = {
-        form: form,
-        type: 'POST',
+        form: $.formData(post),
         upCallbacks: {
           onload: function() {
             return QR.status({
