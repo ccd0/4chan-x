@@ -1254,13 +1254,16 @@
       return key;
     },
     tags: function(tag, ta) {
-      var range, selEnd, selStart, value;
+      var e, range, selEnd, selStart, value;
       value = ta.value;
       selStart = ta.selectionStart;
       selEnd = ta.selectionEnd;
       ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
       range = ("[" + tag + "]").length + selEnd;
-      return ta.setSelectionRange(range, range);
+      ta.setSelectionRange(range, range);
+      e = d.createEvent('Event');
+      e.initEvent('input', true, false);
+      return ta.dispatchEvent(e);
     },
     img: function(thread, all) {
       var thumb;
@@ -1560,10 +1563,13 @@
       }
       ta = $('textarea', QR.el);
       caretPos = ta.selectionStart;
-      QR.selected.el.lastChild.textContent = QR.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
+      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       ta.focus();
       range = caretPos + text.length;
-      return ta.setSelectionRange(range, range);
+      ta.setSelectionRange(range, range);
+      e = d.createEvent('Event');
+      e.initEvent('input', true, false);
+      return ta.dispatchEvent(e);
     },
     drag: function(e) {
       var i;

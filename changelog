@@ -1,4 +1,6 @@
 master
+- Mayhem
+  Fix spoiler/code tag keybinds being ignored on post submission.
 
 2.31.6
 - Mayhem

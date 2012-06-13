@@ -914,6 +914,11 @@ Keybinds =
     # Move the caret to the end of the selection.
     ta.setSelectionRange range, range
 
+    # Fire the 'input' event
+    e = d.createEvent 'Event'
+    e.initEvent 'input', true, false
+    ta.dispatchEvent e
+
   img: (thread, all) ->
     if all
       $.id('imageExpand').click()
@@ -1143,15 +1148,16 @@ QR =
     ta = $ 'textarea', QR.el
     caretPos = ta.selectionStart
     # Replace selection for text.
-    # onchange event isn't triggered, save value.
-    QR.selected.el.lastChild.textContent =
-      QR.selected.com =
-        ta.value =
-          ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
+    ta.value = ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
     ta.focus()
     # Move the caret to the end of the new quote.
     range = caretPos + text.length
     ta.setSelectionRange range, range
+
+    # Fire the 'input' event
+    e = d.createEvent 'Event'
+    e.initEvent 'input', true, false
+    ta.dispatchEvent e
 
   drag: (e) ->
     # Let it drag anything from the page.
