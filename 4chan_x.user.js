@@ -3531,8 +3531,9 @@
         switch (g.BOARD) {
           case 'a':
           case 'b':
-          case 'mlp':
           case 'v':
+          case 'co':
+          case 'mlp':
             return 251;
           case 'vg':
             return 501;
