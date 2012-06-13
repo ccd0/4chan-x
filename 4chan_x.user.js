@@ -327,7 +327,9 @@
         fd = new FormData();
         for (key in arg) {
           val = arg[key];
-          fd.append(key, val);
+          if (val) {
+            fd.append(key, val);
+          }
         }
       }
       return fd;
@@ -728,7 +730,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var el, quote, _i, _len, _ref;
+      var el, quote, show_stub, _i, _len, _ref;
       if (post.isInlined) {
         return;
       }
@@ -738,7 +740,8 @@
         if ((el = $.id(quote.hash.slice(1))) && el.hidden) {
           $.addClass(quote, 'filtered');
           if (Conf['Recursive Filtering']) {
-            ReplyHiding.hide(post.root);
+            show_stub = !!$.x('preceding-sibling::div[contains(@class,"stub")]', el);
+            ReplyHiding.hide(post.root, show_stub);
           }
         }
       }
@@ -1273,13 +1276,16 @@
       return key;
     },
     tags: function(tag, ta) {
-      var range, selEnd, selStart, value;
+      var e, range, selEnd, selStart, value;
       value = ta.value;
       selStart = ta.selectionStart;
       selEnd = ta.selectionEnd;
       ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
       range = ("[" + tag + "]").length + selEnd;
-      return ta.setSelectionRange(range, range);
+      ta.setSelectionRange(range, range);
+      e = d.createEvent('Event');
+      e.initEvent('input', true, false);
+      return ta.dispatchEvent(e);
     },
     img: function(thread, all) {
       var thumb;
@@ -1590,10 +1596,13 @@
       }
       ta = $('textarea', QR.el);
       caretPos = ta.selectionStart;
-      QR.selected.el.lastChild.textContent = QR.selected.com = ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
+      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       ta.focus();
       range = caretPos + text.length;
-      return ta.setSelectionRange(range, range);
+      ta.setSelectionRange(range, range);
+      e = d.createEvent('Event');
+      e.initEvent('input', true, false);
+      return ta.dispatchEvent(e);
     },
     drag: function(e) {
       var i;
@@ -1878,9 +1887,7 @@
         challenge = this.challenge.firstChild.value;
         this.img.alt = challenge;
         this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
-        this.input.value = null;
-        clearTimeout(this.timeoutID);
-        return this.timeoutID = setTimeout(this.reload, 4 * $.MINUTE);
+        return this.input.value = null;
       },
       count: function(count) {
         this.input.placeholder = (function() {
@@ -3673,8 +3680,9 @@
         switch (g.BOARD) {
           case 'a':
           case 'b':
-          case 'mlp':
           case 'v':
+          case 'co':
+          case 'mlp':
             return 251;
           case 'vg':
             return 501;

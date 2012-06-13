@@ -1,9 +1,12 @@
 master
+- Mayhem
+  Fix images uploaded as spoilers.
+  Fix spoiler/code tag keybinds being ignored on post submission.
 
 3.10.0
 - aeosynth
   fix filter highlighting
-  add delete button
+  delete button
 
 3.9.5
 - Mayhem

@@ -276,7 +276,7 @@ $.extend $,
     else
       fd = new FormData()
       for key, val of arg
-        fd.append key, val
+        fd.append key, val if val
     fd
   ajax: (url, callbacks, opts={}) ->
     {type, headers, upCallbacks, data} = opts
@@ -566,7 +566,9 @@ StrikethroughQuotes =
     for quote in post.quotes
       if (el = $.id quote.hash[1..]) and el.hidden
         $.addClass quote, 'filtered'
-        ReplyHiding.hide post.root if Conf['Recursive Filtering']
+        if Conf['Recursive Filtering']
+          show_stub = !!$.x 'preceding-sibling::div[contains(@class,"stub")]', el
+          ReplyHiding.hide post.root, show_stub
     return
 
 ExpandComment =
@@ -925,6 +927,11 @@ Keybinds =
     # Move the caret to the end of the selection.
     ta.setSelectionRange range, range
 
+    # Fire the 'input' event
+    e = d.createEvent 'Event'
+    e.initEvent 'input', true, false
+    ta.dispatchEvent e
+
   img: (thread, all) ->
     if all
       $.id('imageExpand').click()
@@ -1159,15 +1166,16 @@ QR =
     ta = $ 'textarea', QR.el
     caretPos = ta.selectionStart
     # Replace selection for text.
-    # onchange event isn't triggered, save value.
-    QR.selected.el.lastChild.textContent =
-      QR.selected.com =
-        ta.value =
-          ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
+    ta.value = ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
     ta.focus()
     # Move the caret to the end of the new quote.
     range = caretPos + text.length
     ta.setSelectionRange range, range
+
+    # Fire the 'input' event
+    e = d.createEvent 'Event'
+    e.initEvent 'input', true, false
+    ta.dispatchEvent e
 
   drag: (e) ->
     # Let it drag anything from the page.
@@ -1382,18 +1390,13 @@ QR =
       @count captchas.length
       @reload()
     load: ->
-      # Timeout was available at RecaptchaState.timeout in seconds.
-      # Timeout is now set by moot: 5 minutes.
+      # Timeout is available at RecaptchaState.timeout in seconds.
       # We use 5-1 minutes to give upload some time.
       @timeout  = Date.now() + 4*$.MINUTE
       challenge = @challenge.firstChild.value
       @img.alt  = challenge
       @img.src  = "//www.google.com/recaptcha/api/image?c=#{challenge}"
       @input.value = null
-      # Refresh captchas every 4 minutes to avoid filling perished ones.
-      # This used to be done by the recaptcha script, but it doesn't take into account moot's custom value.
-      clearTimeout @timeoutID
-      @timeoutID = setTimeout @reload, 4*$.MINUTE
     count: (count) ->
       @input.placeholder = switch count
         when 0
@@ -2787,7 +2790,7 @@ ThreadStats =
     @posts = @images = 0
     @imgLimit =
       switch g.BOARD
-        when 'a', 'b', 'mlp', 'v'
+        when 'a', 'b', 'v', 'co', 'mlp'
           251
         when 'vg'
           501
