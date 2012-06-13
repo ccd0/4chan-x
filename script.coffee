@@ -2712,7 +2712,7 @@ DeleteButton =
   init: ->
     @a = $.el 'a',
       className: 'delete_button'
-      innerHTML: '[&nbsp;&times;&nbsp;]'
+      innerHTML: '[&nbsp;X&nbsp;]'
       href: 'javascript:;'
     Main.callbacks.push @node
   node: (post) ->
