@@ -265,15 +265,24 @@ $.extend $,
       cb JSON.parse e.newValue if e.key is "#{Main.namespace}#{key}"
   id: (id) ->
     d.getElementById id
+  formData: (arg) ->
+    if arg instanceof HTMLFormElement
+      fd = new FormData arg
+    else
+      fd = new FormData()
+      for key, val of arg
+        fd.append key, val
+    fd
   ajax: (url, callbacks, opts={}) ->
     {type, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
-    r.open type or 'get', url, true
+    type or= form and 'post' or 'get'
+    r.open type, url, true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    if typeof form is 'string' then r.sendAsBinary form else r.send form
+    r.send form
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -1546,10 +1555,6 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
-    form = new FormData()
-    for name, val of post
-      form.append name, val if val
-
     callbacks =
       onload: ->
         QR.response @response
@@ -1562,8 +1567,7 @@ QR =
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
     opts =
-      form: form
-      type: 'POST'
+      form: $.formData post
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
