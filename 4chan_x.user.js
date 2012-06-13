@@ -3474,6 +3474,7 @@
         tc = 'Banned!';
       } else if (msg = doc.getElementById('errmsg')) {
         tc = msg.textContent;
+        $.on(self, 'click', DeleteButton["delete"]);
       } else {
         tc = 'Deleted';
       }

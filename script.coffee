@@ -2655,6 +2655,7 @@ DeleteButton =
       tc = 'Banned!'
     else if msg = doc.getElementById 'errmsg' # error!
       tc = msg.textContent
+      $.on self, 'click', DeleteButton.delete
     else
       tc = 'Deleted'
     self.textContent = tc
