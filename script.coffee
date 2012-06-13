@@ -2614,7 +2614,7 @@ DeleteButton =
   init: ->
     @a = $.el 'a',
       className: 'delete_button'
-      innerHTML: '&times;'
+      innerHTML: '[&nbsp;&times;&nbsp;]'
       href: 'javascript:;'
     Main.callbacks.push @node
   node: (post) ->
@@ -2652,15 +2652,15 @@ DeleteButton =
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = html
     if doc.title is '4chan - Banned' # Ban/warn check
-      tc = 'Banned!'
+      s = 'Banned!'
     else if msg = doc.getElementById 'errmsg' # error!
-      tc = msg.textContent
+      s = msg.textContent
       $.on self, 'click', DeleteButton.delete
     else
-      tc = 'Deleted'
-    self.textContent = tc
+      s = 'Deleted'
+    self.innerHTML = "[&nbsp;#{s}&nbsp;]"
   error: (self) ->
-    self.textContent = 'Connection error, please retry.'
+    self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]'
     $.on self, 'click', DeleteButton.delete
 
 ReportButton =
@@ -3704,13 +3704,6 @@ div.opContainer {
 .backlink.forwardlink {
   text-decoration: none;
   border-bottom: 1px dashed;
-}
-/* \\00A0 is nbsp */
-.delete_button::before {
-  content: "[\\00a0"
-}
-.delete_button::after {
-  content: "\\00a0]"
 }
 '
 
