@@ -3476,7 +3476,8 @@
       return self.textContent = tc;
     },
     error: function(self) {
-      return self.textContent = 'Error';
+      self.textContent = 'Error';
+      return $.on('click', self, DeleteButton["delete"]);
     }
   };
 
