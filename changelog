@@ -1,4 +1,6 @@
 master
+
+3.10.1
 - Mayhem
   Fix images uploaded as spoilers.
   Fix spoiler/code tag keybinds being ignored on post submission.
