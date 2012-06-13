@@ -564,7 +564,9 @@ StrikethroughQuotes =
     for quote in post.quotes
       if (el = $.id quote.hash[1..]) and el.hidden
         $.addClass quote, 'filtered'
-        ReplyHiding.hide post.root if Conf['Recursive Filtering']
+        if Conf['Recursive Filtering']
+          show_stub = !!$.x 'preceding-sibling::div[contains(@class,"stub")]', el
+          ReplyHiding.hide post.root, show_stub
     return
 
 ExpandComment =

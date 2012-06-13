@@ -717,7 +717,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var el, quote, _i, _len, _ref;
+      var el, quote, show_stub, _i, _len, _ref;
       if (post.isInlined) {
         return;
       }
@@ -727,7 +727,8 @@
         if ((el = $.id(quote.hash.slice(1))) && el.hidden) {
           $.addClass(quote, 'filtered');
           if (Conf['Recursive Filtering']) {
-            ReplyHiding.hide(post.root);
+            show_stub = !!$.x('preceding-sibling::div[contains(@class,"stub")]', el);
+            ReplyHiding.hide(post.root, show_stub);
           }
         }
       }
