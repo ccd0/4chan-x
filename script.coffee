@@ -366,7 +366,7 @@ $.extend $,
       if unit > 1
         # Keep the size as a float if the size is greater than 2^20 B.
         # Round to hundredth.
-        Math.round(a * 100) / 100
+        Math.round(size * 100) / 100
       else
         # Round to an integer otherwise.
         Math.round size
@@ -1261,7 +1261,7 @@ QR =
 
       QR.replies.push @
     setFile: (@file) ->
-      @el.title = file.name
+      @el.title = "#{file.name} (#{$.bytesToString file.size})"
       $('label', @el).hidden = false if QR.spoiler
       if file.type is 'application/pdf'
         @el.style.backgroundImage = null

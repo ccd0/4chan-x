@@ -477,7 +477,7 @@
         size /= 1024;
         unit++;
       }
-      size = unit > 1 ? Math.round(a * 100) / 100 : Math.round(size);
+      size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
     }
   });
@@ -1692,7 +1692,7 @@
         var fileUrl, img, url,
           _this = this;
         this.file = file;
-        this.el.title = file.name;
+        this.el.title = "" + file.name + " (" + ($.bytesToString(file.size)) + ")";
         if (QR.spoiler) {
           $('label', this.el).hidden = false;
         }
