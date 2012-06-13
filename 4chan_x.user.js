@@ -72,7 +72,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, DeleteButton, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, GetTitle, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -82,6 +82,7 @@
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
         'Report Button': [true, 'Add report buttons'],
+        'Delete Button': [false, 'Add delete buttons'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -3424,6 +3425,72 @@
     }
   };
 
+  DeleteButton = {
+    init: function() {
+      this.a = $.el('a', {
+        className: 'delete_button',
+        innerHTML: '[&nbsp;&times;&nbsp;]',
+        href: 'javascript:;'
+      });
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var a;
+      if (!(a = $('.delete_button', post.el))) {
+        a = DeleteButton.a.cloneNode(true);
+        $.add($('.postInfo', post.el), a);
+      }
+      return $.on(a, 'click', DeleteButton["delete"]);
+    },
+    "delete": function() {
+      var board, form, id, m, o, pwd, self;
+      $.off(this, 'click', DeleteButton["delete"]);
+      this.textContent = 'Deleting...';
+      if (m = d.cookie.match(/4chan_pass=([^;]+)/)) {
+        pwd = decodeURIComponent(m[1]);
+      } else {
+        pwd = $.id('delPassword').value;
+      }
+      id = $.x('preceding-sibling::input', this).name;
+      board = $.x('preceding-sibling::span[1]/a', this).pathname.match(/\w+/)[0];
+      self = this;
+      o = {
+        mode: 'usrdel',
+        pwd: pwd
+      };
+      o[id] = 'delete';
+      form = $.formData(o);
+      return $.ajax("https://sys.4chan.org/" + board + "/imgboard.php", {
+        onload: function() {
+          return DeleteButton.load(self, this.response);
+        },
+        onerror: function() {
+          return DeleteButton.error(self);
+        }
+      }, {
+        form: form
+      });
+    },
+    load: function(self, html) {
+      var doc, msg, s;
+      doc = d.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = html;
+      if (doc.title === '4chan - Banned') {
+        s = 'Banned!';
+      } else if (msg = doc.getElementById('errmsg')) {
+        s = msg.textContent;
+        $.on(self, 'click', DeleteButton["delete"]);
+      } else {
+        s = 'Deleted';
+      }
+      return self.innerHTML = "[&nbsp;" + s + "&nbsp;]";
+    },
+    error: function(self) {
+      self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]';
+      return $.on(self, 'click', DeleteButton["delete"]);
+    }
+  };
+
   ReportButton = {
     init: function() {
       this.a = $.el('a', {
@@ -4060,6 +4127,9 @@
       }
       if (Conf['Report Button']) {
         ReportButton.init();
+      }
+      if (Conf['Delete Button']) {
+        DeleteButton.init();
       }
       if (Conf['Resurrect Quotes']) {
         Quotify.init();

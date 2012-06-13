@@ -1,4 +1,6 @@
 master
+- aeosynth
+  delete button
 - Mayhem
   Fix spoiler/code tag keybinds being ignored on post submission.
 

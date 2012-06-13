@@ -6,6 +6,7 @@ Config =
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
       'Report Button':                [true,  'Add report buttons']
+      'Delete Button':                [false, 'Add delete buttons']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
@@ -2615,6 +2616,58 @@ Quotify =
       $.replace node, nodes
     return
 
+DeleteButton =
+  init: ->
+    @a = $.el 'a',
+      className: 'delete_button'
+      innerHTML: '[&nbsp;&times;&nbsp;]'
+      href: 'javascript:;'
+    Main.callbacks.push @node
+  node: (post) ->
+    unless a = $ '.delete_button', post.el
+      a = DeleteButton.a.cloneNode true
+      $.add $('.postInfo', post.el), a
+    $.on a, 'click', DeleteButton.delete
+  delete: ->
+    $.off @, 'click', DeleteButton.delete
+    @textContent = 'Deleting...'
+
+    if m = d.cookie.match /4chan_pass=([^;]+)/
+      pwd = decodeURIComponent m[1]
+    else
+      pwd = $.id('delPassword').value
+    id = $.x('preceding-sibling::input', @).name
+    board = $.x('preceding-sibling::span[1]/a', @).pathname.match(/\w+/)[0]
+    self = this
+
+    o =
+      mode: 'usrdel'
+      pwd: pwd
+    o[id] = 'delete'
+    form = $.formData o
+
+    $.ajax "https://sys.4chan.org/#{board}/imgboard.php", {
+        onload:  -> DeleteButton.load  self, @response
+        onerror: -> DeleteButton.error self
+      }, {
+        form: form
+      }
+
+  load: (self, html) ->
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = html
+    if doc.title is '4chan - Banned' # Ban/warn check
+      s = 'Banned!'
+    else if msg = doc.getElementById 'errmsg' # error!
+      s = msg.textContent
+      $.on self, 'click', DeleteButton.delete
+    else
+      s = 'Deleted'
+    self.innerHTML = "[&nbsp;#{s}&nbsp;]"
+  error: (self) ->
+    self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]'
+    $.on self, 'click', DeleteButton.delete
+
 ReportButton =
   init: ->
     @a = $.el 'a',
@@ -3091,6 +3144,9 @@ Main =
 
     if Conf['Report Button']
       ReportButton.init()
+
+    if Conf['Delete Button']
+      DeleteButton.init()
 
     if Conf['Resurrect Quotes']
       Quotify.init()
