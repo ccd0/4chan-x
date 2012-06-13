@@ -2659,8 +2659,8 @@ DeleteButton =
       tc = 'Deleted'
     self.textContent = tc
   error: (self) ->
-    self.textContent = 'Error'
-    $.on 'click', self, DeleteButton.delete
+    self.textContent = 'Connection error, retrying...'
+    DeleteButton.delete.call self
 
 ReportButton =
   init: ->

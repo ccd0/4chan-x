@@ -3480,8 +3480,8 @@
       return self.textContent = tc;
     },
     error: function(self) {
-      self.textContent = 'Error';
-      return $.on('click', self, DeleteButton["delete"]);
+      self.textContent = 'Connection error, retrying...';
+      return DeleteButton["delete"].call(self);
     }
   };
 
