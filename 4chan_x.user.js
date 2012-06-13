@@ -3345,12 +3345,6 @@
     },
     add: function(q, id) {
       var board, el, i, inline, isBacklink, path, postID, root, threadID;
-      if (!(isBacklink = /\bbacklink\b/.test(q.className))) {
-        root = q;
-        while (root.parentNode.nodeName !== 'BLOCKQUOTE') {
-          root = root.parentNode;
-        }
-      }
       if (q.host === 'boards.4chan.org') {
         path = q.pathname.split('/');
         board = path[1];
@@ -3366,7 +3360,8 @@
         id: "i" + postID,
         className: el ? 'inline' : 'inline crosspost'
       });
-      $.after((isBacklink ? q.parentNode : root), inline);
+      root = (isBacklink = /\bbacklink\b/.test(q.className)) ? q.parentNode : $.x('ancestor::*[parent::blockquote][1]', q);
+      $.after(root, inline);
       Get.post(board, threadID, postID, inline);
       if (!el) {
         return;
@@ -3424,7 +3419,7 @@
       }
     },
     mouseover: function(e) {
-      var board, el, parent, path, postID, qp, quote, quoterID, threadID, _i, _len, _ref;
+      var board, el, path, postID, qp, quote, quoterID, threadID, _i, _len, _ref;
       if (/\binlined\b/.test(this.className)) {
         return;
       }
@@ -3489,11 +3484,7 @@
             $.addClass(el, 'qphl');
           }
         }
-        parent = this.parentNode;
-        while (!parent.id) {
-          parent = parent.parentNode;
-        }
-        quoterID = parent.id.match(/\d+$/)[0];
+        quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
         _ref = $$('.quotelink, .backlink', qp);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];

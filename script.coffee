@@ -2598,13 +2598,6 @@ QuoteInline =
     @classList.toggle 'inlined'
 
   add: (q, id) ->
-    # Can't use this because Firefox a shit:
-    # root = $.x 'ancestor::*[parent::blockquote]', q
-    unless isBacklink = /\bbacklink\b/.test q.className
-      root = q
-      until root.parentNode.nodeName is 'BLOCKQUOTE'
-        root = root.parentNode
-
     if q.host is 'boards.4chan.org'
       path     = q.pathname.split '/'
       board    = path[1]
@@ -2619,7 +2612,12 @@ QuoteInline =
     inline = $.el 'div',
       id: "i#{postID}"
       className: if el then 'inline' else 'inline crosspost'
-    $.after (if isBacklink then q.parentNode else root), inline
+    root =
+      if isBacklink = /\bbacklink\b/.test q.className
+        q.parentNode
+      else
+        $.x 'ancestor::*[parent::blockquote][1]', q
+    $.after root, inline
     Get.post board, threadID, postID, inline
 
     return unless el
@@ -2709,11 +2707,7 @@ QuotePreview =
           $.addClass el.parentNode, 'qphl'
         else
           $.addClass el, 'qphl'
-      # can't use xpath because >firefox
-      parent = @parentNode
-      until parent.id
-        parent = parent.parentNode
-      quoterID = parent.id.match(/\d+$/)[0]
+      quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
       for quote in $$ '.quotelink, .backlink', qp
         if quote.hash[2..] is quoterID
           $.addClass quote, 'forwardlink'
