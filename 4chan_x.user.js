@@ -1855,9 +1855,7 @@
         challenge = this.challenge.firstChild.value;
         this.img.alt = challenge;
         this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
-        this.input.value = null;
-        clearTimeout(this.timeoutID);
-        return this.timeoutID = setTimeout(this.reload, 4 * $.MINUTE);
+        return this.input.value = null;
       },
       count: function(count) {
         this.input.placeholder = (function() {
