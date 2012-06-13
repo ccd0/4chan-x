@@ -3435,7 +3435,7 @@
       return $.on(a, 'click', DeleteButton["delete"]);
     },
     "delete": function() {
-      var board, data, id, m, pwd, self;
+      var board, form, id, m, pwd, self;
       $.off(this, 'click', DeleteButton["delete"]);
       this.textContent = 'Deleting...';
       if (m = d.cookie.match(/4chan_pass=([^;]+)/)) {
@@ -3446,10 +3446,10 @@
       id = $.x('preceding-sibling::input', this).name;
       board = $.x('preceding-sibling::span[1]/a', this).pathname.match(/\w+/)[0];
       self = this;
-      data = new FormData();
-      data.append(id, 'delete');
-      data.append('mode', 'usrdel');
-      data.append('pwd', pwd);
+      form = new FormData();
+      form.append(id, 'delete');
+      form.append('mode', 'usrdel');
+      form.append('pwd', pwd);
       return $.ajax("https://sys.4chan.org/" + board + "/imgboard.php", {
         onload: function() {
           return DeleteButton.load(self, this.response);
@@ -3459,7 +3459,7 @@
         }
       }, {
         type: 'post',
-        form: data
+        form: form
       });
     },
     load: function(self, html) {
