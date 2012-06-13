@@ -321,7 +321,7 @@
     },
     formData: function(arg) {
       var fd, key, val;
-      if (arg instanceof HTMLElement) {
+      if (arg instanceof HTMLFormElement) {
         fd = new FormData(arg);
       } else {
         fd = new FormData();
@@ -333,16 +333,13 @@
       return fd;
     },
     ajax: function(url, callbacks, opts) {
-      var data, headers, key, r, type, upCallbacks, val;
+      var form, headers, key, r, type, upCallbacks, val;
       if (opts == null) {
         opts = {};
       }
-      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, data = opts.data;
+      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
       r = new XMLHttpRequest();
-      if (data) {
-        type || (type = 'post');
-      }
-      type || (type = 'get');
+      type || (type = form && 'post' || 'get');
       r.open(type, url, true);
       for (key in headers) {
         val = headers[key];
@@ -350,11 +347,7 @@
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
-      if (typeof data === 'string') {
-        r.sendAsBinary(data);
-      } else {
-        r.send(data);
-      }
+      r.send(form);
       return r;
     },
     cache: function(url, cb) {
@@ -2022,7 +2015,7 @@
       return QR.el.dispatchEvent(e);
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, data, err, m, opts, post, reply, response, threadID;
+      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, threadID;
       if (e != null) {
         e.preventDefault();
       }
@@ -2089,7 +2082,6 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
-      data = $.formData(post);
       callbacks = {
         onload: function() {
           return QR.response(this.response);
@@ -2104,7 +2096,7 @@
         }
       };
       opts = {
-        data: data,
+        form: $.formData(post),
         upCallbacks: {
           onload: function() {
             return QR.status({
@@ -3580,7 +3572,7 @@
     init: function() {
       this.a = $.el('a', {
         className: 'delete_button',
-        innerHTML: '[&nbsp;X&nbsp;]',
+        innerHTML: '[&nbsp;&times;&nbsp;]',
         href: 'javascript:;'
       });
       return Main.callbacks.push(this.node);
@@ -3594,45 +3586,51 @@
       return $.on(a, 'click', DeleteButton["delete"]);
     },
     "delete": function() {
-      var data, id, m, pwd;
+      var board, form, id, m, o, pwd, self;
+      $.off(this, 'click', DeleteButton["delete"]);
+      this.textContent = 'Deleting...';
       if (m = d.cookie.match(/4chan_pass=([^;]+)/)) {
         pwd = decodeURIComponent(m[1]);
       } else {
-        this.textContent = 'Error: no password found';
-        return;
+        pwd = $.id('delPassword').value;
       }
-      DeleteButton.el = this;
-      $.off(this, 'click', DeleteButton["delete"]);
-      this.textContent = 'Deleting...';
       id = $.x('preceding-sibling::input', this).name;
-      data = $.formData({
-        mode: 'usrdel'
-      });
-      data.append(id, 'delete');
-      return $.ajax("https://sys.4chan.org/" + g.BOARD + "/imgboard.php", {
-        onload: DeleteButton.load,
-        onerror: DeleteButton.error
-      }, {
-        type: 'post',
-        form: data,
+      board = $.x('preceding-sibling::span[1]/a', this).pathname.match(/\w+/)[0];
+      self = this;
+      o = {
+        mode: 'usrdel',
         pwd: pwd
+      };
+      o[id] = 'delete';
+      form = $.formData(o);
+      return $.ajax("https://sys.4chan.org/" + board + "/imgboard.php", {
+        onload: function() {
+          return DeleteButton.load(self, this.response);
+        },
+        onerror: function() {
+          return DeleteButton.error(self);
+        }
+      }, {
+        form: form
       });
     },
-    load: function() {
-      var doc, msg, tc;
+    load: function(self, html) {
+      var doc, msg, s;
       doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = this.response;
+      doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
-        tc = 'Banned!';
+        s = 'Banned!';
       } else if (msg = doc.getElementById('errmsg')) {
-        tc = msg.textContent;
+        s = msg.textContent;
+        $.on(self, 'click', DeleteButton["delete"]);
       } else {
-        tc = 'Deleted';
+        s = 'Deleted';
       }
-      return DeleteButton.el.textContent = tc;
+      return self.innerHTML = "[&nbsp;" + s + "&nbsp;]";
     },
-    error: function() {
-      return DeleteButton.el.textContent = 'Error';
+    error: function(self) {
+      self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]';
+      return $.on(self, 'click', DeleteButton["delete"]);
     }
   };
 

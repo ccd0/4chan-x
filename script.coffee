@@ -271,7 +271,7 @@ $.extend $,
   id: (id) ->
     d.getElementById id
   formData: (arg) ->
-    if arg instanceof HTMLElement
+    if arg instanceof HTMLFormElement
       fd = new FormData arg
     else
       fd = new FormData()
@@ -279,16 +279,15 @@ $.extend $,
         fd.append key, val
     fd
   ajax: (url, callbacks, opts={}) ->
-    {type, headers, upCallbacks, data} = opts
+    {type, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
-    type or= 'post' if data
-    type or= 'get'
+    type or= form and 'post' or 'get'
     r.open type, url, true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    if typeof data is 'string' then r.sendAsBinary data else r.send data
+    r.send form
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -1572,8 +1571,6 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
-    data = $.formData post
-
     callbacks =
       onload: ->
         QR.response @response
@@ -1586,7 +1583,7 @@ QR =
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
     opts =
-      data: data
+      form: $.formData post
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
@@ -2715,7 +2712,7 @@ DeleteButton =
   init: ->
     @a = $.el 'a',
       className: 'delete_button'
-      innerHTML: '[&nbsp;X&nbsp;]'
+      innerHTML: '[&nbsp;&times;&nbsp;]'
       href: 'javascript:;'
     Main.callbacks.push @node
   node: (post) ->
@@ -2724,39 +2721,44 @@ DeleteButton =
       $.add $('.postInfo', post.el), a
     $.on a, 'click', DeleteButton.delete
   delete: ->
-    if m = d.cookie.match(/4chan_pass=([^;]+)/)
-      pwd = decodeURIComponent m[1]
-    else
-      @textContent = 'Error: no password found'
-      return
-
-    DeleteButton.el = @
     $.off @, 'click', DeleteButton.delete
     @textContent = 'Deleting...'
 
-    id = $.x('preceding-sibling::input', @).name
-    data = $.formData mode: 'usrdel'
-    data.append id, 'delete'
-    $.ajax "https://sys.4chan.org/#{g.BOARD}/imgboard.php", {
-        onload:  DeleteButton.load
-        onerror: DeleteButton.error
-      }, {
-        type: 'post'
-        form: data
-        pwd:  pwd
-      }
-  load: ->
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = @response
-    if doc.title is '4chan - Banned' # Ban/warn check
-      tc = 'Banned!'
-    else if msg = doc.getElementById 'errmsg' # error!
-      tc = msg.textContent
+    if m = d.cookie.match /4chan_pass=([^;]+)/
+      pwd = decodeURIComponent m[1]
     else
-      tc = 'Deleted'
-    DeleteButton.el.textContent = tc
-  error: ->
-    DeleteButton.el.textContent = 'Error'
+      pwd = $.id('delPassword').value
+    id = $.x('preceding-sibling::input', @).name
+    board = $.x('preceding-sibling::span[1]/a', @).pathname.match(/\w+/)[0]
+    self = this
+
+    o =
+      mode: 'usrdel'
+      pwd: pwd
+    o[id] = 'delete'
+    form = $.formData o
+
+    $.ajax "https://sys.4chan.org/#{board}/imgboard.php", {
+        onload:  -> DeleteButton.load  self, @response
+        onerror: -> DeleteButton.error self
+      }, {
+        form: form
+      }
+
+  load: (self, html) ->
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = html
+    if doc.title is '4chan - Banned' # Ban/warn check
+      s = 'Banned!'
+    else if msg = doc.getElementById 'errmsg' # error!
+      s = msg.textContent
+      $.on self, 'click', DeleteButton.delete
+    else
+      s = 'Deleted'
+    self.innerHTML = "[&nbsp;#{s}&nbsp;]"
+  error: (self) ->
+    self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]'
+    $.on self, 'click', DeleteButton.delete
 
 ReportButton =
   init: ->
