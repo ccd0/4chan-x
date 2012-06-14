@@ -1691,7 +1691,9 @@
           return;
         }
         url = window.URL || window.webkitURL;
-        url.revokeObjectURL(this.url);
+        if (typeof url.revokeObjectURL === "function") {
+          url.revokeObjectURL(this.url);
+        }
         fileUrl = url.createObjectURL(file);
         img = $.el('img');
         $.on(img, 'load', function() {
@@ -1723,12 +1725,13 @@
           bb.append(ui8a.buffer);
           _this.url = url.createObjectURL(bb.getBlob('image/png'));
           _this.el.style.backgroundImage = "url(" + _this.url + ")";
-          return url.revokeObjectURL(fileUrl);
+          return typeof url.revokeObjectURL === "function" ? url.revokeObjectURL(fileUrl) : void 0;
         });
         return img.src = fileUrl;
       };
 
       _Class.prototype.rmFile = function() {
+        var _base1;
         QR.resetFileInput();
         delete this.file;
         this.el.title = null;
@@ -1736,7 +1739,7 @@
         if (QR.spoiler) {
           $('label', this.el).hidden = true;
         }
-        return (window.URL || window.webkitURL).revokeObjectURL(this.url);
+        return typeof (_base1 = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base1.revokeObjectURL(this.url) : void 0;
       };
 
       _Class.prototype.select = function() {
@@ -1800,7 +1803,7 @@
       };
 
       _Class.prototype.rm = function() {
-        var index;
+        var index, _base1;
         QR.resetFileInput();
         $.rm(this.el);
         index = QR.replies.indexOf(this);
@@ -1810,7 +1813,9 @@
           (QR.replies[index - 1] || QR.replies[index + 1]).select();
         }
         QR.replies.splice(index, 1);
-        (window.URL || window.webkitURL).revokeObjectURL(this.url);
+        if (typeof (_base1 = window.URL || window.webkitURL).revokeObjectURL === "function") {
+          _base1.revokeObjectURL(this.url);
+        }
         return delete this;
       };
 
