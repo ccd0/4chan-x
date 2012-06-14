@@ -2630,7 +2630,7 @@ DeleteButton =
     $.on a, 'click', DeleteButton.delete
   delete: ->
     $.off @, 'click', DeleteButton.delete
-    @textContent = 'Deleting...'
+    @innerHTML = '[&nbsp;Deleting...&nbsp;]'
 
     if m = d.cookie.match /4chan_pass=([^;]+)/
       pwd = decodeURIComponent m[1]
@@ -2640,17 +2640,16 @@ DeleteButton =
     board = $.x('preceding-sibling::span[1]/a', @).pathname.match(/\w+/)[0]
     self = this
 
-    o =
+    form =
       mode: 'usrdel'
       pwd: pwd
-    o[id] = 'delete'
-    form = $.formData o
+    form[id] = 'delete'
 
     $.ajax "https://sys.4chan.org/#{board}/imgboard.php", {
         onload:  -> DeleteButton.load  self, @response
         onerror: -> DeleteButton.error self
       }, {
-        form: form
+        form: $.formData form
       }
 
   load: (self, html) ->
