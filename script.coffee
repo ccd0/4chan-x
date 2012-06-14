@@ -2243,7 +2243,7 @@ RevealSpoilers =
     Main.callbacks.push @node
   node: (post) ->
     {img} = post
-    if not (img and /^Spoiler/.test img.alt) or post.isInlined and not post.isCrosspost
+    if not (img and /^Spoiler/.test img.alt) or post.isInlined and not post.isCrosspost or post.isArchived
       return
     img.removeAttribute 'style'
     img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace /src(\/\d+).+$/, 'thumb$1s.jpg'}"
@@ -3520,8 +3520,9 @@ Main =
       class:       el.className
       id:          el.id.match(/\d+$/)[0]
       threadId:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
-      isInlined:   /\binline\b/.test parentClass
-      isCrosspost: /\bcrosspost\b/.test parentClass
+      isArchived:  /\barchivedPost\b/.test parentClass
+      isInlined:   /\binline\b/.test       parentClass
+      isCrosspost: /\bcrosspost\b/.test    parentClass
       blockquote:  el.lastElementChild
       quotes:      el.getElementsByClassName 'quotelink'
       backlinks:   el.getElementsByClassName 'backlink'

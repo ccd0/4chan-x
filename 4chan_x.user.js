@@ -2840,7 +2840,7 @@
     node: function(post) {
       var img;
       img = post.img;
-      if (!(img && /^Spoiler/.test(img.alt)) || post.isInlined && !post.isCrosspost) {
+      if (!(img && /^Spoiler/.test(img.alt)) || post.isInlined && !post.isCrosspost || post.isArchived) {
         return;
       }
       img.removeAttribute('style');
@@ -4509,6 +4509,7 @@
         "class": el.className,
         id: el.id.match(/\d+$/)[0],
         threadId: g.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0],
+        isArchived: /\barchivedPost\b/.test(parentClass),
         isInlined: /\binline\b/.test(parentClass),
         isCrosspost: /\bcrosspost\b/.test(parentClass),
         blockquote: el.lastElementChild,
