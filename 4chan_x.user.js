@@ -3933,7 +3933,7 @@
         case 'u':
         case 'v':
         case 'vg':
-          return "http://archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+          return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
       }
     },
     thread: function(board, id, mode) {

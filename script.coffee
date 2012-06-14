@@ -3101,7 +3101,7 @@ Redirect =
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
-        "http://archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+        "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
   thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
     return unless Conf['404 Redirect'] or mode is 'post'
     switch board
