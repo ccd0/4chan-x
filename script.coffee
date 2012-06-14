@@ -1320,7 +1320,8 @@ QR =
         @el.style.backgroundImage = null
         return
       url = window.URL or window.webkitURL
-      url.revokeObjectURL @url
+      # XXX Opera does not support window.URL.revokeObjectURL
+      url.revokeObjectURL? @url
 
       # Create a redimensioned thumbnail.
       fileUrl = url.createObjectURL file
@@ -1359,7 +1360,7 @@ QR =
 
         @url = url.createObjectURL bb.getBlob 'image/png'
         @el.style.backgroundImage = "url(#{@url})"
-        url.revokeObjectURL fileUrl
+        url.revokeObjectURL? fileUrl
 
       img.src = fileUrl
     rmFile: ->
@@ -1368,7 +1369,7 @@ QR =
       @el.title = null
       @el.style.backgroundImage = null
       $('label', @el).hidden = true if QR.spoiler
-      (window.URL or window.webkitURL).revokeObjectURL @url
+      (window.URL or window.webkitURL).revokeObjectURL? @url
     select: ->
       QR.selected?.el.id = null
       QR.selected = @
@@ -1414,7 +1415,7 @@ QR =
       else if @el.id is 'selected'
         (QR.replies[index-1] or QR.replies[index+1]).select()
       QR.replies.splice index, 1
-      (window.URL or window.webkitURL).revokeObjectURL @url
+      (window.URL or window.webkitURL).revokeObjectURL? @url
       delete @
 
   captcha:
@@ -2882,7 +2883,7 @@ DeleteButton =
     $.on a, 'click', DeleteButton.delete
   delete: ->
     $.off @, 'click', DeleteButton.delete
-    @textContent = 'Deleting...'
+    @innerHTML = '[&nbsp;Deleting...&nbsp;]'
 
     if m = d.cookie.match /4chan_pass=([^;]+)/
       pwd = decodeURIComponent m[1]
@@ -2892,17 +2893,16 @@ DeleteButton =
     board = $.x('preceding-sibling::span[1]/a', @).pathname.match(/\w+/)[0]
     self = this
 
-    o =
+    form =
       mode: 'usrdel'
       pwd: pwd
-    o[id] = 'delete'
-    form = $.formData o
+    form[id] = 'delete'
 
     $.ajax "https://sys.4chan.org/#{board}/imgboard.php", {
         onload:  -> DeleteButton.load  self, @response
         onerror: -> DeleteButton.error self
       }, {
-        form: form
+        form: $.formData form
       }
 
   load: (self, html) ->
