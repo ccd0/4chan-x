@@ -4302,7 +4302,7 @@
       }
     },
     preParse: function(node) {
-      var el, fileInfo, img, post, rootClass;
+      var el, img, post, rootClass;
       rootClass = node.className;
       el = $('.post', node);
       post = {
@@ -4319,12 +4319,9 @@
         fileInfo: false,
         img: false
       };
-      if (fileInfo = $('.fileInfo', el)) {
-        img = fileInfo.nextElementSibling.firstElementChild;
-        if (img.alt !== 'File deleted.') {
-          post.fileInfo = fileInfo;
-          post.img = img;
-        }
+      if (img = $('img[data-md5]', el)) {
+        post.fileInfo = img.parentNode.previousElementSibling;
+        post.img = img;
       }
       Main.prettify(post.blockquote);
       return post;

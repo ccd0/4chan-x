@@ -1487,7 +1487,6 @@ QR =
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
       # The input event replaces keyup, change and paste events.
-      # XXX Does Opera support the `input` event?
       $.on $("[name=#{name}]", QR.el), 'input', ->
         QR.selected[@name] = @value
         # Disable auto-posting if you're typing in the first reply
@@ -2148,7 +2147,7 @@ Sauce =
     @links = []
     for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
-      # .trim() is there to fix Opera reading two different line breaks.
+      # XXX .trim() is there to fix Opera reading two different line breaks.
       @links.push @createSauceLink link.trim()
     return unless @links.length
     Main.callbacks.push @node
@@ -3292,11 +3291,11 @@ Main =
       backlinks:   el.getElementsByClassName 'backlink'
       fileInfo:    false
       img:         false
-    if fileInfo = $ '.fileInfo', el
-      img = fileInfo.nextElementSibling.firstElementChild
-      if img.alt isnt 'File deleted.'
-        post.fileInfo = fileInfo
-        post.img      = img
+    if img = $ 'img[data-md5]', el
+      # Make sure to not add deleted images,
+      # those do not have a data-md5 attribute.
+      post.fileInfo = img.parentNode.previousElementSibling
+      post.img      = img
     Main.prettify post.blockquote
     post
   node: (nodes, notify) ->
