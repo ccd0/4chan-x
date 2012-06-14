@@ -3109,7 +3109,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, data, date, email, file, filesize, isOP, nameBlock, p, pc, pi, piM, span, time;
+      var bq, capcode, data, date, email, file, filesize, isOP, nameBlock, p, pc, pi, piM, span, time;
       data = JSON.parse(req.response);
       if (data.error) {
         root.textContent = data.error;
@@ -3117,7 +3117,7 @@
       }
       isOP = postID === data.thread_num;
       pc = $.el('div', {
-        id: "pc",
+        id: "pc" + postID,
         className: isOP ? 'postContainer opContainer' : 'postContainer replyContainer'
       });
       p = $.el('div', {
@@ -3162,39 +3162,23 @@
           })
         ]);
       }
-      if (data.capcode === 'A') {
+      capcode = data.capcode;
+      if (capcode !== 'N') {
         $.add(nameBlock, [
           $.tn(' '), $.el('strong', {
-            className: 'capcode capcodeAdmin',
-            textContent: '## Admin'
+            className: capcode === 'A' ? 'capcode capcodeAdmin' : 'capcode',
+            textContent: capcode === 'A' ? '## Admin' : '## Mod'
           })
         ]);
         nameBlock = $('.nameBlock', pi);
-        $.addClass(nameBlock, 'capcodeAdmin');
+        $.addClass(nameBlock, capcode === 'A' ? 'capcodeAdmin' : 'capcodeMod');
         $.add(nameBlock, [
-          $.tn(' '), $.el('img'), {
-            src: '//static.4chan.org/image/adminicon.gif',
-            alt: 'This user is the 4chan Administrator.',
-            title: 'This user is the 4chan Administrator.',
+          $.tn(' '), $.el('img', {
+            src: capcode === 'A' ? '//static.4chan.org/image/adminicon.gif' : '//static.4chan.org/image/modicon.gif',
+            alt: capcode === 'A' ? 'This user is the 4chan Administrator.' : 'This user is a 4chan Moderator.',
+            title: capcode === 'A' ? 'This user is the 4chan Administrator.' : 'This user is a 4chan Moderator.',
             className: 'identityIcon'
-          }
-        ]);
-      } else if (data.capcode === 'M') {
-        $.add(nameBlock, [
-          $.tn(' '), $.el('strong', {
-            className: 'capcode',
-            textContent: '## Mod'
           })
-        ]);
-        nameBlock = $('.nameBlock', pi);
-        $.addClass(nameBlock, 'capcodeMod');
-        $.add(nameBlock, [
-          $.tn(' '), $.el('img'), {
-            src: '//static.4chan.org/image/adminicon.gif',
-            alt: 'This user is a 4chan Moderator.',
-            title: 'This user is a 4chan Moderator.',
-            className: 'identityIcon'
-          }
         ]);
       }
       bq = $.el('blockquote', {
@@ -3238,7 +3222,7 @@
         filesize = $.bytesToString(data.media_size);
         $.add(file, $.el('div', {
           className: 'fileInfo',
-          innerHTML: "<span id=fT" + postID + " class=fileText>File: <a href='" + (data.media_link || data.remote_media_link) + "' target=_blank>" + data.media_orig + "</a>-(" + filesize + ", " + data.media_w + "x" + data.media_h + ", <span title></span>)</span>"
+          innerHTML: "<span id=fT" + postID + " class=fileText>File: <a href='" + (data.media_link || data.remote_media_link) + "' target=_blank>" + data.media_orig + "</a>-(" + (data.spoiler === '1' ? 'Spoiler Image, ' : '') + filesize + ", " + data.media_w + "x" + data.media_h + ", <span title></span>)</span>"
         }));
         span = $('span[title]', file);
         span.title = data.media_filename;
@@ -3251,6 +3235,7 @@
         }));
         $.after((isOP ? piM : pi), file);
       }
+      $.addClass(root, 'archivedPost');
       $.replace(root.firstChild, pc);
       if (cb) {
         return cb();
@@ -3509,6 +3494,9 @@
             post.fileInfo = fileInfo;
             post.img = img;
           }
+        }
+        if (Conf['Reveal Spoilers']) {
+          RevealSpoilers.node(post);
         }
         if (Conf['Image Auto-Gif']) {
           AutoGif.node(post);

@@ -2414,15 +2414,6 @@ Get =
     $.replace root.firstChild, pc
     cb() if cb
   parseArchivedPost: (req, board, postID, root, cb) ->
-    # unarchived
-    # >>>/a/1
-    # op
-    # >>>/a/66734868
-    # reply
-    # >>>/a/66718194
-    # reply with image and spoiler text
-    # >>>/v/142341606
-
     data = JSON.parse req.response
 
     if data.error
@@ -2433,7 +2424,7 @@ Get =
 
     # post containers
     pc = $.el 'div',
-      id: "pc#{}"
+      id: "pc#{postID}"
       className: if isOP then 'postContainer opContainer' else 'postContainer replyContainer'
     p  = $.el 'div',
       id: "p#{postID}"
@@ -2476,27 +2467,25 @@ Get =
       textContent: data.name
     if data.trip
       $.add nameBlock, [$.tn(' '), $.el('span', className: 'postertrip', textContent: data.trip)]
-    if data.capcode is 'A' # admin
+    {capcode} = data
+    if capcode isnt 'N' # 'A'dmin or 'M'od
       $.add nameBlock, [
         $.tn(' '),
-        $.el('strong', className: 'capcode capcodeAdmin', textContent: '## Admin')
+        $.el('strong',
+          className:   if capcode is 'A' then 'capcode capcodeAdmin' else 'capcode',
+          textContent: if capcode is 'A' then '## Admin' else '## Mod'
+        )
       ]
       nameBlock = $ '.nameBlock', pi
-      $.addClass nameBlock, 'capcodeAdmin'
+      $.addClass nameBlock, if capcode is 'A' then 'capcodeAdmin' else 'capcodeMod'
       $.add nameBlock, [
         $.tn(' '),
-        $.el('img'), src: '//static.4chan.org/image/adminicon.gif', alt: 'This user is the 4chan Administrator.', title: 'This user is the 4chan Administrator.', className: 'identityIcon'
-      ]
-    else if data.capcode is 'M' # mod
-      $.add nameBlock, [
-        $.tn(' '),
-        $.el('strong', className: 'capcode', textContent: '## Mod')
-      ]
-      nameBlock = $ '.nameBlock', pi
-      $.addClass nameBlock, 'capcodeMod'
-      $.add nameBlock, [
-        $.tn(' '),
-        $.el('img'), src: '//static.4chan.org/image/adminicon.gif', alt: 'This user is a 4chan Moderator.', title: 'This user is a 4chan Moderator.', className: 'identityIcon'
+        $.el('img',
+          src:   if capcode is 'A' then '//static.4chan.org/image/adminicon.gif' else  '//static.4chan.org/image/modicon.gif',
+          alt:   if capcode is 'A' then 'This user is the 4chan Administrator.' else 'This user is a 4chan Moderator.',
+          title: if capcode is 'A' then 'This user is the 4chan Administrator.' else 'This user is a 4chan Moderator.',
+          className: 'identityIcon'
+        )
       ]
 
 
@@ -2552,7 +2541,7 @@ Get =
       filesize = $.bytesToString data.media_size
       $.add file, $.el 'div',
         className: 'fileInfo'
-        innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{filesize}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
+        innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
       span = $ 'span[title]', file
       span.title = data.media_filename
       span.textContent =
@@ -2567,7 +2556,7 @@ Get =
         innerHTML: "<img src=#{data.thumb_link} alt='#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
       $.after (if isOP then piM else pi), file
 
-
+    $.addClass root, 'archivedPost'
     $.replace root.firstChild, pc
     cb() if cb
   cleanPost: (root) ->
@@ -2753,14 +2742,16 @@ QuotePreview =
         if img.alt isnt 'File deleted.'
           post.fileInfo = fileInfo
           post.img      = img
+      if Conf['Reveal Spoilers']
+        RevealSpoilers.node post
       if Conf['Image Auto-Gif']
-        AutoGif.node   post
+        AutoGif.node        post
       if Conf['Time Formatting']
-        Time.node     post
+        Time.node           post
       if Conf['File Info Formatting']
-        FileInfo.node post
+        FileInfo.node       post
       if Conf['Resurrect Quotes']
-        Quotify.node  post
+        Quotify.node        post
 
     if board is g.BOARD and el = $.id "p#{postID}"
       if Conf['Quote Highlighting']
