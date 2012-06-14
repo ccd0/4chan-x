@@ -1570,6 +1570,9 @@
       ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       ta.focus();
       range = caretPos + text.length;
+      if ($.engine === 'presto') {
+        range++;
+      }
       ta.setSelectionRange(range, range);
       e = d.createEvent('Event');
       e.initEvent('input', true, false);

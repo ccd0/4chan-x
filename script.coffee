@@ -1155,6 +1155,8 @@ QR =
     ta.focus()
     # Move the caret to the end of the new quote.
     range = caretPos + text.length
+    # XXX Opera counts newlines as double
+    range++ if $.engine is 'presto'
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
