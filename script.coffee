@@ -175,8 +175,7 @@ UI =
     UI.el = el = @parentNode
     d.addEventListener 'mousemove', UI.drag,    false
     d.addEventListener 'mouseup',   UI.dragend, false
-    #distance from pointer to el edge is constant; calculate it here.
-    # XXX opera reports el.offsetLeft / el.offsetTop as 0
+    # distance from pointer to el edge is constant; calculate it here.
     rect      = el.getBoundingClientRect()
     UI.dx     = e.clientX - rect.left
     UI.dy     = e.clientY - rect.top
@@ -1488,7 +1487,6 @@ QR =
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
       # The input event replaces keyup, change and paste events.
-      # XXX Does Opera support the `input` event?
       $.on $("[name=#{name}]", QR.el), 'input', ->
         QR.selected[@name] = @value
         # Disable auto-posting if you're typing in the first reply
@@ -2981,9 +2979,9 @@ Unread =
     else
       $.rmClass Favicon.el, 'unread'
 
-    #`favicon.href = href` doesn't work on Firefox
-    #`favicon.href = href` isn't enough on Opera
-    #Opera won't always update the favicon if the href didn't not change
+    # `favicon.href = href` doesn't work on Firefox
+    # `favicon.href = href` isn't enough on Opera
+    # Opera won't always update the favicon if the href didn't change
     unless $.engine is 'webkit'
       $.add d.head, Favicon.el
 
