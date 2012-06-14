@@ -1630,7 +1630,27 @@
       return QR.resetFileInput();
     },
     resetFileInput: function() {
-      return $('[type=file]', QR.el).value = null;
+      var clone, input;
+      input = $('[type=file]', QR.el);
+      input.value = null;
+      if ($.engine !== 'presto') {
+        return;
+      }
+      clone = $.el('input', {
+        type: 'file',
+        accept: input.accept,
+        max: input.max,
+        multiple: input.multiple,
+        size: input.size,
+        title: input.title
+      });
+      $.on(clone, 'change', QR.fileInput);
+      $.on(clone, 'click', function(e) {
+        if (e.shiftKey) {
+          return QR.selected.rmFile() || e.preventDefault();
+        }
+      });
+      return $.replace(input, clone);
     },
     replies: [],
     reply: (function() {
