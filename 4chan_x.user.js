@@ -479,6 +479,42 @@
       }
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
+    },
+    isDST: function(d) {
+      var date, day, hours, month, sunday;
+      date = d.getUTCDate();
+      day = d.getUTCDay();
+      hours = d.getUTCHours();
+      month = d.getUTCMonth();
+      if (2 > month || month > 10) {
+        return false;
+      }
+      if ((2 < month && month < 10)) {
+        return true;
+      }
+      sunday = date - day;
+      if (month === 2) {
+        if (sunday < 8) {
+          return false;
+        }
+        if (sunday < 15 && day === 0) {
+          if (hours < 7) {
+            return false;
+          }
+          return true;
+        }
+        return true;
+      }
+      if (sunday < 1) {
+        return true;
+      }
+      if (sunday < 8 && day === 0) {
+        if (hours < 6) {
+          return true;
+        }
+        return false;
+      }
+      return false;
     }
   });
 
@@ -3096,7 +3132,9 @@
       });
       time = $('.dateTime', pi);
       date = new Date(data.timestamp * 1000);
-      time.textContent = date.toString();
+      date.setHours(date.getHours() + date.getTimezoneOffset() / 60 - 5 + 1 * $.isDST(date));
+      Time.date = date;
+      time.textContent = "" + (Time.formatters.m()) + "/" + (Time.formatters.d()) + "/" + (Time.formatters.y()) + "(" + (Time.formatters.a()) + ")" + (Time.formatters.H()) + ":" + (Time.formatters.M());
       $('.subject', pi).textContent = data.title;
       nameBlock = $('.nameBlock', pi);
       if (data.email) {
@@ -3187,7 +3225,7 @@
       });
       bq.innerHTML = bq.innerHTML.replace(/(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3');
       $.add(p, [piM, pi, bq]);
-      if (data.media) {
+      if (data.media_filename) {
         file = $.el('div', {
           id: "f" + postID,
           className: 'file'
@@ -3206,7 +3244,7 @@
           target: '_blank',
           innerHTML: "<img src=" + data.thumb_link + " alt='" + (data.spoiler === '1' ? 'Spoiler Image, ' : '') + filesize + "' data-md5=" + data.media_hash + " style='height: " + data.preview_h + "px; width: " + data.preview_w + "px;'>"
         }));
-        $.after((isOP ? $('.postInfoM', p) : $('.postInfo', p)), file);
+        $.after((isOP ? piM : pi), file);
       }
       $.replace(root.firstChild, pc);
       if (cb) {

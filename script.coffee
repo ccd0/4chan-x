@@ -370,6 +370,60 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
+  isDST: (d) ->
+    # http://en.wikipedia.org/wiki/Eastern_Time_Zone
+    # Its UTC time offset is −5 hrs (UTC−05) during standard time and −4
+    # hrs (UTC−04) during daylight saving time.
+
+    # Since 2007, the local time changes at 02:00 EST to 03:00 EDT on the second
+    # Sunday in March and returns at 02:00 EDT to 01:00 EST on the first Sunday
+    # in November, in the U.S. as well as in Canada.
+
+    # 0200 EST (UTC-05) = 0700 UTC
+    # 0200 EDT (UTC-04) = 0600 UTC
+
+    date  = d.getUTCDate()
+    day   = d.getUTCDay()
+    hours = d.getUTCHours()
+    month = d.getUTCMonth()
+
+    # This is the easy part.
+    if 2 > month or month > 10
+      return false
+    if 2 < month < 10
+      return true
+
+    # (sunday's date) = (today's date) - (number of days past sunday)
+    # date is not zero-indexed
+    sunday = date - day
+
+    if month is 2
+      # before second sunday
+      if sunday < 8
+        return false
+
+      # during second sunday
+      if sunday < 15 and day is 0
+        if hours < 7
+          return false
+        return true
+
+      # after second sunday
+      return true
+
+    # month is 10
+    # before first sunday
+    if sunday < 1
+      return true
+
+    # during first sunday
+    if sunday < 8 and day is 0
+      if hours < 6
+        return true
+      return false
+
+    # after first sunday
+    return false
 
 $.cache.requests = {}
 
@@ -2400,8 +2454,12 @@ Get =
       innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{data.timestamp}></span> <span class='postNum desktop'><a href='/#{board}/res/#{data.thread_num}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{data.thread_num}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
     # time
     time = $ '.dateTime', pi
+    # UTC -> Local time
     date = new Date data.timestamp * 1000
-    time.textContent = date.toString() # XXX needs to be 4chan formatted
+    # Local time -> UTC -> EST/EDT (UTC-5/UTC-4)
+    date.setHours date.getHours() + date.getTimezoneOffset() / 60 - 5 + 1 * $.isDST date
+    Time.date = date
+    time.textContent = "#{Time.formatters.m()}/#{Time.formatters.d()}/#{Time.formatters.y()}(#{Time.formatters.a()})#{Time.formatters.H()}:#{Time.formatters.M()}"
     # subject
     $('.subject', pi).textContent = data.title
 
@@ -2486,7 +2544,7 @@ Get =
 
 
     # file
-    if data.media
+    if data.media_filename
       file = $.el 'div',
         id: "f#{postID}"
         className: 'file'
@@ -2506,7 +2564,7 @@ Get =
         href: data.media_link or data.remote_media_link
         target: '_blank'
         innerHTML: "<img src=#{data.thumb_link} alt='#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
-      $.after (if isOP then $('.postInfoM', p) else $('.postInfo', p)), file
+      $.after (if isOP then piM else pi), file
 
 
     $.replace root.firstChild, pc
