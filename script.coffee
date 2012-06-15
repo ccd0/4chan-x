@@ -1159,6 +1159,8 @@ QR =
 
     sel = window.getSelection()
     if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id.match(/\d+$/)[0]
+      # XXX Opera needs d.getSelection() to retain linebreaks from the selected text
+      s = d.getSelection() if $.engine is 'presto'
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
@@ -1169,6 +1171,8 @@ QR =
     ta.focus()
     # Move the caret to the end of the new quote.
     range = caretPos + text.length
+    # XXX Opera counts newlines as double
+    range += text.match(/\n/g).length if $.engine is 'presto'
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
@@ -1221,7 +1225,20 @@ QR =
     $.addClass QR.el, 'dump'
     QR.resetFileInput() # reset input
   resetFileInput: ->
-    $('[type=file]', QR.el).value = null
+    input = $ '[type=file]', QR.el
+    input.value = null
+    return unless $.engine is 'presto'
+    # XXX Opera needs extra care to reset its file input's value
+    clone = $.el 'input',
+      type: 'file'
+      accept:   input.accept
+      max:      input.max
+      multiple: input.multiple
+      size:     input.size
+      title:    input.title
+    $.on clone, 'change', QR.fileInput
+    $.on clone, 'click',  (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
+    $.replace input, clone
 
   replies: []
   reply: class
@@ -2148,7 +2165,7 @@ Sauce =
     @links = []
     for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
-      # .trim() is there to fix Opera reading two different line breaks.
+      # XXX .trim() is there to fix Opera reading two different line breaks.
       @links.push @createSauceLink link.trim()
     return unless @links.length
     Main.callbacks.push @node
@@ -3491,11 +3508,11 @@ Main =
       backlinks:   el.getElementsByClassName 'backlink'
       fileInfo:    false
       img:         false
-    if fileInfo = $ '.fileInfo', el
-      img = fileInfo.nextElementSibling.firstElementChild
-      if img.alt isnt 'File deleted.'
-        post.fileInfo = fileInfo
-        post.img      = img
+    if img = $ 'img[data-md5]', el
+      # Make sure to not add deleted images,
+      # those do not have a data-md5 attribute.
+      post.fileInfo = img.parentNode.previousElementSibling
+      post.img      = img
     Main.prettify post.blockquote
     post
   node: (nodes, notify) ->

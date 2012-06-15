@@ -1572,6 +1572,9 @@
       text = ">>" + id + "\n";
       sel = window.getSelection();
       if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
+        if ($.engine === 'presto') {
+          s = d.getSelection();
+        }
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
@@ -1580,6 +1583,9 @@
       ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       ta.focus();
       range = caretPos + text.length;
+      if ($.engine === 'presto') {
+        range += text.match(/\n/g).length;
+      }
       ta.setSelectionRange(range, range);
       e = d.createEvent('Event');
       e.initEvent('input', true, false);
@@ -1640,7 +1646,27 @@
       return QR.resetFileInput();
     },
     resetFileInput: function() {
-      return $('[type=file]', QR.el).value = null;
+      var clone, input;
+      input = $('[type=file]', QR.el);
+      input.value = null;
+      if ($.engine !== 'presto') {
+        return;
+      }
+      clone = $.el('input', {
+        type: 'file',
+        accept: input.accept,
+        max: input.max,
+        multiple: input.multiple,
+        size: input.size,
+        title: input.title
+      });
+      $.on(clone, 'change', QR.fileInput);
+      $.on(clone, 'click', function(e) {
+        if (e.shiftKey) {
+          return QR.selected.rmFile() || e.preventDefault();
+        }
+      });
+      return $.replace(input, clone);
     },
     replies: [],
     reply: (function() {
@@ -4484,7 +4510,7 @@
       }
     },
     preParse: function(node) {
-      var el, fileInfo, img, parentClass, post;
+      var el, img, parentClass, post;
       parentClass = node.parentNode.className;
       el = $('.post', node);
       post = {
@@ -4502,12 +4528,9 @@
         fileInfo: false,
         img: false
       };
-      if (fileInfo = $('.fileInfo', el)) {
-        img = fileInfo.nextElementSibling.firstElementChild;
-        if (img.alt !== 'File deleted.') {
-          post.fileInfo = fileInfo;
-          post.img = img;
-        }
+      if (img = $('img[data-md5]', el)) {
+        post.fileInfo = img.parentNode.previousElementSibling;
+        post.img = img;
       }
       Main.prettify(post.blockquote);
       return post;
