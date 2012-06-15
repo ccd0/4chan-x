@@ -3099,35 +3099,30 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, br, capcode, data, email, file, filesize, isOP, nameBlock, p, pc, pi, piM, span;
+      var bq, br, capcode, data, email, file, filesize, isOP, name, nameBlock, pc, pi, piM, span, subject, threadID, trip;
       data = JSON.parse(req.response);
+      $.addClass(root, 'archivedPost');
       if (data.error) {
         root.textContent = data.error;
         return;
       }
-      isOP = postID === data.thread_num;
-      pc = $.el('div', {
-        id: "pc" + postID,
-        className: isOP ? 'postContainer opContainer' : 'postContainer replyContainer'
-      });
-      p = $.el('div', {
-        id: "p" + postID,
-        className: isOP ? 'post op' : 'post reply'
-      });
-      $.add(pc, p);
+      threadID = data.thread_num;
+      isOP = postID === threadID;
+      name = data.name, trip = data.trip;
+      subject = data.title;
       piM = $.el('div', {
         id: "pim" + postID,
         className: 'postInfoM mobile',
-        innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=" + timestamp + ">" + data.fourchan_date + "<br><em></em><a href='/" + board + "/res/" + data.thread_num + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + data.thread_num + "#q" + postID + "' title='Quote this post'>" + postID + "</a></span>"
+        innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=" + timestamp + ">" + data.fourchan_date + "<br><em></em><a href='/" + board + "/res/" + threadID + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "' title='Quote this post'>" + postID + "</a></span>"
       });
-      $('.name', piM).textContent = data.name;
-      $('.subject', piM).textContent = data.title;
+      $('.name', piM).textContent = name;
+      $('.subject', piM).textContent = subject;
       br = $('br', piM);
-      if (data.trip) {
+      if (trip) {
         $.before(br, [
           $.tn(' '), $.el('span', {
             className: 'postertrip',
-            textContent: data.trip
+            textContent: trip
           })
         ]);
       }
@@ -3149,9 +3144,9 @@
       pi = $.el('div', {
         id: "pi" + postID,
         className: 'postInfo desktop',
-        innerHTML: "<input type=checkbox name=" + postID + " value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=" + data.timestamp + ">data.fourchan_date</span> <span class='postNum desktop'><a href='/" + board + "/res/" + data.thread_num + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + data.thread_num + "#q" + postID + "' title='Quote this post'>" + postID + "</a>" + (isOP ? ' &nbsp; ' : '') + "</span> "
+        innerHTML: "<input type=checkbox name=" + postID + " value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=" + data.timestamp + ">data.fourchan_date</span> <span class='postNum desktop'><a href='/" + board + "/res/" + threadID + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "' title='Quote this post'>" + postID + "</a>" + (isOP ? ' &nbsp; ' : '') + "</span> "
       });
-      $('.subject', pi).textContent = data.title;
+      $('.subject', pi).textContent = subject;
       nameBlock = $('.nameBlock', pi);
       if (data.email) {
         email = $.el('a', {
@@ -3165,11 +3160,11 @@
         className: 'name',
         textContent: data.name
       }));
-      if (data.trip) {
+      if (trip) {
         $.add(nameBlock, [
           $.tn(' '), $.el('span', {
             className: 'postertrip',
-            textContent: data.trip
+            textContent: trip
           })
         ]);
       }
@@ -3223,7 +3218,12 @@
         }
       });
       bq.innerHTML = bq.innerHTML.replace(/(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3');
-      $.add(p, [piM, pi, bq]);
+      pc = $.el('div', {
+        id: "pc" + postID,
+        className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
+        innerHTML: "<div id=p" + postID + " class='postContainer " + (isOP ? 'op' : 'reply') + "'></div>"
+      });
+      $.add(pc.firstChild, [piM, pi, bq]);
       if (data.media_filename) {
         file = $.el('div', {
           id: "f" + postID,
@@ -3245,7 +3245,6 @@
         }));
         $.after((isOP ? piM : pi), file);
       }
-      $.addClass(root, 'archivedPost');
       $.replace(root.firstChild, pc);
       if (cb) {
         return cb();

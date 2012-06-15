@@ -2378,35 +2378,28 @@ Get =
     cb() if cb
   parseArchivedPost: (req, board, postID, root, cb) ->
     data = JSON.parse req.response
-
+    $.addClass root, 'archivedPost'
     if data.error
       root.textContent = data.error
       return
 
-    isOP = postID is data.thread_num
-
-    # post containers
-    pc = $.el 'div',
-      id: "pc#{postID}"
-      className: if isOP then 'postContainer opContainer' else 'postContainer replyContainer'
-    p  = $.el 'div',
-      id: "p#{postID}"
-      className: if isOP then 'post op' else 'post reply'
-    $.add pc, p
-
+    threadID = data.thread_num
+    isOP = postID is threadID
+    {name, trip} = data
+    subject = data.title
 
     # post info (mobile)
     piM = $.el 'div',
       id: "pim#{postID}"
       className: 'postInfoM mobile'
-      innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=#{timestamp}>#{data.fourchan_date}<br><em></em><a href='/#{board}/res/#{data.thread_num}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{data.thread_num}#q#{postID}' title='Quote this post'>#{postID}</a></span>"
-    $('.name',    piM).textContent = data.name
-    $('.subject', piM).textContent = data.title
+      innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=#{timestamp}>#{data.fourchan_date}<br><em></em><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a></span>"
+    $('.name',    piM).textContent = name
+    $('.subject', piM).textContent = subject
     br = $ 'br', piM
-    if data.trip
+    if trip
       $.before br, [$.tn(' '), $.el 'span',
         className: 'postertrip'
-        textContent: data.trip
+        textContent: trip
       ]
     {capcode} = data
     if capcode isnt 'N' # 'A'dmin or 'M'od
@@ -2427,15 +2420,13 @@ Get =
         )
       ]
 
-
     # post info
     pi = $.el 'div',
       id: "pi#{postID}"
       className: 'postInfo desktop'
-      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{data.timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{data.thread_num}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{data.thread_num}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
+      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{data.timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
     # subject
-    $('.subject', pi).textContent = data.title
-
+    $('.subject', pi).textContent = subject
     nameBlock = $ '.nameBlock', pi
     if data.email
       email = $.el 'a',
@@ -2446,8 +2437,8 @@ Get =
     $.add nameBlock, $.el 'span',
       className: 'name'
       textContent: data.name
-    if data.trip
-      $.add nameBlock, [$.tn(' '), $.el('span', className: 'postertrip', textContent: data.trip)]
+    if trip
+      $.add nameBlock, [$.tn(' '), $.el('span', className: 'postertrip', textContent: trip)]
     if capcode isnt 'N' # 'A'dmin or 'M'od
       $.add nameBlock, [
         $.tn(' '),
@@ -2467,7 +2458,6 @@ Get =
           className: 'identityIcon'
         )
       ]
-
 
     # comment
     bq = $.el 'blockquote',
@@ -2507,11 +2497,15 @@ Get =
             '<b style="color: red;">'
           when '[/banned]'
             '</b>'
+    # greentext
     bq.innerHTML = bq.innerHTML.replace /(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3'
 
-
-    $.add p, [piM, pi, bq]
-
+    # post container
+    pc = $.el 'div',
+      id: "pc#{postID}"
+      className: "postContainer #{if isOP then 'op' else 'reply'}Container"
+      innerHTML: "<div id=p#{postID} class='postContainer #{if isOP then 'op' else 'reply'}'></div>"
+    $.add pc.firstChild, [piM, pi, bq]
 
     # file
     if data.media_filename
@@ -2536,7 +2530,6 @@ Get =
         innerHTML: "<img src=#{data.thumb_link} alt='#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
       $.after (if isOP then piM else pi), file
 
-    $.addClass root, 'archivedPost'
     $.replace root.firstChild, pc
     cb() if cb
   cleanPost: (root) ->
