@@ -1562,6 +1562,9 @@
       text = ">>" + id + "\n";
       sel = window.getSelection();
       if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
+        if ($.engine === 'presto') {
+          s = d.getSelection();
+        }
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
@@ -1571,7 +1574,7 @@
       ta.focus();
       range = caretPos + text.length;
       if ($.engine === 'presto') {
-        range++;
+        range += text.match(/\n/g).length;
       }
       ta.setSelectionRange(range, range);
       e = d.createEvent('Event');

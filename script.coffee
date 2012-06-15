@@ -1145,6 +1145,8 @@ QR =
 
     sel = window.getSelection()
     if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id.match(/\d+$/)[0]
+      # XXX Opera needs d.getSelection() to retain linebreaks from the selected text
+      s = d.getSelection() if $.engine is 'presto'
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
@@ -1156,7 +1158,7 @@ QR =
     # Move the caret to the end of the new quote.
     range = caretPos + text.length
     # XXX Opera counts newlines as double
-    range++ if $.engine is 'presto'
+    range += text.match(/\n/g).length if $.engine is 'presto'
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
