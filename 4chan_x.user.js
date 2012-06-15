@@ -479,42 +479,6 @@
       }
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
-    },
-    isDST: function(d) {
-      var date, day, hours, month, sunday;
-      date = d.getUTCDate();
-      day = d.getUTCDay();
-      hours = d.getUTCHours();
-      month = d.getUTCMonth();
-      if (2 > month || month > 10) {
-        return false;
-      }
-      if ((2 < month && month < 10)) {
-        return true;
-      }
-      sunday = date - day;
-      if (month === 2) {
-        if (sunday < 8) {
-          return false;
-        }
-        if (sunday < 15 && day === 0) {
-          if (hours < 7) {
-            return false;
-          }
-          return true;
-        }
-        return true;
-      }
-      if (sunday < 1) {
-        return true;
-      }
-      if (sunday < 8 && day === 0) {
-        if (hours < 6) {
-          return true;
-        }
-        return false;
-      }
-      return false;
     }
   });
 
@@ -3109,7 +3073,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, capcode, data, date, email, file, filesize, isOP, nameBlock, p, pc, pi, piM, span, time;
+      var bq, br, capcode, data, email, file, filesize, isOP, nameBlock, p, pc, pi, piM, span;
       data = JSON.parse(req.response);
       if (data.error) {
         root.textContent = data.error;
@@ -3128,18 +3092,39 @@
       piM = $.el('div', {
         id: "pim" + postID,
         className: 'postInfoM mobile',
-        innerHTML: ''
+        innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=" + timestamp + ">" + data.fourchan_date + "<br><em></em><a href='/" + board + "/res/" + data.thread_num + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + data.thread_num + "#q" + postID + "' title='Quote this post'>" + postID + "</a></span>"
       });
+      $('.name', piM).textContent = data.name;
+      $('.subject', piM).textContent = data.title;
+      br = $('br', piM);
+      if (data.trip) {
+        $.before(br, [
+          $.tn(' '), $.el('span', {
+            className: 'postertrip',
+            textContent: data.trip
+          })
+        ]);
+      }
+      capcode = data.capcode;
+      if (capcode !== 'N') {
+        $.addClass(br.parentNode, capcode === 'A' ? 'capcodeAdmin' : 'capcodeMod');
+        $.before(br, [
+          $.tn(' '), $.el('strong', {
+            className: 'capcode',
+            textContent: capcode === 'A' ? '## Admin' : '## Mod'
+          }), $.tn(' '), $.el('img', {
+            src: capcode === 'A' ? '//static.4chan.org/image/adminicon.gif' : '//static.4chan.org/image/modicon.gif',
+            alt: capcode === 'A' ? 'This user is the 4chan Administrator.' : 'This user is a 4chan Moderator.',
+            title: capcode === 'A' ? 'This user is the 4chan Administrator.' : 'This user is a 4chan Moderator.',
+            className: 'identityIcon'
+          })
+        ]);
+      }
       pi = $.el('div', {
         id: "pi" + postID,
         className: 'postInfo desktop',
-        innerHTML: "<input type=checkbox name=" + postID + " value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=" + data.timestamp + "></span> <span class='postNum desktop'><a href='/" + board + "/res/" + data.thread_num + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + data.thread_num + "#q" + postID + "' title='Quote this post'>" + postID + "</a>" + (isOP ? ' &nbsp; ' : '') + "</span> "
+        innerHTML: "<input type=checkbox name=" + postID + " value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=" + data.timestamp + ">data.fourchan_date</span> <span class='postNum desktop'><a href='/" + board + "/res/" + data.thread_num + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + data.thread_num + "#q" + postID + "' title='Quote this post'>" + postID + "</a>" + (isOP ? ' &nbsp; ' : '') + "</span> "
       });
-      time = $('.dateTime', pi);
-      date = new Date(data.timestamp * 1000);
-      date.setHours(date.getHours() + date.getTimezoneOffset() / 60 - 5 + 1 * $.isDST(date));
-      Time.date = date;
-      time.textContent = "" + (Time.formatters.m()) + "/" + (Time.formatters.d()) + "/" + (Time.formatters.y()) + "(" + (Time.formatters.a()) + ")" + (Time.formatters.H()) + ":" + (Time.formatters.M());
       $('.subject', pi).textContent = data.title;
       nameBlock = $('.nameBlock', pi);
       if (data.email) {
@@ -3162,7 +3147,6 @@
           })
         ]);
       }
-      capcode = data.capcode;
       if (capcode !== 'N') {
         $.add(nameBlock, [
           $.tn(' '), $.el('strong', {

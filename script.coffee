@@ -370,60 +370,6 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
-  isDST: (d) ->
-    # http://en.wikipedia.org/wiki/Eastern_Time_Zone
-    # Its UTC time offset is −5 hrs (UTC−05) during standard time and −4
-    # hrs (UTC−04) during daylight saving time.
-
-    # Since 2007, the local time changes at 02:00 EST to 03:00 EDT on the second
-    # Sunday in March and returns at 02:00 EDT to 01:00 EST on the first Sunday
-    # in November, in the U.S. as well as in Canada.
-
-    # 0200 EST (UTC-05) = 0700 UTC
-    # 0200 EDT (UTC-04) = 0600 UTC
-
-    date  = d.getUTCDate()
-    day   = d.getUTCDay()
-    hours = d.getUTCHours()
-    month = d.getUTCMonth()
-
-    # This is the easy part.
-    if 2 > month or month > 10
-      return false
-    if 2 < month < 10
-      return true
-
-    # (sunday's date) = (today's date) - (number of days past sunday)
-    # date is not zero-indexed
-    sunday = date - day
-
-    if month is 2
-      # before second sunday
-      if sunday < 8
-        return false
-
-      # during second sunday
-      if sunday < 15 and day is 0
-        if hours < 7
-          return false
-        return true
-
-      # after second sunday
-      return true
-
-    # month is 10
-    # before first sunday
-    if sunday < 1
-      return true
-
-    # during first sunday
-    if sunday < 8 and day is 0
-      if hours < 6
-        return true
-      return false
-
-    # after first sunday
-    return false
 
 $.cache.requests = {}
 
@@ -2436,22 +2382,40 @@ Get =
     piM = $.el 'div',
       id: "pim#{postID}"
       className: 'postInfoM mobile'
-      innerHTML: '' # XXX
+      innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=#{timestamp}>#{data.fourchan_date}<br><em></em><a href='/#{board}/res/#{data.thread_num}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{data.thread_num}#q#{postID}' title='Quote this post'>#{postID}</a></span>"
+    $('.name',    piM).textContent = data.name
+    $('.subject', piM).textContent = data.title
+    br = $ 'br', piM
+    if data.trip
+      $.before br, [$.tn(' '), $.el 'span',
+        className: 'postertrip'
+        textContent: data.trip
+      ]
+    {capcode} = data
+    if capcode isnt 'N' # 'A'dmin or 'M'od
+      # XXX not sure if this is correct for mods
+      $.addClass br.parentNode, if capcode is 'A' then 'capcodeAdmin' else 'capcodeMod'
+      $.before br, [
+        $.tn(' '),
+        $.el('strong',
+          className: 'capcode',
+          textContent: if capcode is 'A' then '## Admin' else '## Mod'
+        ),
+        $.tn(' '),
+        $.el('img',
+          src:   if capcode is 'A' then '//static.4chan.org/image/adminicon.gif' else  '//static.4chan.org/image/modicon.gif',
+          alt:   if capcode is 'A' then 'This user is the 4chan Administrator.' else 'This user is a 4chan Moderator.',
+          title: if capcode is 'A' then 'This user is the 4chan Administrator.' else 'This user is a 4chan Moderator.',
+          className: 'identityIcon'
+        )
+      ]
 
 
     # post info
     pi = $.el 'div',
       id: "pi#{postID}"
       className: 'postInfo desktop'
-      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{data.timestamp}></span> <span class='postNum desktop'><a href='/#{board}/res/#{data.thread_num}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{data.thread_num}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
-    # time
-    time = $ '.dateTime', pi
-    # UTC -> Local time
-    date = new Date data.timestamp * 1000
-    # Local time -> UTC -> EST/EDT (UTC-5/UTC-4)
-    date.setHours date.getHours() + date.getTimezoneOffset() / 60 - 5 + 1 * $.isDST date
-    Time.date = date
-    time.textContent = "#{Time.formatters.m()}/#{Time.formatters.d()}/#{Time.formatters.y()}(#{Time.formatters.a()})#{Time.formatters.H()}:#{Time.formatters.M()}"
+      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{data.timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{data.thread_num}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{data.thread_num}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
     # subject
     $('.subject', pi).textContent = data.title
 
@@ -2467,7 +2431,6 @@ Get =
       textContent: data.name
     if data.trip
       $.add nameBlock, [$.tn(' '), $.el('span', className: 'postertrip', textContent: data.trip)]
-    {capcode} = data
     if capcode isnt 'N' # 'A'dmin or 'M'od
       $.add nameBlock, [
         $.tn(' '),
