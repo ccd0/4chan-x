@@ -2809,7 +2809,7 @@
     node: function(post) {
       var img, link, nodes, _i, _len, _ref;
       img = post.img;
-      if (post.isInlined && !post.isCrosspost || !img) {
+      if (post.isInlined && !post.isCrosspost || post.isArchived || !img) {
         return;
       }
       img = img.parentNode;
@@ -3099,7 +3099,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, br, capcode, data, email, file, filesize, isOP, name, nameBlock, pc, pi, piM, span, subject, threadID, trip;
+      var bq, br, capcode, data, email, file, filesize, isOP, name, nameBlock, pc, pi, piM, span, subject, threadID, timestamp, trip;
       data = JSON.parse(req.response);
       $.addClass(root, 'archivedPost');
       if (data.error) {
@@ -3108,7 +3108,7 @@
       }
       threadID = data.thread_num;
       isOP = postID === threadID;
-      name = data.name, trip = data.trip;
+      name = data.name, trip = data.trip, timestamp = data.timestamp;
       subject = data.title;
       piM = $.el('div', {
         id: "pim" + postID,
@@ -3144,7 +3144,7 @@
       pi = $.el('div', {
         id: "pi" + postID,
         className: 'postInfo desktop',
-        innerHTML: "<input type=checkbox name=" + postID + " value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=" + data.timestamp + ">data.fourchan_date</span> <span class='postNum desktop'><a href='/" + board + "/res/" + threadID + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "' title='Quote this post'>" + postID + "</a>" + (isOP ? ' &nbsp; ' : '') + "</span> "
+        innerHTML: "<input type=checkbox name=" + postID + " value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=" + timestamp + ">data.fourchan_date</span> <span class='postNum desktop'><a href='/" + board + "/res/" + threadID + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "' title='Quote this post'>" + postID + "</a>" + (isOP ? ' &nbsp; ' : '') + "</span> "
       });
       $('.subject', pi).textContent = subject;
       nameBlock = $('.nameBlock', pi);
@@ -3221,7 +3221,7 @@
       pc = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: "<div id=p" + postID + " class='postContainer " + (isOP ? 'op' : 'reply') + "'></div>"
+        innerHTML: "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + "'></div>"
       });
       $.add(pc.firstChild, [piM, pi, bq]);
       if (data.media_filename) {
@@ -3490,19 +3490,17 @@
       UI.hover(e);
       $.add(d.body, qp);
       Get.post(board, threadID, postID, qp, function() {
-        var bq, fileInfo, img, post;
+        var bq, img, post;
         bq = $('blockquote', qp);
         Main.prettify(bq);
         post = {
           el: qp,
-          blockquote: bq
+          blockquote: bq,
+          isArchived: /\barchivedPost\b/.test(qp.className)
         };
-        if (fileInfo = $('.fileInfo', qp)) {
-          img = fileInfo.nextElementSibling.firstElementChild;
-          if (img.alt !== 'File deleted.') {
-            post.fileInfo = fileInfo;
-            post.img = img;
-          }
+        if (img = $('img[data-md5]', qp)) {
+          post.fileInfo = img.parentNode.previousElementSibling;
+          post.img = img;
         }
         if (Conf['Reveal Spoilers']) {
           RevealSpoilers.node(post);

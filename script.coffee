@@ -2193,7 +2193,7 @@ Sauce =
 
   node: (post) ->
     {img} = post
-    return if post.isInlined and not post.isCrosspost or not img
+    return if post.isInlined and not post.isCrosspost or post.isArchived or not img
     img   = img.parentNode
     nodes = []
     for link in Sauce.links
@@ -2385,7 +2385,7 @@ Get =
 
     threadID = data.thread_num
     isOP = postID is threadID
-    {name, trip} = data
+    {name, trip, timestamp} = data
     subject = data.title
 
     # post info (mobile)
@@ -2424,7 +2424,7 @@ Get =
     pi = $.el 'div',
       id: "pi#{postID}"
       className: 'postInfo desktop'
-      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{data.timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
+      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
     # subject
     $('.subject', pi).textContent = subject
     nameBlock = $ '.nameBlock', pi
@@ -2504,7 +2504,7 @@ Get =
     pc = $.el 'div',
       id: "pc#{postID}"
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
-      innerHTML: "<div id=p#{postID} class='postContainer #{if isOP then 'op' else 'reply'}'></div>"
+      innerHTML: "<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}'></div>"
     $.add pc.firstChild, [piM, pi, bq]
 
     # file
@@ -2710,11 +2710,10 @@ QuotePreview =
       post =
         el: qp
         blockquote: bq
-      if fileInfo = $ '.fileInfo', qp
-        img = fileInfo.nextElementSibling.firstElementChild
-        if img.alt isnt 'File deleted.'
-          post.fileInfo = fileInfo
-          post.img      = img
+        isArchived: /\barchivedPost\b/.test qp.className
+      if img = $ 'img[data-md5]', qp
+        post.fileInfo = img.parentNode.previousElementSibling
+        post.img      = img
       if Conf['Reveal Spoilers']
         RevealSpoilers.node post
       if Conf['Image Auto-Gif']
