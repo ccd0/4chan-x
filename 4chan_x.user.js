@@ -65,6 +65,7 @@
  * Seiba - chrome quick reply focusing
  * herpaderpderp - recaptcha fixes
  * WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
+ * btmcsweeney - allow users to specify text for sauce links
  *
  * All the people who've taken the time to write bug reports.
  *
@@ -151,7 +152,7 @@
       filesize: [''].join('\n'),
       md5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2;show:Upload to imgur', '#http://omploader.org/upload?url1=$2;show:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/search/image/$3/;show:View same on foolz', '#http://archive.foolz.us/$4/search/image/$3/;show:View same on foolz /$4/', '#https://archive.installgentoo.net/$4/image/$3;show:View same on installgentoo /$4/'].join('\n'),
+    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2;text:Upload to imgur', '#http://omploader.org/upload?url1=$2;text:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/search/image/$3/;text:View same on foolz', '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/', '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
@@ -2239,7 +2240,7 @@
   <div>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
     Lines starting with a <code>#</code> will be ignored.<br>\
-	You can specify a certain display text by appending ";show:[text]" to the url.\
+    You can specify a certain display text by appending ";text:[text]" to the url.\
     <ul>These parameters will be replaced by their corresponding values:\
       <li>$1: Thumbnail url.</li>\
       <li>$2: Full image url.</li>\
@@ -2768,7 +2769,7 @@
       return Main.callbacks.push(this.node);
     },
     createSauceLink: function(link) {
-      var domain, el, href;
+      var domain, el, href, m;
       link = link.replace(/(\$\d)/g, function(parameter) {
         switch (parameter) {
           case '$1':
@@ -2781,8 +2782,8 @@
             return g.BOARD;
         }
       });
-      domain = link.match(/;show:(.+)$/) ? link.match(/;show:(.+)$/)[1] : link.match(/(\w+)\.\w+\//)[1];
-      href = link.match(/;show:(.+)$/) ? link.match(/^(.+);show:.+$/)[1] : link;
+      domain = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
+      href = link.replace(/;text:.+$/, '');
       href = Function('img', "return '" + href + "'");
       el = $.el('a', {
         target: '_blank',
