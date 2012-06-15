@@ -2510,7 +2510,7 @@ Get =
     $.add pc.firstChild, [piM, pi, bq]
 
     # file
-    if data.media_filename
+    if filename = data.media_filename
       file = $.el 'div',
         id: "f#{postID}"
         className: 'file'
@@ -2519,12 +2519,18 @@ Get =
         className: 'fileInfo'
         innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
       span = $ 'span[title]', file
-      span.title = data.media_filename
+      span.title = filename
+      max = if isOP then 40 else 30
       span.textContent =
-        if data.media_filename.length < 40
-          data.media_filename
+        # FILENAME SHORTENING SCIENCE:
+        # OPs have +10 characters max.
+        # The file extension is not taken into account.
+        # abcdefghijklmnopqrstuvwxyz_1234.jpg is shortened.
+        # abcdefghijklmnopqrstuvwxyz_123.jpg  is not shortened.
+        if filename.replace(/\.w+$/, '').length > max
+          "#{filename[...max]}(...)#{filename.match(/\.w+$/)}"
         else
-          "#{data.media_filename[...30]}(...)#{data.media_filename[-4...]}"
+          filename
       $.add file, $.el 'a',
         className: 'fileThumb'
         href: data.media_link or data.remote_media_link

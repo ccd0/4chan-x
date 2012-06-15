@@ -3102,7 +3102,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, br, capcode, data, email, file, filesize, isOP, name, nameBlock, pc, pi, piM, span, subject, threadID, timestamp, trip;
+      var bq, br, capcode, data, email, file, filename, filesize, isOP, max, name, nameBlock, pc, pi, piM, span, subject, threadID, timestamp, trip;
       data = JSON.parse(req.response);
       $.addClass(root, 'archivedPost');
       if (data.error) {
@@ -3227,7 +3227,7 @@
         innerHTML: "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + "'></div>"
       });
       $.add(pc.firstChild, [piM, pi, bq]);
-      if (data.media_filename) {
+      if (filename = data.media_filename) {
         file = $.el('div', {
           id: "f" + postID,
           className: 'file'
@@ -3238,8 +3238,9 @@
           innerHTML: "<span id=fT" + postID + " class=fileText>File: <a href='" + (data.media_link || data.remote_media_link) + "' target=_blank>" + data.media_orig + "</a>-(" + (data.spoiler === '1' ? 'Spoiler Image, ' : '') + filesize + ", " + data.media_w + "x" + data.media_h + ", <span title></span>)</span>"
         }));
         span = $('span[title]', file);
-        span.title = data.media_filename;
-        span.textContent = data.media_filename.length < 40 ? data.media_filename : "" + data.media_filename.slice(0, 30) + "(...)" + data.media_filename.slice(-4);
+        span.title = filename;
+        max = isOP ? 40 : 30;
+        span.textContent = filename.replace(/\.w+$/, '').length > max ? "" + filename.slice(0, max) + "(...)" + (filename.match(/\.w+$/)) : filename;
         $.add(file, $.el('a', {
           className: 'fileThumb',
           href: data.media_link || data.remote_media_link,
