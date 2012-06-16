@@ -2253,7 +2253,7 @@
   <div>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
     Lines starting with a <code>#</code> will be ignored.<br>\
-    You can specify a certain display text by appending ";text:[text]" to the url.\
+    You can specify a certain display text by appending <code>;text:[text]</code> to the url.\
     <ul>These parameters will be replaced by their corresponding values:\
       <li>$1: Thumbnail url.</li>\
       <li>$2: Full image url.</li>\
@@ -2466,7 +2466,7 @@
     </li>\
     <li>\
       Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>\
-      For example: <code>stub:yes;</code> or <code>stub:no;</code>\
+      For example: <code>stub:yes;</code> or <code>stub:no;</code>.\
     </li>\
     <li>\
       Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>\
