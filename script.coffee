@@ -1717,32 +1717,25 @@ Options =
       <li>$3: MD5 hash.</li>
       <li>$4: Current board.</li>
     </ul>
-    <textarea name=sauces id=sauces></textarea>
+    <textarea name=sauces id=sauces class=field></textarea>
   </div>
   <input type=radio name=tab hidden id=filter_tab>
   <div>
     <div class=warning><code>Filter</code> is disabled.</div>
-    Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
-    Lines starting with a <code>#</code> will be ignored.<br>
-    For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
-    <ul>You can use these settings with each regular expression, separate them with semicolons:
-      <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>
-      <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>
-      <li>Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code></li>
-      <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li>
-      <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>
-    </ul>
-    <p>Name:<br><textarea name=name></textarea></p>
-    <p>Unique ID:<br><textarea name=uniqueid></textarea></p>
-    <p>Tripcode:<br><textarea name=tripcode></textarea></p>
-    <p>Admin/Mod:<br><textarea name=mod></textarea></p>
-    <p>E-mail:<br><textarea name=email></textarea></p>
-    <p>Subject:<br><textarea name=subject></textarea></p>
-    <p>Comment:<br><textarea name=comment></textarea></p>
-    <p>Filename:<br><textarea name=filename></textarea></p>
-    <p>Image dimensions:<br><textarea name=dimensions></textarea></p>
-    <p>Filesize:<br><textarea name=filesize></textarea></p>
-    <p>Image MD5 (uses exact string matching, not regular expressions):<br><textarea name=md5></textarea></p>
+    <select name=filter>
+      <option value=guide>Guide</option>
+      <option value=name>Name</option>
+      <option value=uniqueid>Unique ID</option>
+      <option value=tripcode>Tripcode</option>
+      <option value=mod>Admin/Mod</option>
+      <option value=email>E-mail</option>
+      <option value=subject>Subject</option>
+      <option value=comment>Comment</option>
+      <option value=filename>Filename</option>
+      <option value=dimensions>Image dimensions</option>
+      <option value=filesize>Filesize</option>
+      <option value=md5>Image MD5 (uses exact string matching, not regular expressions)</option>
+    </select>
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div>
@@ -1813,11 +1806,14 @@ Options =
     $.on $('button', li), 'click', Options.clearHidden
     $.add $('ul:nth-child(2)', dialog), li
 
-    #filter & sauce
-    for ta in $$ 'textarea', dialog
-      ta.textContent = $.get ta.name, Conf[ta.name]
-      ta.className   = 'field'
-      $.on ta, 'change', $.cb.value
+    #filter
+    filter = $ 'select[name=filter]', dialog
+    $.on filter, 'change', Options.filter
+
+    #sauce
+    sauce = $ '#sauces', dialog
+    sauce.value = $.get sauce.name, Conf[sauce.name]
+    $.on sauce, 'change', $.cb.value
 
     #rice
     (back     = $ '[name=backlink]', dialog).value = $.get 'backlink', Conf['backlink']
@@ -1829,7 +1825,7 @@ Options =
     $.on time,     'input', Options.time
     $.on fileInfo, 'input', $.cb.value
     $.on fileInfo, 'input', Options.fileInfo
-    favicon = $ 'select', dialog
+    favicon = $ 'select[name=favicon]', dialog
     favicon.value = $.get 'favicon', Conf['favicon']
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
@@ -1860,6 +1856,7 @@ Options =
     d.body.style.setProperty 'width', "#{d.body.clientWidth}px", null
     $.addClass d.body, 'unscroll'
 
+    Options.filter.call   filter
     Options.backlink.call back
     Options.time.call     time
     Options.fileInfo.call fileInfo
@@ -1884,6 +1881,45 @@ Options =
     return unless (key = Keybinds.keyCode e)?
     @value = key
     $.cb.value.call @
+  filter: ->
+    el = @nextSibling
+    $.rm el if el
+
+    if (name = @value) is 'guide'
+      $.after @, $.el 'article',
+        innerHTML: '<p>Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
+    Lines starting with a <code>#</code> will be ignored.<br>
+    For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.</p>
+    <ul>You can use these settings with each regular expression, separate them with semicolons:
+      <li>
+        Per boards, separate them with commas. It is global if not specified.<br>
+        For example: <code>boards:a,jp;</code>.
+      </li>
+      <li>
+        Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>
+        For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.
+      </li>
+      <li>
+        Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>
+        For example: <code>stub:yes;</code> or <code>stub:no;</code>
+      </li>
+      <li>
+        Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>
+        For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.
+      </li>
+      <li>
+        Highlighted OPs will have their threads put on top of board pages by default.<br>
+        For example: <code>top:yes</code> or <code>top:no</code>.
+      </li>
+    </ul>'
+      return
+
+    ta = $.el 'textarea',
+      name: name
+      className: 'field'
+      value: $.get name, Conf[name]
+    $.on ta, 'change', $.cb.value
+    $.after @, ta
   time: ->
     Time.foo()
     Time.date = new Date()
@@ -3634,8 +3670,10 @@ body.unscroll {
   float: right;
 }
 #options ul {
-  list-style: none;
   padding: 0;
+}
+#options article li {
+  margin: 10px 0 10px 2em;
 }
 #options label {
   text-decoration: underline;
@@ -3646,12 +3684,9 @@ body.unscroll {
 }
 #content textarea {
   font-family: monospace;
-  min-height: 100px;
+  min-height: 350px;
   resize: vertical;
   width: 100%;
-}
-#sauces {
-  height: 300px;
 }
 
 #updater {
