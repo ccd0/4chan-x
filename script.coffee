@@ -1749,12 +1749,12 @@ Options =
     <div class=warning><code>Quote Backlinks</code> are disabled.</div>
     <ul>
       Backlink formatting
-      <li><input type=text name=backlink> : <span id=backlinkPreview></span></li>
+      <li><input name=backlink class=field> : <span id=backlinkPreview></span></li>
     </ul>
     <div class=warning><code>Time Formatting</code> is disabled.</div>
     <ul>
       Time formatting
-      <li><input type=text name=time> : <span id=timePreview></span></li>
+      <li><input name=time class=field> : <span id=timePreview></span></li>
       <li>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</li>
       <li>Day: %a, %A, %d, %e</li>
       <li>Month: %m, %b, %B</li>
@@ -1766,7 +1766,7 @@ Options =
     <div class=warning><code>File Info Formatting</code> is disabled.</div>
     <ul>
       File Info Formatting
-      <li><input type=text name=fileInfo> : <span id=fileInfoPreview class=fileText></span></li>
+      <li><input name=fileInfo class=field> : <span id=fileInfoPreview class=fileText></span></li>
       <li>Link (with original file name): %l (lowercase L, truncated), %L (untruncated)</li>
       <li>Original file name: %n (Truncated), %N (Untruncated)</li>
       <li>Spoiler indicator: %p</li>
@@ -1816,6 +1816,7 @@ Options =
     #filter & sauce
     for ta in $$ 'textarea', dialog
       ta.textContent = $.get ta.name, Conf[ta.name]
+      ta.className   = 'field'
       $.on ta, 'change', $.cb.value
 
     #rice
@@ -1836,7 +1837,7 @@ Options =
     #keybinds
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
-        innerHTML: "<td>#{arr[1]}</td><td><input name=#{key}></td>"
+        innerHTML: "<td>#{arr[1]}</td><td><input name=#{key} class=field></td>"
       input = $ 'input', tr
       input.value = $.get key, Conf[key]
       $.on input, 'keydown', Options.keybind
@@ -1917,7 +1918,7 @@ Updater =
     checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} type=text></label></div>
+      <div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} class=field size=4></label></div>
       <div><input value='Update Now' type=button></div>"
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
@@ -3515,11 +3516,13 @@ h1 {
   font: 13px sans-serif;
   margin: 0;
   padding: 2px 4px 3px;
-  width: 30%;
   -webkit-transition: color .25s, border .25s;
   -moz-transition: color .25s, border .25s;
   -o-transition: color .25s, border .25s;
   transition: color .25s, border .25s;
+}
+#qr .field:not(#dump) {
+  width: 30%;
 }
 .field:-moz-placeholder,
 .field:hover:-moz-placeholder {
@@ -3533,7 +3536,7 @@ h1 {
 textarea.field {
   min-height: 120px;
 }
-.field:only-child {
+#qr .field:only-child {
   display: block;
   min-width: 100%;
 }
@@ -3642,9 +3645,7 @@ body.unscroll {
   overflow: auto;
 }
 #content textarea {
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  margin: 0;
+  font-family: monospace;
   min-height: 100px;
   resize: vertical;
   width: 100%;
@@ -3655,9 +3656,6 @@ body.unscroll {
 
 #updater {
   text-align: right;
-}
-#updater input[type=text] {
-  width: 50px;
 }
 #updater:not(:hover) {
   border: none;
