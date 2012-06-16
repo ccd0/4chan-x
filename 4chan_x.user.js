@@ -3530,6 +3530,9 @@
       });
       UI.hover(e);
       $.add(d.body, qp);
+      if (board === g.BOARD) {
+        el = $.id("p" + postID);
+      }
       Get.post(board, threadID, postID, qp, function() {
         var bq, img, post;
         bq = $('blockquote', qp);
@@ -3559,25 +3562,26 @@
           return Quotify.node(post);
         }
       });
-      if (board === g.BOARD && (el = $.id("p" + postID))) {
-        if (Conf['Quote Highlighting']) {
-          if (/\bop\b/.test(el.className)) {
-            $.addClass(el.parentNode, 'qphl');
-          } else {
-            $.addClass(el, 'qphl');
-          }
-        }
-        quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
-        _ref = $$('.quotelink, .backlink', qp);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          quote = _ref[_i];
-          if (quote.hash.slice(2) === quoterID) {
-            $.addClass(quote, 'forwardlink');
-          }
+      $.on(this, 'mousemove', UI.hover);
+      $.on(this, 'mouseout click', QuotePreview.mouseout);
+      if (!el) {
+        return;
+      }
+      if (Conf['Quote Highlighting']) {
+        if (/\bop\b/.test(el.className)) {
+          $.addClass(el.parentNode, 'qphl');
+        } else {
+          $.addClass(el, 'qphl');
         }
       }
-      $.on(this, 'mousemove', UI.hover);
-      return $.on(this, 'mouseout click', QuotePreview.mouseout);
+      quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
+      _ref = $$('.quotelink, .backlink', qp);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if (quote.hash.slice(2) === quoterID) {
+          $.addClass(quote, 'forwardlink');
+        }
+      }
     },
     mouseout: function(e) {
       var el;

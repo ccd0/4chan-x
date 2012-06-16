@@ -2750,6 +2750,7 @@ QuotePreview =
       className: 'reply dialog'
     UI.hover e
     $.add d.body, qp
+    el = $.id "p#{postID}" if board is g.BOARD
     Get.post board, threadID, postID, qp, ->
       bq = $ 'blockquote', qp
       Main.prettify bq
@@ -2771,18 +2772,20 @@ QuotePreview =
       if Conf['Resurrect Quotes']
         Quotify.node        post
 
-    if board is g.BOARD and el = $.id "p#{postID}"
-      if Conf['Quote Highlighting']
-        if /\bop\b/.test el.className
-          $.addClass el.parentNode, 'qphl'
-        else
-          $.addClass el, 'qphl'
-      quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
-      for quote in $$ '.quotelink, .backlink', qp
-        if quote.hash[2..] is quoterID
-          $.addClass quote, 'forwardlink'
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
+
+    return unless el
+    if Conf['Quote Highlighting']
+      if /\bop\b/.test el.className
+        $.addClass el.parentNode, 'qphl'
+      else
+        $.addClass el, 'qphl'
+    quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
+    for quote in $$ '.quotelink, .backlink', qp
+      if quote.hash[2..] is quoterID
+        $.addClass quote, 'forwardlink'
+    return
   mouseout: (e) ->
     UI.hoverend()
     if el = $.id @hash[1..]
