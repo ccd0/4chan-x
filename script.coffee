@@ -1909,7 +1909,7 @@ Options =
       </li>
       <li>
         Highlighted OPs will have their threads put on top of board pages by default.<br>
-        For example: <code>top:yes</code> or <code>top:no</code>.
+        For example: <code>top:yes;</code> or <code>top:no;</code>.
       </li>
     </ul>'
       return

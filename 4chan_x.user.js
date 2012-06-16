@@ -2455,7 +2455,7 @@
       </li>\
       <li>\
         Highlighted OPs will have their threads put on top of board pages by default.<br>\
-        For example: <code>top:yes</code> or <code>top:no</code>.\
+        For example: <code>top:yes;</code> or <code>top:no;</code>.\
       </li>\
     </ul>'
         }));
@@ -4726,14 +4726,14 @@ body.unscroll {\
   vertical-align: middle;\
   width: 600px;\
 }\
-#options article li {\
-  margin: 10px 0 10px 2em;\
-}\
 #credits {\
   float: right;\
 }\
 #options ul {\
   padding: 0;\
+}\
+#options article li {\
+  margin: 10px 0 10px 2em;\
 }\
 #options label {\
   text-decoration: underline;\
