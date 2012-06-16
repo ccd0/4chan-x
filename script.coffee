@@ -2564,8 +2564,8 @@ Get =
         # The file extension is not taken into account.
         # abcdefghijklmnopqrstuvwxyz_1234.jpg is shortened.
         # abcdefghijklmnopqrstuvwxyz_123.jpg  is not shortened.
-        if filename.replace(/\.w+$/, '').length > max
-          "#{filename[...max]}(...)#{filename.match(/\.w+$/)}"
+        if filename.replace(/\.\w+$/, '').length > max
+          "#{filename[...max]}(...)#{filename.match(/\.\w+$/)}"
         else
           filename
       $.add file, $.el 'a',

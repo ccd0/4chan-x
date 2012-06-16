@@ -3277,7 +3277,7 @@
         span = $('span[title]', file);
         span.title = filename;
         max = isOP ? 40 : 30;
-        span.textContent = filename.replace(/\.w+$/, '').length > max ? "" + filename.slice(0, max) + "(...)" + (filename.match(/\.w+$/)) : filename;
+        span.textContent = filename.replace(/\.\w+$/, '').length > max ? "" + filename.slice(0, max) + "(...)" + (filename.match(/\.\w+$/)) : filename;
         $.add(file, $.el('a', {
           className: 'fileThumb',
           href: data.media_link || data.remote_media_link,
