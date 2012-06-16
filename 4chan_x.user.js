@@ -4735,6 +4735,11 @@ body.unscroll {\
 #options article li {\
   margin: 10px 0 10px 2em;\
 }\
+#options code {\
+  background: hsla(0, 0%, 100%, .5);\
+  color: #000;\
+  padding: 0 1px;\
+}\
 #options label {\
   text-decoration: underline;\
 }\
