@@ -1883,43 +1883,43 @@ Options =
     $.cb.value.call @
   filter: ->
     el = @nextSibling
-    $.rm el if el
 
-    if (name = @value) is 'guide'
-      $.after @, $.el 'article',
-        innerHTML: '<p>Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
-    Lines starting with a <code>#</code> will be ignored.<br>
-    For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.</p>
-    <ul>You can use these settings with each regular expression, separate them with semicolons:
-      <li>
-        Per boards, separate them with commas. It is global if not specified.<br>
-        For example: <code>boards:a,jp;</code>.
-      </li>
-      <li>
-        Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>
-        For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.
-      </li>
-      <li>
-        Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>
-        For example: <code>stub:yes;</code> or <code>stub:no;</code>
-      </li>
-      <li>
-        Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>
-        For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.
-      </li>
-      <li>
-        Highlighted OPs will have their threads put on top of board pages by default.<br>
-        For example: <code>top:yes;</code> or <code>top:no;</code>.
-      </li>
-    </ul>'
+    if (name = @value) isnt 'guide'
+      ta = $.el 'textarea',
+        name: name
+        className: 'field'
+        value: $.get name, Conf[name]
+      $.on ta, 'change', $.cb.value
+      $.replace el, ta
       return
 
-    ta = $.el 'textarea',
-      name: name
-      className: 'field'
-      value: $.get name, Conf[name]
-    $.on ta, 'change', $.cb.value
-    $.after @, ta
+    $.rm el if el
+    $.after @, $.el 'article',
+      innerHTML: '<p>Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
+  Lines starting with a <code>#</code> will be ignored.<br>
+  For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.</p>
+  <ul>You can use these settings with each regular expression, separate them with semicolons:
+    <li>
+      Per boards, separate them with commas. It is global if not specified.<br>
+      For example: <code>boards:a,jp;</code>.
+    </li>
+    <li>
+      Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>
+      For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.
+    </li>
+    <li>
+      Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>
+      For example: <code>stub:yes;</code> or <code>stub:no;</code>
+    </li>
+    <li>
+      Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>
+      For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.
+    </li>
+    <li>
+      Highlighted OPs will have their threads put on top of board pages by default.<br>
+      For example: <code>top:yes;</code> or <code>top:no;</code>.
+    </li>
+  </ul>'
   time: ->
     Time.foo()
     Time.date = new Date()
