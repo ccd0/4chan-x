@@ -490,7 +490,7 @@ Filter =
 
   node: (post) ->
     return if post.isInlined
-    isOP = post.id is post.threadId
+    isOP = post.ID is post.threadID
     {root} = post
     for key of Filter.filters
       value = Filter[key] post
@@ -613,7 +613,7 @@ ExpandComment =
       quote.href = "res/#{href}" # Fix pathnames
     post =
       blockquote: node
-      threadId:   threadID
+      threadID:   threadID
       quotes:     quotes
       backlinks:  []
     if Conf['Resurrect Quotes']
@@ -769,7 +769,7 @@ ReplyHiding =
     side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
     $.on side.firstChild, 'click', ReplyHiding.toggle
 
-    if post.id of g.hiddenReplies
+    if post.ID of g.hiddenReplies
       ReplyHiding.hide post.root
 
   toggle: ->
@@ -2623,9 +2623,9 @@ QuoteBacklink =
         # Duplicate quotes get overwritten.
         quotes[qid] = true
     a = $.el 'a',
-      href: "#p#{post.id}"
+      href: "#p#{post.ID}"
       className: if post.el.hidden then 'filtered backlink' else 'backlink'
-      textContent: QuoteBacklink.funk post.id
+      textContent: QuoteBacklink.funk post.ID
     for qid of quotes
       # Don't backlink the OP.
       continue if !(el = $.id "pi#{qid}") or !Conf['OP Backlinks'] and /\bop\b/.test el.parentNode.className
@@ -2635,7 +2635,7 @@ QuoteBacklink =
       if Conf['Quote Inline']
         $.on link, 'click', QuoteInline.toggle
       else
-        link.setAttribute 'onclick', "replyhl('#{post.id}');"
+        link.setAttribute 'onclick', "replyhl('#{post.ID}');"
       unless container = $.id "blc#{qid}"
         container = $.el 'span',
           className: 'container'
@@ -2801,7 +2801,7 @@ QuoteOP =
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
     for quote in post.quotes
-      if quote.hash[2..] is post.threadId
+      if quote.hash[2..] is post.threadID
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(OP)'
     return
@@ -2817,7 +2817,7 @@ QuoteCT =
         continue
       path = quote.pathname.split '/'
       # If quote leads to a different thread id and is located on the same board.
-      if path[1] is g.BOARD and path[3] isnt post.threadId
+      if path[1] is g.BOARD and path[3] isnt post.threadID
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(Cross-thread)'
     return
@@ -2986,7 +2986,7 @@ Unread =
   foresee: []
 
   node: (post) ->
-    if (index = Unread.foresee.indexOf post.id) isnt -1
+    if (index = Unread.foresee.indexOf post.ID) isnt -1
       Unread.foresee.splice index, 1
       return
     {el} = post
@@ -3553,8 +3553,8 @@ Main =
       root:        node
       el:          el
       class:       el.className
-      id:          el.id.match(/\d+$/)[0]
-      threadId:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
+      ID:          el.id.match(/\d+$/)[0]
+      threadID:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
       isArchived:  /\barchivedPost\b/.test parentClass
       isInlined:   /\binline\b/.test       parentClass
       isCrosspost: /\bcrosspost\b/.test    parentClass

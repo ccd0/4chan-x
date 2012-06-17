@@ -613,7 +613,7 @@
       if (post.isInlined) {
         return;
       }
-      isOP = post.id === post.threadId;
+      isOP = post.ID === post.threadID;
       root = post.root;
       for (key in Filter.filters) {
         value = Filter[key](post);
@@ -787,7 +787,7 @@
       }
       post = {
         blockquote: node,
-        threadId: threadID,
+        threadID: threadID,
         quotes: quotes,
         backlinks: []
       };
@@ -1007,7 +1007,7 @@
       $.addClass(side, 'hide_reply_button');
       side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
       $.on(side.firstChild, 'click', ReplyHiding.toggle);
-      if (post.id in g.hiddenReplies) {
+      if (post.ID in g.hiddenReplies) {
         return ReplyHiding.hide(post.root);
       }
     },
@@ -3361,9 +3361,9 @@
         }
       }
       a = $.el('a', {
-        href: "#p" + post.id,
+        href: "#p" + post.ID,
         className: post.el.hidden ? 'filtered backlink' : 'backlink',
-        textContent: QuoteBacklink.funk(post.id)
+        textContent: QuoteBacklink.funk(post.ID)
       });
       for (qid in quotes) {
         if (!(el = $.id("pi" + qid)) || !Conf['OP Backlinks'] && /\bop\b/.test(el.parentNode.className)) {
@@ -3376,7 +3376,7 @@
         if (Conf['Quote Inline']) {
           $.on(link, 'click', QuoteInline.toggle);
         } else {
-          link.setAttribute('onclick', "replyhl('" + post.id + "');");
+          link.setAttribute('onclick', "replyhl('" + post.ID + "');");
         }
         if (!(container = $.id("blc" + qid))) {
           container = $.el('span', {
@@ -3610,7 +3610,7 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (quote.hash.slice(2) === post.threadId) {
+        if (quote.hash.slice(2) === post.threadID) {
           $.add(quote, $.tn('\u00A0(OP)'));
         }
       }
@@ -3633,7 +3633,7 @@
           continue;
         }
         path = quote.pathname.split('/');
-        if (path[1] === g.BOARD && path[3] !== post.threadId) {
+        if (path[1] === g.BOARD && path[3] !== post.threadID) {
           $.add(quote, $.tn('\u00A0(Cross-thread)'));
         }
       }
@@ -3834,7 +3834,7 @@
     foresee: [],
     node: function(post) {
       var count, el, index;
-      if ((index = Unread.foresee.indexOf(post.id)) !== -1) {
+      if ((index = Unread.foresee.indexOf(post.ID)) !== -1) {
         Unread.foresee.splice(index, 1);
         return;
       }
@@ -4580,8 +4580,8 @@
         root: node,
         el: el,
         "class": el.className,
-        id: el.id.match(/\d+$/)[0],
-        threadId: g.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0],
+        ID: el.id.match(/\d+$/)[0],
+        threadID: g.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0],
         isArchived: /\barchivedPost\b/.test(parentClass),
         isInlined: /\binline\b/.test(parentClass),
         isCrosspost: /\bcrosspost\b/.test(parentClass),
