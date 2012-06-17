@@ -1971,7 +1971,9 @@
       QR.mimeTypes.push('');
       fileInput = $('input[type=file]', QR.el);
       fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
-      fileInput.accept = mimeTypes;
+      if ($.engine !== 'presto') {
+        fileInput.accept = mimeTypes;
+      }
       QR.spoiler = !!$('input[name=spoiler]');
       spoiler = $('#spoilerLabel', QR.el);
       spoiler.hidden = !QR.spoiler;
@@ -3670,7 +3672,7 @@
             a.className = 'quotelink';
             a.setAttribute('onclick', "replyhl('" + id + "');");
           } else {
-            a.href = Redirect.thread(board, id, 'post');
+            a.href = Redirect.thread(board, 0, id);
             a.className = 'deadlink';
             a.target = '_blank';
             if (Redirect.post(board, id)) {
@@ -3944,26 +3946,15 @@
   };
 
   Redirect = {
-    init: function() {
-      var path, url;
-      url = location.hostname === 'images.4chan.org' ? (path = location.pathname.split('/'), this.image(path[1], path[3])) : /^\d+$/.test(g.THREAD_ID) ? this.thread() : void 0;
-      if (url) {
-        return location.href = url;
-      }
-    },
     image: function(board, filename) {
-      if (!Conf['404 Redirect']) {
-        return;
-      }
       switch (board) {
         case 'a':
-        case 'co':
         case 'jp':
         case 'm':
         case 'tg':
         case 'u':
         case 'vg':
-          return "http://archive.foolz.us/" + board + "/full_image/" + filename;
+          return "//archive.foolz.us/" + board + "/full_image/" + filename;
       }
     },
     post: function(board, postID) {
@@ -3977,22 +3968,18 @@
         case 'u':
         case 'v':
         case 'vg':
+        case 'dev':
+        case 'foolz':
+        case 'kuku':
           return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
       }
     },
-    thread: function(board, id, mode) {
-      if (board == null) {
-        board = g.BOARD;
+    thread: function(board, threadID, postID) {
+      var path, url;
+      if (postID) {
+        postID = postID.match(/\d+/)[0];
       }
-      if (id == null) {
-        id = g.THREAD_ID;
-      }
-      if (mode == null) {
-        mode = 'thread';
-      }
-      if (!(Conf['404 Redirect'] || mode === 'post')) {
-        return;
-      }
+      path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
       switch (board) {
         case 'a':
         case 'co':
@@ -4003,31 +3990,57 @@
         case 'u':
         case 'v':
         case 'vg':
-          return "http://archive.foolz.us/" + board + "/" + mode + "/" + id + "/";
+        case 'dev':
+        case 'foolz':
+        case 'kuku':
+          url = "//archive.foolz.us/" + path + "/";
+          if (threadID && postID) {
+            url += "#" + postID;
+          }
+          break;
         case 'lit':
-          return "http://fuuka.warosu.org/" + board + "/" + mode + "/" + id;
+          url = "//fuuka.warosu.org/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
         case 'diy':
         case 'g':
         case 'k':
         case 'sci':
-          return "https://archive.installgentoo.net/" + board + "/" + mode + "/" + id;
+          url = "//archive.installgentoo.net/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
         case 'cgl':
         case 'mu':
         case 'w':
-          return "http://archive.rebeccablacktech.com/" + board + "/" + mode + "/" + id;
+          url = "//archive.rebeccablacktech.com/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
         case 'an':
         case 'toy':
         case 'x':
-          return "http://archive.xfiles.to/" + board + "/" + mode + "/" + id;
+          url = "http://archive.xfiles.to/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
         case 'e':
-          return "https://md401.homelinux.net/4chan/cgi-board.pl/" + board + "/" + mode + "/" + id;
+          url = "https://md401.homelinux.net/4chan/cgi-board.pl/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
         default:
-          if (mode === 'thread') {
-            return "//boards.4chan.org/" + board + "/";
-          } else {
-            return null;
+          if (threadID) {
+            url = "//boards.4chan.org/" + board + "/";
           }
       }
+      return url || null;
     }
   };
 
@@ -4331,8 +4344,13 @@
           return;
         case 'images.4chan.org':
           $.ready(function() {
-            if (d.title === '4chan - 404') {
-              return Redirect.init();
+            var url;
+            if (d.title === '4chan - 404' && Conf['404 Redirect']) {
+              path = location.pathname.split('/');
+              url = Redirect.image(path[1], path[3]);
+              if (url) {
+                return location.href = url;
+              }
             }
           });
           return;
@@ -4432,7 +4450,9 @@
     ready: function() {
       var MutationObserver, a, board, nav, node, nodes, observer, _i, _j, _len, _len1, _ref, _ref1;
       if (d.title === '4chan - 404') {
-        Redirect.init();
+        if (Conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
+          location.href = Redirect.thread(g.BOARD, g.THREAD_ID, location.hash);
+        }
         return;
       }
       if (!$.id('navtopr')) {
@@ -4838,7 +4858,7 @@ textarea.field {\
   min-height: 120px;\
 }\
 #qr .field:only-child {\
-  display: block;\
+  display: -webkit-box;\
   min-width: 100%;\
 }\
 .captcha {\
