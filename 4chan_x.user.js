@@ -2825,33 +2825,35 @@
       link = link.replace(/(\$\d)/g, function(parameter) {
         switch (parameter) {
           case '$1':
-            return "http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '";
+            return "' + (isArchived ? img.firstChild.src : 'http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg')) + '";
           case '$2':
             return "' + img.href + '";
           case '$3':
             return "' + encodeURIComponent(img.firstChild.dataset.md5) + '";
           case '$4':
             return g.BOARD;
+          default:
+            return parameter;
         }
       });
       domain = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
       href = link.replace(/;text:.+$/, '');
-      href = Function('img', "return '" + href + "'");
+      href = Function('img', 'isArchived', "return '" + href + "'");
       el = $.el('a', {
         target: '_blank',
         textContent: domain
       });
-      return function(img) {
+      return function(img, isArchived) {
         var a;
         a = el.cloneNode(true);
-        a.href = href(img);
+        a.href = href(img, isArchived);
         return a;
       };
     },
     node: function(post) {
       var img, link, nodes, _i, _len, _ref;
       img = post.img;
-      if (post.isInlined && !post.isCrosspost || post.isArchived || !img) {
+      if (post.isInlined && !post.isCrosspost || !img) {
         return;
       }
       img = img.parentNode;
@@ -2859,7 +2861,7 @@
       _ref = Sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
-        nodes.push($.tn('\u00A0'), link(img));
+        nodes.push($.tn('\u00A0'), link(img, post.isArchived));
       }
       return $.add(post.fileInfo, nodes);
     }
