@@ -4634,7 +4634,7 @@ textarea.field {\
   min-height: 120px;\
 }\
 #qr .field:only-child {\
-  display: block;\
+  display: -webkit-box;\
   min-width: 100%;\
 }\
 .captcha {\
