@@ -1961,7 +1961,9 @@
       QR.mimeTypes.push('');
       fileInput = $('input[type=file]', QR.el);
       fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
-      fileInput.accept = mimeTypes;
+      if ($.engine !== 'presto') {
+        fileInput.accept = mimeTypes;
+      }
       QR.spoiler = !!$('input[name=spoiler]');
       spoiler = $('#spoilerLabel', QR.el);
       spoiler.hidden = !QR.spoiler;

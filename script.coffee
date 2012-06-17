@@ -1460,7 +1460,7 @@ QR =
     QR.mimeTypes.push ''
     fileInput        = $ 'input[type=file]', QR.el
     fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
-    fileInput.accept = mimeTypes
+    fileInput.accept = mimeTypes if $.engine isnt 'presto' # Opera's accept attribute is fucked up
 
     QR.spoiler     = !!$ 'input[name=spoiler]'
     spoiler        = $ '#spoilerLabel', QR.el
