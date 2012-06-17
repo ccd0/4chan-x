@@ -3783,6 +3783,9 @@
         case 'u':
         case 'v':
         case 'vg':
+        case 'dev':
+        case 'foolz':
+        case 'kuku':
           url = "//archive.foolz.us/" + path + "/";
           if (threadID && postID) {
             url += "#" + postID;

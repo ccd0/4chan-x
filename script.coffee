@@ -2900,7 +2900,7 @@ Redirect =
       else
         "#{board}/post/#{postID}"
     switch board
-      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
+      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg', 'dev', 'foolz', 'kuku'
         url = "//archive.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
