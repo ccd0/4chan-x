@@ -2658,7 +2658,7 @@ Quotify =
           a.className = 'quotelink'
           a.setAttribute 'onclick', "replyhl('#{id}');"
         else
-          a.href      = Redirect.thread board, id, 'post'
+          a.href      = Redirect.thread board, 0, id
           a.className = 'deadlink'
           a.target    = '_blank'
 
@@ -2879,47 +2879,55 @@ Favicon =
   dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
 
 Redirect =
-  init: ->
-    url =
-      if location.hostname is 'images.4chan.org'
-        path = location.pathname.split '/'
-        @image path[1], path[3]
-      else if /^\d+$/.test g.THREAD_ID
-        @thread()
-    location.href = url if url
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
-    return unless Conf['404 Redirect']
     switch board
       when 'a', 'jp', 'm', 'tg', 'u', 'vg'
-        "http://archive.foolz.us/#{board}/full_image/#{filename}"
+        "//archive.foolz.us/#{board}/full_image/#{filename}"
       # these will work whenever https://github.com/eksopl/fuuka/issues/23 is done
       # when 'cgl', 'g', 'w'
-      #   "http://archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
+      #   "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
       # when 'an', 'toy', 'x'
       #   "http://archive.xfiles.to/#{board}/full_image/#{filename}"
       # when 'e'
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
-  thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
-    return unless Conf['404 Redirect'] or mode is 'post'
+  thread: (board, threadID, postID) ->
+    # keep the number only if the location.hash was sent f.e.
+    postID = postID.match(/\d+/)[0] if postID
+    path   =
+      if threadID
+        "#{board}/thread/#{threadID}"
+      else
+        "#{board}/post/#{postID}"
     switch board
       when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
-        "http://archive.foolz.us/#{board}/#{mode}/#{id}/"
+        url = "//archive.foolz.us/#{path}/"
+        if threadID and postID
+          url += "##{postID}"
       when 'lit'
-        "http://fuuka.warosu.org/#{board}/#{mode}/#{id}"
+        url = "//fuuka.warosu.org/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
       when 'diy', 'g', 'k', 'sci'
-        "https://archive.installgentoo.net/#{board}/#{mode}/#{id}"
+        url = "//archive.installgentoo.net/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
       when 'cgl', 'mu', 'w'
-        "http://archive.rebeccablacktech.com/#{board}/#{mode}/#{id}"
+        url = "//archive.rebeccablacktech.com/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
       when 'an', 'toy', 'x'
-        "http://archive.xfiles.to/#{board}/#{mode}/#{id}"
+        url = "http://archive.xfiles.to/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
       when 'e'
-        "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/#{mode}/#{id}"
+        url = "https://md401.homelinux.net/4chan/cgi-board.pl/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
       else
-        if mode is 'thread'
-          "//boards.4chan.org/#{board}/"
-        else
-          null
+        if threadID
+          url = "//boards.4chan.org/#{board}/"
+    url or null
 
 ImageHover =
   init: ->
@@ -3130,7 +3138,11 @@ Main =
               window.location = 'javascript:Recaptcha.reload()' if e.keyCode is 8 and not e.target.value
         return
       when 'images.4chan.org'
-        $.ready -> Redirect.init() if d.title is '4chan - 404'
+        $.ready ->
+          if d.title is '4chan - 404' and Conf['404 Redirect']
+            path = location.pathname.split '/'
+            url  = Redirect.image path[1], path[3]
+            location.href = url if url
         return
 
     $.ready Options.init
@@ -3224,7 +3236,8 @@ Main =
 
   ready: ->
     if d.title is '4chan - 404'
-      Redirect.init()
+      if Conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
+        location.href = Redirect.thread g.BOARD, g.THREAD_ID, location.hash
       return
     unless $.id 'navtopr'
       return
