@@ -1,7 +1,10 @@
 master
+
+2.33.0
 - btmcsweeney
   Allow users to specify text for sauce links.
 - Mayhem
+  Dead quotes can now be previewed or inlined with compatible archivers.
   Opera fixes.
   /f/ fixes.
 
