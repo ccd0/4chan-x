@@ -2891,7 +2891,7 @@ Redirect =
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     return unless Conf['404 Redirect']
     switch board
-      when 'a', 'co', 'jp', 'm', 'tg', 'u', 'vg'
+      when 'a', 'jp', 'm', 'tg', 'u', 'vg'
         "http://archive.foolz.us/#{board}/full_image/#{filename}"
       # these will work whenever https://github.com/eksopl/fuuka/issues/23 is done
       # when 'cgl', 'g', 'w'

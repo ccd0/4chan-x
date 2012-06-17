@@ -3767,7 +3767,6 @@
       }
       switch (board) {
         case 'a':
-        case 'co':
         case 'jp':
         case 'm':
         case 'tg':
