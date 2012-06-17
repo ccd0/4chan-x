@@ -2568,11 +2568,12 @@ Get =
           "#{filename[...max]}(...)#{filename.match(/\.\w+$/)}"
         else
           filename
+      thumb_src = if data.media_status is 'available' then "src=#{data.thumb_link}" else ''
       $.add file, $.el 'a',
         className: 'fileThumb'
         href: data.media_link or data.remote_media_link
         target: '_blank'
-        innerHTML: "<img src=#{data.thumb_link} alt='#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
+        innerHTML: "<img #{thumb_src} alt='#{if data.media_status isnt 'available' then "Error: #{data.media_status}, " else ''}#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
       $.after (if isOP then piM else pi), file
 
     $.replace root.firstChild, pc

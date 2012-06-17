@@ -3141,7 +3141,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, br, capcode, data, email, file, filename, filesize, isOP, max, name, nameBlock, pc, pi, piM, span, subject, threadID, timestamp, trip;
+      var bq, br, capcode, data, email, file, filename, filesize, isOP, max, name, nameBlock, pc, pi, piM, span, subject, threadID, thumb_src, timestamp, trip;
       data = JSON.parse(req.response);
       $.addClass(root, 'archivedPost');
       if (data.error) {
@@ -3280,11 +3280,12 @@
         span.title = filename;
         max = isOP ? 40 : 30;
         span.textContent = filename.replace(/\.\w+$/, '').length > max ? "" + filename.slice(0, max) + "(...)" + (filename.match(/\.\w+$/)) : filename;
+        thumb_src = data.media_status === 'available' ? "src=" + data.thumb_link : '';
         $.add(file, $.el('a', {
           className: 'fileThumb',
           href: data.media_link || data.remote_media_link,
           target: '_blank',
-          innerHTML: "<img src=" + data.thumb_link + " alt='" + (data.spoiler === '1' ? 'Spoiler Image, ' : '') + filesize + "' data-md5=" + data.media_hash + " style='height: " + data.preview_h + "px; width: " + data.preview_w + "px;'>"
+          innerHTML: "<img " + thumb_src + " alt='" + (data.media_status !== 'available' ? "Error: " + data.media_status + ", " : '') + (data.spoiler === '1' ? 'Spoiler Image, ' : '') + filesize + "' data-md5=" + data.media_hash + " style='height: " + data.preview_h + "px; width: " + data.preview_w + "px;'>"
         }));
         $.after((isOP ? piM : pi), file);
       }
