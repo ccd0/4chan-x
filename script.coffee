@@ -3458,7 +3458,6 @@ Main =
       return
     unless $.id 'navtopr'
       return
-    $.addClass d.body, "chanx_#{Main.version.split('.')[1]}"
     $.addClass d.body, $.engine
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
       if a = $ "a[href$='/#{g.BOARD}/']", $.id nav

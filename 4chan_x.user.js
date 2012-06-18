@@ -4464,7 +4464,6 @@
       if (!$.id('navtopr')) {
         return;
       }
-      $.addClass(d.body, "chanx_" + (Main.version.split('.')[1]));
       $.addClass(d.body, $.engine);
       _ref = ['boardNavDesktop', 'boardNavDesktopFoot'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
