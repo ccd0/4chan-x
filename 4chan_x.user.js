@@ -2159,6 +2159,7 @@
         QR.error(err);
         return;
       }
+      $.event(QR.el, 'QRPostSuccessful');
       reply = QR.replies[0];
       persona = $.get('QR.persona', {});
       persona = {

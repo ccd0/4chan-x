@@ -1642,6 +1642,9 @@ QR =
       QR.error err
       return
 
+    # Post/upload confirmed as successful.
+    $.event QR.el, 'QRPostSuccessful'
+
     reply = QR.replies[0]
 
     persona = $.get 'QR.persona', {}
