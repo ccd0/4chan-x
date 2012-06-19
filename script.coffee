@@ -766,7 +766,7 @@ ReplyHiding =
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.isInlined or /\bop\b/.test post.class
+    return if post.isInlined or post.ID is post.threadID
     side = $ '.sideArrows', post.root
     $.addClass side, 'hide_reply_button'
     side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
@@ -2250,6 +2250,9 @@ RevealSpoilers =
     if not (img and /^Spoiler/.test img.alt) or post.isInlined and not post.isCrosspost or post.isArchived
       return
     img.removeAttribute 'style'
+    # revealed spoilers do not have height/width set, this fixes auto-gifs dimensions.
+    s = img.style
+    s.maxHeight = s.maxWidth = if /\bop\b/.test post.class then '250px' else '125px'
     img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace /src(\/\d+).+$/, 'thumb$1s.jpg'}"
 
 Time =
@@ -3839,17 +3842,6 @@ textarea.field {
 .gecko  .fitwidth img[data-md5] + img,
 .presto .fitwidth img[data-md5] + img {
   width: 100%;
-}
-
-/* revealed spoilers do not have height/width,
-   this fixes "expanded" auto-gifs */
-.op > div > a > img[data-md5] {
-  max-height: 252px;
-  max-width: 252px;
-}
-.reply > div > a > img[data-md5] {
-  max-height: 127px;
-  max-width: 127px;
 }
 
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {

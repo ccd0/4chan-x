@@ -1002,7 +1002,7 @@
     },
     node: function(post) {
       var side;
-      if (post.isInlined || /\bop\b/.test(post["class"])) {
+      if (post.isInlined || post.ID === post.threadID) {
         return;
       }
       side = $('.sideArrows', post.root);
@@ -2869,12 +2869,14 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var img;
+      var img, s;
       img = post.img;
       if (!(img && /^Spoiler/.test(img.alt)) || post.isInlined && !post.isCrosspost || post.isArchived) {
         return;
       }
       img.removeAttribute('style');
+      s = img.style;
+      s.maxHeight = s.maxWidth = /\bop\b/.test(post["class"]) ? '250px' : '125px';
       return img.src = "//thumbs.4chan.org" + (img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg'));
     }
   };
@@ -4893,17 +4895,6 @@ textarea.field {\
 .gecko  .fitwidth img[data-md5] + img,\
 .presto .fitwidth img[data-md5] + img {\
   width: 100%;\
-}\
-\
-/* revealed spoilers do not have height/width,\
-   this fixes "expanded" auto-gifs */\
-.op > div > a > img[data-md5] {\
-  max-height: 252px;\
-  max-width: 252px;\
-}\
-.reply > div > a > img[data-md5] {\
-  max-height: 127px;\
-  max-width: 127px;\
 }\
 \
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {\
