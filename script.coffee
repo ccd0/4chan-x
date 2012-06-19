@@ -2687,7 +2687,7 @@ QuoteInline =
       if isBacklink = /\bbacklink\b/.test q.className
         q.parentNode
       else
-        $.x 'ancestor::*[parent::blockquote][1]', q
+        $.x 'ancestor-or-self::*[parent::blockquote][1]', q
     $.after root, inline
     Get.post board, threadID, postID, inline
 
