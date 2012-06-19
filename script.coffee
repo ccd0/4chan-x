@@ -2553,10 +2553,11 @@ Get =
       file = $.el 'div',
         id: "f#{postID}"
         className: 'file'
+      spoiler  = data.spoiler is '1'
       filesize = $.bytesToString data.media_size
       $.add file, $.el 'div',
         className: 'fileInfo'
-        innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
+        innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{if spoiler then 'Spoiler Image, ' else ''}#{filesize}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
       span = $ 'span[title]', file
       span.title = filename
       max = if isOP then 40 else 30
@@ -2572,10 +2573,10 @@ Get =
           filename
       thumb_src = if data.media_status is 'available' then "src=#{data.thumb_link}" else ''
       $.add file, $.el 'a',
-        className: 'fileThumb'
+        className: if spoiler then 'fileThumb imgspoiler' else 'fileThumb'
         href: data.media_link or data.remote_media_link
         target: '_blank'
-        innerHTML: "<img #{thumb_src} alt='#{if data.media_status isnt 'available' then "Error: #{data.media_status}, " else ''}#{if data.spoiler is '1' then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
+        innerHTML: "<img #{thumb_src} alt='#{if data.media_status isnt 'available' then "Error: #{data.media_status}, " else ''}#{if spoiler then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
       $.after (if isOP then piM else pi), file
 
     $.replace root.firstChild, pc
