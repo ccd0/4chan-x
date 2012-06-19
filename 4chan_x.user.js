@@ -466,6 +466,12 @@
     open: function(url) {
       return (GM_openInTab || window.open)(location.protocol + url, '_blank');
     },
+    event: function(el, name, type) {
+      var e;
+      e = d.createEvent(type || 'CustomEvent');
+      e.initEvent(name, true, false);
+      return el.dispatchEvent(e);
+    },
     globalEval: function(code) {
       var script;
       script = $.el('script', {
@@ -1265,16 +1271,14 @@
       return key;
     },
     tags: function(tag, ta) {
-      var e, range, selEnd, selStart, value;
+      var range, selEnd, selStart, value;
       value = ta.value;
       selStart = ta.selectionStart;
       selEnd = ta.selectionEnd;
       ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
       range = ("[" + tag + "]").length + selEnd;
       ta.setSelectionRange(range, range);
-      e = d.createEvent('Event');
-      e.initEvent('input', true, false);
-      return ta.dispatchEvent(e);
+      return $.event(ta, 'input', 'Event');
     },
     img: function(thread, all) {
       var thumb;
@@ -1584,9 +1588,7 @@
         range += text.match(/\n/g).length;
       }
       ta.setSelectionRange(range, range);
-      e = d.createEvent('Event');
-      e.initEvent('input', true, false);
-      return ta.dispatchEvent(e);
+      return $.event(ta, 'input', 'Event');
     },
     drag: function(e) {
       var i;
@@ -1931,7 +1933,7 @@
       }
     },
     dialog: function() {
-      var e, fileInput, id, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+      var fileInput, id, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
       QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
@@ -2028,9 +2030,7 @@
       QR.cooldown.init();
       QR.captcha.init();
       $.add(d.body, QR.el);
-      e = d.createEvent('CustomEvent');
-      e.initEvent('QRDialogCreation', true, false);
-      return QR.el.dispatchEvent(e);
+      return $.event(QR.el, 'QRDialogCreation');
     },
     submit: function(e) {
       var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, threadID;

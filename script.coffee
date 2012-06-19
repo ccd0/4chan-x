@@ -351,6 +351,10 @@ $.extend $,
     return
   open: (url) ->
     (GM_openInTab or window.open) location.protocol + url, '_blank'
+  event: (el, name, type) ->
+    e = d.createEvent type or 'CustomEvent'
+    e.initEvent name, true, false
+    el.dispatchEvent e
   globalEval: (code) ->
     script = $.el 'script', textContent: code
     $.add d.head, script
@@ -931,9 +935,7 @@ Keybinds =
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
-    e = d.createEvent 'Event'
-    e.initEvent 'input', true, false
-    ta.dispatchEvent e
+    $.event ta, 'input', 'Event'
 
   img: (thread, all) ->
     if all
@@ -1175,9 +1177,7 @@ QR =
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
-    e = d.createEvent 'Event'
-    e.initEvent 'input', true, false
-    ta.dispatchEvent e
+    $.event ta, 'input', 'Event'
 
   drag: (e) ->
     # Let it drag anything from the page.
@@ -1519,9 +1519,7 @@ QR =
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
-    e = d.createEvent 'CustomEvent'
-    e.initEvent 'QRDialogCreation', true, false
-    QR.el.dispatchEvent e
+    $.event QR.el, 'QRDialogCreation'
 
   submit: (e) ->
     e?.preventDefault()
