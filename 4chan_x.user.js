@@ -4462,6 +4462,7 @@
         return;
       }
       $.addClass(d.body, $.engine);
+      $.addClass(d.body, 'fourchan_x');
       _ref = ['boardNavDesktop', 'boardNavDesktopFoot'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         nav = _ref[_i];
