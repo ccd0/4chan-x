@@ -665,8 +665,6 @@ ExpandThread =
         replies.splice replies.length - num, num
         for reply in replies
           $.rm reply
-        for backlink in $$ '.backlink', a.previousElementSibling
-          $.rm backlink unless $.id backlink.hash[1..]
     return
 
   parse: (req, thread, a) ->
@@ -697,6 +695,7 @@ ExpandThread =
     for post in $$ '.summary ~ .replyContainer', a.parentNode
       $.rm post
     for backlink in $$ '.backlink', a.previousElementSibling
+      # Keep backlinks from other threads.
       $.rm backlink unless $.id backlink.hash[1..]
     $.after a, nodes
 
@@ -2625,7 +2624,7 @@ QuoteBacklink =
         # Duplicate quotes get overwritten.
         quotes[qid] = true
     a = $.el 'a',
-      href: "#p#{post.ID}"
+      href: "/#{g.BOARD}/res/#{post.threadID}#p#{post.ID}"
       className: if post.el.hidden then 'filtered backlink' else 'backlink'
       textContent: QuoteBacklink.funk post.ID
     for qid of quotes

@@ -834,7 +834,7 @@
       return _results;
     },
     toggle: function(thread) {
-      var a, backlink, num, pathname, replies, reply, _i, _j, _len, _len1, _ref;
+      var a, num, pathname, replies, reply, _i, _len;
       pathname = "/" + g.BOARD + "/res/" + thread.id.slice(1);
       a = $('.summary', thread);
       switch (a.textContent[0]) {
@@ -866,13 +866,6 @@
           for (_i = 0, _len = replies.length; _i < _len; _i++) {
             reply = replies[_i];
             $.rm(reply);
-          }
-          _ref = $$('.backlink', a.previousElementSibling);
-          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-            backlink = _ref[_j];
-            if (!$.id(backlink.hash.slice(1))) {
-              $.rm(backlink);
-            }
           }
       }
     },
@@ -3366,7 +3359,7 @@
         }
       }
       a = $.el('a', {
-        href: "#p" + post.ID,
+        href: "/" + g.BOARD + "/res/" + post.threadID + "#p" + post.ID,
         className: post.el.hidden ? 'filtered backlink' : 'backlink',
         textContent: QuoteBacklink.funk(post.ID)
       });
