@@ -1682,6 +1682,7 @@ QR =
 
   abort: ->
     QR.ajax?.abort()
+    delete QR.ajax
     QR.status()
 
 Options =

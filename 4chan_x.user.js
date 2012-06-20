@@ -2200,6 +2200,7 @@
       if ((_ref = QR.ajax) != null) {
         _ref.abort();
       }
+      delete QR.ajax;
       return QR.status();
     }
   };
