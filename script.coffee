@@ -3137,7 +3137,7 @@ Redirect =
         url = "//archive.rebeccablacktech.com/#{path}"
         if threadID and postID
           url += "#p#{postID}"
-      when 'an', 'toy', 'x'
+      when 'an', 'r9k', 'toy', 'x'
         url = "http://archive.xfiles.to/#{path}"
         if threadID and postID
           url += "#p#{postID}"

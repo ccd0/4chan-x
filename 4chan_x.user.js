@@ -4025,6 +4025,7 @@
           }
           break;
         case 'an':
+        case 'r9k':
         case 'toy':
         case 'x':
           url = "http://archive.xfiles.to/" + path;
