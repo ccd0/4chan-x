@@ -1605,6 +1605,7 @@ QR =
           textContent: 'Connection error, or you are banned.'
     opts =
       form: $.formData post
+      responseType: 'document'
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
@@ -1615,9 +1616,12 @@ QR =
 
     QR.ajax = $.ajax $.id('postForm').parentNode.action, callbacks, opts
 
-  response: (html) ->
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = html
+  response: (response) ->
+    if $.engine is 'presto'
+      doc = d.implementation.createHTMLDocument ''
+      doc.documentElement.innerHTML = response
+    else
+      doc = response
     if doc.title is '4chan - Banned' # Ban/warn check
       bs  = $$ 'b', doc
       err = $.el 'span',
@@ -2937,11 +2941,15 @@ DeleteButton =
         onerror: -> DeleteButton.error self
       }, {
         form: $.formData form
+        responseType: 'document'
       }
 
-  load: (self, html) ->
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = html
+  load: (self, response) ->
+    if $.engine is 'presto'
+      doc = d.implementation.createHTMLDocument ''
+      doc.documentElement.innerHTML = response
+    else
+      doc = response
     if doc.title is '4chan - Banned' # Ban/warn check
       s = 'Banned!'
     else if msg = doc.getElementById 'errmsg' # error!

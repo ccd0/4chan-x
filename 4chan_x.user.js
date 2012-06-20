@@ -2116,6 +2116,7 @@
       };
       opts = {
         form: $.formData(post),
+        responseType: 'document',
         upCallbacks: {
           onload: function() {
             return QR.status({
@@ -2131,10 +2132,14 @@
       };
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
-    response: function(html) {
+    response: function(response) {
       var bs, doc, err, msg, persona, postNumber, reply, thread, _, _ref;
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = html;
+      if ($.engine === 'presto') {
+        doc = d.implementation.createHTMLDocument('');
+        doc.documentElement.innerHTML = response;
+      } else {
+        doc = response;
+      }
       if (doc.title === '4chan - Banned') {
         bs = $$('b', doc);
         err = $.el('span', {
@@ -3743,13 +3748,18 @@
           return DeleteButton.error(self);
         }
       }, {
-        form: $.formData(form)
+        form: $.formData(form),
+        responseType: 'document'
       });
     },
-    load: function(self, html) {
+    load: function(self, response) {
       var doc, msg, s;
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = html;
+      if ($.engine === 'presto') {
+        doc = d.implementation.createHTMLDocument('');
+        doc.documentElement.innerHTML = response;
+      } else {
+        doc = response;
+      }
       if (doc.title === '4chan - Banned') {
         s = 'Banned!';
       } else if (msg = doc.getElementById('errmsg')) {
