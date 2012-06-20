@@ -4366,13 +4366,13 @@
       Main.addStyle();
       now = Date.now();
       if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * $.HOUR) {
-        $.on(window, 'message', Main.message);
         $.ready(function() {
+          $.on(window, 'message', Main.message);
+          $.set('lastUpdate', now);
           return $.add(d.head, $.el('script', {
-            src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
+            src: 'https://github.com/MayhemYDG/4chan-x/raw/master/latest.js'
           }));
         });
-        $.set('lastUpdate', now);
       }
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       if ($.get('lastChecked', 0) < now - 1 * $.DAY) {

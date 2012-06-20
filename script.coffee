@@ -3380,9 +3380,11 @@ Main =
 
     now = Date.now()
     if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*$.HOUR
-      $.on window, 'message', Main.message
-      $.ready -> $.add d.head, $.el 'script', src: 'https://raw.github.com/mayhemydg/4chan-x/master/latest.js'
-      $.set 'lastUpdate', now
+      $.ready ->
+        $.on window, 'message', Main.message
+        $.set 'lastUpdate', now
+        $.add d.head, $.el 'script',
+          src: 'https://github.com/MayhemYDG/4chan-x/raw/master/latest.js'
 
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     if $.get('lastChecked', 0) < now - 1*$.DAY
