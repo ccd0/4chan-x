@@ -274,10 +274,15 @@ $.extend $,
         fd.append key, val if val
     fd
   ajax: (url, callbacks, opts={}) ->
-    {type, headers, upCallbacks, form} = opts
+    {type, responseType, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
     type or= form and 'post' or 'get'
     r.open type, url, true
+    r.responseType =
+      if $.engine is 'presto' and responseType is 'document'
+        ''
+      else
+        responseType or ''
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
@@ -2058,8 +2063,11 @@ Updater =
         return
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
-      doc = d.implementation.createHTMLDocument ''
-      doc.documentElement.innerHTML = @response
+      if $.engine is 'presto'
+        doc = d.implementation.createHTMLDocument ''
+        doc.documentElement.innerHTML = @response
+      else
+        doc = @response
 
       lastPost = Updater.thread.lastElementChild
       id = lastPost.id[2..]
@@ -2093,15 +2101,16 @@ Updater =
 
   retry: ->
     @count.textContent = 'Retry'
-    @count.className = null
+    @count.className   = null
     @update()
 
   update: ->
     Updater.timer.textContent = 0
     Updater.request?.abort()
-    #fool the cache
+    # Fool the cache.
     url = location.pathname + '?' + Date.now()
     Updater.request = $.ajax url, onload: Updater.cb.update,
+      responseType: 'document'
       headers: 'If-Modified-Since': Updater.lastModified
 
 Watcher =

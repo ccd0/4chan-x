@@ -331,14 +331,15 @@
       return fd;
     },
     ajax: function(url, callbacks, opts) {
-      var form, headers, key, r, type, upCallbacks, val;
+      var form, headers, key, r, responseType, type, upCallbacks, val;
       if (opts == null) {
         opts = {};
       }
-      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
+      type = opts.type, responseType = opts.responseType, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
       r = new XMLHttpRequest();
       type || (type = form && 'post' || 'get');
       r.open(type, url, true);
+      r.responseType = $.engine === 'presto' && responseType === 'document' ? '' : responseType || '';
       for (key in headers) {
         val = headers[key];
         r.setRequestHeader(key, val);
@@ -2617,8 +2618,12 @@
           return;
         }
         Updater.lastModified = this.getResponseHeader('Last-Modified');
-        doc = d.implementation.createHTMLDocument('');
-        doc.documentElement.innerHTML = this.response;
+        if ($.engine === 'presto') {
+          doc = d.implementation.createHTMLDocument('');
+          doc.documentElement.innerHTML = this.response;
+        } else {
+          doc = this.response;
+        }
         lastPost = Updater.thread.lastElementChild;
         id = lastPost.id.slice(2);
         nodes = [];
@@ -2670,6 +2675,7 @@
       return Updater.request = $.ajax(url, {
         onload: Updater.cb.update
       }, {
+        responseType: 'document',
         headers: {
           'If-Modified-Since': Updater.lastModified
         }
