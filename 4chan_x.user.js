@@ -3680,8 +3680,8 @@
             a.target = '_blank';
             if (Redirect.post(board, id)) {
               $.addClass(a, 'quotelink');
-              a.dataset.board = board;
-              a.dataset.id = id;
+              a.setAttribute('data-board', board);
+              a.setAttribute('data-id', id);
             }
           }
           data = data.slice(index + quote.length);

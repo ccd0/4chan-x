@@ -2876,8 +2876,13 @@ Quotify =
           a.target    = '_blank'
           if Redirect.post board, id
             $.addClass a, 'quotelink'
-            a.dataset.board = board
-            a.dataset.id    = id
+            # XXX WTF Scriptish/Greasemonkey?
+            # Setting dataset attributes that way doesn't affect the HTML,
+            # but are, I suspect, kept as object key/value pairs and GC'd later.
+            # a.dataset.board = board
+            # a.dataset.id    = id
+            a.setAttribute 'data-board', board
+            a.setAttribute 'data-id',    id
 
         data = data[index + quote.length..]
 
