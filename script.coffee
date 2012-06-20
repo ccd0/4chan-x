@@ -279,6 +279,8 @@ $.extend $,
     type or= form and 'post' or 'get'
     r.open type, url, true
     r.responseType =
+      # XXX Chrome doesn't support 'json' as responseType yet.
+      # XXX Opera gives an XMLDocument for 'document'.
       if $.engine is 'presto' and responseType is 'document' or $.engine is 'webkit' and responseType is 'json'
         ''
       else
