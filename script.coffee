@@ -299,6 +299,7 @@ $.extend $,
       req = $.ajax url, {
         onload:  -> cb.call @ for cb in @callbacks
         onabort: -> delete $.cache.requests[url]
+        onerror: -> delete $.cache.requests[url]
       }, {
         responseType: responseType
       }

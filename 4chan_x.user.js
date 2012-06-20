@@ -371,6 +371,9 @@
           },
           onabort: function() {
             return delete $.cache.requests[url];
+          },
+          onerror: function() {
+            return delete $.cache.requests[url];
           }
         }, {
           responseType: responseType
