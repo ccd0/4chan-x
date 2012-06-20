@@ -279,7 +279,7 @@ $.extend $,
     type or= form and 'post' or 'get'
     r.open type, url, true
     r.responseType =
-      if $.engine is 'presto' and responseType is 'document'
+      if $.engine is 'presto' and responseType is 'document' or $.engine is 'webkit' and responseType is 'json'
         ''
       else
         responseType or ''
@@ -289,16 +289,19 @@ $.extend $,
     $.extend r.upload, upCallbacks
     r.send form
     r
-  cache: (url, cb) ->
+  cache: (url, responseType, cb) ->
     if req = $.cache.requests[url]
       if req.readyState is 4
         cb.call req
       else
         req.callbacks.push cb
     else
-      req = $.ajax url,
+      req = $.ajax url, {
         onload:  -> cb.call @ for cb in @callbacks
         onabort: -> delete $.cache.requests[url]
+      }, {
+        responseType: responseType
+      }
       req.callbacks = [cb]
       $.cache.requests[url] = req
   cb:
@@ -602,14 +605,17 @@ ExpandComment =
     [_, threadID, replyID] = @href.match /(\d+)#p(\d+)/
     @textContent = "Loading #{replyID}..."
     a = @
-    $.cache @pathname, -> ExpandComment.parse @, a, threadID, replyID
+    $.cache @pathname, 'document', -> ExpandComment.parse @, a, threadID, replyID
   parse: (req, a, threadID, replyID) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = req.response
+    if $.engine is 'presto'
+      doc = d.implementation.createHTMLDocument ''
+      doc.documentElement.innerHTML = req.response
+    else
+      doc = req.response
 
     # Import the node to fix quote.hashes
     # as they're empty when in a different document.
@@ -657,7 +663,7 @@ ExpandThread =
     switch a.textContent[0]
       when '+'
         a.textContent = a.textContent.replace '+', '\u00d7 Loading...'
-        $.cache pathname, -> ExpandThread.parse @, thread, a
+        $.cache pathname, 'document', -> ExpandThread.parse @, thread, a
 
       when '\u00d7'
         a.textContent = a.textContent.replace '\u00d7 Loading...', '+'
@@ -684,8 +690,11 @@ ExpandThread =
 
     a.textContent = a.textContent.replace '\u00d7 Loading...', '-'
 
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = req.response
+    if $.engine is 'presto'
+      doc = d.implementation.createHTMLDocument ''
+      doc.documentElement.innerHTML = req.response
+    else
+      doc = req.response
 
     threadID = thread.id[1..]
     nodes    = []
@@ -2391,17 +2400,17 @@ Get =
 
     root.textContent = "Loading post No.#{postID}..."
     if threadID
-      $.cache "/#{board}/res/#{threadID}", ->
+      $.cache "/#{board}/res/#{threadID}", 'document', ->
         Get.parsePost @, board, threadID, postID, root, cb
     else if url = Redirect.post board, postID
-      $.cache url, ->
+      $.cache url, 'json', ->
         Get.parseArchivedPost @, board, postID, root, cb
   parsePost: (req, board, threadID, postID, root, cb) ->
     {status} = req
     if status isnt 200
       # The thread can die by the time we check a quote.
       if url = Redirect.post board, postID
-        $.cache url, ->
+        $.cache url, 'json', ->
           Get.parseArchivedPost @, board, postID, root, cb
       else
         root.textContent =
@@ -2411,13 +2420,16 @@ Get =
             "Error #{req.status}: #{req.statusText}."
       return
 
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = req.response
+    if $.engine is 'presto'
+      doc = d.implementation.createHTMLDocument ''
+      doc.documentElement.innerHTML = req.response
+    else
+      doc = req.response
 
     unless pc = doc.getElementById "pc#{postID}"
       # The post can be deleted by the time we check a quote.
       if url = Redirect.post board, postID
-        $.cache url, ->
+        $.cache url, 'json', ->
           Get.parseArchivedPost @, board, postID, root, cb
       else
         root.textContent = "Post No.#{postID} has not been found."
@@ -2435,7 +2447,10 @@ Get =
     $.replace root.firstChild, pc
     cb() if cb
   parseArchivedPost: (req, board, postID, root, cb) ->
-    data = JSON.parse req.response
+    if $.engine is 'webkit'
+      data = JSON.parse req.response
+    else
+      data = req.response
     $.addClass root, 'archivedPost'
     if data.error
       root.textContent = data.error

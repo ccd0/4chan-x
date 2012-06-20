@@ -339,7 +339,7 @@
       r = new XMLHttpRequest();
       type || (type = form && 'post' || 'get');
       r.open(type, url, true);
-      r.responseType = $.engine === 'presto' && responseType === 'document' ? '' : responseType || '';
+      r.responseType = $.engine === 'presto' && responseType === 'document' || $.engine === 'webkit' && responseType === 'json' ? '' : responseType || '';
       for (key in headers) {
         val = headers[key];
         r.setRequestHeader(key, val);
@@ -349,7 +349,7 @@
       r.send(form);
       return r;
     },
-    cache: function(url, cb) {
+    cache: function(url, responseType, cb) {
       var req;
       if (req = $.cache.requests[url]) {
         if (req.readyState === 4) {
@@ -372,6 +372,8 @@
           onabort: function() {
             return delete $.cache.requests[url];
           }
+        }, {
+          responseType: responseType
         });
         req.callbacks = [cb];
         return $.cache.requests[url] = req;
@@ -773,7 +775,7 @@
       _ref = this.href.match(/(\d+)#p(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
       this.textContent = "Loading " + replyID + "...";
       a = this;
-      return $.cache(this.pathname, function() {
+      return $.cache(this.pathname, 'document', function() {
         return ExpandComment.parse(this, a, threadID, replyID);
       });
     },
@@ -783,8 +785,12 @@
         a.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = req.response;
+      if ($.engine === 'presto') {
+        doc = d.implementation.createHTMLDocument('');
+        doc.documentElement.innerHTML = req.response;
+      } else {
+        doc = req.response;
+      }
       node = d.importNode(doc.getElementById("m" + replyID), true);
       quotes = node.getElementsByClassName('quotelink');
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
@@ -847,7 +853,7 @@
       switch (a.textContent[0]) {
         case '+':
           a.textContent = a.textContent.replace('+', '\u00d7 Loading...');
-          $.cache(pathname, function() {
+          $.cache(pathname, 'document', function() {
             return ExpandThread.parse(this, thread, a);
           });
           break;
@@ -884,8 +890,12 @@
         return;
       }
       a.textContent = a.textContent.replace('\u00d7 Loading...', '-');
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = req.response;
+      if ($.engine === 'presto') {
+        doc = d.implementation.createHTMLDocument('');
+        doc.documentElement.innerHTML = req.response;
+      } else {
+        doc = req.response;
+      }
       threadID = thread.id.slice(1);
       nodes = [];
       _ref = $$('.replyContainer', doc);
@@ -3101,11 +3111,11 @@
       }
       root.textContent = "Loading post No." + postID + "...";
       if (threadID) {
-        return $.cache("/" + board + "/res/" + threadID, function() {
+        return $.cache("/" + board + "/res/" + threadID, 'document', function() {
           return Get.parsePost(this, board, threadID, postID, root, cb);
         });
       } else if (url = Redirect.post(board, postID)) {
-        return $.cache(url, function() {
+        return $.cache(url, 'json', function() {
           return Get.parseArchivedPost(this, board, postID, root, cb);
         });
       }
@@ -3115,7 +3125,7 @@
       status = req.status;
       if (status !== 200) {
         if (url = Redirect.post(board, postID)) {
-          $.cache(url, function() {
+          $.cache(url, 'json', function() {
             return Get.parseArchivedPost(this, board, postID, root, cb);
           });
         } else {
@@ -3123,11 +3133,15 @@
         }
         return;
       }
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = req.response;
+      if ($.engine === 'presto') {
+        doc = d.implementation.createHTMLDocument('');
+        doc.documentElement.innerHTML = req.response;
+      } else {
+        doc = req.response;
+      }
       if (!(pc = doc.getElementById("pc" + postID))) {
         if (url = Redirect.post(board, postID)) {
-          $.cache(url, function() {
+          $.cache(url, 'json', function() {
             return Get.parseArchivedPost(this, board, postID, root, cb);
           });
         } else {
@@ -3155,7 +3169,11 @@
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
       var bq, br, capcode, data, email, file, filename, filesize, isOP, max, name, nameBlock, pc, pi, piM, span, spoiler, subject, threadID, thumb_src, timestamp, trip;
-      data = JSON.parse(req.response);
+      if ($.engine === 'webkit') {
+        data = JSON.parse(req.response);
+      } else {
+        data = req.response;
+      }
       $.addClass(root, 'archivedPost');
       if (data.error) {
         root.textContent = data.error;
