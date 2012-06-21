@@ -14,6 +14,7 @@
 // @include        https://sys.4chan.org/*
 // @run-at         document-start
 // @updateURL      https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
+// @downloadURL    https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
 // @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
 // ==/UserScript==
 
