@@ -1196,6 +1196,13 @@ QR =
     # Fire the 'input' event
     $.event ta, 'input', 'Event'
 
+  characterCount: ->
+    counter = QR.charaCounter
+    count   = @textLength
+    counter.textContent = count
+    counter.hidden      = count < 1000
+    (if count > 1500 then $.addClass else $.rmClass) counter, 'warning'
+
   drag: (e) ->
     # Let it drag anything from the page.
     i = if e.type is 'dragstart' then 'off' else 'on'
@@ -1360,6 +1367,7 @@ QR =
       # Load this reply's values.
       for data in ['name', 'email', 'sub', 'com']
         $("[name=#{data}]", QR.el).value = @[data]
+      QR.characterCount.call $ 'textarea', QR.el
       $('#spoiler', QR.el).checked = @spoiler
     dragStart: ->
       $.addClass    @, 'drag'
@@ -1461,9 +1469,9 @@ QR =
   <span> <a class=close title=Close>&times;</a></span>
 </div>
 <form>
-  <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
+  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
-  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
+  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
   <div class=captcha title=Reload><img></div>
   <div><input title=Verification class=field autocomplete=off size=1></div>
   <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
@@ -1496,6 +1504,9 @@ QR =
     spoiler        = $ '#spoilerLabel', QR.el
     spoiler.hidden = !QR.spoiler
 
+    QR.charaCounter = $ '#charCount', QR.el
+    ta              = $ 'textarea',    QR.el
+
     unless g.REPLY
       # Make a list with visible threads and an option to create a new one.
       threads = '<option value=new>New thread</option>'
@@ -1511,7 +1522,8 @@ QR =
     $.on $('#dump',     QR.el), 'click',     -> QR.el.classList.toggle 'dump'
     $.on $('#addReply', QR.el), 'click',     -> new QR.reply().select()
     $.on $('form',      QR.el), 'submit',    QR.submit
-    $.on $('textarea',  QR.el), 'input',     -> QR.selected.el.lastChild.textContent = @value
+    $.on ta,                    'input',     -> QR.selected.el.lastChild.textContent = @value
+    $.on ta,                    'input',     QR.characterCount
     $.on fileInput,             'change',    QR.fileInput
     $.on fileInput,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
     $.on spoiler.firstChild,    'change',    -> $('input', QR.selected.el).click()
@@ -3695,7 +3707,7 @@ h1 {
 #qr > .move > span {
   float: right;
 }
-#autohide, .close, #qr select, #dump, .remove, .captcha, #qr .warning {
+#autohide, .close, #qr select, #dump, .remove, .captcha, #qr div.warning {
   cursor: pointer;
 }
 #qr select,
@@ -3835,9 +3847,6 @@ h1 {
   -o-transition: color .25s, border .25s;
   transition: color .25s, border .25s;
 }
-#qr .field:not(#dump) {
-  width: 30%;
-}
 .field:-moz-placeholder,
 .field:hover:-moz-placeholder {
   color: #AAA;
@@ -3847,11 +3856,28 @@ h1 {
   color: #000;
   outline: none;
 }
-textarea.field {
-  min-height: 120px;
+#qr > form > div:first-child > .field:not(#dump) {
+  width: 30%;
 }
-#qr .field:only-child {
+#qr textarea.field {
   display: -webkit-box;
+  min-height: 120px;
+  min-width: 100%;
+}
+#qr > form > div:nth-child(3) {
+  position: relative;
+}
+#charCount {
+  color: #000;
+  background: hsla(0, 0%, 100%, .5);
+  position: absolute;
+  top: 100%;
+  right: 0;
+}
+#charCount.warning {
+  color: red;
+}
+.captcha + div > .field {
   min-width: 100%;
 }
 .captcha {
