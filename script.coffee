@@ -3186,7 +3186,7 @@ Redirect =
         url = "//archive.installgentoo.net/#{path}"
         if threadID and postID
           url += "#p#{postID}"
-      when 'cgl', 'mu', 'w'
+      when 'cgl', 'mu', 'soc', 'w'
         url = "//archive.rebeccablacktech.com/#{path}"
         if threadID and postID
           url += "#p#{postID}"

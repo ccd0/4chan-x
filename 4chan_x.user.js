@@ -4069,6 +4069,7 @@
           break;
         case 'cgl':
         case 'mu':
+        case 'soc':
         case 'w':
           url = "//archive.rebeccablacktech.com/" + path;
           if (threadID && postID) {
