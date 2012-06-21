@@ -20,7 +20,7 @@ HEADER  = """
 // @include        http://sys.4chan.org/*
 // @include        https://sys.4chan.org/*
 // @run-at         document-start
-// @updateURL      https://raw.github.com/MayhemYDG/4chan-x/stable/4chan_x.user.js
+// @updateURL      https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
 // @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
 // ==/UserScript==
 
