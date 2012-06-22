@@ -274,15 +274,10 @@ $.extend $,
         fd.append key, val if val
     fd
   ajax: (url, callbacks, opts={}) ->
-    {type, responseType, headers, upCallbacks, form} = opts
+    {type, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
     type or= form and 'post' or 'get'
     r.open type, url, true
-    r.responseType =
-      if $.engine is 'presto' and responseType is 'document'
-        ''
-      else
-        responseType or ''
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
@@ -1618,7 +1613,6 @@ QR =
           textContent: 'Connection error, or you are banned.'
     opts =
       form: $.formData post
-      responseType: 'document'
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
@@ -1629,12 +1623,9 @@ QR =
 
     QR.ajax = $.ajax $.id('postForm').parentNode.action, callbacks, opts
 
-  response: (response) ->
-    if $.engine is 'presto'
-      doc = d.implementation.createHTMLDocument ''
-      doc.documentElement.innerHTML = response
-    else
-      doc = response
+  response: (html) ->
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = html
     if doc.title is '4chan - Banned' # Ban/warn check
       bs  = $$ 'b', doc
       err = $.el 'span',
@@ -2080,11 +2071,8 @@ Updater =
         return
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
-      if $.engine is 'presto'
-        doc = d.implementation.createHTMLDocument ''
-        doc.documentElement.innerHTML = @response
-      else
-        doc = @response
+      doc = d.implementation.createHTMLDocument ''
+      doc.documentElement.innerHTML = @response
 
       lastPost = Updater.thread.lastElementChild
       id = lastPost.id[2..]
@@ -2118,16 +2106,15 @@ Updater =
 
   retry: ->
     @count.textContent = 'Retry'
-    @count.className   = null
+    @count.className = null
     @update()
 
   update: ->
     Updater.timer.textContent = 0
     Updater.request?.abort()
-    # Fool the cache.
+    #fool the cache
     url = location.pathname + '?' + Date.now()
     Updater.request = $.ajax url, onload: Updater.cb.update,
-      responseType: 'document'
       headers: 'If-Modified-Since': Updater.lastModified
 
 Watcher =
@@ -2954,15 +2941,11 @@ DeleteButton =
         onerror: -> DeleteButton.error self
       }, {
         form: $.formData form
-        responseType: 'document'
       }
 
-  load: (self, response) ->
-    if $.engine is 'presto'
-      doc = d.implementation.createHTMLDocument ''
-      doc.documentElement.innerHTML = response
-    else
-      doc = response
+  load: (self, html) ->
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = html
     if doc.title is '4chan - Banned' # Ban/warn check
       s = 'Banned!'
     else if msg = doc.getElementById 'errmsg' # error!

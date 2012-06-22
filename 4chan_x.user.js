@@ -332,15 +332,14 @@
       return fd;
     },
     ajax: function(url, callbacks, opts) {
-      var form, headers, key, r, responseType, type, upCallbacks, val;
+      var form, headers, key, r, type, upCallbacks, val;
       if (opts == null) {
         opts = {};
       }
-      type = opts.type, responseType = opts.responseType, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
+      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
       r = new XMLHttpRequest();
       type || (type = form && 'post' || 'get');
       r.open(type, url, true);
-      r.responseType = $.engine === 'presto' && responseType === 'document' ? '' : responseType || '';
       for (key in headers) {
         val = headers[key];
         r.setRequestHeader(key, val);
@@ -2132,7 +2131,6 @@
       };
       opts = {
         form: $.formData(post),
-        responseType: 'document',
         upCallbacks: {
           onload: function() {
             return QR.status({
@@ -2148,14 +2146,10 @@
       };
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
-    response: function(response) {
+    response: function(html) {
       var bs, doc, err, msg, persona, postNumber, reply, thread, _, _ref;
-      if ($.engine === 'presto') {
-        doc = d.implementation.createHTMLDocument('');
-        doc.documentElement.innerHTML = response;
-      } else {
-        doc = response;
-      }
+      doc = d.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
         bs = $$('b', doc);
         err = $.el('span', {
@@ -2639,12 +2633,8 @@
           return;
         }
         Updater.lastModified = this.getResponseHeader('Last-Modified');
-        if ($.engine === 'presto') {
-          doc = d.implementation.createHTMLDocument('');
-          doc.documentElement.innerHTML = this.response;
-        } else {
-          doc = this.response;
-        }
+        doc = d.implementation.createHTMLDocument('');
+        doc.documentElement.innerHTML = this.response;
         lastPost = Updater.thread.lastElementChild;
         id = lastPost.id.slice(2);
         nodes = [];
@@ -2696,7 +2686,6 @@
       return Updater.request = $.ajax(url, {
         onload: Updater.cb.update
       }, {
-        responseType: 'document',
         headers: {
           'If-Modified-Since': Updater.lastModified
         }
@@ -3764,18 +3753,13 @@
           return DeleteButton.error(self);
         }
       }, {
-        form: $.formData(form),
-        responseType: 'document'
+        form: $.formData(form)
       });
     },
-    load: function(self, response) {
+    load: function(self, html) {
       var doc, msg, s;
-      if ($.engine === 'presto') {
-        doc = d.implementation.createHTMLDocument('');
-        doc.documentElement.innerHTML = response;
-      } else {
-        doc = response;
-      }
+      doc = d.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
         s = 'Banned!';
       } else if (msg = doc.getElementById('errmsg')) {
