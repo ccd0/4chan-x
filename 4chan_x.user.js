@@ -77,7 +77,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, DeleteButton, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, DeleteButton, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -1068,6 +1068,73 @@
       }
       $('.sideArrows', root).hidden = false;
       return $('.post', root).hidden = false;
+    }
+  };
+
+  Menu = {
+    entries: [],
+    init: function() {
+      this.a = $.el('a', {
+        className: 'menu_button',
+        href: 'javascript:;',
+        innerHTML: '[▼]'
+      });
+      this.el = $.el('div', {
+        className: 'reply dialog',
+        id: 'menu'
+      });
+      $.on(this.el, 'click', function(e) {
+        return e.stopPropagation();
+      });
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var a;
+      if (!(a = $('.menu_button', post.el))) {
+        a = Menu.a.cloneNode(true);
+        $.add($('.postInfo', post.el), a);
+      }
+      return $.on(a, 'click', Menu.toggle);
+    },
+    toggle: function(e) {
+      var lastOpener, s;
+      e.preventDefault();
+      e.stopPropagation();
+      if (Menu.el.parentNode) {
+        lastOpener = Menu.lastOpener;
+        Menu.close();
+        if (lastOpener === this) {
+          return;
+        }
+      }
+      s = Menu.el.style;
+      s.top = this.offsetTop + this.offsetHeight + 2 + 'px';
+      s.left = this.offsetLeft + 'px';
+      Menu.lastOpener = this;
+      return Menu.open(Main.preParse($.x('ancestor::div[contains(@class,"postContainer")][1]', this)));
+    },
+    open: function(post) {
+      var entry, i, _i, _len, _ref;
+      for (i in post) {
+        $.add(Menu.el, $.el('code', {
+          className: 'entry',
+          textContent: "" + i + ": " + post[i]
+        }));
+      }
+      _ref = Menu.entries;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        entry = _ref[_i];
+        $.add(Menu.el, entry.el);
+        $.addClass(entry.el, 'entry');
+      }
+      $.add(d.body, Menu.el);
+      return $.on(d, 'click', Menu.close);
+    },
+    close: function() {
+      $.rm(Menu.el);
+      Menu.el.innerHTML = null;
+      delete Menu.lastOpener;
+      return $.off(d, 'click', Menu.close);
     }
   };
 
@@ -4429,6 +4496,7 @@
       if (Conf['Anonymize']) {
         Anonymize.init();
       }
+      Menu.init();
       if (Conf['Time Formatting']) {
         Time.init();
       }
@@ -4713,6 +4781,21 @@ a[href="javascript:;"] {\
 .autohide:not(:hover) > form,\
 #qp input, #qp .inline, .forwarded {\
   display: none !important;\
+}\
+\
+#menu {\
+  position: absolute;\
+}\
+.entry {\
+  border-bottom: 1px solid rgba(0, 0, 0, .25);\
+  display: block;\
+  padding: 3px 4px;\
+}\
+.entry:last-child {\
+  border: none;\
+}\
+.entry:hover, .entry:focus {\
+  background: rgba(255, 255, 255, .33);\
 }\
 \
 h1 {\

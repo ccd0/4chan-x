@@ -814,6 +814,61 @@ ReplyHiding =
     $('.sideArrows', root).hidden = false
     $('.post',       root).hidden = false
 
+Menu =
+  entries: []
+  init: ->
+    @a = $.el 'a',
+      className: 'menu_button'
+      href:      'javascript:;'
+      innerHTML: '[▼]'
+    @el = $.el 'div',
+      className: 'reply dialog'
+      id:        'menu'
+
+    $.on @el, 'click', (e) -> e.stopPropagation()
+
+    Main.callbacks.push @node
+  node: (post) ->
+    unless a = $ '.menu_button', post.el
+      a = Menu.a.cloneNode true
+      $.add $('.postInfo', post.el), a
+    $.on a, 'click', Menu.toggle
+
+  toggle: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+    if Menu.el.parentNode
+      # Close if it's already opened.
+      # Reopen if we clicked on another button.
+      {lastOpener} = Menu
+      Menu.close()
+      return if lastOpener is @
+
+    # Position
+    s = Menu.el.style
+    s.top  = @offsetTop  + @offsetHeight + 2 + 'px'
+    s.left = @offsetLeft + 'px'
+
+    Menu.lastOpener = @
+    Menu.open Main.preParse $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+  open: (post) ->
+    for i of post
+      $.add Menu.el, $.el 'code',
+        className: 'entry'
+        textContent: "#{i}: #{post[i]}"
+    for entry in Menu.entries
+      # if the entry matches this post...
+      $.add Menu.el, entry.el
+      $.addClass entry.el, 'entry' # XXX ???
+    $.add d.body, Menu.el
+    $.on d, 'click', Menu.close
+  close: ->
+    $.rm Menu.el
+    Menu.el.innerHTML = null
+    delete Menu.lastOpener
+    $.off d, 'click', Menu.close
+
 Keybinds =
   init: ->
     for node in $$ '[accesskey]'
@@ -3435,6 +3490,8 @@ Main =
     if Conf['Anonymize']
       Anonymize.init()
 
+    Menu.init()
+
     if Conf['Time Formatting']
       Time.init()
 
@@ -3661,6 +3718,21 @@ a[href="javascript:;"] {
 .autohide:not(:hover) > form,
 #qp input, #qp .inline, .forwarded {
   display: none !important;
+}
+
+#menu {
+  position: absolute;
+}
+.entry {
+  border-bottom: 1px solid rgba(0, 0, 0, .25);
+  display: block;
+  padding: 3px 4px;
+}
+.entry:last-child {
+  border: none;
+}
+.entry:hover, .entry:focus {
+  background: rgba(255, 255, 255, .33);
 }
 
 h1 {
