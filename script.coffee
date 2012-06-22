@@ -352,9 +352,7 @@ $.extend $,
     return
   open: (url) ->
     (GM_openInTab or window.open) location.protocol + url, '_blank'
-  event: (el, name, type) ->
-    e = d.createEvent type or 'CustomEvent'
-    e.initEvent name, true, false
+  event: (el, e) ->
     el.dispatchEvent e
   globalEval: (code) ->
     script = $.el 'script', textContent: code
@@ -936,7 +934,7 @@ Keybinds =
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
-    $.event ta, 'input', 'Event'
+    $.event ta, new Event 'input'
 
   img: (thread, all) ->
     if all
@@ -1178,7 +1176,7 @@ QR =
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
-    $.event ta, 'input', 'Event'
+    $.event ta, new Event 'input'
 
   characterCount: ->
     counter = QR.charaCounter
@@ -1532,7 +1530,8 @@ QR =
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
-    $.event QR.el, 'QRDialogCreation'
+    $.event QR.el, new CustomEvent 'QRDialogCreation',
+      bubbles: true
 
   submit: (e) ->
     e?.preventDefault()
@@ -1655,9 +1654,6 @@ QR =
       QR.error err
       return
 
-    # Post/upload confirmed as successful.
-    $.event QR.el, 'QRPostSuccessful'
-
     reply = QR.replies[0]
 
     persona = $.get 'QR.persona', {}
@@ -1667,18 +1663,25 @@ QR =
       sub:   if Conf['Remember Subject']  then reply.sub     else null
     $.set 'QR.persona', persona
 
-    [_, thread, postNumber] = msg.lastChild.textContent.match /thread:(\d+),no:(\d+)/
-    if thread is '0' # new thread
+    [_, threadID, postID] = msg.lastChild.textContent.match /thread:(\d+),no:(\d+)/
+
+    # Post/upload confirmed as successful.
+    $.event QR.el, new CustomEvent 'QRPostSuccessful',
+      detail:
+        threadID: threadID
+        postID:   postID
+
+    if threadID is '0' # new thread
       if Conf['Thread Watcher'] and Conf['Auto Watch']
-        $.set 'autoWatch', postNumber
+        $.set 'autoWatch', postID
       # auto-noko
-      location.pathname = "/#{g.BOARD}/res/#{postNumber}"
+      location.pathname = "/#{g.BOARD}/res/#{postID}"
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       QR.cooldown.auto = QR.replies.length > 1
       QR.cooldown.set if /sage/i.test reply.email then 60 else 30
       if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
-        $.open "//boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}"
+        $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
     if Conf['Persistent QR'] or QR.cooldown.auto
       reply.rm()
@@ -1686,7 +1689,7 @@ QR =
       QR.close()
 
     if g.REPLY and (Conf['Unread Count'] or Conf['Unread Favicon'])
-      Unread.foresee.push postNumber
+      Unread.foresee.push postID
     if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
       Updater.update()
 

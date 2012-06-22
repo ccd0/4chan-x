@@ -470,10 +470,7 @@
     open: function(url) {
       return (GM_openInTab || window.open)(location.protocol + url, '_blank');
     },
-    event: function(el, name, type) {
-      var e;
-      e = d.createEvent(type || 'CustomEvent');
-      e.initEvent(name, true, false);
+    event: function(el, e) {
       return el.dispatchEvent(e);
     },
     globalEval: function(code) {
@@ -1282,7 +1279,7 @@
       ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
       range = ("[" + tag + "]").length + selEnd;
       ta.setSelectionRange(range, range);
-      return $.event(ta, 'input', 'Event');
+      return $.event(ta, new Event('input'));
     },
     img: function(thread, all) {
       var thumb;
@@ -1592,7 +1589,7 @@
         range += text.match(/\n/g).length;
       }
       ta.setSelectionRange(range, range);
-      return $.event(ta, 'input', 'Event');
+      return $.event(ta, new Event('input'));
     },
     characterCount: function() {
       var count, counter;
@@ -2046,7 +2043,9 @@
       QR.cooldown.init();
       QR.captcha.init();
       $.add(d.body, QR.el);
-      return $.event(QR.el, 'QRDialogCreation');
+      return $.event(QR.el, new CustomEvent('QRDialogCreation', {
+        bubbles: true
+      }));
     },
     submit: function(e) {
       var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, threadID;
@@ -2147,7 +2146,7 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var bs, doc, err, msg, persona, postNumber, reply, thread, _, _ref;
+      var bs, doc, err, msg, persona, postID, reply, threadID, _, _ref;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
@@ -2175,7 +2174,6 @@
         QR.error(err);
         return;
       }
-      $.event(QR.el, 'QRPostSuccessful');
       reply = QR.replies[0];
       persona = $.get('QR.persona', {});
       persona = {
@@ -2184,17 +2182,23 @@
         sub: Conf['Remember Subject'] ? reply.sub : null
       };
       $.set('QR.persona', persona);
-      _ref = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], thread = _ref[1], postNumber = _ref[2];
-      if (thread === '0') {
-        if (Conf['Thread Watcher'] && Conf['Auto Watch']) {
-          $.set('autoWatch', postNumber);
+      _ref = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], threadID = _ref[1], postID = _ref[2];
+      $.event(QR.el, new CustomEvent('QRPostSuccessful', {
+        detail: {
+          threadID: threadID,
+          postID: postID
         }
-        location.pathname = "/" + g.BOARD + "/res/" + postNumber;
+      }));
+      if (threadID === '0') {
+        if (Conf['Thread Watcher'] && Conf['Auto Watch']) {
+          $.set('autoWatch', postID);
+        }
+        location.pathname = "/" + g.BOARD + "/res/" + postID;
       } else {
         QR.cooldown.auto = QR.replies.length > 1;
         QR.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
         if (Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
-          $.open("//boards.4chan.org/" + g.BOARD + "/res/" + thread + "#" + postNumber);
+          $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
         }
       }
       if (Conf['Persistent QR'] || QR.cooldown.auto) {
@@ -2203,7 +2207,7 @@
         QR.close();
       }
       if (g.REPLY && (Conf['Unread Count'] || Conf['Unread Favicon'])) {
-        Unread.foresee.push(postNumber);
+        Unread.foresee.push(postID);
       }
       if (g.REPLY && Conf['Thread Updater'] && Conf['Auto Update This']) {
         Updater.update();
