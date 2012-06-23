@@ -5,7 +5,7 @@ Config =
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
-      'Report Button':                [true,  'Add report buttons']
+      'Report Link':                  [true,  'Add report links']
       'Delete Button':                [false, 'Add delete buttons']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
@@ -824,7 +824,6 @@ Menu =
     @el = $.el 'div',
       className: 'reply dialog'
       id:        'menu'
-
     $.on @el, 'click', (e) -> e.stopPropagation()
 
     Main.callbacks.push @node
@@ -847,27 +846,42 @@ Menu =
 
     # Position
     s = Menu.el.style
+    # XXX prevent overflows
     s.top  = @offsetTop  + @offsetHeight + 2 + 'px'
     s.left = @offsetLeft + 'px'
 
     Menu.lastOpener = @
     Menu.open Main.preParse $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
   open: (post) ->
-    for i of post
-      $.add Menu.el, $.el 'code',
-        className: 'entry'
-        textContent: "#{i}: #{post[i]}"
+    {el} = Menu
+    # XXX GM/Scriptish require setAttribute
+    el.setAttribute 'data-id', post.ID
+    el.setAttribute 'data-rootid', post.root.id
+    # for i of post
+    #   $.add Menu.el, $.el 'code',
+    #     className: 'entry'
+    #     textContent: "#{i}: #{post[i]}"
     for entry in Menu.entries
-      # if the entry matches this post...
-      $.add Menu.el, entry.el
-      $.addClass entry.el, 'entry' # XXX ???
-    $.add d.body, Menu.el
+      if (->
+        for requirement, val of entry.requirements
+          return false if val isnt post[requirement]
+        true
+      )()
+        $.add el, entry.el
+        # XXX 'context' event?
+        $.event entry.el, new CustomEvent 'context'
+    $.add d.body, el
     $.on d, 'click', Menu.close
   close: ->
     $.rm Menu.el
     Menu.el.innerHTML = null
     delete Menu.lastOpener
     $.off d, 'click', Menu.close
+
+  newEntry: (name) ->
+    $.el name,
+      className: 'entry'
+      tabIndex: 0
 
 Keybinds =
   init: ->
@@ -2654,7 +2668,7 @@ Get =
         innerHTML: "<img #{thumb_src} alt='#{if data.media_status isnt 'available' then "Error: #{data.media_status}, " else ''}#{if spoiler then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
       $.after (if isOP then piM else pi), file
 
-    $.replace root.firstChild, pc
+    $.replace root.firstChild, Get.cleanPost pc
     cb() if cb
   cleanPost: (root) ->
     post = $ '.post', root
@@ -2663,7 +2677,9 @@ Get =
 
     # Don't mess with other features
     now = Date.now()
-    for el in $$ '[id]', root
+    els = $$ '[id]', root
+    els.push root
+    for el in els
       el.id = "#{now}_#{el.id}"
 
     $.rmClass root, 'forwarded'
@@ -3018,20 +3034,20 @@ DeleteButton =
 
 ReportButton =
   init: ->
-    @a = $.el 'a',
-      className: 'report_button'
-      innerHTML: '[&nbsp;!&nbsp;]'
-      href: 'javascript:;'
-    Main.callbacks.push @node
-  node: (post) ->
-    unless a = $ '.report_button', post.el
-      a = ReportButton.a.cloneNode true
-      $.add $('.postInfo', post.el), a
+    a = Menu.newEntry 'a'
+    a.href = 'javascript:;'
+    a.textContent = 'Report this post'
+    $.addClass a, 'report_button'
     $.on a, 'click', ReportButton.report
+    Menu.entries.push
+      el: a
+      requirements:
+        isArchived: false
   report: ->
-    url = "//sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
-    id  = Date.now()
-    set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
+    a     = $ '.postNum > a[title="Highlight this post"]', $.id @parentNode.dataset.rootid
+    url   = "//sys.4chan.org/#{a.pathname.split('/')[1]}/imgboard.php?mode=report&no=#{@parentNode.dataset.id}"
+    id    = Date.now()
+    set   = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
 
 ThreadStats =

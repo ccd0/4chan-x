@@ -86,7 +86,7 @@
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
-        'Report Button': [true, 'Add report buttons'],
+        'Report Link': [true, 'Add report links'],
         'Delete Button': [false, 'Add delete buttons'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
@@ -1114,20 +1114,29 @@
       return Menu.open(Main.preParse($.x('ancestor::div[contains(@class,"postContainer")][1]', this)));
     },
     open: function(post) {
-      var entry, i, _i, _len, _ref;
-      for (i in post) {
-        $.add(Menu.el, $.el('code', {
-          className: 'entry',
-          textContent: "" + i + ": " + post[i]
-        }));
-      }
+      var el, entry, _i, _len, _ref;
+      el = Menu.el;
+      el.setAttribute('data-id', post.ID);
+      el.setAttribute('data-rootid', post.root.id);
       _ref = Menu.entries;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         entry = _ref[_i];
-        $.add(Menu.el, entry.el);
-        $.addClass(entry.el, 'entry');
+        if ((function() {
+          var requirement, val, _ref1;
+          _ref1 = entry.requirements;
+          for (requirement in _ref1) {
+            val = _ref1[requirement];
+            if (val !== post[requirement]) {
+              return false;
+            }
+          }
+          return true;
+        })()) {
+          $.add(el, entry.el);
+          $.event(entry.el, new CustomEvent('context'));
+        }
       }
-      $.add(d.body, Menu.el);
+      $.add(d.body, el);
       return $.on(d, 'click', Menu.close);
     },
     close: function() {
@@ -1135,6 +1144,12 @@
       Menu.el.innerHTML = null;
       delete Menu.lastOpener;
       return $.off(d, 'click', Menu.close);
+    },
+    newEntry: function(name) {
+      return $.el(name, {
+        className: 'entry',
+        tabIndex: 0
+      });
     }
   };
 
@@ -3379,13 +3394,13 @@
         }));
         $.after((isOP ? piM : pi), file);
       }
-      $.replace(root.firstChild, pc);
+      $.replace(root.firstChild, Get.cleanPost(pc));
       if (cb) {
         return cb();
       }
     },
     cleanPost: function(root) {
-      var child, el, now, post, _i, _j, _len, _len1, _ref, _ref1;
+      var child, el, els, now, post, _i, _j, _len, _len1, _ref;
       post = $('.post', root);
       _ref = Array.prototype.slice.call(root.childNodes);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3395,9 +3410,10 @@
         }
       }
       now = Date.now();
-      _ref1 = $$('[id]', root);
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        el = _ref1[_j];
+      els = $$('[id]', root);
+      els.push(root);
+      for (_j = 0, _len1 = els.length; _j < _len1; _j++) {
+        el = els[_j];
         el.id = "" + now + "_" + el.id;
       }
       $.rmClass(root, 'forwarded');
@@ -3849,24 +3865,23 @@
 
   ReportButton = {
     init: function() {
-      this.a = $.el('a', {
-        className: 'report_button',
-        innerHTML: '[&nbsp;!&nbsp;]',
-        href: 'javascript:;'
-      });
-      return Main.callbacks.push(this.node);
-    },
-    node: function(post) {
       var a;
-      if (!(a = $('.report_button', post.el))) {
-        a = ReportButton.a.cloneNode(true);
-        $.add($('.postInfo', post.el), a);
-      }
-      return $.on(a, 'click', ReportButton.report);
+      a = Menu.newEntry('a');
+      a.href = 'javascript:;';
+      a.textContent = 'Report this post';
+      $.addClass(a, 'report_button');
+      $.on(a, 'click', ReportButton.report);
+      return Menu.entries.push({
+        el: a,
+        requirements: {
+          isArchived: false
+        }
+      });
     },
     report: function() {
-      var id, set, url;
-      url = "//sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + ($.x('preceding-sibling::input', this).name);
+      var a, id, set, url;
+      a = $('.postNum > a[title="Highlight this post"]', $.id(this.parentNode.dataset.rootid));
+      url = "//sys.4chan.org/" + (a.pathname.split('/')[1]) + "/imgboard.php?mode=report&no=" + this.parentNode.dataset.id;
       id = Date.now();
       set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
       return window.open(url, id, set);
