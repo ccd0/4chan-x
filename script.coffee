@@ -2675,6 +2675,12 @@ Get =
     for child in Array::slice.call root.childNodes
       $.rm child unless child is post
 
+    # Remove inlined posts inside of this post.
+    for inline  in $$ '.inline',  post
+      $.rm inline
+    for inlined in $$ '.inlined', post
+      $.rmClass inlined, 'inlined'
+
     # Don't mess with other features
     now = Date.now()
     els = $$ '[id]', root

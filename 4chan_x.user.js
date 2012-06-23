@@ -3400,7 +3400,7 @@
       }
     },
     cleanPost: function(root) {
-      var child, el, els, now, post, _i, _j, _len, _len1, _ref;
+      var child, el, els, inline, inlined, now, post, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
       post = $('.post', root);
       _ref = Array.prototype.slice.call(root.childNodes);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3409,11 +3409,21 @@
           $.rm(child);
         }
       }
+      _ref1 = $$('.inline', post);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        inline = _ref1[_j];
+        $.rm(inline);
+      }
+      _ref2 = $$('.inlined', post);
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        inlined = _ref2[_k];
+        $.rmClass(inlined, 'inlined');
+      }
       now = Date.now();
       els = $$('[id]', root);
       els.push(root);
-      for (_j = 0, _len1 = els.length; _j < _len1; _j++) {
-        el = els[_j];
+      for (_l = 0, _len3 = els.length; _l < _len3; _l++) {
+        el = els[_l];
         el.id = "" + now + "_" + el.id;
       }
       $.rmClass(root, 'forwarded');
