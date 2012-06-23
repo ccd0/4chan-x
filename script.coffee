@@ -6,7 +6,7 @@ Config =
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
       'Report Link':                  [true,  'Add report links']
-      'Delete Button':                [false, 'Add delete buttons']
+      'Delete Link':                  [true,  'Add delete links']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
@@ -2981,28 +2981,31 @@ Quotify =
       $.replace node, nodes
     return
 
-DeleteButton =
+DeleteLink =
   init: ->
-    @a = $.el 'a',
-      className: 'delete_button'
-      innerHTML: '[&nbsp;&times;&nbsp;]'
-      href: 'javascript:;'
-    Main.callbacks.push @node
-  node: (post) ->
-    unless a = $ '.delete_button', post.el
-      a = DeleteButton.a.cloneNode true
-      $.add $('.postInfo', post.el), a
-    $.on a, 'click', DeleteButton.delete
+    a = Menu.newEntry 'a'
+    a.href = 'javascript:;'
+    $.addClass a, 'delete_link'
+    $.on a, 'context', ->
+      a.textContent = 'Delete this post'
+      $.on a, 'click', DeleteLink.delete
+    Menu.entries.push
+      el: a
+      requirements:
+        isArchived: false
   delete: ->
-    $.off @, 'click', DeleteButton.delete
-    @innerHTML = '[&nbsp;Deleting...&nbsp;]'
+    $.off @, 'click', DeleteLink.delete
+    @textContent = 'Deleting...'
 
-    if m = d.cookie.match /4chan_pass=([^;]+)/
-      pwd = decodeURIComponent m[1]
-    else
-      pwd = $.id('delPassword').value
-    id = $.x('preceding-sibling::input', @).name
-    board = $.x('preceding-sibling::span[1]/a', @).pathname.match(/\w+/)[0]
+    pwd =
+      if m = d.cookie.match /4chan_pass=([^;]+)/
+        decodeURIComponent m[1]
+      else
+        $.id('delPassword').value
+
+    id = @parentNode.dataset.id
+    board = $('.postNum > a[title="Highlight this post"]',
+      $.id @parentNode.dataset.rootid).pathname.split('/')[1]
     self = this
 
     form =
@@ -3010,13 +3013,12 @@ DeleteButton =
       pwd: pwd
     form[id] = 'delete'
 
-    $.ajax "https://sys.4chan.org/#{board}/imgboard.php", {
-        onload:  -> DeleteButton.load  self, @response
-        onerror: -> DeleteButton.error self
+    $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{board}/"), {
+        onload:  -> DeleteLink.load  self, @response
+        onerror: -> DeleteLink.error self
       }, {
         form: $.formData form
       }
-
   load: (self, html) ->
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = html
@@ -3024,13 +3026,13 @@ DeleteButton =
       s = 'Banned!'
     else if msg = doc.getElementById 'errmsg' # error!
       s = msg.textContent
-      $.on self, 'click', DeleteButton.delete
+      $.on self, 'click', DeleteLink.delete
     else
       s = 'Deleted'
-    self.innerHTML = "[&nbsp;#{s}&nbsp;]"
+    self.textContent = s
   error: (self) ->
-    self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]'
-    $.on self, 'click', DeleteButton.delete
+    self.textContent = 'Connection error, please retry.'
+    $.on self, 'click', DeleteLink.delete
 
 ReportLink =
   init: ->
@@ -3529,8 +3531,8 @@ Main =
     if Conf['Report Link']
       ReportLink.init()
 
-    if Conf['Delete Button']
-      DeleteButton.init()
+    if Conf['Delete Link']
+      DeleteLink.init()
 
     if Conf['Resurrect Quotes']
       Quotify.init()
