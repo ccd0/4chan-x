@@ -690,7 +690,7 @@ ExpandThread =
         continue if href[0] is '/' # Cross-board quote
         quote.href = "res/#{href}" # Fix pathnames
       id = reply.id[2..]
-      link = $ '.postInfo > .postNum > a[title="Highlight this post"]', reply
+      link = $ '.postNum > a[title="Highlight this post"]', reply
       link.href = "res/#{threadID}#p#{id}"
       link.nextSibling.href = "res/#{threadID}#q#{id}"
       nodes.push reply
@@ -1014,7 +1014,7 @@ Keybinds =
 
   qr: (thread, quote) ->
     if quote
-      QR.quote.call $ '.postInfo > .postNum > a[title="Quote this post"]', $('.post.highlight', thread) or thread
+      QR.quote.call $ '.postNum > a[title="Quote this post"]', $('.post.highlight', thread) or thread
     else
       QR.open()
     $('textarea', QR.el).focus()

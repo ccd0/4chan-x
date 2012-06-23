@@ -902,7 +902,7 @@
           quote.href = "res/" + href;
         }
         id = reply.id.slice(2);
-        link = $('.postInfo > .postNum > a[title="Highlight this post"]', reply);
+        link = $('.postNum > a[title="Highlight this post"]', reply);
         link.href = "res/" + threadID + "#p" + id;
         link.nextSibling.href = "res/" + threadID + "#q" + id;
         nodes.push(reply);
@@ -1374,7 +1374,7 @@
     },
     qr: function(thread, quote) {
       if (quote) {
-        QR.quote.call($('.postInfo > .postNum > a[title="Quote this post"]', $('.post.highlight', thread) || thread));
+        QR.quote.call($('.postNum > a[title="Quote this post"]', $('.post.highlight', thread) || thread));
       } else {
         QR.open();
       }
