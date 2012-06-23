@@ -77,7 +77,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, DeleteButton, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, AutoGif, Conf, Config, DeleteButton, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -3863,14 +3863,14 @@
     }
   };
 
-  ReportButton = {
+  ReportLink = {
     init: function() {
       var a;
       a = Menu.newEntry('a');
       a.href = 'javascript:;';
       a.textContent = 'Report this post';
-      $.addClass(a, 'report_button');
-      $.on(a, 'click', ReportButton.report);
+      $.addClass(a, 'report_link');
+      $.on(a, 'click', this.report);
       return Menu.entries.push({
         el: a,
         requirements: {
@@ -4530,8 +4530,8 @@
       if (Conf['Image Hover']) {
         ImageHover.init();
       }
-      if (Conf['Report Button']) {
-        ReportButton.init();
+      if (Conf['Report Link']) {
+        ReportLink.init();
       }
       if (Conf['Delete Button']) {
         DeleteButton.init();

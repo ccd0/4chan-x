@@ -3032,13 +3032,13 @@ DeleteButton =
     self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]'
     $.on self, 'click', DeleteButton.delete
 
-ReportButton =
+ReportLink =
   init: ->
     a = Menu.newEntry 'a'
     a.href = 'javascript:;'
     a.textContent = 'Report this post'
-    $.addClass a, 'report_button'
-    $.on a, 'click', ReportButton.report
+    $.addClass a, 'report_link'
+    $.on a, 'click', @report
     Menu.entries.push
       el: a
       requirements:
@@ -3526,8 +3526,8 @@ Main =
     if Conf['Image Hover']
       ImageHover.init()
 
-    if Conf['Report Button']
-      ReportButton.init()
+    if Conf['Report Link']
+      ReportLink.init()
 
     if Conf['Delete Button']
       DeleteButton.init()
