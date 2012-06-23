@@ -1135,7 +1135,7 @@ QR =
     $.on d, 'dragstart dragend', QR.drag
 
   node: (post) ->
-    $.on $('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote
+    $.on $('.postNum > a[title="Quote this post"]', post.el), 'click', QR.quote
 
   open: ->
     if QR.el
@@ -2500,7 +2500,7 @@ Get =
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
       quote.href = "/#{board}/res/#{href}" # Fix pathnames
-    link = $ '.postInfo > .postNum > a[title="Highlight this post"]', pc
+    link = $ '.postNum > a[title="Highlight this post"]', pc
     link.href = "/#{board}/res/#{threadID}#p#{postID}"
     link.nextSibling.href = "/#{board}/res/#{threadID}#q#{postID}"
 
@@ -2948,7 +2948,7 @@ Quotify =
             m[1]
           else
             # Get the post's board, whether it's inlined or not.
-            $('.postInfo > .postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1]
+            $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
           # \u00A0 is nbsp

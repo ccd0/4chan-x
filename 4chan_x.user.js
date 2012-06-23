@@ -1529,7 +1529,7 @@
       return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function(post) {
-      return $.on($('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote);
+      return $.on($('.postNum > a[title="Quote this post"]', post.el), 'click', QR.quote);
     },
     open: function() {
       if (QR.el) {
@@ -3236,7 +3236,7 @@
         }
         quote.href = "/" + board + "/res/" + href;
       }
-      link = $('.postInfo > .postNum > a[title="Highlight this post"]', pc);
+      link = $('.postNum > a[title="Highlight this post"]', pc);
       link.href = "/" + board + "/res/" + threadID + "#p" + postID;
       link.nextSibling.href = "/" + board + "/res/" + threadID + "#q" + postID;
       $.replace(root.firstChild, pc);
@@ -3770,7 +3770,7 @@
             nodes.push($.tn(text));
           }
           id = quote.match(/\d+$/)[0];
-          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postInfo > .postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1];
+          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1];
           nodes.push(a = $.el('a', {
             textContent: "" + quote + "\u00A0(Dead)"
           }));
