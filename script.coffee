@@ -544,7 +544,7 @@ Filter =
       return mail.href[7..]
     false
   subject: (post) ->
-    $('.subject', post.el).textContent or false
+    $('.postInfo .subject', post.el).textContent or false
   comment: (post) ->
     text = []
     # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE is 7

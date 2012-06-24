@@ -690,7 +690,7 @@
       return false;
     },
     subject: function(post) {
-      return $('.subject', post.el).textContent || false;
+      return $('.postInfo .subject', post.el).textContent || false;
     },
     comment: function(post) {
       var data, i, nodes, text, _i, _ref;
