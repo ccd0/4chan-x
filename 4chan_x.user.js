@@ -77,7 +77,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, DeleteLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -88,6 +88,7 @@
         'File Info Formatting': [true, 'Reformats the file information'],
         'Report Link': [true, 'Add report links'],
         'Delete Link': [true, 'Add delete links'],
+        'Archive Link': [true, 'Add archive links'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -1122,8 +1123,10 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         entry = _ref[_i];
         if (entry.requirement(post)) {
+          if (typeof entry.open === "function") {
+            entry.open(post);
+          }
           $.add(el, entry.el);
-          $.event(entry.el, new CustomEvent('context'));
         }
       }
       $.add(d.body, el);
@@ -3803,12 +3806,12 @@
         className: 'delete_link',
         href: 'javascript:;'
       });
-      $.on(a, 'context', function() {
-        a.textContent = 'Delete this post';
-        return $.on(a, 'click', DeleteLink["delete"]);
-      });
       return Menu.addEntry({
         el: a,
+        open: function() {
+          a.textContent = 'Delete this post';
+          return $.on(a, 'click', DeleteLink["delete"]);
+        },
         requirement: function(post) {
           return post.isArchived === false;
         }
@@ -3881,6 +3884,30 @@
       id = Date.now();
       set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
       return window.open(url, id, set);
+    }
+  };
+
+  ArchiveLink = {
+    init: function() {
+      var a;
+      a = $.el('a', {
+        className: 'archive_link',
+        target: '_blank'
+      });
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          var path;
+          path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/');
+          a.href = Redirect.thread(path[1], path[3], post.ID);
+          return a.textContent = "Archived post No." + post.ID;
+        },
+        requirement: function(post) {
+          var path;
+          path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/');
+          return Redirect.thread(path[1], path[3]) !== ("//boards.4chan.org/" + path[1] + "/");
+        }
+      });
     }
   };
 
@@ -4531,6 +4558,9 @@
       }
       if (Conf['Delete Link']) {
         DeleteLink.init();
+      }
+      if (Conf['Archive Link']) {
+        ArchiveLink.init();
       }
       if (Conf['Resurrect Quotes']) {
         Quotify.init();

@@ -7,6 +7,7 @@ Config =
       'File Info Formatting':         [true,  'Reformats the file information']
       'Report Link':                  [true,  'Add report links']
       'Delete Link':                  [true,  'Add delete links']
+      'Archive Link':                 [true,  'Add archive links']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
@@ -863,9 +864,8 @@ Menu =
     #     textContent: "#{i}: #{post[i]}"
     for entry in Menu.entries
       if entry.requirement post
+        entry.open? post
         $.add el, entry.el
-        # XXX 'context' event?
-        $.event entry.el, new CustomEvent 'context'
     $.add d.body, el
     $.on d, 'click', Menu.close
   close: ->
@@ -2987,11 +2987,11 @@ DeleteLink =
     a = $.el 'a',
       className: 'delete_link'
       href: 'javascript:;'
-    $.on a, 'context', ->
-      a.textContent = 'Delete this post'
-      $.on a, 'click', DeleteLink.delete
     Menu.addEntry
       el: a
+      open: ->
+        a.textContent = 'Delete this post'
+        $.on a, 'click', DeleteLink.delete
       requirement: (post) ->
         post.isArchived is false
   delete: ->
@@ -3052,6 +3052,21 @@ ReportLink =
     id    = Date.now()
     set   = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
+
+ArchiveLink =
+  init: ->
+    a = $.el 'a',
+      className: 'archive_link'
+      target: '_blank'
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split '/'
+        a.href = Redirect.thread path[1], path[3], post.ID
+        a.textContent = "Archived post No.#{post.ID}"
+      requirement: (post) ->
+        path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split '/'
+        Redirect.thread(path[1], path[3]) isnt "//boards.4chan.org/#{path[1]}/"
 
 ThreadStats =
   init: ->
@@ -3534,6 +3549,9 @@ Main =
 
     if Conf['Delete Link']
       DeleteLink.init()
+
+    if Conf['Archive Link']
+      ArchiveLink.init()
 
     if Conf['Resurrect Quotes']
       Quotify.init()
