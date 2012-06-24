@@ -862,11 +862,7 @@ Menu =
     #     className: 'entry'
     #     textContent: "#{i}: #{post[i]}"
     for entry in Menu.entries
-      if (->
-        for requirement, val of entry.requirements
-          return false if val isnt post[requirement]
-        true
-      )()
+      if entry.requirement post
         $.add el, entry.el
         # XXX 'context' event?
         $.event entry.el, new CustomEvent 'context'
@@ -878,10 +874,9 @@ Menu =
     delete Menu.lastOpener
     $.off d, 'click', Menu.close
 
-  newEntry: (name) ->
-    $.el name,
-      className: 'entry'
-      tabIndex: 0
+  addEntry: (entry) ->
+    $.addClass entry.el, 'entry'
+    Menu.entries.push entry
 
 Keybinds =
   init: ->
@@ -2989,16 +2984,16 @@ Quotify =
 
 DeleteLink =
   init: ->
-    a = Menu.newEntry 'a'
-    a.href = 'javascript:;'
-    $.addClass a, 'delete_link'
+    a = $.el 'a',
+      className: 'delete_link'
+      href: 'javascript:;'
     $.on a, 'context', ->
       a.textContent = 'Delete this post'
       $.on a, 'click', DeleteLink.delete
-    Menu.entries.push
+    Menu.addEntry
       el: a
-      requirements:
-        isArchived: false
+      requirement: (post) ->
+        post.isArchived is false
   delete: ->
     $.off @, 'click', DeleteLink.delete
     @textContent = 'Deleting...'
@@ -3042,15 +3037,15 @@ DeleteLink =
 
 ReportLink =
   init: ->
-    a = Menu.newEntry 'a'
-    a.href = 'javascript:;'
-    a.textContent = 'Report this post'
-    $.addClass a, 'report_link'
+    a = $.el 'a',
+      className: 'report_link'
+      href: 'javascript:;'
+      textContent: 'Report this post'
     $.on a, 'click', @report
-    Menu.entries.push
+    Menu.addEntry
       el: a
-      requirements:
-        isArchived: false
+      requirement: (post) ->
+        post.isArchived is false
   report: ->
     a     = $ '.postNum > a[title="Highlight this post"]', $.id @parentNode.dataset.rootid
     url   = "//sys.4chan.org/#{a.pathname.split('/')[1]}/imgboard.php?mode=report&no=#{@parentNode.dataset.id}"

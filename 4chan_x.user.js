@@ -1121,17 +1121,7 @@
       _ref = Menu.entries;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         entry = _ref[_i];
-        if ((function() {
-          var requirement, val, _ref1;
-          _ref1 = entry.requirements;
-          for (requirement in _ref1) {
-            val = _ref1[requirement];
-            if (val !== post[requirement]) {
-              return false;
-            }
-          }
-          return true;
-        })()) {
+        if (entry.requirement(post)) {
           $.add(el, entry.el);
           $.event(entry.el, new CustomEvent('context'));
         }
@@ -1145,11 +1135,9 @@
       delete Menu.lastOpener;
       return $.off(d, 'click', Menu.close);
     },
-    newEntry: function(name) {
-      return $.el(name, {
-        className: 'entry',
-        tabIndex: 0
-      });
+    addEntry: function(entry) {
+      $.addClass(entry.el, 'entry');
+      return Menu.entries.push(entry);
     }
   };
 
@@ -3811,17 +3799,18 @@
   DeleteLink = {
     init: function() {
       var a;
-      a = Menu.newEntry('a');
-      a.href = 'javascript:;';
-      $.addClass(a, 'delete_link');
+      a = $.el('a', {
+        className: 'delete_link',
+        href: 'javascript:;'
+      });
       $.on(a, 'context', function() {
         a.textContent = 'Delete this post';
         return $.on(a, 'click', DeleteLink["delete"]);
       });
-      return Menu.entries.push({
+      return Menu.addEntry({
         el: a,
-        requirements: {
-          isArchived: false
+        requirement: function(post) {
+          return post.isArchived === false;
         }
       });
     },
@@ -3872,15 +3861,16 @@
   ReportLink = {
     init: function() {
       var a;
-      a = Menu.newEntry('a');
-      a.href = 'javascript:;';
-      a.textContent = 'Report this post';
-      $.addClass(a, 'report_link');
+      a = $.el('a', {
+        className: 'report_link',
+        href: 'javascript:;',
+        textContent: 'Report this post'
+      });
       $.on(a, 'click', this.report);
-      return Menu.entries.push({
+      return Menu.addEntry({
         el: a,
-        requirements: {
-          isArchived: false
+        requirement: function(post) {
+          return post.isArchived === false;
         }
       });
     },
