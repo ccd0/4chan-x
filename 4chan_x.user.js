@@ -86,9 +86,6 @@
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
-        'Report Link': [true, 'Add report links'],
-        'Delete Link': [true, 'Add delete links'],
-        'Archive Link': [true, 'Add archive links'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -110,6 +107,12 @@
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail'],
         'Expand From Current': [false, 'Expand images from current position to thread end.']
+      },
+      Menu: {
+        'Menu': [true, 'Add a drop-down menu in posts.'],
+        'Report Link': [true, 'Add a report link to the menu.'],
+        'Delete Link': [true, 'Add a delete link to the menu.'],
+        'Archive Link': [true, 'Add a archive link to the menu.']
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
@@ -4534,7 +4537,6 @@
       if (Conf['Anonymize']) {
         Anonymize.init();
       }
-      Menu.init();
       if (Conf['Time Formatting']) {
         Time.init();
       }
@@ -4553,14 +4555,17 @@
       if (Conf['Image Hover']) {
         ImageHover.init();
       }
-      if (Conf['Report Link']) {
-        ReportLink.init();
-      }
-      if (Conf['Delete Link']) {
-        DeleteLink.init();
-      }
-      if (Conf['Archive Link']) {
-        ArchiveLink.init();
+      if (Conf['Menu']) {
+        Menu.init();
+        if (Conf['Report Link']) {
+          ReportLink.init();
+        }
+        if (Conf['Delete Link']) {
+          DeleteLink.init();
+        }
+        if (Conf['Archive Link']) {
+          ArchiveLink.init();
+        }
       }
       if (Conf['Resurrect Quotes']) {
         Quotify.init();
