@@ -778,7 +778,7 @@ ReplyHiding =
     button = @parentNode
     root   = button.parentNode
     id     = root.id[2..]
-    quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href='#p#{id}']"
+    quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href$='#p#{id}']"
     if /\bstub\b/.test button.className
       ReplyHiding.show root
       for quote in quotes
