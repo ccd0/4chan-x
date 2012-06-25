@@ -1453,15 +1453,25 @@
         });
         $.before($.id('postForm'), link);
       }
+      $.on(d, 'dragover', QR.dragOver);
+      $.on(d, 'drop', QR.dropFile);
+      $.on(d, 'dragstart dragend', QR.drag);
+      return $.on($.id('recaptcha_widget_div'), 'DOMNodeInserted', QR.foo);
+    },
+    foo: function(e) {
+      var target;
+      target = e.target;
+      if (target.id !== 'recaptcha_challenge_field_holder') {
+        return;
+      }
+      $.off(this, 'DOMNodeInserted', QR.foo);
+      QR.challenge = target;
       if (Conf['Persistent QR']) {
         QR.dialog();
         if (Conf['Auto Hide QR']) {
-          QR.hide();
+          return QR.hide();
         }
       }
-      $.on(d, 'dragover', QR.dragOver);
-      $.on(d, 'drop', QR.dropFile);
-      return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function(post) {
       return $.on($('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote);
@@ -1851,7 +1861,7 @@
         var _this = this;
         this.img = $('.captcha > img', QR.el);
         this.input = $('[autocomplete]', QR.el);
-        this.challenge = $.id('recaptcha_challenge_field_holder');
+        this.challenge = QR.challenge;
         $.on(this.img.parentNode, 'click', this.reload);
         $.on(this.input, 'keydown', this.keydown);
         $.on(this.challenge, 'DOMNodeInserted', function() {
@@ -1923,6 +1933,9 @@
     },
     dialog: function() {
       var e, fileInput, id, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+      if (!QR.challenge) {
+        return;
+      }
       QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\

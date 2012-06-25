@@ -1059,12 +1059,20 @@ QR =
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 
-    if Conf['Persistent QR']
-      QR.dialog()
-      QR.hide() if Conf['Auto Hide QR']
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile
     $.on d, 'dragstart dragend', QR.drag
+
+    $.on $.id('recaptcha_widget_div'), 'DOMNodeInserted', QR.foo
+
+  foo: (e) ->
+    {target} = e
+    return unless target.id is 'recaptcha_challenge_field_holder'
+    $.off @, 'DOMNodeInserted', QR.foo
+    QR.challenge = target
+    if Conf['Persistent QR']
+      QR.dialog()
+      QR.hide() if Conf['Auto Hide QR']
 
   node: (post) ->
     $.on $('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote
@@ -1368,7 +1376,7 @@ QR =
     init: ->
       @img       = $ '.captcha > img', QR.el
       @input     = $ '[autocomplete]', QR.el
-      @challenge = $.id 'recaptcha_challenge_field_holder'
+      @challenge = QR.challenge
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
       $.on @challenge,      'DOMNodeInserted', => @load()
@@ -1422,6 +1430,7 @@ QR =
       e.preventDefault()
 
   dialog: ->
+    return unless QR.challenge
     QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
