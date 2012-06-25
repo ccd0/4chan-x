@@ -1284,7 +1284,7 @@ QR =
     setFile: (@file) ->
       @el.title = "#{file.name} (#{$.bytesToString file.size})"
       $('label', @el).hidden = false if QR.spoiler
-      if file.type is 'application/pdf'
+      unless /^image/.test file.type
         @el.style.backgroundImage = null
         return
       url = window.URL or window.webkitURL
@@ -1408,8 +1408,8 @@ QR =
       $.after $('.captchaimg', QR.el), $.el 'div',
         className: 'captchainput'
         innerHTML: '<input title=Verification class=field autocomplete=off size=1>'
-      @img       = $ '.captchaimg > img', QR.el
-      @input     = $ '.captchainput > input', QR.el
+      @img   = $ '.captchaimg > img', QR.el
+      @input = $ '.captchainput > input', QR.el
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
       $.on @challenge,      'DOMNodeInserted', => @load()
@@ -1489,6 +1489,8 @@ QR =
           'image/jpeg'
         when 'pdf'
           'application/pdf'
+        when 'swf'
+          'application/x-shockwave-flash'
         else
           "image/#{type}"
     QR.mimeTypes = mimeTypes.split ', '
