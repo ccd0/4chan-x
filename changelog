@@ -1,4 +1,6 @@
 master
+
+2.33.4
 - Mayhem
   Fix QR with the new captcha loading method.
   The QR will now work on /f/ too.
