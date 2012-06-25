@@ -1435,7 +1435,7 @@
 
   QR = {
     init: function() {
-      var link;
+      var challenge, link, widget;
       if (!$('#postForm input[type=submit]')) {
         return;
       }
@@ -1456,7 +1456,15 @@
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
-      return $.on($.id('recaptcha_widget_div'), 'DOMNodeInserted', QR.foo);
+      widget = $.id('recaptcha_widget_div');
+      challenge = $.id('recaptcha_challenge_field_holder');
+      if (widget && challenge) {
+        return QR.foo.call(widget, {
+          target: challenge
+        });
+      } else {
+        return $.on(widget, 'DOMNodeInserted', QR.foo);
+      }
     },
     foo: function(e) {
       var target;

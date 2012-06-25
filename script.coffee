@@ -1063,7 +1063,13 @@ QR =
     $.on d, 'drop',              QR.dropFile
     $.on d, 'dragstart dragend', QR.drag
 
-    $.on $.id('recaptcha_widget_div'), 'DOMNodeInserted', QR.foo
+    #XXX fucking moot
+    widget = $.id 'recaptcha_widget_div'
+    challenge = $.id 'recaptcha_challenge_field_holder'
+    if widget and challenge
+      QR.foo.call widget, target: challenge
+    else
+      $.on widget, 'DOMNodeInserted', QR.foo
 
   foo: (e) ->
     {target} = e
