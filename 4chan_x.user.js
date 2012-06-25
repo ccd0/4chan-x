@@ -1807,7 +1807,7 @@
         if (QR.spoiler) {
           $('label', this.el).hidden = false;
         }
-        if (file.type === 'application/pdf') {
+        if (!/^image/.test(file.type)) {
           this.el.style.backgroundImage = null;
           return;
         }
@@ -2074,6 +2074,8 @@
             return 'image/jpeg';
           case 'pdf':
             return 'application/pdf';
+          case 'swf':
+            return 'application/x-shockwave-flash';
           default:
             return "image/" + type;
         }
