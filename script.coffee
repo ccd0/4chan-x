@@ -1112,7 +1112,7 @@ Nav =
 
 QR =
   init: ->
-    return unless $.id 'recaptcha_challenge_field_holder'
+    return unless $.id 'postForm'
     Main.callbacks.push @node
     setTimeout @asyncInit
 
@@ -1456,9 +1456,27 @@ QR =
 
   captcha:
     init: ->
-      @img       = $ '.captcha > img', QR.el
-      @input     = $ '[autocomplete]', QR.el
-      @challenge = $.id 'recaptcha_challenge_field_holder'
+      return unless QR.captchaIsEnabled = !!$.id 'captchaFormPart'
+      if $.id 'recaptcha_challenge_field_holder'
+        @ready()
+      else
+        @onready = => @ready()
+        $.on $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
+    ready: ->
+      if @challenge = $.id 'recaptcha_challenge_field_holder'
+        $.off $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
+        delete @onready
+      else
+        return
+      $.after $('.textarea', QR.el), $.el 'div',
+        className: 'captchaimg'
+        title: 'Reload'
+        innerHTML: '<img>'
+      $.after $('.captchaimg', QR.el), $.el 'div',
+        className: 'captchainput'
+        innerHTML: '<input title=Verification class=field autocomplete=off size=1>'
+      @img       = $ '.captchaimg > img', QR.el
+      @input     = $ '.captchainput > input', QR.el
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
       $.on @challenge,      'DOMNodeInserted', => @load()
@@ -1520,9 +1538,7 @@ QR =
 <form>
   <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
-  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
-  <div class=captcha title=Reload><img></div>
-  <div><input title=Verification class=field autocomplete=off size=1></div>
+  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
   <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
   <div class=warning></div>
@@ -1614,7 +1630,7 @@ QR =
     # prevent errors
     unless threadID is 'new' and reply.file or threadID isnt 'new' and (reply.com or reply.file)
       err = 'No file selected.'
-    else
+    else if QR.captchaIsEnabled
       # get oldest valid captcha
       captchas = $.get 'captchas', []
       # remove old captchas
@@ -3482,7 +3498,7 @@ Main =
 
     $.ready Options.init
 
-    if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
+    if Conf['Quick Reply'] and Conf['Hide Original Post Form']
       Main.css += '#postForm { display: none; }'
 
     Main.addStyle()
@@ -3726,7 +3742,7 @@ Main =
     $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.33.3'
+  version: '2.33.4'
   callbacks: []
   css: '
 /* dialog styling */
@@ -3789,7 +3805,7 @@ h1 {
 #qr > .move > span {
   float: right;
 }
-#autohide, .close, #qr select, #dump, .remove, .captcha, #qr div.warning {
+#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {
   cursor: pointer;
 }
 #qr select,
@@ -3946,7 +3962,7 @@ h1 {
   min-height: 120px;
   min-width: 100%;
 }
-#qr > form > div:nth-child(3) {
+.textarea {
   position: relative;
 }
 #charCount {
@@ -3959,16 +3975,16 @@ h1 {
 #charCount.warning {
   color: red;
 }
-.captcha + div > .field {
+.captchainput > .field {
   min-width: 100%;
 }
-.captcha {
+.captchaimg {
   background: #FFF;
   outline: 1px solid #CCC;
   outline-offset: -1px;
   text-align: center;
 }
-.captcha > img {
+.captchaimg > img {
   display: block;
   height: 57px;
   width: 300px;

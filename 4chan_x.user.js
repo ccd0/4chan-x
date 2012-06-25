@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.33.3
+// @version        2.33.4
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -23,7 +23,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.33.3
+ * 4chan X 2.33.4
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -1492,7 +1492,7 @@
 
   QR = {
     init: function() {
-      if (!$.id('recaptcha_challenge_field_holder')) {
+      if (!$.id('postForm')) {
         return;
       }
       Main.callbacks.push(this.node);
@@ -1947,9 +1947,37 @@
     captcha: {
       init: function() {
         var _this = this;
-        this.img = $('.captcha > img', QR.el);
-        this.input = $('[autocomplete]', QR.el);
-        this.challenge = $.id('recaptcha_challenge_field_holder');
+        if (!(QR.captchaIsEnabled = !!$.id('captchaFormPart'))) {
+          return;
+        }
+        if ($.id('recaptcha_challenge_field_holder')) {
+          return this.ready();
+        } else {
+          this.onready = function() {
+            return _this.ready();
+          };
+          return $.on($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
+        }
+      },
+      ready: function() {
+        var _this = this;
+        if (this.challenge = $.id('recaptcha_challenge_field_holder')) {
+          $.off($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
+          delete this.onready;
+        } else {
+          return;
+        }
+        $.after($('.textarea', QR.el), $.el('div', {
+          className: 'captchaimg',
+          title: 'Reload',
+          innerHTML: '<img>'
+        }));
+        $.after($('.captchaimg', QR.el), $.el('div', {
+          className: 'captchainput',
+          innerHTML: '<input title=Verification class=field autocomplete=off size=1>'
+        }));
+        this.img = $('.captchaimg > img', QR.el);
+        this.input = $('.captchainput > input', QR.el);
         $.on(this.img.parentNode, 'click', this.reload);
         $.on(this.input, 'keydown', this.keydown);
         $.on(this.challenge, 'DOMNodeInserted', function() {
@@ -2029,9 +2057,7 @@
 <form>\
   <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
-  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\
-  <div class=captcha title=Reload><img></div>\
-  <div><input title=Verification class=field autocomplete=off size=1></div>\
+  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\
   <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>\
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\
   <div class=warning></div>\
@@ -2139,7 +2165,7 @@
       threadID = g.THREAD_ID || $('select', QR.el).value;
       if (!(threadID === 'new' && reply.file || threadID !== 'new' && (reply.com || reply.file))) {
         err = 'No file selected.';
-      } else {
+      } else if (QR.captchaIsEnabled) {
         captchas = $.get('captchas', []);
         while ((captcha = captchas[0]) && captcha.time < Date.now()) {
           captchas.shift();
@@ -4491,7 +4517,7 @@
           return;
       }
       $.ready(Options.init);
-      if (Conf['Quick Reply'] && Conf['Hide Original Post Form'] && g.BOARD !== 'f') {
+      if (Conf['Quick Reply'] && Conf['Hide Original Post Form']) {
         Main.css += '#postForm { display: none; }';
       }
       Main.addStyle();
@@ -4795,7 +4821,7 @@
       return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '2.33.3',
+    version: '2.33.4',
     callbacks: [],
     css: '\
 /* dialog styling */\
@@ -4858,7 +4884,7 @@ h1 {\
 #qr > .move > span {\
   float: right;\
 }\
-#autohide, .close, #qr select, #dump, .remove, .captcha, #qr div.warning {\
+#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\
   cursor: pointer;\
 }\
 #qr select,\
@@ -5015,7 +5041,7 @@ h1 {\
   min-height: 120px;\
   min-width: 100%;\
 }\
-#qr > form > div:nth-child(3) {\
+.textarea {\
   position: relative;\
 }\
 #charCount {\
@@ -5028,16 +5054,16 @@ h1 {\
 #charCount.warning {\
   color: red;\
 }\
-.captcha + div > .field {\
+.captchainput > .field {\
   min-width: 100%;\
 }\
-.captcha {\
+.captchaimg {\
   background: #FFF;\
   outline: 1px solid #CCC;\
   outline-offset: -1px;\
   text-align: center;\
 }\
-.captcha > img {\
+.captchaimg > img {\
   display: block;\
   height: 57px;\
   width: 300px;\
