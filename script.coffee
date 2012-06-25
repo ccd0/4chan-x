@@ -2482,7 +2482,6 @@ Get =
       ]
     {capcode} = data
     if capcode isnt 'N' # 'A'dmin or 'M'od
-      # XXX not sure if this is correct for mods
       $.addClass br.parentNode, if capcode is 'A' then 'capcodeAdmin' else 'capcodeMod'
       $.before br, [
         $.tn(' '),
