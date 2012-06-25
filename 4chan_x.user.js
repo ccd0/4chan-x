@@ -1101,7 +1101,7 @@
       return $.on(a, 'click', Menu.toggle);
     },
     toggle: function(e) {
-      var lastOpener, s;
+      var lastOpener, rect, s;
       e.preventDefault();
       e.stopPropagation();
       if (Menu.el.parentNode) {
@@ -1112,8 +1112,9 @@
         }
       }
       s = Menu.el.style;
-      s.top = this.offsetTop + this.offsetHeight + 2 + 'px';
-      s.left = this.offsetLeft + 'px';
+      rect = this.getBoundingClientRect();
+      s.top = d.documentElement.scrollTop + d.body.scrollTop + rect.top + rect.height + 2 + 'px';
+      s.left = d.documentElement.scrollLeft + d.body.scrollLeft + rect.left + 'px';
       Menu.lastOpener = this;
       return Menu.open(Main.preParse($.x('ancestor::div[contains(@class,"postContainer")][1]', this)));
     },

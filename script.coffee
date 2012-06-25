@@ -850,8 +850,9 @@ Menu =
     # Position
     s = Menu.el.style
     # XXX prevent overflows
-    s.top  = @offsetTop  + @offsetHeight + 2 + 'px'
-    s.left = @offsetLeft + 'px'
+    rect   = @getBoundingClientRect()
+    s.top  = d.documentElement.scrollTop  + d.body.scrollTop  + rect.top  + rect.height + 2 + 'px'
+    s.left = d.documentElement.scrollLeft + d.body.scrollLeft + rect.left + 'px'
 
     Menu.lastOpener = @
     Menu.open Main.preParse $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
