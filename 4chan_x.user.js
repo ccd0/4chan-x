@@ -1101,7 +1101,7 @@
       return $.on(a, 'click', Menu.toggle);
     },
     toggle: function(e) {
-      var lastOpener, rect, s;
+      var lastOpener;
       e.preventDefault();
       e.stopPropagation();
       if (Menu.el.parentNode) {
@@ -1111,15 +1111,11 @@
           return;
         }
       }
-      s = Menu.el.style;
-      rect = this.getBoundingClientRect();
-      s.top = d.documentElement.scrollTop + d.body.scrollTop + rect.top + rect.height + 2 + 'px';
-      s.left = d.documentElement.scrollLeft + d.body.scrollLeft + rect.left + 'px';
       Menu.lastOpener = this;
-      return Menu.open(Main.preParse($.x('ancestor::div[contains(@class,"postContainer")][1]', this)));
+      return Menu.open(this, Main.preParse($.x('ancestor::div[contains(@class,"postContainer")][1]', this)));
     },
-    open: function(post) {
-      var el, entry, _i, _len, _ref;
+    open: function(button, post) {
+      var bLeft, bRect, bTop, el, entry, mRect, _i, _len, _ref;
       el = Menu.el;
       el.setAttribute('data-id', post.ID);
       el.setAttribute('data-rootid', post.root.id);
@@ -1133,12 +1129,21 @@
           $.add(el, entry.el);
         }
       }
+      $.on(d, 'click', Menu.close);
       $.add(d.body, el);
-      return $.on(d, 'click', Menu.close);
+      mRect = el.getBoundingClientRect();
+      bRect = button.getBoundingClientRect();
+      bTop = d.documentElement.scrollTop + d.body.scrollTop + bRect.top;
+      bLeft = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left;
+      el.style.top = bRect.top + bRect.height + mRect.height < d.documentElement.clientHeight ? bTop + bRect.height + 2 + 'px' : bTop - mRect.height - 2 + 'px';
+      return el.style.left = bRect.left + mRect.width < d.documentElement.clientWidth ? bLeft + 'px' : bLeft + bRect.width - mRect.width + 'px';
     },
     close: function() {
-      $.rm(Menu.el);
-      Menu.el.innerHTML = null;
+      var el;
+      el = Menu.el;
+      $.rm(el);
+      el.innerHTML = null;
+      el.removeAttribute('style');
       delete Menu.lastOpener;
       return $.off(d, 'click', Menu.close);
     },

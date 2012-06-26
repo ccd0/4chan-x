@@ -845,16 +845,9 @@ Menu =
       Menu.close()
       return if lastOpener is @
 
-    # Position
-    s = Menu.el.style
-    # XXX prevent overflows
-    rect   = @getBoundingClientRect()
-    s.top  = d.documentElement.scrollTop  + d.body.scrollTop  + rect.top  + rect.height + 2 + 'px'
-    s.left = d.documentElement.scrollLeft + d.body.scrollLeft + rect.left + 'px'
-
     Menu.lastOpener = @
-    Menu.open Main.preParse $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
-  open: (post) ->
+    Menu.open @, Main.preParse $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+  open: (button, post) ->
     {el} = Menu
     # XXX GM/Scriptish require setAttribute
     el.setAttribute 'data-id', post.ID
@@ -867,11 +860,30 @@ Menu =
       if entry.requirement post
         entry.open? post
         $.add el, entry.el
-    $.add d.body, el
+
     $.on d, 'click', Menu.close
+    $.add d.body, el
+
+    # Position
+    mRect = el.getBoundingClientRect()
+    bRect = button.getBoundingClientRect()
+    bTop  = d.documentElement.scrollTop  + d.body.scrollTop  + bRect.top
+    bLeft = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left
+    el.style.top =
+      if bRect.top + bRect.height + mRect.height < d.documentElement.clientHeight
+        bTop + bRect.height + 2 + 'px'
+      else
+        bTop - mRect.height - 2 + 'px'
+    el.style.left =
+      if bRect.left + mRect.width < d.documentElement.clientWidth
+        bLeft + 'px'
+      else
+        bLeft + bRect.width - mRect.width + 'px'
   close: ->
-    $.rm Menu.el
-    Menu.el.innerHTML = null
+    {el} = Menu
+    $.rm el
+    el.innerHTML = null
+    el.removeAttribute 'style'
     delete Menu.lastOpener
     $.off d, 'click', Menu.close
 
