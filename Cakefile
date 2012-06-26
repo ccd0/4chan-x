@@ -13,11 +13,15 @@ HEADER  = """
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
 // @copyright      2012 Nicolas Stepien <stepien.nicolas@gmail.com>, James Campos <james.r.campos@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
-// @include        http*://boards.4chan.org/*
-// @include        http*://images.4chan.org/*
-// @include        http*://sys.4chan.org/*
+// @include        http://boards.4chan.org/*
+// @include        https://boards.4chan.org/*
+// @include        http://images.4chan.org/*
+// @include        https://images.4chan.org/*
+// @include        http://sys.4chan.org/*
+// @include        https://sys.4chan.org/*
 // @run-at         document-start
-// @updateURL      https://raw.github.com/aeosynth/4chan-x/stable/4chan_x.user.js
+// @updateURL      https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js
+// @downloadURL    https://github.com/aeosynth/4chan-x/raw/stable/4chan_x.user.js
 // @icon           http://aeosynth.github.com/4chan-x/favicon.gif
 // ==/UserScript==
 
@@ -73,6 +77,7 @@ HEADER  = """
  * Seiba - chrome quick reply focusing
  * herpaderpderp - recaptcha fixes
  * WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
+ * btmcsweeney - allow users to specify text for sauce links
  *
  * All the people who've taken the time to write bug reports.
  *

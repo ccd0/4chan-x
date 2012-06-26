@@ -110,12 +110,12 @@ Config =
     '#http://3d.iqdb.org/?url=$1'
     '#http://regex.info/exif.cgi?imgurl=$2'
     '# uploaders:'
-    '#http://imgur.com/upload?url=$2'
-    '#http://omploader.org/upload?url1=$2'
+    '#http://imgur.com/upload?url=$2;text:Upload to imgur'
+    '#http://omploader.org/upload?url1=$2;text:Upload to omploader'
     '# "View Same" in archives:'
-    '#http://archive.foolz.us/search/image/$3/'
-    '#http://archive.foolz.us/$4/search/image/$3/'
-    '#https://archive.installgentoo.net/$4/image/$3'
+    '#http://archive.foolz.us/search/image/$3/;text:View same on foolz'
+    '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/'
+    '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
@@ -181,8 +181,7 @@ UI =
     UI.el = el = @parentNode
     d.addEventListener 'mousemove', UI.drag,    false
     d.addEventListener 'mouseup',   UI.dragend, false
-    #distance from pointer to el edge is constant; calculate it here.
-    # XXX opera reports el.offsetLeft / el.offsetTop as 0
+    # distance from pointer to el edge is constant; calculate it here.
     rect      = el.getBoundingClientRect()
     UI.dx     = e.clientX - rect.left
     UI.dy     = e.clientY - rect.top
@@ -299,6 +298,7 @@ $.extend $,
       req = $.ajax url,
         onload:  -> cb.call @ for cb in @callbacks
         onabort: -> delete $.cache.requests[url]
+        onerror: -> delete $.cache.requests[url]
       req.callbacks = [cb]
       $.cache.requests[url] = req
   cb:
@@ -355,10 +355,27 @@ $.extend $,
     for event in events.split ' '
       el.removeEventListener event, handler, false
     return
+  event: (el, e) ->
+    el.dispatchEvent e
   globalEval: (code) ->
     script = $.el 'script', textContent: "(#{code})()"
     $.add d.head, script
     $.rm script
+  bytesToString: (size) ->
+    unit = 0 # Bytes
+    while size >= 1024
+      size /= 1024
+      unit++
+    # Remove trailing 0s.
+    size =
+      if unit > 1
+        # Keep the size as a float if the size is greater than 2^20 B.
+        # Round to hundredth.
+        Math.round(size * 100) / 100
+      else
+        # Round to an integer otherwise.
+        Math.round size
+    "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
 
 $.cache.requests = {}
 
@@ -485,7 +502,7 @@ Filter =
 
   node: (post) ->
     return if post.isInlined
-    isOP = post.id is post.threadId
+    isOP = post.ID is post.threadID
     {root} = post
     for key of Filter.filters
       value = Filter[key] post
@@ -530,7 +547,7 @@ Filter =
       return mail.href[7..]
     false
   subject: (post) ->
-    $('.subject', post.el).textContent or false
+    $('.postInfo .subject', post.el).textContent or false
   comment: (post) ->
     text = []
     nodes = d.evaluate './/br|.//text()', post.blockquote, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null
@@ -601,7 +618,7 @@ ExpandComment =
       quote.href = "res/#{href}" # Fix pathnames
     post =
       blockquote: node
-      threadId:   threadID
+      threadID:   threadID
       quotes:     quotes
       backlinks:  []
     if Conf['Resurrect Quotes']
@@ -652,8 +669,6 @@ ExpandThread =
         replies.splice replies.length - num, num
         for reply in replies
           $.rm reply
-        for backlink in $$ '.backlink', a.previousElementSibling
-          $.rm backlink unless $.id backlink.hash[1..]
     return
 
   parse: (req, thread, a) ->
@@ -676,7 +691,7 @@ ExpandThread =
         continue if href[0] is '/' # Cross-board quote
         quote.href = "res/#{href}" # Fix pathnames
       id = reply.id[2..]
-      link = $ '.postInfo > .postNum > a:first-child', reply
+      link = $ '.postInfo > .postNum > a[title="Highlight this post"]', reply
       link.href = "res/#{threadID}#p#{id}"
       link.nextSibling.href = "res/#{threadID}#q#{id}"
       nodes.push reply
@@ -684,6 +699,7 @@ ExpandThread =
     for post in $$ '.summary ~ .replyContainer', a.parentNode
       $.rm post
     for backlink in $$ '.backlink', a.previousElementSibling
+      # Keep backlinks from other threads.
       $.rm backlink unless $.id backlink.hash[1..]
     $.after a, nodes
     Main.node nodes
@@ -751,22 +767,20 @@ ReplyHiding =
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.isInlined or /\bop\b/.test post.class
+    return if post.isInlined or post.ID is post.threadID
     side = $ '.sideArrows', post.root
     $.addClass side, 'hide_reply_button'
     side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
     $.on side.firstChild, 'click', ReplyHiding.toggle
 
-    if post.id of g.hiddenReplies
+    if post.ID of g.hiddenReplies
       ReplyHiding.hide post.root
 
   toggle: ->
     button = @parentNode
     root   = button.parentNode
-    post   = Main.preParse root
-    {id} = post
-    quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href='#p#{id}']"
-
+    id     = root.id[2..]
+    quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href$='#p#{id}']"
     if /\bstub\b/.test button.className
       ReplyHiding.show post.root
       for quote in quotes
@@ -928,9 +942,7 @@ Keybinds =
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
-    e = d.createEvent 'Event'
-    e.initEvent 'input', true, false
-    ta.dispatchEvent e
+    $.event ta, new Event 'input'
 
   img: (thread, all) ->
     if all
@@ -1049,7 +1061,7 @@ Nav =
 
 QR =
   init: ->
-    return unless $ '#postForm input[type=submit]'
+    return unless $.id 'postForm'
     Main.callbacks.push @node
     if Conf['Hide Original Post Form']
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
@@ -1059,26 +1071,12 @@ QR =
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 
-    $.on d, 'dragover',          QR.dragOver
-    $.on d, 'drop',              QR.dropFile
-    $.on d, 'dragstart dragend', QR.drag
-
-    #XXX fucking moot
-    widget = $.id 'recaptcha_widget_div'
-    challenge = $.id 'recaptcha_challenge_field_holder'
-    if widget and challenge
-      QR.foo.call widget, target: challenge
-    else
-      $.on widget, 'DOMNodeInserted', QR.foo
-
-  foo: (e) ->
-    {target} = e
-    return unless target.id is 'recaptcha_challenge_field_holder'
-    $.off @, 'DOMNodeInserted', QR.foo
-    QR.challenge = target
     if Conf['Persistent QR']
       QR.dialog()
       QR.hide() if Conf['Auto Hide QR']
+    $.on d, 'dragover',          QR.dragOver
+    $.on d, 'drop',              QR.dropFile
+    $.on d, 'dragstart dragend', QR.drag
 
   node: (post) ->
     $.on $('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote
@@ -1174,6 +1172,8 @@ QR =
 
     sel = window.getSelection()
     if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id.match(/\d+$/)[0]
+      # XXX Opera needs d.getSelection() to retain linebreaks from the selected text
+      s = d.getSelection() if $.engine is 'presto'
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
@@ -1184,12 +1184,19 @@ QR =
     ta.focus()
     # Move the caret to the end of the new quote.
     range = caretPos + text.length
+    # XXX Opera counts newlines as double
+    range += text.match(/\n/g).length if $.engine is 'presto'
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
-    e = d.createEvent 'Event'
-    e.initEvent 'input', true, false
-    ta.dispatchEvent e
+    $.event ta, new Event 'input'
+
+  characterCount: ->
+    counter = QR.charaCounter
+    count   = @textLength
+    counter.textContent = count
+    counter.hidden      = count < 1000
+    (if count > 1500 then $.addClass else $.rmClass) counter, 'warning'
 
   drag: (e) ->
     # Let it drag anything from the page.
@@ -1236,7 +1243,20 @@ QR =
     $.addClass QR.el, 'dump'
     QR.resetFileInput() # reset input
   resetFileInput: ->
-    $('[type=file]', QR.el).value = null
+    input = $ '[type=file]', QR.el
+    input.value = null
+    return unless $.engine is 'presto'
+    # XXX Opera needs extra care to reset its file input's value
+    clone = $.el 'input',
+      type: 'file'
+      accept:   input.accept
+      max:      input.max
+      multiple: input.multiple
+      size:     input.size
+      title:    input.title
+    $.on clone, 'change', QR.fileInput
+    $.on clone, 'click',  (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
+    $.replace input, clone
 
   replies: []
   reply: class
@@ -1275,13 +1295,14 @@ QR =
 
       QR.replies.push @
     setFile: (@file) ->
-      @el.title = file.name
+      @el.title = "#{file.name} (#{$.bytesToString file.size})"
       $('label', @el).hidden = false if QR.spoiler
-      if file.type is 'application/pdf'
+      unless /^image/.test file.type
         @el.style.backgroundImage = null
         return
       url = window.URL or window.webkitURL
-      url.revokeObjectURL @url
+      # XXX Opera does not support window.URL.revokeObjectURL
+      url.revokeObjectURL? @url
 
       # Create a redimensioned thumbnail.
       fileUrl = url.createObjectURL file
@@ -1320,7 +1341,7 @@ QR =
 
         @url = url.createObjectURL bb.getBlob 'image/png'
         @el.style.backgroundImage = "url(#{@url})"
-        url.revokeObjectURL fileUrl
+        url.revokeObjectURL? fileUrl
 
       img.src = fileUrl
     rmFile: ->
@@ -1329,7 +1350,7 @@ QR =
       @el.title = null
       @el.style.backgroundImage = null
       $('label', @el).hidden = true if QR.spoiler
-      (window.URL or window.webkitURL).revokeObjectURL @url
+      (window.URL or window.webkitURL).revokeObjectURL? @url
     select: ->
       QR.selected?.el.id = null
       QR.selected = @
@@ -1341,6 +1362,7 @@ QR =
       # Load this reply's values.
       for data in ['name', 'email', 'sub', 'com']
         $("[name=#{data}]", QR.el).value = @[data]
+      QR.characterCount.call $ 'textarea', QR.el
       $('#spoiler', QR.el).checked = @spoiler
     dragStart: ->
       $.addClass    @, 'drag'
@@ -1375,14 +1397,32 @@ QR =
       else if @el.id is 'selected'
         (QR.replies[index-1] or QR.replies[index+1]).select()
       QR.replies.splice index, 1
-      (window.URL or window.webkitURL).revokeObjectURL @url
+      (window.URL or window.webkitURL).revokeObjectURL? @url
       delete @
 
   captcha:
     init: ->
-      @img       = $ '.captcha > img', QR.el
-      @input     = $ '[autocomplete]', QR.el
-      @challenge = QR.challenge
+      return unless QR.captchaIsEnabled = !!$.id 'captchaFormPart'
+      if $.id 'recaptcha_challenge_field_holder'
+        @ready()
+      else
+        @onready = => @ready()
+        $.on $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
+    ready: ->
+      if @challenge = $.id 'recaptcha_challenge_field_holder'
+        $.off $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
+        delete @onready
+      else
+        return
+      $.after $('.textarea', QR.el), $.el 'div',
+        className: 'captchaimg'
+        title: 'Reload'
+        innerHTML: '<img>'
+      $.after $('.captchaimg', QR.el), $.el 'div',
+        className: 'captchainput'
+        innerHTML: '<input title=Verification class=field autocomplete=off size=1>'
+      @img   = $ '.captchaimg > img', QR.el
+      @input = $ '.captchainput > input', QR.el
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
       $.on @challenge,      'DOMNodeInserted', => @load()
@@ -1436,18 +1476,15 @@ QR =
       e.preventDefault()
 
   dialog: ->
-    return unless QR.challenge
     QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
   <span> <a class=close title=Close>X</a></span>
 </div>
 <form>
-  <div><input id=dump class=field type=button title="Dump list" value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
+  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
-  <div><textarea name=com title=Comment placeholder=Comment class=field></textarea></div>
-  <div class=captcha title=Reload><img></div>
-  <div><input title=Verification class=field autocomplete=off size=1></div>
+  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
   <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
   <div class=warning></div>
@@ -1465,6 +1502,8 @@ QR =
           'image/jpeg'
         when 'pdf'
           'application/pdf'
+        when 'swf'
+          'application/x-shockwave-flash'
         else
           "image/#{type}"
     QR.mimeTypes = mimeTypes.split ', '
@@ -1472,11 +1511,14 @@ QR =
     QR.mimeTypes.push ''
     fileInput        = $ 'input[type=file]', QR.el
     fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
-    fileInput.accept = mimeTypes
+    fileInput.accept = mimeTypes if $.engine isnt 'presto' # Opera's accept attribute is fucked up
 
     QR.spoiler     = !!$ 'input[name=spoiler]'
     spoiler        = $ '#spoilerLabel', QR.el
     spoiler.hidden = !QR.spoiler
+
+    QR.charaCounter = $ '#charCount', QR.el
+    ta              = $ 'textarea',    QR.el
 
     unless g.REPLY
       # Make a list with visible threads and an option to create a new one.
@@ -1493,7 +1535,8 @@ QR =
     $.on $('#dump',     QR.el), 'click',     -> QR.el.classList.toggle 'dump'
     $.on $('#addReply', QR.el), 'click',     -> new QR.reply().select()
     $.on $('form',      QR.el), 'submit',    QR.submit
-    $.on $('textarea',  QR.el), 'input',     -> QR.selected.el.lastChild.textContent = @value
+    $.on ta,                    'input',     -> QR.selected.el.lastChild.textContent = @value
+    $.on ta,                    'input',     QR.characterCount
     $.on fileInput,             'change',    QR.fileInput
     $.on fileInput,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
     $.on spoiler.firstChild,    'change',    -> $('input', QR.selected.el).click()
@@ -1503,7 +1546,6 @@ QR =
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
       # The input event replaces keyup, change and paste events.
-      # XXX Does Opera support the `input` event?
       $.on $("[name=#{name}]", QR.el), 'input', ->
         QR.selected[@name] = @value
         # Disable auto-posting if you're typing in the first reply
@@ -1519,9 +1561,8 @@ QR =
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
-    e = d.createEvent 'CustomEvent'
-    e.initEvent 'QRDialogCreation', true, false
-    QR.el.dispatchEvent e
+    $.event QR.el, new CustomEvent 'QRDialogCreation',
+      bubbles: true
 
   submit: (e) ->
     e?.preventDefault()
@@ -1537,7 +1578,7 @@ QR =
     # prevent errors
     unless threadID is 'new' and reply.file or threadID isnt 'new' and (reply.com or reply.file)
       err = 'No file selected.'
-    else
+    else if QR.captchaIsEnabled
       # get oldest valid captcha
       captchas = $.get 'captchas', []
       # remove old captchas
@@ -1653,18 +1694,25 @@ QR =
       sub:   if Conf['Remember Subject']  then reply.sub     else null
     $.set 'QR.persona', persona
 
-    [_, thread, postNumber] = msg.lastChild.textContent.match /thread:(\d+),no:(\d+)/
-    if thread is '0' # new thread
+    [_, threadID, postID] = msg.lastChild.textContent.match /thread:(\d+),no:(\d+)/
+
+    # Post/upload confirmed as successful.
+    $.event QR.el, new CustomEvent 'QRPostSuccessful',
+      detail:
+        threadID: threadID
+        postID:   postID
+
+    if threadID is '0' # new thread
       if Conf['Thread Watcher'] and Conf['Auto Watch']
-        $.set 'autoWatch', postNumber
+        $.set 'autoWatch', postID
       # auto-noko
-      location.pathname = "/#{g.BOARD}/res/#{postNumber}"
+      location.pathname = "/#{g.BOARD}/res/#{postID}"
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       QR.cooldown.auto = QR.replies.length > 1
       QR.cooldown.set if /sage/i.test reply.email then 60 else 30
       if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
-        $.open "//boards.4chan.org/#{g.BOARD}/res/#{thread}##{postNumber}"
+        $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
     if Conf['Persistent QR'] or QR.cooldown.auto
       reply.rm()
@@ -1679,6 +1727,7 @@ QR =
 
   abort: ->
     QR.ajax?.abort()
+    delete QR.ajax
     QR.status()
 
 Options =
@@ -1716,51 +1765,45 @@ Options =
   <input type=radio name=tab hidden id=sauces_tab>
   <div>
     <div class=warning><code>Sauce</code> is disabled.</div>
-    Lines starting with a <code>#</code> will be ignored.
+    Lines starting with a <code>#</code> will be ignored.<br>
+    You can specify a certain display text by appending <code>;text:[text]</code> to the url.
     <ul>These parameters will be replaced by their corresponding values:
       <li>$1: Thumbnail url.</li>
       <li>$2: Full image url.</li>
       <li>$3: MD5 hash.</li>
       <li>$4: Current board.</li>
     </ul>
-    <textarea name=sauces id=sauces></textarea>
+    <textarea name=sauces id=sauces class=field></textarea>
   </div>
   <input type=radio name=tab hidden id=filter_tab>
   <div>
     <div class=warning><code>Filter</code> is disabled.</div>
-    Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
-    Lines starting with a <code>#</code> will be ignored.<br>
-    For example, <code>/weeaboo/i</code> will filter posts containing `weeaboo` case-insensitive.
-    <ul>You can use these settings with each regular expression, separate them with semicolons:
-      <li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li>
-      <li>Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li>
-      <li>Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code></li>
-      <li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li>
-      <li>Highlighted OPs will have their threads put on top of board pages by default.<br>For example: <code>top:yes</code> or <code>top:no</code>.</li>
-    </ul>
-    <p>Name:<br><textarea name=name></textarea></p>
-    <p>Unique ID:<br><textarea name=uniqueid></textarea></p>
-    <p>Tripcode:<br><textarea name=tripcode></textarea></p>
-    <p>Admin/Mod:<br><textarea name=mod></textarea></p>
-    <p>E-mail:<br><textarea name=email></textarea></p>
-    <p>Subject:<br><textarea name=subject></textarea></p>
-    <p>Comment:<br><textarea name=comment></textarea></p>
-    <p>Filename:<br><textarea name=filename></textarea></p>
-    <p>Image dimensions:<br><textarea name=dimensions></textarea></p>
-    <p>Filesize:<br><textarea name=filesize></textarea></p>
-    <p>Image MD5 (uses exact string matching, not regular expressions):<br><textarea name=md5></textarea></p>
+    <select name=filter>
+      <option value=guide>Guide</option>
+      <option value=name>Name</option>
+      <option value=uniqueid>Unique ID</option>
+      <option value=tripcode>Tripcode</option>
+      <option value=mod>Admin/Mod</option>
+      <option value=email>E-mail</option>
+      <option value=subject>Subject</option>
+      <option value=comment>Comment</option>
+      <option value=filename>Filename</option>
+      <option value=dimensions>Image dimensions</option>
+      <option value=filesize>Filesize</option>
+      <option value=md5>Image MD5 (uses exact string matching, not regular expressions)</option>
+    </select>
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div>
     <div class=warning><code>Quote Backlinks</code> are disabled.</div>
     <ul>
       Backlink formatting
-      <li><input type=text name=backlink> : <span id=backlinkPreview></span></li>
+      <li><input name=backlink class=field> : <span id=backlinkPreview></span></li>
     </ul>
     <div class=warning><code>Time Formatting</code> is disabled.</div>
     <ul>
       Time formatting
-      <li><input type=text name=time> : <span id=timePreview></span></li>
+      <li><input name=time class=field> : <span id=timePreview></span></li>
       <li>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</li>
       <li>Day: %a, %A, %d, %e</li>
       <li>Month: %m, %b, %B</li>
@@ -1772,7 +1815,7 @@ Options =
     <div class=warning><code>File Info Formatting</code> is disabled.</div>
     <ul>
       File Info Formatting
-      <li><input type=text name=fileInfo> : <span id=fileInfoPreview class=fileText></span></li>
+      <li><input name=fileInfo class=field> : <span id=fileInfoPreview class=fileText></span></li>
       <li>Link (with original file name): %l (lowercase L, truncated), %L (untruncated)</li>
       <li>Original file name: %n (Truncated), %N (Untruncated)</li>
       <li>Spoiler indicator: %p</li>
@@ -1819,10 +1862,14 @@ Options =
     $.on $('button', li), 'click', Options.clearHidden
     $.add $('ul:nth-child(2)', dialog), li
 
-    #filter & sauce
-    for ta in $$ 'textarea', dialog
-      ta.textContent = $.get ta.name, Conf[ta.name]
-      $.on ta, 'change', $.cb.value
+    #filter
+    filter = $ 'select[name=filter]', dialog
+    $.on filter, 'change', Options.filter
+
+    #sauce
+    sauce = $ '#sauces', dialog
+    sauce.value = $.get sauce.name, Conf[sauce.name]
+    $.on sauce, 'change', $.cb.value
 
     #rice
     (back     = $ '[name=backlink]', dialog).value = $.get 'backlink', Conf['backlink']
@@ -1834,7 +1881,7 @@ Options =
     $.on time,     'input', Options.time
     $.on fileInfo, 'input', $.cb.value
     $.on fileInfo, 'input', Options.fileInfo
-    favicon = $ 'select', dialog
+    favicon = $ 'select[name=favicon]', dialog
     favicon.value = $.get 'favicon', Conf['favicon']
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
@@ -1842,7 +1889,7 @@ Options =
     #keybinds
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
-        innerHTML: "<td>#{arr[1]}</td><td><input name=#{key}></td>"
+        innerHTML: "<td>#{arr[1]}</td><td><input name=#{key} class=field></td>"
       input = $ 'input', tr
       input.value = $.get key, Conf[key]
       $.on input, 'keydown', Options.keybind
@@ -1870,6 +1917,7 @@ Options =
     dialog.style.top  = top  + 'px'
     dialog.style.visibility = 'visible'
 
+    Options.filter.call   filter
     Options.backlink.call back
     Options.time.call     time
     Options.fileInfo.call fileInfo
@@ -1893,6 +1941,45 @@ Options =
     return unless (key = Keybinds.keyCode e)?
     @value = key
     $.cb.value.call @
+  filter: ->
+    el = @nextSibling
+
+    if (name = @value) isnt 'guide'
+      ta = $.el 'textarea',
+        name: name
+        className: 'field'
+        value: $.get name, Conf[name]
+      $.on ta, 'change', $.cb.value
+      $.replace el, ta
+      return
+
+    $.rm el if el
+    $.after @, $.el 'article',
+      innerHTML: '<p>Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
+  Lines starting with a <code>#</code> will be ignored.<br>
+  For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.</p>
+  <ul>You can use these settings with each regular expression, separate them with semicolons:
+    <li>
+      Per boards, separate them with commas. It is global if not specified.<br>
+      For example: <code>boards:a,jp;</code>.
+    </li>
+    <li>
+      Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>
+      For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.
+    </li>
+    <li>
+      Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>
+      For example: <code>stub:yes;</code> or <code>stub:no;</code>.
+    </li>
+    <li>
+      Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>
+      For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.
+    </li>
+    <li>
+      Highlighted OPs will have their threads put on top of board pages by default.<br>
+      For example: <code>top:yes;</code> or <code>top:no;</code>.
+    </li>
+  </ul>'
   time: ->
     Time.foo()
     Time.date = new Date()
@@ -1927,7 +2014,7 @@ Updater =
     checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} type=text></label></div>
+      <div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} class=field size=4></label></div>
       <div><input value='Update Now' type=button></div>"
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
@@ -2142,7 +2229,7 @@ Watcher =
     watched[g.BOARD] or= {}
     watched[g.BOARD][id] =
       href: "/#{g.BOARD}/res/#{id}"
-      textContent: GetTitle thread
+      textContent: Get.title thread
     $.set 'watched', watched
     Watcher.refresh()
     true
@@ -2156,7 +2243,7 @@ Anonymize =
     name.textContent = 'Anonymous'
     if (trip = name.nextElementSibling) and trip.className is 'postertrip'
       $.rm trip
-    if (parent = name.parentNode).className is 'useremail' and not /^sage$/i.test parent.pathname
+    if (parent = name.parentNode).className is 'useremail' and not /^mailto:sage$/i.test parent.href
       $.replace parent, name
 
 Sauce =
@@ -2165,30 +2252,33 @@ Sauce =
     @links = []
     for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
-      # .trim() is there to fix Opera reading two different line breaks.
+      # XXX .trim() is there to fix Opera reading two different line breaks.
       @links.push @createSauceLink link.trim()
     return unless @links.length
     Main.callbacks.push @node
 
   createSauceLink: (link) ->
-    domain = link.match(/(\w+)\.\w+\//)[1]
-    href   = link.replace /(\$\d)/g, (parameter) ->
+    link = link.replace /(\$\d)/g, (parameter) ->
       switch parameter
         when '$1'
-          "http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg') + '"
+          "' + (isArchived ? img.firstChild.src : 'http://thumbs.4chan.org' + img.pathname.replace(/src(\\/\\d+).+$/, 'thumb$1s.jpg')) + '"
         when '$2'
           "' + img.href + '"
         when '$3'
           "' + encodeURIComponent(img.firstChild.dataset.md5) + '"
         when '$4'
           g.BOARD
-    href = Function 'img', "return '#{href}'"
+        else
+          parameter
+    domain = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)[1]
+    href = link.replace /;text:.+$/, ''
+    href = Function 'img', 'isArchived', "return '#{href}'"
     el = $.el 'a',
       target: '_blank'
       textContent: domain
-    (img) ->
+    (img, isArchived) ->
       a = el.cloneNode true
-      a.href = href img
+      a.href = href img, isArchived
       a
 
   node: (post) ->
@@ -2197,7 +2287,7 @@ Sauce =
     img   = img.parentNode
     nodes = []
     for link in Sauce.links
-      nodes.push $.tn($.NBSP), link img
+      nodes.push $.tn($.NBSP), link img, post.isArchived
     $.add post.fileInfo, nodes
 
 RevealSpoilers =
@@ -2205,9 +2295,12 @@ RevealSpoilers =
     Main.callbacks.push @node
   node: (post) ->
     {img} = post
-    if not (img and /^Spoiler/.test img.alt) or post.isInlined and not post.isCrosspost
+    if not (img and /^Spoiler/.test img.alt) or post.isInlined and not post.isCrosspost or post.isArchived
       return
     img.removeAttribute 'style'
+    # revealed spoilers do not have height/width set, this fixes auto-gifs dimensions.
+    s = img.style
+    s.maxHeight = s.maxWidth = if /\bop\b/.test post.class then '250px' else '125px'
     img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace /src(\/\d+).+$/, 'thumb$1s.jpg'}"
 
 Time =
@@ -2324,19 +2417,256 @@ FileInfo =
     M: -> FileInfo.convertUnit 'MB'
     r: -> FileInfo.data.resolution
 
-GetTitle = (thread) ->
-  op = $ '.op', thread
-  el = $ '.subject', op
-  unless el.textContent
-    el = $ 'blockquote', op
+Get =
+  post: (board, threadID, postID, root, cb) ->
+    if board is g.BOARD and post = $.id "pc#{postID}"
+      $.add root, Get.cleanPost post.cloneNode true
+      return
+
+    root.textContent = "Loading post No.#{postID}..."
+    if threadID
+      $.cache "/#{board}/res/#{threadID}", ->
+        Get.parsePost @, board, threadID, postID, root, cb
+    else if url = Redirect.post board, postID
+      $.cache url, ->
+        Get.parseArchivedPost @, board, postID, root, cb
+  parsePost: (req, board, threadID, postID, root, cb) ->
+    {status} = req
+    if status isnt 200
+      # The thread can die by the time we check a quote.
+      if url = Redirect.post board, postID
+        $.cache url, ->
+          Get.parseArchivedPost @, board, postID, root, cb
+      else
+        root.textContent =
+          if status is 404
+            "Thread No.#{threadID} has not been found."
+          else
+            "Error #{req.status}: #{req.statusText}."
+      return
+
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = req.response
+
+    unless pc = doc.getElementById "pc#{postID}"
+      # The post can be deleted by the time we check a quote.
+      if url = Redirect.post board, postID
+        $.cache url, ->
+          Get.parseArchivedPost @, board, postID, root, cb
+      else
+        root.textContent = "Post No.#{postID} has not been found."
+      return
+    pc = Get.cleanPost d.importNode pc, true
+
+    for quote in $$ '.quotelink', pc
+      href = quote.getAttribute 'href'
+      continue if href[0] is '/' # Cross-board quote, or board link
+      quote.href = "/#{board}/res/#{href}" # Fix pathnames
+    link = $ '.postInfo > .postNum > a[title="Highlight this post"]', pc
+    link.href = "/#{board}/res/#{threadID}#p#{postID}"
+    link.nextSibling.href = "/#{board}/res/#{threadID}#q#{postID}"
+
+    $.replace root.firstChild, pc
+    cb() if cb
+  parseArchivedPost: (req, board, postID, root, cb) ->
+    data = JSON.parse req.response
+    $.addClass root, 'archivedPost'
+    if data.error
+      root.textContent = data.error
+      return
+
+    threadID = data.thread_num
+    isOP = postID is threadID
+    {name, trip, timestamp} = data
+    subject = data.title
+
+    # post info (mobile)
+    piM = $.el 'div',
+      id: "pim#{postID}"
+      className: 'postInfoM mobile'
+      innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=#{timestamp}>#{data.fourchan_date}<br><em></em><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a></span>"
+    $('.name',    piM).textContent = name
+    $('.subject', piM).textContent = subject
+    br = $ 'br', piM
+    if trip
+      $.before br, [$.tn(' '), $.el 'span',
+        className: 'postertrip'
+        textContent: trip
+      ]
+    {capcode} = data
+    if capcode isnt 'N' # 'A'dmin or 'M'od
+      $.addClass br.parentNode, if capcode is 'A' then 'capcodeAdmin' else 'capcodeMod'
+      $.before br, [
+        $.tn(' '),
+        $.el('strong',
+          className: 'capcode',
+          textContent: if capcode is 'A' then '## Admin' else '## Mod'
+        ),
+        $.tn(' '),
+        $.el('img',
+          src:   if capcode is 'A' then '//static.4chan.org/image/adminicon.gif' else  '//static.4chan.org/image/modicon.gif',
+          alt:   if capcode is 'A' then 'This user is the 4chan Administrator.' else 'This user is a 4chan Moderator.',
+          title: if capcode is 'A' then 'This user is the 4chan Administrator.' else 'This user is a 4chan Moderator.',
+          className: 'identityIcon'
+        )
+      ]
+
+    # post info
+    pi = $.el 'div',
+      id: "pi#{postID}"
+      className: 'postInfo desktop'
+      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
+    # subject
+    $('.subject', pi).textContent = subject
+    nameBlock = $ '.nameBlock', pi
+    if data.email
+      email = $.el 'a',
+        className: 'useremail'
+        href: "mailto:#{data.email}"
+      $.add nameBlock, email
+      nameBlock = email
+    $.add nameBlock, $.el 'span',
+      className: 'name'
+      textContent: data.name
+    if trip
+      $.add nameBlock, [$.tn(' '), $.el('span', className: 'postertrip', textContent: trip)]
+    if capcode isnt 'N' # 'A'dmin or 'M'od
+      $.add nameBlock, [
+        $.tn(' '),
+        $.el('strong',
+          className:   if capcode is 'A' then 'capcode capcodeAdmin' else 'capcode',
+          textContent: if capcode is 'A' then '## Admin' else '## Mod'
+        )
+      ]
+      nameBlock = $ '.nameBlock', pi
+      $.addClass nameBlock, if capcode is 'A' then 'capcodeAdmin' else 'capcodeMod'
+      $.add nameBlock, [
+        $.tn(' '),
+        $.el('img',
+          src:   if capcode is 'A' then '//static.4chan.org/image/adminicon.gif' else  '//static.4chan.org/image/modicon.gif',
+          alt:   if capcode is 'A' then 'This user is the 4chan Administrator.' else 'This user is a 4chan Moderator.',
+          title: if capcode is 'A' then 'This user is the 4chan Administrator.' else 'This user is a 4chan Moderator.',
+          className: 'identityIcon'
+        )
+      ]
+
+    # comment
+    bq = $.el 'blockquote',
+      id: "m#{postID}"
+      className: 'postMessage'
+      textContent: data.comment # set this first to convert text to HTML entities
+    # https://github.com/eksopl/fuuka/blob/master/Board/Yotsuba.pm#L413-452
+    # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
+    bq.innerHTML = bq.innerHTML.replace ///
+      \n
+      | \[/?b\]
+      | \[/?spoiler\]
+      | \[/?code\]
+      | \[/?moot\]
+      | \[/?banned\]
+      ///g, (text) ->
+        switch text
+          when '\n'
+            '<br>'
+          when '[b]'
+            '<b>'
+          when '[/b]'
+            '</b>'
+          when '[spoiler]'
+            '<span class=spoiler>'
+          when '[/spoiler]'
+            '</span>'
+          when '[code]'
+            '<pre class=prettyprint>'
+          when '[/code]'
+            '</pre>'
+          when '[moot]'
+            '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
+          when '[/moot]'
+            '</div>'
+          when '[banned]'
+            '<b style="color: red;">'
+          when '[/banned]'
+            '</b>'
+    # greentext
+    bq.innerHTML = bq.innerHTML.replace /(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3'
+
+    # post container
+    pc = $.el 'div',
+      id: "pc#{postID}"
+      className: "postContainer #{if isOP then 'op' else 'reply'}Container"
+      innerHTML: "<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}'></div>"
+    $.add pc.firstChild, [piM, pi, bq]
+
+    # file
+    if filename = data.media_filename
+      file = $.el 'div',
+        id: "f#{postID}"
+        className: 'file'
+      spoiler  = data.spoiler is '1'
+      filesize = $.bytesToString data.media_size
+      $.add file, $.el 'div',
+        className: 'fileInfo'
+        innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{if spoiler then 'Spoiler Image, ' else ''}#{filesize}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
+      span = $ 'span[title]', file
+      span.title = filename
+      max = if isOP then 40 else 30
+      span.textContent =
+        # FILENAME SHORTENING SCIENCE:
+        # OPs have +10 characters max.
+        # The file extension is not taken into account.
+        # abcdefghijklmnopqrstuvwxyz_1234.jpg is shortened.
+        # abcdefghijklmnopqrstuvwxyz_123.jpg  is not shortened.
+        if filename.replace(/\.\w+$/, '').length > max
+          "#{filename[...max]}(...)#{filename.match(/\.\w+$/)}"
+        else
+          filename
+      thumb_src = if data.media_status is 'available' then "src=#{data.thumb_link}" else ''
+      $.add file, $.el 'a',
+        className: if spoiler then 'fileThumb imgspoiler' else 'fileThumb'
+        href: data.media_link or data.remote_media_link
+        target: '_blank'
+        innerHTML: "<img #{thumb_src} alt='#{if data.media_status isnt 'available' then "Error: #{data.media_status}, " else ''}#{if spoiler then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
+      $.after (if isOP then piM else pi), file
+
+    $.replace root.firstChild, pc
+    cb() if cb
+  cleanPost: (root) ->
+    post = $ '.post', root
+    for child in Array::slice.call root.childNodes
+      $.rm child unless child is post
+
+    # Remove inlined posts inside of this post.
+    for inline  in $$ '.inline',  post
+      $.rm inline
+    for inlined in $$ '.inlined', post
+      $.rmClass inlined, 'inlined'
+
+    # Don't mess with other features
+    now = Date.now()
+    for el in $$ '[id]', root
+      el.id = "#{now}_#{el.id}"
+
+    $.rmClass root, 'forwarded'
+    $.rmClass root, 'qphl' # op
+    $.rmClass post, 'highlight'
+    $.rmClass post, 'qphl' # reply
+    root.hidden = post.hidden = false
+
+    root
+  title: (thread) ->
+    op = $ '.op', thread
+    el = $ '.subject', op
     unless el.textContent
-      el = $ '.nameBlock', op
-  span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
-  "/#{g.BOARD}/ - #{span.textContent.trim()}"
+      el = $ 'blockquote', op
+      unless el.textContent
+        el = $ '.nameBlock', op
+    span = $.el 'span', innerHTML: el.innerHTML.replace /<br>/g, ' '
+    "/#{g.BOARD}/ - #{span.textContent.trim()}"
 
 TitlePost =
   init: ->
-    d.title = GetTitle()
+    d.title = Get.title()
 
 QuoteBacklink =
   init: ->
@@ -2352,9 +2682,9 @@ QuoteBacklink =
         # Duplicate quotes get overwritten.
         quotes[qid] = true
     a = $.el 'a',
-      href: "#p#{post.id}"
+      href: "/#{g.BOARD}/res/#{post.threadID}#p#{post.ID}"
       className: if post.el.hidden then 'filtered backlink' else 'backlink'
-      textContent: QuoteBacklink.funk post.id
+      textContent: QuoteBacklink.funk post.ID
     for qid of quotes
       # Don't backlink the OP.
       continue if !(el = $.id "pi#{qid}") or !Conf['OP Backlinks'] and /\bop\b/.test el.parentNode.className
@@ -2364,7 +2694,7 @@ QuoteBacklink =
       if Conf['Quote Inline']
         $.on link, 'click', QuoteInline.toggle
       else
-        link.setAttribute 'onclick', "replyhl('#{post.id}');"
+        link.setAttribute 'onclick', "replyhl('#{post.ID}');"
       unless container = $.id "blc#{qid}"
         container = $.el 'span',
           className: 'container'
@@ -2378,7 +2708,7 @@ QuoteInline =
     Main.callbacks.push @node
   node: (post) ->
     for quote in post.quotes
-      continue unless quote.hash
+      continue unless quote.hash or /\bdeadlink\b/.test quote.className
       quote.removeAttribute 'onclick'
       $.on quote, 'click', QuoteInline.toggle
     for quote in post.backlinks
@@ -2387,7 +2717,7 @@ QuoteInline =
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
-    id = @hash[2..]
+    id = @dataset.id or @hash[2..]
     if /\binlined\b/.test @className
       QuoteInline.rm @, id
     else
@@ -2396,46 +2726,44 @@ QuoteInline =
     @classList.toggle 'inlined'
 
   add: (q, id) ->
-    # XXX
-    # Can't use this because Firefox a shit:
-    # root = $.x 'ancestor::*[parent::blockquote]', q
-    unless isBacklink = /\bbacklink\b/.test q.className
-      root = q
-      while root.parentNode.nodeName isnt 'BLOCKQUOTE'
-        root = root.parentNode
-    if el = $.id "p#{id}"
-      if /\bop\b/.test el.className
-        $.rmClass el.parentNode, 'qphl'
-      else
-        $.rmClass el, 'qphl'
-      clonePost = QuoteInline.clone id, el
-      if isBacklink
-        $.after q.parentNode, clonePost
-        if Conf['Forward Hiding']
-          $.addClass el.parentNode, 'forwarded'
-          # Will only unhide if there's no inlined backlinks of it anymore.
-          ++el.dataset.forwarded or el.dataset.forwarded = 1
-      else
-        $.after root, clonePost
-      for reply, i in Unread.replies
-        if reply.el is el
-          Unread.replies.splice i, 1
-          Unread.update true
-          break
-      Main.node [clonePost]
-      return
+    if q.host is 'boards.4chan.org'
+      path     = q.pathname.split '/'
+      board    = path[1]
+      threadID = path[3]
+      postID   = id
+    else
+      board    = q.dataset.board
+      threadID = 0
+      postID   = q.dataset.id
 
+    el = if board is g.BOARD then $.id "p#{postID}" else false
     inline = $.el 'div',
-      className: 'inline'
-      id: "i#{id}"
-      textContent: "Loading #{id}..."
+      id: "i#{postID}"
+      className: if el then 'inline' else 'inline crosspost'
+
+    root =
+      if isBacklink = /\bbacklink\b/.test q.className
+        q.parentNode
+      else
+        $.x 'ancestor-or-self::*[parent::blockquote][1]', q
     $.after root, inline
-    {pathname} = q
-    $.cache pathname, -> QuoteInline.parse @, pathname, id, inline
+    Get.post board, threadID, postID, inline
+
+    return unless el
+
+    # Will only unhide if there's no inlined backlinks of it anymore.
+    if isBacklink and Conf['Forward Hiding']
+      $.addClass el.parentNode, 'forwarded'
+      ++el.dataset.forwarded or el.dataset.forwarded = 1
+
+    # Decrease the unread count if this post is in the array of unread reply.
+    if (i = Unread.replies.indexOf el) isnt -1
+      Unread.replies.splice i, 1
+      Unread.update true
 
   rm: (q, id) ->
     # select the corresponding inlined quote or loading quote
-    div = $.x "following::div[@id='i_pc#{id}']", q
+    div = $.x "following::div[@id='i#{id}']", q
     $.rm div
     return unless Conf['Forward Hiding']
     for inlined in $$ '.backlink.inlined', div
@@ -2445,47 +2773,12 @@ QuoteInline =
       div = $.id "p#{id}"
       $.rmClass div.parentNode, 'forwarded' unless --div.dataset.forwarded
 
-  parse: (req, pathname, id, inline) ->
-    return unless inline.parentNode
-
-    if req.status isnt 200
-      inline.textContent = "#{req.status} #{req.statusText}"
-      return
-
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = req.response
-
-    node = doc.getElementById "p#{id}"
-    newInline = QuoteInline.clone id, node
-    for quote in $$ '.quotelink', newInline
-      href = quote.getAttribute 'href'
-      continue if href[0] is '/' # Cross-board quote
-      quote.href = "res/#{href}" # Fix pathnames
-    link = $ '.postInfo > .postNum > a:first-child', newInline
-    link.href = "#{pathname}#p#{id}"
-    link.nextSibling.href = "#{pathname}#q#{id}"
-    $.addClass newInline, 'crosspost'
-    $.replace inline, newInline
-    Main.node [newInline]
-
-  clone: (id, el) ->
-    clone = $.el 'div',
-      className: 'postContainer inline'
-      id: "i_pc#{id}"
-    post = el.cloneNode true
-    post.hidden = false
-    $.add clone, post
-    for node in $$ '[id]', clone
-      # Don't mess with other features
-      node.id = "i_#{node.id}"
-    clone
-
 QuotePreview =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
     for quote in post.quotes
-      $.on quote, 'mouseover', QuotePreview.mouseover if quote.hash
+      $.on quote, 'mouseover', QuotePreview.mouseover if quote.hash or /\bdeadlink\b/.test quote.className
     for quote in post.backlinks
       $.on quote, 'mouseover', QuotePreview.mouseover
     return
@@ -2502,72 +2795,64 @@ QuotePreview =
     # Don't stop other elements from dragging
     return if UI.el
 
+    if @host is 'boards.4chan.org'
+      path     = @pathname.split '/'
+      board    = path[1]
+      threadID = path[3]
+      postID   = @hash[2..]
+    else
+      board    = @dataset.board
+      threadID = 0
+      postID   = @dataset.id
+
     qp = UI.el = $.el 'div',
       id: 'qp'
-      className: 'post reply dialog'
-    $.add d.body, qp
-
-    id = @hash[2..]
-    if el = $.id "p#{id}"
-      for klass in el.parentNode.className.split ' '
-        # preserve highlight classes
-        unless /^((op|reply|post)Container|forwarded)$/.test klass
-          $.addClass qp, klass
-      qp.innerHTML  = el.innerHTML
-      if Conf['Quote Highlighting']
-        if /\bop\b/.test el.className
-          $.addClass el.parentNode, 'qphl'
-        else
-          $.addClass el, 'qphl'
-      replyID = $.x('ancestor::div[contains(@class,"postContainer")]', @).id.match(/\d+$/)[0]
-      for quote in $$ '.quotelink, .backlink', qp
-        if quote.hash[2..] is replyID
-          $.addClass quote, 'forwardlink'
-    else
-      qp.textContent = "Loading #{id}..."
-      $.cache @pathname, -> QuotePreview.parse @, id
+      className: 'reply dialog'
     UI.hover e
+    $.add d.body, qp
+    el = $.id "p#{postID}" if board is g.BOARD
+    Get.post board, threadID, postID, qp, ->
+      bq = $ 'blockquote', qp
+      Main.prettify bq
+      post =
+        el: qp
+        blockquote: bq
+        isArchived: /\barchivedPost\b/.test qp.className
+      if img = $ 'img[data-md5]', qp
+        post.fileInfo = img.parentNode.previousElementSibling
+        post.img      = img
+      if Conf['Reveal Spoilers']
+        RevealSpoilers.node post
+      if Conf['Image Auto-Gif']
+        AutoGif.node        post
+      if Conf['Time Formatting']
+        Time.node           post
+      if Conf['File Info Formatting']
+        FileInfo.node       post
+      if Conf['Resurrect Quotes']
+        Quotify.node        post
+
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
-  mouseout: ->
+
+    return unless el
+    if Conf['Quote Highlighting']
+      if /\bop\b/.test el.className
+        $.addClass el.parentNode, 'qphl'
+      else
+        $.addClass el, 'qphl'
+    quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
+    for quote in $$ '.quotelink, .backlink', qp
+      if quote.hash[2..] is quoterID
+        $.addClass quote, 'forwardlink'
+    return
+  mouseout: (e) ->
     UI.hoverend()
     if el = $.id @hash[1..]
-      if /\bop\b/.test el.className
-        $.rmClass el.parentNode, 'qphl'
-      else
-        $.rmClass el, 'qphl'
+      $.rmClass el,            'qphl' # reply
+      $.rmClass el.parentNode, 'qphl' # op
     $.off @, 'mousemove',      UI.hover
     $.off @, 'mouseout click', QuotePreview.mouseout
-  parse: (req, id) ->
-    return unless (qp = UI.el) and qp.textContent is "Loading #{id}..."
-
-    if req.status isnt 200
-      qp.textContent = "#{req.status} #{req.statusText}"
-      return
-
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = req.response
-
-    node = doc.getElementById "p#{id}"
-    qp.innerHTML = node.innerHTML
-    bq = $ 'blockquote', qp
-    bq.id += '_qp'
-    Main.prettify bq
-    post =
-      el: qp
-    if fileInfo = $ '.fileInfo', qp
-      img = fileInfo.nextElementSibling.firstElementChild
-      if img.alt isnt 'File deleted.'
-        post.fileInfo = fileInfo
-        post.img      = img
-    if Conf['Image Auto-Gif']
-      AutoGif.node   post
-    if Conf['Time Formatting']
-      Time.node     post
-    if Conf['File Info Formatting']
-      FileInfo.node post
-    if Conf['Anonymize']
-      Anonymize.node post
 
 QuoteOP =
   init: ->
@@ -2575,7 +2860,7 @@ QuoteOP =
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
     for quote in post.quotes
-      if quote.hash[2..] is post.threadId
+      if quote.hash[2..] is post.threadID
         $.add quote, $.tn $.NBSP + '(OP)'
     return
 
@@ -2590,7 +2875,7 @@ QuoteCT =
         continue
       path = quote.pathname.split '/'
       # If quote leads to a different thread id and is located on the same board.
-      if path[1] is g.BOARD and path[3] isnt post.threadId
+      if path[1] is g.BOARD and path[3] isnt post.threadID
         $.add quote, $.tn $.NBSP + '(Cross-thread)'
     return
 
@@ -2625,7 +2910,7 @@ Quotify =
             m[1]
           else
             # Get the post's board, whether it's inlined or not.
-            $('.postInfo > .postNum > a:first-child', post.el).pathname.split('/')[1]
+            $('.postInfo > .postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
           textContent: "#{quote}#{$.NBSP}(Dead)"
@@ -2635,9 +2920,18 @@ Quotify =
           a.className = 'quotelink'
           a.setAttribute 'onclick', "replyhl('#{id}');"
         else
-          a.href      = Redirect.thread board, id, 'post'
+          a.href      = Redirect.thread board, 0, id
           a.className = 'deadlink'
           a.target    = '_blank'
+          if Redirect.post board, id
+            $.addClass a, 'quotelink'
+            # XXX WTF Scriptish/Greasemonkey?
+            # Setting dataset attributes that way doesn't affect the HTML,
+            # but are, I suspect, kept as object key/value pairs and GC'd later.
+            # a.dataset.board = board
+            # a.dataset.id    = id
+            a.setAttribute 'data-board', board
+            a.setAttribute 'data-id',    id
 
         data = data[index + quote.length..]
 
@@ -2659,13 +2953,13 @@ QuoteThreading =
     #
     #of course, implementing your own data structure can be awkward...
 
-    {quotes, id} = post
+    {quotes, ID} = post
     {replies} = Unread
 
     uniq = {}
     for quote in quotes
       qid = quote.hash[2..]
-      continue unless qid < id
+      continue unless qid < ID
       if qid of replies
         uniq[qid] = true
 
@@ -2674,7 +2968,7 @@ QuoteThreading =
 
     qid = keys[0]
     qreply = replies[qid]
-    reply = replies[id]
+    reply = replies[ID]
 
     qroot = qreply.el.parentNode
     threadContainer = qroot.nextSibling
@@ -2756,7 +3050,7 @@ DeleteButton =
       onload:  -> DeleteButton.load  self, @response
       onerror: -> DeleteButton.error self
 
-    o =
+    form =
       mode: 'usrdel'
       pwd: pwd
     o[id] = 'delete'
@@ -2837,11 +3131,11 @@ Unread =
     return if /\bop\b/.test(post.class) or post.isInlined
     #return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
     {replies} = Unread
-    reply = replies[post.id] =
+    reply = replies[post.ID] =
       prev: replies.last
       next: null
       el: el
-      id: post.id
+      id: post.ID
     if replies.first
       reply.prev.next = reply
     else
@@ -2906,9 +3200,9 @@ Unread =
     else
       $.rmClass Favicon.el, 'unread'
 
-    #`favicon.href = href` doesn't work on Firefox
-    #`favicon.href = href` isn't enough on Opera
-    #Opera won't always update the favicon if the href didn't not change
+    # `favicon.href = href` doesn't work on Firefox
+    # `favicon.href = href` isn't enough on Opera
+    # Opera won't always update the favicon if the href didn't change
     unless $.engine is 'webkit'
       $.add d.head, Favicon.el
 
@@ -2945,47 +3239,59 @@ Favicon =
   dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
 
 Redirect =
-  init: ->
-    url =
-      if location.hostname is 'images.4chan.org'
-        path = location.pathname.split '/'
-        @image path[1], path[3]
-      else if /^\d+$/.test g.THREAD_ID
-        @thread()
-    location.href = url if url
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
-    return unless Conf['404 Redirect']
     switch board
-      when 'a', 'co', 'jp', 'm', 'tg', 'u', 'vg'
-        "http://archive.foolz.us/#{board}/full_image/#{filename}"
+      when 'a', 'jp', 'm', 'tg', 'u', 'vg'
+        "//archive.foolz.us/#{board}/full_image/#{filename}"
       # these will work whenever https://github.com/eksopl/fuuka/issues/23 is done
       # when 'cgl', 'g', 'w'
-      #   "http://archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
+      #   "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
       # when 'an', 'toy', 'x'
       #   "http://archive.xfiles.to/#{board}/full_image/#{filename}"
       # when 'e'
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
-  thread: (board=g.BOARD, id=g.THREAD_ID, mode='thread') ->
-    return unless Conf['404 Redirect'] or mode is 'post'
+  post: (board, postID) ->
     switch board
-      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg'
-        "http://archive.foolz.us/#{board}/#{mode}/#{id}/"
-      when 'lit'
-        "http://fuuka.warosu.org/#{board}/#{mode}/#{id}"
-      when 'diy', 'g', 'k', 'sci'
-        "https://archive.installgentoo.net/#{board}/#{mode}/#{id}"
-      when 'cgl', 'mu', 'w'
-        "http://archive.rebeccablacktech.com/#{board}/#{mode}/#{id}"
-      when 'an', 'toy', 'x'
-        "http://archive.xfiles.to/#{board}/#{mode}/#{id}"
-      when 'e'
-        "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/#{mode}/#{id}"
+      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg', 'dev', 'foolz', 'kuku'
+        "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+  thread: (board, threadID, postID) ->
+    # keep the number only if the location.hash was sent f.e.
+    postID = postID.match(/\d+/)[0] if postID
+    path   =
+      if threadID
+        "#{board}/thread/#{threadID}"
       else
-        if mode is 'thread'
-          "//boards.4chan.org/#{board}/"
-        else
-          null
+        "#{board}/post/#{postID}"
+    switch board
+      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg', 'dev', 'foolz', 'kuku'
+        url = "//archive.foolz.us/#{path}/"
+        if threadID and postID
+          url += "##{postID}"
+      when 'lit'
+        url = "//fuuka.warosu.org/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      when 'diy', 'g', 'k', 'sci'
+        url = "//archive.installgentoo.net/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      when 'cgl', 'mu', 'soc', 'w'
+        url = "//archive.rebeccablacktech.com/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      when 'an', 'r9k', 'toy', 'x'
+        url = "http://archive.xfiles.to/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      when 'e'
+        url = "https://md401.homelinux.net/4chan/cgi-board.pl/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      else
+        if threadID
+          url = "//boards.4chan.org/#{board}/"
+    url or null
 
 ImageHover =
   init: ->
@@ -3225,12 +3531,16 @@ Main =
               window.location = 'javascript:Recaptcha.reload()' if e.keyCode is 8 and not e.target.value
         return
       when 'images.4chan.org'
-        $.ready -> Redirect.init() if d.title is '4chan - 404'
+        $.ready ->
+          if d.title is '4chan - 404' and Conf['404 Redirect']
+            path = location.pathname.split '/'
+            url  = Redirect.image path[1], path[3]
+            location.href = url if url
         return
 
     Main.pruneHidden()
 
-    if Conf['Quick Reply'] and Conf['Hide Original Post Form'] and g.BOARD isnt 'f'
+    if Conf['Quick Reply'] and Conf['Hide Original Post Form']
       Main.css += '#postForm { display: none; }'
     if Conf['Recursive Filtering']
       Main.css += '.hidden + .threadContainer { display: none; }'
@@ -3296,13 +3606,13 @@ Main =
 
   ready: ->
     if d.title is '4chan - 404'
-      Redirect.init()
+      if Conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
+        location.href = Redirect.thread g.BOARD, g.THREAD_ID, location.hash
       return
     unless $.id 'navtopr'
       return
-
-    $.addClass d.body, "chanx_#{Main.version.split('.')[1]}"
     $.addClass d.body, $.engine
+    $.addClass d.body, 'fourchan_x'
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
       if a = $ "a[href$='/#{g.BOARD}/']", $.id nav
         # Gotta make it work in temporary boards.
@@ -3413,26 +3723,27 @@ Main =
       window.location = "https://raw.github.com/aeosynth/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
-    rootClass = node.className
+    parentClass = node.parentNode.className
     el   = $ '.post', node
     post =
       root:        node
       el:          el
       class:       el.className
-      id:          el.id[1..]
-      threadId:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id[1..]
-      isInlined:   /\binline\b/.test rootClass
-      isCrosspost: /\bcrosspost\b/.test rootClass
+      ID:          el.id.match(/\d+$/)[0]
+      threadID:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
+      isArchived:  /\barchivedPost\b/.test parentClass
+      isInlined:   /\binline\b/.test       parentClass
+      isCrosspost: /\bcrosspost\b/.test    parentClass
       blockquote:  el.lastElementChild
       quotes:      el.getElementsByClassName 'quotelink'
       backlinks:   el.getElementsByClassName 'backlink'
       fileInfo:    false
       img:         false
-    if fileInfo = $ '.fileInfo', el
-      img = fileInfo.nextElementSibling.firstElementChild
-      if img.alt isnt 'File deleted.'
-        post.fileInfo = fileInfo
-        post.img      = img
+    if img = $ 'img[data-md5]', el
+      # Make sure to not add deleted images,
+      # those do not have a data-md5 attribute.
+      post.fileInfo = img.parentNode.previousElementSibling
+      post.img      = img
     Main.prettify post.blockquote
     post
   node: (nodes, notify) ->
@@ -3510,7 +3821,7 @@ h1 {
 #qr > .move > span {
   float: right;
 }
-#autohide, .close, #qr select, #dump, .remove, .captcha, #qr .warning {
+#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {
   cursor: pointer;
 }
 #qr select,
@@ -3645,7 +3956,6 @@ h1 {
   font: 13px sans-serif;
   margin: 0;
   padding: 2px 4px 3px;
-  width: 30%;
   -webkit-transition: color .25s, border .25s;
   -moz-transition: color .25s, border .25s;
   -o-transition: color .25s, border .25s;
@@ -3660,20 +3970,37 @@ h1 {
   color: #000;
   outline: none;
 }
-textarea.field {
-  min-height: 120px;
+#qr > form > div:first-child > .field:not(#dump) {
+  width: 30%;
 }
-.field:only-child {
-  display: block;
+#qr textarea.field {
+  display: -webkit-box;
+  min-height: 120px;
   min-width: 100%;
 }
-.captcha {
+.textarea {
+  position: relative;
+}
+#charCount {
+  color: #000;
+  background: hsla(0, 0%, 100%, .5);
+  position: absolute;
+  top: 100%;
+  right: 0;
+}
+#charCount.warning {
+  color: red;
+}
+.captchainput > .field {
+  min-width: 100%;
+}
+.captchaimg {
   background: #FFF;
   outline: 1px solid #CCC;
   outline-offset: -1px;
   text-align: center;
 }
-.captcha > img {
+.captchaimg > img {
   display: block;
   height: 57px;
   width: 300px;
@@ -3699,17 +4026,6 @@ textarea.field {
 .gecko  .fitwidth img[data-md5] + img,
 .presto .fitwidth img[data-md5] + img {
   width: 100%;
-}
-
-/* revealed spoilers do not have height/width,
-   this fixes "expanded" auto-gifs */
-.op > div > a > img[data-md5] {
-  max-height: 252px;
-  max-width: 252px;
-}
-.reply > div > a > img[data-md5] {
-  max-height: 127px;
-  max-width: 127px;
 }
 
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {
@@ -3749,8 +4065,15 @@ textarea.field {
   float: right;
 }
 #options ul {
-  list-style: none;
   padding: 0;
+}
+#options article li {
+  margin: 10px 0 10px 2em;
+}
+#options code {
+  background: hsla(0, 0%, 100%, .5);
+  color: #000;
+  padding: 0 1px;
 }
 #options label {
   text-decoration: underline;
@@ -3760,22 +4083,14 @@ textarea.field {
   overflow: auto;
 }
 #content textarea {
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  margin: 0;
-  min-height: 100px;
+  font-family: monospace;
+  min-height: 350px;
   resize: vertical;
   width: 100%;
-}
-#sauces {
-  height: 300px;
 }
 
 #updater {
   text-align: right;
-}
-#updater input[type=text] {
-  width: 50px;
 }
 #updater:not(:hover) {
   border: none;
@@ -3807,8 +4122,12 @@ textarea.field {
 }
 
 #qp {
+  padding: 2px 2px 5px;
+}
+#qp .post {
+  border: none;
   margin: 0;
-  padding: 1px 2px 5px;
+  padding: 0;
 }
 #qp img {
   max-height: 300px;
@@ -3816,12 +4135,6 @@ textarea.field {
 }
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
-}
-.qphl.opContainer {
-  outline-offset: -2px;
-}
-div.opContainer {
-  display: block !important;
 }
 .inlined {
   opacity: .5;
@@ -3831,12 +4144,16 @@ div.opContainer {
   border: 1px solid rgba(128, 128, 128, 0.5);
   display: table;
   margin: 2px;
+  padding: 2px;
 }
 .inline .post {
   background: none;
   border: none;
   margin: 0;
   padding: 0;
+}
+div.opContainer {
+  display: block !important;
 }
 .opContainer.filter_highlight {
   box-shadow: inset 5px 0 rgba(255,0,0,0.5);
