@@ -4160,10 +4160,13 @@
         }
         url = "//images.4chan.org/" + src[3] + "/src/" + src[5] + "?" + (Date.now());
       }
+      if ($.engine !== 'webkit' && url.split('/')[2] === 'images.4chan.org') {
+        return;
+      }
       timeoutID = setTimeout((function() {
         return _this.src = url;
       }), 3000);
-      if (!($.engine === 'webkit' && src[2] === 'images.4chan.org')) {
+      if ($.engine !== 'webkit' || url.split('/')[2] !== 'images.4chan.org') {
         return;
       }
       return $.ajax(url, {
@@ -4345,8 +4348,11 @@
         }
         url = "//images.4chan.org/" + src[3] + "/src/" + src[5] + "?" + (Date.now());
       }
+      if ($.engine !== 'webkit' && url.split('/')[2] === 'images.4chan.org') {
+        return;
+      }
       timeoutID = setTimeout(ImageExpand.expand, 10000, thumb, url);
-      if (!($.engine === 'webkit' && url.split('/')[2] === 'images.4chan.org')) {
+      if ($.engine !== 'webkit' || url.split('/')[2] !== 'images.4chan.org') {
         return;
       }
       return $.ajax(url, {
