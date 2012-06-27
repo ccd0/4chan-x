@@ -3368,14 +3368,13 @@ ImageHover =
     src = @src.replace(/\?\d+$/, '').split '/'
     unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
       return if g.dead
-      # CloudFlare may cache banned pages instead of images.
       # This will fool CloudFlare's cache.
       url = "//images.4chan.org/#{src[3]}/src/#{src[5]}?#{Date.now()}"
-    # navigator.online is not x-browser/os yet
+    return if $.engine isnt 'webkit' and url.split('/')[2] is 'images.4chan.org'
     timeoutID = setTimeout (=> @src = url), 3000
-    # Only Chrome let userscript break through cross domain requests.
-    # Don't check it 404s in the archivers.
-    return unless $.engine is 'webkit' and src[2] is 'images.4chan.org'
+    # Only Chrome let userscripts do cross domain requests.
+    # Don't check for 404'd status in the archivers.
+    return if $.engine isnt 'webkit' or url.split('/')[2] isnt 'images.4chan.org'
     $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
   mouseout: ->
@@ -3489,14 +3488,13 @@ ImageExpand =
     src = @src.replace(/\?\d+$/, '').split '/'
     unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
       return if g.dead
-      # CloudFlare may cache banned pages instead of images.
       # This will fool CloudFlare's cache.
       url = "//images.4chan.org/#{src[3]}/src/#{src[5]}?#{Date.now()}"
-    #navigator.online is not x-browser/os yet
+    return if $.engine isnt 'webkit' and url.split('/')[2] is 'images.4chan.org'
     timeoutID = setTimeout ImageExpand.expand, 10000, thumb, url
-    # Only Chrome let userscript break through cross domain requests.
-    # Don't check it 404s in the archivers.
-    return unless $.engine is 'webkit' and url.split('/')[2] is 'images.4chan.org'
+    # Only Chrome let userscripts do cross domain requests.
+    # Don't check for 404'd status in the archivers.
+    return if $.engine isnt 'webkit' or url.split('/')[2] isnt 'images.4chan.org'
     $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
 
