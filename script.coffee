@@ -719,7 +719,7 @@ ThreadHiding =
     return
 
   cb: ->
-    ThreadHiding.toggle @parentNode
+    ThreadHiding.toggle $.x 'ancestor::div[parent::div[@class="board"]]', @
 
   toggle: (thread) ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
@@ -747,17 +747,21 @@ ThreadHiding =
     text    = if num is 1 then '1 reply' else "#{num} replies"
     opInfo  = $('.op > .postInfo > .nameBlock', thread).textContent
 
-    a = $.el 'a',
+    stub = $.el 'div',
       className: 'hide_thread_button hidden_thread'
-      innerHTML: '<span>[ + ]</span>'
-      href: 'javascript:;'
-    $.add a, $.tn " #{opInfo} (#{text})"
-    $.on a, 'click', ThreadHiding.cb
-    $.prepend thread, a
+      innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
+    a = stub.firstChild
+    $.on  a, 'click', ThreadHiding.cb
+    $.add a, $.tn "#{opInfo} (#{text})"
+    if Conf['Menu']
+      menuButton = Menu.a.cloneNode true
+      $.on menuButton, 'click', Menu.toggle
+      $.add stub, [$.tn(' '), menuButton]
+    $.prepend thread, stub
 
   show: (thread) ->
-    if a = $ '.hidden_thread', thread
-      $.rm a
+    if stub = $ '.hidden_thread', thread
+      $.rm stub
     thread.hidden = false
     thread.nextElementSibling.hidden = false
 
@@ -805,8 +809,12 @@ ReplyHiding =
       className: 'hide_reply_button stub'
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
     a = stub.firstChild
-    $.add a, $.tn $('.nameBlock', el).textContent
     $.on  a, 'click', ReplyHiding.toggle
+    $.add a, $.tn $('.nameBlock', el).textContent
+    if Conf['Menu']
+      menuButton = Menu.a.cloneNode true
+      $.on menuButton, 'click', Menu.toggle
+      $.add stub, [$.tn(' '), menuButton]
     $.prepend root, stub
 
   show: (root) ->
@@ -848,7 +856,13 @@ Menu =
       return if lastOpener is @
 
     Menu.lastOpener = @
-    Menu.open @, Main.preParse $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+    post =
+      if /\bhidden_thread\b/.test @parentNode.className
+        $.x 'ancestor::div[parent::div[@class="board"]]/child::div[contains(@class,"opContainer")]', @
+      else
+        $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+    $.log postContainer
+    Menu.open @, Main.preParse post
   open: (button, post) ->
     {el} = Menu
     # XXX GM/Scriptish require setAttribute

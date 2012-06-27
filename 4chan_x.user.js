@@ -947,7 +947,7 @@
       }
     },
     cb: function() {
-      return ThreadHiding.toggle(this.parentNode);
+      return ThreadHiding.toggle($.x('ancestor::div[parent::div[@class="board"]]', this));
     },
     toggle: function(thread) {
       var hiddenThreads, id;
@@ -963,7 +963,7 @@
       return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
     hide: function(thread, show_stub) {
-      var a, num, opInfo, span, text;
+      var a, menuButton, num, opInfo, span, stub, text;
       if (show_stub == null) {
         show_stub = Conf['Show Stubs'];
       }
@@ -982,19 +982,24 @@
       num += $$('.opContainer ~ .replyContainer', thread).length;
       text = num === 1 ? '1 reply' : "" + num + " replies";
       opInfo = $('.op > .postInfo > .nameBlock', thread).textContent;
-      a = $.el('a', {
+      stub = $.el('div', {
         className: 'hide_thread_button hidden_thread',
-        innerHTML: '<span>[ + ]</span>',
-        href: 'javascript:;'
+        innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
       });
-      $.add(a, $.tn(" " + opInfo + " (" + text + ")"));
+      a = stub.firstChild;
       $.on(a, 'click', ThreadHiding.cb);
-      return $.prepend(thread, a);
+      $.add(a, $.tn("" + opInfo + " (" + text + ")"));
+      if (Conf['Menu']) {
+        menuButton = Menu.a.cloneNode(true);
+        $.on(menuButton, 'click', Menu.toggle);
+        $.add(stub, [$.tn(' '), menuButton]);
+      }
+      return $.prepend(thread, stub);
     },
     show: function(thread) {
-      var a;
-      if (a = $('.hidden_thread', thread)) {
-        $.rm(a);
+      var stub;
+      if (stub = $('.hidden_thread', thread)) {
+        $.rm(stub);
       }
       thread.hidden = false;
       return thread.nextElementSibling.hidden = false;
@@ -1042,7 +1047,7 @@
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
     hide: function(root, show_stub) {
-      var a, el, side, stub;
+      var a, el, menuButton, side, stub;
       if (show_stub == null) {
         show_stub = Conf['Show Stubs'];
       }
@@ -1061,8 +1066,13 @@
         innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
       });
       a = stub.firstChild;
-      $.add(a, $.tn($('.nameBlock', el).textContent));
       $.on(a, 'click', ReplyHiding.toggle);
+      $.add(a, $.tn($('.nameBlock', el).textContent));
+      if (Conf['Menu']) {
+        menuButton = Menu.a.cloneNode(true);
+        $.on(menuButton, 'click', Menu.toggle);
+        $.add(stub, [$.tn(' '), menuButton]);
+      }
       return $.prepend(root, stub);
     },
     show: function(root) {
@@ -1103,7 +1113,7 @@
       return $.on(a, 'click', Menu.toggle);
     },
     toggle: function(e) {
-      var lastOpener;
+      var lastOpener, post;
       e.preventDefault();
       e.stopPropagation();
       if (Menu.el.parentNode) {
@@ -1114,7 +1124,9 @@
         }
       }
       Menu.lastOpener = this;
-      return Menu.open(this, Main.preParse($.x('ancestor::div[contains(@class,"postContainer")][1]', this)));
+      post = /\bhidden_thread\b/.test(this.parentNode.className) ? $.x('ancestor::div[parent::div[@class="board"]]/child::div[contains(@class,"opContainer")]', this) : $.x('ancestor::div[contains(@class,"postContainer")][1]', this);
+      $.log(postContainer);
+      return Menu.open(this, Main.preParse(post));
     },
     open: function(button, post) {
       var bLeft, bRect, bTop, el, entry, mRect, _i, _len, _ref;
