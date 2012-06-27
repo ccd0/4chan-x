@@ -861,7 +861,6 @@ Menu =
         $.x 'ancestor::div[parent::div[@class="board"]]/child::div[contains(@class,"opContainer")]', @
       else
         $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
-    $.log postContainer
     Menu.open @, Main.preParse post
   open: (button, post) ->
     {el} = Menu
@@ -3148,7 +3147,7 @@ ArchiveLink =
       open: (post) ->
         path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split '/'
         a.href = Redirect.thread path[1], path[3], post.ID
-        a.textContent = "Archived post No.#{post.ID}"
+        a.textContent = 'Archived post'
       requirement: (post) ->
         path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split '/'
         Redirect.thread(path[1], path[3]) isnt "//boards.4chan.org/#{path[1]}/"

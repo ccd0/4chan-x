@@ -1125,7 +1125,6 @@
       }
       Menu.lastOpener = this;
       post = /\bhidden_thread\b/.test(this.parentNode.className) ? $.x('ancestor::div[parent::div[@class="board"]]/child::div[contains(@class,"opContainer")]', this) : $.x('ancestor::div[contains(@class,"postContainer")][1]', this);
-      $.log(postContainer);
       return Menu.open(this, Main.preParse(post));
     },
     open: function(button, post) {
@@ -4010,7 +4009,7 @@
           var path;
           path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/');
           a.href = Redirect.thread(path[1], path[3], post.ID);
-          return a.textContent = "Archived post No." + post.ID;
+          return a.textContent = 'Archived post';
         },
         requirement: function(post) {
           var path;
