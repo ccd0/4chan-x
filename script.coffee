@@ -825,7 +825,9 @@ Menu =
     @el = $.el 'div',
       className: 'reply dialog'
       id:        'menu'
-    $.on @el, 'click', (e) -> e.stopPropagation()
+      tabIndex:  0
+    $.on @el, 'click',   (e) -> e.stopPropagation()
+    $.on @el, 'keydown', @keybinds
 
     Main.callbacks.push @node
   node: (post) ->
@@ -861,6 +863,7 @@ Menu =
         entry.open? post
         $.add el, entry.el
 
+    $.addClass $('.entry', Menu.el), 'focused'
     $.on d, 'click', Menu.close
     $.add d.body, el
 
@@ -879,16 +882,55 @@ Menu =
         bLeft + 'px'
       else
         bLeft + bRect.width - mRect.width + 'px'
+
+    el.focus()
   close: ->
     {el} = Menu
     $.rm el
+    if focused = $ '.focused.entry', el
+      $.rmClass focused, 'focused'
     el.innerHTML = null
     el.removeAttribute 'style'
     delete Menu.lastOpener
     $.off d, 'click', Menu.close
 
+  keybinds: (e) ->
+    el = $ '.focused.entry', Menu.el
+
+    switch Keybinds.keyCode(e) or e.keyCode
+      when 'Esc'
+        Menu.lastOpener.focus()
+        Menu.close()
+      when 13, 32 # 'Enter', 'Space'
+        el.click()
+      when 'Up'
+        if next = el.previousElementSibling
+          Menu.focus next
+      when 'Right'
+        if next = el.firstElementChild
+          Menu.focus next
+      when 'Down'
+        if next = el.nextElementSibling
+          Menu.focus next
+      when 'Left'
+        if (next = el.parentNode) and next.id isnt 'menu'
+          Menu.focus next
+      else
+        return
+
+    e.preventDefault()
+    e.stopPropagation()
+  focus: (el) ->
+    if focused = $ '.focused.entry', Menu.el
+      $.rmClass focused, 'focused'
+    $.addClass el, 'focused'
+
   addEntry: (entry) ->
-    $.addClass entry.el, 'entry'
+    els = $$ '*', entry.el
+    els.push entry.el
+    for el in els
+      $.addClass el, 'entry'
+      $.on el, 'focus mouseover', -> Menu.focus @
     Menu.entries.push entry
 
 Keybinds =
@@ -3789,16 +3831,18 @@ a[href="javascript:;"] {
 
 #menu {
   position: absolute;
+  outline: none;
 }
 .entry {
   border-bottom: 1px solid rgba(0, 0, 0, .25);
   display: block;
+  outline: none;
   padding: 3px 4px;
 }
 .entry:last-child {
   border: none;
 }
-.entry:hover, .entry:focus {
+.focused.entry {
   background: rgba(255, 255, 255, .33);
 }
 

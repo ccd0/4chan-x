@@ -1085,11 +1085,13 @@
       });
       this.el = $.el('div', {
         className: 'reply dialog',
-        id: 'menu'
+        id: 'menu',
+        tabIndex: 0
       });
       $.on(this.el, 'click', function(e) {
         return e.stopPropagation();
       });
+      $.on(this.el, 'keydown', this.keybinds);
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -1129,6 +1131,7 @@
           $.add(el, entry.el);
         }
       }
+      $.addClass($('.entry', Menu.el), 'focused');
       $.on(d, 'click', Menu.close);
       $.add(d.body, el);
       mRect = el.getBoundingClientRect();
@@ -1136,19 +1139,77 @@
       bTop = d.documentElement.scrollTop + d.body.scrollTop + bRect.top;
       bLeft = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left;
       el.style.top = bRect.top + bRect.height + mRect.height < d.documentElement.clientHeight ? bTop + bRect.height + 2 + 'px' : bTop - mRect.height - 2 + 'px';
-      return el.style.left = bRect.left + mRect.width < d.documentElement.clientWidth ? bLeft + 'px' : bLeft + bRect.width - mRect.width + 'px';
+      el.style.left = bRect.left + mRect.width < d.documentElement.clientWidth ? bLeft + 'px' : bLeft + bRect.width - mRect.width + 'px';
+      return el.focus();
     },
     close: function() {
-      var el;
+      var el, focused;
       el = Menu.el;
       $.rm(el);
+      if (focused = $('.focused.entry', el)) {
+        $.rmClass(focused, 'focused');
+      }
       el.innerHTML = null;
       el.removeAttribute('style');
       delete Menu.lastOpener;
       return $.off(d, 'click', Menu.close);
     },
+    keybinds: function(e) {
+      var el, next;
+      el = $('.focused.entry', Menu.el);
+      switch (Keybinds.keyCode(e) || e.keyCode) {
+        case 'Esc':
+          Menu.lastOpener.focus();
+          Menu.close();
+          break;
+        case 13:
+        case 32:
+          el.click();
+          break;
+        case 'Up':
+          if (next = el.previousElementSibling) {
+            Menu.focus(next);
+          }
+          break;
+        case 'Right':
+          if (next = el.firstElementChild) {
+            Menu.focus(next);
+          }
+          break;
+        case 'Down':
+          if (next = el.nextElementSibling) {
+            Menu.focus(next);
+          }
+          break;
+        case 'Left':
+          if ((next = el.parentNode) && next.id !== 'menu') {
+            Menu.focus(next);
+          }
+          break;
+        default:
+          return;
+      }
+      e.preventDefault();
+      return e.stopPropagation();
+    },
+    focus: function(el) {
+      var focused;
+      if (focused = $('.focused.entry', Menu.el)) {
+        $.rmClass(focused, 'focused');
+      }
+      return $.addClass(el, 'focused');
+    },
     addEntry: function(entry) {
-      $.addClass(entry.el, 'entry');
+      var el, els, _i, _len;
+      els = $$('*', entry.el);
+      els.push(entry.el);
+      for (_i = 0, _len = els.length; _i < _len; _i++) {
+        el = els[_i];
+        $.addClass(el, 'entry');
+        $.on(el, 'focus mouseover', function() {
+          return Menu.focus(this);
+        });
+      }
       return Menu.entries.push(entry);
     }
   };
@@ -4865,16 +4926,18 @@ a[href="javascript:;"] {\
 \
 #menu {\
   position: absolute;\
+  outline: none;\
 }\
 .entry {\
   border-bottom: 1px solid rgba(0, 0, 0, .25);\
   display: block;\
+  outline: none;\
   padding: 3px 4px;\
 }\
 .entry:last-child {\
   border: none;\
 }\
-.entry:hover, .entry:focus {\
+.focused.entry {\
   background: rgba(255, 255, 255, .33);\
 }\
 \
