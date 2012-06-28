@@ -28,7 +28,8 @@ Config =
       'Menu':                         [true,  'Add a drop-down menu in posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
       'Delete Link':                  [true,  'Add a delete link to the menu.']
-      'Archive Link':                 [true,  'Add a archive link to the menu.']
+      'Download Link':                [true,  'Add a download with original filename link to the menu. Chrome-only currently.']
+      'Archive Link':                 [true,  'Add an archive link to the menu.']
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
@@ -2497,6 +2498,8 @@ FileInfo =
       resolution: span.previousSibling.textContent.match(/\d+x\d+|PDF/)[0]
       fullname:   span.title
       shortname:  span.textContent
+    # XXX GM/Scriptish
+    node.setAttribute 'data-filename', span.title
     node.innerHTML = FileInfo.funk FileInfo
   setFormats: ->
     code = Conf['fileInfo'].replace /%([BKlLMnNprs])/g, (s, c) ->
@@ -3137,6 +3140,26 @@ ReportLink =
     set   = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
 
+DownloadLink =
+  init: ->
+    # Test for download feature support.
+    return if $.el('a').download is undefined
+    a = $.el 'a',
+      className: 'download_link'
+      textContent: 'Download file'
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        a.href     = post.img.parentNode.href
+        fileText   = post.fileInfo.firstElementChild
+        a.download =
+          if Conf['File Info Formatting']
+            fileText.dataset.filename
+          else
+            $('span', fileText).title
+      requirement: (post) ->
+        post.img
+
 ArchiveLink =
   init: ->
     a = $.el 'a',
@@ -3633,6 +3656,9 @@ Main =
       if Conf['Delete Link']
         DeleteLink.init()
 
+      if Conf['Download Link']
+        DownloadLink.init()
+
       if Conf['Archive Link']
         ArchiveLink.init()
 
@@ -3848,7 +3874,8 @@ a[href="javascript:;"] {
   border-bottom: 1px solid rgba(0, 0, 0, .25);
   display: block;
   outline: none;
-  padding: 3px 4px;
+  padding: 3px 7px;
+  text-decoration: none;
 }
 .entry:last-child {
   border: none;

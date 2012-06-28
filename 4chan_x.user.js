@@ -77,7 +77,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -112,7 +112,8 @@
         'Menu': [true, 'Add a drop-down menu in posts.'],
         'Report Link': [true, 'Add a report link to the menu.'],
         'Delete Link': [true, 'Add a delete link to the menu.'],
-        'Archive Link': [true, 'Add a archive link to the menu.']
+        'Download Link': [true, 'Add a download with original filename link to the menu. Chrome-only currently.'],
+        'Archive Link': [true, 'Add an archive link to the menu.']
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
@@ -3203,6 +3204,7 @@
         fullname: span.title,
         shortname: span.textContent
       };
+      node.setAttribute('data-filename', span.title);
       return node.innerHTML = FileInfo.funk(FileInfo);
     },
     setFormats: function() {
@@ -3996,6 +3998,31 @@
     }
   };
 
+  DownloadLink = {
+    init: function() {
+      var a;
+      if ($.el('a').download === void 0) {
+        return;
+      }
+      a = $.el('a', {
+        className: 'download_link',
+        textContent: 'Download file'
+      });
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          var fileText;
+          a.href = post.img.parentNode.href;
+          fileText = post.fileInfo.firstElementChild;
+          return a.download = Conf['File Info Formatting'] ? fileText.dataset.filename : $('span', fileText).title;
+        },
+        requirement: function(post) {
+          return post.img;
+        }
+      });
+    }
+  };
+
   ArchiveLink = {
     init: function() {
       var a;
@@ -4675,6 +4702,9 @@
         if (Conf['Delete Link']) {
           DeleteLink.init();
         }
+        if (Conf['Download Link']) {
+          DownloadLink.init();
+        }
         if (Conf['Archive Link']) {
           ArchiveLink.init();
         }
@@ -4949,7 +4979,8 @@ a[href="javascript:;"] {\
   border-bottom: 1px solid rgba(0, 0, 0, .25);\
   display: block;\
   outline: none;\
-  padding: 3px 4px;\
+  padding: 3px 7px;\
+  text-decoration: none;\
 }\
 .entry:last-child {\
   border: none;\
