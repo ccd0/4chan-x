@@ -1,5 +1,9 @@
 master
 
+2.33.5
+- Mayhem
+  Add /sp/ archive redirection.
+
 2.33.4
 - Mayhem
   Fix QR with the new captcha loading method.

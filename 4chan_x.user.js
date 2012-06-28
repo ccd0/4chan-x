@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.33.4
+// @version        2.33.5
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -23,7 +23,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.33.4
+ * 4chan X 2.33.5
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -4216,10 +4216,12 @@
         case 'a':
         case 'jp':
         case 'm':
+        case 'sp':
         case 'tg':
-        case 'u':
         case 'vg':
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
+        case 'u':
+          return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
       }
     },
     post: function(board, postID) {
@@ -4228,15 +4230,17 @@
         case 'co':
         case 'jp':
         case 'm':
+        case 'sp':
         case 'tg':
         case 'tv':
-        case 'u':
         case 'v':
         case 'vg':
         case 'dev':
         case 'foolz':
-        case 'kuku':
           return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+        case 'u':
+        case 'kuku':
+          return "//nsfw.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
       }
     },
     thread: function(board, threadID, postID) {
@@ -4250,15 +4254,21 @@
         case 'co':
         case 'jp':
         case 'm':
+        case 'sp':
         case 'tg':
         case 'tv':
-        case 'u':
         case 'v':
         case 'vg':
         case 'dev':
         case 'foolz':
-        case 'kuku':
           url = "//archive.foolz.us/" + path + "/";
+          if (threadID && postID) {
+            url += "#" + postID;
+          }
+          break;
+        case 'u':
+        case 'kuku':
+          url = "//nsfw.foolz.us/" + path + "/";
           if (threadID && postID) {
             url += "#" + postID;
           }
@@ -4936,7 +4946,7 @@
       return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '2.33.4',
+    version: '2.33.5',
     callbacks: [],
     css: '\
 /* dialog styling */\

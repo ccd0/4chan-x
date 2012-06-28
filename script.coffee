@@ -3317,8 +3317,10 @@ Redirect =
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
-      when 'a', 'jp', 'm', 'tg', 'u', 'vg'
+      when 'a', 'jp', 'm', 'sp', 'tg', 'vg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
+      when 'u'
+        "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       # these will work whenever https://github.com/eksopl/fuuka/issues/23 is done
       # when 'cgl', 'g', 'w'
       #   "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
@@ -3328,8 +3330,10 @@ Redirect =
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
-      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg', 'dev', 'foolz', 'kuku'
+      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'dev', 'foolz'
         "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+      when 'u', 'kuku'
+        "//nsfw.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
   thread: (board, threadID, postID) ->
     # keep the number only if the location.hash was sent f.e.
     postID = postID.match(/\d+/)[0] if postID
@@ -3339,8 +3343,12 @@ Redirect =
       else
         "#{board}/post/#{postID}"
     switch board
-      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg', 'dev', 'foolz', 'kuku'
+      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'dev', 'foolz'
         url = "//archive.foolz.us/#{path}/"
+        if threadID and postID
+          url += "##{postID}"
+      when 'u', 'kuku'
+        url = "//nsfw.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
       when 'lit'
@@ -3831,7 +3839,7 @@ Main =
     $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.33.4'
+  version: '2.33.5'
   callbacks: []
   css: '
 /* dialog styling */
