@@ -4013,10 +4013,12 @@
         case 'a':
         case 'jp':
         case 'm':
+        case 'sp':
         case 'tg':
-        case 'u':
         case 'vg':
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
+        case 'u':
+          return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
       }
     },
     post: function(board, postID) {
@@ -4025,15 +4027,17 @@
         case 'co':
         case 'jp':
         case 'm':
+        case 'sp':
         case 'tg':
         case 'tv':
-        case 'u':
         case 'v':
         case 'vg':
         case 'dev':
         case 'foolz':
-        case 'kuku':
           return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+        case 'u':
+        case 'kuku':
+          return "//nsfw.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
       }
     },
     thread: function(board, threadID, postID) {
@@ -4047,15 +4051,21 @@
         case 'co':
         case 'jp':
         case 'm':
+        case 'sp':
         case 'tg':
         case 'tv':
-        case 'u':
         case 'v':
         case 'vg':
         case 'dev':
         case 'foolz':
-        case 'kuku':
           url = "//archive.foolz.us/" + path + "/";
+          if (threadID && postID) {
+            url += "#" + postID;
+          }
+          break;
+        case 'u':
+        case 'kuku':
+          url = "//nsfw.foolz.us/" + path + "/";
           if (threadID && postID) {
             url += "#" + postID;
           }
