@@ -2,6 +2,14 @@ master
 - Stallmanu  
   Sage keybind
 
+3.10.3
+- aeosynth
+  another captcha tweak
+
+3.10.2
+- aeosynth
+  quick fix for captcha update
+
 3.10.1
 - Mayhem
   Fix images uploaded as spoilers.
