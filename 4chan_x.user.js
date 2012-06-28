@@ -1133,7 +1133,7 @@
           break;
         case Conf.sage:
           $("[name=email]", QR.el).value = "sage";
-          QR.replies[0].email = "sage";
+          QR.selected.email = "sage";
           break;
         case Conf.watch:
           Watcher.toggle(thread);

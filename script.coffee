@@ -843,7 +843,7 @@ Keybinds =
         Keybinds.tags 'code', target
       when Conf.sage
         $("[name=email]", QR.el).value = "sage"
-        QR.replies[0].email = "sage"
+        QR.selected.email = "sage"
       # Thread related
       when Conf.watch
         Watcher.toggle thread
