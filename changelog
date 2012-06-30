@@ -1,4 +1,7 @@
 master
+- aeosynth
+  add /ck/ archive
+  change /jp/ archive to warosu
 - Mayhem
   Add /sp/ archive redirection.
   Fix QR with the new captcha loading method.

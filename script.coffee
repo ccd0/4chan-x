@@ -3274,7 +3274,7 @@ Redirect =
       else
         "#{board}/post/#{postID}"
     switch board
-      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'dev', 'foolz'
+      when 'a', 'co', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'dev', 'foolz'
         url = "//archive.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
@@ -3282,7 +3282,7 @@ Redirect =
         url = "//nsfw.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
-      when 'lit'
+      when 'ck', 'jp', 'lit'
         url = "//fuuka.warosu.org/#{path}"
         if threadID and postID
           url += "#p#{postID}"

@@ -4200,7 +4200,6 @@
       switch (board) {
         case 'a':
         case 'co':
-        case 'jp':
         case 'm':
         case 'sp':
         case 'tg':
@@ -4221,6 +4220,8 @@
             url += "#" + postID;
           }
           break;
+        case 'ck':
+        case 'jp':
         case 'lit':
           url = "//fuuka.warosu.org/" + path;
           if (threadID && postID) {
