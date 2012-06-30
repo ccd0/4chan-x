@@ -2073,6 +2073,12 @@ Updater =
         Unread.update true
         QR.abort()
         return
+      if @status isnt 200 and @status isnt 304
+        Updater.retryCoef += 10 * (Updater.retryCoef < 120)
+        if Conf['Verbose']
+          Updater.count.textContent = @statusText
+          Updater.count.className   = 'warning'
+        return
 
       Updater.retryCoef = 10
       Updater.timer.textContent = "-#{Conf['Interval']}"
