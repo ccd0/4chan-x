@@ -4301,7 +4301,7 @@
         case 'r9k':
         case 'toy':
         case 'x':
-          url = "http://archive.xfiles.to/" + path;
+          url = "http://archive.maidlab.jp/" + path;
           if (threadID && postID) {
             url += "#p" + postID;
           }

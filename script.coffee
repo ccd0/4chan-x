@@ -3325,7 +3325,7 @@ Redirect =
       # when 'cgl', 'g', 'w'
       #   "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
       # when 'an', 'toy', 'x'
-      #   "http://archive.xfiles.to/#{board}/full_image/#{filename}"
+      #   "http://archive.maidlab.jp/#{board}/full_image/#{filename}"
       # when 'e'
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
@@ -3364,7 +3364,7 @@ Redirect =
         if threadID and postID
           url += "#p#{postID}"
       when 'an', 'r9k', 'toy', 'x'
-        url = "http://archive.xfiles.to/#{path}"
+        url = "http://archive.maidlab.jp/#{path}"
         if threadID and postID
           url += "#p#{postID}"
       when 'e'
