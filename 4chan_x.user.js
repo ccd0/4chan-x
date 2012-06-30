@@ -2803,6 +2803,14 @@
           QR.abort();
           return;
         }
+        if (this.status !== 200 && this.status !== 304) {
+          Updater.retryCoef += 10 * (Updater.retryCoef < 120);
+          if (Conf['Verbose']) {
+            Updater.count.textContent = this.statusText;
+            Updater.count.className = 'warning';
+          }
+          return;
+        }
         Updater.retryCoef = 10;
         Updater.timer.textContent = "-" + Conf['Interval'];
         /*
