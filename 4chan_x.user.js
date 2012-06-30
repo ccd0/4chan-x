@@ -2673,6 +2673,14 @@
           QR.abort();
           return;
         }
+        if (this.status !== 200 && this.status !== 304) {
+          Updater.retryCoef += 10 * (Updater.retryCoef < 120);
+          if (Conf['Verbose']) {
+            Updater.count.textContent = this.statusText;
+            Updater.count.className = 'warning';
+          }
+          return;
+        }
         Updater.retryCoef = 10;
         Updater.timer.textContent = "-" + Conf['Interval'];
         /*
@@ -4156,10 +4164,12 @@
         case 'a':
         case 'jp':
         case 'm':
+        case 'sp':
         case 'tg':
-        case 'u':
         case 'vg':
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
+        case 'u':
+          return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
       }
     },
     post: function(board, postID) {
@@ -4168,15 +4178,17 @@
         case 'co':
         case 'jp':
         case 'm':
+        case 'sp':
         case 'tg':
         case 'tv':
-        case 'u':
         case 'v':
         case 'vg':
         case 'dev':
         case 'foolz':
-        case 'kuku':
           return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+        case 'u':
+        case 'kuku':
+          return "//nsfw.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
       }
     },
     thread: function(board, threadID, postID) {
@@ -4190,15 +4202,21 @@
         case 'co':
         case 'jp':
         case 'm':
+        case 'sp':
         case 'tg':
         case 'tv':
-        case 'u':
         case 'v':
         case 'vg':
         case 'dev':
         case 'foolz':
-        case 'kuku':
           url = "//archive.foolz.us/" + path + "/";
+          if (threadID && postID) {
+            url += "#" + postID;
+          }
+          break;
+        case 'u':
+        case 'kuku':
+          url = "//nsfw.foolz.us/" + path + "/";
           if (threadID && postID) {
             url += "#" + postID;
           }
@@ -4231,7 +4249,7 @@
         case 'r9k':
         case 'toy':
         case 'x':
-          url = "http://archive.xfiles.to/" + path;
+          url = "http://archive.maidlab.jp/" + path;
           if (threadID && postID) {
             url += "#p" + postID;
           }
@@ -4303,10 +4321,13 @@
         }
         url = "//images.4chan.org/" + src[3] + "/src/" + src[5] + "?" + (Date.now());
       }
+      if ($.engine !== 'webkit' && url.split('/')[2] === 'images.4chan.org') {
+        return;
+      }
       timeoutID = setTimeout((function() {
         return _this.src = url;
       }), 3000);
-      if (!($.engine === 'webkit' && src[2] === 'images.4chan.org')) {
+      if ($.engine !== 'webkit' || url.split('/')[2] !== 'images.4chan.org') {
         return;
       }
       return $.ajax(url, {
@@ -4527,8 +4548,11 @@
         }
         url = "//images.4chan.org/" + src[3] + "/src/" + src[5] + "?" + (Date.now());
       }
+      if ($.engine !== 'webkit' && url.split('/')[2] === 'images.4chan.org') {
+        return;
+      }
       timeoutID = setTimeout(ImageExpand.expand, 10000, thumb, url);
-      if (!($.engine === 'webkit' && url.split('/')[2] === 'images.4chan.org')) {
+      if ($.engine !== 'webkit' || url.split('/')[2] !== 'images.4chan.org') {
         return;
       }
       return $.ajax(url, {

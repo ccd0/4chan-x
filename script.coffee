@@ -2087,6 +2087,12 @@ Updater =
         Unread.update true
         QR.abort()
         return
+      if @status isnt 200 and @status isnt 304
+        Updater.retryCoef += 10 * (Updater.retryCoef < 120)
+        if Conf['Verbose']
+          Updater.count.textContent = @statusText
+          Updater.count.className   = 'warning'
+        return
 
       Updater.retryCoef = 10
       Updater.timer.textContent = "-#{Conf['Interval']}"
@@ -3242,19 +3248,23 @@ Redirect =
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
-      when 'a', 'jp', 'm', 'tg', 'u', 'vg'
+      when 'a', 'jp', 'm', 'sp', 'tg', 'vg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
+      when 'u'
+        "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       # these will work whenever https://github.com/eksopl/fuuka/issues/23 is done
       # when 'cgl', 'g', 'w'
       #   "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
       # when 'an', 'toy', 'x'
-      #   "http://archive.xfiles.to/#{board}/full_image/#{filename}"
+      #   "http://archive.maidlab.jp/#{board}/full_image/#{filename}"
       # when 'e'
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
-      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg', 'dev', 'foolz', 'kuku'
+      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'dev', 'foolz'
         "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+      when 'u', 'kuku'
+        "//nsfw.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
   thread: (board, threadID, postID) ->
     # keep the number only if the location.hash was sent f.e.
     postID = postID.match(/\d+/)[0] if postID
@@ -3264,8 +3274,12 @@ Redirect =
       else
         "#{board}/post/#{postID}"
     switch board
-      when 'a', 'co', 'jp', 'm', 'tg', 'tv', 'u', 'v', 'vg', 'dev', 'foolz', 'kuku'
+      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'dev', 'foolz'
         url = "//archive.foolz.us/#{path}/"
+        if threadID and postID
+          url += "##{postID}"
+      when 'u', 'kuku'
+        url = "//nsfw.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
       when 'lit'
@@ -3281,7 +3295,7 @@ Redirect =
         if threadID and postID
           url += "#p#{postID}"
       when 'an', 'r9k', 'toy', 'x'
-        url = "http://archive.xfiles.to/#{path}"
+        url = "http://archive.maidlab.jp/#{path}"
         if threadID and postID
           url += "#p#{postID}"
       when 'e'
@@ -3329,14 +3343,13 @@ ImageHover =
     src = @src.replace(/\?\d+$/, '').split '/'
     unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
       return if g.dead
-      # CloudFlare may cache banned pages instead of images.
       # This will fool CloudFlare's cache.
       url = "//images.4chan.org/#{src[3]}/src/#{src[5]}?#{Date.now()}"
-    # navigator.online is not x-browser/os yet
+    return if $.engine isnt 'webkit' and url.split('/')[2] is 'images.4chan.org'
     timeoutID = setTimeout (=> @src = url), 3000
-    # Only Chrome let userscript break through cross domain requests.
-    # Don't check it 404s in the archivers.
-    return unless $.engine is 'webkit' and src[2] is 'images.4chan.org'
+    # Only Chrome let userscripts do cross domain requests.
+    # Don't check for 404'd status in the archivers.
+    return if $.engine isnt 'webkit' or url.split('/')[2] isnt 'images.4chan.org'
     $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
   mouseout: ->
@@ -3479,14 +3492,13 @@ ImageExpand =
     src = @src.replace(/\?\d+$/, '').split '/'
     unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
       return if g.dead
-      # CloudFlare may cache banned pages instead of images.
       # This will fool CloudFlare's cache.
       url = "//images.4chan.org/#{src[3]}/src/#{src[5]}?#{Date.now()}"
-    #navigator.online is not x-browser/os yet
+    return if $.engine isnt 'webkit' and url.split('/')[2] is 'images.4chan.org'
     timeoutID = setTimeout ImageExpand.expand, 10000, thumb, url
-    # Only Chrome let userscript break through cross domain requests.
-    # Don't check it 404s in the archivers.
-    return unless $.engine is 'webkit' and url.split('/')[2] is 'images.4chan.org'
+    # Only Chrome let userscripts do cross domain requests.
+    # Don't check for 404'd status in the archivers.
+    return if $.engine isnt 'webkit' or url.split('/')[2] isnt 'images.4chan.org'
     $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
 

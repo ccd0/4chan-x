@@ -1,5 +1,6 @@
 master
 - Mayhem
+  Add /sp/ archive redirection.
   Fix QR with the new captcha loading method.
   The QR will now work on /f/ too.
   Revert changes that broke fetchers in Firefox.
