@@ -4078,6 +4078,7 @@
             url += "#" + postID;
           }
           break;
+        case 'ck':
         case 'lit':
           url = "//fuuka.warosu.org/" + path;
           if (threadID && postID) {

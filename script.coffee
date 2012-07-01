@@ -3181,7 +3181,7 @@ Redirect =
         url = "//nsfw.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
-      when 'lit'
+      when 'ck', 'lit'
         url = "//fuuka.warosu.org/#{path}"
         if threadID and postID
           url += "#p#{postID}"
