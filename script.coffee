@@ -840,7 +840,9 @@ Menu =
 
     Main.callbacks.push @node
   node: (post) ->
-    unless a = $ '.menu_button', post.el
+    if post.isInlined and !post.isCrosspost
+      a = $ '.menu_button', post.el
+    else
       a = Menu.a.cloneNode true
       $.add $('.postInfo', post.el), a
     $.on a, 'click', Menu.toggle
@@ -873,8 +875,7 @@ Menu =
     #     className: 'entry'
     #     textContent: "#{i}: #{post[i]}"
     for entry in Menu.entries
-      if entry.requirement post
-        entry.open? post
+      if entry.open post
         $.add el, entry.el
 
     $.addClass $('.entry', Menu.el), 'focused'
@@ -3082,11 +3083,12 @@ DeleteLink =
       href: 'javascript:;'
     Menu.addEntry
       el: a
-      open: ->
+      open: (post) ->
+        if post.isArchived
+          return false
         a.textContent = 'Delete this post'
         $.on a, 'click', DeleteLink.delete
-      requirement: (post) ->
-        post.isArchived is false
+        true
   delete: ->
     $.off @, 'click', DeleteLink.delete
     @textContent = 'Deleting...'
@@ -3137,7 +3139,7 @@ ReportLink =
     $.on a, 'click', @report
     Menu.addEntry
       el: a
-      requirement: (post) ->
+      open: (post) ->
         post.isArchived is false
   report: ->
     a     = $ '.postNum > a[title="Highlight this post"]', $.id @parentNode.dataset.rootid
@@ -3156,6 +3158,8 @@ DownloadLink =
     Menu.addEntry
       el: a
       open: (post) ->
+        unless post.img
+          return false
         a.href     = post.img.parentNode.href
         fileText   = post.fileInfo.firstElementChild
         a.download =
@@ -3163,23 +3167,22 @@ DownloadLink =
             fileText.dataset.filename
           else
             $('span', fileText).title
-      requirement: (post) ->
-        post.img
+        true
 
 ArchiveLink =
   init: ->
     a = $.el 'a',
-      className: 'archive_link'
-      target: '_blank'
+      className:   'archive_link'
+      target:      '_blank'
+      textContent: 'Archived post'
     Menu.addEntry
       el: a
       open: (post) ->
         path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split '/'
-        a.href = Redirect.thread path[1], path[3], post.ID
-        a.textContent = 'Archived post'
-      requirement: (post) ->
-        path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split '/'
-        Redirect.thread(path[1], path[3]) isnt "//boards.4chan.org/#{path[1]}/"
+        if (href = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
+          return false
+        a.href = href
+        true
 
 ThreadStats =
   init: ->

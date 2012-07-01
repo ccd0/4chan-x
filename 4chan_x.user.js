@@ -1107,7 +1107,9 @@
     },
     node: function(post) {
       var a;
-      if (!(a = $('.menu_button', post.el))) {
+      if (post.isInlined && !post.isCrosspost) {
+        a = $('.menu_button', post.el);
+      } else {
         a = Menu.a.cloneNode(true);
         $.add($('.postInfo', post.el), a);
       }
@@ -1136,10 +1138,7 @@
       _ref = Menu.entries;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         entry = _ref[_i];
-        if (entry.requirement(post)) {
-          if (typeof entry.open === "function") {
-            entry.open(post);
-          }
+        if (entry.open(post)) {
           $.add(el, entry.el);
         }
       }
@@ -3927,12 +3926,13 @@
       });
       return Menu.addEntry({
         el: a,
-        open: function() {
+        open: function(post) {
+          if (post.isArchived) {
+            return false;
+          }
           a.textContent = 'Delete this post';
-          return $.on(a, 'click', DeleteLink["delete"]);
-        },
-        requirement: function(post) {
-          return post.isArchived === false;
+          $.on(a, 'click', DeleteLink["delete"]);
+          return true;
         }
       });
     },
@@ -3991,7 +3991,7 @@
       $.on(a, 'click', this.report);
       return Menu.addEntry({
         el: a,
-        requirement: function(post) {
+        open: function(post) {
           return post.isArchived === false;
         }
       });
@@ -4020,12 +4020,13 @@
         el: a,
         open: function(post) {
           var fileText;
+          if (!post.img) {
+            return false;
+          }
           a.href = post.img.parentNode.href;
           fileText = post.fileInfo.firstElementChild;
-          return a.download = Conf['File Info Formatting'] ? fileText.dataset.filename : $('span', fileText).title;
-        },
-        requirement: function(post) {
-          return post.img;
+          a.download = Conf['File Info Formatting'] ? fileText.dataset.filename : $('span', fileText).title;
+          return true;
         }
       });
     }
@@ -4036,20 +4037,19 @@
       var a;
       a = $.el('a', {
         className: 'archive_link',
-        target: '_blank'
+        target: '_blank',
+        textContent: 'Archived post'
       });
       return Menu.addEntry({
         el: a,
         open: function(post) {
-          var path;
+          var href, path;
           path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/');
-          a.href = Redirect.thread(path[1], path[3], post.ID);
-          return a.textContent = 'Archived post';
-        },
-        requirement: function(post) {
-          var path;
-          path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/');
-          return Redirect.thread(path[1], path[3]) !== ("//boards.4chan.org/" + path[1] + "/");
+          if ((href = Redirect.thread(path[1], path[3], post.ID)) === ("//boards.4chan.org/" + path[1] + "/")) {
+            return false;
+          }
+          a.href = href;
+          return true;
         }
       });
     }
