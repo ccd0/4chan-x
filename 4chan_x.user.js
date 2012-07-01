@@ -172,7 +172,7 @@
       close: ['Esc', 'Close Options or QR'],
       spoiler: ['ctrl+s', 'Quick spoiler tags'],
       code: ['alt+c', 'Quick code tags'],
-      sage: ['alt+n', 'Sage keybind'],
+      sage: ['alt+g', 'Sage keybind'],
       submit: ['alt+s', 'Submit post'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
