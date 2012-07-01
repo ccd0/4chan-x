@@ -1,5 +1,9 @@
 master
 
+2.33.7
+- Mayhem
+  Add /ck/ archive redirection.
+
 2.33.6
 - Mayhem
   Update/fix archive redirection method.
