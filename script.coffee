@@ -3633,8 +3633,8 @@ Main =
       $.add d.head, $.el 'script', src: 'http://aeosynth.github.com/4chan-x/latest.js'
       $.set 'lastUpdate', now
 
-    Options.init()
     Favicon.init()
+    Options.init()
 
     # Major features.
     if Conf['Quick Reply']

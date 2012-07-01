@@ -4717,8 +4717,8 @@
         }));
         $.set('lastUpdate', now);
       }
-      Options.init();
       Favicon.init();
+      Options.init();
       if (Conf['Quick Reply']) {
         QR.init();
       }
