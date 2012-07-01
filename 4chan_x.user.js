@@ -930,8 +930,7 @@
           $.rm(backlink);
         }
       }
-      $.after(a, nodes);
-      return Main.node(nodes);
+      return $.after(a, nodes);
     }
   };
 
@@ -2721,7 +2720,6 @@
           Updater.lastPost = lastPost;
         }
         $.add(Updater.thread, nodes.reverse());
-        Main.node(nodes);
         if (scroll) {
           return nodes[0].scrollIntoView();
         }
@@ -3527,7 +3525,7 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var board, el, i, inline, isBacklink, path, postID, root, threadID;
+      var board, el, inline, isBacklink, path, postID, root, threadID;
       if (q.host === 'boards.4chan.org') {
         path = q.pathname.split('/');
         board = path[1];
@@ -3551,11 +3549,7 @@
       }
       if (isBacklink && Conf['Forward Hiding']) {
         $.addClass(el.parentNode, 'forwarded');
-        ++el.dataset.forwarded || (el.dataset.forwarded = 1);
-      }
-      if ((i = Unread.replies.indexOf(el)) !== -1) {
-        Unread.replies.splice(i, 1);
-        return Unread.update(true);
+        return ++el.dataset.forwarded || (el.dataset.forwarded = 1);
       }
     },
     rm: function(q, id) {
@@ -4691,7 +4685,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var a, board, nav, nodes, now, _i, _len, _ref;
+      var MutationObserver, a, board, nav, node, nodes, now, observer, _i, _j, _len, _len1, _ref, _ref1;
       if (d.title === '4chan - 404') {
         if (Conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
           location.href = Redirect.thread(g.BOARD, g.THREAD_ID, location.hash);
@@ -4769,9 +4763,23 @@
         }
       }
       board = $('.board');
-      nodes = $$('.postContainer', board);
+      nodes = [];
+      _ref1 = $$('.postContainer', board);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        node = _ref1[_j];
+        nodes.push(Main.preParse(node));
+      }
       Main.node(nodes, true);
-      return Main.prettify = Main._prettify;
+      Main.prettify = Main._prettify;
+      if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
+        observer = new MutationObserver(Main.observer);
+        observer.observe(board, {
+          childList: true,
+          subtree: true
+        });
+      } else {
+        $.on(board, 'DOMNodeInserted', Main.listener);
+      }
     },
     pruneHidden: function() {
       var cutoff, hiddenThreads, id, now, timestamp, _ref;
@@ -4853,18 +4861,13 @@
       return post;
     },
     node: function(nodes, notify) {
-      var callback, node, parsed, _i, _j, _k, _len, _len1, _len2, _ref;
-      parsed = [];
-      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-        node = nodes[_i];
-        parsed.push(Main.preParse(node));
-      }
+      var callback, node, _i, _j, _len, _len1, _ref;
       _ref = Main.callbacks;
-      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        callback = _ref[_j];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
         try {
-          for (_k = 0, _len2 = parsed.length; _k < _len2; _k++) {
-            node = parsed[_k];
+          for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
+            node = nodes[_j];
             callback(node);
           }
         } catch (err) {
@@ -4872,6 +4875,30 @@
             alert("4chan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/aeosynth/4chan-x/issues\n\n" + Main.version + "\n" + window.location + "\n" + navigator.userAgent + "\n\n" + err.stack);
           }
         }
+      }
+    },
+    observer: function(mutations) {
+      var addedNode, mutation, nodes, _i, _j, _len, _len1, _ref;
+      nodes = [];
+      for (_i = 0, _len = mutations.length; _i < _len; _i++) {
+        mutation = mutations[_i];
+        _ref = mutation.addedNodes;
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          addedNode = _ref[_j];
+          if (/\bpostContainer\b/.test(addedNode.className) && addedNode.parentNode.className !== 'threadContainer') {
+            nodes.push(Main.preParse(addedNode));
+          }
+        }
+      }
+      if (nodes.length) {
+        return Main.node(nodes);
+      }
+    },
+    listener: function(e) {
+      var target;
+      target = e.target;
+      if (/\bpostContainer\b/.test(target.className) && target.parentNode.className !== 'threadContainer') {
+        return Main.node([Main.preParse(target)]);
       }
     },
     prettify: function() {},

@@ -702,7 +702,6 @@ ExpandThread =
       # Keep backlinks from other threads.
       $.rm backlink unless $.id backlink.hash[1..]
     $.after a, nodes
-    Main.node nodes
 
 ThreadHiding =
   init: ->
@@ -2130,7 +2129,6 @@ Updater =
       if lastPost = nodes[0]
         Updater.lastPost = lastPost
       $.add Updater.thread, nodes.reverse()
-      Main.node nodes
       if scroll
         nodes[0].scrollIntoView()
 
@@ -2761,11 +2759,6 @@ QuoteInline =
     if isBacklink and Conf['Forward Hiding']
       $.addClass el.parentNode, 'forwarded'
       ++el.dataset.forwarded or el.dataset.forwarded = 1
-
-    # Decrease the unread count if this post is in the array of unread reply.
-    if (i = Unread.replies.indexOf el) isnt -1
-      Unread.replies.splice i, 1
-      Unread.update true
 
   rm: (q, id) ->
     # select the corresponding inlined quote or loading quote
@@ -3688,9 +3681,20 @@ Main =
         Nav.init()
 
     board = $ '.board'
-    nodes = $$ '.postContainer', board
+    nodes = []
+    for node in $$ '.postContainer', board
+      nodes.push Main.preParse node
     Main.node nodes, true
     Main.prettify = Main._prettify
+
+    if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
+      observer = new MutationObserver Main.observer
+      observer.observe board,
+        childList: true
+        subtree:   true
+    else
+      $.on board, 'DOMNodeInserted', Main.listener
+    return
 
   pruneHidden: ->
     now = Date.now()
@@ -3759,14 +3763,23 @@ Main =
     Main.prettify post.blockquote
     post
   node: (nodes, notify) ->
-    parsed = []
-    parsed.push Main.preParse node for node in nodes
     for callback in Main.callbacks
       try
-        callback node for node in parsed
+        callback node for node in nodes
       catch err
         alert "4chan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/aeosynth/4chan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err.stack}" if notify
     return
+  observer: (mutations) ->
+    nodes = []
+    for mutation in mutations
+      for addedNode in mutation.addedNodes
+        if /\bpostContainer\b/.test(addedNode.className) and addedNode.parentNode.className isnt 'threadContainer'
+          nodes.push Main.preParse addedNode
+    Main.node nodes if nodes.length
+  listener: (e) ->
+    {target} = e
+    if /\bpostContainer\b/.test(target.className) and target.parentNode.className isnt 'threadContainer'
+      Main.node [Main.preParse target]
 
   prettify: -> return
   _prettify: (bq) ->
