@@ -3414,7 +3414,7 @@ Main =
         return
       when 'images.4chan.org'
         $.ready ->
-          if d.title is '4chan - 404' and Conf['404 Redirect']
+          if /^4chan - 404/.test(d.title) and Conf['404 Redirect']
             path = location.pathname.split '/'
             url  = Redirect.image path[1], path[3]
             location.href = url if url
@@ -3512,7 +3512,7 @@ Main =
     $.ready Main.ready
 
   ready: ->
-    if d.title is '4chan - 404'
+    if /^4chan - 404/.test d.title
       if Conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
         location.href = Redirect.thread g.BOARD, g.THREAD_ID, location.hash
       return

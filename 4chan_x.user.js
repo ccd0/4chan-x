@@ -4433,7 +4433,7 @@
         case 'images.4chan.org':
           $.ready(function() {
             var url;
-            if (d.title === '4chan - 404' && Conf['404 Redirect']) {
+            if (/^4chan - 404/.test(d.title) && Conf['404 Redirect']) {
               path = location.pathname.split('/');
               url = Redirect.image(path[1], path[3]);
               if (url) {
@@ -4537,7 +4537,7 @@
     },
     ready: function() {
       var MutationObserver, a, board, nav, node, nodes, observer, _i, _j, _len, _len1, _ref, _ref1;
-      if (d.title === '4chan - 404') {
+      if (/^4chan - 404/.test(d.title)) {
         if (Conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
           location.href = Redirect.thread(g.BOARD, g.THREAD_ID, location.hash);
         }
