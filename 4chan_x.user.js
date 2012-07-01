@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.33.5
+// @version        2.33.6
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -23,7 +23,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.33.5
+ * 4chan X 2.33.6
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -4636,7 +4636,7 @@
         case 'images.4chan.org':
           $.ready(function() {
             var url;
-            if (d.title === '4chan - 404' && Conf['404 Redirect']) {
+            if (/^4chan - 404/.test(d.title) && Conf['404 Redirect']) {
               path = location.pathname.split('/');
               url = Redirect.image(path[1], path[3]);
               if (url) {
@@ -4749,7 +4749,7 @@
     },
     ready: function() {
       var MutationObserver, a, board, nav, node, nodes, observer, _i, _j, _len, _len1, _ref, _ref1;
-      if (d.title === '4chan - 404') {
+      if (/^4chan - 404/.test(d.title)) {
         if (Conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
           location.href = Redirect.thread(g.BOARD, g.THREAD_ID, location.hash);
         }
@@ -4954,7 +4954,7 @@
       return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '2.33.5',
+    version: '2.33.6',
     callbacks: [],
     css: '\
 /* dialog styling */\

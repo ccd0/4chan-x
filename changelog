@@ -1,5 +1,9 @@
 master
 
+2.33.6
+- Mayhem
+  Update/fix archive redirection method.
+
 2.33.5
 - Mayhem
   Add /sp/ archive redirection.
