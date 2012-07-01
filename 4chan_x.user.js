@@ -172,6 +172,7 @@
       close: ['Esc', 'Close Options or QR'],
       spoiler: ['ctrl+s', 'Quick spoiler tags'],
       code: ['alt+c', 'Quick code tags'],
+      sage: ['alt+n', 'Sage keybind'],
       submit: ['alt+s', 'Submit post'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
@@ -1141,6 +1142,10 @@
             return;
           }
           Keybinds.tags('code', target);
+          break;
+        case Conf.sage:
+          $("[name=email]", QR.el).value = "sage";
+          QR.selected.email = "sage";
           break;
         case Conf.watch:
           Watcher.toggle(thread);

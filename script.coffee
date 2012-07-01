@@ -129,6 +129,7 @@ Config =
     close:           ['Esc',    'Close Options or QR']
     spoiler:         ['ctrl+s', 'Quick spoiler tags']
     code:            ['alt+c',  'Quick code tags']
+    sage:            ['alt+n',  'Sage keybind']
     submit:          ['alt+s',  'Submit post']
     # Thread related
     watch:           ['w',      'Watch thread']
@@ -853,6 +854,9 @@ Keybinds =
       when Conf.code
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'code', target
+      when Conf.sage
+        $("[name=email]", QR.el).value = "sage"
+        QR.selected.email = "sage"
       # Thread related
       when Conf.watch
         Watcher.toggle thread
