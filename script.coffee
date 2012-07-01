@@ -782,12 +782,12 @@ ReplyHiding =
     id     = root.id[2..]
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href$='#p#{id}']"
     if /\bstub\b/.test button.className
-      ReplyHiding.show post.root
+      ReplyHiding.show root
       for quote in quotes
         $.rmClass quote, 'filtered'
       delete g.hiddenReplies[id]
     else
-      ReplyHiding.hide post.root
+      ReplyHiding.hide root
       for quote in quotes
         $.addClass quote, 'filtered'
       g.hiddenReplies[id] = Date.now()
