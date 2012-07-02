@@ -2081,7 +2081,8 @@ Updater =
         Unread.update true
         QR.abort()
         return
-      if @status isnt 200 and @status isnt 304
+      unless @status in [0, 200, 304]
+        # XXX 304 -> 0 in Opera
         Updater.retryCoef += 10 * (Updater.retryCoef < 120)
         if Conf['Verbose']
           Updater.count.textContent = @statusText

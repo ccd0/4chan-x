@@ -2641,7 +2641,7 @@
         };
       },
       update: function() {
-        var count, doc, id, lastPost, nodes, reply, scroll, _i, _len, _ref;
+        var count, doc, id, lastPost, nodes, reply, scroll, _i, _len, _ref, _ref1;
         if (this.status === 404) {
           Updater.timer.textContent = '';
           Updater.count.textContent = 404;
@@ -2657,7 +2657,7 @@
           QR.abort();
           return;
         }
-        if (this.status !== 200 && this.status !== 304) {
+        if ((_ref = this.status) !== 0 && _ref !== 200 && _ref !== 304) {
           Updater.retryCoef += 10 * (Updater.retryCoef < 120);
           if (Conf['Verbose']) {
             Updater.count.textContent = this.statusText;
@@ -2687,9 +2687,9 @@
         lastPost = Updater.thread.lastElementChild;
         id = lastPost.id.slice(2);
         nodes = [];
-        _ref = $$('.replyContainer', doc).reverse();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          reply = _ref[_i];
+        _ref1 = $$('.replyContainer', doc).reverse();
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          reply = _ref1[_i];
           if (reply.id.slice(2) <= id) {
             break;
           }
