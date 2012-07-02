@@ -1100,7 +1100,7 @@
       this.a = $.el('a', {
         className: 'menu_button',
         href: 'javascript:;',
-        innerHTML: '[▾]'
+        innerHTML: '[▼]'
       });
       this.el = $.el('div', {
         className: 'reply dialog',
@@ -4999,9 +4999,6 @@ a[href="javascript:;"] {\
   display: none !important;\
 }\
 \
-.menu_button {\
-  letter-spacing: 2px;\
-}\
 #menu {\
   position: absolute;\
   outline: none;\

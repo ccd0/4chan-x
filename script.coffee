@@ -837,7 +837,7 @@ Menu =
     @a = $.el 'a',
       className: 'menu_button'
       href:      'javascript:;'
-      innerHTML: '[▾]'
+      innerHTML: '[▼]'
     @el = $.el 'div',
       className: 'reply dialog'
       id:        'menu'
@@ -3891,9 +3891,6 @@ a[href="javascript:;"] {
   display: none !important;
 }
 
-.menu_button {
-  letter-spacing: 2px;
-}
 #menu {
   position: absolute;
   outline: none;
