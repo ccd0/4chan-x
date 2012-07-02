@@ -151,6 +151,7 @@
       email: ['# Filter any e-mails that are not `sage` on /a/ and /jp/:', '#/^(?!sage$)/;boards:a,jp'].join('\n'),
       subject: ['# Filter Generals on /v/:', '#/general/i;boards:v;op:only'].join('\n'),
       comment: ['# Filter Stallman copypasta on /g/:', '#/what you\'re refer+ing to as linux/i;boards:g'].join('\n'),
+      country: [''].join('\n'),
       filename: [''].join('\n'),
       dimensions: ['# Highlight potential wallpapers:', '#/1920x1080/;op:yes;highlight;top:no;boards:w,wg'].join('\n'),
       filesize: [''].join('\n'),
@@ -700,6 +701,13 @@
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
       return text.join('');
+    },
+    country: function(post) {
+      var flag;
+      if (flag = $('.countryFlag', post.el)) {
+        return flag.title.replace('Country: ', '');
+      }
+      return false;
     },
     filename: function(post) {
       var file, fileInfo;
@@ -2322,6 +2330,7 @@
       <option value=email>E-mail</option>\
       <option value=subject>Subject</option>\
       <option value=comment>Comment</option>\
+      <option value=country>Country</option>\
       <option value=filename>Filename</option>\
       <option value=dimensions>Image dimensions</option>\
       <option value=filesize>Filesize</option>\
