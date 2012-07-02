@@ -90,6 +90,9 @@ Config =
       '# Filter Stallman copypasta on /g/:'
       '#/what you\'re refer+ing to as linux/i;boards:g'
     ].join '\n'
+    country: [
+      ''
+    ].join '\n'
     filename: [
       ''
     ].join '\n'
@@ -556,6 +559,10 @@ Filter =
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
+  country: (post) ->
+    if flag = $ '.countryFlag', post.el
+      return flag.title.replace 'Country: ', ''
+    false
   filename: (post) ->
     {fileInfo} = post
     if fileInfo and file = $ '.fileText > span', fileInfo
@@ -1914,6 +1921,7 @@ Options =
       <option value=email>E-mail</option>
       <option value=subject>Subject</option>
       <option value=comment>Comment</option>
+      <option value=country>Country</option>
       <option value=filename>Filename</option>
       <option value=dimensions>Image dimensions</option>
       <option value=filesize>Filesize</option>
