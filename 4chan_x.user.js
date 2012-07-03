@@ -793,7 +793,9 @@
               return "\\" + c;
             }
           });
-          re = "/^" + re + "$/";
+          if (type !== 'md5') {
+            re = "/^" + re + "$/";
+          }
           if (/\bop\b/.test(post["class"])) {
             re += ';op:yes';
           }
@@ -5122,6 +5124,7 @@ a[href="javascript:;"] {\
 }\
 .entry {\
   border-bottom: 1px solid rgba(0, 0, 0, .25);\
+  cursor: pointer;\
   display: block;\
   outline: none;\
   padding: 3px 7px;\
