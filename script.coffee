@@ -544,7 +544,8 @@ Filter =
   email: (post) ->
     if mail = $ '.useremail', post.el
       # remove 'mailto:'
-      return mail.href[7..]
+      # decode %20 into space for example
+      return decodeURIComponent mail.href[7..]
     false
   subject: (post) ->
     $('.postInfo .subject', post.el).textContent or false

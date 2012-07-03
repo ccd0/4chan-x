@@ -686,7 +686,7 @@
     email: function(post) {
       var mail;
       if (mail = $('.useremail', post.el)) {
-        return mail.href.slice(7);
+        return decodeURIComponent(mail.href.slice(7));
       }
       return false;
     },
