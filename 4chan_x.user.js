@@ -717,8 +717,12 @@
     filename: function(post) {
       var file, fileInfo;
       fileInfo = post.fileInfo;
-      if (fileInfo && (file = $('.fileText > span', fileInfo))) {
-        return file.title;
+      if (fileInfo) {
+        if (file = $('.fileText > span', fileInfo)) {
+          return file.title;
+        } else {
+          return fileInfo.firstElementChild.dataset.filename;
+        }
       }
       return false;
     },
@@ -745,6 +749,73 @@
         return img.dataset.md5;
       }
       return false;
+    },
+    menuInit: function() {
+      var div, entry, type, _i, _len, _ref;
+      div = $.el('div');
+      entry = {
+        el: div,
+        open: function() {
+          div.textContent = 'Filter';
+          return true;
+        },
+        children: []
+      };
+      _ref = [['Name', 'name'], ['Unique ID', 'uniqueid'], ['Tripcode', 'tripcode'], ['Admin/Mod', 'mod'], ['E-mail', 'email'], ['Subject', 'subject'], ['Comment', 'comment'], ['Country', 'country'], ['Filename', 'filename'], ['Image dimensions', 'dimensions'], ['Filesize', 'filesize'], ['Image MD5', 'md5']];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        entry.children.push(Filter.createSubEntry(type[0], type[1]));
+      }
+      return Menu.addEntry(entry);
+    },
+    createSubEntry: function(text, type) {
+      var el, onclick, open;
+      el = $.el('a', {
+        href: 'javascript:;',
+        textContent: text
+      });
+      onclick = null;
+      open = function(post) {
+        var value;
+        value = Filter[type](post);
+        if (value === false) {
+          return false;
+        }
+        $.off(el, 'click', onclick);
+        onclick = function() {
+          var re, save, select, ta, tl;
+          re = type === 'md5' ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
+            if (c === '\n') {
+              return '\\n';
+            } else if (c === '\\') {
+              return '\\\\';
+            } else {
+              return "\\" + c;
+            }
+          });
+          re = "/^" + re + "$/";
+          if (/\bop\b/.test(post["class"])) {
+            re += ';op:yes';
+          }
+          save = (save = $.get(type, '')) ? "" + save + "\n" + re : re;
+          $.set(type, save);
+          Options.dialog();
+          select = $('select[name=filter]', $.id('options'));
+          select.value = type;
+          $.event(select, new Event('change'));
+          $.id('filter_tab').checked = true;
+          ta = select.nextElementSibling;
+          tl = ta.textLength;
+          ta.setSelectionRange(tl, tl);
+          return ta.focus();
+        };
+        $.on(el, 'click', onclick);
+        return true;
+      };
+      return {
+        el: el,
+        open: open
+      };
     }
   };
 
@@ -1139,18 +1210,35 @@
       return Menu.open(this, Main.preParse(post));
     },
     open: function(button, post) {
-      var bLeft, bRect, bTop, el, entry, mRect, _i, _len, _ref;
+      var bLeft, bRect, bTop, el, entry, funk, mRect, _i, _len, _ref;
       el = Menu.el;
       el.setAttribute('data-id', post.ID);
       el.setAttribute('data-rootid', post.root.id);
+      funk = function(entry, parent) {
+        var child, children, open, subMenu, _i, _len;
+        open = entry.open, children = entry.children;
+        if (!open(post)) {
+          return;
+        }
+        $.add(parent, entry.el);
+        if (!children) {
+          return;
+        }
+        subMenu = $.el('div', {
+          className: 'reply dialog subMenu'
+        });
+        $.add(entry.el, subMenu);
+        for (_i = 0, _len = children.length; _i < _len; _i++) {
+          child = children[_i];
+          funk(child, subMenu);
+        }
+      };
       _ref = Menu.entries;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         entry = _ref[_i];
-        if (entry.open(post)) {
-          $.add(el, entry.el);
-        }
+        funk(entry, el);
       }
-      $.addClass($('.entry', Menu.el), 'focused');
+      Menu.focus($('.entry', Menu.el));
       $.on(d, 'click', Menu.close);
       $.add(d.body, el);
       mRect = el.getBoundingClientRect();
@@ -1162,20 +1250,23 @@
       return el.focus();
     },
     close: function() {
-      var el, focused;
+      var el, focused, _i, _len, _ref;
       el = Menu.el;
       $.rm(el);
-      if (focused = $('.focused.entry', el)) {
+      _ref = $$('.focused.entry', el);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        focused = _ref[_i];
         $.rmClass(focused, 'focused');
       }
       el.innerHTML = null;
       el.removeAttribute('style');
       delete Menu.lastOpener;
+      delete Menu.focusedEntry;
       return $.off(d, 'click', Menu.close);
     },
     keybinds: function(e) {
-      var el, next;
-      el = $('.focused.entry', Menu.el);
+      var el, next, subMenu;
+      el = Menu.focusedEntry;
       switch (Keybinds.keyCode(e) || e.keyCode) {
         case 'Esc':
           Menu.lastOpener.focus();
@@ -1190,18 +1281,18 @@
             Menu.focus(next);
           }
           break;
-        case 'Right':
-          if (next = el.firstElementChild) {
-            Menu.focus(next);
-          }
-          break;
         case 'Down':
           if (next = el.nextElementSibling) {
             Menu.focus(next);
           }
           break;
+        case 'Right':
+          if ((subMenu = $('.subMenu', el)) && (next = subMenu.firstElementChild)) {
+            Menu.focus(next);
+          }
+          break;
         case 'Left':
-          if ((next = el.parentNode) && next.id !== 'menu') {
+          if (next = $.x('parent::*[contains(@class,"subMenu")]/parent::*', el)) {
             Menu.focus(next);
           }
           break;
@@ -1212,23 +1303,35 @@
       return e.stopPropagation();
     },
     focus: function(el) {
-      var focused;
-      if (focused = $('.focused.entry', Menu.el)) {
+      var focused, _i, _len, _ref;
+      if (focused = $.x('parent::*/child::*[contains(@class,"focused")]', el)) {
         $.rmClass(focused, 'focused');
       }
+      _ref = $$('.focused', el);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        focused = _ref[_i];
+        $.rmClass(focused, 'focused');
+      }
+      Menu.focusedEntry = el;
       return $.addClass(el, 'focused');
     },
     addEntry: function(entry) {
-      var el, els, _i, _len;
-      els = $$('*', entry.el);
-      els.push(entry.el);
-      for (_i = 0, _len = els.length; _i < _len; _i++) {
-        el = els[_i];
+      var funk;
+      funk = function(entry) {
+        var child, children, el, _i, _len, _ref;
+        el = entry.el, children = entry.children;
         $.addClass(el, 'entry');
-        $.on(el, 'focus mouseover', function() {
+        $.on(el, 'focus mouseover', function(e) {
+          e.stopPropagation();
           return Menu.focus(this);
         });
-      }
+        _ref = children || [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          funk(child);
+        }
+      };
+      funk(entry);
       return Menu.entries.push(entry);
     }
   };
@@ -4730,6 +4833,9 @@
         if (Conf['Delete Link']) {
           DeleteLink.init();
         }
+        if (Conf['Filter']) {
+          Filter.menuInit();
+        }
         if (Conf['Download Link']) {
           DownloadLink.init();
         }
@@ -5019,13 +5125,24 @@ a[href="javascript:;"] {\
   display: block;\
   outline: none;\
   padding: 3px 7px;\
+  position: relative;\
   text-decoration: none;\
+  white-space: nowrap;\
 }\
 .entry:last-child {\
   border: none;\
 }\
 .focused.entry {\
   background: rgba(255, 255, 255, .33);\
+}\
+.entry:not(.focused) > .subMenu {\
+  display: none;\
+}\
+.subMenu {\
+  position: absolute;\
+  left: 100%;\
+  top: 0;\
+  margin-top: -1px;\
 }\
 \
 h1 {\

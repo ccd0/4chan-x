@@ -565,8 +565,11 @@ Filter =
     false
   filename: (post) ->
     {fileInfo} = post
-    if fileInfo and file = $ '.fileText > span', fileInfo
-      return file.title
+    if fileInfo
+      if file = $ '.fileText > span', fileInfo
+        return file.title
+      else
+        return fileInfo.firstElementChild.dataset.filename
     false
   dimensions: (post) ->
     {fileInfo} = post
@@ -583,6 +586,98 @@ Filter =
     if img
       return img.dataset.md5
     false
+
+  menuInit: ->
+    div = $.el 'div'
+
+    entry =
+      el: div
+      open: ->
+        # Reset the container's content,
+        # don't keep irrelevant entries.
+        div.textContent = 'Filter'
+        true
+      children: []
+
+    for type in [
+      ['Name',             'name']
+      ['Unique ID',        'uniqueid']
+      ['Tripcode',         'tripcode']
+      ['Admin/Mod',        'mod']
+      ['E-mail',           'email']
+      ['Subject',          'subject']
+      ['Comment',          'comment']
+      ['Country',          'country']
+      ['Filename',         'filename']
+      ['Image dimensions', 'dimensions']
+      ['Filesize',         'filesize']
+      ['Image MD5',        'md5']
+    ]
+      # Add a sub entry for each filter type.
+      entry.children.push Filter.createSubEntry type[0], type[1]
+
+    Menu.addEntry entry
+
+  createSubEntry: (text, type) ->
+    el = $.el 'a',
+      href: 'javascript:;'
+      textContent: text
+    # Define the onclick var outside of open's scope to $.off it properly.
+    onclick = null
+
+    open = (post) ->
+      value = Filter[type] post
+      return false if value is false
+      $.off el, 'click', onclick
+      onclick = ->
+        # Convert value -> regexp, unless type is md5
+        re = if type is 'md5' then value else value.replace ///
+          /
+          | \\
+          | \^
+          | \$
+          | \n
+          | \.
+          | \(
+          | \)
+          | \{
+          | \}
+          | \[
+          | \]
+          | \?
+          | \*
+          | \+
+          | \|
+          ///g, (c) ->
+            if c is '\n'
+              '\\n'
+            else if c is '\\'
+              '\\\\'
+            else
+              "\\#{c}"
+
+        re = "/^#{re}$/"
+        if /\bop\b/.test post.class
+          re += ';op:yes'
+
+        # Add a new line before the regexp unless the text is empty.
+        save = if save = $.get type, '' then "#{save}\n#{re}" else re
+        $.set type, save
+
+        # Open the options and display & focus the relevant filter textarea.
+        Options.dialog()
+        select = $ 'select[name=filter]', $.id 'options'
+        select.value = type
+        $.event select, new Event 'change'
+        $.id('filter_tab').checked = true
+        ta = select.nextElementSibling
+        tl = ta.textLength
+        ta.setSelectionRange tl, tl
+        ta.focus()
+      $.on el, 'click', onclick
+      true
+
+    return el: el, open: open
 
 StrikethroughQuotes =
   init: ->
@@ -877,15 +972,22 @@ Menu =
     # XXX GM/Scriptish require setAttribute
     el.setAttribute 'data-id', post.ID
     el.setAttribute 'data-rootid', post.root.id
-    # for i of post
-    #   $.add Menu.el, $.el 'code',
-    #     className: 'entry'
-    #     textContent: "#{i}: #{post[i]}"
-    for entry in Menu.entries
-      if entry.open post
-        $.add el, entry.el
 
-    $.addClass $('.entry', Menu.el), 'focused'
+    funk = (entry, parent) ->
+      {open, children} = entry
+      return unless open post
+      $.add parent, entry.el
+      return unless children
+      subMenu = $.el 'div',
+        className: 'reply dialog subMenu'
+      $.add entry.el, subMenu
+      for child in children
+        funk child, subMenu
+      return
+    for entry in Menu.entries
+      funk entry, el
+
+    Menu.focus $ '.entry', Menu.el
     $.on d, 'click', Menu.close
     $.add d.body, el
 
@@ -909,15 +1011,16 @@ Menu =
   close: ->
     {el} = Menu
     $.rm el
-    if focused = $ '.focused.entry', el
+    for focused in $$ '.focused.entry', el
       $.rmClass focused, 'focused'
     el.innerHTML = null
     el.removeAttribute 'style'
     delete Menu.lastOpener
+    delete Menu.focusedEntry
     $.off d, 'click', Menu.close
 
   keybinds: (e) ->
-    el = $ '.focused.entry', Menu.el
+    el = Menu.focusedEntry
 
     switch Keybinds.keyCode(e) or e.keyCode
       when 'Esc'
@@ -928,14 +1031,14 @@ Menu =
       when 'Up'
         if next = el.previousElementSibling
           Menu.focus next
-      when 'Right'
-        if next = el.firstElementChild
-          Menu.focus next
       when 'Down'
         if next = el.nextElementSibling
           Menu.focus next
+      when 'Right'
+        if (subMenu = $ '.subMenu', el) and next = subMenu.firstElementChild
+          Menu.focus next
       when 'Left'
-        if (next = el.parentNode) and next.id isnt 'menu'
+        if next = $.x 'parent::*[contains(@class,"subMenu")]/parent::*', el
           Menu.focus next
       else
         return
@@ -943,16 +1046,24 @@ Menu =
     e.preventDefault()
     e.stopPropagation()
   focus: (el) ->
-    if focused = $ '.focused.entry', Menu.el
+    if focused = $.x 'parent::*/child::*[contains(@class,"focused")]', el
       $.rmClass focused, 'focused'
+    for focused in $$ '.focused', el
+      $.rmClass focused, 'focused'
+    Menu.focusedEntry = el
     $.addClass el, 'focused'
 
   addEntry: (entry) ->
-    els = $$ '*', entry.el
-    els.push entry.el
-    for el in els
+    funk = (entry) ->
+      {el, children} = entry
       $.addClass el, 'entry'
-      $.on el, 'focus mouseover', -> Menu.focus @
+      $.on el, 'focus mouseover', (e) ->
+        e.stopPropagation()
+        Menu.focus @
+      for child in children or []
+        funk child
+      return
+    funk entry
     Menu.entries.push entry
 
 Keybinds =
@@ -1493,9 +1604,9 @@ QR =
       QR.characterCount.call $ 'textarea', QR.el
       $('#spoiler', QR.el).checked = @spoiler
     dragStart: ->
-      $.addClass    @, 'drag'
+      $.addClass @, 'drag'
     dragEnter: ->
-      $.addClass    @, 'over'
+      $.addClass @, 'over'
     dragLeave: ->
       $.rmClass @, 'over'
     dragOver: (e) ->
@@ -3151,10 +3262,10 @@ ReportLink =
       open: (post) ->
         post.isArchived is false
   report: ->
-    a     = $ '.postNum > a[title="Highlight this post"]', $.id @parentNode.dataset.rootid
-    url   = "//sys.4chan.org/#{a.pathname.split('/')[1]}/imgboard.php?mode=report&no=#{@parentNode.dataset.id}"
-    id    = Date.now()
-    set   = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
+    a   = $ '.postNum > a[title="Highlight this post"]', $.id @parentNode.dataset.rootid
+    url = "//sys.4chan.org/#{a.pathname.split('/')[1]}/imgboard.php?mode=report&no=#{@parentNode.dataset.id}"
+    id  = Date.now()
+    set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
 
 DownloadLink =
@@ -3682,6 +3793,9 @@ Main =
       if Conf['Delete Link']
         DeleteLink.init()
 
+      if Conf['Filter']
+        Filter.menuInit()
+
       if Conf['Download Link']
         DownloadLink.init()
 
@@ -3912,13 +4026,24 @@ a[href="javascript:;"] {
   display: block;
   outline: none;
   padding: 3px 7px;
+  position: relative;
   text-decoration: none;
+  white-space: nowrap;
 }
 .entry:last-child {
   border: none;
 }
 .focused.entry {
   background: rgba(255, 255, 255, .33);
+}
+.entry:not(.focused) > .subMenu {
+  display: none;
+}
+.subMenu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  margin-top: -1px;
 }
 
 h1 {
