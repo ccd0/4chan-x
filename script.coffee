@@ -656,7 +656,11 @@ Filter =
             else
               "\\#{c}"
 
-        re = "/^#{re}$/" unless type is 'md5'
+        re =
+          if type is 'md5'
+            "/#{value}/"
+          else
+            "/^#{re}$/"
         if /\bop\b/.test post.class
           re += ';op:yes'
 

@@ -793,9 +793,7 @@
               return "\\" + c;
             }
           });
-          if (type !== 'md5') {
-            re = "/^" + re + "$/";
-          }
+          re = type === 'md5' ? "/" + value + "/" : "/^" + re + "$/";
           if (/\bop\b/.test(post["class"])) {
             re += ';op:yes';
           }
