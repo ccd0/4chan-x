@@ -705,7 +705,7 @@
     country: function(post) {
       var flag;
       if (flag = $('.countryFlag', post.el)) {
-        return flag.title.replace('Country: ', '');
+        return flag.title;
       }
       return false;
     },

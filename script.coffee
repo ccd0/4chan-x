@@ -558,7 +558,7 @@ Filter =
     text.join ''
   country: (post) ->
     if flag = $ '.countryFlag', post.el
-      return flag.title.replace 'Country: ', ''
+      return flag.title
     false
   filename: (post) ->
     {fileInfo} = post
