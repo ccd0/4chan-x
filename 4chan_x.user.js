@@ -5044,9 +5044,9 @@ body.unscroll {\
 }\
 #overlay {\
   top: 0;\
-  right: 0;\
   left: 0;\
-  bottom: 0;\
+  width: 100%;\
+  height: 100%;\
   text-align: center;\
   background: rgba(0,0,0,.5);\
   z-index: 1;\
@@ -5058,11 +5058,17 @@ body.unscroll {\
   vertical-align: middle;\
 }\
 #options {\
+  box-sizing: border-box;\
+  -moz-box-sizing: border-box;\
   display: inline-block;\
   padding: 5px;\
+  position: relative;\
   text-align: left;\
   vertical-align: middle;\
   width: 600px;\
+  max-width: 100%;\
+  height: 500px;\
+  max-height: 100%;\
 }\
 #credits {\
   float: right;\
@@ -5082,8 +5088,12 @@ body.unscroll {\
   text-decoration: underline;\
 }\
 #content {\
-  height: 450px;\
   overflow: auto;\
+  position: absolute;\
+  top: 2.5em;\
+  right: 5px;\
+  bottom: 5px;\
+  left: 5px;\
 }\
 #content textarea {\
   font-family: monospace;\
