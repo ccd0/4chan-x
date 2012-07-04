@@ -177,6 +177,7 @@
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
       unreadCountTo0: ['z', 'Reset unread status'],
+      threading: ['t', 'Toggle threading'],
       expandImage: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
       zero: ['0', 'Jump to page 0'],
@@ -1159,6 +1160,9 @@
             last: null
           };
           Unread.update(true);
+          break;
+        case Conf.threading:
+          QuoteThreading["public"].toggle();
           break;
         case Conf.expandImage:
           Keybinds.img(thread);
@@ -3791,7 +3795,15 @@
 
   QuoteThreading = {
     init: function() {
-      return Main.callbacks.push(this.node);
+      var controls, form, input;
+      Main.callbacks.push(this.node);
+      controls = $.el('span', {
+        innerHTML: '<label>Threading<input id=threadingControl type=checkbox checked></label>'
+      });
+      input = $('input', controls);
+      $.on(input, 'change', QuoteThreading.toggle);
+      form = $('#delform');
+      return $.prepend(form, controls);
     },
     node: function(post) {
       var ID, keys, next, pEl, pid, preply, prev, qid, qreply, qroot, quote, quotes, replies, reply, threadContainer, uniq, _i, _len;
@@ -3842,21 +3854,15 @@
       reply.next = next;
       return Unread.replies = replies;
     },
-    dialog: function() {
-      var controls, input;
-      controls = $.el('label', {
-        id: 'thread',
-        "class": 'controls',
-        innerHTML: "Thread<input type=checkbox checked>"
-      });
-      input = $('input', controls);
-      $.on(input, 'click', QuoteThreading.toggle);
-      return $.prepend($.id('delform'), controls);
-    },
     toggle: function() {
-      var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _results, _results1;
+      var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2;
+      Main.disconnect();
+      Unread.replies = {
+        first: null,
+        last: null
+      };
       thread = $('.thread');
-      replies = $$('.replyContainer', thread);
+      replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
       if (this.checked) {
         nodes = (function() {
           var _i, _len, _results;
@@ -3871,12 +3877,11 @@
           node = nodes[_i];
           Unread.node(node);
         }
-        _results = [];
+        Unread.scroll();
         for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
           node = nodes[_j];
-          _results.push(QuoteThreading.node(node));
+          QuoteThreading.node(node);
         }
-        return _results;
       } else {
         replies.sort(function(a, b) {
           var aID, bID;
@@ -3886,12 +3891,20 @@
         });
         $.add(thread, replies);
         containers = $$('.threadContainer', thread);
-        _results1 = [];
         for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
           container = containers[_k];
-          _results1.push($.rm(container));
+          $.rm(container);
         }
-        return _results1;
+      }
+      Unread.update(true);
+      return Main.observe();
+    },
+    "public": {
+      toggle: function() {
+        var control;
+        control = $.id('threadingControl');
+        control.checked = !control.checked;
+        return QuoteThreading.toggle.call(control);
       }
     }
   };
@@ -4690,7 +4703,7 @@
       return $.ready(Main.ready);
     },
     ready: function() {
-      var MutationObserver, a, board, nav, node, nodes, now, observer, _i, _j, _len, _len1, _ref, _ref1;
+      var a, board, nav, node, nodes, now, _i, _j, _len, _len1, _ref, _ref1;
       if (/^4chan - 404/.test(d.title)) {
         if (Conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
           location.href = Redirect.thread(g.BOARD, g.THREAD_ID, location.hash);
@@ -4776,14 +4789,28 @@
       }
       Main.node(nodes, true);
       Main.prettify = Main._prettify;
+      return Main.observe();
+    },
+    observe: function() {
+      var MutationObserver, board, observer;
+      board = $('.board');
       if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
-        observer = new MutationObserver(Main.observer);
-        observer.observe(board, {
+        Main.observer2 = observer = new MutationObserver(Main.observer);
+        return observer.observe(board, {
           childList: true,
           subtree: true
         });
       } else {
-        $.on(board, 'DOMNodeInserted', Main.listener);
+        return $.on(board, 'DOMNodeInserted', Main.listener);
+      }
+    },
+    disconnect: function() {
+      var board;
+      if (Main.observer2) {
+        return Main.observer2.disconnect();
+      } else {
+        board = $('.board');
+        return $.off(board, 'DOMNodeInserted', Main.listener);
       }
     },
     pruneHidden: function() {

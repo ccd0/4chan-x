@@ -135,6 +135,7 @@ Config =
     watch:           ['w',      'Watch thread']
     update:          ['u',      'Update now']
     unreadCountTo0:  ['z',      'Reset unread status']
+    threading:       ['t',      'Toggle threading']
     # Images
     expandImage:     ['m',      'Expand selected image']
     expandAllImages: ['M',      'Expand all images']
@@ -867,6 +868,8 @@ Keybinds =
           first: null
           last: null
         Unread.update true
+      when Conf.threading
+        QuoteThreading.public.toggle()
       # Images
       when Conf.expandImage
         Keybinds.img thread
@@ -2948,13 +2951,24 @@ Quotify =
 QuoteThreading =
   init: ->
     Main.callbacks.push @node
+
+    controls = $.el 'span',
+      innerHTML: '<label>Threading<input id=threadingControl type=checkbox checked></label>'
+    input = $ 'input', controls
+    $.on input, 'change', QuoteThreading.toggle
+    form = $ '#delform'
+    $.prepend form, controls
+
   node: (post) ->
-    #hash table + linked list
+    #Random access list
+    #
     #array implementation is very awkward - mid-array inserts, loop to find
     #quoted post, loop to find inserted post(!), loop to find distance from
     #threaded post to thread root
     #
     #of course, implementing your own data structure can be awkward...
+
+    return if post.isInlined
 
     {quotes, ID} = post
     {replies} = Unread
@@ -2967,7 +2981,7 @@ QuoteThreading =
         uniq[qid] = true
 
     keys = Object.keys uniq
-    return unless keys.length is 1 #multiple posts quoted, bail
+    return unless keys.length is 1
 
     qid = keys[0]
     qreply = replies[qid]
@@ -2997,22 +3011,17 @@ QuoteThreading =
     reply.next = next
 
     Unread.replies = replies
-  dialog: ->
-    controls = $.el 'label',
-      id: 'thread'
-      class: 'controls'
-      innerHTML:
-        "Thread<input type=checkbox checked>"
-    input = $ 'input', controls
-    $.on input, 'click', QuoteThreading.toggle
-
-    $.prepend $.id('delform'), controls
   toggle: ->
+    Main.disconnect()
+    Unread.replies =
+      first: null
+      last: null
     thread = $ '.thread'
-    replies = $$ '.replyContainer', thread
+    replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
     if @checked
       nodes = (Main.preParse reply for reply in replies)
       Unread.node         node for node in nodes
+      Unread.scroll()
       QuoteThreading.node node for node in nodes
     else
       replies.sort (a, b) ->
@@ -3022,6 +3031,13 @@ QuoteThreading =
       $.add thread, replies
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
+      Unread.update true
+    Main.observe()
+  public:
+    toggle: ->
+      control = $.id 'threadingControl'
+      control.checked = not control.checked
+      QuoteThreading.toggle.call control
 
 DeleteButton =
   init: ->
@@ -3691,14 +3707,24 @@ Main =
     Main.node nodes, true
     Main.prettify = Main._prettify
 
+    Main.observe()
+
+  observe: ->
+    board = $ '.board'
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
-      observer = new MutationObserver Main.observer
+      Main.observer2 = observer = new MutationObserver Main.observer
       observer.observe board,
         childList: true
         subtree:   true
     else
       $.on board, 'DOMNodeInserted', Main.listener
-    return
+
+  disconnect: ->
+    if Main.observer2
+      Main.observer2.disconnect()
+    else
+      board = $ '.board'
+      $.off board, 'DOMNodeInserted', Main.listener
 
   pruneHidden: ->
     now = Date.now()
