@@ -2952,6 +2952,8 @@ QuoteThreading =
   init: ->
     Main.callbacks.push @node
 
+    @enabled = true
+
     controls = $.el 'span',
       innerHTML: '<label>Threading<input id=threadingControl type=checkbox checked></label>'
     input = $ 'input', controls
@@ -2968,7 +2970,7 @@ QuoteThreading =
     #
     #of course, implementing your own data structure can be awkward...
 
-    return if post.isInlined
+    return if post.isInlined or not QuoteThreading.enabled
 
     {quotes, ID} = post
     {replies} = Unread
@@ -3018,6 +3020,7 @@ QuoteThreading =
       last: null
     thread = $ '.thread'
     replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
+    QuoteThreading.enabled = @checked
     if @checked
       nodes = (Main.preParse reply for reply in replies)
       Unread.node         node for node in nodes

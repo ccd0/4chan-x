@@ -3797,6 +3797,7 @@
     init: function() {
       var controls, form, input;
       Main.callbacks.push(this.node);
+      this.enabled = true;
       controls = $.el('span', {
         innerHTML: '<label>Threading<input id=threadingControl type=checkbox checked></label>'
       });
@@ -3807,6 +3808,9 @@
     },
     node: function(post) {
       var ID, keys, next, pEl, pid, preply, prev, qid, qreply, qroot, quote, quotes, replies, reply, threadContainer, uniq, _i, _len;
+      if (post.isInlined || !QuoteThreading.enabled) {
+        return;
+      }
       quotes = post.quotes, ID = post.ID;
       replies = Unread.replies;
       uniq = {};
@@ -3863,6 +3867,7 @@
       };
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
+      QuoteThreading.enabled = this.checked;
       if (this.checked) {
         nodes = (function() {
           var _i, _len, _results;
@@ -3895,8 +3900,8 @@
           container = containers[_k];
           $.rm(container);
         }
+        Unread.update(true);
       }
-      Unread.update(true);
       return Main.observe();
     },
     "public": {
