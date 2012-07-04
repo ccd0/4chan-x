@@ -77,7 +77,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGif, Conf, Config, DeleteButton, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportButton, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -86,8 +86,6 @@
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
-        'Report Button': [true, 'Add report buttons'],
-        'Delete Button': [false, 'Add delete buttons'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -109,6 +107,13 @@
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail'],
         'Expand From Current': [false, 'Expand images from current position to thread end.']
+      },
+      Menu: {
+        'Menu': [true, 'Add a drop-down menu in posts.'],
+        'Report Link': [true, 'Add a report link to the menu.'],
+        'Delete Link': [true, 'Add a delete link to the menu.'],
+        'Download Link': [true, 'Add a download with original filename link to the menu. Chrome-only currently.'],
+        'Archive Link': [true, 'Add an archive link to the menu.']
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
@@ -419,7 +424,7 @@
     },
     nodes: function(nodes) {
       var frag, node, _i, _len;
-      if (nodes instanceof Node) {
+      if (!(nodes instanceof Array)) {
         return nodes;
       }
       frag = d.createDocumentFragment();
@@ -712,8 +717,12 @@
     filename: function(post) {
       var file, fileInfo;
       fileInfo = post.fileInfo;
-      if (fileInfo && (file = $('.fileText > span', fileInfo))) {
-        return file.title;
+      if (fileInfo) {
+        if (file = $('.fileText > span', fileInfo)) {
+          return file.title;
+        } else {
+          return fileInfo.firstElementChild.dataset.filename;
+        }
       }
       return false;
     },
@@ -740,6 +749,74 @@
         return img.dataset.md5;
       }
       return false;
+    },
+    menuInit: function() {
+      var div, entry, type, _i, _len, _ref;
+      div = $.el('div', {
+        textContent: 'Filter'
+      });
+      entry = {
+        el: div,
+        open: function() {
+          return true;
+        },
+        children: []
+      };
+      _ref = [['Name', 'name'], ['Unique ID', 'uniqueid'], ['Tripcode', 'tripcode'], ['Admin/Mod', 'mod'], ['E-mail', 'email'], ['Subject', 'subject'], ['Comment', 'comment'], ['Country', 'country'], ['Filename', 'filename'], ['Image dimensions', 'dimensions'], ['Filesize', 'filesize'], ['Image MD5', 'md5']];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        entry.children.push(Filter.createSubEntry(type[0], type[1]));
+      }
+      return Menu.addEntry(entry);
+    },
+    createSubEntry: function(text, type) {
+      var el, onclick, open;
+      el = $.el('a', {
+        href: 'javascript:;',
+        textContent: text
+      });
+      onclick = null;
+      open = function(post) {
+        var value;
+        value = Filter[type](post);
+        if (value === false) {
+          return false;
+        }
+        $.off(el, 'click', onclick);
+        onclick = function() {
+          var re, save, select, ta, tl;
+          re = type === 'md5' ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
+            if (c === '\n') {
+              return '\\n';
+            } else if (c === '\\') {
+              return '\\\\';
+            } else {
+              return "\\" + c;
+            }
+          });
+          re = type === 'md5' ? "/" + value + "/" : "/^" + re + "$/";
+          if (/\bop\b/.test(post["class"])) {
+            re += ';op:yes';
+          }
+          save = (save = $.get(type, '')) ? "" + save + "\n" + re : re;
+          $.set(type, save);
+          Options.dialog();
+          select = $('select[name=filter]', $.id('options'));
+          select.value = type;
+          $.event(select, new Event('change'));
+          $.id('filter_tab').checked = true;
+          ta = select.nextElementSibling;
+          tl = ta.textLength;
+          ta.setSelectionRange(tl, tl);
+          return ta.focus();
+        };
+        $.on(el, 'click', onclick);
+        return true;
+      };
+      return {
+        el: el,
+        open: open
+      };
     }
   };
 
@@ -910,7 +987,7 @@
           quote.href = "res/" + href;
         }
         id = reply.id.slice(2);
-        link = $('.postInfo > .postNum > a[title="Highlight this post"]', reply);
+        link = $('.postNum > a[title="Highlight this post"]', reply);
         link.href = "res/" + threadID + "#p" + id;
         link.nextSibling.href = "res/" + threadID + "#q" + id;
         nodes.push(reply);
@@ -951,7 +1028,7 @@
       }
     },
     cb: function() {
-      return ThreadHiding.toggle(this.parentNode);
+      return ThreadHiding.toggle($.x('ancestor::div[parent::div[@class="board"]]', this));
     },
     toggle: function(thread) {
       var hiddenThreads, id;
@@ -967,7 +1044,7 @@
       return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
     hide: function(thread, show_stub) {
-      var a, num, opInfo, span, text;
+      var a, menuButton, num, opInfo, span, stub, text;
       if (show_stub == null) {
         show_stub = Conf['Show Stubs'];
       }
@@ -986,19 +1063,24 @@
       num += $$('.opContainer ~ .replyContainer', thread).length;
       text = num === 1 ? '1 reply' : "" + num + " replies";
       opInfo = $('.op > .postInfo > .nameBlock', thread).textContent;
-      a = $.el('a', {
+      stub = $.el('div', {
         className: 'hide_thread_button hidden_thread',
-        innerHTML: '<span>[ + ]</span>',
-        href: 'javascript:;'
+        innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
       });
-      $.add(a, $.tn(" " + opInfo + " (" + text + ")"));
+      a = stub.firstChild;
       $.on(a, 'click', ThreadHiding.cb);
-      return $.prepend(thread, a);
+      $.add(a, $.tn("" + opInfo + " (" + text + ")"));
+      if (Conf['Menu']) {
+        menuButton = Menu.a.cloneNode(true);
+        $.on(menuButton, 'click', Menu.toggle);
+        $.add(stub, [$.tn(' '), menuButton]);
+      }
+      return $.prepend(thread, stub);
     },
     show: function(thread) {
-      var a;
-      if (a = $('.hidden_thread', thread)) {
-        $.rm(a);
+      var stub;
+      if (stub = $('.hidden_thread', thread)) {
+        $.rm(stub);
       }
       thread.hidden = false;
       return thread.nextElementSibling.hidden = false;
@@ -1046,7 +1128,7 @@
       return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
     },
     hide: function(root, show_stub) {
-      var a, el, side, stub;
+      var a, el, menuButton, side, stub;
       if (show_stub == null) {
         show_stub = Conf['Show Stubs'];
       }
@@ -1065,8 +1147,13 @@
         innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
       });
       a = stub.firstChild;
-      $.add(a, $.tn($('.nameBlock', el).textContent));
       $.on(a, 'click', ReplyHiding.toggle);
+      $.add(a, $.tn($('.nameBlock', el).textContent));
+      if (Conf['Menu']) {
+        menuButton = Menu.a.cloneNode(true);
+        $.on(menuButton, 'click', Menu.toggle);
+        $.add(stub, [$.tn(' '), menuButton]);
+      }
       return $.prepend(root, stub);
     },
     show: function(root) {
@@ -1076,6 +1163,186 @@
       }
       $('.sideArrows', root).hidden = false;
       return $('.post', root).hidden = false;
+    }
+  };
+
+  Menu = {
+    entries: [],
+    init: function() {
+      this.a = $.el('a', {
+        className: 'menu_button',
+        href: 'javascript:;',
+        innerHTML: '[<span></span>]'
+      });
+      this.el = $.el('div', {
+        className: 'reply dialog',
+        id: 'menu',
+        tabIndex: 0
+      });
+      $.on(this.el, 'click', function(e) {
+        return e.stopPropagation();
+      });
+      $.on(this.el, 'keydown', this.keybinds);
+      $.on(d, 'AddMenuEntry', function(e) {
+        return Menu.addEntry(e.detail);
+      });
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var a;
+      if (post.isInlined && !post.isCrosspost) {
+        a = $('.menu_button', post.el);
+      } else {
+        a = Menu.a.cloneNode(true);
+        $.add($('.postInfo', post.el), a);
+      }
+      return $.on(a, 'click', Menu.toggle);
+    },
+    toggle: function(e) {
+      var lastOpener, post;
+      e.preventDefault();
+      e.stopPropagation();
+      if (Menu.el.parentNode) {
+        lastOpener = Menu.lastOpener;
+        Menu.close();
+        if (lastOpener === this) {
+          return;
+        }
+      }
+      Menu.lastOpener = this;
+      post = /\bhidden_thread\b/.test(this.parentNode.className) ? $.x('ancestor::div[parent::div[@class="board"]]/child::div[contains(@class,"opContainer")]', this) : $.x('ancestor::div[contains(@class,"postContainer")][1]', this);
+      return Menu.open(this, Main.preParse(post));
+    },
+    open: function(button, post) {
+      var bLeft, bRect, bTop, el, entry, funk, mRect, _i, _len, _ref;
+      el = Menu.el;
+      el.setAttribute('data-id', post.ID);
+      el.setAttribute('data-rootid', post.root.id);
+      funk = function(entry, parent) {
+        var child, children, subMenu, _i, _len;
+        children = entry.children;
+        if (!entry.open(post)) {
+          return;
+        }
+        $.add(parent, entry.el);
+        if (!children) {
+          return;
+        }
+        if (subMenu = $('.subMenu', entry.el)) {
+          $.rm(subMenu);
+        }
+        subMenu = $.el('div', {
+          className: 'reply dialog subMenu'
+        });
+        $.add(entry.el, subMenu);
+        for (_i = 0, _len = children.length; _i < _len; _i++) {
+          child = children[_i];
+          funk(child, subMenu);
+        }
+      };
+      _ref = Menu.entries;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        entry = _ref[_i];
+        funk(entry, el);
+      }
+      Menu.focus($('.entry', Menu.el));
+      $.on(d, 'click', Menu.close);
+      $.add(d.body, el);
+      mRect = el.getBoundingClientRect();
+      bRect = button.getBoundingClientRect();
+      bTop = d.documentElement.scrollTop + d.body.scrollTop + bRect.top;
+      bLeft = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left;
+      el.style.top = bRect.top + bRect.height + mRect.height < d.documentElement.clientHeight ? bTop + bRect.height + 2 + 'px' : bTop - mRect.height - 2 + 'px';
+      el.style.left = bRect.left + mRect.width < d.documentElement.clientWidth ? bLeft + 'px' : bLeft + bRect.width - mRect.width + 'px';
+      return el.focus();
+    },
+    close: function() {
+      var el, focused, _i, _len, _ref;
+      el = Menu.el;
+      $.rm(el);
+      _ref = $$('.focused.entry', el);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        focused = _ref[_i];
+        $.rmClass(focused, 'focused');
+      }
+      el.innerHTML = null;
+      el.removeAttribute('style');
+      delete Menu.lastOpener;
+      delete Menu.focusedEntry;
+      return $.off(d, 'click', Menu.close);
+    },
+    keybinds: function(e) {
+      var el, next, subMenu;
+      el = Menu.focusedEntry;
+      switch (Keybinds.keyCode(e) || e.keyCode) {
+        case 'Esc':
+          Menu.lastOpener.focus();
+          Menu.close();
+          break;
+        case 13:
+        case 32:
+          el.click();
+          break;
+        case 'Up':
+          if (next = el.previousElementSibling) {
+            Menu.focus(next);
+          }
+          break;
+        case 'Down':
+          if (next = el.nextElementSibling) {
+            Menu.focus(next);
+          }
+          break;
+        case 'Right':
+          if ((subMenu = $('.subMenu', el)) && (next = subMenu.firstElementChild)) {
+            Menu.focus(next);
+          }
+          break;
+        case 'Left':
+          if (next = $.x('parent::*[contains(@class,"subMenu")]/parent::*', el)) {
+            Menu.focus(next);
+          }
+          break;
+        default:
+          return;
+      }
+      e.preventDefault();
+      return e.stopPropagation();
+    },
+    focus: function(el) {
+      var focused, _i, _len, _ref;
+      if (focused = $.x('parent::*/child::*[contains(@class,"focused")]', el)) {
+        $.rmClass(focused, 'focused');
+      }
+      _ref = $$('.focused', el);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        focused = _ref[_i];
+        $.rmClass(focused, 'focused');
+      }
+      Menu.focusedEntry = el;
+      return $.addClass(el, 'focused');
+    },
+    addEntry: function(entry) {
+      var funk;
+      funk = function(entry) {
+        var child, children, el, _i, _len;
+        el = entry.el, children = entry.children;
+        $.addClass(el, 'entry');
+        $.on(el, 'focus mouseover', function(e) {
+          e.stopPropagation();
+          return Menu.focus(this);
+        });
+        if (!children) {
+          return;
+        }
+        $.addClass(el, 'hasSubMenu');
+        for (_i = 0, _len = children.length; _i < _len; _i++) {
+          child = children[_i];
+          funk(child);
+        }
+      };
+      funk(entry);
+      return Menu.entries.push(entry);
     }
   };
 
@@ -1300,7 +1567,7 @@
     },
     qr: function(thread, quote) {
       if (quote) {
-        QR.quote.call($('.postInfo > .postNum > a[title="Quote this post"]', $('.post.highlight', thread) || thread));
+        QR.quote.call($('.postNum > a[title="Quote this post"]', $('.post.highlight', thread) || thread));
       } else {
         QR.open();
       }
@@ -1455,7 +1722,7 @@
       return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function(post) {
-      return $.on($('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote);
+      return $.on($('.postNum > a[title="Quote this post"]', post.el), 'click', QR.quote);
     },
     open: function() {
       if (QR.el) {
@@ -3078,6 +3345,7 @@
         fullname: span.title,
         shortname: span.textContent
       };
+      node.setAttribute('data-filename', span.title);
       return node.innerHTML = FileInfo.funk(FileInfo);
     },
     setFormats: function() {
@@ -3211,7 +3479,7 @@
         }
         quote.href = "/" + board + "/res/" + href;
       }
-      link = $('.postInfo > .postNum > a[title="Highlight this post"]', pc);
+      link = $('.postNum > a[title="Highlight this post"]', pc);
       link.href = "/" + board + "/res/" + threadID + "#p" + postID;
       link.nextSibling.href = "/" + board + "/res/" + threadID + "#q" + postID;
       $.replace(root.firstChild, pc);
@@ -3369,13 +3637,13 @@
         }));
         $.after((isOP ? piM : pi), file);
       }
-      $.replace(root.firstChild, pc);
+      $.replace(root.firstChild, Get.cleanPost(pc));
       if (cb) {
         return cb();
       }
     },
     cleanPost: function(root) {
-      var child, el, inline, inlined, now, post, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+      var child, el, els, inline, inlined, now, post, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
       post = $('.post', root);
       _ref = Array.prototype.slice.call(root.childNodes);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3395,9 +3663,10 @@
         $.rmClass(inlined, 'inlined');
       }
       now = Date.now();
-      _ref3 = $$('[id]', root);
-      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-        el = _ref3[_l];
+      els = $$('[id]', root);
+      els.push(root);
+      for (_l = 0, _len3 = els.length; _l < _len3; _l++) {
+        el = els[_l];
         el.id = "" + now + "_" + el.id;
       }
       $.rmClass(root, 'forwarded');
@@ -3754,7 +4023,7 @@
             nodes.push($.tn(text));
           }
           id = quote.match(/\d+$/)[0];
-          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postInfo > .postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1];
+          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1];
           nodes.push(a = $.el('a', {
             textContent: "" + quote + "\u00A0(Dead)"
           }));
@@ -3782,46 +4051,44 @@
     }
   };
 
-  DeleteButton = {
+  DeleteLink = {
     init: function() {
-      this.a = $.el('a', {
-        className: 'delete_button',
-        innerHTML: '[&nbsp;&times;&nbsp;]',
+      var a;
+      a = $.el('a', {
+        className: 'delete_link',
         href: 'javascript:;'
       });
-      return Main.callbacks.push(this.node);
-    },
-    node: function(post) {
-      var a;
-      if (!(a = $('.delete_button', post.el))) {
-        a = DeleteButton.a.cloneNode(true);
-        $.add($('.postInfo', post.el), a);
-      }
-      return $.on(a, 'click', DeleteButton["delete"]);
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          if (post.isArchived) {
+            return false;
+          }
+          a.textContent = 'Delete this post';
+          $.on(a, 'click', DeleteLink["delete"]);
+          return true;
+        }
+      });
     },
     "delete": function() {
       var board, form, id, m, pwd, self;
-      $.off(this, 'click', DeleteButton["delete"]);
-      this.innerHTML = '[&nbsp;Deleting...&nbsp;]';
-      if (m = d.cookie.match(/4chan_pass=([^;]+)/)) {
-        pwd = decodeURIComponent(m[1]);
-      } else {
-        pwd = $.id('delPassword').value;
-      }
-      id = $.x('preceding-sibling::input', this).name;
-      board = $.x('preceding-sibling::span[1]/a', this).pathname.match(/\w+/)[0];
+      $.off(this, 'click', DeleteLink["delete"]);
+      this.textContent = 'Deleting...';
+      pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
+      id = this.parentNode.dataset.id;
+      board = $('.postNum > a[title="Highlight this post"]', $.id(this.parentNode.dataset.rootid)).pathname.split('/')[1];
       self = this;
       form = {
         mode: 'usrdel',
         pwd: pwd
       };
       form[id] = 'delete';
-      return $.ajax("https://sys.4chan.org/" + board + "/imgboard.php", {
+      return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + board + "/"), {
         onload: function() {
-          return DeleteButton.load(self, this.response);
+          return DeleteLink.load(self, this.response);
         },
         onerror: function() {
-          return DeleteButton.error(self);
+          return DeleteLink.error(self);
         }
       }, {
         form: $.formData(form)
@@ -3835,41 +4102,90 @@
         s = 'Banned!';
       } else if (msg = doc.getElementById('errmsg')) {
         s = msg.textContent;
-        $.on(self, 'click', DeleteButton["delete"]);
+        $.on(self, 'click', DeleteLink["delete"]);
       } else {
         s = 'Deleted';
       }
-      return self.innerHTML = "[&nbsp;" + s + "&nbsp;]";
+      return self.textContent = s;
     },
     error: function(self) {
-      self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]';
-      return $.on(self, 'click', DeleteButton["delete"]);
+      self.textContent = 'Connection error, please retry.';
+      return $.on(self, 'click', DeleteLink["delete"]);
     }
   };
 
-  ReportButton = {
+  ReportLink = {
     init: function() {
-      this.a = $.el('a', {
-        className: 'report_button',
-        innerHTML: '[&nbsp;!&nbsp;]',
-        href: 'javascript:;'
-      });
-      return Main.callbacks.push(this.node);
-    },
-    node: function(post) {
       var a;
-      if (!(a = $('.report_button', post.el))) {
-        a = ReportButton.a.cloneNode(true);
-        $.add($('.postInfo', post.el), a);
-      }
-      return $.on(a, 'click', ReportButton.report);
+      a = $.el('a', {
+        className: 'report_link',
+        href: 'javascript:;',
+        textContent: 'Report this post'
+      });
+      $.on(a, 'click', this.report);
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          return post.isArchived === false;
+        }
+      });
     },
     report: function() {
-      var id, set, url;
-      url = "//sys.4chan.org/" + g.BOARD + "/imgboard.php?mode=report&no=" + ($.x('preceding-sibling::input', this).name);
+      var a, id, set, url;
+      a = $('.postNum > a[title="Highlight this post"]', $.id(this.parentNode.dataset.rootid));
+      url = "//sys.4chan.org/" + (a.pathname.split('/')[1]) + "/imgboard.php?mode=report&no=" + this.parentNode.dataset.id;
       id = Date.now();
       set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
       return window.open(url, id, set);
+    }
+  };
+
+  DownloadLink = {
+    init: function() {
+      var a;
+      if ($.el('a').download === void 0) {
+        return;
+      }
+      a = $.el('a', {
+        className: 'download_link',
+        textContent: 'Download file'
+      });
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          var fileText;
+          if (!post.img) {
+            return false;
+          }
+          a.href = post.img.parentNode.href;
+          fileText = post.fileInfo.firstElementChild;
+          a.download = Conf['File Info Formatting'] ? fileText.dataset.filename : $('span', fileText).title;
+          return true;
+        }
+      });
+    }
+  };
+
+  ArchiveLink = {
+    init: function() {
+      var a;
+      a = $.el('a', {
+        className: 'archive_link',
+        target: '_blank',
+        textContent: 'Archived post'
+      });
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          var href, path;
+          path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/');
+          if ((href = Redirect.thread(path[1], path[3], post.ID)) === ("//boards.4chan.org/" + path[1] + "/")) {
+            return false;
+          }
+          a.href = href;
+          return true;
+        }
+      });
     }
   };
 
@@ -4531,11 +4847,23 @@
       if (Conf['Image Hover']) {
         ImageHover.init();
       }
-      if (Conf['Report Button']) {
-        ReportButton.init();
-      }
-      if (Conf['Delete Button']) {
-        DeleteButton.init();
+      if (Conf['Menu']) {
+        Menu.init();
+        if (Conf['Report Link']) {
+          ReportLink.init();
+        }
+        if (Conf['Delete Link']) {
+          DeleteLink.init();
+        }
+        if (Conf['Filter']) {
+          Filter.menuInit();
+        }
+        if (Conf['Download Link']) {
+          DownloadLink.init();
+        }
+        if (Conf['Archive Link']) {
+          ArchiveLink.init();
+        }
       }
       if (Conf['Resurrect Quotes']) {
         Quotify.init();
@@ -4797,6 +5125,60 @@ a[href="javascript:;"] {\
 .autohide:not(:hover) > form,\
 #qp input, #qp .inline, .forwarded {\
   display: none !important;\
+}\
+\
+.menu_button {\
+  display: inline-block;\
+}\
+.menu_button > span {\
+  border-top:   .5em solid;\
+  border-right: .3em solid transparent;\
+  border-left:  .3em solid transparent;\
+  display: inline-block;\
+  margin: 2px;\
+  vertical-align: middle;\
+}\
+#menu {\
+  position: absolute;\
+  outline: none;\
+}\
+.entry {\
+  border-bottom: 1px solid rgba(0, 0, 0, .25);\
+  cursor: pointer;\
+  display: block;\
+  outline: none;\
+  padding: 3px 7px;\
+  position: relative;\
+  text-decoration: none;\
+  white-space: nowrap;\
+}\
+.entry:last-child {\
+  border: none;\
+}\
+.focused.entry {\
+  background: rgba(255, 255, 255, .33);\
+}\
+.entry.hasSubMenu {\
+  padding-right: 1.5em;\
+}\
+.hasSubMenu::after {\
+  content: "";\
+  border-left:   .5em solid;\
+  border-top:    .3em solid transparent;\
+  border-bottom: .3em solid transparent;\
+  display: inline-block;\
+  margin: .3em;\
+  position: absolute;\
+  right: 3px;\
+}\
+.hasSubMenu:not(.focused) > .subMenu {\
+  display: none;\
+}\
+.subMenu {\
+  position: absolute;\
+  left: 100%;\
+  top: 0;\
+  margin-top: -1px;\
 }\
 \
 h1 {\

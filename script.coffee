@@ -5,8 +5,6 @@ Config =
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
-      'Report Button':                [true,  'Add report buttons']
-      'Delete Button':                [false, 'Add delete buttons']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
@@ -26,6 +24,12 @@ Config =
       'Sauce':                        [true,  'Add sauce to images']
       'Reveal Spoilers':              [false, 'Replace spoiler thumbnails by the original thumbnail']
       'Expand From Current':          [false, 'Expand images from current position to thread end.']
+    Menu:
+      'Menu':                         [true,  'Add a drop-down menu in posts.']
+      'Report Link':                  [true,  'Add a report link to the menu.']
+      'Delete Link':                  [true,  'Add a delete link to the menu.']
+      'Download Link':                [true,  'Add a download with original filename link to the menu. Chrome-only currently.']
+      'Archive Link':                 [true,  'Add an archive link to the menu.']
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
@@ -325,7 +329,10 @@ $.extend $,
   tn: (s) ->
     d.createTextNode s
   nodes: (nodes) ->
-    if nodes instanceof Node
+    # In (at least) Chrome, elements created inside different
+    # scripts/window contexts inherit from unequal prototypes.
+    # window_ext1.Node !== window_ext2.Node
+    unless nodes instanceof Array
       return nodes
     frag = d.createDocumentFragment()
     for node in nodes
@@ -562,8 +569,11 @@ Filter =
     false
   filename: (post) ->
     {fileInfo} = post
-    if fileInfo and file = $ '.fileText > span', fileInfo
-      return file.title
+    if fileInfo
+      if file = $ '.fileText > span', fileInfo
+        return file.title
+      else
+        return fileInfo.firstElementChild.dataset.filename
     false
   dimensions: (post) ->
     {fileInfo} = post
@@ -580,6 +590,99 @@ Filter =
     if img
       return img.dataset.md5
     false
+
+  menuInit: ->
+    div = $.el 'div',
+      textContent: 'Filter'
+
+    entry =
+      el: div
+      open: -> true
+      children: []
+
+    for type in [
+      ['Name',             'name']
+      ['Unique ID',        'uniqueid']
+      ['Tripcode',         'tripcode']
+      ['Admin/Mod',        'mod']
+      ['E-mail',           'email']
+      ['Subject',          'subject']
+      ['Comment',          'comment']
+      ['Country',          'country']
+      ['Filename',         'filename']
+      ['Image dimensions', 'dimensions']
+      ['Filesize',         'filesize']
+      ['Image MD5',        'md5']
+    ]
+      # Add a sub entry for each filter type.
+      entry.children.push Filter.createSubEntry type[0], type[1]
+
+    Menu.addEntry entry
+
+  createSubEntry: (text, type) ->
+    el = $.el 'a',
+      href: 'javascript:;'
+      textContent: text
+    # Define the onclick var outside of open's scope to $.off it properly.
+    onclick = null
+
+    open = (post) ->
+      value = Filter[type] post
+      return false if value is false
+      $.off el, 'click', onclick
+      onclick = ->
+        # Convert value -> regexp, unless type is md5
+        re = if type is 'md5' then value else value.replace ///
+          /
+          | \\
+          | \^
+          | \$
+          | \n
+          | \.
+          | \(
+          | \)
+          | \{
+          | \}
+          | \[
+          | \]
+          | \?
+          | \*
+          | \+
+          | \|
+          ///g, (c) ->
+            if c is '\n'
+              '\\n'
+            else if c is '\\'
+              '\\\\'
+            else
+              "\\#{c}"
+
+        re =
+          if type is 'md5'
+            "/#{value}/"
+          else
+            "/^#{re}$/"
+        if /\bop\b/.test post.class
+          re += ';op:yes'
+
+        # Add a new line before the regexp unless the text is empty.
+        save = if save = $.get type, '' then "#{save}\n#{re}" else re
+        $.set type, save
+
+        # Open the options and display & focus the relevant filter textarea.
+        Options.dialog()
+        select = $ 'select[name=filter]', $.id 'options'
+        select.value = type
+        $.event select, new Event 'change'
+        $.id('filter_tab').checked = true
+        ta = select.nextElementSibling
+        tl = ta.textLength
+        ta.setSelectionRange tl, tl
+        ta.focus()
+      $.on el, 'click', onclick
+      true
+
+    return el: el, open: open
 
 StrikethroughQuotes =
   init: ->
@@ -696,7 +799,7 @@ ExpandThread =
         continue if href[0] is '/' # Cross-board quote
         quote.href = "res/#{href}" # Fix pathnames
       id = reply.id[2..]
-      link = $ '.postInfo > .postNum > a[title="Highlight this post"]', reply
+      link = $ '.postNum > a[title="Highlight this post"]', reply
       link.href = "res/#{threadID}#p#{id}"
       link.nextSibling.href = "res/#{threadID}#q#{id}"
       nodes.push reply
@@ -724,7 +827,7 @@ ThreadHiding =
     return
 
   cb: ->
-    ThreadHiding.toggle @parentNode
+    ThreadHiding.toggle $.x 'ancestor::div[parent::div[@class="board"]]', @
 
   toggle: (thread) ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
@@ -752,17 +855,21 @@ ThreadHiding =
     text    = if num is 1 then '1 reply' else "#{num} replies"
     opInfo  = $('.op > .postInfo > .nameBlock', thread).textContent
 
-    a = $.el 'a',
+    stub = $.el 'div',
       className: 'hide_thread_button hidden_thread'
-      innerHTML: '<span>[ + ]</span>'
-      href: 'javascript:;'
-    $.add a, $.tn " #{opInfo} (#{text})"
-    $.on a, 'click', ThreadHiding.cb
-    $.prepend thread, a
+      innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
+    a = stub.firstChild
+    $.on  a, 'click', ThreadHiding.cb
+    $.add a, $.tn "#{opInfo} (#{text})"
+    if Conf['Menu']
+      menuButton = Menu.a.cloneNode true
+      $.on menuButton, 'click', Menu.toggle
+      $.add stub, [$.tn(' '), menuButton]
+    $.prepend thread, stub
 
   show: (thread) ->
-    if a = $ '.hidden_thread', thread
-      $.rm a
+    if stub = $ '.hidden_thread', thread
+      $.rm stub
     thread.hidden = false
     thread.nextElementSibling.hidden = false
 
@@ -810,8 +917,12 @@ ReplyHiding =
       className: 'hide_reply_button stub'
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
     a = stub.firstChild
-    $.add a, $.tn $('.nameBlock', el).textContent
     $.on  a, 'click', ReplyHiding.toggle
+    $.add a, $.tn $('.nameBlock', el).textContent
+    if Conf['Menu']
+      menuButton = Menu.a.cloneNode true
+      $.on menuButton, 'click', Menu.toggle
+      $.add stub, [$.tn(' '), menuButton]
     $.prepend root, stub
 
   show: (root) ->
@@ -819,6 +930,155 @@ ReplyHiding =
       $.rm stub
     $('.sideArrows', root).hidden = false
     $('.post',       root).hidden = false
+
+Menu =
+  entries: []
+  init: ->
+    @a = $.el 'a',
+      className: 'menu_button'
+      href:      'javascript:;'
+      innerHTML: '[<span></span>]'
+    @el = $.el 'div',
+      className: 'reply dialog'
+      id:        'menu'
+      tabIndex:  0
+    $.on @el, 'click',   (e) -> e.stopPropagation()
+    $.on @el, 'keydown', @keybinds
+
+    # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
+    $.on d, 'AddMenuEntry', (e) -> Menu.addEntry e.detail
+
+    Main.callbacks.push @node
+  node: (post) ->
+    if post.isInlined and !post.isCrosspost
+      a = $ '.menu_button', post.el
+    else
+      a = Menu.a.cloneNode true
+      $.add $('.postInfo', post.el), a
+    $.on a, 'click', Menu.toggle
+
+  toggle: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+    if Menu.el.parentNode
+      # Close if it's already opened.
+      # Reopen if we clicked on another button.
+      {lastOpener} = Menu
+      Menu.close()
+      return if lastOpener is @
+
+    Menu.lastOpener = @
+    post =
+      if /\bhidden_thread\b/.test @parentNode.className
+        $.x 'ancestor::div[parent::div[@class="board"]]/child::div[contains(@class,"opContainer")]', @
+      else
+        $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+    Menu.open @, Main.preParse post
+  open: (button, post) ->
+    {el} = Menu
+    # XXX GM/Scriptish require setAttribute
+    el.setAttribute 'data-id', post.ID
+    el.setAttribute 'data-rootid', post.root.id
+
+    funk = (entry, parent) ->
+      {children} = entry
+      return unless entry.open post
+      $.add parent, entry.el
+
+      return unless children
+      if subMenu = $ '.subMenu', entry.el
+        # Reset sub menu, remove irrelevant entries.
+        $.rm subMenu
+      subMenu = $.el 'div',
+        className: 'reply dialog subMenu'
+      $.add entry.el, subMenu
+      for child in children
+        funk child, subMenu
+      return
+    for entry in Menu.entries
+      funk entry, el
+
+    Menu.focus $ '.entry', Menu.el
+    $.on d, 'click', Menu.close
+    $.add d.body, el
+
+    # Position
+    mRect = el.getBoundingClientRect()
+    bRect = button.getBoundingClientRect()
+    bTop  = d.documentElement.scrollTop  + d.body.scrollTop  + bRect.top
+    bLeft = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left
+    el.style.top =
+      if bRect.top + bRect.height + mRect.height < d.documentElement.clientHeight
+        bTop + bRect.height + 2 + 'px'
+      else
+        bTop - mRect.height - 2 + 'px'
+    el.style.left =
+      if bRect.left + mRect.width < d.documentElement.clientWidth
+        bLeft + 'px'
+      else
+        bLeft + bRect.width - mRect.width + 'px'
+
+    el.focus()
+  close: ->
+    {el} = Menu
+    $.rm el
+    for focused in $$ '.focused.entry', el
+      $.rmClass focused, 'focused'
+    el.innerHTML = null
+    el.removeAttribute 'style'
+    delete Menu.lastOpener
+    delete Menu.focusedEntry
+    $.off d, 'click', Menu.close
+
+  keybinds: (e) ->
+    el = Menu.focusedEntry
+
+    switch Keybinds.keyCode(e) or e.keyCode
+      when 'Esc'
+        Menu.lastOpener.focus()
+        Menu.close()
+      when 13, 32 # 'Enter', 'Space'
+        el.click()
+      when 'Up'
+        if next = el.previousElementSibling
+          Menu.focus next
+      when 'Down'
+        if next = el.nextElementSibling
+          Menu.focus next
+      when 'Right'
+        if (subMenu = $ '.subMenu', el) and next = subMenu.firstElementChild
+          Menu.focus next
+      when 'Left'
+        if next = $.x 'parent::*[contains(@class,"subMenu")]/parent::*', el
+          Menu.focus next
+      else
+        return
+
+    e.preventDefault()
+    e.stopPropagation()
+  focus: (el) ->
+    if focused = $.x 'parent::*/child::*[contains(@class,"focused")]', el
+      $.rmClass focused, 'focused'
+    for focused in $$ '.focused', el
+      $.rmClass focused, 'focused'
+    Menu.focusedEntry = el
+    $.addClass el, 'focused'
+
+  addEntry: (entry) ->
+    funk = (entry) ->
+      {el, children} = entry
+      $.addClass el, 'entry'
+      $.on el, 'focus mouseover', (e) ->
+        e.stopPropagation()
+        Menu.focus @
+      return unless children
+      $.addClass el, 'hasSubMenu'
+      for child in children
+        funk child
+      return
+    funk entry
+    Menu.entries.push entry
 
 Keybinds =
   init: ->
@@ -951,7 +1211,7 @@ Keybinds =
 
   qr: (thread, quote) ->
     if quote
-      QR.quote.call $ '.postInfo > .postNum > a[title="Quote this post"]', $('.post.highlight', thread) or thread
+      QR.quote.call $ '.postNum > a[title="Quote this post"]', $('.post.highlight', thread) or thread
     else
       QR.open()
     $('textarea', QR.el).focus()
@@ -1072,7 +1332,7 @@ QR =
     $.on d, 'dragstart dragend', QR.drag
 
   node: (post) ->
-    $.on $('.postInfo > .postNum > a[title="Quote this post"]', post.el), 'click', QR.quote
+    $.on $('.postNum > a[title="Quote this post"]', post.el), 'click', QR.quote
 
   open: ->
     if QR.el
@@ -1358,9 +1618,9 @@ QR =
       QR.characterCount.call $ 'textarea', QR.el
       $('#spoiler', QR.el).checked = @spoiler
     dragStart: ->
-      $.addClass    @, 'drag'
+      $.addClass @, 'drag'
     dragEnter: ->
-      $.addClass    @, 'over'
+      $.addClass @, 'over'
     dragLeave: ->
       $.rmClass @, 'over'
     dragOver: (e) ->
@@ -2390,6 +2650,8 @@ FileInfo =
       resolution: span.previousSibling.textContent.match(/\d+x\d+|PDF/)[0]
       fullname:   span.title
       shortname:  span.textContent
+    # XXX GM/Scriptish
+    node.setAttribute 'data-filename', span.title
     node.innerHTML = FileInfo.funk FileInfo
   setFormats: ->
     code = Conf['fileInfo'].replace /%([BKlLMnNprs])/g, (s, c) ->
@@ -2473,7 +2735,7 @@ Get =
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
       quote.href = "/#{board}/res/#{href}" # Fix pathnames
-    link = $ '.postInfo > .postNum > a[title="Highlight this post"]', pc
+    link = $ '.postNum > a[title="Highlight this post"]', pc
     link.href = "/#{board}/res/#{threadID}#p#{postID}"
     link.nextSibling.href = "/#{board}/res/#{threadID}#q#{postID}"
 
@@ -2640,7 +2902,7 @@ Get =
         innerHTML: "<img #{thumb_src} alt='#{if data.media_status isnt 'available' then "Error: #{data.media_status}, " else ''}#{if spoiler then 'Spoiler Image, ' else ''}#{filesize}' data-md5=#{data.media_hash} style='height: #{data.preview_h}px; width: #{data.preview_w}px;'>"
       $.after (if isOP then piM else pi), file
 
-    $.replace root.firstChild, pc
+    $.replace root.firstChild, Get.cleanPost pc
     cb() if cb
   cleanPost: (root) ->
     post = $ '.post', root
@@ -2655,7 +2917,9 @@ Get =
 
     # Don't mess with other features
     now = Date.now()
-    for el in $$ '[id]', root
+    els = $$ '[id]', root
+    els.push root
+    for el in els
       el.id = "#{now}_#{el.id}"
 
     $.rmClass root, 'forwarded'
@@ -2924,7 +3188,7 @@ Quotify =
             m[1]
           else
             # Get the post's board, whether it's inlined or not.
-            $('.postInfo > .postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1]
+            $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
           # \u00A0 is nbsp
@@ -2957,28 +3221,32 @@ Quotify =
       $.replace node, nodes
     return
 
-DeleteButton =
+DeleteLink =
   init: ->
-    @a = $.el 'a',
-      className: 'delete_button'
-      innerHTML: '[&nbsp;&times;&nbsp;]'
+    a = $.el 'a',
+      className: 'delete_link'
       href: 'javascript:;'
-    Main.callbacks.push @node
-  node: (post) ->
-    unless a = $ '.delete_button', post.el
-      a = DeleteButton.a.cloneNode true
-      $.add $('.postInfo', post.el), a
-    $.on a, 'click', DeleteButton.delete
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        if post.isArchived
+          return false
+        a.textContent = 'Delete this post'
+        $.on a, 'click', DeleteLink.delete
+        true
   delete: ->
-    $.off @, 'click', DeleteButton.delete
-    @innerHTML = '[&nbsp;Deleting...&nbsp;]'
+    $.off @, 'click', DeleteLink.delete
+    @textContent = 'Deleting...'
 
-    if m = d.cookie.match /4chan_pass=([^;]+)/
-      pwd = decodeURIComponent m[1]
-    else
-      pwd = $.id('delPassword').value
-    id = $.x('preceding-sibling::input', @).name
-    board = $.x('preceding-sibling::span[1]/a', @).pathname.match(/\w+/)[0]
+    pwd =
+      if m = d.cookie.match /4chan_pass=([^;]+)/
+        decodeURIComponent m[1]
+      else
+        $.id('delPassword').value
+
+    id = @parentNode.dataset.id
+    board = $('.postNum > a[title="Highlight this post"]',
+      $.id @parentNode.dataset.rootid).pathname.split('/')[1]
     self = this
 
     form =
@@ -2986,13 +3254,12 @@ DeleteButton =
       pwd: pwd
     form[id] = 'delete'
 
-    $.ajax "https://sys.4chan.org/#{board}/imgboard.php", {
-        onload:  -> DeleteButton.load  self, @response
-        onerror: -> DeleteButton.error self
+    $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{board}/"), {
+        onload:  -> DeleteLink.load  self, @response
+        onerror: -> DeleteLink.error self
       }, {
         form: $.formData form
       }
-
   load: (self, html) ->
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = html
@@ -3000,31 +3267,67 @@ DeleteButton =
       s = 'Banned!'
     else if msg = doc.getElementById 'errmsg' # error!
       s = msg.textContent
-      $.on self, 'click', DeleteButton.delete
+      $.on self, 'click', DeleteLink.delete
     else
       s = 'Deleted'
-    self.innerHTML = "[&nbsp;#{s}&nbsp;]"
+    self.textContent = s
   error: (self) ->
-    self.innerHTML = '[&nbsp;Connection error, please retry.&nbsp;]'
-    $.on self, 'click', DeleteButton.delete
+    self.textContent = 'Connection error, please retry.'
+    $.on self, 'click', DeleteLink.delete
 
-ReportButton =
+ReportLink =
   init: ->
-    @a = $.el 'a',
-      className: 'report_button'
-      innerHTML: '[&nbsp;!&nbsp;]'
+    a = $.el 'a',
+      className: 'report_link'
       href: 'javascript:;'
-    Main.callbacks.push @node
-  node: (post) ->
-    unless a = $ '.report_button', post.el
-      a = ReportButton.a.cloneNode true
-      $.add $('.postInfo', post.el), a
-    $.on a, 'click', ReportButton.report
+      textContent: 'Report this post'
+    $.on a, 'click', @report
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        post.isArchived is false
   report: ->
-    url = "//sys.4chan.org/#{g.BOARD}/imgboard.php?mode=report&no=#{$.x('preceding-sibling::input', @).name}"
+    a   = $ '.postNum > a[title="Highlight this post"]', $.id @parentNode.dataset.rootid
+    url = "//sys.4chan.org/#{a.pathname.split('/')[1]}/imgboard.php?mode=report&no=#{@parentNode.dataset.id}"
     id  = Date.now()
     set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
     window.open url, id, set
+
+DownloadLink =
+  init: ->
+    # Test for download feature support.
+    return if $.el('a').download is undefined
+    a = $.el 'a',
+      className: 'download_link'
+      textContent: 'Download file'
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        unless post.img
+          return false
+        a.href     = post.img.parentNode.href
+        fileText   = post.fileInfo.firstElementChild
+        a.download =
+          if Conf['File Info Formatting']
+            fileText.dataset.filename
+          else
+            $('span', fileText).title
+        true
+
+ArchiveLink =
+  init: ->
+    a = $.el 'a',
+      className:   'archive_link'
+      target:      '_blank'
+      textContent: 'Archived post'
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split '/'
+        if (href = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
+          return false
+        a.href = href
+        true
 
 ThreadStats =
   init: ->
@@ -3506,11 +3809,23 @@ Main =
     if Conf['Image Hover']
       ImageHover.init()
 
-    if Conf['Report Button']
-      ReportButton.init()
+    if Conf['Menu']
+      Menu.init()
 
-    if Conf['Delete Button']
-      DeleteButton.init()
+      if Conf['Report Link']
+        ReportLink.init()
+
+      if Conf['Delete Link']
+        DeleteLink.init()
+
+      if Conf['Filter']
+        Filter.menuInit()
+
+      if Conf['Download Link']
+        DownloadLink.init()
+
+      if Conf['Archive Link']
+        ArchiveLink.init()
 
     if Conf['Resurrect Quotes']
       Quotify.init()
@@ -3714,6 +4029,60 @@ a[href="javascript:;"] {
 .autohide:not(:hover) > form,
 #qp input, #qp .inline, .forwarded {
   display: none !important;
+}
+
+.menu_button {
+  display: inline-block;
+}
+.menu_button > span {
+  border-top:   .5em solid;
+  border-right: .3em solid transparent;
+  border-left:  .3em solid transparent;
+  display: inline-block;
+  margin: 2px;
+  vertical-align: middle;
+}
+#menu {
+  position: absolute;
+  outline: none;
+}
+.entry {
+  border-bottom: 1px solid rgba(0, 0, 0, .25);
+  cursor: pointer;
+  display: block;
+  outline: none;
+  padding: 3px 7px;
+  position: relative;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.entry:last-child {
+  border: none;
+}
+.focused.entry {
+  background: rgba(255, 255, 255, .33);
+}
+.entry.hasSubMenu {
+  padding-right: 1.5em;
+}
+.hasSubMenu::after {
+  content: "";
+  border-left:   .5em solid;
+  border-top:    .3em solid transparent;
+  border-bottom: .3em solid transparent;
+  display: inline-block;
+  margin: .3em;
+  position: absolute;
+  right: 3px;
+}
+.hasSubMenu:not(.focused) > .subMenu {
+  display: none;
+}
+.subMenu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  margin-top: -1px;
 }
 
 h1 {
