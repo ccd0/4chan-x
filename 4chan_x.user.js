@@ -752,11 +752,12 @@
     },
     menuInit: function() {
       var div, entry, type, _i, _len, _ref;
-      div = $.el('div');
+      div = $.el('div', {
+        textContent: 'Filter'
+      });
       entry = {
         el: div,
         open: function() {
-          div.textContent = 'Filter';
           return true;
         },
         children: []
@@ -1227,6 +1228,9 @@
         if (!children) {
           return;
         }
+        if (subMenu = $('.subMenu', entry.el)) {
+          $.rm(subMenu);
+        }
         subMenu = $.el('div', {
           className: 'reply dialog subMenu'
         });
@@ -1321,16 +1325,19 @@
     addEntry: function(entry) {
       var funk;
       funk = function(entry) {
-        var child, children, el, _i, _len, _ref;
+        var child, children, el, _i, _len;
         el = entry.el, children = entry.children;
         $.addClass(el, 'entry');
         $.on(el, 'focus mouseover', function(e) {
           e.stopPropagation();
           return Menu.focus(this);
         });
-        _ref = children || [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          child = _ref[_i];
+        if (!children) {
+          return;
+        }
+        $.addClass(el, 'hasSubMenu');
+        for (_i = 0, _len = children.length; _i < _len; _i++) {
+          child = children[_i];
           funk(child);
         }
       };
@@ -5112,9 +5119,9 @@ a[href="javascript:;"] {\
   display: inline-block;\
 }\
 .menu_button > span {\
-  border-top: .5em solid;\
+  border-top:   .5em solid;\
   border-right: .3em solid transparent;\
-  border-left: .3em solid transparent;\
+  border-left:  .3em solid transparent;\
   display: inline-block;\
   margin: 2px;\
   vertical-align: middle;\
@@ -5139,7 +5146,20 @@ a[href="javascript:;"] {\
 .focused.entry {\
   background: rgba(255, 255, 255, .33);\
 }\
-.entry:not(.focused) > .subMenu {\
+.entry.hasSubMenu {\
+  padding-right: 1.5em;\
+}\
+.hasSubMenu::after {\
+  content: "";\
+  border-left:   .5em solid;\
+  border-top:    .3em solid transparent;\
+  border-bottom: .3em solid transparent;\
+  display: inline-block;\
+  margin: .3em;\
+  position: absolute;\
+  right: 3px;\
+}\
+.hasSubMenu:not(.focused) > .subMenu {\
   display: none;\
 }\
 .subMenu {\

@@ -592,15 +592,12 @@ Filter =
     false
 
   menuInit: ->
-    div = $.el 'div'
+    div = $.el 'div',
+      textContent: 'Filter'
 
     entry =
       el: div
-      open: ->
-        # Reset the container's content,
-        # don't keep irrelevant entries.
-        div.textContent = 'Filter'
-        true
+      open: -> true
       children: []
 
     for type in [
@@ -988,7 +985,11 @@ Menu =
       {children} = entry
       return unless entry.open post
       $.add parent, entry.el
+
       return unless children
+      if subMenu = $ '.subMenu', entry.el
+        # Reset sub menu, remove irrelevant entries.
+        $.rm subMenu
       subMenu = $.el 'div',
         className: 'reply dialog subMenu'
       $.add entry.el, subMenu
@@ -1071,7 +1072,9 @@ Menu =
       $.on el, 'focus mouseover', (e) ->
         e.stopPropagation()
         Menu.focus @
-      for child in children or []
+      return unless children
+      $.addClass el, 'hasSubMenu'
+      for child in children
         funk child
       return
     funk entry
@@ -4021,9 +4024,9 @@ a[href="javascript:;"] {
   display: inline-block;
 }
 .menu_button > span {
-  border-top: .5em solid;
+  border-top:   .5em solid;
   border-right: .3em solid transparent;
-  border-left: .3em solid transparent;
+  border-left:  .3em solid transparent;
   display: inline-block;
   margin: 2px;
   vertical-align: middle;
@@ -4048,7 +4051,20 @@ a[href="javascript:;"] {
 .focused.entry {
   background: rgba(255, 255, 255, .33);
 }
-.entry:not(.focused) > .subMenu {
+.entry.hasSubMenu {
+  padding-right: 1.5em;
+}
+.hasSubMenu::after {
+  content: "";
+  border-left:   .5em solid;
+  border-top:    .3em solid transparent;
+  border-bottom: .3em solid transparent;
+  display: inline-block;
+  margin: .3em;
+  position: absolute;
+  right: 3px;
+}
+.hasSubMenu:not(.focused) > .subMenu {
   display: none;
 }
 .subMenu {
