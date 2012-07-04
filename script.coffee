@@ -329,7 +329,10 @@ $.extend $,
   tn: (s) ->
     d.createTextNode s
   nodes: (nodes) ->
-    if nodes instanceof Node
+    # In (at least) Chrome, elements created inside different
+    # scripts/window contexts inherit from unequal prototypes.
+    # window_ext1.Node !== window_ext2.Node
+    unless nodes instanceof Array
       return nodes
     frag = d.createDocumentFragment()
     for node in nodes
@@ -945,6 +948,9 @@ Menu =
     $.on @el, 'click',   (e) -> e.stopPropagation()
     $.on @el, 'keydown', @keybinds
 
+    # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
+    $.on d, 'AddMenuEntry', (e) -> Menu.addEntry e.detail
+
     Main.callbacks.push @node
   node: (post) ->
     if post.isInlined and !post.isCrosspost
@@ -979,8 +985,8 @@ Menu =
     el.setAttribute 'data-rootid', post.root.id
 
     funk = (entry, parent) ->
-      {open, children} = entry
-      return unless open post
+      {children} = entry
+      return unless entry.open post
       $.add parent, entry.el
       return unless children
       subMenu = $.el 'div',

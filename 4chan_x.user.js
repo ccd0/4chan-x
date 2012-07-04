@@ -424,7 +424,7 @@
     },
     nodes: function(nodes) {
       var frag, node, _i, _len;
-      if (nodes instanceof Node) {
+      if (!(nodes instanceof Array)) {
         return nodes;
       }
       frag = d.createDocumentFragment();
@@ -1182,6 +1182,9 @@
         return e.stopPropagation();
       });
       $.on(this.el, 'keydown', this.keybinds);
+      $.on(d, 'AddMenuEntry', function(e) {
+        return Menu.addEntry(e.detail);
+      });
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -1215,9 +1218,9 @@
       el.setAttribute('data-id', post.ID);
       el.setAttribute('data-rootid', post.root.id);
       funk = function(entry, parent) {
-        var child, children, open, subMenu, _i, _len;
-        open = entry.open, children = entry.children;
-        if (!open(post)) {
+        var child, children, subMenu, _i, _len;
+        children = entry.children;
+        if (!entry.open(post)) {
           return;
         }
         $.add(parent, entry.el);
