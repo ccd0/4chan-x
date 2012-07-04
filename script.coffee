@@ -1725,6 +1725,8 @@ QR =
     else
       QR.close()
 
+    if g.REPLY and (Conf['Unread Count'] or Conf['Unread Favicon'])
+      Unread.foresee.push postID
     if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
       Updater.update()
 
@@ -2975,6 +2977,8 @@ QuoteThreading =
     {quotes, ID} = post
     {replies} = Unread
 
+    return unless reply = replies[ID] #foresee
+
     uniq = {}
     for quote in quotes
       qid = quote.hash[2..]
@@ -2987,7 +2991,6 @@ QuoteThreading =
 
     qid = keys[0]
     qreply = replies[qid]
-    reply = replies[ID]
 
     qroot = qreply.el.parentNode
     threadContainer = qroot.nextSibling
@@ -3147,9 +3150,13 @@ Unread =
   replies:
     first: null
     last: null
+  foresee: []
 
   node: (post) ->
     {el} = post
+    if (index = Unread.foresee.indexOf post.ID) isnt -1
+      Unread.foresee.splice index, 1
+      return
     return if /\bop\b/.test(post.class) or post.isInlined
     #return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
     {replies} = Unread

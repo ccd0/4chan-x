@@ -2270,6 +2270,9 @@
       } else {
         QR.close();
       }
+      if (g.REPLY && (Conf['Unread Count'] || Conf['Unread Favicon'])) {
+        Unread.foresee.push(postID);
+      }
       if (g.REPLY && Conf['Thread Updater'] && Conf['Auto Update This']) {
         Updater.update();
       }
@@ -3813,6 +3816,9 @@
       }
       quotes = post.quotes, ID = post.ID;
       replies = Unread.replies;
+      if (!(reply = replies[ID])) {
+        return;
+      }
       uniq = {};
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
@@ -3830,7 +3836,6 @@
       }
       qid = keys[0];
       qreply = replies[qid];
-      reply = replies[ID];
       qroot = qreply.el.parentNode;
       threadContainer = qroot.nextSibling;
       if ((threadContainer != null ? threadContainer.className : void 0) !== 'threadContainer') {
@@ -4059,9 +4064,14 @@
       first: null,
       last: null
     },
+    foresee: [],
     node: function(post) {
-      var el, replies, reply;
+      var el, index, replies, reply;
       el = post.el;
+      if ((index = Unread.foresee.indexOf(post.ID)) !== -1) {
+        Unread.foresee.splice(index, 1);
+        return;
+      }
       if (/\bop\b/.test(post["class"]) || post.isInlined) {
         return;
       }
