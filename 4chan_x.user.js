@@ -2246,6 +2246,7 @@
         Unread.foresee.push(postID);
       }
       if (g.REPLY && Conf['Thread Updater'] && Conf['Auto Update This']) {
+        Updater.unsuccessfulFetchCount = 0;
         Updater.update();
       }
       QR.status();
@@ -2567,7 +2568,7 @@
   Updater = {
     init: function() {
       var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
-      html = "<div class=move><span id=count></span> <span id=timer>-" + Conf['Interval'] + "</span></div>";
+      html = '<div class=move><span id=count></span> <span id=timer></span></div>';
       checkbox = Config.updater.checkbox;
       for (name in checkbox) {
         title = checkbox[name][1];
@@ -2575,11 +2576,13 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input name=Interval value=" + Conf['Interval'] + " class=field size=4></label></div>      <div><input value='Update Now' type=button></div>";
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>      <div><input value='Update Now' type=button></div>";
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
       this.thread = $.id("t" + g.THREAD_ID);
+      this.unsuccessfulFetchCount = 0;
+      this.lastModified = '0';
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
@@ -2598,21 +2601,22 @@
             Conf[input.name] = input.checked;
           }
         } else if (input.name === 'Interval') {
+          input.value = Conf['Interval'];
           $.on(input, 'input', this.cb.interval);
+          this.cb.interval.call(input);
         } else if (input.type === 'button') {
           $.on(input, 'click', this.update);
         }
       }
-      $.add(d.body, dialog);
-      this.retryCoef = 10;
-      return this.lastModified = 0;
+      return $.add(d.body, dialog);
     },
     cb: {
       interval: function() {
         var val;
         val = parseInt(this.value, 10);
-        this.value = val > 0 ? val : 1;
-        return $.cb.value.call(this);
+        this.value = val > 5 ? val : 5;
+        $.cb.value.call(this);
+        return Updater.timer.textContent = "-" + (Updater.getInterval());
       },
       verbose: function() {
         if (Conf['Verbose']) {
@@ -2641,7 +2645,7 @@
         };
       },
       update: function() {
-        var count, doc, id, lastPost, nodes, reply, scroll, _i, _len, _ref, _ref1;
+        var count, doc, id, lastPost, nodes, reply, scroll, _i, _len, _ref, _ref1, _ref2;
         if (this.status === 404) {
           Updater.timer.textContent = '';
           Updater.count.textContent = 404;
@@ -2658,15 +2662,15 @@
           return;
         }
         if ((_ref = this.status) !== 0 && _ref !== 200 && _ref !== 304) {
-          Updater.retryCoef += 10 * (Updater.retryCoef < 120);
           if (Conf['Verbose']) {
             Updater.count.textContent = this.statusText;
             Updater.count.className = 'warning';
           }
+          Updater.unsuccessfulFetchCount++;
           return;
         }
-        Updater.retryCoef = 10;
-        Updater.timer.textContent = "-" + Conf['Interval'];
+        Updater.unsuccessfulFetchCount++;
+        Updater.timer.textContent = "-" + (Updater.getInterval());
         /*
               Status Code 304: Not modified
               By sending the `If-Modified-Since` header we get a proper status code, and no response.
@@ -2674,7 +2678,7 @@
               and won't load images and scripts when parsing the response.
         */
 
-        if (this.status === 304) {
+        if ((_ref1 = this.status) === 0 || _ref1 === 304) {
           if (Conf['Verbose']) {
             Updater.count.textContent = '+0';
             Updater.count.className = null;
@@ -2687,25 +2691,36 @@
         lastPost = Updater.thread.lastElementChild;
         id = lastPost.id.slice(2);
         nodes = [];
-        _ref1 = $$('.replyContainer', doc).reverse();
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          reply = _ref1[_i];
+        _ref2 = $$('.replyContainer', doc).reverse();
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          reply = _ref2[_i];
           if (reply.id.slice(2) <= id) {
             break;
           }
           nodes.push(reply);
         }
         count = nodes.length;
-        scroll = Conf['Scrolling'] && Updater.scrollBG() && count && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         if (Conf['Verbose']) {
           Updater.count.textContent = "+" + count;
           Updater.count.className = count ? 'new' : null;
         }
+        if (!count) {
+          return;
+        }
+        Updater.unsuccessfulFetchCount = 0;
+        Updater.timer.textContent = "-" + (Updater.getInterval());
+        scroll = Conf['Scrolling'] && Updater.scrollBG() && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         $.add(Updater.thread, nodes.reverse());
         if (scroll) {
           return nodes[0].scrollIntoView();
         }
       }
+    },
+    getInterval: function() {
+      var i, j;
+      i = +Conf['Interval'];
+      j = Math.min(this.unsuccessfulFetchCount, 9);
+      return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 300, 600][j]);
     },
     timeout: function() {
       var n;
@@ -2713,17 +2728,14 @@
       n = 1 + Number(Updater.timer.textContent);
       if (n === 0) {
         return Updater.update();
-      } else if (n === Updater.retryCoef) {
-        Updater.retryCoef += 10 * (Updater.retryCoef < 120);
-        return Updater.retry();
+      } else if (n === Updater.getInterval()) {
+        Updater.unsuccessfulFetchCount++;
+        Updater.count.textContent = 'Retry';
+        Updater.count.className = null;
+        return Updater.update();
       } else {
         return Updater.timer.textContent = n;
       }
-    },
-    retry: function() {
-      this.count.textContent = 'Retry';
-      this.count.className = null;
-      return this.update();
     },
     update: function() {
       var url, _ref;
@@ -5086,6 +5098,9 @@ body.unscroll {\
 #updater:not(:hover) {\
   border: none;\
   background: transparent;\
+}\
+#updater input[type=number] {\
+  width: 4em;\
 }\
 .new {\
   background: lime;\
