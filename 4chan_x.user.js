@@ -13,8 +13,8 @@
 // @include        http://sys.4chan.org/*
 // @include        https://sys.4chan.org/*
 // @run-at         document-start
-// @updateURL      https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
-// @downloadURL    https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
+// @updateURL      https://github.com/that4chanwolf/4chan-x/raw/stable/4chan_x.user.js
+// @downloadURL    https://github.com/that4chanwolf/4chan-x/raw/stable/4chan_x.user.js
 // @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
 // ==/UserScript==
 
@@ -2882,7 +2882,7 @@
       interval: function() {
         var val;
         val = parseInt(this.value, 10);
-        this.value = val > 5 ? val : 5;
+        this.value = val > 2 ? val : 2;
         $.cb.value.call(this);
         return Updater.timer.textContent = "-" + (Updater.getInterval());
       },
