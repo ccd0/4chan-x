@@ -4072,7 +4072,7 @@
         Unread.foresee.splice(index, 1);
         return;
       }
-      if (/\bop\b/.test(post["class"]) || post.isInlined) {
+      if (el.hidden || /\bop\b/.test(post["class"]) || post.isInlined) {
         return;
       }
       replies = Unread.replies;

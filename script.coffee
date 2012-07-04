@@ -2977,7 +2977,7 @@ QuoteThreading =
     {quotes, ID} = post
     {replies} = Unread
 
-    return unless reply = replies[ID] #foresee
+    return unless reply = replies[ID] #foresee, filtered
 
     uniq = {}
     for quote in quotes
@@ -3157,8 +3157,7 @@ Unread =
     if (index = Unread.foresee.indexOf post.ID) isnt -1
       Unread.foresee.splice index, 1
       return
-    return if /\bop\b/.test(post.class) or post.isInlined
-    #return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
+    return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
     {replies} = Unread
     reply = replies[post.ID] =
       prev: replies.last
