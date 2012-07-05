@@ -4305,7 +4305,7 @@
           return DeleteLink.error(self);
         }
       }, {
-        form: $.formData(form)
+        data: $.formData(form)
       });
     },
     load: function(self, html) {

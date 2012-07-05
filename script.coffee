@@ -3410,7 +3410,7 @@ DeleteLink =
         onload:  -> DeleteLink.load  self, @response
         onerror: -> DeleteLink.error self
       }, {
-        form: $.formData form
+        data: $.formData form
       }
   load: (self, html) ->
     doc = d.implementation.createHTMLDocument ''
