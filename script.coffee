@@ -287,15 +287,16 @@ $.extend $,
         fd.append key, val if val
     fd
   ajax: (url, callbacks, opts={}) ->
-    {type, headers, upCallbacks, data} = opts
+    #XXX `form` should be `data`
+    {type, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
-    type or= data and 'post' or 'get'
+    type or= form and 'post' or 'get'
     r.open type, url, true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    r.send data
+    r.send form
     r
   cache: (url, cb) ->
     if req = $.cache.requests[url]
@@ -1966,7 +1967,7 @@ QR =
           target: '_blank'
           textContent: 'Connection error, or you are banned.'
     opts =
-      data: $.formData post
+      form: $.formData post
       upCallbacks:
         onload: ->
           # Upload done, waiting for response.
@@ -3410,7 +3411,7 @@ DeleteLink =
         onload:  -> DeleteLink.load  self, @response
         onerror: -> DeleteLink.error self
       }, {
-        data: $.formData form
+        form: $.formData form
       }
   load: (self, html) ->
     doc = d.implementation.createHTMLDocument ''

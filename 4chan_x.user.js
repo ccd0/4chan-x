@@ -348,13 +348,13 @@
       return fd;
     },
     ajax: function(url, callbacks, opts) {
-      var data, headers, key, r, type, upCallbacks, val;
+      var form, headers, key, r, type, upCallbacks, val;
       if (opts == null) {
         opts = {};
       }
-      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, data = opts.data;
+      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
       r = new XMLHttpRequest();
-      type || (type = data && 'post' || 'get');
+      type || (type = form && 'post' || 'get');
       r.open(type, url, true);
       for (key in headers) {
         val = headers[key];
@@ -362,7 +362,7 @@
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
-      r.send(data);
+      r.send(form);
       return r;
     },
     cache: function(url, cb) {
@@ -2536,7 +2536,7 @@
         }
       };
       opts = {
-        data: $.formData(post),
+        form: $.formData(post),
         upCallbacks: {
           onload: function() {
             return QR.status({
@@ -4305,7 +4305,7 @@
           return DeleteLink.error(self);
         }
       }, {
-        data: $.formData(form)
+        form: $.formData(form)
       });
     },
     load: function(self, html) {
