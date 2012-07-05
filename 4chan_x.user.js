@@ -1966,7 +1966,7 @@
         prev = QR.replies[QR.replies.length - 1];
         persona = $.get('QR.persona', {});
         this.name = prev ? prev.name : persona.name || null;
-        this.email = prev && !/^sage$/.test(prev.email) ? prev.email : persona.email || null;
+        this.email = prev && !/^sage$/.test(prev.email) ? prev.email : g.BOARD === 'jp' ? 'sage' : persona.email || null;
         this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona.sub : null;
         this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
         this.com = null;
