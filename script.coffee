@@ -3106,7 +3106,7 @@ QuoteInline =
       ++el.dataset.forwarded or el.dataset.forwarded = 1
 
     # Decrease the unread count if this post is unread
-    if postID of Unread.replies
+    if g.REPLY and postID of Unread.replies
       Unread.replies.rm postID
       Unread.update true
 

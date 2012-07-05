@@ -3921,7 +3921,7 @@
         $.addClass(el.parentNode, 'forwarded');
         ++el.dataset.forwarded || (el.dataset.forwarded = 1);
       }
-      if (postID in Unread.replies) {
+      if (g.REPLY && postID in Unread.replies) {
         Unread.replies.rm(postID);
         return Unread.update(true);
       }
