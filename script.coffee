@@ -2416,7 +2416,7 @@ Updater =
 
     if n is 0
       Updater.update()
-    else if n is Updater.getInterval()
+    else if n >= Updater.getInterval()
       Updater.unsuccessfulFetchCount++
       Updater.count.textContent = 'Retry'
       Updater.count.className   = null

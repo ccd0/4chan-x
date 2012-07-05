@@ -3004,7 +3004,7 @@
       n = 1 + Number(Updater.timer.textContent);
       if (n === 0) {
         return Updater.update();
-      } else if (n === Updater.getInterval()) {
+      } else if (n >= Updater.getInterval()) {
         Updater.unsuccessfulFetchCount++;
         Updater.count.textContent = 'Retry';
         Updater.count.className = null;
