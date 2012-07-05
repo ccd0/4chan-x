@@ -2467,10 +2467,10 @@ Updater =
       Updater.unsuccessfulFetchCount = 0
       Updater.timer.textContent = "-#{Updater.getInterval()}"
       scroll = Conf['Scrolling'] && Updater.scrollBG() &&
-        lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
+        Updater.thread.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       $.add Updater.thread, nodes.reverse()
       if scroll
-        nodes[0].scrollIntoView()
+        lastPost.scrollIntoView()
 
   getInterval: ->
     i = +Conf['Interval']

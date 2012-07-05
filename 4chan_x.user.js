@@ -3083,10 +3083,10 @@
         }
         Updater.unsuccessfulFetchCount = 0;
         Updater.timer.textContent = "-" + (Updater.getInterval());
-        scroll = Conf['Scrolling'] && Updater.scrollBG() && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
+        scroll = Conf['Scrolling'] && Updater.scrollBG() && Updater.thread.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         $.add(Updater.thread, nodes.reverse());
         if (scroll) {
-          return nodes[0].scrollIntoView();
+          return lastPost.scrollIntoView();
         }
       }
     },
