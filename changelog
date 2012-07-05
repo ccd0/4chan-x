@@ -1,4 +1,14 @@
 master
+- Mayhem
+  New feature: Menu, which
+    - replaces and includes Report Button and Delete Button.
+    - add one-click Filter buttons.
+    - add download links to automatically save the file with its original filename. Chrome-only currently.
+    - add archive links.
+    - can integrate features from external userscripts/extensions, see https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
+  The updater's refresh interval will now increase gradually in inactive threads.
+  The updater's refresh interval is now limited to 5 seconds minimum.
+  Add Country filtering.
 
 3.12.0
 - aeosynth
