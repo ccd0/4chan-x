@@ -412,6 +412,8 @@ $.extend $,
       {first} = @
       return unless first
       @length--
+      if @length is 0
+        @last = null
       {next} = first
       delete @[first.id]
       @first = next

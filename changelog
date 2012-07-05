@@ -1,4 +1,6 @@
 master
+- aeosynth
+  fix quote threading bug
 
 3.13.0
 - aeosynth
