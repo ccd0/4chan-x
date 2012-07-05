@@ -1,4 +1,6 @@
 master
+- aeosynth
+  Quote Threading toggle - checkbox and 't' keybind
 - Mayhem
   New feature: Menu, which
     - replaces and includes Report Button and Delete Button.
