@@ -134,6 +134,7 @@ Config =
     close:           ['Esc',    'Close Options or QR']
     spoiler:         ['ctrl+s', 'Quick spoiler tags']
     code:            ['alt+c',  'Quick code tags']
+    sageru:          ['alt+n',  'Sage keybind']
     submit:          ['alt+s',  'Submit post']
     # Thread related
     watch:           ['w',      'Watch thread']
@@ -1115,6 +1116,9 @@ Keybinds =
       when Conf.code
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'code', target
+      when Conf.sageru
+          $("[name=email]", QR.el).value = "sage"
+          QR.selected.email = "sage"
       # Thread related
       when Conf.watch
         Watcher.toggle thread
@@ -3464,7 +3468,7 @@ Redirect =
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
-      when 'a', 'jp', 'm', 'sp', 'tg', 'vg'
+      when 'a', 'm', 'sp', 'tg', 'vg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
@@ -3490,7 +3494,7 @@ Redirect =
       else
         "#{board}/post/#{postID}"
     switch board
-      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'dev', 'foolz'
+      when 'a', 'co', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'dev', 'foolz'
         url = "//archive.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
@@ -3498,7 +3502,7 @@ Redirect =
         url = "//nsfw.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
-      when 'ck', 'lit'
+      when 'ck', 'lit', 'jp'
         url = "//fuuka.warosu.org/#{path}"
         if threadID and postID
           url += "#p#{postID}"
@@ -3628,8 +3632,7 @@ ImageExpand =
     return unless post.img
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
-    console.log "spoilered: #{post}" if img.alt.match /^Spoiler/
-    if ImageExpand.on and !post.el.hidden and (img.alt.match /^Spoiler/ isnt true)
+    if ImageExpand.on and !post.el.hidden
       ImageExpand.expand post.img
   cb:
     toggle: (e) ->

@@ -175,6 +175,7 @@
       close: ['Esc', 'Close Options or QR'],
       spoiler: ['ctrl+s', 'Quick spoiler tags'],
       code: ['alt+c', 'Quick code tags'],
+      sageru: ['alt+n', 'Sage keybind'],
       submit: ['alt+s', 'Submit post'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
@@ -1404,6 +1405,10 @@
             return;
           }
           Keybinds.tags('code', target);
+          break;
+        case Conf.sageru:
+          $("[name=email]", QR.el).value = "sage";
+          QR.selected.email = "sage";
           break;
         case Conf.watch:
           Watcher.toggle(thread);
@@ -4350,7 +4355,6 @@
     image: function(board, filename) {
       switch (board) {
         case 'a':
-        case 'jp':
         case 'm':
         case 'sp':
         case 'tg':
@@ -4388,7 +4392,6 @@
       switch (board) {
         case 'a':
         case 'co':
-        case 'jp':
         case 'm':
         case 'sp':
         case 'tg':
@@ -4411,6 +4414,7 @@
           break;
         case 'ck':
         case 'lit':
+        case 'jp':
           url = "//fuuka.warosu.org/" + path;
           if (threadID && postID) {
             url += "#p" + postID;
@@ -4617,10 +4621,7 @@
       }
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
-      if (img.alt.match(/^Spoiler/)) {
-        console.log("spoilered: " + post);
-      }
-      if (ImageExpand.on && !post.el.hidden && (img.alt.match(/^Spoiler/ !== true))) {
+      if (ImageExpand.on && !post.el.hidden) {
         return ImageExpand.expand(post.img);
       }
     },
