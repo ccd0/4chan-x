@@ -503,7 +503,67 @@
       }
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
-    }
+    },
+    RandomAccessList: (function() {
+
+      function _Class() {
+        this.first = null;
+        this.last = null;
+        this.length = 0;
+      }
+
+      _Class.prototype.push = function(id, el) {
+        var item, last;
+        last = this.last;
+        this[id] = item = {
+          prev: last,
+          next: null,
+          el: el,
+          id: id
+        };
+        this.last = item;
+        if (last) {
+          last.next = item;
+        } else {
+          this.first = item;
+        }
+        return this.length++;
+      };
+
+      _Class.prototype.shift = function() {
+        var first, next;
+        first = this.first;
+        if (!first) {
+          return;
+        }
+        this.length--;
+        next = first.next;
+        delete this[first.id];
+        return this.first = next;
+      };
+
+      _Class.prototype.after = function(root, item) {
+        var next, prev;
+        prev = item.prev, next = item.next;
+        if (root === prev) {
+          return;
+        }
+        prev.next = next;
+        if (next) {
+          next.prev = prev;
+        } else {
+          this.last = prev;
+        }
+        next = root.next;
+        root.next = item;
+        item.prev = root;
+        item.next = next;
+        return next.prev = item;
+      };
+
+      return _Class;
+
+    })()
   });
 
   $.cache.requests = {};
@@ -3810,7 +3870,7 @@
       return $.prepend(form, controls);
     },
     node: function(post) {
-      var ID, keys, next, pEl, pid, preply, prev, qid, qreply, qroot, quote, quotes, replies, reply, threadContainer, uniq, _i, _len;
+      var ID, keys, pEl, pid, preply, qid, qreply, qroot, quote, quotes, replies, reply, threadContainer, uniq, _i, _len;
       if (post.isInlined || !QuoteThreading.enabled) {
         return;
       }
@@ -3848,28 +3908,12 @@
       pEl = $.x('preceding::div[contains(@class,"post reply")][1]/parent::div', reply.el.parentNode);
       pid = pEl.id.slice(2);
       preply = replies[pid];
-      prev = reply.prev, next = reply.next;
-      if (preply === prev) {
-        return;
-      }
-      prev.next = next;
-      if (next) {
-        next.prev = prev;
-      } else {
-        replies.last = prev;
-      }
-      next = preply.next;
-      preply.next = reply;
-      reply.next = next;
-      return Unread.replies = replies;
+      return replies.after(preply, reply);
     },
     toggle: function() {
       var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2;
       Main.disconnect();
-      Unread.replies = {
-        first: null,
-        last: null
-      };
+      Unread.replies = new $.RandomAccessList;
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
       QuoteThreading.enabled = this.checked;
@@ -4055,18 +4099,15 @@
 
   Unread = {
     init: function() {
+      this.replies = new $.RandomAccessList;
       this.title = d.title;
       this.update();
       $.on(window, 'scroll', Unread.scroll);
       return Main.callbacks.push(this.node);
     },
-    replies: {
-      first: null,
-      last: null
-    },
     foresee: [],
     node: function(post) {
-      var el, index, replies, reply;
+      var el, index, replies;
       el = post.el;
       if ((index = Unread.foresee.indexOf(post.ID)) !== -1) {
         Unread.foresee.splice(index, 1);
@@ -4076,22 +4117,11 @@
         return;
       }
       replies = Unread.replies;
-      reply = replies[post.ID] = {
-        prev: replies.last,
-        next: null,
-        el: el,
-        id: post.ID
-      };
-      if (replies.first) {
-        reply.prev.next = reply;
-      } else {
-        replies.first = reply;
-      }
-      replies.last = reply;
-      return Unread.update(Object.keys(replies).length === 3);
+      replies.push(post.ID, el);
+      return Unread.update(replies.length === 1);
     },
     scroll: function() {
-      var bottom, first, height, next, replies, update;
+      var bottom, first, height, replies, update;
       height = d.documentElement.clientHeight;
       replies = Unread.replies;
       first = replies.first;
@@ -4102,15 +4132,12 @@
           break;
         }
         update = true;
-        next = first.next;
-        delete replies[first.id];
-        first = next;
+        first = replies.shift();
       }
-      replies.first = first;
-      Unread.replies = replies;
-      if (update) {
-        return Unread.update(Object.keys(replies).length === 2);
+      if (!update) {
+        return;
       }
+      return Unread.update(replies.length === 0);
     },
     setTitle: function(count) {
       return d.title = "(" + count + ") " + Unread.title;
@@ -4120,7 +4147,7 @@
       if (!g.REPLY) {
         return;
       }
-      count = Object.keys(this.replies).length - 2;
+      count = this.replies.length;
       if (Conf['Unread Count']) {
         this.setTitle(count);
       }

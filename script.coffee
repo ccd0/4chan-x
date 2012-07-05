@@ -378,6 +378,50 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
+  RandomAccessList: class
+    constructor: ->
+      @first = null
+      @last = null
+      @length = 0
+
+    push: (id, el) ->
+      {last} = @
+      @[id] = item =
+        prev: last
+        next: null
+        el: el
+        id: id
+      @last = item
+      if last
+        last.next = item
+      else
+        @first = item
+      @length++
+
+    shift: ->
+      {first} = @
+      return unless first
+      @length--
+      {next} = first
+      delete @[first.id]
+      @first = next
+
+    after: (root, item) ->
+      {prev, next} = item
+      return if root is prev
+
+      prev.next = next
+      if next
+        next.prev = prev
+      else
+        @last = prev
+
+      {next} = root
+
+      root.next = item
+      item.prev = root
+      item.next = next
+      next.prev = item
 
 $.cache.requests = {}
 
@@ -3003,24 +3047,11 @@ QuoteThreading =
     pid = pEl.id[2..]
     preply = replies[pid]
 
-    {prev, next} = reply
-    return if preply is prev #order has not been changed; don't change anything
-    prev.next = next
-    if next
-      next.prev = prev
-    else
-      replies.last = prev
+    replies.after preply, reply
 
-    {next} = preply
-    preply.next = reply
-    reply.next = next
-
-    Unread.replies = replies
   toggle: ->
     Main.disconnect()
-    Unread.replies =
-      first: null
-      last: null
+    Unread.replies = new $.RandomAccessList
     thread = $ '.thread'
     replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
     QuoteThreading.enabled = @checked
@@ -3142,14 +3173,12 @@ ThreadStats =
 
 Unread =
   init: ->
+    @replies = new $.RandomAccessList
     @title = d.title
     @update()
     $.on window, 'scroll', Unread.scroll
     Main.callbacks.push @node
 
-  replies:
-    first: null
-    last: null
   foresee: []
 
   node: (post) ->
@@ -3159,18 +3188,8 @@ Unread =
       return
     return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
     {replies} = Unread
-    reply = replies[post.ID] =
-      prev: replies.last
-      next: null
-      el: el
-      id: post.ID
-    if replies.first
-      reply.prev.next = reply
-    else
-      replies.first = reply
-    replies.last = reply
-
-    Unread.update Object.keys(replies).length is 3
+    replies.push post.ID, el
+    Unread.update replies.length is 1
 
   scroll: ->
     height = d.documentElement.clientHeight
@@ -3182,13 +3201,11 @@ Unread =
       if bottom > height #post is not completely read
         break
       update = true
-      next = first.next
-      delete replies[first.id]
-      first = next
-    replies.first = first
-    Unread.replies = replies
+      first = replies.shift()
 
-    Unread.update Object.keys(replies).length is 2 if update
+    return unless update
+
+    Unread.update replies.length is 0
 
   setTitle: (count) ->
     d.title = "(#{count}) #{Unread.title}"
@@ -3196,7 +3213,7 @@ Unread =
   update: (updateFavicon) ->
     return unless g.REPLY
 
-    count = Object.keys(@replies).length - 2
+    count = @replies.length
 
     if Conf['Unread Count']
       @setTitle count
