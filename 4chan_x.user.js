@@ -543,22 +543,30 @@
       };
 
       _Class.prototype.after = function(root, item) {
-        var next, prev;
-        prev = item.prev, next = item.next;
-        if (root === prev) {
+        var next;
+        if (item.prev === root) {
           return;
         }
+        this.rm(item.id);
+        this.length++;
+        next = root.next;
+        root.next = item;
+        item.prev = root;
+        item.next = next;
+        return next.prev = item;
+      };
+
+      _Class.prototype.rm = function(id) {
+        var item, next, prev;
+        item = this[id];
+        prev = item.prev, next = item.next;
         prev.next = next;
         if (next) {
           next.prev = prev;
         } else {
           this.last = prev;
         }
-        next = root.next;
-        root.next = item;
-        item.prev = root;
-        item.next = next;
-        return next.prev = item;
+        return this.length--;
       };
 
       return _Class;
@@ -1215,10 +1223,7 @@
           Updater.update();
           break;
         case Conf.unreadCountTo0:
-          Unread.replies = {
-            first: null,
-            last: null
-          };
+          Unread.replies = new $.RandomAccessList;
           Unread.update(true);
           break;
         case Conf.threading:
@@ -3621,7 +3626,11 @@
       }
       if (isBacklink && Conf['Forward Hiding']) {
         $.addClass(el.parentNode, 'forwarded');
-        return ++el.dataset.forwarded || (el.dataset.forwarded = 1);
+        ++el.dataset.forwarded || (el.dataset.forwarded = 1);
+      }
+      if (postID in Unread.replies) {
+        Unread.replies.rm(postID);
+        return Unread.update(true);
       }
     },
     rm: function(q, id) {

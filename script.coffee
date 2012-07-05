@@ -407,14 +407,10 @@ $.extend $,
       @first = next
 
     after: (root, item) ->
-      {prev, next} = item
-      return if root is prev
+      return if item.prev is root
 
-      prev.next = next
-      if next
-        next.prev = prev
-      else
-        @last = prev
+      @rm item.id
+      @length++
 
       {next} = root
 
@@ -422,6 +418,16 @@ $.extend $,
       item.prev = root
       item.next = next
       next.prev = item
+
+    rm: (id) ->
+      item = @[id]
+      {prev, next} = item
+      prev.next = next
+      if next
+        next.prev = prev
+      else
+        @last = prev
+      @length--
 
 $.cache.requests = {}
 
@@ -908,9 +914,7 @@ Keybinds =
       when Conf.update
         Updater.update()
       when Conf.unreadCountTo0
-        Unread.replies =
-          first: null
-          last: null
+        Unread.replies = new $.RandomAccessList
         Unread.update true
       when Conf.threading
         QuoteThreading.public.toggle()
@@ -2812,6 +2816,11 @@ QuoteInline =
     if isBacklink and Conf['Forward Hiding']
       $.addClass el.parentNode, 'forwarded'
       ++el.dataset.forwarded or el.dataset.forwarded = 1
+
+    # Decrease the unread count if this post is unread
+    if postID of Unread.replies
+      Unread.replies.rm postID
+      Unread.update true
 
   rm: (q, id) ->
     # select the corresponding inlined quote or loading quote
