@@ -2262,7 +2262,7 @@ Options =
 
 Updater =
   init: ->
-    html = '<div class=move><span id=count></span> <span id=timer></span></div>'
+    html = "<div class=move><span id=count></span> <span id=timer>-#{Conf['Interval']}</span></div>"
     {checkbox} = Config.updater
     for name of checkbox
       title = checkbox[name][1]
@@ -2271,18 +2271,16 @@ Updater =
 
     checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
-      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>
-      <div><input value='Update Now' type=button></div>"
+<div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
+<div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} class=field size=4></label></div>
+<div><input value='Update Now' type=button></div>"
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
-    @count  = $ '#count', dialog
-    @timer  = $ '#timer', dialog
+    @count = $ '#count', dialog
+    @timer = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
-
-    @unsuccessfulFetchCount = 0
-    @lastModified = '0'
+    @lastPost = @thread.lastElementChild
 
     for input in $$ 'input', dialog
       if input.type is 'checkbox'
@@ -2299,20 +2297,20 @@ Updater =
           # Required for the QR's update after posting.
           Conf[input.name] = input.checked
       else if input.name is 'Interval'
-        input.value = Conf['Interval']
         $.on input, 'input', @cb.interval
-        @cb.interval.call input
       else if input.type is 'button'
         $.on input, 'click', @update
 
     $.add d.body, dialog
 
+    @retryCoef = 10
+    @lastModified = 0
+
   cb:
     interval: ->
       val = parseInt @value, 10
-      @value = if val > 2 then val else 2
+      @value = if val > 0 then val else 30
       $.cb.value.call @
-      Updater.timer.textContent = "-#{Updater.getInterval()}"
     verbose: ->
       if Conf['Verbose']
         Updater.count.textContent = '+0'
@@ -2337,7 +2335,7 @@ Updater =
       if @status is 404
         Updater.timer.textContent = ''
         Updater.count.textContent = 404
-        Updater.count.className   = 'warning'
+        Updater.count.className = 'warning'
         clearTimeout Updater.timeoutID
         g.dead = true
         if Conf['Unread Count']
@@ -2347,16 +2345,15 @@ Updater =
         Unread.update true
         QR.abort()
         return
-      unless @status in [0, 200, 304]
-        # XXX 304 -> 0 in Opera
+      if @status isnt 200 and @status isnt 304
+        Updater.retryCoef += 10 * (Updater.retryCoef < 120)
         if Conf['Verbose']
           Updater.count.textContent = @statusText
-          Updater.count.className   = 'warning'
-        Updater.unsuccessfulFetchCount++
+          Updater.count.className = 'warning'
         return
 
-      Updater.unsuccessfulFetchCount++
-      Updater.timer.textContent = "-#{Updater.getInterval()}"
+      Updater.retryCoef = 10
+      Updater.timer.textContent = "-#{Conf['Interval']}"
 
       ###
       Status Code 304: Not modified
@@ -2364,18 +2361,17 @@ Updater =
       This saves bandwidth for both the user and the servers, avoid unnecessary computation,
       and won't load images and scripts when parsing the response.
       ###
-      if @status in [0, 304]
-        # XXX 304 -> 0 in Opera
+      if @status is 304
         if Conf['Verbose']
           Updater.count.textContent = '+0'
-          Updater.count.className   = null
+          Updater.count.className = null
         return
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
       doc = d.implementation.createHTMLDocument ''
       doc.documentElement.innerHTML = @response
 
-      lastPost = Updater.thread.lastElementChild
+      {lastPost} = Updater
       id = lastPost.id[2..]
       nodes = []
       for reply in $$('.replyContainer', doc).reverse()
@@ -2383,24 +2379,17 @@ Updater =
         nodes.push reply
 
       count = nodes.length
+      scroll = Conf['Scrolling'] && Updater.scrollBG() && count &&
+        lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       if Conf['Verbose']
         Updater.count.textContent = "+#{count}"
-        Updater.count.className   = if count then 'new' else null
+        Updater.count.className = if count then 'new' else null
 
-      return unless count
-
-      Updater.unsuccessfulFetchCount = 0
-      Updater.timer.textContent = "-#{Updater.getInterval()}"
-      scroll = Conf['Scrolling'] && Updater.scrollBG() &&
-        lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
+      if lastPost = nodes[0]
+        Updater.lastPost = lastPost
       $.add Updater.thread, nodes.reverse()
       if scroll
         nodes[0].scrollIntoView()
-
-  getInterval: ->
-    i = +Conf['Interval']
-    j = Math.min @unsuccessfulFetchCount, 9
-    Math.max i, [5, 10, 15, 20, 30, 60, 90, 120, 300, 600][j]
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000
@@ -2408,18 +2397,21 @@ Updater =
 
     if n is 0
       Updater.update()
-    else if n is Updater.getInterval()
-      Updater.unsuccessfulFetchCount++
-      Updater.count.textContent = 'Retry'
-      Updater.count.className   = null
-      Updater.update()
+    else if n is Updater.retryCoef
+      Updater.retryCoef += 10 * (Updater.retryCoef < 120)
+      Updater.retry()
     else
       Updater.timer.textContent = n
+
+  retry: ->
+    @count.textContent = 'Retry'
+    @count.className = null
+    @update()
 
   update: ->
     Updater.timer.textContent = 0
     Updater.request?.abort()
-    # Fool the cache.
+    #fool the cache
     url = location.pathname + '?' + Date.now()
     Updater.request = $.ajax url, onload: Updater.cb.update,
       headers: 'If-Modified-Since': Updater.lastModified
@@ -3632,10 +3624,12 @@ ImageExpand =
     @dialog()
 
   node: (post) ->
+    {img} = post
     return unless post.img
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
-    if ImageExpand.on and !post.el.hidden
+    console.log "spoilered: #{post}" if img.alt.match /^Spoiler/
+    if ImageExpand.on and !post.el.hidden and (img.alt.match /^Spoiler/ isnt true)
       ImageExpand.expand post.img
   cb:
     toggle: (e) ->

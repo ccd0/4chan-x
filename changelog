@@ -1,4 +1,6 @@
 master
+- that4chanwolf
+  Remove Mayhem's stupidity.
 - Mayhem
   New feature: Menu, which
     - replaces and includes Report Button and Delete Button.
@@ -6,7 +8,6 @@ master
     - add download links to automatically save the file with its original filename. Chrome-only currently.
     - add archive links.
     - can integrate features from external userscripts/extensions, see https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
-  The updater's refresh interval will now increase gradually in inactive threads.
   The updater's refresh interval is now limited to 2 seconds minimum.
 
 2.33.8
