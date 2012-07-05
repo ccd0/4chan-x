@@ -1,5 +1,9 @@
 master
 
+3.13.2
+- aeosynth
+  fix another QT bug
+
 3.13.1
 - aeosynth
   fix quote threading bug
