@@ -1,4 +1,6 @@
 master
+
+2.34.0
 - Mayhem
   New feature: Menu, which
     - replaces and includes Report Button and Delete Button.
@@ -14,6 +16,7 @@ master
     - It takes at least 230 seconds to get to 120, at least 350 seconds to get to 300, and at least 650 seconds to get to 600.
     - Focusing back to a tab will reset its inactivity state to normal.
     - It basically changes nothing, but it salvages 4chan from being slaughtered by a massive amount of concurrent connections.
+    - see http://www.4chan.org/tmp/extensions.html
   The updater's refresh interval is now limited to 5 seconds minimum.
   Fix the Settings' window size on small screens, should be useable on Opera Mobile.
 
