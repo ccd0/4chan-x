@@ -1,4 +1,6 @@
 master
+
+3.13.3
 - aeosynth
   reset updater interval when manually updating
   fix regressions
