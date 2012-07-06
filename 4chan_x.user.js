@@ -5396,9 +5396,9 @@ h1 {\
   min-height: 120px;\
   min-width: 100%;\
 }\
-.textarea {\
-  position: relative;\
-}\
+#.textarea {\
+#  position: relative;\
+#}\
 #charCount {\
   color: #000;\
   background: hsla(0, 0%, 100%, .5);\
