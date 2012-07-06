@@ -5612,6 +5612,9 @@ div.opContainer {\
   text-decoration: none;\
   border-bottom: 1px dashed;\
 }\
+.post:not(:hover) .postInfo > a:not(.backlink) {\
+  display: none !important;\
+}\
 '
   };
 
