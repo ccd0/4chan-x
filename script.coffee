@@ -3785,7 +3785,7 @@ Main =
         $.on window, 'message', Main.message
         $.set 'lastUpdate', now
         $.add d.head, $.el 'script',
-          src: 'https://github.com/MayhemYDG/4chan-x/raw/master/latest.js'
+          src: 'https://github.com/that4chanwolf/4chan-x/raw/master/latest.js'
 
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     if $.get('lastChecked', 0) < now - 1*$.DAY
@@ -3973,7 +3973,7 @@ Main =
   message: (e) ->
     {version} = e.data
     if version and version isnt Main.version and confirm 'An updated version of 4chan X is available, would you like to install it now?'
-      window.location = "https://raw.github.com/mayhemydg/4chan-x/#{version}/4chan_x.user.js"
+      window.location = "https://raw.github.com/that4chanwolf/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
     parentClass = node.parentNode.className
@@ -4004,7 +4004,7 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "4chan X (#{Main.version}) error: #{err.message}\nReport the bug at mayhemydg.github.com/4chan-x/#bug-report\n\nURL: #{window.location}\n#{err.stack}" if notify
+        alert "4chan X (#{Main.version}) error: #{err.message}\nReport the bug at that4chanwolf.github.com/4chan-x/#bug-report\n\nURL: #{window.location}\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []
@@ -4502,7 +4502,7 @@ div.opContainer {
   text-decoration: none;
   border-bottom: 1px dashed;
 }
-.post:not(:hover) .postInfo > a:not(.backlink) {
+form .replyContainer:not(:hover) div.reply .menu_button {
   display: none !important;
 }
 '

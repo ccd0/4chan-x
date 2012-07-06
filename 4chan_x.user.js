@@ -4834,7 +4834,7 @@
           $.on(window, 'message', Main.message);
           $.set('lastUpdate', now);
           return $.add(d.head, $.el('script', {
-            src: 'https://github.com/MayhemYDG/4chan-x/raw/master/latest.js'
+            src: 'https://github.com/that4chanwolf/4chan-x/raw/master/latest.js'
           }));
         });
       }
@@ -5051,7 +5051,7 @@
       var version;
       version = e.data.version;
       if (version && version !== Main.version && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
-        return window.location = "https://raw.github.com/mayhemydg/4chan-x/" + version + "/4chan_x.user.js";
+        return window.location = "https://raw.github.com/that4chanwolf/4chan-x/" + version + "/4chan_x.user.js";
       }
     },
     preParse: function(node) {
@@ -5092,7 +5092,7 @@
           }
         } catch (err) {
           if (notify) {
-            alert("4chan X (" + Main.version + ") error: " + err.message + "\nReport the bug at mayhemydg.github.com/4chan-x/#bug-report\n\nURL: " + window.location + "\n" + err.stack);
+            alert("4chan X (" + Main.version + ") error: " + err.message + "\nReport the bug at that4chanwolf.github.com/4chan-x/#bug-report\n\nURL: " + window.location + "\n" + err.stack);
           }
         }
       }
@@ -5612,7 +5612,7 @@ div.opContainer {\
   text-decoration: none;\
   border-bottom: 1px dashed;\
 }\
-.post:not(:hover) .postInfo > a:not(.backlink) {\
+form .replyContainer:not(:hover) div.reply .menu_button {\
   display: none !important;\
 }\
 '
