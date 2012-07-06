@@ -2979,15 +2979,21 @@
           $.on(input, 'click', this.update);
         }
       }
-      return $.add(d.body, dialog);
+      $.add(d.body, dialog);
+      return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', function() {
+        Updater.unsuccessfulFetchCount = 0;
+        if (Updater.timer.textContent < -Conf['Interval']) {
+          return Updater.timer.textContent = -Updater.getInterval();
+        }
+      });
     },
     cb: {
       interval: function() {
         var val;
         val = parseInt(this.value, 10);
-        this.value = val > 0 ? val : 30;
+        this.value = val > 5 ? val : 5;
         $.cb.value.call(this);
-        return Updater.timer.textContent = "-" + (Updater.getInterval());
+        return Updater.timer.textContent = -Updater.getInterval();
       },
       verbose: function() {
         if (Conf['Verbose']) {
@@ -3041,7 +3047,7 @@
           return;
         }
         Updater.unsuccessfulFetchCount++;
-        Updater.timer.textContent = "-" + (Updater.getInterval());
+        Updater.timer.textContent = -Updater.getInterval();
         /*
               Status Code 304: Not modified
               By sending the `If-Modified-Since` header we get a proper status code, and no response.
@@ -3082,7 +3088,7 @@
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
-        Updater.timer.textContent = "-" + (Updater.getInterval());
+        Updater.timer.textContent = -Updater.getInterval();
         scroll = Conf['Scrolling'] && Updater.scrollBG() && Updater.thread.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         $.add(Updater.thread, nodes.reverse());
         if (scroll) {
@@ -3094,6 +3100,9 @@
       var i, j;
       i = +Conf['Interval'];
       j = Math.min(this.unsuccessfulFetchCount, 9);
+      if (!(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden)) {
+        j = Math.min(j, 6);
+      }
       return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 300, 600][j]);
     },
     timeout: function() {
@@ -3102,7 +3111,7 @@
       n = 1 + Number(Updater.timer.textContent);
       if (n === 0) {
         return Updater.update();
-      } else if (n === Updater.getInterval()) {
+      } else if (n >= Updater.getInterval()) {
         Updater.unsuccessfulFetchCount++;
         Updater.count.textContent = 'Retry';
         Updater.count.className = null;

@@ -2379,12 +2379,18 @@ Updater =
 
     $.add d.body, dialog
 
+    $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', ->
+      # Reset the counter when we focus this tab.
+      Updater.unsuccessfulFetchCount = 0
+      if Updater.timer.textContent < -Conf['Interval']
+        Updater.timer.textContent = -Updater.getInterval()
+
   cb:
     interval: ->
       val = parseInt @value, 10
-      @value = if val > 0 then val else 30
+      @value = if val > 5 then val else 5
       $.cb.value.call @
-      Updater.timer.textContent = "-#{Updater.getInterval()}"
+      Updater.timer.textContent = -Updater.getInterval()
     verbose: ->
       if Conf['Verbose']
         Updater.count.textContent = '+0'
@@ -2428,7 +2434,7 @@ Updater =
         return
 
       Updater.unsuccessfulFetchCount++
-      Updater.timer.textContent = "-#{Updater.getInterval()}"
+      Updater.timer.textContent = -Updater.getInterval()
 
       ###
       Status Code 304: Not modified
@@ -2465,7 +2471,7 @@ Updater =
       return unless count
 
       Updater.unsuccessfulFetchCount = 0
-      Updater.timer.textContent = "-#{Updater.getInterval()}"
+      Updater.timer.textContent = -Updater.getInterval()
       scroll = Conf['Scrolling'] && Updater.scrollBG() &&
         Updater.thread.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       $.add Updater.thread, nodes.reverse()
@@ -2475,6 +2481,9 @@ Updater =
   getInterval: ->
     i = +Conf['Interval']
     j = Math.min @unsuccessfulFetchCount, 9
+    unless d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+      # Don't increase the refresh rate too much on visible tabs.
+      j = Math.min j, 6
     Math.max i, [5, 10, 15, 20, 30, 60, 90, 120, 300, 600][j]
 
   timeout: ->
@@ -2483,7 +2492,7 @@ Updater =
 
     if n is 0
       Updater.update()
-    else if n is Updater.getInterval()
+    else if n >= Updater.getInterval()
       Updater.unsuccessfulFetchCount++
       Updater.count.textContent = 'Retry'
       Updater.count.className   = null
