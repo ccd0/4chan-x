@@ -6,7 +6,14 @@ master
     - add download links to automatically save the file with its original filename. Chrome-only currently.
     - add archive links.
     - can integrate features from external userscripts/extensions, see https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
-  The updater's refresh interval will now increase gradually in inactive threads.
+  The updater's refresh interval will now increase gradually in inactive threads:
+    - "Inactive thread" defines a thread that has not received any replies since its last refresh.
+    - Threads receiving a reply will have its updater interval reset to user's setting.
+    - The refresh interval will grow up to 90 seconds on visible tabs.
+    - Unfocused tabs will grow up to 120, 300, then 600 seconds.
+    - It takes at least 230 seconds to get to 120, at least 350 seconds to get to 300, and at least 650 seconds to get to 600.
+    - Focusing back to a tab will reset its inactivity state to normal.
+    - It basically changes nothing, but it salvages 4chan from being slaughtered by a massive amount of concurrent connections.
   The updater's refresh interval is now limited to 5 seconds minimum.
   Fix the Settings' window size on small screens, should be useable on Opera Mobile.
 
