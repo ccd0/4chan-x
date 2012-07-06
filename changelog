@@ -1,4 +1,6 @@
 master
+- aeosynth
+  reset updater interval when manually updating
 
 3.13.2
 - aeosynth

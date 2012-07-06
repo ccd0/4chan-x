@@ -1183,7 +1183,7 @@ Keybinds =
       when Conf.watch
         Watcher.toggle thread
       when Conf.update
-        Updater.update()
+        Updater.updateReset()
       when Conf.unreadCountTo0
         Unread.replies = new $.RandomAccessList
         Unread.update true
@@ -2375,7 +2375,7 @@ Updater =
         $.on input, 'input', @cb.interval
         @cb.interval.call input
       else if input.type is 'button'
-        $.on input, 'click', @update
+        $.on input, 'click', @updateReset
 
     $.add d.body, dialog
 
@@ -2507,6 +2507,10 @@ Updater =
     url = location.pathname + '?' + Date.now()
     Updater.request = $.ajax url, onload: Updater.cb.update,
       headers: 'If-Modified-Since': Updater.lastModified
+
+  updateReset: ->
+    Updater.unsuccessfulFetchCount = 0
+    Updater.update()
 
 Watcher =
   init: ->

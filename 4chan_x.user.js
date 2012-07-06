@@ -1498,7 +1498,7 @@
           Watcher.toggle(thread);
           break;
         case Conf.update:
-          Updater.update();
+          Updater.updateReset();
           break;
         case Conf.unreadCountTo0:
           Unread.replies = new $.RandomAccessList;
@@ -2976,7 +2976,7 @@
           $.on(input, 'input', this.cb.interval);
           this.cb.interval.call(input);
         } else if (input.type === 'button') {
-          $.on(input, 'click', this.update);
+          $.on(input, 'click', this.updateReset);
         }
       }
       $.add(d.body, dialog);
@@ -3134,6 +3134,10 @@
           'If-Modified-Since': Updater.lastModified
         }
       });
+    },
+    updateReset: function() {
+      Updater.unsuccessfulFetchCount = 0;
+      return Updater.update();
     }
   };
 
