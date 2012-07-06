@@ -1,6 +1,7 @@
 master
 - aeosynth
   reset updater interval when manually updating
+  fix regressions
 
 3.13.2
 - aeosynth
