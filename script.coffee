@@ -2011,9 +2011,9 @@ Options =
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
   <div id=credits>
-    <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>
-    | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + Main.version + '</a>
-    | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>
+    <a target=_blank href=http://that4chanwolf.github.com/4chan-x/>4chan X</a>
+    | <a target=_blank href=https://raw.github.com/that4chanwolf/4chan-x/master/changelog>' + Main.version + '</a>
+    | <a target=_blank href=http://that4chanwolf.github.com/4chan-x/#bug-report>Issues</a>
   </div>
   <div>
     <label for=main_tab>Main</label>
@@ -4502,6 +4502,7 @@ div.opContainer {
   text-decoration: none;
   border-bottom: 1px dashed;
 }
+form .opContainer:not(:hover) div.post .menu_button,
 form .replyContainer:not(:hover) div.reply .menu_button {
   display: none !important;
 }
