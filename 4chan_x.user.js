@@ -4614,8 +4614,7 @@
       return this.dialog();
     },
     node: function(post) {
-      var a, img;
-      img = post.img;
+      var a;
       if (!post.img) {
         return;
       }
@@ -4765,7 +4764,7 @@
     },
     dialog: function() {
       var controls, imageType, select;
-      controls = $.el('div', {
+      controls = $.el('span', {
         id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
       });
