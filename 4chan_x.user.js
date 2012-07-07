@@ -135,7 +135,8 @@
         'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
-        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.']
+        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.'],
+        'Sage on /jp/': [true, 'Uses sage by default on /jp/']
       },
       Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
@@ -1966,7 +1967,7 @@
         prev = QR.replies[QR.replies.length - 1];
         persona = $.get('QR.persona', {});
         this.name = prev ? prev.name : persona.name || null;
-        this.email = prev && !/^sage$/.test(prev.email) ? prev.email : g.BOARD === 'jp' ? 'sage' : persona.email || null;
+        this.email = prev && !/^sage$/.test(prev.email) ? prev.email : Conf['Sage on /jp/'] && g.BOARD === 'jp' ? 'sage' : persona.email || null;
         this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona.sub : null;
         this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
         this.com = null;
@@ -4614,7 +4615,8 @@
       return this.dialog();
     },
     node: function(post) {
-      var a;
+      var a, img;
+      img = post.img;
       if (!post.img) {
         return;
       }

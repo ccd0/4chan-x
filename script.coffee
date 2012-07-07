@@ -50,6 +50,7 @@ Config =
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR.']
+      'Sage on /jp/':                 [true,  'Uses sage by default on /jp/']
     Quoting:
       'Quote Backlinks':              [true,  'Add quote backlinks']
       'OP Backlinks':                 [false, 'Add backlinks to the OP']
@@ -1523,7 +1524,7 @@ QR =
       prev     = QR.replies[QR.replies.length-1]
       persona  = $.get 'QR.persona', {}
       @name    = if prev then prev.name else persona.name or null
-      @email   = if prev and !/^sage$/.test prev.email then prev.email   else if g.BOARD is 'jp' then 'sage' else persona.email or null
+      @email   = if prev and !/^sage$/.test prev.email then prev.email   else if Conf['Sage on /jp/'] and g.BOARD is 'jp' then 'sage' else persona.email or null
       @sub     = if prev and Conf['Remember Subject']  then prev.sub     else if Conf['Remember Subject'] then persona.sub else null
       @spoiler = if prev and Conf['Remember Spoiler']  then prev.spoiler else false
       @com = null
