@@ -5612,10 +5612,6 @@ div.opContainer {\
   text-decoration: none;\
   border-bottom: 1px dashed;\
 }\
-form .opContainer:not(:hover) div.post .menu_button,\
-form .replyContainer:not(:hover) div.reply .menu_button {\
-  display: none !important;\
-}\
 '
   };
 
