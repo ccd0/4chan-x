@@ -4705,7 +4705,6 @@
           }
           if (rect.left < 0) {
             d.documentElement.scrollLeft += rect.left;
-          }
         }
         return ImageExpand.contract(thumb);
       } else {
