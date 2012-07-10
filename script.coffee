@@ -3307,6 +3307,7 @@ Quotify =
 
 QuoteThreading =
   init: ->
+    return unless Conf['Unread Count'] or Conf['Unread Favicon']
     Main.callbacks.push @node
 
     @enabled = true

@@ -4175,6 +4175,9 @@
   QuoteThreading = {
     init: function() {
       var controls, form, input;
+      if (!(Conf['Unread Count'] || Conf['Unread Favicon'])) {
+        return;
+      }
       Main.callbacks.push(this.node);
       this.enabled = true;
       controls = $.el('span', {
