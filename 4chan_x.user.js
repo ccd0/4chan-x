@@ -537,18 +537,7 @@
       };
 
       _Class.prototype.shift = function() {
-        var first, next;
-        first = this.first;
-        if (!first) {
-          return;
-        }
-        this.length--;
-        if (this.length === 0) {
-          this.last = null;
-        }
-        next = first.next;
-        delete this[first.id];
-        return this.first = next;
+        return this.rm(this.first.id);
       };
 
       _Class.prototype.after = function(root, item) {
@@ -556,8 +545,7 @@
         if (item.prev === root) {
           return;
         }
-        this.rm(item.id);
-        this.length++;
+        this.rmi(item);
         next = root.next;
         root.next = item;
         item.prev = root;
@@ -566,16 +554,29 @@
       };
 
       _Class.prototype.rm = function(id) {
-        var item, next, prev;
+        var item;
         item = this[id];
-        prev = item.prev, next = item.next;
-        prev.next = next;
-        if (next) {
-          next.prev = prev;
-        } else {
-          this.last = prev;
+        if (!item) {
+          return;
         }
-        return this.length--;
+        delete this[id];
+        this.length--;
+        return this.rmi(item);
+      };
+
+      _Class.prototype.rmi = function(item) {
+        var next, prev;
+        prev = item.prev, next = item.next;
+        if (prev) {
+          prev.next = next;
+        } else {
+          this.first = next;
+        }
+        if (next) {
+          return next.prev = prev;
+        } else {
+          return this.last = prev;
+        }
       };
 
       return _Class;
@@ -4491,7 +4492,8 @@
           break;
         }
         update = true;
-        first = replies.shift();
+        replies.shift();
+        first = replies.first;
       }
       if (!update) {
         return;

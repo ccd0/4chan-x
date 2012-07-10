@@ -410,20 +410,12 @@ $.extend $,
       @length++
 
     shift: ->
-      {first} = @
-      return unless first
-      @length--
-      if @length is 0
-        @last = null
-      {next} = first
-      delete @[first.id]
-      @first = next
+      @rm @first.id
 
     after: (root, item) ->
       return if item.prev is root
 
-      @rm item.id
-      @length++
+      @rmi item
 
       {next} = root
 
@@ -434,13 +426,21 @@ $.extend $,
 
     rm: (id) ->
       item = @[id]
+      return unless item
+      delete @[id]
+      @length--
+      @rmi item
+
+    rmi: (item) ->
       {prev, next} = item
-      prev.next = next
+      if prev
+        prev.next = next
+      else
+        @first = next
       if next
         next.prev = prev
       else
         @last = prev
-      @length--
 
 $.cache.requests = {}
 
@@ -3549,7 +3549,8 @@ Unread =
       if bottom > height #post is not completely read
         break
       update = true
-      first = replies.shift()
+      replies.shift()
+      {first} = replies
 
     return unless update
 
