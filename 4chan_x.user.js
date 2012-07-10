@@ -3497,7 +3497,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, br, capcode, data, email, file, filename, filesize, isOP, max, name, nameBlock, pc, pi, piM, span, spoiler, subject, threadID, thumb_src, timestamp, trip;
+      var bq, br, capcode, data, email, file, filename, filesize, isOP, name, nameBlock, pc, pi, piM, span, spoiler, subject, threadID, threshold, thumb_src, timestamp, trip;
       data = JSON.parse(req.response);
       $.addClass(root, 'archivedPost');
       if (data.error) {
@@ -3635,8 +3635,8 @@
         }));
         span = $('span[title]', file);
         span.title = filename;
-        max = isOP ? 40 : 30;
-        span.textContent = filename.replace(/\.\w+$/, '').length > max ? "" + filename.slice(0, max) + "(...)" + (filename.match(/\.\w+$/)) : filename;
+        threshold = isOP ? 40 : 30;
+        span.textContent = filename.replace(/\.\w+$/, '').length > threshold ? "" + filename.slice(0, threshold - 5) + "(...)" + (filename.match(/\.\w+$/)) : filename;
         thumb_src = data.media_status === 'available' ? "src=" + data.thumb_link : '';
         $.add(file, $.el('a', {
           className: spoiler ? 'fileThumb imgspoiler' : 'fileThumb',

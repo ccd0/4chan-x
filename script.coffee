@@ -2892,15 +2892,13 @@ Get =
         innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{if spoiler then 'Spoiler Image, ' else ''}#{filesize}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
       span = $ 'span[title]', file
       span.title = filename
-      max = if isOP then 40 else 30
+      threshold = if isOP then 40 else 30
       span.textContent =
         # FILENAME SHORTENING SCIENCE:
-        # OPs have +10 characters max.
+        # OPs have a +10 characters threshold.
         # The file extension is not taken into account.
-        # abcdefghijklmnopqrstuvwxyz_1234.jpg is shortened.
-        # abcdefghijklmnopqrstuvwxyz_123.jpg  is not shortened.
-        if filename.replace(/\.\w+$/, '').length > max
-          "#{filename[...max]}(...)#{filename.match(/\.\w+$/)}"
+        if filename.replace(/\.\w+$/, '').length > threshold
+          "#{filename[...threshold - 5]}(...)#{filename.match(/\.\w+$/)}"
         else
           filename
       thumb_src = if data.media_status is 'available' then "src=#{data.thumb_link}" else ''
