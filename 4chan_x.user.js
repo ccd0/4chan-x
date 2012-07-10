@@ -2531,16 +2531,13 @@
 
   Options = {
     init: function() {
-      var a, home, _i, _len, _ref;
+      var a, settings, _i, _len, _ref;
       _ref = [$.id('navtopr'), $.id('navbotr')];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        home = _ref[_i];
-        a = $.el('a', {
-          textContent: '4chan X Settings',
-          href: 'javascript:;'
-        });
+        settings = _ref[_i];
+        a = settings.firstElementChild;
+        a.textContent = '4chan X Settings';
         $.on(a, 'click', Options.dialog);
-        $.replace(home.firstElementChild, a);
       }
       if (!$.get('firstrun')) {
         if (!Favicon.el) {
@@ -2550,8 +2547,11 @@
         return Options.dialog();
       }
     },
-    dialog: function() {
+    dialog: function(e) {
       var arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, sauce, time, tr, ul, _i, _len, _ref, _ref1, _ref2;
+      if (e != null) {
+        e.stopImmediatePropagation();
+      }
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
