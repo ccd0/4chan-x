@@ -2797,7 +2797,7 @@ Get =
     pi = $.el 'div',
       id: "pi#{postID}"
       className: 'postInfo desktop'
-      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
+      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=subject></span> <span class=nameBlock></span> <span class=dateTime data-utc=#{timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
     # subject
     $('.subject', pi).textContent = subject
     nameBlock = $ '.nameBlock', pi
