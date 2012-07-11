@@ -2047,7 +2047,7 @@ QR =
       Unread.foresee.push postID
     if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
       Updater.unsuccessfulFetchCount = 0
-      Updater.update()
+      setTimeout Updater.update, 1000
 
     QR.status()
     QR.resetFileInput()
@@ -2059,19 +2059,20 @@ QR =
 
 Options =
   init: ->
-    for home in [$.id('navtopr'), $.id('navbotr')]
-      a = $.el 'a',
-        textContent: '4chan X'
-        href: 'javascript:;'
+    for settings in [$.id('navtopr'), $.id('navbotr')]
+      a = settings.firstElementChild
+      a.textContent = '4chan X'
       $.on a, 'click', Options.dialog
-      $.replace home.firstElementChild, a
     unless $.get 'firstrun'
       $.set 'firstrun', true
       Options.dialog()
 
-  dialog: ->
-    dialog = UI.dialog 'options', null,
-      '<div id=optionsbar>
+  dialog: (e) ->
+    e?.stopImmediatePropagation()
+    dialog = $.el 'div'
+      id: 'options'
+      className: 'reply dialog'
+      innerHTML: '<div id=optionsbar>
   <div id=credits>
     <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>
     | <a target=_blank href=https://raw.github.com/aeosynth/4chan-x/master/changelog>' + Main.version + '</a>
@@ -2875,7 +2876,7 @@ Get =
     pi = $.el 'div',
       id: "pi#{postID}"
       className: 'postInfo desktop'
-      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=#{timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
+      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=subject></span> <span class=nameBlock></span> <span class=dateTime data-utc=#{timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
     # subject
     $('.subject', pi).textContent = subject
     nameBlock = $ '.nameBlock', pi
@@ -2970,15 +2971,13 @@ Get =
         innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{if spoiler then 'Spoiler Image, ' else ''}#{filesize}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
       span = $ 'span[title]', file
       span.title = filename
-      max = if isOP then 40 else 30
+      threshold = if isOP then 40 else 30
       span.textContent =
         # FILENAME SHORTENING SCIENCE:
-        # OPs have +10 characters max.
+        # OPs have a +10 characters threshold.
         # The file extension is not taken into account.
-        # abcdefghijklmnopqrstuvwxyz_1234.jpg is shortened.
-        # abcdefghijklmnopqrstuvwxyz_123.jpg  is not shortened.
-        if filename.replace(/\.\w+$/, '').length > max
-          "#{filename[...max]}(...)#{filename.match(/\.\w+$/)}"
+        if filename.replace(/\.\w+$/, '').length > threshold
+          "#{filename[...threshold - 5]}(...)#{filename.match(/\.\w+$/)}"
         else
           filename
       thumb_src = if data.media_status is 'available' then "src=#{data.thumb_link}" else ''

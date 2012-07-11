@@ -2618,7 +2618,7 @@
       }
       if (g.REPLY && Conf['Thread Updater'] && Conf['Auto Update This']) {
         Updater.unsuccessfulFetchCount = 0;
-        Updater.update();
+        setTimeout(Updater.update, 1000);
       }
       QR.status();
       return QR.resetFileInput();
@@ -2635,25 +2635,28 @@
 
   Options = {
     init: function() {
-      var a, home, _i, _len, _ref;
+      var a, settings, _i, _len, _ref;
       _ref = [$.id('navtopr'), $.id('navbotr')];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        home = _ref[_i];
-        a = $.el('a', {
-          textContent: '4chan X',
-          href: 'javascript:;'
-        });
+        settings = _ref[_i];
+        a = settings.firstElementChild;
+        a.textContent = '4chan X';
         $.on(a, 'click', Options.dialog);
-        $.replace(home.firstElementChild, a);
       }
       if (!$.get('firstrun')) {
         $.set('firstrun', true);
         return Options.dialog();
       }
     },
-    dialog: function() {
+    dialog: function(e) {
       var arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, left, li, obj, overlay, sauce, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2;
-      dialog = UI.dialog('options', null, '<div id=optionsbar>\
+      if (e != null) {
+        e.stopImmediatePropagation();
+      }
+      dialog = $.el('div', {
+        id: 'options',
+        className: 'reply dialog',
+        innerHTML: '<div id=optionsbar>\
   <div id=credits>\
     <a target=_blank href=http://aeosynth.github.com/4chan-x/>4chan X</a>\
     | <a target=_blank href=https://raw.github.com/aeosynth/4chan-x/master/changelog>' + Main.version + '</a>\
@@ -2750,7 +2753,8 @@
       <tr><th>Actions</th><th>Keybinds</th></tr>\
     </tbody></table>\
   </div>\
-</div>');
+</div>'
+      });
       _ref = Config.main;
       for (key in _ref) {
         obj = _ref[key];
@@ -3608,7 +3612,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, br, capcode, data, email, file, filename, filesize, isOP, max, name, nameBlock, pc, pi, piM, span, spoiler, subject, threadID, thumb_src, timestamp, trip;
+      var bq, br, capcode, data, email, file, filename, filesize, isOP, name, nameBlock, pc, pi, piM, span, spoiler, subject, threadID, threshold, thumb_src, timestamp, trip;
       data = JSON.parse(req.response);
       $.addClass(root, 'archivedPost');
       if (data.error) {
@@ -3653,7 +3657,7 @@
       pi = $.el('div', {
         id: "pi" + postID,
         className: 'postInfo desktop',
-        innerHTML: "<input type=checkbox name=" + postID + " value=delete> <span class=userInfo><span class=subject></span> <span class=nameBlock></span></span> <span class=dateTime data-utc=" + timestamp + ">data.fourchan_date</span> <span class='postNum desktop'><a href='/" + board + "/res/" + threadID + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "' title='Quote this post'>" + postID + "</a>" + (isOP ? ' &nbsp; ' : '') + "</span> "
+        innerHTML: "<input type=checkbox name=" + postID + " value=delete> <span class=subject></span> <span class=nameBlock></span> <span class=dateTime data-utc=" + timestamp + ">data.fourchan_date</span> <span class='postNum desktop'><a href='/" + board + "/res/" + threadID + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "' title='Quote this post'>" + postID + "</a>" + (isOP ? ' &nbsp; ' : '') + "</span> "
       });
       $('.subject', pi).textContent = subject;
       nameBlock = $('.nameBlock', pi);
@@ -3746,8 +3750,8 @@
         }));
         span = $('span[title]', file);
         span.title = filename;
-        max = isOP ? 40 : 30;
-        span.textContent = filename.replace(/\.\w+$/, '').length > max ? "" + filename.slice(0, max) + "(...)" + (filename.match(/\.\w+$/)) : filename;
+        threshold = isOP ? 40 : 30;
+        span.textContent = filename.replace(/\.\w+$/, '').length > threshold ? "" + filename.slice(0, threshold - 5) + "(...)" + (filename.match(/\.\w+$/)) : filename;
         thumb_src = data.media_status === 'available' ? "src=" + data.thumb_link : '';
         $.add(file, $.el('a', {
           className: spoiler ? 'fileThumb imgspoiler' : 'fileThumb',
