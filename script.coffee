@@ -3746,6 +3746,7 @@ ImageHover =
 
 AutoGif =
   init: ->
+    return if g.BOARD in ['gif', 'wsg']
     Main.callbacks.push @node
   node: (post) ->
     {img} = post

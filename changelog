@@ -1,4 +1,6 @@
 master
+- aeosynth
+  disable autogif on /gif/ and /wsg/
 
 3.14.0
 - aeosynth

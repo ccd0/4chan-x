@@ -4771,6 +4771,10 @@
 
   AutoGif = {
     init: function() {
+      var _ref;
+      if ((_ref = g.BOARD) === 'gif' || _ref === 'wsg') {
+        return;
+      }
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
