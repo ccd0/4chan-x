@@ -2514,7 +2514,7 @@
       }
       if (g.REPLY && Conf['Thread Updater'] && Conf['Auto Update This']) {
         Updater.unsuccessfulFetchCount = 0;
-        setTimeout(Updater.update, 1000);
+        setTimeout(Updater.update, 500);
       }
       QR.status();
       return QR.resetFileInput();

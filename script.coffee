@@ -1976,7 +1976,7 @@ QR =
       Unread.foresee.push postID
     if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
       Updater.unsuccessfulFetchCount = 0
-      setTimeout Updater.update, 1000
+      setTimeout Updater.update, 500
 
     QR.status()
     QR.resetFileInput()
