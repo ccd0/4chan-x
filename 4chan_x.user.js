@@ -4360,6 +4360,7 @@
         case 'sp':
         case 'tg':
         case 'vg':
+        case 'wsg':
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
         case 'u':
           return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
@@ -4376,6 +4377,7 @@
         case 'tv':
         case 'v':
         case 'vg':
+        case 'wsg':
         case 'dev':
         case 'foolz':
           return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
@@ -4399,6 +4401,7 @@
         case 'tv':
         case 'v':
         case 'vg':
+        case 'wsg':
         case 'dev':
         case 'foolz':
           url = "//archive.foolz.us/" + path + "/";
