@@ -1994,19 +1994,18 @@ QR =
 
 Options =
   init: ->
-    for home in [$.id('navtopr'), $.id('navbotr')]
-      a = $.el 'a',
-        textContent: '4chan X Settings'
-        href: 'javascript:;'
+    for settings in [$.id('navtopr'), $.id('navbotr')]
+      a = settings.firstElementChild
+      a.textContent = '4chan X Settings'
       $.on a, 'click', Options.dialog
-      $.replace home.firstElementChild, a
     unless $.get 'firstrun'
       # Prevent race conditions
       Favicon.init() unless Favicon.el
       $.set 'firstrun', true
       Options.dialog()
 
-  dialog: ->
+  dialog: (e) ->
+    e?.stopImmediatePropagation()
     dialog = $.el 'div'
       id: 'options'
       className: 'reply dialog'
