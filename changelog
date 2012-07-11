@@ -1,4 +1,6 @@
 master
+- aeosynth
+  remove image prefetching
 
 3.13.3
 - aeosynth

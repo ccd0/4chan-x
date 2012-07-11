@@ -25,7 +25,6 @@ Config =
       'Sauce':                        [true,  'Add sauce to images']
       'Reveal Spoilers':              [false, 'Replace spoiler thumbnails by the original thumbnail']
       'Expand From Current':          [false, 'Expand images from current position to thread end.']
-      'Prefetch':                     [false, 'Prefetch images.']
     Menu:
       'Menu':                         [true,  'Add a drop-down menu in posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
@@ -3760,36 +3759,6 @@ AutoGif =
         img.src = src
       gif.src = src
 
-Prefetch =
-  init: ->
-    @dialog()
-  dialog: ->
-    controls = $.el 'label',
-      id: 'prefetch'
-      innerHTML:
-        "Prefetch Images<input type=checkbox id=prefetch>"
-    input = $ 'input', controls
-    $.on input, 'change', Prefetch.change
-
-    first = $.id('delform').firstElementChild
-    if first.id is 'imgControls'
-      $.after first, controls
-    else
-      $.before first, controls
-
-  change: ->
-    $.off @, 'change', Prefetch.change
-    for thumb in $$ 'a.fileThumb'
-      img = $.el 'img',
-        src: thumb.href
-    Main.callbacks.push Prefetch.node
-
-  node: (post) ->
-    {img} = post
-    return unless img
-    $.el 'img',
-      src: img.parentNode.href
-
 ImageExpand =
   init: ->
     Main.callbacks.push @node
@@ -4054,9 +4023,6 @@ Main =
       Keybinds.init()
 
     if g.REPLY
-      if Conf['Prefetch']
-        Prefetch.init()
-
       if Conf['Thread Updater']
         Updater.init()
 

@@ -78,7 +78,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, log, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, log, _base;
 
   Config = {
     main: {
@@ -108,8 +108,7 @@
         'Image Hover': [false, 'Show full image on mouseover'],
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail'],
-        'Expand From Current': [false, 'Expand images from current position to thread end.'],
-        'Prefetch': [false, 'Prefetch images.']
+        'Expand From Current': [false, 'Expand images from current position to thread end.']
       },
       Menu: {
         'Menu': [true, 'Add a drop-down menu in posts.'],
@@ -4787,49 +4786,6 @@
     }
   };
 
-  Prefetch = {
-    init: function() {
-      return this.dialog();
-    },
-    dialog: function() {
-      var controls, first, input;
-      controls = $.el('label', {
-        id: 'prefetch',
-        innerHTML: "Prefetch Images<input type=checkbox id=prefetch>"
-      });
-      input = $('input', controls);
-      $.on(input, 'change', Prefetch.change);
-      first = $.id('delform').firstElementChild;
-      if (first.id === 'imgControls') {
-        return $.after(first, controls);
-      } else {
-        return $.before(first, controls);
-      }
-    },
-    change: function() {
-      var img, thumb, _i, _len, _ref;
-      $.off(this, 'change', Prefetch.change);
-      _ref = $$('a.fileThumb');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        thumb = _ref[_i];
-        img = $.el('img', {
-          src: thumb.href
-        });
-      }
-      return Main.callbacks.push(Prefetch.node);
-    },
-    node: function(post) {
-      var img;
-      img = post.img;
-      if (!img) {
-        return;
-      }
-      return $.el('img', {
-        src: img.parentNode.href
-      });
-    }
-  };
-
   ImageExpand = {
     init: function() {
       Main.callbacks.push(this.node);
@@ -5163,9 +5119,6 @@
         Keybinds.init();
       }
       if (g.REPLY) {
-        if (Conf['Prefetch']) {
-          Prefetch.init();
-        }
         if (Conf['Thread Updater']) {
           Updater.init();
         }
