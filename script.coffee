@@ -2306,6 +2306,8 @@ Updater =
     $.add d.body, dialog
 
     $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', ->
+      state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
+      return if state isnt 'visible'
       # Reset the counter when we focus this tab.
       Updater.unsuccessfulFetchCount = 0
       if Updater.timer.textContent < -Conf['Interval']

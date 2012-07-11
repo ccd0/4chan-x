@@ -2877,6 +2877,12 @@
       }
       $.add(d.body, dialog);
       return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', function() {
+        var state;
+        state = d.visibilityState || d.oVisibilityState || d.mozVisibilityState || d.webkitVisibilityState;
+        if (state !== 'visible') {
+          return;
+        }
+        $.log(state);
         Updater.unsuccessfulFetchCount = 0;
         if (Updater.timer.textContent < -Conf['Interval']) {
           return Updater.timer.textContent = -Updater.getInterval();
