@@ -27,7 +27,7 @@ Config =
     Menu:
       'Menu':                         [true,  'Add a drop-down menu in posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
-      'Delete Link':                  [true,  'Add a delete link to the menu.']
+      'Delete Link':                  [true,  'Add post and image deletion links to the menu.']
       'Download Link':                [true,  'Add a download with original filename link to the menu. Chrome-only currently.']
       'Archive Link':                 [true,  'Add an archive link to the menu.']
     Monitoring:
@@ -3231,17 +3231,38 @@ Quotify =
 
 DeleteLink =
   init: ->
-    a = $.el 'a',
+    div = $.el 'div',
       className: 'delete_link'
+      textContent: 'Delete'
+    aPost = $.el 'a',
+      className: 'delete_post'
       href: 'javascript:;'
-    Menu.addEntry
-      el: a
-      open: (post) ->
-        if post.isArchived
-          return false
-        a.textContent = 'Delete this post'
-        $.on a, 'click', DeleteLink.delete
+    aImage = $.el 'a',
+      className: 'delete_image'
+      href: 'javascript:;'
+
+    children = []
+
+    children.push
+      el: aPost
+      open: ->
+        aPost.textContent = 'Post'
+        $.on aPost, 'click', DeleteLink.delete
         true
+
+    children.push
+      el: aImage
+      open: (post) ->
+        return false unless post.img
+        aImage.textContent = 'Image'
+        $.on aImage, 'click', DeleteLink.delete
+        true
+
+    Menu.addEntry
+      el: div
+      open: (post) -> !post.isArchived
+      children: children
+
   delete: ->
     $.off @, 'click', DeleteLink.delete
     @textContent = 'Deleting...'
@@ -3252,13 +3273,15 @@ DeleteLink =
       else
         $.id('delPassword').value
 
-    id = @parentNode.dataset.id
+    menu = $.id 'menu'
+    id = menu.dataset.id
     board = $('.postNum > a[title="Highlight this post"]',
-      $.id @parentNode.dataset.rootid).pathname.split('/')[1]
-    self = this
+      $.id menu.dataset.rootid).pathname.split('/')[1]
+    self = @
 
     form =
       mode: 'usrdel'
+      onlyimgdel: /\bdelete_image\b/.test @className
       pwd: pwd
     form[id] = 'delete'
 
