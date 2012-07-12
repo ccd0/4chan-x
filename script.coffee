@@ -3286,8 +3286,6 @@ DeleteLink =
       else
         $.id('delPassword').value
 
-    menu = $.id 'menu'
-    id = menu.dataset.id
     board = $('a[title="Highlight this post"]',
       $.id menu.dataset.rootid).pathname.split('/')[1]
     self = @
