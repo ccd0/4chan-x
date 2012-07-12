@@ -990,7 +990,7 @@
           quote.href = "res/" + href;
         }
         id = reply.id.slice(2);
-        link = $('.postNum > a[title="Highlight this post"]', reply);
+        link = $('a[title="Highlight this post"]', reply);
         link.href = "res/" + threadID + "#p" + id;
         link.nextSibling.href = "res/" + threadID + "#q" + id;
         nodes.push(reply);
@@ -1574,7 +1574,7 @@
     },
     qr: function(thread, quote) {
       if (quote) {
-        QR.quote.call($('.postNum > a[title="Quote this post"]', $('.post.highlight', thread) || thread));
+        QR.quote.call($('a[title="Quote this post"]', $('.post.highlight', thread) || thread));
       } else {
         QR.open();
       }
@@ -1729,7 +1729,7 @@
       return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function(post) {
-      return $.on($('.postNum > a[title="Quote this post"]', post.el), 'click', QR.quote);
+      return $.on($('a[title="Quote this post"]', post.el), 'click', QR.quote);
     },
     open: function() {
       if (QR.el) {
@@ -3479,7 +3479,7 @@
         }
         quote.href = "/" + board + "/res/" + href;
       }
-      link = $('.postNum > a[title="Highlight this post"]', pc);
+      link = $('a[title="Highlight this post"]', pc);
       link.href = "/" + board + "/res/" + threadID + "#p" + postID;
       link.nextSibling.href = "/" + board + "/res/" + threadID + "#q" + postID;
       $.replace(root.firstChild, pc);
@@ -3502,7 +3502,7 @@
       piM = $.el('div', {
         id: "pim" + postID,
         className: 'postInfoM mobile',
-        innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=" + timestamp + ">" + data.fourchan_date + "<br><em></em><a href='/" + board + "/res/" + threadID + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "' title='Quote this post'>" + postID + "</a></span>"
+        innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=" + timestamp + ">" + data.fourchan_date + "<br><em></em><a href='/" + board + "/res/" + threadID + "#p" + postID + "'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "'>" + postID + "</a></span>"
       });
       $('.name', piM).textContent = name;
       $('.subject', piM).textContent = subject;
@@ -4023,7 +4023,7 @@
             nodes.push($.tn(text));
           }
           id = quote.match(/\d+$/)[0];
-          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1];
+          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('a[title="Highlight this post"]', post.el).pathname.split('/')[1];
           nodes.push(a = $.el('a', {
             textContent: "" + quote + "\u00A0(Dead)"
           }));
@@ -4076,7 +4076,7 @@
       this.textContent = 'Deleting...';
       pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
       id = this.parentNode.dataset.id;
-      board = $('.postNum > a[title="Highlight this post"]', $.id(this.parentNode.dataset.rootid)).pathname.split('/')[1];
+      board = $('a[title="Highlight this post"]', $.id(this.parentNode.dataset.rootid)).pathname.split('/')[1];
       self = this;
       form = {
         mode: 'usrdel',
@@ -4132,7 +4132,7 @@
     },
     report: function() {
       var a, id, set, url;
-      a = $('.postNum > a[title="Highlight this post"]', $.id(this.parentNode.dataset.rootid));
+      a = $('a[title="Highlight this post"]', $.id(this.parentNode.dataset.rootid));
       url = "//sys.4chan.org/" + (a.pathname.split('/')[1]) + "/imgboard.php?mode=report&no=" + this.parentNode.dataset.id;
       id = Date.now();
       set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
@@ -4178,7 +4178,7 @@
         el: a,
         open: function(post) {
           var href, path;
-          path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/');
+          path = $('a[title="Highlight this post"]', post.el).pathname.split('/');
           if ((href = Redirect.thread(path[1], path[3], post.ID)) === ("//boards.4chan.org/" + path[1] + "/")) {
             return false;
           }
