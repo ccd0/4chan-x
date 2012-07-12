@@ -2396,9 +2396,6 @@
       if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
         QR.hide();
       }
-      if (Conf['Thread Watcher'] && Conf['Auto Watch Reply'] && threadID !== 'new') {
-        Watcher.watch(threadID);
-      }
       if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
         d.activeElement.blur();
       }
@@ -2487,15 +2484,13 @@
       $.set('QR.persona', persona);
       _ref = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], threadID = _ref[1], postID = _ref[2];
       $.event(QR.el, new CustomEvent('QRPostSuccessful', {
+        bubbles: true,
         detail: {
           threadID: threadID,
           postID: postID
         }
       }));
       if (threadID === '0') {
-        if (Conf['Thread Watcher'] && Conf['Auto Watch']) {
-          $.set('autoWatch', postID);
-        }
         location.pathname = "/" + g.BOARD + "/res/" + postID;
       } else {
         QR.cooldown.auto = QR.replies.length > 1;
@@ -2508,13 +2503,6 @@
         reply.rm();
       } else {
         QR.close();
-      }
-      if (g.REPLY && (Conf['Unread Count'] || Conf['Unread Favicon'])) {
-        Unread.foresee.push(postID);
-      }
-      if (g.REPLY && Conf['Thread Updater'] && Conf['Auto Update This']) {
-        Updater.unsuccessfulFetchCount = 0;
-        setTimeout(Updater.update, 500);
       }
       QR.status();
       return QR.resetFileInput();
@@ -2878,7 +2866,18 @@
         }
       }
       $.add(d.body, dialog);
-      return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', function() {
+      $.on(d, 'QRPostSuccessful', this.cb.post);
+      return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
+    },
+    cb: {
+      post: function() {
+        if (!Conf['Auto Update This']) {
+          return;
+        }
+        Updater.unsuccessfulFetchCount = 0;
+        return setTimeout(Updater.update, 500);
+      },
+      visibility: function() {
         var state;
         state = d.visibilityState || d.oVisibilityState || d.mozVisibilityState || d.webkitVisibilityState;
         if (state !== 'visible') {
@@ -2888,9 +2887,7 @@
         if (Updater.timer.textContent < -Conf['Interval']) {
           return Updater.timer.textContent = -Updater.getInterval();
         }
-      });
-    },
-    cb: {
+      },
       interval: function() {
         var val;
         val = parseInt(this.value, 10);
@@ -3058,6 +3055,7 @@
       } else {
         this.refresh();
       }
+      $.on(d, 'QRPostSuccessful', this.cb.post);
       return $.sync('watched', this.refresh);
     },
     refresh: function(watched) {
@@ -3106,6 +3104,17 @@
         var thread;
         thread = this.nextElementSibling.pathname.split('/');
         return Watcher.unwatch(thread[3], thread[1]);
+      },
+      post: function(e) {
+        var postID, threadID, _ref;
+        _ref = e.detail, postID = _ref.postID, threadID = _ref.threadID;
+        if (threadID === '0') {
+          if (Conf['Auto Watch']) {
+            return $.set('autoWatch', postID);
+          }
+        } else if (Conf['Auto Watch Reply']) {
+          return Watcher.watch(threadID);
+        }
       }
     },
     toggle: function(thread) {
@@ -4274,12 +4283,16 @@
   Unread = {
     init: function() {
       this.title = d.title;
+      $.on(d, 'QRPostSuccessful', this.post);
       this.update();
       $.on(window, 'scroll', Unread.scroll);
       return Main.callbacks.push(this.node);
     },
     replies: [],
     foresee: [],
+    post: function(e) {
+      return Unread.foresee.push(e.detail.postID);
+    },
     node: function(post) {
       var count, el, index;
       if ((index = Unread.foresee.indexOf(post.ID)) !== -1) {
