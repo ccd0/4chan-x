@@ -28,7 +28,7 @@ Config =
     Menu:
       'Menu':                         [true,  'Add a drop-down menu in posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
-      'Delete Link':                  [true,  'Add a delete link to the menu.']
+      'Delete Link':                  [true,  'Add post and image deletion links to the menu.']
       'Download Link':                [true,  'Add a download with original filename link to the menu. Chrome-only currently.']
       'Archive Link':                 [true,  'Add an archive link to the menu.']
     Monitoring:
@@ -857,7 +857,7 @@ ExpandThread =
         continue if href[0] is '/' # Cross-board quote
         quote.href = "res/#{href}" # Fix pathnames
       id = reply.id[2..]
-      link = $ '.postNum > a[title="Highlight this post"]', reply
+      link = $ 'a[title="Highlight this post"]', reply
       link.href = "res/#{threadID}#p#{id}"
       link.nextSibling.href = "res/#{threadID}#q#{id}"
       nodes.push reply
@@ -1278,7 +1278,7 @@ Keybinds =
 
   qr: (thread, quote) ->
     if quote
-      QR.quote.call $ '.postNum > a[title="Quote this post"]', $('.post.highlight', thread) or thread
+      QR.quote.call $ 'a[title="Quote this post"]', $('.post.highlight', thread) or thread
     else
       QR.open()
     $('textarea', QR.el).focus()
@@ -1404,7 +1404,7 @@ QR =
     $.on d, 'dragstart dragend', QR.drag
 
   node: (post) ->
-    $.on $('.postNum > a[title="Quote this post"]', post.el), 'click', QR.quote
+    $.on $('a[title="Quote this post"]', post.el), 'click', QR.quote
 
   open: ->
     if QR.el
@@ -1932,8 +1932,6 @@ QR =
     QR.cooldown.auto = QR.replies.length > 1
     if Conf['Auto Hide QR'] and not QR.cooldown.auto
       QR.hide()
-    if Conf['Thread Watcher'] and Conf['Auto Watch Reply'] and threadID isnt 'new'
-      Watcher.watch threadID
     if not QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
       # Unfocus the focused element if it is one within the QR and we're not auto-posting.
       d.activeElement.blur()
@@ -2023,13 +2021,12 @@ QR =
 
     # Post/upload confirmed as successful.
     $.event QR.el, new CustomEvent 'QRPostSuccessful',
+      bubbles: true
       detail:
         threadID: threadID
         postID:   postID
 
     if threadID is '0' # new thread
-      if Conf['Thread Watcher'] and Conf['Auto Watch']
-        $.set 'autoWatch', postID
       # auto-noko
       location.pathname = "/#{g.BOARD}/res/#{postID}"
     else
@@ -2044,12 +2041,6 @@ QR =
     else
       QR.close()
 
-    if g.REPLY and (Conf['Unread Count'] or Conf['Unread Favicon'])
-      Unread.foresee.push postID
-    if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
-      Updater.unsuccessfulFetchCount = 0
-      setTimeout Updater.update, 1000
-
     QR.status()
     QR.resetFileInput()
 
@@ -2060,16 +2051,20 @@ QR =
 
 Options =
   init: ->
-    for settings in [$.id('navtopr'), $.id('navbotr')]
-      a = settings.firstElementChild
-      a.textContent = '4chan X'
+    for settings in ['navtopr', 'navbotr']
+      a = $.el 'a',
+        href: 'javascript:;'
+        className: 'settingsWindowLink'
+        textContent: '4chan X Settings'
       $.on a, 'click', Options.dialog
+      el = $.id(settings).firstElementChild
+      el.hidden = true
+      $.before el, a
     unless $.get 'firstrun'
       $.set 'firstrun', true
       Options.dialog()
 
-  dialog: (e) ->
-    e?.stopImmediatePropagation()
+  dialog: ->
     dialog = $.el 'div'
       id: 'options'
       className: 'reply dialog'
@@ -2346,7 +2341,7 @@ Updater =
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
       <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>
       <div><label>Max Interval (s)<input type=number name='Max Interval' class=field min=180></label></div>
-      <div><input value='Update Now' type=button></div>"
+      <div><input value='Update Now' type=button name='Update Now'></div>"
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
@@ -2359,10 +2354,9 @@ Updater =
     @lastModified = '0'
 
     for input in $$ 'input', dialog
-      {type, name} = input
       if input.type is 'checkbox'
         $.on input, 'click', $.cb.checked
-      switch name
+      switch input.name
         when 'Scroll BG'
           $.on input, 'click', @cb.scrollBG
           @cb.scrollBG.call input
@@ -2372,8 +2366,6 @@ Updater =
         when 'Auto Update This'
           $.on input, 'click', @cb.autoUpdate
           @cb.autoUpdate.call input
-          # Required for the QR's update after posting.
-          Conf[input.name] = input.checked
         when 'Interval'
           input.value = Conf['Interval']
           $.on input, 'change', @cb.interval
@@ -2381,12 +2373,18 @@ Updater =
         when 'Max Interval'
           input.value = Conf['Max Interval']
           $.on input, 'change', @cb.maxInterval
-        else #button
-          $.on input, 'click', @updateReset
+        when 'Update Now'
+          $.on input, 'click', @update
 
     $.add d.body, dialog
 
+    $.on d, 'QRPostSuccessful', @cb.post
+
   cb:
+    post: ->
+      return unless Conf['Auto Update This']
+      Updater.unsuccessfulFetchCount = 0
+      setTimeout Updater.update, 500
     interval: ->
       val = parseInt @value, 10
       @value = if val > 5 then val else 5
@@ -2406,7 +2404,7 @@ Updater =
           textContent: 'Thread Updater'
         Updater.timer.hidden = true
     autoUpdate: ->
-      if @checked
+      if Conf['Auto Update This'] = @checked
         Updater.timeoutID = setTimeout Updater.timeout, 1000
       else
         clearTimeout Updater.timeoutID
@@ -2540,6 +2538,7 @@ Watcher =
       #populate watcher, display watch buttons
       @refresh()
 
+    $.on d, 'QRPostSuccessful', @cb.post
     $.sync 'watched', @refresh
 
   refresh: (watched) ->
@@ -2577,6 +2576,13 @@ Watcher =
     x: ->
       thread = @nextElementSibling.pathname.split '/'
       Watcher.unwatch thread[3], thread[1]
+    post: (e) ->
+      {postID, threadID} = e.detail
+      if threadID is '0'
+        if Conf['Auto Watch']
+          $.set 'autoWatch', postID
+      else if Conf['Auto Watch Reply']
+        Watcher.watch threadID
 
   toggle: (thread) ->
     id = $('.favicon + input', thread).name
@@ -2831,7 +2837,7 @@ Get =
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
       quote.href = "/#{board}/res/#{href}" # Fix pathnames
-    link = $ '.postNum > a[title="Highlight this post"]', pc
+    link = $ 'a[title="Highlight this post"]', pc
     link.href = "/#{board}/res/#{threadID}#p#{postID}"
     link.nextSibling.href = "/#{board}/res/#{threadID}#q#{postID}"
 
@@ -2853,7 +2859,7 @@ Get =
     piM = $.el 'div',
       id: "pim#{postID}"
       className: 'postInfoM mobile'
-      innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=#{timestamp}>#{data.fourchan_date}<br><em></em><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a></span>"
+      innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=#{timestamp}>#{data.fourchan_date}<br><em></em><a href='/#{board}/res/#{threadID}#p#{postID}'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}'>#{postID}</a></span>"
     $('.name',    piM).textContent = name
     $('.subject', piM).textContent = subject
     br = $ 'br', piM
@@ -3279,7 +3285,7 @@ Quotify =
             m[1]
           else
             # Get the post's board, whether it's inlined or not.
-            $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1]
+            $('a[title="Highlight this post"]', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
           textContent: "#{quote}#{$.NBSP}(Dead)"
@@ -3396,18 +3402,55 @@ QuoteThreading =
 
 DeleteLink =
   init: ->
-    a = $.el 'a',
+    div = $.el 'div',
       className: 'delete_link'
+      textContent: 'Delete'
+    aPost = $.el 'a',
+      className: 'delete_post'
       href: 'javascript:;'
+    aImage = $.el 'a',
+      className: 'delete_image'
+      href: 'javascript:;'
+
+    children = []
+
+    children.push
+      el: aPost
+      open: ->
+        aPost.textContent = 'Post'
+        $.on aPost, 'click', DeleteLink.delete
+        true
+
+    children.push
+      el: aImage
+      open: (post) ->
+        return false unless post.img
+        aImage.textContent = 'Image'
+        $.on aImage, 'click', DeleteLink.delete
+        true
+
     Menu.addEntry
-      el: a
+      el: div
       open: (post) ->
         if post.isArchived
           return false
-        a.textContent = 'Delete this post'
-        $.on a, 'click', DeleteLink.delete
+        node = div.firstChild
+        if seconds = DeleteLink.cooldown[post.ID]
+          node.textContent = "Delete (#{seconds})"
+          DeleteLink.cooldown.el = node
+        else
+          node.textContent = 'Delete'
+          delete DeleteLink.cooldown.el
         true
+      children: children
+
+    $.on d, 'QRPostSuccessful', @cooldown.start
+
   delete: ->
+    menu = $.id 'menu'
+    {id} = menu.dataset
+    return if DeleteLink.cooldown[id]
+
     $.off @, 'click', DeleteLink.delete
     @textContent = 'Deleting...'
 
@@ -3417,13 +3460,13 @@ DeleteLink =
       else
         $.id('delPassword').value
 
-    id = @parentNode.dataset.id
-    board = $('.postNum > a[title="Highlight this post"]',
-      $.id @parentNode.dataset.rootid).pathname.split('/')[1]
-    self = this
+    board = $('a[title="Highlight this post"]',
+      $.id menu.dataset.rootid).pathname.split('/')[1]
+    self = @
 
     form =
       mode: 'usrdel'
+      onlyimgdel: /\bdelete_image\b/.test @className
       pwd: pwd
     form[id] = 'delete'
 
@@ -3448,6 +3491,21 @@ DeleteLink =
     self.textContent = 'Connection error, please retry.'
     $.on self, 'click', DeleteLink.delete
 
+  cooldown:
+    start: (e) ->
+      DeleteLink.cooldown.count e.detail.postID, 30
+    count: (postID, seconds) ->
+      return unless 0 <= seconds <= 30
+      setTimeout DeleteLink.cooldown.count, 1000, postID, seconds-1
+      {el} = DeleteLink.cooldown
+      if seconds is 0
+        el?.textContent = 'Delete'
+        delete DeleteLink.cooldown[postID]
+        delete DeleteLink.cooldown.el
+        return
+      el?.textContent = "Delete (#{seconds})"
+      DeleteLink.cooldown[postID] = seconds
+
 ReportLink =
   init: ->
     a = $.el 'a',
@@ -3460,7 +3518,7 @@ ReportLink =
       open: (post) ->
         post.isArchived is false
   report: ->
-    a   = $ '.postNum > a[title="Highlight this post"]', $.id @parentNode.dataset.rootid
+    a   = $ 'a[title="Highlight this post"]', $.id @parentNode.dataset.rootid
     url = "//sys.4chan.org/#{a.pathname.split('/')[1]}/imgboard.php?mode=report&no=#{@parentNode.dataset.id}"
     id  = Date.now()
     set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
@@ -3496,7 +3554,7 @@ ArchiveLink =
     Menu.addEntry
       el: a
       open: (post) ->
-        path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split '/'
+        path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
         if (href = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
           return false
         a.href = href
@@ -3530,11 +3588,15 @@ Unread =
   init: ->
     @replies = new $.RandomAccessList
     @title = d.title
+    $.on d, 'QRPostSuccessful', @post
     @update()
     $.on window, 'scroll', Unread.scroll
     Main.callbacks.push @node
 
   foresee: []
+
+  post: (e) ->
+    Unread.foresee.push e.detail.postID
 
   node: (post) ->
     {el} = post
@@ -3643,7 +3705,7 @@ Redirect =
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
-      when 'a', 'jp', 'm', 'sp', 'tg', 'vg'
+      when 'a', 'jp', 'm', 'sp', 'tg', 'vg', 'wsg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
@@ -3656,7 +3718,7 @@ Redirect =
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
-      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'dev', 'foolz'
+      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
       when 'u', 'kuku'
         "//nsfw.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
@@ -3669,7 +3731,7 @@ Redirect =
       else
         "#{board}/post/#{postID}"
     switch board
-      when 'a', 'co', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'dev', 'foolz'
+      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         url = "//archive.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
@@ -3689,7 +3751,7 @@ Redirect =
         url = "//archive.rebeccablacktech.com/#{path}"
         if threadID and postID
           url += "#p#{postID}"
-      when 'an', 'r9k', 'toy', 'x'
+      when 'an', 'fit', 'r9k', 'toy', 'x'
         url = "http://archive.maidlab.jp/#{path}"
         if threadID and postID
           url += "#p#{postID}"

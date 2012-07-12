@@ -113,7 +113,7 @@
       Menu: {
         'Menu': [true, 'Add a drop-down menu in posts.'],
         'Report Link': [true, 'Add a report link to the menu.'],
-        'Delete Link': [true, 'Add a delete link to the menu.'],
+        'Delete Link': [true, 'Add post and image deletion links to the menu.'],
         'Download Link': [true, 'Add a download with original filename link to the menu. Chrome-only currently.'],
         'Archive Link': [true, 'Add an archive link to the menu.']
       },
@@ -1072,7 +1072,7 @@
           quote.href = "res/" + href;
         }
         id = reply.id.slice(2);
-        link = $('.postNum > a[title="Highlight this post"]', reply);
+        link = $('a[title="Highlight this post"]', reply);
         link.href = "res/" + threadID + "#p" + id;
         link.nextSibling.href = "res/" + threadID + "#q" + id;
         nodes.push(reply);
@@ -1661,7 +1661,7 @@
     },
     qr: function(thread, quote) {
       if (quote) {
-        QR.quote.call($('.postNum > a[title="Quote this post"]', $('.post.highlight', thread) || thread));
+        QR.quote.call($('a[title="Quote this post"]', $('.post.highlight', thread) || thread));
       } else {
         QR.open();
       }
@@ -1827,7 +1827,7 @@
       return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function(post) {
-      return $.on($('.postNum > a[title="Quote this post"]', post.el), 'click', QR.quote);
+      return $.on($('a[title="Quote this post"]', post.el), 'click', QR.quote);
     },
     open: function() {
       if (QR.el) {
@@ -2501,9 +2501,6 @@
       if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
         QR.hide();
       }
-      if (Conf['Thread Watcher'] && Conf['Auto Watch Reply'] && threadID !== 'new') {
-        Watcher.watch(threadID);
-      }
       if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
         d.activeElement.blur();
       }
@@ -2592,15 +2589,13 @@
       $.set('QR.persona', persona);
       _ref = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], threadID = _ref[1], postID = _ref[2];
       $.event(QR.el, new CustomEvent('QRPostSuccessful', {
+        bubbles: true,
         detail: {
           threadID: threadID,
           postID: postID
         }
       }));
       if (threadID === '0') {
-        if (Conf['Thread Watcher'] && Conf['Auto Watch']) {
-          $.set('autoWatch', postID);
-        }
         location.pathname = "/" + g.BOARD + "/res/" + postID;
       } else {
         QR.cooldown.auto = QR.replies.length > 1;
@@ -2613,13 +2608,6 @@
         reply.rm();
       } else {
         QR.close();
-      }
-      if (g.REPLY && (Conf['Unread Count'] || Conf['Unread Favicon'])) {
-        Unread.foresee.push(postID);
-      }
-      if (g.REPLY && Conf['Thread Updater'] && Conf['Auto Update This']) {
-        Updater.unsuccessfulFetchCount = 0;
-        setTimeout(Updater.update, 1000);
       }
       QR.status();
       return QR.resetFileInput();
@@ -2636,24 +2624,27 @@
 
   Options = {
     init: function() {
-      var a, settings, _i, _len, _ref;
-      _ref = [$.id('navtopr'), $.id('navbotr')];
+      var a, el, settings, _i, _len, _ref;
+      _ref = ['navtopr', 'navbotr'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
-        a = settings.firstElementChild;
-        a.textContent = '4chan X';
+        a = $.el('a', {
+          href: 'javascript:;',
+          className: 'settingsWindowLink',
+          textContent: '4chan X Settings'
+        });
         $.on(a, 'click', Options.dialog);
+        el = $.id(settings).firstElementChild;
+        el.hidden = true;
+        $.before(el, a);
       }
       if (!$.get('firstrun')) {
         $.set('firstrun', true);
         return Options.dialog();
       }
     },
-    dialog: function(e) {
+    dialog: function() {
       var arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, left, li, obj, overlay, sauce, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2;
-      if (e != null) {
-        e.stopImmediatePropagation();
-      }
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2942,7 +2933,7 @@
 
   Updater = {
     init: function() {
-      var checkbox, checked, dialog, html, input, name, title, type, _i, _len, _ref;
+      var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
       html = '<div class=move><span id=count></span> <span id=timer></span></div>';
       checkbox = Config.updater.checkbox;
       for (name in checkbox) {
@@ -2951,7 +2942,7 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>      <div><label>Max Interval (s)<input type=number name='Max Interval' class=field min=180></label></div>      <div><input value='Update Now' type=button></div>";
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>      <div><label>Max Interval (s)<input type=number name='Max Interval' class=field min=180></label></div>      <div><input value='Update Now' type=button name='Update Now'></div>";
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
@@ -2962,11 +2953,10 @@
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
-        type = input.type, name = input.name;
         if (input.type === 'checkbox') {
           $.on(input, 'click', $.cb.checked);
         }
-        switch (name) {
+        switch (input.name) {
           case 'Scroll BG':
             $.on(input, 'click', this.cb.scrollBG);
             this.cb.scrollBG.call(input);
@@ -2978,7 +2968,6 @@
           case 'Auto Update This':
             $.on(input, 'click', this.cb.autoUpdate);
             this.cb.autoUpdate.call(input);
-            Conf[input.name] = input.checked;
             break;
           case 'Interval':
             input.value = Conf['Interval'];
@@ -2989,13 +2978,21 @@
             input.value = Conf['Max Interval'];
             $.on(input, 'change', this.cb.maxInterval);
             break;
-          default:
-            $.on(input, 'click', this.updateReset);
+          case 'Update Now':
+            $.on(input, 'click', this.update);
         }
       }
-      return $.add(d.body, dialog);
+      $.add(d.body, dialog);
+      return $.on(d, 'QRPostSuccessful', this.cb.post);
     },
     cb: {
+      post: function() {
+        if (!Conf['Auto Update This']) {
+          return;
+        }
+        Updater.unsuccessfulFetchCount = 0;
+        return setTimeout(Updater.update, 500);
+      },
       interval: function() {
         var val;
         val = parseInt(this.value, 10);
@@ -3022,7 +3019,7 @@
         }
       },
       autoUpdate: function() {
-        if (this.checked) {
+        if (Conf['Auto Update This'] = this.checked) {
           return Updater.timeoutID = setTimeout(Updater.timeout, 1000);
         } else {
           return clearTimeout(Updater.timeoutID);
@@ -3180,6 +3177,7 @@
       } else {
         this.refresh();
       }
+      $.on(d, 'QRPostSuccessful', this.cb.post);
       return $.sync('watched', this.refresh);
     },
     refresh: function(watched) {
@@ -3228,6 +3226,17 @@
         var thread;
         thread = this.nextElementSibling.pathname.split('/');
         return Watcher.unwatch(thread[3], thread[1]);
+      },
+      post: function(e) {
+        var postID, threadID, _ref;
+        _ref = e.detail, postID = _ref.postID, threadID = _ref.threadID;
+        if (threadID === '0') {
+          if (Conf['Auto Watch']) {
+            return $.set('autoWatch', postID);
+          }
+        } else if (Conf['Auto Watch Reply']) {
+          return Watcher.watch(threadID);
+        }
       }
     },
     toggle: function(thread) {
@@ -3617,7 +3626,7 @@
         }
         quote.href = "/" + board + "/res/" + href;
       }
-      link = $('.postNum > a[title="Highlight this post"]', pc);
+      link = $('a[title="Highlight this post"]', pc);
       link.href = "/" + board + "/res/" + threadID + "#p" + postID;
       link.nextSibling.href = "/" + board + "/res/" + threadID + "#q" + postID;
       $.replace(root.firstChild, pc);
@@ -3640,7 +3649,7 @@
       piM = $.el('div', {
         id: "pim" + postID,
         className: 'postInfoM mobile',
-        innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=" + timestamp + ">" + data.fourchan_date + "<br><em></em><a href='/" + board + "/res/" + threadID + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "' title='Quote this post'>" + postID + "</a></span>"
+        innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=" + timestamp + ">" + data.fourchan_date + "<br><em></em><a href='/" + board + "/res/" + threadID + "#p" + postID + "'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "'>" + postID + "</a></span>"
       });
       $('.name', piM).textContent = name;
       $('.subject', piM).textContent = subject;
@@ -4161,7 +4170,7 @@
             nodes.push($.tn(text));
           }
           id = quote.match(/\d+$/)[0];
-          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1];
+          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('a[title="Highlight this post"]', post.el).pathname.split('/')[1];
           nodes.push(a = $.el('a', {
             textContent: "" + quote + $.NBSP + "(Dead)"
           }));
@@ -4301,33 +4310,75 @@
 
   DeleteLink = {
     init: function() {
-      var a;
-      a = $.el('a', {
+      var aImage, aPost, children, div;
+      div = $.el('div', {
         className: 'delete_link',
+        textContent: 'Delete'
+      });
+      aPost = $.el('a', {
+        className: 'delete_post',
         href: 'javascript:;'
       });
-      return Menu.addEntry({
-        el: a,
-        open: function(post) {
-          if (post.isArchived) {
-            return false;
-          }
-          a.textContent = 'Delete this post';
-          $.on(a, 'click', DeleteLink["delete"]);
+      aImage = $.el('a', {
+        className: 'delete_image',
+        href: 'javascript:;'
+      });
+      children = [];
+      children.push({
+        el: aPost,
+        open: function() {
+          aPost.textContent = 'Post';
+          $.on(aPost, 'click', DeleteLink["delete"]);
           return true;
         }
       });
+      children.push({
+        el: aImage,
+        open: function(post) {
+          if (!post.img) {
+            return false;
+          }
+          aImage.textContent = 'Image';
+          $.on(aImage, 'click', DeleteLink["delete"]);
+          return true;
+        }
+      });
+      Menu.addEntry({
+        el: div,
+        open: function(post) {
+          var node, seconds;
+          if (post.isArchived) {
+            return false;
+          }
+          node = div.firstChild;
+          if (seconds = DeleteLink.cooldown[post.ID]) {
+            node.textContent = "Delete (" + seconds + ")";
+            DeleteLink.cooldown.el = node;
+          } else {
+            node.textContent = 'Delete';
+            delete DeleteLink.cooldown.el;
+          }
+          return true;
+        },
+        children: children
+      });
+      return $.on(d, 'QRPostSuccessful', this.cooldown.start);
     },
     "delete": function() {
-      var board, form, id, m, pwd, self;
+      var board, form, id, m, menu, pwd, self;
+      menu = $.id('menu');
+      id = menu.dataset.id;
+      if (DeleteLink.cooldown[id]) {
+        return;
+      }
       $.off(this, 'click', DeleteLink["delete"]);
       this.textContent = 'Deleting...';
       pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
-      id = this.parentNode.dataset.id;
-      board = $('.postNum > a[title="Highlight this post"]', $.id(this.parentNode.dataset.rootid)).pathname.split('/')[1];
+      board = $('a[title="Highlight this post"]', $.id(menu.dataset.rootid)).pathname.split('/')[1];
       self = this;
       form = {
         mode: 'usrdel',
+        onlyimgdel: /\bdelete_image\b/.test(this.className),
         pwd: pwd
       };
       form[id] = 'delete';
@@ -4359,6 +4410,31 @@
     error: function(self) {
       self.textContent = 'Connection error, please retry.';
       return $.on(self, 'click', DeleteLink["delete"]);
+    },
+    cooldown: {
+      start: function(e) {
+        return DeleteLink.cooldown.count(e.detail.postID, 30);
+      },
+      count: function(postID, seconds) {
+        var el;
+        if (!((0 <= seconds && seconds <= 30))) {
+          return;
+        }
+        setTimeout(DeleteLink.cooldown.count, 1000, postID, seconds - 1);
+        el = DeleteLink.cooldown.el;
+        if (seconds === 0) {
+          if (el != null) {
+            el.textContent = 'Delete';
+          }
+          delete DeleteLink.cooldown[postID];
+          delete DeleteLink.cooldown.el;
+          return;
+        }
+        if (el != null) {
+          el.textContent = "Delete (" + seconds + ")";
+        }
+        return DeleteLink.cooldown[postID] = seconds;
+      }
     }
   };
 
@@ -4380,7 +4456,7 @@
     },
     report: function() {
       var a, id, set, url;
-      a = $('.postNum > a[title="Highlight this post"]', $.id(this.parentNode.dataset.rootid));
+      a = $('a[title="Highlight this post"]', $.id(this.parentNode.dataset.rootid));
       url = "//sys.4chan.org/" + (a.pathname.split('/')[1]) + "/imgboard.php?mode=report&no=" + this.parentNode.dataset.id;
       id = Date.now();
       set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
@@ -4426,7 +4502,7 @@
         el: a,
         open: function(post) {
           var href, path;
-          path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/');
+          path = $('a[title="Highlight this post"]', post.el).pathname.split('/');
           if ((href = Redirect.thread(path[1], path[3], post.ID)) === ("//boards.4chan.org/" + path[1] + "/")) {
             return false;
           }
@@ -4481,11 +4557,15 @@
     init: function() {
       this.replies = new $.RandomAccessList;
       this.title = d.title;
+      $.on(d, 'QRPostSuccessful', this.post);
       this.update();
       $.on(window, 'scroll', Unread.scroll);
       return Main.callbacks.push(this.node);
     },
     foresee: [],
+    post: function(e) {
+      return Unread.foresee.push(e.detail.postID);
+    },
     node: function(post) {
       var el, index, replies;
       el = post.el;
@@ -4602,6 +4682,7 @@
         case 'sp':
         case 'tg':
         case 'vg':
+        case 'wsg':
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
         case 'u':
           return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
@@ -4618,6 +4699,7 @@
         case 'tv':
         case 'v':
         case 'vg':
+        case 'wsg':
         case 'dev':
         case 'foolz':
           return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
@@ -4635,12 +4717,14 @@
       switch (board) {
         case 'a':
         case 'co':
+        case 'jp':
         case 'm':
         case 'sp':
         case 'tg':
         case 'tv':
         case 'v':
         case 'vg':
+        case 'wsg':
         case 'dev':
         case 'foolz':
           url = "//archive.foolz.us/" + path + "/";
@@ -4682,6 +4766,7 @@
           }
           break;
         case 'an':
+        case 'fit':
         case 'r9k':
         case 'toy':
         case 'x':

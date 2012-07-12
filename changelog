@@ -1,4 +1,9 @@
 master
+- Mayhem
+  Divide the Delete Link in the Menu into a Post and Image deletion links.
+  The Delete Links in the Menu now have a cooldown.
+  Add /fit/ archive redirection.
+  Add /wsg/ archive redirection.
 
 3.14.1
 - aeosynth
