@@ -1866,6 +1866,8 @@ QR =
     QR.cooldown.auto = QR.replies.length > 1
     if Conf['Auto Hide QR'] and not QR.cooldown.auto
       QR.hide()
+    if Conf['Thread Watcher'] and Conf['Auto Watch Reply'] and threadID isnt 'new'
+      Watcher.watch threadID
     if not QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
       # Unfocus the focused element if it is one within the QR and we're not auto-posting.
       d.activeElement.blur()
@@ -1955,12 +1957,13 @@ QR =
 
     # Post/upload confirmed as successful.
     $.event QR.el, new CustomEvent 'QRPostSuccessful',
-      bubbles: true
       detail:
         threadID: threadID
         postID:   postID
 
     if threadID is '0' # new thread
+      if Conf['Thread Watcher'] and Conf['Auto Watch']
+        $.set 'autoWatch', postID
       # auto-noko
       location.pathname = "/#{g.BOARD}/res/#{postID}"
     else
@@ -1974,6 +1977,12 @@ QR =
       reply.rm()
     else
       QR.close()
+
+    if g.REPLY and (Conf['Unread Count'] or Conf['Unread Favicon'])
+      Unread.foresee.push postID
+    if g.REPLY and Conf['Thread Updater'] and Conf['Auto Update This']
+      Updater.unsuccessfulFetchCount = 0
+      Updater.update()
 
     QR.status()
     QR.resetFileInput()
@@ -2300,21 +2309,10 @@ Updater =
 
     $.add d.body, dialog
 
-    $.on d, 'QRPostSuccessful', @cb.post
-    $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
+    @retryCoef = 10
+    @lastModified = 0
 
   cb:
-    post: ->
-      return unless Conf['Auto Update This']
-      Updater.unsuccessfulFetchCount = 0
-      setTimeout Updater.update, 500
-    visibility: ->
-      state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
-      return if state isnt 'visible'
-      # Reset the counter when we focus this tab.
-      Updater.unsuccessfulFetchCount = 0
-      if Updater.timer.textContent < -Conf['Interval']
-        Updater.timer.textContent = -Updater.getInterval()
     interval: ->
       val = parseInt @value, 10
       @value = if val > 0 then val else 30
@@ -2444,7 +2442,6 @@ Watcher =
       #populate watcher, display watch buttons
       @refresh()
 
-    $.on d, 'QRPostSuccessful', @cb.post
     $.sync 'watched', @refresh
 
   refresh: (watched) ->
@@ -2482,13 +2479,6 @@ Watcher =
     x: ->
       thread = @nextElementSibling.pathname.split '/'
       Watcher.unwatch thread[3], thread[1]
-    post: (e) ->
-      {postID, threadID} = e.detail
-      if threadID is '0'
-        if Conf['Auto Watch']
-          $.set 'autoWatch', postID
-      else if Conf['Auto Watch Reply']
-        Watcher.watch threadID
 
   toggle: (thread) ->
     id = $('.favicon + input', thread).name
@@ -3417,16 +3407,12 @@ ThreadStats =
 Unread =
   init: ->
     @title = d.title
-    $.on d, 'QRPostSuccessful', @post
     @update()
     $.on window, 'scroll', Unread.scroll
     Main.callbacks.push @node
 
   replies: []
   foresee: []
-
-  post: (e) ->
-    Unread.foresee.push e.detail.postID
 
   node: (post) ->
     if (index = Unread.foresee.indexOf post.ID) isnt -1
