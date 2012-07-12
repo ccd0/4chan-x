@@ -1,4 +1,6 @@
 master
+
+2.34.2
 - Mayhem
   Adjust background tabs max update interval down to 5 minutes instead of 10.
   Divide the Delete Link in the Menu into a Post and Image deletion links.
