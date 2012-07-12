@@ -166,6 +166,7 @@ Config =
       'Verbose':     [true,  'Show countdown timer, new post count']
       'Auto Update': [true,  'Automatically fetch new posts']
     'Interval': 30
+    'Max Interval': 600
 
 Conf = {}
 d = document
@@ -2344,6 +2345,7 @@ Updater =
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
       <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>
+      <div><label>Max Interval (s)<input type=number name='Max Interval' class=field min=180></label></div>
       <div><input value='Update Now' type=button></div>"
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
@@ -2357,25 +2359,29 @@ Updater =
     @lastModified = '0'
 
     for input in $$ 'input', dialog
+      {type, name} = input
       if input.type is 'checkbox'
         $.on input, 'click', $.cb.checked
-        if input.name is 'Scroll BG'
+      switch name
+        when 'Scroll BG'
           $.on input, 'click', @cb.scrollBG
           @cb.scrollBG.call input
-        if input.name is 'Verbose'
+        when 'Verbose'
           $.on input, 'click', @cb.verbose
           @cb.verbose.call input
-        else if input.name is 'Auto Update This'
+        when 'Auto Update This'
           $.on input, 'click', @cb.autoUpdate
           @cb.autoUpdate.call input
           # Required for the QR's update after posting.
           Conf[input.name] = input.checked
-      else if input.name is 'Interval'
-        input.value = Conf['Interval']
-        $.on input, 'input', @cb.interval
-        @cb.interval.call input
-      else if input.type is 'button'
-        $.on input, 'click', @updateReset
+        when 'Interval'
+          input.value = Conf['Interval']
+          $.on input, 'input', @cb.interval
+          @cb.interval.call input
+        when 'Max Interval'
+          input.value = Conf['Max Interval']
+        else #button
+          $.on input, 'click', @updateReset
 
     $.add d.body, dialog
 

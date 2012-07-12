@@ -204,7 +204,8 @@
         'Verbose': [true, 'Show countdown timer, new post count'],
         'Auto Update': [true, 'Automatically fetch new posts']
       },
-      'Interval': 30
+      'Interval': 30,
+      'Max Interval': 600
     }
   };
 
@@ -2941,7 +2942,7 @@
 
   Updater = {
     init: function() {
-      var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
+      var checkbox, checked, dialog, html, input, name, title, type, _i, _len, _ref;
       html = '<div class=move><span id=count></span> <span id=timer></span></div>';
       checkbox = Config.updater.checkbox;
       for (name in checkbox) {
@@ -2950,7 +2951,7 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>      <div><input value='Update Now' type=button></div>";
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>      <div><label>Max Interval (s)<input type=number name='Max Interval' class=field min=180></label></div>      <div><input value='Update Now' type=button></div>";
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
@@ -2961,26 +2962,34 @@
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
+        type = input.type, name = input.name;
         if (input.type === 'checkbox') {
           $.on(input, 'click', $.cb.checked);
-          if (input.name === 'Scroll BG') {
+        }
+        switch (name) {
+          case 'Scroll BG':
             $.on(input, 'click', this.cb.scrollBG);
             this.cb.scrollBG.call(input);
-          }
-          if (input.name === 'Verbose') {
+            break;
+          case 'Verbose':
             $.on(input, 'click', this.cb.verbose);
             this.cb.verbose.call(input);
-          } else if (input.name === 'Auto Update This') {
+            break;
+          case 'Auto Update This':
             $.on(input, 'click', this.cb.autoUpdate);
             this.cb.autoUpdate.call(input);
             Conf[input.name] = input.checked;
-          }
-        } else if (input.name === 'Interval') {
-          input.value = Conf['Interval'];
-          $.on(input, 'input', this.cb.interval);
-          this.cb.interval.call(input);
-        } else if (input.type === 'button') {
-          $.on(input, 'click', this.updateReset);
+            break;
+          case 'Interval':
+            input.value = Conf['Interval'];
+            $.on(input, 'input', this.cb.interval);
+            this.cb.interval.call(input);
+            break;
+          case 'Max Interval':
+            input.value = Conf['Max Interval'];
+            break;
+          default:
+            $.on(input, 'click', this.updateReset);
         }
       }
       $.add(d.body, dialog);
