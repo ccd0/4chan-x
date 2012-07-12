@@ -1982,6 +1982,7 @@ Options =
     for settings in ['navtopr', 'navbotr']
       a = $.el 'a',
         href: 'javascript:;'
+        className: 'settingsWindowLink'
         textContent: '4chan X Settings'
       $.on a, 'click', Options.dialog
       el = $.id(settings).firstElementChild

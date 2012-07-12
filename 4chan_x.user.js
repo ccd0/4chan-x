@@ -2525,6 +2525,7 @@
         settings = _ref[_i];
         a = $.el('a', {
           href: 'javascript:;',
+          className: 'settingsWindowLink',
           textContent: '4chan X Settings'
         });
         $.on(a, 'click', Options.dialog);
