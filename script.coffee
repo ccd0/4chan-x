@@ -2277,10 +2277,9 @@ Updater =
     @lastModified = '0'
 
     for input in $$ 'input', dialog
-      {type, name} = input
-      if type is 'checkbox'
+      if input.type is 'checkbox'
         $.on input, 'click', $.cb.checked
-      switch name
+      switch input.name
         when 'Scroll BG'
           $.on input, 'click', @cb.scrollBG
           @cb.scrollBG.call input
@@ -2290,11 +2289,9 @@ Updater =
         when 'Auto Update This'
           $.on input, 'click', @cb.autoUpdate
           @cb.autoUpdate.call input
-          # Required for the QR's update after posting.
-          Conf[input.name] = input.checked
         when 'Interval'
           input.value = Conf['Interval']
-          $.on input, 'input', @cb.interval
+          $.on input, 'change', @cb.interval
           @cb.interval.call input
         when 'Update Now'
           $.on input, 'click', @update
@@ -2331,7 +2328,7 @@ Updater =
           textContent: 'Thread Updater'
         Updater.timer.hidden = true
     autoUpdate: ->
-      if @checked
+      if Conf['Auto Update This'] = @checked
         Updater.timeoutID = setTimeout Updater.timeout, 1000
       else
         clearTimeout Updater.timeoutID

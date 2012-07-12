@@ -2824,7 +2824,7 @@
 
   Updater = {
     init: function() {
-      var checkbox, checked, dialog, html, input, name, title, type, _i, _len, _ref;
+      var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
       html = '<div class=move><span id=count></span> <span id=timer></span></div>';
       checkbox = Config.updater.checkbox;
       for (name in checkbox) {
@@ -2843,11 +2843,10 @@
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
-        type = input.type, name = input.name;
-        if (type === 'checkbox') {
+        if (input.type === 'checkbox') {
           $.on(input, 'click', $.cb.checked);
         }
-        switch (name) {
+        switch (input.name) {
           case 'Scroll BG':
             $.on(input, 'click', this.cb.scrollBG);
             this.cb.scrollBG.call(input);
@@ -2859,11 +2858,10 @@
           case 'Auto Update This':
             $.on(input, 'click', this.cb.autoUpdate);
             this.cb.autoUpdate.call(input);
-            Conf[input.name] = input.checked;
             break;
           case 'Interval':
             input.value = Conf['Interval'];
-            $.on(input, 'input', this.cb.interval);
+            $.on(input, 'change', this.cb.interval);
             this.cb.interval.call(input);
             break;
           case 'Update Now':
@@ -2913,7 +2911,7 @@
         }
       },
       autoUpdate: function() {
-        if (this.checked) {
+        if (Conf['Auto Update This'] = this.checked) {
           return Updater.timeoutID = setTimeout(Updater.timeout, 1000);
         } else {
           return clearTimeout(Updater.timeoutID);
