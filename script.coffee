@@ -8,8 +8,8 @@ Config =
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
+      'Rollover':                     [true,  'Index navigation will fallback to page navigation.']
       'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
-      'Check for Updates':            [true,  'Check for updated versions of 4chan X']
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
       'Filter':                       [true,  'Self-moderation placebo']
@@ -19,6 +19,7 @@ Config =
       'Show Stubs':                   [true,  'Of hidden threads / replies']
     Imaging:
       'Image Auto-Gif':               [false, 'Animate gif thumbnails']
+      'Png Thumbnail Fix':            [false, 'Fixes transparent png thumbnails']
       'Image Expansion':              [true,  'Expand images']
       'Image Hover':                  [false, 'Show full image on mouseover']
       'Sauce':                        [true,  'Add sauce to images']
@@ -51,6 +52,7 @@ Config =
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR.']
       'Sage on /jp/':                 [true,  'Uses sage by default on /jp/']
+      'Markdown':                     [false, 'Code, italic, bold, italic bold, double struck - `, *, **, ***, ||, respectively. _ can be used instead of *']
     Quoting:
       'Quote Backlinks':              [true,  'Add quote backlinks']
       'OP Backlinks':                 [false, 'Add backlinks to the OP']
@@ -61,6 +63,7 @@ Config =
       'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes']
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
+      'Quote Threading':              [false, 'Thread conversations']
   filter:
     name: [
       '# Filter any namefags:'
@@ -141,6 +144,7 @@ Config =
     watch:           ['w',      'Watch thread']
     update:          ['u',      'Update now']
     unreadCountTo0:  ['z',      'Reset unread status']
+    threading:       ['t',      'Toggle threading']
     # Images
     expandImage:     ['m',      'Expand selected image']
     expandAllImages: ['M',      'Expand all images']
@@ -152,8 +156,8 @@ Config =
     nextThread:      ['n',      'See next thread']
     previousThread:  ['p',      'See previous thread']
     expandThread:    ['e',      'Expand thread']
-    openThreadTab:   ['o',      'Open thread in current tab']
-    openThread:      ['O',      'Open thread in new tab']
+    openThreadTab:   ['o',      'Open thread in new tab']
+    openThread:      ['O',      'Open thread in current tab']
     # Reply Navigation
     nextReply:       ['J',      'Select next reply']
     previousReply:   ['K',      'Select previous reply']
@@ -170,6 +174,9 @@ Conf = {}
 d = document
 g = {}
 
+# XXX GreaseMonkey can't into console.log.bind
+log = console.log.bind? console
+
 UI =
   dialog: (id, position, html) ->
     el = d.createElement 'div'
@@ -177,7 +184,7 @@ UI =
     el.innerHTML = html
     el.id        = id
     el.style.cssText = localStorage.getItem("#{Main.namespace}#{id}.position") or position
-    el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
+    el.querySelector('.move')?.addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
     #prevent text selection
@@ -253,13 +260,11 @@ $.extend = (object, properties) ->
   return
 
 $.extend $,
+  NBSP: '\u00A0'
   SECOND: 1000
   MINUTE: 1000*60
   HOUR  : 1000*60*60
   DAY   : 1000*60*60*24
-  log:
-    # XXX GreaseMonkey can't into console.log.bind
-    console.log.bind? console
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
@@ -284,8 +289,10 @@ $.extend $,
         fd.append key, val if val
     fd
   ajax: (url, callbacks, opts={}) ->
+    #XXX `form` should be `data`
     {type, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
+    r.overrideMimeType 'text/html'
     type or= form and 'post' or 'get'
     r.open type, url, true
     for key, val of headers
@@ -320,9 +327,10 @@ $.extend $,
     $.add d.head, style
     style
   x: (path, root=d.body) ->
-    # XPathResult.ANY_UNORDERED_NODE_TYPE is 8
-    d.evaluate(path, root, null, 8, null).
+    d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
       singleNodeValue
+  X: (path, root=d.body) ->
+    d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null)
   addClass: (el, className) ->
     el.classList.add className
   rmClass: (el, className) ->
@@ -363,12 +371,10 @@ $.extend $,
     for event in events.split ' '
       el.removeEventListener event, handler, false
     return
-  open: (url) ->
-    (GM_openInTab or window.open) location.protocol + url, '_blank'
   event: (el, e) ->
     el.dispatchEvent e
   globalEval: (code) ->
-    script = $.el 'script', textContent: code
+    script = $.el 'script', textContent: "(#{code})()"
     $.add d.head, script
     $.rm script
   bytesToString: (size) ->
@@ -386,6 +392,58 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
+  RandomAccessList: class
+    constructor: ->
+      @first = null
+      @last = null
+      @length = 0
+
+    push: (id, el) ->
+      {last} = @
+      @[id] = item =
+        prev: last
+        next: null
+        el: el
+        id: id
+      @last = item
+      if last
+        last.next = item
+      else
+        @first = item
+      @length++
+
+    shift: ->
+      @rm @first.id
+
+    after: (root, item) ->
+      return if item.prev is root
+
+      @rmi item
+
+      {next} = root
+
+      root.next = item
+      item.prev = root
+      item.next = next
+      next.prev = item
+
+    rm: (id) ->
+      item = @[id]
+      return unless item
+      delete @[id]
+      @length--
+      @rmi item
+
+    rmi: (item) ->
+      {prev, next} = item
+      if prev
+        prev.next = next
+      else
+        @first = next
+      if next
+        next.prev = prev
+      else
+        @last = prev
 
 $.cache.requests = {}
 
@@ -405,6 +463,10 @@ $.extend $,
       # for `storage` events
       localStorage.setItem name, JSON.stringify value
       GM_setValue name, JSON.stringify value
+    open: (url) ->
+      #https://github.com/scriptish/scriptish/wiki/GM_openInTab
+      #string url, bool loadInBackground, bool reuseTab
+      GM_openInTab location.protocol + url, true
   else
     delete: (name) ->
       localStorage.removeItem Main.namespace + name
@@ -415,9 +477,99 @@ $.extend $,
         defaultValue
     set: (name, value) ->
       localStorage.setItem Main.namespace + name, JSON.stringify value
+    open: (url) ->
+      window.open location.protocol + url, '_blank'
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
+
+Markdown =
+  format: (text) ->
+    tag_patterns =
+      bi: /(\*\*\*|___)(?=\S)([^\r\n]*?\S)\1/g
+      b: /(\*\*|__)(?=\S)([^\r\n]*?\S)\1/g
+      i: /(\*|_)(?=\S)([^\r\n]*?\S)\1/g
+      code: /(`)(?=\S)([^\r\n]*?\S)\1/g
+      ds: /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
+
+    for tag, pattern of tag_patterns
+      text = text.replace pattern, Markdown.unicode_convert
+    text
+
+  unicode_convert: (str, tag, inner) ->
+    if tag is "_" or tag is "*"
+      fmt = "i"
+    else if tag is "__" or tag is "**"
+      fmt = "b"
+    else if tag is "***" or tag is "___"
+      fmt = "bi"
+    else if tag is "||"
+      fmt = "ds"
+    else fmt = "code"  if tag is "`" or tag is "```"
+
+    #Unicode codepoints for the characters '0', 'A', and 'a'
+    #http://en.wikipedia.org/wiki/Mathematical_Alphanumeric_Symbols
+    codepoints =
+      b:    [ 0x1D7CE, 0x1D400, 0x1D41A ] #MATHEMATICAL BOLD
+      i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
+      bi:   [ 0x1D7CE, 0x1D468, 0x1D482 ] #MATHEMATICAL BOLD ITALIC
+      code: [ 0x1D7F6, 0x1D670, 0x1D68A ] #MATHEMATICAL MONOSPACE
+      ds:   [ 0x1D7D8, 0x1D538, 0x1D552 ] #I FUCKING LOVE CAPS LOCK
+
+    charcodes = (inner.charCodeAt i for c, i in inner)
+
+    codes = for charcode in charcodes
+      if charcode >= 48 and charcode <= 57
+        charcode - 48 + codepoints[fmt][0]
+      else if charcode >= 65 and charcode <= 90
+        charcode - 65 + codepoints[fmt][1]
+      else if charcode >= 97 and charcode <= 122
+        if charcode is 104 and tag is "i"
+          #http://blogs.msdn.com/b/michkap/archive/2006/04/21/580328.aspx
+          #mathematical small h -> planck constant
+          0x210E
+        else
+          charcode - 97 + codepoints[fmt][2]
+      else
+        charcode
+
+    unicode_text = codes.map(Markdown.ucs2_encode).join ""
+    unicode_text = unicode_text.replace(/\x20/g, "\xA0")  if tag is "code"
+    unicode_text
+
+  ucs2_encode: (value) ->
+    #translates Unicode codepoint integers directly into text. Javascript does this in an ugly fashion by default.
+    ###
+    From Punycode.js: https://github.com/bestiejs/punycode.js
+
+    Copyright Mathias Bynens <http://mathiasbynens.be/>
+
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF`
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+    LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    ###
+    output = ""
+    if value > 0xFFFF
+      value -= 0x10000
+      output += String.fromCharCode value >>> 10 & 0x3FF | 0xD800
+      value = 0xDC00 | value & 0x3FF
+    output += String.fromCharCode value
+    output
 
 Filter =
   filters: {}
@@ -525,17 +677,11 @@ Filter =
             else
               continue
           else
-            ReplyHiding.hide root, result.stub
+            ReplyHiding.hide post.root, result.stub
           return
 
         # Highlight
         $.addClass root, result.class
-        if isOP and result.top and not g.REPLY
-          # Put the highlighted OPs' thread on top of the board page...
-          thisThread = root.parentNode
-          # ...before the first non highlighted thread.
-          if firstThread = $('div[class="postContainer opContainer"]').parentNode
-            $.before firstThread, [thisThread, thisThread.nextElementSibling]
 
   name: (post) ->
     $('.name', post.el).textContent
@@ -561,8 +707,7 @@ Filter =
     $('.postInfo .subject', post.el).textContent or false
   comment: (post) ->
     text = []
-    # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE is 7
-    nodes = d.evaluate './/br|.//text()', post.blockquote, null, 7, null
+    nodes = d.evaluate './/br|.//text()', post.blockquote, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
     text.join ''
@@ -743,6 +888,7 @@ ExpandComment =
       QuoteOP.node      post
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
+
     $.replace a.parentNode.parentNode, node
     Main.prettify node
 
@@ -765,7 +911,7 @@ ExpandThread =
         a.textContent = a.textContent.replace '+', '× Loading...'
         $.cache pathname, -> ExpandThread.parse @, thread, a
 
-      when '×'
+      when 'X'
         a.textContent = a.textContent.replace '× Loading...', '+'
         $.cache.requests[pathname].abort()
 
@@ -856,7 +1002,7 @@ ThreadHiding =
       num   = Number span.textContent.match /\d+/
     num    += $$('.opContainer ~ .replyContainer', thread).length
     text    = if num is 1 then '1 reply' else "#{num} replies"
-    opInfo  = $('.op > .postInfo > .nameBlock', thread).textContent
+    opInfo  = $('.desktop > .nameBlock', thread).textContent
 
     stub = $.el 'div',
       className: 'hide_thread_button hidden_thread'
@@ -914,6 +1060,8 @@ ReplyHiding =
     el = side.nextElementSibling
     el.hidden = true
 
+    $.addClass root, 'hidden'
+
     return unless show_stub
 
     stub = $.el 'div',
@@ -921,7 +1069,7 @@ ReplyHiding =
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
     a = stub.firstChild
     $.on  a, 'click', ReplyHiding.toggle
-    $.add a, $.tn $('.nameBlock', el).textContent
+    $.add a, $.tn $('.desktop > .nameBlock', el).textContent
     if Conf['Menu']
       menuButton = Menu.a.cloneNode true
       $.on menuButton, 'click', Menu.toggle
@@ -933,6 +1081,8 @@ ReplyHiding =
       $.rm stub
     $('.sideArrows', root).hidden = false
     $('.post',       root).hidden = false
+
+    $.rmClass root, 'hidden'
 
 Menu =
   entries: []
@@ -957,7 +1107,8 @@ Menu =
       a = $ '.menu_button', post.el
     else
       a = Menu.a.cloneNode true
-      $.add $('.postInfo', post.el), a
+      # \u00A0 is nbsp
+      $.add $('.postInfo', post.el), [$.tn('\u00A0'), a]
     $.on a, 'click', Menu.toggle
 
   toggle: (e) ->
@@ -1118,16 +1269,18 @@ Keybinds =
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'code', target
       when Conf.sageru
-          $("[name=email]", QR.el).value = "sage"
-          QR.selected.email = "sage"
+        $("[name=email]", QR.el).value = "sage"
+        QR.selected.email = "sage"
       # Thread related
       when Conf.watch
         Watcher.toggle thread
       when Conf.update
-        Updater.update()
+        Updater.updateReset()
       when Conf.unreadCountTo0
-        Unread.replies = []
+        Unread.replies = new $.RandomAccessList
         Unread.update true
+      when Conf.threading
+        QuoteThreading.public.toggle()
       # Images
       when Conf.expandImage
         Keybinds.img thread
@@ -1138,10 +1291,10 @@ Keybinds =
         window.location = "/#{g.BOARD}/0#delform"
       when Conf.nextPage
         if link = $ 'link[rel=next]', d.head
-          window.location = link.href
+          window.location = link.href + '#delform'
       when Conf.previousPage
         if link = $ 'link[rel=prev]', d.head
-          window.location.href = link.href
+          window.location = link.href + '#delform'
       # Thread Navigation
       when Conf.nextThread
         return if g.REPLY
@@ -1233,14 +1386,11 @@ Keybinds =
   hl: (delta, thread) ->
     if post = $ '.reply.highlight', thread
       $.rmClass post, 'highlight'
-      post.removeAttribute 'tabindex'
       rect = post.getBoundingClientRect()
       if rect.bottom >= 0 and rect.top <= d.documentElement.clientHeight # We're at least partially visible
-        next = $.x 'child::div[contains(@class,"post reply")]',
-          if delta is +1 then post.parentNode.nextElementSibling else post.parentNode.previousElementSibling
-        unless next
-          @focus post
-          return
+        axis = if delta is +1 then 'following' else 'preceding'
+        next = $.x axis + '::div[contains(@class,"post reply")][1]', post
+        return unless next
         return unless g.REPLY or $.x('ancestor::div[parent::div[@class="board"]]', next) is thread
         rect = next.getBoundingClientRect()
         if rect.top < 0 or rect.bottom > d.documentElement.clientHeight
@@ -1258,7 +1408,6 @@ Keybinds =
 
   focus: (post) ->
     $.addClass post, 'highlight'
-    post.tabIndex = 0
     post.focus()
 
 Nav =
@@ -1292,7 +1441,7 @@ Nav =
       Nav.scroll +1
 
   getThread: (full) ->
-    Nav.threads = $$ '.thread:not([hidden])'
+    Nav.threads = $$ '.thread:not(.hidden)'
     for thread, i in Nav.threads
       rect = thread.getBoundingClientRect()
       {bottom} = rect
@@ -1312,6 +1461,18 @@ Nav =
     unless (delta is -1 and Math.ceil(top) < 0) or (delta is +1 and top > 1)
       i += delta
 
+    if Conf['Rollover']
+      if i is -1
+        if link = $ 'link[rel=prev]', d.head
+          window.location = link.href + '#delform'
+        else
+          window.location = "/#{g.BOARD}/0#delform"
+        return
+      if (delta is +1) and ( (i is Nav.threads.length) or (innerHeight + pageYOffset == d.body.scrollHeight) )
+        if link = $ 'link[rel=next]', d.head
+          window.location = link.href + '#delform'
+          return
+
     {top} = Nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
 
@@ -1319,9 +1480,6 @@ QR =
   init: ->
     return unless $.id 'postForm'
     Main.callbacks.push @node
-    setTimeout @asyncInit
-
-  asyncInit: ->
     if Conf['Hide Original Post Form']
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
       $.on link.firstChild, 'click', ->
@@ -1524,7 +1682,7 @@ QR =
       prev     = QR.replies[QR.replies.length-1]
       persona  = $.get 'QR.persona', {}
       @name    = if prev then prev.name else persona.name or null
-      @email   = if prev and !/^sage$/.test prev.email then prev.email   else if prev and /;sage/.test prev.email then prev.email.replace(/;sage/,'') else if Conf['Sage on /jp/'] and g.BOARD is 'jp' then 'sage' else persona.email or null
+      @email   = if prev and !/^sage$/.test prev.email then prev.email   else if Conf['Sage on /jp/'] and g.BOARD is 'jp' then 'sage' else persona.email or null
       @sub     = if prev and Conf['Remember Subject']  then prev.sub     else if Conf['Remember Subject'] then persona.sub else null
       @spoiler = if prev and Conf['Remember Spoiler']  then prev.spoiler else false
       @com = null
@@ -1533,7 +1691,7 @@ QR =
         className: 'thumbnail'
         draggable: true
         href: 'javascript:;'
-        innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+        innerHTML: '<a class=remove>X</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
       $('input', @el).checked = @spoiler
       $.on @el,               'click',      => @select()
       $.on $('.remove', @el), 'click',  (e) =>
@@ -1595,10 +1753,8 @@ QR =
         ui8a = new Uint8Array l
         for i in  [0...l]
           ui8a[i] = data.charCodeAt i
-        bb = new (window.MozBlobBuilder or window.WebKitBlobBuilder)()
-        bb.append ui8a.buffer
 
-        @url = url.createObjectURL bb.getBlob 'image/png'
+        @url = url.createObjectURL new Blob [ui8a.buffer], type: 'image/png'
         @el.style.backgroundImage = "url(#{@url})"
         url.revokeObjectURL? fileUrl
 
@@ -1879,7 +2035,7 @@ QR =
       name:    reply.name
       email:   reply.email
       sub:     reply.sub
-      com:     reply.com
+      com:     if Conf['Markdown'] then Markdown.format reply.com else reply.com
       upfile:  reply.file
       spoiler: reply.spoiler
       mode:    'regist'
@@ -1991,22 +2147,22 @@ Options =
         className: 'settingsWindowLink'
         textContent: '4chan X Settings'
       $.on a, 'click', Options.dialog
+      el = $.id(settings).firstElementChild
+      el.hidden = true
+      $.before el, a
     unless $.get 'firstrun'
-      # Prevent race conditions
-      Favicon.init() unless Favicon.el
       $.set 'firstrun', true
       Options.dialog()
 
-  dialog: (e) ->
-    e?.stopImmediatePropagation()
+  dialog: ->
     dialog = $.el 'div'
       id: 'options'
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
   <div id=credits>
-    <a target=_blank href=http://that4chanwolf.github.com/4chan-x/>4chan X</a>
-    | <a target=_blank href=https://raw.github.com/that4chanwolf/4chan-x/master/changelog>' + Main.version + '</a>
-    | <a target=_blank href=http://that4chanwolf.github.com/4chan-x/#bug-report>Issues</a>
+    <a target=_blank href=http://ihavenoface.github.com/4chan-x/>4chan X</a>
+    | <a target=_blank href=https://raw.github.com/ihavenoface/4chan-x/master/changelog>' + Main.version + '</a>
+    | <a target=_blank href=http://ihavenoface.github.com/4chan-x/#bug-report>Issues</a>
   </div>
   <div>
     <label for=main_tab>Main</label>
@@ -2165,11 +2321,16 @@ Options =
 
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', Options.close
-    $.on dialog,  'click', (e) -> e.stopPropagation()
-    $.add overlay, dialog
     $.add d.body, overlay
-    d.body.style.setProperty 'width', "#{d.body.clientWidth}px", null
-    $.addClass d.body, 'unscroll'
+    dialog.style.visibility = 'hidden'
+    $.add d.body, dialog
+    left = (window.innerWidth  - dialog.getBoundingClientRect().width ) / 2 + window.pageXOffset
+    top  = (window.innerHeight - dialog.getBoundingClientRect().height) / 2 + window.pageYOffset
+    left = 0 if left < 0
+    top  = 0 if top  < 0
+    dialog.style.left = left + 'px'
+    dialog.style.top  = top  + 'px'
+    dialog.style.visibility = 'visible'
 
     Options.filter.call   filter
     Options.backlink.call back
@@ -2178,9 +2339,8 @@ Options =
     Options.favicon.call  favicon
 
   close: ->
-    $.rm this
-    d.body.style.removeProperty 'width'
-    $.rmClass d.body, 'unscroll'
+    $.rm @nextSibling
+    $.rm @
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -2268,9 +2428,9 @@ Updater =
 
     checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
-<div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-<div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} class=field size=4></label></div>
-<div><input value='Update Now' type=button></div>"
+	<div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
+	<div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} class=field size=4></label></div>
+	<div><input value='Update Now' type=button name='Update Now'></div>"
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
@@ -2280,41 +2440,36 @@ Updater =
     @lastPost = @thread.lastElementChild
 
     for input in $$ 'input', dialog
-      if input.type is 'checkbox'
+      {type, name} = input
+      if type is 'checkbox'
         $.on input, 'click', $.cb.checked
-        if input.name is 'Scroll BG'
+      switch name
+        when 'Scroll BG'
           $.on input, 'click', @cb.scrollBG
           @cb.scrollBG.call input
-        if input.name is 'Verbose'
+        when 'Verbose'
           $.on input, 'click', @cb.verbose
           @cb.verbose.call input
-        else if input.name is 'Auto Update This'
+        when 'Auto Update This'
           $.on input, 'click', @cb.autoUpdate
           @cb.autoUpdate.call input
           # Required for the QR's update after posting.
           Conf[input.name] = input.checked
-      else if input.name is 'Interval'
-        $.on input, 'input', @cb.interval
-      else if input.type is 'button'
-        $.on input, 'click', @update
+        when 'Interval'
+          $.on input, 'input', @cb.interval
+        when 'Update Now'
+          $.on input, 'click', @update
 
     $.add d.body, dialog
 
+    @retryCoef = 10
+    @lastModified = 0
+
     $.on d, 'QRPostSuccessful', @cb.post
-    $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
 
   cb:
     post: ->
       return unless Conf['Auto Update This']
-      Updater.unsuccessfulFetchCount = 0
-      setTimeout Updater.update, 500
-    visibility: ->
-      state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
-      return if state isnt 'visible'
-      # Reset the counter when we focus this tab.
-      Updater.unsuccessfulFetchCount = 0
-      if Updater.timer.textContent < -Conf['Interval']
-        Updater.timer.textContent = -Updater.getInterval()
     interval: ->
       val = parseInt @value, 10
       @value = if val > 0 then val else 30
@@ -2329,8 +2484,8 @@ Updater =
           textContent: 'Thread Updater'
         Updater.timer.hidden = true
     autoUpdate: ->
-      if @checked
-        Updater.timeoutID = setTimeout Updater.timeout, 100
+      if Conf['Auto Update This'] = @checked
+        Updater.timeoutID = setTimeout Updater.timeout, 1000
       else
         clearTimeout Updater.timeoutID
     scrollBG: ->
@@ -2343,7 +2498,7 @@ Updater =
       if @status is 404
         Updater.timer.textContent = ''
         Updater.count.textContent = 404
-        Updater.count.className = 'warning'
+        Updater.count.className   = 'warning'
         clearTimeout Updater.timeoutID
         g.dead = true
         if Conf['Unread Count']
@@ -2372,7 +2527,7 @@ Updater =
       if @status is 304
         if Conf['Verbose']
           Updater.count.textContent = '+0'
-          Updater.count.className = null
+          Updater.count.className   = null
         return
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
@@ -2387,17 +2542,24 @@ Updater =
         nodes.push reply
 
       count = nodes.length
+      if Conf['Verbose']
+        Updater.count.textContent = "+#{count}"
+        Updater.count.className   = if count then 'new' else null
+
+      count  = nodes.length
       scroll = Conf['Scrolling'] && Updater.scrollBG() && count &&
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       if Conf['Verbose']
         Updater.count.textContent = "+#{count}"
-        Updater.count.className = if count then 'new' else null
+        Updater.count.className   = if count then 'new' else null
 
       if lastPost = nodes[0]
         Updater.lastPost = lastPost
+
+
       $.add Updater.thread, nodes.reverse()
       if scroll
-        nodes[0].scrollIntoView()
+        lastPost.scrollIntoView()
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000
@@ -2419,10 +2581,13 @@ Updater =
   update: ->
     Updater.timer.textContent = 0
     Updater.request?.abort()
-    #fool the cache
+    # Fool the cache.
     url = location.pathname + '?' + Date.now()
     Updater.request = $.ajax url, onload: Updater.cb.update,
       headers: 'If-Modified-Since': Updater.lastModified
+
+  updateReset: ->
+    Updater.update()
 
 Watcher =
   init: ->
@@ -2566,8 +2731,7 @@ Sauce =
     img   = img.parentNode
     nodes = []
     for link in Sauce.links
-      # \u00A0 is nbsp
-      nodes.push $.tn('\u00A0'), link img, post.isArchived
+      nodes.push $.tn($.NBSP), link img, post.isArchived
     $.add post.fileInfo, nodes
 
 RevealSpoilers =
@@ -2797,7 +2961,7 @@ Get =
     pi = $.el 'div',
       id: "pi#{postID}"
       className: 'postInfo desktop'
-      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=>subject></span> <span class=nameBlock></span> <span class=dateTime data-utc=#{timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
+      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=subject></span> <span class=nameBlock></span> <span class=dateTime data-utc=#{timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
     # subject
     $('.subject', pi).textContent = subject
     nameBlock = $ '.nameBlock', pi
@@ -3038,9 +3202,9 @@ QuoteInline =
       $.addClass el.parentNode, 'forwarded'
       ++el.dataset.forwarded or el.dataset.forwarded = 1
 
-    # Decrease the unread count if this post is in the array of unread reply.
-    if (i = Unread.replies.indexOf el) isnt -1
-      Unread.replies.splice i, 1
+    # Decrease the unread count if this post is unread
+    if Unread.replies and postID of Unread.replies
+      Unread.replies.rm postID
       Unread.update true
 
   rm: (q, id) ->
@@ -3143,8 +3307,7 @@ QuoteOP =
     return if post.isInlined and not post.isCrosspost
     for quote in post.quotes
       if quote.hash[2..] is post.threadID
-        # \u00A0 is nbsp
-        $.add quote, $.tn '\u00A0(OP)'
+        $.add quote, $.tn $.NBSP + '(OP)'
     return
 
 QuoteCT =
@@ -3159,8 +3322,7 @@ QuoteCT =
       path = quote.pathname.split '/'
       # If quote leads to a different thread id and is located on the same board.
       if path[1] is g.BOARD and path[3] isnt post.threadID
-        # \u00A0 is nbsp
-        $.add quote, $.tn '\u00A0(Cross-thread)'
+        $.add quote, $.tn $.NBSP + '(Cross-thread)'
     return
 
 Quotify =
@@ -3169,9 +3331,8 @@ Quotify =
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
 
-    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
-    # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()[not(parent::a)]', post.blockquote, null, 6, null
+    # Get all the text nodes that are not inside an anchor or pre ([code] tags).
+    snapshot = $.X './/text()[not(parent::a)][not(ancestor::pre)]', post.blockquote
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
@@ -3198,8 +3359,7 @@ Quotify =
             $('a[title="Highlight this post"]', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
-          # \u00A0 is nbsp
-          textContent: "#{quote}\u00A0(Dead)"
+          textContent: "#{quote}#{$.NBSP}(Dead)"
 
         if board is g.BOARD and $.id "p#{id}"
           a.href      = "#p#{id}"
@@ -3227,6 +3387,89 @@ Quotify =
 
       $.replace node, nodes
     return
+
+QuoteThreading =
+  init: ->
+    return unless Conf['Unread Count'] or Conf['Unread Favicon']
+    Main.callbacks.push @node
+
+    @enabled = true
+
+    controls = $.el 'span',
+      innerHTML: '<label>Threading<input id=threadingControl type=checkbox checked></label>'
+    input = $ 'input', controls
+    $.on input, 'change', QuoteThreading.toggle
+    form = $ '#delform'
+    $.prepend form, controls
+
+  node: (post) ->
+    #Random access list
+    #
+    #array implementation is very awkward - mid-array inserts, loop to find
+    #quoted post, loop to find inserted post(!), loop to find distance from
+    #threaded post to thread root
+    #
+    #of course, implementing your own data structure can be awkward...
+
+    return if post.isInlined or not QuoteThreading.enabled
+
+    {quotes, ID} = post
+    {replies} = Unread
+
+    return unless reply = replies[ID] #foresee, filtered
+
+    uniq = {}
+    for quote in quotes
+      qid = quote.hash[2..]
+      continue unless qid < ID
+      if qid of replies
+        uniq[qid] = true
+
+    keys = Object.keys uniq
+    return unless keys.length is 1
+
+    qid = keys[0]
+    qreply = replies[qid]
+
+    qroot = qreply.el.parentNode
+    threadContainer = qroot.nextSibling
+    if threadContainer?.className isnt 'threadContainer'
+      threadContainer = $.el 'div', className: 'threadContainer'
+      $.after qroot, threadContainer
+
+    $.add threadContainer, reply.el.parentNode
+    pEl = $.x 'preceding::div[contains(@class,"post reply")][1]/parent::div', reply.el.parentNode
+    pid = pEl.id[2..]
+    preply = replies[pid]
+
+    replies.after preply, reply
+
+  toggle: ->
+    Main.disconnect()
+    Unread.replies = new $.RandomAccessList
+    thread = $ '.thread'
+    replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
+    QuoteThreading.enabled = @checked
+    if @checked
+      nodes = (Main.preParse reply for reply in replies)
+      Unread.node         node for node in nodes
+      Unread.scroll()
+      QuoteThreading.node node for node in nodes
+    else
+      replies.sort (a, b) ->
+        aID = Number a.id[2..]
+        bID = Number b.id[2..]
+        aID - bID
+      $.add thread, replies
+      containers = $$ '.threadContainer', thread
+      $.rm container for container in containers
+      Unread.update true
+    Main.observe()
+  public:
+    toggle: ->
+      control = $.id 'threadingControl'
+      control.checked = not control.checked
+      QuoteThreading.toggle.call control
 
 DeleteLink =
   init: ->
@@ -3288,8 +3531,6 @@ DeleteLink =
       else
         $.id('delPassword').value
 
-    menu = $.id 'menu'
-    id = menu.dataset.id
     board = $('a[title="Highlight this post"]',
       $.id menu.dataset.rootid).pathname.split('/')[1]
     self = @
@@ -3416,47 +3657,47 @@ ThreadStats =
 
 Unread =
   init: ->
+    @replies = new $.RandomAccessList
     @title = d.title
     $.on d, 'QRPostSuccessful', @post
     @update()
     $.on window, 'scroll', Unread.scroll
     Main.callbacks.push @node
 
-  replies: []
   foresee: []
 
   post: (e) ->
     Unread.foresee.push e.detail.postID
 
   node: (post) ->
+    {el} = post
     if (index = Unread.foresee.indexOf post.ID) isnt -1
       Unread.foresee.splice index, 1
       return
-    {el} = post
     return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
-    count = Unread.replies.push el
-    Unread.update count is 1
+    {replies} = Unread
+    replies.push post.ID, el
+    Unread.update replies.length is 1
 
   scroll: ->
     height = d.documentElement.clientHeight
-    for reply, i in Unread.replies
-      {bottom} = reply.getBoundingClientRect()
+    {replies} = Unread
+    {first} = replies
+    update = false
+    while first
+      {bottom} = first.el.getBoundingClientRect()
       if bottom > height #post is not completely read
         break
-    return if i is 0
+      update = true
+      replies.shift()
+      {first} = replies
 
-    Unread.replies = Unread.replies[i..]
-    Unread.update Unread.replies.length is 0
+    return unless update
+
+    Unread.update replies.length is 0
 
   setTitle: (count) ->
-    if @scheduled
-      clearTimeout @scheduled
-      delete Unread.scheduled
-      @setTitle count
-      return
-    @scheduled = setTimeout (->
-      d.title = "(#{count}) #{Unread.title}"
-    ), 5
+    d.title = "(#{count}) #{Unread.title}"
 
   update: (updateFavicon) ->
     return unless g.REPLY
@@ -3501,7 +3742,6 @@ Unread =
 
 Favicon =
   init: ->
-    return if @el # Prevent race condition with options first run
     @el = $ 'link[rel="shortcut icon"]', d.head
     @el.type = 'image/x-icon'
     {href} = @el
@@ -3543,8 +3783,8 @@ Redirect =
       # these will work whenever https://github.com/eksopl/fuuka/issues/23 is done
       # when 'cgl', 'g', 'w'
       #   "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
-      # when 'an', 'toy', 'x'
-      #   "http://archive.maidlab.jp/#{board}/full_image/#{filename}"
+      # when 'an', 'k', 'toy', 'x'
+      #   "http://archive.heinessen.com/#{board}/full_image/#{filename}"
       # when 'e'
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
@@ -3570,11 +3810,11 @@ Redirect =
         url = "//nsfw.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
-      when 'ck', 'lit', 'jp'
+      when 'ck', 'jp', 'lit'
         url = "//fuuka.warosu.org/#{path}"
         if threadID and postID
           url += "#p#{postID}"
-      when 'diy', 'g', 'k', 'sci'
+      when 'diy', 'g', 'sci'
         url = "//archive.installgentoo.net/#{path}"
         if threadID and postID
           url += "#p#{postID}"
@@ -3582,8 +3822,8 @@ Redirect =
         url = "//archive.rebeccablacktech.com/#{path}"
         if threadID and postID
           url += "#p#{postID}"
-      when 'an', 'fit', 'r9k', 'toy', 'x'
-        url = "http://archive.maidlab.jp/#{path}"
+      when 'an', 'fit', 'k', 'r9k', 'toy', 'x'
+        url = "http://archive.heinessen.com/#{path}"
         if threadID and postID
           url += "#p#{postID}"
       when 'e'
@@ -3628,11 +3868,10 @@ ImageHover =
       clientX: - 45 + parseInt style.left
       clientY:  120 + parseInt style.top
   error: ->
-    src = @src.replace(/\?\d+$/, '').split '/'
+    src = @src.split '/'
     unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
       return if g.dead
-      # This will fool CloudFlare's cache.
-      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}?#{Date.now()}"
+      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}"
     return if $.engine isnt 'webkit' and url.split('/')[2] is 'images.4chan.org'
     timeoutID = setTimeout (=> @src = url), 3000
     # Only Chrome let userscripts do cross domain requests.
@@ -3690,17 +3929,30 @@ Prefetch =
     $.el 'img',
       src: img.parentNode.href
 
+PngFix =
+  init: ->
+    Main.callbacks.push @node
+  node: (post) ->
+    {img} = post
+    return if post.el.hidden or not img
+    src = img.parentNode.href
+    if /png$/.test(src) and !/spoiler/.test img.src
+      png = $.el 'img'
+      $.on png, 'load', ->
+        img.src = src
+      png.src = src
+
 ImageExpand =
   init: ->
     Main.callbacks.push @node
     @dialog()
 
   node: (post) ->
-    {img} = post
     return unless post.img
+    sp = FileInfo.data.spoiler
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
-    if ImageExpand.on and !post.el.hidden
+    if ImageExpand.on and !post.el.hidden and sp isnt true
       ImageExpand.expand post.img
   cb:
     toggle: (e) ->
@@ -3779,11 +4031,10 @@ ImageExpand =
     thumb = @previousSibling
     ImageExpand.contract thumb
     $.rm @
-    src = @src.replace(/\?\d+$/, '').split '/'
+    src = @src.split '/'
     unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
       return if g.dead
-      # This will fool CloudFlare's cache.
-      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}?#{Date.now()}"
+      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}"
     return if $.engine isnt 'webkit' and url.split('/')[2] is 'images.4chan.org'
     timeoutID = setTimeout ImageExpand.expand, 10000, thumb, url
     # Only Chrome let userscripts do cross domain requests.
@@ -3814,16 +4065,16 @@ Main =
   init: ->
     Main.flatten null, Config
 
+    # Load values from localStorage.
+    for key, val of Conf
+      Conf[key] = $.get key, val
+
     path = location.pathname
     pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname
     if temp is 'res'
       g.REPLY = true
       g.THREAD_ID = pathname[2]
-
-    # Load values from localStorage.
-    for key, val of Conf
-      Conf[key] = $.get key, val
 
     switch location.hostname
       when 'sys.4chan.org'
@@ -3840,39 +4091,14 @@ Main =
             location.href = url if url
         return
 
-    $.ready Options.init
+    Main.pruneHidden()
 
     if Conf['Quick Reply'] and Conf['Hide Original Post Form']
       Main.css += '#postForm { display: none; }'
+    if Conf['Recursive Filtering']
+      Main.css += '.hidden + .threadContainer { display: none; }'
 
     Main.addStyle()
-
-    now = Date.now()
-    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*$.HOUR
-      $.ready ->
-        $.on window, 'message', Main.message
-        $.set 'lastUpdate', now
-        $.add d.head, $.el 'script',
-          src: 'https://github.com/that4chanwolf/4chan-x/raw/master/latest.js'
-
-    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
-    if $.get('lastChecked', 0) < now - 1*$.DAY
-      $.set 'lastChecked', now
-
-      cutoff = now - 7*$.DAY
-      hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-
-      for id, timestamp of hiddenThreads
-        if timestamp < cutoff
-          delete hiddenThreads[id]
-
-      for id, timestamp of g.hiddenReplies
-        if timestamp < cutoff
-          delete g.hiddenReplies[id]
-
-      $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
-      $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
-
 
     #major features
     if Conf['Filter']
@@ -3901,6 +4127,9 @@ Main =
 
     if Conf['Image Auto-Gif']
       AutoGif.init()
+
+    if Conf['Png Thumbnail Fix']
+      PngFix.init()
 
     if Conf['Image Hover']
       ImageHover.init()
@@ -3956,7 +4185,11 @@ Main =
       if a = $ "a[href$='/#{g.BOARD}/']", $.id nav
         # Gotta make it work in temporary boards.
         $.addClass a, 'current'
+
+    now = Date.now()
+
     Favicon.init()
+    Options.init()
 
     # Major features.
     if Conf['Quick Reply']
@@ -3966,23 +4199,23 @@ Main =
       ImageExpand.init()
 
     if Conf['Thread Watcher']
-      setTimeout -> Watcher.init()
+      Watcher.init()
 
     if Conf['Keybinds']
-      setTimeout -> Keybinds.init()
+      Keybinds.init()
 
     if g.REPLY
       if Conf['Prefetch']
         Prefetch.init()
 
       if Conf['Thread Updater']
-        setTimeout -> Updater.init()
+        Updater.init()
 
       if Conf['Thread Stats']
         ThreadStats.init()
 
       if Conf['Reply Navigation']
-        setTimeout -> Nav.init()
+        Nav.init()
 
       if Conf['Post in Title']
         TitlePost.init()
@@ -3990,36 +4223,67 @@ Main =
       if Conf['Unread Count'] or Conf['Unread Favicon']
         Unread.init()
 
+      if Conf['Quote Threading']
+        QuoteThreading.init()
+
     else #not reply
       if Conf['Thread Hiding']
         ThreadHiding.init()
 
       if Conf['Thread Expansion']
-        setTimeout -> ExpandThread.init()
+        ExpandThread.init()
 
       if Conf['Comment Expansion']
-        setTimeout -> ExpandComment.init()
+        ExpandComment.init()
 
       if Conf['Index Navigation']
-        setTimeout -> Nav.init()
+        Nav.init()
 
     board = $ '.board'
     nodes = []
     for node in $$ '.postContainer', board
       nodes.push Main.preParse node
     Main.node nodes, true
+    Main.prettify = Main._prettify
 
-    # Execute these scripts on inserted posts, not page init.
-    Main.hasCodeTags = !! $ 'script[src="//static.4chan.org/js/prettify/prettify.js"]'
+    Main.observe()
 
+  observe: ->
+    board = $ '.board'
     if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
-      observer = new MutationObserver Main.observer
+      Main.observer2 = observer = new MutationObserver Main.observer
       observer.observe board,
         childList: true
         subtree:   true
     else
       $.on board, 'DOMNodeInserted', Main.listener
-    return
+
+  disconnect: ->
+    if Main.observer2
+      Main.observer2.disconnect()
+    else
+      board = $ '.board'
+      $.off board, 'DOMNodeInserted', Main.listener
+
+  pruneHidden: ->
+    now = Date.now()
+    g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
+    if $.get('lastChecked', 0) < now - 1*$.DAY
+      $.set 'lastChecked', now
+
+      cutoff = now - 7*$.DAY
+      hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+
+      for id, timestamp of hiddenThreads
+        if timestamp < cutoff
+          delete hiddenThreads[id]
+
+      for id, timestamp of g.hiddenReplies
+        if timestamp < cutoff
+          delete g.hiddenReplies[id]
+
+      $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
+      $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   flatten: (parent, obj) ->
     if obj instanceof Array
@@ -4038,10 +4302,10 @@ Main =
     else # XXX fox
       $.on d, 'DOMNodeInserted', Main.addStyle
 
-  message: (e) ->
-    {version} = e.data
-    if version and version isnt Main.version and confirm 'An updated version of 4chan X is available, would you like to install it now?'
-      window.location = "https://raw.github.com/that4chanwolf/4chan-x/#{version}/4chan_x.user.js"
+  #message: (e) ->
+  #  {version} = e.data
+  #  if version and version isnt Main.version and confirm 'An updated version of 4chan X is available, would you like to install it now?'
+  #    window.location = "https://raw.github.com/aeosynth/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
     parentClass = node.parentNode.className
@@ -4072,30 +4336,38 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "4chan X (#{Main.version}) error: #{err.message}\nReport the bug at that4chanwolf.github.com/4chan-x/#bug-report\n\nURL: #{window.location}\n#{err.stack}" if notify
+        alert "4chan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/ihavenoface/4chan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []
     for mutation in mutations
       for addedNode in mutation.addedNodes
-        if /\bpostContainer\b/.test addedNode.className
+        if /\bpostContainer\b/.test(addedNode.className) and addedNode.parentNode.className isnt 'threadContainer'
           nodes.push Main.preParse addedNode
     Main.node nodes if nodes.length
   listener: (e) ->
     {target} = e
-    if /\bpostContainer\b/.test target.className
+    if /\bpostContainer\b/.test(target.className) and target.parentNode.className isnt 'threadContainer'
       Main.node [Main.preParse target]
 
-  prettify: (bq) ->
-    return unless Main.hasCodeTags
-    code = ->
-      for pre in document.getElementById('_id_').getElementsByClassName 'prettyprint'
-        pre.innerHTML = prettyPrintOne pre.innerHTML.replace /\s/g, '&nbsp;'
-      return
-    $.globalEval "(#{code})()".replace '_id_', bq.id
+  prettify: -> return
+  _prettify: (bq) ->
+    switch g.BOARD
+      when 'g'
+        code = ->
+          for pre in document.getElementById('_id_').getElementsByClassName 'prettyprint'
+            pre.innerHTML = prettyPrintOne pre.innerHTML.replace /\s/g, '&nbsp;'
+          return
+      when 'sci'
+        code = ->
+          jsMath.Process document.getElementById '_id_'
+          return
+      else
+        return
+    $.globalEval "#{code}".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.34.0'
+  version: '2.34.4'
   callbacks: []
   css: '
 /* dialog styling */
@@ -4126,7 +4398,7 @@ a[href="javascript:;"] {
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
 .autohide:not(:hover) > form,
-#qp input, #qp .inline, .forwarded {
+#qp input, .forwarded {
   display: none !important;
 }
 
@@ -4420,34 +4692,19 @@ h1 {
   right: 5px;
 }
 
-body {
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-}
-body.unscroll {
-  overflow: hidden;
-}
 #overlay {
   top: 0;
-  left: 0;
+  right: 0;
   width: 100%;
   height: 100%;
-  text-align: center;
   background: rgba(0,0,0,.5);
   z-index: 1;
 }
-#overlay::after {
-  content: "";
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
-}
 #options {
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
+  z-index: 2;
+  position: absolute;
   display: inline-block;
   padding: 5px;
-  position: relative;
   text-align: left;
   vertical-align: middle;
   width: 600px;
@@ -4562,13 +4819,23 @@ div.opContainer {
 .filter_highlight > .reply {
   box-shadow: -5px 0 rgba(255,0,0,0.5);
 }
-.filtered {
-  text-decoration: underline line-through;
+.filtered,
+.quotelink.filtered {
+  text-decoration: underline;
+  text-decoration: line-through !important;
 }
 .quotelink.forwardlink,
 .backlink.forwardlink {
   text-decoration: none;
   border-bottom: 1px dashed;
+}
+
+.threadContainer {
+  margin-left: 20px;
+  border-left: 1px solid black;
+}
+.stub ~ * {
+  display: none !important;
 }
 '
 

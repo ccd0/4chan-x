@@ -2,7 +2,7 @@
 {exec} = require 'child_process'
 fs     = require 'fs'
 
-VERSION = '2.34.0'
+VERSION = '2.34.4'
 
 HEADER  = """
 // ==UserScript==
@@ -20,9 +20,9 @@ HEADER  = """
 // @include        http://sys.4chan.org/*
 // @include        https://sys.4chan.org/*
 // @run-at         document-start
-// @updateURL      https://github.com/that4chanwolf/4chan-x/raw/stable/4chan_x.user.js
-// @downloadURL    https://github.com/that4chanwolf/4chan-x/raw/stable/4chan_x.user.js
-// @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
+// @updateURL      https://github.com/ihavenoface/4chan-x/raw/stable/4chan_x.user.js
+// @downloadURL    https://github.com/ihavenoface/4chan-x/raw/stable/4chan_x.user.js
+// @icon           https://raw.github.com/ihavenoface/4chan-x/gh-pages/favicon.gif
 // ==/UserScript==
 
 /* LICENSE

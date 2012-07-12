@@ -1,4 +1,4 @@
-# Get 4chan X [HERE](http://that4chanwolf.github.com/4chan-x/).
+# Get 4chan X [HERE](http://ihavenoface.github.com/4chan-x/).
 
 # Building
 
