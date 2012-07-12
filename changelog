@@ -1,4 +1,6 @@
 master
+- aeosynth
+  remove version updater
 
 3.15.0
 - Mayhem

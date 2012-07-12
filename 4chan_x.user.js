@@ -91,8 +91,7 @@
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
         'Rollover': [true, 'Index navigation will fallback to page navigation.'],
-        'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
-        'Check for Updates': [true, 'Check for updated versions of 4chan X']
+        'Reply Navigation': [false, 'Navigate to top / bottom of thread']
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
@@ -5204,13 +5203,6 @@
         }
       }
       now = Date.now();
-      if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 1 * $.DAY) {
-        $.on(window, 'message', Main.message);
-        $.add(d.head, $.el('script', {
-          src: 'http://aeosynth.github.com/4chan-x/latest.js'
-        }));
-        $.set('lastUpdate', now);
-      }
       Favicon.init();
       Options.init();
       if (Conf['Quick Reply']) {

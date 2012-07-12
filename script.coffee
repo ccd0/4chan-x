@@ -10,7 +10,6 @@ Config =
       'Index Navigation':             [true,  'Navigate to previous / next thread']
       'Rollover':                     [true,  'Index navigation will fallback to page navigation.']
       'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
-      'Check for Updates':            [true,  'Check for updated versions of 4chan X']
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
       'Filter':                       [true,  'Self-moderation placebo']
@@ -4071,10 +4070,6 @@ Main =
         $.addClass a, 'current'
 
     now = Date.now()
-    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 1*$.DAY
-      $.on window, 'message', Main.message
-      $.add d.head, $.el 'script', src: 'http://aeosynth.github.com/4chan-x/latest.js'
-      $.set 'lastUpdate', now
 
     Favicon.init()
     Options.init()
