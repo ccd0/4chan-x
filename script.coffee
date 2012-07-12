@@ -799,7 +799,7 @@ ExpandThread =
         continue if href[0] is '/' # Cross-board quote
         quote.href = "res/#{href}" # Fix pathnames
       id = reply.id[2..]
-      link = $ '.postNum > a[title="Highlight this post"]', reply
+      link = $ 'a[title="Highlight this post"]', reply
       link.href = "res/#{threadID}#p#{id}"
       link.nextSibling.href = "res/#{threadID}#q#{id}"
       nodes.push reply
@@ -1211,7 +1211,7 @@ Keybinds =
 
   qr: (thread, quote) ->
     if quote
-      QR.quote.call $ '.postNum > a[title="Quote this post"]', $('.post.highlight', thread) or thread
+      QR.quote.call $ 'a[title="Quote this post"]', $('.post.highlight', thread) or thread
     else
       QR.open()
     $('textarea', QR.el).focus()
@@ -1332,7 +1332,7 @@ QR =
     $.on d, 'dragstart dragend', QR.drag
 
   node: (post) ->
-    $.on $('.postNum > a[title="Quote this post"]', post.el), 'click', QR.quote
+    $.on $('a[title="Quote this post"]', post.el), 'click', QR.quote
 
   open: ->
     if QR.el
@@ -2753,7 +2753,7 @@ Get =
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
       quote.href = "/#{board}/res/#{href}" # Fix pathnames
-    link = $ '.postNum > a[title="Highlight this post"]', pc
+    link = $ 'a[title="Highlight this post"]', pc
     link.href = "/#{board}/res/#{threadID}#p#{postID}"
     link.nextSibling.href = "/#{board}/res/#{threadID}#q#{postID}"
 
@@ -2775,7 +2775,7 @@ Get =
     piM = $.el 'div',
       id: "pim#{postID}"
       className: 'postInfoM mobile'
-      innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=#{timestamp}>#{data.fourchan_date}<br><em></em><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a></span>"
+      innerHTML: "<span class=nameBlock><span class=name></span><br><span class=subject></span></span><span class='dateTime postNum' data-utc=#{timestamp}>#{data.fourchan_date}<br><em></em><a href='/#{board}/res/#{threadID}#p#{postID}'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}'>#{postID}</a></span>"
     $('.name',    piM).textContent = name
     $('.subject', piM).textContent = subject
     br = $ 'br', piM
@@ -3204,7 +3204,7 @@ Quotify =
             m[1]
           else
             # Get the post's board, whether it's inlined or not.
-            $('.postNum > a[title="Highlight this post"]', post.el).pathname.split('/')[1]
+            $('a[title="Highlight this post"]', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
           # \u00A0 is nbsp
@@ -3283,7 +3283,7 @@ DeleteLink =
 
     menu = $.id 'menu'
     id = menu.dataset.id
-    board = $('.postNum > a[title="Highlight this post"]',
+    board = $('a[title="Highlight this post"]',
       $.id menu.dataset.rootid).pathname.split('/')[1]
     self = @
 
@@ -3326,7 +3326,7 @@ ReportLink =
       open: (post) ->
         post.isArchived is false
   report: ->
-    a   = $ '.postNum > a[title="Highlight this post"]', $.id @parentNode.dataset.rootid
+    a   = $ 'a[title="Highlight this post"]', $.id @parentNode.dataset.rootid
     url = "//sys.4chan.org/#{a.pathname.split('/')[1]}/imgboard.php?mode=report&no=#{@parentNode.dataset.id}"
     id  = Date.now()
     set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
@@ -3362,7 +3362,7 @@ ArchiveLink =
     Menu.addEntry
       el: a
       open: (post) ->
-        path = $('.postNum > a[title="Highlight this post"]', post.el).pathname.split '/'
+        path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
         if (href = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
           return false
         a.href = href
