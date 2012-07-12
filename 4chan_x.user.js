@@ -4086,22 +4086,38 @@
           return true;
         }
       });
-      return Menu.addEntry({
+      Menu.addEntry({
         el: div,
         open: function(post) {
-          return !post.isArchived;
+          var node, seconds;
+          if (post.isArchived) {
+            return false;
+          }
+          node = div.firstChild;
+          if (seconds = DeleteLink.cooldown[post.ID]) {
+            node.textContent = "Delete (" + seconds + ")";
+            DeleteLink.cooldown.el = node;
+          } else {
+            node.textContent = 'Delete';
+            delete DeleteLink.cooldown.el;
+          }
+          return true;
         },
         children: children
       });
+      return $.on(d, 'QRPostSuccessful', this.cooldown.start);
     },
     "delete": function() {
       var board, form, id, m, menu, pwd, self;
+      menu = $.id('menu');
+      id = menu.dataset.id;
+      if (DeleteLink.cooldown[id]) {
+        return;
+      }
       $.off(this, 'click', DeleteLink["delete"]);
       this.textContent = 'Deleting...';
       pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
-      menu = $.id('menu');
-      id = menu.dataset.id;
-      board = $('.postNum > a[title="Highlight this post"]', $.id(menu.dataset.rootid)).pathname.split('/')[1];
+      board = $('a[title="Highlight this post"]', $.id(menu.dataset.rootid)).pathname.split('/')[1];
       self = this;
       form = {
         mode: 'usrdel',
@@ -4137,6 +4153,31 @@
     error: function(self) {
       self.textContent = 'Connection error, please retry.';
       return $.on(self, 'click', DeleteLink["delete"]);
+    },
+    cooldown: {
+      start: function(e) {
+        return DeleteLink.cooldown.count(e.detail.postID, 30);
+      },
+      count: function(postID, seconds) {
+        var el;
+        if (!((0 <= seconds && seconds <= 30))) {
+          return;
+        }
+        setTimeout(DeleteLink.cooldown.count, 1000, postID, seconds - 1);
+        el = DeleteLink.cooldown.el;
+        if (seconds === 0) {
+          if (el != null) {
+            el.textContent = 'Delete';
+          }
+          delete DeleteLink.cooldown[postID];
+          delete DeleteLink.cooldown.el;
+          return;
+        }
+        if (el != null) {
+          el.textContent = "Delete (" + seconds + ")";
+        }
+        return DeleteLink.cooldown[postID] = seconds;
+      }
     }
   };
 
