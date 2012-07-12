@@ -4117,6 +4117,8 @@
       $.off(this, 'click', DeleteLink["delete"]);
       this.textContent = 'Deleting...';
       pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
+      menu = $.id('menu');
+      id = menu.dataset.id;
       board = $('a[title="Highlight this post"]', $.id(menu.dataset.rootid)).pathname.split('/')[1];
       self = this;
       form = {
