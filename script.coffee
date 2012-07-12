@@ -2409,7 +2409,7 @@ Updater =
     unless d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
       # Don't increase the refresh rate too much on visible tabs.
       j = Math.min j, 6
-    Math.max i, [5, 10, 15, 20, 30, 60, 90, 120, 300, 600][j]
+    Math.max i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000

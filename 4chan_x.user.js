@@ -3004,7 +3004,7 @@
       if (!(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden)) {
         j = Math.min(j, 6);
       }
-      return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 300, 600][j]);
+      return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
     },
     timeout: function() {
       var n;
