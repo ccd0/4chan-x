@@ -2982,23 +2982,18 @@
             break;
           case 'Interval':
             input.value = Conf['Interval'];
-            $.on(input, 'input', this.cb.interval);
+            $.on(input, 'change', this.cb.interval);
             this.cb.interval.call(input);
             break;
           case 'Max Interval':
             input.value = Conf['Max Interval'];
+            $.on(input, 'change', this.cb.maxInterval);
             break;
           default:
             $.on(input, 'click', this.updateReset);
         }
       }
-      $.add(d.body, dialog);
-      return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', function() {
-        Updater.unsuccessfulFetchCount = 0;
-        if (Updater.timer.textContent < -Conf['Interval']) {
-          return Updater.timer.textContent = -Updater.getInterval();
-        }
-      });
+      return $.add(d.body, dialog);
     },
     cb: {
       interval: function() {
@@ -3007,6 +3002,12 @@
         this.value = val > 5 ? val : 5;
         $.cb.value.call(this);
         return Updater.timer.textContent = -Updater.getInterval();
+      },
+      maxInterval: function() {
+        var val;
+        val = parseInt(this.value, 10);
+        this.value = val > 180 ? val : 180;
+        return $.cb.value.call(this);
       },
       verbose: function() {
         if (Conf['Verbose']) {
@@ -3110,13 +3111,17 @@
       }
     },
     getInterval: function() {
-      var i, j;
-      i = +Conf['Interval'];
-      j = Math.min(this.unsuccessfulFetchCount, 9);
-      if (!(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden)) {
-        j = Math.min(j, 6);
+      var max, min, now;
+      min = +Conf['Interval'];
+      max = +Conf['Max Interval'];
+      now = 5 * Math.pow(2, this.unsuccessfulFetchCount);
+      if (min > now) {
+        return min;
+      } else if (max < now) {
+        return max;
+      } else {
+        return now;
       }
-      return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 300, 600][j]);
     },
     timeout: function() {
       var n;

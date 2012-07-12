@@ -2376,20 +2376,15 @@ Updater =
           Conf[input.name] = input.checked
         when 'Interval'
           input.value = Conf['Interval']
-          $.on input, 'input', @cb.interval
+          $.on input, 'change', @cb.interval
           @cb.interval.call input
         when 'Max Interval'
           input.value = Conf['Max Interval']
+          $.on input, 'change', @cb.maxInterval
         else #button
           $.on input, 'click', @updateReset
 
     $.add d.body, dialog
-
-    $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', ->
-      # Reset the counter when we focus this tab.
-      Updater.unsuccessfulFetchCount = 0
-      if Updater.timer.textContent < -Conf['Interval']
-        Updater.timer.textContent = -Updater.getInterval()
 
   cb:
     interval: ->
@@ -2397,6 +2392,10 @@ Updater =
       @value = if val > 5 then val else 5
       $.cb.value.call @
       Updater.timer.textContent = -Updater.getInterval()
+    maxInterval: ->
+      val = parseInt @value, 10
+      @value = if val > 180 then val else 180
+      $.cb.value.call @
     verbose: ->
       if Conf['Verbose']
         Updater.count.textContent = '+0'
@@ -2485,12 +2484,15 @@ Updater =
         lastPost.scrollIntoView()
 
   getInterval: ->
-    i = +Conf['Interval']
-    j = Math.min @unsuccessfulFetchCount, 9
-    unless d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
-      # Don't increase the refresh rate too much on visible tabs.
-      j = Math.min j, 6
-    Math.max i, [5, 10, 15, 20, 30, 60, 90, 120, 300, 600][j]
+    min = +Conf['Interval']
+    max = +Conf['Max Interval']
+    now = 5 * Math.pow 2, @unsuccessfulFetchCount
+    if min > now
+      min
+    else if max < now
+      max
+    else
+      now
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000
