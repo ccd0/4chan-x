@@ -4544,6 +4544,7 @@
           }
           break;
         case 'an':
+        case 'fit':
         case 'r9k':
         case 'toy':
         case 'x':
