@@ -3268,10 +3268,26 @@ DeleteLink =
 
     Menu.addEntry
       el: div
-      open: (post) -> !post.isArchived
+      open: (post) ->
+        if post.isArchived
+          return false
+        node = div.firstChild
+        if seconds = DeleteLink.cooldown[post.ID]
+          node.textContent = "Delete (#{seconds})"
+          DeleteLink.cooldown.el = node
+        else
+          node.textContent = 'Delete'
+          delete DeleteLink.cooldown.el
+        true
       children: children
 
+    $.on d, 'QRPostSuccessful', @cooldown.start
+
   delete: ->
+    menu = $.id 'menu'
+    {id} = menu.dataset
+    return if DeleteLink.cooldown[id]
+
     $.off @, 'click', DeleteLink.delete
     @textContent = 'Deleting...'
 
@@ -3281,8 +3297,6 @@ DeleteLink =
       else
         $.id('delPassword').value
 
-    menu = $.id 'menu'
-    id = menu.dataset.id
     board = $('a[title="Highlight this post"]',
       $.id menu.dataset.rootid).pathname.split('/')[1]
     self = @
@@ -3313,6 +3327,21 @@ DeleteLink =
   error: (self) ->
     self.textContent = 'Connection error, please retry.'
     $.on self, 'click', DeleteLink.delete
+
+  cooldown:
+    start: (e) ->
+      DeleteLink.cooldown.count e.detail.postID, 30
+    count: (postID, seconds) ->
+      return unless 0 <= seconds <= 30
+      setTimeout DeleteLink.cooldown.count, 1000, postID, seconds-1
+      {el} = DeleteLink.cooldown
+      if seconds is 0
+        el?.textContent = 'Delete'
+        delete DeleteLink.cooldown[postID]
+        delete DeleteLink.cooldown.el
+        return
+      el?.textContent = "Delete (#{seconds})"
+      DeleteLink.cooldown[postID] = seconds
 
 ReportLink =
   init: ->
