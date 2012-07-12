@@ -2539,11 +2539,14 @@
   Options = {
     init: function() {
       var a, settings, _i, _len, _ref;
-      _ref = [$.id('navtopr'), $.id('navbotr')];
+      _ref = ['navtopr', 'navbotr'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
-        a = settings.firstElementChild;
-        a.textContent = '4chan X Settings';
+        a = $.el('a', {
+          href: 'javascript:;',
+          className: 'settingsWindowLink',
+          textContent: '4chan X Settings'
+        });
         $.on(a, 'click', Options.dialog);
       }
       if (!$.get('firstrun')) {

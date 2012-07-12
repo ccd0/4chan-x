@@ -1994,9 +1994,11 @@ QR =
 
 Options =
   init: ->
-    for settings in [$.id('navtopr'), $.id('navbotr')]
-      a = settings.firstElementChild
-      a.textContent = '4chan X Settings'
+    for settings in ['navtopr', 'navbotr']
+      a = $.el 'a',
+        href: 'javascript:;'
+        className: 'settingsWindowLink'
+        textContent: '4chan X Settings'
       $.on a, 'click', Options.dialog
     unless $.get 'firstrun'
       # Prevent race conditions
