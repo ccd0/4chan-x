@@ -853,7 +853,7 @@ ThreadHiding =
       num   = Number span.textContent.match /\d+/
     num    += $$('.opContainer ~ .replyContainer', thread).length
     text    = if num is 1 then '1 reply' else "#{num} replies"
-    opInfo  = $('.op > .postInfo > .nameBlock', thread).textContent
+    opInfo  = $('.desktop > .nameBlock', thread).textContent
 
     stub = $.el 'div',
       className: 'hide_thread_button hidden_thread'
@@ -918,7 +918,7 @@ ReplyHiding =
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
     a = stub.firstChild
     $.on  a, 'click', ReplyHiding.toggle
-    $.add a, $.tn $('.nameBlock', el).textContent
+    $.add a, $.tn $('.desktop > .nameBlock', el).textContent
     if Conf['Menu']
       menuButton = Menu.a.cloneNode true
       $.on menuButton, 'click', Menu.toggle
