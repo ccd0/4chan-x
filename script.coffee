@@ -28,7 +28,7 @@ Config =
     Menu:
       'Menu':                         [true,  'Add a drop-down menu in posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
-      'Delete Link':                  [true,  'Add a delete link to the menu.']
+      'Delete Link':                  [true,  'Add post and image deletion links to the menu.']
       'Download Link':                [true,  'Add a download with original filename link to the menu. Chrome-only currently.']
       'Archive Link':                 [true,  'Add an archive link to the menu.']
     Monitoring:
@@ -3218,18 +3218,55 @@ Quotify =
 
 DeleteLink =
   init: ->
-    a = $.el 'a',
+    div = $.el 'div',
       className: 'delete_link'
+      textContent: 'Delete'
+    aPost = $.el 'a',
+      className: 'delete_post'
       href: 'javascript:;'
+    aImage = $.el 'a',
+      className: 'delete_image'
+      href: 'javascript:;'
+
+    children = []
+
+    children.push
+      el: aPost
+      open: ->
+        aPost.textContent = 'Post'
+        $.on aPost, 'click', DeleteLink.delete
+        true
+
+    children.push
+      el: aImage
+      open: (post) ->
+        return false unless post.img
+        aImage.textContent = 'Image'
+        $.on aImage, 'click', DeleteLink.delete
+        true
+
     Menu.addEntry
-      el: a
+      el: div
       open: (post) ->
         if post.isArchived
           return false
-        a.textContent = 'Delete this post'
-        $.on a, 'click', DeleteLink.delete
+        node = div.firstChild
+        if seconds = DeleteLink.cooldown[post.ID]
+          node.textContent = "Delete (#{seconds})"
+          DeleteLink.cooldown.el = node
+        else
+          node.textContent = 'Delete'
+          delete DeleteLink.cooldown.el
         true
+      children: children
+
+    $.on d, 'QRPostSuccessful', @cooldown.start
+
   delete: ->
+    menu = $.id 'menu'
+    {id} = menu.dataset
+    return if DeleteLink.cooldown[id]
+
     $.off @, 'click', DeleteLink.delete
     @textContent = 'Deleting...'
 
@@ -3239,13 +3276,15 @@ DeleteLink =
       else
         $.id('delPassword').value
 
-    id = @parentNode.dataset.id
+    menu = $.id 'menu'
+    id = menu.dataset.id
     board = $('a[title="Highlight this post"]',
-      $.id @parentNode.dataset.rootid).pathname.split('/')[1]
-    self = this
+      $.id menu.dataset.rootid).pathname.split('/')[1]
+    self = @
 
     form =
       mode: 'usrdel'
+      onlyimgdel: /\bdelete_image\b/.test @className
       pwd: pwd
     form[id] = 'delete'
 
@@ -3269,6 +3308,21 @@ DeleteLink =
   error: (self) ->
     self.textContent = 'Connection error, please retry.'
     $.on self, 'click', DeleteLink.delete
+
+  cooldown:
+    start: (e) ->
+      DeleteLink.cooldown.count e.detail.postID, 30
+    count: (postID, seconds) ->
+      return unless 0 <= seconds <= 30
+      setTimeout DeleteLink.cooldown.count, 1000, postID, seconds-1
+      {el} = DeleteLink.cooldown
+      if seconds is 0
+        el?.textContent = 'Delete'
+        delete DeleteLink.cooldown[postID]
+        delete DeleteLink.cooldown.el
+        return
+      el?.textContent = "Delete (#{seconds})"
+      DeleteLink.cooldown[postID] = seconds
 
 ReportLink =
   init: ->

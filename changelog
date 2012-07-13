@@ -1,7 +1,10 @@
 master
 - Mayhem
+  Divide the Delete Link in the Menu into a Post and Image deletion links.
+  The Delete Links in the Menu now have a cooldown.
   Add /wsg/ archive redirection.
   Add /fit/ archive redirection.
+
 2.34.0
 - Stallmanu
   Sage keybind
