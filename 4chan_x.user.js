@@ -1065,7 +1065,7 @@
       }
       num += $$('.opContainer ~ .replyContainer', thread).length;
       text = num === 1 ? '1 reply' : "" + num + " replies";
-      opInfo = $('.op > .postInfo > .nameBlock', thread).textContent;
+      opInfo = $('.desktop > .nameBlock', thread).textContent;
       stub = $.el('div', {
         className: 'hide_thread_button hidden_thread',
         innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
@@ -1151,7 +1151,7 @@
       });
       a = stub.firstChild;
       $.on(a, 'click', ReplyHiding.toggle);
-      $.add(a, $.tn($('.nameBlock', el).textContent));
+      $.add(a, $.tn($('.desktop > .nameBlock', el).textContent));
       if (Conf['Menu']) {
         menuButton = Menu.a.cloneNode(true);
         $.on(menuButton, 'click', Menu.toggle);
