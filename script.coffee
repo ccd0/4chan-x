@@ -954,7 +954,8 @@ Menu =
       a = $ '.menu_button', post.el
     else
       a = Menu.a.cloneNode true
-      $.add $('.postInfo', post.el), a
+      # \u00A0 is nbsp
+      $.add $('.postInfo', post.el), [$.tn('\u00A0'), a]
     $.on a, 'click', Menu.toggle
 
   toggle: (e) ->

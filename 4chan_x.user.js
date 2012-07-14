@@ -1194,7 +1194,7 @@
         a = $('.menu_button', post.el);
       } else {
         a = Menu.a.cloneNode(true);
-        $.add($('.postInfo', post.el), a);
+        $.add($('.postInfo', post.el), [$.tn('\u00A0'), a]);
       }
       return $.on(a, 'click', Menu.toggle);
     },
