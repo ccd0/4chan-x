@@ -5227,7 +5227,7 @@ a[href="javascript:;"] {\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
 .autohide:not(:hover) > form,\
-#qp input, #qp .inline, .forwarded {\
+#qp input, .forwarded {\
   display: none !important;\
 }\
 \
