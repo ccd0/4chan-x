@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.34.1
+// @version        2.34.2
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -23,7 +23,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.34.1
+ * 4chan X 2.34.2
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -177,7 +177,7 @@
       close: ['Esc', 'Close Options or QR'],
       spoiler: ['ctrl+s', 'Quick spoiler tags'],
       code: ['alt+c', 'Quick code tags'],
-      sage: ['alt+n', 'Sage keybind'],
+      sageru: ['alt+n', 'Sage keybind'],
       submit: ['alt+s', 'Submit post'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
@@ -1016,13 +1016,13 @@
       a = $('.summary', thread);
       switch (a.textContent[0]) {
         case '+':
-          a.textContent = a.textContent.replace('+', 'X Loading...');
+          a.textContent = a.textContent.replace('+', '× Loading...');
           $.cache(pathname, function() {
             return ExpandThread.parse(this, thread, a);
           });
           break;
         case 'X':
-          a.textContent = a.textContent.replace('X Loading...', '+');
+          a.textContent = a.textContent.replace('× Loading...', '+');
           $.cache.requests[pathname].abort();
           break;
         case '-':
@@ -1053,7 +1053,7 @@
         $.off(a, 'click', ExpandThread.cb.toggle);
         return;
       }
-      a.textContent = a.textContent.replace('X Loading...', '-');
+      a.textContent = a.textContent.replace('× Loading...', '-');
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = req.response;
       threadID = thread.id.slice(1);
@@ -1491,7 +1491,7 @@
           }
           Keybinds.tags('code', target);
           break;
-        case Conf.sage:
+        case Conf.sageru:
           $("[name=email]", QR.el).value = "sage";
           QR.selected.email = "sage";
           break;
@@ -2355,7 +2355,7 @@
       QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
-  <span> <a class=close title=Close>X</a></span>\
+  <span> <a class=close title=Close>×</a></span>\
 </div>\
 <form>\
   <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
@@ -3194,7 +3194,7 @@
         for (id in _ref) {
           props = _ref[id];
           x = $.el('a', {
-            textContent: 'X',
+            textContent: '×',
             href: 'javascript:;'
           });
           $.on(x, 'click', Watcher.cb.x);
@@ -5484,7 +5484,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '3.16.0',
+    version: '2.34.1',
     callbacks: [],
     css: '\
 /* dialog styling */\
