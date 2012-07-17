@@ -136,7 +136,7 @@ Config =
     close:           ['Esc',    'Close Options or QR']
     spoiler:         ['ctrl+s', 'Quick spoiler tags']
     code:            ['alt+c',  'Quick code tags']
-    sage:            ['alt+n',  'Sage keybind']
+    sageru:          ['alt+n',  'Sage keybind']
     submit:          ['alt+s',  'Submit post']
     # Thread related
     watch:           ['w',      'Watch thread']
@@ -818,11 +818,11 @@ ExpandThread =
 
     switch a.textContent[0]
       when '+'
-        a.textContent = a.textContent.replace '+', 'X Loading...'
+        a.textContent = a.textContent.replace '+', '× Loading...'
         $.cache pathname, -> ExpandThread.parse @, thread, a
 
       when 'X'
-        a.textContent = a.textContent.replace 'X Loading...', '+'
+        a.textContent = a.textContent.replace '× Loading...', '+'
         $.cache.requests[pathname].abort()
 
       when '-'
@@ -844,7 +844,7 @@ ExpandThread =
       $.off a, 'click', ExpandThread.cb.toggle
       return
 
-    a.textContent = a.textContent.replace 'X Loading...', '-'
+    a.textContent = a.textContent.replace '× Loading...', '-'
 
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
@@ -1178,7 +1178,7 @@ Keybinds =
       when Conf.code
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'code', target
-      when Conf.sage
+      when Conf.sageru
         $("[name=email]", QR.el).value = "sage"
         QR.selected.email = "sage"
       # Thread related
@@ -1806,7 +1806,7 @@ QR =
     QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
-  <span> <a class=close title=Close>X</a></span>
+  <span> <a class=close title=Close>×</a></span>
 </div>
 <form>
   <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
@@ -2549,7 +2549,7 @@ Watcher =
     for board of watched
       for id, props of watched[board]
         x = $.el 'a',
-          textContent: 'X'
+          textContent: '×'
           href: 'javascript:;'
         $.on x, 'click', Watcher.cb.x
         link = $.el 'a', props
@@ -4285,7 +4285,7 @@ Main =
     $.globalEval "#{code}".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '3.16.0'
+  version: '2.34.1'
   callbacks: []
   css: '
 /* dialog styling */
