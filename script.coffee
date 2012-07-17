@@ -1590,10 +1590,8 @@ QR =
         ui8a = new Uint8Array l
         for i in  [0...l]
           ui8a[i] = data.charCodeAt i
-        bb = new (window.MozBlobBuilder or window.WebKitBlobBuilder)()
-        bb.append ui8a.buffer
 
-        @url = url.createObjectURL bb.getBlob 'image/png'
+        @url = url.createObjectURL new Blob [ui8a.buffer], type: 'image/png'
         @el.style.backgroundImage = "url(#{@url})"
         url.revokeObjectURL? fileUrl
 

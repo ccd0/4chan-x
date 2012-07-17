@@ -2016,7 +2016,7 @@
         fileUrl = url.createObjectURL(file);
         img = $.el('img');
         $.on(img, 'load', function() {
-          var bb, c, data, i, l, s, ui8a, _i;
+          var c, data, i, l, s, ui8a, _i;
           s = 90 * 3;
           if (img.height < s || img.width < s) {
             _this.url = fileUrl;
@@ -2040,9 +2040,9 @@
           for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
             ui8a[i] = data.charCodeAt(i);
           }
-          bb = new (window.MozBlobBuilder || window.WebKitBlobBuilder)();
-          bb.append(ui8a.buffer);
-          _this.url = url.createObjectURL(bb.getBlob('image/png'));
+          _this.url = url.createObjectURL(new Blob([ui8a.buffer], {
+            type: 'image/png'
+          }));
           _this.el.style.backgroundImage = "url(" + _this.url + ")";
           return typeof url.revokeObjectURL === "function" ? url.revokeObjectURL(fileUrl) : void 0;
         });
