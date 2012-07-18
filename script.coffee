@@ -3986,7 +3986,7 @@ Main =
     # Execute these scripts on inserted posts, not page init.
     Main.hasCodeTags = !! $ 'script[src="//static.4chan.org/js/prettify/prettify.js"]'
 
-    if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
+    if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
       observer = new MutationObserver Main.observer
       observer.observe board,
         childList: true

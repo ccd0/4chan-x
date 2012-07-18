@@ -5075,7 +5075,7 @@
       }
       Main.node(nodes, true);
       Main.hasCodeTags = !!$('script[src="//static.4chan.org/js/prettify/prettify.js"]');
-      if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
+      if (MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver) {
         observer = new MutationObserver(Main.observer);
         observer.observe(board, {
           childList: true,
