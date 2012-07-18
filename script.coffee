@@ -3714,7 +3714,7 @@ Redirect =
       # these will work whenever https://github.com/eksopl/fuuka/issues/23 is done
       # when 'cgl', 'g', 'w'
       #   "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
-      # when 'an', 'toy', 'x'
+      # when 'an', 'k', 'toy', 'x'
       #   "http://archive.maidlab.jp/#{board}/full_image/#{filename}"
       # when 'e'
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
@@ -3745,7 +3745,7 @@ Redirect =
         url = "//fuuka.warosu.org/#{path}"
         if threadID and postID
           url += "#p#{postID}"
-      when 'diy', 'g', 'k', 'sci'
+      when 'diy', 'g', 'sci'
         url = "//archive.installgentoo.net/#{path}"
         if threadID and postID
           url += "#p#{postID}"
@@ -3753,7 +3753,7 @@ Redirect =
         url = "//archive.rebeccablacktech.com/#{path}"
         if threadID and postID
           url += "#p#{postID}"
-      when 'an', 'fit', 'r9k', 'toy', 'x'
+      when 'an', 'fit', 'k', 'r9k', 'toy', 'x'
         url = "http://archive.maidlab.jp/#{path}"
         if threadID and postID
           url += "#p#{postID}"

@@ -4754,7 +4754,6 @@
           break;
         case 'diy':
         case 'g':
-        case 'k':
         case 'sci':
           url = "//archive.installgentoo.net/" + path;
           if (threadID && postID) {
@@ -4772,6 +4771,7 @@
           break;
         case 'an':
         case 'fit':
+        case 'k':
         case 'r9k':
         case 'toy':
         case 'x':
