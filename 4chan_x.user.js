@@ -4840,12 +4840,12 @@
     error: function() {
       var src, timeoutID, url,
         _this = this;
-      src = this.src.replace(/\?\d+$/, '').split('/');
+      src = this.src.split('/');
       if (!(src[2] === 'images.4chan.org' && (url = Redirect.image(src[3], src[5])))) {
         if (g.dead) {
           return;
         }
-        url = "//images.4chan.org/" + src[3] + "/src/" + src[5] + "?" + (Date.now());
+        url = "//images.4chan.org/" + src[3] + "/src/" + src[5];
       }
       if ($.engine !== 'webkit' && url.split('/')[2] === 'images.4chan.org') {
         return;
@@ -5075,12 +5075,12 @@
       thumb = this.previousSibling;
       ImageExpand.contract(thumb);
       $.rm(this);
-      src = this.src.replace(/\?\d+$/, '').split('/');
+      src = this.src.split('/');
       if (!(src[2] === 'images.4chan.org' && (url = Redirect.image(src[3], src[5])))) {
         if (g.dead) {
           return;
         }
-        url = "//images.4chan.org/" + src[3] + "/src/" + src[5] + "?" + (Date.now());
+        url = "//images.4chan.org/" + src[3] + "/src/" + src[5];
       }
       if ($.engine !== 'webkit' && url.split('/')[2] === 'images.4chan.org') {
         return;
