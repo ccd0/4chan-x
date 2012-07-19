@@ -3636,11 +3636,10 @@ ImageHover =
       clientX: - 45 + parseInt style.left
       clientY:  120 + parseInt style.top
   error: ->
-    src = @src.replace(/\?\d+$/, '').split '/'
+    src = @src.split '/'
     unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
       return if g.dead
-      # This will fool CloudFlare's cache.
-      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}?#{Date.now()}"
+      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}"
     return if $.engine isnt 'webkit' and url.split('/')[2] is 'images.4chan.org'
     timeoutID = setTimeout (=> @src = url), 3000
     # Only Chrome let userscripts do cross domain requests.
@@ -3756,11 +3755,10 @@ ImageExpand =
     thumb = @previousSibling
     ImageExpand.contract thumb
     $.rm @
-    src = @src.replace(/\?\d+$/, '').split '/'
+    src = @src.split '/'
     unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
       return if g.dead
-      # This will fool CloudFlare's cache.
-      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}?#{Date.now()}"
+      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}"
     return if $.engine isnt 'webkit' and url.split('/')[2] is 'images.4chan.org'
     timeoutID = setTimeout ImageExpand.expand, 10000, thumb, url
     # Only Chrome let userscripts do cross domain requests.
