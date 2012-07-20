@@ -2314,20 +2314,19 @@ Updater =
       # Reset the counter when we focus this tab.
       Updater.unsuccessfulFetchCount = 0
       if Updater.timer.textContent < -Conf['Interval']
-        Updater.timer.textContent = -Updater.getInterval()
+        Updater.set 'timer', -Updater.getInterval()
     interval: ->
       val = parseInt @value, 10
       @value = if val > 5 then val else 5
       $.cb.value.call @
-      Updater.timer.textContent = -Updater.getInterval()
+      Updater.set 'timer', -Updater.getInterval()
     verbose: ->
       if Conf['Verbose']
-        Updater.count.textContent = '+0'
+        Updater.set 'count', '+0'
         Updater.timer.hidden = false
       else
-        $.extend Updater.count,
-          className: ''
-          textContent: 'Thread Updater'
+        Updater.set 'count', 'Thread Updater'
+        Updater.count.className = ''
         Updater.timer.hidden = true
     autoUpdate: ->
       if Conf['Auto Update This'] = @checked
@@ -2342,9 +2341,9 @@ Updater =
           -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
     update: ->
       if @status is 404
-        Updater.timer.textContent = ''
-        Updater.count.textContent = 404
-        Updater.count.className   = 'warning'
+        Updater.set 'timer', ''
+        Updater.set 'count', 404
+        Updater.count.className = 'warning'
         clearTimeout Updater.timeoutID
         g.dead = true
         if Conf['Unread Count']
@@ -2357,13 +2356,13 @@ Updater =
       unless @status in [0, 200, 304]
         # XXX 304 -> 0 in Opera
         if Conf['Verbose']
-          Updater.count.textContent = @statusText
-          Updater.count.className   = 'warning'
+          Updater.set 'count', @statusText
+          Updater.count.className = 'warning'
         Updater.unsuccessfulFetchCount++
         return
 
       Updater.unsuccessfulFetchCount++
-      Updater.timer.textContent = -Updater.getInterval()
+      Updater.set 'timer', -Updater.getInterval()
 
       ###
       Status Code 304: Not modified
@@ -2374,8 +2373,8 @@ Updater =
       if @status in [0, 304]
         # XXX 304 -> 0 in Opera
         if Conf['Verbose']
-          Updater.count.textContent = '+0'
-          Updater.count.className   = null
+          Updater.set 'count', '+0'
+          Updater.count.className = null
         return
       Updater.lastModified = @getResponseHeader 'Last-Modified'
 
@@ -2391,18 +2390,27 @@ Updater =
 
       count = nodes.length
       if Conf['Verbose']
-        Updater.count.textContent = "+#{count}"
-        Updater.count.className   = if count then 'new' else null
+        Updater.set 'count', "+#{count}"
+        Updater.count.className = if count then 'new' else null
 
       return unless count
 
       Updater.unsuccessfulFetchCount = 0
-      Updater.timer.textContent = -Updater.getInterval()
+      Updater.set 'timer', -Updater.getInterval()
       scroll = Conf['Scrolling'] && Updater.scrollBG() &&
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       $.add Updater.thread, nodes.reverse()
       if scroll
         nodes[0].scrollIntoView()
+
+  set: (name, text) ->
+    el = Updater[name]
+    if node = el.firstChild
+      # Prevent the creation of a new DOM Node
+      # by setting the text node's data.
+      node.data = text
+    else
+      el.textContent = text
 
   getInterval: ->
     i = +Conf['Interval']
@@ -2414,20 +2422,20 @@ Updater =
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000
-    n = 1 + Number Updater.timer.textContent
+    n = 1 + Number Updater.timer.firstChild.data
 
     if n is 0
       Updater.update()
     else if n >= Updater.getInterval()
       Updater.unsuccessfulFetchCount++
-      Updater.count.textContent = 'Retry'
-      Updater.count.className   = null
+      Updater.set 'count', 'Retry'
+      Updater.count.className = null
       Updater.update()
     else
-      Updater.timer.textContent = n
+      Updater.set 'timer', n
 
   update: ->
-    Updater.timer.textContent = 0
+    Updater.set 'timer', 0
     Updater.request?.abort()
     # Fool the cache.
     url = location.pathname + '?' + Date.now()

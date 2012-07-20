@@ -2889,7 +2889,7 @@
         }
         Updater.unsuccessfulFetchCount = 0;
         if (Updater.timer.textContent < -Conf['Interval']) {
-          return Updater.timer.textContent = -Updater.getInterval();
+          return Updater.set('timer', -Updater.getInterval());
         }
       },
       interval: function() {
@@ -2897,17 +2897,15 @@
         val = parseInt(this.value, 10);
         this.value = val > 5 ? val : 5;
         $.cb.value.call(this);
-        return Updater.timer.textContent = -Updater.getInterval();
+        return Updater.set('timer', -Updater.getInterval());
       },
       verbose: function() {
         if (Conf['Verbose']) {
-          Updater.count.textContent = '+0';
+          Updater.set('count', '+0');
           return Updater.timer.hidden = false;
         } else {
-          $.extend(Updater.count, {
-            className: '',
-            textContent: 'Thread Updater'
-          });
+          Updater.set('count', 'Thread Updater');
+          Updater.count.className = '';
           return Updater.timer.hidden = true;
         }
       },
@@ -2928,8 +2926,8 @@
       update: function() {
         var count, doc, id, lastPost, nodes, reply, scroll, _i, _len, _ref, _ref1, _ref2;
         if (this.status === 404) {
-          Updater.timer.textContent = '';
-          Updater.count.textContent = 404;
+          Updater.set('timer', '');
+          Updater.set('count', 404);
           Updater.count.className = 'warning';
           clearTimeout(Updater.timeoutID);
           g.dead = true;
@@ -2944,14 +2942,14 @@
         }
         if ((_ref = this.status) !== 0 && _ref !== 200 && _ref !== 304) {
           if (Conf['Verbose']) {
-            Updater.count.textContent = this.statusText;
+            Updater.set('count', this.statusText);
             Updater.count.className = 'warning';
           }
           Updater.unsuccessfulFetchCount++;
           return;
         }
         Updater.unsuccessfulFetchCount++;
-        Updater.timer.textContent = -Updater.getInterval();
+        Updater.set('timer', -Updater.getInterval());
         /*
               Status Code 304: Not modified
               By sending the `If-Modified-Since` header we get a proper status code, and no response.
@@ -2961,7 +2959,7 @@
 
         if ((_ref1 = this.status) === 0 || _ref1 === 304) {
           if (Conf['Verbose']) {
-            Updater.count.textContent = '+0';
+            Updater.set('count', '+0');
             Updater.count.className = null;
           }
           return;
@@ -2982,19 +2980,28 @@
         }
         count = nodes.length;
         if (Conf['Verbose']) {
-          Updater.count.textContent = "+" + count;
+          Updater.set('count', "+" + count);
           Updater.count.className = count ? 'new' : null;
         }
         if (!count) {
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
-        Updater.timer.textContent = -Updater.getInterval();
+        Updater.set('timer', -Updater.getInterval());
         scroll = Conf['Scrolling'] && Updater.scrollBG() && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         $.add(Updater.thread, nodes.reverse());
         if (scroll) {
           return nodes[0].scrollIntoView();
         }
+      }
+    },
+    set: function(name, text) {
+      var el, node;
+      el = Updater[name];
+      if (node = el.firstChild) {
+        return node.data = text;
+      } else {
+        return el.textContent = text;
       }
     },
     getInterval: function() {
@@ -3009,21 +3016,21 @@
     timeout: function() {
       var n;
       Updater.timeoutID = setTimeout(Updater.timeout, 1000);
-      n = 1 + Number(Updater.timer.textContent);
+      n = 1 + Number(Updater.timer.firstChild.data);
       if (n === 0) {
         return Updater.update();
       } else if (n >= Updater.getInterval()) {
         Updater.unsuccessfulFetchCount++;
-        Updater.count.textContent = 'Retry';
+        Updater.set('count', 'Retry');
         Updater.count.className = null;
         return Updater.update();
       } else {
-        return Updater.timer.textContent = n;
+        return Updater.set('timer', n);
       }
     },
     update: function() {
       var url, _ref;
-      Updater.timer.textContent = 0;
+      Updater.set('timer', 0);
       if ((_ref = Updater.request) != null) {
         _ref.abort();
       }
