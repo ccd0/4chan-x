@@ -2383,7 +2383,7 @@ Updater =
     post: ->
       return unless Conf['Auto Update This']
       Updater.unsuccessfulFetchCount = 0
-      setTimeout Updater.update, 500
+      setTimeout Updater.update, 100
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
@@ -2488,7 +2488,7 @@ Updater =
   getInterval: ->
     min = +Conf['Interval']
     max = +Conf['Max Interval']
-    now = 5 * Math.pow 2, @unsuccessfulFetchCount
+    now = 1 * Math.pow 2, @unsuccessfulFetchCount
     if min > now
       min
     else if max < now

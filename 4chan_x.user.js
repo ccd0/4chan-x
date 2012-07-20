@@ -2987,7 +2987,7 @@
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
-        return setTimeout(Updater.update, 500);
+        return setTimeout(Updater.update, 100);
       },
       visibility: function() {
         var state;
@@ -3118,7 +3118,7 @@
       var max, min, now;
       min = +Conf['Interval'];
       max = +Conf['Max Interval'];
-      now = 5 * Math.pow(2, this.unsuccessfulFetchCount);
+      now = 1 * Math.pow(2, this.unsuccessfulFetchCount);
       if (min > now) {
         return min;
       } else if (max < now) {
