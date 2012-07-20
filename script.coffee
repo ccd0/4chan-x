@@ -167,7 +167,7 @@ Config =
       'Verbose':     [true,  'Show countdown timer, new post count']
       'Auto Update': [true,  'Automatically fetch new posts']
     'Interval': 30
-    'Max Interval': 600
+    'Max Interval': 10
 
 Conf = {}
 d = document
