@@ -354,6 +354,7 @@
       }
       type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
       r = new XMLHttpRequest();
+      r.overrideMimeType('text/html');
       type || (type = form && 'post' || 'get');
       r.open(type, url, true);
       for (key in headers) {

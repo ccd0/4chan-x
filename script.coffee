@@ -291,6 +291,7 @@ $.extend $,
     #XXX `form` should be `data`
     {type, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
+    r.overrideMimeType 'text/html'
     type or= form and 'post' or 'get'
     r.open type, url, true
     for key, val of headers
