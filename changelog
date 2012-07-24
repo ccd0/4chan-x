@@ -1,10 +1,28 @@
 master
+- Mayhem
+  Update /k/ archive redirection.
+
+2.43.2
+- noface
+  Insert Quote Threading from aeosynths tree.
+
+- Mayhem
+  The Delete Links in the Menu now have a cooldown.
+
+2.43.1
+- Mayhem
+  Divide the Delete Link in the Menu into a Post and Image deletion links.
+  Add /wsg/ archive redirection.
+  Add /fit/ archive redirection.
+
+2.34.0
 - Stallmanu
   Sage keybind
 - that4chanwolf
   Remove Mayhem's stupidity.
   Redirect /jp/ to fuuka.warosu.org
   Autosage on /jp/ (now an option).
+  Improve sage 'consistency'.
 - Mayhem
   New feature: Menu, which
     - replaces and includes Report Button and Delete Button.
@@ -12,7 +30,6 @@ master
     - add download links to automatically save the file with its original filename. Chrome-only currently.
     - add archive links.
     - can integrate features from external userscripts/extensions, see https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
-  The updater's refresh interval is now limited to 2 seconds minimum.
 
 2.33.8
 - Mayhem
