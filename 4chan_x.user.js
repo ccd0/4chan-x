@@ -376,7 +376,7 @@
       } else {
         req = $.ajax(url, {
           onload: function() {
-            var _i, _len, _ref, _results;
+            var cb, _i, _len, _ref, _results;
             _ref = this.callbacks;
             _results = [];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {

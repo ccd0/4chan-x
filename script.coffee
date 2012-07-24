@@ -3262,8 +3262,8 @@ Quotify =
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
 
-    # Get all the text nodes that are not inside an anchor.
-    snapshot = $.X './/text()[not(parent::a)]', post.blockquote
+    # Get all the text nodes that are not inside an anchor or pre ([code] tags).
+    snapshot = $.X './/text()[not(parent::a)][not(ancestor::pre)]', post.blockquote
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
