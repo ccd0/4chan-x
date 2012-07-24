@@ -376,7 +376,7 @@
       } else {
         req = $.ajax(url, {
           onload: function() {
-            var cb, _i, _len, _ref, _results;
+            var _i, _len, _ref, _results;
             _ref = this.callbacks;
             _results = [];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4160,7 +4160,7 @@
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      snapshot = $.X('.//text()[not(parent::a)]', post.blockquote);
+      snapshot = $.X('.//text()[not(parent::a)][not(ancestor::pre)]', post.blockquote);
       for (i = _i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         node = snapshot.snapshotItem(i);
         data = node.data;
