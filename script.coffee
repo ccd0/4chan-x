@@ -1009,7 +1009,7 @@ Menu =
     $.on @el, 'click',   (e) -> e.stopPropagation()
     $.on @el, 'keydown', @keybinds
 
-    # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
+    # Doc here: https://github.com/zixaphir/appchan-x/wiki/Menu-API
     $.on d, 'AddMenuEntry', (e) -> Menu.addEntry e.detail
 
     Main.callbacks.push @node
@@ -2058,7 +2058,7 @@ Options =
       a = $.el 'a',
         href: 'javascript:;'
         className: 'settingsWindowLink'
-        textContent: '4chan X Settings'
+        textContent: 'Appchan X Settings'
       $.on a, 'click', Options.dialog
       el = $.id(settings).firstElementChild
       el.hidden = true
@@ -2073,9 +2073,9 @@ Options =
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
   <div id=credits>
-    <a target=_blank href=http://that4chanwolf.github.com/4chan-x/>4chan X</a>
-    | <a target=_blank href=https://raw.github.com/that4chanwolf/4chan-x/master/changelog>' + Main.version + '</a>
-    | <a target=_blank href=http://that4chanwolf.github.com/4chan-x/#bug-report>Issues</a>
+    <a target=_blank href=http://zixaphir.github.com/Appchan-x/>Appchan X</a>
+    | <a target=_blank href=https://raw.github.com/zixaphir/appchan-x/master/changelog>' + Main.version + '</a>
+    | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>
   </div>
   <div>
     <label for=main_tab>Main</label>
@@ -4221,8 +4221,8 @@ Main =
 
   message: (e) ->
     {version} = e.data
-    if version and version isnt Main.version and confirm 'An updated version of 4chan X is available, would you like to install it now?'
-      window.location = "https://raw.github.com/aeosynth/4chan-x/#{version}/4chan_x.user.js"
+    if version and version isnt Main.version and confirm 'An updated version of Appchan X is available, would you like to install it now?'
+      window.location = "https://raw.github.com/zixaphir/appchan-x/#{version}/appchan_x.user.js"
 
   preParse: (node) ->
     parentClass = node.parentNode.className
@@ -4253,7 +4253,7 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "4chan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/aeosynth/4chan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err.stack}" if notify
+        alert "Appchan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []

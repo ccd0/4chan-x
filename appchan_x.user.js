@@ -1,10 +1,11 @@
 // ==UserScript==
-// @name           4chan x
+// @name           AppChan x
 // @version        2.34.2
-// @namespace      aeosynth
-// @description    Adds various features.
-// @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright      2012 Nicolas Stepien <stepien.nicolas@gmail.com>
+// @namespace      zixaphir
+// @description    Adds various features and stylings.
+// @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
+// @copyright      4chan x - 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
+// @copyright      Appchan x - 2012 Zixaphir <zixaphirmoxphar@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        https://boards.4chan.org/*
@@ -13,17 +14,22 @@
 // @include        http://sys.4chan.org/*
 // @include        https://sys.4chan.org/*
 // @run-at         document-start
-// @updateURL      https://github.com/that4chanwolf/4chan-x/raw/stable/4chan_x.user.js
-// @downloadURL    https://github.com/that4chanwolf/4chan-x/raw/stable/4chan_x.user.js
-// @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
+// @updateURL      https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
+// @downloadURL    https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
+// @icon           http://zixaphir.github.com/appchan-x/favicon.gif
 // ==/UserScript==
 
 /* LICENSE
  *
- * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
- * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
+ * 4chan x Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
+ * http://aeosynth.github.com/4chan-x/
+ * 4chan x Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.34.2
+ * Appchan X Copyright (c) 2012 Zixaphir <zixaphirmodnar@gmail.com>
+ * http://zixaphir.github.com/appchan-x/
+ *
+ * 4chan X
+ * Appchan X
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -47,22 +53,24 @@
  *
  * HACKING
  *
- * 4chan X is written in CoffeeScript[1], and developed on GitHub[2].
+ * Appchan X is written in CoffeeScript[1], and developed on GitHub[2].
  *
  * [1]: http://coffeescript.org/
- * [2]: https://github.com/MayhemYDG/4chan-x
+ * [2]: https://github.com/zixaphir/appchan-x
  *
  * CONTRIBUTORS
  *
+ * aeosynth - original author of 4chan x
+ * mayhemydg - a current maintainer of 4chan x
+ * that4chanwolf - a current maintainer of 4chan x
  * noface - unique ID fixes
  * desuwa - Firefox filename upload fix
  * seaweed - bottom padding for image hover
  * e000 - cooldown sanity check
  * ahodesuka - scroll back when unexpanding images, file info formatting
- * Shou- - pentadactyl fixes
+ * Shou - pentadactyl fixes
  * ferongr - new favicons
- * xat- - new favicons
- * Zixaphir - fix qr textarea - captcha-image gap
+ * xat - new favicons
  * Ongpot - sfw favicon
  * thisisanon - nsfw + 404 favicons
  * Anonymous - empty favicon
@@ -2632,7 +2640,7 @@
         a = $.el('a', {
           href: 'javascript:;',
           className: 'settingsWindowLink',
-          textContent: '4chan X Settings'
+          textContent: 'Appchan X Settings'
         });
         $.on(a, 'click', Options.dialog);
         el = $.id(settings).firstElementChild;
@@ -2651,9 +2659,9 @@
         className: 'reply dialog',
         innerHTML: '<div id=optionsbar>\
   <div id=credits>\
-    <a target=_blank href=http://that4chanwolf.github.com/4chan-x/>4chan X</a>\
-    | <a target=_blank href=https://raw.github.com/that4chanwolf/4chan-x/master/changelog>' + Main.version + '</a>\
-    | <a target=_blank href=http://that4chanwolf.github.com/4chan-x/#bug-report>Issues</a>\
+    <a target=_blank href=http://zixaphir.github.com/Appchan-x/>Appchan X</a>\
+    | <a target=_blank href=https://raw.github.com/zixaphir/appchan-x/master/changelog>' + Main.version + '</a>\
+    | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>\
   </div>\
   <div>\
     <label for=main_tab>Main</label>\
@@ -5389,8 +5397,8 @@
     message: function(e) {
       var version;
       version = e.data.version;
-      if (version && version !== Main.version && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
-        return window.location = "https://raw.github.com/aeosynth/4chan-x/" + version + "/4chan_x.user.js";
+      if (version && version !== Main.version && confirm('An updated version of Appchan X is available, would you like to install it now?')) {
+        return window.location = "https://raw.github.com/zixaphir/appchan-x/" + version + "/appchan_x.user.js";
       }
     },
     preParse: function(node) {
@@ -5431,7 +5439,7 @@
           }
         } catch (err) {
           if (notify) {
-            alert("4chan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/aeosynth/4chan-x/issues\n\n" + Main.version + "\n" + window.location + "\n" + navigator.userAgent + "\n\n" + err.stack);
+            alert("Appchan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n" + Main.version + "\n" + window.location + "\n" + navigator.userAgent + "\n\n" + err.stack);
           }
         }
       }
