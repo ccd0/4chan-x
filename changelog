@@ -1,4 +1,6 @@
-master
+alpha
+- Mayhem
+  Fix Chrome's install warning that 4chan X would execute on all domains.
 
 2.34.3
 - Mayhem

@@ -2,27 +2,27 @@
 {exec} = require 'child_process'
 fs     = require 'fs'
 
-VERSION = '2.34.3'
-
-HEADER  = """
+VERSION   = '3.0.0'
+CAKEFILE  = 'Cakefile'
+INFILE    = 'script.coffee'
+OUTFILE   = '4chan_x.user.js'
+CHANGELOG = 'changelog'
+LATEST    = 'latest.js'
+HEADER    = """
 // ==UserScript==
-// @name           4chan x
-// @version        #{VERSION}
-// @namespace      aeosynth
-// @description    Adds various features.
-// @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright      2012 Nicolas Stepien <stepien.nicolas@gmail.com>
-// @license        MIT; http://en.wikipedia.org/wiki/Mit_license
-// @include        http://boards.4chan.org/*
-// @include        https://boards.4chan.org/*
-// @include        http://images.4chan.org/*
-// @include        https://images.4chan.org/*
-// @include        http://sys.4chan.org/*
-// @include        https://sys.4chan.org/*
-// @run-at         document-start
-// @updateURL      https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
-// @downloadURL    https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
-// @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
+// @name         4chan X alpha
+// @version      #{VERSION}
+// @description  Adds various features.
+// @copyright    2009-2011 James Campos <james.r.campos@gmail.com>
+// @copyright    2012 Nicolas Stepien <stepien.nicolas@gmail.com>
+// @license      MIT; http://en.wikipedia.org/wiki/Mit_license
+// @match        *://boards.4chan.org/*
+// @match        *://images.4chan.org/*
+// @match        *://sys.4chan.org/*
+// @run-at       document-start
+// @updateURL    https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
+// @downloadURL  https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
+// @icon         http://mayhemydg.github.com/4chan-x/favicon.gif
 // ==/UserScript==
 
 /* LICENSE
@@ -86,12 +86,6 @@ HEADER  = """
 
 """
 
-CAKEFILE  = 'Cakefile'
-INFILE    = 'script.coffee'
-OUTFILE   = '4chan_x.user.js'
-CHANGELOG = 'changelog'
-LATEST    = 'latest.js'
-
 option '-v', '--version [version]', 'Upgrade version.'
 
 task 'upgrade', (options) ->
@@ -101,10 +95,10 @@ task 'upgrade', (options) ->
     return
   regexp = RegExp VERSION, 'g'
   for file in [CAKEFILE, INFILE, OUTFILE, LATEST]
-    data = fs.readFileSync file, 'utf8'
-    fs.writeFileSync file, data.replace regexp, version
-  data = fs.readFileSync CHANGELOG, 'utf8'
-  fs.writeFileSync CHANGELOG, data.replace 'master', "master\n\n#{version}"
+    data = fs.readFileSync(file, 'utf8').replace regexp, version
+    fs.writeFileSync file, data
+  # data = fs.readFileSync CHANGELOG, 'utf8'
+  # fs.writeFileSync CHANGELOG, data.replace 'master', "master\n\n#{version}"
   exec "git commit -am 'Release #{version}.' && git tag -a #{version} -m '#{version}' && git tag -af stable -m '#{version}'"
 
 task 'build', ->
