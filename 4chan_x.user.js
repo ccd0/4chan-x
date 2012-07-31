@@ -4555,7 +4555,7 @@
         case 'r9k':
         case 'toy':
         case 'x':
-          url = "http://archive.maidlab.jp/" + path;
+          url = "http://archive.heinessen.com/" + path;
           if (threadID && postID) {
             url += "#p" + postID;
           }
