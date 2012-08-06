@@ -657,8 +657,10 @@
           $.addClass(root, result["class"]);
           if (isOP && result.top && !g.REPLY) {
             thisThread = root.parentNode;
-            if (firstThread = $('div[class="postContainer opContainer"]').parentNode) {
-              $.before(firstThread, [thisThread, thisThread.nextElementSibling]);
+            if (firstThread = $('div[class="postContainer opContainer"]')) {
+              if (firstThread !== root) {
+                $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
+              }
             }
           }
         }
