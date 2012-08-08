@@ -4768,6 +4768,7 @@
       switch (board) {
         case 'a':
         case 'm':
+        case 'q':
         case 'sp':
         case 'tg':
         case 'vg':
@@ -4783,6 +4784,7 @@
         case 'co':
         case 'jp':
         case 'm':
+        case 'q':
         case 'sp':
         case 'tg':
         case 'tv':
@@ -4807,6 +4809,7 @@
         case 'a':
         case 'co':
         case 'm':
+        case 'q':
         case 'sp':
         case 'tg':
         case 'tv':

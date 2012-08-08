@@ -3776,7 +3776,7 @@ Redirect =
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
-      when 'a', 'm', 'sp', 'tg', 'vg', 'wsg'
+      when 'a', 'm', 'q', 'sp', 'tg', 'vg', 'wsg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
@@ -3789,7 +3789,7 @@ Redirect =
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
-      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
       when 'u', 'kuku'
         "//nsfw.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
@@ -3802,7 +3802,7 @@ Redirect =
       else
         "#{board}/post/#{postID}"
     switch board
-      when 'a', 'co', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+      when 'a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         url = "//archive.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
