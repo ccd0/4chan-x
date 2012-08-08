@@ -4467,6 +4467,7 @@
         case 'a':
         case 'jp':
         case 'm':
+        case 'q':
         case 'sp':
         case 'tg':
         case 'vg':
@@ -4482,6 +4483,7 @@
         case 'co':
         case 'jp':
         case 'm':
+        case 'q':
         case 'sp':
         case 'tg':
         case 'tv':
@@ -4507,6 +4509,7 @@
         case 'co':
         case 'jp':
         case 'm':
+        case 'q':
         case 'sp':
         case 'tg':
         case 'tv':
