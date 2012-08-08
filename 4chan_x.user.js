@@ -564,15 +564,15 @@
           if (boards !== 'global' && boards.split(',').indexOf(g.BOARD) === -1) {
             continue;
           }
-          try {
-            if (key === 'md5') {
-              regexp = regexp[1];
-            } else {
+          if (key === 'md5') {
+            regexp = regexp[1];
+          } else {
+            try {
               regexp = RegExp(regexp[1], regexp[2]);
+            } catch (err) {
+              alert(err.message);
+              continue;
             }
-          } catch (e) {
-            alert(e.message);
-            continue;
           }
           op = ((_ref2 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref2[1] : void 0) || 'no';
           stub = (function() {

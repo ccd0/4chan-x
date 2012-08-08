@@ -437,17 +437,17 @@ Filter =
         if boards isnt 'global' and boards.split(',').indexOf(g.BOARD) is -1
           continue
 
-        try
-          if key is 'md5'
-            # MD5 filter will use strings instead of regular expressions.
-            regexp = regexp[1]
-          else
+        if key is 'md5'
+          # MD5 filter will use strings instead of regular expressions.
+          regexp = regexp[1]
+        else
+          try
             # Please, don't write silly regular expressions.
             regexp = RegExp regexp[1], regexp[2]
-        catch e
-          # I warned you, bro.
-          alert e.message
-          continue
+          catch err
+            # I warned you, bro.
+            alert err.message
+            continue
 
         # Filter OPs along with their threads, replies only, or both.
         # Defaults to replies only.
