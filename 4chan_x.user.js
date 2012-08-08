@@ -3725,7 +3725,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, br, capcode, data, email, file, filename, filesize, isOP, name, nameBlock, pc, pi, piM, span, spoiler, subject, threadID, threshold, thumb_src, timestamp, trip;
+      var bq, br, capcode, data, email, file, filename, filesize, isOP, name, nameBlock, pc, pi, piM, span, spoiler, subject, threadID, threshold, thumb_src, timestamp, trip, userID;
       data = JSON.parse(req.response);
       $.addClass(root, 'archivedPost');
       if (data.error) {
@@ -3736,6 +3736,7 @@
       isOP = postID === threadID;
       name = data.name, trip = data.trip, timestamp = data.timestamp;
       subject = data.title;
+      userID = data.poster_hash;
       piM = $.el('div', {
         id: "pim" + postID,
         className: 'postInfoM mobile',
@@ -3770,7 +3771,7 @@
       pi = $.el('div', {
         id: "pi" + postID,
         className: 'postInfo desktop',
-        innerHTML: "<input type=checkbox name=" + postID + " value=delete> <span class=subject></span> <span class=nameBlock></span> <span class=dateTime data-utc=" + timestamp + ">data.fourchan_date</span> <span class='postNum desktop'><a href='/" + board + "/res/" + threadID + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "' title='Quote this post'>" + postID + "</a>" + (isOP ? ' &nbsp; ' : '') + "</span> "
+        innerHTML: "<input type=checkbox name=" + postID + " value=delete> <span class=subject></span> <span class=nameBlock></span> <span class=dateTime data-utc=" + timestamp + ">data.fourchan_date</span> <span class='postNum desktop'><a href='/" + board + "/res/" + threadID + "#p" + postID + "' title='Highlight this post'>No.</a><a href='/" + board + "/res/" + threadID + "#q" + postID + "' title='Quote this post'>" + postID + "</a></span>"
       });
       $('.subject', pi).textContent = subject;
       nameBlock = $('.nameBlock', pi);
@@ -3786,6 +3787,14 @@
         className: 'name',
         textContent: data.name
       }));
+      if (userID) {
+        $.add(nameBlock, [
+          $.tn(' '), $.el('span', {
+            className: "posteruid id_" + userID,
+            innerHTML: "(ID: <span class=hand title='Highlight posts by this ID'>" + userID + "</span>)"
+          })
+        ]);
+      }
       if (trip) {
         $.add(nameBlock, [
           $.tn(' '), $.el('span', {
@@ -3794,23 +3803,49 @@
           })
         ]);
       }
-      if (capcode !== 'N') {
-        $.add(nameBlock, [
-          $.tn(' '), $.el('strong', {
-            className: capcode === 'A' ? 'capcode capcodeAdmin' : 'capcode',
-            textContent: capcode === 'A' ? '## Admin' : '## Mod'
-          })
-        ]);
-        nameBlock = $('.nameBlock', pi);
-        $.addClass(nameBlock, capcode === 'A' ? 'capcodeAdmin' : 'capcodeMod');
-        $.add(nameBlock, [
-          $.tn(' '), $.el('img', {
-            src: capcode === 'A' ? '//static.4chan.org/image/adminicon.gif' : '//static.4chan.org/image/modicon.gif',
-            alt: capcode === 'A' ? 'This user is the 4chan Administrator.' : 'This user is a 4chan Moderator.',
-            title: capcode === 'A' ? 'This user is the 4chan Administrator.' : 'This user is a 4chan Moderator.',
-            className: 'identityIcon'
-          })
-        ]);
+      nameBlock = $('.nameBlock', pi);
+      switch (capcode) {
+        case 'A':
+          $.addClass(nameBlock, 'capcodeAdmin');
+          $.add(nameBlock, [
+            $.tn(' '), $.el('strong', {
+              className: 'capcode',
+              textContent: '## Admin'
+            }), $.tn(' '), $.el('img', {
+              src: '//static.4chan.org/image/adminicon.gif',
+              alt: 'This user is the 4chan Administrator.',
+              title: 'This user is the 4chan Administrator.',
+              className: 'identityIcon'
+            })
+          ]);
+          break;
+        case 'M':
+          $.addClass(nameBlock, 'capcodeMod');
+          $.add(nameBlock, [
+            $.tn(' '), $.el('strong', {
+              className: 'capcode',
+              textContent: '## Mod'
+            }), $.tn(' '), $.el('img', {
+              src: '//static.4chan.org/image/modicon.gif',
+              alt: 'This user is a 4chan Moderator.',
+              title: 'This user is a 4chan Moderator.',
+              className: 'identityIcon'
+            })
+          ]);
+          break;
+        case 'D':
+          $.addClass(nameBlock, 'capcodeDeveloper');
+          $.add(nameBlock, [
+            $.tn(' '), $.el('strong', {
+              className: 'capcode',
+              textContent: '## Developer'
+            }), $.tn(' '), $.el('img', {
+              src: '//static.4chan.org/image/developericon.gif',
+              alt: 'This user is a 4chan Developer.',
+              title: 'title="This user is a 4chan Developer.',
+              className: 'identityIcon'
+            })
+          ]);
       }
       bq = $.el('blockquote', {
         id: "m" + postID,
