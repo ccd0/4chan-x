@@ -19,6 +19,7 @@ Config =
       'Show Stubs':                   [true,  'Of hidden threads / replies']
     Imaging:
       'Image Auto-Gif':               [false, 'Animate gif thumbnails']
+      'Png Thumbnail Fix':            [false, 'Fixes transparent png thumbnails']
       'Image Expansion':              [true,  'Expand images']
       'Image Hover':                  [false, 'Show full image on mouseover']
       'Sauce':                        [true,  'Add sauce to images']
@@ -51,6 +52,7 @@ Config =
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR.']
       'Sage on /jp/':                 [true,  'Uses sage by default on /jp/']
+      'Markdown':                     [false, 'Code, italic, bold, italic bold, double struck - `, *, **, ***, ||, respectively. _ can be used instead of *']
     Quoting:
       'Quote Backlinks':              [true,  'Add quote backlinks']
       'OP Backlinks':                 [false, 'Add backlinks to the OP']
@@ -167,7 +169,6 @@ Config =
       'Verbose':     [true,  'Show countdown timer, new post count']
       'Auto Update': [true,  'Automatically fetch new posts']
     'Interval': 30
-    'Max Interval': 10
 
 Conf = {}
 d = document
@@ -482,6 +483,94 @@ $.extend $,
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector
 
+Markdown =
+  format: (text) ->
+    tag_patterns =
+      bi: /(\*\*\*|___)(?=\S)([^\r\n]*?\S)\1/g
+      b: /(\*\*|__)(?=\S)([^\r\n]*?\S)\1/g
+      i: /(\*|_)(?=\S)([^\r\n]*?\S)\1/g
+      code: /(`)(?=\S)([^\r\n]*?\S)\1/g
+      ds: /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
+
+    for tag, pattern of tag_patterns
+      text = text.replace pattern, Markdown.unicode_convert
+    text
+
+  unicode_convert: (str, tag, inner) ->
+    if tag is "_" or tag is "*"
+      fmt = "i"
+    else if tag is "__" or tag is "**"
+      fmt = "b"
+    else if tag is "***" or tag is "___"
+      fmt = "bi"
+    else if tag is "||"
+      fmt = "ds"
+    else fmt = "code"  if tag is "`" or tag is "```"
+
+    #Unicode codepoints for the characters '0', 'A', and 'a'
+    #http://en.wikipedia.org/wiki/Mathematical_Alphanumeric_Symbols
+    codepoints =
+      b:    [ 0x1D7CE, 0x1D400, 0x1D41A ] #MATHEMATICAL BOLD
+      i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
+      bi:   [ 0x1D7CE, 0x1D468, 0x1D482 ] #MATHEMATICAL BOLD ITALIC
+      code: [ 0x1D7F6, 0x1D670, 0x1D68A ] #MATHEMATICAL MONOSPACE
+      ds:   [ 0x1D7D8, 0x1D538, 0x1D552 ] #I FUCKING LOVE CAPS LOCK
+
+    charcodes = (inner.charCodeAt i for c, i in inner)
+
+    codes = for charcode in charcodes
+      if charcode >= 48 and charcode <= 57
+        charcode - 48 + codepoints[fmt][0]
+      else if charcode >= 65 and charcode <= 90
+        charcode - 65 + codepoints[fmt][1]
+      else if charcode >= 97 and charcode <= 122
+        if charcode is 104 and tag is "i"
+          #http://blogs.msdn.com/b/michkap/archive/2006/04/21/580328.aspx
+          #mathematical small h -> planck constant
+          0x210E
+        else
+          charcode - 97 + codepoints[fmt][2]
+      else
+        charcode
+
+    unicode_text = codes.map(Markdown.ucs2_encode).join ""
+    unicode_text = unicode_text.replace(/\x20/g, "\xA0")  if tag is "code"
+    unicode_text
+
+  ucs2_encode: (value) ->
+    #translates Unicode codepoint integers directly into text. Javascript does this in an ugly fashion by default.
+    ###
+    From Punycode.js: https://github.com/bestiejs/punycode.js
+
+    Copyright Mathias Bynens <http://mathiasbynens.be/>
+
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF`
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+    LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    ###
+    output = ""
+    if value > 0xFFFF
+      value -= 0x10000
+      output += String.fromCharCode value >>> 10 & 0x3FF | 0xD800
+      value = 0xDC00 | value & 0x3FF
+    output += String.fromCharCode value
+    output
+
 Filter =
   filters: {}
   init: ->
@@ -503,17 +592,17 @@ Filter =
         if boards isnt 'global' and boards.split(',').indexOf(g.BOARD) is -1
           continue
 
-        try
-          if key is 'md5'
-            # MD5 filter will use strings instead of regular expressions.
-            regexp = regexp[1]
-          else
+        if key is 'md5'
+          # MD5 filter will use strings instead of regular expressions.
+          regexp = regexp[1]
+        else
+          try
             # Please, don't write silly regular expressions.
             regexp = RegExp regexp[1], regexp[2]
-        catch e
-          # I warned you, bro.
-          alert e.message
-          continue
+          catch err
+            # I warned you, bro.
+            alert err.message
+            continue
 
         # Filter OPs along with their threads, replies only, or both.
         # Defaults to replies only.
@@ -1009,7 +1098,7 @@ Menu =
     $.on @el, 'click',   (e) -> e.stopPropagation()
     $.on @el, 'keydown', @keybinds
 
-    # Doc here: https://github.com/zixaphir/appchan-x/wiki/Menu-API
+    # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
     $.on d, 'AddMenuEntry', (e) -> Menu.addEntry e.detail
 
     Main.callbacks.push @node
@@ -1664,10 +1753,8 @@ QR =
         ui8a = new Uint8Array l
         for i in  [0...l]
           ui8a[i] = data.charCodeAt i
-        bb = new (window.MozBlobBuilder or window.WebKitBlobBuilder)()
-        bb.append ui8a.buffer
 
-        @url = url.createObjectURL bb.getBlob 'image/png'
+        @url = url.createObjectURL new Blob [ui8a.buffer], type: 'image/png'
         @el.style.backgroundImage = "url(#{@url})"
         url.revokeObjectURL? fileUrl
 
@@ -1948,7 +2035,7 @@ QR =
       name:    reply.name
       email:   reply.email
       sub:     reply.sub
-      com:     reply.com
+      com:     if Conf['Markdown'] then Markdown.format reply.com else reply.com
       upfile:  reply.file
       spoiler: reply.spoiler
       mode:    'regist'
@@ -2058,7 +2145,7 @@ Options =
       a = $.el 'a',
         href: 'javascript:;'
         className: 'settingsWindowLink'
-        textContent: 'Appchan X Settings'
+        textContent: 'AppChan X Settings'
       $.on a, 'click', Options.dialog
       el = $.id(settings).firstElementChild
       el.hidden = true
@@ -2073,7 +2160,7 @@ Options =
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
   <div id=credits>
-    <a target=_blank href=http://zixaphir.github.com/Appchan-x/>Appchan X</a>
+    <a target=_blank href=http://zixaphir.github.com/appchan-x/>AppChan X</a>
     | <a target=_blank href=https://raw.github.com/zixaphir/appchan-x/master/changelog>' + Main.version + '</a>
     | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>
   </div>
@@ -2343,7 +2430,7 @@ Updater =
     html += "
 	<div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
 	<div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} class=field size=4></label></div>
-	<div><input value='Update Now' type=button></div>"
+	<div><input value='Update Now' type=button name='Update Now'></div>"
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
@@ -2383,23 +2470,9 @@ Updater =
   cb:
     post: ->
       return unless Conf['Auto Update This']
-      Updater.unsuccessfulFetchCount = 0
-      setTimeout Updater.update, 100
-    visibility: ->
-      state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
-      return if state isnt 'visible'
-      # Reset the counter when we focus this tab.
-      Updater.unsuccessfulFetchCount = 0
-      if Updater.timer.textContent < -Conf['Interval']
-        Updater.timer.textContent = -Updater.getInterval()
     interval: ->
       val = parseInt @value, 10
       @value = if val > 0 then val else 30
-      $.cb.value.call @
-      Updater.timer.textContent = -Updater.getInterval()
-    maxInterval: ->
-      val = parseInt @value, 10
-      @value = if val > 180 then val else 180
       $.cb.value.call @
     verbose: ->
       if Conf['Verbose']
@@ -2473,29 +2546,20 @@ Updater =
         Updater.count.textContent = "+#{count}"
         Updater.count.className   = if count then 'new' else null
 
+      count  = nodes.length
+      scroll = Conf['Scrolling'] && Updater.scrollBG() && count &&
+        lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
+      if Conf['Verbose']
+        Updater.count.textContent = "+#{count}"
+        Updater.count.className   = if count then 'new' else null
+
       if lastPost = nodes[0]
         Updater.lastPost = lastPost
 
-      return unless count
 
-      Updater.unsuccessfulFetchCount = 0
-      Updater.timer.textContent = -Updater.getInterval()
-      scroll = Conf['Scrolling'] && Updater.scrollBG() &&
-        Updater.thread.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       $.add Updater.thread, nodes.reverse()
       if scroll
         lastPost.scrollIntoView()
-
-  getInterval: ->
-    min = +Conf['Interval']
-    max = +Conf['Max Interval']
-    now = 1 * Math.pow 2, @unsuccessfulFetchCount
-    if min > now
-      min
-    else if max < now
-      max
-    else
-      now
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000
@@ -2509,6 +2573,11 @@ Updater =
     else
       Updater.timer.textContent = n
 
+  retry: ->
+    @count.textContent = 'Retry'
+    @count.className = null
+    @update()
+
   update: ->
     Updater.timer.textContent = 0
     Updater.request?.abort()
@@ -2518,7 +2587,6 @@ Updater =
       headers: 'If-Modified-Since': Updater.lastModified
 
   updateReset: ->
-    Updater.unsuccessfulFetchCount = 0
     Updater.update()
 
 Watcher =
@@ -2857,6 +2925,7 @@ Get =
     isOP = postID is threadID
     {name, trip, timestamp} = data
     subject = data.title
+    userID  = data.poster_hash
 
     # post info (mobile)
     piM = $.el 'div',
@@ -2893,7 +2962,7 @@ Get =
     pi = $.el 'div',
       id: "pi#{postID}"
       className: 'postInfo desktop'
-      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=subject></span> <span class=nameBlock></span> <span class=dateTime data-utc=#{timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a>#{if isOP then ' &nbsp; ' else ''}</span> "
+      innerHTML: "<input type=checkbox name=#{postID} value=delete> <span class=subject></span> <span class=nameBlock></span> <span class=dateTime data-utc=#{timestamp}>data.fourchan_date</span> <span class='postNum desktop'><a href='/#{board}/res/#{threadID}#p#{postID}' title='Highlight this post'>No.</a><a href='/#{board}/res/#{threadID}#q#{postID}' title='Quote this post'>#{postID}</a></span>"
     # subject
     $('.subject', pi).textContent = subject
     nameBlock = $ '.nameBlock', pi
@@ -2906,27 +2975,63 @@ Get =
     $.add nameBlock, $.el 'span',
       className: 'name'
       textContent: data.name
+    if userID
+      $.add nameBlock, [$.tn(' '), $.el('span',
+        className: "posteruid id_#{userID}"
+        innerHTML: "(ID: <span class=hand title='Highlight posts by this ID'>#{userID}</span>)"
+      )]
     if trip
       $.add nameBlock, [$.tn(' '), $.el('span', className: 'postertrip', textContent: trip)]
-    if capcode isnt 'N' # 'A'dmin or 'M'od
-      $.add nameBlock, [
-        $.tn(' '),
-        $.el('strong',
-          className:   if capcode is 'A' then 'capcode capcodeAdmin' else 'capcode',
-          textContent: if capcode is 'A' then '## Admin' else '## Mod'
-        )
-      ]
-      nameBlock = $ '.nameBlock', pi
-      $.addClass nameBlock, if capcode is 'A' then 'capcodeAdmin' else 'capcodeMod'
-      $.add nameBlock, [
-        $.tn(' '),
-        $.el('img',
-          src:   if capcode is 'A' then '//static.4chan.org/image/adminicon.gif' else  '//static.4chan.org/image/modicon.gif',
-          alt:   if capcode is 'A' then 'This user is the 4chan Administrator.' else 'This user is a 4chan Moderator.',
-          title: if capcode is 'A' then 'This user is the 4chan Administrator.' else 'This user is a 4chan Moderator.',
-          className: 'identityIcon'
-        )
-      ]
+    nameBlock = $ '.nameBlock', pi
+    switch capcode # 'A'dmin or 'M'od or 'D'eveloper
+      when 'A'
+        $.addClass nameBlock, 'capcodeAdmin'
+        $.add nameBlock, [
+          $.tn(' '),
+          $.el('strong',
+            className:   'capcode'
+            textContent: '## Admin'
+          ),
+          $.tn(' '),
+          $.el('img',
+            src:   '//static.4chan.org/image/adminicon.gif'
+            alt:   'This user is the 4chan Administrator.'
+            title: 'This user is the 4chan Administrator.'
+            className: 'identityIcon'
+          )
+        ]
+      when 'M'
+        $.addClass nameBlock, 'capcodeMod'
+        $.add nameBlock, [
+          $.tn(' '),
+          $.el('strong',
+            className:   'capcode'
+            textContent: '## Mod'
+          ),
+          $.tn(' '),
+          $.el('img',
+            src:   '//static.4chan.org/image/modicon.gif'
+            alt:   'This user is a 4chan Moderator.'
+            title: 'This user is a 4chan Moderator.'
+            className: 'identityIcon'
+          )
+        ]
+      when 'D'
+        $.addClass nameBlock, 'capcodeDeveloper'
+        $.add nameBlock, [
+          $.tn(' '),
+          $.el('strong',
+            className:   'capcode'
+            textContent: '## Developer'
+          ),
+          $.tn(' '),
+          $.el('img',
+            src:   '//static.4chan.org/image/developericon.gif'
+            alt:   'This user is a 4chan Developer.'
+            title: 'title="This user is a 4chan Developer.'
+            className: 'identityIcon'
+          )
+        ]
 
     # comment
     bq = $.el 'blockquote',
@@ -3708,7 +3813,7 @@ Redirect =
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
-      when 'a', 'jp', 'm', 'sp', 'tg', 'vg', 'wsg'
+      when 'a', 'm', 'q', 'sp', 'tg', 'vg', 'wsg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
@@ -3716,12 +3821,12 @@ Redirect =
       # when 'cgl', 'g', 'w'
       #   "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
       # when 'an', 'k', 'toy', 'x'
-      #   "http://archive.maidlab.jp/#{board}/full_image/#{filename}"
+      #   "http://archive.heinessen.com/#{board}/full_image/#{filename}"
       # when 'e'
       #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
-      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
       when 'u', 'kuku'
         "//nsfw.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
@@ -3734,7 +3839,7 @@ Redirect =
       else
         "#{board}/post/#{postID}"
     switch board
-      when 'a', 'co', 'jp', 'm', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+      when 'a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         url = "//archive.foolz.us/#{path}/"
         if threadID and postID
           url += "##{postID}"
@@ -3755,7 +3860,7 @@ Redirect =
         if threadID and postID
           url += "#p#{postID}"
       when 'an', 'fit', 'k', 'r9k', 'toy', 'x'
-        url = "http://archive.maidlab.jp/#{path}"
+        url = "http://archive.heinessen.com/#{path}"
         if threadID and postID
           url += "#p#{postID}"
       when 'e'
@@ -3861,18 +3966,30 @@ Prefetch =
     $.el 'img',
       src: img.parentNode.href
 
+PngFix =
+  init: ->
+    Main.callbacks.push @node
+  node: (post) ->
+    {img} = post
+    return if post.el.hidden or not img
+    src = img.parentNode.href
+    if /png$/.test(src) and !/spoiler/.test img.src
+      png = $.el 'img'
+      $.on png, 'load', ->
+        img.src = src
+      png.src = src
+
 ImageExpand =
   init: ->
     Main.callbacks.push @node
     @dialog()
 
   node: (post) ->
-    {img} = post
     return unless post.img
+    sp = FileInfo.data.spoiler
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
-    console.log "spoilered: #{post}" if img.alt.match /^Spoiler/
-    if ImageExpand.on and !post.el.hidden and (img.alt.match /^Spoiler/ isnt true)
+    if ImageExpand.on and !post.el.hidden and sp isnt true
       ImageExpand.expand post.img
   cb:
     toggle: (e) ->
@@ -4048,6 +4165,9 @@ Main =
     if Conf['Image Auto-Gif']
       AutoGif.init()
 
+    if Conf['Png Thumbnail Fix']
+      PngFix.init()
+
     if Conf['Image Hover']
       ImageHover.init()
 
@@ -4219,10 +4339,10 @@ Main =
     else # XXX fox
       $.on d, 'DOMNodeInserted', Main.addStyle
 
-  message: (e) ->
-    {version} = e.data
-    if version and version isnt Main.version and confirm 'An updated version of Appchan X is available, would you like to install it now?'
-      window.location = "https://raw.github.com/zixaphir/appchan-x/#{version}/appchan_x.user.js"
+  #message: (e) ->
+  #  {version} = e.data
+  #  if version and version isnt Main.version and confirm 'An updated version of 4chan X is available, would you like to install it now?'
+  #    window.location = "https://raw.github.com/aeosynth/4chan-x/#{version}/4chan_x.user.js"
 
   preParse: (node) ->
     parentClass = node.parentNode.className
@@ -4253,7 +4373,7 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "Appchan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err.stack}" if notify
+        alert "AppChan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []
@@ -4283,8 +4403,8 @@ Main =
         return
     $.globalEval "#{code}".replace '_id_', bq.id
 
-  namespace: '4chan_x.'
-  version: '2.34.2'
+  namespace: 'appchan_x.'
+  version: '2.34.5'
   callbacks: []
   css: '
 /* dialog styling */
@@ -4736,8 +4856,10 @@ div.opContainer {
 .filter_highlight > .reply {
   box-shadow: -5px 0 rgba(255,0,0,0.5);
 }
-.filtered {
-  text-decoration: underline line-through;
+.filtered,
+.quotelink.filtered {
+  text-decoration: underline;
+  text-decoration: line-through !important;
 }
 .quotelink.forwardlink,
 .backlink.forwardlink {

@@ -2,7 +2,7 @@
 {exec} = require 'child_process'
 fs     = require 'fs'
 
-VERSION = '2.34.2'
+VERSION = '2.34.4'
 
 HEADER  = """
 // ==UserScript==
@@ -24,7 +24,6 @@ HEADER  = """
 // @updateURL      https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
 // @downloadURL    https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
 // @icon           http://zixaphir.github.com/appchan-x/favicon.gif
-// ==/UserScript==
 
 /* LICENSE
  *
