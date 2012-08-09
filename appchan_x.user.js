@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        2.34.4
+// @version        2.34.5
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
