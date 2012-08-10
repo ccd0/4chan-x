@@ -1145,6 +1145,7 @@
             switch (g.BOARD) {
               case 'b':
               case 'vg':
+              case 'q':
                 return 3;
               case 't':
                 return 1;
@@ -2094,10 +2095,10 @@
       return (count > 1500 ? $.addClass : $.rmClass)(counter, 'warning');
     },
     drag: function(e) {
-      var i;
-      i = e.type === 'dragstart' ? 'off' : 'on';
-      $[i](d, 'dragover', QR.dragOver);
-      return $[i](d, 'drop', QR.dropFile);
+      var toggle;
+      toggle = e.type === 'dragstart' ? $.off : $.on;
+      toggle(d, 'dragover', QR.dragOver);
+      return toggle(d, 'drop', QR.dropFile);
     },
     dragOver: function(e) {
       e.preventDefault();
