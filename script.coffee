@@ -771,7 +771,7 @@ ExpandThread =
         a.textContent = a.textContent.replace '-', '+'
         #goddamit moot
         num = switch g.BOARD
-          when 'b', 'vg' then 3
+          when 'b', 'vg', 'q' then 3
           when 't' then 1
           else 5
         replies = $$ '.replyContainer', thread
@@ -1455,9 +1455,9 @@ QR =
 
   drag: (e) ->
     # Let it drag anything from the page.
-    i = if e.type is 'dragstart' then 'off' else 'on'
-    $[i] d, 'dragover', QR.dragOver
-    $[i] d, 'drop',     QR.dropFile
+    toggle = if e.type is 'dragstart' then $.off else $.on
+    toggle d, 'dragover', QR.dragOver
+    toggle d, 'drop',     QR.dropFile
   dragOver: (e) ->
     e.preventDefault()
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
