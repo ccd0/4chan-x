@@ -4602,7 +4602,7 @@
           }
           break;
         case 'e':
-          url = "https://md401.homelinux.net/4chan/cgi-board.pl/" + path;
+          url = "https://www.cliché.net/4chan/cgi-board.pl/" + path;
           if (threadID && postID) {
             url += "#p" + postID;
           }
