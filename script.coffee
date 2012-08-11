@@ -3823,7 +3823,7 @@ Redirect =
       # when 'an', 'k', 'toy', 'x'
       #   "http://archive.heinessen.com/#{board}/full_image/#{filename}"
       # when 'e'
-      #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
+      #   "https://www.cliché.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
@@ -3864,7 +3864,7 @@ Redirect =
         if threadID and postID
           url += "#p#{postID}"
       when 'e'
-        url = "https://md401.homelinux.net/4chan/cgi-board.pl/#{path}"
+        url = "https://www.cliché.net/4chan/cgi-board.pl/#{path}"
         if threadID and postID
           url += "#p#{postID}"
       else
