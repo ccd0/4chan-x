@@ -160,30 +160,6 @@
         'Quote Threading': [false, 'Thread conversations']
       }
     },
-    style: {
-      'Theme': ['RedUX', '4chan Color Scheme.'],
-      'Mascot': ['none', 'Adds an image to the sidebar of a character of your choice from those available or ones that have been customly added.'],
-      'Captcha Opacity': ['opaque', 'Transparency of the 4chan Captcha'],
-      'Emoji Position': ['right', 'Position of emoji icons, like sega and neko.'],
-      'Expand Post Form Textarea': ['expand', 'Expands the post form text area when in use.'],
-      'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
-      'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
-      'Font': ['ubuntu', 'The font used by all elements of 4chan.'],
-      'Fontsize': ['normal', 'The font size of posts and various UI. This does not change all font sizes.'],
-      'Logo and Banner Location': ['Both on Side', 'The location of the banner and logo.'],
-      'Announcements': ['hide', 'The style of announcements and the ability to hide them.'],
-      'Navigation': ['sticky', 'The position of 4chan navigation'],
-      'Slideout Navigation': ['list', 'How the slideout navigation will be displayed.'],
-      'Page Margin': ['centered', 'Additional layout options, allowing you to center the page or use additional page margins.'],
-      'Post Form Style': ['fixed', 'How the post form will sit on the page.'],
-      'Reply Spacing': ['small', 'The amount of space between replies.'],
-      'Reply Width': ['fit', 'The default width of replies.'],
-      'Rounded Edges': ['roundedcircles', 'Round the edges of various 4chan elements.'],
-      'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.'],
-      'Hide Sidebar': ['disabled', 'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.'],
-      'Underline Links': [true, 'Put lines under hyperlinks.'],
-      'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
-    },
     filter: {
       name: ['# Filter any namefags:', '#/^(?!Anonymous$)/'].join('\n'),
       uniqueid: ['# Filter a specific ID:', '#/Txhvk1Tl/'].join('\n'),
@@ -238,7 +214,51 @@
         'Auto Update': [true, 'Automatically fetch new posts']
       },
       'Interval': 30
-    }
+    },
+    style: {
+      'Captcha Opacity': [0, 'Transparency of the 4chan Captcha', [100, 75, 50, 25]],
+      'Emoji Position': [
+        0, 'Position of emoji icons, like sega and neko.', {
+          'right': 'right',
+          'left': 'left',
+          'hide emoji': 'hide emoji'
+        }
+      ],
+      'Font': [
+        0, 'The font used by all elements of 4chan.', {
+          'ubuntu': 'ubuntu',
+          'sans serif': 'sans serif',
+          'serif': 'serif'
+        }
+      ],
+      'Fontsize': [
+        2, 'The font size of posts and various UI. This does not change all font sizes.', {
+          10: 10,
+          11: 11,
+          12: 12,
+          13: 13,
+          14: 14
+        }
+      ],
+      'Announcements': [2, 'The style of announcements and the ability to hide them.', ['4chan default', 'slide out', 'hide']],
+      'Boards Navigation': [0, 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
+      'Pagination': [1, 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
+      'Slideout Navigation': [1, 'How the slideout navigation will be displayed.', ['compact', 'list']],
+      'Page Margin': [0, 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
+      'Post Form Style': [0, 'How the post form will sit on the page.', ['fixed', 'slide out', 'tabbed slideout', 'transparent fade']],
+      'Reply Spacing': [0, 'The amount of space between replies.', ['small', 'normal', 'large']],
+      'Sage Highlighting': [1, 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
+      'Expand Post Form Textarea': [true, 'Expands the post form text area when in use.'],
+      'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
+      'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
+      'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
+      'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
+      'Hide Sidebar': [false, 'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.'],
+      'Underline Links': [true, 'Put lines under hyperlinks.'],
+      'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
+    },
+    themes: [],
+    mascots: []
   };
 
   Conf = {};
@@ -2801,6 +2821,7 @@
   </div>\
   <div>\
     <label for=main_tab>Main</label>\
+    | <label for="style_tab>Style</label>\
     | <label for=filter_tab>Filter</label>\
     | <label for=sauces_tab>Sauce</label>\
     | <label for=rice_tab>Rice</label>\
@@ -2823,6 +2844,29 @@
       <li>$4: Current board.</li>\
     </ul>\
     <textarea name=sauces id=sauces class=field></textarea>\
+  </div>\
+  <input type=radio name=tab hidden id=style_tab>\
+  <div>\
+    <select name=theme></select>\
+    <select name=captchaopacity></select>\
+    <select name=emoji></select>\
+    <select name=expandinput></select>\
+    <select name=filterlinks></select>\
+    <select name=font></select>\
+    <select name=fontsize></select>\
+    <select name=logo></select>\
+    <select name=announcements></select>\
+    <select name=navigation></select>\
+    <select name=slideoutnavigation></select>\
+    <select name=margin></select>\
+    <select name=postform></select>\
+    <select name=replyspacing></select>\
+    <select name=replywidth></select>\
+    <select name=roundededges></select>\
+    <select name=sage></select>\
+    <select name=hidesidebar></select>\
+    <select name=underlinelinks></select>\
+    <select name=slideoutwatcher></select>\
   </div>\
   <input type=radio name=tab hidden id=filter_tab>\
   <div>\
