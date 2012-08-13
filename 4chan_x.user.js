@@ -2052,7 +2052,7 @@
           for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
             ui8a[i] = data.charCodeAt(i);
           }
-          _this.url = url.createObjectURL(new Blob([ui8a.buffer], {
+          _this.url = url.createObjectURL(new Blob([ui8a], {
             type: 'image/png'
           }));
           _this.el.style.backgroundImage = "url(" + _this.url + ")";
