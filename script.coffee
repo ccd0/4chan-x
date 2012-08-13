@@ -978,7 +978,7 @@ ExpandThread =
         a.textContent = a.textContent.replace '-', '+'
         #goddamit moot
         num = switch g.BOARD
-          when 'b', 'vg' then 3
+          when 'b', 'vg', 'q' then 3
           when 't' then 1
           else 5
         replies = $$ '.replyContainer', thread
@@ -1676,9 +1676,9 @@ QR =
 
   drag: (e) ->
     # Let it drag anything from the page.
-    i = if e.type is 'dragstart' then 'off' else 'on'
-    $[i] d, 'dragover', QR.dragOver
-    $[i] d, 'drop',     QR.dropFile
+    toggle = if e.type is 'dragstart' then $.off else $.on
+    toggle d, 'dragover', QR.dragOver
+    toggle d, 'drop',     QR.dropFile
   dragOver: (e) ->
     e.preventDefault()
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
@@ -3908,7 +3908,7 @@ Redirect =
       # when 'an', 'k', 'toy', 'x'
       #   "http://archive.heinessen.com/#{board}/full_image/#{filename}"
       # when 'e'
-      #   "https://md401.homelinux.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
+      #   "https://www.cliché.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
@@ -3949,7 +3949,7 @@ Redirect =
         if threadID and postID
           url += "#p#{postID}"
       when 'e'
-        url = "https://md401.homelinux.net/4chan/cgi-board.pl/#{path}"
+        url = "https://www.cliché.net/4chan/cgi-board.pl/#{path}"
         if threadID and postID
           url += "#p#{postID}"
       else
