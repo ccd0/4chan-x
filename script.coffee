@@ -1754,7 +1754,7 @@ QR =
         for i in  [0...l]
           ui8a[i] = data.charCodeAt i
 
-        @url = url.createObjectURL new Blob [ui8a.buffer], type: 'image/png'
+        @url = url.createObjectURL new Blob [ui8a], type: 'image/png'
         @el.style.backgroundImage = "url(#{@url})"
         url.revokeObjectURL? fileUrl
 
