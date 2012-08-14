@@ -2293,7 +2293,7 @@
           for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
             ui8a[i] = data.charCodeAt(i);
           }
-          _this.url = url.createObjectURL(new Blob([ui8a.buffer], {
+          _this.url = url.createObjectURL(new Blob([ui8a], {
             type: 'image/png'
           }));
           _this.el.style.backgroundImage = "url(" + _this.url + ")";
@@ -2747,7 +2747,7 @@
         location.pathname = "/" + g.BOARD + "/res/" + postID;
       } else {
         QR.cooldown.auto = QR.replies.length > 1;
-        QR.cooldown.set(/sage/i.test(reply.email) ? 60 : 30);
+        QR.cooldown.set(g.BOARD === 'q' || /sage/i.test(reply.email) ? 60 : 30);
         if (Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
           $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
         }
