@@ -170,53 +170,54 @@ Config =
       'Auto Update': [true,  'Automatically fetch new posts']
     'Interval': 30
   style:
-    'Announcements':             [2,    'The style of announcements and the ability to hide them.', [
-      '4chan default', 'slide out', 'hide'
-    ]]
-    'Boards Navigation':         [0,    'The position of 4chan board navigation', [
-      'sticky top', 'sticky bottom', 'top', 'bottom'
-    ]]
-    'Checkboxes':                [0,    'Alter checkboxes.', [
-      'show', 'make checkboxes circular', 'hide checkboxes'
-    ]]
-    'Captcha Opacity':           [0,    'Transparency of the 4chan Captcha', [
-      100, 75, 50, 25
-    ]]
-    'Emoji Position':            [0,    'Position of emoji icons, like sega and neko.', [
-      'right', 'left', 'hide emoji'
-    ]]
-    'Font':                      [0,    'The font used by all elements of 4chan.', [
-      'ubuntu', 'sans serif', 'serif'
-    ]]
-    'Fontsize':                  [2,    'The font size of posts and various UI. This does not change all font sizes.', [
-      10, 11, 12, 13, 14
-    ]]
-    'Page Margin':               [0,     'Additional layout options, allowing you to center the page or use additional page margins.', [
-      'none', 'small', 'medium', 'large', 'fully centered'
-    ]]
-    'Pagination':                [1,    'The position of 4chan page navigation', [
-      'sticky top', 'sticky bottom', 'top', 'bottom'
-    ]]
-    'Post Form Style':           [0,     'How the post form will sit on the page.', [
-      'fixed', 'slide out', 'tabbed slideout', 'transparent fade'
-    ]]
-    'Reply Spacing':             [0,     'The amount of space between replies.', [
-      'small', 'normal', 'large'
-    ]]
-    'Sage Highlighting':         [1,     'Icons or text to highlight saged posts.', [
-      'text', 'image', 'none'
-    ]]
-    'Slideout Navigation':       [1,     'How the slideout navigation will be displayed.', [
-      'compact', 'list'
-    ]]
-    'Compact Post Form Inputs':  [true,   'Use compact inputs on the post form.']
-    'Expand Post Form Textarea': [true,   'Expands the post form text area when in use.']
-    'Filtered Backlinks':        [true,   'Mark backlinks to filtered posts.']
-    'Fit Width Replies':         [true,   'Replies fit the entire width of the page.']
-    'Hide Sidebar':              [false,  'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.']
-    'Rounded Edges':             [true,   'Round the edges of various 4chan elements.']
-    'Slideout Watcher':          [true,   'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
-    'Underline Links':           [true,   'Put lines under hyperlinks.']
+    category:
+      'Announcements':             [2,    'The style of announcements and the ability to hide them.', [
+        '4chan default', 'slide out', 'hide'
+      ]]
+      'Boards Navigation':         [0,    'The position of 4chan board navigation', [
+        'sticky top', 'sticky bottom', 'top', 'bottom'
+      ]]
+      'Checkboxes':                [0,    'Alter checkboxes.', [
+        'show', 'make checkboxes circular', 'hide checkboxes'
+      ]]
+      'Captcha Opacity':           [0,    'Transparency of the 4chan Captcha', [
+        100, 75, 50, 25
+      ]]
+      'Emoji Position':            [0,    'Position of emoji icons, like sega and neko.', [
+        'right', 'left', 'hide emoji'
+      ]]
+      'Font':                      [0,    'The font used by all elements of 4chan.', [
+        'ubuntu', 'sans serif', 'serif'
+      ]]
+      'Fontsize':                  [2,    'The font size of posts and various UI. This does not change all font sizes.', [
+        10, 11, 12, 13, 14
+      ]]
+      'Page Margin':               [0,     'Additional layout options, allowing you to center the page or use additional page margins.', [
+        'none', 'small', 'medium', 'large', 'fully centered'
+      ]]
+      'Pagination':                [1,    'The position of 4chan page navigation', [
+        'sticky top', 'sticky bottom', 'top', 'bottom'
+      ]]
+      'Post Form Style':           [0,     'How the post form will sit on the page.', [
+        'fixed', 'slide out', 'tabbed slideout', 'transparent fade'
+      ]]
+      'Reply Spacing':             [0,     'The amount of space between replies.', [
+        'small', 'normal', 'large'
+      ]]
+      'Sage Highlighting':         [1,     'Icons or text to highlight saged posts.', [
+        'text', 'image', 'none'
+      ]]
+      'Slideout Navigation':       [1,     'How the slideout navigation will be displayed.', [
+        'compact', 'list'
+      ]]
+      'Compact Post Form Inputs':  [true,   'Use compact inputs on the post form.']
+      'Expand Post Form Textarea': [true,   'Expands the post form text area when in use.']
+      'Filtered Backlinks':        [true,   'Mark backlinks to filtered posts.']
+      'Fit Width Replies':         [true,   'Replies fit the entire width of the page.']
+      'Hide Sidebar':              [false,  'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.']
+      'Rounded Edges':             [true,   'Round the edges of various 4chan elements.']
+      'Slideout Watcher':          [true,   'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
+      'Underline Links':           [true,   'Put lines under hyperlinks.']
   themes: []
   mascots: []
   navigation: {}
@@ -2222,6 +2223,7 @@ Options =
     | <label for=sauces_tab>Sauce</label>
     | <label for=rice_tab>Rice</label>
     | <label for=keybinds_tab>Keybinds</label>
+    | <label for=style_tab>Style</label>
   </div>
 </div>
 <hr>
@@ -2308,14 +2310,11 @@ Options =
     </tbody></table>
   </div>
   <input type=radio name=tab hidden id=style_tab>
-  <div>
-  </div>
+  <div></div>
   <input type=radio name=tab hidden id=theme_tab>
-  <div>
-  </div>
+  <div></div>
   <input type=radio name=tab hidden id=mascot_tab>
-  <div>
-  </div>
+  <div></div>
 </div>'
 
     #main
@@ -2337,19 +2336,6 @@ Options =
       innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have \"Show Stubs\" disabled."
     $.on $('button', li), 'click', Options.clearHidden
     $.add $('ul:nth-child(2)', dialog), li
-    
-    #style
-    for key, obj of Config.style
-      ul = $.el 'ul',
-        textContent: key
-      for key, arr of obj
-        checked = if $.get(key, Conf[key]) then 'checked' else ''
-        description = arr[1]
-        li = $.el 'li',
-          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
-        $.on $('input', li), 'click', $.cb.checked
-        $.add ul, li
-      $.add $('#style_tab + div', dialog), ul
 
     #filter
     filter = $ 'select[name=filter]', dialog
@@ -2392,6 +2378,22 @@ Options =
       indicators[key] = indicator
       $.on $("[name='#{key}']", dialog), 'click', ->
         indicators[@name].hidden = @checked
+    
+    #style
+    for key, obj of Config.style
+      ul = $.el 'ul',
+        textContent: key
+      for key, arr of obj
+        try 
+          checked = if $.get(key, Conf[key]) then 'checked' else ''
+          description = arr[1]
+          li = $.el 'li',
+            innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
+          $.on $('input', li), 'click', $.cb.checked
+          $.add ul, li
+        catch err
+          console.log err
+      $.add $('#style_tab + div', dialog), ul
 
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', Options.close

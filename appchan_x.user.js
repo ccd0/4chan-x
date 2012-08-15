@@ -216,27 +216,29 @@
       'Interval': 30
     },
     style: {
-      'Announcements': [2, 'The style of announcements and the ability to hide them.', ['4chan default', 'slide out', 'hide']],
-      'Boards Navigation': [0, 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
-      'Checkboxes': [0, 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide checkboxes']],
-      'Captcha Opacity': [0, 'Transparency of the 4chan Captcha', [100, 75, 50, 25]],
-      'Emoji Position': [0, 'Position of emoji icons, like sega and neko.', ['right', 'left', 'hide emoji']],
-      'Font': [0, 'The font used by all elements of 4chan.', ['ubuntu', 'sans serif', 'serif']],
-      'Fontsize': [2, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
-      'Page Margin': [0, 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
-      'Pagination': [1, 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
-      'Post Form Style': [0, 'How the post form will sit on the page.', ['fixed', 'slide out', 'tabbed slideout', 'transparent fade']],
-      'Reply Spacing': [0, 'The amount of space between replies.', ['small', 'normal', 'large']],
-      'Sage Highlighting': [1, 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
-      'Slideout Navigation': [1, 'How the slideout navigation will be displayed.', ['compact', 'list']],
-      'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
-      'Expand Post Form Textarea': [true, 'Expands the post form text area when in use.'],
-      'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
-      'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
-      'Hide Sidebar': [false, 'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.'],
-      'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
-      'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'],
-      'Underline Links': [true, 'Put lines under hyperlinks.']
+      category: {
+        'Announcements': [2, 'The style of announcements and the ability to hide them.', ['4chan default', 'slide out', 'hide']],
+        'Boards Navigation': [0, 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
+        'Checkboxes': [0, 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide checkboxes']],
+        'Captcha Opacity': [0, 'Transparency of the 4chan Captcha', [100, 75, 50, 25]],
+        'Emoji Position': [0, 'Position of emoji icons, like sega and neko.', ['right', 'left', 'hide emoji']],
+        'Font': [0, 'The font used by all elements of 4chan.', ['ubuntu', 'sans serif', 'serif']],
+        'Fontsize': [2, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
+        'Page Margin': [0, 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
+        'Pagination': [1, 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
+        'Post Form Style': [0, 'How the post form will sit on the page.', ['fixed', 'slide out', 'tabbed slideout', 'transparent fade']],
+        'Reply Spacing': [0, 'The amount of space between replies.', ['small', 'normal', 'large']],
+        'Sage Highlighting': [1, 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
+        'Slideout Navigation': [1, 'How the slideout navigation will be displayed.', ['compact', 'list']],
+        'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
+        'Expand Post Form Textarea': [true, 'Expands the post form text area when in use.'],
+        'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
+        'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
+        'Hide Sidebar': [false, 'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.'],
+        'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
+        'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'],
+        'Underline Links': [true, 'Put lines under hyperlinks.']
+      }
     },
     themes: [],
     mascots: [],
@@ -2809,6 +2811,7 @@
     | <label for=sauces_tab>Sauce</label>\
     | <label for=rice_tab>Rice</label>\
     | <label for=keybinds_tab>Keybinds</label>\
+    | <label for=style_tab>Style</label>\
   </div>\
 </div>\
 <hr>\
@@ -2895,14 +2898,11 @@
     </tbody></table>\
   </div>\
   <input type=radio name=tab hidden id=style_tab>\
-  <div>\
-  </div>\
+  <div></div>\
   <input type=radio name=tab hidden id=theme_tab>\
-  <div>\
-  </div>\
+  <div></div>\
   <input type=radio name=tab hidden id=mascot_tab>\
-  <div>\
-  </div>\
+  <div></div>\
 </div>'
       });
       _ref = Config.main;
@@ -2930,24 +2930,6 @@
       });
       $.on($('button', li), 'click', Options.clearHidden);
       $.add($('ul:nth-child(2)', dialog), li);
-      _ref1 = Config.style;
-      for (key in _ref1) {
-        obj = _ref1[key];
-        ul = $.el('ul', {
-          textContent: key
-        });
-        for (key in obj) {
-          arr = obj[key];
-          checked = $.get(key, Conf[key]) ? 'checked' : '';
-          description = arr[1];
-          li = $.el('li', {
-            innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
-          });
-          $.on($('input', li), 'click', $.cb.checked);
-          $.add(ul, li);
-        }
-        $.add($('#style_tab + div', dialog), ul);
-      }
       filter = $('select[name=filter]', dialog);
       $.on(filter, 'change', Options.filter);
       sauce = $('#sauces', dialog);
@@ -2966,9 +2948,9 @@
       favicon.value = $.get('favicon', Conf['favicon']);
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', Options.favicon);
-      _ref2 = Config.hotkeys;
-      for (key in _ref2) {
-        arr = _ref2[key];
+      _ref1 = Config.hotkeys;
+      for (key in _ref1) {
+        arr = _ref1[key];
         tr = $.el('tr', {
           innerHTML: "<td>" + arr[1] + "</td><td><input name=" + key + " class=field></td>"
         });
@@ -2978,15 +2960,37 @@
         $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
       indicators = {};
-      _ref3 = $$('.warning', dialog);
-      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        indicator = _ref3[_i];
+      _ref2 = $$('.warning', dialog);
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        indicator = _ref2[_i];
         key = indicator.firstChild.textContent;
         indicator.hidden = $.get(key, Conf[key]);
         indicators[key] = indicator;
         $.on($("[name='" + key + "']", dialog), 'click', function() {
           return indicators[this.name].hidden = this.checked;
         });
+      }
+      _ref3 = Config.style;
+      for (key in _ref3) {
+        obj = _ref3[key];
+        ul = $.el('ul', {
+          textContent: key
+        });
+        for (key in obj) {
+          arr = obj[key];
+          try {
+            checked = $.get(key, Conf[key]) ? 'checked' : '';
+            description = arr[1];
+            li = $.el('li', {
+              innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
+            });
+            $.on($('input', li), 'click', $.cb.checked);
+            $.add(ul, li);
+          } catch (err) {
+            console.log(err);
+          }
+        }
+        $.add($('#style_tab + div', dialog), ul);
       }
       overlay = $.el('div', {
         id: 'overlay'
