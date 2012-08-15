@@ -2218,7 +2218,6 @@ Options =
   </div>
   <div>
     <label for=main_tab>Main</label>
-    | <label for="style_tab>Style</label>
     | <label for=filter_tab>Filter</label>
     | <label for=sauces_tab>Sauce</label>
     | <label for=rice_tab>Rice</label>
@@ -2380,19 +2379,31 @@ Options =
         indicators[@name].hidden = @checked
     
     #style
+    styleSetting = []
     for key, obj of Config.style
       ul = $.el 'ul',
         textContent: key
+      i=0
       for key, arr of obj
-        try 
+        description = arr[1]
+        if arr[2]
+          liHTML = "<label>#{key}</label><span class=description>: #{description}</span><select name=\"#{key}\" style=width:100%><br>"
+          for keyhole, arg in arr[2]
+            liHTML = liHTML + "<option value=\"#{key}\">#{keyhole}</option>"
+          liHTML = liHTML + "</select>"
+          li = $.el 'li',
+            innerHTML: liHTML
+          styleSetting[i] = $ "select[name='#{key}']", li
+          styleSetting[i].value = $.get key, Conf[key]
+          $.on styleSetting[i], 'change', $.cb.value
+          $.on styleSetting[i], 'change', Options.style
+        else
           checked = if $.get(key, Conf[key]) then 'checked' else ''
-          description = arr[1]
           li = $.el 'li',
             innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
           $.on $('input', li), 'click', $.cb.checked
-          $.add ul, li
-        catch err
-          console.log err
+        $.add ul, li
+        i++
       $.add $('#style_tab + div', dialog), ul
 
     overlay = $.el 'div', id: 'overlay'

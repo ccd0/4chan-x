@@ -2794,7 +2794,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, left, li, obj, overlay, sauce, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var arg, arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, i, indicator, indicators, input, key, keyhole, left, li, liHTML, obj, overlay, sauce, styleSetting, time, top, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2806,7 +2806,6 @@
   </div>\
   <div>\
     <label for=main_tab>Main</label>\
-    | <label for="style_tab>Style</label>\
     | <label for=filter_tab>Filter</label>\
     | <label for=sauces_tab>Sauce</label>\
     | <label for=rice_tab>Rice</label>\
@@ -2970,25 +2969,41 @@
           return indicators[this.name].hidden = this.checked;
         });
       }
+      styleSetting = [];
       _ref3 = Config.style;
       for (key in _ref3) {
         obj = _ref3[key];
         ul = $.el('ul', {
           textContent: key
         });
+        i = 0;
         for (key in obj) {
           arr = obj[key];
-          try {
+          description = arr[1];
+          if (arr[2]) {
+            liHTML = "<label>" + key + "</label><span class=description>: " + description + "</span><select name=\"" + key + "\" style=width:100%><br>";
+            _ref4 = arr[2];
+            for (arg = _j = 0, _len1 = _ref4.length; _j < _len1; arg = ++_j) {
+              keyhole = _ref4[arg];
+              liHTML = liHTML + ("<option value=\"" + key + "\">" + keyhole + "</option>");
+            }
+            liHTML = liHTML + "</select>";
+            li = $.el('li', {
+              innerHTML: liHTML
+            });
+            styleSetting[i] = $("select[name='" + key + "']", li);
+            styleSetting[i].value = $.get(key, Conf[key]);
+            $.on(styleSetting[i], 'change', $.cb.value);
+            $.on(styleSetting[i], 'change', Options.style);
+          } else {
             checked = $.get(key, Conf[key]) ? 'checked' : '';
-            description = arr[1];
             li = $.el('li', {
               innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
             });
             $.on($('input', li), 'click', $.cb.checked);
-            $.add(ul, li);
-          } catch (err) {
-            console.log(err);
           }
+          $.add(ul, li);
+          i++;
         }
         $.add($('#style_tab + div', dialog), ul);
       }
