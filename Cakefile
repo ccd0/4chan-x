@@ -66,17 +66,18 @@ HEADER  = """
  *
  * CONTRIBUTORS
  *
+ * blaise - mentoring and support
  * aeosynth - original author of 4chan x
  * mayhemydg - a current maintainer of 4chan x
- * that4chanwolf - a current maintainer of 4chan x
- * noface - unique ID fixes
+ * noface - a current maintainer of 4chan x
+ * that4chanwolf - former maintainer of 4chan x
  * desuwa - Firefox filename upload fix
  * seaweed - bottom padding for image hover
  * e000 - cooldown sanity check
  * ahodesuka - scroll back when unexpanding images, file info formatting
  * Shou - pentadactyl fixes
- * ferongr - new favicons
- * xat - new favicons
+ * ferongr - favicons
+ * xat - favicons
  * Ongpot - sfw favicon
  * thisisanon - nsfw + 404 favicons
  * Anonymous - empty favicon

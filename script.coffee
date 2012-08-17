@@ -10,6 +10,7 @@ Config =
       'Index Navigation':             [true,  'Navigate to previous / next thread']
       'Rollover':                     [true,  'Index navigation will fallback to page navigation.']
       'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
+      'Style':                        [true,  'Custom theming and styling options.']
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
       'Filter':                       [true,  'Self-moderation placebo']
@@ -44,8 +45,8 @@ Config =
     Posting:
       'Quick Reply':                  [true,  'Reply without leaving the page.']
       'Cooldown':                     [true,  'Prevent "flood detected" errors.']
-      'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
-      'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
+      'Persistent QR':                [true, 'The Quick reply won\'t disappear after posting.']
+      'Auto Hide QR':                 [false,  'Automatically hide the quick reply when posting.']
       'Open Reply in New Tab':        [false, 'Open replies in a new tab that are made from the main board.']
       'Remember QR size':             [false, 'Remember the size of the Quick reply (Firefox only).']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
@@ -2377,30 +2378,30 @@ Options =
       indicators[key] = indicator
       $.on $("[name='#{key}']", dialog), 'click', ->
         indicators[@name].hidden = @checked
-    
+
     #style
     styleSetting = []
-    for key, obj of Config.style
+    for category, obj of Config.style
       ul = $.el 'ul',
-        textContent: key
+        textContent: category
       i=0
-      for key, arr of obj
+      for optionname, arr of obj
         description = arr[1]
         if arr[2]
-          liHTML = "<label>#{key}</label><span class=description>: #{description}</span><select name=\"#{key}\" style=width:100%><br>"
-          for keyhole, arg in arr[2]
-            liHTML = liHTML + "<option value=\"#{key}\">#{keyhole}</option>"
+          liHTML = "<label>#{optionname}</label><span class=description>: #{description}</span><select name=\"#{optionname}\" style=width:100%><br>"
+          for selectoption, optionvalue in arr[2]
+            liHTML = liHTML + "<option value=\"#{optionvalue}\">#{selectoption}</option>"
           liHTML = liHTML + "</select>"
           li = $.el 'li',
             innerHTML: liHTML
-          styleSetting[i] = $ "select[name='#{key}']", li
-          styleSetting[i].value = $.get key, Conf[key]
+          styleSetting[i] = $ "select[name='#{optionname}']", li
+          styleSetting[i].value = $.get optionname, Conf[optionname]
           $.on styleSetting[i], 'change', $.cb.value
           $.on styleSetting[i], 'change', Options.style
         else
-          checked = if $.get(key, Conf[key]) then 'checked' else ''
+          checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
           li = $.el 'li',
-            innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
+            innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}>#{optionname}</label><span class=description>: #{description}</span>"
           $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
         i++
@@ -4222,9 +4223,14 @@ Main =
     if Conf['Recursive Filtering']
       Main.css += '.hidden + .threadContainer { display: none; }'
 
-    Main.addStyle()
-
     #major features
+    if Conf['Style']
+      Main.addStyle()
+      Main.remStyleStep()
+    else
+      console.log Conf['Style']
+      Main.addStyle()
+
     if Conf['Filter']
       Filter.init()
 
@@ -4425,6 +4431,21 @@ Main =
       $.addStyle Main.css
     else # XXX fox
       $.on d, 'DOMNodeInserted', Main.addStyle
+
+  remStyleStep: ->
+    $.off d, 'DOMNodeInserted', Main.remStyleStep
+    if d.head and d.head.childNodes.length > 10
+      Main.remStyle()
+    else # XXX fox
+      $.on d, 'DOMNodeInserted', Main.remStyleStep
+  
+  remStyle: ->
+    headNodes = d.head.childNodes
+    headNode = headNodes.length - 1
+    for node, index in headNodes
+      step = headNode - index
+      if headNodes[step].rel == 'stylesheet' or headNodes[step].rel == 'alternate stylesheet'
+        $.rm headNodes[step]
 
   #message: (e) ->
   #  {version} = e.data

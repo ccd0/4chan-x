@@ -59,17 +59,18 @@
  *
  * CONTRIBUTORS
  *
+ * blaise - mentoring and support
  * aeosynth - original author of 4chan x
  * mayhemydg - a current maintainer of 4chan x
- * that4chanwolf - a current maintainer of 4chan x
- * noface - unique ID fixes
+ * noface - a current maintainer of 4chan x
+ * that4chanwolf - former maintainer of 4chan x
  * desuwa - Firefox filename upload fix
  * seaweed - bottom padding for image hover
  * e000 - cooldown sanity check
  * ahodesuka - scroll back when unexpanding images, file info formatting
  * Shou - pentadactyl fixes
- * ferongr - new favicons
- * xat - new favicons
+ * ferongr - favicons
+ * xat - favicons
  * Ongpot - sfw favicon
  * thisisanon - nsfw + 404 favicons
  * Anonymous - empty favicon
@@ -97,7 +98,8 @@
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
         'Rollover': [true, 'Index navigation will fallback to page navigation.'],
-        'Reply Navigation': [false, 'Navigate to top / bottom of thread']
+        'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
+        'Style': [true, 'Custom theming and styling options.']
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
@@ -137,8 +139,8 @@
       Posting: {
         'Quick Reply': [true, 'Reply without leaving the page.'],
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
-        'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
-        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
+        'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
+        'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
         'Open Reply in New Tab': [false, 'Open replies in a new tab that are made from the main board.'],
         'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
@@ -2794,7 +2796,7 @@
       }
     },
     dialog: function() {
-      var arg, arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, i, indicator, indicators, input, key, keyhole, left, li, liHTML, obj, overlay, sauce, styleSetting, time, top, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
+      var arr, back, category, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, i, indicator, indicators, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, top, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2971,34 +2973,34 @@
       }
       styleSetting = [];
       _ref3 = Config.style;
-      for (key in _ref3) {
-        obj = _ref3[key];
+      for (category in _ref3) {
+        obj = _ref3[category];
         ul = $.el('ul', {
-          textContent: key
+          textContent: category
         });
         i = 0;
-        for (key in obj) {
-          arr = obj[key];
+        for (optionname in obj) {
+          arr = obj[optionname];
           description = arr[1];
           if (arr[2]) {
-            liHTML = "<label>" + key + "</label><span class=description>: " + description + "</span><select name=\"" + key + "\" style=width:100%><br>";
+            liHTML = "<label>" + optionname + "</label><span class=description>: " + description + "</span><select name=\"" + optionname + "\" style=width:100%><br>";
             _ref4 = arr[2];
-            for (arg = _j = 0, _len1 = _ref4.length; _j < _len1; arg = ++_j) {
-              keyhole = _ref4[arg];
-              liHTML = liHTML + ("<option value=\"" + key + "\">" + keyhole + "</option>");
+            for (optionvalue = _j = 0, _len1 = _ref4.length; _j < _len1; optionvalue = ++_j) {
+              selectoption = _ref4[optionvalue];
+              liHTML = liHTML + ("<option value=\"" + optionvalue + "\">" + selectoption + "</option>");
             }
             liHTML = liHTML + "</select>";
             li = $.el('li', {
               innerHTML: liHTML
             });
-            styleSetting[i] = $("select[name='" + key + "']", li);
-            styleSetting[i].value = $.get(key, Conf[key]);
+            styleSetting[i] = $("select[name='" + optionname + "']", li);
+            styleSetting[i].value = $.get(optionname, Conf[optionname]);
             $.on(styleSetting[i], 'change', $.cb.value);
             $.on(styleSetting[i], 'change', Options.style);
           } else {
-            checked = $.get(key, Conf[key]) ? 'checked' : '';
+            checked = $.get(optionname, Conf[optionname]) ? 'checked' : '';
             li = $.el('li', {
-              innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
+              innerHTML: "<label><input type=checkbox name=\"" + optionname + "\" " + checked + ">" + optionname + "</label><span class=description>: " + description + "</span>"
             });
             $.on($('input', li), 'click', $.cb.checked);
           }
@@ -5386,7 +5388,13 @@
       if (Conf['Recursive Filtering']) {
         Main.css += '.hidden + .threadContainer { display: none; }';
       }
-      Main.addStyle();
+      if (Conf['Style']) {
+        Main.addStyle();
+        Main.remStyleStep();
+      } else {
+        console.log(Conf['Style']);
+        Main.addStyle();
+      }
       if (Conf['Filter']) {
         Filter.init();
       }
@@ -5607,6 +5615,30 @@
       } else {
         return $.on(d, 'DOMNodeInserted', Main.addStyle);
       }
+    },
+    remStyleStep: function() {
+      $.off(d, 'DOMNodeInserted', Main.remStyleStep);
+      if (d.head && d.head.childNodes.length > 10) {
+        return Main.remStyle();
+      } else {
+        return $.on(d, 'DOMNodeInserted', Main.remStyleStep);
+      }
+    },
+    remStyle: function() {
+      var headNode, headNodes, index, node, step, _i, _len, _results;
+      headNodes = d.head.childNodes;
+      headNode = headNodes.length - 1;
+      _results = [];
+      for (index = _i = 0, _len = headNodes.length; _i < _len; index = ++_i) {
+        node = headNodes[index];
+        step = headNode - index;
+        if (headNodes[step].rel === 'stylesheet' || headNodes[step].rel === 'alternate stylesheet') {
+          _results.push($.rm(headNodes[step]));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
     },
     preParse: function(node) {
       var el, img, parentClass, post;
