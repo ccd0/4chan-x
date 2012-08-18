@@ -100,7 +100,8 @@
         'Index Navigation': [true, 'Navigate to previous / next thread'],
         'Rollover': [true, 'Index navigation will fallback to page navigation.'],
         'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
-        'Style': [true, 'Custom theming and styling options.']
+        'Style': [true, 'Custom theming and styling options.'],
+        'Check for Updates': [false, 'Check for updated versions of 4chan X']
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
@@ -5349,7 +5350,7 @@
 
   Main = {
     init: function() {
-      var key, path, pathname, temp, val;
+      var key, now, path, pathname, temp, val;
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
@@ -5400,6 +5401,16 @@
       } else {
         console.log(Conf['Style']);
         Main.addStyle();
+      }
+      now = Date.now();
+      if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 18 * $.HOUR) {
+        $.ready(function() {
+          $.on(window, 'message', Main.message);
+          $.set('lastUpdate', now);
+          return $.add(d.head, $.el('script', {
+            src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
+          }));
+        });
       }
       if (Conf['Filter']) {
         Filter.init();

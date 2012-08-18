@@ -11,6 +11,7 @@ Config =
       'Rollover':                     [true,  'Index navigation will fallback to page navigation.']
       'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
       'Style':                        [true,  'Custom theming and styling options.']
+      'Check for Updates':            [false,  'Check for updated versions of 4chan X']
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
       'Filter':                       [true,  'Self-moderation placebo']
@@ -2409,7 +2410,7 @@ Options =
         textContent: 'The "Style" setting is currently disabled. Please enable it in the Main tab to use styling options.'
       div.setAttribute 'class', 'warning'
       $.add $('#style_tab + div', dialog), div
-      
+
 
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', Options.close
@@ -4234,6 +4235,14 @@ Main =
     else
       console.log Conf['Style']
       Main.addStyle()
+
+    now = Date.now()
+    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 18*$.HOUR
+      $.ready ->
+        $.on window, 'message', Main.message
+        $.set 'lastUpdate', now
+        $.add d.head, $.el 'script',
+          src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
 
     if Conf['Filter']
       Filter.init()
