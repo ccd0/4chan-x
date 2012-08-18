@@ -4461,8 +4461,8 @@ Main =
 
   message: (e) ->
     {version} = e.data
-    if version and version isnt Main.version and confirm 'An updated version of 4chan X is available, would you like to install it now?'
-      window.location = "https://raw.github.com/aeosynth/4chan-x/#{version}/4chan_x.user.js"
+    if version and version isnt Main.version and confirm 'An updated version of appchan X is available, would you like to install it now?'
+      window.location = "https://raw.github.com/zixaphir/appchan-x/#{version}/appchan_x.user.js"
 
   preParse: (node) ->
     parentClass = node.parentNode.className
