@@ -2815,6 +2815,7 @@
     | <label for=rice_tab>Rice</label>\
     | <label for=keybinds_tab>Keybinds</label>\
     | <label for=style_tab>Style</label>\
+    | <label for=apply>Apply</label>\
   </div>\
 </div>\
 <hr>\
@@ -2906,6 +2907,8 @@
   <div></div>\
   <input type=radio name=tab hidden id=mascot_tab>\
   <div></div>\
+  <input type=radio name=tab hidden onClick="javascript:location.reload(true)" id=apply>\
+  <div>Reloading page with new settings.</div>\
 </div>'
       });
       _ref = Config.main;
@@ -3013,7 +3016,7 @@
         div = $.el('div', {
           textContent: 'The "Style" setting is currently disabled. Please enable it in the Main tab to use styling options.'
         });
-        div.setAttribute('class', 'warning');
+        $.addClass(div, 'warning');
         $.add($('#style_tab + div', dialog), div);
       }
       overlay = $.el('div', {
@@ -6172,6 +6175,9 @@ h1 {\
 }\
 .qphl {\
   outline: 2px solid rgba(216, 94, 49, .7);\
+}\
+.image_expanded {\
+  clear: both !important;\
 }\
 .inlined {\
   opacity: .5;\
