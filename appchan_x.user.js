@@ -5657,6 +5657,13 @@
         return $.on(d, 'DOMNodeInserted', Main.remStyle);
       }
     },
+    message: function(e) {
+      var version;
+      version = e.data.version;
+      if (version && version !== Main.version && confirm('An updated version of 4chan X is available, would you like to install it now?')) {
+        return window.location = "https://raw.github.com/aeosynth/4chan-x/" + version + "/4chan_x.user.js";
+      }
+    },
     preParse: function(node) {
       var el, img, parentClass, post;
       parentClass = node.parentNode.className;
