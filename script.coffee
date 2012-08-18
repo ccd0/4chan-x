@@ -2380,32 +2380,36 @@ Options =
         indicators[@name].hidden = @checked
 
     #style
-    styleSetting = []
-    for category, obj of Config.style
-      ul = $.el 'ul',
-        textContent: category
-      i=0
-      for optionname, arr of obj
-        description = arr[1]
-        if arr[2]
-          liHTML = "<label>#{optionname}</label><span class=description>: #{description}</span><select name=\"#{optionname}\" style=width:100%><br>"
-          for selectoption, optionvalue in arr[2]
-            liHTML = liHTML + "<option value=\"#{optionvalue}\">#{selectoption}</option>"
-          liHTML = liHTML + "</select>"
-          li = $.el 'li',
-            innerHTML: liHTML
-          styleSetting[i] = $ "select[name='#{optionname}']", li
-          styleSetting[i].value = $.get optionname, Conf[optionname]
-          $.on styleSetting[i], 'change', $.cb.value
-          $.on styleSetting[i], 'change', Options.style
-        else
-          checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
-          li = $.el 'li',
-            innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}>#{optionname}</label><span class=description>: #{description}</span>"
-          $.on $('input', li), 'click', $.cb.checked
-        $.add ul, li
-        i++
-      $.add $('#style_tab + div', dialog), ul
+    if Conf['Style']
+      for category, obj of Config.style
+        ul = $.el 'ul',
+          textContent: category
+        for optionname, arr of obj
+          description = arr[1]
+          if arr[2]
+            liHTML = "<label>#{optionname}</label><span class=description>: #{description}</span><select name=\"#{optionname}\" style=width:100%><br>"
+            for selectoption, optionvalue in arr[2]
+              liHTML = liHTML + "<option value=\"#{optionvalue}\">#{selectoption}</option>"
+            liHTML = liHTML + "</select>"
+            li = $.el 'li',
+              innerHTML: liHTML
+            styleSetting = $ "select[name='#{optionname}']", li
+            styleSetting.value = $.get optionname, Conf[optionname]
+            $.on styleSetting, 'change', $.cb.value
+            $.on styleSetting, 'change', Options.style
+          else
+            checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
+            li = $.el 'li',
+              innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}>#{optionname}</label><span class=description>: #{description}</span>"
+            $.on $('input', li), 'click', $.cb.checked
+          $.add ul, li
+        $.add $('#style_tab + div', dialog), ul
+    else
+      div = $.el 'div',
+        textContent: 'The "Style" setting is currently disabled. Please enable it in the Main tab to use styling options.'
+      div.setAttribute 'class', 'warning'
+      $.add $('#style_tab + div', dialog), div
+      
 
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', Options.close
@@ -4226,7 +4230,7 @@ Main =
     #major features
     if Conf['Style']
       Main.addStyle()
-      Main.remStyleStep()
+      Main.remStyle()
     else
       console.log Conf['Style']
       Main.addStyle()
@@ -4432,20 +4436,17 @@ Main =
     else # XXX fox
       $.on d, 'DOMNodeInserted', Main.addStyle
 
-  remStyleStep: ->
-    $.off d, 'DOMNodeInserted', Main.remStyleStep
-    if d.head and d.head.childNodes.length > 10
-      Main.remStyle()
-    else # XXX fox
-      $.on d, 'DOMNodeInserted', Main.remStyleStep
-  
   remStyle: ->
-    headNodes = d.head.childNodes
-    headNode = headNodes.length - 1
-    for node, index in headNodes
-      step = headNode - index
-      if headNodes[step].rel == 'stylesheet' or headNodes[step].rel == 'alternate stylesheet'
-        $.rm headNodes[step]
+    $.off d, 'DOMNodeInserted', Main.remStyle
+    if d.head and d.head.childNodes.length > 10
+      headNodes = d.head.childNodes
+      headNode = headNodes.length - 1
+      for node, index in headNodes
+        step = headNode - index
+        if headNodes[step].rel == 'stylesheet' or headNodes[step].rel == 'alternate stylesheet'
+          $.rm headNodes[step]
+    else # XXX fox
+      $.on d, 'DOMNodeInserted', Main.remStyle
 
   #message: (e) ->
   #  {version} = e.data

@@ -24,6 +24,7 @@ HEADER  = """
 // @updateURL      https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
 // @downloadURL    https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
 // @icon           http://zixaphir.github.com/appchan-x/favicon.gif
+// ==/UserScript==
 
 /* LICENSE
  *

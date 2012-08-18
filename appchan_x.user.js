@@ -17,6 +17,7 @@
 // @updateURL      https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
 // @downloadURL    https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
 // @icon           http://zixaphir.github.com/appchan-x/favicon.gif
+// ==/UserScript==
 
 /* LICENSE
  *
@@ -2796,7 +2797,7 @@
       }
     },
     dialog: function() {
-      var arr, back, category, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, i, indicator, indicators, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, top, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
+      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, top, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2971,43 +2972,48 @@
           return indicators[this.name].hidden = this.checked;
         });
       }
-      styleSetting = [];
-      _ref3 = Config.style;
-      for (category in _ref3) {
-        obj = _ref3[category];
-        ul = $.el('ul', {
-          textContent: category
-        });
-        i = 0;
-        for (optionname in obj) {
-          arr = obj[optionname];
-          description = arr[1];
-          if (arr[2]) {
-            liHTML = "<label>" + optionname + "</label><span class=description>: " + description + "</span><select name=\"" + optionname + "\" style=width:100%><br>";
-            _ref4 = arr[2];
-            for (optionvalue = _j = 0, _len1 = _ref4.length; _j < _len1; optionvalue = ++_j) {
-              selectoption = _ref4[optionvalue];
-              liHTML = liHTML + ("<option value=\"" + optionvalue + "\">" + selectoption + "</option>");
+      if (Conf['Style']) {
+        _ref3 = Config.style;
+        for (category in _ref3) {
+          obj = _ref3[category];
+          ul = $.el('ul', {
+            textContent: category
+          });
+          for (optionname in obj) {
+            arr = obj[optionname];
+            description = arr[1];
+            if (arr[2]) {
+              liHTML = "<label>" + optionname + "</label><span class=description>: " + description + "</span><select name=\"" + optionname + "\" style=width:100%><br>";
+              _ref4 = arr[2];
+              for (optionvalue = _j = 0, _len1 = _ref4.length; _j < _len1; optionvalue = ++_j) {
+                selectoption = _ref4[optionvalue];
+                liHTML = liHTML + ("<option value=\"" + optionvalue + "\">" + selectoption + "</option>");
+              }
+              liHTML = liHTML + "</select>";
+              li = $.el('li', {
+                innerHTML: liHTML
+              });
+              styleSetting = $("select[name='" + optionname + "']", li);
+              styleSetting.value = $.get(optionname, Conf[optionname]);
+              $.on(styleSetting, 'change', $.cb.value);
+              $.on(styleSetting, 'change', Options.style);
+            } else {
+              checked = $.get(optionname, Conf[optionname]) ? 'checked' : '';
+              li = $.el('li', {
+                innerHTML: "<label><input type=checkbox name=\"" + optionname + "\" " + checked + ">" + optionname + "</label><span class=description>: " + description + "</span>"
+              });
+              $.on($('input', li), 'click', $.cb.checked);
             }
-            liHTML = liHTML + "</select>";
-            li = $.el('li', {
-              innerHTML: liHTML
-            });
-            styleSetting[i] = $("select[name='" + optionname + "']", li);
-            styleSetting[i].value = $.get(optionname, Conf[optionname]);
-            $.on(styleSetting[i], 'change', $.cb.value);
-            $.on(styleSetting[i], 'change', Options.style);
-          } else {
-            checked = $.get(optionname, Conf[optionname]) ? 'checked' : '';
-            li = $.el('li', {
-              innerHTML: "<label><input type=checkbox name=\"" + optionname + "\" " + checked + ">" + optionname + "</label><span class=description>: " + description + "</span>"
-            });
-            $.on($('input', li), 'click', $.cb.checked);
+            $.add(ul, li);
           }
-          $.add(ul, li);
-          i++;
+          $.add($('#style_tab + div', dialog), ul);
         }
-        $.add($('#style_tab + div', dialog), ul);
+      } else {
+        div = $.el('div', {
+          textContent: 'The "Style" setting is currently disabled. Please enable it in the Main tab to use styling options.'
+        });
+        div.setAttribute('class', 'warning');
+        $.add($('#style_tab + div', dialog), div);
       }
       overlay = $.el('div', {
         id: 'overlay'
@@ -5390,7 +5396,7 @@
       }
       if (Conf['Style']) {
         Main.addStyle();
-        Main.remStyleStep();
+        Main.remStyle();
       } else {
         console.log(Conf['Style']);
         Main.addStyle();
@@ -5616,29 +5622,26 @@
         return $.on(d, 'DOMNodeInserted', Main.addStyle);
       }
     },
-    remStyleStep: function() {
-      $.off(d, 'DOMNodeInserted', Main.remStyleStep);
-      if (d.head && d.head.childNodes.length > 10) {
-        return Main.remStyle();
-      } else {
-        return $.on(d, 'DOMNodeInserted', Main.remStyleStep);
-      }
-    },
     remStyle: function() {
       var headNode, headNodes, index, node, step, _i, _len, _results;
-      headNodes = d.head.childNodes;
-      headNode = headNodes.length - 1;
-      _results = [];
-      for (index = _i = 0, _len = headNodes.length; _i < _len; index = ++_i) {
-        node = headNodes[index];
-        step = headNode - index;
-        if (headNodes[step].rel === 'stylesheet' || headNodes[step].rel === 'alternate stylesheet') {
-          _results.push($.rm(headNodes[step]));
-        } else {
-          _results.push(void 0);
+      $.off(d, 'DOMNodeInserted', Main.remStyle);
+      if (d.head && d.head.childNodes.length > 10) {
+        headNodes = d.head.childNodes;
+        headNode = headNodes.length - 1;
+        _results = [];
+        for (index = _i = 0, _len = headNodes.length; _i < _len; index = ++_i) {
+          node = headNodes[index];
+          step = headNode - index;
+          if (headNodes[step].rel === 'stylesheet' || headNodes[step].rel === 'alternate stylesheet') {
+            _results.push($.rm(headNodes[step]));
+          } else {
+            _results.push(void 0);
+          }
         }
+        return _results;
+      } else {
+        return $.on(d, 'DOMNodeInserted', Main.remStyle);
       }
-      return _results;
     },
     preParse: function(node) {
       var el, img, parentClass, post;
