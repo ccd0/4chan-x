@@ -4545,11 +4545,9 @@ a[href="javascript:;"] {
 .warning {
   color: red;
 }
-
 .hide_thread_button:not(.hidden_thread) {
   float: left;
 }
-
 .thread > .hidden_thread ~ *,
 [hidden],
 #content > [name=tab]:not(:checked) + div,
@@ -4558,7 +4556,6 @@ a[href="javascript:;"] {
 #qp input, .forwarded {
   display: none !important;
 }
-
 .menu_button {
   display: inline-block;
 }
@@ -4612,7 +4609,6 @@ a[href="javascript:;"] {
   top: 0;
   margin-top: -1px;
 }
-
 h1 {
   text-align: center;
 }
@@ -4783,9 +4779,6 @@ h1 {
   min-height: 120px;
   min-width: 100%;
 }
-#.textarea {
-#  position: relative;
-#}
 #charCount {
   color: #000;
   background: hsla(0, 0%, 100%, .5);
@@ -4820,7 +4813,6 @@ h1 {
   padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */
   width: 30%;
 }
-
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull {
   display: none;
@@ -4832,23 +4824,19 @@ h1 {
 .presto .fitwidth img[data-md5] + img {
   width: 100%;
 }
-
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {
   position: fixed;
 }
-
 #ihover {
   max-height: 97%;
   max-width: 75%;
   padding-bottom: 18px;
 }
-
 #navlinks {
   font-size: 16px;
   top: 25px;
   right: 5px;
 }
-
 #overlay {
   top: 0;
   right: 0;
@@ -4900,7 +4888,6 @@ h1 {
   resize: vertical;
   width: 100%;
 }
-
 #updater {
   text-align: right;
 }
@@ -4914,7 +4901,6 @@ h1 {
 .new {
   background: lime;
 }
-
 #watcher {
   padding-bottom: 5px;
   position: absolute;
@@ -4935,7 +4921,6 @@ h1 {
   padding-top: 5px;
   text-decoration: underline;
 }
-
 #qp {
   padding: 2px 2px 5px;
 }
@@ -4989,7 +4974,6 @@ div.opContainer {
   text-decoration: none;
   border-bottom: 1px dashed;
 }
-
 .threadContainer {
   margin-left: 20px;
   border-left: 1px solid black;
