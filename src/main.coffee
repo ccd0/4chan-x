@@ -39,8 +39,8 @@ Main =
     if Conf['Style']
       Main.addStyle()
       Main.remStyle()
+      Style.init()
     else
-      console.log Conf['Style']
       Main.addStyle()
 
     now = Date.now()
