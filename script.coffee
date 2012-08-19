@@ -3634,7 +3634,7 @@ Redirect =
         url = "//archive.rebeccablacktech.com/#{path}"
         if threadID and postID
           url += "#p#{postID}"
-      when 'an', 'fit', 'k', 'r9k', 'toy', 'x'
+      when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         url = "http://archive.heinessen.com/#{path}"
         if threadID and postID
           url += "#p#{postID}"

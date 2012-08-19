@@ -4593,6 +4593,7 @@
         case 'an':
         case 'fit':
         case 'k':
+        case 'mlp':
         case 'r9k':
         case 'toy':
         case 'x':
