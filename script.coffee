@@ -3679,7 +3679,7 @@ ThreadStats =
         when 'a', 'b', 'v', 'co', 'mlp'
           251
         when 'vg'
-          501
+          376
         else
           151
     Main.callbacks.push @node
