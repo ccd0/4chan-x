@@ -92,7 +92,6 @@ HEADER = """
 * Thank you.
 */
 
-
 """
 
 CAKEFILE  = 'Cakefile'
@@ -103,6 +102,8 @@ LATEST    = 'latest.js'
 APPFILES  = [
   'config'
   'library'
+  'chanx'
+  'appchan'
   'main'
   'css'
   'exec'
@@ -137,7 +138,7 @@ task 'build', ->
   process = ->
     fs.writeFile "app.coffee", appContents.join('\n\n'), 'utf8', (err) ->
       throw err if err
-      exec 'coffee --print app.coffee', (err, stdout, stderr) ->
+      exec 'coffee --print app.coffee', {maxBuffer: 1024 * 1024}, (err, stdout, stderr) ->
         throw err if err
         fs.writeFile OUTFILE, HEADER + stdout, (err) ->
         fs.unlink 'app.coffee', (err) ->
