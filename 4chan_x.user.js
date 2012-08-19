@@ -4346,7 +4346,7 @@
           case 'mlp':
             return 251;
           case 'vg':
-            return 501;
+            return 376;
           default:
             return 151;
         }
