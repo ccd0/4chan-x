@@ -2571,7 +2571,7 @@
       }));
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, threadID, _ref;
+      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, textOnly, threadID, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -2586,7 +2586,7 @@
       if (threadID === 'new') {
         if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
           err = 'New threads require a subject.';
-        } else if (!reply.file) {
+        } else if (!(reply.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
           err = 'No file selected.';
         }
       } else {
@@ -2639,6 +2639,7 @@
         com: Conf['Markdown'] ? Markdown.format(reply.com) : reply.com,
         upfile: reply.file,
         spoiler: reply.spoiler,
+        textonly: textOnly,
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
