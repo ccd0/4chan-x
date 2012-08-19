@@ -1880,11 +1880,11 @@
         id: 'navlinks'
       });
       prev = $.el('a', {
-        textContent: '?',
+        textContent: '▲',
         href: 'javascript:;'
       });
       next = $.el('a', {
-        textContent: '?',
+        textContent: '▼',
         href: 'javascript:;'
       });
       $.on(prev, 'click', this.prev);
