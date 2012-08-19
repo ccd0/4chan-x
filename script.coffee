@@ -1986,14 +1986,21 @@ QR =
       QR.status()
       return
     QR.abort()
-    reply = QR.replies[0]
 
+    reply = QR.replies[0]
     threadID = g.THREAD_ID or $('select', QR.el).value
 
     # prevent errors
-    unless threadID is 'new' and reply.file or threadID isnt 'new' and (reply.com or reply.file)
-      err = 'No file selected.'
-    else if QR.captchaIsEnabled
+    if threadID is 'new'
+      if g.BOARD in ['vg', 'q'] and !reply.sub
+        err = 'New threads require a subject.'
+      else unless reply.file
+        err = 'No file selected.'
+    else
+      unless reply.com or reply.file
+        err = 'No file selected.'
+
+    if QR.captchaIsEnabled and !err
       # get oldest valid captcha
       captchas = $.get 'captchas', []
       # remove old captchas
