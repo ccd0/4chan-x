@@ -1832,8 +1832,8 @@ QR =
     if threadID is 'new'
       if g.BOARD in ['vg', 'q'] and !reply.sub
         err = 'New threads require a subject.'
-      else unless reply.file
-        err = 'No file selected.'
+      else unless reply.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
+          err = 'No file selected.'
     else
       unless reply.com or reply.file
         err = 'No file selected.'
@@ -1876,14 +1876,15 @@ QR =
     QR.status progress: '...'
 
     post =
-      resto:   threadID
-      name:    reply.name
-      email:   reply.email
-      sub:     reply.sub
-      com:     reply.com
-      upfile:  reply.file
-      spoiler: reply.spoiler
-      mode:    'regist'
+      resto:    threadID
+      name:     reply.name
+      email:    reply.email
+      sub:      reply.sub
+      com:      reply.com
+      upfile:   reply.file
+      spoiler:  reply.spoiler
+      textonly: textOnly
+      mode:     'regist'
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '

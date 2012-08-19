@@ -1,6 +1,7 @@
 master
 - Mayhem
   Fix cooldown on /q/.
+  Fix thread creation with no file on /q/.
   Add /mlp/ archive redirection.
 
 2.34.4
