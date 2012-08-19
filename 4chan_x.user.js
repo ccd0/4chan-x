@@ -2354,7 +2354,7 @@
       }));
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, threadID;
+      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, threadID, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -2366,9 +2366,18 @@
       QR.abort();
       reply = QR.replies[0];
       threadID = g.THREAD_ID || $('select', QR.el).value;
-      if (!(threadID === 'new' && reply.file || threadID !== 'new' && (reply.com || reply.file))) {
-        err = 'No file selected.';
-      } else if (QR.captchaIsEnabled) {
+      if (threadID === 'new') {
+        if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
+          err = 'New threads require a subject.';
+        } else if (!reply.file) {
+          err = 'No file selected.';
+        }
+      } else {
+        if (!(reply.com || reply.file)) {
+          err = 'No file selected.';
+        }
+      }
+      if (QR.captchaIsEnabled && !err) {
         captchas = $.get('captchas', []);
         while ((captcha = captchas[0]) && captcha.time < Date.now()) {
           captchas.shift();
