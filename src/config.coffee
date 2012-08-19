@@ -180,7 +180,7 @@ Config =
         'sticky top', 'sticky bottom', 'top', 'bottom'
       ]]
       'Checkboxes':                [0,    'Alter checkboxes.', [
-        'show', 'make checkboxes circular', 'hide checkboxes'
+        'show', 'make checkboxes circular', 'hide checkboxes', 'do not style checkboxes'
       ]]
       'Captcha Opacity':           [0,    'Transparency of the 4chan Captcha', [
         100, 75, 50, 25
@@ -191,7 +191,7 @@ Config =
       'Font':                      [0,    'The font used by all elements of 4chan.', [
         'ubuntu', 'sans serif', 'serif'
       ]]
-      'Fontsize':                  [2,    'The font size of posts and various UI. This does not change all font sizes.', [
+      'Font Size':                  [2,    'The font size of posts and various UI. This does not change all font sizes.', [
         10, 11, 12, 13, 14
       ]]
       'Page Margin':               [0,     'Additional layout options, allowing you to center the page or use additional page margins.', [
