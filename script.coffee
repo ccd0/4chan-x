@@ -174,8 +174,6 @@ Conf = {}
 d = document
 g = {}
 
-# XXX GreaseMonkey can't into console.log.bind
-log = console.log.bind? console
 
 UI =
   dialog: (id, position, html) ->
@@ -2050,6 +2048,9 @@ QR =
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
+
+    try
+      console.log.bind? console
 
     callbacks =
       onload: ->

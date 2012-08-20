@@ -77,7 +77,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, log, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g;
 
   Config = {
     main: {
@@ -215,8 +215,6 @@
   d = document;
 
   g = {};
-
-  log = typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0;
 
   UI = {
     dialog: function(id, position, html) {
@@ -2270,7 +2268,7 @@
       };
 
       _Class.prototype.rmFile = function() {
-        var _base1;
+        var _base;
         QR.resetFileInput();
         delete this.file;
         this.el.title = null;
@@ -2278,7 +2276,7 @@
         if (QR.spoiler) {
           $('label', this.el).hidden = true;
         }
-        return typeof (_base1 = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base1.revokeObjectURL(this.url) : void 0;
+        return typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base.revokeObjectURL(this.url) : void 0;
       };
 
       _Class.prototype.select = function() {
@@ -2343,7 +2341,7 @@
       };
 
       _Class.prototype.rm = function() {
-        var index, _base1;
+        var index, _base;
         QR.resetFileInput();
         $.rm(this.el);
         index = QR.replies.indexOf(this);
@@ -2353,8 +2351,8 @@
           (QR.replies[index - 1] || QR.replies[index + 1]).select();
         }
         QR.replies.splice(index, 1);
-        if (typeof (_base1 = window.URL || window.webkitURL).revokeObjectURL === "function") {
-          _base1.revokeObjectURL(this.url);
+        if (typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function") {
+          _base.revokeObjectURL(this.url);
         }
         return delete this;
       };
@@ -2571,7 +2569,7 @@
       }));
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, textOnly, threadID, _ref;
+      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, textOnly, threadID, _base, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -2645,6 +2643,11 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
+      try {
+        if (typeof (_base = console.log).bind === "function") {
+          _base.bind(console);
+        }
+      } catch (_error) {}
       callbacks = {
         onload: function() {
           return QR.response(this.response);
