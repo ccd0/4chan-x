@@ -1,7 +1,10 @@
 master
+
+2.34.5
 - Mayhem
   Fix cooldown on /q/.
   Fix thread creation with no file on /q/.
+  Fix 'Administrator/Moderator/Developer Replies' creating extra backlinks on /q/.
   Add /mlp/ archive redirection.
 
 2.34.4

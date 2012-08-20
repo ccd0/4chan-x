@@ -3023,6 +3023,8 @@ QuoteBacklink =
     return if post.isInlined
     quotes = {}
     for quote in post.quotes
+      # Stop at 'Admin/Mod/Dev Replies:' on /q/
+      break if quote.parentNode.getAttribute('style') is 'font-size: smaller;'
       # Don't process >>>/b/.
       if qid = quote.hash[2..]
         # Duplicate quotes get overwritten.
@@ -4121,7 +4123,7 @@ Main =
     $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.34.4'
+  version: '2.34.5'
   callbacks: []
   css: '
 /* dialog styling */
