@@ -254,9 +254,6 @@ $.extend $,
   MINUTE: 1000*60
   HOUR  : 1000*60*60
   DAY   : 1000*60*60*24
-  log:
-    # XXX GreaseMonkey can't into console.log.bind
-    console.log.bind? console
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
@@ -1888,6 +1885,11 @@ QR =
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
+
+    try
+      console.log.bind? console
+    catch err
+      post.com += "\n\n╔══════════════ ೋღ☃ღೋ ══════════════╗\n~ ~ ~ ~ ~ ~ ~ ~ Repost this if ~ ~ ~ ~ ~ ~ ~ ~ ~\n~ ~ ~ ~ you are a strong test build user ~ ~ ~ ~\n~ ~ ~ ~ who don’t need no stable channel ~ ~ ~ ~\n╚══════════════ ೋღ☃ღೋ ══════════════╝"
 
     callbacks =
       onload: ->

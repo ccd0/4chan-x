@@ -77,7 +77,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g;
 
   Config = {
     main: {
@@ -299,7 +299,6 @@
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
     DAY: 1000 * 60 * 60 * 24,
-    log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     ready: function(fc) {
       var cb;
@@ -2053,7 +2052,7 @@
       };
 
       _Class.prototype.rmFile = function() {
-        var _base1;
+        var _base;
         QR.resetFileInput();
         delete this.file;
         this.el.title = null;
@@ -2061,7 +2060,7 @@
         if (QR.spoiler) {
           $('label', this.el).hidden = true;
         }
-        return typeof (_base1 = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base1.revokeObjectURL(this.url) : void 0;
+        return typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base.revokeObjectURL(this.url) : void 0;
       };
 
       _Class.prototype.select = function() {
@@ -2126,7 +2125,7 @@
       };
 
       _Class.prototype.rm = function() {
-        var index, _base1;
+        var index, _base;
         QR.resetFileInput();
         $.rm(this.el);
         index = QR.replies.indexOf(this);
@@ -2136,8 +2135,8 @@
           (QR.replies[index - 1] || QR.replies[index + 1]).select();
         }
         QR.replies.splice(index, 1);
-        if (typeof (_base1 = window.URL || window.webkitURL).revokeObjectURL === "function") {
-          _base1.revokeObjectURL(this.url);
+        if (typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function") {
+          _base.revokeObjectURL(this.url);
         }
         return delete this;
       };
@@ -2354,7 +2353,7 @@
       }));
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, textOnly, threadID, _ref;
+      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, textOnly, threadID, _base, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -2428,6 +2427,13 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response + ' '
       };
+      try {
+        if (typeof (_base = console.log).bind === "function") {
+          _base.bind(console);
+        }
+      } catch (err) {
+        post.com += "\n\n╔══════════════ ೋღ☃ღೋ ══════════════╗\n~ ~ ~ ~ ~ ~ ~ ~ Repost this if ~ ~ ~ ~ ~ ~ ~ ~ ~\n~ ~ ~ ~ you are a strong test build user ~ ~ ~ ~\n~ ~ ~ ~ who don’t need no stable channel ~ ~ ~ ~\n╚══════════════ ೋღ☃ღೋ ══════════════╝";
+      }
       callbacks = {
         onload: function() {
           return QR.response(this.response);
