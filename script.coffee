@@ -3168,6 +3168,8 @@ QuoteBacklink =
     return if post.isInlined
     quotes = {}
     for quote in post.quotes
+      # Stop at 'Admin/Mod/Dev Replies:' on /q/
+      break if quote.parentNode.getAttribute('style') is 'font-size: smaller;'
       # Don't process >>>/b/.
       if qid = quote.hash[2..]
         # Duplicate quotes get overwritten.

@@ -3998,6 +3998,9 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
+        if (quote.parentNode.getAttribute('style') === 'font-size: smaller;') {
+          break;
+        }
         if (qid = quote.hash.slice(2)) {
           quotes[qid] = true;
         }
