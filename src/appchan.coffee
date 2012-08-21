@@ -1,5 +1,6 @@
 Style =
   init: ->
+    Style.setup()
     switch Conf['Emoji Position']
       when '0'
         Style.css = Style.css + Style.emoji('before', 'left')
@@ -43,7 +44,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 }
 '
     return css
-
+  
   inputs: ->
     div = $.el div,
       className: 'fakecheckbox'
@@ -54,3 +55,9 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       $.addStyle Style.css
     else # XXX fox
       $.on d, 'DOMNodeInserted', Style.addStyle
+      
+  setup: ->
+    themeName = Conf['theme']
+    currentTheme = Themes[themeName]
+    console.log currentTheme
+    

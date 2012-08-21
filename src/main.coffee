@@ -140,8 +140,6 @@ Main =
 
     Favicon.init()
     Options.init()
-    
-    console.log Conf['themes']
 
     # Major features.
     if Conf['Quick Reply']

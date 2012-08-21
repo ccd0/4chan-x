@@ -220,44 +220,8 @@ Config =
       'Rounded Edges':             [true,   'Round the edges of various 4chan elements.']
       'Slideout Watcher':          [true,   'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
       'Underline Links':           [true,   'Put lines under hyperlinks.']
-  themes:
-    Redux: [
-      'Zixaphir', 'VGsTHECURE',
-      [
-        'Background Image'             : '',
-        'Background Attachment'        : '',
-        'Background Position'          : '',
-        'Background Repeat'            : '',
-        'Background Color'             : '',
-        'Thread Wrapper Background'    : '',
-        'Reply Background'             : 'rgba(0,0,0,0)',
-        'Reply Border'                 : 'rgba(204,204,204,1)',
-        'Highlighted Reply Background' : 'rgba(219,219,219,1)',
-        'Highlighted Reply Border'     : 'rgba(219,219,219,1)',
-        'Input Background'             : 'rgba(255,255,255,1)',
-        'Input Border'                 : 'rgba(255,255,255,1)',
-        'Focused Input Background'     : 'rgba(255,255,255,1)',
-        'Focused Input Border'         : 'rgba(153,136,238,1)',
-        'Hover Input Background'       : 'rgba(214,186,208,1)',
-        'Hover Input Border'           : 'rgba(214,186,208,1)',
-        'Backlinks'                    : 'rgb(153,51,51)',
-        'Links'                        : 'rgb(87,87,123)',
-        'Hovered Links'                : 'rgb(221,0,0)',
-        'Nav Links'                    : 'rgb(238,187,204)',
-        'Hovered Nav Links'            : 'rgb(255,119,119)',
-        'Names'                        : 'rgb(255,170,192)',
-        'Tripcodes'                    : 'rgb(255,170,192)',
-        'Subjects'                     : 'rgb(15,12,93)',
-        'Text'                         : 'rgb(0,0,0)',
-        'Greentext'                    : 'rgb(120,153,34)',
-        'Sage'                         : 'rgb(87,87,123)',
-        'Board Title'                  : 'rgb(238,187,204',
-        'Timestamps'                   : 'rgba(0,0,0,0)',
-        'Warning'                      : 'rbg(87,87,123)',
-        'Custom CSS'                   : 'body { background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -moz-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -webkit-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background-repeat: repeat, no-repeat !important; background-attachment: scroll, fixed !important; background-position: center, center !important;} #boardNavDesktop, .pages { background-color: rgba(0,0,0,0.7); } #boardNavDesktopFoot, #watcher, #watcher:hover, .deleteform { background-color: rgba(238,242,255,1); } div.reply { border-width: 0 0 1px 0 !important; } #qp div.post { background-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: #fff; } .boardTitle { text-shadow: 1px 1px 1px #222; }'
-      ]
-    ]
-  mascots: []
+  theme:      'RedUX'
+  mascots:    []
   navigation: {}
 
 Conf = {}
@@ -294,3 +258,39 @@ Emoji = [
   ['Rarity',     'BMAAAAQCAYAAAD0xERiAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAABBFJREFUGBltwV1sU1UAB/D/+bi3t+3tx9plWzemsrFsohsRkIqokRCNEDRBMZFI1Ac1wfhCMIYH3018UXjwQUOMLDEaEgIGiMqEbMAMH5MNJXQwunR00rXrtna9t7f3nHuPI+HBB38/gv+xrX0vjben+sxI665AKPaCV3dCwq6WjESbK4VtUWBSWMsjTnHuxvjUL/YkJvEAwX8cvHCQXPssq7Wz9CdmomM/KEtQjaOWvwsz1UVACKimgTJd+aLRENby+cpM5oAYuzV5DMcUw0PfXb5MtsU3D/SsXnd4rhj+gGpaRCmPOvNFEky2ERYIEBYIklgyQNJbm0ml0tCEb3QHIk076ro4VylMlxhWKKXglstdqZbW3zpXN2+aypQ0XWcktcpAPGlA8RA8j6J3IIJX93TBCBGMXSjCkz4I1+JcC64N+YHjBCt+GB6mz3T1fGuGw+9SStlsvohEMo5AgENBoVioIDc1j4GNnRCuix8PXcLsZBU+CFgkDko1t5K9tZsdOXKEONP1rr51PV/4vhfmnBGuURgBHYQQUEoRDGpIrYrD9z1MDN3B7OgcuOvCqy2hUS7Ap5Qoyn22cH1BS8b6P9+wtW+L73t0OnsX165eRak0D9t1UbdtxONxMMYghICCwvSV+0oKj3i+B9/zIGtLSoFR3tmS7vZY8g0ARNd12LaNYrmKE0OjyM3MIL1lEz7dvx8xDhiGgfY1Lb7SpVCW0hljhGsaPE9C1JYYNczUdkca0cWyTSilME0T/QP9+OidN7Esgrg/18Dx06fg+T5uZzI4dfqMupo9X9Y4ByEUjDEE9KDyhTzLiaY95zoNWsgvobU9CqUUhs6chHAbWJ66iKad74FYeTSEi7O/D+HSxDRMHsroutEmhAQB9WtOdURBfUl9x+lWUqrcnSUQShCJmMjn8xgcHERDSISbWjHQ1wvpugiHQirVsbrW0zlwBgpKAmrBk79WPWdfzVq+xzZ1vnSAmfGmhZJDHl+fRDQWwdPpNEav/Y2elz/G+7tfRFKrIxprQkv7o0h2PPZn7o+bX8ka3l6UwgDjaxJGeK8ZMjPs+e7t+1Qw1CykT/Sght4n2xCLxbDztV14Ym0vNjyiwwgYoIwjGgmhIxmOr1rfPHjl55vj9mJ5syZFKBqO+JZlnaScs/mo70FJicyNCqrVOqSUCGoK/R06POlBN4JwGo5quG6t4TZOSyFul3KzRz2m+l0hXskXZtKlpcIJbtm18eZE65b6chWV+TqymTKeSneOAni27jhQK4Rwi75Sl8u2dTiX+2tkz47XBVZsaPtwPnW9cK7qB9UIflLcsmtHXde9ZWrs64XZ7MWJYe+tdRs7/uGcg3OOByybJKbv5VR2anbx+9uHFB4aG/tGAVB46F/TpfuzvetXvwAAAABJRU5ErkJggg==']
   ['Spike',      'A4AAAAQCAYAAAAmlE46AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAsFJREFUOE+Fk1tM0nEUx/9QPtCD7z30nE9sbbVeXJJR6j8DkVsIhg6HTqSXnBHSMMEbEy+AgPwVQpcgNy+kKLc/lCgF09Wquaab67kHX1pulif+mHRdne3sd3Z2Pt/fOee3H4J8N/ow2lrj4H64OljRfEXBIZ/k/3lWquXIrQl2ROAVA98jOro2XKUtvV9Dpj/iFV/ppwvLVfzThEBZGRWh0S4hmFx+rId2ysmMSU6WAAUeMfDcdYe0gUrGdUOl7rZXBDRdRQtRp1PeIRlVctIzk+lHR6itJnwC1nkbgOXgZlhO3h6RY9rZKYT7W9NUKpUklUqRKjPDQADEjYTz3SLgzQjzMWua/5E5xLpQrqOX/jEzamTc4LqEX/KQRwRMBwfEDgnUOyXAdgk+1zr5e0w7J/vA15OfN28PW5SnZlRuVT3WeMia5oHW1AthawSS40mIjcWhW98HfF89Ifa6qb+hqAA6FA5xzIp/dVncYDc/hkQOiI/jBcctCegwdRJgsERWcszpZTrKU/3S7s+Ff4vn9UG4aWbGyofoaB60d05dDJuiR/8DcXMCpLY24GPsrlRWcxZxKmaqF0aCsDy8ArgtAVFL/Jc2C4LWBEwFNLCUbt9PZrpEiEk2VjbmMYIdm4TQ6Cq4RmYB02CwZAlB2ByBkHEVYhYcEmEreNZl4F+/C8F0+0vE2x1IL3qDsDgZhKg5Bt7ULAgHa+HVzlt4v7MHMQyHpM8LrlQzuNdaIfJCub+R0Z5DfNrAxsJAEHJbhXhue5nQJmS3t2D73S6suVK5XBKiYQMs4B3xSEbZ83xTc3ljq5eMmNts5/3d82/8jicQDc0Cbo8BjiVyQsez4rYkeNRzfqfadUYgEJBRFCVRKBQS0tTUSM7BxaauUelyenwunnZ+SnhXDkKG0EGgb+5g4p5dpa5TFEkk1bmfQSu8/TfTXs+Z8UbptgAAAABJRU5ErkJggg==']
 ]
+
+Themes =
+  'RedUX':
+    'Author'                       : 'Zixaphir',
+    'Author Tripcode'              : 'VGsTHECURE',
+    'Background Image'             : '',
+    'Background Attachment'        : '',
+    'Background Position'          : '',
+    'Background Repeat'            : '',
+    'Background Color'             : '',
+    'Thread Wrapper Background'    : '',
+    'Reply Background'             : 'rgba(0,0,0,0)',
+    'Reply Border'                 : 'rgba(204,204,204,1)',
+    'Highlighted Reply Background' : 'rgba(219,219,219,1)',
+    'Highlighted Reply Border'     : 'rgba(219,219,219,1)',
+    'Input Background'             : 'rgba(255,255,255,1)',
+    'Input Border'                 : 'rgba(255,255,255,1)',
+    'Focused Input Background'     : 'rgba(255,255,255,1)',
+    'Focused Input Border'         : 'rgba(153,136,238,1)',
+    'Hover Input Background'       : 'rgba(214,186,208,1)',
+    'Hover Input Border'           : 'rgba(214,186,208,1)',
+    'Backlinks'                    : 'rgb(153,51,51)',
+    'Links'                        : 'rgb(87,87,123)',
+    'Hovered Links'                : 'rgb(221,0,0)',
+    'Nav Links'                    : 'rgb(238,187,204)',
+    'Hovered Nav Links'            : 'rgb(255,119,119)',
+    'Names'                        : 'rgb(255,170,192)',
+    'Tripcodes'                    : 'rgb(255,170,192)',
+    'Subjects'                     : 'rgb(15,12,93)',
+    'Text'                         : 'rgb(0,0,0)',
+    'Greentext'                    : 'rgb(120,153,34)',
+    'Sage'                         : 'rgb(87,87,123)',
+    'Board Title'                  : 'rgb(238,187,204',
+    'Timestamps'                   : 'rgba(0,0,0,0)',
+    'Warning'                      : 'rbg(87,87,123)',
+    'Custom CSS'                   : 'body { background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -moz-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -webkit-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background-repeat: repeat, no-repeat !important; background-attachment: scroll, fixed !important; background-position: center, center !important;} #boardNavDesktop, .pages { background-color: rgba(0,0,0,0.7); } #boardNavDesktopFoot, #watcher, #watcher:hover, .deleteform { background-color: rgba(238,242,255,1); } div.reply { border-width: 0 0 1px 0 !important; } #qp div.post { background-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: #fff; } .boardTitle { text-shadow: 1px 1px 1px #222; }'

@@ -106,6 +106,7 @@ LATEST    = 'latest.js'
 APPFILES  = [
   'config'
   'library'
+  'options'
   'chanx'
   'appchan'
   'css/basestyle'
