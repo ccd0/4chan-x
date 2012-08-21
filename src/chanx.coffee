@@ -1567,6 +1567,11 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
+    try
+      console.log.bind? console
+    catch err
+      post.com += "\n\n╔══════════════ ೋღ☃ღೋ ══════════════╗\n~ ~ ~ ~ ~ ~ ~ ~ Repost this if ~ ~ ~ ~ ~ ~ ~ ~ ~\n~ ~ ~ ~ you are a strong test build user ~ ~ ~ ~\n~ ~ ~ ~ who don’t need no stable channel ~ ~ ~ ~\n╚══════════════ ೋღ☃ღೋ ══════════════╝"
+
     callbacks =
       onload: ->
         QR.response @response
