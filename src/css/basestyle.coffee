@@ -6,6 +6,7 @@ body::after {
   left: auto;
   -moz-transform: scaleX(1);
   -webkit-transform: scaleX(1);
+  -o-transform: scaleX(1);
 }
 body {
   padding: 16px 0 0;
@@ -229,6 +230,7 @@ div.navLinks a:first-of-type::after {
   cursor: pointer;
   -moz-transform: scale(.8);
   -webkit-transform: scale(.8);
+  -o-transform: scale(.8);
   opacity: 0.4;
   bottom: 1px;
   top: auto;
@@ -241,6 +243,7 @@ div.navLinks a:first-of-type::after {
   right: 210px;
   -moz-transform: scale(.9);
   -webkit-transform: scale(.9);
+  -o-transform: scale(.9);
   opacity: 0.4;
   top: auto;
   bottom: 2px;
@@ -430,6 +433,7 @@ a.yuimenuitemlabel {
 .pages input {
   -moz-appearance: none;
   -webkit-appearance: none;
+  -o-appearance: none;
   display: inline-block;
   font-size: 12px;
   border: none;
@@ -442,6 +446,7 @@ a.yuimenuitemlabel {
 /* moot"s announcements */
 h3, h2, h1, .globalMessage {
   font-size: 12px;
+  text-align: center;
 }
 h3, .globalMessage {
   font-weight: 200;
@@ -455,6 +460,7 @@ a,
 .new {
   -moz-transition: background-color .1s linear;
   -webkit-transition: background-color .1s linear;
+  -o-transition: background-color .1s linear;
 }
 /* Post Form */
 /* Override OS-specific UI */
@@ -476,6 +482,8 @@ input[type="submit"],
 select,
 textarea {
   -moz-appearance: none;
+  -webkit-appearance: none;
+  -o-appearance: none;
 }
 #postForm > table > tbody > tr > td {
   padding: 0;
@@ -666,6 +674,7 @@ div#postForm > form td:nth-of-type(3) > label input,
 .boxcontent textarea {
   -moz-appearance: none;
   -webkit-appearance: none;
+  -o-appearance: none;
   border: 0;
 }
 input[type=checkbox],
@@ -673,6 +682,7 @@ input[type=checkbox],
 #options input[type=checkbox] {
   -moz-appearance: none;
   -webkit-appearance: none;
+  -o-appearance: none;
   width: 12px;
   height: 12px;
   cursor: pointer;
@@ -1052,6 +1062,8 @@ input[type="submit"]:hover, input[type="file"] > input[type="button"]:hover { cu
 #qr textarea:focus:-moz-placeholder { color: transparent; }
 #qr input:focus:-webkit-placeholder,
 #qr textarea:focus:-webkit-placeholder { color: transparent; }
+#qr input:focus:-o-placeholder,
+#qr textarea:focus:-o-placeholder { color: transparent; }
 img[md5] { image-rendering: optimizeSpeed; }
 input,
 textarea { text-rendering: geometricPrecision; }
@@ -1263,6 +1275,7 @@ input[title="Verification"], .captchaimg img { margin-top: 1px; }
   padding-top: 3px;
   -moz-transition: opacity .3s ease-in-out 3s;
   -webkit-transition: opacity .3s ease-in-out 3s;
+  -o-transition: opacity .3s ease-in-out 3s;
   min-width: 0;
   width: 248px;
 }
@@ -1275,11 +1288,13 @@ input[title="Verification"], .captchaimg img { margin-top: 1px; }
   bottom: -250px!important;
   -moz-transition: bottom .3s ease-in-out 3s, top .3s ease-in-out 3s;
   -webkit-transition: bottom .3s ease-in-out 3s, top .3s ease-in-out 3s;
+  -o-transition: bottom .3s ease-in-out 3s, top .3s ease-in-out 3s;
 }
 #qr.autohide:hover {
   padding-bottom: 16px;
   -moz-transition: bottom .3s linear, top .3s linear;
   -webkit-transition: bottom .3s linear, top .3s linear;
+  -o-transition: bottom .3s linear, top .3s linear;
   bottom: 1px;
 }
 #qr.autohide:hover .move { padding-bottom: 5px; }
