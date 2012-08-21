@@ -423,11 +423,11 @@ ExpandThread =
 
     switch a.textContent[0]
       when '+'
-        a.textContent = a.textContent.replace '+', 'Ã— Loading...'
+        a.textContent = a.textContent.replace '+', '× Loading...'
         $.cache pathname, -> ExpandThread.parse @, thread, a
 
       when 'X'
-        a.textContent = a.textContent.replace 'Ã— Loading...', '+'
+        a.textContent = a.textContent.replace '× Loading...', '+'
         $.cache.requests[pathname].abort()
 
       when '-'
@@ -449,7 +449,7 @@ ExpandThread =
       $.off a, 'click', ExpandThread.cb.toggle
       return
 
-    a.textContent = a.textContent.replace 'Ã— Loading...', '-'
+    a.textContent = a.textContent.replace '× Loading...', '-'
 
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = req.response
@@ -931,10 +931,10 @@ Nav =
     span = $.el 'span',
       id: 'navlinks'
     prev = $.el 'a',
-      textContent: 'â–²',
+      textContent: '▲',
       href: 'javascript:;'
     next = $.el 'a',
-      textContent: 'â–¼'
+      textContent: '▼'
       href: 'javascript:;'
 
     $.on prev, 'click', @prev
@@ -1409,7 +1409,7 @@ QR =
     QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
-  <span> <a class=close title=Close>Ã—</a></span>
+  <span> <a class=close title=Close>×</a></span>
 </div>
 <form>
   <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
@@ -1864,7 +1864,7 @@ Watcher =
     for board of watched
       for id, props of watched[board]
         x = $.el 'a',
-          textContent: 'Ã—'
+          textContent: '×'
           href: 'javascript:;'
         $.on x, 'click', Watcher.cb.x
         link = $.el 'a', props
@@ -3071,7 +3071,7 @@ Redirect =
       # when 'an', 'k', 'toy', 'x'
       #   "http://archive.heinessen.com/#{board}/full_image/#{filename}"
       # when 'e'
-      #   "https://www.clichÃ©.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
+      #   "https://www.cliché.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
@@ -3112,7 +3112,7 @@ Redirect =
         if threadID and postID
           url += "#p#{postID}"
       when 'e'
-        url = "https://www.clichÃ©.net/4chan/cgi-board.pl/#{path}"
+        url = "https://www.cliché.net/4chan/cgi-board.pl/#{path}"
         if threadID and postID
           url += "#p#{postID}"
       else
