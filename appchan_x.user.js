@@ -2653,7 +2653,7 @@
       }));
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, threadID;
+      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, textOnly, threadID, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -2665,9 +2665,18 @@
       QR.abort();
       reply = QR.replies[0];
       threadID = g.THREAD_ID || $('select', QR.el).value;
-      if (!(threadID === 'new' && reply.file || threadID !== 'new' && (reply.com || reply.file))) {
-        err = 'No file selected.';
-      } else if (QR.captchaIsEnabled) {
+      if (threadID === 'new') {
+        if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
+          err = 'New threads require a subject.';
+        } else if (!(reply.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
+          err = 'No file selected.';
+        }
+      } else {
+        if (!(reply.com || reply.file)) {
+          err = 'No file selected.';
+        }
+      }
+      if (QR.captchaIsEnabled && !err) {
         captchas = $.get('captchas', []);
         while ((captcha = captchas[0]) && captcha.time < Date.now()) {
           captchas.shift();
@@ -2709,9 +2718,10 @@
         name: reply.name,
         email: reply.email,
         sub: reply.sub,
-        com: Conf['Markdown'] ? Markdown.format(reply.com) : reply.com,
+        com: reply.com,
         upfile: reply.file,
         spoiler: reply.spoiler,
+        textonly: textOnly,
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
@@ -4123,6 +4133,9 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
+        if (quote.parentNode.getAttribute('style') === 'font-size: smaller;') {
+          break;
+        }
         if (qid = quote.hash.slice(2)) {
           quotes[qid] = true;
         }
@@ -4790,7 +4803,7 @@
           case 'mlp':
             return 251;
           case 'vg':
-            return 501;
+            return 376;
           default:
             return 151;
         }
@@ -5029,6 +5042,7 @@
         case 'an':
         case 'fit':
         case 'k':
+        case 'mlp':
         case 'r9k':
         case 'toy':
         case 'x':
