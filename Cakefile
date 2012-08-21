@@ -105,6 +105,7 @@ CHANGELOG = 'changelog'
 LATEST    = 'latest.js'
 APPFILES  = [
   'config'
+  'themes'
   'library'
   'options'
   'chanx'
