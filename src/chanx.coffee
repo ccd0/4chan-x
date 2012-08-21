@@ -1567,9 +1567,6 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response + ' '
 
-    try
-      console.log.bind? console
-
     callbacks =
       onload: ->
         QR.response @response
