@@ -1558,7 +1558,7 @@ QR =
       name:     reply.name
       email:    reply.email
       sub:      reply.sub
-      com:      reply.com
+      com:      if Conf['Markdown'] then Markdown.format reply.com else reply.com
       upfile:   reply.file
       spoiler:  reply.spoiler
       textonly: textOnly
@@ -1569,8 +1569,6 @@ QR =
 
     try
       console.log.bind? console
-    catch err
-      post.com += "\n\n╔══════════════ ೋღ☃ღೋ ══════════════╗\n~ ~ ~ ~ ~ ~ ~ ~ Repost this if ~ ~ ~ ~ ~ ~ ~ ~ ~\n~ ~ ~ ~ you are a strong test build user ~ ~ ~ ~\n~ ~ ~ ~ who don’t need no stable channel ~ ~ ~ ~\n╚══════════════ ೋღ☃ღೋ ══════════════╝"
 
     callbacks =
       onload: ->
@@ -2730,7 +2728,7 @@ QuoteBacklink =
     return if post.isInlined
     quotes = {}
     for quote in post.quotes
-    # Stop at 'Admin/Mod/Dev Replies:' on /q/
+      # Stop at 'Admin/Mod/Dev Replies:' on /q/
       break if quote.parentNode.getAttribute('style') is 'font-size: smaller;'
       # Don't process >>>/b/.
       if qid = quote.hash[2..]

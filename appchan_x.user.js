@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        2.34.5
+// @version        2.34.6
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -2716,7 +2716,7 @@
         name: reply.name,
         email: reply.email,
         sub: reply.sub,
-        com: reply.com,
+        com: Conf['Markdown'] ? Markdown.format(reply.com) : reply.com,
         upfile: reply.file,
         spoiler: reply.spoiler,
         textonly: textOnly,
@@ -2729,9 +2729,7 @@
         if (typeof (_base = console.log).bind === "function") {
           _base.bind(console);
         }
-      } catch (err) {
-        post.com += "\n\n╔══════════════ ೋღ☃ღೋ ══════════════╗\n~ ~ ~ ~ ~ ~ ~ ~ Repost this if ~ ~ ~ ~ ~ ~ ~ ~ ~\n~ ~ ~ ~ you are a strong test build user ~ ~ ~ ~\n~ ~ ~ ~ who don’t need no stable channel ~ ~ ~ ~\n╚══════════════ ೋღ☃ღೋ ══════════════╝";
-      }
+      } catch (_error) {}
       callbacks = {
         onload: function() {
           return QR.response(this.response);

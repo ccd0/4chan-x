@@ -1,34 +1,11 @@
 master
 
-2.34.5
+2.34.6
 - Mayhem
   Fix cooldown on /q/.
   Fix thread creation with no file on /q/.
   Fix 'Administrator/Moderator/Developer Replies' creating extra backlinks on /q/.
   Add /mlp/ archive redirection.
-
-2.34.4
-- Mayhem
-  Add /q/ archive redirection.
-
-2.34.3
-- Mayhem
-  Update /k/ archive redirection.
-
-2.34.2
-- Mayhem
-  Adjust background tabs max update interval down to 5 minutes instead of 10.
-  Divide the Delete Link in the Menu into a Post and Image deletion links.
-  The Delete Links in the Menu now have a cooldown.
-  Add /fit/ archive redirection.
-
-2.34.1
-- Mayhem
-  Add /wsg/ archive redirection.
-
-2.34.0
-- Mayhem
-  Fix cooldown on /q/.
 
 2.34.5
 - Mayhem
