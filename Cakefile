@@ -34,6 +34,10 @@ HEADER = """
 * http://mayhemydg.github.com/4chan-x/
 * Appchan X Copyright (c) 2012 Zixaphir <zixaphirmodnar@gmail.com>
 * http://zixaphir.github.com/appchan-x/
+* OneeChan Copyright (c) 2012 Jordan Bates
+* http://seaweedchan.github.com/oneechan/
+* 4chan SS Copyright (c) 2012 Ahodesuka
+* http://ahodesuka.github.com/4chan-Style-Script/
 *
 * 4chan X
 * Appchan X
@@ -104,6 +108,7 @@ APPFILES  = [
   'library'
   'chanx'
   'appchan'
+  'css/basestyle'
   'main'
   'css'
   'exec'
