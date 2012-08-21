@@ -391,7 +391,7 @@
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
     DAY: 1000 * 60 * 60 * 24,
-    log: !console.log ? console = unsafeWindow.console : void 0,
+    log: !console ? console = unsafeWindow.console : void 0,
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     ready: function(fc) {
       var cb;
