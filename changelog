@@ -1,5 +1,8 @@
 master
--Mayhem
+- noface
+  Adjust to new recaptcha (now the a space must be provided).
+
+- Mayhem
   Fix support of change in 4chan's HTML about hidden filename in case of spoiler.
 
 2.34.6
