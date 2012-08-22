@@ -368,6 +368,15 @@ $.extend $,
     script = $.el 'script', textContent: code
     $.add d.head, script
     $.rm script
+  shortenFilename: (filename, isOP) ->
+    # FILENAME SHORTENING SCIENCE:
+    # OPs have a +10 characters threshold.
+    # The file extension is not taken into account.
+    threshold = if isOP then 40 else 30
+    if filename.replace(/\.\w+$/, '').length > threshold
+      "#{filename[...threshold - 5]}(...)#{filename.match(/\.\w+$/)}"
+    else
+      filename
   bytesToString: (size) ->
     unit = 0 # Bytes
     while size >= 1024
@@ -2675,17 +2684,17 @@ FileInfo =
     return if post.isInlined and not post.isCrosspost or not post.fileInfo
     node = post.fileInfo.firstElementChild
     alt  = post.img.alt
-    span = $ 'span', node
+    filename = $('span', node)?.title or node.title
     FileInfo.data =
       link:       post.img.parentNode.href
       spoiler:    /^Spoiler/.test alt
       size:       alt.match(/\d+\.?\d*/)[0]
       unit:       alt.match(/\w+$/)[0]
-      resolution: span.previousSibling.textContent.match(/\d+x\d+|PDF/)[0]
-      fullname:   span.title
-      shortname:  span.textContent
+      resolution: node.textContent.match(/\d+x\d+|PDF/)[0]
+      fullname:   filename
+      shortname:  $.shortenFilename filename, post.isOP
     # XXX GM/Scriptish
-    node.setAttribute 'data-filename', span.title
+    node.setAttribute 'data-filename', filename
     node.innerHTML = FileInfo.funk FileInfo
   setFormats: ->
     code = Conf['fileInfo'].replace /%([BKlLMnNprs])/g, (s, c) ->
@@ -2954,15 +2963,7 @@ Get =
         innerHTML: "<span id=fT#{postID} class=fileText>File: <a href='#{data.media_link or data.remote_media_link}' target=_blank>#{data.media_orig}</a>-(#{if spoiler then 'Spoiler Image, ' else ''}#{filesize}, #{data.media_w}x#{data.media_h}, <span title></span>)</span>"
       span = $ 'span[title]', file
       span.title = filename
-      threshold = if isOP then 40 else 30
-      span.textContent =
-        # FILENAME SHORTENING SCIENCE:
-        # OPs have a +10 characters threshold.
-        # The file extension is not taken into account.
-        if filename.replace(/\.\w+$/, '').length > threshold
-          "#{filename[...threshold - 5]}(...)#{filename.match(/\.\w+$/)}"
-        else
-          filename
+      span.textContent = $.shortenFilename filename, isOP
       thumb_src = if data.media_status is 'available' then "src=#{data.thumb_link}" else ''
       $.add file, $.el 'a',
         className: if spoiler then 'fileThumb imgspoiler' else 'fileThumb'
