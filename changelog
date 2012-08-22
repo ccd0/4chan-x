@@ -1,4 +1,6 @@
 master
+- Mayhem
+  Fix one-word-captcha, you'll need to leave a space for the fake word now.
 
 2.34.6
 - Mayhem
