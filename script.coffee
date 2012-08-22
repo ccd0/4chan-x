@@ -2051,6 +2051,10 @@ QR =
 
     try
       console.log.bind? console
+    catch err
+      unless $.get 'scriptish'
+        $.set 'scriptish', true
+        alert "From here it appears that you're currently using Scriptish on Nightly.\n\nDue to a recent changeset in the Nightly channel Scriptish isn\'t able to log anything to the console right now.\n\nPlease consider using either Greasemonkey or the stable/beta/aurora channel of Firefox until this problem is fixed."
 
     callbacks =
       onload: ->
