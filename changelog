@@ -1,6 +1,8 @@
 master
--Mayhem
-  Fix support of change in 4chan's HTML about hidden filename in case of spoiler.
+
+2.34.6
+- Mayhem
+  Fix error caused by change in 4chan's HTML about hidden filename in case of spoiler.
 
 2.34.5
 - Mayhem
