@@ -269,32 +269,45 @@
       'Background Position': '',
       'Background Repeat': '',
       'Background Color': '',
-      'Thread Wrapper Background': '',
+      'Thread Wrapper Background': 'rgba(0,0,0,0)',
+      'Thread Wrapper Border': 'rgba(0,0,0,0)',
+      'Dialog Background': 'rgba(238,242,255,1)',
+      'Dialog Border': 'rgba(238,242,255,1)',
       'Reply Background': 'rgba(0,0,0,0)',
       'Reply Border': 'rgba(204,204,204,1)',
       'Highlighted Reply Background': 'rgba(219,219,219,1)',
       'Highlighted Reply Border': 'rgba(219,219,219,1)',
+      'Backlinked Reply Outline': 'rgba(98,124,141,1)',
       'Input Background': 'rgba(255,255,255,1)',
       'Input Border': 'rgba(255,255,255,1)',
+      'Checkbox Background': 'rgb(119,51,51)',
+      'Checkbox Border': 'rgba(238,242,255,1)',
+      'Buttons Background': 'rgba(255,255,255,1)',
+      'Buttons Border': 'rgba(255,255,255,1)',
       'Focused Input Background': 'rgba(255,255,255,1)',
       'Focused Input Border': 'rgba(153,136,238,1)',
-      'Hover Input Background': 'rgba(214,186,208,1)',
-      'Hover Input Border': 'rgba(214,186,208,1)',
+      'Hovered Input Background': 'rgba(214,186,208,1)',
+      'Hovered Input Border': 'rgba(214,186,208,1)',
+      'Navigation Background': 'rgba(0,0,0,0.7)',
+      'Navigation Border': 'rgba(0,0,0,0.7)',
       'Backlinks': 'rgb(153,51,51)',
       'Links': 'rgb(87,87,123)',
       'Hovered Links': 'rgb(221,0,0)',
-      'Nav Links': 'rgb(238,187,204)',
-      'Hovered Nav Links': 'rgb(255,119,119)',
-      'Names': 'rgb(255,170,192)',
-      'Tripcodes': 'rgb(255,170,192)',
+      'Navigation Links': 'rgb(238,187,204)',
+      'Hovered Navigation Links': 'rgb(255,119,119)',
+      'Names': 'rgb(119,51,51)',
+      'Tripcodes': 'rgb(119,51,51)',
       'Subjects': 'rgb(15,12,93)',
       'Text': 'rgb(0,0,0)',
+      'Post Numbers': 'rgb(0,0,0)',
       'Greentext': 'rgb(120,153,34)',
       'Sage': 'rgb(87,87,123)',
       'Board Title': 'rgb(238,187,204',
       'Timestamps': 'rgba(0,0,0,0)',
-      'Warning': 'rbg(87,87,123)',
-      'Custom CSS': 'body { background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -moz-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -webkit-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background-repeat: repeat, no-repeat !important; background-attachment: scroll, fixed !important; background-position: center, center !important;} #boardNavDesktop, .pages { background-color: rgba(0,0,0,0.7); } #boardNavDesktopFoot, #watcher, #watcher:hover, .deleteform { background-color: rgba(238,242,255,1); } div.reply { border-width: 0 0 1px 0 !important; } #qp div.post { background-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: #fff; } .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { background: -moz-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); background: -webkit-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); -o-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
+      'Warnings': 'rbg(87,87,123)',
+      'Shadow Color': 'rgba(60,60,60,0.6)',
+      'Dark Theme': '0',
+      'Custom CSS': 'body { background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -moz-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -webkit-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background-repeat: repeat, no-repeat !important; background-attachment: scroll, fixed !important; background-position: center, center !important;} #boardNavDesktop, .pages { background-color: rgba(0,0,0,0.7); } #boardNavDesktopFoot, #watcher, #watcher:hover, .deleteform { background-color: rgba(238,242,255,1); } div.reply { border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: #fff; } .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { background: -moz-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); background: -webkit-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); -o-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
     }
   };
 
@@ -5409,35 +5422,6 @@
 
   Style = {
     init: function() {
-      Style.setup();
-      switch (Conf['Emoji Position']) {
-        case '0':
-          Style.css = Style.css + Style.emoji('before', 'left');
-          break;
-        case '1':
-          Style.css = Style.css + Style.emoji('after', 'right');
-      }
-      if (Conf['Compact Post Form Inputs']) {
-        console.log(Conf['Expand Post Form Textarea']);
-      }
-      if (Conf['Expand Post Form Textarea']) {
-        console.log(Conf['Expand Post Form Textarea']);
-      }
-      if (Conf['Filtered Backlinks']) {
-        console.log(Conf['Filtered Backlinks']);
-      }
-      if (Conf['Fit Width Replies']) {
-        console.log(Conf['Fit Width Replies']);
-      }
-      if (Conf['Rounded Edges']) {
-        console.log(Conf['Rounded Edges']);
-      }
-      if (Conf['Slideout Watcher']) {
-        console.log(Conf['Slideout Watcher']);
-      }
-      if (Conf['Underline Links']) {
-        console.log(Conf['Underline Links']);
-      }
       return Style.addStyle();
     },
     emoji: function(position, direction) {
@@ -5464,21 +5448,19 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         className: 'fakecheckbox'
       });
     },
-    addStyle: function() {
+    addStyle: function(stylesheet) {
+      var theme;
       $.off(d, 'DOMNodeInserted', Style.addStyle);
+      theme = Themes[Conf['theme']];
       if (d.head) {
-        return $.addStyle(Style.css);
+        return $.addStyle(Style.css(theme));
       } else {
         return $.on(d, 'DOMNodeInserted', Style.addStyle);
       }
     },
-    setup: function() {
-      var currentTheme, themeName;
-      themeName = Conf['theme'];
-      currentTheme = Themes[themeName];
-      return console.log(currentTheme);
-    },
-    css: '\
+    css: function(theme) {
+      var css;
+      css = '\
 body::after {\
   position: fixed;\
   bottom: 279px;\
@@ -6447,12 +6429,7 @@ div.navLinks a:first-of-type:hover::after {\
   opacity: 1;\
   cursor: pointer;\
 }\
-#qp div.post,\
-div.reply,\
-div.reply.highlight,\
-#options { border: 0; }\
 #watcher {\
-  border: 0;\
   padding: 1px 0;\
   border-radius: 0;\
 }\
@@ -6783,7 +6760,361 @@ input[title="Verification"], .captchaimg img { margin-top: 1px; }\
 #qr.autohide:hover .move { padding-top: 1px; }\
 #qr textarea.field,\
 #qr div { min-width: 0; }\
-'
+html body span[style="left: 5px; position: absolute;"] a {\
+  height: 14px;\
+  padding-top: 3px;\
+  width: 56px;\
+}\
+hr {\
+  position: relative;\
+  top: 2px;\
+}\
+#updater input,\
+#options input,\
+#qr,\
+table.reply[style^="clear: both"] {\
+  border: none;\
+}\
+#delform > div:not(.thread) select,\
+.pages input[type="submit"] {\
+  margin: 0;\
+  height: 17px;\
+}\
+#qr.autohide .move {\
+  border-bottom: none;\
+}\
+/* Toolbox images */\
+/* 4chan X options */\
+#settingsWindowLink::after, body:not([class]) a[href="javascript:void(0);"]::after {\
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIVJREFUGNOFkVENwCAMRE8CUiYBCZOAM6Rg4CWTMAlIuH0AG9mS0f7Q67W9FmkyMoWstxGIEgljTJKIhCd59IQp9+voBHaMOUmdnqgYs41qcxLYKZhCJFCxbrZJvUfz2LCm1liappoiYUxu8AiHVw2cPIXf6sXsl/L6Vb7c++9qi5v//dgFtjLxtKnNCFwAAAAASUVORK5CYII=");\
+}\
+/* Delete buttons */\
+.deleteform::before {\
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAeRJREFUOE9tlM0rRFEYh0dMPiKxkWxsyEpWshCpURbWNPkvlCwYe6VJWU+zkmytZIOttZJsaHZioQkhH8+j++p0M/U0Z8597+/83o8zhUajUcjRwu8OGIAJmIFZmIJh6IHW/Ht5kXYCxmAVzuABvuAbXuAS9mAOesFDfzVSoW42FuEYXrOXFcjzyd41rMFQiIWQThS5AAP/E8jv3RO3Bf3hSHumo5MQeWZ9CjfJ3mO2d8d3pMuysQxFHVlYaxLpKLIP07ACV/AE2zAJ63CbuVbwBAYVsjsWNqzrRJE26ART3jAYdG/8bnJwk3VJIVtsd0LIdHSiiM+LYIdcKzQOR5DWsuJD5yRyVswA09GJItEQRUbgIHETh9cMctjyHbEmphNOjGuF+eyQfGfrBjixDluI2R0La00iHUVcm+4SOJipWNWHjr0P0mLbHVOJdHQSNetjvQNv2TvvfJcV8u7sJSc4J7bY7lhYa2LNdKLIApwn8T4bjdy9O469riy8c2KL7Y7zZRq61okiujDWmduEruiIRfXuOPaRYgjEb8VMJ2rzwfoQ7GRL2lovoHfHTzoO/907nShiLX9HJL39FtYL6N1x7JuJuxAzJWtiOjr5m7P8/1FMsq0vQQVqUIcqlGEUukxHJ8EPyeEKDPe5ibUAAAAASUVORK5CYII=");\
+}\
+/* Return button */\
+div.navLinks a:first-of-type::after {\
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAA5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHkJaAqNQAAAA50Uk5TABAgQFBgcICPn6+/3+9ACPafAAAASElEQVQI15XMyxKAIAxD0eCr1ZT8/+eKDCOw07O700mBT45rrDXEXgul3sn0yCwsAaGBv/cw86xc92fbl0v7z7mBzeeudhJ/3aoUA1Vr0uhDAAAAAElFTkSuQmCC");\
+}\
+/* Watcher */\
+#watcher::before {\
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACpQTFRFAAAA0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLUmYS1qAAAAA10Uk5TABAgQFBggI+fv8/f74aeqbgAAABVSURBVAjXnY0xDsMwEMNo+5TYPen/3+2SpUCXlhvBgfAH2uecrcdWt5O4ewHIdVtTvmXB9BoRoIzy5DqsDIAszvXRlyfItS3kXRZA9StJ0l1f/z/xBlXVAtkqW+Q3AAAAAElFTkSuQmCC");\
+}\
+/* Announcement */\
+.globalMessage::before {\
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAllJREFUKM9dkk1oE0EYhicmMf424MFatVZqrOakUEVFqKlYPAgK/oAXBRG8iB40F0XIQUGx8SSKiIcGJJSIerAoAUMOUqyaqIRmw6bZ2Z3ZVQRvggdvPhM2UpzwkPm+ed9vZr4dIRi1Wi3S+NxY6klvbeAGu3zln4MbgQpuQdb3/OPE2+yW3Vcul6OlUkl0R7FYjLiOm0QwjjAf6OADKPgOPyDwte+QeU2BS9rT6YXWQoINhWjb7VUsnET0BjrMKzCJ4QpcZX6d/GOog0X8ULlqFHNcaKX3hUYL8T3lqTHHdvqVUuNa6wJxRkm1mR1PYXyOrg15V7rrBYa7BB5HmnRdN2XbdiybzQqMh2AWMtwz4nneCjY6iG4GzzzXPCKoJjG/JbkX8xIRDkyjcJ8T7Ojlms3mSnQX0DsUygsmv2HKl/6gWDQwboHzMNTLSSmjxBPoP7F7wZh/QVFLPZzL5f6ZOUWSo6bZeXUvx5Xi3P0Y+gYneCLCLs6RPGxZVnyReQTjRRg2cbvdjtDldZhuhj3KmoblCMzvged66UqlEjNidt2I8Sj/Aybm8STozwl0H2FWu3qP4FNsJzltqsE0xU5LR47IjuznNIOsbyU3xNomuA3f0N9hfY2wGlaCtmdIFqDVvY/2zWt6xvwlzMALeETezH9inuIKG0S1WjWNWM4uO0leRvAUwTv4Au/NZwz/W+GT/QPzFB/rNsc89M7XTqzT6iS5Z4oC+/mOEwgOwG4w7/4MXAuf6ivWz4r/h+M4EQpE6XaMZkXNtzXz+lx9mW3ZfZzQ9CKFZuAvJEBX+Y7iKRwAAAAASUVORK5CYII=");\
+}\
+/* Slideout nav */\
+#boardNavDesktopFoot::after {\
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAAzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMdShx9gAAAA50Uk5TABAgMEBggI+fr7/P3+82uMT1AAAAb0lEQVQIHQXBiQHDIAwEMOE8gGlu/3ErgWt297wAYyenT7IGjJNVqJUzsPMAniyuLODedspMQe3cKq8+8HxZOK0b9eUb6NYHO98Dv/am3FkDKq/Ktm9gp1h5AE8mxsku1M4ZMGby618yB6De7n4L/v79BDw2df22AAAAAElFTkSuQmCC");\
+}\
+/* 4sight */\
+body > a[style="cursor: pointer; float: right;"]::after {\
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRFAAAAzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMIXMlggAAAA90Uk5TABAgMEBQYICPn6+/z9/vD6iGsgAAAFRJREFUCB0FwYcBwyAMADAZCCN2y//fRgIAAG0MAMSba/8eAO9EVAe0BOMAxgISMDaIBKgGewKMesS+C0A7mXPdCgCQtwIAou6/A0DUPQCgnw4A4APNOQHMJOa9jgAAAABJRU5ErkJggg==");\
+}\
+/* Expand */\
+#imgControls label:first-of-type::after {\
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAALlJREFUKFOFkT0KwlAQhANWaUSb+AciVmLlSZLcVhttBH9QjyIIHiDOF2ZhOxeGebM7b3dfUnRdVwmN0Aq1UAqFGU2eekWSQ8RTh6HNMDqiwczNiJsnkR8Jx1RrSTKKDlE467wR9jY+XK9jN0bSKQwfGy/iqVcrMWespd82fsW7XP/XmZUmuXPsfHLHq3grHKzveef8NXjozKPH4mjAvf5rZPNLGtPAjI7ozUtfiD+1kp4LPLZxDV78APzYoty/jZXwAAAAAElFTkSuQmCC");\
+  opacity: 0.5;\
+}\
+span.com { color: #d00; }\
+span.str, span.atv { color: #7FA61B; }\
+span.pun { color: #61663A; }\
+span.tag { color: #117743; }\
+span.kwd { color: #5A6F9E; }\
+span.typ, span.atn { color: #9474BD; }\
+span.lit { color: #368C72; }\
+.prettyprint {\
+  background-color: #e7e7e7;\
+  border: 1px solid #dcdcdc;\
+}\
+body {\
+  background-color: ' + theme["Background Color"] + ';\
+  background-image: ' + theme["Background Image"] + ';\
+  background-repeat: ' + theme["Background Repeat"] + ';\
+  background-attachment: ' + theme["Background Attachment"] + ';\
+  background-position: ' + theme["Background Position"] + ';\
+}\
+.boardTitle {\
+  text-shadow: 1px 1px 1px ' + theme["Reply Border"] + ';\
+}\
+#ft li,\
+#ft ul,\
+#options .dialog,\
+#qr::before,\
+#watcher,\
+#updater:hover,\
+.box-outer,\
+.boxbar,\
+.deleteform input[value=Delete],\
+.top-box,\
+.yuimenuitem-selected,\
+#postForm::before,\
+html body span[style="left: 5px; position: absolute;"] a,\
+input[type="submit"],\
+input[type="file"] > input[type="button"],\
+#options.reply.dialog,\
+.deleteform input[value=Delete],\
+input[value="Report"],\
+#qr.autohide .move {\
+  background-color: ' + theme["Buttons Background"] + ';\
+  border-color: ' + theme["Buttons Border"] + ';\
+}\
+.recaptchatable #recaptcha_response_field,\
+.deleteform input[type="password"],\
+input,\
+input.field,\
+textarea {\
+  background-color: ' + theme["Input Background"] + ';\
+  border-color: ' + theme["Input Border"] + ';\
+}\
+div.reply {\
+  background-color: ' + theme["Reply Background"] + ';\
+  border-color: ' + theme["Reply Border"] + ';\
+}\
+.reply.highlight {\
+  background-color: ' + theme["Highlighted Reply Background"] + ';\
+  border-color: ' + theme["Highlighted Reply Border"] + ';\
+}\
+#boardNavDesktop,\
+.pages {\
+  background-color: ' + theme["Navigation Background"] + ';\
+  border-color: ' + theme["Navigation Border"] + ';\
+}\
+#delform {\
+  background-color: ' + theme["Thread Wrapper Background"] + ';\
+  border-color: ' + theme["Thread Wrapper Border"] + ';\
+}\
+#boardNavDesktopFoot,\
+ #watcher,\
+ #watcher:hover,\
+ .deleteform,\
+div.subMenu,\
+#menu {\
+  background-color: ' + theme["Dialog Background"] + ';\
+  border-color: ' + theme["Dialog Border"] + ';\
+}\
+td[style="border: 1px dashed;"],\
+div.reply > tr > div.reply,\
+.inline div.reply,\
+.inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply {\
+  /* Inline Quotes */\
+  background-color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)") + ';\
+  border: 1px solid ' + theme["Reply Border"] + ';\
+  box-shadow: 5px 5px 5px rgba(128,128,128,0.5);\
+}\
+.inline .inline div.reply,\
+.inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
+.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply {\
+  background-color: ' + theme["Reply Background"] + ';\
+  border-color: ' + theme["Reply Border"] + ';\
+}\
+ [id^="q"] .warning {\
+  background: ' + theme["Input Background"] + ';\
+  color: ' + theme["Warnings"] + ';\
+}\
+a,\
+#dump,\
+.entry,\
+div.post > blockquote a[href^="//"],\
+.sideArrows a,\
+div.postContainer span.postNum > .replylink {\
+  color: ' + theme["Links"] + ';\
+}\
+.postNum a {\
+  color: ' + theme["Post Numbers"] + ';\
+}\
+.recaptchatable #recaptcha_response_field:focus,\
+.deleteform input[type="password"]:focus,\
+input:focus,\
+input.field:focus,\
+input[type="submit"]:focus,\
+textarea:focus {\
+  background-color: ' + theme["Focused Input Background"] + ';\
+  border-color: ' + theme["Focused Input Border"] + ';\
+}\
+.subject {\
+  color: ' + theme["Subjects"] + ';\
+  font-weight: 600;\
+}\
+.summary,\
+body > form,\
+body,\
+html body span[style="left: 5px; position: absolute;"] a,\
+input,\
+#postForm,\
+#postForm::before,\
+.deleteform::after,\
+textarea,\
+.abbr,\
+.boxbar,\
+.boxcontent,\
+.pages strong,\
+.reply,\
+.reply.highlight,\
+#boardNavDesktop .title,\
+#imgControls label::after,\
+#boardNavDesktop::after,\
+#updater #count:not(.new)::after,\
+#qr > form > label::after,\
+#qr.autohide .move,\
+span.pln {\
+  color: ' + theme["Text"] + ';\
+}\
+#options ul {\
+  border-bottom: 1px solid ' + theme["Reply Border"] + ';\
+}\
+span.quote > a.quotelink,\
+a.backlink {\
+  color: ' + theme["Backlinks"] + ';\
+  font-weight: 800;\
+}\
+div.navLinks a:first-of-type:hover,\
+.deleteform input:hover,\
+.recaptchatable #recaptcha_response_field:hover,\
+input:hover,\
+input[type="submit"]:hover,\
+input[type="file"] > input[type="button"]:hover,\
+textarea:hover {\
+  background-color: ' + theme["Hovered Input Background"] + ';\
+  border-color: ' + theme["Hovered Input Border"] + ';\
+}\
+div.subMenu,\
+#menu,\
+#qp div.post {\
+  box-shadow: 5px 5px 5px ' + theme["Shadow Color"] + ';\
+}\
+.rice,\
+#options .rice,\
+#postForm td:nth-of-type(3) > label .rice,\
+#qr label .rice {\
+  background-color: ' + theme["Checkbox Background"] + ';\
+  border-color: ' + theme["Checkbox Border"] + ';\
+}\
+#options input,\
+#options textarea,\
+#qr label input,\
+#updater input:not([type="checkbox"]),\
+.bd {\
+  background-color: ' + theme["Buttons Background"] + ';\
+  border-color: ' + theme["Buttons Border"] + ';\
+}\
+#updater:not(:hover),\
+#updater:not(:hover) #count:not(.new)::after,\
+#qr > form > label::after,\
+.globalMessage > *,\
+.pages a,\
+.boardBanner,\
+select,\
+#boardNavDesktop a {\
+  color: ' + theme["Navigation Links"] + ';\
+}\
+input[type=checkbox]:checked,\
+#options input[type=checkbox]:checked,\
+#postForm td:nth-of-type(3) > label input[type="checkbox"]:checked,\
+#qr label input[type="checkbox"]:checked {\
+  background-color: ;\
+}\
+a:hover,\
+#dump:hover,\
+.entry:hover,\
+div.post > blockquote a[href^="//"]:hover,\
+.sideArrows a:hover,\
+div.post div.postInfo span.postNum a:hover,\
+div.postContainer span.postNum > .replylink:hover,\
+.nameBlock > .useremail > .name:hover,\
+.nameBlock > .useremail > .postertrip:hover {\
+  color: ' + theme["Hovered Links"] + ';\
+}\
+.boardBanner a:hover,\
+#boardNavDesktop a:hover {\
+  color: ' + theme["Hovered Navigation Links"] + ';\
+}\
+.nameBlock > .useremail > .name,\
+.name {\
+  color: ' + theme["Names"] + ';\
+}\
+.nameBlock > .useremail > .postertrip,\
+.postertrip,\
+.trip {\
+  color: ' + theme["Tripcodes"] + ';\
+}\
+.nameBlock > .useremail > .name,\
+.name {\
+  font-weight: 600;\
+}\
+a.forwardlink {\
+  border-bottom: 1px dashed;\
+}\
+.qphl {\
+  outline-color: ' + theme["Backlinked Reply Outline"] + ';\
+}\
+#postForm::before,\
+#qr::before {\
+  color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)") + ';\
+}\
+#qr input:-moz-placeholder,\
+#qr textarea:-moz-placeholder {\
+  color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)") + ';\
+}\
+#qr input:-webkit-placeholder,\
+#qr textarea:-webkit-placeholder {\
+  color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)") + ';\
+}\
+#qr input:placeholder,\
+#qr textarea:placeholder {\
+  color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)") + ';\
+}\
+.boxcontent dd,\
+#options ul {\
+  border-color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)") + ';\
+}\
+' + theme['Custom CSS'];
+      switch (Conf['Emoji Position']) {
+        case '0':
+          css = css + Style.emoji('before', 'left');
+          break;
+        case '1':
+          css = css + Style.emoji('after', 'right');
+      }
+      if (Conf['Compact Post Form Inputs']) {
+        console.log(Conf['Expand Post Form Textarea']);
+      }
+      if (Conf['Expand Post Form Textarea']) {
+        console.log(Conf['Expand Post Form Textarea']);
+      }
+      if (Conf['Filtered Backlinks']) {
+        console.log(Conf['Filtered Backlinks']);
+      }
+      if (Conf['Fit Width Replies']) {
+        console.log(Conf['Fit Width Replies']);
+      }
+      if (Conf['Rounded Edges']) {
+        console.log(Conf['Rounded Edges']);
+      }
+      if (Conf['Slideout Watcher']) {
+        console.log(Conf['Slideout Watcher']);
+      }
+      if (Conf['Underline Links']) {
+        console.log(Conf['Underline Links']);
+      }
+      return css;
+    }
   };
 
   Main = {

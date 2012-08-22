@@ -1,33 +1,5 @@
 Style =
   init: ->
-    Style.setup()
-    switch Conf['Emoji Position']
-      when '0'
-        Style.css = Style.css + Style.emoji('before', 'left')
-      when '1'
-        Style.css = Style.css + Style.emoji('after', 'right')
-
-    if Conf['Compact Post Form Inputs']
-      console.log Conf['Expand Post Form Textarea']
-
-    if Conf['Expand Post Form Textarea']
-      console.log Conf['Expand Post Form Textarea']
-
-    if Conf['Filtered Backlinks']
-      console.log Conf['Filtered Backlinks']
-
-    if Conf['Fit Width Replies']
-      console.log Conf['Fit Width Replies']
-
-    if Conf['Rounded Edges']
-      console.log Conf['Rounded Edges']
-
-    if Conf['Slideout Watcher']
-      console.log Conf['Slideout Watcher']
-
-    if Conf['Underline Links']
-      console.log Conf['Underline Links']
-
     Style.addStyle()
 
   emoji: (position, direction) ->
@@ -49,15 +21,11 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     div = $.el div,
       className: 'fakecheckbox'
 
-  addStyle: ->
+  addStyle: (stylesheet) ->
     $.off d, 'DOMNodeInserted', Style.addStyle
+    theme = Themes[Conf['theme']]
     if d.head
-      $.addStyle Style.css
+      $.addStyle Style.css(theme)
     else # XXX fox
       $.on d, 'DOMNodeInserted', Style.addStyle
-      
-  setup: ->
-    themeName = Conf['theme']
-    currentTheme = Themes[themeName]
-    console.log currentTheme
     
