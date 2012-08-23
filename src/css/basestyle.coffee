@@ -1518,6 +1518,9 @@ span.pln {
 #options ul {
   border-bottom: 1px solid ' + theme["Reply Border"] + ';
 }
+.quote {
+  color: ' + theme["Greentext"] + ';
+}
 span.quote > a.quotelink,
 a.backlink {
   color: ' + theme["Backlinks"] + ';

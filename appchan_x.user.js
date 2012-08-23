@@ -596,6 +596,15 @@
       $.add(d.head, script);
       return $.rm(script);
     },
+    shortenFilename: function(filename, isOP) {
+      var threshold;
+      threshold = isOP ? 40 : 30;
+      if (filename.replace(/\.\w+$/, '').length > threshold) {
+        return "" + filename.slice(0, threshold - 5) + "(...)" + (filename.match(/\.\w+$/));
+      } else {
+        return filename;
+      }
+    },
     bytesToString: function(size) {
       var unit;
       unit = 0;
@@ -6977,6 +6986,9 @@ span.pln {\
 }\
 #options ul {\
   border-bottom: 1px solid ' + theme["Reply Border"] + ';\
+}\
+.quote {\
+  color: ' + theme["Greentext"] + ';\
 }\
 span.quote > a.quotelink,\
 a.backlink {\
