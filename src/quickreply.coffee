@@ -500,6 +500,9 @@ QR =
     new QR.reply().select()
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
+      if Conf['Style']
+        $.on $("[name=#{name}]",    QR.el), 'focus', -> QR.el.classList.add 'focus'
+        $.on $("[name=#{name}]",    QR.el), 'blur',  -> QR.el.classList.remove 'focus'
       # The input event replaces keyup, change and paste events.
       $.on $("[name=#{name}]", QR.el), 'input', ->
         QR.selected[@name] = @value
