@@ -5279,6 +5279,14 @@
       QR.status();
       QR.cooldown.init();
       QR.captcha.init();
+      if (Conf['Style']) {
+        $.on($(".captchainput .field", QR.el), 'focus', function() {
+          return QR.el.classList.add('focus');
+        });
+        $.on($(".captchainput .field", QR.el), 'blur', function() {
+          return QR.el.classList.remove('focus');
+        });
+      }
       $.add(d.body, QR.el);
       return $.event(QR.el, new CustomEvent('QRDialogCreation', {
         bubbles: true
@@ -5929,11 +5937,11 @@ a.yuimenuitemlabel {\
   width: auto;\
 }\
 #boardNavDesktop{\
-  /* cripple the positioning of the top navigation */\
-  position: static;\
   width: auto;\
   padding-right: 0px;\
   margin-right: 0px;\
+  padding-top: 1px;\
+  padding-bottom: 3px;\
 }\
 #boardNavDesktopFoot:hover::after {\
   opacity: 1;\
@@ -5941,7 +5949,6 @@ a.yuimenuitemlabel {\
 }\
 #boardNavDesktopFoot {\
   visibility: visible;\
-  position: fixed;\
   position: fixed;\
   right: 2px;\
   bottom: auto;\
@@ -7389,8 +7396,6 @@ body {\
 #boardNavDesktop {\
   left: ' + pagemargin + ';\
   right: 252px;\
-  padding-top: 1px;\
-  padding-bottom: 3px;\
 }\
 ';
       }

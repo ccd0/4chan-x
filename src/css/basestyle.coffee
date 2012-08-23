@@ -417,11 +417,11 @@ a.yuimenuitemlabel {
   width: auto;
 }
 #boardNavDesktop{
-  /* cripple the positioning of the top navigation */
-  position: static;
   width: auto;
   padding-right: 0px;
   margin-right: 0px;
+  padding-top: 1px;
+  padding-bottom: 3px;
 }
 #boardNavDesktopFoot:hover::after {
   opacity: 1;
@@ -429,7 +429,6 @@ a.yuimenuitemlabel {
 }
 #boardNavDesktopFoot {
   visibility: visible;
-  position: fixed;
   position: fixed;
   right: 2px;
   bottom: auto;
@@ -1869,8 +1868,6 @@ body {
 #boardNavDesktop {
   left: ' + pagemargin + ';
   right: 252px;
-  padding-top: 1px;
-  padding-bottom: 3px;
 }
 '
 

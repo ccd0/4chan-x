@@ -517,6 +517,9 @@ QR =
     QR.status()
     QR.cooldown.init()
     QR.captcha.init()
+    if Conf['Style']
+      $.on $(".captchainput .field",    QR.el), 'focus', -> QR.el.classList.add 'focus'
+      $.on $(".captchainput .field",    QR.el), 'blur',  -> QR.el.classList.remove 'focus'
     $.add d.body, QR.el
 
     # Create a custom event when the QR dialog is first initialized.
