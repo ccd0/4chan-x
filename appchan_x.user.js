@@ -303,7 +303,7 @@
       'Post Numbers': 'rgb(0,0,0)',
       'Greentext': 'rgb(120,153,34)',
       'Sage': 'rgb(87,87,123)',
-      'Board Title': 'rgb(238,187,204',
+      'Board Title': 'rgb(238,187,204)',
       'Timestamps': 'rgba(0,0,0,0)',
       'Warnings': 'rbg(87,87,123)',
       'Shadow Color': 'rgba(60,60,60,0.6)',
@@ -5510,7 +5510,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     css: function(theme) {
-      var agent, css;
+      var agent, css, pagemargin;
       agent = Style.agent();
       css = '\
 body::after {\
@@ -7201,6 +7201,199 @@ a.forwardlink {\
 }\
 ';
       }
+      if (Conf['Fit Width Replies']) {
+        css = css + '\
+.summary {\
+  clear: both;\
+  padding-left: 20px;\
+  display: block;\
+}\
+.sideArrows {\
+  z-index: 1;\
+  position: absolute;\
+  right: 0px;\
+  height: 10px;\
+}\
+.postInfo {\
+  margin: 1px 0 0;\
+  position: relative;\
+  width: 100%;\
+}\
+.sideArrows a, .sideArrows span {\
+  position: static;\
+  width: 20px;\
+  font-size: 9px;\
+  height: 10px;\
+}\
+.sideArrows {\
+  width: 20px;\
+  padding-top: 1px;\
+}\
+div.reply .report_button, .sideArrows, .postInfo input, div.reply .menu_button {\
+  opacity: 0;\
+}\
+form .replyContainer:not(:hover) div.reply .report_button, form .replyContainer:not(:hover) div.reply .menu_button, form .replyContainer:not(:hover) .sideArrows, form .replyContainer:not(:hover) .postInfo input{\
+  ' + agent + 'transition: opacity .3s ease-out 0s;\
+}\
+form .replyContainer:hover div.reply .report_button, form .replyContainer:hover div.reply .menu_button, form .replyContainer:hover .sideArrows, .replyContainer:hover .postInfo input {\
+  opacity: 1;\
+  ' + agent + 'transition: opacity .3s ease-in 0s;\
+}\
+ div.reply input:checked {\
+  opacity: 1;\
+}\
+form .postContainer blockquote {\
+  margin-left: 30px;\
+}\
+div.reply {\
+  padding-top: 6px;\
+  padding-left: 10px;\
+}\
+div.reply .postInfo input {\
+  position: absolute;\
+  top: -3px;\
+  right: 5px;\
+}\
+div.reply .report_button, div.reply .menu_button {\
+  position: absolute;\
+  right: 33px;\
+  right: 13px;\
+  top: -1px;\
+  font-size: 9px;\
+}\
+.sideArrows a {\
+  position: absolute;\
+  right: 47px;\
+  right: 27px;\
+  top: 7px;\
+}\
+.sideArrows a {\
+  font-size: 9px;\
+}\
+div.thread {\
+  overflow: visible;\
+  padding: 0;\
+  position: relative;\
+}\
+div.post:not(#qp):not([hidden]) {\
+  margin: 0;\
+  width: 100%;\
+}\
+div.reply {\
+  display: table;\
+  clear: both;\
+}\
+div.sideArrows {\
+  float: none;\
+}\
+.hide_thread_button {\
+  position: relative;\
+  z-index: 2;\
+  margin-right: 10px;\
+  margin-left: 5px;\
+  font-size: 9px;\
+}\
+.opContainer input {\
+  opacity: 1;\
+}\
+#options.reply {\
+  display: inline-block;\
+}\
+';
+      } else {
+        css = css + '\
+.sideArrows a {\
+  font-size: 9px;\
+}\
+.sideArrows a {\
+  position: static;\
+}\
+div.reply {\
+  padding-right: 5px;\
+}\
+.sideArrows {\
+  margin-right: 5px;\
+  width: 20px;\
+}\
+.sideArrows a {\
+  width: 20px;\
+  font-size: 12px;\
+}\
+.hide_thread_button {\
+  position: relative;\
+  z-index: 2;\
+  margin-right: 5px;\
+}\
+div.reply {\
+  padding-top: 5px;\
+  padding-left: 2px;\
+  display: table;\
+}\
+div.thread {\
+  overflow: visible;\
+  padding: 0;\
+  position: relative;\
+}\
+div.post:not(#qp):not([hidden]) {\
+  margin: 0;\
+}\
+.thread > div > .post {\
+  overflow: visible;\
+}\
+.sideArrows span {\
+  font-size: 9px;\
+}\
+.sideArrows {\
+  width: 20px;\
+}\
+.sideArrows a {\
+  right: 27px;\
+ }\
+div.reply .report_button, div.reply .menu_button {\
+  right: 13px;\
+ }\
+div.reply {\
+  padding-top: 6px;\
+  padding-left: 8px;\
+}\
+.sideArrows {\
+  margin-right: 2px;\
+  width: 20px;\
+}\
+form .postContainer blockquote {\
+  margin-left: 30px;\
+}\
+';
+      }
+      if (!Conf['Hide Sidebar']) {
+        switch (Conf['Page Margin']) {
+          case 'none':
+            pagemargin = '2px';
+            break;
+          case 'small':
+            pagemargin = '25px';
+            break;
+          case 'medium':
+            pagemargin = '50px';
+            break;
+          case 'large':
+            pagemargin = '150px';
+            break;
+          case 'fully centered':
+            pagemargin = '252px';
+        }
+        css = css + '\
+body {\
+  margin: 1px 252px 0 ' + pagemargin + ';\
+}\
+#boardNavDesktop {\
+  left: ' + pagemargin + ';\
+  right: 252px;\
+  padding-top: 1px;\
+  padding-bottom: 3px;\
+}\
+';
+      }
       switch (Conf['Emoji Position']) {
         case 'left':
           css = css + Style.emoji('before', 'left');
@@ -7216,9 +7409,6 @@ a.forwardlink {\
       }
       if (Conf['Filtered Backlinks']) {
         console.log(Conf['Filtered Backlinks']);
-      }
-      if (Conf['Fit Width Replies']) {
-        console.log(Conf['Fit Width Replies']);
       }
       if (Conf['Rounded Edges']) {
         console.log(Conf['Rounded Edges']);
