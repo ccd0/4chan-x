@@ -66,6 +66,7 @@ Themes =
     'Hovered Navigation Links'    : 'rgb(255,119,119)',
     'Names'                       : 'rgb(119,51,51)',
     'Tripcodes'                   : 'rgb(119,51,51)',
+    'Emails'                       : 'rgb(87,87,123)',
     'Subjects'                    : 'rgb(15,12,93)',
     'Text'                        : 'rgb(0,0,0)',
     'Post Numbers'                : 'rgb(0,0,0)',

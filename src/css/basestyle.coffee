@@ -1575,14 +1575,16 @@ div.postContainer span.postNum > .replylink:hover,
 #boardNavDesktop a:hover {
   color: ' + theme["Hovered Navigation Links"] + ';
 }
-.nameBlock > .useremail > .name,
 .name {
   color: ' + theme["Names"] + ';
 }
-.nameBlock > .useremail > .postertrip,
 .postertrip,
 .trip {
   color: ' + theme["Tripcodes"] + ';
+}
+.nameBlock > .useremail > .postertrip,
+.nameBlock > .useremail > .name {
+  color: ' + theme["Emails"] + ';
 }
 .nameBlock > .useremail > .name,
 .name {
@@ -1620,7 +1622,7 @@ a.forwardlink {
 #qr {
   right: -233px !important;
   left: auto !important;
-  ' + agent + 'transition: right .3s ease-in-out .3s, left .3s ease-in-out .3s;
+  ' + agent + 'transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
@@ -1635,7 +1637,7 @@ a.forwardlink {
 #qr {
   right: -249px !important;
   left: auto !important;
-  ' + agent + 'transition: right .3s ease-in-out .3s, left .3s ease-in-out .3s;
+  ' + agent + 'transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
@@ -1659,7 +1661,7 @@ a.forwardlink {
   content: "Post Form";
   padding-top: 3px;
   vertical-align: middle;
-  ' + agent + 'transition: opacity .3s ease-in-out .3s;
+  ' + agent + 'transition: opacity .3s ease-in-out 1s;
 }
 #qr:hover::before,
 #qr.focus::before,
@@ -1674,7 +1676,7 @@ a.forwardlink {
   right: 2px !important;
   left: auto !important;
   opacity: 0.2;
-  ' + agent + 'transition: opacity .3s ease-in-out .3s;
+  ' + agent + 'transition: opacity .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
