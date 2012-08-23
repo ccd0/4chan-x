@@ -173,43 +173,43 @@ Config =
     'Interval': 30
   style:
     category:
-      'Announcements':             [2,    'The style of announcements and the ability to hide them.', [
+      'Announcements':             ['hide',           'The style of announcements and the ability to hide them.', [
         '4chan default', 'slide out', 'hide'
       ]]
-      'Boards Navigation':         [0,    'The position of 4chan board navigation', [
+      'Boards Navigation':         ['sticky top',     'The position of 4chan board navigation', [
         'sticky top', 'sticky bottom', 'top', 'bottom'
       ]]
-      'Checkboxes':                [0,    'Alter checkboxes.', [
+      'Checkboxes':                ['show',           'Alter checkboxes.', [
         'show', 'make checkboxes circular', 'hide checkboxes', 'do not style checkboxes'
       ]]
-      'Captcha Opacity':           [0,    'Transparency of the 4chan Captcha', [
+      'Captcha Opacity':           [100,              'Transparency of the 4chan Captcha', [
         100, 75, 50, 25
       ]]
-      'Emoji Position':            [0,    'Position of emoji icons, like sega and neko.', [
+      'Emoji Position':            ['left',           'Position of emoji icons, like sega and neko.', [
         'left', 'right', 'hide emoji'
       ]]
-      'Font':                      [0,    'The font used by all elements of 4chan.', [
+      'Font':                      ['ubuntu',         'The font used by all elements of 4chan.', [
         'ubuntu', 'sans serif', 'serif'
       ]]
-      'Font Size':                  [2,    'The font size of posts and various UI. This does not change all font sizes.', [
+      'Font Size':                  [12,              'The font size of posts and various UI. This does not change all font sizes.', [
         10, 11, 12, 13, 14
       ]]
-      'Page Margin':               [0,     'Additional layout options, allowing you to center the page or use additional page margins.', [
+      'Page Margin':               ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', [
         'none', 'small', 'medium', 'large', 'fully centered'
       ]]
-      'Pagination':                [1,    'The position of 4chan page navigation', [
+      'Pagination':                ['sticky bottom',  'The position of 4chan page navigation', [
         'sticky top', 'sticky bottom', 'top', 'bottom'
       ]]
-      'Post Form Style':           [0,     'How the post form will sit on the page.', [
+      'Post Form Style':           ['fixed',          'How the post form will sit on the page.', [
         'fixed', 'slide out', 'tabbed slideout', 'transparent fade'
       ]]
-      'Reply Spacing':             [0,     'The amount of space between replies.', [
+      'Reply Spacing':             ['small',          'The amount of space between replies.', [
         'small', 'normal', 'large'
       ]]
-      'Sage Highlighting':         [1,     'Icons or text to highlight saged posts.', [
+      'Sage Highlighting':         ['image',          'Icons or text to highlight saged posts.', [
         'text', 'image', 'none'
       ]]
-      'Slideout Navigation':       [1,     'How the slideout navigation will be displayed.', [
+      'Slideout Navigation':       ['compact',        'How the slideout navigation will be displayed.', [
         'compact', 'list'
       ]]
       'Compact Post Form Inputs':  [true,   'Use compact inputs on the post form.']

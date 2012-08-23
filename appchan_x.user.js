@@ -224,19 +224,19 @@
     },
     style: {
       category: {
-        'Announcements': [2, 'The style of announcements and the ability to hide them.', ['4chan default', 'slide out', 'hide']],
-        'Boards Navigation': [0, 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
-        'Checkboxes': [0, 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide checkboxes', 'do not style checkboxes']],
-        'Captcha Opacity': [0, 'Transparency of the 4chan Captcha', [100, 75, 50, 25]],
-        'Emoji Position': [0, 'Position of emoji icons, like sega and neko.', ['left', 'right', 'hide emoji']],
-        'Font': [0, 'The font used by all elements of 4chan.', ['ubuntu', 'sans serif', 'serif']],
-        'Font Size': [2, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
-        'Page Margin': [0, 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
-        'Pagination': [1, 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
-        'Post Form Style': [0, 'How the post form will sit on the page.', ['fixed', 'slide out', 'tabbed slideout', 'transparent fade']],
-        'Reply Spacing': [0, 'The amount of space between replies.', ['small', 'normal', 'large']],
-        'Sage Highlighting': [1, 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
-        'Slideout Navigation': [1, 'How the slideout navigation will be displayed.', ['compact', 'list']],
+        'Announcements': ['hide', 'The style of announcements and the ability to hide them.', ['4chan default', 'slide out', 'hide']],
+        'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
+        'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide checkboxes', 'do not style checkboxes']],
+        'Captcha Opacity': [100, 'Transparency of the 4chan Captcha', [100, 75, 50, 25]],
+        'Emoji Position': ['left', 'Position of emoji icons, like sega and neko.', ['left', 'right', 'hide emoji']],
+        'Font': ['ubuntu', 'The font used by all elements of 4chan.', ['ubuntu', 'sans serif', 'serif']],
+        'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
+        'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
+        'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
+        'Post Form Style': ['fixed', 'How the post form will sit on the page.', ['fixed', 'slide out', 'tabbed slideout', 'transparent fade']],
+        'Reply Spacing': ['small', 'The amount of space between replies.', ['small', 'normal', 'large']],
+        'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
+        'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list']],
         'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
         'Expand Post Form Textarea': [true, 'Expands the post form text area when in use.'],
         'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
@@ -955,7 +955,7 @@
               _ref4 = arr[2];
               for (optionvalue = _j = 0, _len1 = _ref4.length; _j < _len1; optionvalue = ++_j) {
                 selectoption = _ref4[optionvalue];
-                liHTML = liHTML + ("<option value=\"" + optionvalue + "\">" + selectoption + "</option>");
+                liHTML = liHTML + ("<option value=\"" + selectoption + "\">" + selectoption + "</option>");
               }
               liHTML = liHTML + "</select>";
               li = $.el('li', {
@@ -5495,6 +5495,8 @@ body {\
   body {\
     padding-top: 61px;\
   }\
+}html, body, input, select, textarea, .boardTitle {\
+  font-family: ' + Conf["Font"] + ';\
 }\
 .globalMessage {\
   bottom: auto;\
@@ -7097,10 +7099,10 @@ a.forwardlink {\
 }\
 ' + theme['Custom CSS'];
       switch (Conf['Emoji Position']) {
-        case '0':
+        case 'left':
           css = css + Style.emoji('before', 'left');
           break;
-        case '1':
+        case 'right':
           css = css + Style.emoji('after', 'right');
       }
       if (Conf['Compact Post Form Inputs']) {

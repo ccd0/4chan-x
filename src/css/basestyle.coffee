@@ -26,6 +26,8 @@ body {
   body {
     padding-top: 61px;
   }
+}html, body, input, select, textarea, .boardTitle {
+  font-family: ' + Conf["Font"] + ';
 }
 .globalMessage {
   bottom: auto;
@@ -1628,9 +1630,9 @@ a.forwardlink {
 }
 ' + theme['Custom CSS']
     switch Conf['Emoji Position']
-      when '0'
+      when 'left'
         css = css + Style.emoji('before', 'left')
-      when '1'
+      when 'right'
         css = css + Style.emoji('after', 'right')
 
     if Conf['Compact Post Form Inputs']

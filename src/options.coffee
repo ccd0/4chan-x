@@ -198,7 +198,7 @@ Options =
           if arr[2]
             liHTML = "<label>#{optionname}</label><span class=description>: #{description}</span><select name=\"#{optionname}\" style=width:100%><br>"
             for selectoption, optionvalue in arr[2]
-              liHTML = liHTML + "<option value=\"#{optionvalue}\">#{selectoption}</option>"
+              liHTML = liHTML + "<option value=\"#{selectoption}\">#{selectoption}</option>"
             liHTML = liHTML + "</select>"
             li = $.el 'li',
               innerHTML: liHTML
