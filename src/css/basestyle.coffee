@@ -1,11 +1,12 @@
   css: (theme) ->
+    agent = Style.agent
     css='
 body::after {
   position: fixed;
   bottom: 279px;
   right: 0;
   left: auto;
-  ' + Style.agent() + 'transform: scaleX(1);
+  ' + agent + 'transform: scaleX(1);
 }
 body {
   padding: 16px 0 0;
@@ -259,7 +260,7 @@ div.navLinks a:first-of-type::after {
   position: fixed;
   right: 230px;
   cursor: pointer;
-  ' + Style.agent() + 'transform: scale(.8);
+  ' + agent + 'transform: scale(.8);
   opacity: 0.4;
   bottom: 1px;
   top: auto;
@@ -270,7 +271,7 @@ div.navLinks a:first-of-type::after {
   visibility: visible;
   position: fixed;
   right: 210px;
-  ' + Style.agent() + 'transform: scale(.9);
+  ' + agent + 'transform: scale(.9);
   opacity: 0.4;
   top: auto;
   bottom: 2px;
@@ -458,7 +459,7 @@ a.yuimenuitemlabel {
 .pages a,
 .pages strong,
 .pages input {
-  ' + Style.agent() + 'appearance: none;
+  ' + agent + 'appearance: none;
   display: inline-block;
   font-size: 12px;
   border: none;
@@ -483,7 +484,7 @@ h3, .globalMessage {
 .pages input,
 a,
 .new {
-  ' + Style.agent() + 'transition: background-color .1s linear;
+  ' + agent + 'transition: background-color .1s linear;
 }
 /* Post Form */
 /* Override OS-specific UI */
@@ -504,7 +505,7 @@ input[type="file"] > input[type="button"],
 input[type="submit"],
 select,
 textarea {
-  ' + Style.agent() + 'appearance: none;
+  ' + agent + 'appearance: none;
 }
 #postForm > table > tbody > tr > td {
   padding: 0;
@@ -693,13 +694,13 @@ div#postForm > form td:nth-of-type(3) > label input,
 #qr label input,
 .boxcontent input,
 .boxcontent textarea {
-  ' + Style.agent() + 'appearance: none;
+  ' + agent + 'appearance: none;
   border: 0;
 }
 input[type=checkbox],
 .reply input[type=checkbox],
 #options input[type=checkbox] {
-  ' + Style.agent() + 'appearance: none;
+  ' + agent + 'appearance: none;
   width: 12px;
   height: 12px;
   cursor: pointer;
@@ -1070,8 +1071,8 @@ input[type="submit"]:hover, input[type="file"] > input[type="button"]:hover { cu
   padding-left: 0;
   padding-top: 0;
 }
-#qr input:focus:' + Style.agent() + 'placeholder,
-#qr textarea:focus:' + Style.agent() + 'placeholder {
+#qr input:focus:' + agent + 'placeholder,
+#qr textarea:focus:' + agent + 'placeholder {
   color: transparent;
 }
 img[md5] { image-rendering: optimizeSpeed; }
@@ -1198,9 +1199,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   width: 20px;
   height: 17px;
   margin: 0;
-  position: absolute;
-  bottom: -14px;
-  right: 0px;
   font-size: 14px;
   vertical-align: middle;
   outline: none;
@@ -1283,7 +1281,7 @@ input[title="Verification"], .captchaimg img { margin-top: 1px; }
   text-align: center;
   overflow: visible;
   padding-top: 3px;
-  ' + Style.agent() + 'transition: opacity .3s ease-in-out 3s;
+  ' + agent + 'transition: opacity .3s ease-in-out 3s;
   min-width: 0;
   width: 248px;
 }
@@ -1294,11 +1292,11 @@ input[title="Verification"], .captchaimg img { margin-top: 1px; }
 #qr.autohide {
   padding-bottom: 0px;
   bottom: -250px!important;
-  ' + Style.agent() + 'transition: bottom .3s ease-in-out 3s, top .3s ease-in-out 3s;
+  ' + agent + 'transition: bottom .3s ease-in-out 3s, top .3s ease-in-out 3s;
 }
 #qr.autohide:hover {
   padding-bottom: 16px;
-  ' + Style.agent() + 'transition: bottom .3s linear, top .3s linear;
+  ' + agent + 'transition: bottom .3s linear, top .3s linear;
   bottom: 1px;
 }
 #qr.autohide:hover .move { padding-bottom: 5px; }
@@ -1618,8 +1616,8 @@ a.forwardlink {
 #qr::before {
   color: ' + (if theme["Dark Theme"] == 1 then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)") + ';
 }
-#qr input:' + Style.agent() + 'placeholder,
-#qr textarea:' + Style.agent() + 'placeholder {
+#qr input:' + agent + 'placeholder,
+#qr textarea:' + agent + 'placeholder {
   color: ' + (if theme["Dark Theme"] == 1 then "rgba(255,255,255,0.5)" else "rgba(0,0,0,0.5)") + ';
 }
 .boxcontent dd,
@@ -1627,6 +1625,83 @@ a.forwardlink {
   border-color: ' + (if theme["Dark Theme"] == 1 then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + ';
 }
 ' + theme['Custom CSS']
+    switch Conf['Post Form Style']
+      when 'fixed'
+        css = css + '
+#qr {
+  right: 2px !important;
+  left: auto !important;
+}
+'
+      when 'slideout'
+        css = css + '
+#qr {
+  right: -233px !important;
+  left: auto !important;
+  -moz-transition: right .3s ease-in-out 3s, left .3s ease-in-out 3s;
+  -webkit-transition: right .3s ease-in-out 3s, left .3s ease-in-out 3s;
+}
+#qr:hover,
+#qr.focus {
+  right: 2px !important;
+  left: auto !important;
+  -moz-transition: right .3s linear, left .3s linear;
+  -webkit-transition: right .3s linear, left .3s linear;
+}
+'
+      when 'tabbed slideout'
+        css = css + '
+#qr {
+  right: -263px !important;
+  left: auto !important;
+  -moz-transition: right .3s ease-in-out 3s, left .3s ease-in-out 3s;
+  -webkit-transition: right .3s ease-in-out 3s, left .3s ease-in-out 3s;
+}
+#qr:hover,
+#qr.focus {
+  right: 2px !important;
+  left: auto !important;
+  -moz-transition: right .3s linear, left .3s linear;
+  -webkit-transition: right .3s linear, left .3s linear;
+}
+#qr::before {
+  ' + agent + 'transform: rotate(-90deg);
+  ' + agent + 'transform-origin: bottom left;
+  margin-right: 250px;
+  margin-left: 264px;
+  margin-bottom: -20px;
+  width: 210px;
+  display: inline-block;
+  font-size: 12px;
+  opacity: 1;
+  height: 18px;
+  text-align: center;
+  content: "Post Form";
+  padding-top: 3px;
+  vertical-align: middle;
+  ' + agent + 'transition: opacity .3s ease-in-out 3s;
+}
+#qr:hover::before,
+#qr.focus::before {
+  opacity: 0;
+  ' + agent + 'transition: opacity .3s linear;
+}
+'
+      when 'transparent fade'
+        css = css + '
+#qr {
+  right: 2px !important;
+  left: auto !important;
+  opacity: 0.2;
+  ' + agent + 'transition: opacity .3s ease-in-out 3s;
+}
+#qr:hover,
+#qr.focus {
+  opacity: 1;
+  ' + agent + 'transition: opacity .3s linear;
+}
+'
+
     switch Conf['Emoji Position']
       when 'left'
         css = css + Style.emoji('before', 'left')
