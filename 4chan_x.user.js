@@ -489,7 +489,7 @@
     },
     shortenFilename: function(filename, isOP) {
       var threshold;
-      threshold = isOP ? 40 : 30;
+      threshold = 30 + 10 * isOP;
       if (filename.replace(/\.\w+$/, '').length > threshold) {
         return "" + filename.slice(0, threshold - 5) + "(...)" + (filename.match(/\.\w+$/));
       } else {
@@ -3401,7 +3401,7 @@
         unit: alt.match(/\w+$/)[0],
         resolution: node.textContent.match(/\d+x\d+|PDF/)[0],
         fullname: filename,
-        shortname: $.shortenFilename(filename, post.isOP)
+        shortname: $.shortenFilename(filename, post.ID === post.threadID)
       };
       node.setAttribute('data-filename', filename);
       return node.innerHTML = FileInfo.funk(FileInfo);
