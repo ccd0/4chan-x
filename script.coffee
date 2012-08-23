@@ -2043,7 +2043,7 @@ QR =
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
     QR.status progress: '...'
-
+    rand =      Math.random().toString(36).substring(6)
     post =
       resto:    threadID
       name:     reply.name
@@ -2055,9 +2055,8 @@ QR =
       textonly: textOnly
       mode:     'regist'
       pwd:      if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
-      rand:     Math.random().toString(36).substring(6)
       recaptcha_challenge_field: challenge
-      recaptcha_response_field:  response.replace(/^\s+/, 'rand' + " ").replace /\s+$/, " " + 'rand'
+      recaptcha_response_field:  response.replace(/^\s+/, rand + ' ').replace /\s+$/, ' ' + rand
 
     try
       console.log.bind? console

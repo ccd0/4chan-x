@@ -2578,7 +2578,7 @@
       }));
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, textOnly, threadID, _base, _ref;
+      var callbacks, captcha, captchas, challenge, err, m, opts, post, rand, reply, response, textOnly, threadID, _base, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -2638,6 +2638,7 @@
       QR.status({
         progress: '...'
       });
+      rand = Math.random().toString(36).substring(6);
       post = {
         resto: threadID,
         name: reply.name,
@@ -2649,9 +2650,8 @@
         textonly: textOnly,
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
-        rand: Math.random().toString(36).substring(6),
         recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response.replace(/^\s+/, 'rand' + " ").replace(/\s+$/, " " + 'rand')
+        recaptcha_response_field: response.replace(/^\s+/, rand + ' ').replace(/\s+$/, ' ' + rand)
       };
       try {
         if (typeof (_base = console.log).bind === "function") {
