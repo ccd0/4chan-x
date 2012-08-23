@@ -109,6 +109,7 @@ APPFILES  = [
   'library'
   'options'
   'chanx'
+  'quickreply'
   'appchan'
   'css/basestyle'
   'main'

@@ -27,7 +27,37 @@ body {
     padding-top: 61px;
   }
 }html, body, input, select, textarea, .boardTitle {
-  font-family: ' + Conf["Font"] + ';
+  font-family: "' + Conf["Font"] + '";
+}
+#recaptcha_image img,
+#qr img,
+.captcha img {
+  opacity: ' + Conf["Captcha Opacity"] + ';
+}
+#qp div.post .postertrip,
+#qp div.post .subject,
+.capcode,
+.container::before,
+.dateTime,
+.file,
+.fileInfo,
+.fileText,
+.fileText span:not([class])::after,
+.name,
+.postNum,
+.postertrip,
+.rules,
+.subject,
+.subjectm
+.summary,
+a,
+blockquote,
+div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
+div.reply,
+fieldset,
+textarea,
+time + span {
+	font-size: ' + Conf["Font Size"] + 'px;
 }
 .globalMessage {
   bottom: auto;
