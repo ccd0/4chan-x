@@ -6473,15 +6473,6 @@ div.navLinks a:first-of-type:hover::after {\
   font-size: 12px;\
   content: "+0";\
 }\
-#watcher > div {\
-  max-width: 236px;\
-  width: 236px;\
-  overflow: hidden;\
-}\
-#watcher .move {\
-  font-size: 0px;\
-  height: 0px;\
-}\
 .opContainer .favicon {\
   position: relative;\
   top: 2px;\
@@ -6495,12 +6486,6 @@ div.navLinks a:first-of-type:hover::after {\
   padding: 1px 0;\
   border-radius: 0;\
 }\
-#watcher .move {\
-  padding: 2px 3px;\
-  margin-bottom: 2px;\
-  text-decoration: none;\
-}\
-#watcher .move,\
 #updater .move,\
 #options .move,\
 #stats .move { cursor: default !important; }\
