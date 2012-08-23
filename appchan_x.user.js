@@ -227,7 +227,7 @@
         'Announcements': ['hide', 'The style of announcements and the ability to hide them.', ['4chan default', 'slide out', 'hide']],
         'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
         'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide checkboxes', 'do not style checkboxes']],
-        'Captcha Opacity': ['1.0', 'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']],
+        'Captcha Opacity': ['1.00', 'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']],
         'Emoji Position': ['left', 'Position of emoji icons, like sega and neko.', ['left', 'right', 'hide emoji']],
         'Font': ['ubuntu', 'The font used by all elements of 4chan.', ['ubuntu', 'sans serif', 'serif']],
         'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
@@ -5472,6 +5472,16 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
       return css;
     },
+    agent: function() {
+      switch ($.engine) {
+        case 'gecko':
+          return '-moz-';
+        case 'webkit':
+          return '-webkit-';
+        case 'presto':
+          return '-o-';
+      }
+    },
     inputs: function() {
       var div;
       return div = $.el(div, {
@@ -5496,9 +5506,7 @@ body::after {\
   bottom: 279px;\
   right: 0;\
   left: auto;\
-  -moz-transform: scaleX(1);\
-  -webkit-transform: scaleX(1);\
-  -o-transform: scaleX(1);\
+  ' + Style.agent() + 'transform: scaleX(1);\
 }\
 body {\
   padding: 16px 0 0;\
@@ -5548,7 +5556,7 @@ div.reply,\
 fieldset,\
 textarea,\
 time + span {\
-	font-size: ' + Conf["Font Size"] + 'px;\
+  font-size: ' + Conf["Font Size"] + 'px;\
 }\
 .globalMessage {\
   bottom: auto;\
@@ -5752,9 +5760,7 @@ div.navLinks a:first-of-type::after {\
   position: fixed;\
   right: 230px;\
   cursor: pointer;\
-  -moz-transform: scale(.8);\
-  -webkit-transform: scale(.8);\
-  -o-transform: scale(.8);\
+  ' + Style.agent() + 'transform: scale(.8);\
   opacity: 0.4;\
   bottom: 1px;\
   top: auto;\
@@ -5765,9 +5771,7 @@ div.navLinks a:first-of-type::after {\
   visibility: visible;\
   position: fixed;\
   right: 210px;\
-  -moz-transform: scale(.9);\
-  -webkit-transform: scale(.9);\
-  -o-transform: scale(.9);\
+  ' + Style.agent() + 'transform: scale(.9);\
   opacity: 0.4;\
   top: auto;\
   bottom: 2px;\
@@ -5955,9 +5959,7 @@ a.yuimenuitemlabel {\
 .pages a,\
 .pages strong,\
 .pages input {\
-  -moz-appearance: none;\
-  -webkit-appearance: none;\
-  -o-appearance: none;\
+  ' + Style.agent() + 'appearance: none;\
   display: inline-block;\
   font-size: 12px;\
   border: none;\
@@ -5982,9 +5984,7 @@ h3, .globalMessage {\
 .pages input,\
 a,\
 .new {\
-  -moz-transition: background-color .1s linear;\
-  -webkit-transition: background-color .1s linear;\
-  -o-transition: background-color .1s linear;\
+  ' + Style.agent() + 'transition: background-color .1s linear;\
 }\
 /* Post Form */\
 /* Override OS-specific UI */\
@@ -6005,9 +6005,7 @@ input[type="file"] > input[type="button"],\
 input[type="submit"],\
 select,\
 textarea {\
-  -moz-appearance: none;\
-  -webkit-appearance: none;\
-  -o-appearance: none;\
+  ' + Style.agent() + 'appearance: none;\
 }\
 #postForm > table > tbody > tr > td {\
   padding: 0;\
@@ -6196,17 +6194,13 @@ div#postForm > form td:nth-of-type(3) > label input,\
 #qr label input,\
 .boxcontent input,\
 .boxcontent textarea {\
-  -moz-appearance: none;\
-  -webkit-appearance: none;\
-  -o-appearance: none;\
+  ' + Style.agent() + 'appearance: none;\
   border: 0;\
 }\
 input[type=checkbox],\
 .reply input[type=checkbox],\
 #options input[type=checkbox] {\
-  -moz-appearance: none;\
-  -webkit-appearance: none;\
-  -o-appearance: none;\
+  ' + Style.agent() + 'appearance: none;\
   width: 12px;\
   height: 12px;\
   cursor: pointer;\
@@ -6246,7 +6240,7 @@ body > .postingMode ~ #delform br[clear="left"],\
 .spoiler:not(:hover),\
 .spoiler:not(:hover) .quote,\
 .spoiler:not(:hover) a {\
-  color: #000;\
+  color: rgb(0,0,0);\
   text-shadow: none;\
 }\
 /* Remove default "inherit" background declaration */\
@@ -6577,12 +6571,10 @@ input[type="submit"]:hover, input[type="file"] > input[type="button"]:hover { cu
   padding-left: 0;\
   padding-top: 0;\
 }\
-#qr input:focus:-moz-placeholder,\
-#qr textarea:focus:-moz-placeholder { color: transparent; }\
-#qr input:focus:-webkit-placeholder,\
-#qr textarea:focus:-webkit-placeholder { color: transparent; }\
-#qr input:focus:-o-placeholder,\
-#qr textarea:focus:-o-placeholder { color: transparent; }\
+#qr input:focus:' + Style.agent() + 'placeholder,\
+#qr textarea:focus:' + Style.agent() + 'placeholder {\
+  color: transparent;\
+}\
 img[md5] { image-rendering: optimizeSpeed; }\
 input,\
 textarea { text-rendering: geometricPrecision; }\
@@ -6644,7 +6636,7 @@ a.forwardlink { border: none; }\
 .exif td { color: #999; }\
 .callToAction.callToAction-big {\
   font-size: 18px;\
-  color: white;\
+  color: rgb(255,255,255);\
 }\
 body > table[cellpadding="30"] h1, body > table[cellpadding="30"] h3 { position: static; }\
 .focused.entry { background-color: transparent; }\
@@ -6654,11 +6646,11 @@ body > table[cellpadding="30"] h1, body > table[cellpadding="30"] h3 { position:
   position: absolute;\
   right: 2px;\
   top: 112px;\
-  color: black;\
+  color: rgb(0,0,0);\
   font-size: 10px;\
 }\
 #charCount.warning {\
-  color: red;\
+  color: rgb(255,0,0);\
   position: absolute;\
   right: 2px;\
   top: 110px;\
@@ -6792,9 +6784,7 @@ input[title="Verification"], .captchaimg img { margin-top: 1px; }\
   text-align: center;\
   overflow: visible;\
   padding-top: 3px;\
-  -moz-transition: opacity .3s ease-in-out 3s;\
-  -webkit-transition: opacity .3s ease-in-out 3s;\
-  -o-transition: opacity .3s ease-in-out 3s;\
+  ' + Style.agent() + 'transition: opacity .3s ease-in-out 3s;\
   min-width: 0;\
   width: 248px;\
 }\
@@ -6805,15 +6795,11 @@ input[title="Verification"], .captchaimg img { margin-top: 1px; }\
 #qr.autohide {\
   padding-bottom: 0px;\
   bottom: -250px!important;\
-  -moz-transition: bottom .3s ease-in-out 3s, top .3s ease-in-out 3s;\
-  -webkit-transition: bottom .3s ease-in-out 3s, top .3s ease-in-out 3s;\
-  -o-transition: bottom .3s ease-in-out 3s, top .3s ease-in-out 3s;\
+  ' + Style.agent() + 'transition: bottom .3s ease-in-out 3s, top .3s ease-in-out 3s;\
 }\
 #qr.autohide:hover {\
   padding-bottom: 16px;\
-  -moz-transition: bottom .3s linear, top .3s linear;\
-  -webkit-transition: bottom .3s linear, top .3s linear;\
-  -o-transition: bottom .3s linear, top .3s linear;\
+  ' + Style.agent() + 'transition: bottom .3s linear, top .3s linear;\
   bottom: 1px;\
 }\
 #qr.autohide:hover .move { padding-bottom: 5px; }\
@@ -7133,16 +7119,8 @@ a.forwardlink {\
 #qr::before {\
   color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)") + ';\
 }\
-#qr input:-moz-placeholder,\
-#qr textarea:-moz-placeholder {\
-  color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)") + ';\
-}\
-#qr input:-webkit-placeholder,\
-#qr textarea:-webkit-placeholder {\
-  color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)") + ';\
-}\
-#qr input:placeholder,\
-#qr textarea:placeholder {\
+#qr input:' + Style.agent() + 'placeholder,\
+#qr textarea:' + Style.agent() + 'placeholder {\
   color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)") + ';\
 }\
 .boxcontent dd,\

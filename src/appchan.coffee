@@ -17,6 +17,15 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 '
     return css
   
+  agent: ->
+    switch $.engine
+      when 'gecko'
+        return '-moz-'
+      when 'webkit'
+        return '-webkit-'
+      when 'presto'
+        return '-o-'
+  
   inputs: ->
     div = $.el div,
       className: 'fakecheckbox'

@@ -182,7 +182,7 @@ Config =
       'Checkboxes':                ['show',           'Alter checkboxes.', [
         'show', 'make checkboxes circular', 'hide checkboxes', 'do not style checkboxes'
       ]]
-      'Captcha Opacity':           ['1.0',              'Transparency of the 4chan Captcha', [
+      'Captcha Opacity':           ['1.00',              'Transparency of the 4chan Captcha', [
         '1.00', '.75', '.50', '.25'
       ]]
       'Emoji Position':            ['left',           'Position of emoji icons, like sega and neko.', [
