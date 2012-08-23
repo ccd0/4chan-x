@@ -379,7 +379,7 @@ $.extend $,
     # FILENAME SHORTENING SCIENCE:
     # OPs have a +10 characters threshold.
     # The file extension is not taken into account.
-    threshold = if isOP then 40 else 30
+    threshold = 30 + 10 * isOP
     if filename.replace(/\.\w+$/, '').length > threshold
       "#{filename[...threshold - 5]}(...)#{filename.match(/\.\w+$/)}"
     else
@@ -2845,7 +2845,7 @@ FileInfo =
       unit:       alt.match(/\w+$/)[0]
       resolution: node.textContent.match(/\d+x\d+|PDF/)[0]
       fullname:   filename
-      shortname:  $.shortenFilename filename, post.isOP
+      shortname:  $.shortenFilename filename, post.ID is post.threadID
     # XXX GM/Scriptish
     node.setAttribute 'data-filename', filename
     node.innerHTML = FileInfo.funk FileInfo
