@@ -4627,8 +4627,10 @@
     },
     open: function() {
       if (QR.el) {
-        QR.el.hidden = false;
-        return QR.unhide();
+        if (!Conf['Style']) {
+          QR.el.hidden = false;
+          return QR.unhide();
+        }
       } else {
         return QR.dialog();
       }
@@ -7189,7 +7191,8 @@ a.forwardlink {\
   ' + agent + 'transition: opacity .3s ease-in-out .3s;\
 }\
 #qr:hover,\
-#qr.focus {\
+#qr.focus,\
+#qr.dump {\
   opacity: 1;\
   ' + agent + 'transition: opacity .3s linear;\
 }\

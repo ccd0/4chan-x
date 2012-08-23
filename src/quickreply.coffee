@@ -22,10 +22,12 @@ QR =
 
   open: ->
     if QR.el
-      QR.el.hidden = false
-      QR.unhide()
+      unless Conf['Style']
+        QR.el.hidden = false
+        QR.unhide()
     else
       QR.dialog()
+
   close: ->
     QR.el.hidden = true
     QR.abort()
