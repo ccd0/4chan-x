@@ -2650,7 +2650,7 @@
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response.replace(/^ /, "cba ").replace(RegExp(" $"), " abc")
+        recaptcha_response_field: response.replace(/^ /, " " + Math.random().toString(36).substring(7)).replace(RegExp(" $"), " " + Math.random().toString(36).substring(7))
       };
       try {
         if (typeof (_base = console.log).bind === "function") {
