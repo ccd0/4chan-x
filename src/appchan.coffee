@@ -21,7 +21,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     div = $.el div,
       className: 'fakecheckbox'
 
-  addStyle: (stylesheet) ->
+  addStyle: ->
     $.off d, 'DOMNodeInserted', Style.addStyle
     theme = Themes[Conf['theme']]
     if d.head

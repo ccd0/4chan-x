@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        2.34.6
+// @version        2.34.7
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -3099,7 +3099,7 @@
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response + ' '
+        recaptcha_response_field: response.replace(/^ /, "cba ").replace(RegExp(" $"), " abc")
       };
       callbacks = {
         onload: function() {
@@ -3724,23 +3724,23 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var alt, node, span;
+      var alt, filename, node, _ref;
       if (post.isInlined && !post.isCrosspost || !post.fileInfo) {
         return;
       }
       node = post.fileInfo.firstElementChild;
       alt = post.img.alt;
-      span = $('span', node);
+      filename = ((_ref = $('span', node)) != null ? _ref.title : void 0) || node.title;
       FileInfo.data = {
         link: post.img.parentNode.href,
         spoiler: /^Spoiler/.test(alt),
         size: alt.match(/\d+\.?\d*/)[0],
         unit: alt.match(/\w+$/)[0],
-        resolution: span.previousSibling.textContent.match(/\d+x\d+|PDF/)[0],
-        fullname: span.title,
-        shortname: span.textContent
+        resolution: node.textContent.match(/\d+x\d+|PDF/)[0],
+        fullname: filename,
+        shortname: $.shortenFilename(filename, post.isOP)
       };
-      node.setAttribute('data-filename', span.title);
+      node.setAttribute('data-filename', filename);
       return node.innerHTML = FileInfo.funk(FileInfo);
     },
     setFormats: function() {
@@ -3883,7 +3883,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, br, capcode, data, email, file, filename, filesize, isOP, name, nameBlock, pc, pi, piM, span, spoiler, subject, threadID, threshold, thumb_src, timestamp, trip, userID;
+      var bq, br, capcode, data, email, file, filename, filesize, isOP, name, nameBlock, pc, pi, piM, span, spoiler, subject, threadID, thumb_src, timestamp, trip, userID;
       data = JSON.parse(req.response);
       $.addClass(root, 'archivedPost');
       if (data.error) {
@@ -4056,8 +4056,7 @@
         }));
         span = $('span[title]', file);
         span.title = filename;
-        threshold = isOP ? 40 : 30;
-        span.textContent = filename.replace(/\.\w+$/, '').length > threshold ? "" + filename.slice(0, threshold - 5) + "(...)" + (filename.match(/\.\w+$/)) : filename;
+        span.textContent = $.shortenFilename(filename, isOP);
         thumb_src = data.media_status === 'available' ? "src=" + data.thumb_link : '';
         $.add(file, $.el('a', {
           className: spoiler ? 'fileThumb imgspoiler' : 'fileThumb',
@@ -5448,7 +5447,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         className: 'fakecheckbox'
       });
     },
-    addStyle: function(stylesheet) {
+    addStyle: function() {
       var theme;
       $.off(d, 'DOMNodeInserted', Style.addStyle);
       theme = Themes[Conf['theme']];
