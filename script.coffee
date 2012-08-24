@@ -1,29 +1,29 @@
 Config =
   main:
     Enhancing:
-      '404 Redirect':                 [true,  'Redirect dead threads and images']
-      'Keybinds':                     [true,  'Binds actions to keys']
-      'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
-      'File Info Formatting':         [true,  'Reformats the file information']
-      'Comment Expansion':            [true,  'Expand too long comments']
-      'Thread Expansion':             [true,  'View all replies']
-      'Index Navigation':             [true,  'Navigate to previous / next thread']
-      'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
-      'Check for Updates':            [true,  'Check for updated versions of 4chan X']
+      '404 Redirect':                 [true,  'Redirect dead threads and images.']
+      'Keybinds':                     [true,  'Bind actions to keyboard shortcuts.']
+      'Time Formatting':              [true,  'Localize and format timestamps arbitrarily.']
+      'File Info Formatting':         [true,  'Reformat the file information.']
+      'Comment Expansion':            [true,  'Can expand too long comments.']
+      'Thread Expansion':             [true,  'Can expand threads to view all replies.']
+      'Index Navigation':             [false, 'Navigate to previous / next thread.']
+      'Reply Navigation':             [false, 'Navigate to top / bottom of thread.']
+      'Check for Updates':            [true,  'Check for updated versions of 4chan X.']
     Filtering:
-      'Anonymize':                    [false, 'Make everybody anonymous']
-      'Filter':                       [true,  'Self-moderation placebo']
-      'Recursive Filtering':          [true,  'Filter replies of filtered posts, recursively']
-      'Reply Hiding':                 [true,  'Hide single replies']
-      'Thread Hiding':                [true,  'Hide entire threads']
-      'Show Stubs':                   [true,  'Of hidden threads / replies']
+      'Anonymize':                    [false, 'Turn everyone Anonymous.']
+      'Filter':                       [true,  'Self-moderation placebo.']
+      'Recursive Filtering':          [true,  'Filter replies of filtered posts, recursively.']
+      'Reply Hiding':                 [true,  'Hide single replies.']
+      'Thread Hiding':                [true,  'Hide entire threads.']
+      'Stubs':                        [true,  'Make stubs of hidden threads / replies.']
     Imaging:
-      'Image Auto-Gif':               [false, 'Animate gif thumbnails']
-      'Image Expansion':              [true,  'Expand images']
-      'Image Hover':                  [false, 'Show full image on mouseover']
-      'Sauce':                        [true,  'Add sauce to images']
-      'Reveal Spoilers':              [false, 'Replace spoiler thumbnails by the original thumbnail']
-      'Expand From Current':          [false, 'Expand images from current position to thread end.']
+      'Image Auto-Gif':               [false, 'Animate GIF thumbnails.']
+      'Image Expansion':              [true,  'Expand images.']
+      'Expand From Position':         [true,  'Expand all images only from current position to thread end.']
+      'Image Hover':                  [false, 'Show full image on mouseover.']
+      'Sauce':                        [true,  'Add sauce links to images.']
+      'Reveal Spoilers':              [false, 'Reveal spoiler thumbnails.']
     Menu:
       'Menu':                         [true,  'Add a drop-down menu in posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
@@ -31,34 +31,32 @@ Config =
       'Download Link':                [true,  'Add a download with original filename link to the menu. Chrome-only currently.']
       'Archive Link':                 [true,  'Add an archive link to the menu.']
     Monitoring:
-      'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
-      'Unread Count':                 [true,  'Show unread post count in tab title']
-      'Unread Favicon':               [true,  'Show a different favicon when there are unread posts']
-      'Post in Title':                [true,  'Show the op\'s post in the tab title']
-      'Thread Stats':                 [true,  'Display reply and image count']
-      'Thread Watcher':               [true,  'Bookmark threads']
-      'Auto Watch':                   [true,  'Automatically watch threads that you start']
-      'Auto Watch Reply':             [false, 'Automatically watch threads that you reply to']
+      'Thread Updater':               [true,  'Fetch and insert new replies. Has more options in its own dialog.']
+      'Unread Count':                 [true,  'Show the unread posts count in the tab title.']
+      'Unread Favicon':               [true,  'Show a different favicon when there are unread posts.']
+      'Post in Title':                [true,  'Show the thread\'s subject in the tab title.']
+      'Thread Stats':                 [true,  'Display reply and image count.']
+      'Thread Watcher':               [true,  'Bookmark threads.']
+      'Auto Watch':                   [true,  'Automatically watch threads that you start.']
+      'Auto Watch Reply':             [false, 'Automatically watch threads that you reply to.']
     Posting:
-      'Quick Reply':                  [true,  'Reply without leaving the page.']
-      'Cooldown':                     [true,  'Prevent "flood detected" errors.']
+      'Quick Reply':                  [true,  'WMD.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
-      'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
-      'Open Reply in New Tab':        [false, 'Open replies in a new tab that are made from the main board.']
-      'Remember QR size':             [false, 'Remember the size of the Quick reply (Firefox only).']
+      'Auto Hide QR':                 [false, 'Automatically hide the quick reply when posting.']
+      'Open Reply in New Tab':        [false, 'Open replies posted from the board pages in a new tab.']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR.']
     Quoting:
-      'Quote Backlinks':              [true,  'Add quote backlinks']
-      'OP Backlinks':                 [false, 'Add backlinks to the OP']
-      'Quote Highlighting':           [true,  'Highlight the previewed post']
-      'Quote Inline':                 [true,  'Show quoted post inline on quote click']
-      'Quote Preview':                [true,  'Show quote content on hover']
-      'Resurrect Quotes':             [true,  'Linkify dead quotes to archives']
-      'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes']
-      'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
-      'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
+      'Quote Backlinks':              [true,  'Add quote backlinks.']
+      'OP Backlinks':                 [false, 'Add backlinks to the OP.']
+      'Quote Inline':                 [true,  'Inline quoted post on click.']
+      'Forward Hiding':               [true,  'Hide original posts of inlined backlinks.']
+      'Quote Preview':                [true,  'Show quoted post on hover.']
+      'Quote Highlighting':           [true,  'Highlight the previewed post.']
+      'Resurrect Quotes':             [true,  'Linkify dead quotes to archives.']
+      'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes.']
+      'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes.']
   filter:
     name: [
       '# Filter any namefags:'
@@ -72,7 +70,7 @@ Config =
       '# Filter any tripfags'
       '#/^!/'
     ].join '\n'
-    mod: [
+    capcode: [
       '# Set a custom class for mods:'
       '#/Mod$/;highlight:mod;op:yes'
       '# Set a custom class for moot:'
@@ -90,7 +88,7 @@ Config =
       '# Filter Stallman copypasta on /g/:'
       '#/what you\'re refer+ing to as linux/i;boards:g'
     ].join '\n'
-    country: [
+    flag: [
       ''
     ].join '\n'
     filename: [
@@ -127,41 +125,41 @@ Config =
   favicon: 'ferongr'
   hotkeys:
     # QR & Options
-    openQR:          ['i',      'Open QR with post number inserted']
-    openEmptyQR:     ['I',      'Open QR without post number inserted']
-    openOptions:     ['ctrl+o', 'Open Options']
-    close:           ['Esc',    'Close Options or QR']
-    spoiler:         ['ctrl+s', 'Quick spoiler tags']
-    code:            ['alt+c',  'Quick code tags']
-    submit:          ['alt+s',  'Submit post']
+    'open QR':            ['q',      'Open QR with post number inserted.']
+    'open empty QR':      ['Q',      'Open QR without post number inserted.']
+    'open options':       ['alt+o',  'Open Options.']
+    'close':              ['Esc',    'Close Options or QR.']
+    'spoiler tags':       ['ctrl+s', 'Insert spoiler tags.']
+    'code tags':          ['alt+c',  'Insert code tags.']
+    'submit QR':          ['alt+s',  'Submit post.']
     # Thread related
-    watch:           ['w',      'Watch thread']
-    update:          ['u',      'Update now']
-    unreadCountTo0:  ['z',      'Reset unread status']
+    'watch':              ['w',      'Watch thread.']
+    'update':             ['u',      'Update the thread now.']
+    'reset unread count': ['r',      'Reset unread status.']
     # Images
-    expandImage:     ['m',      'Expand selected image']
-    expandAllImages: ['M',      'Expand all images']
+    'expand image':       ['E',      'Expand selected image.']
+    'expand images':      ['e',      'Expand all images.']
     # Board Navigation
-    zero:            ['0',      'Jump to page 0']
-    nextPage:        ['L',      'Jump to the next page']
-    previousPage:    ['H',      'Jump to the previous page']
+    'front page':         ['0',      'Jump to page 0.']
+    'next page':          ['Right',  'Jump to the next page.']
+    'previous page':      ['Left',   'Jump to the previous page.']
     # Thread Navigation
-    nextThread:      ['n',      'See next thread']
-    previousThread:  ['p',      'See previous thread']
-    expandThread:    ['e',      'Expand thread']
-    openThreadTab:   ['o',      'Open thread in current tab']
-    openThread:      ['O',      'Open thread in new tab']
+    'next thread':        ['Down',   'See next thread.']
+    'previous thread':    ['Up',     'See previous thread.']
+    'expand thread':      ['ctrl+e', 'Expand thread.']
+    'open thread':        ['o',      'Open thread in current tab.']
+    'open thread tab':    ['O',      'Open thread in new tab.']
     # Reply Navigation
-    nextReply:       ['J',      'Select next reply']
-    previousReply:   ['K',      'Select previous reply']
-    hide:            ['x',      'Hide thread']
+    'next reply':         ['j',      'Select next reply.']
+    'previous reply':     ['k',      'Select previous reply.']
+    'hide':               ['x',      'Hide thread.']
   updater:
     checkbox:
-      'Scrolling':   [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
-      'Scroll BG':   [false, 'Scroll background tabs']
-      'Verbose':     [true,  'Show countdown timer, new post count']
-      'Auto Update': [true,  'Automatically fetch new posts']
+      'Auto Scroll': [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
+      'Scroll BG':   [false, 'Auto-scroll background tabs.']
+      'Auto Update': [true,  'Automatically fetch new posts.']
     'Interval': 30
+  imageFit: 'fit width'
 
 # Opera doesn't support the @match metadata key,
 # return 4chan X here if we're not on 4chan.
