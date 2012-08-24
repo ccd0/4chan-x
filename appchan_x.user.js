@@ -5483,7 +5483,10 @@
 
   Style = {
     init: function() {
-      return Style.addStyle();
+      if (Conf['Checkboxes'] === 'show' || Conf['Checkboxes'] === 'make checkboxes circular') {
+        Main.callbacks.push(this.noderice);
+      }
+      return this.addStyle();
     },
     emoji: function(position, direction) {
       var css, image, item, name, _i, _len;
@@ -5503,6 +5506,13 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
       return css;
     },
+    noderice: function(post) {
+      var div;
+      div = $.el('div', {
+        className: 'rice'
+      });
+      return $.after($('[type=checkbox]', post.root), div);
+    },
     agent: function() {
       switch ($.engine) {
         case 'gecko':
@@ -5512,12 +5522,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         case 'presto':
           return '-o-';
       }
-    },
-    inputs: function() {
-      var div;
-      return div = $.el(div, {
-        className: 'fakecheckbox'
-      });
     },
     addStyle: function() {
       var theme;
@@ -5629,6 +5633,7 @@ time + span {\
 .qrHeader,\
 .replyContainer > .hide_reply_button.stub ~ .reply,\
 .replymode,\
+.rice,\
 .rules,\
 .sideArrows:not(.hide_reply_button),\
 .stylechanger,\

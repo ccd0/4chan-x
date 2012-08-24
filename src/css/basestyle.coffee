@@ -97,6 +97,7 @@ time + span {
 .qrHeader,
 .replyContainer > .hide_reply_button.stub ~ .reply,
 .replymode,
+.rice,
 .rules,
 .sideArrows:not(.hide_reply_button),
 .stylechanger,

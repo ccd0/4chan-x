@@ -1,6 +1,8 @@
 Style =
   init: ->
-    Style.addStyle()
+    if Conf['Checkboxes'] == 'show' or Conf['Checkboxes'] == 'make checkboxes circular'
+      Main.callbacks.push @noderice
+    @addStyle()
 
   emoji: (position, direction) ->
     css = ''
@@ -17,6 +19,12 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 '
     return css
   
+  noderice: (post) ->
+    div = $.el 'div',
+      className: 'rice'
+    $.after $('[type=checkbox]', post.root), div
+      
+  
   agent: ->
     switch $.engine
       when 'gecko'
@@ -25,10 +33,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         return '-webkit-'
       when 'presto'
         return '-o-'
-  
-  inputs: ->
-    div = $.el div,
-      className: 'fakecheckbox'
 
   addStyle: ->
     $.off d, 'DOMNodeInserted', Style.addStyle
