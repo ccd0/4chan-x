@@ -179,7 +179,7 @@ UI =
     el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
-    #prevent text selection
+    # prevent text selection
     e.preventDefault()
     UI.el = el = @parentNode
     d.addEventListener 'mousemove', UI.drag,    false
@@ -201,13 +201,11 @@ UI =
       if top < 10 then '0px'
       else if UI.height - top < 10 then null
       else top + 'px'
-    #using null instead of '' is 4% faster
-    #these 4 statements are 40% faster than 1 style.cssText
     {style} = UI.el
     style.left   = left
     style.top    = top
-    style.right  = if left is null then '0px' else null
-    style.bottom = if top  is null then '0px' else null
+    style.right  = if left then null else '0px'
+    style.bottom = if top  then null else '0px'
   dragend: ->
     localStorage.setItem "#{Main.namespace}#{UI.el.id}.position", UI.el.style.cssText
     d.removeEventListener 'mousemove', UI.drag,    false
