@@ -372,6 +372,15 @@ $.extend $,
     script = $.el 'script', textContent: code
     $.add d.head, script
     $.rm script
+  shortenFilename: (filename, isOP) ->
+    # FILENAME SHORTENING SCIENCE:
+    # OPs have a +10 characters threshold.
+    # The file extension is not taken into account.
+    threshold = 30 + 10 * isOP
+    if filename.replace(/\.\w+$/, '').length > threshold
+      "#{filename[...threshold - 5]}(...)#{filename.match(/\.\w+$/)}"
+    else
+      filename
   bytesToString: (size) ->
     unit = 0 # Bytes
     while size >= 1024

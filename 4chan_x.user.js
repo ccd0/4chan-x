@@ -487,6 +487,15 @@
       $.add(d.head, script);
       return $.rm(script);
     },
+    shortenFilename: function(filename, isOP) {
+      var threshold;
+      threshold = 30 + 10 * isOP;
+      if (filename.replace(/\.\w+$/, '').length > threshold) {
+        return "" + filename.slice(0, threshold - 5) + "(...)" + (filename.match(/\.\w+$/));
+      } else {
+        return filename;
+      }
+    },
     bytesToString: function(size) {
       var unit;
       unit = 0;

@@ -2,6 +2,25 @@ alpha
 - Mayhem
   Fix Chrome's install warning that 4chan X would execute on all domains.
 
+2.34.7
+- Mayhem
+  Fix one-word-captcha, you'll need to leave a space for the fake word now.
+
+2.34.6
+- Mayhem
+  Fix error caused by change in 4chan's HTML about hidden filename in case of spoiler.
+
+2.34.5
+- Mayhem
+  Fix cooldown on /q/.
+  Fix thread creation with no file on /q/.
+  Fix 'Administrator/Moderator/Developer Replies' creating extra backlinks on /q/.
+  Add /mlp/ archive redirection.
+
+2.34.4
+- Mayhem
+  Add /q/ archive redirection.
+
 2.34.3
 - Mayhem
   Update /k/ archive redirection.
