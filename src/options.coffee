@@ -117,7 +117,9 @@ Options =
     </tbody></table>
   </div>
   <input type=radio name=tab hidden id=style_tab>
-  <div></div>
+  <div>
+    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>
+  </div>
   <input type=radio name=tab hidden id=theme_tab>
   <div></div>
   <input type=radio name=tab hidden id=mascot_tab>
@@ -179,45 +181,32 @@ Options =
       $.on input, 'keydown', Options.keybind
       $.add $('#keybinds_tab + div tbody', dialog), tr
 
-    #indicate if the settings require a feature to be enabled
-    indicators = {}
-    for indicator in $$ '.warning', dialog
-      key = indicator.firstChild.textContent
-      indicator.hidden = $.get key, Conf[key]
-      indicators[key] = indicator
-      $.on $("[name='#{key}']", dialog), 'click', ->
-        indicators[@name].hidden = @checked
-
     #style
-    if Conf['Style']
-      for category, obj of Config.style
-        ul = $.el 'ul',
-          textContent: category
-        for optionname, arr of obj
-          description = arr[1]
-          if arr[2]
-            liHTML = "<label>#{optionname}</label><span class=description>: #{description}</span><select name=\"#{optionname}\" style=width:100%><br>"
-            for selectoption, optionvalue in arr[2]
-              liHTML = liHTML + "<option value=\"#{selectoption}\">#{selectoption}</option>"
-            liHTML = liHTML + "</select>"
-            li = $.el 'li',
-              innerHTML: liHTML
-            styleSetting = $ "select[name='#{optionname}']", li
-            styleSetting.value = $.get optionname, Conf[optionname]
-            $.on styleSetting, 'change', $.cb.value
-            $.on styleSetting, 'change', Options.style
-          else
-            checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
-            li = $.el 'li',
-              innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}>#{optionname}</label><span class=description>: #{description}</span>"
-            $.on $('input', li), 'click', $.cb.checked
-          $.add ul, li
-        $.add $('#style_tab + div', dialog), ul
-    else
-      div = $.el 'div',
-        textContent: 'The "Style" setting is currently disabled. Please enable it in the Main tab to use styling options.'
-      $.addClass div, 'warning'
-      $.add $('#style_tab + div', dialog), div
+    for category, obj of Config.style
+      ul = $.el 'ul',
+        textContent: category
+      for optionname, arr of obj
+        description = arr[1]
+        if arr[2]
+          liHTML = "<label>#{optionname}</label><span class=description>: #{description}</span><select name=\"#{optionname}\" style=width:100%><br>"
+          for selectoption, optionvalue in arr[2]
+            liHTML = liHTML + "<option value=\"#{selectoption}\">#{selectoption}</option>"
+          liHTML = liHTML + "</select>"
+          li = $.el 'li',
+            innerHTML: liHTML
+          styleSetting = $ "select[name='#{optionname}']", li
+          styleSetting.value = $.get optionname, Conf[optionname]
+          $.on styleSetting, 'change', $.cb.value
+          $.on styleSetting, 'change', Options.style
+        else
+          checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
+          li = $.el 'li',
+            innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}>#{optionname}</label><span class=description>: #{description}</span>"
+          $.on $('input', li), 'click', $.cb.checked
+        $.add ul, li
+      $.add $('#style_tab + div', dialog), ul
+
+    Options.indicators dialog
 
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', Options.close
@@ -237,6 +226,21 @@ Options =
     Options.time.call     time
     Options.fileInfo.call fileInfo
     Options.favicon.call  favicon
+
+  indicators: (dialog) ->
+    indicators = {}
+    for indicator in $$ '.warning', dialog
+      key = indicator.firstChild.textContent
+      indicator.hidden = $.get key, Conf[key]
+      indicators[key] = indicator
+      $.on $("[name='#{key}']", dialog), 'click', ->
+        indicators[@name].hidden = @checked
+    for indicator in $$ '.disabledwarning', dialog
+      key = indicator.firstChild.textContent
+      indicator.hidden = not $.get key, Conf[key]
+      indicators[key] = indicator
+      $.on $("[name='#{key}']", dialog), 'click', ->
+        Options.indicators dialog
 
   close: ->
     $.rm @nextSibling

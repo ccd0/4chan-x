@@ -14,7 +14,8 @@ label, .favicon {
 a[href="javascript:;"] {
   text-decoration: none;
 }
-.warning {
+.warning,
+.disabledwarning {
   color: red;
 }
 .hide_thread_button:not(.hidden_thread) {

@@ -142,15 +142,15 @@
         'Auto Watch Reply': [false, 'Automatically watch threads that you reply to']
       },
       Posting: {
-        'Quick Reply': [true, 'Reply without leaving the page.'],
+        'Quick Reply': [true, 'Reply without leaving the page. <span class=disabledwarning><code>Style</code> is enabled. This option will be enabled regardless of this setting\'s value.</span>'],
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
-        'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
-        'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
+        'Persistent QR': [true, 'The Quick reply won\'t disappear after posting. <span class=disabledwarning><code>Style</code> is enabled. This option will be enabled regardless of this setting\'s value.</span>'],
+        'Auto Hide QR': [false, 'Automatically hide the quick reply when posting. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>'],
         'Open Reply in New Tab': [false, 'Open replies in a new tab that are made from the main board.'],
         'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
-        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.'],
+        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>'],
         'Sage on /jp/': [true, 'Uses sage by default on /jp/'],
         'Markdown': [false, 'Code, italic, bold, italic bold, double struck - `, *, **, ***, ||, respectively. _ can be used instead of *']
       },
@@ -763,7 +763,7 @@
       }
     },
     dialog: function() {
-      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, top, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
+      var arr, back, category, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -867,7 +867,9 @@
     </tbody></table>\
   </div>\
   <input type=radio name=tab hidden id=style_tab>\
-  <div></div>\
+  <div>\
+    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>\
+  </div>\
   <input type=radio name=tab hidden id=theme_tab>\
   <div></div>\
   <input type=radio name=tab hidden id=mascot_tab>\
@@ -930,60 +932,42 @@
         $.on(input, 'keydown', Options.keybind);
         $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
-      indicators = {};
-      _ref2 = $$('.warning', dialog);
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        indicator = _ref2[_i];
-        key = indicator.firstChild.textContent;
-        indicator.hidden = $.get(key, Conf[key]);
-        indicators[key] = indicator;
-        $.on($("[name='" + key + "']", dialog), 'click', function() {
-          return indicators[this.name].hidden = this.checked;
+      _ref2 = Config.style;
+      for (category in _ref2) {
+        obj = _ref2[category];
+        ul = $.el('ul', {
+          textContent: category
         });
-      }
-      if (Conf['Style']) {
-        _ref3 = Config.style;
-        for (category in _ref3) {
-          obj = _ref3[category];
-          ul = $.el('ul', {
-            textContent: category
-          });
-          for (optionname in obj) {
-            arr = obj[optionname];
-            description = arr[1];
-            if (arr[2]) {
-              liHTML = "<label>" + optionname + "</label><span class=description>: " + description + "</span><select name=\"" + optionname + "\" style=width:100%><br>";
-              _ref4 = arr[2];
-              for (optionvalue = _j = 0, _len1 = _ref4.length; _j < _len1; optionvalue = ++_j) {
-                selectoption = _ref4[optionvalue];
-                liHTML = liHTML + ("<option value=\"" + selectoption + "\">" + selectoption + "</option>");
-              }
-              liHTML = liHTML + "</select>";
-              li = $.el('li', {
-                innerHTML: liHTML
-              });
-              styleSetting = $("select[name='" + optionname + "']", li);
-              styleSetting.value = $.get(optionname, Conf[optionname]);
-              $.on(styleSetting, 'change', $.cb.value);
-              $.on(styleSetting, 'change', Options.style);
-            } else {
-              checked = $.get(optionname, Conf[optionname]) ? 'checked' : '';
-              li = $.el('li', {
-                innerHTML: "<label><input type=checkbox name=\"" + optionname + "\" " + checked + ">" + optionname + "</label><span class=description>: " + description + "</span>"
-              });
-              $.on($('input', li), 'click', $.cb.checked);
+        for (optionname in obj) {
+          arr = obj[optionname];
+          description = arr[1];
+          if (arr[2]) {
+            liHTML = "<label>" + optionname + "</label><span class=description>: " + description + "</span><select name=\"" + optionname + "\" style=width:100%><br>";
+            _ref3 = arr[2];
+            for (optionvalue = _i = 0, _len = _ref3.length; _i < _len; optionvalue = ++_i) {
+              selectoption = _ref3[optionvalue];
+              liHTML = liHTML + ("<option value=\"" + selectoption + "\">" + selectoption + "</option>");
             }
-            $.add(ul, li);
+            liHTML = liHTML + "</select>";
+            li = $.el('li', {
+              innerHTML: liHTML
+            });
+            styleSetting = $("select[name='" + optionname + "']", li);
+            styleSetting.value = $.get(optionname, Conf[optionname]);
+            $.on(styleSetting, 'change', $.cb.value);
+            $.on(styleSetting, 'change', Options.style);
+          } else {
+            checked = $.get(optionname, Conf[optionname]) ? 'checked' : '';
+            li = $.el('li', {
+              innerHTML: "<label><input type=checkbox name=\"" + optionname + "\" " + checked + ">" + optionname + "</label><span class=description>: " + description + "</span>"
+            });
+            $.on($('input', li), 'click', $.cb.checked);
           }
-          $.add($('#style_tab + div', dialog), ul);
+          $.add(ul, li);
         }
-      } else {
-        div = $.el('div', {
-          textContent: 'The "Style" setting is currently disabled. Please enable it in the Main tab to use styling options.'
-        });
-        $.addClass(div, 'warning');
-        $.add($('#style_tab + div', dialog), div);
+        $.add($('#style_tab + div', dialog), ul);
       }
+      Options.indicators(dialog);
       overlay = $.el('div', {
         id: 'overlay'
       });
@@ -1007,6 +991,32 @@
       Options.time.call(time);
       Options.fileInfo.call(fileInfo);
       return Options.favicon.call(favicon);
+    },
+    indicators: function(dialog) {
+      var indicator, indicators, key, _i, _j, _len, _len1, _ref, _ref1, _results;
+      indicators = {};
+      _ref = $$('.warning', dialog);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        indicator = _ref[_i];
+        key = indicator.firstChild.textContent;
+        indicator.hidden = $.get(key, Conf[key]);
+        indicators[key] = indicator;
+        $.on($("[name='" + key + "']", dialog), 'click', function() {
+          return indicators[this.name].hidden = this.checked;
+        });
+      }
+      _ref1 = $$('.disabledwarning', dialog);
+      _results = [];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        indicator = _ref1[_j];
+        key = indicator.firstChild.textContent;
+        indicator.hidden = !$.get(key, Conf[key]);
+        indicators[key] = indicator;
+        _results.push($.on($("[name='" + key + "']", dialog), 'click', function() {
+          return Options.indicators(dialog);
+        }));
+      }
+      return _results;
     },
     close: function() {
       $.rm(this.nextSibling);
@@ -4600,22 +4610,24 @@
         return;
       }
       Main.callbacks.push(this.node);
-      if (Conf['Hide Original Post Form']) {
-        link = $.el('h1', {
-          innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Reply to Thread' : 'Start a Thread') + "</a>"
-        });
-        $.on(link.firstChild, 'click', function() {
-          QR.open();
-          if (!g.REPLY) {
-            $('select', QR.el).value = 'new';
-          }
-          return $('textarea', QR.el).focus();
-        });
-        $.before($.id('postForm'), link);
+      if (Conf['Hide Original Post Form'] || Conf['Style']) {
+        if (!Conf['Style']) {
+          link = $.el('h1', {
+            innerHTML: "<a href=javascript:;>" + (g.REPLY ? 'Reply to Thread' : 'Start a Thread') + "</a>"
+          });
+          $.on(link.firstChild, 'click', function() {
+            QR.open();
+            if (!g.REPLY) {
+              $('select', QR.el).value = 'new';
+            }
+            return $('textarea', QR.el).focus();
+          });
+          $.before($.id('postForm'), link);
+        }
       }
-      if (Conf['Persistent QR']) {
+      if (Conf['Persistent QR'] || Conf['Style']) {
         QR.dialog();
-        if (Conf['Auto Hide QR']) {
+        if (Conf['Auto Hide QR'] && !Conf['Style']) {
           QR.hide();
         }
       }
@@ -7469,7 +7481,7 @@ body {\
           return;
       }
       Main.pruneHidden();
-      if (Conf['Quick Reply'] && Conf['Hide Original Post Form']) {
+      if ((Conf['Quick Reply'] && Conf['Hide Original Post Form']) || Conf['Style']) {
         Main.css += '#postForm { display: none; }';
       }
       if (Conf['Recursive Filtering']) {
@@ -7851,7 +7863,8 @@ label, .favicon {\
 a[href="javascript:;"] {\
   text-decoration: none;\
 }\
-.warning {\
+.warning,\
+.disabledwarning {\
   color: red;\
 }\
 .hide_thread_button:not(.hidden_thread) {\

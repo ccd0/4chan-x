@@ -2,17 +2,18 @@ QR =
   init: ->
     return unless $.id 'postForm'
     Main.callbacks.push @node
-    if Conf['Hide Original Post Form']
-      link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
-      $.on link.firstChild, 'click', ->
-        QR.open()
-        $('select',   QR.el).value = 'new' unless g.REPLY
-        $('textarea', QR.el).focus()
-      $.before $.id('postForm'), link
+    if Conf['Hide Original Post Form'] or Conf['Style']
+      unless Conf['Style']
+        link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
+        $.on link.firstChild, 'click', ->
+          QR.open()
+          $('select',   QR.el).value = 'new' unless g.REPLY
+          $('textarea', QR.el).focus()
+        $.before $.id('postForm'), link
 
-    if Conf['Persistent QR']
+    if Conf['Persistent QR'] or Conf['Style']
       QR.dialog()
-      QR.hide() if Conf['Auto Hide QR']
+      QR.hide() if Conf['Auto Hide QR'] and not Conf['Style']
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile
     $.on d, 'dragstart dragend', QR.drag
@@ -518,8 +519,8 @@ QR =
     QR.cooldown.init()
     QR.captcha.init()
     if Conf['Style']
-      $.on $(".captchainput .field",    QR.el), 'focus', -> QR.el.classList.add 'focus'
-      $.on $(".captchainput .field",    QR.el), 'blur',  -> QR.el.classList.remove 'focus'
+      $.on $(".captchainput .field", QR.el), 'focus', -> QR.el.classList.add 'focus'
+      $.on $(".captchainput .field", QR.el), 'blur',  -> QR.el.classList.remove 'focus'
     $.add d.body, QR.el
 
     # Create a custom event when the QR dialog is first initialized.

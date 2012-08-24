@@ -30,7 +30,7 @@ Main =
 
     Main.pruneHidden()
 
-    if Conf['Quick Reply'] and Conf['Hide Original Post Form']
+    if (Conf['Quick Reply'] and Conf['Hide Original Post Form']) or Conf['Style']
       Main.css += '#postForm { display: none; }'
     if Conf['Recursive Filtering']
       Main.css += '.hidden + .threadContainer { display: none; }'
