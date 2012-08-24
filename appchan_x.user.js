@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        2.34.7
+// @version        2.34.8
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -599,7 +599,7 @@
     },
     shortenFilename: function(filename, isOP) {
       var threshold;
-      threshold = isOP ? 40 : 30;
+      threshold = 30 + 10 * isOP;
       if (filename.replace(/\.\w+$/, '').length > threshold) {
         return "" + filename.slice(0, threshold - 5) + "(...)" + (filename.match(/\.\w+$/));
       } else {
@@ -2922,7 +2922,7 @@
         unit: alt.match(/\w+$/)[0],
         resolution: node.textContent.match(/\d+x\d+|PDF/)[0],
         fullname: filename,
-        shortname: $.shortenFilename(filename, post.isOP)
+        shortname: $.shortenFilename(filename, post.ID === post.threadID)
       };
       node.setAttribute('data-filename', filename);
       return node.innerHTML = FileInfo.funk(FileInfo);
@@ -5377,7 +5377,7 @@
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response.replace(/^ /, "cba ").replace(RegExp(" $"), " abc")
+        recaptcha_response_field: response.replace(/^\s+/, rand + ' ').replace(/\s+$/, ' ' + rand)
       };
       callbacks = {
         onload: function() {

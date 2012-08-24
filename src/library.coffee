@@ -203,7 +203,7 @@ $.extend $,
     # FILENAME SHORTENING SCIENCE:
     # OPs have a +10 characters threshold.
     # The file extension is not taken into account.
-    threshold = if isOP then 40 else 30
+    threshold = 30 + 10 * isOP
     if filename.replace(/\.\w+$/, '').length > threshold
       "#{filename[...threshold - 5]}(...)#{filename.match(/\.\w+$/)}"
     else

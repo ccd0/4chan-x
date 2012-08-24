@@ -1,8 +1,10 @@
 master
 
+2.34.8
+
 2.34.7
 - noface
-  Adjust to new recaptcha (now the a space must be provided).
+  Adjust to new recaptcha (now a space must be provided).
 
 - Mayhem
   Fix support of change in 4chan's HTML about hidden filename in case of spoiler.
