@@ -598,6 +598,7 @@ QR =
       textonly: textOnly
       mode:     'regist'
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
+      rand: Math.random().toString(36).substring(6),
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response.replace(/^\s+/, rand + ' ').replace /\s+$/, ' ' + rand
 
