@@ -76,9 +76,6 @@ time + span {
 #absbot,
 #ft li.fill,
 #logo,
-#postForm .refreshBtn,
-#postForm > tbody > tr > td:first-child,
-#postForm > tbody > tr:nth-of-type(7),
 #postPassword + span,
 #qr.auto:not(:hover) #recaptcha_reload_btn,
 #recaptcha_switch_audio_btn,
@@ -220,8 +217,6 @@ div.navLinks a:first-of-type::after,
 #watcher::before {
   z-index: 4 !important;
 }
-#postForm label::after,
-#postForm label input,
 body::after {
   z-index: 3 !important;
 }
@@ -231,7 +226,6 @@ body::after {
 .replyhider a {
   z-index: 1 !important;
 }
-#postForm td,
 div.reply,
 div.reply.highlight {
   z-index: 0 !important;
@@ -360,7 +354,6 @@ a.yuimenuitemlabel:hover,
   top: 19px;
   width: 248px;
   margin: 0;
-  margin-top: -6px;
   text-align: center;
  }
 .boardBanner img {
@@ -504,9 +497,6 @@ select,
 textarea {
   ' + agent + 'appearance: none;
 }
-#postForm > table > tbody > tr > td {
-  padding: 0;
-}
 /* Unfuxor the Captcha layout */
 #recaptcha_widget_div tr, #recaptcha_widget_div td, #recaptcha_widget_div center, #recaptcha_widget_div #recaptcha_table, #recaptcha_widget_div #recaptcha_area, #recaptcha_widget_div #recaptcha_image {
   margin: 0;
@@ -515,13 +505,6 @@ textarea {
 }
 #recaptcha_table #recaptcha_image {
   border: none;
-}
-#postForm #recaptcha_widget_div {
-  height: 69px;
-}
-/* Collapse the postarea table for better control over the height and width */
-#postForm {
-  border-collapse: collapse;
 }
 /* Formatting for all postarea elements */
 .recaptchatable #recaptcha_response_field,
@@ -537,11 +520,7 @@ textarea {
   padding: 1px !important;
   height: 20px !important;
 }
-#postForm input:not([type="radio"]),
 #qr .move .field,
-#postForm textarea,
-#postForm #recaptcha_widget_div input,
-#postForm #recaptcha_widget_div #recaptcha_image img,
 #qr input[type="submit"],
 input[type="file"],
 #qr textarea,
@@ -551,71 +530,35 @@ input[type="file"],
 }
 /* Width and height of all postarea elements (excluding some captcha elements) */
 #recaptcha_response_field,
-#postForm textarea,
 textarea.field,
-#postForm input,
-#postForm .field,
 #recaptcha_widget_div input,
 #qr .move .field,
 #qr .field[type="password"],
 .ys_playerContainer audio,
 #qr input[title="Verification"],
-#postForm > table,
 #recaptcha_image,
 #qr div,
 input[type="file"] {
   width: 248px;
 }
-/* File and Subject inputs */
-#qr input[type="file"] > input[type="text"],
-#postForm input[type="file"] > input[type="text"] {
-  width: 185px;
-}
-input[type="file"] > input[type="button"],
-#postForm input[type="file"] > input[type="button"],
-#qr input[type="file"] > input[type="text"],
-#postForm input[type="file"] > input[type="text"] {
-  margin-top: 0;
-}
 /* Buttons */
 input[type="submit"], /* Any lingering buttons */
-input[value="Report"],
-input[type="file"] > input[type="button"],
-#postForm input[type="file"] > input[type="button"] /* Browse Button (Fx*) */ {
+input[value="Report"] {
   cursor: default;
   height: 20px;
   padding: 0;
   font-size: 12px;
 }
-#postForm [type="submit"],
 #qr input[type="submit"] {
   width: 100%;
   float: left;
   clear: both;
 }
-#qr input[type="file"] > input[type="button"],
-#postForm input[type="file"] > input[type="button"] {
-  width: 62px;
-  margin-right: 1px;
-}
-/* Force the file input"s CONTAINER to behave as if it were non-existent, e.g. occupies no more space than its contents */
-#qr input[type="file"],
-#postForm input[type="file"] {
+#qr input[type="file"] {
   height: auto;
   border: none 0px;
   padding: 0;
   float: left;
-}
-/* Positioning of various postarea checkboxes */
-#postForm label {
-  position: absolute;
-}
-#postForm input[name="sub"] + input + label {
-  font-size: 12px;
-  top: auto;
-  bottom: 0px;
-  right: 20px;
-  vertical-align: bottom;
 }
 #qr input[name="email"] + label {
   bottom: 2px;
@@ -650,9 +593,6 @@ input[type="file"] > input[type="button"],
 #qr {
   height: auto;
 }
-#postForm td {
-  padding: 0;
-}
 #recaptcha_reload_btn {
   position: absolute;
   height: 0;
@@ -661,34 +601,16 @@ input[type="file"] > input[type="button"],
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAZ0lEQVR4XgXAsQ0BUQCA4c8kSrOo70KntAgxgkl05CV2sMOVEo2ofgEAYAIAdp6SRQBwkSQJgL3kbJYEwPC1BgArIFcAwAvIFgAcBQwAQAawQZK7g0UmAJKPt+QEAPlJHmYA4AYA8AeJKy3vtXoiawAAAABJRU5ErkJggg==") no-repeat;
   overflow: hidden;
 }
-#postForm #recaptcha_reload_btn {
-  bottom: 62px;
-  right: 2px;
-}
-#postForm #recaptcha_reload_btn,
-.refreshBtn {
-  bottom: 70px;
-  right: 5px;
-}
 .top-box .menubutton,
 .boardTitle {
   background-image: none;
 }
-/* Post form Checkboxes */
-#postForm input[name="email"] + label {
-  position: absolute;
-  top: auto;
-  bottom: 2px;
-  right: 170px;
-  vertical-align: bottom;
-}
-div#postForm > form td:nth-of-type(3) > label input,
 #delform > div:not(.thread) input,
+#delform > div:not(.thread) .rice,
 .deleteform input[type="checkbox"],
 .deleteform .rice {
   vertical-align: middle;
 }
-#postForm td:nth-of-type(3) > label input,
 #qr label input,
 .boxcontent input,
 .boxcontent textarea {
@@ -944,7 +866,7 @@ div.navLinks a:first-of-type:hover::after {
 }
 #updater {
   right: 2px !important;
-  top: -4px !important;
+  top: 0 !important;
   bottom: auto !important;
   width: 58px !important;
   border: 0;
@@ -1066,13 +988,8 @@ textarea { text-rendering: geometricPrecision; }
   font-weight: bold;
   font-size: 13px;
 }
-#postForm > tbody > tr:nth-last-of-type(2) td,
-#postForm input {
-  height: 20px;
-}
-#postForm textarea,
 textarea.field {
-  height: 88px;
+  height: 88px !important;
 }
 #postPassword {
   position: relative;
@@ -1081,30 +998,6 @@ textarea.field {
 #recaptcha_table, #recaptcha_table tbody, #recaptcha tbody tr {
   display: block;
   visibility: visible;
-}
-#postPassword {
-  margin-bottom: 0px;
-  margin-top: 0px;
-}
-#postForm label {
-  position: absolute;
-  bottom: 0px;
-  font-size: 0px;
-}
-#postForm > tbody > tr:nth-of-type(3) > td { font-size: 0px; }
-#postForm label input {
-  position: absolute;
-  bottom: 20px;
-  right: 150px;
-  max-height: 12px;
-  max-width: 12px;
-}
-#postForm label::after {
-  font-size: 12px;
-  content: "Spoiler?";
-  position: absolute;
-  bottom: 7px;
-  right: 90px;
 }
 .postContainer.inline {
   border: none;
@@ -1139,10 +1032,6 @@ body > table[cellpadding="30"] h1, body > table[cellpadding="30"] h3 { position:
   right: 2px;
   top: 110px;
 }
-#postForm input[type="password"] {
-  text-align: right;
-  border: none;
-}
 textarea {
   resize: none;
 }
@@ -1154,7 +1043,7 @@ textarea {
   cursor: default;
 }
 /* Position and Dimensions of the #qr */
-#qr, #postForm {
+#qr {
   overflow: visible;
   position: fixed;
   top: auto !important;
@@ -1166,13 +1055,12 @@ textarea {
 }
 /* Width and height of all #qr elements (excluding some captcha elements) */
 #qr textarea {
-  min-height: 0;
+  min-height: 0 !important;
 }
 body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   position: relative;
   z-index: 96;
 }
-#postForm #recaptcha_widget_div img,
 #qr img {
   height: 47px;
   width: 248px;
@@ -1379,7 +1267,6 @@ body {
 .deleteform input[value=Delete],
 .top-box,
 .yuimenuitem-selected,
-#postForm::before,
 html body span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
 input[type="file"] > input[type="button"],
@@ -1392,19 +1279,21 @@ input[value="Report"],
 }
 .recaptchatable #recaptcha_response_field,
 .deleteform input[type="password"],
+#dump,
 input,
 input.field,
-textarea {
+textarea,
+textarea.field {
   background-color: ' + theme["Input Background"] + ';
-  border-color: ' + theme["Input Border"]  + ';
+  border: 1px solid ' + theme["Input Border"]  + ';
 }
 div.reply {
   background-color: ' + theme["Reply Background"] + ';
-  border-color: ' + theme["Reply Border"]  + ';
+  border: 1px solid ' + theme["Reply Border"]  + ';
 }
 .reply.highlight {
   background-color: ' + theme["Highlighted Reply Background"] + ';
-  border-color: ' + theme["Highlighted Reply Border"]  + ';
+  border: 1px solid ' + theme["Highlighted Reply Border"]  + ';
 }
 #boardNavDesktop,
 .pages {
@@ -1413,7 +1302,7 @@ div.reply {
 }
 #delform {
   background-color: ' + theme["Thread Wrapper Background"] + ';
-  border-color: ' + theme["Thread Wrapper Border"]  + ';
+  border: 1px solid ' + theme["Thread Wrapper Border"]  + ';
 }
 #boardNavDesktopFoot,
  #watcher,
@@ -1422,7 +1311,7 @@ div.reply {
 div.subMenu,
 #menu {
   background-color: ' + theme["Dialog Background"] + ';
-  border-color: ' + theme["Dialog Border"]  + ';
+  border: 1px solid ' + theme["Dialog Border"]  + ';
 }
 td[style="border: 1px dashed;"],
 div.reply > tr > div.reply,
@@ -1437,25 +1326,13 @@ div.reply > tr > div.reply,
 .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
 .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply {
   /* Inline Quotes */
-  background-color: ' + (if theme["Dark Theme"] == 1 then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.05)") + ';
+  background-color: ' + (if theme["Dark Theme"] == 1 then "rgba(255,255,255,0.03)" else "rgba(0,0,0,0.03)") + ';
   border: 1px solid ' + theme["Reply Border"] + ';
   box-shadow: 5px 5px 5px rgba(128,128,128,0.5);
 }
-.inline .inline div.reply,
-.inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply {
-  background-color: ' + theme["Reply Background"] + ';
-  border-color: ' + theme["Reply Border"]  + ';
-}
  [id^="q"] .warning {
   background: ' + theme["Input Background"] + ';
+  border: 1px solid ' + theme["Input Border"]  + ';
   color: ' + theme["Warnings"] + ';
 }
 a,
@@ -1474,7 +1351,8 @@ div.postContainer span.postNum > .replylink {
 input:focus,
 input.field:focus,
 input[type="submit"]:focus,
-textarea:focus {
+textarea:focus,
+textarea.field:focus {
   background-color: ' + theme["Focused Input Background"] + ';
   border-color: ' + theme["Focused Input Border"]  + ';
 }
@@ -1487,8 +1365,6 @@ body > form,
 body,
 html body span[style="left: 5px; position: absolute;"] a,
 input,
-#postForm,
-#postForm::before,
 .deleteform::after,
 textarea,
 .abbr,
@@ -1522,9 +1398,11 @@ div.navLinks a:first-of-type:hover,
 .deleteform input:hover,
 .recaptchatable #recaptcha_response_field:hover,
 input:hover,
+input.field:hover,
 input[type="submit"]:hover,
 input[type="file"] > input[type="button"]:hover,
-textarea:hover {
+textarea:hover,
+textarea.field:hover {
   background-color: ' + theme["Hovered Input Background"] + ';
   border-color: ' + theme["Hovered Input Border"]  + ';
 }
@@ -1547,7 +1425,7 @@ div.subMenu,
 #updater input,
 .bd {
   background-color: ' + theme["Buttons Background"] + ';
-  border-color: ' + theme["Buttons Border"]  + ';
+  border: 1px solid ' + theme["Buttons Border"]  + ';
 }
 #updater:not(:hover),
 #updater:not(:hover) #count:not(.new)::after,
@@ -1598,9 +1476,8 @@ a.forwardlink {
 .qphl {
   outline-color: ' + theme["Backlinked Reply Outline"] + ';
 }
-#postForm::before,
 #qr::before {
-  color: ' + (if theme["Dark Theme"] == 1 then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)") + ';
+  color: ' + (if theme["Dark Theme"] == 1 then "rgb(255,255,255)" else "rgb(0,0,0)") + ';
 }
 #qr input:' + agent + 'placeholder,
 #qr textarea:' + agent + 'placeholder {
@@ -1613,14 +1490,14 @@ a.forwardlink {
 ' + theme['Custom CSS']
     switch Conf['Post Form Style']
       when 'fixed'
-        css = css + '
+        css += '
 #qr {
   right: 2px !important;
   left: auto !important;
 }
 '
       when 'slideout'
-        css = css + '
+        css += '
 #qr {
   right: -233px !important;
   left: auto !important;
@@ -1635,7 +1512,7 @@ a.forwardlink {
 }
 '
       when 'tabbed slideout'
-        css = css + '
+        css += '
 #qr {
   right: -249px !important;
   left: auto !important;
@@ -1657,7 +1534,7 @@ a.forwardlink {
   width: 210px;
   display: inline-block;
   font-size: 12px;
-  opacity: 1;
+  opacity: 0.5;
   height: 18px;
   text-align: center;
   content: "Post Form";
@@ -1673,7 +1550,7 @@ a.forwardlink {
 }
 '
       when 'transparent fade'
-        css = css + '
+        css += '
 #qr {
   right: 2px !important;
   left: auto !important;
@@ -1688,11 +1565,14 @@ a.forwardlink {
 }
 '
     if Conf['Fit Width Replies']
-      css = css + '
+      css += '
 .summary {
   clear: both;
   padding-left: 20px;
   display: block;
+}
+.replyContainer {
+  clear: both;
 }
 .sideArrows {
   z-index: 1;
@@ -1715,7 +1595,7 @@ a.forwardlink {
   width: 20px;
   padding-top: 1px;
 }
-div.reply .report_button, .sideArrows, .postInfo input, .postInfo .rice, div.reply .menu_button {
+div.reply .report_button, .sideArrows, div.reply .postInfo input, div.reply .postInfo .rice, div.reply .menu_button {
   opacity: 0;
 }
 form .replyContainer:not(:hover) div.reply .report_button, form .replyContainer:not(:hover) div.reply .menu_button, form .replyContainer:not(:hover) .sideArrows, form .replyContainer:not(:hover) .postInfo input, .postInfo .rice {
@@ -1743,14 +1623,12 @@ div.reply .postInfo .rice {
 }
 div.reply .report_button, div.reply .menu_button {
   position: absolute;
-  right: 33px;
-  right: 13px;
+  right: 26px;
   top: -1px;
   font-size: 9px;
 }
 .sideArrows a {
   position: absolute;
-  right: 47px;
   right: 27px;
   top: 7px;
 }
@@ -1758,7 +1636,6 @@ div.reply .report_button, div.reply .menu_button {
   font-size: 9px;
 }
 div.thread {
-  overflow: visible;
   padding: 0;
   position: relative;
 }
@@ -1788,7 +1665,7 @@ div.sideArrows {
 }
 '
     else
-      css = css + '
+      css += '
 .sideArrows a {
   font-size: 9px;
 }
@@ -1865,7 +1742,7 @@ form .postContainer blockquote {
         when 'fully centered'
           pagemargin = '252px'
 
-      css = css + '
+      css += '
 body {
   margin: 1px 252px 0 ' + pagemargin + ';
 }
@@ -1875,14 +1752,33 @@ body {
 }
 '
 
-    switch Conf['Emoji Position']
-      when 'left'
-        css = css + Style.emoji('before', 'left')
-      when 'right'
-        css = css + Style.emoji('after', 'right')
-
     if Conf['Compact Post Form Inputs']
-      console.log Conf['Expand Post Form Textarea']
+      css += '
+#qr textarea {
+  height: 114px;
+}
+.field[name="name"],
+.field[name="email"],
+.field[name="sub"] {
+  width: 75px !important;
+  margin-left: 1px !important;
+}
+'
+    else
+      css += '
+.field[name="email"],
+.field[name="sub"] {
+  width: 248px !important;
+}
+.field[name="name"] {
+  width: 227px !important;
+  margin-left: 1px !important;
+}
+.field[name="email"],
+.field[name="sub"] {
+  margin-top: 1px;
+}
+'
 
     if Conf['Expand Post Form Textarea']
       console.log Conf['Expand Post Form Textarea']
@@ -1898,5 +1794,11 @@ body {
 
     if Conf['Underline Links']
       console.log Conf['Underline Links']
-    
+
+    switch Conf['Emoji Position']
+      when 'left'
+        css += Style.emoji('before', 'left')
+      when 'right'
+        css += Style.emoji('after', 'right')
+
     return css

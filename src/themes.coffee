@@ -51,7 +51,7 @@ Themes =
     'Input Border'                : 'rgba(255,255,255,1)',
     'Checkbox Background'         : 'rgba(238,242,255,1)',
     'Checkbox Checked Background' : 'rgba(188,192,212,1)',
-    'Checkbox Border'             : 'rgba(119,51,51,1)',
+    'Checkbox Border'             : 'rgba(153,51,51,1)',
     'Buttons Background'          : 'rgba(255,255,255,1)',
     'Buttons Border'              : 'rgba(255,255,255,1)',
     'Focused Input Background'    : 'rgba(255,255,255,1)',
