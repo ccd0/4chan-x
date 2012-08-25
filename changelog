@@ -1,6 +1,9 @@
 master
+- noface
+  Re-adjust to new recaptcha - now only the control word is needed.
 
 2.34.8
+- small fixes
 
 2.34.7
 - noface
