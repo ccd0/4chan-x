@@ -280,8 +280,9 @@
       'Backlinked Reply Outline': 'rgba(98,124,141,1)',
       'Input Background': 'rgba(255,255,255,1)',
       'Input Border': 'rgba(255,255,255,1)',
-      'Checkbox Background': 'rgb(119,51,51)',
-      'Checkbox Border': 'rgba(238,242,255,1)',
+      'Checkbox Background': 'rgba(238,242,255,1)',
+      'Checkbox Checked Background': 'rgba(188,192,212,1)',
+      'Checkbox Border': 'rgba(119,51,51,1)',
       'Buttons Background': 'rgba(255,255,255,1)',
       'Buttons Border': 'rgba(255,255,255,1)',
       'Focused Input Background': 'rgba(255,255,255,1)',
@@ -5507,11 +5508,15 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       return css;
     },
     noderice: function(post) {
-      var div;
+      var checkbox, div;
+      checkbox = $('[type=checkbox]', post.root);
       div = $.el('div', {
         className: 'rice'
       });
-      return $.after($('[type=checkbox]', post.root), div);
+      $.on(div, 'click', function() {
+        return checkbox.click();
+      });
+      return $.after(checkbox, div);
     },
     agent: function() {
       switch ($.engine) {
@@ -5608,6 +5613,7 @@ time + span {\
   opacity: 1;\
 }\
 /* Cleanup */\
+' + (Conf["Checkboxes"] !== "do not style checkboxes" ? "input[type=checkbox]," : "input[type=checkbox] { " + agent + "appearance: checkbox;}") + '\
 #absbot,\
 #ft li.fill,\
 #logo,\
@@ -5633,7 +5639,6 @@ time + span {\
 .qrHeader,\
 .replyContainer > .hide_reply_button.stub ~ .reply,\
 .replymode,\
-.rice,\
 .rules,\
 .sideArrows:not(.hide_reply_button),\
 .stylechanger,\
@@ -5659,7 +5664,7 @@ td[style^="padding: "]:not([style="padding: 10px 7px 7px 7px;"]):not([style="pad
 #autohide,\
 #qr.autohide select,\
 #qr.autohide .close {\
-  display: none;\
+  display: none !important;\
 }\
 div.post > blockquote .prettyprint span {\
   font-family: monospace;\
@@ -5738,7 +5743,8 @@ body > form #imgControls {\
   z-index: 9 !important;\
 }\
 .fileThumb,\
-.deleteform:hover input[type="checkbox"] {\
+.deleteform:hover input[type="checkbox"],\
+.deleteform:hover .rice {\
   z-index: 7 !important;\
 }\
 #boardNavDesktopFoot::after,\
@@ -6023,8 +6029,8 @@ a,\
 /* Override OS-specific UI */\
 #ft li,\
 #ft ul,\
-#options input:not([type="checkbox"]):not([type="radio"]),\
-#updater input:not([type="checkbox"]):not([type="radio"]),\
+#options input:not([type="radio"]),\
+#updater input:not([type="radio"]),\
 .box-outer,\
 .boxbar,\
 .deleteform input[value=Delete],\
@@ -6032,7 +6038,6 @@ a,\
 [name="recaptcha_response_field"],\
 .top-box,\
 h2,\
-input:not([type="checkbox"]):not([type="radio"]),\
 input:not([type="radio"]),\
 input[type="file"] > input[type="button"],\
 input[type="submit"],\
@@ -6073,7 +6078,7 @@ textarea {\
   padding: 1px !important;\
   height: 20px !important;\
 }\
-#postForm input:not([type="checkbox"]):not([type="radio"]),\
+#postForm input:not([type="radio"]),\
 #qr .move .field,\
 #postForm textarea,\
 #postForm #recaptcha_widget_div input,\
@@ -6220,7 +6225,8 @@ input[type="file"] > input[type="button"],\
 }\
 div#postForm > form td:nth-of-type(3) > label input,\
 #delform > div:not(.thread) input,\
-.deleteform input[type="checkbox"] {\
+.deleteform input[type="checkbox"],\
+.deleteform .rice {\
   vertical-align: middle;\
 }\
 #postForm td:nth-of-type(3) > label input,\
@@ -6400,7 +6406,8 @@ select > input {\
   text-align: right;\
 }\
 div.deleteform input[type="password"] { width: 144px; }\
-.deleteform:hover input[type="checkbox"] {\
+.deleteform:hover input[type="checkbox"],\
+.deleteform:hover .rice {\
   position: fixed;\
   right: 130px;\
 }\
@@ -6781,6 +6788,7 @@ input[type="file"] input[type="text"] {\
   bottom: 0px;\
 }\
 .deleteform:hover input[type="checkbox"],\
+.deleteform:hover .rice,\
 .deleteform:hover::after {\
   top: auto;\
   bottom: 2px;\
@@ -7066,17 +7074,18 @@ div.subMenu,\
 #qp div.post {\
   box-shadow: 5px 5px 5px ' + theme["Shadow Color"] + ';\
 }\
-.rice,\
-#options .rice,\
-#postForm td:nth-of-type(3) > label .rice,\
-#qr label .rice {\
+.rice {\
+  width: 12px;\
+  height: 12px;\
+  margin: 3px;\
+  display: inline-block;\
   background-color: ' + theme["Checkbox Background"] + ';\
-  border-color: ' + theme["Checkbox Border"] + ';\
+  border: 1px solid ' + theme["Checkbox Border"] + ';\
 }\
 #options input,\
 #options textarea,\
 #qr label input,\
-#updater input:not([type="checkbox"]),\
+#updater input,\
 .bd {\
   background-color: ' + theme["Buttons Background"] + ';\
   border-color: ' + theme["Buttons Border"] + ';\
@@ -7091,11 +7100,8 @@ select,\
 #boardNavDesktop a {\
   color: ' + theme["Navigation Links"] + ';\
 }\
-input[type=checkbox]:checked,\
-#options input[type=checkbox]:checked,\
-#postForm td:nth-of-type(3) > label input[type="checkbox"]:checked,\
-#qr label input[type="checkbox"]:checked {\
-  background-color: ;\
+input[type=checkbox]:checked + .rice {\
+  background-color: ' + theme["Checkbox Checked Background"] + ';\
 }\
 a:hover,\
 #dump:hover,\
@@ -7254,13 +7260,13 @@ a.forwardlink {\
   width: 20px;\
   padding-top: 1px;\
 }\
-div.reply .report_button, .sideArrows, .postInfo input, div.reply .menu_button {\
+div.reply .report_button, .sideArrows, .postInfo input, .postInfo .rice, div.reply .menu_button {\
   opacity: 0;\
 }\
-form .replyContainer:not(:hover) div.reply .report_button, form .replyContainer:not(:hover) div.reply .menu_button, form .replyContainer:not(:hover) .sideArrows, form .replyContainer:not(:hover) .postInfo input{\
+form .replyContainer:not(:hover) div.reply .report_button, form .replyContainer:not(:hover) div.reply .menu_button, form .replyContainer:not(:hover) .sideArrows, form .replyContainer:not(:hover) .postInfo input, .postInfo .rice {\
   ' + agent + 'transition: opacity .3s ease-out 0s;\
 }\
-form .replyContainer:hover div.reply .report_button, form .replyContainer:hover div.reply .menu_button, form .replyContainer:hover .sideArrows, .replyContainer:hover .postInfo input {\
+form .replyContainer:hover div.reply .report_button, form .replyContainer:hover div.reply .menu_button, form .replyContainer:hover .sideArrows, .replyContainer:hover .postInfo input, .replyContainer:hover .postInfo .rice {\
   opacity: 1;\
   ' + agent + 'transition: opacity .3s ease-in 0s;\
 }\
@@ -7274,7 +7280,8 @@ div.reply {\
   padding-top: 6px;\
   padding-left: 10px;\
 }\
-div.reply .postInfo input {\
+div.reply .postInfo input,\
+div.reply .postInfo .rice {\
   position: absolute;\
   top: -3px;\
   right: 5px;\

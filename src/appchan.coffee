@@ -20,11 +20,13 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     return css
   
   noderice: (post) ->
+    checkbox = $('[type=checkbox]', post.root)
     div = $.el 'div',
       className: 'rice'
-    $.after $('[type=checkbox]', post.root), div
-      
-  
+    $.on div, 'click', ->
+      checkbox.click()
+    $.after checkbox, div
+
   agent: ->
     switch $.engine
       when 'gecko'
