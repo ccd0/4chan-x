@@ -177,7 +177,7 @@ Config =
         '4chan default', 'slide out', 'hide'
       ]]
       'Boards Navigation':         ['sticky top',     'The position of 4chan board navigation', [
-        'sticky top', 'sticky bottom', 'top', 'bottom'
+        'sticky top', 'sticky bottom', 'top', 'hide'
       ]]
       'Checkboxes':                ['show',           'Alter checkboxes.', [
         'show', 'make checkboxes circular', 'hide checkboxes', 'do not style checkboxes'
@@ -198,7 +198,7 @@ Config =
         'none', 'small', 'medium', 'large', 'fully centered'
       ]]
       'Pagination':                ['sticky bottom',  'The position of 4chan page navigation', [
-        'sticky top', 'sticky bottom', 'top', 'bottom'
+        'sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide'
       ]]
       'Post Form Style':           ['fixed',          'How the post form will sit on the page.', [
         'fixed', 'slide out', 'tabbed slideout', 'transparent fade'

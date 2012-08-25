@@ -225,14 +225,14 @@
     style: {
       category: {
         'Announcements': ['hide', 'The style of announcements and the ability to hide them.', ['4chan default', 'slide out', 'hide']],
-        'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
+        'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
         'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide checkboxes', 'do not style checkboxes']],
         'Captcha Opacity': ['1.00', 'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']],
         'Emoji Position': ['left', 'Position of emoji icons, like sega and neko.', ['left', 'right', 'hide emoji']],
         'Font': ['ubuntu', 'The font used by all elements of 4chan.', ['ubuntu', 'sans serif', 'serif']],
         'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
         'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
-        'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom']],
+        'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']],
         'Post Form Style': ['fixed', 'How the post form will sit on the page.', ['fixed', 'slide out', 'tabbed slideout', 'transparent fade']],
         'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'normal', 'large']],
         'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
@@ -7349,7 +7349,8 @@ form .postContainer blockquote {\
 body {\
   margin: 1px 252px 0 ' + pagemargin + ';\
 }\
-#boardNavDesktop {\
+#boardNavDesktop,\
+.pages {\
   left: ' + pagemargin + ';\
   right: 252px;\
 }\
@@ -7676,6 +7677,56 @@ body > .postingMode ~ #delform {\
 #boardNavDesktop {\
   position: fixed;\
   bottom: 0;\
+}\
+';
+          break;
+        case 'top':
+          css += '\
+#boardNavDesktop {\
+  position: absolute;\
+  top: 0;\
+}\
+';
+          break;
+        case 'hide':
+          css += '\
+#boardNavDesktop {\
+  position: absolute;\
+  top: -100px;\
+}\
+';
+      }
+      switch (Conf['Pagination']) {
+        case 'sticky top':
+          css += '\
+.pages {\
+  position: fixed;\
+  top: 0;\
+}\
+';
+          break;
+        case 'sticky bottom':
+          css += '\
+.pages {\
+  position: fixed;\
+  bottom: 0;\
+}\
+';
+          break;
+        case 'top':
+          css += '\
+.pages {\
+  position: absolute;\
+  top: 0;\
+}\
+';
+          break;
+        case 'side':
+          break;
+        case 'hide':
+          css += '\
+.pages {\
+  display: none;\
 }\
 ';
       }

@@ -1800,7 +1800,8 @@ form .postContainer blockquote {
 body {
   margin: 1px 252px 0 ' + pagemargin + ';
 }
-#boardNavDesktop {
+#boardNavDesktop,
+.pages {
   left: ' + pagemargin + ';
   right: 252px;
 }
@@ -2119,6 +2120,52 @@ body > .postingMode ~ #delform {
   bottom: 0;
 }
 '
+      when 'top'
+        css += '
+#boardNavDesktop {
+  position: absolute;
+  top: 0;
+}
+'
+      when 'hide'
+        css += '
+#boardNavDesktop {
+  position: absolute;
+  top: -100px;
+}
+'
+
+    switch Conf['Pagination']
+      when 'sticky top'
+        css += '
+.pages {
+  position: fixed;
+  top: 0;
+}
+'
+      when 'sticky bottom'
+        css += '
+.pages {
+  position: fixed;
+  bottom: 0;
+}
+'
+      when 'top'
+        css += '
+.pages {
+  position: absolute;
+  top: 0;
+}
+'
+      when 'side'
+        break
+      when 'hide'
+        css += '
+.pages {
+  display: none;
+}
+'
+
     switch Conf['Emoji Position']
       when 'left'
         css += Style.emoji('before', 'left')
