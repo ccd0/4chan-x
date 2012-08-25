@@ -411,6 +411,20 @@ $.extend $,
       # for `storage` events
       localStorage.setItem name, value
       GM_setValue name, value
+  else if window.opera
+    delete: (name)->
+      delete opera.scriptStorage[$.NAMESPACE + name]
+    get: (name, defaultValue) ->
+      if value = opera.scriptStorage[$.NAMESPACE + name]
+        JSON.parse value
+      else
+        defaultValue
+    set: (name, value) ->
+      name  = $.NAMESPACE + name
+      value = JSON.stringify value
+      # for `storage` events
+      localStorage.setItem name, value
+      opera.scriptStorage[name] = value
   else
     delete: (name) ->
       localStorage.removeItem $.NAMESPACE + name

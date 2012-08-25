@@ -527,6 +527,24 @@
       localStorage.setItem(name, value);
       return GM_setValue(name, value);
     }
+  } : window.opera ? {
+    "delete": function(name) {
+      return delete opera.scriptStorage[$.NAMESPACE + name];
+    },
+    get: function(name, defaultValue) {
+      var value;
+      if (value = opera.scriptStorage[$.NAMESPACE + name]) {
+        return JSON.parse(value);
+      } else {
+        return defaultValue;
+      }
+    },
+    set: function(name, value) {
+      name = $.NAMESPACE + name;
+      value = JSON.stringify(value);
+      localStorage.setItem(name, value);
+      return opera.scriptStorage[name] = value;
+    }
   } : {
     "delete": function(name) {
       return localStorage.removeItem($.NAMESPACE + name);
