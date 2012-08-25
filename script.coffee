@@ -251,12 +251,10 @@ $.extend = (object, properties) ->
 
 $.extend $,
   SECOND: 1000
-  MINUTE: 1000*60
-  HOUR  : 1000*60*60
-  DAY   : 1000*60*60*24
-  log:
-    # XXX GreaseMonkey can't into console.log.bind
-    console.log.bind? console
+  MINUTE: 1000 *60
+  HOUR  : 1000 *60 * 60
+  DAY   : 1000 *60 * 60 * 24
+  log: console.log.bind console
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   ready: (fc) ->
     if /interactive|complete/.test d.readyState

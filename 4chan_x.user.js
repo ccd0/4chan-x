@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Conf, Config, UI, d, g, _base;
+  var $, $$, Conf, Config, UI, d, g;
 
   Config = {
     main: {
@@ -297,7 +297,7 @@
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
     DAY: 1000 * 60 * 60 * 24,
-    log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
+    log: console.log.bind(console),
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     ready: function(fc) {
       var cb;
