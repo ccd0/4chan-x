@@ -2404,6 +2404,11 @@
         QR.captcha.count(captchas.length);
         if (!response) {
           err = 'No valid captcha.';
+        } else {
+          response = response.trim();
+          if (!/\s/.test(response)) {
+            response = "" + response + " " + response;
+          }
         }
       }
       if (err) {
@@ -2435,7 +2440,7 @@
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response.replace(/^\s+/, 'a ').replace(/\s+$/, ' a')
+        recaptcha_response_field: response
       };
       callbacks = {
         onload: function() {

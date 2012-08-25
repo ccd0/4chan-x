@@ -1,4 +1,6 @@
 master
+- Mayhem
+  One-word-captcha: you don't need to input an extra space anymore, the true word will be duplicated.
 
 2.34.7
 - Mayhem
