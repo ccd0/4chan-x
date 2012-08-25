@@ -5376,9 +5376,8 @@
         textonly: textOnly,
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
-        rand: Math.random().toString(36).substring(6),
         recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response.replace(/^\s+/, rand + ' ').replace(/\s+$/, ' ' + rand)
+        recaptcha_response_field: response.replace(/^ /, "cba ").replace(RegExp(" $"), " abc")
       };
       callbacks = {
         onload: function() {
@@ -7047,6 +7046,7 @@ span.pln {\
   color: ' + theme["Greentext"] + ';\
 }\
 span.quote > a.quotelink,\
+a.quotelink,\
 a.backlink {\
   color: ' + theme["Backlinks"] + ';\
   font-weight: 800;\

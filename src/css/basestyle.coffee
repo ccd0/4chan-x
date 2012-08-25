@@ -1510,6 +1510,7 @@ span.pln {
   color: ' + theme["Greentext"] + ';
 }
 span.quote > a.quotelink,
+a.quotelink,
 a.backlink {
   color: ' + theme["Backlinks"] + ';
   font-weight: 800;
