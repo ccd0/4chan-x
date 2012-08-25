@@ -175,7 +175,7 @@ UI =
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id        = id
-    el.style.cssText = localStorage.getItem("#{Main.namespace}#{id}.position") or position
+    el.style.cssText = localStorage.getItem("#{$.NAMESPACE}#{id}.position") or position
     el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
@@ -207,7 +207,7 @@ UI =
     style.right  = if left then null else '0px'
     style.bottom = if top  then null else '0px'
   dragend: ->
-    localStorage.setItem "#{Main.namespace}#{UI.el.id}.position", UI.el.style.cssText
+    localStorage.setItem "#{$.NAMESPACE}#{UI.el.id}.position", UI.el.style.cssText
     d.removeEventListener 'mousemove', UI.drag,    false
     d.removeEventListener 'mouseup',   UI.dragend, false
     delete UI.el
@@ -250,33 +250,35 @@ $.extend = (object, properties) ->
   return
 
 $.extend $,
+  NAMESPACE: '4chan_X.'
   SECOND: 1000
   MINUTE: 1000 *60
   HOUR  : 1000 *60 * 60
   DAY   : 1000 *60 * 60 * 24
   log: console.log.bind console
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
+  id: (id) ->
+    d.getElementById id
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
-      # Execute the functions in parallel.
-      # If one fails, do not stop the others.
-      return setTimeout fc
+      try
+        fc()
+      finally
+        return
     cb = ->
       $.off d, 'DOMContentLoaded', cb
       fc()
     $.on d, 'DOMContentLoaded', cb
   sync: (key, cb) ->
     $.on window, 'storage', (e) ->
-      cb JSON.parse e.newValue if e.key is "#{Main.namespace}#{key}"
-  id: (id) ->
-    d.getElementById id
-  formData: (arg) ->
-    if arg instanceof HTMLFormElement
-      fd = new FormData arg
-    else
-      fd = new FormData()
-      for key, val of arg
-        fd.append key, val if val
+      if e.key is "#{$.NAMESPACE}#{key}"
+        cb JSON.parse e.newValue
+  formData: (form) ->
+    if form instanceof HTMLFormElement
+      return new FormData form
+    fd = new FormData()
+    for key, val of form
+      fd.append key, val if val
     fd
   ajax: (url, callbacks, opts={}) ->
     {type, headers, upCallbacks, form} = opts
@@ -290,18 +292,21 @@ $.extend $,
     r.send form
     r
   cache: (url, cb) ->
-    if req = $.cache.requests[url]
+    reqs = $.cache.requests or= {}
+    if req = reqs[url]
       if req.readyState is 4
         cb.call req
       else
         req.callbacks.push cb
-    else
-      req = $.ajax url,
-        onload:  -> cb.call @ for cb in @callbacks
-        onabort: -> delete $.cache.requests[url]
-        onerror: -> delete $.cache.requests[url]
-      req.callbacks = [cb]
-      $.cache.requests[url] = req
+      return
+    req = $.ajax url,
+      onload:  ->
+        cb.call @ for cb in @callbacks
+        return
+      onabort: -> delete reqs[url]
+      onerror: -> delete reqs[url]
+    req.callbacks = [cb]
+    reqs[url] = req
   cb:
     checked: ->
       $.set @name, @checked
@@ -316,12 +321,13 @@ $.extend $,
     style
   x: (path, root=d.body) ->
     # XPathResult.ANY_UNORDERED_NODE_TYPE is 8
-    d.evaluate(path, root, null, 8, null).
-      singleNodeValue
+    d.evaluate(path, root, null, 8, null).singleNodeValue
   addClass: (el, className) ->
     el.classList.add className
   rmClass: (el, className) ->
     el.classList.remove className
+  hasClass: (el, className) ->
+    el.classList.contains className
   rm: (el) ->
     el.parentNode.removeChild el
   tn: (s) ->
@@ -329,17 +335,17 @@ $.extend $,
   nodes: (nodes) ->
     # In (at least) Chrome, elements created inside different
     # scripts/window contexts inherit from unequal prototypes.
-    # window_ext1.Node !== window_ext2.Node
+    # window_context1.Node !== window_context2.Node
     unless nodes instanceof Array
       return nodes
     frag = d.createDocumentFragment()
     for node in nodes
       frag.appendChild node
     frag
-  add: (parent, children) ->
-    parent.appendChild $.nodes children
-  prepend: (parent, children) ->
-    parent.insertBefore $.nodes(children), parent.firstChild
+  add: (parent, el) ->
+    parent.appendChild $.nodes el
+  prepend: (parent, el) ->
+    parent.insertBefore $.nodes(el), parent.firstChild
   after: (root, el) ->
     root.parentNode.insertBefore $.nodes(el), root.nextSibling
   before: (root, el) ->
@@ -359,20 +365,19 @@ $.extend $,
       el.removeEventListener event, handler, false
     return
   open: (url) ->
-    (GM_openInTab or window.open) location.protocol + url, '_blank'
-  event: (el, e) ->
-    el.dispatchEvent e
+    (GM_openInTab or window.open) url, '_blank'
   globalEval: (code) ->
-    script = $.el 'script', textContent: code
+    script = $.el 'script',
+      textContent: code
     $.add d.head, script
     $.rm script
   shortenFilename: (filename, isOP) ->
     # FILENAME SHORTENING SCIENCE:
     # OPs have a +10 characters threshold.
     # The file extension is not taken into account.
-    threshold = 30 + 10 * isOP
-    if filename.replace(/\.\w+$/, '').length > threshold
-      "#{filename[...threshold - 5]}(...)#{filename.match(/\.\w+$/)}"
+    threshold = if isOP then 40 else 30
+    if filename.length - 4 > threshold
+      "#{filename[...threshold - 5]}(...).#{filename.match(/\w+$/)}"
     else
       filename
   bytesToString: (size) ->
@@ -391,34 +396,31 @@ $.extend $,
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
 
-$.cache.requests = {}
-
 $.extend $,
   if GM_deleteValue?
     delete: (name) ->
-      name = Main.namespace + name
-      GM_deleteValue name
+      GM_deleteValue $.NAMESPACE + name
     get: (name, defaultValue) ->
-      name = Main.namespace + name
-      if value = GM_getValue name
+      if value = GM_getValue $.NAMESPACE + name
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      name = Main.namespace + name
+      name  = $.NAMESPACE + name
+      value = JSON.stringify value
       # for `storage` events
-      localStorage.setItem name, JSON.stringify value
-      GM_setValue name, JSON.stringify value
+      localStorage.setItem name, value
+      GM_setValue name, value
   else
     delete: (name) ->
-      localStorage.removeItem Main.namespace + name
+      localStorage.removeItem $.NAMESPACE + name
     get: (name, defaultValue) ->
-      if value = localStorage.getItem Main.namespace + name
+      if value = localStorage.getItem $.NAMESPACE + name
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      localStorage.setItem Main.namespace + name, JSON.stringify value
+      localStorage.setItem $.NAMESPACE + name, JSON.stringify value
 
 $$ = (selector, root=d.body) ->
   Array::slice.call root.querySelectorAll selector

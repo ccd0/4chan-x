@@ -214,7 +214,7 @@
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
-      el.style.cssText = localStorage.getItem("" + Main.namespace + id + ".position") || position;
+      el.style.cssText = localStorage.getItem("" + $.NAMESPACE + id + ".position") || position;
       el.querySelector('.move').addEventListener('mousedown', UI.dragstart, false);
       return el;
     },
@@ -243,7 +243,7 @@
       return style.bottom = top ? null : '0px';
     },
     dragend: function() {
-      localStorage.setItem("" + Main.namespace + UI.el.id + ".position", UI.el.style.cssText);
+      localStorage.setItem("" + $.NAMESPACE + UI.el.id + ".position", UI.el.style.cssText);
       d.removeEventListener('mousemove', UI.drag, false);
       d.removeEventListener('mouseup', UI.dragend, false);
       return delete UI.el;
@@ -293,16 +293,24 @@
   };
 
   $.extend($, {
+    NAMESPACE: '4chan_X.',
     SECOND: 1000,
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
     DAY: 1000 * 60 * 60 * 24,
     log: console.log.bind(console),
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
+    id: function(id) {
+      return d.getElementById(id);
+    },
     ready: function(fc) {
       var cb;
       if (/interactive|complete/.test(d.readyState)) {
-        return setTimeout(fc);
+        try {
+          fc();
+        } finally {
+          return;
+        }
       }
       cb = function() {
         $.off(d, 'DOMContentLoaded', cb);
@@ -312,25 +320,21 @@
     },
     sync: function(key, cb) {
       return $.on(window, 'storage', function(e) {
-        if (e.key === ("" + Main.namespace + key)) {
+        if (e.key === ("" + $.NAMESPACE + key)) {
           return cb(JSON.parse(e.newValue));
         }
       });
     },
-    id: function(id) {
-      return d.getElementById(id);
-    },
-    formData: function(arg) {
+    formData: function(form) {
       var fd, key, val;
-      if (arg instanceof HTMLFormElement) {
-        fd = new FormData(arg);
-      } else {
-        fd = new FormData();
-        for (key in arg) {
-          val = arg[key];
-          if (val) {
-            fd.append(key, val);
-          }
+      if (form instanceof HTMLFormElement) {
+        return new FormData(form);
+      }
+      fd = new FormData();
+      for (key in form) {
+        val = form[key];
+        if (val) {
+          fd.append(key, val);
         }
       }
       return fd;
@@ -354,35 +358,34 @@
       return r;
     },
     cache: function(url, cb) {
-      var req;
-      if (req = $.cache.requests[url]) {
+      var req, reqs, _base;
+      reqs = (_base = $.cache).requests || (_base.requests = {});
+      if (req = reqs[url]) {
         if (req.readyState === 4) {
-          return cb.call(req);
+          cb.call(req);
         } else {
-          return req.callbacks.push(cb);
+          req.callbacks.push(cb);
         }
-      } else {
-        req = $.ajax(url, {
-          onload: function() {
-            var _i, _len, _ref, _results;
-            _ref = this.callbacks;
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              cb = _ref[_i];
-              _results.push(cb.call(this));
-            }
-            return _results;
-          },
-          onabort: function() {
-            return delete $.cache.requests[url];
-          },
-          onerror: function() {
-            return delete $.cache.requests[url];
-          }
-        });
-        req.callbacks = [cb];
-        return $.cache.requests[url] = req;
+        return;
       }
+      req = $.ajax(url, {
+        onload: function() {
+          var _i, _len, _ref;
+          _ref = this.callbacks;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            cb = _ref[_i];
+            cb.call(this);
+          }
+        },
+        onabort: function() {
+          return delete reqs[url];
+        },
+        onerror: function() {
+          return delete reqs[url];
+        }
+      });
+      req.callbacks = [cb];
+      return reqs[url] = req;
     },
     cb: {
       checked: function() {
@@ -414,6 +417,9 @@
     rmClass: function(el, className) {
       return el.classList.remove(className);
     },
+    hasClass: function(el, className) {
+      return el.classList.contains(className);
+    },
     rm: function(el) {
       return el.parentNode.removeChild(el);
     },
@@ -432,11 +438,11 @@
       }
       return frag;
     },
-    add: function(parent, children) {
-      return parent.appendChild($.nodes(children));
+    add: function(parent, el) {
+      return parent.appendChild($.nodes(el));
     },
-    prepend: function(parent, children) {
-      return parent.insertBefore($.nodes(children), parent.firstChild);
+    prepend: function(parent, el) {
+      return parent.insertBefore($.nodes(el), parent.firstChild);
     },
     after: function(root, el) {
       return root.parentNode.insertBefore($.nodes(el), root.nextSibling);
@@ -472,10 +478,7 @@
       }
     },
     open: function(url) {
-      return (GM_openInTab || window.open)(location.protocol + url, '_blank');
-    },
-    event: function(el, e) {
-      return el.dispatchEvent(e);
+      return (GM_openInTab || window.open)(url, '_blank');
     },
     globalEval: function(code) {
       var script;
@@ -487,9 +490,9 @@
     },
     shortenFilename: function(filename, isOP) {
       var threshold;
-      threshold = 30 + 10 * isOP;
-      if (filename.replace(/\.\w+$/, '').length > threshold) {
-        return "" + filename.slice(0, threshold - 5) + "(...)" + (filename.match(/\.\w+$/));
+      threshold = isOP ? 40 : 30;
+      if (filename.length - 4 > threshold) {
+        return "" + filename.slice(0, threshold - 5) + "(...)." + (filename.match(/\w+$/));
       } else {
         return filename;
       }
@@ -506,41 +509,38 @@
     }
   });
 
-  $.cache.requests = {};
-
   $.extend($, typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null ? {
     "delete": function(name) {
-      name = Main.namespace + name;
-      return GM_deleteValue(name);
+      return GM_deleteValue($.NAMESPACE + name);
     },
     get: function(name, defaultValue) {
       var value;
-      name = Main.namespace + name;
-      if (value = GM_getValue(name)) {
+      if (value = GM_getValue($.NAMESPACE + name)) {
         return JSON.parse(value);
       } else {
         return defaultValue;
       }
     },
     set: function(name, value) {
-      name = Main.namespace + name;
-      localStorage.setItem(name, JSON.stringify(value));
-      return GM_setValue(name, JSON.stringify(value));
+      name = $.NAMESPACE + name;
+      value = JSON.stringify(value);
+      localStorage.setItem(name, value);
+      return GM_setValue(name, value);
     }
   } : {
     "delete": function(name) {
-      return localStorage.removeItem(Main.namespace + name);
+      return localStorage.removeItem($.NAMESPACE + name);
     },
     get: function(name, defaultValue) {
       var value;
-      if (value = localStorage.getItem(Main.namespace + name)) {
+      if (value = localStorage.getItem($.NAMESPACE + name)) {
         return JSON.parse(value);
       } else {
         return defaultValue;
       }
     },
     set: function(name, value) {
-      return localStorage.setItem(Main.namespace + name, JSON.stringify(value));
+      return localStorage.setItem($.NAMESPACE + name, JSON.stringify(value));
     }
   });
 
