@@ -72,7 +72,7 @@ time + span {
   opacity: 1;
 }
 /* Cleanup */
-' + (unless Conf["Checkboxes"] == "do not style checkboxes" then "input[type=checkbox]," else "input[type=checkbox] { " + agent + "appearance: checkbox;}") + '
+' + (unless Conf["Checkboxes"] == "do not style checkboxes" then "#delform input[type=checkbox],") + '
 #absbot,
 #ft li.fill,
 #logo,
@@ -307,9 +307,56 @@ div.navLinks a:first-of-type::after {
   opacity: 0.4;
 }
 /* END OF ICON POSITIONS */
-a.yuimenuitemlabel:hover,
-.sideArrows a:hover {
-  background-color: transparent;
+.boardBanner {
+  position: fixed;
+  left: auto;
+  right: 2px;
+  top: 19px;
+  padding-top: 0px;
+  margin: 0;
+  margin-top: -6px;
+  z-index: 1;
+}
+.boardBanner img {
+  width: 248px;
+  height: 83px;
+  ' + agent + 'box-reflect: below 0px ' + agent + 'gradient( linear, left top, left bottom, from(transparent), color-stop(91%, rgba(255, 255, 255, .1)), color-stop(21.01%, transparent) );
+}
+.boardTitle {
+  margin-top: 20px;
+}
+#watcher::before {
+  top: 105px;
+}
+#watcher:hover {
+}
+#watcher {
+  position: fixed;
+  top: 119px;
+}
+#boardNavDesktopFoot::after {
+  top: 104px;
+}
+#boardNavDesktopFoot:hover {
+  top: 119px;
+}
+#navtopr .settingsWindowLink::after {
+  top: 104px;
+}
+#settingsBox {
+  top: 110px;
+}
+body > a[style="cursor: pointer; float: right;"]::after {
+  top: 104px;
+}
+.globalMessage::before {
+  top: 104px;
+}
+.globalMessage:hover {
+  top: 119px;
+}
+.boardTitle {
+  margin-top: 20px;
 }
 #settingsBox {
   position: fixed;
@@ -988,9 +1035,6 @@ textarea { text-rendering: geometricPrecision; }
   font-weight: bold;
   font-size: 13px;
 }
-textarea.field {
-  height: 88px !important;
-}
 #postPassword {
   position: relative;
   bottom: 3px;
@@ -1183,6 +1227,12 @@ html body span[style="left: 5px; position: absolute;"] a {
   padding-top: 3px;
   width: 56px;
 }
+#qr textarea.field {
+  height: 88px !important;
+}
+.textarea {
+  height: 89px !important;
+}
 hr {
   position: relative;
   top: 2px;
@@ -1235,6 +1285,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAALlJREFUKFOFkT0KwlAQhANWaUSb+AciVmLlSZLcVhttBH9QjyIIHiDOF2ZhOxeGebM7b3dfUnRdVwmN0Aq1UAqFGU2eekWSQ8RTh6HNMDqiwczNiJsnkR8Jx1RrSTKKDlE467wR9jY+XK9jN0bSKQwfGy/iqVcrMWespd82fsW7XP/XmZUmuXPsfHLHq3grHKzveef8NXjozKPH4mjAvf5rZPNLGtPAjI7ozUtfiD+1kp4LPLZxDV78APzYoty/jZXwAAAAAElFTkSuQmCC");
   opacity: 0.5;
 }
+
 span.com { color: #d00; }
 span.str, span.atv { color: #7FA61B; }
 span.pun { color: #61663A; }
@@ -1486,6 +1537,9 @@ a.forwardlink {
 .boxcontent dd,
 #options ul {
   border-color: ' + (if theme["Dark Theme"] == 1 then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + ';
+}
+input[type=checkbox] {
+  ' + agent + 'appearance: checkbox !important;
 }
 ' + theme['Custom CSS']
     switch Conf['Post Form Style']
@@ -1754,8 +1808,11 @@ body {
 
     if Conf['Compact Post Form Inputs']
       css += '
-#qr textarea {
-  height: 114px;
+#qr textarea.field {
+  height: 114px !important;
+}
+.textarea {
+  height: 115px !important;
 }
 .field[name="name"],
 .field[name="email"],
@@ -1781,20 +1838,287 @@ body {
 '
 
     if Conf['Expand Post Form Textarea']
-      console.log Conf['Expand Post Form Textarea']
+      css += '
+#qr textarea {
+  display: block;
+  ' + agent + 'transition: width .3s ease-in-out .3s, color 0.25s ease 0s, border 0.25s ease 0s;
+  float: right;
+}
+#qr textarea:focus {
+  width: 400px;
+}
+'
 
     if Conf['Filtered Backlinks']
-      console.log Conf['Filtered Backlinks']
+      css += '
+.filtered.backlink {
+  display: none;
+}
+'
 
     if Conf['Rounded Edges']
-      console.log Conf['Rounded Edges']
+      css += '
+.rice {
+  border-radius: 2px;
+}
+div.reply,
+div.reply.highlight,
+#options,
+#watcher,
+#qp,
+td[style="border: 1px dashed;"],
+div.reply > tr > div.reply,
+.inline div.reply,
+h2,
+.deleteform,
+#boardNavDesktopFoot,
+.globalMessage {
+  border-radius: 3px;
+}
+.pages b,
+.pages input,
+a,
+.new {
+  border-radius: 9px;
+}
+#postForm::after {
+  border-radius: 6px 6px 0 0;
+}
+.qphl {
+  ' + agent + 'outline-radius: 3px;
+}
+'
 
     if Conf['Slideout Watcher']
-      console.log Conf['Slideout Watcher']
-
+      css += '
+#watcher {
+  position: fixed;
+  top: -1000px !important;
+  right: 2px !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: 246px !important;
+  padding-bottom: 4px;
+}
+#watcher:hover {
+  z-index: 99 !important;
+  top: 119px !important;
+}
+'
+    else
+      css += '
+#watcher::before {
+  display: none;
+}
+#watcher {
+  right: 2px !important;
+  left: auto !important;
+  width: 246px;
+  padding-bottom: 4px;
+  z-index: 96;
+}
+'
     if Conf['Underline Links']
-      console.log Conf['Underline Links']
+      css += '
+#credits a,
+.abbr a,
+.backlink:not(.filtered),
+.chanlinkify,
+.file a,
+.pages,
+.pages a,
+.quotejs,
+.quotelink:not(.filtered),
+.quotelink:not(.filtered),
+.useremail,
+a.deadlink,
+a[href*="//dis"],
+a[href*=res],
+div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
+div.postContainer span.postNum > .replylink {
+	text-decoration: underline;
+}
+'
 
+    switch Conf['Slideout Navigation']
+      when 'compact'
+        css += '
+#boardNavDesktopFoot {
+  padding-bottom: 0px;
+  padding-top: 0px;
+  word-spacing: 0px;
+}
+#navbotr {
+  display: none;
+}
+'
+      when 'list'
+        css += '
+#boardNavDesktopFoot a {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-bottom: -15px;
+}
+#boardNavDesktopFoot {
+  height: 300px;
+  overflow-y: scroll;
+  padding-bottom: 0px;
+  padding-top: 0px;
+  word-spacing: 0px;
+}
+#boardNavDesktopFoot a[href*="/a/"] {
+  margin-top: -12px;
+}
+#boardNavDesktopFoot a::after{
+  content: " - " attr(title);
+  font-size: 12px;
+}
+#boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
+#boardNavDesktopFoot a[href*="//rs.4chan.org/"]::after{
+  content: "/ - " attr(title);
+  font-size: 12px;
+}
+#boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
+#boardNavDesktopFoot a[href*="//rs.4chan.org/"]::before {
+  content: "/";
+  font-size: 12px;
+}
+#navbotr {
+  display: none;
+}
+'
+      when 'hide'
+        css += '
+#boardNavDesktopFoot::after, #boardNavDesktopFoot {
+	display: none;
+}
+'
+
+    switch Conf['Reply Spacing']
+      when 'none'
+        css += '
+.replyContainer {
+  margin-bottom: 0px;
+}
+#delform {
+  margin-bottom: 12px;
+}
+body > .postingMode ~ #delform {
+  margin-bottom: 18px;
+}
+'
+      when 'small'
+        css += '
+.replyContainer {
+  margin-bottom: 2px;
+}
+#delform {
+  margin-bottom: 10px;
+}
+body > .postingMode ~ #delform {
+  margin-bottom: 16px;
+}
+'
+      when 'medium'
+        css += '
+.replyContainer {
+  margin-bottom: 6px;
+}
+#delform {
+  margin-bottom: 6px;
+}
+body > .postingMode ~ #delform {
+  margin-bottom: 12px;
+}
+'
+      when 'large'
+        css += '
+.replyContainer {
+  margin-bottom: 4px;
+}
+#delform {
+  margin-bottom: 8px;
+}
+body > .postingMode ~ #delform {
+  margin-bottom: 14px;
+}
+'
+
+    switch Conf['Sage Highlighting']
+      when 'text'
+        css += '
+  a.useremail[href*="sage"]:last-of-type::after,
+  a.useremail[href*="Sage"]:last-of-type::after,
+  a.useremail[href*="SAGE"]:last-of-type::after {
+    content: " (sage) ";
+    color: rgb(228,34,23);
+  }
+'
+      when 'image'
+        css += '
+  a.useremail[href*="sage"]:last-of-type::after,
+  a.useremail[href*="Sage"]:last-of-type::after,
+  a.useremail[href*="SAGE"]:last-of-type::after {
+    content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=") "  ";
+  }
+'
+
+    switch Conf['Announcements']
+      when '4chan default'
+        css += '
+.globalMessage {
+  position: static;
+  background: none;
+  border: none;
+  margin-top: 0px;
+}
+.globalMessage, h2, h3, h1 {
+  position: relative;
+  top: 0px;
+}
+.globalMessage::before {
+  display: none;
+}
+.globalMessage:hover {
+  top: 0px;
+}
+'
+      when 'slideout'
+        css += '
+.globalMessage:hover {
+  position: fixed;
+  z-index: 99;
+}
+.globalMessage {
+  width: 236px;
+}
+'
+      when 'hide'
+        css += '
+.globalMessage {
+  display: none;
+}
+.globalMessage::before {
+  display: none;
+}
+'
+
+    switch Conf['Boards Navigation']
+      when 'sticky top'
+        css += '
+#boardNavDesktop {
+  position: fixed;
+  top: 0;
+}
+'
+      when 'sticky bottom'
+        css += '
+#boardNavDesktop {
+  position: fixed;
+  bottom: 0;
+}
+'
     switch Conf['Emoji Position']
       when 'left'
         css += Style.emoji('before', 'left')

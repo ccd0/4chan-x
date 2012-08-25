@@ -204,13 +204,13 @@ Config =
         'fixed', 'slide out', 'tabbed slideout', 'transparent fade'
       ]]
       'Reply Spacing':             ['small',          'The amount of space between replies.', [
-        'small', 'normal', 'large'
+        'none', 'small', 'normal', 'large'
       ]]
       'Sage Highlighting':         ['image',          'Icons or text to highlight saged posts.', [
         'text', 'image', 'none'
       ]]
       'Slideout Navigation':       ['compact',        'How the slideout navigation will be displayed.', [
-        'compact', 'list'
+        'compact', 'list', 'hide'
       ]]
       'Compact Post Form Inputs':  [true,   'Use compact inputs on the post form.']
       'Expand Post Form Textarea': [true,   'Expands the post form text area when in use.']
