@@ -488,6 +488,11 @@
       $.add(d.head, script);
       return $.rm(script);
     },
+    unsafeWindow: window.opera && window || unsafeWindow || (function() {
+      d.createElement('p');
+      p.setAttribute('onclick', 'return window');
+      return el.onclick();
+    })(),
     shortenFilename: function(filename, isOP) {
       var threshold;
       threshold = isOP ? 40 : 30;

@@ -371,6 +371,12 @@ $.extend $,
       textContent: code
     $.add d.head, script
     $.rm script
+  # http://mths.be/unsafewindow
+  unsafeWindow: window.opera and window or unsafeWindow or (->
+    d.createElement 'p'
+    p.setAttribute 'onclick', 'return window'
+    el.onclick()
+  )()
   shortenFilename: (filename, isOP) ->
     # FILENAME SHORTENING SCIENCE:
     # OPs have a +10 characters threshold.
