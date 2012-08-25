@@ -4002,10 +4002,9 @@ ImageExpand =
 
   node: (post) ->
     return unless post.img
-    sp = FileInfo.data.spoiler
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
-    if ImageExpand.on and !post.el.hidden and sp isnt true
+    if ImageExpand.on and !post.el.hidden
       ImageExpand.expand post.img
   cb:
     toggle: (e) ->

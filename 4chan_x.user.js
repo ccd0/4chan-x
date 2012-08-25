@@ -5121,14 +5121,13 @@
       return this.dialog();
     },
     node: function(post) {
-      var a, sp;
+      var a;
       if (!post.img) {
         return;
       }
-      sp = FileInfo.data.spoiler;
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
-      if (ImageExpand.on && !post.el.hidden && sp !== true) {
+      if (ImageExpand.on && !post.el.hidden) {
         return ImageExpand.expand(post.img);
       }
     },
