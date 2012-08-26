@@ -906,6 +906,7 @@ div.navLinks a:first-of-type:hover::after {
   position: fixed;
   top: -1px !important;
   right: 45px !important;
+  left: auto !important;
   width: 96px;
   text-align: right;
   bottom: auto !important;
@@ -1188,7 +1189,10 @@ input[type="file"] input[type="text"] {
   top: auto;
   bottom: 0px;
 }
-input[title="Verification"], .captchaimg img { margin-top: 1px; }
+input[title="Verification"],
+.captchaimg img {
+  margin-top: 1px;
+}
 #qr.autohide .move {
   display: inline-block;
   font-size: 12px;
@@ -1411,6 +1415,8 @@ textarea.field:focus {
   color: ' + theme["Subjects"] + ';
   font-weight: 600;
 }
+#updater:not(:hover),
+#updater:not(:hover) #count:not(.new)::after,
 .summary,
 body > form,
 body,
@@ -1478,13 +1484,7 @@ div.subMenu,
   background-color: ' + theme["Buttons Background"] + ';
   border: 1px solid ' + theme["Buttons Border"]  + ';
 }
-#updater:not(:hover),
-#updater:not(:hover) #count:not(.new)::after,
-#qr > form > label::after,
-.globalMessage > *,
 .pages a,
-.boardBanner,
-select,
 #boardNavDesktop a {
   color: ' + theme["Navigation Links"] + ';
 }
@@ -1506,6 +1506,7 @@ div.postContainer span.postNum > .replylink:hover,
 #boardNavDesktop a:hover {
   color: ' + theme["Hovered Navigation Links"] + ';
 }
+.boardBanner,
 .name {
   color: ' + theme["Names"] + ';
 }

@@ -266,9 +266,6 @@ h1 {
   min-width: 100%;
 }
 .captchaimg {
-  background: #FFF;
-  outline: 1px solid #CCC;
-  outline-offset: -1px;
   text-align: center;
 }
 .captchaimg > img {
