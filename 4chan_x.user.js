@@ -512,7 +512,7 @@
       $.add(d.head, script);
       return $.rm(script);
     },
-    unsafeWindow: window.opera && window || unsafeWindow || (function() {
+    unsafeWindow: window.opera ? window : unsafeWindow !== window ? unsafeWindow : (function() {
       var p;
       p = d.createElement('p');
       p.setAttribute('onclick', 'return window');
