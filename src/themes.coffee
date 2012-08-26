@@ -74,7 +74,7 @@ Themes =
     'Greentext'                   : 'rgb(120,153,34)',
     'Sage'                        : 'rgb(87,87,123)',
     'Board Title'                 : 'rgb(238,187,204)',
-    'Timestamps'                  : 'rgba(0,0,0,0)',
+    'Timestamps'                  : 'rgb(0,0,0)',
     'Warnings'                    : 'rbg(87,87,123)',
     'Shadow Color'                : 'rgba(60,60,60,0.6)',
     'Dark Theme'                  : '0',

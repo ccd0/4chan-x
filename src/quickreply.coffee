@@ -420,7 +420,7 @@ QR =
       QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
-  <span> <a class=close title=Close>�</a></span>
+  <span> <a class=close title=Close>×</a></span>
 </div>
 <form>
   <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>

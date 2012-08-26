@@ -472,14 +472,14 @@ a.yuimenuitemlabel {
 #boardNavDesktopFoot {
   visibility: visible;
   position: fixed;
+  top: -1000px;
   right: 2px;
   bottom: auto;
   width: 226px;
   color: transparent;
+  font-size: 0;
   padding: 3px 10px 35px 10px;
-  border-width: 0 1px 1px 0;
-  word-spacing: -2px;
-  height: 50px;
+  border-width: 1px;
   text-align: center;
   word-spacing: -3px;
 }
@@ -1356,9 +1356,9 @@ div.reply {
   border: 1px solid ' + theme["Thread Wrapper Border"]  + ';
 }
 #boardNavDesktopFoot,
- #watcher,
- #watcher:hover,
- .deleteform,
+#watcher,
+#watcher:hover,
+.deleteform,
 div.subMenu,
 #menu {
   background-color: ' + theme["Dialog Background"] + ';
@@ -1945,9 +1945,10 @@ div.postContainer span.postNum > .replylink {
       when 'compact'
         css += '
 #boardNavDesktopFoot {
+  height: 84px;
   padding-bottom: 0px;
   padding-top: 0px;
-  word-spacing: 0px;
+  word-spacing: 3px;
 }
 #navbotr {
   display: none;
@@ -1956,10 +1957,8 @@ div.postContainer span.postNum > .replylink {
       when 'list'
         css += '
 #boardNavDesktopFoot a {
-  position: relative;
   z-index: 1;
   display: block;
-  margin-bottom: -15px;
 }
 #boardNavDesktopFoot {
   height: 300px;
@@ -1968,15 +1967,12 @@ div.postContainer span.postNum > .replylink {
   padding-top: 0px;
   word-spacing: 0px;
 }
-#boardNavDesktopFoot a[href*="/a/"] {
-  margin-top: -12px;
-}
 #boardNavDesktopFoot a::after{
   content: " - " attr(title);
   font-size: 12px;
 }
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
-#boardNavDesktopFoot a[href*="//rs.4chan.org/"]::after{
+#boardNavDesktopFoot a[href*="//rs.4chan.org/"]::after {
   content: "/ - " attr(title);
   font-size: 12px;
 }

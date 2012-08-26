@@ -200,7 +200,7 @@ Config =
       'Pagination':                ['sticky bottom',  'The position of 4chan page navigation', [
         'sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide'
       ]]
-      'Post Form Style':           ['fixed',          'How the post form will sit on the page.', [
+      'Post Form Style':           ['tabbed slideout',          'How the post form will sit on the page.', [
         'fixed', 'slide out', 'tabbed slideout', 'transparent fade'
       ]]
       'Reply Spacing':             ['small',          'The amount of space between replies.', [

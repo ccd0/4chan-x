@@ -233,7 +233,7 @@
         'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
         'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
         'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']],
-        'Post Form Style': ['fixed', 'How the post form will sit on the page.', ['fixed', 'slide out', 'tabbed slideout', 'transparent fade']],
+        'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slide out', 'tabbed slideout', 'transparent fade']],
         'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'normal', 'large']],
         'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
         'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
@@ -305,7 +305,7 @@
       'Greentext': 'rgb(120,153,34)',
       'Sage': 'rgb(87,87,123)',
       'Board Title': 'rgb(238,187,204)',
-      'Timestamps': 'rgba(0,0,0,0)',
+      'Timestamps': 'rgb(0,0,0)',
       'Warnings': 'rbg(87,87,123)',
       'Shadow Color': 'rgba(60,60,60,0.6)',
       'Dark Theme': '0',
@@ -5168,7 +5168,7 @@
         QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
-  <span> <a class=close title=Close>�</a></span>\
+  <span> <a class=close title=Close>×</a></span>\
 </div>\
 <form>\
   <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
@@ -6018,14 +6018,14 @@ a.yuimenuitemlabel {\
 #boardNavDesktopFoot {\
   visibility: visible;\
   position: fixed;\
+  top: -1000px;\
   right: 2px;\
   bottom: auto;\
   width: 226px;\
   color: transparent;\
+  font-size: 0;\
   padding: 3px 10px 35px 10px;\
-  border-width: 0 1px 1px 0;\
-  word-spacing: -2px;\
-  height: 50px;\
+  border-width: 1px;\
   text-align: center;\
   word-spacing: -3px;\
 }\
@@ -6902,9 +6902,9 @@ div.reply {\
   border: 1px solid ' + theme["Thread Wrapper Border"] + ';\
 }\
 #boardNavDesktopFoot,\
- #watcher,\
- #watcher:hover,\
- .deleteform,\
+#watcher,\
+#watcher:hover,\
+.deleteform,\
 div.subMenu,\
 #menu {\
   background-color: ' + theme["Dialog Background"] + ';\
@@ -7500,9 +7500,10 @@ div.postContainer span.postNum > .replylink {\
         case 'compact':
           css += '\
 #boardNavDesktopFoot {\
+  height: 84px;\
   padding-bottom: 0px;\
   padding-top: 0px;\
-  word-spacing: 0px;\
+  word-spacing: 3px;\
 }\
 #navbotr {\
   display: none;\
@@ -7512,10 +7513,8 @@ div.postContainer span.postNum > .replylink {\
         case 'list':
           css += '\
 #boardNavDesktopFoot a {\
-  position: relative;\
   z-index: 1;\
   display: block;\
-  margin-bottom: -15px;\
 }\
 #boardNavDesktopFoot {\
   height: 300px;\
@@ -7524,15 +7523,12 @@ div.postContainer span.postNum > .replylink {\
   padding-top: 0px;\
   word-spacing: 0px;\
 }\
-#boardNavDesktopFoot a[href*="/a/"] {\
-  margin-top: -12px;\
-}\
 #boardNavDesktopFoot a::after{\
   content: " - " attr(title);\
   font-size: 12px;\
 }\
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,\
-#boardNavDesktopFoot a[href*="//rs.4chan.org/"]::after{\
+#boardNavDesktopFoot a[href*="//rs.4chan.org/"]::after {\
   content: "/ - " attr(title);\
   font-size: 12px;\
 }\
