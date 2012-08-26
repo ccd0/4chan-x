@@ -366,6 +366,26 @@ $.extend $,
     return
   open: (url) ->
     (GM_openInTab or window.open) url, '_blank'
+  queueTask:
+    # inspired by https://www.w3.org/Bugs/Public/show_bug.cgi?id=15007
+    (->
+      taskQueue = []
+      execTask = ->
+        task = taskQueue.shift()
+        func = task[0]
+        args = Array::slice.call task, 1
+        func.apply func, args
+      if window.MessageChannel
+        taskChannel = new MessageChannel()
+        taskChannel.port1.onmessage = execTask
+        ->
+          taskQueue.push arguments
+          taskChannel.port2.postMessage null
+      else # XXX Firefox
+        ->
+          taskQueue.push arguments
+          setTimeout execTask, 0
+    )()
   globalEval: (code) ->
     script = $.el 'script',
       textContent: code
@@ -373,9 +393,9 @@ $.extend $,
     $.rm script
   # http://mths.be/unsafewindow
   unsafeWindow: window.opera and window or unsafeWindow or (->
-    d.createElement 'p'
+    p = d.createElement 'p'
     p.setAttribute 'onclick', 'return window'
-    el.onclick()
+    p.onclick()
   )()
   shortenFilename: (filename, isOP) ->
     # FILENAME SHORTENING SCIENCE:

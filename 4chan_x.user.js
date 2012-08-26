@@ -480,6 +480,30 @@
     open: function(url) {
       return (GM_openInTab || window.open)(url, '_blank');
     },
+    queueTask: (function() {
+      var execTask, taskChannel, taskQueue;
+      taskQueue = [];
+      execTask = function() {
+        var args, func, task;
+        task = taskQueue.shift();
+        func = task[0];
+        args = Array.prototype.slice.call(task, 1);
+        return func.apply(func, args);
+      };
+      if (window.MessageChannel) {
+        taskChannel = new MessageChannel();
+        taskChannel.port1.onmessage = execTask;
+        return function() {
+          taskQueue.push(arguments);
+          return taskChannel.port2.postMessage(null);
+        };
+      } else {
+        return function() {
+          taskQueue.push(arguments);
+          return setTimeout(execTask, 0);
+        };
+      }
+    })(),
     globalEval: function(code) {
       var script;
       script = $.el('script', {
@@ -489,9 +513,10 @@
       return $.rm(script);
     },
     unsafeWindow: window.opera && window || unsafeWindow || (function() {
-      d.createElement('p');
+      var p;
+      p = d.createElement('p');
       p.setAttribute('onclick', 'return window');
-      return el.onclick();
+      return p.onclick();
     })(),
     shortenFilename: function(filename, isOP) {
       var threshold;
