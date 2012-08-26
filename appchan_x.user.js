@@ -4342,10 +4342,6 @@
 
   AutoGif = {
     init: function() {
-      var _ref;
-      if ((_ref = g.BOARD) === 'gif' || _ref === 'wsg') {
-        return;
-      }
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -7282,6 +7278,7 @@ div.reply {\
 .sideArrows {\
   margin-right: 5px;\
   width: 20px;\
+  float: left;\
 }\
 .sideArrows a {\
   width: 20px;\

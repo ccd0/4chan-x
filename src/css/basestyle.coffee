@@ -1732,6 +1732,7 @@ div.reply {
 .sideArrows {
   margin-right: 5px;
   width: 20px;
+  float: left;
 }
 .sideArrows a {
   width: 20px;
