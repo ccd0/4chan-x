@@ -13,7 +13,7 @@ body::after {
   ' + agent + 'transform: scaleX(1);
 }
 body {
-  padding: 16px 0 0;
+  padding: 16px 0 16px;
 }
 @media only screen and (max-width: 1100px) {
   body {
