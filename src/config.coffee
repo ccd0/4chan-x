@@ -220,7 +220,7 @@ Config =
       'Rounded Edges':             [true,   'Round the edges of various 4chan elements.']
       'Slideout Watcher':          [true,   'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
       'Underline Links':           [true,   'Put lines under hyperlinks.']
-  theme:      'RedUX'
+  theme:      'Midnight Caek'
   mascots:    []
   navigation: {}
 

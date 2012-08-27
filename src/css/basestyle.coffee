@@ -1,6 +1,10 @@
   css: (theme) ->
     agent = Style.agent()
     css='
+::' + agent + 'selection {
+  background-color: ' + theme["Text"] + ';
+  color: ' + theme["Background Color"] + ';
+}
 body::after {
   position: fixed;
   bottom: 279px;
@@ -229,6 +233,7 @@ body::after {
 div.reply,
 div.reply.highlight {
   z-index: 0 !important;
+  ' + agent + 'box-sizing: border-box;
 }
 /* ICON POSITIONS */
 /* 4chan X Options / 4chan Options */
@@ -1103,6 +1108,7 @@ textarea {
   margin: 0;
   padding: 0;
   z-index: 5;
+  background-color: transparent !important;
 }
 /* Width and height of all #qr elements (excluding some captcha elements) */
 #qr textarea {
@@ -1348,6 +1354,7 @@ textarea.field {
   background-color: ' + theme["Input Background"] + ';
   border: 1px solid ' + theme["Input Border"]  + ';
 }
+#qp div.post,
 div.reply {
   background-color: ' + theme["Reply Background"] + ';
   border: 1px solid ' + theme["Reply Border"]  + ';
@@ -1374,22 +1381,11 @@ div.subMenu,
   background-color: ' + theme["Dialog Background"] + ';
   border: 1px solid ' + theme["Dialog Border"]  + ';
 }
-td[style="border: 1px dashed;"],
-div.reply > tr > div.reply,
-.inline div.reply,
-.inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply {
+.inline div.reply {
   /* Inline Quotes */
-  background-color: ' + (if theme["Dark Theme"] == 1 then "rgba(255,255,255,0.03)" else "rgba(0,0,0,0.03)") + ';
+  background-color: ' + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.03)" else "rgba(0,0,0,0.03)") + ';
   border: 1px solid ' + theme["Reply Border"] + ';
-  box-shadow: 5px 5px 5px rgba(128,128,128,0.5);
+  box-shadow: 5px 5px 5px '+ theme["Shadow Color"] + ';
 }
  [id^="q"] .warning {
   background: ' + theme["Input Background"] + ';
@@ -1406,16 +1402,6 @@ div.postContainer span.postNum > .replylink {
 }
 .postNum a {
   color: ' + theme["Post Numbers"] + ';
-}
-.recaptchatable #recaptcha_response_field:focus,
-.deleteform input[type="password"]:focus,
-input:focus,
-input.field:focus,
-input[type="submit"]:focus,
-textarea:focus,
-textarea.field:focus {
-  background-color: ' + theme["Focused Input Background"] + ';
-  border-color: ' + theme["Focused Input Border"]  + ';
 }
 .subject {
   color: ' + theme["Subjects"] + ';
@@ -1469,6 +1455,16 @@ textarea.field:hover {
   background-color: ' + theme["Hovered Input Background"] + ';
   border-color: ' + theme["Hovered Input Border"]  + ';
 }
+.recaptchatable #recaptcha_response_field:focus,
+.deleteform input[type="password"]:focus,
+input:focus,
+input.field:focus,
+input[type="submit"]:focus,
+textarea:focus,
+textarea.field:focus {
+  background-color: ' + theme["Focused Input Background"] + ';
+  border-color: ' + theme["Focused Input Border"]  + ';
+}
 div.subMenu,
 #menu,
 #qp div.post {
@@ -1512,7 +1508,9 @@ div.postContainer span.postNum > .replylink:hover,
 #boardNavDesktop a:hover {
   color: ' + theme["Hovered Navigation Links"] + ';
 }
-.boardBanner,
+.boardBanner {
+  color: ' + theme["Board Title"] + ';
+}
 .name {
   color: ' + theme["Names"] + ';
 }
@@ -1535,15 +1533,15 @@ a.forwardlink {
   outline-color: ' + theme["Backlinked Reply Outline"] + ';
 }
 #qr::before {
-  color: ' + (if theme["Dark Theme"] == 1 then "rgb(255,255,255)" else "rgb(0,0,0)") + ';
+  color: ' + (if theme["Dark Theme"] == "1" then "rgb(255,255,255)" else "rgb(0,0,0)") + ';
 }
 #qr input:' + agent + 'placeholder,
 #qr textarea:' + agent + 'placeholder {
-  color: ' + (if theme["Dark Theme"] == 1 then "rgba(255,255,255,0.5)" else "rgba(0,0,0,0.5)") + ';
+  color: ' + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.5)" else "rgba(0,0,0,0.5)") + ';
 }
 .boxcontent dd,
 #options ul {
-  border-color: ' + (if theme["Dark Theme"] == 1 then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + ';
+  border-color: ' + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + ';
 }
 input[type=checkbox] {
   ' + agent + 'appearance: checkbox !important;

@@ -247,7 +247,7 @@
         'Underline Links': [true, 'Put lines under hyperlinks.']
       }
     },
-    theme: 'RedUX',
+    theme: 'Midnight Caek',
     mascots: [],
     navigation: {}
   };
@@ -268,7 +268,7 @@
       'Background Attachment': '',
       'Background Position': '',
       'Background Repeat': '',
-      'Background Color': '',
+      'Background Color': 'rgba(255,255,255,1)',
       'Thread Wrapper Background': 'rgba(0,0,0,0)',
       'Thread Wrapper Border': 'rgba(0,0,0,0)',
       'Dialog Background': 'rgba(238,242,255,1)',
@@ -280,15 +280,15 @@
       'Backlinked Reply Outline': 'rgba(98,124,141,1)',
       'Input Background': 'rgba(255,255,255,1)',
       'Input Border': 'rgba(255,255,255,1)',
+      'Hovered Input Background': 'rgba(214,186,208,1)',
+      'Hovered Input Border': 'rgba(214,186,208,1)',
+      'Focused Input Background': 'rgba(255,255,255,1)',
+      'Focused Input Border': 'rgba(153,136,238,1)',
       'Checkbox Background': 'rgba(238,242,255,1)',
       'Checkbox Checked Background': 'rgba(188,192,212,1)',
       'Checkbox Border': 'rgba(153,51,51,1)',
       'Buttons Background': 'rgba(255,255,255,1)',
       'Buttons Border': 'rgba(255,255,255,1)',
-      'Focused Input Background': 'rgba(255,255,255,1)',
-      'Focused Input Border': 'rgba(153,136,238,1)',
-      'Hovered Input Background': 'rgba(214,186,208,1)',
-      'Hovered Input Border': 'rgba(214,186,208,1)',
       'Navigation Background': 'rgba(0,0,0,0.7)',
       'Navigation Border': 'rgba(0,0,0,0.7)',
       'Backlinks': 'rgb(153,51,51)',
@@ -310,6 +310,56 @@
       'Shadow Color': 'rgba(60,60,60,0.6)',
       'Dark Theme': '0',
       'Custom CSS': 'body { background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -moz-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -webkit-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background-repeat: repeat, no-repeat !important; background-attachment: scroll, fixed !important; background-position: center, center !important;} #boardNavDesktop, .pages { background-color: rgba(0,0,0,0.7); } #boardNavDesktopFoot, #watcher, #watcher:hover, .deleteform { background-color: rgba(238,242,255,1); } div.reply { border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { background: -moz-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); background: -webkit-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); -o-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
+    },
+    'Midnight Caek': {
+      'Author': 'Zixaphir',
+      'Author Tripcode': 'M.........',
+      'Background Image': '',
+      'Background Attachment': '',
+      'Background Position': '',
+      'Background Repeat': '',
+      'Background Color': 'rgba(16,16,16,1)',
+      'Thread Wrapper Background': 'rgba(0,0,0,0)',
+      'Thread Wrapper Border': 'rgba(0,0,0,0)',
+      'Dialog Background': 'rgba(60,60,60,1)',
+      'Dialog Border': 'rgba(60,60,60,1)',
+      'Reply Background': 'rgba(28,28,28,1)',
+      'Reply Border': 'rgba(28,28,28,1)',
+      'Highlighted Reply Background': 'rgba(24,24,24,1)',
+      'Highlighted Reply Border': 'rgba(24,24,24,1)',
+      'Backlinked Reply Outline': 'rgba(98,124,141,1)',
+      'Input Background': 'rgba(28,28,28,1)',
+      'Input Border': 'rgba(28,28,28,1)',
+      'Hovered Input Background': 'rgba(24,24,24,1)',
+      'Hovered Input Border': 'rgba(24,24,24,1)',
+      'Focused Input Background': 'rgba(16,16,16,1)',
+      'Focused Input Border': 'rgba(28,28,28,1)',
+      'Checkbox Background': 'rgba(0,0,0,1)',
+      'Checkbox Border': 'rgba(60,60,60,1)',
+      'Checkbox Checked Background': 'rgba(60,60,60,1)',
+      'Buttons Background': 'rgba(24,24,24,1)',
+      'Buttons Border': 'rgba(24,24,24,1)',
+      'Navigation Background': 'rgba(16,16,16,0.9)',
+      'Navigation Border': 'rgba(16,16,16,0.9)',
+      'Backlinks': 'rgb(66,66,71)',
+      'Links': 'rgb(87,87,123)',
+      'Hovered Links': 'rgb(71,71,91)',
+      'Navigation Links': 'rgb(144,144,144)',
+      'Hovered Navigation Links': 'rgb(71,71,91)',
+      'Names': 'rgb(124,45,45)',
+      'Tripcodes': 'rgb(62,113,87)',
+      'Emails': 'rgb(68,68,68)',
+      'Subjects': 'rgb(170,170,170)',
+      'Text': 'rgb(144,144,144)',
+      'Post Numbers': 'rgb(144,144,144)',
+      'Greentext': 'rgb(113,121,62)',
+      'Sage': 'rgb(68,68,68)',
+      'Board Title': 'rgb(144,144,144)',
+      'Timestamps': 'rgb(144,144,144)',
+      'Warnings': 'rbg(87,87,123)',
+      'Shadow Color': 'rgba(16,16,16,0.4)',
+      'Dark Theme': '1',
+      'Custom CSS': ''
     }
   };
 
@@ -5543,6 +5593,10 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       var agent, css, pagemargin;
       agent = Style.agent();
       css = '\
+::' + agent + 'selection {\
+  background-color: ' + theme["Text"] + ';\
+  color: ' + theme["Background Color"] + ';\
+}\
 body::after {\
   position: fixed;\
   bottom: 279px;\
@@ -5771,6 +5825,7 @@ body::after {\
 div.reply,\
 div.reply.highlight {\
   z-index: 0 !important;\
+  ' + agent + 'box-sizing: border-box;\
 }\
 /* ICON POSITIONS */\
 /* 4chan X Options / 4chan Options */\
@@ -6645,6 +6700,7 @@ textarea {\
   margin: 0;\
   padding: 0;\
   z-index: 5;\
+  background-color: transparent !important;\
 }\
 /* Width and height of all #qr elements (excluding some captcha elements) */\
 #qr textarea {\
@@ -6890,6 +6946,7 @@ textarea.field {\
   background-color: ' + theme["Input Background"] + ';\
   border: 1px solid ' + theme["Input Border"] + ';\
 }\
+#qp div.post,\
 div.reply {\
   background-color: ' + theme["Reply Background"] + ';\
   border: 1px solid ' + theme["Reply Border"] + ';\
@@ -6916,22 +6973,11 @@ div.subMenu,\
   background-color: ' + theme["Dialog Background"] + ';\
   border: 1px solid ' + theme["Dialog Border"] + ';\
 }\
-td[style="border: 1px dashed;"],\
-div.reply > tr > div.reply,\
-.inline div.reply,\
-.inline .inline .inline div.reply,\
-.inline .inline .inline .inline .inline div.reply,\
-.inline .inline .inline .inline .inline .inline .inline div.reply,\
-.inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply,\
-.inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline .inline div.reply {\
+.inline div.reply {\
   /* Inline Quotes */\
-  background-color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)") + ';\
+  background-color: ' + (theme["Dark Theme"] === "1" ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)") + ';\
   border: 1px solid ' + theme["Reply Border"] + ';\
-  box-shadow: 5px 5px 5px rgba(128,128,128,0.5);\
+  box-shadow: 5px 5px 5px ' + theme["Shadow Color"] + ';\
 }\
  [id^="q"] .warning {\
   background: ' + theme["Input Background"] + ';\
@@ -6948,16 +6994,6 @@ div.postContainer span.postNum > .replylink {\
 }\
 .postNum a {\
   color: ' + theme["Post Numbers"] + ';\
-}\
-.recaptchatable #recaptcha_response_field:focus,\
-.deleteform input[type="password"]:focus,\
-input:focus,\
-input.field:focus,\
-input[type="submit"]:focus,\
-textarea:focus,\
-textarea.field:focus {\
-  background-color: ' + theme["Focused Input Background"] + ';\
-  border-color: ' + theme["Focused Input Border"] + ';\
 }\
 .subject {\
   color: ' + theme["Subjects"] + ';\
@@ -7011,6 +7047,16 @@ textarea.field:hover {\
   background-color: ' + theme["Hovered Input Background"] + ';\
   border-color: ' + theme["Hovered Input Border"] + ';\
 }\
+.recaptchatable #recaptcha_response_field:focus,\
+.deleteform input[type="password"]:focus,\
+input:focus,\
+input.field:focus,\
+input[type="submit"]:focus,\
+textarea:focus,\
+textarea.field:focus {\
+  background-color: ' + theme["Focused Input Background"] + ';\
+  border-color: ' + theme["Focused Input Border"] + ';\
+}\
 div.subMenu,\
 #menu,\
 #qp div.post {\
@@ -7054,7 +7100,9 @@ div.postContainer span.postNum > .replylink:hover,\
 #boardNavDesktop a:hover {\
   color: ' + theme["Hovered Navigation Links"] + ';\
 }\
-.boardBanner,\
+.boardBanner {\
+  color: ' + theme["Board Title"] + ';\
+}\
 .name {\
   color: ' + theme["Names"] + ';\
 }\
@@ -7077,15 +7125,15 @@ a.forwardlink {\
   outline-color: ' + theme["Backlinked Reply Outline"] + ';\
 }\
 #qr::before {\
-  color: ' + (theme["Dark Theme"] === 1 ? "rgb(255,255,255)" : "rgb(0,0,0)") + ';\
+  color: ' + (theme["Dark Theme"] === "1" ? "rgb(255,255,255)" : "rgb(0,0,0)") + ';\
 }\
 #qr input:' + agent + 'placeholder,\
 #qr textarea:' + agent + 'placeholder {\
-  color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)") + ';\
+  color: ' + (theme["Dark Theme"] === "1" ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)") + ';\
 }\
 .boxcontent dd,\
 #options ul {\
-  border-color: ' + (theme["Dark Theme"] === 1 ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)") + ';\
+  border-color: ' + (theme["Dark Theme"] === "1" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)") + ';\
 }\
 input[type=checkbox] {\
   ' + agent + 'appearance: checkbox !important;\
