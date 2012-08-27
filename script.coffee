@@ -485,14 +485,14 @@ class Thread
     @hr = root.nextElementSibling
     @posts = {}
 
-    g.threads[@ID] = board.threads[@ID] = @
+    g.threads["#{board.ID}.#{@ID}"] = board.threads[@ID] = @
 
 class Post
   constructor: (@root, @thread, @board) ->
     @ID = +root.id[2..]
     @el = $ '.post', root
 
-    g.posts[@ID] = thread.posts[@ID] = board.posts[@ID] = @
+    g.posts["#{board.ID}.#{@ID}"] = thread.posts[@ID] = board.posts[@ID] = @
 
 Main =
   init: ->
@@ -528,13 +528,13 @@ Main =
           if $.hasClass child, 'postContainer'
             new Post child, thread, g.BOARD
     $.log g
+
   addStyle: ->
     $.off d, 'DOMNodeInserted', Main.addStyle
     if d.head
       $.addStyle Main.css
     else
       $.on d, 'DOMNodeInserted', Main.addStyle
-
   css: '
 .move {
   cursor: move;

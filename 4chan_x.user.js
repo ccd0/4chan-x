@@ -621,7 +621,7 @@
       this.ID = +root.id.slice(1);
       this.hr = root.nextElementSibling;
       this.posts = {};
-      g.threads[this.ID] = board.threads[this.ID] = this;
+      g.threads["" + board.ID + "." + this.ID] = board.threads[this.ID] = this;
     }
 
     return Thread;
@@ -636,7 +636,7 @@
       this.board = board;
       this.ID = +root.id.slice(2);
       this.el = $('.post', root);
-      g.posts[this.ID] = thread.posts[this.ID] = board.posts[this.ID] = this;
+      g.posts["" + board.ID + "." + this.ID] = thread.posts[this.ID] = board.posts[this.ID] = this;
     }
 
     return Post;
