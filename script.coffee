@@ -516,6 +516,8 @@ Main =
     if g.REPLY = pathname[2] is 'res'
       g.THREAD = +pathname[3]
 
+    Main.addStyle()
+
     $.ready Main.ready
   ready: ->
     board = $ '.board'
@@ -526,5 +528,20 @@ Main =
           if $.hasClass child, 'postContainer'
             new Post child, thread, g.BOARD
     $.log g
+  addStyle: ->
+    $.off d, 'DOMNodeInserted', Main.addStyle
+    if d.head
+      $.addStyle Main.css
+    else
+      $.on d, 'DOMNodeInserted', Main.addStyle
+
+  css: '
+.move {
+  cursor: move;
+}
+label {
+  cursor: pointer;
+}
+'
 
 Main.init()

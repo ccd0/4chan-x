@@ -669,6 +669,7 @@
       if (g.REPLY = pathname[2] === 'res') {
         g.THREAD = +pathname[3];
       }
+      Main.addStyle();
       return $.ready(Main.ready);
     },
     ready: function() {
@@ -689,7 +690,23 @@
         }
       }
       return $.log(g);
-    }
+    },
+    addStyle: function() {
+      $.off(d, 'DOMNodeInserted', Main.addStyle);
+      if (d.head) {
+        return $.addStyle(Main.css);
+      } else {
+        return $.on(d, 'DOMNodeInserted', Main.addStyle);
+      }
+    },
+    css: '\
+.move {\
+  cursor: move;\
+}\
+label {\
+  cursor: pointer;\
+}\
+'
   };
 
   Main.init();
