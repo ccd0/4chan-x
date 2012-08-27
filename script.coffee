@@ -167,7 +167,12 @@ return unless /^(boards|images|sys)\.4chan\.org$/.test location.hostname
 
 Conf = {}
 d = document
-g = {}
+g =
+  VERSION:   '3.0.0'
+  NAMESPACE: '4chan_X.'
+  boards:  {}
+  threads: {}
+  posts:   {}
 
 UI =
   dialog: (id, position, html) ->
@@ -175,7 +180,7 @@ UI =
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id        = id
-    el.style.cssText = localStorage.getItem("#{$.NAMESPACE}#{id}.position") or position
+    el.style.cssText = localStorage.getItem("#{g.NAMESPACE}#{id}.position") or position
     el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
@@ -207,7 +212,7 @@ UI =
     style.right  = if left then null else '0px'
     style.bottom = if top  then null else '0px'
   dragend: ->
-    localStorage.setItem "#{$.NAMESPACE}#{UI.el.id}.position", UI.el.style.cssText
+    localStorage.setItem "#{g.NAMESPACE}#{UI.el.id}.position", UI.el.style.cssText
     d.removeEventListener 'mousemove', UI.drag,    false
     d.removeEventListener 'mouseup',   UI.dragend, false
     delete UI.el
@@ -252,8 +257,6 @@ $.extend = (object, properties) ->
   return
 
 $.extend $,
-  VERSION: '3.0.0'
-  NAMESPACE: '4chan_X.'
   SECOND: 1000
   MINUTE: 1000 * 60
   HOUR  : 1000 * 60 * 60
@@ -271,7 +274,7 @@ $.extend $,
     $.on d, 'DOMContentLoaded', cb
   sync: (key, cb) ->
     $.on window, 'storage', (e) ->
-      if e.key is "#{$.NAMESPACE}#{key}"
+      if e.key is "#{g.NAMESPACE}#{key}"
         cb JSON.parse e.newValue
   formData: (form) ->
     if form instanceof HTMLFormElement
@@ -431,45 +434,44 @@ $.extend $,
 $.extend $,
   if GM_deleteValue?
     delete: (name) ->
-      GM_deleteValue $.NAMESPACE + name
+      GM_deleteValue g.NAMESPACE + name
     get: (name, defaultValue) ->
-      if value = GM_getValue $.NAMESPACE + name
+      if value = GM_getValue g.NAMESPACE + name
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      name  = $.NAMESPACE + name
+      name  = g.NAMESPACE + name
       value = JSON.stringify value
       # for `storage` events
       localStorage.setItem name, value
       GM_setValue name, value
   else if window.opera
     delete: (name)->
-      delete opera.scriptStorage[$.NAMESPACE + name]
+      delete opera.scriptStorage[g.NAMESPACE + name]
     get: (name, defaultValue) ->
-      if value = opera.scriptStorage[$.NAMESPACE + name]
+      if value = opera.scriptStorage[g.NAMESPACE + name]
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      name  = $.NAMESPACE + name
+      name  = g.NAMESPACE + name
       value = JSON.stringify value
       # for `storage` events
       localStorage.setItem name, value
       opera.scriptStorage[name] = value
   else
     delete: (name) ->
-      localStorage.removeItem $.NAMESPACE + name
+      localStorage.removeItem g.NAMESPACE + name
     get: (name, defaultValue) ->
-      if value = localStorage.getItem $.NAMESPACE + name
+      if value = localStorage.getItem g.NAMESPACE + name
         JSON.parse value
       else
         defaultValue
     set: (name, value) ->
-      localStorage.setItem $.NAMESPACE + name, JSON.stringify value
+      localStorage.setItem g.NAMESPACE + name, JSON.stringify value
 
 
-g.boards = {}
 class Board
   constructor: (@ID) ->
     @threads = {}
@@ -477,7 +479,6 @@ class Board
 
     g.boards[@ID] = @
 
-g.threads = {}
 class Thread
   constructor: (@root, @board) ->
     @ID = +root.id[1..]
@@ -486,7 +487,6 @@ class Thread
 
     g.threads[@ID] = board.threads[@ID] = @
 
-g.posts = {}
 class Post
   constructor: (@root, @thread, @board) ->
     @ID = +root.id[2..]

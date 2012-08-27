@@ -205,7 +205,13 @@
 
   d = document;
 
-  g = {};
+  g = {
+    VERSION: '3.0.0',
+    NAMESPACE: '4chan_X.',
+    boards: {},
+    threads: {},
+    posts: {}
+  };
 
   UI = {
     dialog: function(id, position, html) {
@@ -214,7 +220,7 @@
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
-      el.style.cssText = localStorage.getItem("" + $.NAMESPACE + id + ".position") || position;
+      el.style.cssText = localStorage.getItem("" + g.NAMESPACE + id + ".position") || position;
       el.querySelector('.move').addEventListener('mousedown', UI.dragstart, false);
       return el;
     },
@@ -243,7 +249,7 @@
       return style.bottom = top ? null : '0px';
     },
     dragend: function() {
-      localStorage.setItem("" + $.NAMESPACE + UI.el.id + ".position", UI.el.style.cssText);
+      localStorage.setItem("" + g.NAMESPACE + UI.el.id + ".position", UI.el.style.cssText);
       d.removeEventListener('mousemove', UI.drag, false);
       d.removeEventListener('mouseup', UI.dragend, false);
       return delete UI.el;
@@ -300,8 +306,6 @@
   };
 
   $.extend($, {
-    VERSION: '3.0.0',
-    NAMESPACE: '4chan_X.',
     SECOND: 1000,
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
@@ -324,7 +328,7 @@
     },
     sync: function(key, cb) {
       return $.on(window, 'storage', function(e) {
-        if (e.key === ("" + $.NAMESPACE + key)) {
+        if (e.key === ("" + g.NAMESPACE + key)) {
           return cb(JSON.parse(e.newValue));
         }
       });
@@ -545,58 +549,56 @@
 
   $.extend($, typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null ? {
     "delete": function(name) {
-      return GM_deleteValue($.NAMESPACE + name);
+      return GM_deleteValue(g.NAMESPACE + name);
     },
     get: function(name, defaultValue) {
       var value;
-      if (value = GM_getValue($.NAMESPACE + name)) {
+      if (value = GM_getValue(g.NAMESPACE + name)) {
         return JSON.parse(value);
       } else {
         return defaultValue;
       }
     },
     set: function(name, value) {
-      name = $.NAMESPACE + name;
+      name = g.NAMESPACE + name;
       value = JSON.stringify(value);
       localStorage.setItem(name, value);
       return GM_setValue(name, value);
     }
   } : window.opera ? {
     "delete": function(name) {
-      return delete opera.scriptStorage[$.NAMESPACE + name];
+      return delete opera.scriptStorage[g.NAMESPACE + name];
     },
     get: function(name, defaultValue) {
       var value;
-      if (value = opera.scriptStorage[$.NAMESPACE + name]) {
+      if (value = opera.scriptStorage[g.NAMESPACE + name]) {
         return JSON.parse(value);
       } else {
         return defaultValue;
       }
     },
     set: function(name, value) {
-      name = $.NAMESPACE + name;
+      name = g.NAMESPACE + name;
       value = JSON.stringify(value);
       localStorage.setItem(name, value);
       return opera.scriptStorage[name] = value;
     }
   } : {
     "delete": function(name) {
-      return localStorage.removeItem($.NAMESPACE + name);
+      return localStorage.removeItem(g.NAMESPACE + name);
     },
     get: function(name, defaultValue) {
       var value;
-      if (value = localStorage.getItem($.NAMESPACE + name)) {
+      if (value = localStorage.getItem(g.NAMESPACE + name)) {
         return JSON.parse(value);
       } else {
         return defaultValue;
       }
     },
     set: function(name, value) {
-      return localStorage.setItem($.NAMESPACE + name, JSON.stringify(value));
+      return localStorage.setItem(g.NAMESPACE + name, JSON.stringify(value));
     }
   });
-
-  g.boards = {};
 
   Board = (function() {
 
@@ -610,8 +612,6 @@
     return Board;
 
   })();
-
-  g.threads = {};
 
   Thread = (function() {
 
@@ -627,8 +627,6 @@
     return Thread;
 
   })();
-
-  g.posts = {};
 
   Post = (function() {
 
