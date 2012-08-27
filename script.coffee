@@ -498,6 +498,21 @@ class Post
 
 Main =
   init: ->
+    # flatten Config into Conf
+    # and get saved or default values
+    flatten = (parent, obj) ->
+      if obj instanceof Array
+        Conf[parent] = obj[0]
+      else if typeof obj is 'object'
+        for key, val of obj
+          flatten key, val
+      else # string or number
+        Conf[parent] = obj
+      return
+    flatten null, Config
+    for key, val of Conf
+      Conf[key] = $.get key, val
+
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
     if g.REPLY = pathname[2] is 'res'

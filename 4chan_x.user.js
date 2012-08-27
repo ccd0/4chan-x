@@ -650,7 +650,25 @@
 
   Main = {
     init: function() {
-      var pathname;
+      var flatten, key, pathname, val;
+      flatten = function(parent, obj) {
+        var key, val;
+        if (obj instanceof Array) {
+          Conf[parent] = obj[0];
+        } else if (typeof obj === 'object') {
+          for (key in obj) {
+            val = obj[key];
+            flatten(key, val);
+          }
+        } else {
+          Conf[parent] = obj;
+        }
+      };
+      flatten(null, Config);
+      for (key in Conf) {
+        val = Conf[key];
+        Conf[key] = $.get(key, val);
+      }
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       if (g.REPLY = pathname[2] === 'res') {
