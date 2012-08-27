@@ -300,6 +300,7 @@
   };
 
   $.extend($, {
+    VERSION: '3.0.0',
     NAMESPACE: '4chan_X.',
     SECOND: 1000,
     MINUTE: 1000 * 60,
