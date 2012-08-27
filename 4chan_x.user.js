@@ -609,6 +609,10 @@
       g.boards[this.ID] = this;
     }
 
+    Board.prototype.toString = function() {
+      return this.ID;
+    };
+
     return Board;
 
   })();
@@ -673,11 +677,56 @@
       if (g.REPLY = pathname[2] === 'res') {
         g.THREAD = +pathname[3];
       }
-      Main.addStyle();
-      return $.ready(Main.ready);
+      switch (location.hostname) {
+        case 'boards.4chan.org':
+          Main.addStyle();
+          Main.initHeader();
+          return Main.initFeatures();
+        case 'sys.4chan.org':
+          break;
+        case 'images.4chan.org':
+      }
     },
-    ready: function() {
+    initHeader: function() {
+      Main.header = $.el('div', {
+        className: 'reply',
+        innerHTML: '<div class=extra></div>'
+      });
+      return $.ready(Main.initHeaderReady);
+    },
+    initHeaderReady: function() {
+      var header, nav, settings, _ref, _ref1;
+      if (!$.id('navtopr')) {
+        return;
+      }
+      header = Main.header;
+      $.prepend(d.body, header);
+      nav = $.id('boardNavDesktop');
+      header.id = nav.id;
+      $.prepend(header, nav);
+      nav.id = nav.className = null;
+      nav.lastElementChild.hidden = true;
+      settings = $.el('span', {
+        id: 'settings',
+        innerHTML: '[<a href=javascript:;>Settings</a>]'
+      });
+      $.on(settings.firstElementChild, 'click', Main.settings);
+      $.add(nav, settings);
+      if ((_ref = $("a[href$='/" + g.BOARD + "/']", nav)) != null) {
+        _ref.className = 'current';
+      }
+      $.addClass(d.body, $.engine);
+      $.addClass(d.body, 'fourchan_x');
+      return (_ref1 = $.id('boardNavDesktopFoot')) != null ? _ref1.hidden = true : void 0;
+    },
+    initFeatures: function() {
+      return $.ready(Main.initFeaturesReady);
+    },
+    initFeaturesReady: function() {
       var board, child, thread, _i, _j, _len, _len1, _ref, _ref1;
+      if (!$.id('navtopr')) {
+        return;
+      }
       board = $('.board');
       _ref = board.children;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -695,6 +744,9 @@
       }
       return $.log(g);
     },
+    settings: function() {
+      return alert('Here be settings');
+    },
     addStyle: function() {
       $.off(d, 'DOMNodeInserted', Main.addStyle);
       if (d.head) {
@@ -703,14 +755,7 @@
         return $.on(d, 'DOMNodeInserted', Main.addStyle);
       }
     },
-    css: '\
-.move {\
-  cursor: move;\
-}\
-label {\
-  cursor: pointer;\
-}\
-'
+    css: ".move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\n\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}"
   };
 
   Main.init();

@@ -479,6 +479,8 @@ class Board
 
     g.boards[@ID] = @
 
+  toString: -> @ID
+
 class Thread
   constructor: (@root, @board) ->
     @ID = +root.id[1..]
@@ -518,10 +520,47 @@ Main =
     if g.REPLY = pathname[2] is 'res'
       g.THREAD = +pathname[3]
 
-    Main.addStyle()
+    switch location.hostname
+      when 'boards.4chan.org'
+        Main.addStyle()
+        Main.initHeader()
+        Main.initFeatures()
+      when 'sys.4chan.org'
+        return
+      when 'images.4chan.org'
+        return
 
-    $.ready Main.ready
-  ready: ->
+  initHeader: ->
+    Main.header = $.el 'div',
+      className: 'reply'
+      innerHTML: '<div class=extra></div>'
+    $.ready Main.initHeaderReady
+  initHeaderReady: ->
+    return unless $.id 'navtopr'
+    header = Main.header
+    $.prepend d.body, header
+
+    nav = $.id 'boardNavDesktop'
+    header.id = nav.id
+    $.prepend header, nav
+    nav.id = nav.className = null
+    nav.lastElementChild.hidden = true
+    settings = $.el 'span',
+      id: 'settings'
+      innerHTML: '[<a href=javascript:;>Settings</a>]'
+    $.on settings.firstElementChild, 'click', Main.settings
+    $.add nav, settings
+    $("a[href$='/#{g.BOARD}/']", nav)?.className = 'current'
+
+    $.addClass d.body, $.engine
+    $.addClass d.body, 'fourchan_x'
+
+    $.id('boardNavDesktopFoot')?.hidden = true
+
+  initFeatures: ->
+    $.ready Main.initFeaturesReady
+  initFeaturesReady: ->
+    return unless $.id 'navtopr'
     board = $ '.board'
     for child in board.children
       if child.className is 'thread'
@@ -531,19 +570,52 @@ Main =
             new Post child, thread, g.BOARD
     $.log g
 
+  settings: ->
+    alert 'Here be settings'
+
   addStyle: ->
     $.off d, 'DOMNodeInserted', Main.addStyle
     if d.head
       $.addStyle Main.css
     else
       $.on d, 'DOMNodeInserted', Main.addStyle
-  css: '
+  css: """
 .move {
   cursor: move;
 }
 label {
   cursor: pointer;
 }
-'
+
+body.fourchan_x {
+  margin-top: 2.5em;
+}
+#boardNavDesktop.reply {
+  border-width: 0 0 1px;
+  padding: 4px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  transition: opacity .1s ease-in-out;
+  -o-transition: opacity .1s ease-in-out;
+  -moz-transition: opacity .1s ease-in-out;
+  -webkit-transition: opacity .1s ease-in-out;
+  z-index: 1;
+}
+#boardNavDesktop.reply:not(:hover) {
+  opacity: .4;
+  transition: opacity 1.5s .5s ease-in-out;
+  -o-transition: opacity 1.5s .5s ease-in-out;
+  -moz-transition: opacity 1.5s .5s ease-in-out;
+  -webkit-transition: opacity 1.5s .5s ease-in-out;
+}
+#boardNavDesktop.reply a {
+  margin: -1px;
+}
+#settings {
+  float: right;
+}
+"""
 
 Main.init()
