@@ -760,10 +760,11 @@
         return Conf[this.name] = this.value;
       }
     },
-    addStyle: function(css) {
+    addStyle: function(css, identifier) {
       var style;
       style = $.el('style', {
-        textContent: css
+        textContent: css,
+        id: identifier
       });
       $.add(d.head, style);
       return style;
@@ -5807,7 +5808,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       $.off(d, 'DOMNodeInserted', Style.addStyle);
       theme = Themes[Conf['theme']];
       if (d.head) {
-        return $.addStyle(Style.css(theme));
+        return $.addStyle(Style.css(theme), 'appchan');
       } else {
         return $.on(d, 'DOMNodeInserted', Style.addStyle);
       }
@@ -8393,7 +8394,7 @@ body > .postingMode ~ #delform {\
     addStyle: function() {
       $.off(d, 'DOMNodeInserted', Main.addStyle);
       if (d.head) {
-        return $.addStyle(Main.css);
+        return $.addStyle(Main.css, 'main');
       } else {
         return $.on(d, 'DOMNodeInserted', Main.addStyle);
       }

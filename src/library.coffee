@@ -143,9 +143,10 @@ $.extend $,
     value: ->
       $.set @name, @value.trim()
       Conf[@name] = @value
-  addStyle: (css) ->
+  addStyle: (css, identifier) ->
     style = $.el 'style',
       textContent: css
+      id:          identifier
     $.add d.head, style
     style
   x: (path, root=d.body) ->

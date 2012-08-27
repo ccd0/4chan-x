@@ -248,7 +248,7 @@ Main =
   addStyle: ->
     $.off d, 'DOMNodeInserted', Main.addStyle
     if d.head
-      $.addStyle Main.css
+      $.addStyle Main.css, 'main'
     else # XXX fox
       $.on d, 'DOMNodeInserted', Main.addStyle
 
