@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Conf, Config, UI, d, g;
+  var $, $$, Board, Conf, Config, Main, Post, Thread, UI, d, g;
 
   Config = {
     main: {
@@ -282,6 +282,13 @@
       root = d.body;
     }
     return root.querySelector(selector);
+  };
+
+  $$ = function(selector, root) {
+    if (root == null) {
+      root = d.body;
+    }
+    return Array.prototype.slice.call(root.querySelectorAll(selector));
   };
 
   $.extend = function(object, properties) {
@@ -592,11 +599,86 @@
     }
   });
 
-  $$ = function(selector, root) {
-    if (root == null) {
-      root = d.body;
+  g.boards = {};
+
+  Board = (function() {
+
+    function Board(ID) {
+      this.ID = ID;
+      this.threads = {};
+      this.posts = {};
+      g.boards[this.ID] = this;
     }
-    return Array.prototype.slice.call(root.querySelectorAll(selector));
+
+    return Board;
+
+  })();
+
+  g.threads = {};
+
+  Thread = (function() {
+
+    function Thread(root, board) {
+      this.root = root;
+      this.board = board;
+      this.ID = +root.id.slice(1);
+      this.hr = root.nextElementSibling;
+      this.posts = {};
+      g.threads[this.ID] = board.threads[this.ID] = this;
+    }
+
+    return Thread;
+
+  })();
+
+  g.posts = {};
+
+  Post = (function() {
+
+    function Post(root, thread, board) {
+      this.root = root;
+      this.thread = thread;
+      this.board = board;
+      this.ID = +root.id.slice(2);
+      this.el = $('.post', root);
+      g.posts[this.ID] = thread.posts[this.ID] = board.posts[this.ID] = this;
+    }
+
+    return Post;
+
+  })();
+
+  Main = {
+    init: function() {
+      var pathname;
+      pathname = location.pathname.split('/');
+      g.BOARD = new Board(pathname[1]);
+      if (g.REPLY = pathname[2] === 'res') {
+        g.THREAD = +pathname[3];
+      }
+      return $.ready(Main.ready);
+    },
+    ready: function() {
+      var board, child, thread, _i, _j, _len, _len1, _ref, _ref1;
+      board = $('.board');
+      _ref = board.children;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        if (child.className === 'thread') {
+          thread = new Thread(child, g.BOARD);
+          _ref1 = thread.root.children;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            child = _ref1[_j];
+            if ($.hasClass(child, 'postContainer')) {
+              new Post(child, thread, g.BOARD);
+            }
+          }
+        }
+      }
+      return $.log(g);
+    }
   };
+
+  Main.init();
 
 }).call(this);

@@ -243,6 +243,8 @@ not chainable
 ###
 $ = (selector, root=d.body) ->
   root.querySelector selector
+$$ = (selector, root=d.body) ->
+  Array::slice.call root.querySelectorAll selector
 
 $.extend = (object, properties) ->
   for key, val of properties
@@ -468,5 +470,48 @@ $.extend $,
     set: (name, value) ->
       localStorage.setItem $.NAMESPACE + name, JSON.stringify value
 
-$$ = (selector, root=d.body) ->
-  Array::slice.call root.querySelectorAll selector
+
+g.boards = {}
+class Board
+  constructor: (@ID) ->
+    @threads = {}
+    @posts   = {}
+
+    g.boards[@ID] = @
+
+g.threads = {}
+class Thread
+  constructor: (@root, @board) ->
+    @ID = +root.id[1..]
+    @hr = root.nextElementSibling
+    @posts = {}
+
+    g.threads[@ID] = board.threads[@ID] = @
+
+g.posts = {}
+class Post
+  constructor: (@root, @thread, @board) ->
+    @ID = +root.id[2..]
+    @el = $ '.post', root
+
+    g.posts[@ID] = thread.posts[@ID] = board.posts[@ID] = @
+
+Main =
+  init: ->
+    pathname = location.pathname.split '/'
+    g.BOARD  = new Board pathname[1]
+    if g.REPLY = pathname[2] is 'res'
+      g.THREAD = +pathname[3]
+
+    $.ready Main.ready
+  ready: ->
+    board = $ '.board'
+    for child in board.children
+      if child.className is 'thread'
+        thread = new Thread child, g.BOARD
+        for child in thread.root.children
+          if $.hasClass child, 'postContainer'
+            new Post child, thread, g.BOARD
+    $.log g
+
+Main.init()
