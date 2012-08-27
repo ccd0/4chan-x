@@ -19,7 +19,8 @@ Options =
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
   <div id=credits>
-    <a target=_blank href=http://zixaphir.github.com/appchan-x/>AppChan X</a>
+    <label for=apply>Apply</label>
+    | <a target=_blank href=http://zixaphir.github.com/appchan-x/>AppChan X</a>
     | <a target=_blank href=https://raw.github.com/zixaphir/appchan-x/master/changelog>' + Main.version + '</a>
     | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>
   </div>
@@ -30,7 +31,7 @@ Options =
     | <label for=rice_tab>Rice</label>
     | <label for=keybinds_tab>Keybinds</label>
     | <label for=style_tab>Style</label>
-    | <label for=apply>Apply</label>
+    | <label for=theme_tab>Themes</label>
   </div>
 </div>
 <hr>
@@ -205,6 +206,20 @@ Options =
           $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
       $.add $('#style_tab + div', dialog), ul
+    
+    #themes
+    for themename, theme of Themes
+      div = $.el 'div',
+        className: if themename == Conf['theme'] then 'selectedtheme' else ''
+        id:        themename
+        innerHTML: "<div class='reply' style='position: relative; cursor: pointer; width: 100%; background-color:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'><div style='width: 12px;height: 12px;margin: 3px;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div><span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'>#{themename}</span> <span style='color:#{theme['Names']}!important; font-weight: 700 !important'>#{theme['Author']}</span><span style='color:#{theme['Sage']}!important'> (SAGE)</span><span style='color:#{theme['Tripcodes']}!important'> #{theme['Author Tripcode']}</span><time style='color:#{theme['Timestamps']}'> 20XX.01.01 12:00 </time><a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important' href='javascript:;'>No.22772469</a><br><blockquote>Post content is right here.</blockquote><h1 style='color: #{theme['Text']}'>Selected</h1></div>"
+      $.on div, 'click', ->
+        $.rmClass $.id(Conf['theme']), 'selectedtheme'
+        $.set 'theme', @.id
+        Conf['theme'] = @.id
+        console.log @.id
+        $.addClass @, 'selectedtheme'
+      $.add $('#theme_tab + div', dialog), div
 
     Options.indicators dialog
 

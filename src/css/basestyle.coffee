@@ -136,6 +136,18 @@ div.post div.file .fileThumb {
 a {
   outline: 0;
 }
+#theme_tab + div > div:not(.selectedtheme) h1 {
+  color: transparent !important;
+  right: 300px;
+}
+#theme_tab + div > div.selectedtheme h1 {
+  right: 11px;
+}
+#theme_tab + div > div h1 {
+  position: absolute;
+  bottom: 0;
+  ' + agent + 'transition: all .2s ease-in-out;
+}
 #boardNavDesktop,
 #boardNavDesktop a,
 #boardNavDesktopFoot a,
@@ -1475,6 +1487,7 @@ div.subMenu,
   box-shadow: 5px 5px 5px '+ theme["Shadow Color"] + ';
 }
 .rice {
+  cursor: pointer;
   width: 12px;
   height: 12px;
   margin: 3px;
@@ -2059,7 +2072,7 @@ body > .postingMode ~ #delform {
   a.useremail[href*="Sage"]:last-of-type::after,
   a.useremail[href*="SAGE"]:last-of-type::after {
     content: " (sage) ";
-    color: rgb(228,34,23);
+    color: ' + theme["Sage"] + ';
   }
 '
       when 'image'

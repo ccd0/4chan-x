@@ -273,7 +273,7 @@
       'Thread Wrapper Border': 'rgba(0,0,0,0)',
       'Dialog Background': 'rgba(238,242,255,1)',
       'Dialog Border': 'rgba(238,242,255,1)',
-      'Reply Background': 'rgba(0,0,0,0)',
+      'Reply Background': 'rgba(240,240,240,1)',
       'Reply Border': 'rgba(204,204,204,1)',
       'Highlighted Reply Background': 'rgba(219,219,219,1)',
       'Highlighted Reply Border': 'rgba(219,219,219,1)',
@@ -310,7 +310,7 @@
       'Warnings': 'rbg(87,87,123)',
       'Shadow Color': 'rgba(60,60,60,0.6)',
       'Dark Theme': '0',
-      'Custom CSS': 'body { background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -moz-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -webkit-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background-repeat: repeat, no-repeat !important; background-attachment: scroll, fixed !important; background-position: center, center !important;} #boardNavDesktop, .pages { background-color: rgba(0,0,0,0.7); } #boardNavDesktopFoot, #watcher, #watcher:hover, .deleteform { background-color: rgba(238,242,255,1); } div.reply { border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { background: -moz-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); background: -webkit-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); -o-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
+      'Custom CSS': '.replyContainer > .reply {background-color: transparent;} body { background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -moz-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -webkit-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background-repeat: repeat, no-repeat !important; background-attachment: scroll, fixed !important; background-position: center, center !important;} #boardNavDesktop, .pages { background-color: rgba(0,0,0,0.7); } #boardNavDesktopFoot, #watcher, #watcher:hover, .deleteform { background-color: rgba(238,242,255,1); } div.reply { border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { background: -moz-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); background: -webkit-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); -o-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
     },
     'Midnight Caek': {
       'Author': 'Zixaphir',
@@ -816,13 +816,14 @@
       }
     },
     dialog: function() {
-      var arr, back, category, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
         innerHTML: '<div id=optionsbar>\
   <div id=credits>\
-    <a target=_blank href=http://zixaphir.github.com/appchan-x/>AppChan X</a>\
+    <label for=apply>Apply</label>\
+    | <a target=_blank href=http://zixaphir.github.com/appchan-x/>AppChan X</a>\
     | <a target=_blank href=https://raw.github.com/zixaphir/appchan-x/master/changelog>' + Main.version + '</a>\
     | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>\
   </div>\
@@ -833,7 +834,7 @@
     | <label for=rice_tab>Rice</label>\
     | <label for=keybinds_tab>Keybinds</label>\
     | <label for=style_tab>Style</label>\
-    | <label for=apply>Apply</label>\
+    | <label for=theme_tab>Themes</label>\
   </div>\
 </div>\
 <hr>\
@@ -1019,6 +1020,22 @@
           $.add(ul, li);
         }
         $.add($('#style_tab + div', dialog), ul);
+      }
+      for (themename in Themes) {
+        theme = Themes[themename];
+        div = $.el('div', {
+          className: themename === Conf['theme'] ? 'selectedtheme' : '',
+          id: themename,
+          innerHTML: "<div class='reply' style='position: relative; cursor: pointer; width: 100%; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'><div style='width: 12px;height: 12px;margin: 3px;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div><span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'>" + themename + "</span> <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'>" + theme['Author'] + "</span><span style='color:" + theme['Sage'] + "!important'> (SAGE)</span><span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span><time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time><a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important' href='javascript:;'>No.22772469</a><br><blockquote>Post content is right here.</blockquote><h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
+        });
+        $.on(div, 'click', function() {
+          $.rmClass($.id(Conf['theme']), 'selectedtheme');
+          $.set('theme', this.id);
+          Conf['theme'] = this.id;
+          console.log(this.id);
+          return $.addClass(this, 'selectedtheme');
+        });
+        $.add($('#theme_tab + div', dialog), div);
       }
       Options.indicators(dialog);
       overlay = $.el('div', {
@@ -5730,6 +5747,18 @@ div.post div.file .fileThumb {\
 a {\
   outline: 0;\
 }\
+#theme_tab + div > div:not(.selectedtheme) h1 {\
+  color: transparent !important;\
+  right: 300px;\
+}\
+#theme_tab + div > div.selectedtheme h1 {\
+  right: 11px;\
+}\
+#theme_tab + div > div h1 {\
+  position: absolute;\
+  bottom: 0;\
+  ' + agent + 'transition: all .2s ease-in-out;\
+}\
 #boardNavDesktop,\
 #boardNavDesktop a,\
 #boardNavDesktopFoot a,\
@@ -7069,6 +7098,7 @@ div.subMenu,\
   box-shadow: 5px 5px 5px ' + theme["Shadow Color"] + ';\
 }\
 .rice {\
+  cursor: pointer;\
   width: 12px;\
   height: 12px;\
   margin: 3px;\
@@ -7667,7 +7697,7 @@ body > .postingMode ~ #delform {\
   a.useremail[href*="Sage"]:last-of-type::after,\
   a.useremail[href*="SAGE"]:last-of-type::after {\
     content: " (sage) ";\
-    color: rgb(228,34,23);\
+    color: ' + theme["Sage"] + ';\
   }\
 ';
           break;
@@ -8237,7 +8267,7 @@ a[href="javascript:;"] {\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
 .autohide:not(:hover) > form,\
-#qp input, .forwarded {\
+#qp input, .forwarded, #qp .rice {\
   display: none !important;\
 }\
 .menu_button {\
