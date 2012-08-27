@@ -1,6 +1,14 @@
 master
+
+0.2beta
 - Zixaphir
   Pagination options now work. Also fixed Board Navigation options.
+  Cicle Checkboxes and On Side Pagination now work
+  New Themes:
+   -- AppChan
+   -- BakaBT
+   -- Blackberry Jam
+   -- Midnight Caek
 - Mayhem
   One-word-captcha: you don't need to input an extra space anymore, the true word will be duplicated.
 
