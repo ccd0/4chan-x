@@ -263,10 +263,7 @@ $.extend $,
     d.getElementById id
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
-      try
-        fc()
-      finally
-        return
+      $.queueTask fc
     cb = ->
       $.off d, 'DOMContentLoaded', cb
       fc()

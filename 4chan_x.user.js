@@ -313,11 +313,7 @@
     ready: function(fc) {
       var cb;
       if (/interactive|complete/.test(d.readyState)) {
-        try {
-          fc();
-        } finally {
-          return;
-        }
+        $.queueTask(fc);
       }
       cb = function() {
         $.off(d, 'DOMContentLoaded', cb);
