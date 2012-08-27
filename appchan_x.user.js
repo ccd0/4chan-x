@@ -224,7 +224,7 @@
     },
     style: {
       category: {
-        'Announcements': ['hide', 'The style of announcements and the ability to hide them.', ['4chan default', 'slide out', 'hide']],
+        'Announcements': ['hide', 'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']],
         'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
         'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide checkboxes', 'do not style checkboxes']],
         'Captcha Opacity': ['1.00', 'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']],
@@ -233,7 +233,7 @@
         'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
         'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
         'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']],
-        'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slide out', 'tabbed slideout', 'transparent fade']],
+        'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']],
         'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'normal', 'large']],
         'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
         'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
@@ -301,6 +301,7 @@
       'Emails': 'rgb(87,87,123)',
       'Subjects': 'rgb(15,12,93)',
       'Text': 'rgb(0,0,0)',
+      'Inputs': 'rgb(0,0,0)',
       'Post Numbers': 'rgb(0,0,0)',
       'Greentext': 'rgb(120,153,34)',
       'Sage': 'rgb(87,87,123)',
@@ -321,8 +322,8 @@
       'Background Color': 'rgba(16,16,16,1)',
       'Thread Wrapper Background': 'rgba(0,0,0,0)',
       'Thread Wrapper Border': 'rgba(0,0,0,0)',
-      'Dialog Background': 'rgba(60,60,60,1)',
-      'Dialog Border': 'rgba(60,60,60,1)',
+      'Dialog Background': 'rgba(28,28,28,1)',
+      'Dialog Border': 'rgba(28,28,28,1)',
       'Reply Background': 'rgba(28,28,28,1)',
       'Reply Border': 'rgba(28,28,28,1)',
       'Highlighted Reply Background': 'rgba(24,24,24,1)',
@@ -351,6 +352,7 @@
       'Emails': 'rgb(68,68,68)',
       'Subjects': 'rgb(170,170,170)',
       'Text': 'rgb(144,144,144)',
+      'Inputs': 'rgb(144,144,144)',
       'Post Numbers': 'rgb(144,144,144)',
       'Greentext': 'rgb(113,121,62)',
       'Sage': 'rgb(68,68,68)',
@@ -5656,10 +5658,10 @@ time + span {\
 }\
 .globalMessage {\
   bottom: auto;\
-  left: 2px;\
   padding: 10px 5px 10px 5px;\
   position: fixed;\
-  right: auto;\
+  left: auto;\
+  right: 2px;\
   top: -1000px;\
 }\
 .globalMessage b { font-weight: 100; }\
@@ -6945,6 +6947,32 @@ textarea,\
 textarea.field {\
   background-color: ' + theme["Input Background"] + ';\
   border: 1px solid ' + theme["Input Border"] + ';\
+  color: ' + theme["Inputs"] + ';\
+  ' + agent + 'transition: all .2s linear;\
+}\
+div.navLinks a:first-of-type:hover,\
+.deleteform input:hover,\
+.recaptchatable #recaptcha_response_field:hover,\
+input:hover,\
+input.field:hover,\
+input[type="submit"]:hover,\
+input[type="file"] > input[type="button"]:hover,\
+textarea:hover,\
+textarea.field:hover {\
+  background-color: ' + theme["Hovered Input Background"] + ';\
+  border-color: ' + theme["Hovered Input Border"] + ';\
+  color: ' + theme["Inputs"] + ';\
+}\
+.recaptchatable #recaptcha_response_field:focus,\
+.deleteform input[type="password"]:focus,\
+input:focus,\
+input.field:focus,\
+input[type="submit"]:focus,\
+textarea:focus,\
+textarea.field:focus {\
+  background-color: ' + theme["Focused Input Background"] + ';\
+  border-color: ' + theme["Focused Input Border"] + ';\
+  color: ' + theme["Inputs"] + ';\
 }\
 #qp div.post,\
 div.reply {\
@@ -7034,28 +7062,6 @@ a.quotelink,\
 a.backlink {\
   color: ' + theme["Backlinks"] + ';\
   font-weight: 800;\
-}\
-div.navLinks a:first-of-type:hover,\
-.deleteform input:hover,\
-.recaptchatable #recaptcha_response_field:hover,\
-input:hover,\
-input.field:hover,\
-input[type="submit"]:hover,\
-input[type="file"] > input[type="button"]:hover,\
-textarea:hover,\
-textarea.field:hover {\
-  background-color: ' + theme["Hovered Input Background"] + ';\
-  border-color: ' + theme["Hovered Input Border"] + ';\
-}\
-.recaptchatable #recaptcha_response_field:focus,\
-.deleteform input[type="password"]:focus,\
-input:focus,\
-input.field:focus,\
-input[type="submit"]:focus,\
-textarea:focus,\
-textarea.field:focus {\
-  background-color: ' + theme["Focused Input Background"] + ';\
-  border-color: ' + theme["Focused Input Border"] + ';\
 }\
 div.subMenu,\
 #menu,\
@@ -7284,7 +7290,7 @@ div.reply .report_button, div.reply .menu_button {\
 }\
 .sideArrows a {\
   position: absolute;\
-  right: 27px;\
+  right: 36px;\
   top: 7px;\
 }\
 .sideArrows a {\
@@ -7448,7 +7454,7 @@ body {\
         css += '\
 #qr textarea {\
   display: block;\
-  ' + agent + 'transition: width .3s ease-in-out .3s, color 0.25s ease 0s, border 0.25s ease 0s;\
+  ' + agent + 'transition: all 0.25s ease 0s, width .3s ease-in-out .3s;\
   float: right;\
 }\
 #qr textarea:focus {\
@@ -7703,6 +7709,8 @@ body > .postingMode ~ #delform {\
 }\
 .globalMessage {\
   width: 236px;\
+  background-color: ' + theme["Dialog Background"] + ';\
+  border: 1px solid ' + theme["Dialog Border"] + ';\
 }\
 ';
           break;

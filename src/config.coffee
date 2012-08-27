@@ -174,7 +174,7 @@ Config =
   style:
     category:
       'Announcements':             ['hide',           'The style of announcements and the ability to hide them.', [
-        '4chan default', 'slide out', 'hide'
+        '4chan default', 'slideout', 'hide'
       ]]
       'Boards Navigation':         ['sticky top',     'The position of 4chan board navigation', [
         'sticky top', 'sticky bottom', 'top', 'hide'
@@ -201,7 +201,7 @@ Config =
         'sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide'
       ]]
       'Post Form Style':           ['tabbed slideout',          'How the post form will sit on the page.', [
-        'fixed', 'slide out', 'tabbed slideout', 'transparent fade'
+        'fixed', 'slideout', 'tabbed slideout', 'transparent fade'
       ]]
       'Reply Spacing':             ['small',          'The amount of space between replies.', [
         'none', 'small', 'normal', 'large'

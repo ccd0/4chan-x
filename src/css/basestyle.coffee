@@ -64,10 +64,10 @@ time + span {
 }
 .globalMessage {
   bottom: auto;
-  left: 2px;
   padding: 10px 5px 10px 5px;
   position: fixed;
-  right: auto;
+  left: auto;
+  right: 2px;
   top: -1000px;
 }
 .globalMessage b { font-weight: 100; }
@@ -1353,6 +1353,32 @@ textarea,
 textarea.field {
   background-color: ' + theme["Input Background"] + ';
   border: 1px solid ' + theme["Input Border"]  + ';
+  color: ' + theme["Inputs"] + ';
+  ' + agent + 'transition: all .2s linear;
+}
+div.navLinks a:first-of-type:hover,
+.deleteform input:hover,
+.recaptchatable #recaptcha_response_field:hover,
+input:hover,
+input.field:hover,
+input[type="submit"]:hover,
+input[type="file"] > input[type="button"]:hover,
+textarea:hover,
+textarea.field:hover {
+  background-color: ' + theme["Hovered Input Background"] + ';
+  border-color: ' + theme["Hovered Input Border"]  + ';
+  color: ' + theme["Inputs"] + ';
+}
+.recaptchatable #recaptcha_response_field:focus,
+.deleteform input[type="password"]:focus,
+input:focus,
+input.field:focus,
+input[type="submit"]:focus,
+textarea:focus,
+textarea.field:focus {
+  background-color: ' + theme["Focused Input Background"] + ';
+  border-color: ' + theme["Focused Input Border"]  + ';
+  color: ' + theme["Inputs"] + ';
 }
 #qp div.post,
 div.reply {
@@ -1442,28 +1468,6 @@ a.quotelink,
 a.backlink {
   color: ' + theme["Backlinks"] + ';
   font-weight: 800;
-}
-div.navLinks a:first-of-type:hover,
-.deleteform input:hover,
-.recaptchatable #recaptcha_response_field:hover,
-input:hover,
-input.field:hover,
-input[type="submit"]:hover,
-input[type="file"] > input[type="button"]:hover,
-textarea:hover,
-textarea.field:hover {
-  background-color: ' + theme["Hovered Input Background"] + ';
-  border-color: ' + theme["Hovered Input Border"]  + ';
-}
-.recaptchatable #recaptcha_response_field:focus,
-.deleteform input[type="password"]:focus,
-input:focus,
-input.field:focus,
-input[type="submit"]:focus,
-textarea:focus,
-textarea.field:focus {
-  background-color: ' + theme["Focused Input Background"] + ';
-  border-color: ' + theme["Focused Input Border"]  + ';
 }
 div.subMenu,
 #menu,
@@ -1688,7 +1692,7 @@ div.reply .report_button, div.reply .menu_button {
 }
 .sideArrows a {
   position: absolute;
-  right: 27px;
+  right: 36px;
   top: 7px;
 }
 .sideArrows a {
@@ -1848,7 +1852,7 @@ body {
       css += '
 #qr textarea {
   display: block;
-  ' + agent + 'transition: width .3s ease-in-out .3s, color 0.25s ease 0s, border 0.25s ease 0s;
+  ' + agent + 'transition: all 0.25s ease 0s, width .3s ease-in-out .3s;
   float: right;
 }
 #qr textarea:focus {
@@ -2095,6 +2099,8 @@ body > .postingMode ~ #delform {
 }
 .globalMessage {
   width: 236px;
+  background-color: ' + theme["Dialog Background"] + ';
+  border: 1px solid ' + theme["Dialog Border"]  + ';
 }
 '
       when 'hide'
