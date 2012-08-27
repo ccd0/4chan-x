@@ -486,6 +486,7 @@ class Thread
     @posts = {}
 
     g.threads["#{board.ID}.#{@ID}"] = board.threads[@ID] = @
+  callbacks: []
 
 class Post
   constructor: (@root, @thread, @board) ->
@@ -493,6 +494,7 @@ class Post
     @el = $ '.post', root
 
     g.posts["#{board.ID}.#{@ID}"] = thread.posts[@ID] = board.posts[@ID] = @
+  callbacks: []
 
 Main =
   init: ->

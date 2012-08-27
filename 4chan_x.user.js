@@ -624,6 +624,8 @@
       g.threads["" + board.ID + "." + this.ID] = board.threads[this.ID] = this;
     }
 
+    Thread.prototype.callbacks = [];
+
     return Thread;
 
   })();
@@ -638,6 +640,8 @@
       this.el = $('.post', root);
       g.posts["" + board.ID + "." + this.ID] = thread.posts[this.ID] = board.posts[this.ID] = this;
     }
+
+    Post.prototype.callbacks = [];
 
     return Post;
 
