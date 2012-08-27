@@ -1021,7 +1021,7 @@
       }
     },
     dialog: function() {
-      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, save, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -1191,6 +1191,13 @@
         $.on(input, 'keydown', Options.keybind);
         $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
+      save = $.el('div', {
+        innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
+      });
+      $.on($('a', save), 'click', function() {
+        return Style.addStyle(Conf['theme']);
+      });
+      $.add($('#style_tab + div', dialog), save);
       _ref2 = Config.style;
       for (category in _ref2) {
         obj = _ref2[category];
@@ -1226,6 +1233,13 @@
         }
         $.add($('#style_tab + div', dialog), ul);
       }
+      save = $.el('div', {
+        innerHTML: '<a href="javascript:void(0)">Save Theme Settings</a></li>'
+      });
+      $.on($('a', save), 'click', function() {
+        return Style.addStyle(Conf['theme']);
+      });
+      $.add($('#theme_tab + div', dialog), save);
       for (themename in Themes) {
         theme = Themes[themename];
         div = $.el('div', {
@@ -5804,10 +5818,13 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     addStyle: function() {
-      var theme;
+      var existingStyle, theme;
       $.off(d, 'DOMNodeInserted', Style.addStyle);
       theme = Themes[Conf['theme']];
       if (d.head) {
+        if (existingStyle = $.id('appchan')) {
+          $.rm(existingStyle);
+        }
         return $.addStyle(Style.css(theme), 'appchan');
       } else {
         return $.on(d, 'DOMNodeInserted', Style.addStyle);

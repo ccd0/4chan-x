@@ -183,6 +183,11 @@ Options =
       $.add $('#keybinds_tab + div tbody', dialog), tr
 
     #style
+    save = $.el 'div',
+      innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
+    $.on $('a', save), 'click', ->
+      Style.addStyle(Conf['theme'])
+    $.add $('#style_tab + div', dialog), save
     for category, obj of Config.style
       ul = $.el 'ul',
         textContent: category
@@ -208,6 +213,11 @@ Options =
       $.add $('#style_tab + div', dialog), ul
     
     #themes
+    save = $.el 'div',
+      innerHTML: '<a href="javascript:void(0)">Save Theme Settings</a></li>'
+    $.on $('a', save), 'click', ->
+      Style.addStyle(Conf['theme'])
+    $.add $('#theme_tab + div', dialog), save
     for themename, theme of Themes
       div = $.el 'div',
         className: if themename == Conf['theme'] then 'selectedtheme' else ''

@@ -40,6 +40,8 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     $.off d, 'DOMNodeInserted', Style.addStyle
     theme = Themes[Conf['theme']]
     if d.head
+      if existingStyle = $.id 'appchan'
+        $.rm existingStyle
       $.addStyle Style.css(theme), 'appchan'
     else # XXX fox
       $.on d, 'DOMNodeInserted', Style.addStyle
