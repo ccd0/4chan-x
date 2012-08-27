@@ -148,6 +148,9 @@ a {
   bottom: 0;
   ' + agent + 'transition: all .2s ease-in-out;
 }
+#theme_tab + div > div {
+  margin-bottom: 3px;
+}
 #boardNavDesktop,
 #boardNavDesktop a,
 #boardNavDesktopFoot a,
@@ -670,9 +673,8 @@ input[value="Report"] {
   background-image: none;
 }
 #delform > div:not(.thread) input,
-#delform > div:not(.thread) .rice,
 .deleteform input[type="checkbox"],
-.deleteform .rice {
+.rice {
   vertical-align: middle;
 }
 #qr label input,
@@ -1490,7 +1492,7 @@ div.subMenu,
   cursor: pointer;
   width: 12px;
   height: 12px;
-  margin: 3px;
+  margin: 0 3px;
   display: inline-block;
   background-color: ' + theme["Checkbox Background"] + ';
   border: 1px solid ' + theme["Checkbox Border"]  + ';
