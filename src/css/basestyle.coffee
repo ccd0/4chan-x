@@ -76,7 +76,6 @@ time + span {
   opacity: 1;
 }
 /* Cleanup */
-' + (unless Conf["Checkboxes"] == "do not style checkboxes" then "#delform input[type=checkbox],") + '
 #absbot,
 #ft li.fill,
 #logo,
@@ -1490,8 +1489,8 @@ div.subMenu,
 }
 .rice {
   cursor: pointer;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   margin: 0 3px;
   display: inline-block;
   background-color: ' + theme["Checkbox Background"] + ';
@@ -2186,6 +2185,22 @@ body > .postingMode ~ #delform {
         css += '
 .pages {
   display: none;
+}
+'
+    switch Conf["Checkboxes"] 
+      when "show", "hide checkboxes"
+        css += '
+#delform input[type=checkbox] {
+  display: none;
+}
+'
+      when "make checkboxes circular"
+        css += '
+#delform input[type=checkbox] {
+  display: none;
+}
+.rice {
+  border-radius: 6px;
 }
 '
 
