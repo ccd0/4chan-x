@@ -1432,7 +1432,7 @@ div.subMenu,
   cursor: pointer;
   width: 10px;
   height: 10px;
-  margin: 0 3px;
+  margin: 3px;
   display: inline-block;
   background-color: ' + theme["Checkbox Background"] + ';
   border: 1px solid ' + theme["Checkbox Border"]  + ';

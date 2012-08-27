@@ -465,6 +465,57 @@
       'Dark Theme': '1',
       'Custom CSS': ''
     },
+    'Minimalistic Mayhem': {
+      'Author': 'Mayhem',
+      'Author Tripcode': '!MayhemYDG.',
+      'Background Image': '',
+      'Background Attachment': '',
+      'Background Position': '',
+      'Background Repeat': '',
+      'Background Color': 'rgba(25,25,25,1)',
+      'Dialog Background': 'rgba(34,34,34,1)',
+      'Dialog Border': 'rgba(41,41,41,1)',
+      'Thread Wrapper Background': 'rgba(0,0,0,0)',
+      'Thread Wrapper Border': 'rgba(0,0,0,0)',
+      'Reply Background': 'rgba(34,34,34,1)',
+      'Reply Border': 'rgba(41,41,41,1)',
+      'Highlighted Reply Background': 'rgba(24,24,24,1)',
+      'Highlighted Reply Border': 'rgba(41,41,41,1)',
+      'Backlinked Reply Outline': 'rgba(98,124,141,1)',
+      'Checkbox Background': 'rgba(57,57,57,1)',
+      'Checkbox Border': 'rgba(25,25,25,1)',
+      'Input Background': 'rgba(34,34,34,1)',
+      'Input Border': 'rgba(21,21,21,1)',
+      'Focused Input Background': 'rgba(32,32,32,1)',
+      'Focused Input Border': 'rgba(102,102,102,1)',
+      'Hovered Input Background': 'rgba(24,24,24,1)',
+      'Hovered Input Border': 'rgba(21,21,21,1)',
+      'Checkbox Checked Background': 'rgba(57,57,57,1)',
+      'Buttons Background': 'rgba(32,32,32,1)',
+      'Buttons Border': 'rgba(16,16,16,1)',
+      'Navigation Background': 'rgba(26,26,26,0.9)',
+      'Navigation Border': 'rgba(26,26,26,0.9)',
+      'Links': 'rgb(137,115,153)',
+      'Hovered Links': 'rgb(198,23,230)',
+      'Navigation Links': 'rgb(144,144,144)',
+      'Hovered Navigation Links': 'rgb(198,23,230)',
+      'Subjects': 'rgb(152,125,62)',
+      'Names': 'rgb(163,68,67)',
+      'Sage': 'inherit',
+      'Tripcodes': 'rgb(150,86,44)',
+      'Emails': 'rgb(174,43,41)',
+      'Post Numbers': 'rgb(137,115,153)',
+      'Text': 'rgb(187,187,187)',
+      'Backlinks': 'rgb(137,115,153)',
+      'Greentext': 'rgb(139,164,70)',
+      'Board Title': 'rgb(187,187,187)',
+      'Timestamps': 'rgb(187,187,187)',
+      'Inputs': 'rgb(187,187,187)',
+      'Warnings': 'rbg(87,87,123)',
+      'Shadow Color': 'rgba(16,16,16,0.4)',
+      'Dark Theme': '1',
+      'Custom CSS': '.nameBlock>.useremail>postertrip{color: rgb(137,115,153);}a.backlink:hover{color: rgb(198,23,230);}.reply:target,.reply.highlight:target{background:rgb(37,38,42);}[alt="sticky"]+a{color: rgb(242,141,0);}[alt="closed"]+a{color: rgb(178,171,130);}input:checked .rice{border-color:rgb(21,21,21)}}input[type="submit"], input[type="button"], button {background: -moz-linear-gradient(#393939, #292929);background: -webkit-linear-gradient(#393939, #292929);background: -o-linear-gradient(#393939, #292929);border: 1px solid #191919;color: #AAA;text-shadow: 0 1px 1px #191919;}input[type="checkbox"], input[type="radio"] {background-color: #393939;border: 1px solid #191919;}input[type="checkbox"]:checked, input[type="radio"]:checked {background: -moz-linear-gradient(#595959, #393939);background: -webkit-linear-gradient(#595959, #393939);background: -o-linear-gradient(#595959, #393939);border: 1px solid #151515;}'
+    },
     'RedUX': {
       'Author': 'Zixaphir',
       'Author Tripcode': '!VGsTHECURE',
@@ -1179,7 +1230,7 @@
         div = $.el('div', {
           className: themename === Conf['theme'] ? 'selectedtheme' : '',
           id: themename,
-          innerHTML: "<div class='reply' style='position: relative; cursor: pointer; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'><div class='rice' style='width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div><span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'>" + themename + "</span> <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'>" + theme['Author'] + "</span><span style='color:" + theme['Sage'] + "!important'> (SAGE)</span><span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span><time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time><a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important' href='javascript:;'>No.22772469</a><br><blockquote>Post content is right here.</blockquote><h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
+          innerHTML: "<div class='reply' style='position: relative; cursor: pointer; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'><div class='rice' style='width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div><span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + themename + "</span> <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'>" + theme['Author'] + "</span> <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span><span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span><time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time><a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important' href='javascript:;'>No.22772469</a><br><blockquote>Post content is right here.</blockquote><h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
         });
         $.on(div, 'click', function() {
           $.rmClass($.id(Conf['theme']), 'selectedtheme');
@@ -7196,7 +7247,7 @@ div.subMenu,\
   cursor: pointer;\
   width: 10px;\
   height: 10px;\
-  margin: 0 3px;\
+  margin: 3px;\
   display: inline-block;\
   background-color: ' + theme["Checkbox Background"] + ';\
   border: 1px solid ' + theme["Checkbox Border"] + ';\
