@@ -159,7 +159,7 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
   z-index: 999 !important;
 }
 #qp {
-  z-index: 102;
+  z-index: 102 !important;
 }
 #autoPagerBorderPaging,
 #boardNavDesktop,
