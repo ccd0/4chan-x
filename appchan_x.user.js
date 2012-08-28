@@ -89,7 +89,7 @@
 * Thank you.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, g;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, enabledmascots, g;
 
   Config = {
     main: {
@@ -240,6 +240,7 @@
         'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
         'Font': ['ubuntu', 'The font used by all elements of 4chan.', ['ubuntu', 'sans serif', 'serif']],
         'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
+        'Mascots': [true, 'Add a pretty picture of your waifu to the sidebar.'],
         'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
         'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
         'Underline Links': [true, 'Put lines under hyperlinks.']
@@ -255,9 +256,10 @@
     },
     theme: 'Midnight Caek',
     styleenabled: '0',
-    mascots: [],
     navigation: {}
   };
+
+  enabledmascots = {};
 
   Conf = {};
 
@@ -573,6 +575,86 @@
       'Shadow Color': 'rgba(60,60,60,0.6)',
       'Dark Theme': '1',
       'Custom CSS': '.replyContainer > .reply {background-color: transparent;} body { background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -moz-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -webkit-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background-repeat: repeat, no-repeat !important; background-attachment: scroll, fixed !important; background-position: center, center !important;} #boardNavDesktop, .pages { background-color: rgba(0,0,0,0.7); } #boardNavDesktopFoot, #watcher, #watcher:hover, .deleteform { background-color: rgba(238,242,255,1); } div.reply { border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); border-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { background: -moz-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); background: -webkit-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); -o-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; } #qr::before {color: #000;}'
+    }
+  };
+
+  Mascots = {
+    SFW: {
+      'Akiyama_Mio': 'url("http://i.imgur.com/MdE9K.png")',
+      'Akiyama_Mio_2': 'url("http://i.imgur.com/pBuG2.png")',
+      'Akiyama_Mio_sitting': 'url("http://i.imgur.com/0x4Rr.png")',
+      'Ayase_Yue': 'url("http://i.imgur.com/i2MT8.png")',
+      'Asuka_Langley_Soryu': 'url("http://i.imgur.com/Wj7s7.png")',
+      'BLACK★ROCK_SHOOTER': 'url("http://i.imgur.com/VidKo.png")',
+      'CC': 'url("http://i.imgur.com/Ir1v3.png")',
+      'CC2': 'url("http://i.imgur.com/AU1H8.png")',
+      'Dawn_Hikari': 'url("http://i.imgur.com/lxLdH.png")',
+      'Evangeline_AK_McDowell': 'url("http://i.imgur.com/cRhjg.png")',
+      'Furudo_Erika': 'url("http://i.imgur.com/zLsPY.png")',
+      'Gasai_Yuno': 'url("http://i.imgur.com/iG1F2.png")',
+      'George_Costanza': 'url("http://i.imgur.com/Nnsrf.png")',
+      'Hakase': 'url("http://i.imgur.com/TBHI6.png")',
+      'Hasekura_Youko': 'url("http://i.imgur.com/qTQqY.png")',
+      'Hatsune_Miku': 'url("http://i.imgur.com/lKQHW.png")',
+      'Hatsune_Miku_2': 'url("http://i.imgur.com/ULksz.png")',
+      'Hatsune_Miku_3': 'url("http://i.imgur.com/H1pgZ.png")',
+      'Hatsune_Miku_4': 'url("http://i.imgur.com/vE3FJ.png")',
+      'Hirasawa_Yui': 'url("http://i.imgur.com/sL1Uo.png")',
+      'Horo_sil_light': 'url("http://i.imgur.com/HMpug.png")',
+      'Horo_sil_dark': 'url("http://i.imgur.com/PKfl4.png")',
+      'Horo_sil_2 light': 'url("http://i.imgur.com/BjV3U.png")',
+      'Horo_sil_2 dark': 'url("http://i.imgur.com/8fcrD.png")',
+      'Ika_Musume': 'url("http://i.imgur.com/rKT7L.png")',
+      'Ika_Musume_2': 'url("http://i.imgur.com/uUhGG.png")',
+      'Iwakura_Lain': 'url("http://i.imgur.com/AfjG9.png")',
+      'Iwakura_Lain_2': 'url("http://i.imgur.com/hIBLa.png")',
+      'KOn_Girls': 'url("http://i.imgur.com/Sc1Pa.png")',
+      'Kagamine_Rin': 'url("http://i.imgur.com/fXXd2.png")',
+      'Kaname_Madoka': 'url("http://i.imgur.com/4PHsl.png")',
+      'Kinomoto_Sakura': 'url("http://i.imgur.com/Ve0hl.png")',
+      'Kirino_Kosaka_and_Ruri_Goko': 'url("http://i.imgur.com/MGaLr.png")',
+      'Koiwai_Yotsuba': 'url("http://i.imgur.com/1MyDM.png")',
+      'Kotobuki_Tsumugi': 'url("http://i.imgur.com/fzhbH.png")',
+      'Kyouko_Sakura': 'url("http://i.imgur.com/78HS9.png")',
+      'Li_Syaoran': 'url("http://i.imgur.com/GySuy.png")',
+      'Link': 'url("http://i.imgur.com/OyTWU.png")',
+      'Nagato_Yuki': 'url("http://i.imgur.com/ucnzg.png")',
+      'Nagato_Yuki_sil_light': 'url("http://i.imgur.com/uR35P.png")',
+      'Nagato_Yuki_sil_dark': 'url("http://i.imgur.com/aGFCl.png")',
+      'Nagato_Yuki_with_Pantsu_light': 'url("http://i.imgur.com/L9ZAT.png")',
+      'Nagato_Yuki_with_Pantsu_dark': 'url("http://i.imgur.com/MwoI9.png")',
+      'Nakano_Azusa': 'url("http://i.imgur.com/6c3p3.png")',
+      'Patchouli_Knowledge': 'url("http://i.imgur.com/QoKJb.png")',
+      'Samus_Aran': 'url("http://i.imgur.com/34viJ.png")',
+      'Seraphim': 'url("http://i.imgur.com/PA7pJ.png")',
+      'Shana': 'url("http://i.imgur.com/JNS1z.png")',
+      'Shinonome_Hakase': 'url("http://i.imgur.com/TBHI6.png")',
+      'Suzumiya_Haruhi': 'url("http://i.imgur.com/iVl5d.png")',
+      'Suzumiya_Haruhi_2': 'url("http://i.imgur.com/rW9Q6.png")',
+      'Tardis': 'url("http://goput.it/vig.png")',
+      'Yoko_Littner': 'url("http://i.imgur.com/3goQm.png")'
+    },
+    Ponies: {
+      'Applejack': 'url("http://i.imgur.com/1ufSL.png")',
+      'Fluttershy': 'url("http://i.imgur.com/x88ZT.png")',
+      'Fluttershy_2': 'url("http://i.imgur.com/hokhQ.png")',
+      'Fluttershy_Cutiemark': 'url("http://i.imgur.com/vBqiB.png")',
+      'Pinkie_Pie': 'url("http://i.imgur.com/rY3w4.png")',
+      'Pinkie_Pie_2': 'url("http://i.imgur.com/zy6rO.png")',
+      'Rainbow_Dash': 'url("http://i.imgur.com/Zf3eQ.png")',
+      'Rarity': 'url("http://i.imgur.com/Mbhf7.png")',
+      'Twilight_Sparkle': 'url("http://i.imgur.com/r5q9h.png")'
+    },
+    NSFW: {
+      'Anime_Girl_in_Bondage': 'url("http://i.imgur.com/B3h3c.png")',
+      'Anime_Girl_in_Bondage_2': 'url("http://i.imgur.com/1TUjP.png"); z-index: 1',
+      'Golden_Darkness': 'url("http://i.imgur.com/lYGo4.png"); bottom: 0',
+      'Horo': 'url("http://i.imgur.com/6f8wd.png")',
+      'Horo_2': 'url("http://i.imgur.com/KJLui.png")',
+      'Ika_Musume_3': 'url("http://i.imgur.com/PeckP.png")',
+      'Kinomoto_Sakura_2': 'url("http://i.imgur.com/Rdk9s.png")',
+      'Sakurazaki_Setsuna': 'url("http://i.imgur.com/QLChr.png"); z-index: 1',
+      'Yuki_Nagato': 'url("http://i.imgur.com/2BUww.png")'
     }
   };
 
@@ -1028,7 +1110,7 @@
       }
     },
     dialog: function() {
-      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var arr, back, category, checked, contents, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -1047,6 +1129,7 @@
     | <label for=keybinds_tab>Keybinds</label>\
     | <label for=style_tab>Style</label>\
     | <label for=theme_tab>Themes</label>\
+    | <label for=mascot_tab>Mascots</label>\
   </div>\
 </div>\
 <hr>\
@@ -1137,9 +1220,12 @@
     <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>\
   </div>\
   <input type=radio name=tab hidden id=theme_tab>\
-  <div></div>\
+  <div>\
+    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div></div>\
   <input type=radio name=tab hidden id=mascot_tab>\
-  <div></div>\
+  <div>\
+    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div>\
+  </div>\
   <input type=radio name=tab hidden onClick="javascript:location.reload(true)" id=apply>\
   <div>Reloading page with new settings.</div>\
 </div>'
@@ -1253,6 +1339,41 @@
         $.add($('#theme_tab + div', dialog), div);
       }
       Style.button(dialog, 'theme_tab');
+      Style.button(dialog, 'mascot_tab');
+      for (category in Mascots) {
+        contents = Mascots[category];
+        ul = $.el('ul', {
+          innerHTML: "<div style='clear: both;'>" + category + "</div>",
+          id: category,
+          className: 'mascots'
+        });
+        for (name in contents) {
+          mascot = contents[name];
+          description = name;
+          li = $.el('li', {
+            innerHTML: "<div id='" + name + "' style='background-image: " + mascot + ";'></div>",
+            className: 'mascot'
+          });
+          div = $('div', li);
+          if (enabledmascots[name] === true) {
+            $.addClass(div, 'enabled');
+          }
+          $.on(div, 'click', function() {
+            if (enabledmascots[this.id] === true) {
+              $.rmClass(this, 'enabled');
+              $.set(this.id, false);
+              return enabledmascots[this.id] = false;
+            } else {
+              $.addClass(this, 'enabled');
+              $.set(this.id, true);
+              return enabledmascots[this.id] = true;
+            }
+          });
+          $.add(ul, li);
+        }
+        $.add($('#mascot_tab + div', dialog), ul);
+      }
+      Style.button(dialog, 'mascot_tab');
       Options.indicators(dialog);
       overlay = $.el('div', {
         id: 'overlay'
@@ -5841,19 +5962,12 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     css: function(theme) {
-      var agent, css, pagemargin;
+      var agent, category, css, mascot, mascotimages, mascots, name, pagemargin;
       agent = Style.agent();
       css = '\
 ::' + agent + 'selection {\
   background-color: ' + theme["Text"] + ';\
   color: ' + theme["Background Color"] + ';\
-}\
-body::after {\
-  position: fixed;\
-  bottom: 279px;\
-  right: 0;\
-  left: auto;\
-  ' + agent + 'transform: scaleX(1);\
 }\
 body {\
   padding: 16px 0 16px;\
@@ -6033,6 +6147,9 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {\
 #updater:hover,\
 .exPopup,\
 html .subMenu {\
+  z-index: 101 !important;\
+}\
+.fileThumb {\
   z-index: 100 !important;\
 }\
 div.navLinks a:first-of-type::after,\
@@ -6058,7 +6175,6 @@ body > form #imgControls {\
 #settingsBox {\
   z-index: 9 !important;\
 }\
-.fileThumb,\
 .deleteform:hover input[type="checkbox"],\
 .deleteform:hover .rice {\
   z-index: 7 !important;\
@@ -8114,6 +8230,31 @@ div.postContainer span.postNum > .replylink {\
 }\
 ';
       }
+      if (Conf["Mascots"]) {
+        mascotimages = [];
+        for (category in Mascots) {
+          mascots = Mascots[category];
+          for (name in mascots) {
+            mascot = mascots[name];
+            if (enabledmascots[name] === true) {
+              console.log(mascot);
+              mascotimages.push(mascot);
+            }
+          }
+        }
+        console.log(mascotimages);
+        console.log(mascotimages.length);
+        css += '\
+body::after {\
+  position: fixed;\
+  bottom: 264px;\
+  right: 0;\
+  left: auto;\
+  ' + agent + 'transform: scaleX(1);\
+  content: ' + mascotimages[Math.floor(Math.random() * mascotimages.length)] + '\
+}\
+';
+      }
       switch (Conf['Emoji Position']) {
         case 'left':
           css += Style.emoji('before', 'left');
@@ -8127,11 +8268,25 @@ div.postContainer span.postNum > .replylink {\
 
   Main = {
     init: function() {
-      var key, now, path, pathname, temp, val;
+      var category, key, mascot, mascots, name, now, path, pathname, temp, val;
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
         Conf[key] = $.get(key, val);
+      }
+      for (category in Mascots) {
+        mascots = Mascots[category];
+        if (category === 'SFW') {
+          for (name in mascots) {
+            mascot = mascots[name];
+            enabledmascots[name] = $.get(name, true);
+          }
+        } else {
+          for (name in mascots) {
+            mascot = mascots[name];
+            enabledmascots[name] = $.get(name, false);
+          }
+        }
       }
       path = location.pathname;
       pathname = path.slice(1).split('/');
@@ -8530,7 +8685,7 @@ div.postContainer span.postNum > .replylink {\
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '2.34.5',
+    version: '0.2beta',
     callbacks: [],
     css: '\
 /* dialog styling */\
@@ -8880,6 +9035,27 @@ h1 {\
 }\
 #options label {\
   text-decoration: underline;\
+}\
+#options .mascots {\
+  text-align: center;\
+}\
+#options .mascot {\
+  display: inline;\
+}\
+#options .mascot div {\
+  border: 2px solid rgba(0,0,0,0);\
+  width: 200px;\
+  height: 250px;\
+  display: inline-block;\
+  margin: 7px;\
+  cursor: pointer;\
+  background-position: top center;\
+  background-repeat: no-repeat;\
+  background-size: 200px auto;\
+}\
+#options .mascot div.enabled {\
+  border: 2px solid rgba(0,0,0,0.5);\
+  background-color: rgba(255,255,255,0.1);\
 }\
 #content {\
   overflow: auto;\

@@ -5,13 +5,6 @@
   background-color: ' + theme["Text"] + ';
   color: ' + theme["Background Color"] + ';
 }
-body::after {
-  position: fixed;
-  bottom: 279px;
-  right: 0;
-  left: auto;
-  ' + agent + 'transform: scaleX(1);
-}
 body {
   padding: 16px 0 16px;
 }
@@ -190,6 +183,9 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
 #updater:hover,
 .exPopup,
 html .subMenu {
+  z-index: 101 !important;
+}
+.fileThumb {
   z-index: 100 !important;
 }
 div.navLinks a:first-of-type::after,
@@ -215,7 +211,6 @@ body > form #imgControls {
 #settingsBox {
   z-index: 9 !important;
 }
-.fileThumb,
 .deleteform:hover input[type="checkbox"],
 .deleteform:hover .rice {
   z-index: 7 !important;
@@ -2242,6 +2237,27 @@ div.postContainer span.postNum > .replylink {
   border-radius: 6px;
 }
 '
+
+    if Conf["Mascots"]
+      mascotimages = []
+      for category, mascots of Mascots
+        for name, mascot of mascots
+          if enabledmascots[name] == true
+            console.log mascot
+            mascotimages.push mascot
+      console.log mascotimages
+      console.log mascotimages.length
+      css += '
+body::after {
+  position: fixed;
+  bottom: 264px;
+  right: 0;
+  left: auto;
+  ' + agent + 'transform: scaleX(1);
+  content: ' + mascotimages[Math.floor(Math.random() * mascotimages.length)] + '
+}
+'
+      
 
     switch Conf['Emoji Position']
       when 'left'

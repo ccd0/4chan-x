@@ -207,6 +207,7 @@ Config =
       'Font Size':                  [12,              'The font size of posts and various UI. This does not change all font sizes.', [
         10, 11, 12, 13, 14
       ]]
+      'Mascots':                   [true,   'Add a pretty picture of your waifu to the sidebar.']
       'Rounded Edges':             [true,   'Round the edges of various 4chan elements.']
       'Sage Highlighting':         ['image',          'Icons or text to highlight saged posts.', [
         'text', 'image', 'none'
@@ -225,9 +226,9 @@ Config =
       'Hide Sidebar':              [false,  'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.']
   theme:        'Midnight Caek'
   styleenabled: '0'
-  mascots:    []
   navigation: {}
 
+enabledmascots = {}
 Conf = {}
 d = document
 g = {}

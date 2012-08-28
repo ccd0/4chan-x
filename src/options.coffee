@@ -32,6 +32,7 @@ Options =
     | <label for=keybinds_tab>Keybinds</label>
     | <label for=style_tab>Style</label>
     | <label for=theme_tab>Themes</label>
+    | <label for=mascot_tab>Mascots</label>
   </div>
 </div>
 <hr>
@@ -122,9 +123,12 @@ Options =
     <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>
   </div>
   <input type=radio name=tab hidden id=theme_tab>
-  <div></div>
+  <div>
+    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div></div>
   <input type=radio name=tab hidden id=mascot_tab>
-  <div></div>
+  <div>
+    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div>
+  </div>
   <input type=radio name=tab hidden onClick="javascript:location.reload(true)" id=apply>
   <div>Reloading page with new settings.</div>
 </div>'
@@ -224,6 +228,34 @@ Options =
         $.addClass @, 'selectedtheme'
       $.add $('#theme_tab + div', dialog), div
     Style.button(dialog, 'theme_tab')
+    
+    #mascots
+    Style.button(dialog, 'mascot_tab')
+    for category, contents of Mascots
+      ul = $.el 'ul',
+        innerHTML:   "<div style='clear: both;'>#{category}</div>"
+        id:          category
+        className:   'mascots'
+      for name, mascot of contents
+        description = name
+        li = $.el 'li',
+          innerHTML: "<div id='#{name}' style='background-image: #{mascot};'></div>"
+          className: 'mascot'
+        div = $('div', li)
+        if enabledmascots[name] == true
+          $.addClass div, 'enabled'
+        $.on div, 'click', ->
+          if enabledmascots[@.id] == true
+            $.rmClass @, 'enabled'
+            $.set @.id, false
+            enabledmascots[@.id] = false
+          else
+            $.addClass @, 'enabled'
+            $.set @.id, true
+            enabledmascots[@.id] = true
+        $.add ul, li
+      $.add $('#mascot_tab + div', dialog), ul
+    Style.button(dialog, 'mascot_tab')
 
     Options.indicators dialog
 

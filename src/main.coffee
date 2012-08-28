@@ -5,6 +5,14 @@ Main =
     # Load values from localStorage.
     for key, val of Conf
       Conf[key] = $.get key, val
+    
+    for category, mascots of Mascots
+      if category == 'SFW'
+        for name, mascot of mascots
+          enabledmascots[name] = $.get name, true
+      else
+        for name, mascot of mascots
+          enabledmascots[name] = $.get name, false
 
     path = location.pathname
     pathname = path[1..].split '/'
@@ -329,5 +337,5 @@ Main =
     $.globalEval "#{code}".replace '_id_', bq.id
 
   namespace: 'appchan_x.'
-  version: '2.34.5'
+  version: '0.2beta'
   callbacks: []

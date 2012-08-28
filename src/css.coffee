@@ -347,6 +347,27 @@ h1 {
 #options label {
   text-decoration: underline;
 }
+#options .mascots {
+  text-align: center;
+}
+#options .mascot {
+  display: inline;
+}
+#options .mascot div {
+  border: 2px solid rgba(0,0,0,0);
+  width: 200px;
+  height: 250px;
+  display: inline-block;
+  margin: 7px;
+  cursor: pointer;
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: 200px auto;
+}
+#options .mascot div.enabled {
+  border: 2px solid rgba(0,0,0,0.5);
+  background-color: rgba(255,255,255,0.1);
+}
 #content {
   overflow: auto;
   position: absolute;
