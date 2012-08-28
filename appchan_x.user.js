@@ -1333,7 +1333,6 @@
           $.rmClass($.id(Conf['theme']), 'selectedtheme');
           $.set('theme', this.id);
           Conf['theme'] = this.id;
-          console.log(this.id);
           return $.addClass(this, 'selectedtheme');
         });
         $.add($('#theme_tab + div', dialog), div);
@@ -6088,21 +6087,6 @@ div.post div.file .fileThumb {\
 a {\
   outline: 0;\
 }\
-#theme_tab + div > div:not(.selectedtheme) h1 {\
-  color: transparent !important;\
-  right: 300px;\
-}\
-#theme_tab + div > div.selectedtheme h1 {\
-  right: 11px;\
-}\
-#theme_tab + div > div h1 {\
-  position: absolute;\
-  bottom: 0;\
-  ' + agent + 'transition: all .2s ease-in-out;\
-}\
-#theme_tab + div > div {\
-  margin-bottom: 3px;\
-}\
 #boardNavDesktop,\
 #boardNavDesktop a,\
 #boardNavDesktopFoot a,\
@@ -6500,11 +6484,9 @@ a.yuimenuitemlabel {\
   word-spacing: 10px;\
 }\
 /* moot"s announcements */\
-h3, h2, h1, .globalMessage {\
+.globalMessage {\
   font-size: 12px;\
   text-align: center;\
-}\
-h3, .globalMessage {\
   font-weight: 200;\
 }\
 .pages input {\
@@ -8086,10 +8068,6 @@ div.postContainer span.postNum > .replylink {\
   border: none;\
   margin-top: 0px;\
 }\
-.globalMessage, h2, h3, h1 {\
-  position: relative;\
-  top: 0px;\
-}\
 .globalMessage::before {\
   display: none;\
 }\
@@ -8237,13 +8215,10 @@ div.postContainer span.postNum > .replylink {\
           for (name in mascots) {
             mascot = mascots[name];
             if (enabledmascots[name] === true) {
-              console.log(mascot);
               mascotimages.push(mascot);
             }
           }
         }
-        console.log(mascotimages);
-        console.log(mascotimages.length);
         css += '\
 body::after {\
   position: fixed;\

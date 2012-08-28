@@ -521,11 +521,9 @@ a.yuimenuitemlabel {
   word-spacing: 10px;
 }
 /* moot"s announcements */
-h3, h2, h1, .globalMessage {
+.globalMessage {
   font-size: 12px;
   text-align: center;
-}
-h3, .globalMessage {
   font-weight: 200;
 }
 .pages input {
@@ -2090,10 +2088,6 @@ div.postContainer span.postNum > .replylink {
   background: none;
   border: none;
   margin-top: 0px;
-}
-.globalMessage, h2, h3, h1 {
-  position: relative;
-  top: 0px;
 }
 .globalMessage::before {
   display: none;
