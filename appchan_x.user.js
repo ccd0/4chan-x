@@ -9019,6 +9019,23 @@ h1 {\
 #options #style_tab + div select {\
   width: 100%;\
 }\
+#theme_tab + div > div:not(.selectedtheme) h1 {\
+  color: transparent !important;\
+  right: 300px;\
+}\
+#theme_tab + div > div.selectedtheme h1 {\
+  right: 11px;\
+}\
+#theme_tab + div > div h1 {\
+  position: absolute;\
+  bottom: 0;\
+  -moz-transition: all .2s ease-in-out;\
+  -webkit-transition: all .2s ease-in-out;\
+  -o-transition: all .2s ease-in-out;\
+}\
+#theme_tab + div > div {\
+  margin-bottom: 3px;\
+}\
 #credits {\
   float: right;\
 }\
