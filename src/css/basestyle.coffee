@@ -158,13 +158,16 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
 #options.reply.dialog {
   z-index: 999 !important;
 }
+#qp {
+  z-index: 102;
+}
 #autoPagerBorderPaging,
+#boardNavDesktop,
 #boardNavDesktopFoot:hover,
 #ihover,
 #menu.reply.dialog,
 #navlinks,
 #overlay,
-#qp,
 #updater:hover,
 .exPopup,
 html .subMenu {
@@ -177,7 +180,6 @@ div.navLinks a:first-of-type::after,
 .deleteform {
   z-index: 99 !important;
 }
-#boardNavDesktop,
 #qr,
 body > form #imgControls {
   z-index: 98 !important;
@@ -1490,27 +1492,27 @@ span.lit { color: #558773; }
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIVJREFUGNOFkVENwCAMRE8CUiYBCZOAM6Rg4CWTMAlIuH0AG9mS0f7Q67W9FmkyMoWstxGIEgljTJKIhCd59IQp9+voBHaMOUmdnqgYs41qcxLYKZhCJFCxbrZJvUfz2LCm1liappoiYUxu8AiHVw2cPIXf6sXsl/L6Vb7c++9qi5v//dgFtjLxtKnNCFwAAAAASUVORK5CYII=");
 }
 /* Delete buttons */
-.deleteform::before { 
+.deleteform::before {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAeRJREFUOE9tlM0rRFEYh0dMPiKxkWxsyEpWshCpURbWNPkvlCwYe6VJWU+zkmytZIOttZJsaHZioQkhH8+j++p0M/U0Z8597+/83o8zhUajUcjRwu8OGIAJmIFZmIJh6IHW/Ht5kXYCxmAVzuABvuAbXuAS9mAOesFDfzVSoW42FuEYXrOXFcjzyd41rMFQiIWQThS5AAP/E8jv3RO3Bf3hSHumo5MQeWZ9CjfJ3mO2d8d3pMuysQxFHVlYaxLpKLIP07ACV/AE2zAJ63CbuVbwBAYVsjsWNqzrRJE26ART3jAYdG/8bnJwk3VJIVtsd0LIdHSiiM+LYIdcKzQOR5DWsuJD5yRyVswA09GJItEQRUbgIHETh9cMctjyHbEmphNOjGuF+eyQfGfrBjixDluI2R0La00iHUVcm+4SOJipWNWHjr0P0mLbHVOJdHQSNetjvQNv2TvvfJcV8u7sJSc4J7bY7lhYa2LNdKLIApwn8T4bjdy9O469riy8c2KL7Y7zZRq61okiujDWmduEruiIRfXuOPaRYgjEb8VMJ2rzwfoQ7GRL2lovoHfHTzoO/907nShiLX9HJL39FtYL6N1x7JuJuxAzJWtiOjr5m7P8/1FMsq0vQQVqUIcqlGEUukxHJ8EPyeEKDPe5ibUAAAAASUVORK5CYII=");
 }
 /* Return button */
-div.navLinks a:first-of-type::after {  
+div.navLinks a:first-of-type::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAA5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHkJaAqNQAAAA50Uk5TABAgQFBgcICPn6+/3+9ACPafAAAASElEQVQI15XMyxKAIAxD0eCr1ZT8/+eKDCOw07O700mBT45rrDXEXgul3sn0yCwsAaGBv/cw86xc92fbl0v7z7mBzeeudhJ/3aoUA1Vr0uhDAAAAAElFTkSuQmCC");
 }
 /* Watcher */
-#watcher::before {  
+#watcher::before {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACpQTFRFAAAA0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLUmYS1qAAAAA10Uk5TABAgQFBggI+fv8/f74aeqbgAAABVSURBVAjXnY0xDsMwEMNo+5TYPen/3+2SpUCXlhvBgfAH2uecrcdWt5O4ewHIdVtTvmXB9BoRoIzy5DqsDIAszvXRlyfItS3kXRZA9StJ0l1f/z/xBlXVAtkqW+Q3AAAAAElFTkSuQmCC");
 }
 /* Announcement */
-.globalMessage::before {  
+.globalMessage::before {
    content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAK5JREFUGNN1kF0RxCAMhCMBCZVQCUhAwkmohDhAAhKQEAPfDBKQUAm5B3qU3s3t425mfyJygUTBMIzMLivYaTiGoigNpxJu8aSxLeeRTiOICIGOXfQLH8aT5eD8GKE4cTo4UTDKND1uWYRGFpzXkrnKGROc9JDnKBQTjDyJjbr0b+RnteO3WpgbhYSN/QQabX1L/HqLzyA2DKdTUCodx/E7dHgoFaOgJMo4kP8gEt+mlap7ZbvCVgAAAABJRU5ErkJggg==");
 }
 /* Slideout nav */
-#boardNavDesktopFoot::after {  
+#boardNavDesktopFoot::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAAzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMdShx9gAAAA50Uk5TABAgMEBggI+fr7/P3+82uMT1AAAAb0lEQVQIHQXBiQHDIAwEMOE8gGlu/3ErgWt297wAYyenT7IGjJNVqJUzsPMAniyuLODedspMQe3cKq8+8HxZOK0b9eUb6NYHO98Dv/am3FkDKq/Ktm9gp1h5AE8mxsku1M4ZMGby618yB6De7n4L/v79BDw2df22AAAAAElFTkSuQmCC");
 }
 /* 4sight */
-body > a[style="cursor: pointer; float: right;"]::after { 
+body > a[style="cursor: pointer; float: right;"]::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRFAAAAzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMIXMlggAAAA90Uk5TABAgMEBQYICPn6+/z9/vD6iGsgAAAFRJREFUCB0FwYcBwyAMADAZCCN2y//fRgIAAG0MAMSba/8eAO9EVAe0BOMAxgISMDaIBKgGewKMesS+C0A7mXPdCgCQtwIAou6/A0DUPQCgnw4A4APNOQHMJOa9jgAAAABJRU5ErkJggg==");
 }
 /* Expand */
@@ -1566,6 +1568,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 '
     switch Conf['Post Form Style']
       when 'fixed'
+        mascotposition = '264'
         css += '
 #qr {
   right: 2px !important;
@@ -1573,6 +1576,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 '
       when 'slideout'
+        mascotposition = '0'
         css += '
 #qr {
   right: -233px !important;
@@ -1588,6 +1592,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 '
       when 'tabbed slideout'
+        mascotposition = '0'
         css += '
 #qr {
   right: -249px !important;
@@ -1626,6 +1631,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 '
       when 'transparent fade'
+        mascotposition = '0'
         css += '
 #qr {
   right: 2px !important;
@@ -2200,7 +2206,7 @@ div.postContainer span.postNum > .replylink {
   display: none;
 }
 '
-    switch Conf["Checkboxes"] 
+    switch Conf["Checkboxes"]
       when "show", "hide checkboxes"
         css += '
 #delform input[type=checkbox] {
@@ -2226,14 +2232,14 @@ div.postContainer span.postNum > .replylink {
       css += '
 body::after {
   position: fixed;
-  bottom: 264px;
+  bottom: ' + mascotposition + 'px;
   right: 0;
   left: auto;
   ' + agent + 'transform: scaleX(1);
   content: ' + mascotimages[Math.floor(Math.random() * mascotimages.length)] + '
 }
 '
-      
+
 
     switch Conf['Emoji Position']
       when 'left'

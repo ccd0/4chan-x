@@ -19,7 +19,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 }
 '
     return css
-  
+
   noderice: (post) ->
     checkbox = $('[type=checkbox]', post.root)
     div = $.el 'div',
@@ -54,4 +54,3 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       $.addStyle Style.css(theme), 'appchan'
     else # XXX fox
       $.on d, 'DOMNodeInserted', Style.addStyle
-    

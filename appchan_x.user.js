@@ -589,7 +589,9 @@
       'CC': 'url("http://i.imgur.com/Ir1v3.png")',
       'CC2': 'url("http://i.imgur.com/AU1H8.png")',
       'Dawn_Hikari': 'url("http://i.imgur.com/lxLdH.png")',
+      'Erio_Touwa': 'url("http://i.imgur.com/zhPlM.png")',
       'Evangeline_AK_McDowell': 'url("http://i.imgur.com/cRhjg.png")',
+      'Fujiwara_no_Mokou': 'url("http://i.imgur.com/NaKmF.png")',
       'Furudo_Erika': 'url("http://i.imgur.com/zLsPY.png")',
       'Gasai_Yuno': 'url("http://i.imgur.com/iG1F2.png")',
       'George_Costanza': 'url("http://i.imgur.com/Nnsrf.png")',
@@ -600,6 +602,7 @@
       'Hatsune_Miku_3': 'url("http://i.imgur.com/H1pgZ.png")',
       'Hatsune_Miku_4': 'url("http://i.imgur.com/vE3FJ.png")',
       'Hirasawa_Yui': 'url("http://i.imgur.com/sL1Uo.png")',
+      'Homura_Akemi': 'url("http://i.imgur.com/b9KmB.png")',
       'Horo_sil_light': 'url("http://i.imgur.com/HMpug.png")',
       'Horo_sil_dark': 'url("http://i.imgur.com/PKfl4.png")',
       'Horo_sil_2 light': 'url("http://i.imgur.com/BjV3U.png")',
@@ -618,6 +621,8 @@
       'Kyouko_Sakura': 'url("http://i.imgur.com/78HS9.png")',
       'Li_Syaoran': 'url("http://i.imgur.com/GySuy.png")',
       'Link': 'url("http://i.imgur.com/OyTWU.png")',
+      'Luka': 'url("http://i.imgur.com/WUIMw.png")',
+      'Madotsuki': 'url("http://i.imgur.com/J1i26.png")',
       'Nagato_Yuki': 'url("http://i.imgur.com/ucnzg.png")',
       'Nagato_Yuki_sil_light': 'url("http://i.imgur.com/uR35P.png")',
       'Nagato_Yuki_sil_dark': 'url("http://i.imgur.com/aGFCl.png")',
@@ -625,13 +630,19 @@
       'Nagato_Yuki_with_Pantsu_dark': 'url("http://i.imgur.com/MwoI9.png")',
       'Nakano_Azusa': 'url("http://i.imgur.com/6c3p3.png")',
       'Patchouli_Knowledge': 'url("http://i.imgur.com/QoKJb.png")',
+      'Patchouli_Knowledge_2': 'url("http://i.imgur.com/dK9Pn.png")',
+      'Ruri_Gokou': 'url("http://i.imgur.com/Ht6dr.png")',
       'Samus_Aran': 'url("http://i.imgur.com/34viJ.png")',
       'Seraphim': 'url("http://i.imgur.com/PA7pJ.png")',
       'Shana': 'url("http://i.imgur.com/JNS1z.png")',
+      'Shana_2': 'url("http://i.imgur.com/K1mLx.png")',
+      'Shiki': 'url("http://i.imgur.com/FKDcd.png")',
       'Shinonome_Hakase': 'url("http://i.imgur.com/TBHI6.png")',
       'Suzumiya_Haruhi': 'url("http://i.imgur.com/iVl5d.png")',
       'Suzumiya_Haruhi_2': 'url("http://i.imgur.com/rW9Q6.png")',
       'Tardis': 'url("http://goput.it/vig.png")',
+      'Yin': 'url("http://i.imgur.com/haBSN.png")',
+      'Yuzuki_Yukari': 'url("http://i.imgur.com/c8Lal.png")',
       'Yoko_Littner': 'url("http://i.imgur.com/3goQm.png")'
     },
     Ponies: {
@@ -1529,11 +1540,13 @@
         code: /(`)(?=\S)([^\r\n]*?\S)\1/g,
         ds: /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
       };
-      for (tag in tag_patterns) {
-        pattern = tag_patterns[tag];
-        text = text.replace(pattern, Markdown.unicode_convert);
+      if (text !== null) {
+        for (tag in tag_patterns) {
+          pattern = tag_patterns[tag];
+          text = text.replace(pattern, Markdown.unicode_convert);
+        }
+        return text;
       }
-      return text;
     },
     unicode_convert: function(str, tag, inner) {
       var c, charcode, charcodes, codepoints, codes, fmt, i, unicode_text;
@@ -5870,7 +5883,7 @@
           $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
         }
       }
-      if (Conf['Persistent QR'] || QR.cooldown.auto) {
+      if (Conf['Persistent QR'] || QR.cooldown.auto in Conf['Style']) {
         reply.rm();
       } else {
         QR.close();
@@ -5961,7 +5974,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     css: function(theme) {
-      var agent, category, css, mascot, mascotimages, mascots, name, pagemargin;
+      var agent, category, css, mascot, mascotimages, mascotposition, mascots, name, pagemargin;
       agent = Style.agent();
       css = '\
 ::' + agent + 'selection {\
@@ -6121,13 +6134,16 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {\
 #options.reply.dialog {\
   z-index: 999 !important;\
 }\
+#qp {\
+  z-index: 102;\
+}\
 #autoPagerBorderPaging,\
+#boardNavDesktop,\
 #boardNavDesktopFoot:hover,\
 #ihover,\
 #menu.reply.dialog,\
 #navlinks,\
 #overlay,\
-#qp,\
 #updater:hover,\
 .exPopup,\
 html .subMenu {\
@@ -6140,7 +6156,6 @@ div.navLinks a:first-of-type::after,\
 .deleteform {\
   z-index: 99 !important;\
 }\
-#boardNavDesktop,\
 #qr,\
 body > form #imgControls {\
   z-index: 98 !important;\
@@ -7453,27 +7468,27 @@ span.lit { color: #558773; }\
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIVJREFUGNOFkVENwCAMRE8CUiYBCZOAM6Rg4CWTMAlIuH0AG9mS0f7Q67W9FmkyMoWstxGIEgljTJKIhCd59IQp9+voBHaMOUmdnqgYs41qcxLYKZhCJFCxbrZJvUfz2LCm1liappoiYUxu8AiHVw2cPIXf6sXsl/L6Vb7c++9qi5v//dgFtjLxtKnNCFwAAAAASUVORK5CYII=");\
 }\
 /* Delete buttons */\
-.deleteform::before { \
+.deleteform::before {\
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAeRJREFUOE9tlM0rRFEYh0dMPiKxkWxsyEpWshCpURbWNPkvlCwYe6VJWU+zkmytZIOttZJsaHZioQkhH8+j++p0M/U0Z8597+/83o8zhUajUcjRwu8OGIAJmIFZmIJh6IHW/Ht5kXYCxmAVzuABvuAbXuAS9mAOesFDfzVSoW42FuEYXrOXFcjzyd41rMFQiIWQThS5AAP/E8jv3RO3Bf3hSHumo5MQeWZ9CjfJ3mO2d8d3pMuysQxFHVlYaxLpKLIP07ACV/AE2zAJ63CbuVbwBAYVsjsWNqzrRJE26ART3jAYdG/8bnJwk3VJIVtsd0LIdHSiiM+LYIdcKzQOR5DWsuJD5yRyVswA09GJItEQRUbgIHETh9cMctjyHbEmphNOjGuF+eyQfGfrBjixDluI2R0La00iHUVcm+4SOJipWNWHjr0P0mLbHVOJdHQSNetjvQNv2TvvfJcV8u7sJSc4J7bY7lhYa2LNdKLIApwn8T4bjdy9O469riy8c2KL7Y7zZRq61okiujDWmduEruiIRfXuOPaRYgjEb8VMJ2rzwfoQ7GRL2lovoHfHTzoO/907nShiLX9HJL39FtYL6N1x7JuJuxAzJWtiOjr5m7P8/1FMsq0vQQVqUIcqlGEUukxHJ8EPyeEKDPe5ibUAAAAASUVORK5CYII=");\
 }\
 /* Return button */\
-div.navLinks a:first-of-type::after {  \
+div.navLinks a:first-of-type::after {\
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAA5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHkJaAqNQAAAA50Uk5TABAgQFBgcICPn6+/3+9ACPafAAAASElEQVQI15XMyxKAIAxD0eCr1ZT8/+eKDCOw07O700mBT45rrDXEXgul3sn0yCwsAaGBv/cw86xc92fbl0v7z7mBzeeudhJ/3aoUA1Vr0uhDAAAAAElFTkSuQmCC");\
 }\
 /* Watcher */\
-#watcher::before {  \
+#watcher::before {\
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACpQTFRFAAAA0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLUmYS1qAAAAA10Uk5TABAgQFBggI+fv8/f74aeqbgAAABVSURBVAjXnY0xDsMwEMNo+5TYPen/3+2SpUCXlhvBgfAH2uecrcdWt5O4ewHIdVtTvmXB9BoRoIzy5DqsDIAszvXRlyfItS3kXRZA9StJ0l1f/z/xBlXVAtkqW+Q3AAAAAElFTkSuQmCC");\
 }\
 /* Announcement */\
-.globalMessage::before {  \
+.globalMessage::before {\
    content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAK5JREFUGNN1kF0RxCAMhCMBCZVQCUhAwkmohDhAAhKQEAPfDBKQUAm5B3qU3s3t425mfyJygUTBMIzMLivYaTiGoigNpxJu8aSxLeeRTiOICIGOXfQLH8aT5eD8GKE4cTo4UTDKND1uWYRGFpzXkrnKGROc9JDnKBQTjDyJjbr0b+RnteO3WpgbhYSN/QQabX1L/HqLzyA2DKdTUCodx/E7dHgoFaOgJMo4kP8gEt+mlap7ZbvCVgAAAABJRU5ErkJggg==");\
 }\
 /* Slideout nav */\
-#boardNavDesktopFoot::after {  \
+#boardNavDesktopFoot::after {\
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAAzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMdShx9gAAAA50Uk5TABAgMEBggI+fr7/P3+82uMT1AAAAb0lEQVQIHQXBiQHDIAwEMOE8gGlu/3ErgWt297wAYyenT7IGjJNVqJUzsPMAniyuLODedspMQe3cKq8+8HxZOK0b9eUb6NYHO98Dv/am3FkDKq/Ktm9gp1h5AE8mxsku1M4ZMGby618yB6De7n4L/v79BDw2df22AAAAAElFTkSuQmCC");\
 }\
 /* 4sight */\
-body > a[style="cursor: pointer; float: right;"]::after { \
+body > a[style="cursor: pointer; float: right;"]::after {\
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRFAAAAzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMIXMlggAAAA90Uk5TABAgMEBQYICPn6+/z9/vD6iGsgAAAFRJREFUCB0FwYcBwyAMADAZCCN2y//fRgIAAG0MAMSba/8eAO9EVAe0BOMAxgISMDaIBKgGewKMesS+C0A7mXPdCgCQtwIAou6/A0DUPQCgnw4A4APNOQHMJOa9jgAAAABJRU5ErkJggg==");\
 }\
 /* Expand */\
@@ -7530,6 +7545,7 @@ body > a[style="cursor: pointer; float: right;"]::after {\
       }
       switch (Conf['Post Form Style']) {
         case 'fixed':
+          mascotposition = '264';
           css += '\
 #qr {\
   right: 2px !important;\
@@ -7538,6 +7554,7 @@ body > a[style="cursor: pointer; float: right;"]::after {\
 ';
           break;
         case 'slideout':
+          mascotposition = '0';
           css += '\
 #qr {\
   right: -233px !important;\
@@ -7554,6 +7571,7 @@ body > a[style="cursor: pointer; float: right;"]::after {\
 ';
           break;
         case 'tabbed slideout':
+          mascotposition = '0';
           css += '\
 #qr {\
   right: -249px !important;\
@@ -7593,6 +7611,7 @@ body > a[style="cursor: pointer; float: right;"]::after {\
 ';
           break;
         case 'transparent fade':
+          mascotposition = '0';
           css += '\
 #qr {\
   right: 2px !important;\
@@ -8222,7 +8241,7 @@ div.postContainer span.postNum > .replylink {\
         css += '\
 body::after {\
   position: fixed;\
-  bottom: 264px;\
+  bottom: ' + mascotposition + 'px;\
   right: 0;\
   left: auto;\
   ' + agent + 'transform: scaleX(1);\

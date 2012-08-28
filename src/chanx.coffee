@@ -6,10 +6,10 @@ Markdown =
       i: /(\*|_)(?=\S)([^\r\n]*?\S)\1/g
       code: /(`)(?=\S)([^\r\n]*?\S)\1/g
       ds: /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
-
-    for tag, pattern of tag_patterns
-      text = text.replace pattern, Markdown.unicode_convert
-    text
+    unless text == null
+      for tag, pattern of tag_patterns
+        text = text.replace pattern, Markdown.unicode_convert
+      text
 
   unicode_convert: (str, tag, inner) ->
     if tag is "_" or tag is "*"

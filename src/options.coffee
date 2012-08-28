@@ -212,7 +212,7 @@ Options =
         $.add ul, li
       $.add $('#style_tab + div', dialog), ul
     Style.button(dialog, 'style_tab')
-    
+
     #themes
     Style.button(dialog, 'theme_tab')
     for themename, theme of Themes
@@ -227,7 +227,7 @@ Options =
         $.addClass @, 'selectedtheme'
       $.add $('#theme_tab + div', dialog), div
     Style.button(dialog, 'theme_tab')
-    
+
     #mascots
     Style.button(dialog, 'mascot_tab')
     for category, contents of Mascots

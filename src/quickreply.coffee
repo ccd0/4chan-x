@@ -478,8 +478,8 @@ QR =
       for thread in $$ '.thread'
         id = thread.id[1..]
         threads += "<option value=#{id}>Thread #{id}</option>"
-      unless Conf["Style"] 
-        $.prepend $('.move > span', QR.el), $.el 'select' 
+      unless Conf["Style"]
+        $.prepend $('.move > span', QR.el), $.el 'select'
           innerHTML: threads
           title: 'Create a new thread / Reply to a thread'
       else
@@ -689,7 +689,7 @@ QR =
       if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
         $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
-    if Conf['Persistent QR'] or QR.cooldown.auto
+    if Conf['Persistent QR'] or QR.cooldown.auto of Conf['Style']
       reply.rm()
     else
       QR.close()

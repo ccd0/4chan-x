@@ -5,7 +5,7 @@ Main =
     # Load values from localStorage.
     for key, val of Conf
       Conf[key] = $.get key, val
-    
+
     for category, mascots of Mascots
       if category == 'SFW'
         for name, mascot of mascots
