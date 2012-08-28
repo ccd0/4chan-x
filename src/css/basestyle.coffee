@@ -188,9 +188,12 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
 #overlay,
 #qp,
 #updater:hover,
-.deleteform:hover,
 .exPopup,
 html .subMenu {
+  z-index: 100 !important;
+}
+div.navLinks a:first-of-type::after,
+.deleteform {
   z-index: 99 !important;
 }
 #boardNavDesktop,
@@ -221,8 +224,6 @@ body > form #imgControls {
 #navtopr,
 .deleteform::before,
 .qrMessage,
-body > a[style="cursor: pointer; float: right;"],
-div.navLinks a:first-of-type::after,
 #navtopr .settingsWindowLink::after {
   z-index: 6 !important;
 }
@@ -570,9 +571,7 @@ a,
 .top-box,
 h2,
 input:not([type="radio"]),
-input[type="file"] > input[type="button"],
 input[type="submit"],
-select,
 textarea {
   ' + agent + 'appearance: none;
 }
@@ -591,8 +590,6 @@ textarea {
 input,
 input.field,
 input[type="submit"],
-input[type="file"] > input[type="button"],
-input[type="file"] > input[type="text"],
 textarea {
   border-width: 1px !important;
   border-style: solid !important;
@@ -1020,7 +1017,7 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"]{
 }
 /* Adblock Minus */
 img[src^="//static.4chan.org/support/"] { display: none; }
-input[type="submit"]:hover, input[type="file"] > input[type="button"]:hover { cursor: pointer; }
+input[type="submit"]:hover { cursor: pointer; }
 /* 4chan Sounds */
 .ys_playerContainer.reply {
   position: fixed;
@@ -1175,13 +1172,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   padding-top: 2px;
   max-height: 16px;
 }
-input[type="file"] > input[type="button"] {
-  float: left;
-}
-input[type="file"] input[type="text"] {
-  float: right;
-  margin-right: -1px;
-}
 .deleteform:hover {
   top: auto;
   bottom: 0px;
@@ -1290,7 +1280,6 @@ body {
 .yuimenuitem-selected,
 html body span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
-input[type="file"] > input[type="button"],
 #options.reply.dialog,
 .deleteform input[value=Delete],
 input[value="Report"],
@@ -1316,7 +1305,6 @@ div.navLinks a:first-of-type:hover,
 input:hover,
 input.field:hover,
 input[type="submit"]:hover,
-input[type="file"] > input[type="button"]:hover,
 textarea:hover,
 textarea.field:hover {
   background-color: ' + theme["Hovered Input Background"] + ';
@@ -1528,7 +1516,7 @@ span.lit { color: #558773; }
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAeRJREFUOE9tlM0rRFEYh0dMPiKxkWxsyEpWshCpURbWNPkvlCwYe6VJWU+zkmytZIOttZJsaHZioQkhH8+j++p0M/U0Z8597+/83o8zhUajUcjRwu8OGIAJmIFZmIJh6IHW/Ht5kXYCxmAVzuABvuAbXuAS9mAOesFDfzVSoW42FuEYXrOXFcjzyd41rMFQiIWQThS5AAP/E8jv3RO3Bf3hSHumo5MQeWZ9CjfJ3mO2d8d3pMuysQxFHVlYaxLpKLIP07ACV/AE2zAJ63CbuVbwBAYVsjsWNqzrRJE26ART3jAYdG/8bnJwk3VJIVtsd0LIdHSiiM+LYIdcKzQOR5DWsuJD5yRyVswA09GJItEQRUbgIHETh9cMctjyHbEmphNOjGuF+eyQfGfrBjixDluI2R0La00iHUVcm+4SOJipWNWHjr0P0mLbHVOJdHQSNetjvQNv2TvvfJcV8u7sJSc4J7bY7lhYa2LNdKLIApwn8T4bjdy9O469riy8c2KL7Y7zZRq61okiujDWmduEruiIRfXuOPaRYgjEb8VMJ2rzwfoQ7GRL2lovoHfHTzoO/907nShiLX9HJL39FtYL6N1x7JuJuxAzJWtiOjr5m7P8/1FMsq0vQQVqUIcqlGEUukxHJ8EPyeEKDPe5ibUAAAAASUVORK5CYII=");
 }
 /* Return button */
-div[class="navLinks"] a:first-of-type::after {  
+div.navLinks a:first-of-type::after {  
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAA5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHkJaAqNQAAAA50Uk5TABAgQFBgcICPn6+/3+9ACPafAAAASElEQVQI15XMyxKAIAxD0eCr1ZT8/+eKDCOw07O700mBT45rrDXEXgul3sn0yCwsAaGBv/cw86xc92fbl0v7z7mBzeeudhJ/3aoUA1Vr0uhDAAAAAElFTkSuQmCC");
 }
 /* Watcher */
@@ -1859,8 +1847,16 @@ body {
 }
 #boardNavDesktop,
 .pages {
-  left: ' + pagemargin + ';
+  left:  ' + pagemargin + ';
   right: 252px;
+}
+'
+    else
+      css += '
+#boardNavDesktop,
+.pages {
+  left:  2px;
+  right: 2px;
 }
 '
 
@@ -2058,9 +2054,6 @@ div.postContainer span.postNum > .replylink {
 #delform {
   margin-bottom: 12px;
 }
-body > .postingMode ~ #delform {
-  margin-bottom: 18px;
-}
 '
       when 'small'
         css += '
@@ -2070,23 +2063,8 @@ body > .postingMode ~ #delform {
 #delform {
   margin-bottom: 10px;
 }
-body > .postingMode ~ #delform {
-  margin-bottom: 16px;
-}
 '
       when 'medium'
-        css += '
-.replyContainer {
-  margin-bottom: 6px;
-}
-#delform {
-  margin-bottom: 6px;
-}
-body > .postingMode ~ #delform {
-  margin-bottom: 12px;
-}
-'
-      when 'large'
         css += '
 .replyContainer {
   margin-bottom: 4px;
@@ -2094,8 +2072,14 @@ body > .postingMode ~ #delform {
 #delform {
   margin-bottom: 8px;
 }
-body > .postingMode ~ #delform {
-  margin-bottom: 14px;
+'
+      when 'large'
+        css += '
+.replyContainer {
+  margin-bottom: 6px;
+}
+#delform {
+  margin-bottom: 6px;
 }
 '
 

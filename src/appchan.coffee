@@ -1,5 +1,6 @@
 Style =
   init: ->
+    Conf['styleenabled'] = '1'
     if Conf['Checkboxes'] == 'show' or Conf['Checkboxes'] == 'make checkboxes circular'
       Main.callbacks.push @noderice
     @addStyle()
@@ -35,6 +36,14 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         return '-webkit-'
       when 'presto'
         return '-o-'
+
+  button: (dialog, tab) ->
+    if Conf['styleenabled'] == '1'
+      save = $.el 'div',
+        innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
+      $.on $('a', save), 'click', ->
+        Style.addStyle(Conf['theme'])
+      $.add $('#' + tab + ' + div', dialog), save
 
   addStyle: ->
     $.off d, 'DOMNodeInserted', Style.addStyle

@@ -172,13 +172,25 @@ Config =
       'Auto Update': [true,  'Automatically fetch new posts']
     'Interval': 30
   style:
-    category:
+    Dialogs:
       'Announcements':             ['hide',           'The style of announcements and the ability to hide them.', [
         '4chan default', 'slideout', 'hide'
       ]]
+      'Post Form Style':           ['tabbed slideout',          'How the post form will sit on the page.', [
+        'fixed', 'slideout', 'tabbed slideout', 'transparent fade'
+      ]]
+      'Slideout Navigation':       ['compact',        'How the slideout navigation will be displayed.', [
+        'compact', 'list', 'hide'
+      ]]
+      'Slideout Watcher':          [true,   'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
+     Navigation:
       'Boards Navigation':         ['sticky top',     'The position of 4chan board navigation', [
         'sticky top', 'sticky bottom', 'top', 'hide'
       ]]
+      'Pagination':                ['sticky bottom',  'The position of 4chan page navigation', [
+        'sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide'
+      ]]
+    Rice:
       'Checkboxes':                ['show',           'Alter checkboxes.', [
         'show', 'make checkboxes circular', 'hide', 'do not style checkboxes'
       ]]
@@ -188,39 +200,31 @@ Config =
       'Emoji Position':            ['left',           'Position of emoji icons, like sega and neko.', [
         'left', 'right', 'hide emoji'
       ]]
+      'Filtered Backlinks':        [true,   'Mark backlinks to filtered posts.']
       'Font':                      ['ubuntu',         'The font used by all elements of 4chan.', [
         'ubuntu', 'sans serif', 'serif'
       ]]
       'Font Size':                  [12,              'The font size of posts and various UI. This does not change all font sizes.', [
         10, 11, 12, 13, 14
       ]]
-      'Page Margin':               ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', [
-        'none', 'small', 'medium', 'large', 'fully centered'
-      ]]
-      'Pagination':                ['sticky bottom',  'The position of 4chan page navigation', [
-        'sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide'
-      ]]
-      'Post Form Style':           ['tabbed slideout',          'How the post form will sit on the page.', [
-        'fixed', 'slideout', 'tabbed slideout', 'transparent fade'
-      ]]
-      'Reply Spacing':             ['small',          'The amount of space between replies.', [
-        'none', 'small', 'normal', 'large'
-      ]]
+      'Rounded Edges':             [true,   'Round the edges of various 4chan elements.']
       'Sage Highlighting':         ['image',          'Icons or text to highlight saged posts.', [
         'text', 'image', 'none'
       ]]
-      'Slideout Navigation':       ['compact',        'How the slideout navigation will be displayed.', [
-        'compact', 'list', 'hide'
+      'Underline Links':           [true,   'Put lines under hyperlinks.']
+    Layout:
+      'Page Margin':               ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', [
+        'none', 'small', 'medium', 'large', 'fully centered'
+      ]]
+      'Reply Spacing':             ['small',          'The amount of space between replies.', [
+        'none', 'small', 'medium', 'large'
       ]]
       'Compact Post Form Inputs':  [true,   'Use compact inputs on the post form.']
       'Expand Post Form Textarea': [true,   'Expands the post form text area when in use.']
-      'Filtered Backlinks':        [true,   'Mark backlinks to filtered posts.']
       'Fit Width Replies':         [true,   'Replies fit the entire width of the page.']
       'Hide Sidebar':              [false,  'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.']
-      'Rounded Edges':             [true,   'Round the edges of various 4chan elements.']
-      'Slideout Watcher':          [true,   'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
-      'Underline Links':           [true,   'Put lines under hyperlinks.']
-  theme:      'Midnight Caek'
+  theme:        'Midnight Caek'
+  styleenabled: '0'
   mascots:    []
   navigation: {}
 

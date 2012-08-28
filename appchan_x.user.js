@@ -223,31 +223,38 @@
       'Interval': 30
     },
     style: {
-      category: {
+      Dialogs: {
         'Announcements': ['hide', 'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']],
+        'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']],
+        'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
+        'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
+      },
+      Navigation: {
         'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
+        'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']]
+      },
+      Rice: {
         'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']],
         'Captcha Opacity': ['1.00', 'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']],
         'Emoji Position': ['left', 'Position of emoji icons, like sega and neko.', ['left', 'right', 'hide emoji']],
+        'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
         'Font': ['ubuntu', 'The font used by all elements of 4chan.', ['ubuntu', 'sans serif', 'serif']],
         'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
-        'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
-        'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']],
-        'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']],
-        'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'normal', 'large']],
+        'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
         'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
-        'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
+        'Underline Links': [true, 'Put lines under hyperlinks.']
+      },
+      Layout: {
+        'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
+        'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'medium', 'large']],
         'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
         'Expand Post Form Textarea': [true, 'Expands the post form text area when in use.'],
-        'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
         'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
-        'Hide Sidebar': [false, 'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.'],
-        'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
-        'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'],
-        'Underline Links': [true, 'Put lines under hyperlinks.']
+        'Hide Sidebar': [false, 'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.']
       }
     },
     theme: 'Midnight Caek',
+    styleenabled: '0',
     mascots: [],
     navigation: {}
   };
@@ -1021,7 +1028,7 @@
       }
     },
     dialog: function() {
-      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, save, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -1191,13 +1198,7 @@
         $.on(input, 'keydown', Options.keybind);
         $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
-      save = $.el('div', {
-        innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
-      });
-      $.on($('a', save), 'click', function() {
-        return Style.addStyle(Conf['theme']);
-      });
-      $.add($('#style_tab + div', dialog), save);
+      Style.button(dialog, 'style_tab');
       _ref2 = Config.style;
       for (category in _ref2) {
         obj = _ref2[category];
@@ -1208,7 +1209,7 @@
           arr = obj[optionname];
           description = arr[1];
           if (arr[2]) {
-            liHTML = "<label>" + optionname + "</label><span class=description>: " + description + "</span><select name=\"" + optionname + "\" style=width:100%><br>";
+            liHTML = "<label>" + optionname + "</label><span class=description>: " + description + "</span><select name=\"" + optionname + "\"><br>";
             _ref3 = arr[2];
             for (optionvalue = _i = 0, _len = _ref3.length; _i < _len; optionvalue = ++_i) {
               selectoption = _ref3[optionvalue];
@@ -1233,13 +1234,8 @@
         }
         $.add($('#style_tab + div', dialog), ul);
       }
-      save = $.el('div', {
-        innerHTML: '<a href="javascript:void(0)">Save Theme Settings</a></li>'
-      });
-      $.on($('a', save), 'click', function() {
-        return Style.addStyle(Conf['theme']);
-      });
-      $.add($('#theme_tab + div', dialog), save);
+      Style.button(dialog, 'style_tab');
+      Style.button(dialog, 'theme_tab');
       for (themename in Themes) {
         theme = Themes[themename];
         div = $.el('div', {
@@ -1256,6 +1252,7 @@
         });
         $.add($('#theme_tab + div', dialog), div);
       }
+      Style.button(dialog, 'theme_tab');
       Options.indicators(dialog);
       overlay = $.el('div', {
         id: 'overlay'
@@ -5773,6 +5770,7 @@
 
   Style = {
     init: function() {
+      Conf['styleenabled'] = '1';
       if (Conf['Checkboxes'] === 'show' || Conf['Checkboxes'] === 'make checkboxes circular') {
         Main.callbacks.push(this.noderice);
       }
@@ -5815,6 +5813,18 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
           return '-webkit-';
         case 'presto':
           return '-o-';
+      }
+    },
+    button: function(dialog, tab) {
+      var save;
+      if (Conf['styleenabled'] === '1') {
+        save = $.el('div', {
+          innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
+        });
+        $.on($('a', save), 'click', function() {
+          return Style.addStyle(Conf['theme']);
+        });
+        return $.add($('#' + tab + ' + div', dialog), save);
       }
     },
     addStyle: function() {
@@ -6021,9 +6031,12 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {\
 #overlay,\
 #qp,\
 #updater:hover,\
-.deleteform:hover,\
 .exPopup,\
 html .subMenu {\
+  z-index: 100 !important;\
+}\
+div.navLinks a:first-of-type::after,\
+.deleteform {\
   z-index: 99 !important;\
 }\
 #boardNavDesktop,\
@@ -6054,8 +6067,6 @@ body > form #imgControls {\
 #navtopr,\
 .deleteform::before,\
 .qrMessage,\
-body > a[style="cursor: pointer; float: right;"],\
-div.navLinks a:first-of-type::after,\
 #navtopr .settingsWindowLink::after {\
   z-index: 6 !important;\
 }\
@@ -6403,9 +6414,7 @@ a,\
 .top-box,\
 h2,\
 input:not([type="radio"]),\
-input[type="file"] > input[type="button"],\
 input[type="submit"],\
-select,\
 textarea {\
   ' + agent + 'appearance: none;\
 }\
@@ -6424,8 +6433,6 @@ textarea {\
 input,\
 input.field,\
 input[type="submit"],\
-input[type="file"] > input[type="button"],\
-input[type="file"] > input[type="text"],\
 textarea {\
   border-width: 1px !important;\
   border-style: solid !important;\
@@ -6853,7 +6860,7 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"]{\
 }\
 /* Adblock Minus */\
 img[src^="//static.4chan.org/support/"] { display: none; }\
-input[type="submit"]:hover, input[type="file"] > input[type="button"]:hover { cursor: pointer; }\
+input[type="submit"]:hover { cursor: pointer; }\
 /* 4chan Sounds */\
 .ys_playerContainer.reply {\
   position: fixed;\
@@ -7008,13 +7015,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {\
   padding-top: 2px;\
   max-height: 16px;\
 }\
-input[type="file"] > input[type="button"] {\
-  float: left;\
-}\
-input[type="file"] input[type="text"] {\
-  float: right;\
-  margin-right: -1px;\
-}\
 .deleteform:hover {\
   top: auto;\
   bottom: 0px;\
@@ -7123,7 +7123,6 @@ body {\
 .yuimenuitem-selected,\
 html body span[style="left: 5px; position: absolute;"] a,\
 input[type="submit"],\
-input[type="file"] > input[type="button"],\
 #options.reply.dialog,\
 .deleteform input[value=Delete],\
 input[value="Report"],\
@@ -7149,7 +7148,6 @@ div.navLinks a:first-of-type:hover,\
 input:hover,\
 input.field:hover,\
 input[type="submit"]:hover,\
-input[type="file"] > input[type="button"]:hover,\
 textarea:hover,\
 textarea.field:hover {\
   background-color: ' + theme["Hovered Input Background"] + ';\
@@ -7361,7 +7359,7 @@ span.lit { color: #558773; }\
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAeRJREFUOE9tlM0rRFEYh0dMPiKxkWxsyEpWshCpURbWNPkvlCwYe6VJWU+zkmytZIOttZJsaHZioQkhH8+j++p0M/U0Z8597+/83o8zhUajUcjRwu8OGIAJmIFZmIJh6IHW/Ht5kXYCxmAVzuABvuAbXuAS9mAOesFDfzVSoW42FuEYXrOXFcjzyd41rMFQiIWQThS5AAP/E8jv3RO3Bf3hSHumo5MQeWZ9CjfJ3mO2d8d3pMuysQxFHVlYaxLpKLIP07ACV/AE2zAJ63CbuVbwBAYVsjsWNqzrRJE26ART3jAYdG/8bnJwk3VJIVtsd0LIdHSiiM+LYIdcKzQOR5DWsuJD5yRyVswA09GJItEQRUbgIHETh9cMctjyHbEmphNOjGuF+eyQfGfrBjixDluI2R0La00iHUVcm+4SOJipWNWHjr0P0mLbHVOJdHQSNetjvQNv2TvvfJcV8u7sJSc4J7bY7lhYa2LNdKLIApwn8T4bjdy9O469riy8c2KL7Y7zZRq61okiujDWmduEruiIRfXuOPaRYgjEb8VMJ2rzwfoQ7GRL2lovoHfHTzoO/907nShiLX9HJL39FtYL6N1x7JuJuxAzJWtiOjr5m7P8/1FMsq0vQQVqUIcqlGEUukxHJ8EPyeEKDPe5ibUAAAAASUVORK5CYII=");\
 }\
 /* Return button */\
-div[class="navLinks"] a:first-of-type::after {  \
+div.navLinks a:first-of-type::after {  \
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAA5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHkJaAqNQAAAA50Uk5TABAgQFBgcICPn6+/3+9ACPafAAAASElEQVQI15XMyxKAIAxD0eCr1ZT8/+eKDCOw07O700mBT45rrDXEXgul3sn0yCwsAaGBv/cw86xc92fbl0v7z7mBzeeudhJ/3aoUA1Vr0uhDAAAAAElFTkSuQmCC");\
 }\
 /* Watcher */\
@@ -7701,8 +7699,16 @@ body {\
 }\
 #boardNavDesktop,\
 .pages {\
-  left: ' + pagemargin + ';\
+  left:  ' + pagemargin + ';\
   right: 252px;\
+}\
+';
+      } else {
+        css += '\
+#boardNavDesktop,\
+.pages {\
+  left:  2px;\
+  right: 2px;\
 }\
 ';
       }
@@ -7903,9 +7909,6 @@ div.postContainer span.postNum > .replylink {\
 #delform {\
   margin-bottom: 12px;\
 }\
-body > .postingMode ~ #delform {\
-  margin-bottom: 18px;\
-}\
 ';
           break;
         case 'small':
@@ -7916,25 +7919,9 @@ body > .postingMode ~ #delform {\
 #delform {\
   margin-bottom: 10px;\
 }\
-body > .postingMode ~ #delform {\
-  margin-bottom: 16px;\
-}\
 ';
           break;
         case 'medium':
-          css += '\
-.replyContainer {\
-  margin-bottom: 6px;\
-}\
-#delform {\
-  margin-bottom: 6px;\
-}\
-body > .postingMode ~ #delform {\
-  margin-bottom: 12px;\
-}\
-';
-          break;
-        case 'large':
           css += '\
 .replyContainer {\
   margin-bottom: 4px;\
@@ -7942,8 +7929,15 @@ body > .postingMode ~ #delform {\
 #delform {\
   margin-bottom: 8px;\
 }\
-body > .postingMode ~ #delform {\
-  margin-bottom: 14px;\
+';
+          break;
+        case 'large':
+          css += '\
+.replyContainer {\
+  margin-bottom: 6px;\
+}\
+#delform {\
+  margin-bottom: 6px;\
 }\
 ';
       }
@@ -8866,6 +8860,9 @@ h1 {\
   max-width: 100%;\
   height: 500px;\
   max-height: 100%;\
+}\
+#options #style_tab + div select {\
+  width: 100%;\
 }\
 #credits {\
   float: right;\

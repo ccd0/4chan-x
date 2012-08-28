@@ -183,18 +183,14 @@ Options =
       $.add $('#keybinds_tab + div tbody', dialog), tr
 
     #style
-    save = $.el 'div',
-      innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
-    $.on $('a', save), 'click', ->
-      Style.addStyle(Conf['theme'])
-    $.add $('#style_tab + div', dialog), save
+    Style.button(dialog, 'style_tab')
     for category, obj of Config.style
       ul = $.el 'ul',
         textContent: category
       for optionname, arr of obj
         description = arr[1]
         if arr[2]
-          liHTML = "<label>#{optionname}</label><span class=description>: #{description}</span><select name=\"#{optionname}\" style=width:100%><br>"
+          liHTML = "<label>#{optionname}</label><span class=description>: #{description}</span><select name=\"#{optionname}\"><br>"
           for selectoption, optionvalue in arr[2]
             liHTML = liHTML + "<option value=\"#{selectoption}\">#{selectoption}</option>"
           liHTML = liHTML + "</select>"
@@ -211,13 +207,10 @@ Options =
           $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
       $.add $('#style_tab + div', dialog), ul
+    Style.button(dialog, 'style_tab')
     
     #themes
-    save = $.el 'div',
-      innerHTML: '<a href="javascript:void(0)">Save Theme Settings</a></li>'
-    $.on $('a', save), 'click', ->
-      Style.addStyle(Conf['theme'])
-    $.add $('#theme_tab + div', dialog), save
+    Style.button(dialog, 'theme_tab')
     for themename, theme of Themes
       div = $.el 'div',
         className: if themename == Conf['theme'] then 'selectedtheme' else ''
@@ -230,6 +223,7 @@ Options =
         console.log @.id
         $.addClass @, 'selectedtheme'
       $.add $('#theme_tab + div', dialog), div
+    Style.button(dialog, 'theme_tab')
 
     Options.indicators dialog
 

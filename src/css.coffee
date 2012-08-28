@@ -327,6 +327,9 @@ h1 {
   height: 500px;
   max-height: 100%;
 }
+#options #style_tab + div select {
+  width: 100%;
+}
 #credits {
   float: right;
 }
