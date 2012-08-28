@@ -124,21 +124,6 @@ div.post div.file .fileThumb {
 a {
   outline: 0;
 }
-#theme_tab + div > div:not(.selectedtheme) h1 {
-  color: transparent !important;
-  right: 300px;
-}
-#theme_tab + div > div.selectedtheme h1 {
-  right: 11px;
-}
-#theme_tab + div > div h1 {
-  position: absolute;
-  bottom: 0;
-  ' + agent + 'transition: all .2s ease-in-out;
-}
-#theme_tab + div > div {
-  margin-bottom: 3px;
-}
 #boardNavDesktop,
 #boardNavDesktop a,
 #boardNavDesktopFoot a,
@@ -2243,10 +2228,7 @@ div.postContainer span.postNum > .replylink {
       for category, mascots of Mascots
         for name, mascot of mascots
           if enabledmascots[name] == true
-            console.log mascot
             mascotimages.push mascot
-      console.log mascotimages
-      console.log mascotimages.length
       css += '
 body::after {
   position: fixed;

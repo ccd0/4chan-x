@@ -224,7 +224,6 @@ Options =
         $.rmClass $.id(Conf['theme']), 'selectedtheme'
         $.set 'theme', @.id
         Conf['theme'] = @.id
-        console.log @.id
         $.addClass @, 'selectedtheme'
       $.add $('#theme_tab + div', dialog), div
     Style.button(dialog, 'theme_tab')
