@@ -2,6 +2,10 @@ alpha
 - Mayhem
   Fix Chrome's install warning that 4chan X would execute on all domains.
 
+2.34.8
+- Mayhem
+  One-word-captcha: you don't need to input an extra space anymore, the true word will be duplicated.
+
 2.34.7
 - Mayhem
   Fix one-word-captcha, you'll need to leave a space for the fake word now.
