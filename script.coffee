@@ -580,6 +580,7 @@ Main =
     else
       $.on d, 'DOMNodeInserted', Main.addStyle
   css: """
+/* general */
 .move {
   cursor: move;
 }
@@ -587,6 +588,15 @@ label {
   cursor: pointer;
 }
 
+/* 4chan style fixes */
+.opContainer, .op {
+  display: block !important;
+}
+.post {
+  overflow: visible !important;
+}
+
+/* header */
 body.fourchan_x {
   margin-top: 2.5em;
 }
