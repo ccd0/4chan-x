@@ -1711,7 +1711,7 @@ div.reply .report_button, div.reply .menu_button {
 }
 .sideArrows a {
   position: absolute;
-  right: 36px;
+  right: 40px;
   top: 7px;
 }
 .sideArrows a {
