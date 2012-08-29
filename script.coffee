@@ -43,7 +43,7 @@ Config =
       'Auto Watch Reply':             [false, 'Automatically watch threads that you reply to']
     Posting:
       'Quick Reply':                  [true,  'Reply without leaving the page.']
-      'Focus on Alert':               [true, 'Switch to tab if an error occurs']
+      'Focus on Alert':               [true,  'Switch to tab if an error occurs']
       'Cooldown':                     [true,  'Prevent "flood detected" errors.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
@@ -4532,7 +4532,9 @@ h1 {
   background: -o-linear-gradient(#EEE, #CCC);
   background: linear-gradient(#EEE, #CCC);
   width: 10%;
-  padding: -moz-calc(1px) 0 2px;
+}
+.gecko #dump {
+  padding: 1px 0 2px;
 }
 #dump:hover, #dump:focus {
   background: -webkit-linear-gradient(#FFF, #DDD);
@@ -4710,8 +4712,10 @@ h1 {
 #qr [type=submit] {
   margin: 1px 0;
   padding: 1px; /* not Gecko */
-  padding: 0 -moz-calc(1px); /* Gecko does not respect box-sizing: border-box */
   width: 30%;
+}
+.gecko #qr [type=submit] {
+  padding: 0 1px; /* Gecko does not respect box-sizing: border-box */
 }
 
 .fileText:hover .fntrunc,
