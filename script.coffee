@@ -268,6 +268,7 @@ $.extend $,
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
       $.queueTask fc
+      return
     cb = ->
       $.off d, 'DOMContentLoaded', cb
       fc()

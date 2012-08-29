@@ -319,6 +319,7 @@
       var cb;
       if (/interactive|complete/.test(d.readyState)) {
         $.queueTask(fc);
+        return;
       }
       cb = function() {
         $.off(d, 'DOMContentLoaded', cb);
