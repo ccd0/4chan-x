@@ -728,26 +728,46 @@
       return $.ready(Main.initFeaturesReady);
     },
     initFeaturesReady: function() {
-      var board, child, thread, _i, _j, _len, _len1, _ref, _ref1;
+      var child, posts, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (!$.id('navtopr')) {
         return;
       }
-      board = $('.board');
-      _ref = board.children;
+      threads = [];
+      posts = [];
+      _ref = $('.board').children;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         child = _ref[_i];
-        if (child.className === 'thread') {
-          thread = new Thread(child, g.BOARD);
-          _ref1 = thread.root.children;
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            child = _ref1[_j];
-            if ($.hasClass(child, 'postContainer')) {
-              new Post(child, thread, g.BOARD);
-            }
+        if (child.className !== 'thread') {
+          continue;
+        }
+        thread = new Thread(child, g.BOARD);
+        threads.push(thread);
+        _ref1 = thread.root.children;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          child = _ref1[_j];
+          if (!$.hasClass(child, 'postContainer')) {
+            continue;
           }
+          posts.push(new Post(child, thread, g.BOARD));
         }
       }
-      return $.log(g);
+      Main.callbackNodes(Thread, threads, true);
+      return Main.callbackNodes(Post, posts, true);
+    },
+    callbackNodes: function(klass, nodes, notify) {
+      var callback, i, len, _i, _j, _len, _ref;
+      len = nodes.length;
+      _ref = klass.prototype.callbacks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        try {
+          for (i = _j = 0; 0 <= len ? _j < len : _j > len; i = 0 <= len ? ++_j : --_j) {
+            callback.cb.call(nodes[i]);
+          }
+        } catch (err) {
+
+        }
+      }
     },
     settings: function() {
       return alert('Here be settings');

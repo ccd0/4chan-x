@@ -566,14 +566,31 @@ Main =
     $.ready Main.initFeaturesReady
   initFeaturesReady: ->
     return unless $.id 'navtopr'
-    board = $ '.board'
-    for child in board.children
-      if child.className is 'thread'
-        thread = new Thread child, g.BOARD
-        for child in thread.root.children
-          if $.hasClass child, 'postContainer'
-            new Post child, thread, g.BOARD
-    $.log g
+
+    threads = []
+    posts   = []
+
+    for child in $('.board').children
+      continue unless child.className is 'thread'
+      thread = new Thread child, g.BOARD
+      threads.push thread
+      for child in thread.root.children
+        continue unless $.hasClass child, 'postContainer'
+        posts.push new Post child, thread, g.BOARD
+
+    Main.callbackNodes Thread, threads, true
+    Main.callbackNodes Post,   posts,   true
+
+  callbackNodes: (klass, nodes, notify) ->
+    # get the nodes' length only once
+    len = nodes.length
+    for callback in klass::callbacks
+      try
+        for i in [0...len]
+          callback.cb.call nodes[i]
+      catch err
+        # handle error if notify
+    return
 
   settings: ->
     alert 'Here be settings'
