@@ -693,10 +693,11 @@
         className: 'reply',
         innerHTML: '<div class=extra></div>'
       });
+      localStorage.setItem('4chan_settings', false);
       return $.ready(Main.initHeaderReady);
     },
     initHeaderReady: function() {
-      var header, nav, settings, _ref, _ref1;
+      var header, nav, settings, _ref, _ref1, _ref2;
       if (!$.id('navtopr')) {
         return;
       }
@@ -718,7 +719,10 @@
       }
       $.addClass(d.body, $.engine);
       $.addClass(d.body, 'fourchan_x');
-      return (_ref1 = $.id('boardNavDesktopFoot')) != null ? _ref1.hidden = true : void 0;
+      if ((_ref1 = $('link[href*=mobile]', d.head)) != null) {
+        _ref1.disabled = true;
+      }
+      return (_ref2 = $.id('boardNavDesktopFoot')) != null ? _ref2.hidden = true : void 0;
     },
     initFeatures: function() {
       return $.ready(Main.initFeaturesReady);

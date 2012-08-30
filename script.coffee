@@ -535,6 +535,8 @@ Main =
     Main.header = $.el 'div',
       className: 'reply'
       innerHTML: '<div class=extra></div>'
+    # disable 4chan's features
+    localStorage.setItem '4chan_settings', false
     $.ready Main.initHeaderReady
   initHeaderReady: ->
     return unless $.id 'navtopr'
@@ -556,6 +558,8 @@ Main =
     $.addClass d.body, $.engine
     $.addClass d.body, 'fourchan_x'
 
+    # disable the mobile layout
+    $('link[href*=mobile]', d.head)?.disabled = true
     $.id('boardNavDesktopFoot')?.hidden = true
 
   initFeatures: ->
