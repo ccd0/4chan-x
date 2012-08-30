@@ -1,7 +1,5 @@
 Style =
   init: ->
-    if Conf['Checkboxes'] == 'show' or Conf['Checkboxes'] == 'make checkboxes circular'
-      Main.callbacks.push @noderice
     @addStyle()
 
   emoji: (position, direction) ->

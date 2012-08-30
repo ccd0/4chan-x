@@ -482,11 +482,18 @@ div.opContainer {
 '
     if (Conf['Quick Reply'] and Conf['Hide Original Post Form']) or Conf['Style']
       css += '#postForm { display: none; }'
+
     if Conf['Recursive Filtering']
       css += '.hidden + .threadContainer { display: none; }'
-    if Conf['Style'] == true
+
+    if Conf['Style']
+      if Conf['Checkboxes'] == 'show' or Conf['Checkboxes'] == 'make checkboxes circular'
+        Main.callbacks.push @noderice
+
       Conf['styleenabled'] = '1'
+
       @remStyle()
+
       css += '
 ::' + agent + 'selection {
   background-color: ' + theme["Text"] + ';

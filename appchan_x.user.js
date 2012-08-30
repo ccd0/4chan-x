@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        0.4beta
+// @version        0.41beta
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -5915,9 +5915,6 @@
 
   Style = {
     init: function() {
-      if (Conf['Checkboxes'] === 'show' || Conf['Checkboxes'] === 'make checkboxes circular') {
-        Main.callbacks.push(this.noderice);
-      }
       return this.addStyle();
     },
     emoji: function(position, direction) {
@@ -6482,7 +6479,10 @@ div.opContainer {\
       if (Conf['Recursive Filtering']) {
         css += '.hidden + .threadContainer { display: none; }';
       }
-      if (Conf['Style'] === true) {
+      if (Conf['Style']) {
+        if (Conf['Checkboxes'] === 'show' || Conf['Checkboxes'] === 'make checkboxes circular') {
+          Main.callbacks.push(this.noderice);
+        }
         Conf['styleenabled'] = '1';
         this.remStyle();
         css += '\
@@ -9148,7 +9148,7 @@ body::after {\
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '0.4beta',
+    version: '0.41beta',
     callbacks: []
   };
 
