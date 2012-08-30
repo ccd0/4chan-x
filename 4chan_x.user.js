@@ -129,6 +129,7 @@
       },
       Posting: {
         'Quick Reply': [true, 'Reply without leaving the page.'],
+        'Focus on Alert': [true, 'Switch to tab if an error occurs'],
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
@@ -2003,8 +2004,10 @@
       if (/captcha|verification/i.test(el.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
-      if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
-        return alert(el.textContent);
+      if (Conf['Focus on Alert']) {
+        if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
+          return alert(el.textContent);
+        }
       }
     },
     cleanError: function() {

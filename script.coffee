@@ -43,6 +43,7 @@ Config =
       'Auto Watch Reply':             [false, 'Automatically watch threads that you reply to']
     Posting:
       'Quick Reply':                  [true,  'Reply without leaving the page.']
+      'Focus on Alert':               [true, 'Switch to tab if an error occurs']
       'Cooldown':                     [true,  'Prevent "flood detected" errors.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [true,  'Automatically hide the quick reply when posting.']
@@ -1545,7 +1546,8 @@ QR =
     if /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
-    alert el.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+    if Conf['Focus on Alert'] 
+      if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden then alert el.textContent
   cleanError: ->
     $('.warning', QR.el).textContent = null
 
