@@ -111,9 +111,8 @@ APPFILES  = [
   'chanx'
   'quickreply'
   'appchan'
-  'css/basestyle'
+  'css/style'
   'main'
-  'css'
   'exec'
 ]
 

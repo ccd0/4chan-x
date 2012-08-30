@@ -38,18 +38,9 @@ Main =
 
     Main.pruneHidden()
 
-    if (Conf['Quick Reply'] and Conf['Hide Original Post Form']) or Conf['Style']
-      Main.css += '#postForm { display: none; }'
-    if Conf['Recursive Filtering']
-      Main.css += '.hidden + .threadContainer { display: none; }'
-
     #major features
-    if Conf['Style']
-      Main.addStyle()
-      Main.remStyle()
-      Style.init()
-    else
-      Main.addStyle()
+
+    Style.init()
 
     now = Date.now()
     if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 18*$.HOUR
@@ -252,25 +243,6 @@ Main =
     else # string or number
       Conf[parent] = obj
     return
-
-  addStyle: ->
-    $.off d, 'DOMNodeInserted', Main.addStyle
-    if d.head
-      $.addStyle Main.css, 'main'
-    else # XXX fox
-      $.on d, 'DOMNodeInserted', Main.addStyle
-
-  remStyle: ->
-    $.off d, 'DOMNodeInserted', Main.remStyle
-    if d.head and d.head.childNodes.length > 10
-      headNodes = d.head.childNodes
-      headNode = headNodes.length - 1
-      for node, index in headNodes
-        step = headNode - index
-        if headNodes[step].rel == 'stylesheet' or headNodes[step].rel == 'alternate stylesheet'
-          $.rm headNodes[step]
-    else # XXX fox
-      $.on d, 'DOMNodeInserted', Main.remStyle
 
   message: (e) ->
     {version} = e.data

@@ -1,6 +1,5 @@
 Style =
   init: ->
-    Conf['styleenabled'] = '1'
     if Conf['Checkboxes'] == 'show' or Conf['Checkboxes'] == 'make checkboxes circular'
       Main.callbacks.push @noderice
     @addStyle()
@@ -37,14 +36,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       when 'presto'
         return '-o-'
 
-  button: (dialog, tab) ->
-    if Conf['styleenabled'] == '1'
-      save = $.el 'div',
-        innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
-      $.on $('a', save), 'click', ->
-        Style.addStyle(Conf['theme'])
-      $.add $('#' + tab + ' + div', dialog), save
-
   addStyle: ->
     $.off d, 'DOMNodeInserted', Style.addStyle
     theme = Themes[Conf['theme']]
@@ -54,3 +45,15 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       $.addStyle Style.css(theme), 'appchan'
     else # XXX fox
       $.on d, 'DOMNodeInserted', Style.addStyle
+
+  remStyle: ->
+    $.off d, 'DOMNodeInserted', @remStyle
+    if d.head and d.head.childNodes.length > 10
+      headNodes = d.head.childNodes
+      headNode = headNodes.length - 1
+      for node, index in headNodes
+        step = headNode - index
+        if headNodes[step].rel == 'stylesheet' or headNodes[step].rel == 'alternate stylesheet'
+          $.rm headNodes[step]
+    else # XXX fox
+      $.on d, 'DOMNodeInserted', @remStyle

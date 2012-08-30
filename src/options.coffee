@@ -187,7 +187,7 @@ Options =
       $.add $('#keybinds_tab + div tbody', dialog), tr
 
     #style
-    Style.button(dialog, 'style_tab')
+    Options.applyStyle(dialog, 'style_tab')
     for category, obj of Config.style
       ul = $.el 'ul',
         textContent: category
@@ -211,10 +211,10 @@ Options =
           $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
       $.add $('#style_tab + div', dialog), ul
-    Style.button(dialog, 'style_tab')
+    Options.applyStyle(dialog, 'style_tab')
 
     #themes
-    Style.button(dialog, 'theme_tab')
+    Options.applyStyle(dialog, 'theme_tab')
     for themename, theme of Themes
       div = $.el 'div',
         className: if themename == Conf['theme'] then 'selectedtheme' else ''
@@ -226,10 +226,10 @@ Options =
         Conf['theme'] = @.id
         $.addClass @, 'selectedtheme'
       $.add $('#theme_tab + div', dialog), div
-    Style.button(dialog, 'theme_tab')
+    Options.applyStyle(dialog, 'theme_tab')
 
     #mascots
-    Style.button(dialog, 'mascot_tab')
+    Options.applyStyle(dialog, 'mascot_tab')
     for category, contents of Mascots
       ul = $.el 'ul',
         innerHTML:   "<div style='clear: both;'>#{category}</div>"
@@ -254,7 +254,7 @@ Options =
             enabledmascots[@.id] = true
         $.add ul, li
       $.add $('#mascot_tab + div', dialog), ul
-    Style.button(dialog, 'mascot_tab')
+    Options.applyStyle(dialog, 'mascot_tab')
 
     Options.indicators dialog
 
@@ -370,3 +370,11 @@ Options =
     Favicon.switch()
     Unread.update true
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
+
+  applyStyle: (dialog, tab) ->
+    if Conf['styleenabled'] == '1'
+      save = $.el 'div',
+        innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
+      $.on $('a', save), 'click', ->
+        Style.addStyle(Conf['theme'])
+      $.add $('#' + tab + ' + div', dialog), save
