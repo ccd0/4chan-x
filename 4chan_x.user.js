@@ -4911,8 +4911,15 @@
             url += "#p" + postID;
           }
           break;
-        case 'cgl':
+        case 'diy':
         case 'g':
+        case 'sci':
+          url = "//archive.installgentoo.net/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
+        case 'cgl':
         case 'mu':
         case 'soc':
         case 'w':

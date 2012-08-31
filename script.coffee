@@ -3872,7 +3872,11 @@ Redirect =
         url = "//fuuka.warosu.org/#{path}"
         if threadID and postID
           url += "#p#{postID}"
-      when 'cgl', 'g', 'mu', 'soc', 'w'
+      when 'diy', 'g', 'sci'
+        url = "//archive.installgentoo.net/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      when 'cgl', 'mu', 'soc', 'w'
         url = "//archive.rebeccablacktech.com/#{path}"
         if threadID and postID
           url += "#p#{postID}"
