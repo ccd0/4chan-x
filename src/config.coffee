@@ -191,7 +191,7 @@ Config =
         'sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide'
       ]]
     Rice:
-      'Block Ads':                 [false,             'Block advertisements']
+      'Block Ads':                 [false,             'Block advertisements. It\'s probably better to use AdBlock for this.']
       'Checkboxes':                ['show',            'Alter checkboxes.', [
         'show', 'make checkboxes circular', 'hide', 'do not style checkboxes'
       ]]
@@ -215,16 +215,24 @@ Config =
       ]]
       'Underline Links':           [true,              'Put lines under hyperlinks.']
     Layout:
+      '4chan Banner':              ['in sidebar',      'The positioning of 4chan\'s image banner.', [
+        'in sidebar', 'at top', 'hide'
+      ]]
+      'Board Logo':                ['in sidebar',      'The positioning of the board\'s logo and subtitle.', [
+        'in sidebar', 'at top', 'hide'
+      ]]
+      'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
+      'Expand Post Form Textarea': [true,              'Expands the post form text area when in use.']
+      'Fit Width Replies':         [true,              'Replies fit the entire width of the page.']
       'Page Margin':               ['fully centered',  'Additional layout options, allowing you to center the page or use additional page margins.', [
         'none', 'small', 'medium', 'large', 'fully centered'
       ]]
       'Reply Spacing':             ['small',           'The amount of space between replies.', [
         'none', 'small', 'medium', 'large'
       ]]
-      'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
-      'Expand Post Form Textarea': [true,              'Expands the post form text area when in use.']
-      'Fit Width Replies':         [true,              'Replies fit the entire width of the page.']
-      'Hide Sidebar':              [false,             'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.']
+      'Sidebar':                   ['normal',          'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', [
+        'normal', 'large', 'hide'
+      ]]
   theme:        'Midnight Caek'
   styleenabled: '0'
   navigation: {}

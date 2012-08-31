@@ -234,7 +234,7 @@
         'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']]
       },
       Rice: {
-        'Block Ads': [false, 'Block advertisements'],
+        'Block Ads': [false, 'Block advertisements. It\'s probably better to use AdBlock for this.'],
         'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']],
         'Captcha Opacity': ['1.00', 'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']],
         'Emoji Position': ['left', 'Position of emoji icons, like sega and neko.', ['left', 'right', 'hide emoji']],
@@ -247,12 +247,14 @@
         'Underline Links': [true, 'Put lines under hyperlinks.']
       },
       Layout: {
-        'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
-        'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'medium', 'large']],
+        '4chan Banner': ['in sidebar', 'The positioning of 4chan\'s image banner.', ['in sidebar', 'at top', 'hide']],
+        'Board Logo': ['in sidebar', 'The positioning of the board\'s logo and subtitle.', ['in sidebar', 'at top', 'hide']],
         'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
         'Expand Post Form Textarea': [true, 'Expands the post form text area when in use.'],
         'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
-        'Hide Sidebar': [false, 'Hide the sidebar. This option can be dangerous and causes content to overlap, but in conjunction with other options, can reduce unnecessary space.']
+        'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
+        'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'medium', 'large']],
+        'Sidebar': ['normal', 'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['normal', 'large', 'hide']]
       }
     },
     theme: 'Midnight Caek',
@@ -6095,7 +6097,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     css: function(theme) {
-      var agent, category, css, mascot, mascotimages, mascotposition, mascots, name, pagemargin;
+      var agent, category, css, logoOffset, mascot, mascotimages, mascotposition, mascots, name, pagemargin, sidebarOffsetH, sidebarOffsetW;
       agent = Style.agent();
       css = '\
 /* dialog styling */\
@@ -6181,7 +6183,7 @@ a[href="javascript:;"] {\
   top: 0;\
   margin-top: -1px;\
 }\
-h1 {\
+h1, .boardBanner {\
   text-align: center;\
 }\
 #qr > .move {\
@@ -6593,6 +6595,13 @@ div.opContainer {\
         }
         Conf['styleenabled'] = '1';
         this.remStyle();
+        if (Conf['Sidebar'] === 'large') {
+          sidebarOffsetW = 51;
+          sidebarOffsetH = 17;
+        } else {
+          sidebarOffsetW = 0;
+          sidebarOffsetH = 0;
+        }
         css += '\
 ::' + agent + 'selection {\
   background-color: ' + theme["Text"] + ';\
@@ -6917,70 +6926,6 @@ div.navLinks > a:first-of-type:hover::after {\
   cursor: pointer;\
 }\
 /* END OF ICON POSITIONS */\
-.boardBanner {\
-  position: fixed;\
-  left: auto;\
-  right: 2px;\
-  top: 19px;\
-  padding-top: 0px;\
-  margin: 0;\
-  margin-top: -6px;\
-  z-index: 1;\
-}\
-.boardBanner img {\
-  width: 248px;\
-  height: 83px;\
-  ' + agent + 'box-reflect: below 0px ' + agent + 'gradient( linear, left top, left bottom, from(transparent), color-stop(91%, rgba(255, 255, 255, .1)), color-stop(21.01%, transparent) );\
-}\
-.boardTitle {\
-  margin-top: 20px;\
-}\
-#watcher::before {\
-  top: 105px;\
-}\
-#watcher {\
-  position: fixed;\
-  top: 119px;\
-}\
-#boardNavDesktopFoot::after {\
-  top: 104px;\
-}\
-#boardNavDesktopFoot:hover {\
-  top: 119px;\
-}\
-#navtopr .settingsWindowLink::after {\
-  top: 104px;\
-}\
-#settingsBox {\
-  top: 110px;\
-}\
-body > a[style="cursor: pointer; float: right;"]::after {\
-  top: 104px;\
-}\
-.globalMessage::before {\
-  top: 104px;\
-}\
-.globalMessage:hover {\
-  top: 119px;\
-}\
-.boardTitle {\
-  margin-top: 20px;\
-}\
-#settingsBox {\
-  position: fixed;\
-  right: 5px;\
-  width: 234px;\
-}\
-#boardNavMobile {\
-  background: none;\
-  border: none;\
-  font-size: 12px;\
-  padding: 0px;\
-  padding-top: 1px;\
-  padding-left: 2px;\
-  width: 320px;\
-  pointer-events: none;\
-}\
 .pageJump {\
   position: fixed;\
   top: -1000px;\
@@ -7001,19 +6946,7 @@ body > a[style="cursor: pointer; float: right;"]::after {\
   font-weight: 100;\
   background: none;\
   border: none;\
-  width: 248px;\
-}\
-.boardBanner {\
-  position: fixed;\
-  right: 2px;\
-  top: 19px;\
-  width: 248px;\
-  margin: 0;\
-  text-align: center;\
- }\
-.boardBanner img {\
-  width: 248px;\
-  height: 83px;\
+  width: ' + (248 + sidebarOffsetW) + 'px;\
 }\
 .boardTitle {\
   font-size: 30px;\
@@ -7021,14 +6954,6 @@ body > a[style="cursor: pointer; float: right;"]::after {\
 }\
 .boardSubtitle {\
   font-size: 13px;\
-}\
-/* 4watch */\
-body > span > div {\
-  position: fixed;\
-  top: auto;\
-  bottom: 440px;\
-  right: 0;\
-  width: 248px;\
 }\
 hr {\
   padding: 0;\
@@ -7077,9 +7002,9 @@ a.yuimenuitemlabel {\
   visibility: visible;\
   position: fixed;\
   top: -1000px;\
-  right: 2px;\
+  right: 2px !important;\
   bottom: auto;\
-  width: 226px;\
+  width: ' + (226 + sidebarOffsetW) + 'px;\
   color: transparent;\
   font-size: 0;\
   padding: 3px 10px 35px 10px;\
@@ -7110,7 +7035,7 @@ a.yuimenuitemlabel {\
 .pages {\
   word-spacing: 10px;\
 }\
-/* moot"s announcements */\
+/* moots announcements */\
 .globalMessage {\
   font-size: 12px;\
   text-align: center;\
@@ -7186,7 +7111,7 @@ textarea.field,\
 #recaptcha_image,\
 #qr div,\
 input[type="file"] {\
-  width: 248px;\
+  width: ' + (248 + sidebarOffsetW) + 'px;\
 }\
 /* Buttons */\
 input[type="submit"], /* Any lingering buttons */\
@@ -7200,12 +7125,6 @@ input[value="Report"] {\
   width: 100%;\
   float: left;\
   clear: both;\
-}\
-#qr input[type="file"] {\
-  height: auto;\
-  border: none 0px;\
-  padding: 0;\
-  float: left;\
 }\
 #qr input[name="email"] + label {\
   bottom: 2px;\
@@ -7357,13 +7276,13 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {\
 }\
 #imgControls label:first-of-type {\
   position: fixed;\
-  right: 232px;\
+  right: ' + (232 + sidebarOffsetW) + 'px;\
   top: 0px;\
   bottom: auto;\
 }\
 #imageType {\
   position: fixed;\
-  right: 140px;\
+  right: ' + (140 + sidebarOffsetW) + 'px;\
   top: 1px;\
   bottom: auto;\
 }\
@@ -7407,7 +7326,7 @@ select > input {\
   top: -1000px;\
   right: 2px;\
   bottom: auto;\
-  width: 248px;\
+  width: ' + (248 + sidebarOffsetW) + 'px;\
   margin: 0px;\
   padding: 0px;\
   font-size: 0px;\
@@ -7421,37 +7340,21 @@ select > input {\
 .deleteform input[value="Report"] {\
   float: left;\
 }\
-.deleteform,\
 .deleteform {\
-  width: 246px;\
-}\
-.deleteform:hover input[name="pwd"] {\
-  position: fixed;\
-  left: 105px;\
-  right: 3px;\
-  width: 146px;\
-  height: 20px;\
-  text-align: right;\
-}\
-div.deleteform input[type="password"] {\
-  width: 144px;\
+  width: ' + (246 + sidebarOffsetW) + 'px;\
 }\
 .deleteform:hover input[type="checkbox"],\
 .deleteform:hover .rice {\
   position: fixed;\
-  right: 130px;\
+  right: ' + (130 + sidebarOffsetW) + 'px;\
 }\
 .deleteform:hover::after {\
   visibility: visible;\
   position: fixed;\
-  right: 80px;\
+  right: ' + (50 + sidebarOffsetW) + 'px;\
   font-size: 12px;\
   content: "File Only";\
   width: 50px;\
-}\
-.deleteform .field {\
-  width: 138px;\
-  margin-right: 1px;\
 }\
 div.navLinks {\
   font-size: 0;\
@@ -7463,16 +7366,6 @@ div.navLinks a {\
   right: -192px;\
   bottom: -1000px;\
   visibility: visible;\
-  height: 14px;\
-  width: 58px;\
-  margin: 0;\
-  padding: 0;\
-  font-size: 9px;\
-  text-transform: uppercase;\
-  vertical-align: bottom;\
-  padding-top: 5px;\
-  border-radius: 0;\
-  text-align: center;\
 }\
 /* File Clearer support */\
 .clearbutton {\
@@ -7544,7 +7437,7 @@ div.navLinks a {\
   background-color: transparent;\
 }\
 #updater:hover {\
-  width: 150px;\
+  width: 150px !important;\
   right: 2px !important;\
 }\
 #updater #count:not(.new) {\
@@ -7584,7 +7477,7 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] {\
   top: 17px;\
   bottom: 17px;\
   left: 4px;\
-  right: 252px;\
+  right: ' + (252 + sidebarOffsetW) + 'px;\
   width: auto;\
   margin: 0;\
 }\
@@ -7692,19 +7585,29 @@ body > table[cellpadding="30"] h1, body > table[cellpadding="30"] h3 {\
 #menu.reply.dialog, html .subMenu {\
   padding: 0px;\
 }\
-#charCount {\
+#qr #charCount {\
   background: none;\
   position: absolute;\
   right: 2px;\
-  top: 112px;\
-  color: rgb(0,0,0);\
+  top: auto;\
+  bottom: 110px;\
+  color: ' + (theme["Dark Theme"] === "1" ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)") + ';\
   font-size: 10px;\
+  height: 20px;\
+  text-align: right;\
+  vertical-align: middle;\
+  padding-top: 2px;\
 }\
-#charCount.warning {\
+#qr #charCount.warning {\
   color: rgb(255,0,0);\
   position: absolute;\
+  top: auto;\
   right: 2px;\
-  top: 110px;\
+  bottom: 110px;\
+  height: 20px;\
+  max-height: 20px;\
+  border: none;\
+  background: none;\
 }\
 textarea {\
   resize: none;\
@@ -7722,7 +7625,7 @@ textarea {\
   position: fixed;\
   top: auto !important;\
   bottom: 20px !important;\
-  width: 248px;\
+  width: ' + (248 + sidebarOffsetW) + 'px;\
   margin: 0;\
   padding: 0;\
   z-index: 5;\
@@ -7738,7 +7641,7 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {\
 }\
 #qr img {\
   height: 47px;\
-  width: 248px;\
+  width: ' + (248 + sidebarOffsetW) + 'px;\
 }\
 #dump {\
   background: none;\
@@ -7820,45 +7723,6 @@ input[title="Verification"],\
 .captchaimg img {\
   margin-top: 1px;\
 }\
-#qr.autohide .move {\
-  display: inline-block;\
-  font-size: 12px;\
-  visibility: visible;\
-  height: 20px;\
-  bottom: 20px;\
-  text-align: center;\
-  overflow: visible;\
-  padding-top: 3px;\
-  ' + agent + 'transition: opacity .3s ease-in-out .3s;\
-  min-width: 0;\
-  width: 248px;\
-}\
-#qr.autohide:not(:hover) .move {\
-  position: fixed;\
-  bottom: 0px;\
-}\
-#qr.autohide {\
-  padding-bottom: 0px;\
-  bottom: -250px!important;\
-  ' + agent + 'transition: bottom .3s ease-in-out .3s, top .3s ease-in-out .3s;\
-}\
-#qr.autohide:hover {\
-  padding-bottom: 16px;\
-  ' + agent + 'transition: bottom .3s linear, top .3s linear;\
-  bottom: 1px;\
-}\
-#qr.autohide:hover .move {\
-  padding-bottom: 5px;\
-}\
-#qr.autohide:hover .move input {\
-  display: inline-block;\
-}\
-#qr.autohide:hover select {\
-  display: inline-block;\
-}\
-#qr.autohide:hover .move {\
-  padding-top: 1px;\
-}\
 #qr textarea.field,\
 #qr div {\
   min-width: 0;\
@@ -7870,9 +7734,6 @@ html body span[style="left: 5px; position: absolute;"] a {\
 }\
 #qr textarea.field {\
   height: 88px !important;\
-}\
-.textarea {\
-  height: 89px !important;\
 }\
 hr {\
   position: relative;\
@@ -8128,7 +7989,7 @@ a.forwardlink {\
 }\
 #qr input:' + agent + 'placeholder,\
 #qr textarea:' + agent + 'placeholder {\
-  color: ' + (theme["Dark Theme"] === "1" ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)") + ';\
+  color: ' + (theme["Dark Theme"] === "1" ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)") + ' !important;\
 }\
 .boxcontent dd,\
 #options ul {\
@@ -8256,6 +8117,86 @@ body > a[style="cursor: pointer; float: right;"]::after {\
 }\
 ';
         }
+        switch (Conf['4chan Banner']) {
+          case 'in sidebar':
+            logoOffset = 83 + sidebarOffsetH;
+            css += '\
+.boardBanner img {\
+  position: fixed;\
+  width: ' + (248 + sidebarOffsetW) + 'px;\
+  top: 19px;\
+  right: 2px;\
+  ' + agent + 'box-reflect: below 0px ' + agent + 'gradient( linear, left top, left bottom, from(transparent), color-stop(91%, rgba(255, 255, 255, .1)), color-stop(21.01%, transparent) );\
+}\
+';
+            break;
+          case 'at top':
+            logoOffset = 0;
+            break;
+          case 'hide':
+            logoOffset = 0;
+            css += '\
+.boardBanner img {\
+  display: none;\
+}\
+';
+        }
+        css += '\
+#watcher::before {\
+	top: ' + (20 + logoOffset) + 'px;\
+}\
+#watcher:hover {\
+	top: ' + (34 + logoOffset) + 'px;\
+}\
+#watcher {\
+	position: fixed;\
+	top: ' + (34 + logoOffset) + 'px;\
+}\
+#boardNavDesktopFoot::after {\
+	top: ' + (19 + logoOffset) + 'px;\
+}\
+#boardNavDesktopFoot:hover {\
+	top: ' + (34 + logoOffset) + 'px;\
+}\
+#navtopr .settingsWindowLink::after {\
+	top: ' + (19 + logoOffset) + 'px;\
+}\
+#settingsBox {\
+	top: ' + (25 + logoOffset) + 'px;\
+}\
+body > a[style="cursor: pointer; float: right;"]::after {\
+	top: ' + (19 + logoOffset) + 'px;\
+}\
+.globalMessage::before {\
+	top: ' + (19 + logoOffset) + 'px;\
+}\
+.globalMessage:hover {\
+	top: ' + (34 + logoOffset) + 'px;\
+}\
+';
+        switch (Conf['Board Logo']) {
+          case 'in sidebar':
+            css += '\
+.boardTitle {\
+  position: fixed;\
+  left: auto;\
+  right: 2px;\
+  top: ' + (45 + logoOffset) + 'px;\
+  z-index: 1;\
+  width: ' + (248 + sidebarOffsetW) + 'px;\
+}\
+.boardSubtitle {\
+  display: none;\
+}\
+';
+            break;
+          case 'hide':
+            css += '\
+.boardTitle, .boardSubtitle {\
+  display: none;\
+}\
+';
+        }
         switch (Conf['Post Form Style']) {
           case 'fixed':
             mascotposition = '264';
@@ -8270,7 +8211,7 @@ body > a[style="cursor: pointer; float: right;"]::after {\
             mascotposition = '0';
             css += '\
 #qr {\
-  right: -233px !important;\
+  right: -' + (233 + sidebarOffsetW) + 'px !important;\
   left: auto !important;\
   ' + agent + 'transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;\
 }\
@@ -8287,7 +8228,7 @@ body > a[style="cursor: pointer; float: right;"]::after {\
             mascotposition = '0';
             css += '\
 #qr {\
-  right: -249px !important;\
+  right: -' + (249 + sidebarOffsetW) + 'px !important;\
   left: auto !important;\
   ' + agent + 'transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;\
 }\
@@ -8506,7 +8447,7 @@ form .postContainer blockquote {\
 }\
 ';
         }
-        if (!Conf['Hide Sidebar']) {
+        if (Conf['Sidebar'] !== 'hide') {
           switch (Conf['Page Margin']) {
             case 'none':
               pagemargin = '2px';
@@ -8521,16 +8462,16 @@ form .postContainer blockquote {\
               pagemargin = '150px';
               break;
             case 'fully centered':
-              pagemargin = '252px';
+              pagemargin = (248 + sidebarOffsetW) + 'px';
           }
           css += '\
 body {\
-  margin: 1px 252px 0 ' + pagemargin + ';\
+  margin: 1px ' + (252 + sidebarOffsetW) + 'px 0 ' + pagemargin + ';\
 }\
 #boardNavDesktop,\
 .pages {\
   left:  ' + pagemargin + ';\
-  right: 252px;\
+  right: ' + (252 + sidebarOffsetW) + 'px;\
 }\
 ';
         } else {
@@ -8553,7 +8494,7 @@ body {\
 .field[name="name"],\
 .field[name="email"],\
 .field[name="sub"] {\
-  width: 75px !important;\
+  width: ' + (75 + (sidebarOffsetW / 3)) + 'px !important;\
   margin-left: 1px !important;\
 }\
 ';
@@ -8561,10 +8502,10 @@ body {\
           css += '\
 .field[name="email"],\
 .field[name="sub"] {\
-  width: 248px !important;\
+  width: ' + (248 + sidebarOffsetW) + 'px !important;\
 }\
 .field[name="name"] {\
-  width: 227px !important;\
+  width: ' + (227 + sidebarOffsetW) + 'px !important;\
   margin-left: 1px !important;\
 }\
 .field[name="email"],\
@@ -8633,7 +8574,7 @@ a,\
   right: 2px !important;\
   left: auto !important;\
   bottom: auto !important;\
-  width: 246px !important;\
+  width: ' + (246 + sidebarOffsetW) + 'px !important;\
   padding-bottom: 4px;\
 }\
 #watcher:hover {\
@@ -8649,7 +8590,7 @@ a,\
 #watcher {\
   right: 2px !important;\
   left: auto !important;\
-  width: 246px;\
+  width: ' + (246 + sidebarOffsetW) + 'px;\
   padding-bottom: 4px;\
   z-index: 96;\
 }\
@@ -8726,7 +8667,7 @@ div.postContainer span.postNum > .replylink {\
           case 'hide':
             css += '\
 #boardNavDesktopFoot::after, #boardNavDesktopFoot {\
-	display: none;\
+  display: none;\
 }\
 ';
         }
@@ -8815,7 +8756,7 @@ a.useremail[href*="SAGE"]:last-of-type::after {\
   z-index: 99;\
 }\
 .globalMessage {\
-  width: 236px;\
+  width: ' + (236 + sidebarOffsetW) + 'px;\
   background-color: ' + theme["Dialog Background"] + ';\
   border: 1px solid ' + theme["Dialog Border"] + ';\
 }\
@@ -8898,7 +8839,7 @@ a.useremail[href*="SAGE"]:last-of-type::after {\
   bottom: 175px;\
   width: 290px;\
   left: auto;\
-  right: 251px;\
+  right: ' + (251 + sidebarOffsetW) + 'px;\
   position: fixed;\
   ' + agent + 'transform: rotate(90deg);\
   ' + agent + 'transform-origin: bottom right;\
