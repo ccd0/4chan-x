@@ -1206,7 +1206,8 @@ body > .postingMode ~ #delform br[clear="left"],
 .spoiler:not(:hover) .quote,
 .spoiler:not(:hover) a {
   color: rgb(0,0,0);
-  text-shadow: none;
+  background-color: rgb(0,0,0);
+  text-shadow: none !important;
 }
 /* Remove default "inherit" background declaration */
 .span.subject,
