@@ -474,30 +474,117 @@ $.extend $,
 
 
 class Board
+  toString: -> @ID
+
   constructor: (@ID) ->
     @threads = {}
     @posts   = {}
 
-    g.boards[@ID] = @
-
-  toString: -> @ID
+    g.boards[@] = @
 
 class Thread
+  callbacks: []
+  toString: -> @ID
+
   constructor: (@root, @board) ->
     @ID = +root.id[1..]
     @hr = root.nextElementSibling
     @posts = {}
 
-    g.threads["#{board.ID}.#{@ID}"] = board.threads[@ID] = @
-  callbacks: []
+    g.threads["#{board}.#{@}"] = board.threads[@] = @
 
 class Post
-  constructor: (@root, @thread, @board) ->
-    @ID = +root.id[2..]
-    @el = $ '.post', root
-
-    g.posts["#{board.ID}.#{@ID}"] = thread.posts[@ID] = board.posts[@ID] = @
   callbacks: []
+  toString: -> @ID
+
+  constructor: (root, @thread, @board) ->
+    @ID = +root.id[2..]
+
+    post = $ '.post', root
+    @nodes =
+      root: root
+      post: post
+      info:    $ '.postInfo',    post
+      comment: $ '.postMessage', post
+      quotelinks: []
+
+    info = @nodes.info
+    if subject        = $ '.subject',     info
+      @nodes.subject  = subject
+      @subject        = subject.textContent
+    if name           = $ '.name',        info
+      @nodes.name     = name
+      @name           = name.textContent
+    if email          = $ '.useremail',   info
+      @nodes.email    = email
+      @email          = decodeURIComponent email.href[7..]
+    if tripcode       = $ '.postertrip',  info
+      @nodes.tripcode = tripcode
+      @tripcode       = tripcode.textContent
+    if uniqueID       = $ '.posteruid',   info
+      @nodes.uniqueID = uniqueID
+      @uniqueID       = uniqueID.textContent
+    if capcode        = $ '.capcode',     info
+      @nodes.capcode  = capcode
+      @capcode        = capcode.textContent
+    if flag           = $ '.countryFlag', info
+      @nodes.flag     = flag
+      @flag           = flag.title
+    if date           = $ '.dateTime',    info
+      @nodes.date     = date
+      @dateUTC        = date.dataset.utc
+
+    # Get the comment's text.
+    # <br> -> \n
+    # Remove:
+    #   'Comment too long'...
+    #   Admin/Mod/Dev replies. (/q/)
+    #   EXIF data. (/p/)
+    #   Rolls. (/tg/)
+    #   Preceding and following new lines.
+    #   Trailing spaces.
+    bq = @nodes.comment.cloneNode true
+    for node in $$ '.abbr, .capcodeReplies, .exif, b', bq
+      $.rm node
+    text = []
+    # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
+    nodes = d.evaluate './/br|.//text()', bq, null, 7, null
+    for i in [0...nodes.snapshotLength]
+      text.push if data = nodes.snapshotItem(i).data then data else '\n'
+    @comment = text.join('').replace /^\n+|\n+$| +(?=\n|$)/g, ''
+
+    quotes = {}
+    for quotelink in $$ '.quotelink', @nodes.comment
+      # Don't add board links. (>>>/b/)
+      # Don't add text-board quotelinks. (>>>/img/1234)
+      # Only add quotes that link to posts on an imageboard.
+      if quotelink.hash
+        @.nodes.quotelinks.push quotelink
+        quotes["#{quotelink.pathname.split('/')[1]}.#{quotelink.hash[2..]}"] = true
+    @quotes = Object.keys quotes
+
+    if (file = $ '.file', post) and thumb = $ 'img[data-md5]', file
+      # Supports JPG/PNG/GIF/PDF.
+      # Flash files are not supported.
+      alt    = thumb.alt
+      anchor = thumb.parentNode
+      @file  =
+        info:  $ '.fileInfo', file
+        text:  $ '.fileText', file
+        thumb: thumb
+        URL:   anchor.href
+        MD5:   thumb.dataset.md5
+        size:  alt.match(/\d+(\.\d+)?\s\w+$/)[0]
+        isSpoiler: $.hasClass anchor, 'imgspoiler'
+      @file.thumbURL = "#{location.protocol}//thumbs.4chan.org/#{board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
+      @file.name = $('span[title]', @file.info).title
+      if @file.isImage = /(jpg|png|gif|svg)$/i.test @file.name # I want to believe.
+        @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
+
+    @isReply = $.hasClass post, 'reply'
+
+    g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
+
 
 Main =
   init: ->
@@ -576,7 +663,12 @@ Main =
       threads.push thread
       for child in thread.root.children
         continue unless $.hasClass child, 'postContainer'
-        posts.push new Post child, thread, g.BOARD
+        try
+          posts.push new Post child, thread, g.BOARD
+        catch err
+          # Skip posts that we failed to parse.
+          # XXX handle error
+          # Post parser crashed for post No.#{child.id[2..]}
 
     Main.callbackNodes Thread, threads, true
     Main.callbackNodes Post,   posts,   true
@@ -589,7 +681,7 @@ Main =
         for i in [0...len]
           callback.cb.call nodes[i]
       catch err
-        # handle error if notify
+        # XXX handle error if notify
     return
 
   settings: ->

@@ -603,16 +603,16 @@
 
   Board = (function() {
 
+    Board.prototype.toString = function() {
+      return this.ID;
+    };
+
     function Board(ID) {
       this.ID = ID;
       this.threads = {};
       this.posts = {};
-      g.boards[this.ID] = this;
+      g.boards[this] = this;
     }
-
-    Board.prototype.toString = function() {
-      return this.ID;
-    };
 
     return Board;
 
@@ -620,16 +620,20 @@
 
   Thread = (function() {
 
+    Thread.prototype.callbacks = [];
+
+    Thread.prototype.toString = function() {
+      return this.ID;
+    };
+
     function Thread(root, board) {
       this.root = root;
       this.board = board;
       this.ID = +root.id.slice(1);
       this.hr = root.nextElementSibling;
       this.posts = {};
-      g.threads["" + board.ID + "." + this.ID] = board.threads[this.ID] = this;
+      g.threads["" + board + "." + this] = board.threads[this] = this;
     }
-
-    Thread.prototype.callbacks = [];
 
     return Thread;
 
@@ -637,16 +641,101 @@
 
   Post = (function() {
 
+    Post.prototype.callbacks = [];
+
+    Post.prototype.toString = function() {
+      return this.ID;
+    };
+
     function Post(root, thread, board) {
-      this.root = root;
+      var alt, anchor, bq, capcode, data, date, email, file, flag, i, info, name, node, nodes, post, quotelink, quotes, subject, text, thumb, tripcode, uniqueID, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2;
       this.thread = thread;
       this.board = board;
       this.ID = +root.id.slice(2);
-      this.el = $('.post', root);
-      g.posts["" + board.ID + "." + this.ID] = thread.posts[this.ID] = board.posts[this.ID] = this;
+      post = $('.post', root);
+      this.nodes = {
+        root: root,
+        post: post,
+        info: $('.postInfo', post),
+        comment: $('.postMessage', post),
+        quotelinks: []
+      };
+      info = this.nodes.info;
+      if (subject = $('.subject', info)) {
+        this.nodes.subject = subject;
+        this.subject = subject.textContent;
+      }
+      if (name = $('.name', info)) {
+        this.nodes.name = name;
+        this.name = name.textContent;
+      }
+      if (email = $('.useremail', info)) {
+        this.nodes.email = email;
+        this.email = decodeURIComponent(email.href.slice(7));
+      }
+      if (tripcode = $('.postertrip', info)) {
+        this.nodes.tripcode = tripcode;
+        this.tripcode = tripcode.textContent;
+      }
+      if (uniqueID = $('.posteruid', info)) {
+        this.nodes.uniqueID = uniqueID;
+        this.uniqueID = uniqueID.textContent;
+      }
+      if (capcode = $('.capcode', info)) {
+        this.nodes.capcode = capcode;
+        this.capcode = capcode.textContent;
+      }
+      if (flag = $('.countryFlag', info)) {
+        this.nodes.flag = flag;
+        this.flag = flag.title;
+      }
+      if (date = $('.dateTime', info)) {
+        this.nodes.date = date;
+        this.dateUTC = date.dataset.utc;
+      }
+      bq = this.nodes.comment.cloneNode(true);
+      _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i];
+        $.rm(node);
+      }
+      text = [];
+      nodes = d.evaluate('.//br|.//text()', bq, null, 7, null);
+      for (i = _j = 0, _ref1 = nodes.snapshotLength; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+        text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
+      }
+      this.comment = text.join('').replace(/^\n+|\n+$| +(?=\n|$)/g, '');
+      quotes = {};
+      _ref2 = $$('.quotelink', this.nodes.comment);
+      for (_k = 0, _len1 = _ref2.length; _k < _len1; _k++) {
+        quotelink = _ref2[_k];
+        if (quotelink.hash) {
+          this.nodes.quotelinks.push(quotelink);
+          quotes["" + (quotelink.pathname.split('/')[1]) + "." + quotelink.hash.slice(2)] = true;
+        }
+      }
+      this.quotes = Object.keys(quotes);
+      if ((file = $('.file', post)) && (thumb = $('img[data-md5]', file))) {
+        alt = thumb.alt;
+        anchor = thumb.parentNode;
+        this.file = {
+          info: $('.fileInfo', file),
+          text: $('.fileText', file),
+          thumb: thumb,
+          URL: anchor.href,
+          MD5: thumb.dataset.md5,
+          size: alt.match(/\d+(\.\d+)?\s\w+$/)[0],
+          isSpoiler: $.hasClass(anchor, 'imgspoiler')
+        };
+        this.file.thumbURL = "" + location.protocol + "//thumbs.4chan.org/" + board + "/thumb/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
+        this.file.name = $('span[title]', this.file.info).title;
+        if (this.file.isImage = /(jpg|png|gif|svg)$/i.test(this.file.name)) {
+          this.file.dimensions = this.file.text.textContent.match(/\d+x\d+/)[0];
+        }
+      }
+      this.isReply = $.hasClass(post, 'reply');
+      g.posts["" + board + "." + this] = thread.posts[this] = board.posts[this] = this;
     }
-
-    Post.prototype.callbacks = [];
 
     return Post;
 
@@ -748,7 +837,11 @@
           if (!$.hasClass(child, 'postContainer')) {
             continue;
           }
-          posts.push(new Post(child, thread, g.BOARD));
+          try {
+            posts.push(new Post(child, thread, g.BOARD));
+          } catch (err) {
+
+          }
         }
       }
       Main.callbackNodes(Thread, threads, true);
