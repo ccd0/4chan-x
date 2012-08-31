@@ -1000,7 +1000,6 @@ a.yuimenuitemlabel {
 .pages a,
 .pages strong,
 .pages input {
-  ' + agent + 'appearance: none;
   display: inline-block;
   font-size: 12px;
   border: none;
@@ -1042,6 +1041,9 @@ input:not([type="radio"]),
 input[type="submit"],
 textarea {
   ' + agent + 'appearance: none;
+}
+input[type=checkbox] {
+  ' + agent + 'appearance: checkbox !important;
 }
 /* Unfuxor the Captcha layout */
 #recaptcha_widget_div tr, #recaptcha_widget_div td, #recaptcha_widget_div center, #recaptcha_widget_div #recaptcha_table, #recaptcha_widget_div #recaptcha_area, #recaptcha_widget_div #recaptcha_image {
@@ -1905,6 +1907,10 @@ div.subMenu,
 }
 input[type=checkbox]:checked + .rice {
   background-color: ' + theme["Checkbox Checked Background"] + ';
+  background-image: url(' + (if theme["Dark Theme"] == "1" then "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABlBMVEX///////9VfPVsAAAAAXRSTlMAQObYZgAAACJJREFUeF4FwLEJACAMBMATh3WN31jLFCEIsWLHicvQFM8HVtkHPQ48rNIAAAAASUVORK5CYII=" else "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJBAMAAAASvxsjAAAAG1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACUUeIgAAAACHRSTlMAMN9AIL8Qn+Bdi9cAAAA4SURBVHheFcSxDQAgCATANzoAcQKNjSWxcgFncQ2gcmzhikOgKLe4CgonIxxZA9g6yX8dvrF/1fuGOAZL4rd0JQAAAABJRU5ErkJggg==") + ');
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-position: bottom right;
 }
 a:hover,
 #dump:hover,
@@ -1955,9 +1961,6 @@ a.forwardlink {
 .boxcontent dd,
 #options ul {
   border-color: ' + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + ';
-}
-input[type=checkbox] {
-  ' + agent + 'appearance: checkbox !important;
 }
 ' + theme['Custom CSS']
       if theme['Dark Theme'] == '1'

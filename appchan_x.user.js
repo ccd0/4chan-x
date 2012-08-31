@@ -526,6 +526,108 @@
       'Dark Theme': '1',
       'Custom CSS': '.nameBlock>.useremail>postertrip{color: rgb(137,115,153);}a.backlink:hover{color: rgb(198,23,230);}.reply:target,.reply.highlight:target{background:rgb(37,38,42);}[alt="sticky"]+a{color: rgb(242,141,0);}[alt="closed"]+a{color: rgb(178,171,130);}input:checked .rice{border-color:rgb(21,21,21)}}input[type="submit"], input[type="button"], button {background: -moz-linear-gradient(#393939, #292929);background: -webkit-linear-gradient(#393939, #292929);background: -o-linear-gradient(#393939, #292929);border: 1px solid #191919;color: #AAA;text-shadow: 0 1px 1px #191919;}input[type="checkbox"], input[type="radio"] {background-color: #393939;border: 1px solid #191919;}input[type="checkbox"]:checked, input[type="radio"]:checked {background: -moz-linear-gradient(#595959, #393939);background: -webkit-linear-gradient(#595959, #393939);background: -o-linear-gradient(#595959, #393939);border: 1px solid #151515;} #delform { padding: 7px; }'
     },
+    'ObsidianChan': {
+      'Author': 'seaweed-chan',
+      'Author Tripcode': '!POMF.9waa',
+      'Background Image': 'url("http://i.imgur.com/sbi8u.png")',
+      'Background Attachment': 'fixed',
+      'Background Position': '',
+      'Background Repeat': '',
+      'Dialog Background': 'rgba(0,0,0,0.7)',
+      'Dialog Border': 'rgba(0,0,0,0.7)',
+      'Background Color': 'rgba(0,0,0,1)',
+      'Thread Wrapper Background': 'rgba(0,0,0,0.3)',
+      'Thread Wrapper Border': 'rgba(51,51,51,1)',
+      'Reply Background': 'rgba(0,0,0,0.6)',
+      'Reply Border': 'rgba(0,0,0,0.6)',
+      'Highlighted Reply Background': 'rgba(0,0,0,0.4)',
+      'Highlighted Reply Border': 'rgba(0,0,0,0.4)',
+      'Backlinked Reply Outline': 'rgba(98,124,141,1)',
+      'Checkbox Background': 'rgba(68,68,68,1)',
+      'Checkbox Border': 'rgba(68,68,68,1)',
+      'Input Background': 'rgba(0,0,0,0.6)',
+      'Input Border': 'rgba(0,0,0,0.6)',
+      'Hovered Input Background': 'rgba(0,0,0,0.4)',
+      'Hovered Input Border': 'rgba(0,0,0,0.4)',
+      'Focused Input Background': 'rgba(0,0,0,0.4)',
+      'Focused Input Border': 'rgba(0,0,0,0.4)',
+      'Checkbox Checked Background': 'rgba(255,0,127,1)',
+      'Buttons Background': 'rgba(0,0,0,0.4)',
+      'Buttons Border': 'rgba(0,0,0,0.4)',
+      'Navigation Background': 'rgba(0,0,0,0.7)',
+      'Navigation Border': 'rgba(0,0,0,0.7)',
+      'Links': 'rgb(0,255,255)',
+      'Hovered Links': 'rgb(0,255,255)',
+      'Navigation Links': 'rgb(253,254,255)',
+      'Hovered Navigation Links': 'rgb(253,254,255)',
+      'Subjects': 'rgb(144,144,144)',
+      'Names': 'rgb(253,254,255)',
+      'Sage': 'rgb(253,254,255)',
+      'Tripcodes': 'rgb(255,82,203)',
+      'Emails': 'rgb(0,255,255)',
+      'Post Numbers': 'rgb(253,254,255)',
+      'Text': 'rgb(253,254,255)',
+      'Backlinks': 'rgb(0,255,255)',
+      'Greentext': 'rgb(67,204,103)',
+      'Board Title': 'rgb(253,254,255)',
+      'Timestamps': 'rgb(253,254,255)',
+      'Inputs': 'rgb(253,254,255)',
+      'Warnings': 'rbg(0,255,255)',
+      'Shadow Color': 'rgba(44,44,44,0.4)',
+      'Dark Theme': '1',
+      'Custom CSS': '#qp div.post{background-color:rgba(0,0,0,0.8);border-radius:4px;border: 1px solid #333;}#qr {background-color: rgba(0,0,0,0.7);border: 1px solid #333;}'
+    },
+    'PaisleyChan': {
+      'Author': '#gay',
+      'Author Tripcode': '',
+      'Background Image': 'url(http://i.imgur.com/DRaZf.jpg)',
+      'Background Attachment': 'fixed',
+      'Background Position': '',
+      'Background Repeat': 'repeat',
+      'Background Color': 'rgba(0,0,0,1)',
+      'Dialog Background': 'rgba(16,16,16,1)',
+      'Dialog Border': 'rgba(16,16,16,1)',
+      'Thread Wrapper Background': 'rgba(52,56,56,0.75)',
+      'Thread Wrapper Border': 'rgba(52,56,56,0.75)',
+      'Reply Background': 'rgba(0,0,0,0)',
+      'Reply Border': 'rgba(0,0,0,0)',
+      'Highlighted Reply Background': 'rgba(42,46,46,0.9)',
+      'Highlighted Reply Border': 'rgba(42,46,46,0.9)',
+      'Backlinked Reply Outline': 'rgba(98,124,141,1)',
+      'Checkbox Background': 'rgba(34,34,34,1)',
+      'Checkbox Border': 'rgba(60,60,60,1)',
+      'Input Background': 'rgba(28,28,28,1)',
+      'Input Border': 'rgba(28,28,28,1)',
+      'Hovered Input Background': 'rgba(24,24,24,1)',
+      'Hovered Input Border': 'rgba(24,24,24,1)',
+      'Focused Input Background': 'rgba(32,32,32,1)',
+      'Focused Input Border': 'rgba(32,32,32,1)',
+      'Checkbox Checked Background': 'rgba(34,34,34,1)',
+      'Buttons Background': 'rgba(32,32,32,1)',
+      'Buttons Border': 'rgba(32,32,32,1)',
+      'Navigation Background': 'rgba(16,16,16,0.9)',
+      'Navigation Border': 'rgba(16,16,16,0.9)',
+      'Links': 'rgb(187,187,187)',
+      'Hovered Links': 'rgb(0,223,252)',
+      'Navigation Links': 'rgb(153,153,153)',
+      'Hovered Navigation Links': 'rgb(0,223,252)',
+      'Subjects': 'rgb(170,170,170)',
+      'Names': 'rgb(128,172,206)',
+      'Sage': 'rgb(153,153,153)',
+      'Tripcodes': 'rgb(128,172,206)',
+      'Emails': 'rgb(187,187,187)',
+      'Post Numbers': 'rgb(153,153,153)',
+      'Text': 'rgb(153,153,153)',
+      'Backlinks': 'rgb(212,212,212)',
+      'Greentext': 'rgb(152,185,98)',
+      'Board Title': 'rgb(153,153,153)',
+      'Timestamps': 'rgb(153,153,153)',
+      'Inputs': 'rgb(153,153,153)',
+      'Warnings': 'rbg(187,187,187)',
+      'Shadow Color': 'rgba(20,20,20,0.9)',
+      'Dark Theme': '1',
+      'Custom CSS': '#delform blockquote{color:#bbb;background:#343838;margin-bottom:10px;padding:8px;box-shadow:0px 0px 20px rgba(25,25,25,0.6);border:1px solid #343838;border-bottom:2px solid #444848;border-radius:0px 6px 6px 6px;padding-top:15px;}.name{font-weight:800;}.nameBlock>.useremail>.name:hover,.nameBlock>.useremail>.postertrip:hover{color:#00dffc;}a.forwardlink{color:#608cae;font-weight:800;}#delform blockquote{border-radius:3px;}.reply #delform blockquote{background-color:transparent;}div.reply, .reply.highlight{padding:0px;}#qp div.post{border:1px solid rgba(128,172,206,0.5);background-color:rgba(24,24,24,0.9);}.name,.postertrip{text-shadow:0px 0px 6px rgba(20,20,20,0.9);font-weight:bold;background:#343838;border:1px solid #343838;border-radius:5px 5px 0px 0px;-moz-border-radius:5px 5px 0px 0px;padding:4px 6px;padding-top:2px;}div.reply,form[name="delform"],#delform blockquote{margin:0px!important;padding:0px;}a{-moz-transition:all 0.5s ease;}a.pointer {font-weight:bold;font-weight:normal;color:#777;padding-right:5px;}form[name="delform"] table a img{position:relative;bottom:15px;right:10px;padding:0px;margin-bottom:10px;}.opContainer{-moz-transition:all 0.5s ease;opacity:0.45;-webkit-transition:all 0.5s ease;opacity:0.45;-o-transition:all 0.5s ease;opacity:0.45;}.opContainer:hover{opacity:1;}.reply,.reply.highlight{background:transparent;border:0px;padding:0px;padding-bottom:0px;border-radius:6px;}form[name="delform"] table blockquote{padding:5px;background:#343838;margin-top:0px;min-height:20px;padding-top:10px;clear:none;}table a[href^="http://images.4chan.org"] + blockquote{margin-top:-14px;padding-left:150px;}a.backlink{border:1px solid #343838;border-radius:5px 5px 0px 0px;background:#343838;padding:2px 4px 2px;text-decoration:none;}a.forwardlink{color:#608CAE;text-shadow:0 0 6px rgba(96,140,174,0.8);}body > .postingMode ~ form[name="delform"] .subject{font-weight: bold;letter-spacing: 3px;background: transparent;}div.reply {background-color: transparent;}#qp div.post .name, #qp div.post a.backlink, #qp div.post blockquote {background:none;border:none;box-shadow:none;border-radius:0px;}'
+    },
     'RedUX': {
       'Author': 'Zixaphir',
       'Author Tripcode': '!VGsTHECURE',
@@ -5938,7 +6040,8 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     },
     noderice: function(post) {
       var checkbox, div;
-      checkbox = $('[type=checkbox]', post.root);
+      checkbox = $('[type=checkbox]:not(.riced)', post.root);
+      $.addClass(checkbox, 'riced');
       div = $.el('div', {
         className: 'rice'
       });
@@ -6992,7 +7095,6 @@ a.yuimenuitemlabel {\
 .pages a,\
 .pages strong,\
 .pages input {\
-  ' + agent + 'appearance: none;\
   display: inline-block;\
   font-size: 12px;\
   border: none;\
@@ -7034,6 +7136,9 @@ input:not([type="radio"]),\
 input[type="submit"],\
 textarea {\
   ' + agent + 'appearance: none;\
+}\
+input[type=checkbox] {\
+  ' + agent + 'appearance: checkbox !important;\
 }\
 /* Unfuxor the Captcha layout */\
 #recaptcha_widget_div tr, #recaptcha_widget_div td, #recaptcha_widget_div center, #recaptcha_widget_div #recaptcha_table, #recaptcha_widget_div #recaptcha_area, #recaptcha_widget_div #recaptcha_image {\
@@ -7897,6 +8002,10 @@ div.subMenu,\
 }\
 input[type=checkbox]:checked + .rice {\
   background-color: ' + theme["Checkbox Checked Background"] + ';\
+  background-image: url(' + (theme["Dark Theme"] === "1" ? "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABlBMVEX///////9VfPVsAAAAAXRSTlMAQObYZgAAACJJREFUeF4FwLEJACAMBMATh3WN31jLFCEIsWLHicvQFM8HVtkHPQ48rNIAAAAASUVORK5CYII=" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJBAMAAAASvxsjAAAAG1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACUUeIgAAAACHRSTlMAMN9AIL8Qn+Bdi9cAAAA4SURBVHheFcSxDQAgCATANzoAcQKNjSWxcgFncQ2gcmzhikOgKLe4CgonIxxZA9g6yX8dvrF/1fuGOAZL4rd0JQAAAABJRU5ErkJggg==") + ');\
+  background-attachment: scroll;\
+  background-repeat: no-repeat;\
+  background-position: bottom right;\
 }\
 a:hover,\
 #dump:hover,\
@@ -7947,9 +8056,6 @@ a.forwardlink {\
 .boxcontent dd,\
 #options ul {\
   border-color: ' + (theme["Dark Theme"] === "1" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)") + ';\
-}\
-input[type=checkbox] {\
-  ' + agent + 'appearance: checkbox !important;\
 }\
 ' + theme['Custom CSS'];
         if (theme['Dark Theme'] === '1') {

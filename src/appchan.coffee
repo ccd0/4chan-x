@@ -18,7 +18,8 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     return css
 
   noderice: (post) ->
-    checkbox = $('[type=checkbox]', post.root)
+    checkbox = $('[type=checkbox]:not(.riced)', post.root)
+    $.addClass checkbox, 'riced'
     div = $.el 'div',
       className: 'rice'
     $.on div, 'click', ->
