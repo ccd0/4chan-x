@@ -657,7 +657,11 @@
       };
       for (tag in tag_patterns) {
         pattern = tag_patterns[tag];
-        text = text.replace(pattern, Markdown.unicode_convert);
+        if (text === null) {
+          text = '\u180e';
+        } else {
+          text = text.replace(pattern, Markdown.unicode_convert);
+        }
       }
       return text;
     },

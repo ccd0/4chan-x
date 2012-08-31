@@ -501,7 +501,10 @@ Markdown =
       ds: /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
 
     for tag, pattern of tag_patterns
-      text = text.replace pattern, Markdown.unicode_convert
+      if text == null
+        text = '\u180e'
+      else
+        text = text.replace pattern, Markdown.unicode_convert
     text
 
   unicode_convert: (str, tag, inner) ->
