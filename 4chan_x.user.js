@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Board, Conf, Config, Main, Post, Thread, UI, d, g;
+  var $, $$, Board, Conf, Config, Main, Post, Thread, Time, UI, d, g;
 
   Config = {
     main: {
@@ -695,7 +695,7 @@
       }
       if (date = $('.dateTime', info)) {
         this.nodes.date = date;
-        this.dateUTC = date.dataset.utc;
+        this.date = new Date(date.dataset.utc * 1000);
       }
       bq = this.nodes.comment.cloneNode(true);
       _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
@@ -818,10 +818,17 @@
       return (_ref2 = $.id('boardNavDesktopFoot')) != null ? _ref2.hidden = true : void 0;
     },
     initFeatures: function() {
+      if (Conf['Time Formatting']) {
+        try {
+          Time.init();
+        } catch (err) {
+          $.log(err, 'Time Formatting');
+        }
+      }
       return $.ready(Main.initFeaturesReady);
     },
     initFeaturesReady: function() {
-      var child, posts, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+      var boardChild, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (!$.id('navtopr')) {
         return;
       }
@@ -829,22 +836,22 @@
       posts = [];
       _ref = $('.board').children;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        child = _ref[_i];
-        if (child.className !== 'thread') {
+        boardChild = _ref[_i];
+        if (!$.hasClass(boardChild, 'thread')) {
           continue;
         }
-        thread = new Thread(child, g.BOARD);
+        thread = new Thread(boardChild, g.BOARD);
         threads.push(thread);
-        _ref1 = thread.root.children;
+        _ref1 = boardChild.children;
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          child = _ref1[_j];
-          if (!$.hasClass(child, 'postContainer')) {
+          threadChild = _ref1[_j];
+          if (!$.hasClass(threadChild, 'postContainer')) {
             continue;
           }
           try {
-            posts.push(new Post(child, thread, g.BOARD));
+            posts.push(new Post(threadChild, thread, g.BOARD));
           } catch (err) {
-
+            $.log(threadChild, err);
           }
         }
       }
@@ -862,7 +869,7 @@
             callback.cb.call(nodes[i]);
           }
         } catch (err) {
-
+          $.log(callback.name, 'crashed. error:', err.message, nodes[i], err);
         }
       }
     },
@@ -878,6 +885,97 @@
       }
     },
     css: "/* general */\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}"
+  };
+
+  Time = {
+    init: function() {
+      this.funk = this.createFunc();
+      return Post.prototype.callbacks.push({
+        name: 'Time Formatting',
+        cb: this.node
+      });
+    },
+    node: function() {
+      return this.nodes.date.textContent = Time.funk(Time, this.date);
+    },
+    createFunc: function() {
+      var code;
+      code = Conf['time'].replace(/%([A-Za-z])/g, function(s, c) {
+        if (c in Time.formatters) {
+          return "' + Time.formatters." + c + ".call(date) + '";
+        } else {
+          return s;
+        }
+      });
+      return Function('Time', 'date', "return '" + code + "'");
+    },
+    day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    zeroPad: function(n) {
+      if (n < 10) {
+        return "0" + n;
+      } else {
+        return n;
+      }
+    },
+    formatters: {
+      a: function() {
+        return Time.day[this.getDay()].slice(0, 3);
+      },
+      A: function() {
+        return Time.day[this.getDay()];
+      },
+      b: function() {
+        return Time.month[this.getMonth()].slice(0, 3);
+      },
+      B: function() {
+        return Time.month[this.getMonth()];
+      },
+      d: function() {
+        return Time.zeroPad(this.getDate());
+      },
+      e: function() {
+        return this.getDate();
+      },
+      H: function() {
+        return Time.zeroPad(this.getHours());
+      },
+      I: function() {
+        return Time.zeroPad(this.getHours() % 12 || 12);
+      },
+      k: function() {
+        return this.getHours();
+      },
+      l: function() {
+        return this.getHours() % 12 || 12;
+      },
+      m: function() {
+        return Time.zeroPad(this.getMonth() + 1);
+      },
+      M: function() {
+        return Time.zeroPad(this.getMinutes());
+      },
+      p: function() {
+        if (this.getHours() < 12) {
+          return 'AM';
+        } else {
+          return 'PM';
+        }
+      },
+      P: function() {
+        if (this.getHours() < 12) {
+          return 'am';
+        } else {
+          return 'pm';
+        }
+      },
+      S: function() {
+        return Time.zeroPad(this.getSeconds());
+      },
+      y: function() {
+        return this.getFullYear() - 2000;
+      }
+    }
   };
 
   Main.init();

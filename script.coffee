@@ -536,7 +536,7 @@ class Post
       @flag           = flag.title
     if date           = $ '.dateTime',    info
       @nodes.date     = date
-      @dateUTC        = date.dataset.utc
+      @date           = new Date date.dataset.utc * 1000
 
     # Get the comment's text.
     # <br> -> \n
@@ -654,6 +654,13 @@ Main =
     $.id('boardNavDesktopFoot')?.hidden = true
 
   initFeatures: ->
+    if Conf['Time Formatting']
+      try
+        Time.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Time Formatting'
+
     $.ready Main.initFeaturesReady
   initFeaturesReady: ->
     return unless $.id 'navtopr'
@@ -661,18 +668,19 @@ Main =
     threads = []
     posts   = []
 
-    for child in $('.board').children
-      continue unless child.className is 'thread'
-      thread = new Thread child, g.BOARD
+    for boardChild in $('.board').children
+      continue unless $.hasClass boardChild, 'thread'
+      thread = new Thread boardChild, g.BOARD
       threads.push thread
-      for child in thread.root.children
-        continue unless $.hasClass child, 'postContainer'
+      for threadChild in boardChild.children
+        continue unless $.hasClass threadChild, 'postContainer'
         try
-          posts.push new Post child, thread, g.BOARD
+          posts.push new Post threadChild, thread, g.BOARD
         catch err
           # Skip posts that we failed to parse.
           # XXX handle error
-          # Post parser crashed for post No.#{child.id[2..]}
+          # Post parser crashed for post No.#{threadChild.id[2..]}
+          $.log threadChild, err
 
     Main.callbackNodes Thread, threads, true
     Main.callbackNodes Post,   posts,   true
@@ -686,6 +694,7 @@ Main =
           callback.cb.call nodes[i]
       catch err
         # XXX handle error if notify
+        $.log callback.name, 'crashed. error:', err.message, nodes[i], err
     return
 
   settings: ->
@@ -745,5 +754,67 @@ body.fourchan_x {
   float: right;
 }
 """
+
+
+
+Time =
+  init: ->
+    @funk = @createFunc()
+    Post::callbacks.push
+      name: 'Time Formatting'
+      cb:   @node
+  node: ->
+    # XXX return if @isInlined and not @isCrosspost
+    @nodes.date.textContent = Time.funk Time, @date
+  createFunc: ->
+    code = Conf['time'].replace /%([A-Za-z])/g, (s, c) ->
+      if c of Time.formatters
+        "' + Time.formatters.#{c}.call(date) + '"
+      else
+        s
+    Function 'Time', 'date', "return '#{code}'"
+  day: [
+    'Sunday'
+    'Monday'
+    'Tuesday'
+    'Wednesday'
+    'Thursday'
+    'Friday'
+    'Saturday'
+  ]
+  month: [
+    'January'
+    'February'
+    'March'
+    'April'
+    'May'
+    'June'
+    'July'
+    'August'
+    'September'
+    'October'
+    'November'
+    'December'
+  ]
+  zeroPad: (n) -> if n < 10 then "0#{n}" else n
+  formatters:
+    a: -> Time.day[@getDay()][...3]
+    A: -> Time.day[@getDay()]
+    b: -> Time.month[@getMonth()][...3]
+    B: -> Time.month[@getMonth()]
+    d: -> Time.zeroPad @getDate()
+    e: -> @getDate()
+    H: -> Time.zeroPad @getHours()
+    I: -> Time.zeroPad @getHours() % 12 or 12
+    k: -> @getHours()
+    l: -> @getHours() % 12 or 12
+    m: -> Time.zeroPad @getMonth() + 1
+    M: -> Time.zeroPad @getMinutes()
+    p: -> if @getHours() < 12 then 'AM' else 'PM'
+    P: -> if @getHours() < 12 then 'am' else 'pm'
+    S: -> Time.zeroPad @getSeconds()
+    y: -> @getFullYear() - 2000
+
+
 
 Main.init()
