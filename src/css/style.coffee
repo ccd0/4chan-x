@@ -560,22 +560,29 @@ time + span {
 .globalMessage b { font-weight: 100; }
 /* Cleanup */
 #absbot,
+#autohide,
 #ft li.fill,
+#imgControls label:first-of-type input,
 #logo,
 #postPassword + span,
 #qr.auto:not(:hover) #recaptcha_reload_btn,
+#qr.autohide select,
+#qr.autohide .close,
 #recaptcha_switch_audio_btn,
 #recaptcha_whatsthis_btn,
 #settingsBox[style*="display: none;"],
+.autoPagerS,
 .board > hr:last-of-type,
 .closed,
 .deleteform br,
+.entry:not(.focused) > .subMenu,
 .error:empty,
 .hidden_thread > .summary,
+.inline .report_button,
+.inline input,
 .mobile,
 .navLinksBot,
 .next,
-.pages td:nth-of-type(2n-1),
 .postingMode,
 .prev,
 .qrHeader,
@@ -587,25 +594,12 @@ time + span {
 .warnicon,
 .warning:empty,
 .yui-menu-shadow,
-a[href*="jlist"],
 body > .postingMode ~ #delform hr,
 body > br,
 body > hr,
 div.reply[hidden],
-form table tbody > tr:nth-of-type(2) td[align="right"],
-form[name="post"] h1,
 html body > span[style="left: 5px; position: absolute;"]:nth-of-type(0),
-table[style="text-align:center;width:100%;height:300px;"],
-td[style^="padding: "]:not([style="padding: 10px 7px 7px 7px;"]):not([style="padding: 10px 7px 7px;"]),
-#imgControls label:first-of-type input,
-.autoPagerS,
-#options hr,
-.inline .report_button,
-.inline input,
-.entry:not(.focused) > .subMenu,
-#autohide,
-#qr.autohide select,
-#qr.autohide .close {
+table[style="text-align:center;width:100%;height:300px;"] {
   display: none !important;
 }
 div.post > blockquote .prettyprint span {
@@ -1489,8 +1483,6 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"]{
   background-color: transparent;
   border: none;
 }
-/* Adblock Minus */
-img[src^="//static.4chan.org/support/"] { display: none; }
 input[type="submit"]:hover { cursor: pointer; }
 /* 4chan Sounds */
 .ys_playerContainer.reply {
@@ -2103,7 +2095,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #qr::before {
   ' + agent + 'transform: rotate(-90deg);
   ' + agent + 'transform-origin: bottom right;
-  margin-left: -212px;
+  margin-left: -210px;
   margin-right: 264px;
   margin-bottom: -20px;
   width: 210px;
@@ -2733,8 +2725,14 @@ body::after {
   content: ' + mascotimages[Math.floor(Math.random() * mascotimages.length)] + '
 }
 '
-
-
+      if Conf["Block Ads"]
+        css += '
+/* AdBlock Minus */
+a[href*="jlist"],
+img[src^="//static.4chan.org/support/"] {
+  display: none;
+}
+'
       switch Conf['Emoji Position']
         when 'left'
           css += Style.emoji('before', 'left')

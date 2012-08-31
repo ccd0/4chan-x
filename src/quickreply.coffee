@@ -689,7 +689,7 @@ QR =
       if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
         $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
-    if Conf['Persistent QR'] or QR.cooldown.auto of Conf['Style']
+    if Conf['Persistent QR'] or QR.cooldown.auto or Conf['Style']
       reply.rm()
     else
       QR.close()
