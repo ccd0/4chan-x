@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Board, Conf, Config, Main, Post, Quotify, Thread, Time, UI, d, g;
+  var $, $$, Board, Conf, Config, Main, Post, QuoteBacklink, Quotify, Thread, Time, UI, d, g;
 
   Config = {
     main: {
@@ -825,6 +825,13 @@
           $.log(err, 'Resurrect Quotes');
         }
       }
+      if (Conf['Quote Backlinks']) {
+        try {
+          QuoteBacklink.init();
+        } catch (err) {
+          $.log(err, 'Quote Backlinks');
+        }
+      }
       if (Conf['Time Formatting']) {
         try {
           Time.init();
@@ -927,7 +934,6 @@
             textContent: quote
           });
           this.nodes.quotelinks.push(a);
-          $.log(this.nodes.quotelinks, this.quotes);
           nodes.push(a);
           data = data.slice(index + quote.length);
         }
@@ -936,6 +942,52 @@
         }
         $.replace(node, nodes);
       }
+    }
+  };
+
+  QuoteBacklink = {
+    init: function() {
+      var format;
+      format = Conf['backlink'].replace(/%id/g, "' + id + '");
+      this.funk = Function('id', "return '" + format + "'");
+      this.containers = {};
+      Post.prototype.callbacks.push({
+        name: 'Quote Backlinking Part 1',
+        cb: this.firstNode
+      });
+      return Post.prototype.callbacks.push({
+        name: 'Quote Backlinking Part 2',
+        cb: this.secondNode
+      });
+    },
+    firstNode: function() {
+      var a, link, quote, _i, _len, _ref;
+      if (!this.quotes.length) {
+        return;
+      }
+      a = $.el('a', {
+        href: "/" + this.board + "/res/" + this.thread + "#p" + this,
+        className: 'backlink',
+        textContent: QuoteBacklink.funk(this.ID)
+      });
+      _ref = this.quotes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        link = a.cloneNode(true);
+        $.add(QuoteBacklink.getContainer(quote), [$.tn(' '), link]);
+      }
+    },
+    secondNode: function() {
+      if (!(Conf['OP Backlinks'] || this.isReply)) {
+        return;
+      }
+      return $.add(this.nodes.info, QuoteBacklink.getContainer("" + this.board + "." + this));
+    },
+    getContainer: function(id) {
+      var _base;
+      return (_base = this.containers)[id] || (_base[id] = $.el('span', {
+        className: 'container'
+      }));
     }
   };
 

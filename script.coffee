@@ -661,6 +661,13 @@ Main =
         # XXX handle error
         $.log err, 'Resurrect Quotes'
 
+    if Conf['Quote Backlinks']
+      try
+        QuoteBacklink.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Quote Backlinks'
+
     if Conf['Time Formatting']
       try
         Time.init()
@@ -770,7 +777,7 @@ Quotify =
       name: 'Resurrect Quotes'
       cb:   @node
   node: ->
-    # return if post.isInlined and not post.isCrosspost
+    # XXX return if post.isInlined and not post.isCrosspost
 
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
@@ -825,7 +832,6 @@ Quotify =
         #     a.setAttribute 'data-id',    ID
 
         @nodes.quotelinks.push a
-        $.log @nodes.quotelinks, @quotes
         nodes.push a
         data = data[index + quote.length..]
 
@@ -835,6 +841,56 @@ Quotify =
 
       $.replace node, nodes
     return
+
+QuoteBacklink =
+  # Backlinks appending need to work for:
+  #  - previous, same, and following posts.
+  #  - existing and yet-to-exist posts.
+  #  - newly fetched posts.
+  #  - in copies.
+  # XXX what about order for fetched posts?
+  # XXX need to work on post copying first before appending inside copies too
+  #
+  # First callback creates backlinks and add them to relevant containers.
+  # Second callback adds relevant containers into posts.
+  # This is is so that fetched posts can get their backlinks,
+  # and that as much backlinks are appended in the background as possible.
+  init: ->
+    format = Conf['backlink'].replace /%id/g, "' + id + '"
+    @funk  = Function 'id', "return '#{format}'"
+    @containers = {}
+    Post::callbacks.push
+      name: 'Quote Backlinking Part 1'
+      cb:   @firstNode
+    Post::callbacks.push
+      name: 'Quote Backlinking Part 2'
+      cb:   @secondNode
+  firstNode: ->
+    # XXX return if post.isInlined
+    return unless @quotes.length
+    a = $.el 'a',
+      href: "/#{@board}/res/#{@thread}#p#{@}"
+      # XXX className: if post.el.hidden then 'filtered backlink' else 'backlink'
+      className: 'backlink'
+      textContent: QuoteBacklink.funk @ID
+    for quote in @quotes
+      link = a.cloneNode true
+      # XXX
+      # if Conf['Quote Preview']
+      #   $.on link, 'mouseover', QuotePreview.mouseover
+      # if Conf['Quote Inline']
+      #   $.on link, 'click', QuoteInline.toggle
+      # else
+      #   link.setAttribute 'onclick', "replyhl('#{post.ID}');"
+      $.add QuoteBacklink.getContainer(quote), [$.tn(' '), link]
+    return
+  secondNode: ->
+    # Don't backlink the OP.
+    return unless Conf['OP Backlinks'] or @isReply
+    $.add @nodes.info, QuoteBacklink.getContainer "#{@board}.#{@}"
+  getContainer: (id) ->
+    @containers[id] or=
+      $.el 'span', className: 'container'
 
 Time =
   init: ->
