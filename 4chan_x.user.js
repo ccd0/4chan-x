@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Board, Conf, Config, Main, Post, Thread, Time, UI, d, g;
+  var $, $$, Board, Conf, Config, Main, Post, Quotify, Thread, Time, UI, d, g;
 
   Config = {
     main: {
@@ -818,6 +818,13 @@
       return (_ref2 = $.id('boardNavDesktopFoot')) != null ? _ref2.hidden = true : void 0;
     },
     initFeatures: function() {
+      if (Conf['Resurrect Quotes']) {
+        try {
+          Quotify.init();
+        } catch (err) {
+          $.log(err, 'Resurrect Quotes');
+        }
+      }
       if (Conf['Time Formatting']) {
         try {
           Time.init();
@@ -885,6 +892,51 @@
       }
     },
     css: "/* general */\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}"
+  };
+
+  Quotify = {
+    init: function() {
+      return Post.prototype.callbacks.push({
+        name: 'Resurrect Quotes',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var ID, a, board, data, i, index, m, node, nodes, quote, quoteID, quotes, snapshot, text, _i, _j, _len, _ref;
+      snapshot = d.evaluate('.//text()[not(parent::a)]', this.nodes.comment, null, 6, null);
+      for (i = _i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+        node = snapshot.snapshotItem(i);
+        data = node.data;
+        if (!(quotes = data.match(/>>(>\/[a-z\d]+\/)?\d+/g))) {
+          continue;
+        }
+        nodes = [];
+        for (_j = 0, _len = quotes.length; _j < _len; _j++) {
+          quote = quotes[_j];
+          index = data.indexOf(quote);
+          if (text = data.slice(0, index)) {
+            nodes.push($.tn(text));
+          }
+          ID = quote.match(/\d+$/)[0];
+          board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
+          quoteID = "" + board + "." + ID;
+          if (this.quotes.indexOf(quoteID) === -1) {
+            this.quotes.push(quoteID);
+          }
+          a = $.el('a', {
+            textContent: quote
+          });
+          this.nodes.quotelinks.push(a);
+          $.log(this.nodes.quotelinks, this.quotes);
+          nodes.push(a);
+          data = data.slice(index + quote.length);
+        }
+        if (data) {
+          nodes.push($.tn(data));
+        }
+        $.replace(node, nodes);
+      }
+    }
   };
 
   Time = {

@@ -654,6 +654,13 @@ Main =
     $.id('boardNavDesktopFoot')?.hidden = true
 
   initFeatures: ->
+    if Conf['Resurrect Quotes']
+      try
+        Quotify.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Resurrect Quotes'
+
     if Conf['Time Formatting']
       try
         Time.init()
@@ -756,6 +763,78 @@ body.fourchan_x {
 """
 
 
+
+Quotify =
+  init: ->
+    Post::callbacks.push
+      name: 'Resurrect Quotes'
+      cb:   @node
+  node: ->
+    # return if post.isInlined and not post.isCrosspost
+
+    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
+    # Get all the text nodes that are not inside an anchor.
+    snapshot = d.evaluate './/text()[not(parent::a)]', @nodes.comment, null, 6, null
+
+    for i in [0...snapshot.snapshotLength]
+      node = snapshot.snapshotItem i
+      data = node.data
+
+      # Only accept nodes with potentially valid links
+      continue unless quotes = data.match />>(>\/[a-z\d]+\/)?\d+/g
+
+      nodes = []
+
+      for quote in quotes
+        index   = data.indexOf quote
+        if text = data[...index]
+          # Potential text before this valid quote.
+          nodes.push $.tn text
+
+        ID = quote.match(/\d+$/)[0]
+        board =
+          if m = quote.match /^>>>\/([a-z\d]+)/
+            m[1]
+          else
+            @board.ID
+
+        quoteID = "#{board}.#{ID}"
+        if @quotes.indexOf(quoteID) is -1
+          @quotes.push quoteID
+
+        a = $.el 'a',
+          # \u00A0 is nbsp
+          # textContent: "#{quote}\u00A0(Dead)"
+          textContent: quote
+
+        # if board is g.BOARD and $.id "p#{ID}"
+        #   a.href      = "#p#{ID}"
+        #   a.className = 'quotelink'
+        #   a.setAttribute 'onclick', "replyhl('#{ID}');"
+        # else
+        #   a.href      = Redirect.thread board, 0, ID
+        #   a.className = 'deadlink'
+        #   a.target    = '_blank'
+        #   if Redirect.post board, ID
+        #     $.addClass a, 'quotelink'
+        #     # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
+        #     # GM can't into dataset
+        #     # a.dataset.board = board
+        #     # a.dataset.id    = ID
+        #     a.setAttribute 'data-board', board
+        #     a.setAttribute 'data-id',    ID
+
+        @nodes.quotelinks.push a
+        $.log @nodes.quotelinks, @quotes
+        nodes.push a
+        data = data[index + quote.length..]
+
+      if data
+        # Potential text after the last valid quote.
+        nodes.push $.tn data
+
+      $.replace node, nodes
+    return
 
 Time =
   init: ->
