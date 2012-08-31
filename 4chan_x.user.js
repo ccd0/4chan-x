@@ -627,11 +627,15 @@
     };
 
     function Thread(root, board) {
+      var postInfo;
       this.root = root;
       this.board = board;
       this.ID = +root.id.slice(1);
       this.hr = root.nextElementSibling;
       this.posts = {};
+      postInfo = $('.postInfo', root.firstElementChild);
+      this.isClosed = !!$('img[title=Closed]', postInfo);
+      this.isSticky = !!$('img[title=Sticky]', postInfo);
       g.threads["" + board + "." + this] = board.threads[this] = this;
     }
 

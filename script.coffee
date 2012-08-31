@@ -491,6 +491,10 @@ class Thread
     @hr = root.nextElementSibling
     @posts = {}
 
+    postInfo   = $ '.postInfo', root.firstElementChild
+    @isClosed = !!$ 'img[title=Closed]', postInfo
+    @isSticky = !!$ 'img[title=Sticky]', postInfo
+
     g.threads["#{board}.#{@}"] = board.threads[@] = @
 
 class Post
