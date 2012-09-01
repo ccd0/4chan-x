@@ -561,6 +561,7 @@ class Post
     for quotelink in $$ '.quotelink', @nodes.comment
       # Don't add board links. (>>>/b/)
       # Don't add text-board quotelinks. (>>>/img/1234)
+      # Don't count capcode replies as quote. (Admin/Mod/Dev Replies: ...)
       # Only add quotes that link to posts on an imageboard.
       if quotelink.hash
         @.nodes.quotelinks.push quotelink
