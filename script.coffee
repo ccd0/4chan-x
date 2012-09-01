@@ -512,7 +512,6 @@ class Post
       info: info
       comment: $ '.postMessage', post
       quotelinks: []
-      backlinks: info.getElementsByClassName 'backlink'
 
     @info = {}
     if subject        = $ '.subject',     info
@@ -602,7 +601,7 @@ class Post
     $.rm clone.nodes.root
 
 class Clone extends Post
-  constructor: (origin) ->
+  constructor: (@origin) ->
     for key in ['ID', 'board', 'thread', 'info', 'quotes', 'isReply']
       # Copy or point to the origin's key value.
       @[key] = origin[key]
@@ -617,26 +616,23 @@ class Clone extends Post
       info: info
       comment: $ '.postMessage', post
       quotelinks: []
-      backlinks: info.getElementsByClassName 'backlinks'
 
     if nodes.subject
-      @nodes.subject           = $ '.subject',     info
+      @nodes.subject  = $ '.subject',     info
     if nodes.name
-      @nodes.name              = $ '.name',        info
+      @nodes.name     = $ '.name',        info
     if nodes.email
-      @nodes.email             = $ '.useremail',   info
+      @nodes.email    = $ '.useremail',   info
     if nodes.tripcode
-      @nodes.tripcode          = $ '.postertrip',  info
+      @nodes.tripcode = $ '.postertrip',  info
     if nodes.uniqueID
-      @nodes.uniqueID          = $ '.posteruid',   info
+      @nodes.uniqueID = $ '.posteruid',   info
     if nodes.capcode
-      @nodes.capcode           = $ '.capcode',     info
+      @nodes.capcode  = $ '.capcode',     info
     if nodes.flag
-      @nodes.flag              = $ '.countryFlag', info
+      @nodes.flag     = $ '.countryFlag', info
     if nodes.date
-      @nodes.date              = $ '.dateTime',    info
-    if nodes.backlinkContainer
-      @nodes.backlinkContainer = $ '.container',   info
+      @nodes.date     = $ '.dateTime',    info
 
     for quotelink in $$ '.quotelink', @nodes.comment
       # See comments in Post's constructor.
@@ -916,7 +912,6 @@ QuoteBacklink =
   #  - newly fetched posts.
   #  - in copies.
   # XXX what about order for fetched posts?
-  # XXX need to work on post copying first before appending inside copies too
   #
   # First callback creates backlinks and add them to relevant containers.
   # Second callback adds relevant containers into posts.
@@ -956,10 +951,16 @@ QuoteBacklink =
         $.add container, [$.tn(' '), link]
     return
   secondNode: ->
+    if @isClone and @origin.nodes.backlinkContainer
+      container = $ '.container', @nodes.info
+      @nodes.backlinkContainer = container
+      @nodes.backlinks = container.getElementsByClassName 'backlinks'
+      return
     # Don't backlink the OP.
-    return if @isClone or !(Conf['OP Backlinks'] or @isReply)
+    return unless Conf['OP Backlinks'] or @isReply
     container = QuoteBacklink.getContainer "#{@board}.#{@}"
     @nodes.backlinkContainer = container
+    @nodes.backlinks = container.getElementsByClassName 'backlinks'
     $.add @nodes.info, container
   getContainer: (id) ->
     @containers[id] or=

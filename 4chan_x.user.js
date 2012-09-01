@@ -665,8 +665,7 @@
         post: post,
         info: info,
         comment: $('.postMessage', post),
-        quotelinks: [],
-        backlinks: info.getElementsByClassName('backlink')
+        quotelinks: []
       };
       this.info = {};
       if (subject = $('.subject', info)) {
@@ -772,6 +771,7 @@
 
     function Clone(origin) {
       var file, index, info, key, nodes, post, quotelink, root, val, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      this.origin = origin;
       _ref = ['ID', 'board', 'thread', 'info', 'quotes', 'isReply'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
@@ -786,8 +786,7 @@
         post: post,
         info: info,
         comment: $('.postMessage', post),
-        quotelinks: [],
-        backlinks: info.getElementsByClassName('backlinks')
+        quotelinks: []
       };
       if (nodes.subject) {
         this.nodes.subject = $('.subject', info);
@@ -812,9 +811,6 @@
       }
       if (nodes.date) {
         this.nodes.date = $('.dateTime', info);
-      }
-      if (nodes.backlinkContainer) {
-        this.nodes.backlinkContainer = $('.container', info);
       }
       _ref1 = $$('.quotelink', this.nodes.comment);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -1093,11 +1089,18 @@
     },
     secondNode: function() {
       var container;
-      if (this.isClone || !(Conf['OP Backlinks'] || this.isReply)) {
+      if (this.isClone && this.origin.nodes.backlinkContainer) {
+        container = $('.container', this.nodes.info);
+        this.nodes.backlinkContainer = container;
+        this.nodes.backlinks = container.getElementsByClassName('backlinks');
+        return;
+      }
+      if (!(Conf['OP Backlinks'] || this.isReply)) {
         return;
       }
       container = QuoteBacklink.getContainer("" + this.board + "." + this);
       this.nodes.backlinkContainer = container;
+      this.nodes.backlinks = container.getElementsByClassName('backlinks');
       return $.add(this.nodes.info, container);
     },
     getContainer: function(id) {
