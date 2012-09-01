@@ -870,7 +870,6 @@ hr {
 .bd ul,
 img,
 .pages,
-.pages *,
 #qr,
 div[id^="qr"],
 table.reply[style^="clear: both"],
@@ -918,17 +917,9 @@ a.yuimenuitemlabel {
 .fileThumb {
   position: relative;
 }
-.pages td:nth-of-type(1) {
-  font-size: 75%;
-  text-transform: uppercase;
-}
-.pages td {
-  color: transparent;
-}
 #boardNavDesktop a,
 .pages a,
-.pages strong,
-.pages input {
+.pages strong {
   display: inline-block;
   font-size: 12px;
   border: none;
@@ -944,11 +935,7 @@ a.yuimenuitemlabel {
   text-align: center;
   font-weight: 200;
 }
-.pages input {
-  margin-bottom: 2px;
-}
 .pages strong,
-.pages input,
 a,
 .new {
   ' + agent + 'transition: background-color .1s linear;
@@ -2471,7 +2458,7 @@ a,
 }
 #watcher:hover {
   z-index: 99 !important;
-  top: 119px !important;
+  top: ' + ( 34 +  + logoOffset) + 'px !important;
 }
 '
       else
@@ -2691,6 +2678,7 @@ a.useremail[href*="SAGE"]:last-of-type::after {
 .pages {
   position: fixed;
   top: 0;
+  z-index: 101;
 }
 '
         when 'sticky bottom'
@@ -2698,6 +2686,7 @@ a.useremail[href*="SAGE"]:last-of-type::after {
 .pages {
   position: fixed;
   bottom: 0;
+  z-index: 101;
 }
 '
         when 'top'
@@ -2726,7 +2715,7 @@ a.useremail[href*="SAGE"]:last-of-type::after {
   margin: 0;
   height: 15px;
 }
-.pages a, .pages strong, .pages input {
+.pages a, .pages strong {
   visibility: visible;
   min-width: 0;
 }
