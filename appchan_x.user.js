@@ -641,7 +641,7 @@
       'Dialog Background': 'rgba(38,238,238,1)',
       'Dialog Border': 'rgba(204,204,204,1)',
       'Thread Wrapper Background': 'rgba(0,0,0,0)',
-      'Thread Wrapper Border': 'rgba(204,204,204,1)',
+      'Thread Wrapper Border': 'rgba(0,0,0,0)',
       'Reply Background': 'rgba(221,221,221,1)',
       'Reply Border': 'rgba(204,204,204,1)',
       'Highlighted Reply Background': 'rgba(204,204,204,1)',
@@ -679,7 +679,7 @@
       'Warnings': 'rbg(51,51,51)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': '0',
-      'Custom CSS': '.fileText{color: rgb(102,102,102);}#qp div.post{background-color:rgba(21,21,21,0.8);color:#FFF;border:1px solid rgba(255,255,255,1);outline:1px solid black;-moz-outline-radius:3px;-webkit-outline-radius:3px;-o-outline-radius:3px;}#qp div.post .name,#qp div.post .container a,#qp div.post .postNum a{color:#FFF;}#qp div.post .postertrip{color:#999;}#qp div.post .fileText{color:#999;}'
+      'Custom CSS': '.fileText{color: rgb(102,102,102);}#qp div.post{background-color:rgba(21,21,21,0.8);color:#FFF;border:1px solid rgba(0,0,0,1);}#qp div.post .subject,#qp div.post .name,#qp div.post .container a,#qp div.post .postNum a{color:#FFF;}#qp div.post .postertrip{color:#999;}#qp div.post .fileText{color:#999;}span.quote > a.quotelink{color: #ff6600;}'
     },
     'RedUX': {
       'Author': 'Zixaphir',
