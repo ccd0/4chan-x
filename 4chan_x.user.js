@@ -715,6 +715,9 @@
         quotelink = _ref2[_k];
         if (quotelink.hash) {
           this.nodes.quotelinks.push(quotelink);
+          if (quotelink.parentNode.parentNode.className === 'capcodeReplies') {
+            continue;
+          }
           quotes["" + (quotelink.pathname.split('/')[1]) + "." + quotelink.hash.slice(2)] = true;
         }
       }

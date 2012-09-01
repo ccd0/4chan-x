@@ -564,6 +564,7 @@ class Post
       # Only add quotes that link to posts on an imageboard.
       if quotelink.hash
         @.nodes.quotelinks.push quotelink
+        continue if quotelink.parentNode.parentNode.className is 'capcodeReplies'
         quotes["#{quotelink.pathname.split('/')[1]}.#{quotelink.hash[2..]}"] = true
     @quotes = Object.keys quotes
 
