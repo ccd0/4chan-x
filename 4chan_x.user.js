@@ -73,7 +73,9 @@
  */
 
 (function() {
-  var $, $$, Board, Conf, Config, Main, Post, QuoteBacklink, Quotify, Thread, Time, UI, d, g;
+  var $, $$, Board, Clone, Conf, Config, Main, Post, QuoteBacklink, Quotify, Thread, Time, UI, d, g,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Config = {
     main: {
@@ -657,45 +659,47 @@
       this.board = board;
       this.ID = +root.id.slice(2);
       post = $('.post', root);
+      info = $('.postInfo', post);
       this.nodes = {
         root: root,
         post: post,
-        info: $('.postInfo', post),
+        info: info,
         comment: $('.postMessage', post),
-        quotelinks: []
+        quotelinks: [],
+        backlinks: info.getElementsByClassName('backlink')
       };
-      info = this.nodes.info;
+      this.info = {};
       if (subject = $('.subject', info)) {
         this.nodes.subject = subject;
-        this.subject = subject.textContent;
+        this.info.subject = subject.textContent;
       }
       if (name = $('.name', info)) {
         this.nodes.name = name;
-        this.name = name.textContent;
+        this.info.name = name.textContent;
       }
       if (email = $('.useremail', info)) {
         this.nodes.email = email;
-        this.email = decodeURIComponent(email.href.slice(7));
+        this.info.email = decodeURIComponent(email.href.slice(7));
       }
       if (tripcode = $('.postertrip', info)) {
         this.nodes.tripcode = tripcode;
-        this.tripcode = tripcode.textContent;
+        this.info.tripcode = tripcode.textContent;
       }
       if (uniqueID = $('.posteruid', info)) {
         this.nodes.uniqueID = uniqueID;
-        this.uniqueID = uniqueID.textContent;
+        this.info.uniqueID = uniqueID.textContent;
       }
       if (capcode = $('.capcode', info)) {
         this.nodes.capcode = capcode;
-        this.capcode = capcode.textContent;
+        this.info.capcode = capcode.textContent;
       }
       if (flag = $('.countryFlag', info)) {
         this.nodes.flag = flag;
-        this.flag = flag.title;
+        this.info.flag = flag.title;
       }
       if (date = $('.dateTime', info)) {
         this.nodes.date = date;
-        this.date = new Date(date.dataset.utc * 1000);
+        this.info.date = new Date(date.dataset.utc * 1000);
       }
       bq = this.nodes.comment.cloneNode(true);
       _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
@@ -708,7 +712,7 @@
       for (i = _j = 0, _ref1 = nodes.snapshotLength; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
-      this.comment = text.join('').replace(/^\n+|\n+$| +(?=\n|$)/g, '');
+      this.info.comment = text.join('').replace(/^\n+|\n+$| +(?=\n|$)/g, '');
       quotes = {};
       _ref2 = $$('.quotelink', this.nodes.comment);
       for (_k = 0, _len1 = _ref2.length; _k < _len1; _k++) {
@@ -741,12 +745,104 @@
         }
       }
       this.isReply = $.hasClass(post, 'reply');
+      this.clones = [];
       g.posts["" + board + "." + this] = thread.posts[this] = board.posts[this] = this;
     }
+
+    Post.prototype.addClone = function() {
+      return new Clone(this);
+    };
+
+    Post.prototype.rmClone = function(index) {
+      var clone, i, _i, _ref;
+      clone = this.clones.splice(index, 1);
+      for (i = _i = index, _ref = this.clones.length; index <= _ref ? _i < _ref : _i > _ref; i = index <= _ref ? ++_i : --_i) {
+        this.clones[i].nodes.root.setAttribute('data-clone', i);
+      }
+      return $.rm(clone.nodes.root);
+    };
 
     return Post;
 
   })();
+
+  Clone = (function(_super) {
+
+    __extends(Clone, _super);
+
+    function Clone(origin) {
+      var file, index, info, key, nodes, post, quotelink, root, val, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      _ref = ['ID', 'board', 'thread', 'info', 'quotes', 'isReply'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        key = _ref[_i];
+        this[key] = origin[key];
+      }
+      nodes = origin.nodes;
+      root = nodes.root.cloneNode(true);
+      post = $('.post', root);
+      info = $('.postInfo', post);
+      this.nodes = {
+        root: root,
+        post: post,
+        info: info,
+        comment: $('.postMessage', post),
+        quotelinks: [],
+        backlinks: info.getElementsByClassName('backlinks')
+      };
+      if (nodes.subject) {
+        this.nodes.subject = $('.subject', info);
+      }
+      if (nodes.name) {
+        this.nodes.name = $('.name', info);
+      }
+      if (nodes.email) {
+        this.nodes.email = $('.useremail', info);
+      }
+      if (nodes.tripcode) {
+        this.nodes.tripcode = $('.postertrip', info);
+      }
+      if (nodes.uniqueID) {
+        this.nodes.uniqueID = $('.posteruid', info);
+      }
+      if (nodes.capcode) {
+        this.nodes.capcode = $('.capcode', info);
+      }
+      if (nodes.flag) {
+        this.nodes.flag = $('.countryFlag', info);
+      }
+      if (nodes.date) {
+        this.nodes.date = $('.dateTime', info);
+      }
+      if (nodes.backlinkContainer) {
+        this.nodes.backlinkContainer = $('.container', info);
+      }
+      _ref1 = $$('.quotelink', this.nodes.comment);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        quotelink = _ref1[_j];
+        if (quotelink.hash || $.hasClass(quotelink, 'deadlink')) {
+          this.nodes.quotelinks.push(quotelink);
+        }
+      }
+      if (origin.file) {
+        this.file = {};
+        _ref2 = origin.file;
+        for (key in _ref2) {
+          val = _ref2[key];
+          this.file[key] = val;
+        }
+        file = $('.file', post);
+        this.file.info = $('.fileInfo', file);
+        this.file.text = $('.fileText', file);
+        this.file.thumb = $('img[data-md5]', file);
+      }
+      this.isClone = true;
+      index = origin.clones.push(this);
+      root.setAttribute('data-clone', index);
+    }
+
+    return Clone;
+
+  })(Post);
 
   Main = {
     init: function() {
@@ -913,6 +1009,9 @@
     },
     node: function() {
       var ID, a, board, data, i, index, m, node, nodes, quote, quoteID, quotes, snapshot, text, _i, _j, _len, _ref;
+      if (this.isClone) {
+        return;
+      }
       snapshot = d.evaluate('.//text()[not(parent::a)]', this.nodes.comment, null, 6, null);
       for (i = _i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         node = snapshot.snapshotItem(i);
@@ -934,7 +1033,8 @@
             this.quotes.push(quoteID);
           }
           a = $.el('a', {
-            textContent: quote
+            textContent: quote,
+            className: 'quotelink deadlink'
           });
           this.nodes.quotelinks.push(a);
           nodes.push(a);
@@ -964,8 +1064,8 @@
       });
     },
     firstNode: function() {
-      var a, link, quote, _i, _len, _ref;
-      if (!this.quotes.length) {
+      var a, clone, container, containers, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      if (this.isClone || !this.quotes.length) {
         return;
       }
       a = $.el('a', {
@@ -976,15 +1076,29 @@
       _ref = this.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        link = a.cloneNode(true);
-        $.add(QuoteBacklink.getContainer(quote), [$.tn(' '), link]);
+        containers = [QuoteBacklink.getContainer(quote)];
+        if (post = g.posts[quote]) {
+          _ref1 = post.clones;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            clone = _ref1[_j];
+            containers.push(clone.nodes.backlinkContainer);
+          }
+        }
+        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
+          container = containers[_k];
+          link = a.cloneNode(true);
+          $.add(container, [$.tn(' '), link]);
+        }
       }
     },
     secondNode: function() {
-      if (!(Conf['OP Backlinks'] || this.isReply)) {
+      var container;
+      if (this.isClone || !(Conf['OP Backlinks'] || this.isReply)) {
         return;
       }
-      return $.add(this.nodes.info, QuoteBacklink.getContainer("" + this.board + "." + this));
+      container = QuoteBacklink.getContainer("" + this.board + "." + this);
+      this.nodes.backlinkContainer = container;
+      return $.add(this.nodes.info, container);
     },
     getContainer: function(id) {
       var _base;
@@ -1003,7 +1117,10 @@
       });
     },
     node: function() {
-      return this.nodes.date.textContent = Time.funk(Time, this.date);
+      if (this.isClone) {
+        return;
+      }
+      return this.nodes.date.textContent = Time.funk(Time, this.info.date);
     },
     createFunc: function() {
       var code;

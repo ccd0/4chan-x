@@ -324,7 +324,7 @@ $.extend $,
     $.add d.head, style
     style
   x: (path, root=d.body) ->
-    # XPathResult.ANY_UNORDERED_NODE_TYPE is 8
+    # XPathResult.ANY_UNORDERED_NODE_TYPE === 8
     d.evaluate(path, root, null, 8, null).singleNodeValue
   addClass: (el, className) ->
     el.classList.add className
@@ -504,39 +504,41 @@ class Post
   constructor: (root, @thread, @board) ->
     @ID = +root.id[2..]
 
-    post = $ '.post', root
+    post = $ '.post',     root
+    info = $ '.postInfo', post
     @nodes =
       root: root
       post: post
-      info:    $ '.postInfo',    post
+      info: info
       comment: $ '.postMessage', post
       quotelinks: []
+      backlinks: info.getElementsByClassName 'backlink'
 
-    info = @nodes.info
+    @info = {}
     if subject        = $ '.subject',     info
       @nodes.subject  = subject
-      @subject        = subject.textContent
+      @info.subject   = subject.textContent
     if name           = $ '.name',        info
       @nodes.name     = name
-      @name           = name.textContent
+      @info.name      = name.textContent
     if email          = $ '.useremail',   info
       @nodes.email    = email
-      @email          = decodeURIComponent email.href[7..]
+      @info.email     = decodeURIComponent email.href[7..]
     if tripcode       = $ '.postertrip',  info
       @nodes.tripcode = tripcode
-      @tripcode       = tripcode.textContent
+      @info.tripcode  = tripcode.textContent
     if uniqueID       = $ '.posteruid',   info
       @nodes.uniqueID = uniqueID
-      @uniqueID       = uniqueID.textContent
+      @info.uniqueID  = uniqueID.textContent
     if capcode        = $ '.capcode',     info
       @nodes.capcode  = capcode
-      @capcode        = capcode.textContent
+      @info.capcode   = capcode.textContent
     if flag           = $ '.countryFlag', info
       @nodes.flag     = flag
-      @flag           = flag.title
+      @info.flag      = flag.title
     if date           = $ '.dateTime',    info
       @nodes.date     = date
-      @date           = new Date date.dataset.utc * 1000
+      @info.date      = new Date date.dataset.utc * 1000
 
     # Get the comment's text.
     # <br> -> \n
@@ -555,16 +557,16 @@ class Post
     nodes = d.evaluate './/br|.//text()', bq, null, 7, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
-    @comment = text.join('').replace /^\n+|\n+$| +(?=\n|$)/g, ''
+    @info.comment = text.join('').replace /^\n+|\n+$| +(?=\n|$)/g, ''
 
     quotes = {}
     for quotelink in $$ '.quotelink', @nodes.comment
       # Don't add board links. (>>>/b/)
       # Don't add text-board quotelinks. (>>>/img/1234)
-      # Don't count capcode replies as quote. (Admin/Mod/Dev Replies: ...)
+      # Don't count capcode replies as quotes. (Admin/Mod/Dev Replies: ...)
       # Only add quotes that link to posts on an imageboard.
       if quotelink.hash
-        @.nodes.quotelinks.push quotelink
+        @nodes.quotelinks.push quotelink
         continue if quotelink.parentNode.parentNode.className is 'capcodeReplies'
         quotes["#{quotelink.pathname.split('/')[1]}.#{quotelink.hash[2..]}"] = true
     @quotes = Object.keys quotes
@@ -588,8 +590,73 @@ class Post
         @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
 
     @isReply = $.hasClass post, 'reply'
-
+    @clones  = []
     g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
+
+  addClone: ->
+    new Clone @
+  rmClone: (index) ->
+    clone = @clones.splice index, 1
+    for i in [index...@clones.length]
+      @clones[i].nodes.root.setAttribute 'data-clone', i
+    $.rm clone.nodes.root
+
+class Clone extends Post
+  constructor: (origin) ->
+    for key in ['ID', 'board', 'thread', 'info', 'quotes', 'isReply']
+      # Copy or point to the origin's key value.
+      @[key] = origin[key]
+
+    {nodes} = origin
+    root = nodes.root.cloneNode true
+    post = $ '.post',     root
+    info = $ '.postInfo', post
+    @nodes =
+      root: root
+      post: post
+      info: info
+      comment: $ '.postMessage', post
+      quotelinks: []
+      backlinks: info.getElementsByClassName 'backlinks'
+
+    if nodes.subject
+      @nodes.subject           = $ '.subject',     info
+    if nodes.name
+      @nodes.name              = $ '.name',        info
+    if nodes.email
+      @nodes.email             = $ '.useremail',   info
+    if nodes.tripcode
+      @nodes.tripcode          = $ '.postertrip',  info
+    if nodes.uniqueID
+      @nodes.uniqueID          = $ '.posteruid',   info
+    if nodes.capcode
+      @nodes.capcode           = $ '.capcode',     info
+    if nodes.flag
+      @nodes.flag              = $ '.countryFlag', info
+    if nodes.date
+      @nodes.date              = $ '.dateTime',    info
+    if nodes.backlinkContainer
+      @nodes.backlinkContainer = $ '.container',   info
+
+    for quotelink in $$ '.quotelink', @nodes.comment
+      # See comments in Post's constructor.
+      if quotelink.hash or $.hasClass quotelink, 'deadlink'
+        @nodes.quotelinks.push quotelink
+
+    if origin.file
+      # Copy values, point to relevant elements.
+      # See comments in Post's constructor.
+      @file = {}
+      for key, val of origin.file
+        @file[key] = val
+      file = $ '.file', post
+      @file.info  = $ '.fileInfo',     file
+      @file.text  = $ '.fileText',     file
+      @file.thumb = $ 'img[data-md5]', file
+
+    @isClone = true
+    index = origin.clones.push @
+    root.setAttribute 'data-clone', index
 
 
 Main =
@@ -779,9 +846,9 @@ Quotify =
       name: 'Resurrect Quotes'
       cb:   @node
   node: ->
-    # XXX return if post.isInlined and not post.isCrosspost
+    return if @isClone
 
-    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
+    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE === 6
     # Get all the text nodes that are not inside an anchor.
     snapshot = d.evaluate './/text()[not(parent::a)]', @nodes.comment, null, 6, null
 
@@ -815,6 +882,8 @@ Quotify =
           # \u00A0 is nbsp
           # textContent: "#{quote}\u00A0(Dead)"
           textContent: quote
+          # XXX
+          className: 'quotelink deadlink'
 
         # if board is g.BOARD and $.id "p#{ID}"
         #   a.href      = "#p#{ID}"
@@ -826,10 +895,6 @@ Quotify =
         #   a.target    = '_blank'
         #   if Redirect.post board, ID
         #     $.addClass a, 'quotelink'
-        #     # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
-        #     # GM can't into dataset
-        #     # a.dataset.board = board
-        #     # a.dataset.id    = ID
         #     a.setAttribute 'data-board', board
         #     a.setAttribute 'data-id',    ID
 
@@ -868,28 +933,34 @@ QuoteBacklink =
       name: 'Quote Backlinking Part 2'
       cb:   @secondNode
   firstNode: ->
-    # XXX return if post.isInlined
-    return unless @quotes.length
+    return if @isClone or !@quotes.length
     a = $.el 'a',
       href: "/#{@board}/res/#{@thread}#p#{@}"
       # XXX className: if post.el.hidden then 'filtered backlink' else 'backlink'
       className: 'backlink'
       textContent: QuoteBacklink.funk @ID
     for quote in @quotes
-      link = a.cloneNode true
-      # XXX
-      # if Conf['Quote Preview']
-      #   $.on link, 'mouseover', QuotePreview.mouseover
-      # if Conf['Quote Inline']
-      #   $.on link, 'click', QuoteInline.toggle
-      # else
-      #   link.setAttribute 'onclick', "replyhl('#{post.ID}');"
-      $.add QuoteBacklink.getContainer(quote), [$.tn(' '), link]
+      containers = [QuoteBacklink.getContainer quote]
+      if post = g.posts[quote]
+        for clone in post.clones
+          containers.push clone.nodes.backlinkContainer
+      for container in containers
+        link = a.cloneNode true
+        # XXX
+        # if Conf['Quote Preview']
+        #   $.on link, 'mouseover', QuotePreview.mouseover
+        # if Conf['Quote Inline']
+        #   $.on link, 'click', QuoteInline.toggle
+        # else
+        #   link.setAttribute 'onclick', "replyhl('#{post.ID}');"
+        $.add container, [$.tn(' '), link]
     return
   secondNode: ->
     # Don't backlink the OP.
-    return unless Conf['OP Backlinks'] or @isReply
-    $.add @nodes.info, QuoteBacklink.getContainer "#{@board}.#{@}"
+    return if @isClone or !(Conf['OP Backlinks'] or @isReply)
+    container = QuoteBacklink.getContainer "#{@board}.#{@}"
+    @nodes.backlinkContainer = container
+    $.add @nodes.info, container
   getContainer: (id) ->
     @containers[id] or=
       $.el 'span', className: 'container'
@@ -901,8 +972,8 @@ Time =
       name: 'Time Formatting'
       cb:   @node
   node: ->
-    # XXX return if @isInlined and not @isCrosspost
-    @nodes.date.textContent = Time.funk Time, @date
+    return if @isClone
+    @nodes.date.textContent = Time.funk Time, @info.date
   createFunc: ->
     code = Conf['time'].replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
