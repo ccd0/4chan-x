@@ -6645,7 +6645,7 @@ h1, .boardBanner {\
   position: absolute;\
   top: 0;\
   right: 0;\
-  bottom: 2em;\
+  bottom: 1.5em;\
   left: 0;\
 }\
 .stylesettings {\
@@ -7898,6 +7898,9 @@ html body span[style="left: 5px; position: absolute;"] a {\
 #qr textarea.field {\
   height: 88px !important;\
 }\
+.textarea {\
+  height: 89px;\
+}\
 hr {\
   position: relative;\
   top: 2px;\
@@ -8649,6 +8652,9 @@ body {\
           css += '\
 #qr textarea.field {\
   height: 114px !important;\
+}\
+.textarea {\
+  height: 115px;\
 }\
 #qr .field[name="name"],\
 #qr .field[name="email"],\
