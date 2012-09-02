@@ -580,7 +580,7 @@
       'Custom CSS': '#qp div.post{background-color:rgba(0,0,0,0.8);border-radius:4px;border: 1px solid #333;}#qr {background-color: rgba(0,0,0,0.7);border: 1px solid #333;}'
     },
     'PaisleyChan': {
-      'Author': '#gay',
+      'Author': 'Ubuntufriend',
       'Author Tripcode': '',
       'Background Image': 'url(http://i.imgur.com/DRaZf.jpg)',
       'Background Attachment': 'fixed',
@@ -1328,7 +1328,7 @@
       }
     },
     dialog: function() {
-      var arr, back, category, checked, contents, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var arr, back, category, checked, contents, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -1502,7 +1502,9 @@
         $.on(input, 'keydown', Options.keybind);
         $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
-      Options.applyStyle(dialog, 'style_tab');
+      div = $.el('div', {
+        className: "suboptions"
+      });
       _ref2 = Config.style;
       for (category in _ref2) {
         obj = _ref2[category];
@@ -1536,10 +1538,13 @@
           }
           $.add(ul, li);
         }
-        $.add($('#style_tab + div', dialog), ul);
+        $.add(div, ul);
       }
+      $.add($('#style_tab + div', dialog), div);
       Options.applyStyle(dialog, 'style_tab');
-      Options.applyStyle(dialog, 'theme_tab');
+      parentdiv = $.el('div', {
+        className: "suboptions"
+      });
       for (themename in Themes) {
         theme = Themes[themename];
         div = $.el('div', {
@@ -1553,10 +1558,13 @@
           Conf['theme'] = this.id;
           return $.addClass(this, 'selectedtheme');
         });
-        $.add($('#theme_tab + div', dialog), div);
+        $.add(parentdiv, div);
       }
+      $.add($('#theme_tab + div', dialog), parentdiv);
       Options.applyStyle(dialog, 'theme_tab');
-      Options.applyStyle(dialog, 'mascot_tab');
+      parentdiv = $.el('div', {
+        className: "suboptions"
+      });
       for (category in Mascots) {
         contents = Mascots[category];
         ul = $.el('ul', {
@@ -1588,8 +1596,9 @@
           });
           $.add(ul, li);
         }
-        $.add($('#mascot_tab + div', dialog), ul);
+        $.add(parentdiv, ul);
       }
+      $.add($('#mascot_tab + div', dialog), parentdiv);
       Options.applyStyle(dialog, 'mascot_tab');
       Options.indicators(dialog);
       overlay = $.el('div', {
@@ -1739,7 +1748,8 @@
       var save;
       if (Conf['styleenabled'] === '1') {
         save = $.el('div', {
-          innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
+          innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>',
+          className: 'stylesettings'
         });
         $.on($('a', save), 'click', function() {
           return Style.addStyle(Conf['theme']);
@@ -6580,6 +6590,19 @@ h1, .boardBanner {\
   right: 5px;\
   bottom: 5px;\
   left: 5px;\
+}\
+.suboptions {\
+  overflow: auto;\
+  position: absolute;\
+  top: 0;\
+  right: 0;\
+  bottom: 2em;\
+  left: 0;\
+}\
+.stylesettings {\
+  position: absolute;\
+  right: 0;\
+  bottom: 0;\
 }\
 #content textarea {\
   font-family: monospace;\

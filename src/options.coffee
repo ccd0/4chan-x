@@ -187,7 +187,8 @@ Options =
       $.add $('#keybinds_tab + div tbody', dialog), tr
 
     #style
-    Options.applyStyle(dialog, 'style_tab')
+    div = $.el 'div',
+      className: "suboptions"
     for category, obj of Config.style
       ul = $.el 'ul',
         textContent: category
@@ -210,11 +211,13 @@ Options =
             innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}>#{optionname}</label><span class=description>: #{description}</span>"
           $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
-      $.add $('#style_tab + div', dialog), ul
+      $.add div, ul
+    $.add $('#style_tab + div', dialog), div
     Options.applyStyle(dialog, 'style_tab')
 
     #themes
-    Options.applyStyle(dialog, 'theme_tab')
+    parentdiv = $.el 'div',
+      className: "suboptions"
     for themename, theme of Themes
       div = $.el 'div',
         className: if themename == Conf['theme'] then 'selectedtheme' else ''
@@ -225,11 +228,13 @@ Options =
         $.set 'theme', @.id
         Conf['theme'] = @.id
         $.addClass @, 'selectedtheme'
-      $.add $('#theme_tab + div', dialog), div
+      $.add parentdiv, div
+    $.add $('#theme_tab + div', dialog), parentdiv
     Options.applyStyle(dialog, 'theme_tab')
 
     #mascots
-    Options.applyStyle(dialog, 'mascot_tab')
+    parentdiv = $.el 'div',
+      className: "suboptions"
     for category, contents of Mascots
       ul = $.el 'ul',
         innerHTML:   "<div style='clear: both;'>#{category}</div>"
@@ -253,7 +258,8 @@ Options =
             $.set @.id, true
             enabledmascots[@.id] = true
         $.add ul, li
-      $.add $('#mascot_tab + div', dialog), ul
+      $.add parentdiv, ul
+    $.add $('#mascot_tab + div', dialog), parentdiv
     Options.applyStyle(dialog, 'mascot_tab')
 
     Options.indicators dialog
@@ -375,6 +381,7 @@ Options =
     if Conf['styleenabled'] == '1'
       save = $.el 'div',
         innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
+        className: 'stylesettings'
       $.on $('a', save), 'click', ->
         Style.addStyle(Conf['theme'])
       $.add $('#' + tab + ' + div', dialog), save

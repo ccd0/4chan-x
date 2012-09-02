@@ -380,6 +380,19 @@ h1, .boardBanner {
   bottom: 5px;
   left: 5px;
 }
+.suboptions {
+  overflow: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 2em;
+  left: 0;
+}
+.stylesettings {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
 #content textarea {
   font-family: monospace;
   min-height: 350px;

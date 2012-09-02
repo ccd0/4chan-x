@@ -331,7 +331,7 @@ Themes =
     'Dark Theme'                  : '1',
     'Custom CSS'                  : '#qp div.post{background-color:rgba(0,0,0,0.8);border-radius:4px;border: 1px solid #333;}#qr {background-color: rgba(0,0,0,0.7);border: 1px solid #333;}'
   'PaisleyChan':
-    'Author'                      : '#gay',
+    'Author'                      : 'Ubuntufriend',
     'Author Tripcode'             : '',
     'Background Image'            : 'url(http://i.imgur.com/DRaZf.jpg)',
     'Background Attachment'       : 'fixed',
