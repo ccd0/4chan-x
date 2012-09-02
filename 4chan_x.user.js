@@ -4930,10 +4930,22 @@
         case 'sys.4chan.org':
           if (/report/.test(location.search)) {
             $.ready(function() {
-              return $.on($.id('recaptcha_response_field'), 'keydown', function(e) {
+              var field, form;
+              form = $('form');
+              field = $.id('recaptcha_response_field');
+              $.on(field, 'keydown', function(e) {
                 if (e.keyCode === 8 && !e.target.value) {
                   return window.location = 'javascript:Recaptcha.reload()';
                 }
+              });
+              return $.on(form, 'submit', function(e) {
+                var response;
+                e.preventDefault();
+                response = field.value.trim();
+                if (!/\s/.test(response)) {
+                  field.value = "" + response + " " + response;
+                }
+                return form.submit();
               });
             });
           }

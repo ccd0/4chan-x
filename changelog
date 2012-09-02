@@ -1,5 +1,6 @@
 master
 - Mayhem
+  One-word-captcha now works in the report window.
   Fix duplicate file upload error link.
 
 2.34.8
