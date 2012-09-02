@@ -340,6 +340,18 @@ h1, .boardBanner {
 #options ul {
   padding: 0;
 }
+#options ul li {
+  overflow: auto;
+  padding: 0 5px 0 7px;
+}
+#options input:checked + .optionlabel {
+  font-weight: 800;
+}
+#options input,
+#options .rice {
+  float: right;
+  clear: left;
+}
 #options article li {
   margin: 10px 0 10px 2em;
 }
@@ -1089,8 +1101,8 @@ input[type=checkbox],
 .reply input[type=checkbox],
 #options input[type=checkbox] {
   ' + agent + 'appearance: none;
-  width: 12px;
-  height: 12px;
+  width: 12px !important;
+  height: 12px !important;
   cursor: pointer;
 }
 .postingMode ~ #delform .opContainer input {
@@ -1285,9 +1297,6 @@ div.navLinks a {
 /* Appchan x options */
 #options ul {
   margin: 0;
-}
-#options ul > li {
-  padding: 0;
 }
 #options.reply.dialog, #options .dialog {
   width: 700px;
@@ -2028,7 +2037,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
   width: ' + (248 + sidebarOffsetW) + 'px;
   top: 19px;
   right: 2px;
-  ' + agent + 'box-reflect: below 0px ' + agent + 'gradient( linear, left top, left bottom, from(transparent), color-stop(91%, rgba(255, 255, 255, .1)), color-stop(21.01%, transparent) );
 }
 '
         when 'at top'
@@ -2380,28 +2388,25 @@ body {
 #qr textarea.field {
   height: 114px !important;
 }
-.textarea {
-  height: 115px !important;
-}
-.field[name="name"],
-.field[name="email"],
-.field[name="sub"] {
+#qr .field[name="name"],
+#qr .field[name="email"],
+#qr .field[name="sub"] {
   width: ' + (75 + (sidebarOffsetW / 3)) + 'px !important;
   margin-left: 1px !important;
 }
 '
       else
         css += '
-.field[name="email"],
-.field[name="sub"] {
+#qr .field[name="email"],
+#qr .field[name="sub"] {
   width: ' + (248 + sidebarOffsetW) + 'px !important;
 }
-.field[name="name"] {
+#qr .field[name="name"] {
   width: ' + (227 + sidebarOffsetW) + 'px !important;
   margin-left: 1px !important;
 }
-.field[name="email"],
-.field[name="sub"] {
+#qr .field[name="email"],
+#qr .field[name="sub"] {
   margin-top: 1px;
 }
 '

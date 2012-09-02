@@ -141,7 +141,7 @@ Options =
         checked = if $.get(key, Conf[key]) then 'checked' else ''
         description = arr[1]
         li = $.el 'li',
-          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
+          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}><span class=\"optionlabel\">#{key}</span></label><span class=description>: #{description}</span>"
         $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
       $.add $('#main_tab + div', dialog), ul
@@ -195,7 +195,7 @@ Options =
       for optionname, arr of obj
         description = arr[1]
         if arr[2]
-          liHTML = "<label>#{optionname}</label><span class=description>: #{description}</span><select name=\"#{optionname}\"><br>"
+          liHTML = "<label><span class=\"optionlabel\">#{optionname}</span></label><span class=description>: #{description}</span><select name=\"#{optionname}\"><br>"
           for selectoption, optionvalue in arr[2]
             liHTML = liHTML + "<option value=\"#{selectoption}\">#{selectoption}</option>"
           liHTML = liHTML + "</select>"
@@ -208,7 +208,7 @@ Options =
         else
           checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
           li = $.el 'li',
-            innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}>#{optionname}</label><span class=description>: #{description}</span>"
+            innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}><span class=\"optionlabel\">#{optionname}<span></label><span class=description>: #{description}</span>"
           $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
       $.add div, ul

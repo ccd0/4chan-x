@@ -507,26 +507,26 @@
       'Buttons Border': 'rgba(16,16,16,1)',
       'Navigation Background': 'rgba(26,26,26,0.9)',
       'Navigation Border': 'rgba(26,26,26,0.9)',
-      'Links': 'rgb(137,115,153)',
-      'Hovered Links': 'rgb(198,23,230)',
+      'Links': 'rgb(85,156,122)',
+      'Hovered Links': 'rgb(199,222,26)',
       'Navigation Links': 'rgb(144,144,144)',
       'Hovered Navigation Links': 'rgb(198,23,230)',
-      'Subjects': 'rgb(152,125,62)',
-      'Names': 'rgb(163,68,67)',
-      'Sage': 'inherit',
-      'Tripcodes': 'rgb(150,86,44)',
+      'Subjects': 'rgb(72,98,115)',
+      'Names': 'rgb(46,136,166)',
+      'Sage': 'rgb(124,45,45)',
+      'Tripcodes': 'rgb(140,93,42)',
       'Emails': 'rgb(174,43,41)',
       'Post Numbers': 'rgb(137,115,153)',
-      'Text': 'rgb(187,187,187)',
-      'Backlinks': 'rgb(137,115,153)',
+      'Text': 'rgb(221,221,221)',
+      'Backlinks': 'rgb(139,164,70)',
       'Greentext': 'rgb(139,164,70)',
       'Board Title': 'rgb(187,187,187)',
-      'Timestamps': 'rgb(187,187,187)',
+      'Timestamps': 'rgb(221,221,221)',
       'Inputs': 'rgb(187,187,187)',
       'Warnings': 'rbg(87,87,123)',
       'Shadow Color': 'rgba(16,16,16,0.4)',
       'Dark Theme': '1',
-      'Custom CSS': '.nameBlock>.useremail>postertrip{color: rgb(137,115,153);}a.backlink:hover{color: rgb(198,23,230);}.reply:target,.reply.highlight:target{background:rgb(37,38,42);}[alt="sticky"]+a{color: rgb(242,141,0);}[alt="closed"]+a{color: rgb(178,171,130);}input:checked .rice{border-color:rgb(21,21,21)}}input[type="submit"], input[type="button"], button {background: -moz-linear-gradient(#393939, #292929);background: -webkit-linear-gradient(#393939, #292929);background: -o-linear-gradient(#393939, #292929);border: 1px solid #191919;color: #AAA;text-shadow: 0 1px 1px #191919;}input[type="checkbox"], input[type="radio"] {background-color: #393939;border: 1px solid #191919;}input[type="checkbox"]:checked, input[type="radio"]:checked {background: -moz-linear-gradient(#595959, #393939);background: -webkit-linear-gradient(#595959, #393939);background: -o-linear-gradient(#595959, #393939);border: 1px solid #151515;} #delform { padding: 7px; }'
+      'Custom CSS': '.nameBlock>.useremail>postertrip{color: rgb(137,115,153);}a.backlink:hover{color: rgb(198,23,230);}.reply:target,.reply.highlight:target{background:rgb(37,38,42);}[alt="sticky"]+a{color: rgb(242,141,0);}[alt="closed"]+a{color: rgb(178,171,130);}input:checked .rice{border-color:rgb(21,21,21)}}input[type="submit"], input[type="button"], button {background: -moz-linear-gradient(#393939, #292929);background: -webkit-linear-gradient(#393939, #292929);background: -o-linear-gradient(#393939, #292929);border: 1px solid #191919;color: #AAA;text-shadow: 0 1px 1px #191919;}input[type="checkbox"], input[type="radio"] {background-color: #393939;border: 1px solid #191919;}input[type="checkbox"]:checked, input[type="radio"]:checked {background: -moz-linear-gradient(#595959, #393939);background: -webkit-linear-gradient(#595959, #393939);background: -o-linear-gradient(#595959, #393939);border: 1px solid #151515;} #delform { padding: 7px; }.subject:hover,div.post:hover .subject{color: #3F8DBF !important;}.postertrip:hover,div.post:hover .postertrip{color:#CC7212 !important;}.name:hover, div.post:hover .name {  color: #0AAEE7 !important;}.name,.subject,.postertrip {-webkit-transition:color .3s ease-in-out;-moz-transition:color .3s ease-in-out;}'
     },
     'ObsidianChan': {
       'Author': 'seaweed-chan',
@@ -1459,7 +1459,7 @@
           checked = $.get(key, Conf[key]) ? 'checked' : '';
           description = arr[1];
           li = $.el('li', {
-            innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
+            innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + "><span class=\"optionlabel\">" + key + "</span></label><span class=description>: " + description + "</span>"
           });
           $.on($('input', li), 'click', $.cb.checked);
           $.add(ul, li);
@@ -1515,7 +1515,7 @@
           arr = obj[optionname];
           description = arr[1];
           if (arr[2]) {
-            liHTML = "<label>" + optionname + "</label><span class=description>: " + description + "</span><select name=\"" + optionname + "\"><br>";
+            liHTML = "<label><span class=\"optionlabel\">" + optionname + "</span></label><span class=description>: " + description + "</span><select name=\"" + optionname + "\"><br>";
             _ref3 = arr[2];
             for (optionvalue = _i = 0, _len = _ref3.length; _i < _len; optionvalue = ++_i) {
               selectoption = _ref3[optionvalue];
@@ -1532,7 +1532,7 @@
           } else {
             checked = $.get(optionname, Conf[optionname]) ? 'checked' : '';
             li = $.el('li', {
-              innerHTML: "<label><input type=checkbox name=\"" + optionname + "\" " + checked + ">" + optionname + "</label><span class=description>: " + description + "</span>"
+              innerHTML: "<label><input type=checkbox name=\"" + optionname + "\" " + checked + "><span class=\"optionlabel\">" + optionname + "<span></label><span class=description>: " + description + "</span>"
             });
             $.on($('input', li), 'click', $.cb.checked);
           }
@@ -6551,6 +6551,18 @@ h1, .boardBanner {\
 #options ul {\
   padding: 0;\
 }\
+#options ul li {\
+  overflow: auto;\
+  padding: 0 5px 0 7px;\
+}\
+#options input:checked + .optionlabel {\
+  font-weight: 800;\
+}\
+#options input,\
+#options .rice {\
+  float: right;\
+  clear: left;\
+}\
 #options article li {\
   margin: 10px 0 10px 2em;\
 }\
@@ -7298,8 +7310,8 @@ input[type=checkbox],\
 .reply input[type=checkbox],\
 #options input[type=checkbox] {\
   ' + agent + 'appearance: none;\
-  width: 12px;\
-  height: 12px;\
+  width: 12px !important;\
+  height: 12px !important;\
   cursor: pointer;\
 }\
 .postingMode ~ #delform .opContainer input {\
@@ -7494,9 +7506,6 @@ div.navLinks a {\
 /* Appchan x options */\
 #options ul {\
   margin: 0;\
-}\
-#options ul > li {\
-  padding: 0;\
 }\
 #options.reply.dialog, #options .dialog {\
   width: 700px;\
@@ -8238,7 +8247,6 @@ body > a[style="cursor: pointer; float: right;"]::after {\
   width: ' + (248 + sidebarOffsetW) + 'px;\
   top: 19px;\
   right: 2px;\
-  ' + agent + 'box-reflect: below 0px ' + agent + 'gradient( linear, left top, left bottom, from(transparent), color-stop(91%, rgba(255, 255, 255, .1)), color-stop(21.01%, transparent) );\
 }\
 ';
             break;
@@ -8600,28 +8608,25 @@ body {\
 #qr textarea.field {\
   height: 114px !important;\
 }\
-.textarea {\
-  height: 115px !important;\
-}\
-.field[name="name"],\
-.field[name="email"],\
-.field[name="sub"] {\
+#qr .field[name="name"],\
+#qr .field[name="email"],\
+#qr .field[name="sub"] {\
   width: ' + (75 + (sidebarOffsetW / 3)) + 'px !important;\
   margin-left: 1px !important;\
 }\
 ';
         } else {
           css += '\
-.field[name="email"],\
-.field[name="sub"] {\
+#qr .field[name="email"],\
+#qr .field[name="sub"] {\
   width: ' + (248 + sidebarOffsetW) + 'px !important;\
 }\
-.field[name="name"] {\
+#qr .field[name="name"] {\
   width: ' + (227 + sidebarOffsetW) + 'px !important;\
   margin-left: 1px !important;\
 }\
-.field[name="email"],\
-.field[name="sub"] {\
+#qr .field[name="email"],\
+#qr .field[name="sub"] {\
   margin-top: 1px;\
 }\
 ';
