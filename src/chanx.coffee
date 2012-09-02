@@ -2245,11 +2245,11 @@ ThreadStats =
     @imgLimit =
       switch g.BOARD
         when 'a', 'b', 'v', 'co', 'mlp'
-          251
+          250
         when 'vg'
-          376
+          370
         else
-          151
+          150
     Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined
