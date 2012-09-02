@@ -812,8 +812,8 @@
       'Homura_Akemi': 'url("http://i.imgur.com/b9KmB.png")',
       'Horo_sil_light': 'url("http://i.imgur.com/HMpug.png")',
       'Horo_sil_dark': 'url("http://i.imgur.com/PKfl4.png")',
-      'Horo_sil_2 light': 'url("http://i.imgur.com/BjV3U.png")',
-      'Horo_sil_2 dark': 'url("http://i.imgur.com/8fcrD.png")',
+      'Horo_sil_2_light': 'url("http://i.imgur.com/BjV3U.png")',
+      'Horo_sil_2_dark': 'url("http://i.imgur.com/8fcrD.png")',
       'Ika_Musume': 'url("http://i.imgur.com/rKT7L.png")',
       'Ika_Musume_2': 'url("http://i.imgur.com/uUhGG.png")',
       'Iwakura_Lain': 'url("http://i.imgur.com/AfjG9.png")',
@@ -1328,7 +1328,7 @@
       }
     },
     dialog: function() {
-      var arr, back, category, checked, contents, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var arr, back, batchmascots, category, checked, contents, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -1599,6 +1599,41 @@
         $.add(parentdiv, ul);
       }
       $.add($('#mascot_tab + div', dialog), parentdiv);
+      batchmascots = $.el('div', {
+        id: "mascots_batch",
+        innerHTML: "<a href=\"javascript:void(0)\" id=\"clear\">Clear All</a> / <a href=\"javascript:void(0)\" id=\"selectAll\">Select All</a>"
+      });
+      $.on($('#clear', batchmascots), 'click', function() {
+        var mascotname, mascots, _results;
+        _results = [];
+        for (mascotname in enabledmascots) {
+          mascots = enabledmascots[mascotname];
+          if (enabledmascots[mascotname] === true) {
+            $.rmClass($('#' + mascotname, this.parentElement.parentElement), 'enabled');
+            $.set(mascotname, false);
+            _results.push(enabledmascots[mascotname] = false);
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      });
+      $.on($('#selectAll', batchmascots), 'click', function() {
+        var mascotname, mascots, _results;
+        _results = [];
+        for (mascotname in enabledmascots) {
+          mascots = enabledmascots[mascotname];
+          if (enabledmascots[mascotname] === false) {
+            $.addClass($('#' + mascotname, this.parentElement.parentElement), 'enabled');
+            $.set(mascotname, true);
+            _results.push(enabledmascots[mascotname] = true);
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      });
+      $.add($('#mascot_tab + div', dialog), batchmascots);
       Options.applyStyle(dialog, 'mascot_tab');
       Options.indicators(dialog);
       overlay = $.el('div', {
@@ -6576,16 +6611,18 @@ h1, .boardBanner {\
 }\
 #options .mascots {\
   text-align: center;\
+  padding: 0;\
 }\
 #options .mascot {\
   display: inline;\
+  padding: 0;\
 }\
 #options .mascot div {\
   border: 2px solid rgba(0,0,0,0);\
   width: 200px;\
   height: 250px;\
   display: inline-block;\
-  margin: 7px;\
+  margin: 5px;\
   cursor: pointer;\
   background-position: top center;\
   background-repeat: no-repeat;\
@@ -6614,6 +6651,11 @@ h1, .boardBanner {\
 .stylesettings {\
   position: absolute;\
   right: 0;\
+  bottom: 0;\
+}\
+#mascots_batch {\
+  position: absolute;\
+  left: 0;\
   bottom: 0;\
 }\
 #content textarea {\

@@ -260,6 +260,23 @@ Options =
         $.add ul, li
       $.add parentdiv, ul
     $.add $('#mascot_tab + div', dialog), parentdiv
+    batchmascots = $.el 'div',
+      id:        "mascots_batch"
+      innerHTML: "<a href=\"javascript:void(0)\" id=\"clear\">Clear All</a> / <a href=\"javascript:void(0)\" id=\"selectAll\">Select All</a>"
+    $.on $('#clear', batchmascots), 'click', ->
+      for mascotname, mascots of enabledmascots
+        if enabledmascots[mascotname] == true
+          $.rmClass $('#' + mascotname, @parentElement.parentElement), 'enabled'
+          $.set mascotname, false
+          enabledmascots[mascotname] = false
+    $.on $('#selectAll', batchmascots), 'click', ->
+      for mascotname, mascots of enabledmascots
+        if enabledmascots[mascotname] == false
+          $.addClass $('#' + mascotname, @parentElement.parentElement), 'enabled'
+          $.set mascotname, true
+          enabledmascots[mascotname] = true
+    $.add $('#mascot_tab + div', dialog), batchmascots
+        
     Options.applyStyle(dialog, 'mascot_tab')
 
     Options.indicators dialog

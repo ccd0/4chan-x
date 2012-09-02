@@ -365,16 +365,18 @@ h1, .boardBanner {
 }
 #options .mascots {
   text-align: center;
+  padding: 0;
 }
 #options .mascot {
   display: inline;
+  padding: 0;
 }
 #options .mascot div {
   border: 2px solid rgba(0,0,0,0);
   width: 200px;
   height: 250px;
   display: inline-block;
-  margin: 7px;
+  margin: 5px;
   cursor: pointer;
   background-position: top center;
   background-repeat: no-repeat;
@@ -403,6 +405,11 @@ h1, .boardBanner {
 .stylesettings {
   position: absolute;
   right: 0;
+  bottom: 0;
+}
+#mascots_batch {
+  position: absolute;
+  left: 0;
   bottom: 0;
 }
 #content textarea {
