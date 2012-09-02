@@ -177,7 +177,7 @@
       submit: ['alt+s', 'Submit post'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
-      unreadCountTo0: ['z', 'Reset unread status'],
+      unreadCountTo0: ['z', 'Mark thread as read'],
       expandImage: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
       zero: ['0', 'Jump to page 0'],
