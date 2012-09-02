@@ -3039,8 +3039,6 @@ QuoteBacklink =
         $.on link, 'mouseover', QuotePreview.mouseover
       if Conf['Quote Inline']
         $.on link, 'click', QuoteInline.toggle
-      else
-        link.setAttribute 'onclick', "replyhl('#{post.ID}');"
       unless container = $.id "blc#{qid}"
         container = $.el 'span',
           className: 'container'
@@ -3268,7 +3266,6 @@ Quotify =
         if board is g.BOARD and $.id "p#{id}"
           a.href      = "#p#{id}"
           a.className = 'quotelink'
-          a.setAttribute 'onclick', "replyhl('#{id}');"
         else
           a.href      = Redirect.thread board, 0, id
           a.className = 'deadlink'
