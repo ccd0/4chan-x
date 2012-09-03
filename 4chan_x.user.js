@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Board, Clone, Conf, Config, Main, Post, QuoteBacklink, Quotify, Thread, Time, UI, d, g,
+  var $, $$, Board, Clone, Conf, Config, Get, Main, Post, QuoteBacklink, QuoteInline, Quotify, Thread, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -628,16 +628,10 @@
       return this.ID;
     };
 
-    function Thread(root, board) {
-      var postInfo;
-      this.root = root;
+    function Thread(ID, board) {
       this.board = board;
-      this.ID = +root.id.slice(1);
-      this.hr = root.nextElementSibling;
+      this.ID = +ID;
       this.posts = {};
-      postInfo = $('.postInfo', root.firstElementChild);
-      this.isClosed = !!$('img[title=Closed]', postInfo);
-      this.isSticky = !!$('img[title=Sticky]', postInfo);
       g.threads["" + board + "." + this] = board.threads[this] = this;
     }
 
@@ -665,7 +659,8 @@
         post: post,
         info: info,
         comment: $('.postMessage', post),
-        quotelinks: []
+        quotelinks: [],
+        backlinks: info.getElementsByClassName('backlink')
       };
       this.info = {};
       if (subject = $('.subject', info)) {
@@ -753,12 +748,11 @@
     };
 
     Post.prototype.rmClone = function(index) {
-      var clone, i, _i, _ref;
-      clone = this.clones.splice(index, 1);
+      var i, _i, _ref;
+      this.clones.splice(index, 1);
       for (i = _i = index, _ref = this.clones.length; index <= _ref ? _i < _ref : _i > _ref; i = index <= _ref ? ++_i : --_i) {
         this.clones[i].nodes.root.setAttribute('data-clone', i);
       }
-      return $.rm(clone.nodes.root);
     };
 
     return Post;
@@ -770,7 +764,7 @@
     __extends(Clone, _super);
 
     function Clone(origin) {
-      var file, index, info, key, nodes, post, quotelink, root, val, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      var file, index, info, inline, inlined, key, nodes, post, quotelink, root, val, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
       this.origin = origin;
       _ref = ['ID', 'board', 'thread', 'info', 'quotes', 'isReply'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -786,8 +780,20 @@
         post: post,
         info: info,
         comment: $('.postMessage', post),
-        quotelinks: []
+        quotelinks: [],
+        backlinks: info.getElementsByClassName('backlink')
       };
+      _ref1 = $$('.inline', post);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        inline = _ref1[_j];
+        $.rm(inline);
+      }
+      _ref2 = $$('.inlined', post);
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        inlined = _ref2[_k];
+        $.rmClass(inlined, 'inlined');
+      }
+      $.rmClass(root, 'forwarded');
       if (nodes.subject) {
         this.nodes.subject = $('.subject', info);
       }
@@ -812,18 +818,18 @@
       if (nodes.date) {
         this.nodes.date = $('.dateTime', info);
       }
-      _ref1 = $$('.quotelink', this.nodes.comment);
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        quotelink = _ref1[_j];
+      _ref3 = $$('.quotelink', this.nodes.comment);
+      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+        quotelink = _ref3[_l];
         if (quotelink.hash || $.hasClass(quotelink, 'deadlink')) {
           this.nodes.quotelinks.push(quotelink);
         }
       }
       if (origin.file) {
         this.file = {};
-        _ref2 = origin.file;
-        for (key in _ref2) {
-          val = _ref2[key];
+        _ref4 = origin.file;
+        for (key in _ref4) {
+          val = _ref4[key];
           this.file[key] = val;
         }
         file = $('.file', post);
@@ -832,7 +838,7 @@
         this.file.thumb = $('img[data-md5]', file);
       }
       this.isClone = true;
-      index = origin.clones.push(this);
+      index = origin.clones.push(this) - 1;
       root.setAttribute('data-clone', index);
     }
 
@@ -920,6 +926,13 @@
           $.log(err, 'Resurrect Quotes');
         }
       }
+      if (Conf['Quote Inline']) {
+        try {
+          QuoteInline.init();
+        } catch (err) {
+          $.log(err, 'Quote Inline');
+        }
+      }
       if (Conf['Quote Backlinks']) {
         try {
           QuoteBacklink.init();
@@ -949,7 +962,7 @@
         if (!$.hasClass(boardChild, 'thread')) {
           continue;
         }
-        thread = new Thread(boardChild, g.BOARD);
+        thread = new Thread(boardChild.id.slice(1), g.BOARD);
         threads.push(thread);
         _ref1 = boardChild.children;
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -993,7 +1006,75 @@
         return $.on(d, 'DOMNodeInserted', Main.addStyle);
       }
     },
-    css: "/* general */\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}"
+    css: "/* general */\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quotes */\n.inlined {\n  opacity: .5;\n}\n.forwarded {\n  display: none;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, 0.5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n  border: 0 !important;\n}"
+  };
+
+  Get = {
+    post: function(board, threadID, postID, root) {
+      var clone, origin;
+      if (origin = g.posts["" + board + "." + postID]) {
+        clone = origin.addClone();
+        $.add(root, Get.cleanRoot(clone));
+        Main.callbackNodes(Post, [clone]);
+        return;
+      }
+      root.textContent = "Loading post No." + postID + "...";
+      if (threadID) {
+        return $.cache("/" + board + "/res/" + threadID, function() {
+          return Get.parsePost(this, board, threadID, postID, root);
+        });
+      }
+    },
+    cleanRoot: function(clone) {
+      var child, post, root, _i, _len, _ref, _ref1;
+      _ref = clone.nodes, root = _ref.root, post = _ref.post;
+      _ref1 = Array.prototype.slice.call(root.childNodes);
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        child = _ref1[_i];
+        if (child !== post) {
+          $.rm(child);
+        }
+      }
+      return root;
+    },
+    parsePost: function(req, board, threadID, postID, root) {
+      var clone, doc, href, inBoard, inThread, link, pc, post, quote, status, _i, _len, _ref;
+      status = req.status;
+      if (status !== 200) {
+        $.addClass(root, 'warning');
+        root.textContent = status === 404 ? "Thread No." + threadID + " has not been found." : "Error " + req.status + ": " + req.statusText + ".";
+        return;
+      }
+      doc = d.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = req.response;
+      if (!(pc = doc.getElementById("pc" + postID))) {
+        root.textContent = "Post No." + postID + " has not been found.";
+        return;
+      }
+      pc = d.importNode(pc, true);
+      _ref = $$('.quotelink', pc);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
+        }
+        quote.href = "/" + board + "/res/" + href;
+      }
+      link = $('a[title="Highlight this post"]', pc);
+      link.href = "/" + board + "/res/" + threadID + "#p" + postID;
+      link.nextSibling.href = "/" + board + "/res/" + threadID + "#q" + postID;
+      inBoard = g.boards[board] || new Board(board);
+      inThread = g.threads["" + board + "." + threadID] || new Thread(threadID, inBoard);
+      post = new Post(pc, inThread, inBoard);
+      Main.callbackNodes(Post, [post]);
+      if (!root.parentNode) {
+        return;
+      }
+      clone = post.addClone();
+      $.replace(root.firstChild, Get.cleanRoot(clone));
+      return Main.callbackNodes(Post, [clone]);
+    }
   };
 
   Quotify = {
@@ -1044,6 +1125,100 @@
     }
   };
 
+  QuoteInline = {
+    init: function() {
+      return Post.prototype.callbacks.push({
+        name: 'Quote Inline',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var link, _i, _j, _len, _len1, _ref, _ref1;
+      _ref = this.nodes.quotelinks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        $.on(link, 'click', QuoteInline.toggle);
+      }
+      _ref1 = this.nodes.backlinks;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        link = _ref1[_j];
+        $.on(link, 'click', QuoteInline.toggle);
+      }
+    },
+    toggle: function(e) {
+      var board, path, postID, threadID;
+      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+        return;
+      }
+      e.preventDefault();
+      path = this.pathname.split('/');
+      board = path[1];
+      threadID = path[3];
+      postID = this.hash.slice(2);
+      if ($.hasClass(this, 'inlined')) {
+        QuoteInline.rm(this, board, threadID, postID);
+      } else {
+        if ($.x("ancestor::div[@id='p" + postID + "']", this)) {
+          return;
+        }
+        QuoteInline.add(this, board, threadID, postID);
+      }
+      return this.classList.toggle('inlined');
+    },
+    add: function(quotelink, board, threadID, postID) {
+      var inline, isBacklink, post, root;
+      inline = $.el('div', {
+        id: "i" + postID,
+        className: 'inline'
+      });
+      root = (isBacklink = $.hasClass(quotelink, 'backlink')) ? quotelink.parentNode.parentNode : $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
+      $.after(root, inline);
+      Get.post(board, threadID, postID, inline);
+      if (!(board === g.BOARD.ID && $.x("ancestor::div[@id='t" + threadID + "']", quotelink))) {
+        return;
+      }
+      post = g.posts["" + board + "." + postID];
+      if (isBacklink && Conf['Forward Hiding']) {
+        $.addClass(post.nodes.root, 'forwarded');
+        return post.forwarded++ || (post.forwarded = 1);
+      }
+    },
+    rm: function(quotelink, board, threadID, postID) {
+      var el, inThreadID, index, inline, inlines, path, post, root, _i, _len;
+      root = $.x("following::div[@id='i" + postID + "'][1]", quotelink);
+      $.rm(root);
+      if (!(el = root.firstElementChild)) {
+        return;
+      }
+      post = g.posts["" + board + "." + postID];
+      post.rmClone(el.dataset.clone);
+      inThreadID = $.x('ancestor::div[@class="thread"]', quotelink).id.slice(1);
+      if (Conf['Forward Hiding'] && board === g.BOARD.ID && threadID === inThreadID && $.hasClass(quotelink, 'backlink')) {
+        if (!--post.forwarded) {
+          delete post.forwarded;
+          $.rmClass(post.nodes.root, 'forwarded');
+        }
+      }
+      inlines = $$('.inlined', el);
+      for (_i = 0, _len = inlines.length; _i < _len; _i++) {
+        inline = inlines[_i];
+        path = inline.pathname.split('/');
+        board = path[1];
+        threadID = path[3];
+        postID = inline.hash.slice(2);
+        index = $.x("following::div[@id='i" + postID + "'][1]/child::div", inline).dataset.clone;
+        post = g.posts["" + board + "." + postID];
+        post.rmClone(index);
+        if (Conf['Forward Hiding'] && board === g.BOARD.ID && threadID === inThreadID && $.hasClass(inline, 'backlink')) {
+          if (!--post.forwarded) {
+            delete post.forwarded;
+            $.rmClass(post.nodes.root, 'forwarded');
+          }
+        }
+      }
+    }
+  };
+
   QuoteBacklink = {
     init: function() {
       var format;
@@ -1083,6 +1258,9 @@
         for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
           container = containers[_k];
           link = a.cloneNode(true);
+          if (Conf['Quote Inline']) {
+            $.on(link, 'click', QuoteInline.toggle);
+          }
           $.add(container, [$.tn(' '), link]);
         }
       }
@@ -1090,9 +1268,7 @@
     secondNode: function() {
       var container;
       if (this.isClone && this.origin.nodes.backlinkContainer) {
-        container = $('.container', this.nodes.info);
-        this.nodes.backlinkContainer = container;
-        this.nodes.backlinks = container.getElementsByClassName('backlinks');
+        this.nodes.backlinkContainer = $('.container', this.nodes.info);
         return;
       }
       if (!(Conf['OP Backlinks'] || this.isReply)) {
@@ -1100,7 +1276,6 @@
       }
       container = QuoteBacklink.getContainer("" + this.board + "." + this);
       this.nodes.backlinkContainer = container;
-      this.nodes.backlinks = container.getElementsByClassName('backlinks');
       return $.add(this.nodes.info, container);
     },
     getContainer: function(id) {

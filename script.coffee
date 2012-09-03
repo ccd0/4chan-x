@@ -486,14 +486,15 @@ class Thread
   callbacks: []
   toString: -> @ID
 
-  constructor: (@root, @board) ->
-    @ID = +root.id[1..]
-    @hr = root.nextElementSibling
+  constructor: (ID, @board) ->
+    @ID = +ID
     @posts = {}
 
-    postInfo   = $ '.postInfo', root.firstElementChild
-    @isClosed = !!$ 'img[title=Closed]', postInfo
-    @isSticky = !!$ 'img[title=Sticky]', postInfo
+    # XXX Can't check when parsing single posts
+    #     move to Post constructor? unless @isReply
+    # postInfo  = $ '.postInfo', root.firstElementChild
+    # @isClosed = !!$ 'img[title=Closed]', postInfo
+    # @isSticky = !!$ 'img[title=Sticky]', postInfo
 
     g.threads["#{board}.#{@}"] = board.threads[@] = @
 
@@ -512,6 +513,7 @@ class Post
       info: info
       comment: $ '.postMessage', post
       quotelinks: []
+      backlinks: info.getElementsByClassName 'backlink'
 
     @info = {}
     if subject        = $ '.subject',     info
@@ -595,10 +597,10 @@ class Post
   addClone: ->
     new Clone @
   rmClone: (index) ->
-    clone = @clones.splice index, 1
+    @clones.splice index, 1
     for i in [index...@clones.length]
       @clones[i].nodes.root.setAttribute 'data-clone', i
-    $.rm clone.nodes.root
+    return
 
 class Clone extends Post
   constructor: (@origin) ->
@@ -616,6 +618,17 @@ class Clone extends Post
       info: info
       comment: $ '.postMessage', post
       quotelinks: []
+      backlinks: info.getElementsByClassName 'backlink'
+
+    # Remove inlined posts inside of this post.
+    for inline  in $$ '.inline',  post
+      $.rm inline
+    for inlined in $$ '.inlined', post
+      $.rmClass inlined, 'inlined'
+
+    # root.hidden = false # post hiding
+    $.rmClass root, 'forwarded' # quote inlining
+    # $.rmClass post, 'highlight' # keybind navigation
 
     if nodes.subject
       @nodes.subject  = $ '.subject',     info
@@ -651,7 +664,7 @@ class Clone extends Post
       @file.thumb = $ 'img[data-md5]', file
 
     @isClone = true
-    index = origin.clones.push @
+    index = origin.clones.push(@) - 1
     root.setAttribute 'data-clone', index
 
 
@@ -726,6 +739,13 @@ Main =
         # XXX handle error
         $.log err, 'Resurrect Quotes'
 
+    if Conf['Quote Inline']
+      try
+        QuoteInline.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Quote Inline'
+
     if Conf['Quote Backlinks']
       try
         QuoteBacklink.init()
@@ -749,7 +769,7 @@ Main =
 
     for boardChild in $('.board').children
       continue unless $.hasClass boardChild, 'thread'
-      thread = new Thread boardChild, g.BOARD
+      thread = new Thread boardChild.id[1..], g.BOARD
       threads.push thread
       for threadChild in boardChild.children
         continue unless $.hasClass threadChild, 'postContainer'
@@ -793,6 +813,9 @@ Main =
 label {
   cursor: pointer;
 }
+.warning {
+  color: red;
+}
 
 /* 4chan style fixes */
 .opContainer, .op {
@@ -832,9 +855,100 @@ body.fourchan_x {
 #settings {
   float: right;
 }
+
+/* quotes */
+.inlined {
+  opacity: .5;
+}
+.forwarded {
+  display: none;
+}
+.inline {
+  border: 1px solid rgba(128, 128, 128, 0.5);
+  display: table;
+  margin: 2px 0;
+}
+.inline .post {
+  display: table !important;
+  margin: 0 !important;
+  padding: 1px 2px !important;
+  border: 0 !important;
+}
 """
 
 
+
+Get =
+  post: (board, threadID, postID, root) ->
+    if origin = g.posts["#{board}.#{postID}"]
+      clone = origin.addClone()
+      $.add root, Get.cleanRoot clone
+      Main.callbackNodes Post, [clone]
+      return
+
+    root.textContent = "Loading post No.#{postID}..."
+    if threadID
+      $.cache "/#{board}/res/#{threadID}", ->
+        Get.parsePost @, board, threadID, postID, root
+    # else if url = Redirect.post board, postID
+    #   $.cache url, ->
+    #     Get.parseArchivedPost @, board, postID, root
+  cleanRoot: (clone) ->
+    {root, post} = clone.nodes
+    for child in Array::slice.call root.childNodes
+      $.rm child unless child is post
+    root
+  parsePost: (req, board, threadID, postID, root) ->
+    {status} = req
+    if status isnt 200
+      # The thread can die by the time we check a quote.
+      # XXX
+      # if url = Redirect.post board, postID
+      #   $.cache url, ->
+      #     Get.parseArchivedPost @, board, postID, root
+      # else
+      $.addClass root, 'warning'
+      root.textContent =
+        if status is 404
+          "Thread No.#{threadID} has not been found."
+        else
+          "Error #{req.status}: #{req.statusText}."
+      return
+
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = req.response
+
+    unless pc = doc.getElementById "pc#{postID}"
+      # The post can be deleted by the time we check a quote.
+      # XXX
+      # if url = Redirect.post board, postID
+      #   $.cache url, ->
+      #     Get.parseArchivedPost @, board, postID, root
+      # else
+      root.textContent = "Post No.#{postID} has not been found."
+      return
+    pc = d.importNode pc, true
+
+    for quote in $$ '.quotelink', pc
+      href = quote.getAttribute 'href'
+      continue if href[0] is '/' # Cross-board quote, or board link
+      quote.href = "/#{board}/res/#{href}" # Fix pathnames
+    link = $ 'a[title="Highlight this post"]', pc
+    link.href = "/#{board}/res/#{threadID}#p#{postID}"
+    link.nextSibling.href = "/#{board}/res/#{threadID}#q#{postID}"
+
+    inBoard = g.boards[board] or
+      new Board board
+    inThread = g.threads["#{board}.#{threadID}"] or
+      new Thread threadID, inBoard
+    post = new Post pc, inThread, inBoard
+    Main.callbackNodes Post, [post]
+
+    # Stop here if the container has been removed while loading.
+    return unless root.parentNode
+    clone = post.addClone()
+    $.replace root.firstChild, Get.cleanRoot clone
+    Main.callbackNodes Post, [clone]
 
 Quotify =
   init: ->
@@ -884,7 +998,6 @@ Quotify =
         # if board is g.BOARD and $.id "p#{ID}"
         #   a.href      = "#p#{ID}"
         #   a.className = 'quotelink'
-        #   a.setAttribute 'onclick', "replyhl('#{ID}');"
         # else
         #   a.href      = Redirect.thread board, 0, ID
         #   a.className = 'deadlink'
@@ -903,6 +1016,105 @@ Quotify =
         nodes.push $.tn data
 
       $.replace node, nodes
+    return
+
+QuoteInline =
+  init: ->
+    Post::callbacks.push
+      name: 'Quote Inline'
+      cb:   @node
+  node: ->
+    for link in @nodes.quotelinks
+      $.on link, 'click', QuoteInline.toggle
+    for link in @nodes.backlinks
+      $.on link, 'click', QuoteInline.toggle
+    return
+  toggle: (e) ->
+    return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+    e.preventDefault()
+    # XXX quote resurrection
+    # id = @dataset.id or @hash[2..]
+    path     = @pathname.split '/'
+    board    = path[1]
+    threadID = path[3]
+    postID   = @hash[2..]
+    if $.hasClass @, 'inlined'
+      QuoteInline.rm @, board, threadID, postID
+    else
+      return if $.x "ancestor::div[@id='p#{postID}']", @
+      QuoteInline.add @, board, threadID, postID
+    @classList.toggle 'inlined'
+
+  add: (quotelink, board, threadID, postID) ->
+    inline = $.el 'div',
+      id: "i#{postID}"
+      className: 'inline'
+
+    root =
+      if isBacklink = $.hasClass quotelink, 'backlink'
+        quotelink.parentNode.parentNode
+      else
+        $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
+    $.after root, inline
+    Get.post board, threadID, postID, inline
+
+    return unless board is g.BOARD.ID and $.x "ancestor::div[@id='t#{threadID}']", quotelink
+    post = g.posts["#{board}.#{postID}"]
+
+    # Hide forward post if it's a backlink of a post in this thread.
+    # Will only unhide if there's no inlined backlinks of it anymore.
+    if isBacklink and Conf['Forward Hiding']
+      $.addClass post.nodes.root, 'forwarded'
+      post.forwarded++ or post.forwarded = 1
+
+    # Decrease the unread count if this post is in the array of unread reply.
+    # XXX
+    # if (i = Unread.replies.indexOf el) isnt -1
+    #   Unread.replies.splice i, 1
+    #   Unread.update true
+
+  rm: (quotelink, board, threadID, postID) ->
+    # Select the corresponding inlined quote, and remove it.
+    root = $.x "following::div[@id='i#{postID}'][1]", quotelink
+    $.rm root
+
+    # Stop if it's still loading.
+    return unless el = root.firstElementChild
+
+    # Dereference clone.
+    post = g.posts["#{board}.#{postID}"]
+    post.rmClone el.dataset.clone
+
+    inThreadID = $.x('ancestor::div[@class="thread"]', quotelink).id[1..]
+
+    # Decrease forward count and unhide.
+    if Conf['Forward Hiding'] and
+      board is g.BOARD.ID and
+      threadID is inThreadID and
+      $.hasClass quotelink, 'backlink'
+        unless --post.forwarded
+          delete post.forwarded
+          $.rmClass post.nodes.root, 'forwarded'
+
+    # Repeat.
+    inlines = $$ '.inlined', el
+    for inline in inlines
+      # XXX resurrected quotes
+      path     = inline.pathname.split '/'
+      board    = path[1]
+      threadID = path[3]
+      postID   = inline.hash[2..]
+      index    = $.x("following::div[@id='i#{postID}'][1]/child::div", inline).dataset.clone
+      post     = g.posts["#{board}.#{postID}"]
+      post.rmClone index
+
+      if Conf['Forward Hiding'] and
+        board is g.BOARD.ID and
+        threadID is inThreadID and
+        $.hasClass inline, 'backlink'
+          unless --post.forwarded
+            delete post.forwarded
+            $.rmClass post.nodes.root, 'forwarded'
     return
 
 QuoteBacklink =
@@ -944,23 +1156,18 @@ QuoteBacklink =
         # XXX
         # if Conf['Quote Preview']
         #   $.on link, 'mouseover', QuotePreview.mouseover
-        # if Conf['Quote Inline']
-        #   $.on link, 'click', QuoteInline.toggle
-        # else
-        #   link.setAttribute 'onclick', "replyhl('#{post.ID}');"
+        if Conf['Quote Inline']
+          $.on link, 'click', QuoteInline.toggle
         $.add container, [$.tn(' '), link]
     return
   secondNode: ->
     if @isClone and @origin.nodes.backlinkContainer
-      container = $ '.container', @nodes.info
-      @nodes.backlinkContainer = container
-      @nodes.backlinks = container.getElementsByClassName 'backlinks'
+      @nodes.backlinkContainer = $ '.container', @nodes.info
       return
     # Don't backlink the OP.
     return unless Conf['OP Backlinks'] or @isReply
     container = QuoteBacklink.getContainer "#{@board}.#{@}"
     @nodes.backlinkContainer = container
-    @nodes.backlinks = container.getElementsByClassName 'backlinks'
     $.add @nodes.info, container
   getContainer: (id) ->
     @containers[id] or=
