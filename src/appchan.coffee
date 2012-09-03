@@ -16,18 +16,19 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 }
 '
     return css
-    
+
   rice: (checkbox)->
     $.addClass checkbox, 'riced'
     div = $.el 'div',
       className: 'rice'
-    $.on div, 'click', ->
-      checkbox.click()
     $.after checkbox, div
+    if div.parentElement.tagName.toLowerCase() != 'label'
+      $.on div, 'click', ->
+        checkbox.click()
 
   noderice: (post) ->
     Style.rice checkbox = $('[type=checkbox]:not(.riced)', post.root)
-    
+
   allrice: ->
     checkboxes = $$('[type=checkbox]:not(.riced)', d.body)
     for checkbox in checkboxes

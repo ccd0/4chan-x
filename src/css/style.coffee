@@ -1053,6 +1053,11 @@ input[value="Report"] {
   float: left;
   clear: both;
 }
+#qr input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
 #file {
   width: ' + (177 + sidebarOffsetW) + 'px;
 }
@@ -1907,7 +1912,7 @@ a.forwardlink {
 }
 #qr input:' + agent + 'placeholder,
 #qr textarea:' + agent + 'placeholder {
-  color: ' + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)") + ' !important;
+  color: ' + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)") + ' !important;
 }
 .boxcontent dd,
 #options ul {
