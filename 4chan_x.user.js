@@ -173,7 +173,7 @@
       'submit QR': ['alt+s', 'Submit post.'],
       'watch': ['w', 'Watch thread.'],
       'update': ['u', 'Update the thread now.'],
-      'reset unread count': ['r', 'Reset unread status.'],
+      'read thread': ['r', 'Mark thread as read.'],
       'expand image': ['E', 'Expand selected image.'],
       'expand images': ['e', 'Expand all images.'],
       'front page': ['0', 'Jump to page 0.'],

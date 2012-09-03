@@ -135,7 +135,7 @@ Config =
     # Thread related
     'watch':              ['w',      'Watch thread.']
     'update':             ['u',      'Update the thread now.']
-    'reset unread count': ['r',      'Reset unread status.']
+    'read thread':        ['r',      'Mark thread as read.']
     # Images
     'expand image':       ['E',      'Expand selected image.']
     'expand images':      ['e',      'Expand all images.']

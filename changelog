@@ -2,6 +2,12 @@ alpha
 - Mayhem
   Fix Chrome's install warning that 4chan X would execute on all domains.
 
+2.34.9
+- Mayhem
+  Add /g/, /k/, /w/, /an/, /cgl/, /ck/, /lit/, /toy/ and /x/ archived image redirection.
+  One-word-captcha now works in the report window.
+  Fix duplicate file upload error link.
+
 2.34.8
 - Mayhem
   One-word-captcha: you don't need to input an extra space anymore, the true word will be duplicated.
