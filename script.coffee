@@ -3053,7 +3053,6 @@ QuoteInline =
   node: (post) ->
     for quote in post.quotes
       continue unless quote.hash or /\bdeadlink\b/.test quote.className
-      quote.removeAttribute 'onclick'
       $.on quote, 'click', QuoteInline.toggle
     for quote in post.backlinks
       $.on quote, 'click', QuoteInline.toggle

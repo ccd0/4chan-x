@@ -3853,7 +3853,6 @@
         if (!(quote.hash || /\bdeadlink\b/.test(quote.className))) {
           continue;
         }
-        quote.removeAttribute('onclick');
         $.on(quote, 'click', QuoteInline.toggle);
       }
       _ref1 = post.backlinks;
