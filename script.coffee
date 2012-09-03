@@ -3599,11 +3599,10 @@ Redirect =
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
-      # these will work whenever https://github.com/eksopl/fuuka/issues/23 is done
       # when 'cgl', 'g', 'w'
       #   "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
-      # when 'an', 'k', 'toy', 'x'
-      #   "http://archive.heinessen.com/#{board}/full_image/#{filename}"
+      when 'an', 'k', 'toy', 'x'
+        "http://archive.heinessen.com/#{board}/full_image/#{filename}"
       # when 'e'
       #   "https://www.cliché.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
