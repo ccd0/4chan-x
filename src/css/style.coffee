@@ -344,7 +344,8 @@ h1, .boardBanner {
   overflow: auto;
   padding: 0 5px 0 7px;
 }
-#options input:checked + .optionlabel {
+#options input:checked + .optionlabel,
+#options input:checked + .rice + .optionlabel {
   font-weight: 800;
 }
 #options input,
@@ -523,8 +524,8 @@ div.opContainer {
 }'
 
     if Conf['Style']
-      if Conf['Checkboxes'] == 'show' or Conf['Checkboxes'] == 'make checkboxes circular'
-        Main.callbacks.push @noderice
+      Main.callbacks.push @noderice
+      $.ready @allrice
 
       Conf['styleenabled'] = '1'
 
@@ -744,7 +745,11 @@ body > form #imgControls {
 }
 #stats,
 #watcher,
-#watcher::before {
+#watcher::before,
+.menu_button,
+.postInfo input,
+.postInfo .rice,
+.sideArrows {
   z-index: 4 !important;
 }
 body::after {
@@ -2751,20 +2756,29 @@ a.useremail[href*="SAGE"]:last-of-type::after {
       switch Conf["Checkboxes"]
         when "show", "hide checkboxes"
           css += '
-#delform input[type=checkbox] {
+input[type=checkbox] {
+  display: none;
+}
+.rice {
   display: none;
 }
 '
         when "make checkboxes circular"
           css += '
-#delform input[type=checkbox] {
+input[type=checkbox] {
   display: none;
 }
 .rice {
   border-radius: 6px;
 }
 '
-
+        when "do not style checkboxes"
+          css += '
+.rice {
+  display: none;
+}
+'
+          
       if Conf["Mascots"]
         mascotimages = []
         for category, mascots of Mascots

@@ -5,13 +5,17 @@ Options =
         href: 'javascript:;'
         className: 'settingsWindowLink'
         textContent: 'AppChan X Settings'
-      $.on a, 'click', Options.dialog
+      $.on a, 'click', ->
+        Options.dialog()
+        if Conf['Style']
+          Style.allrice()
       el = $.id(settings).firstElementChild
       el.hidden = true
       $.before el, a
     unless $.get 'firstrun'
       $.set 'firstrun', true
       Options.dialog()
+      Style.allrice()
 
   dialog: ->
     dialog = $.el 'div'

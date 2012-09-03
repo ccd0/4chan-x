@@ -1317,14 +1317,20 @@
           className: 'settingsWindowLink',
           textContent: 'AppChan X Settings'
         });
-        $.on(a, 'click', Options.dialog);
+        $.on(a, 'click', function() {
+          Options.dialog();
+          if (Conf['Style']) {
+            return Style.allrice();
+          }
+        });
         el = $.id(settings).firstElementChild;
         el.hidden = true;
         $.before(el, a);
       }
       if (!$.get('firstrun')) {
         $.set('firstrun', true);
-        return Options.dialog();
+        Options.dialog();
+        return Style.allrice();
       }
     },
     dialog: function() {
@@ -6195,9 +6201,8 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
       return css;
     },
-    noderice: function(post) {
-      var checkbox, div;
-      checkbox = $('[type=checkbox]:not(.riced)', post.root);
+    rice: function(checkbox) {
+      var div;
       $.addClass(checkbox, 'riced');
       div = $.el('div', {
         className: 'rice'
@@ -6206,6 +6211,20 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         return checkbox.click();
       });
       return $.after(checkbox, div);
+    },
+    noderice: function(post) {
+      var checkbox;
+      return Style.rice(checkbox = $('[type=checkbox]:not(.riced)', post.root));
+    },
+    allrice: function() {
+      var checkbox, checkboxes, _i, _len, _results;
+      checkboxes = $$('[type=checkbox]:not(.riced)', d.body);
+      _results = [];
+      for (_i = 0, _len = checkboxes.length; _i < _len; _i++) {
+        checkbox = checkboxes[_i];
+        _results.push(Style.rice(checkbox));
+      }
+      return _results;
     },
     agent: function() {
       switch ($.engine) {
@@ -6598,7 +6617,8 @@ h1, .boardBanner {\
   overflow: auto;\
   padding: 0 5px 0 7px;\
 }\
-#options input:checked + .optionlabel {\
+#options input:checked + .optionlabel,\
+#options input:checked + .rice + .optionlabel {\
   font-weight: 800;\
 }\
 #options input,\
@@ -6777,9 +6797,8 @@ div.opContainer {\
 }';
       }
       if (Conf['Style']) {
-        if (Conf['Checkboxes'] === 'show' || Conf['Checkboxes'] === 'make checkboxes circular') {
-          Main.callbacks.push(this.noderice);
-        }
+        Main.callbacks.push(this.noderice);
+        $.ready(this.allrice);
         Conf['styleenabled'] = '1';
         this.remStyle();
         if (Conf['Sidebar'] === 'large') {
@@ -6996,7 +7015,11 @@ body > form #imgControls {\
 }\
 #stats,\
 #watcher,\
-#watcher::before {\
+#watcher::before,\
+.menu_button,\
+.postInfo input,\
+.postInfo .rice,\
+.sideArrows {\
   z-index: 4 !important;\
 }\
 body::after {\
@@ -9032,18 +9055,28 @@ a.useremail[href*="SAGE"]:last-of-type::after {\
           case "show":
           case "hide checkboxes":
             css += '\
-#delform input[type=checkbox] {\
+input[type=checkbox] {\
+  display: none;\
+}\
+.rice {\
   display: none;\
 }\
 ';
             break;
           case "make checkboxes circular":
             css += '\
-#delform input[type=checkbox] {\
+input[type=checkbox] {\
   display: none;\
 }\
 .rice {\
   border-radius: 6px;\
+}\
+';
+            break;
+          case "do not style checkboxes":
+            css += '\
+.rice {\
+  display: none;\
 }\
 ';
         }
