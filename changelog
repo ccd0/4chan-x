@@ -1,4 +1,8 @@
 master
+- Mayhem
+  Add /an/, /k/, /toy/ and /x/ archived image redirection.
+  One-word-captcha now works in the report window.
+  Fix duplicate file upload error link.
 
 0.5beta
 - Zixaphir

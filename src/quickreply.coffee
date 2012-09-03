@@ -613,10 +613,7 @@ QR =
         # Connection error, or
         # CORS disabled error on www.4chan.org/banned
         QR.status()
-        QR.error $.el 'a',
-          href: '//www.4chan.org/banned'
-          target: '_blank'
-          textContent: 'Connection error, or you are banned.'
+        QR.error 'Connection error with sys.4chan.org.'
     opts =
       form: $.formData post
       upCallbacks:
@@ -640,11 +637,8 @@ QR =
             "You were issued a warning on #{bs[0].innerHTML} as #{bs[3].innerHTML}.<br>Warning reason: #{bs[1].innerHTML}"
           else
             "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
-    else if msg = doc.getElementById 'errmsg' # error!
-      err = msg.textContent
-      if msg.firstChild.tagName # duplicate image link
-        err = msg.firstChild
-        err.target = '_blank'
+    else if err = doc.getElementById 'errmsg' # error!
+      $('a', err)?.target = '_blank' # duplicate image link
     else unless msg = $ 'b', doc
       err = 'Connection error with sys.4chan.org.'
 

@@ -197,7 +197,7 @@
       submit: ['alt+s', 'Submit post'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
-      unreadCountTo0: ['z', 'Reset unread status'],
+      unreadCountTo0: ['z', 'Mark thread as read'],
       threading: ['t', 'Toggle threading'],
       expandImage: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
@@ -4033,8 +4033,6 @@
         }
         if (Conf['Quote Inline']) {
           $.on(link, 'click', QuoteInline.toggle);
-        } else {
-          link.setAttribute('onclick', "replyhl('" + post.ID + "');");
         }
         if (!(container = $.id("blc" + qid))) {
           container = $.el('span', {
@@ -4329,7 +4327,6 @@
           if (board === g.BOARD && $.id("p" + id)) {
             a.href = "#p" + id;
             a.className = 'quotelink';
-            a.setAttribute('onclick', "replyhl('" + id + "');");
           } else {
             a.href = Redirect.thread(board, 0, id);
             a.className = 'deadlink';
@@ -4838,6 +4835,11 @@
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
         case 'u':
           return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
+        case 'an':
+        case 'k':
+        case 'toy':
+        case 'x':
+          return "http://archive.heinessen.com/" + board + "/full_image/" + filename;
       }
     },
     post: function(board, postID) {
@@ -6069,11 +6071,7 @@
         },
         onerror: function() {
           QR.status();
-          return QR.error($.el('a', {
-            href: '//www.4chan.org/banned',
-            target: '_blank',
-            textContent: 'Connection error, or you are banned.'
-          }));
+          return QR.error('Connection error with sys.4chan.org.');
         }
       };
       opts = {
@@ -6094,7 +6092,7 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var bs, doc, err, msg, persona, postID, reply, threadID, _, _ref;
+      var bs, doc, err, msg, persona, postID, reply, threadID, _, _ref, _ref1;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
@@ -6102,11 +6100,9 @@
         err = $.el('span', {
           innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
         });
-      } else if (msg = doc.getElementById('errmsg')) {
-        err = msg.textContent;
-        if (msg.firstChild.tagName) {
-          err = msg.firstChild;
-          err.target = '_blank';
+      } else if (err = doc.getElementById('errmsg')) {
+        if ((_ref = $('a', err)) != null) {
+          _ref.target = '_blank';
         }
       } else if (!(msg = $('b', doc))) {
         err = 'Connection error with sys.4chan.org.';
@@ -6130,7 +6126,7 @@
         sub: Conf['Remember Subject'] ? reply.sub : null
       };
       $.set('QR.persona', persona);
-      _ref = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], threadID = _ref[1], postID = _ref[2];
+      _ref1 = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
       $.event(QR.el, new CustomEvent('QRPostSuccessful', {
         bubbles: true,
         detail: {
@@ -9124,10 +9120,22 @@ img[src^="//static.4chan.org/support/"] {\
         case 'sys.4chan.org':
           if (/report/.test(location.search)) {
             $.ready(function() {
-              return $.on($.id('recaptcha_response_field'), 'keydown', function(e) {
+              var field, form;
+              form = $('form');
+              field = $.id('recaptcha_response_field');
+              $.on(field, 'keydown', function(e) {
                 if (e.keyCode === 8 && !e.target.value) {
                   return window.location = 'javascript:Recaptcha.reload()';
                 }
+              });
+              return $.on(form, 'submit', function(e) {
+                var response;
+                e.preventDefault();
+                response = field.value.trim();
+                if (!/\s/.test(response)) {
+                  field.value = "" + response + " " + response;
+                }
+                return form.submit();
               });
             });
           }
