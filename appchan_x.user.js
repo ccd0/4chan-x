@@ -5843,7 +5843,7 @@
       }
     },
     dialog: function() {
-      var fileInput, id, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+      var fileInput, id, mimeTypes, name, qrFile, riceFile, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (!Conf['Style']) {
         QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
@@ -5864,11 +5864,23 @@
   <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>\
+  <div><input hidden type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse>Browse...</div><div id=file></div></div>\
+  <div id=submit><input type=submit></div>\
   <div id=threadselect></div>\
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\
   <div class=warning></div>\
 </form>');
+        qrFile = $("[type=file]", QR.el);
+        riceFile = $("#file", QR.el);
+        $.on(riceFile, 'click', function() {
+          return qrFile.click();
+        });
+        $.on($("#browse", QR.el), 'click', function() {
+          return qrFile.click();
+        });
+        $.on(qrFile, 'change', function() {
+          return riceFile.textContent = qrFile.value;
+        });
       }
       if (Conf['Remember QR size'] && $.engine === 'gecko') {
         $.on(ta = $('textarea', QR.el), 'mouseup', function() {
@@ -7243,6 +7255,8 @@ input[type=checkbox] {\
   border: none;\
 }\
 /* Formatting for all postarea elements */\
+#browse,\
+#file,\
 .recaptchatable #recaptcha_response_field,\
 .deleteform input[type="password"],\
 input,\
@@ -7254,9 +7268,9 @@ textarea {\
   padding: 1px !important;\
   height: 20px !important;\
 }\
-#qr .move .field,\
+#browse,\
+#file,\
 #qr input[type="submit"],\
-input[type="file"],\
 #qr textarea,\
 #qr .field {\
   margin: 1px 0 0;\
@@ -7266,19 +7280,17 @@ input[type="file"],\
 #recaptcha_response_field,\
 textarea.field,\
 #recaptcha_widget_div input,\
-#qr .move .field,\
 #qr .field[type="password"],\
 .ys_playerContainer audio,\
 #qr input[title="Verification"],\
 #recaptcha_image,\
-#qr div,\
-input[type="file"] {\
+#qr > form > div {\
   width: ' + (248 + sidebarOffsetW) + 'px;\
 }\
 /* Buttons */\
+#browse,\
 input[type="submit"], /* Any lingering buttons */\
 input[value="Report"] {\
-  cursor: default;\
   height: 20px;\
   padding: 0;\
   font-size: 12px;\
@@ -7288,15 +7300,20 @@ input[value="Report"] {\
   float: left;\
   clear: both;\
 }\
-#qr input[name="email"] + label {\
-  bottom: 2px;\
-  right: 4px;\
+#file {\
+  width: ' + (177 + sidebarOffsetW) + 'px;\
 }\
-#qr input[name="sub"] + input + label {\
-  font-size: 12px;\
-  top: auto;\
-  right: 70px;\
-  margin-top: 1px;\
+#browse {\
+  text-align: center;\
+  width: 70px;\
+  margin: 1px 1px 0 0;\
+}\
+#browse,\
+#file {\
+  cursor: pointer;\
+  ' + agent + 'box-sizing: border-box;\
+  box-sizing: border-box;\
+  display: inline-block;\
 }\
 /* Image Hover and Image Expansion */\
 #ihover {\
@@ -7771,13 +7788,6 @@ body > table[cellpadding="30"] h1, body > table[cellpadding="30"] h3 {\
 textarea {\
   resize: none;\
 }\
-/* .move contains the name field of the #qr. Here we"re making it behave like no more than a container. We also hide the "Quick Reply" text with a hack. */\
-#qr .move {\
-  color: transparent;\
-  font-size: 0;\
-  height: 20px;\
-  cursor: default;\
-}\
 /* Position and Dimensions of the #qr */\
 #qr {\
   overflow: visible;\
@@ -7815,9 +7825,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {\
 #dump:hover {\
   background: none;\
 }\
-#qr .move {\
-  height: 0px;\
-}\
 #qr select {\
   position: absolute;\
   bottom: -18px;\
@@ -7838,11 +7845,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {\
 .dump > form > label {\
   display: block;\
   visibility: hidden;\
-}\
-#qr [type="file"] input[type="text"] {\
-  width: 104px;\
-  position: relative;\
-  right: 1px;\
 }\
 #spoilerLabel {\
   position: absolute;\
@@ -7912,9 +7914,6 @@ table.reply[style^="clear: both"] {\
   margin: 0;\
   height: 17px;\
 }\
-#qr.autohide .move {\
-  border-bottom: none;\
-}\
 .prettyprint {\
   white-space: pre-wrap;\
   border-radius: 2px;\
@@ -7930,6 +7929,7 @@ body {\
 .boardTitle {\
   text-shadow: 1px 1px 1px ' + theme["Reply Border"] + ';\
 }\
+#browse,\
 #ft li,\
 #ft ul,\
 #options .dialog,\
@@ -7950,6 +7950,7 @@ input[value="Report"],\
   background-color: ' + theme["Buttons Background"] + ';\
   border-color: ' + theme["Buttons Border"] + ';\
 }\
+#file,\
 .recaptchatable #recaptcha_response_field,\
 .deleteform input[type="password"],\
 #dump,\
@@ -7962,6 +7963,8 @@ textarea.field {\
   color: ' + theme["Inputs"] + ';\
   ' + agent + 'transition: all .2s linear;\
 }\
+#browse:hover,\
+#file:hover,\
 div.navLinks a:first-of-type:hover,\
 .deleteform input:hover,\
 .recaptchatable #recaptcha_response_field:hover,\

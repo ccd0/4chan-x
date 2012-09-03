@@ -1003,6 +1003,8 @@ input[type=checkbox] {
   border: none;
 }
 /* Formatting for all postarea elements */
+#browse,
+#file,
 .recaptchatable #recaptcha_response_field,
 .deleteform input[type="password"],
 input,
@@ -1014,9 +1016,9 @@ textarea {
   padding: 1px !important;
   height: 20px !important;
 }
-#qr .move .field,
+#browse,
+#file,
 #qr input[type="submit"],
-input[type="file"],
 #qr textarea,
 #qr .field {
   margin: 1px 0 0;
@@ -1026,19 +1028,17 @@ input[type="file"],
 #recaptcha_response_field,
 textarea.field,
 #recaptcha_widget_div input,
-#qr .move .field,
 #qr .field[type="password"],
 .ys_playerContainer audio,
 #qr input[title="Verification"],
 #recaptcha_image,
-#qr div,
-input[type="file"] {
+#qr > form > div {
   width: ' + (248 + sidebarOffsetW) + 'px;
 }
 /* Buttons */
+#browse,
 input[type="submit"], /* Any lingering buttons */
 input[value="Report"] {
-  cursor: default;
   height: 20px;
   padding: 0;
   font-size: 12px;
@@ -1048,15 +1048,20 @@ input[value="Report"] {
   float: left;
   clear: both;
 }
-#qr input[name="email"] + label {
-  bottom: 2px;
-  right: 4px;
+#file {
+  width: ' + (177 + sidebarOffsetW) + 'px;
 }
-#qr input[name="sub"] + input + label {
-  font-size: 12px;
-  top: auto;
-  right: 70px;
-  margin-top: 1px;
+#browse {
+  text-align: center;
+  width: 70px;
+  margin: 1px 1px 0 0;
+}
+#browse,
+#file {
+  cursor: pointer;
+  ' + agent + 'box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
 }
 /* Image Hover and Image Expansion */
 #ihover {
@@ -1531,13 +1536,6 @@ body > table[cellpadding="30"] h1, body > table[cellpadding="30"] h3 {
 textarea {
   resize: none;
 }
-/* .move contains the name field of the #qr. Here we"re making it behave like no more than a container. We also hide the "Quick Reply" text with a hack. */
-#qr .move {
-  color: transparent;
-  font-size: 0;
-  height: 20px;
-  cursor: default;
-}
 /* Position and Dimensions of the #qr */
 #qr {
   overflow: visible;
@@ -1575,9 +1573,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 #dump:hover {
   background: none;
 }
-#qr .move {
-  height: 0px;
-}
 #qr select {
   position: absolute;
   bottom: -18px;
@@ -1598,11 +1593,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 .dump > form > label {
   display: block;
   visibility: hidden;
-}
-#qr [type="file"] input[type="text"] {
-  width: 104px;
-  position: relative;
-  right: 1px;
 }
 #spoilerLabel {
   position: absolute;
@@ -1672,9 +1662,6 @@ table.reply[style^="clear: both"] {
   margin: 0;
   height: 17px;
 }
-#qr.autohide .move {
-  border-bottom: none;
-}
 .prettyprint {
   white-space: pre-wrap;
   border-radius: 2px;
@@ -1690,6 +1677,7 @@ body {
 .boardTitle {
   text-shadow: 1px 1px 1px ' + theme["Reply Border"] + ';
 }
+#browse,
 #ft li,
 #ft ul,
 #options .dialog,
@@ -1710,6 +1698,7 @@ input[value="Report"],
   background-color: ' + theme["Buttons Background"] + ';
   border-color: ' + theme["Buttons Border"]  + ';
 }
+#file,
 .recaptchatable #recaptcha_response_field,
 .deleteform input[type="password"],
 #dump,
@@ -1722,6 +1711,8 @@ textarea.field {
   color: ' + theme["Inputs"] + ';
   ' + agent + 'transition: all .2s linear;
 }
+#browse:hover,
+#file:hover,
 div.navLinks a:first-of-type:hover,
 .deleteform input:hover,
 .recaptchatable #recaptcha_response_field:hover,
