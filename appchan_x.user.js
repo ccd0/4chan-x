@@ -4064,7 +4064,6 @@
         if (!(quote.hash || /\bdeadlink\b/.test(quote.className))) {
           continue;
         }
-        quote.removeAttribute('onclick');
         $.on(quote, 'click', QuoteInline.toggle);
       }
       _ref1 = post.backlinks;
@@ -4682,11 +4681,11 @@
           case 'v':
           case 'co':
           case 'mlp':
-            return 250;
+            return 251;
           case 'vg':
-            return 370;
+            return 376;
           default:
-            return 150;
+            return 151;
         }
       })();
       return Main.callbacks.push(this.node);
@@ -4841,6 +4840,13 @@
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
         case 'u':
           return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
+        case 'ck':
+        case 'lit':
+          return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
+        case 'cgl':
+        case 'g':
+        case 'w':
+          return "//archive.rebeccablacktech.com/" + board + "/full_image/" + filename;
         case 'an':
         case 'k':
         case 'toy':

@@ -1758,7 +1758,6 @@ QuoteInline =
   node: (post) ->
     for quote in post.quotes
       continue unless quote.hash or /\bdeadlink\b/.test quote.className
-      quote.removeAttribute 'onclick'
       $.on quote, 'click', QuoteInline.toggle
     for quote in post.backlinks
       $.on quote, 'click', QuoteInline.toggle
@@ -2242,11 +2241,11 @@ ThreadStats =
     @imgLimit =
       switch g.BOARD
         when 'a', 'b', 'v', 'co', 'mlp'
-          250
+          251
         when 'vg'
-          370
+          376
         else
-          150
+          151
     Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined
@@ -2382,8 +2381,10 @@ Redirect =
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
-      # when 'cgl', 'g', 'w'
-      #   "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
+      when 'ck', 'lit'
+        "//fuuka.warosu.org/#{board}/full_image/#{filename}"
+      when 'cgl', 'g', 'w'
+        "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
       # when 'e'
