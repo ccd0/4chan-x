@@ -789,25 +789,48 @@
     SFW: {
       'Akiyama_Mio': 'url("http://i.imgur.com/MdE9K.png")',
       'Akiyama_Mio_2': 'url("http://i.imgur.com/pBuG2.png")',
+      'Akiyama_Mio_3': 'url("http://i.imgur.com/s3ffU.png")',
       'Akiyama_Mio_sitting': 'url("http://i.imgur.com/0x4Rr.png")',
-      'Ayase_Yue': 'url("http://i.imgur.com/i2MT8.png")',
       'Asuka_Langley_Soryu': 'url("http://i.imgur.com/Wj7s7.png")',
+      'Asuka_Langley_Soryu_2': 'url("http://i.imgur.com/FMbEx.png")',
+      'Asuka_Langley_Soryu_3': 'url("http://i.imgur.com/qunYm.png")',
+      'Asuka_Langley_Soryu_4': 'url("http://i.imgur.com/MvYCD.png")',
+      'Asuka_Langley_Soryu_5': 'url("http://i.imgur.com/1rDfl.png")',
+      'Ayanami_Rei': 'url("http://i.imgur.com/Ye6OS.png")',
+      'Ayase_Yue': 'url("http://i.imgur.com/i2MT8.png")',
+      'Ayase': 'url("http://i.imgur.com/4Ehza.png")',
+      'Ayase_2': 'url("http://i.imgur.com/48nYb.png")',
       'BLACK★ROCK_SHOOTER': 'url("http://i.imgur.com/VidKo.png")',
+      'Blue_Rose': 'url("http://i.imgur.com/q5RwP.png")',
+      'Brioche_d_Arquien': 'url("http://i.imgur.com/rxTsB.png")',
       'CC': 'url("http://i.imgur.com/Ir1v3.png")',
       'CC2': 'url("http://i.imgur.com/AU1H8.png")',
+      'Chie': 'url("http://i.imgur.com/E3ge5.png")',
+      'Cirno': 'url("http://i.imgur.com/q735W.png")',
+      'Cirno_2': 'url("http://i.imgur.com/dLrCn.png")',
       'Dawn_Hikari': 'url("http://i.imgur.com/lxLdH.png")',
+      'Doppleganger': 'url("http://i.imgur.com/w3GwS.png")',
+      'Dragonkid': 'url("http://i.imgur.com/tEoVT.png")',
+      'Dragonkid_2': 'url("http://i.imgur.com/3tIpW.png")',
+      'Eclair': 'url("http://i.imgur.com/DEh76.png")',
       'Erio_Touwa': 'url("http://i.imgur.com/zhPlM.png")',
       'Evangeline_AK_McDowell': 'url("http://i.imgur.com/cRhjg.png")',
       'Fujiwara_no_Mokou': 'url("http://i.imgur.com/NaKmF.png")',
       'Furudo_Erika': 'url("http://i.imgur.com/zLsPY.png")',
+      'Gally': 'url("http://i.imgur.com/PJSjp.png")',
       'Gasai_Yuno': 'url("http://i.imgur.com/iG1F2.png")',
+      'Gasai_Yuno_2': 'url("http://i.imgur.com/XI0DZ.png")',
       'George_Costanza': 'url("http://i.imgur.com/Nnsrf.png")',
       'Hakase': 'url("http://i.imgur.com/TBHI6.png")',
+      'Hanako': 'url("http://i.imgur.com/G3iN7.png")',
       'Hasekura_Youko': 'url("http://i.imgur.com/qTQqY.png")',
       'Hatsune_Miku': 'url("http://i.imgur.com/lKQHW.png")',
       'Hatsune_Miku_2': 'url("http://i.imgur.com/ULksz.png")',
       'Hatsune_Miku_3': 'url("http://i.imgur.com/H1pgZ.png")',
       'Hatsune_Miku_4': 'url("http://i.imgur.com/vE3FJ.png")',
+      'Hatsune_Miku_5': 'url("http://i.imgur.com/yCB6B.png")',
+      'Hatsune_Miku_6': 'url("http://i.imgur.com/DKGQb.png")',
+      'Hatsune_Miku_7': 'url("http://i.imgur.com/vc7rU.png")',
       'Hirasawa_Yui': 'url("http://i.imgur.com/sL1Uo.png")',
       'Homura_Akemi': 'url("http://i.imgur.com/b9KmB.png")',
       'Horo_sil_light': 'url("http://i.imgur.com/HMpug.png")',
@@ -816,41 +839,93 @@
       'Horo_sil_2_dark': 'url("http://i.imgur.com/8fcrD.png")',
       'Ika_Musume': 'url("http://i.imgur.com/rKT7L.png")',
       'Ika_Musume_2': 'url("http://i.imgur.com/uUhGG.png")',
+      'Inori': 'url("http://i.imgur.com/u4zuy.png")',
       'Iwakura_Lain': 'url("http://i.imgur.com/AfjG9.png")',
       'Iwakura_Lain_2': 'url("http://i.imgur.com/hIBLa.png")',
       'KOn_Girls': 'url("http://i.imgur.com/Sc1Pa.png")',
       'Kagamine_Rin': 'url("http://i.imgur.com/fXXd2.png")',
+      'Kagari_Izuriha': 'url("http://i.imgur.com/coMey.png")',
       'Kaname_Madoka': 'url("http://i.imgur.com/4PHsl.png")',
+      'Karina': 'url("http://i.imgur.com/5oPTS.png")',
+      'Kigurumi_Harokitei': 'url("http://i.imgur.com/4JV1K.png")',
       'Kinomoto_Sakura': 'url("http://i.imgur.com/Ve0hl.png")',
       'Kirino_Kosaka_and_Ruri_Goko': 'url("http://i.imgur.com/MGaLr.png")',
       'Koiwai_Yotsuba': 'url("http://i.imgur.com/1MyDM.png")',
+      'Koko': 'url("http://i.imgur.com/QMDHh.png")',
       'Kotobuki_Tsumugi': 'url("http://i.imgur.com/fzhbH.png")',
+      'Kurisu_Makise': 'url("http://i.imgur.com/HKnLt.png")',
       'Kyouko_Sakura': 'url("http://i.imgur.com/78HS9.png")',
+      'Kyubee': 'url("http://i.imgur.com/PW5gt.png")',
+      'Kyubee_2': 'url("http://i.imgur.com/fuTo9.png")',
+      'Leonmitchelli': 'url("http://i.imgur.com/KkOsZ.png")',
       'Li_Syaoran': 'url("http://i.imgur.com/GySuy.png")',
       'Link': 'url("http://i.imgur.com/OyTWU.png")',
+      'Lizardgirl': 'url("http://i.imgur.com/R8zzn.png")',
       'Luka': 'url("http://i.imgur.com/WUIMw.png")',
       'Madotsuki': 'url("http://i.imgur.com/J1i26.png")',
+      'Makoto': 'url("http://i.imgur.com/H2Nmv.png")',
+      'Mantis': 'url("http://i.imgur.com/kQs3e.png")',
+      'Megurine_Luka': 'url("http://i.imgur.com/BxybK.png")',
+      'Mei_Sunohara': 'url("http://i.imgur.com/zZ5pE.png")',
+      'Millefiori': 'url("http://i.imgur.com/Ygq8D.png")',
+      'Millefiori_2': 'url("http://i.imgur.com/00gF5.png")',
+      'Millefiori_3': 'url("http://i.imgur.com/bl7RT.png")',
+      'Misaki_Mei': 'url("http://i.imgur.com/zVKmv.png")',
+      'Mizunashi_Akari': 'url("http://i.imgur.com/LF8wU.png")',
+      'Motoko': 'url("http://i.imgur.com/FZD2l.png")',
       'Nagato_Yuki': 'url("http://i.imgur.com/ucnzg.png")',
+      'Nagato_Yuki_2': 'url("http://i.imgur.com/J2eZi.png")',
+      'Nagato_Yuki_3': 'url("http://i.imgur.com/sUSvI.png")',
+      'Nagato_Yuki_4': 'url("http://i.imgur.com/atnqf.png")',
       'Nagato_Yuki_sil_light': 'url("http://i.imgur.com/uR35P.png")',
       'Nagato_Yuki_sil_dark': 'url("http://i.imgur.com/aGFCl.png")',
       'Nagato_Yuki_with_Pantsu_light': 'url("http://i.imgur.com/L9ZAT.png")',
       'Nagato_Yuki_with_Pantsu_dark': 'url("http://i.imgur.com/MwoI9.png")',
       'Nakano_Azusa': 'url("http://i.imgur.com/6c3p3.png")',
+      'Nichijou': 'url("http://i.imgur.com/w5oaQ.png")',
+      'Noir_VinoCacao': 'url("http://i.imgur.com/VNbnm.png")',
+      'Oshino_Shinobu': 'url("http://i.imgur.com/UMq6v.png")',
+      'Oshino_Shinobu_2': 'url("http://i.imgur.com/ObCSS.png")',
       'Patchouli_Knowledge': 'url("http://i.imgur.com/QoKJb.png")',
       'Patchouli_Knowledge_2': 'url("http://i.imgur.com/dK9Pn.png")',
+      'Pink_Doggy': 'url("http://i.imgur.com/zv5BS.png")',
+      'Pink_Hair': 'url("http://i.imgur.com/1r1Vx.png")',
+      'Pixie': 'url("http://i.imgur.com/KPGKl.png")',
+      'Railgun': 'url("http://i.imgur.com/AEjIx.png")',
+      'Railgun_2': 'url("http://i.imgur.com/KD6s7.png")',
+      'Railgun_3': 'url("http://i.imgur.com/7wJEW.png")',
+      'Railbun_4': 'url("http://i.imgur.com/xM4rx.png")',
+      'Revi': 'url("http://i.imgur.com/Cn4nK.png")',
       'Ruri_Gokou': 'url("http://i.imgur.com/Ht6dr.png")',
+      'Ryuu': 'url("http://i.imgur.com/LFUs2.png")',
+      'Saber': 'url("http://i.imgur.com/6AIbD.png")',
       'Samus_Aran': 'url("http://i.imgur.com/34viJ.png")',
       'Seraphim': 'url("http://i.imgur.com/PA7pJ.png")',
       'Shana': 'url("http://i.imgur.com/JNS1z.png")',
       'Shana_2': 'url("http://i.imgur.com/K1mLx.png")',
       'Shiki': 'url("http://i.imgur.com/FKDcd.png")',
+      'Shinji_and_Girls': 'url("http://i.imgur.com/k5Dsb.png")',
       'Shinonome_Hakase': 'url("http://i.imgur.com/TBHI6.png")',
+      'Shirakiin_Ririchiyo': 'url("http://i.imgur.com/cXsO6.png")',
+      'Shirohibe': 'url("http://i.imgur.com/mfNR3.png")',
+      'Suruga_Kanbaru': 'url("http://i.imgur.com/rgcAA.png")',
       'Suzumiya_Haruhi': 'url("http://i.imgur.com/iVl5d.png")',
       'Suzumiya_Haruhi_2': 'url("http://i.imgur.com/rW9Q6.png")',
       'Tardis': 'url("http://goput.it/vig.png")',
+      'Three_Wet_Girls': 'url("http://i.imgur.com/AbU8b.png")',
+      'Tifa': 'url("http://i.imgur.com/SEKOZ.png")',
+      'Tomozo_Kaoru': 'url("http://i.imgur.com/awpTb.png")',
+      'Udine': 'url("http://i.imgur.com/2QkXW.png")',
+      'Wanwan': 'url("http://i.imgur.com/CcyTm.png")',
+      'White_Curious': 'url("http://i.imgur.com/2FQfj.png")',
       'Yin': 'url("http://i.imgur.com/haBSN.png")',
+      'Yin_2': 'url("http://i.imgur.com/3zj9M.png")',
       'Yuzuki_Yukari': 'url("http://i.imgur.com/c8Lal.png")',
-      'Yoko_Littner': 'url("http://i.imgur.com/3goQm.png")'
+      'Yoko_Littner': 'url("http://i.imgur.com/3goQm.png")',
+      'Yoko_Littner_2': 'url("http://i.imgur.com/Pj9i5.png")',
+      'Yoko_Littner_3': 'url("http://i.imgur.com/0S2WK.png")',
+      'Yukkikaze': 'url("http://i.imgur.com/EkUXJ.png")',
+      'Yukkihaze_2': 'url("http://i.imgur.com/oIKZb.png")'
     },
     Ponies: {
       'Applejack': 'url("http://i.imgur.com/1ufSL.png")',
@@ -9068,11 +9143,7 @@ a.useremail[href*="SAGE"]:last-of-type::after {\
         }
         switch (Conf["Checkboxes"]) {
           case "show":
-          case "hide checkboxes":
             css += '\
-input[type=checkbox] {\
-  display: none;\
-}\
 .rice {\
   display: none;\
 }\
@@ -9090,6 +9161,16 @@ input[type=checkbox] {\
             break;
           case "do not style checkboxes":
             css += '\
+.rice {\
+  display: none;\
+}\
+';
+            break;
+          case "hide checkboxes":
+            css += '\
+input[type=checkbox] {\
+  display: none;\
+}\
 .rice {\
   display: none;\
 }\

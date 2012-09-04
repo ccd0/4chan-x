@@ -2759,11 +2759,8 @@ a.useremail[href*="SAGE"]:last-of-type::after {
 }
 '
       switch Conf["Checkboxes"]
-        when "show", "hide checkboxes"
+        when "show"
           css += '
-input[type=checkbox] {
-  display: none;
-}
 .rice {
   display: none;
 }
@@ -2779,6 +2776,15 @@ input[type=checkbox] {
 '
         when "do not style checkboxes"
           css += '
+.rice {
+  display: none;
+}
+'
+        when "hide checkboxes"
+          css += '
+input[type=checkbox] {
+  display: none;
+}
 .rice {
   display: none;
 }
