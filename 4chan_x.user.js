@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Board, Clone, Conf, Config, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Thread, Time, UI, d, g,
+  var $, $$, Board, Clone, Conf, Config, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, Thread, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -880,6 +880,16 @@
         case 'sys.4chan.org':
           break;
         case 'images.4chan.org':
+          $.ready(function() {
+            var path, url;
+            if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
+              path = location.pathname.split('/');
+              url = Redirect.image(path[1], path[3]);
+              if (url) {
+                return location.href = url;
+              }
+            }
+          });
       }
     },
     initHeader: function() {
@@ -958,6 +968,12 @@
     },
     initFeaturesReady: function() {
       var boardChild, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
+      if (d.title === '4chan - 404 Not Found') {
+        if (Conf['404 Redirect'] && g.REPLY) {
+          location.href = Redirect.thread(g.BOARD, g.THREAD, location.hash);
+        }
+        return;
+      }
       if (!$.id('navtopr')) {
         return;
       }
@@ -1014,6 +1030,138 @@
       }
     },
     css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quote related */\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  position: fixed;\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216, 94, 49, .7);\n}"
+  };
+
+  Redirect = {
+    image: function(board, filename) {
+      switch (board) {
+        case 'a':
+        case 'jp':
+        case 'm':
+        case 'q':
+        case 'sp':
+        case 'tg':
+        case 'vg':
+        case 'wsg':
+          return "//archive.foolz.us/" + board + "/full_image/" + filename;
+        case 'u':
+          return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
+        case 'ck':
+        case 'lit':
+          return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
+        case 'cgl':
+        case 'g':
+        case 'w':
+          return "//archive.rebeccablacktech.com/" + board + "/full_image/" + filename;
+        case 'an':
+        case 'k':
+        case 'toy':
+        case 'x':
+          return "http://archive.heinessen.com/" + board + "/full_image/" + filename;
+      }
+    },
+    post: function(board, postID) {
+      switch (board) {
+        case 'a':
+        case 'co':
+        case 'jp':
+        case 'm':
+        case 'q':
+        case 'sp':
+        case 'tg':
+        case 'tv':
+        case 'v':
+        case 'vg':
+        case 'wsg':
+        case 'dev':
+        case 'foolz':
+          return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+        case 'u':
+        case 'kuku':
+          return "//nsfw.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+      }
+    },
+    thread: function(board, threadID, postID) {
+      var path, url;
+      if (postID) {
+        postID = postID.match(/\d+/)[0];
+      }
+      path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
+      switch (board) {
+        case 'a':
+        case 'co':
+        case 'jp':
+        case 'm':
+        case 'q':
+        case 'sp':
+        case 'tg':
+        case 'tv':
+        case 'v':
+        case 'vg':
+        case 'wsg':
+        case 'dev':
+        case 'foolz':
+          url = "//archive.foolz.us/" + path + "/";
+          if (threadID && postID) {
+            url += "#" + postID;
+          }
+          break;
+        case 'u':
+        case 'kuku':
+          url = "//nsfw.foolz.us/" + path + "/";
+          if (threadID && postID) {
+            url += "#" + postID;
+          }
+          break;
+        case 'ck':
+        case 'lit':
+          url = "//fuuka.warosu.org/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
+        case 'diy':
+        case 'g':
+        case 'sci':
+          url = "//archive.installgentoo.net/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
+        case 'cgl':
+        case 'mu':
+        case 'soc':
+        case 'w':
+          url = "//archive.rebeccablacktech.com/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
+        case 'an':
+        case 'fit':
+        case 'k':
+        case 'mlp':
+        case 'r9k':
+        case 'toy':
+        case 'x':
+          url = "http://archive.heinessen.com/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
+        case 'e':
+          url = "https://www.cliché.net/4chan/cgi-board.pl/" + path;
+          if (threadID && postID) {
+            url += "#p" + postID;
+          }
+          break;
+        default:
+          if (threadID) {
+            url = "//boards.4chan.org/" + board + "/";
+          }
+      }
+      return url || '';
+    }
   };
 
   Get = {

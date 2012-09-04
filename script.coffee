@@ -698,6 +698,11 @@ Main =
       when 'sys.4chan.org'
         return
       when 'images.4chan.org'
+        $.ready ->
+          if Conf['404 Redirect'] and d.title is '4chan - 404 Not Found'
+            path = location.pathname.split '/'
+            url  = Redirect.image path[1], path[3]
+            location.href = url if url
         return
 
   initHeader: ->
@@ -769,6 +774,11 @@ Main =
 
     $.ready Main.initFeaturesReady
   initFeaturesReady: ->
+    if d.title is '4chan - 404 Not Found'
+      if Conf['404 Redirect'] and g.REPLY
+        location.href = Redirect.thread g.BOARD, g.THREAD, location.hash
+      return
+
     return unless $.id 'navtopr'
 
     threads = []
@@ -913,6 +923,72 @@ body.fourchan_x {
 """
 
 
+
+Redirect =
+  image: (board, filename) ->
+    # Do not use g.BOARD, the image url can originate from a cross-quote.
+    switch board
+      when 'a', 'jp', 'm', 'q', 'sp', 'tg', 'vg', 'wsg'
+        "//archive.foolz.us/#{board}/full_image/#{filename}"
+      when 'u'
+        "//nsfw.foolz.us/#{board}/full_image/#{filename}"
+      when 'ck', 'lit'
+        "//fuuka.warosu.org/#{board}/full_image/#{filename}"
+      when 'cgl', 'g', 'w'
+        "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
+      when 'an', 'k', 'toy', 'x'
+        "http://archive.heinessen.com/#{board}/full_image/#{filename}"
+      # when 'e'
+      #   "https://www.cliché.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
+  post: (board, postID) ->
+    switch board
+      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+        "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+      when 'u', 'kuku'
+        "//nsfw.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+    # for fuuka-based archives:
+    # https://github.com/eksopl/fuuka/issues/27
+  thread: (board, threadID, postID) ->
+    # keep the number only, if the location.hash was sent f.e.
+    postID = postID.match(/\d+/)[0] if postID
+    path   =
+      if threadID
+        "#{board}/thread/#{threadID}"
+      else
+        "#{board}/post/#{postID}"
+    switch board
+      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+        url = "//archive.foolz.us/#{path}/"
+        if threadID and postID
+          url += "##{postID}"
+      when 'u', 'kuku'
+        url = "//nsfw.foolz.us/#{path}/"
+        if threadID and postID
+          url += "##{postID}"
+      when 'ck', 'lit'
+        url = "//fuuka.warosu.org/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      when 'diy', 'g', 'sci'
+        url = "//archive.installgentoo.net/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      when 'cgl', 'mu', 'soc', 'w'
+        url = "//archive.rebeccablacktech.com/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
+        url = "http://archive.heinessen.com/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      when 'e'
+        url = "https://www.cliché.net/4chan/cgi-board.pl/#{path}"
+        if threadID and postID
+          url += "#p#{postID}"
+      else
+        if threadID
+          url = "//boards.4chan.org/#{board}/"
+    url or ''
 
 Get =
   postFromRoot: (root) ->
