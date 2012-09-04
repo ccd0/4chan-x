@@ -1,6 +1,8 @@
 alpha
 - Mayhem
   Fix Chrome's install warning that 4chan X would execute on all domains.
+  Fix Quote Backlinks not affecting inlined quotes.
+  Fix Quote Highlighting not affecting inlined quotes.
 
 2.34.9
 - Mayhem

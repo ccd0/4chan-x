@@ -746,6 +746,13 @@ Main =
         # XXX handle error
         $.log err, 'Quote Inline'
 
+    if Conf['Quote Preview']
+      try
+        QuotePreview.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Quote Preview'
+
     if Conf['Quote Backlinks']
       try
         QuoteBacklink.init()
@@ -807,11 +814,19 @@ Main =
       $.on d, 'DOMNodeInserted', Main.addStyle
   css: """
 /* general */
+.dialog.reply {
+  display: block;
+  border: 1px solid rgba(0, 0, 0, .25);
+  padding: 0;
+}
 .move {
   cursor: move;
 }
 label {
   cursor: pointer;
+}
+a[href="javascript:;"] {
+  text-decoration: none;
 }
 .warning {
   color: red;
@@ -856,34 +871,78 @@ body.fourchan_x {
   float: right;
 }
 
-/* quotes */
+/* quote related */
 .inlined {
   opacity: .5;
 }
-.forwarded {
+#qp input, .forwarded {
   display: none;
 }
+.quotelink.forwardlink,
+.backlink.forwardlink {
+  text-decoration: none;
+  border-bottom: 1px dashed;
+}
 .inline {
-  border: 1px solid rgba(128, 128, 128, 0.5);
+  border: 1px solid rgba(128, 128, 128, .5);
   display: table;
   margin: 2px 0;
 }
 .inline .post {
+  border: 0 !important;
   display: table !important;
   margin: 0 !important;
   padding: 1px 2px !important;
-  border: 0 !important;
+}
+#qp {
+  position: fixed;
+  padding: 2px 2px 5px;
+}
+#qp .post {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+#qp img {
+  max-height: 300px;
+  max-width: 500px;
+}
+.qphl {
+  outline: 2px solid rgba(216, 94, 49, .7);
 }
 """
 
 
 
 Get =
-  post: (board, threadID, postID, root) ->
+  postFromRoot: (root) ->
+    link   = $ 'a[title="Highlight this post"]', root
+    board  = link.pathname.split('/')[1]
+    postID = link.hash[2..]
+    index  = root.dataset.clone
+    post   = g.posts["#{board}.#{postID}"]
+    if index then post.clones[index] else post
+  postDataFromLink: (link) ->
+    if link.host is 'boards.4chan.org'
+      path     = link.pathname.split '/'
+      board    = path[1]
+      threadID = path[3]
+      postID   = link.hash[2..]
+    # XXX
+    # else # quote resurrection
+    #   board    = ???
+    #   threadID = ???
+    #   postID   = ???
+    return {
+      board:    board
+      threadID: threadID
+      postID:   postID
+    }
+  postClone: (board, threadID, postID, root) ->
     if origin = g.posts["#{board}.#{postID}"]
       clone = origin.addClone()
-      $.add root, Get.cleanRoot clone
       Main.callbackNodes Post, [clone]
+      $.add root, Get.cleanRoot clone
       return
 
     root.textContent = "Loading post No.#{postID}..."
@@ -947,8 +1006,8 @@ Get =
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
     clone = post.addClone()
-    $.replace root.firstChild, Get.cleanRoot clone
     Main.callbackNodes Post, [clone]
+    $.replace root.firstChild, Get.cleanRoot clone
 
 Quotify =
   init: ->
@@ -1032,12 +1091,7 @@ QuoteInline =
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
-    # XXX quote resurrection
-    # id = @dataset.id or @hash[2..]
-    path     = @pathname.split '/'
-    board    = path[1]
-    threadID = path[3]
-    postID   = @hash[2..]
+    {board, threadID, postID} = Get.postDataFromLink @
     if $.hasClass @, 'inlined'
       QuoteInline.rm @, board, threadID, postID
     else
@@ -1056,7 +1110,7 @@ QuoteInline =
       else
         $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
     $.after root, inline
-    Get.post board, threadID, postID, inline
+    Get.postClone board, threadID, postID, inline
 
     return unless board is g.BOARD.ID and $.x "ancestor::div[@id='t#{threadID}']", quotelink
     post = g.posts["#{board}.#{postID}"]
@@ -1078,7 +1132,7 @@ QuoteInline =
     root = $.x "following::div[@id='i#{postID}'][1]", quotelink
     $.rm root
 
-    # Stop if it's still loading.
+    # Stop if it only contains text.
     return unless el = root.firstElementChild
 
     # Dereference clone.
@@ -1099,14 +1153,10 @@ QuoteInline =
     # Repeat.
     inlines = $$ '.inlined', el
     for inline in inlines
-      # XXX resurrected quotes
-      path     = inline.pathname.split '/'
-      board    = path[1]
-      threadID = path[3]
-      postID   = inline.hash[2..]
-      index    = $.x("following::div[@id='i#{postID}'][1]/child::div", inline).dataset.clone
-      post     = g.posts["#{board}.#{postID}"]
-      post.rmClone index
+      {board, threadID, postID} = Get.postDataFromLink inline
+      continue unless root = $.x("following::div[@id='i#{postID}'][1]", inline).firstElementChild
+      post  = g.posts["#{board}.#{postID}"]
+      post.rmClone root.dataset.clone
 
       if Conf['Forward Hiding'] and
         board is g.BOARD.ID and
@@ -1115,6 +1165,71 @@ QuoteInline =
           unless --post.forwarded
             delete post.forwarded
             $.rmClass post.nodes.root, 'forwarded'
+    return
+
+QuotePreview =
+  init: ->
+    Post::callbacks.push
+      name: 'Quote Preview'
+      cb:   @node
+  node: ->
+    for link in @nodes.quotelinks
+      $.on link, 'mouseover', QuotePreview.mouseover
+    for link in @nodes.backlinks
+      $.on link, 'mouseover', QuotePreview.mouseover
+    return
+  mouseover: (e) ->
+    return if $.hasClass @, 'inlined'
+
+    # Don't stop other elements from dragging
+    return if UI.el
+
+    {board, threadID, postID} = Get.postDataFromLink @
+
+    qp = UI.el = $.el 'div',
+      id: 'qp'
+      className: 'reply dialog'
+    UI.hover e
+    Get.postClone board, threadID, postID, qp
+    $.add d.body, qp
+
+    $.on @, 'mousemove',      UI.hover
+    $.on @, 'mouseout click', QuotePreview.mouseout
+
+    return unless origin = g.posts["#{board}.#{postID}"]
+
+    if Conf['Quote Highlighting']
+      posts = [origin].concat origin.clones
+      # Remove the clone that's in the qp from the array.
+      posts.pop()
+      for post in posts
+        $.addClass post.nodes.post, 'qphl'
+
+    quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
+    clone = Get.postFromRoot qp.firstChild
+    for quote in clone.nodes.quotelinks
+      if quote.hash[2..] is quoterID
+        $.addClass quote, 'forwardlink'
+    for quote in clone.nodes.backlinks
+      if quote.hash[2..] is quoterID
+        $.addClass quote, 'forwardlink'
+    return
+  mouseout: (e) ->
+    root = UI.el.firstElementChild
+    UI.hoverend()
+    $.off @, 'mousemove',      UI.hover
+    $.off @, 'mouseout click', QuotePreview.mouseout
+
+    # Stop if it only contains text.
+    return unless root
+
+    clone = Get.postFromRoot root
+    post  = clone.origin
+    post.rmClone root.dataset.clone
+
+    return unless Conf['Quote Highlighting']
+    for post in [post].concat post.clones
+      $.rmClass post.nodes.post, 'qphl'
     return
 
 QuoteBacklink =
@@ -1153,9 +1268,8 @@ QuoteBacklink =
           containers.push clone.nodes.backlinkContainer
       for container in containers
         link = a.cloneNode true
-        # XXX
-        # if Conf['Quote Preview']
-        #   $.on link, 'mouseover', QuotePreview.mouseover
+        if Conf['Quote Preview']
+          $.on link, 'mouseover', QuotePreview.mouseover
         if Conf['Quote Inline']
           $.on link, 'click', QuoteInline.toggle
         $.add container, [$.tn(' '), link]

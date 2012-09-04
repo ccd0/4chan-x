@@ -73,7 +73,7 @@
  */
 
 (function() {
-  var $, $$, Board, Clone, Conf, Config, Get, Main, Post, QuoteBacklink, QuoteInline, Quotify, Thread, Time, UI, d, g,
+  var $, $$, Board, Clone, Conf, Config, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Thread, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -933,6 +933,13 @@
           $.log(err, 'Quote Inline');
         }
       }
+      if (Conf['Quote Preview']) {
+        try {
+          QuotePreview.init();
+        } catch (err) {
+          $.log(err, 'Quote Preview');
+        }
+      }
       if (Conf['Quote Backlinks']) {
         try {
           QuoteBacklink.init();
@@ -1006,16 +1013,43 @@
         return $.on(d, 'DOMNodeInserted', Main.addStyle);
       }
     },
-    css: "/* general */\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quotes */\n.inlined {\n  opacity: .5;\n}\n.forwarded {\n  display: none;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, 0.5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n  border: 0 !important;\n}"
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quote related */\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  position: fixed;\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216, 94, 49, .7);\n}"
   };
 
   Get = {
-    post: function(board, threadID, postID, root) {
+    postFromRoot: function(root) {
+      var board, index, link, post, postID;
+      link = $('a[title="Highlight this post"]', root);
+      board = link.pathname.split('/')[1];
+      postID = link.hash.slice(2);
+      index = root.dataset.clone;
+      post = g.posts["" + board + "." + postID];
+      if (index) {
+        return post.clones[index];
+      } else {
+        return post;
+      }
+    },
+    postDataFromLink: function(link) {
+      var board, path, postID, threadID;
+      if (link.host === 'boards.4chan.org') {
+        path = link.pathname.split('/');
+        board = path[1];
+        threadID = path[3];
+        postID = link.hash.slice(2);
+      }
+      return {
+        board: board,
+        threadID: threadID,
+        postID: postID
+      };
+    },
+    postClone: function(board, threadID, postID, root) {
       var clone, origin;
       if (origin = g.posts["" + board + "." + postID]) {
         clone = origin.addClone();
-        $.add(root, Get.cleanRoot(clone));
         Main.callbackNodes(Post, [clone]);
+        $.add(root, Get.cleanRoot(clone));
         return;
       }
       root.textContent = "Loading post No." + postID + "...";
@@ -1072,8 +1106,8 @@
         return;
       }
       clone = post.addClone();
-      $.replace(root.firstChild, Get.cleanRoot(clone));
-      return Main.callbackNodes(Post, [clone]);
+      Main.callbackNodes(Post, [clone]);
+      return $.replace(root.firstChild, Get.cleanRoot(clone));
     }
   };
 
@@ -1146,15 +1180,12 @@
       }
     },
     toggle: function(e) {
-      var board, path, postID, threadID;
+      var board, postID, threadID, _ref;
       if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
         return;
       }
       e.preventDefault();
-      path = this.pathname.split('/');
-      board = path[1];
-      threadID = path[3];
-      postID = this.hash.slice(2);
+      _ref = Get.postDataFromLink(this), board = _ref.board, threadID = _ref.threadID, postID = _ref.postID;
       if ($.hasClass(this, 'inlined')) {
         QuoteInline.rm(this, board, threadID, postID);
       } else {
@@ -1173,7 +1204,7 @@
       });
       root = (isBacklink = $.hasClass(quotelink, 'backlink')) ? quotelink.parentNode.parentNode : $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
       $.after(root, inline);
-      Get.post(board, threadID, postID, inline);
+      Get.postClone(board, threadID, postID, inline);
       if (!(board === g.BOARD.ID && $.x("ancestor::div[@id='t" + threadID + "']", quotelink))) {
         return;
       }
@@ -1184,7 +1215,7 @@
       }
     },
     rm: function(quotelink, board, threadID, postID) {
-      var el, inThreadID, index, inline, inlines, path, post, root, _i, _len;
+      var el, inThreadID, inline, inlines, post, root, _i, _len, _ref;
       root = $.x("following::div[@id='i" + postID + "'][1]", quotelink);
       $.rm(root);
       if (!(el = root.firstElementChild)) {
@@ -1202,19 +1233,107 @@
       inlines = $$('.inlined', el);
       for (_i = 0, _len = inlines.length; _i < _len; _i++) {
         inline = inlines[_i];
-        path = inline.pathname.split('/');
-        board = path[1];
-        threadID = path[3];
-        postID = inline.hash.slice(2);
-        index = $.x("following::div[@id='i" + postID + "'][1]/child::div", inline).dataset.clone;
+        _ref = Get.postDataFromLink(inline), board = _ref.board, threadID = _ref.threadID, postID = _ref.postID;
+        if (!(root = $.x("following::div[@id='i" + postID + "'][1]", inline).firstElementChild)) {
+          continue;
+        }
         post = g.posts["" + board + "." + postID];
-        post.rmClone(index);
+        post.rmClone(root.dataset.clone);
         if (Conf['Forward Hiding'] && board === g.BOARD.ID && threadID === inThreadID && $.hasClass(inline, 'backlink')) {
           if (!--post.forwarded) {
             delete post.forwarded;
             $.rmClass(post.nodes.root, 'forwarded');
           }
         }
+      }
+    }
+  };
+
+  QuotePreview = {
+    init: function() {
+      return Post.prototype.callbacks.push({
+        name: 'Quote Preview',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var link, _i, _j, _len, _len1, _ref, _ref1;
+      _ref = this.nodes.quotelinks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        $.on(link, 'mouseover', QuotePreview.mouseover);
+      }
+      _ref1 = this.nodes.backlinks;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        link = _ref1[_j];
+        $.on(link, 'mouseover', QuotePreview.mouseover);
+      }
+    },
+    mouseover: function(e) {
+      var board, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      if ($.hasClass(this, 'inlined')) {
+        return;
+      }
+      if (UI.el) {
+        return;
+      }
+      _ref = Get.postDataFromLink(this), board = _ref.board, threadID = _ref.threadID, postID = _ref.postID;
+      qp = UI.el = $.el('div', {
+        id: 'qp',
+        className: 'reply dialog'
+      });
+      UI.hover(e);
+      Get.postClone(board, threadID, postID, qp);
+      $.add(d.body, qp);
+      $.on(this, 'mousemove', UI.hover);
+      $.on(this, 'mouseout click', QuotePreview.mouseout);
+      if (!(origin = g.posts["" + board + "." + postID])) {
+        return;
+      }
+      if (Conf['Quote Highlighting']) {
+        posts = [origin].concat(origin.clones);
+        posts.pop();
+        for (_i = 0, _len = posts.length; _i < _len; _i++) {
+          post = posts[_i];
+          $.addClass(post.nodes.post, 'qphl');
+        }
+      }
+      quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
+      clone = Get.postFromRoot(qp.firstChild);
+      _ref1 = clone.nodes.quotelinks;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        quote = _ref1[_j];
+        if (quote.hash.slice(2) === quoterID) {
+          $.addClass(quote, 'forwardlink');
+        }
+      }
+      _ref2 = clone.nodes.backlinks;
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        quote = _ref2[_k];
+        if (quote.hash.slice(2) === quoterID) {
+          $.addClass(quote, 'forwardlink');
+        }
+      }
+    },
+    mouseout: function(e) {
+      var clone, post, root, _i, _len, _ref;
+      root = UI.el.firstElementChild;
+      UI.hoverend();
+      $.off(this, 'mousemove', UI.hover);
+      $.off(this, 'mouseout click', QuotePreview.mouseout);
+      if (!root) {
+        return;
+      }
+      clone = Get.postFromRoot(root);
+      post = clone.origin;
+      post.rmClone(root.dataset.clone);
+      if (!Conf['Quote Highlighting']) {
+        return;
+      }
+      _ref = [post].concat(post.clones);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        post = _ref[_i];
+        $.rmClass(post.nodes.post, 'qphl');
       }
     }
   };
@@ -1258,6 +1377,9 @@
         for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
           container = containers[_k];
           link = a.cloneNode(true);
+          if (Conf['Quote Preview']) {
+            $.on(link, 'mouseover', QuotePreview.mouseover);
+          }
           if (Conf['Quote Inline']) {
             $.on(link, 'click', QuoteInline.toggle);
           }
