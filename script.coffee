@@ -1129,7 +1129,12 @@ QuoteInline =
 
   rm: (quotelink, board, threadID, postID) ->
     # Select the corresponding inlined quote, and remove it.
-    root = $.x "following::div[@id='i#{postID}'][1]", quotelink
+    root =
+      if $.hasClass quotelink, 'backlink'
+        quotelink.parentNode.parentNode
+      else
+        $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
+    root = $.x "following-sibling::div[@id='i#{postID}'][1]", root
     $.rm root
 
     # Stop if it only contains text.
@@ -1154,9 +1159,15 @@ QuoteInline =
     inlines = $$ '.inlined', el
     for inline in inlines
       {board, threadID, postID} = Get.postDataFromLink inline
-      continue unless root = $.x("following::div[@id='i#{postID}'][1]", inline).firstElementChild
+      root =
+        if $.hasClass inline, 'backlink'
+          inline.parentNode.parentNode
+        else
+          $.x 'ancestor-or-self::*[parent::blockquote][1]', inline
+      root = $.x "following-sibling::div[@id='i#{postID}'][1]", root
+      continue unless el = root.firstElementChild
       post  = g.posts["#{board}.#{postID}"]
-      post.rmClone root.dataset.clone
+      post.rmClone el.dataset.clone
 
       if Conf['Forward Hiding'] and
         board is g.BOARD.ID and

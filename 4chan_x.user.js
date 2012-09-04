@@ -1216,7 +1216,8 @@
     },
     rm: function(quotelink, board, threadID, postID) {
       var el, inThreadID, inline, inlines, post, root, _i, _len, _ref;
-      root = $.x("following::div[@id='i" + postID + "'][1]", quotelink);
+      root = $.hasClass(quotelink, 'backlink') ? quotelink.parentNode.parentNode : $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
+      root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
       $.rm(root);
       if (!(el = root.firstElementChild)) {
         return;
@@ -1234,11 +1235,13 @@
       for (_i = 0, _len = inlines.length; _i < _len; _i++) {
         inline = inlines[_i];
         _ref = Get.postDataFromLink(inline), board = _ref.board, threadID = _ref.threadID, postID = _ref.postID;
-        if (!(root = $.x("following::div[@id='i" + postID + "'][1]", inline).firstElementChild)) {
+        root = $.hasClass(inline, 'backlink') ? inline.parentNode.parentNode : $.x('ancestor-or-self::*[parent::blockquote][1]', inline);
+        root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
+        if (!(el = root.firstElementChild)) {
           continue;
         }
         post = g.posts["" + board + "." + postID];
-        post.rmClone(root.dataset.clone);
+        post.rmClone(el.dataset.clone);
         if (Conf['Forward Hiding'] && board === g.BOARD.ID && threadID === inThreadID && $.hasClass(inline, 'backlink')) {
           if (!--post.forwarded) {
             delete post.forwarded;
