@@ -1384,7 +1384,7 @@
   Options = {
     init: function() {
       var a, el, settings, _i, _len, _ref;
-      _ref = ['navtopr', 'navbotr'];
+      _ref = ['navtopright', 'navbotright'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
         a = $.el('a', {
@@ -1400,7 +1400,7 @@
         });
         el = $.id(settings).firstElementChild;
         el.hidden = true;
-        $.before(el, a);
+        $.before(el, [a, $.tn('] ')]);
       }
       if (!$.get('firstrun')) {
         $.set('firstrun', true);
@@ -7020,7 +7020,7 @@ a {\
 #imageType,\
 #imageType option\
 #imgControls,\
-#navtopr a[href="javascript:;"],\
+#navtopright a[href="javascript:;"],\
 #postcount,\
 #stats,\
 #timer,\
@@ -7092,10 +7092,10 @@ body > form #imgControls {\
   z-index: 7 !important;\
 }\
 #boardNavDesktopFoot::after,\
-#navtopr,\
+#navtopright,\
 .deleteform::before,\
 .qrMessage,\
-#navtopr .settingsWindowLink::after {\
+#navtopright .settingsWindowLink::after {\
   z-index: 6 !important;\
 }\
 #stats,\
@@ -7123,13 +7123,13 @@ div.reply.highlight {\
 }\
 /* ICON POSITIONS */\
 /* 4chan X Options / 4chan Options */\
-#navtopr .settingsWindowLink::after {\
+#navtopright .settingsWindowLink::after {\
   position: fixed;\
   left: auto;\
   right: 17px;\
   opacity: 0.3;\
 }\
-#navtopr .settingsWindowLink:hover::after {\
+#navtopright .settingsWindowLink:hover::after {\
   opacity: 1;\
   right: 16px;\
 }\
@@ -7547,7 +7547,7 @@ td[style="padding-left: 7px;"],\
 div[id^="qr"] tr[height="73"]:nth-of-type(2) {\
   padding: 0;\
 }\
-#navtopr {\
+#navtopright {\
   position: fixed;\
   right: 60px;\
   top: -100px;\
@@ -8302,7 +8302,7 @@ span.lit {\
   color: #558773;\
 }\
 /* 4chan X options */\
-#navtopr .settingsWindowLink::after {\
+#navtopright .settingsWindowLink::after {\
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIVJREFUGNOFkVENwCAMRE8CUiYBCZOAM6Rg4CWTMAlIuH0AG9mS0f7Q67W9FmkyMoWstxGIEgljTJKIhCd59IQp9+voBHaMOUmdnqgYs41qcxLYKZhCJFCxbrZJvUfz2LCm1liappoiYUxu8AiHVw2cPIXf6sXsl/L6Vb7c++9qi5v//dgFtjLxtKnNCFwAAAAASUVORK5CYII=");\
 }\
 /* Delete buttons */\
@@ -8362,7 +8362,7 @@ span.lit {\
   color: #368c72;\
 }\
 /* 4chan X options */\
-#navtopr .settingsWindowLink::after {\
+#navtopright .settingsWindowLink::after {\
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIVJREFUGNOFkVERwCAMQyMBKZOAhEng69lCChImYRKQkH0AG7fdjfaHpmmbFmkyMoWstxGIEgljTJKIhCd59IQp9+voBHaMOUmdnqgYs41qcxLYKZhCJFCxbrZJvUfz2LCm1liappoiYUxu8AiHVw2cPIXf6sXsl/L6Vb7c++9qi5v//dgFAGGyWuspVmQAAAAASUVORK5CYII=");\
 }\
 /* Delete buttons */\
@@ -8435,7 +8435,7 @@ body > a[style="cursor: pointer; float: right;"]::after {\
 #boardNavDesktopFoot:hover {\
 	top: ' + (34 + logoOffset) + 'px;\
 }\
-#navtopr .settingsWindowLink::after {\
+#navtopright .settingsWindowLink::after {\
 	top: ' + (19 + logoOffset) + 'px;\
 }\
 #settingsBox {\
@@ -8904,7 +8904,7 @@ div.postContainer span.postNum > .replylink {\
   padding-top: 0px;\
   word-spacing: 3px;\
 }\
-#navbotr {\
+#navbotright {\
   display: none;\
 }\
 ';
@@ -8936,7 +8936,7 @@ div.postContainer span.postNum > .replylink {\
   content: "/";\
   font-size: 12px;\
 }\
-#navbotr {\
+#navbotright {\
   display: none;\
 }\
 ';
@@ -9376,7 +9376,7 @@ img[src^="//static.4chan.org/support/"] {\
         }
         return;
       }
-      if (!$.id('navtopr')) {
+      if (!$.id('navtopright')) {
         return;
       }
       $.addClass(d.body, $.engine);

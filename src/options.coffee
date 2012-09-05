@@ -1,6 +1,6 @@
 Options =
   init: ->
-    for settings in ['navtopr', 'navbotr']
+    for settings in ['navtopright', 'navbotright']
       a = $.el 'a',
         href: 'javascript:;'
         className: 'settingsWindowLink'
@@ -11,7 +11,7 @@ Options =
           Style.allrice()
       el = $.id(settings).firstElementChild
       el.hidden = true
-      $.before el, a
+      $.before el, [a, $.tn('] ')]
     unless $.get 'firstrun'
       $.set 'firstrun', true
       Options.dialog()

@@ -133,7 +133,7 @@ Main =
       if Conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
         location.href = Redirect.thread g.BOARD, g.THREAD_ID, location.hash
       return
-    unless $.id 'navtopr'
+    unless $.id 'navtopright'
       return
     $.addClass d.body, $.engine
     $.addClass d.body, 'fourchan_x'
