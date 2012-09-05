@@ -388,6 +388,7 @@
             cb = _ref[_i];
             cb.call(this);
           }
+          return delete this.callbacks;
         },
         onabort: function() {
           return delete reqs[url];

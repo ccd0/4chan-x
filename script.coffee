@@ -306,7 +306,7 @@ $.extend $,
     req = $.ajax url,
       onload:  ->
         cb.call @ for cb in @callbacks
-        return
+        delete @callbacks
       onabort: -> delete reqs[url]
       onerror: -> delete reqs[url]
     req.callbacks = [cb]
