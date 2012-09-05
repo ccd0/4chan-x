@@ -672,7 +672,7 @@ a {
 #updater,
 .pages a,
 .pages strong,
-body:not([class]) a[href="javascript:void(0);"],
+body:not([class]) a[href="javascript:;"],
 input,
 label {
   font-size: 12px;

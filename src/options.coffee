@@ -1,6 +1,6 @@
 Options =
   init: ->
-    for settings in ['navtopr', 'navbotr']
+    for settings in ['navtopright', 'navbotright']
       a = $.el 'a',
         href: 'javascript:;'
         className: 'settingsWindowLink'
@@ -9,13 +9,12 @@ Options =
         Options.dialog()
         if Conf['Style']
           Style.allrice()
-      el = $.id(settings).firstElementChild
-      el.hidden = true
-      $.before el, a
+      $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
     unless $.get 'firstrun'
+      # Prevent race conditions
+      Favicon.init() unless Favicon.el
       $.set 'firstrun', true
       Options.dialog()
-      Style.allrice()
 
   dialog: ->
     dialog = $.el 'div'
@@ -266,7 +265,7 @@ Options =
     $.add $('#mascot_tab + div', dialog), parentdiv
     batchmascots = $.el 'div',
       id:        "mascots_batch"
-      innerHTML: "<a href=\"javascript:void(0)\" id=\"clear\">Clear All</a> / <a href=\"javascript:void(0)\" id=\"selectAll\">Select All</a>"
+      innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a>"
     $.on $('#clear', batchmascots), 'click', ->
       for mascotname, mascots of enabledmascots
         if enabledmascots[mascotname] == true
@@ -401,7 +400,7 @@ Options =
   applyStyle: (dialog, tab) ->
     if Conf['styleenabled'] == '1'
       save = $.el 'div',
-        innerHTML: '<a href="javascript:void(0)">Save Style Settings</a>'
+        innerHTML: '<a href="javascript:;">Save Style Settings</a>'
         className: 'stylesettings'
       $.on $('a', save), 'click', ->
         Style.addStyle(Conf['theme'])
