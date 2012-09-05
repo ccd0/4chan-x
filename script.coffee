@@ -1194,8 +1194,12 @@ Get =
       new Board board
     inThread = g.threads["#{board}.#{threadID}"] or
       new Thread threadID, inBoard
-    post = new Post pc, inThread, inBoard
-    Main.callbackNodes Post, [post]
+    # In case of multiple callbacks for the same request,
+    # don't parse the same original post more than once.
+    unless post = g.posts["#{board}.#{postID}"]
+      post = new Post postContainer, thread, board,
+        isArchived: true
+      Main.callbackNodes Post, [post]
 
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
@@ -1283,9 +1287,12 @@ Get =
       new Board board
     thread = g.threads["#{board}.#{threadID}"] or
       new Thread threadID, board
-    post = new Post postContainer, thread, board,
-      isArchived: true
-    Main.callbackNodes Post, [post]
+    # In case of multiple callbacks for the same request,
+    # don't parse the same original post more than once.
+    unless post = g.posts["#{board}.#{postID}"]
+      post = new Post postContainer, thread, board,
+        isArchived: true
+      Main.callbackNodes Post, [post]
 
     # Stop here if the container has been removed while loading.
     return unless root.parentNode

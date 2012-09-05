@@ -1404,8 +1404,12 @@
       link.nextSibling.href = "/" + board + "/res/" + threadID + "#q" + postID;
       inBoard = g.boards[board] || new Board(board);
       inThread = g.threads["" + board + "." + threadID] || new Thread(threadID, inBoard);
-      post = new Post(pc, inThread, inBoard);
-      Main.callbackNodes(Post, [post]);
+      if (!(post = g.posts["" + board + "." + postID])) {
+        post = new Post(postContainer, thread, board, {
+          isArchived: true
+        });
+        Main.callbackNodes(Post, [post]);
+      }
       if (!root.parentNode) {
         return;
       }
@@ -1482,10 +1486,12 @@
       });
       board = g.boards[board] || new Board(board);
       thread = g.threads["" + board + "." + threadID] || new Thread(threadID, board);
-      post = new Post(postContainer, thread, board, {
-        isArchived: true
-      });
-      Main.callbackNodes(Post, [post]);
+      if (!(post = g.posts["" + board + "." + postID])) {
+        post = new Post(postContainer, thread, board, {
+          isArchived: true
+        });
+        Main.callbackNodes(Post, [post]);
+      }
       if (!root.parentNode) {
         return;
       }
