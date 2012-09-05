@@ -1,14 +1,13 @@
 master
+- Zixaphir
+  Disable inlined 4chan JS "extension".
 
 0.6.2beta
 - Mayhem
-<<<<<<< HEAD
   Fix 4chan X. Blame moot.
-=======
   Fix thread updater
 - seaweed
   Fix options button
->>>>>>> 067f7d3e58c73429f39148d9368b6323e31b0c9f
 
 0.6.1beta
 - Mayhem

@@ -1,5 +1,6 @@
 Main =
   init: ->
+    localStorage.setItem '4chan-settings', '{"disableAll":true}'
     Main.flatten null, Config
 
     # Load values from localStorage.

@@ -9222,6 +9222,7 @@ img[src^="//static.4chan.org/support/"] {\
   Main = {
     init: function() {
       var category, key, mascot, mascots, name, now, path, pathname, temp, val;
+      localStorage.setItem('4chan-settings', '{"disableAll":true}');
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
