@@ -407,15 +407,6 @@ $.extend $,
         p.setAttribute 'onclick', 'return window'
         p.onclick()
       )()
-  shortenFilename: (filename, isOP) ->
-    # FILENAME SHORTENING SCIENCE:
-    # OPs have a +10 characters threshold.
-    # The file extension is not taken into account.
-    threshold = if isOP then 40 else 30
-    if filename.length - 4 > threshold
-      "#{filename[...threshold - 5]}(...).#{filename.match(/\w+$/)}"
-    else
-      filename
   bytesToString: (size) ->
     unit = 0 # Bytes
     while size >= 1024
@@ -502,7 +493,7 @@ class Post
   callbacks: []
   toString: -> @ID
 
-  constructor: (root, @thread, @board) ->
+  constructor: (root, @thread, @board, that={}) ->
     @ID = +root.id[2..]
 
     post = $ '.post',     root
@@ -583,14 +574,23 @@ class Post
         thumb: thumb
         URL:   anchor.href
         MD5:   thumb.dataset.md5
-        size:  alt.match(/\d+(\.\d+)?\s\w+$/)[0]
         isSpoiler: $.hasClass anchor, 'imgspoiler'
-      @file.thumbURL = "#{location.protocol}//thumbs.4chan.org/#{board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
+      size = +alt.match(/\d+(\.\d+)?/)[0]
+      unit = ['B', 'KB', 'MB', 'GB'].indexOf alt.match(/\w+$/)[0]
+      while unit--
+        size *= 1024
+      @file.size = size
+      @file.thumbURL =
+        if that.isArchived
+          thumb.src
+        else
+          "#{location.protocol}//thumbs.4chan.org/#{board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
       @file.name = $('span[title]', @file.info).title
-      if @file.isImage = /(jpg|png|gif|svg)$/i.test @file.name # I want to believe.
+      if @file.isImage = /(jpg|png|gif)$/i.test @file.name
         @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
 
     @isReply = $.hasClass post, 'reply'
+    @isDead  = true if that.isArchived
     @clones  = []
     g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
 
@@ -663,6 +663,7 @@ class Clone extends Post
       @file.text  = $ '.fileText',     file
       @file.thumb = $ 'img[data-md5]', file
 
+    @isDead  = true if origin.isDead
     @isClone = true
     index = origin.clones.push(@) - 1
     root.setAttribute 'data-clone', index
@@ -956,7 +957,7 @@ Redirect =
         "#{board}/thread/#{threadID}"
       else
         "#{board}/post/#{postID}"
-    switch board
+    switch "#{board}"
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         url = "//archive.foolz.us/#{path}/"
         if threadID and postID
@@ -990,6 +991,125 @@ Redirect =
           url = "//boards.4chan.org/#{board}/"
     url or ''
 
+Build =
+  shortFilename: (filename, isReply) ->
+    # FILENAME SHORTENING SCIENCE:
+    # OPs have a +10 characters threshold.
+    # The file extension is not taken into account.
+    threshold = if isReply then 30 else 40
+    if filename.length - 4 > threshold
+      "#{filename[...threshold - 5]}(...).#{filename[-3..]}"
+    else
+      filename
+  post: (o) ->
+    {
+      postID, threadID, board
+      name, capcode, tripcode, uniqueID, email, subject, flag, flagTitle, date, dateUTC, comment
+      file
+    } = o
+    isOP = postID is threadID
+
+    # post info
+    html = []
+    # input
+    html.push "<input type=checkbox name=#{postID} value=delete> "
+    # subject
+    html.push "<span class=subject>#{subject}</span> "
+    # name block
+    html.push "<span class='nameBlock"
+    html.push switch capcode
+      when 'M' then ' capcodeMod'
+      when 'A' then ' capcodeAdmin'
+      when 'D' then ' capcodeDeveloper'
+      else ''
+    html.push "'>"
+    # mail start
+    html.push "<a href=mailto:#{email} class=useremail>" if email
+    # name
+    html.push "<span class=name>#{name}</span>"
+    # tripcode
+    html.push " <span class=postertrip>#{tripcode}</span>" if tripcode
+    # user id
+    html.push " <span class='posteruid id_#{uniqueID}'>(ID: <span class=hand title='Highlight posts by this ID'>#{uniqueID}</span>)</span>" if uniqueID
+    # capcode
+    switch capcode
+      when 'M'
+        html.push ' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>'
+        html.push ' <img src=//static.4chan.org/image/modicon.gif alt="This user is a 4chan Moderator." title="This user is a 4chan Moderator." class=identityIcon>'
+      when 'A'
+        html.push ' <strong class="capcode hand id_admin" title="Highlight posts by the Administrator">## Admin</strong>'
+        html.push ' <img src=//static.4chan.org/image/adminicon.gif alt="This user is the 4chan Administrator." title="This user is the 4chan Administrator." class=identityIcon>'
+      when 'D'
+        html.push ' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>'
+        html.push ' <img src=//static.4chan.org/image/developericon.gif alt="This user is a 4chan Developer." title="This user is a 4chan Developer." class=identityIcon>'
+    # mail end
+    html.push '</a>' if email
+    # flag
+    # XXX what about troll flags in /pol/?
+    html.push " <img src=//static.4chan.org/image/country/#{flag.toLowerCase()}.gif alt=#{flag} title='#{flagTitle}' class=countryFlag>" if flag
+    # end name block
+    html.push '</span> '
+    # date
+    html.push "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> "
+    # post num
+    html.push '<span class="postNum desktop">'
+    html.push "<a href=/#{board}/res/#{threadID}#p#{postID} title='Highlight this post'>No.</a>"
+    html.push "<a href=/#{board}/res/#{threadID}#q#{postID} title='Quote this post'>#{postID}</a>"
+    # XXX closed/sticky?
+    html.push '</span>'
+    pi = $.el 'div',
+      id: "pi#{postID}"
+      className: 'postInfo desktop'
+      innerHTML: html.join ''
+
+    bq = $.el 'blockquote',
+      id: "m#{postID}"
+      className: 'postMessage'
+      innerHTML: comment
+
+    # file
+    if file.name # XXX need to fix support of Flash
+      html = []
+      html.push '<div class=fileInfo>'
+      html.push "<span id=fT#{postID} class=fileText#{if file.isSpoiler then " title='file.name'" else ''}>File: "
+      html.push "<a href=#{file.url} target=_blank>#{file.origin}</a>"
+      html.push '-('
+      html.push 'Spoiler Image, ' if file.isSpoiler
+      html.push "#{$.bytesToString file.size}, "
+      html.push if /\.pdf$/i.test file.name
+          "PDF"
+        else
+          "#{file.width}x#{file.height}"
+      html.push ", <span title='#{file.name}'>#{Build.shortFilename file.name}</span>" unless file.isSpoiler
+      html.push ")</span></div>"
+      html.push "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href=#{file.url} target=_blank>"
+      html.push "<img src=#{file.turl} alt='#{if file.isSpoiler then 'Spoiler Image, ' else ''}#{$.bytesToString file.size}' data-md5='#{file.MD5}' style='height:#{file.theight}px;width:#{file.twidth}px'>"
+      html.push '</a>'
+      fl = $.el 'div',
+        id: "f#{postID}"
+        className: 'file'
+        innerHTML: html.join ''
+
+    post = $.el 'div',
+      id: "p#{postID}"
+      className: "post #{if isOP then 'op' else 'reply'}"
+    $.add post, fl if fl and isOP
+    $.add post, pi
+    $.add post, fl if fl and !isOP
+    $.add post, bq
+
+    container = $.el 'div',
+      id: "pc#{postID}"
+      className: "postContainer #{if isOP then 'op' else 'reply'}Container"
+    unless isOP
+      $.add container, $.el 'div',
+        id: "sa#{postID}"
+        className: 'sideArrows'
+        textContent: '>>'
+    $.add container, post
+
+    container
+
 Get =
   postFromRoot: (root) ->
     link   = $ 'a[title="Highlight this post"]', root
@@ -1004,11 +1124,10 @@ Get =
       board    = path[1]
       threadID = path[3]
       postID   = link.hash[2..]
-    # XXX
-    # else # quote resurrection
-    #   board    = ???
-    #   threadID = ???
-    #   postID   = ???
+    else # resurrected quote
+      board    = link.dataset.board
+      threadID = ''
+      postID   = link.dataset.postid
     return {
       board:    board
       threadID: threadID
@@ -1024,30 +1143,29 @@ Get =
     root.textContent = "Loading post No.#{postID}..."
     if threadID
       $.cache "/#{board}/res/#{threadID}", ->
-        Get.parsePost @, board, threadID, postID, root
-    # else if url = Redirect.post board, postID
-    #   $.cache url, ->
-    #     Get.parseArchivedPost @, board, postID, root
+        Get.fetchedPost @, board, threadID, postID, root
+    else if url = Redirect.post board, postID
+      $.cache url, ->
+        Get.archivedPost @, board, postID, root
   cleanRoot: (clone) ->
     {root, post} = clone.nodes
     for child in Array::slice.call root.childNodes
       $.rm child unless child is post
     root
-  parsePost: (req, board, threadID, postID, root) ->
+  fetchedPost: (req, board, threadID, postID, root) ->
     {status} = req
     if status isnt 200
       # The thread can die by the time we check a quote.
-      # XXX
-      # if url = Redirect.post board, postID
-      #   $.cache url, ->
-      #     Get.parseArchivedPost @, board, postID, root
-      # else
-      $.addClass root, 'warning'
-      root.textContent =
-        if status is 404
-          "Thread No.#{threadID} has not been found."
-        else
-          "Error #{req.status}: #{req.statusText}."
+      if url = Redirect.post board, postID
+        $.cache url, ->
+          Get.archivedPost @, board, postID, root
+      else
+        $.addClass root, 'warning'
+        root.textContent =
+          if status is 404
+            "Thread No.#{threadID} has not been found."
+          else
+            "Error #{req.status}: #{req.statusText}."
       return
 
     doc = d.implementation.createHTMLDocument ''
@@ -1055,12 +1173,12 @@ Get =
 
     unless pc = doc.getElementById "pc#{postID}"
       # The post can be deleted by the time we check a quote.
-      # XXX
-      # if url = Redirect.post board, postID
-      #   $.cache url, ->
-      #     Get.parseArchivedPost @, board, postID, root
-      # else
-      root.textContent = "Post No.#{postID} has not been found."
+      if url = Redirect.post board, postID
+        $.cache url, ->
+          Get.archivedPost @, board, postID, root
+      else
+        $.addClass root, 'warning'
+        root.textContent = "Post No.#{postID} has not been found."
       return
     pc = d.importNode pc, true
 
@@ -1077,6 +1195,96 @@ Get =
     inThread = g.threads["#{board}.#{threadID}"] or
       new Thread threadID, inBoard
     post = new Post pc, inThread, inBoard
+    Main.callbackNodes Post, [post]
+
+    # Stop here if the container has been removed while loading.
+    return unless root.parentNode
+    clone = post.addClone()
+    Main.callbackNodes Post, [clone]
+    $.replace root.firstChild, Get.cleanRoot clone
+  archivedPost: (req, board, postID, root) ->
+    data = JSON.parse req.response
+    if data.error
+      $.addClass root, 'warning'
+      root.textContent = data.error
+      return
+
+    # convert comment to html
+    bq = $.el 'blockquote', textContent: data.comment # set this first to convert text to HTML entities
+    # https://github.com/eksopl/fuuka/blob/master/Board/Yotsuba.pm#L413-452
+    # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
+    bq.innerHTML = bq.innerHTML.replace ///
+      \n
+      | \[/?b\]
+      | \[/?spoiler\]
+      | \[/?code\]
+      | \[/?moot\]
+      | \[/?banned\]
+      ///g, (text) ->
+        switch text
+          when '\n'
+            '<br>'
+          when '[b]'
+            '<b>'
+          when '[/b]'
+            '</b>'
+          when '[spoiler]'
+            '<span class=spoiler>'
+          when '[/spoiler]'
+            '</span>'
+          when '[code]'
+            '<pre class=prettyprint>'
+          when '[/code]'
+            '</pre>'
+          when '[moot]'
+            '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
+          when '[/moot]'
+            '</div>'
+          when '[banned]'
+            '<b style="color: red;">'
+          when '[/banned]'
+            '</b>'
+    # greentext
+    comment = bq.innerHTML.replace /(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3'
+
+    threadID = data.thread_num
+    postContainer = Build.post
+      # id
+      postID:    postID
+      threadID:  threadID
+      board:     board
+      # info
+      name:      data.name
+      capcode:   data.capcode
+      tripcode:  data.trip
+      uniqueID:  data.poster_hash
+      email:     data.email
+      subject:   data.title
+      flag:      data.poster_country
+      # XXX flagTitle: data.???
+      date:      data.fourchan_date
+      dateUTC:   data.timestamp
+      comment:   comment
+      # file
+      file:
+        name:      data.media_filename
+        origin:    data.media_orig
+        url:       data.media_link or data.remote_media_link
+        height:    data.media_h
+        width:     data.media_w
+        isSpoiler: data.spoiler is '1'
+        MD5:       data.media_hash
+        size:      data.media_size
+        turl:      data.thumb_link or "//thumbs.4chan.org/#{board}/thumb/#{data.preview_orig}"
+        theight:   data.preview_h
+        twidth:    data.preview_w
+
+    board = g.boards[board] or
+      new Board board
+    thread = g.threads["#{board}.#{threadID}"] or
+      new Thread threadID, board
+    post = new Post postContainer, thread, board,
+      isArchived: true
     Main.callbackNodes Post, [post]
 
     # Stop here if the container has been removed while loading.
@@ -1120,28 +1328,37 @@ Quotify =
             @board.ID
 
         quoteID = "#{board}.#{ID}"
+
+        # \u00A0 is nbsp
+        if post = g.posts[quoteID]
+          if post.isDead
+            a = $.el 'a',
+              href:        Redirect.thread board, 0, ID
+              className:   'quotelink deadlink'
+              textContent: "#{quote}\u00A0(Dead)"
+              target:      '_blank'
+          else
+            # Don't (Dead) when quotifying in an archived post,
+            # and we know the post still exists.
+            a = $.el 'a',
+              href:        "/#{board}/#{post.thread}/res/#p#{ID}"
+              className:   'quotelink'
+              textContent: quote
+        else
+          a = $.el 'a',
+            href:        Redirect.thread board, 0, ID
+            className:   'deadlink'
+            target:      '_blank'
+            # Don't (Dead) when quotifying in an archived post,
+            # and we don't know anything about the post.
+            textContent: if @isDead then quote else "#{quote}\u00A0(Dead)"
+          if Redirect.post board, ID
+            $.addClass a, 'quotelink'
+            a.setAttribute 'data-board',  board
+            a.setAttribute 'data-postid', ID
+
         if @quotes.indexOf(quoteID) is -1
           @quotes.push quoteID
-
-        a = $.el 'a',
-          # \u00A0 is nbsp
-          # textContent: "#{quote}\u00A0(Dead)"
-          textContent: quote
-          # XXX
-          className: 'quotelink deadlink'
-
-        # if board is g.BOARD and $.id "p#{ID}"
-        #   a.href      = "#p#{ID}"
-        #   a.className = 'quotelink'
-        # else
-        #   a.href      = Redirect.thread board, 0, ID
-        #   a.className = 'deadlink'
-        #   a.target    = '_blank'
-        #   if Redirect.post board, ID
-        #     $.addClass a, 'quotelink'
-        #     a.setAttribute 'data-board', board
-        #     a.setAttribute 'data-id',    ID
-
         @nodes.quotelinks.push a
         nodes.push a
         data = data[index + quote.length..]
@@ -1242,7 +1459,7 @@ QuoteInline =
           $.x 'ancestor-or-self::*[parent::blockquote][1]', inline
       root = $.x "following-sibling::div[@id='i#{postID}'][1]", root
       continue unless el = root.firstElementChild
-      post  = g.posts["#{board}.#{postID}"]
+      post = g.posts["#{board}.#{postID}"]
       post.rmClone el.dataset.clone
 
       if Conf['Forward Hiding'] and

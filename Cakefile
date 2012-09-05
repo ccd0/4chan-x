@@ -19,6 +19,7 @@ HEADER    = """
 // @match        *://boards.4chan.org/*
 // @match        *://images.4chan.org/*
 // @match        *://sys.4chan.org/*
+// @match        *://*.foolz.us/api/*
 // @run-at       document-start
 // @updateURL    https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
 // @downloadURL  https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
