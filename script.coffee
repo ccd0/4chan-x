@@ -2001,8 +2001,7 @@ Options =
         className: 'settingsWindowLink'
         textContent: '4chan X Settings'
       $.on a, 'click', Options.dialog
-      el = $.id(settings).firstElementChild
-      $.before el, [a, $.tn('] ')]
+      $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
     unless $.get 'firstrun'
       # Prevent race conditions
       Favicon.init() unless Favicon.el

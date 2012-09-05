@@ -2540,7 +2540,7 @@
 
   Options = {
     init: function() {
-      var a, el, settings, _i, _len, _ref;
+      var a, settings, _i, _len, _ref;
       _ref = ['navtopright', 'navbotright'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
@@ -2550,8 +2550,7 @@
           textContent: '4chan X Settings'
         });
         $.on(a, 'click', Options.dialog);
-        el = $.id(settings).firstElementChild;
-        $.before(el, [a, $.tn('] ')]);
+        $.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]);
       }
       if (!$.get('firstrun')) {
         if (!Favicon.el) {
