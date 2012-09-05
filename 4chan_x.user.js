@@ -5301,7 +5301,6 @@
   Main = {
     init: function() {
       var key, path, pathname, temp, val;
-      localStorage.setItem('4chan-settings', '{"disableAll":true}');
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
