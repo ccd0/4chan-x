@@ -2774,8 +2774,9 @@
 
   Options = {
     init: function() {
-      var a, settings, _i, _len, _ref;
+      var a, settings, _i, _len, _ref, _results;
       _ref = ['navtopright', 'navbotright'];
+      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
         a = $.el('a', {
@@ -2785,11 +2786,14 @@
         });
         $.on(a, 'click', Options.dialog);
         $.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]);
+        if (!$.get('firstrun')) {
+          $.set('firstrun', true);
+          _results.push(Options.dialog());
+        } else {
+          _results.push(void 0);
+        }
       }
-      if (!$.get('firstrun')) {
-        $.set('firstrun', true);
-        return Options.dialog();
-      }
+      return _results;
     },
     dialog: function() {
       var arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, left, li, obj, overlay, sauce, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2;
@@ -5297,6 +5301,7 @@
   Main = {
     init: function() {
       var key, path, pathname, temp, val;
+      localStorage.setItem('4chan-settings', '{"disableAll":true}');
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
@@ -5421,7 +5426,7 @@
         }
         return;
       }
-      if (!$.id('navtopr')) {
+      if (!$.id('navtopright')) {
         return;
       }
       $.addClass(d.body, $.engine);

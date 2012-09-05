@@ -2175,9 +2175,9 @@ Options =
         textContent: '4chan X Settings'
       $.on a, 'click', Options.dialog
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
-    unless $.get 'firstrun'
-      $.set 'firstrun', true
-      Options.dialog()
+      unless $.get 'firstrun'
+        $.set 'firstrun', true
+        Options.dialog()
 
   dialog: ->
     dialog = $.el 'div'
@@ -4232,7 +4232,7 @@ Main =
       if Conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
         location.href = Redirect.thread g.BOARD, g.THREAD_ID, location.hash
       return
-    unless $.id 'navtopr'
+    unless $.id 'navtopright'
       return
     $.addClass d.body, $.engine
     $.addClass d.body, 'fourchan_x'
