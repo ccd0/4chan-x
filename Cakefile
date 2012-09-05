@@ -21,8 +21,8 @@ HEADER = """
 // @include        http://sys.4chan.org/*
 // @include        https://sys.4chan.org/*
 // @run-at         document-start
-// @updateURL      https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
-// @downloadURL    https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
+// @updateURL      https://github.com/zixaphir/appchan-x/raw/stable/appchan_x.user.js
+// @downloadURL    https://github.com/zixaphir/appchan-x/raw/stable/appchan_x.user.js
 // @icon           http://zixaphir.github.com/appchan-x/favicon.gif
 // ==/UserScript==
 
