@@ -369,37 +369,40 @@
       r.send(form);
       return r;
     },
-    cache: function(url, cb) {
-      var req, reqs, _base;
-      reqs = (_base = $.cache).requests || (_base.requests = {});
-      if (req = reqs[url]) {
-        if (req.readyState === 4) {
-          cb.call(req);
-        } else {
-          req.callbacks.push(cb);
-        }
-        return;
-      }
-      req = $.ajax(url, {
-        onload: function() {
-          var _i, _len, _ref;
-          _ref = this.callbacks;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            cb = _ref[_i];
-            cb.call(this);
+    cache: (function() {
+      var reqs;
+      reqs = {};
+      return function(url, cb) {
+        var req;
+        if (req = reqs[url]) {
+          if (req.readyState === 4) {
+            cb.call(req);
+          } else {
+            req.callbacks.push(cb);
           }
-          return delete this.callbacks;
-        },
-        onabort: function() {
-          return delete reqs[url];
-        },
-        onerror: function() {
-          return delete reqs[url];
+          return;
         }
-      });
-      req.callbacks = [cb];
-      return reqs[url] = req;
-    },
+        req = $.ajax(url, {
+          onload: function() {
+            var _i, _len, _ref;
+            _ref = this.callbacks;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              cb = _ref[_i];
+              cb.call(this);
+            }
+            return delete this.callbacks;
+          },
+          onabort: function() {
+            return delete reqs[url];
+          },
+          onerror: function() {
+            return delete reqs[url];
+          }
+        });
+        req.callbacks = [cb];
+        return reqs[url] = req;
+      };
+    })(),
     cb: {
       checked: function() {
         $.set(this.name, this.checked);

@@ -295,22 +295,24 @@ $.extend $,
     $.extend r.upload, upCallbacks
     r.send form
     r
-  cache: (url, cb) ->
-    reqs = $.cache.requests or= {}
-    if req = reqs[url]
-      if req.readyState is 4
-        cb.call req
-      else
-        req.callbacks.push cb
-      return
-    req = $.ajax url,
-      onload:  ->
-        cb.call @ for cb in @callbacks
-        delete @callbacks
-      onabort: -> delete reqs[url]
-      onerror: -> delete reqs[url]
-    req.callbacks = [cb]
-    reqs[url] = req
+  cache: (->
+    reqs = {}
+    (url, cb) ->
+      if req = reqs[url]
+        if req.readyState is 4
+          cb.call req
+        else
+          req.callbacks.push cb
+        return
+      req = $.ajax url,
+        onload:  ->
+          cb.call @ for cb in @callbacks
+          delete @callbacks
+        onabort: -> delete reqs[url]
+        onerror: -> delete reqs[url]
+      req.callbacks = [cb]
+      reqs[url] = req
+  )()
   cb:
     checked: ->
       $.set @name, @checked
