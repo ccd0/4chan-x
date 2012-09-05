@@ -935,9 +935,11 @@ Redirect =
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       when 'ck', 'lit'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
-      when 'cgl', 'g', 'w'
+      # when 'diy', 'sci'
+      #   "//archive.installgentoo.net/#{board}/full_image/#{filename}"
+      when 'cgl', 'g', 'mu', 'soc', 'w'
         "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
-      when 'an', 'k', 'toy', 'x'
+      when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
       # when 'e'
       #   "https://www.cliché.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"

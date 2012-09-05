@@ -1061,10 +1061,15 @@
           return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
         case 'cgl':
         case 'g':
+        case 'mu':
+        case 'soc':
         case 'w':
           return "//archive.rebeccablacktech.com/" + board + "/full_image/" + filename;
         case 'an':
+        case 'fit':
         case 'k':
+        case 'mlp':
+        case 'r9k':
         case 'toy':
         case 'x':
           return "http://archive.heinessen.com/" + board + "/full_image/" + filename;
