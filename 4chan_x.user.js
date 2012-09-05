@@ -1043,11 +1043,14 @@
     image: function(board, filename) {
       switch (board) {
         case 'a':
+        case 'co':
         case 'jp':
         case 'm':
         case 'q':
         case 'sp':
         case 'tg':
+        case 'tv':
+        case 'v':
         case 'vg':
         case 'wsg':
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
