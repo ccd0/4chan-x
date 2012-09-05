@@ -2168,15 +2168,13 @@ QR =
 
 Options =
   init: ->
-    for settings in ['navtopr', 'navbotr']
+    for settings in ['navtopright', 'navbotright']
       a = $.el 'a',
         href: 'javascript:;'
         className: 'settingsWindowLink'
         textContent: '4chan X Settings'
       $.on a, 'click', Options.dialog
-      el = $.id(settings).firstElementChild
-      el.hidden = true
-      $.before el, a
+      $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
     unless $.get 'firstrun'
       $.set 'firstrun', true
       Options.dialog()
@@ -4424,7 +4422,7 @@ Main =
     $.globalEval "#{code}".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.34.9'
+  version: '2.34.10'
   callbacks: []
   css: '
 /* dialog styling */
