@@ -714,7 +714,7 @@ Main =
     localStorage.setItem '4chan_settings', false
     $.ready Main.initHeaderReady
   initHeaderReady: ->
-    return unless $.id 'navtopr'
+    return unless $.id 'navtopright'
     header = Main.header
     $.prepend d.body, header
 
@@ -780,7 +780,7 @@ Main =
         location.href = Redirect.thread g.BOARD, g.THREAD, location.hash
       return
 
-    return unless $.id 'navtopr'
+    return unless $.id 'navtopright'
 
     threads = []
     posts   = []
@@ -1160,6 +1160,11 @@ Get =
       $.rm child unless child is post
     root
   fetchedPost: (req, board, threadID, postID, root) ->
+    # In case of multiple callbacks for the same request,
+    # don't parse the same original post more than once.
+    if post = g.posts["#{board}.#{postID}"]
+      Get.insert post, root
+      return
     {status} = req
     if status isnt 200
       # The thread can die by the time we check a quote.
@@ -1201,18 +1206,15 @@ Get =
       new Board board
     inThread = g.threads["#{board}.#{threadID}"] or
       new Thread threadID, inBoard
+    post = new Post postContainer, thread, board
+    Main.callbackNodes Post, [post]
+    Get.insert post, root
+  archivedPost: (req, board, postID, root) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
-    unless post = g.posts["#{board}.#{postID}"]
-      post = new Post postContainer, thread, board
-      Main.callbackNodes Post, [post]
-
-    # Stop here if the container has been removed while loading.
-    return unless root.parentNode
-    clone = post.addClone()
-    Main.callbackNodes Post, [clone]
-    $.replace root.firstChild, Get.cleanRoot clone
-  archivedPost: (req, board, postID, root) ->
+    if post = g.posts["#{board}.#{postID}"]
+      Get.insert post, root
+      return
     data = JSON.parse req.response
     if data.error
       $.addClass root, 'warning'
@@ -1293,13 +1295,11 @@ Get =
       new Board board
     thread = g.threads["#{board}.#{threadID}"] or
       new Thread threadID, board
-    # In case of multiple callbacks for the same request,
-    # don't parse the same original post more than once.
-    unless post = g.posts["#{board}.#{postID}"]
-      post = new Post postContainer, thread, board,
-        isArchived: true
-      Main.callbackNodes Post, [post]
-
+    post = new Post postContainer, thread, board,
+      isArchived: true
+    Main.callbackNodes Post, [post]
+    Get.insert post, root
+  insert: (post, root) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
     clone = post.addClone()

@@ -909,7 +909,7 @@
     },
     initHeaderReady: function() {
       var header, nav, settings, _ref, _ref1, _ref2;
-      if (!$.id('navtopr')) {
+      if (!$.id('navtopright')) {
         return;
       }
       header = Main.header;
@@ -981,7 +981,7 @@
         }
         return;
       }
-      if (!$.id('navtopr')) {
+      if (!$.id('navtopright')) {
         return;
       }
       threads = [];
@@ -1371,7 +1371,11 @@
       return root;
     },
     fetchedPost: function(req, board, threadID, postID, root) {
-      var clone, doc, href, inBoard, inThread, link, pc, post, quote, status, url, _i, _len, _ref;
+      var doc, href, inBoard, inThread, link, pc, post, quote, status, url, _i, _len, _ref;
+      if (post = g.posts["" + board + "." + postID]) {
+        Get.insert(post, root);
+        return;
+      }
       status = req.status;
       if (status !== 200) {
         if (url = Redirect.post(board, postID)) {
@@ -1412,19 +1416,16 @@
       link.nextSibling.href = "/" + board + "/res/" + threadID + "#q" + postID;
       inBoard = g.boards[board] || new Board(board);
       inThread = g.threads["" + board + "." + threadID] || new Thread(threadID, inBoard);
-      if (!(post = g.posts["" + board + "." + postID])) {
-        post = new Post(postContainer, thread, board);
-        Main.callbackNodes(Post, [post]);
-      }
-      if (!root.parentNode) {
-        return;
-      }
-      clone = post.addClone();
-      Main.callbackNodes(Post, [clone]);
-      return $.replace(root.firstChild, Get.cleanRoot(clone));
+      post = new Post(postContainer, thread, board);
+      Main.callbackNodes(Post, [post]);
+      return Get.insert(post, root);
     },
     archivedPost: function(req, board, postID, root) {
-      var bq, clone, comment, data, post, postContainer, thread, threadID;
+      var bq, comment, data, post, postContainer, thread, threadID;
+      if (post = g.posts["" + board + "." + postID]) {
+        Get.insert(post, root);
+        return;
+      }
       data = JSON.parse(req.response);
       if (data.error) {
         $.addClass(root, 'warning');
@@ -1492,12 +1493,14 @@
       });
       board = g.boards[board] || new Board(board);
       thread = g.threads["" + board + "." + threadID] || new Thread(threadID, board);
-      if (!(post = g.posts["" + board + "." + postID])) {
-        post = new Post(postContainer, thread, board, {
-          isArchived: true
-        });
-        Main.callbackNodes(Post, [post]);
-      }
+      post = new Post(postContainer, thread, board, {
+        isArchived: true
+      });
+      Main.callbackNodes(Post, [post]);
+      return Get.insert(post, root);
+    },
+    insert: function(post, root) {
+      var clone;
       if (!root.parentNode) {
         return;
       }
