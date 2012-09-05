@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.34.9
+// @version        2.34.10
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -23,7 +23,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.34.9
+ * 4chan X 2.34.10
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -2775,7 +2775,7 @@
   Options = {
     init: function() {
       var a, el, settings, _i, _len, _ref;
-      _ref = ['navtopr', 'navbotr'];
+      ref = ['navtopright', 'navbotright'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
         a = $.el('a', {
@@ -2783,12 +2783,9 @@
           className: 'settingsWindowLink',
           textContent: '4chan X Settings'
         });
-        $.on(a, 'click', Options.dialog);
-        el = $.id(settings).firstElementChild;
-        el.hidden = true;
-        $.before(el, a);
-      }
-      if (!$.get('firstrun')) {
+        $.on(a, 'click', Options.dialog); 
+        $.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]);
+        $.get('firstrun')) {
         $.set('firstrun', true);
         return Options.dialog();
       }
@@ -5423,7 +5420,7 @@
         }
         return;
       }
-      if (!$.id('navtopr')) {
+      if (!$.id('navtopright')) {
         return;
       }
       $.addClass(d.body, $.engine);
@@ -5657,7 +5654,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '2.34.9',
+    version: '2.34.10',
     callbacks: [],
     css: '\
 /* dialog styling */\
