@@ -1197,8 +1197,7 @@ Get =
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
     unless post = g.posts["#{board}.#{postID}"]
-      post = new Post postContainer, thread, board,
-        isArchived: true
+      post = new Post postContainer, thread, board
       Main.callbackNodes Post, [post]
 
     # Stop here if the container has been removed while loading.

@@ -1408,9 +1408,7 @@
       inBoard = g.boards[board] || new Board(board);
       inThread = g.threads["" + board + "." + threadID] || new Thread(threadID, inBoard);
       if (!(post = g.posts["" + board + "." + postID])) {
-        post = new Post(postContainer, thread, board, {
-          isArchived: true
-        });
+        post = new Post(postContainer, thread, board);
         Main.callbackNodes(Post, [post]);
       }
       if (!root.parentNode) {
