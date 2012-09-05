@@ -60,7 +60,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       headNode = headNodes.length - 1
       for node, index in headNodes
         step = headNode - index
-        if headNodes[step].rel == 'stylesheet' or headNodes[step].rel == 'alternate stylesheet'
+        if headNodes[step].rel == 'stylesheet' or headNodes[step].rel == 'alternate stylesheet' or headNodes[step].tagName.toLowerCase() == 'style'
           $.rm headNodes[step]
     else # XXX fox
       $.on d, 'DOMNodeInserted', @remStyle

@@ -2212,7 +2212,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
   right: 0px;
   height: 10px;
 }
-.postInfo {
+div.postInfo {
   margin: 1px 0 0;
   position: relative;
   width: 100%;

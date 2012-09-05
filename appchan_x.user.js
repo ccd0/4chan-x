@@ -6344,7 +6344,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         for (index = _i = 0, _len = headNodes.length; _i < _len; index = ++_i) {
           node = headNodes[index];
           step = headNode - index;
-          if (headNodes[step].rel === 'stylesheet' || headNodes[step].rel === 'alternate stylesheet') {
+          if (headNodes[step].rel === 'stylesheet' || headNodes[step].rel === 'alternate stylesheet' || headNodes[step].tagName.toLowerCase() === 'style') {
             _results.push($.rm(headNodes[step]));
           } else {
             _results.push(void 0);
@@ -8574,7 +8574,7 @@ body > a[style="cursor: pointer; float: right;"]::after {\
   right: 0px;\
   height: 10px;\
 }\
-.postInfo {\
+div.postInfo {\
   margin: 1px 0 0;\
   position: relative;\
   width: 100%;\
