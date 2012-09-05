@@ -1238,7 +1238,7 @@
       html.push("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ");
       html.push('<span class="postNum desktop">');
       html.push("<a href=/" + board + "/res/" + threadID + "#p" + postID + " title='Highlight this post'>No.</a>");
-      html.push("<a href=/" + board + "/res/" + threadID + "#q" + postID + " title='Quote this post'>" + postID + "</a>");
+      html.push("<a href=\"" + (g.REPLY ? "javascript:quote('" + postID + "');" : "/" + board + "/res/" + threadID + "#q" + postID) + "\" title='Quote this post'>" + postID + "</a>");
       html.push('</span>');
       pi = $.el('div', {
         id: "pi" + postID,

@@ -1054,7 +1054,12 @@ Build =
     # post num
     html.push '<span class="postNum desktop">'
     html.push "<a href=/#{board}/res/#{threadID}#p#{postID} title='Highlight this post'>No.</a>"
-    html.push "<a href=/#{board}/res/#{threadID}#q#{postID} title='Quote this post'>#{postID}</a>"
+    html.push "<a href=\"#{
+      if g.REPLY
+        "javascript:quote('#{postID}');"
+      else
+        "/#{board}/res/#{threadID}#q#{postID}"
+    }\" title='Quote this post'>#{postID}</a>"
     # XXX closed/sticky?
     html.push '</span>'
     pi = $.el 'div',
