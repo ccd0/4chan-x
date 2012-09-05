@@ -2774,8 +2774,8 @@
 
   Options = {
     init: function() {
-      var a, el, settings, _i, _len, _ref;
-      ref = ['navtopright', 'navbotright'];
+      var a, settings, _i, _len, _ref;
+      _ref = ['navtopright', 'navbotright'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
         a = $.el('a', {
@@ -2783,9 +2783,10 @@
           className: 'settingsWindowLink',
           textContent: '4chan X Settings'
         });
-        $.on(a, 'click', Options.dialog); 
+        $.on(a, 'click', Options.dialog);
         $.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]);
-        $.get('firstrun')) {
+      }
+      if (!$.get('firstrun')) {
         $.set('firstrun', true);
         return Options.dialog();
       }
@@ -5420,7 +5421,7 @@
         }
         return;
       }
-      if (!$.id('navtopright')) {
+      if (!$.id('navtopr')) {
         return;
       }
       $.addClass(d.body, $.engine);
