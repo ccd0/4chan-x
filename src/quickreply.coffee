@@ -593,7 +593,7 @@ QR =
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1
-    if Conf['Auto Hide QR'] and not QR.cooldown.auto
+    if Conf['Auto Hide QR'] and not QR.cooldown.auto and not Conf['Style']
       QR.hide()
     if not QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
       # Unfocus the focused element if it is one within the QR and we're not auto-posting.

@@ -104,7 +104,7 @@
         'Rollover': [true, 'Index navigation will fallback to page navigation.'],
         'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
         'Style': [true, 'Custom theming and styling options.'],
-        'Check for Updates': [false, 'Check for updated versions of 4chan X']
+        'Check for Updates': [false, 'Check for updated versions of Appchan X']
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
@@ -6143,7 +6143,7 @@
       }
       QR.cleanError();
       QR.cooldown.auto = QR.replies.length > 1;
-      if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
+      if (Conf['Auto Hide QR'] && !QR.cooldown.auto && !Conf['Style']) {
         QR.hide();
       }
       if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {

@@ -11,7 +11,7 @@ Config =
       'Rollover':                     [true,  'Index navigation will fallback to page navigation.']
       'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
       'Style':                        [true,  'Custom theming and styling options.']
-      'Check for Updates':            [false,  'Check for updated versions of 4chan X']
+      'Check for Updates':            [false,  'Check for updated versions of Appchan X']
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
       'Filter':                       [true,  'Self-moderation placebo']
