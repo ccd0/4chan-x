@@ -2485,7 +2485,7 @@
         err = 'Connection error with sys.4chan.org.';
       }
       if (err) {
-        if (/captcha|verification/i.test(err) || err === 'Connection error with sys.4chan.org.') {
+        if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           QR.cooldown.auto = !!$.get('captchas', []).length;
           QR.cooldown.set(2);
         } else {
