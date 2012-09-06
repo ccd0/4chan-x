@@ -6299,7 +6299,9 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     },
     noderice: function(post) {
       var checkbox;
-      return Style.rice(checkbox = $('[type=checkbox]:not(.riced)', post.root));
+      if (checkbox = $('[type=checkbox]:not(.riced)', post.root)) {
+        return Style.rice(checkbox);
+      }
     },
     allrice: function() {
       var checkbox, checkboxes, _i, _len, _results;
@@ -6335,7 +6337,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     remStyle: function() {
-      var headNode, headNodes, index, node, step, _i, _len, _results;
+      var current, headNode, headNodes, index, node, _i, _len, _results;
       $.off(d, 'DOMNodeInserted', this.remStyle);
       if (d.head && d.head.childNodes.length > 10) {
         headNodes = d.head.childNodes;
@@ -6343,9 +6345,13 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         _results = [];
         for (index = _i = 0, _len = headNodes.length; _i < _len; index = ++_i) {
           node = headNodes[index];
-          step = headNode - index;
-          if (headNodes[step].rel === 'stylesheet' || headNodes[step].rel === 'alternate stylesheet' || headNodes[step].tagName.toLowerCase() === 'style') {
-            _results.push($.rm(headNodes[step]));
+          current = headNodes[headNode - index];
+          if (current.nodeType === 1) {
+            if ((current.rel === 'stylesheet' || current.rel === 'alternate stylesheet' || current.tagName.toLowerCase() === 'style') && current.id !== 'appchan') {
+              _results.push($.rm(current));
+            } else {
+              _results.push(void 0);
+            }
           } else {
             _results.push(void 0);
           }

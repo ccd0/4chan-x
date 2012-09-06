@@ -27,7 +27,8 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         checkbox.click()
 
   noderice: (post) ->
-    Style.rice checkbox = $('[type=checkbox]:not(.riced)', post.root)
+    if checkbox = $('[type=checkbox]:not(.riced)', post.root)
+      Style.rice checkbox
 
   allrice: ->
     checkboxes = $$('[type=checkbox]:not(.riced)', d.body)
@@ -59,8 +60,9 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       headNodes = d.head.childNodes
       headNode = headNodes.length - 1
       for node, index in headNodes
-        step = headNode - index
-        if headNodes[step].rel == 'stylesheet' or headNodes[step].rel == 'alternate stylesheet' or headNodes[step].tagName.toLowerCase() == 'style'
-          $.rm headNodes[step]
+        current = headNodes[headNode - index]
+        if current.nodeType == 1
+          if (current.rel == 'stylesheet' or current.rel == 'alternate stylesheet' or current.tagName.toLowerCase() == 'style') and current.id != 'appchan'
+            $.rm current
     else # XXX fox
       $.on d, 'DOMNodeInserted', @remStyle
