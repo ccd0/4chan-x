@@ -711,25 +711,22 @@ Main =
     Main.header = $.el 'div',
       className: 'reply'
       innerHTML: '<div class=extra></div>'
-    # disable 4chan's features
-    localStorage.setItem '4chan_settings', false
     $.ready Main.initHeaderReady
   initHeaderReady: ->
-    return unless $.id 'navtopright'
     header = Main.header
     $.prepend d.body, header
 
-    nav = $.id 'boardNavDesktop'
-    header.id = nav.id
-    $.prepend header, nav
-    nav.id = nav.className = null
-    nav.lastElementChild.hidden = true
-    settings = $.el 'span',
-      id: 'settings'
-      innerHTML: '[<a href=javascript:;>Settings</a>]'
-    $.on settings.firstElementChild, 'click', Main.settings
-    $.add nav, settings
-    $("a[href$='/#{g.BOARD}/']", nav)?.className = 'current'
+    if nav = $.id 'boardNavDesktop'
+      header.id = nav.id
+      $.prepend header, nav
+      nav.id = nav.className = null
+      nav.lastElementChild.hidden = true
+      settings = $.el 'span',
+        id: 'settings'
+        innerHTML: '[<a href=javascript:;>Settings</a>]'
+      $.on settings.firstElementChild, 'click', Main.settings
+      $.add nav, settings
+      $("a[href$='/#{g.BOARD}/']", nav)?.className = 'current'
 
     $.addClass d.body, $.engine
     $.addClass d.body, 'fourchan_x'

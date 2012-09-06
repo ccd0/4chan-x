@@ -907,29 +907,26 @@
         className: 'reply',
         innerHTML: '<div class=extra></div>'
       });
-      localStorage.setItem('4chan_settings', false);
       return $.ready(Main.initHeaderReady);
     },
     initHeaderReady: function() {
       var header, nav, settings, _ref, _ref1, _ref2;
-      if (!$.id('navtopright')) {
-        return;
-      }
       header = Main.header;
       $.prepend(d.body, header);
-      nav = $.id('boardNavDesktop');
-      header.id = nav.id;
-      $.prepend(header, nav);
-      nav.id = nav.className = null;
-      nav.lastElementChild.hidden = true;
-      settings = $.el('span', {
-        id: 'settings',
-        innerHTML: '[<a href=javascript:;>Settings</a>]'
-      });
-      $.on(settings.firstElementChild, 'click', Main.settings);
-      $.add(nav, settings);
-      if ((_ref = $("a[href$='/" + g.BOARD + "/']", nav)) != null) {
-        _ref.className = 'current';
+      if (nav = $.id('boardNavDesktop')) {
+        header.id = nav.id;
+        $.prepend(header, nav);
+        nav.id = nav.className = null;
+        nav.lastElementChild.hidden = true;
+        settings = $.el('span', {
+          id: 'settings',
+          innerHTML: '[<a href=javascript:;>Settings</a>]'
+        });
+        $.on(settings.firstElementChild, 'click', Main.settings);
+        $.add(nav, settings);
+        if ((_ref = $("a[href$='/" + g.BOARD + "/']", nav)) != null) {
+          _ref.className = 'current';
+        }
       }
       $.addClass(d.body, $.engine);
       $.addClass(d.body, 'fourchan_x');
