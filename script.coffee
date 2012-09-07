@@ -2912,7 +2912,7 @@ Build =
       dateUTC:  data.time
       comment:  data.com
       # file
-    if data.ext
+    if data.ext or data.filedeleted
       o.file =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
@@ -3053,8 +3053,8 @@ Build =
         ''
 
     container = $.el 'div',
-      className: "postContainer #{if isOP then 'op' else 'reply'}Container"
       id: "pc#{postID}"
+      className: "postContainer #{if isOP then 'op' else 'reply'}Container"
       innerHTML: \
       (if isOP then '' else "<div class=sideArrows id=sa#{postID}>&gt;&gt;</div>") +
       "<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}'>" +

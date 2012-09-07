@@ -3689,7 +3689,7 @@
         dateUTC: data.time,
         comment: data.com
       };
-      if (data.ext) {
+      if (data.ext || data.filedeleted) {
         o.file = {
           name: data.filename + data.ext,
           timestamp: "" + data.tim + data.ext,
@@ -3802,8 +3802,8 @@
       }
       tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
       container = $.el('div', {
-        className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
         id: "pc" + postID,
+        className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
         innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + name + "</span>") + tripcode + emailEnd + capcodeStart + capcode + userID + flag + ("<br><span class=subject>" + subject + "</span>") + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("<span class=subject>" + (subject || '') + "</span> ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + name + "</span>") + tripcode + emailEnd + capcodeStart + capcode + userID + flag + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + comment + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
