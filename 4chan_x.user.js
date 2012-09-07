@@ -3767,7 +3767,7 @@
         if (file.isSpoiler) {
           fileSize = "Spoiler Image, " + fileSize;
           if (!isArchived) {
-            fileThumb = '//thumbs.4chan.org/image/spoiler';
+            fileThumb = '//static.4chan.org/image/spoiler';
             fileThumb += (function() {
               switch (board) {
                 case 'a':
@@ -3804,7 +3804,7 @@
           innerHTML: file.name
         });
         filename = a.textContent.replace(/%22/g, '"');
-        a.textContent = Build.shortname(filename);
+        a.textContent = Build.shortFilename(filename);
         shortFilename = a.innerHTML;
         a.textContent = filename;
         filename = a.innerHTML;
