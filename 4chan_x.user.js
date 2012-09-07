@@ -3715,7 +3715,7 @@
           @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, flag, flagCode, flagName, highlight, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, highlight, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
       postID = o.postID, threadID = o.threadID, board = o.board, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org';
@@ -3800,8 +3800,16 @@
           }
         }
         imgSrc = ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='width:" + file.twidth + "px;height:" + file.theight + "px'></a>");
+        a = $.el('a', {
+          innerHTML: file.name
+        });
+        filename = a.textContent.replace(/%22/g, '"');
+        a.textContent = Build.shortname(filename);
+        shortFilename = a.innerHTML;
+        a.textContent = filename;
+        filename = a.innerHTML;
         fileDims = ext === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
-        fileInfo = ("<span class=fileText id=fT" + postID + ">File: <a href='" + file.url + "' target=_blank>" + file.timestamp + "</a>") + ("-(" + fileSize + ", " + fileDims + (file.isSpoiler ? '' : ", <span title='" + file.name + "'>" + (Build.shortFilename(file.name)) + "</span>'")) + ")</span>";
+        fileInfo = ("<span class=fileText id=fT" + postID + (file.isSpoiler ? " title='" + filename + "'" : void 0) + ">File: <a href='" + file.url + "' target=_blank>" + file.timestamp + "</a>") + ("-(" + fileSize + ", " + fileDims + (file.isSpoiler ? '' : ", <span title='" + shortFilename + "'>" + filename + "</span>'")) + ")</span>";
         fileHTML = "<div id=f" + postID + " class=file><div class=fileInfo>" + fileInfo + "</div>" + imgSrc + "</div>";
       } else {
         fileHTML = '';

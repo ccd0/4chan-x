@@ -3039,13 +3039,26 @@ Build =
       imgSrc = "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{file.url}' target=_blank>" +
         "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='width:#{file.twidth}px;height:#{file.theight}px'></a>"
 
+      # Ha Ha filenames.
+      # html -> text, translate WebKit's %22s into "s
+      a = $.el 'a', innerHTML: file.name
+      filename = a.textContent.replace /%22/g, '"'
+
+      # shorten filename, get html
+      a.textContent = Build.shortname filename
+      shortFilename = a.innerHTML
+
+      # get html
+      a.textContent = filename
+      filename      = a.innerHTML
+
       fileDims = if ext is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
-      fileInfo = "<span class=fileText id=fT#{postID}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
+      fileInfo = "<span class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'"}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
         "-(#{fileSize}, #{fileDims}#{
           if file.isSpoiler
             ''
           else
-            ", <span title='#{file.name}'>#{Build.shortFilename file.name}</span>'"
+            ", <span title='#{shortFilename}'>#{filename}</span>'"
         }" + ")</span>"
 
       fileHTML = "<div id=f#{postID} class=file><div class=fileInfo>#{fileInfo}</div>#{imgSrc}</div>"
