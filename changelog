@@ -1,4 +1,8 @@
 master
+- Mayhem
+  Use 4chan's API to fetch posts for:
+    - Quote Inlining.
+    - Quote Previewing.
 
 2.34.10
 - Mayhem
