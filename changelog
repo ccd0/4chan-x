@@ -1,6 +1,7 @@
 master
 - Mayhem
   Use 4chan's API to fetch posts for:
+    - Thread Updater.
     - Quote Inlining.
     - Quote Previewing.
 

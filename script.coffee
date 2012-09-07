@@ -2343,64 +2343,62 @@ Updater =
           -> true
         else
           -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
-    update: ->
-      if @status is 404
-        Updater.set 'timer', ''
-        Updater.set 'count', 404
-        Updater.count.className = 'warning'
-        clearTimeout Updater.timeoutID
-        g.dead = true
-        if Conf['Unread Count']
-          Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
-        else
-          d.title = d.title.match(/^.+-/)[0] + ' 404'
-        Unread.update true
-        QR.abort()
-        return
-      unless @status in [0, 200, 304]
-        # XXX 304 -> 0 in Opera
-        if Conf['Verbose']
-          Updater.set 'count', @statusText
+    load: ->
+      switch @status
+        when 404
+          Updater.set 'timer', ''
+          Updater.set 'count', 404
           Updater.count.className = 'warning'
-        Updater.unsuccessfulFetchCount++
-        return
-
-      Updater.unsuccessfulFetchCount++
-      Updater.set 'timer', -Updater.getInterval()
-
-      ###
-      Status Code 304: Not modified
-      By sending the `If-Modified-Since` header we get a proper status code, and no response.
-      This saves bandwidth for both the user and the servers, avoid unnecessary computation,
-      and won't load images and scripts when parsing the response.
-      ###
-      if @status in [0, 304]
+          clearTimeout Updater.timeoutID
+          g.dead = true
+          if Conf['Unread Count']
+            Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
+          else
+            d.title = d.title.match(/^.+-/)[0] + ' 404'
+          Unread.update true
+          QR.abort()
         # XXX 304 -> 0 in Opera
-        if Conf['Verbose']
-          Updater.set 'count', '+0'
-          Updater.count.className = null
-        return
-      Updater.lastModified = @getResponseHeader 'Last-Modified'
-
-      doc = d.implementation.createHTMLDocument ''
-      doc.documentElement.innerHTML = @response
-
+        when 0, 304
+          ###
+          Status Code 304: Not modified
+          By sending the `If-Modified-Since` header we get a proper status code, and no response.
+          This saves bandwidth for both the user and the servers and avoid unnecessary computation.
+          ###
+          Updater.unsuccessfulFetchCount++
+          Updater.set 'timer', -Updater.getInterval()
+          if Conf['Verbose']
+            Updater.set 'count', '+0'
+            Updater.count.className = null
+        when 200
+          Updater.lastModified = @getResponseHeader 'Last-Modified'
+          Updater.cb.update JSON.parse(@response).posts
+          Updater.set 'timer', -Updater.getInterval()
+        else
+          Updater.unsuccessfulFetchCount++
+          Updater.set 'timer', -Updater.getInterval()
+          if Conf['Verbose']
+            Updater.set 'count', @statusText
+            Updater.count.className = 'warning'
+      delete Updater.request
+    update: (posts) ->
       lastPost = Updater.thread.lastElementChild
-      id = lastPost.id[2..]
+      id = +lastPost.id[2..]
       nodes = []
-      for reply in $$('.replyContainer', doc).reverse()
-        break if reply.id[2..] <= id #make sure to not insert older posts
-        nodes.push reply
+      for post in posts.reverse()
+        break if post.no <= id # Make sure to not insert older posts.
+        nodes.push Build.postFromObject post
 
       count = nodes.length
       if Conf['Verbose']
         Updater.set 'count', "+#{count}"
         Updater.count.className = if count then 'new' else null
 
-      return unless count
+      if count
+        Updater.unsuccessfulFetchCount = 0
+      else
+        Updater.unsuccessfulFetchCount++
+        return
 
-      Updater.unsuccessfulFetchCount = 0
-      Updater.set 'timer', -Updater.getInterval()
       scroll = Conf['Scrolling'] and Updater.scrollBG() and
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       $.add Updater.thread, nodes.reverse()
@@ -2442,8 +2440,10 @@ Updater =
     Updater.set 'timer', 0
     Updater.request?.abort()
     # Fool the cache.
-    url = location.pathname + '?' + Date.now()
-    Updater.request = $.ajax url, onload: Updater.cb.update,
+    # XXX is fooling the cache still necessary?
+    # url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json?{Date.now()}"
+    url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json"
+    Updater.request = $.ajax url, onload: Updater.cb.load,
       headers: 'If-Modified-Since': Updater.lastModified
 
 Watcher =
