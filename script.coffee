@@ -3054,7 +3054,7 @@ Build =
       filename      = a.innerHTML
 
       fileDims = if ext is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
-      fileInfo = "<span class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'"}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
+      fileInfo = "<span class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
         "-(#{fileSize}, #{fileDims}#{
           if file.isSpoiler
             ''
