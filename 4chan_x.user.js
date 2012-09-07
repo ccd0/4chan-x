@@ -858,24 +858,35 @@
       var a, replyID, threadID, _, _ref;
       e.preventDefault();
       _ref = this.href.match(/(\d+)#p(\d+)/), _ = _ref[0], threadID = _ref[1], replyID = _ref[2];
-      this.textContent = "Loading " + replyID + "...";
+      this.textContent = "Loading No." + replyID + "...";
       a = this;
-      return $.cache(this.pathname, function() {
+      return $.cache("//api.4chan.org" + this.pathname + ".json", function() {
         return ExpandComment.parse(this, a, threadID, replyID);
       });
     },
     parse: function(req, a, threadID, replyID) {
-      var doc, href, node, post, quote, quotes, _i, _len;
+      var bq, href, post, posts, quote, quotes, _i, _j, _len, _len1;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
       }
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = req.response;
-      node = d.importNode(doc.getElementById("m" + replyID), true);
-      quotes = node.getElementsByClassName('quotelink');
-      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-        quote = quotes[_i];
+      posts = JSON.parse(req.response).posts;
+      replyID = +replyID;
+      for (_i = 0, _len = posts.length; _i < _len; _i++) {
+        post = posts[_i];
+        if (post.no === replyID) {
+          break;
+        }
+      }
+      if (post.no !== replyID) {
+        a.textContent = 'No.#{replyID} not found.';
+        return;
+      }
+      bq = $.id("m" + replyID);
+      bq.innerHTML = post.com;
+      quotes = bq.getElementsByClassName('quotelink');
+      for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
+        quote = quotes[_j];
         href = quote.getAttribute('href');
         if (href[0] === '/') {
           continue;
@@ -883,7 +894,7 @@
         quote.href = "res/" + href;
       }
       post = {
-        blockquote: node,
+        blockquote: bq,
         threadID: threadID,
         quotes: quotes,
         backlinks: []
@@ -903,8 +914,7 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      $.replace(a.parentNode.parentNode, node);
-      return Main.prettify(node);
+      return Main.prettify(bq);
     }
   };
 

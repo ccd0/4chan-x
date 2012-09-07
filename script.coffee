@@ -706,28 +706,32 @@ ExpandComment =
   expand: (e) ->
     e.preventDefault()
     [_, threadID, replyID] = @href.match /(\d+)#p(\d+)/
-    @textContent = "Loading #{replyID}..."
+    @textContent = "Loading No.#{replyID}..."
     a = @
-    $.cache @pathname, -> ExpandComment.parse @, a, threadID, replyID
+    $.cache "//api.4chan.org#{@pathname}.json", -> ExpandComment.parse @, a, threadID, replyID
   parse: (req, a, threadID, replyID) ->
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
       return
 
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = req.response
+    posts = JSON.parse(req.response).posts
+    replyID = +replyID
 
-    # Import the node to fix quote.hashes
-    # as they're empty when in a different document.
-    node = d.importNode doc.getElementById("m#{replyID}"), true
+    for post in posts
+      break if post.no is replyID
+    if post.no isnt replyID
+      a.textContent = 'No.#{replyID} not found.'
+      return
 
-    quotes = node.getElementsByClassName 'quotelink'
+    bq = $.id "m#{replyID}"
+    bq.innerHTML = post.com
+    quotes = bq.getElementsByClassName 'quotelink'
     for quote in quotes
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote
       quote.href = "res/#{href}" # Fix pathnames
     post =
-      blockquote: node
+      blockquote: bq
       threadID:   threadID
       quotes:     quotes
       backlinks:  []
@@ -741,8 +745,7 @@ ExpandComment =
       QuoteOP.node      post
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
-    $.replace a.parentNode.parentNode, node
-    Main.prettify node
+    Main.prettify bq
 
 ExpandThread =
   init: ->
