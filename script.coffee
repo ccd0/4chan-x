@@ -2386,7 +2386,7 @@ Updater =
       nodes = []
       for post in posts.reverse()
         break if post.no <= id # Make sure to not insert older posts.
-        nodes.push Build.postFromObject post
+        nodes.push Build.postFromObject post, g.BOARD
 
       count = nodes.length
       if Conf['Verbose']

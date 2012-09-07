@@ -2990,7 +2990,7 @@
           if (post.no <= id) {
             break;
           }
-          nodes.push(Build.postFromObject(post));
+          nodes.push(Build.postFromObject(post, g.BOARD));
         }
         count = nodes.length;
         if (Conf['Verbose']) {
