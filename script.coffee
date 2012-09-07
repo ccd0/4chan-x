@@ -2965,7 +2965,6 @@ Build =
 
     switch capcode
       when 'admin', 'admin_highlight'
-        highlight    = ' highlightPost' if capcode is 'admin_highlight'
         capcodeClass = " capcodeAdmin"
         capcodeStart = " <strong class='capcode hand id_admin'" +
           "title='Highlight posts by the Administrator'>## Admin</strong>"
@@ -2987,7 +2986,6 @@ Build =
           "alt='This user is a 4chan Developer.' " +
           "title='This user is a 4chan Developer.' class=identityIcon>"
       else
-        highlight    = ''
         capcodeClass = ''
         capcodeStart = ''
         capcode      = ''
@@ -3090,7 +3088,12 @@ Build =
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
       innerHTML: \
       (if isOP then '' else "<div class=sideArrows id=sa#{postID}>&gt;&gt;</div>") +
-      "<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}#{highlight}'>" +
+      "<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}#{
+        if capcode is 'admin_highlight'
+          ' highlightPost'
+        else
+          ''
+        }'>" +
 
         "<div class='postInfoM mobile' id=pim#{postID}>" +
           "<span class='nameBlock#{capcodeClass}'>" +
