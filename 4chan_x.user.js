@@ -938,19 +938,19 @@
       return _results;
     },
     toggle: function(thread) {
-      var a, num, pathname, replies, reply, _i, _len;
-      pathname = "/" + g.BOARD + "/res/" + thread.id.slice(1);
+      var a, num, replies, reply, url, _i, _len;
+      url = "//api.4chan.org/" + g.BOARD + "/res/" + thread.id.slice(1) + ".json";
       a = $('.summary', thread);
       switch (a.textContent[0]) {
         case '+':
           a.textContent = a.textContent.replace('+', '× Loading...');
-          $.cache(pathname, function() {
+          $.cache(url, function() {
             return ExpandThread.parse(this, thread, a);
           });
           break;
         case '×':
           a.textContent = a.textContent.replace('× Loading...', '+');
-          $.cache.requests[pathname].abort();
+          $.cache.requests[url].abort();
           break;
         case '-':
           a.textContent = a.textContent.replace('-', '+');
@@ -975,44 +975,33 @@
       }
     },
     parse: function(req, thread, a) {
-      var backlink, doc, href, id, link, nodes, post, quote, reply, threadID, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+      var backlink, id, link, nodes, post, replies, reply, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', ExpandThread.cb.toggle);
         return;
       }
       a.textContent = a.textContent.replace('× Loading...', '-');
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = req.response;
+      replies = JSON.parse(req.response).posts.slice(1);
       threadID = thread.id.slice(1);
       nodes = [];
-      _ref = $$('.replyContainer', doc);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        reply = _ref[_i];
-        reply = d.importNode(reply, true);
-        _ref1 = $$('.quotelink', reply);
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          quote = _ref1[_j];
-          href = quote.getAttribute('href');
-          if (href[0] === '/') {
-            continue;
-          }
-          quote.href = "res/" + href;
-        }
-        id = reply.id.slice(2);
-        link = $('a[title="Highlight this post"]', reply);
+      for (_i = 0, _len = replies.length; _i < _len; _i++) {
+        reply = replies[_i];
+        post = Build.postFromObject(reply, g.BOARD);
+        id = reply.no;
+        link = $('a[title="Highlight this post"]', post);
         link.href = "res/" + threadID + "#p" + id;
         link.nextSibling.href = "res/" + threadID + "#q" + id;
-        nodes.push(reply);
+        nodes.push(post);
       }
-      _ref2 = $$('.summary ~ .replyContainer', a.parentNode);
-      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-        post = _ref2[_k];
+      _ref = $$('.summary ~ .replyContainer', a.parentNode);
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        post = _ref[_j];
         $.rm(post);
       }
-      _ref3 = $$('.backlink', a.previousElementSibling);
-      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-        backlink = _ref3[_l];
+      _ref1 = $$('.backlink', a.previousElementSibling);
+      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+        backlink = _ref1[_k];
         if (!$.id(backlink.hash.slice(1))) {
           $.rm(backlink);
         }

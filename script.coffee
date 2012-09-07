@@ -758,17 +758,17 @@ ExpandThread =
       $.replace span, a
 
   toggle: (thread) ->
-    pathname = "/#{g.BOARD}/res/#{thread.id[1..]}"
-    a = $ '.summary', thread
+    url = "//api.4chan.org/#{g.BOARD}/res/#{thread.id[1..]}.json"
+    a   = $ '.summary', thread
 
     switch a.textContent[0]
       when '+'
         a.textContent = a.textContent.replace '+', '× Loading...'
-        $.cache pathname, -> ExpandThread.parse @, thread, a
+        $.cache url, -> ExpandThread.parse @, thread, a
 
       when '×'
         a.textContent = a.textContent.replace '× Loading...', '+'
-        $.cache.requests[pathname].abort()
+        $.cache.requests[url].abort()
 
       when '-'
         a.textContent = a.textContent.replace '-', '+'
@@ -791,22 +791,17 @@ ExpandThread =
 
     a.textContent = a.textContent.replace '× Loading...', '-'
 
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = req.response
+    replies = JSON.parse(req.response).posts[1..]
 
     threadID = thread.id[1..]
     nodes    = []
-    for reply in $$ '.replyContainer', doc
-      reply = d.importNode reply, true
-      for quote in $$ '.quotelink', reply
-        href = quote.getAttribute 'href'
-        continue if href[0] is '/' # Cross-board quote
-        quote.href = "res/#{href}" # Fix pathnames
-      id = reply.id[2..]
-      link = $ 'a[title="Highlight this post"]', reply
+    for reply in replies
+      post = Build.postFromObject reply, g.BOARD
+      id   = reply.no
+      link = $ 'a[title="Highlight this post"]', post
       link.href = "res/#{threadID}#p#{id}"
       link.nextSibling.href = "res/#{threadID}#q#{id}"
-      nodes.push reply
+      nodes.push post
     # eat everything, then replace with fresh full posts
     for post in $$ '.summary ~ .replyContainer', a.parentNode
       $.rm post
