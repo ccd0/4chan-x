@@ -2281,6 +2281,11 @@ Updater =
 
     @unsuccessfulFetchCount = 0
     @lastModified = '0'
+    $.ajax "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json",
+      type: 'head'
+      onload: ->
+        return if @status isnt 200
+        Updater.lastModified = @getResponseHeader 'Last-Modified'
 
     for input in $$ 'input', dialog
       if input.type is 'checkbox'

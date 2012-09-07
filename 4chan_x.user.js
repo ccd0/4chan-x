@@ -2851,6 +2851,15 @@
       this.thread = $.id("t" + g.THREAD_ID);
       this.unsuccessfulFetchCount = 0;
       this.lastModified = '0';
+      $.ajax("//api.4chan.org/" + g.BOARD + "/res/" + g.THREAD_ID + ".json", {
+        type: 'head',
+        onload: function() {
+          if (this.status !== 200) {
+            return;
+          }
+          return Updater.lastModified = this.getResponseHeader('Last-Modified');
+        }
+      });
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
