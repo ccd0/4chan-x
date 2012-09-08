@@ -1995,6 +1995,15 @@ QR =
 
 Options =
   init: ->
+    unless $.get 'firstrun'
+      $.set 'firstrun', true
+      localStorage.setItem '4chan-settings', '{"disableAll":true}'
+      $.ready ->
+        # Prevent race conditions
+        Favicon.init() unless Favicon.el
+        Options.dialog()
+    $.ready Options.initReady
+  initReady: ->
     for settings in ['navtopright', 'navbotright']
       a = $.el 'a',
         href: 'javascript:;'
@@ -2002,12 +2011,7 @@ Options =
         textContent: '4chan X Settings'
       $.on a, 'click', Options.dialog
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
-    unless $.get 'firstrun'
-      # Prevent race conditions
-      Favicon.init() unless Favicon.el
-      $.set 'firstrun', true
-      Options.dialog()
-      localStorage.setItem '4chan-settings', '{"disableAll":true}'
+    return
 
   dialog: ->
     dialog = $.el 'div'
@@ -3872,7 +3876,7 @@ Main =
             location.href = url if url
         return
 
-    $.ready Options.init
+    Options.init()
 
     if Conf['Quick Reply'] and Conf['Hide Original Post Form']
       Main.css += '#postForm { display: none; }'

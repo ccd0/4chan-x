@@ -2540,6 +2540,19 @@
 
   Options = {
     init: function() {
+      if (!$.get('firstrun')) {
+        $.set('firstrun', true);
+        localStorage.setItem('4chan-settings', '{"disableAll":true}');
+        $.ready(function() {
+          if (!Favicon.el) {
+            Favicon.init();
+          }
+          return Options.dialog();
+        });
+      }
+      return $.ready(Options.initReady);
+    },
+    initReady: function() {
       var a, settings, _i, _len, _ref;
       _ref = ['navtopright', 'navbotright'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2551,13 +2564,6 @@
         });
         $.on(a, 'click', Options.dialog);
         $.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]);
-      }
-      if (!$.get('firstrun')) {
-        if (!Favicon.el) {
-          Favicon.init();
-        }
-        $.set('firstrun', true);
-        return Options.dialog();
       }
     },
     dialog: function() {
@@ -4972,7 +4978,7 @@
           });
           return;
       }
-      $.ready(Options.init);
+      Options.init();
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form']) {
         Main.css += '#postForm { display: none; }';
       }
