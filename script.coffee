@@ -2007,6 +2007,7 @@ Options =
       Favicon.init() unless Favicon.el
       $.set 'firstrun', true
       Options.dialog()
+      localStorage.setItem '4chan-settings', '{"disableAll":true}'
 
   dialog: ->
     dialog = $.el 'div'
