@@ -12,6 +12,10 @@
 // @include        https://images.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @include        https://sys.4chan.org/*
+// @grant          GM_getValue
+// @grant          GM_setValue
+// @grant          GM_deleteValue
+// @grant          GM_openInTab
 // @run-at         document-start
 // @updateURL      https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
 // @downloadURL    https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
