@@ -1,4 +1,11 @@
 master
+- Mayhem
+  Use 4chan's API to fetch posts for:
+    - Thread Updater.
+    - Quote Inlining.
+    - Quote Previewing.
+    - Thread Expansion.
+    - Comment Expansion.
 
 0.6.6beta
 

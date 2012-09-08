@@ -467,6 +467,9 @@ h1, .boardBanner {
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
 }
+.quotelink.deadlink {
+  text-decoration: underline !important;
+}
 .image_expanded {
   clear: both !important;
 }
