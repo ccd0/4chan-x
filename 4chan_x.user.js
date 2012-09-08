@@ -12,10 +12,14 @@
 // @include        https://images.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @include        https://sys.4chan.org/*
+// @grant          GM_getValue
+// @grant          GM_setValue
+// @grant          GM_deleteValue
+// @grant          GM_openInTab
 // @run-at         document-start
 // @updateURL      https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
 // @downloadURL    https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
-// @icon           http://mayhemydg.github.com/4chan-x/favicon.gif
+// @icon           data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
 /* LICENSE
@@ -2530,6 +2534,19 @@
 
   Options = {
     init: function() {
+      if (!$.get('firstrun')) {
+        $.set('firstrun', true);
+        localStorage.setItem('4chan-settings', '{"disableAll":true}');
+        $.ready(function() {
+          if (!Favicon.el) {
+            Favicon.init();
+          }
+          return Options.dialog();
+        });
+      }
+      return $.ready(Options.initReady);
+    },
+    initReady: function() {
       var a, settings, _i, _len, _ref;
       _ref = ['navtopright', 'navbotright'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2541,13 +2558,6 @@
         });
         $.on(a, 'click', Options.dialog);
         $.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]);
-      }
-      if (!$.get('firstrun')) {
-        if (!Favicon.el) {
-          Favicon.init();
-        }
-        $.set('firstrun', true);
-        return Options.dialog();
       }
     },
     dialog: function() {
@@ -5025,7 +5035,7 @@
           });
           return;
       }
-      $.ready(Options.init);
+      Options.init();
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form']) {
         Main.css += '#postForm { display: none; }';
       }
