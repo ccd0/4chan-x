@@ -3046,7 +3046,7 @@ Build =
 
       # get html
       a.textContent = filename
-      filename      = a.innerHTML
+      filename      = a.innerHTML.replace /'/g, '&apos;'
 
       fileDims = if ext is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
       fileInfo = "<span class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
@@ -3054,7 +3054,7 @@ Build =
           if file.isSpoiler
             ''
           else
-            ", <span title='#{shortFilename}'>#{filename}</span>'"
+            ", <span title='#{filename}'>#{shortFilename}</span>"
         }" + ")</span>"
 
       fileHTML = "<div id=f#{postID} class=file><div class=fileInfo>#{fileInfo}</div>#{imgSrc}</div>"
