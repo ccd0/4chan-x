@@ -6970,7 +6970,8 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 .move {\
   cursor: move;\
 }\
-label, .favicon {\
+label,\
+.favicon {\
   cursor: pointer;\
 }\
 a[href="javascript:;"] {\
@@ -6988,7 +6989,9 @@ a[href="javascript:;"] {\
 #content > [name=tab]:not(:checked) + div,\
 #updater:not(:hover) > :not(.move),\
 .autohide:not(:hover) > form,\
-#qp input, .forwarded, #qp .rice {\
+#qp input,\
+.forwarded,\
+#qp .rice {\
   display: none !important;\
 }\
 .menu_button {\
@@ -7044,7 +7047,8 @@ a[href="javascript:;"] {\
   top: 0;\
   margin-top: -1px;\
 }\
-h1, .boardBanner {\
+h1,\
+.boardBanner {\
   text-align: center;\
 }\
 #qr > .move {\
@@ -7057,11 +7061,12 @@ h1, .boardBanner {\
 #qr > .move > span {\
   float: right;\
 }\
-#autohide, .close, \
-#qr select, \
-#dump, \
-.remove, \
-.captchaimg, \
+#autohide,\
+.close,\
+#qr select,\
+#dump,\
+.remove,\
+.captchaimg,\
 #qr div.warning {\
   cursor: pointer;\
 }\
@@ -7076,13 +7081,16 @@ h1, .boardBanner {\
 .gecko #dump {\
   padding: 1px 0 2px;\
 }\
-#dump:hover, #dump:focus {\
+#dump:hover,\
+#dump:focus {\
   background: ' + agent + 'linear-gradient(#FFF, #DDD);\
 }\
-#dump:active, .dump #dump:not(:hover):not(:focus) {\
+#dump:active,\
+.dump #dump:not(:hover):not(:focus) {\
   background: ' + agent + 'linear-gradient(#CCC, #DDD);\
 }\
-#qr:not(.dump) #replies, .dump > form > label {\
+#qr:not(.dump) #replies,\
+.dump > form > label {\
   display: none;\
 }\
 #replies {\
@@ -7124,7 +7132,8 @@ h1, .boardBanner {\
   ' + agent + 'transition: opacity .25s ease-in-out;\
   vertical-align: top;\
 }\
-.thumbnail:hover, .thumbnail:focus {\
+.thumbnail:hover,\
+.thumbnail:focus {\
   opacity: .9;\
 }\
 .thumbnail#selected {\
@@ -7174,7 +7183,8 @@ h1, .boardBanner {\
   font-size: 3.5em;\
   line-height: 100px;\
 }\
-#addReply:hover, #addReply:focus {\
+#addReply:hover,\
+#addReply:focus {\
   color: #000;\
 }\
 .field {\
@@ -7191,7 +7201,8 @@ h1, .boardBanner {\
 .field:hover:-moz-placeholder {\
   color: #AAA;\
 }\
-.field:hover, .field:focus {\
+.field:hover,\
+.field:focus {\
   border-color: #999;\
   color: #000;\
   outline: none;\
@@ -7248,7 +7259,13 @@ h1, .boardBanner {\
 .presto .fitwidth img[data-md5] + img {\
   width: 100%;\
 }\
-#qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {\
+#qr,\
+#qp,\
+#updater,\
+#stats,\
+#ihover,\
+#overlay,\
+#navlinks {\
   position: fixed;\
 }\
 #ihover {\
@@ -7259,7 +7276,7 @@ h1, .boardBanner {\
 #navlinks {\
   font-size: 16px;\
   top: 25px;\
-  right: 5px;\
+  right: 105px;\
 }\
 #overlay {\
   top: 0;\
@@ -7526,11 +7543,11 @@ body {\
     padding-top: 61px;\
   }\
 }\
-html, \
-body, \
-input, \
-select, \
-textarea, \
+html,\
+body,\
+input,\
+select,\
+textarea,\
 .boardTitle {\
   font-family: "' + Conf["Font"] + '";\
 }\
@@ -7966,19 +7983,9 @@ textarea {\
 input[type=checkbox] {\
   ' + agent + 'appearance: checkbox !important;\
 }\
-/* Unfuxor the Captcha layout */\
-#recaptcha_widget_div tr, #recaptcha_widget_div td, #recaptcha_widget_div center, #recaptcha_widget_div #recaptcha_table, #recaptcha_widget_div #recaptcha_area, #recaptcha_widget_div #recaptcha_image {\
-  margin: 0;\
-  padding: 0;\
-  height: auto;\
-}\
-#recaptcha_table #recaptcha_image {\
-  border: none;\
-}\
 /* Formatting for all postarea elements */\
 #browse,\
 #file,\
-.recaptchatable #recaptcha_response_field,\
 .deleteform input[type="password"],\
 input,\
 input.field,\
@@ -8408,7 +8415,8 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"]{\
 .fileText+br+a[target="_blank"]:hover {\
   background: none;\
 }\
-.inline, #qp {\
+.inline,\
+#qp {\
   background-color: transparent;\
   border: none;\
 }\
@@ -8444,10 +8452,6 @@ textarea {\
   position: relative;\
   bottom: 3px;\
 }\
-#recaptcha_table, #recaptcha_table tbody, #recaptcha tbody tr {\
-  display: block;\
-  visibility: visible;\
-}\
 .postContainer.inline {\
   border: none;\
   background: none;\
@@ -8470,13 +8474,15 @@ a.forwardlink {\
   font-size: 18px;\
   color: rgb(255,255,255);\
 }\
-body > table[cellpadding="30"] h1, body > table[cellpadding="30"] h3 {\
+body > table[cellpadding="30"] h1,\
+body > table[cellpadding="30"] h3 {\
   position: static;\
 }\
 .focused.entry {\
   background-color: transparent;\
 }\
-#menu.reply.dialog, html .subMenu {\
+#menu.reply.dialog,\
+html .subMenu {\
   padding: 0px;\
 }\
 #qr #charCount {\
@@ -8902,13 +8908,15 @@ span.pun {\
 span.com {\
   color: #a34443;\
 }\
-span.str, span.atv {\
+span.str,\
+span.atv {\
   color: #8ba446;\
 }\
 span.kwd {\
   color: #987d3e;\
 }\
-span.typ, span.atn {\
+span.typ,\
+span.atn {\
   color: #897399;\
 }\
 span.lit {\
@@ -8956,7 +8964,8 @@ body > a[style="cursor: pointer; float: right;"]::after {\
 span.com {\
   color: #d00;\
 }\
-span.str, span.atv {\
+span.str,\
+span.atv {\
   color: #7fa61b;\
 }\
 span.pun {\
@@ -8968,7 +8977,8 @@ span.tag {\
 span.kwd {\
   color: #5a6F9e;\
 }\
-span.typ, span.atn {\
+span.typ,\
+span.atn {\
   color: #9474bd;\
 }\
 span.lit {\
@@ -9082,7 +9092,8 @@ body > a[style="cursor: pointer; float: right;"]::after {\
             break;
           case 'hide':
             css += '\
-.boardTitle, .boardSubtitle {\
+.boardTitle,\
+.boardSubtitle {\
   display: none;\
 }\
 ';
@@ -9192,7 +9203,8 @@ div.postInfo {\
   position: relative;\
   width: 100%;\
 }\
-.sideArrows a, .sideArrows span {\
+.sideArrows a,\
+.sideArrows span {\
   position: static;\
   width: 20px;\
   font-size: 9px;\
@@ -9202,13 +9214,25 @@ div.postInfo {\
   width: 20px;\
   padding-top: 1px;\
 }\
-div.reply .report_button, .sideArrows, div.reply .postInfo input, div.reply .postInfo .rice, div.reply .menu_button {\
+div.reply .report_button,\
+.sideArrows,\
+div.reply .postInfo input,\
+div.reply .postInfo .rice,\
+div.reply .menu_button {\
   opacity: 0;\
 }\
-form .replyContainer:not(:hover) div.reply .report_button, form .replyContainer:not(:hover) div.reply .menu_button, form .replyContainer:not(:hover) .sideArrows, form .replyContainer:not(:hover) .postInfo input, .postInfo .rice {\
+form .replyContainer:not(:hover) div.reply .report_button,\
+form .replyContainer:not(:hover) div.reply .menu_button,\
+form .replyContainer:not(:hover) .sideArrows,\
+form .replyContainer:not(:hover) .postInfo input,\
+.postInfo .rice {\
   ' + agent + 'transition: opacity .3s ease-out 0s;\
 }\
-form .replyContainer:hover div.reply .report_button, form .replyContainer:hover div.reply .menu_button, form .replyContainer:hover .sideArrows, .replyContainer:hover .postInfo input, .replyContainer:hover .postInfo .rice {\
+form .replyContainer:hover div.reply .report_button,\
+form .replyContainer:hover div.reply .menu_button,\
+form .replyContainer:hover .sideArrows,\
+.replyContainer:hover .postInfo input,\
+.replyContainer:hover .postInfo .rice {\
   opacity: 1;\
   ' + agent + 'transition: opacity .3s ease-in 0s;\
 }\
@@ -9228,7 +9252,8 @@ div.reply .postInfo .rice {\
   top: -3px;\
   right: 5px;\
 }\
-div.reply .report_button, div.reply .menu_button {\
+div.reply .report_button,\
+div.reply .menu_button {\
   position: absolute;\
   right: 26px;\
   top: -1px;\
@@ -9321,7 +9346,8 @@ div.post:not(#qp):not([hidden]) {\
 .sideArrows a {\
   right: 27px;\
  }\
-div.reply .report_button, div.reply .menu_button {\
+div.reply .report_button,\
+div.reply .menu_button {\
   right: 13px;\
  }\
 div.reply {\
@@ -9556,7 +9582,8 @@ div.postContainer span.postNum > .replylink {\
             break;
           case 'hide':
             css += '\
-#boardNavDesktopFoot::after, #boardNavDesktopFoot {\
+#boardNavDesktopFoot::after,\
+#boardNavDesktopFoot {\
   display: none;\
 }\
 ';
@@ -9741,7 +9768,8 @@ a.useremail[href*="SAGE"]:last-of-type::after {\
   margin: 0;\
   height: 15px;\
 }\
-.pages a, .pages strong {\
+.pages a,\
+.pages strong {\
   visibility: visible;\
   min-width: 0;\
 }\
