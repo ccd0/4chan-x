@@ -1,5 +1,10 @@
 Options =
   init: ->
+    unless $.get 'firstrun'
+      # Prevent race conditions
+      Favicon.init() unless Favicon.el
+      $.set 'firstrun', true
+      Options.dialog()
     for settings in ['navtopright', 'navbotright']
       a = $.el 'a',
         href: 'javascript:;'
@@ -10,11 +15,6 @@ Options =
         if Conf['Style']
           Style.allrice()
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
-    unless $.get 'firstrun'
-      # Prevent race conditions
-      Favicon.init() unless Favicon.el
-      $.set 'firstrun', true
-      Options.dialog()
 
   dialog: ->
     dialog = $.el 'div'

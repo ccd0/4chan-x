@@ -6,12 +6,7 @@ master
     - Quote Previewing.
     - Thread Expansion.
     - Comment Expansion.
-
-0.6.6beta
-
-0.6.5beta
-
-0.6.4beta
+  Fix compatibility with Scriptish's auto-udpater.
 
 0.6.3beta
 - Zixaphir

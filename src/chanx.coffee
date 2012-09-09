@@ -984,7 +984,6 @@ Nav =
         if link = $ 'link[rel=next]', d.head
           window.location = link.href + '#delform'
           return
-
     {top} = Nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
 

@@ -20,10 +20,14 @@ HEADER = """
 // @include        https://images.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @include        https://sys.4chan.org/*
+// @grant          GM_getValue
+// @grant          GM_setValue
+// @grant          GM_deleteValue
+// @grant          GM_openInTab
 // @run-at         document-start
 // @updateURL      https://github.com/zixaphir/appchan-x/raw/stable/appchan_x.user.js
 // @downloadURL    https://github.com/zixaphir/appchan-x/raw/stable/appchan_x.user.js
-// @icon           http://zixaphir.github.com/appchan-x/favicon.gif
+// @icon           data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
 /* LICENSE
