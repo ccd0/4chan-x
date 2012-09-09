@@ -246,6 +246,7 @@
         'Font': ['Calibri', 'The font used by all elements of 4chan.', 'text'],
         'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
         'Mascots': [true, 'Add a pretty picture of your waifu to the sidebar.'],
+        'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
         'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
         'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
         'Underline Links': [true, 'Put lines under hyperlinks.']
@@ -7722,9 +7723,6 @@ body > form #imgControls {\
 .sideArrows {\
   z-index: 4 !important;\
 }\
-#mascot img {\
-  z-index: 3 !important;\
-}\
 #recaptcha_reload_btn,\
 .boardBanner,\
 .globalMessage::before,\
@@ -9802,6 +9800,9 @@ input[type=checkbox] {\
   left: auto;\
   ' + agent + 'transform: scaleX(1);\
   pointer-events: none;\
+}\
+#mascot img {\
+  z-index: ' + (Conf["Mascots Overlap Posts"] ? "3" : "-1") + ';\
 }\
 ';
             try {

@@ -766,9 +766,6 @@ body > form #imgControls {
 .sideArrows {
   z-index: 4 !important;
 }
-#mascot img {
-  z-index: 3 !important;
-}
 #recaptcha_reload_btn,
 .boardBanner,
 .globalMessage::before,
@@ -2812,6 +2809,9 @@ input[type=checkbox] {
   left: auto;
   ' + agent + 'transform: scaleX(1);
   pointer-events: none;
+}
+#mascot img {
+  z-index: ' + (if Conf["Mascots Overlap Posts"] then "3" else "-1") + ';
 }
 '
           try
