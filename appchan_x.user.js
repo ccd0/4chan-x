@@ -596,10 +596,10 @@
       'Dialog Border': 'rgba(16,16,16,1)',
       'Thread Wrapper Background': 'rgba(52,56,56,0.75)',
       'Thread Wrapper Border': 'rgba(52,56,56,0.75)',
-      'Reply Background': 'rgba(0,0,0,0)',
+      'Reply Background': 'rgba(52,56,56,1)',
       'Reply Border': 'rgba(0,0,0,0)',
-      'Highlighted Reply Background': 'rgba(42,46,46,0.9)',
-      'Highlighted Reply Border': 'rgba(42,46,46,0.9)',
+      'Highlighted Reply Background': 'rgba(0,0,0,0)',
+      'Highlighted Reply Border': 'rgba(0,0,0,0)',
       'Backlinked Reply Outline': 'rgba(98,124,141,1)',
       'Checkbox Background': 'rgba(34,34,34,1)',
       'Checkbox Border': 'rgba(60,60,60,1)',
@@ -633,10 +633,10 @@
       'Warnings': 'rbg(187,187,187)',
       'Shadow Color': 'rgba(20,20,20,0.9)',
       'Dark Theme': '1',
-      'Custom CSS': '#delform blockquote{color:#bbb;background:#343838;margin-bottom:10px;padding:8px;box-shadow:0px 0px 20px rgba(25,25,25,0.6);border:1px solid #343838;border-bottom:2px solid #444848;border-radius:0px 6px 6px 6px;padding-top:15px;}.name{font-weight:800;}.nameBlock>.useremail>.name:hover,.nameBlock>.useremail>.postertrip:hover{color:#00dffc;}a.forwardlink{color:#608cae;font-weight:800;}#delform blockquote{border-radius:3px;}.reply #delform blockquote{background-color:transparent;}div.reply, .reply.highlight{padding:0px;}#qp div.post{border:1px solid rgba(128,172,206,0.5);background-color:rgba(24,24,24,0.9);}.name,.postertrip{text-shadow:0px 0px 6px rgba(20,20,20,0.9);font-weight:bold;background:#343838;border:1px solid #343838;border-radius:5px 5px 0px 0px;-moz-border-radius:5px 5px 0px 0px;padding:4px 6px;padding-top:2px;}div.reply,form[name="delform"],#delform blockquote{margin:0px!important;padding:0px;}a{-moz-transition:all 0.5s ease;}a.pointer {font-weight:bold;font-weight:normal;color:#777;padding-right:5px;}form[name="delform"] table a img{position:relative;bottom:15px;right:10px;padding:0px;margin-bottom:10px;}.opContainer{-moz-transition:all 0.5s ease;opacity:0.45;-webkit-transition:all 0.5s ease;opacity:0.45;-o-transition:all 0.5s ease;opacity:0.45;}.opContainer:hover{opacity:1;}.reply,.reply.highlight{background:transparent;border:0px;padding:0px;padding-bottom:0px;border-radius:6px;}form[name="delform"] table blockquote{padding:5px;background:#343838;margin-top:0px;min-height:20px;padding-top:10px;clear:none;}table a[href^="http://images.4chan.org"] + blockquote{margin-top:-14px;padding-left:150px;}a.backlink{border:1px solid #343838;border-radius:5px 5px 0px 0px;background:#343838;padding:2px 4px 2px;text-decoration:none;}a.forwardlink{color:#608CAE;text-shadow:0 0 6px rgba(96,140,174,0.8);}body > .postingMode ~ form[name="delform"] .subject{font-weight: bold;letter-spacing: 3px;background: transparent;}div.reply {background-color: transparent;}#qp div.post .name, #qp div.post a.backlink, #qp div.post blockquote {background:none;border:none;box-shadow:none;border-radius:0px;}'
+      'Custom CSS': '#delform blockquote{color:#bbb;background:#343838;margin-bottom:10px;padding:8px;box-shadow:0px 0px 20px rgba(25,25,25,0.6);border:1px solid #343838;border-bottom:2px solid #444848;border-radius:0px 6px 6px 6px;padding-top:15px;}.name{font-weight:800;}.nameBlock>.useremail>.name:hover,.nameBlock>.useremail>.postertrip:hover{color:#00dffc;}a.forwardlink{color:#608cae;font-weight:800;}#delform blockquote{border-radius:3px;}.reply #delform blockquote{background-color:transparent;}div.reply, .reply.highlight{padding:0px;}#qp div.post{border:1px solid rgba(128,172,206,0.5);background-color:rgba(24,24,24,0.9);}.name,.postertrip{text-shadow:0px 0px 6px rgba(20,20,20,0.9);font-weight:bold;background:#343838;border:1px solid #343838;border-radius:5px 5px 0px 0px;-moz-border-radius:5px 5px 0px 0px;padding:4px 6px;padding-top:2px;}div.reply,form[name="delform"],#delform blockquote{margin:0px!important;padding:0px;}a{-moz-transition:all 0.5s ease;}a.pointer {font-weight:bold;font-weight:normal;color:#777;padding-right:5px;}form[name="delform"] table a img{position:relative;bottom:15px;right:10px;padding:0px;margin-bottom:10px;}.opContainer, replyContainer{-moz-transition:all 0.5s ease;opacity:0.45;-webkit-transition:all 0.5s ease;opacity:0.45;-o-transition:all 0.5s ease;opacity:0.45;}.opContainer:hover,.replyContainer:hover{opacity:1;}.reply,.reply.highlight{background:transparent;border:0px;padding:0px;padding-bottom:0px;border-radius:6px;}form[name="delform"] table blockquote{padding:5px;background:#343838;margin-top:0px;min-height:20px;padding-top:10px;clear:none;}table a[href^="http://images.4chan.org"] + blockquote{margin-top:-14px;padding-left:150px;}a.backlink{border:1px solid #343838;border-radius:5px 5px 0px 0px;background:#343838;padding:2px 4px 2px;text-decoration:none;}a.forwardlink{color:#608CAE;text-shadow:0 0 6px rgba(96,140,174,0.8);}body > .postingMode ~ form[name="delform"] .subject{font-weight: bold;letter-spacing: 3px;background: transparent;}div.reply, div.reply.highlight {background-color: rgba(0,0,0,0) !important; border: none !important;}#qp div.post .name, #qp div.post a.backlink, #qp div.post blockquote {background:none;border:none;box-shadow:none;border-radius:0px;}'
     },
     'Photon': {
-      'Author': 'Seaweed-chan',
+      'Author': 'seaweed-chan',
       'Author Tripcode': '!POMF.9waa',
       'Background Image': '',
       'Background Attachment': '',
@@ -2162,7 +2162,7 @@
       for (themename in Themes) {
         theme = Themes[themename];
         div = $.el('div', {
-          className: themename === Conf['theme'] ? 'selectedtheme' : '',
+          className: themename === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
           id: themename,
           innerHTML: "<div class='reply' style='position: relative; cursor: pointer; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'><div class='rice' style='width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div><span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + themename + "</span> <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'>" + theme['Author'] + "</span> <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span><span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span><time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time><a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important' href='javascript:;'>No.22772469</a><br><blockquote>Post content is right here.</blockquote><h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
         });
@@ -7303,14 +7303,15 @@ h1,\
 }\
 #theme_tab + div > div > div:not(.selectedtheme) h1 {\
   color: transparent !important;\
-  right: 300px;\
 }\
 #theme_tab + div > div > div.selectedtheme h1 {\
   right: 11px;\
 }\
 #theme_tab + div > div h1 {\
   position: absolute;\
-  bottom: 0;\
+  right: 300px;\
+  bottom: 10px;\
+  margin: 0;\
   ' + agent + 'transition: all .2s ease-in-out;\
 }\
 #theme_tab + div > div {\
@@ -7551,7 +7552,6 @@ textarea,\
 .boardTitle {\
   font-family: "' + Conf["Font"] + '";\
 }\
-#recaptcha_image img,\
 #qr img,\
 .captcha img {\
   opacity: ' + Conf["Captcha Opacity"] + ';\
@@ -7599,11 +7599,6 @@ time + span {\
 #imgControls label:first-of-type input,\
 #logo,\
 #postPassword + span,\
-#qr.auto:not(:hover) #recaptcha_reload_btn,\
-#qr.autohide select,\
-#qr.autohide .close,\
-#recaptcha_switch_audio_btn,\
-#recaptcha_whatsthis_btn,\
 #settingsBox[style*="display: none;"],\
 .autoPagerS,\
 .board > hr:last-of-type,\
@@ -7740,7 +7735,6 @@ body > form #imgControls {\
 .sideArrows {\
   z-index: 4 !important;\
 }\
-#recaptcha_reload_btn,\
 .boardBanner,\
 .globalMessage::before,\
 .replyhider a {\
@@ -7970,9 +7964,6 @@ a,\
 #updater input:not([type="radio"]),\
 .box-outer,\
 .boxbar,\
-.deleteform input[value=Delete],\
-.recaptcha_image_cell > center > #recaptcha_image,\
-[name="recaptcha_response_field"],\
 .top-box,\
 h2,\
 input:not([type="radio"]),\
@@ -7986,7 +7977,6 @@ input[type=checkbox] {\
 /* Formatting for all postarea elements */\
 #browse,\
 #file,\
-.deleteform input[type="password"],\
 input,\
 input.field,\
 input[type="submit"],\
@@ -8005,13 +7995,10 @@ textarea {\
   vertical-align: bottom;\
 }\
 /* Width and height of all postarea elements (excluding some captcha elements) */\
-#recaptcha_response_field,\
 textarea.field,\
-#recaptcha_widget_div input,\
 #qr .field[type="password"],\
 .ys_playerContainer audio,\
 #qr input[title="Verification"],\
-#recaptcha_image,\
 #qr > form > div {\
   width: ' + (248 + sidebarOffsetW) + 'px;\
 }\
@@ -8070,14 +8057,6 @@ input[value="Report"] {\
 /* #qr dimensions */\
 #qr {\
   height: auto;\
-}\
-#recaptcha_reload_btn {\
-  position: absolute;\
-  height: 0;\
-  width: 0;\
-  padding: 12px 0 0 12px;\
-  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAZ0lEQVR4XgXAsQ0BUQCA4c8kSrOo70KntAgxgkl05CV2sMOVEo2ofgEAYAIAdp6SRQBwkSQJgL3kbJYEwPC1BgArIFcAwAvIFgAcBQwAQAawQZK7g0UmAJKPt+QEAPlJHmYA4AYA8AeJKy3vtXoiawAAAABJRU5ErkJggg==") no-repeat;\
-  overflow: hidden;\
 }\
 .top-box .menubutton,\
 .boardTitle {\
@@ -8159,10 +8138,8 @@ body > div[style="width: 100%;"] {\
 #boardNavDesktop a,\
 #qr td,\
 #qr tr[height="73"]:nth-of-type(2),\
-.recaptcha_input_area,\
 .menubutton a,\
 .pages td,\
-.recaptchatable td.recaptcha_image_cell,\
 td[style="padding-left: 7px;"],\
 div[id^="qr"] tr[height="73"]:nth-of-type(2) {\
   padding: 0;\
@@ -8680,8 +8657,6 @@ input[value="Report"],\
   border: 1px solid ' + theme["Buttons Border"] + ';\
 }\
 #file,\
-.recaptchatable #recaptcha_response_field,\
-.deleteform input[type="password"],\
 #dump,\
 #options input,\
 input,\
@@ -8698,7 +8673,6 @@ textarea.field {\
 #file:hover,\
 div.navLinks > a:first-of-type:hover,\
 .deleteform input:hover,\
-.recaptchatable #recaptcha_response_field:hover,\
 input:hover,\
 input.field:hover,\
 input[type="submit"]:hover,\
@@ -8710,8 +8684,6 @@ textarea.field:hover {\
   color: ' + theme["Inputs"] + ';\
   ' + agent + 'transition: all .2s linear;\
 }\
-.recaptchatable #recaptcha_response_field:focus,\
-.deleteform input[type="password"]:focus,\
 input:focus,\
 input.field:focus,\
 input[type="submit"]:focus,\

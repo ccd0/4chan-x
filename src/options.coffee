@@ -230,7 +230,7 @@ Options =
       className: "suboptions"
     for themename, theme of Themes
       div = $.el 'div',
-        className: if themename == Conf['theme'] then 'selectedtheme' else ''
+        className: if themename == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
         id:        themename
         innerHTML: "<div class='reply' style='position: relative; cursor: pointer; width: 100%; box-shadow: none !important; background-color:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'><div class='rice' style='width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div><span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{themename}</span> <span style='color:#{theme['Names']}!important; font-weight: 700 !important'>#{theme['Author']}</span> <span style='color:#{theme['Sage']}!important'> (SAGE)</span><span style='color:#{theme['Tripcodes']}!important'> #{theme['Author Tripcode']}</span><time style='color:#{theme['Timestamps']}'> 20XX.01.01 12:00 </time><a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important' href='javascript:;'>No.22772469</a><br><blockquote>Post content is right here.</blockquote><h1 style='color: #{theme['Text']}'>Selected</h1></div>"
       $.on div, 'click', ->

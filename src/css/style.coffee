@@ -343,14 +343,15 @@ h1,
 }
 #theme_tab + div > div > div:not(.selectedtheme) h1 {
   color: transparent !important;
-  right: 300px;
 }
 #theme_tab + div > div > div.selectedtheme h1 {
   right: 11px;
 }
 #theme_tab + div > div h1 {
   position: absolute;
-  bottom: 0;
+  right: 300px;
+  bottom: 10px;
+  margin: 0;
   ' + agent + 'transition: all .2s ease-in-out;
 }
 #theme_tab + div > div {
@@ -594,7 +595,6 @@ textarea,
 .boardTitle {
   font-family: "' + Conf["Font"] + '";
 }
-#recaptcha_image img,
 #qr img,
 .captcha img {
   opacity: ' + Conf["Captcha Opacity"] + ';
@@ -642,11 +642,6 @@ time + span {
 #imgControls label:first-of-type input,
 #logo,
 #postPassword + span,
-#qr.auto:not(:hover) #recaptcha_reload_btn,
-#qr.autohide select,
-#qr.autohide .close,
-#recaptcha_switch_audio_btn,
-#recaptcha_whatsthis_btn,
 #settingsBox[style*="display: none;"],
 .autoPagerS,
 .board > hr:last-of-type,
@@ -783,7 +778,6 @@ body > form #imgControls {
 .sideArrows {
   z-index: 4 !important;
 }
-#recaptcha_reload_btn,
 .boardBanner,
 .globalMessage::before,
 .replyhider a {
@@ -1013,9 +1007,6 @@ a,
 #updater input:not([type="radio"]),
 .box-outer,
 .boxbar,
-.deleteform input[value=Delete],
-.recaptcha_image_cell > center > #recaptcha_image,
-[name="recaptcha_response_field"],
 .top-box,
 h2,
 input:not([type="radio"]),
@@ -1029,7 +1020,6 @@ input[type=checkbox] {
 /* Formatting for all postarea elements */
 #browse,
 #file,
-.deleteform input[type="password"],
 input,
 input.field,
 input[type="submit"],
@@ -1048,13 +1038,10 @@ textarea {
   vertical-align: bottom;
 }
 /* Width and height of all postarea elements (excluding some captcha elements) */
-#recaptcha_response_field,
 textarea.field,
-#recaptcha_widget_div input,
 #qr .field[type="password"],
 .ys_playerContainer audio,
 #qr input[title="Verification"],
-#recaptcha_image,
 #qr > form > div {
   width: ' + (248 + sidebarOffsetW) + 'px;
 }
@@ -1113,14 +1100,6 @@ input[value="Report"] {
 /* #qr dimensions */
 #qr {
   height: auto;
-}
-#recaptcha_reload_btn {
-  position: absolute;
-  height: 0;
-  width: 0;
-  padding: 12px 0 0 12px;
-  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAQAAAD8fJRsAAAAZ0lEQVR4XgXAsQ0BUQCA4c8kSrOo70KntAgxgkl05CV2sMOVEo2ofgEAYAIAdp6SRQBwkSQJgL3kbJYEwPC1BgArIFcAwAvIFgAcBQwAQAawQZK7g0UmAJKPt+QEAPlJHmYA4AYA8AeJKy3vtXoiawAAAABJRU5ErkJggg==") no-repeat;
-  overflow: hidden;
 }
 .top-box .menubutton,
 .boardTitle {
@@ -1202,10 +1181,8 @@ body > div[style="width: 100%;"] {
 #boardNavDesktop a,
 #qr td,
 #qr tr[height="73"]:nth-of-type(2),
-.recaptcha_input_area,
 .menubutton a,
 .pages td,
-.recaptchatable td.recaptcha_image_cell,
 td[style="padding-left: 7px;"],
 div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   padding: 0;
@@ -1723,8 +1700,6 @@ input[value="Report"],
   border: 1px solid ' + theme["Buttons Border"]  + ';
 }
 #file,
-.recaptchatable #recaptcha_response_field,
-.deleteform input[type="password"],
 #dump,
 #options input,
 input,
@@ -1741,7 +1716,6 @@ textarea.field {
 #file:hover,
 div.navLinks > a:first-of-type:hover,
 .deleteform input:hover,
-.recaptchatable #recaptcha_response_field:hover,
 input:hover,
 input.field:hover,
 input[type="submit"]:hover,
@@ -1753,8 +1727,6 @@ textarea.field:hover {
   color: ' + theme["Inputs"] + ';
   ' + agent + 'transition: all .2s linear;
 }
-.recaptchatable #recaptcha_response_field:focus,
-.deleteform input[type="password"]:focus,
 input:focus,
 input.field:focus,
 input[type="submit"]:focus,
