@@ -202,9 +202,7 @@ Config =
         'left', 'right', 'hide emoji'
       ]]
       'Filtered Backlinks':        [true,              'Mark backlinks to filtered posts.']
-      'Font':                      ['ubuntu',          'The font used by all elements of 4chan.', [
-        'ubuntu', 'sans serif', 'serif'
-      ]]
+      'Font':                      ["'Ubuntu', 'Droid Sans', 'Terminus', 'Segoe UI', 'Calibri', 'Lucida Grande', 'Arial', 'Helvetica Neue', 'Helvetica'",          'The font used by all elements of 4chan.', 'text']
       'Font Size':                  [12,               'The font size of posts and various UI. This does not change all font sizes.', [
         10, 11, 12, 13, 14
       ]]

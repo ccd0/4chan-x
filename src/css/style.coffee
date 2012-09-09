@@ -97,7 +97,12 @@ h1, .boardBanner {
 #qr > .move > span {
   float: right;
 }
-#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {
+#autohide, .close, 
+#qr select, 
+#dump, 
+.remove, 
+.captchaimg, 
+#qr div.warning {
   cursor: pointer;
 }
 #qr select,
@@ -306,15 +311,15 @@ h1, .boardBanner {
 }
 #options {
   z-index: 2;
-  position: absolute;
+  position: fixed;
   display: inline-block;
   padding: 5px;
   text-align: left;
   vertical-align: middle;
-  width: 600px;
-  max-width: 100%;
-  height: 500px;
-  max-height: 100%;
+  left: 5%;
+  right: 5%;
+  top: 10%;
+  bottom: 10%;
 }
 #options #style_tab + div select {
   width: 100%;
@@ -408,7 +413,7 @@ h1, .boardBanner {
   right: 0;
   bottom: 0;
 }
-#mascot imgs_batch {
+#mascots_batch {
   position: absolute;
   left: 0;
   bottom: 0;
@@ -563,7 +568,13 @@ body {
   body {
     padding-top: 61px;
   }
-}html, body, input, select, textarea, .boardTitle {
+}
+html, 
+body, 
+input, 
+select, 
+textarea, 
+.boardTitle {
   font-family: "' + Conf["Font"] + '";
 }
 #recaptcha_image img,
@@ -1233,11 +1244,6 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
 #imgControls select {
   float: right;
 }
-/* Hide UI of the select element */
-select > button,
-select > input {
-  opacity: 0;
-}
 #imgControls select > option {
   font-size: 80%;
 }
@@ -1322,9 +1328,6 @@ div.navLinks > a {
 /* Appchan x options */
 #options ul {
   margin: 0;
-}
-#options.reply.dialog, #options .dialog {
-  width: 700px;
 }
 #options ul {
   margin-bottom: 5px;
@@ -1709,7 +1712,7 @@ input[type="submit"],
 input[value="Report"],
 #qr.autohide .move {
   background-color: ' + theme["Buttons Background"] + ';
-  border-color: ' + theme["Buttons Border"]  + ';
+  border-color: 1px solid' + theme["Buttons Border"]  + ';
 }
 #file,
 .recaptchatable #recaptcha_response_field,
@@ -1717,6 +1720,7 @@ input[value="Report"],
 #dump,
 input,
 input.field,
+select,
 textarea,
 textarea.field {
   background-color: ' + theme["Input Background"] + ';
@@ -1732,17 +1736,20 @@ div.navLinks > a:first-of-type:hover,
 input:hover,
 input.field:hover,
 input[type="submit"]:hover,
+select:hover,
 textarea:hover,
 textarea.field:hover {
   background-color: ' + theme["Hovered Input Background"] + ';
   border-color: ' + theme["Hovered Input Border"]  + ';
   color: ' + theme["Inputs"] + ';
+  ' + agent + 'transition: all .2s linear;
 }
 .recaptchatable #recaptcha_response_field:focus,
 .deleteform input[type="password"]:focus,
 input:focus,
 input.field:focus,
 input[type="submit"]:focus,
+select:focus,
 textarea:focus,
 textarea.field:focus {
   background-color: ' + theme["Focused Input Background"] + ';
@@ -1852,8 +1859,6 @@ div.subMenu,
   background-color: ' + theme["Checkbox Background"] + ';
   border: 1px solid ' + theme["Checkbox Border"]  + ';
 }
-#options input,
-#options textarea,
 #qr label input,
 #updater input,
 .bd {
@@ -2810,7 +2815,7 @@ input[type=checkbox] {
 }
 '
           try
-            if oldmascot = $('#mascot img', d.body)
+            if oldmascot = $('#mascot', d.body)
               $.rm oldmascot
           div = $.el 'div',
             id: "mascot"

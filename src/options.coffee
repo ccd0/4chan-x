@@ -1,9 +1,9 @@
 Options =
   init: ->
     unless $.get 'firstrun'
+      $.set 'firstrun', true
       # Prevent race conditions
       Favicon.init() unless Favicon.el
-      $.set 'firstrun', true
       Options.dialog()
     for settings in ['navtopright', 'navbotright']
       a = $.el 'a',
@@ -197,7 +197,14 @@ Options =
         textContent: category
       for optionname, arr of obj
         description = arr[1]
-        if arr[2]
+        if arr[2] == 'text'
+          li = $.el 'li',
+          innerHTML: "<label><span class=\"optionlabel\">#{optionname}</span></label><span class=description>: #{description}</span><input name=\"#{optionname}\" style=\"width: 100%\"><br>"
+          styleSetting = $ "input[name='#{optionname}']", li
+          styleSetting.value = $.get optionname, Conf[optionname]
+          $.on styleSetting, 'change', $.cb.value
+          $.on styleSetting, 'change', Options.style
+        else if arr[2]
           liHTML = "<label><span class=\"optionlabel\">#{optionname}</span></label><span class=description>: #{description}</span><select name=\"#{optionname}\"><br>"
           for selectoption, optionvalue in arr[2]
             liHTML = liHTML + "<option value=\"#{selectoption}\">#{selectoption}</option>"
@@ -286,12 +293,6 @@ Options =
     $.add d.body, overlay
     dialog.style.visibility = 'hidden'
     $.add d.body, dialog
-    left = (window.innerWidth  - dialog.getBoundingClientRect().width ) / 2 + window.pageXOffset
-    top  = (window.innerHeight - dialog.getBoundingClientRect().height) / 2 + window.pageYOffset
-    left = 0 if left < 0
-    top  = 0 if top  < 0
-    dialog.style.left = left + 'px'
-    dialog.style.top  = top  + 'px'
     dialog.style.visibility = 'visible'
 
     Options.filter.call   filter

@@ -243,7 +243,7 @@
         'Captcha Opacity': ['1.00', 'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']],
         'Emoji Position': ['left', 'Position of emoji icons, like sega and neko.', ['left', 'right', 'hide emoji']],
         'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
-        'Font': ['ubuntu', 'The font used by all elements of 4chan.', ['ubuntu', 'sans serif', 'serif']],
+        'Font': ["'Ubuntu', 'Droid Sans', 'Terminus', 'Segoe UI', 'Calibri', 'Lucida Grande', 'Arial', 'Helvetica Neue', 'Helvetica'", 'The font used by all elements of 4chan.', 'text'],
         'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
         'Mascots': [true, 'Add a pretty picture of your waifu to the sidebar.'],
         'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
@@ -1907,10 +1907,10 @@
     init: function() {
       var a, settings, _i, _len, _ref, _results;
       if (!$.get('firstrun')) {
+        $.set('firstrun', true);
         if (!Favicon.el) {
           Favicon.init();
         }
-        $.set('firstrun', true);
         Options.dialog();
       }
       _ref = ['navtopright', 'navbotright'];
@@ -1933,7 +1933,7 @@
       return _results;
     },
     dialog: function() {
-      var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, theme, themename, time, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2119,7 +2119,15 @@
         for (optionname in obj) {
           arr = obj[optionname];
           description = arr[1];
-          if (arr[2]) {
+          if (arr[2] === 'text') {
+            li = $.el('li', {
+              innerHTML: "<label><span class=\"optionlabel\">" + optionname + "</span></label><span class=description>: " + description + "</span><input name=\"" + optionname + "\" style=\"width: 100%\"><br>"
+            });
+            styleSetting = $("input[name='" + optionname + "']", li);
+            styleSetting.value = $.get(optionname, Conf[optionname]);
+            $.on(styleSetting, 'change', $.cb.value);
+            $.on(styleSetting, 'change', Options.style);
+          } else if (arr[2]) {
             liHTML = "<label><span class=\"optionlabel\">" + optionname + "</span></label><span class=description>: " + description + "</span><select name=\"" + optionname + "\"><br>";
             _ref3 = arr[2];
             for (optionvalue = _i = 0, _len = _ref3.length; _i < _len; optionvalue = ++_i) {
@@ -2243,16 +2251,6 @@
       $.add(d.body, overlay);
       dialog.style.visibility = 'hidden';
       $.add(d.body, dialog);
-      left = (window.innerWidth - dialog.getBoundingClientRect().width) / 2 + window.pageXOffset;
-      top = (window.innerHeight - dialog.getBoundingClientRect().height) / 2 + window.pageYOffset;
-      if (left < 0) {
-        left = 0;
-      }
-      if (top < 0) {
-        top = 0;
-      }
-      dialog.style.left = left + 'px';
-      dialog.style.top = top + 'px';
       dialog.style.visibility = 'visible';
       Options.filter.call(filter);
       Options.backlink.call(back);
@@ -7058,7 +7056,12 @@ h1, .boardBanner {\
 #qr > .move > span {\
   float: right;\
 }\
-#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\
+#autohide, .close, \
+#qr select, \
+#dump, \
+.remove, \
+.captchaimg, \
+#qr div.warning {\
   cursor: pointer;\
 }\
 #qr select,\
@@ -7267,15 +7270,15 @@ h1, .boardBanner {\
 }\
 #options {\
   z-index: 2;\
-  position: absolute;\
+  position: fixed;\
   display: inline-block;\
   padding: 5px;\
   text-align: left;\
   vertical-align: middle;\
-  width: 600px;\
-  max-width: 100%;\
-  height: 500px;\
-  max-height: 100%;\
+  left: 5%;\
+  right: 5%;\
+  top: 10%;\
+  bottom: 10%;\
 }\
 #options #style_tab + div select {\
   width: 100%;\
@@ -7369,7 +7372,7 @@ h1, .boardBanner {\
   right: 0;\
   bottom: 0;\
 }\
-#mascot imgs_batch {\
+#mascots_batch {\
   position: absolute;\
   left: 0;\
   bottom: 0;\
@@ -7521,7 +7524,13 @@ body {\
   body {\
     padding-top: 61px;\
   }\
-}html, body, input, select, textarea, .boardTitle {\
+}\
+html, \
+body, \
+input, \
+select, \
+textarea, \
+.boardTitle {\
   font-family: "' + Conf["Font"] + '";\
 }\
 #recaptcha_image img,\
@@ -8191,11 +8200,6 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {\
 #imgControls select {\
   float: right;\
 }\
-/* Hide UI of the select element */\
-select > button,\
-select > input {\
-  opacity: 0;\
-}\
 #imgControls select > option {\
   font-size: 80%;\
 }\
@@ -8280,9 +8284,6 @@ div.navLinks > a {\
 /* Appchan x options */\
 #options ul {\
   margin: 0;\
-}\
-#options.reply.dialog, #options .dialog {\
-  width: 700px;\
 }\
 #options ul {\
   margin-bottom: 5px;\
@@ -8667,7 +8668,7 @@ input[type="submit"],\
 input[value="Report"],\
 #qr.autohide .move {\
   background-color: ' + theme["Buttons Background"] + ';\
-  border-color: ' + theme["Buttons Border"] + ';\
+  border-color: 1px solid' + theme["Buttons Border"] + ';\
 }\
 #file,\
 .recaptchatable #recaptcha_response_field,\
@@ -8675,6 +8676,7 @@ input[value="Report"],\
 #dump,\
 input,\
 input.field,\
+select,\
 textarea,\
 textarea.field {\
   background-color: ' + theme["Input Background"] + ';\
@@ -8690,17 +8692,20 @@ div.navLinks > a:first-of-type:hover,\
 input:hover,\
 input.field:hover,\
 input[type="submit"]:hover,\
+select:hover,\
 textarea:hover,\
 textarea.field:hover {\
   background-color: ' + theme["Hovered Input Background"] + ';\
   border-color: ' + theme["Hovered Input Border"] + ';\
   color: ' + theme["Inputs"] + ';\
+  ' + agent + 'transition: all .2s linear;\
 }\
 .recaptchatable #recaptcha_response_field:focus,\
 .deleteform input[type="password"]:focus,\
 input:focus,\
 input.field:focus,\
 input[type="submit"]:focus,\
+select:focus,\
 textarea:focus,\
 textarea.field:focus {\
   background-color: ' + theme["Focused Input Background"] + ';\
@@ -8810,8 +8815,6 @@ div.subMenu,\
   background-color: ' + theme["Checkbox Background"] + ';\
   border: 1px solid ' + theme["Checkbox Border"] + ';\
 }\
-#options input,\
-#options textarea,\
 #qr label input,\
 #updater input,\
 .bd {\
@@ -9802,7 +9805,7 @@ input[type=checkbox] {\
 }\
 ';
             try {
-              if (oldmascot = $('#mascot img', d.body)) {
+              if (oldmascot = $('#mascot', d.body)) {
                 $.rm(oldmascot);
               }
             } catch (_error) {}

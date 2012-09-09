@@ -1,4 +1,7 @@
 master
+- Zixaphir
+  Changed the font option from a dropdown to a text input.
+  Options are now fixed positioned instead of absolutely.
 
 0.7.1beta
 - Zixaphir
