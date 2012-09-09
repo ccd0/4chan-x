@@ -74,7 +74,7 @@
  */
 
 (function() {
-  var $, $$, Board, Build, Clone, Conf, Config, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, Thread, Time, UI, d, g,
+  var $, $$, Board, Build, Clone, Conf, Config, FileInfo, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, Thread, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -971,6 +971,13 @@
           $.log(err, 'Time Formatting');
         }
       }
+      if (Conf['File Info Formatting']) {
+        try {
+          FileInfo.init();
+        } catch (err) {
+          $.log(err, 'File Info Formatting');
+        }
+      }
       return $.ready(Main.initFeaturesReady);
     },
     initFeaturesReady: function() {
@@ -1036,7 +1043,7 @@
         return $.on(d, 'DOMNodeInserted', Main.addStyle);
       }
     },
-    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quote related */\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  position: fixed;\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216, 94, 49, .7);\n}"
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quote */\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  position: fixed;\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}"
   };
 
   Redirect = {
@@ -1836,7 +1843,7 @@
 
   Time = {
     init: function() {
-      this.funk = this.createFunc();
+      this.funk = this.createFunc(Conf['time']);
       return Post.prototype.callbacks.push({
         name: 'Time Formatting',
         cb: this.node
@@ -1848,9 +1855,9 @@
       }
       return this.nodes.date.textContent = Time.funk(Time, this.info.date);
     },
-    createFunc: function() {
+    createFunc: function(format) {
       var code;
-      code = Conf['time'].replace(/%([A-Za-z])/g, function(s, c) {
+      code = format.replace(/%([A-Za-z])/g, function(s, c) {
         if (c in Time.formatters) {
           return "' + Time.formatters." + c + ".call(date) + '";
         } else {
@@ -1924,6 +1931,97 @@
       },
       y: function() {
         return this.getFullYear() - 2000;
+      }
+    }
+  };
+
+  FileInfo = {
+    init: function() {
+      this.funk = this.createFunc(Conf['fileInfo']);
+      return Post.prototype.callbacks.push({
+        name: 'File Info Formatting',
+        cb: this.node
+      });
+    },
+    node: function() {
+      if (!this.file || this.isClone) {
+        return;
+      }
+      return this.file.text.innerHTML = FileInfo.funk(FileInfo, this);
+    },
+    createFunc: function(format) {
+      var code;
+      code = format.replace(/%([BKlLMnNprs])/g, function(s, c) {
+        if (c in FileInfo.formatters) {
+          return "' + FileInfo.formatters." + c + ".call(post) + '";
+        } else {
+          return s;
+        }
+      });
+      return Function('FileInfo', 'post', "return '" + code + "'");
+    },
+    convertUnit: function(size, unit) {
+      var i;
+      if (unit === 'B') {
+        return "" + (size.toFixed()) + " Bytes";
+      }
+      i = 1 + ['KB', 'MB'].indexOf(unit);
+      while (i--) {
+        size /= 1024;
+      }
+      size = unit === 'MB' ? Math.round(size * 100) / 100 : size.toFixed();
+      return "" + size + " " + unit;
+    },
+    escape: function(name) {
+      return name.replace(/<|>/g, function(c) {
+        return c === '<' && '&lt;' || '&gt;';
+      });
+    },
+    formatters: {
+      l: function() {
+        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.n.call(this)) + "</a>";
+      },
+      L: function() {
+        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.N.call(this)) + "</a>";
+      },
+      n: function() {
+        var fullname, shortname;
+        fullname = this.file.name;
+        shortname = Build.shortFilename(this.file.name, this.isReply);
+        if (fullname === shortname) {
+          return FileInfo.escape(fullname);
+        } else {
+          return "<span class=fntrunc>" + (FileInfo.escape(shortname)) + "</span><span class=fnfull>" + (FileInfo.escape(fullname)) + "</span>";
+        }
+      },
+      N: function() {
+        return FileInfo.escape(this.file.name);
+      },
+      p: function() {
+        if (this.file.isSpoiler) {
+          return 'Spoiler';
+        } else {
+          return '';
+        }
+      },
+      s: function() {
+        return $.bytesToString(this.file.size);
+      },
+      B: function() {
+        return FileInfo.convertUnit(this.file.size, 'B');
+      },
+      K: function() {
+        return FileInfo.convertUnit(this.file.size, 'KB');
+      },
+      M: function() {
+        return FileInfo.convertUnit(this.file.size, 'MB');
+      },
+      r: function() {
+        if (this.file.isImage) {
+          return this.file.dimensions;
+        } else {
+          return 'PDF';
+        }
       }
     }
   };
