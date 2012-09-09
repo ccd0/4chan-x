@@ -6957,7 +6957,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     css: function(theme) {
-      var agent, css, div, logoOffset, mascot, mascotnames, mascotposition, name, oldmascot, pagemargin, sidebarOffsetH, sidebarOffsetW;
+      var agent, css, div, logoOffset, mascot, mascotnames, mascotposition, name, pagemargin, sidebarOffsetH, sidebarOffsetW;
       agent = Style.agent();
       css = '\
 /* dialog styling */\
@@ -7531,7 +7531,7 @@ input, \
 select, \
 textarea, \
 .boardTitle {\
-  font-family: "' + Conf["Font"] + '";\
+  font-family: ' + Conf["Font"] + ';\
 }\
 #recaptcha_image img,\
 #qr img,\
@@ -9805,9 +9805,7 @@ input[type=checkbox] {\
 }\
 ';
             try {
-              if (oldmascot = $('#mascot', d.body)) {
-                $.rm(oldmascot);
-              }
+              $.rm($('#mascot', d.body));
             } catch (_error) {}
             div = $.el('div', {
               id: "mascot"

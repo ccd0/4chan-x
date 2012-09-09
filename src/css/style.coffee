@@ -575,7 +575,7 @@ input,
 select, 
 textarea, 
 .boardTitle {
-  font-family: "' + Conf["Font"] + '";
+  font-family: ' + Conf["Font"] + ';
 }
 #recaptcha_image img,
 #qr img,
@@ -2815,8 +2815,7 @@ input[type=checkbox] {
 }
 '
           try
-            if oldmascot = $('#mascot', d.body)
-              $.rm oldmascot
+            $.rm $('#mascot', d.body)
           div = $.el 'div',
             id: "mascot"
           div.innerHTML = "<img src='#{mascot.image}'>"
