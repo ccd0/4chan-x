@@ -238,42 +238,39 @@ Options =
     #mascots
     parentdiv = $.el 'div',
       className: "suboptions"
-    for category, contents of Mascots
-      ul = $.el 'ul',
-        innerHTML:   "<div style='clear: both;'>#{category}</div>"
-        id:          category
-        className:   'mascots'
-      for name, mascot of contents
-        description = name
-        li = $.el 'li',
-          innerHTML: "<div id='#{name}' style='background-image: #{mascot};'></div>"
-          className: 'mascot'
-        div = $('div', li)
-        if enabledmascots[name] == true
-          $.addClass div, 'enabled'
-        $.on div, 'click', ->
-          if enabledmascots[@.id] == true
-            $.rmClass @, 'enabled'
-            $.set @.id, false
-            enabledmascots[@.id] = false
-          else
-            $.addClass @, 'enabled'
-            $.set @.id, true
-            enabledmascots[@.id] = true
-        $.add ul, li
+    ul = $.el 'ul',
+      className:   'mascots'
+    for name, mascot of Mascots
+      description = name
+      li = $.el 'li',
+        innerHTML: "<div id='#{name}' class='#{mascot.category}' style='background-image: url(#{mascot.image});'></div>"
+        className: 'mascot'
+      div = $('div', li)
+      if enabledmascots[name] == true
+        $.addClass div, 'enabled'
+      $.on div, 'click', ->
+        if enabledmascots[@.id] == true
+          $.rmClass @, 'enabled'
+          $.set @.id, false
+          enabledmascots[@.id] = false
+        else
+          $.addClass @, 'enabled'
+          $.set @.id, true
+          enabledmascots[@.id] = true
+      $.add ul, li
       $.add parentdiv, ul
     $.add $('#mascot_tab + div', dialog), parentdiv
     batchmascots = $.el 'div',
       id:        "mascots_batch"
       innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a>"
     $.on $('#clear', batchmascots), 'click', ->
-      for mascotname, mascots of enabledmascots
+      for mascotname, mascot of enabledmascots
         if enabledmascots[mascotname] == true
           $.rmClass $('#' + mascotname, @parentElement.parentElement), 'enabled'
           $.set mascotname, false
           enabledmascots[mascotname] = false
     $.on $('#selectAll', batchmascots), 'click', ->
-      for mascotname, mascots of enabledmascots
+      for mascotname, mascot of enabledmascots
         if enabledmascots[mascotname] == false
           $.addClass $('#' + mascotname, @parentElement.parentElement), 'enabled'
           $.set mascotname, true

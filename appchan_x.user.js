@@ -337,7 +337,7 @@
       'Dialog Background': 'rgba(238,221,255,1)',
       'Dialog Border': 'rgba(238,221,255,1)',
       'Reply Background': 'rgba(238,221,255,1)',
-      'Reply Border': 'rgba(238,221,255,1)',
+      'Reply Border': 'rgba(209,162,255,1)',
       'Highlighted Reply Background': 'rgba(238,221,255,1)',
       'Highlighted Reply Border': 'rgba(209,162,255,1)',
       'Backlinked Reply Outline': 'rgba(204,101,99,1)',
@@ -373,7 +373,7 @@
       'Warnings': 'rbg(133,76,158)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': '0',
-      'Custom CSS': '#delForm{ box-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5); border-radius: 3px;}#delform::before {width: 252px;content: "";position: fixed;top: 0px;right: 0px;height: 19px;background-color: rgba(255,255,255,0.8);}#options.reply.dialog, #options .dialog {	background-color: #FFF;	color: #000;	border: 2px solid #CCC;	border-radius: 6px;}#options ul {border-bottom: 1px solid #DBD8D2;border-radius: 0px;}#options ul:last-of-type {border: none;}#qp div.post {background-color: rgba(255,255,255,0.9);border: 1px solid #D1A2FF;color: #000;}'
+      'Custom CSS': '#delform{ box-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5); border-radius: 3px;padding:10px;}#options.reply.dialog,#options .dialog{background-color:#FFF;color:#000;border:2px solid #CCC;border-radius:6px;}#options ul{border-bottom:1px solid #DBD8D2;border-radius: 0px;}#options ul:last-of-type{border:none;}#qp div.post{background-color:rgba(255,255,255,0.9);border:1px solid #D1A2FF;color:#000;}'
     },
     'Blackberry Jam': {
       'Author': 'seaweed-chan',
@@ -786,168 +786,686 @@
   };
 
   Mascots = {
-    SFW: {
-      'Akiyama_Mio': 'url("http://i.imgur.com/MdE9K.png")',
-      'Akiyama_Mio_2': 'url("http://i.imgur.com/pBuG2.png")',
-      'Akiyama_Mio_3': 'url("http://i.imgur.com/s3ffU.png")',
-      'Akiyama_Mio_sitting': 'url("http://i.imgur.com/0x4Rr.png")',
-      'Asuka_Langley_Soryu': 'url("http://i.imgur.com/Wj7s7.png")',
-      'Asuka_Langley_Soryu_2': 'url("http://i.imgur.com/FMbEx.png")',
-      'Asuka_Langley_Soryu_3': 'url("http://i.imgur.com/qunYm.png")',
-      'Asuka_Langley_Soryu_4': 'url("http://i.imgur.com/MvYCD.png")',
-      'Asuka_Langley_Soryu_5': 'url("http://i.imgur.com/1rDfl.png")',
-      'Ayanami_Rei': 'url("http://i.imgur.com/Ye6OS.png")',
-      'Ayase_Yue': 'url("http://i.imgur.com/i2MT8.png")',
-      'Ayase': 'url("http://i.imgur.com/4Ehza.png")',
-      'Ayase_2': 'url("http://i.imgur.com/48nYb.png")',
-      'BLACK★ROCK_SHOOTER': 'url("http://i.imgur.com/VidKo.png")',
-      'Blue_Rose': 'url("http://i.imgur.com/q5RwP.png")',
-      'Brioche_d_Arquien': 'url("http://i.imgur.com/rxTsB.png")',
-      'CC': 'url("http://i.imgur.com/Ir1v3.png")',
-      'CC2': 'url("http://i.imgur.com/AU1H8.png")',
-      'Chie': 'url("http://i.imgur.com/E3ge5.png")',
-      'Cirno': 'url("http://i.imgur.com/q735W.png")',
-      'Cirno_2': 'url("http://i.imgur.com/dLrCn.png")',
-      'Dawn_Hikari': 'url("http://i.imgur.com/lxLdH.png")',
-      'Doppleganger': 'url("http://i.imgur.com/w3GwS.png")',
-      'Dragonkid': 'url("http://i.imgur.com/tEoVT.png")',
-      'Dragonkid_2': 'url("http://i.imgur.com/3tIpW.png")',
-      'Eclair': 'url("http://i.imgur.com/DEh76.png")',
-      'Erio_Touwa': 'url("http://i.imgur.com/zhPlM.png")',
-      'Evangeline_AK_McDowell': 'url("http://i.imgur.com/cRhjg.png")',
-      'Fujiwara_no_Mokou': 'url("http://i.imgur.com/NaKmF.png")',
-      'Furudo_Erika': 'url("http://i.imgur.com/zLsPY.png")',
-      'Gally': 'url("http://i.imgur.com/PJSjp.png")',
-      'Gasai_Yuno': 'url("http://i.imgur.com/iG1F2.png")',
-      'Gasai_Yuno_2': 'url("http://i.imgur.com/XI0DZ.png")',
-      'George_Costanza': 'url("http://i.imgur.com/Nnsrf.png")',
-      'Hakase': 'url("http://i.imgur.com/TBHI6.png")',
-      'Hanako': 'url("http://i.imgur.com/G3iN7.png")',
-      'Hasekura_Youko': 'url("http://i.imgur.com/qTQqY.png")',
-      'Hatsune_Miku': 'url("http://i.imgur.com/lKQHW.png")',
-      'Hatsune_Miku_2': 'url("http://i.imgur.com/ULksz.png")',
-      'Hatsune_Miku_3': 'url("http://i.imgur.com/H1pgZ.png")',
-      'Hatsune_Miku_4': 'url("http://i.imgur.com/vE3FJ.png")',
-      'Hatsune_Miku_5': 'url("http://i.imgur.com/yCB6B.png")',
-      'Hatsune_Miku_6': 'url("http://i.imgur.com/DKGQb.png")',
-      'Hatsune_Miku_7': 'url("http://i.imgur.com/vc7rU.png")',
-      'Hirasawa_Yui': 'url("http://i.imgur.com/sL1Uo.png")',
-      'Homura_Akemi': 'url("http://i.imgur.com/b9KmB.png")',
-      'Horo_sil_light': 'url("http://i.imgur.com/HMpug.png")',
-      'Horo_sil_dark': 'url("http://i.imgur.com/PKfl4.png")',
-      'Horo_sil_2_light': 'url("http://i.imgur.com/BjV3U.png")',
-      'Horo_sil_2_dark': 'url("http://i.imgur.com/8fcrD.png")',
-      'Ika_Musume': 'url("http://i.imgur.com/rKT7L.png")',
-      'Ika_Musume_2': 'url("http://i.imgur.com/uUhGG.png")',
-      'Inori': 'url("http://i.imgur.com/u4zuy.png")',
-      'Iwakura_Lain': 'url("http://i.imgur.com/AfjG9.png")',
-      'Iwakura_Lain_2': 'url("http://i.imgur.com/hIBLa.png")',
-      'KOn_Girls': 'url("http://i.imgur.com/Sc1Pa.png")',
-      'Kagamine_Rin': 'url("http://i.imgur.com/fXXd2.png")',
-      'Kagari_Izuriha': 'url("http://i.imgur.com/coMey.png")',
-      'Kaname_Madoka': 'url("http://i.imgur.com/4PHsl.png")',
-      'Karina': 'url("http://i.imgur.com/5oPTS.png")',
-      'Kigurumi_Harokitei': 'url("http://i.imgur.com/4JV1K.png")',
-      'Kinomoto_Sakura': 'url("http://i.imgur.com/Ve0hl.png")',
-      'Kirino_Kosaka_and_Ruri_Goko': 'url("http://i.imgur.com/MGaLr.png")',
-      'Koiwai_Yotsuba': 'url("http://i.imgur.com/1MyDM.png")',
-      'Koko': 'url("http://i.imgur.com/QMDHh.png")',
-      'Kotobuki_Tsumugi': 'url("http://i.imgur.com/fzhbH.png")',
-      'Kurisu_Makise': 'url("http://i.imgur.com/HKnLt.png")',
-      'Kyouko_Sakura': 'url("http://i.imgur.com/78HS9.png")',
-      'Kyubee': 'url("http://i.imgur.com/PW5gt.png")',
-      'Kyubee_2': 'url("http://i.imgur.com/fuTo9.png")',
-      'Leonmitchelli': 'url("http://i.imgur.com/KkOsZ.png")',
-      'Li_Syaoran': 'url("http://i.imgur.com/GySuy.png")',
-      'Link': 'url("http://i.imgur.com/OyTWU.png")',
-      'Lizardgirl': 'url("http://i.imgur.com/R8zzn.png")',
-      'Luka': 'url("http://i.imgur.com/WUIMw.png")',
-      'Madotsuki': 'url("http://i.imgur.com/J1i26.png")',
-      'Makoto': 'url("http://i.imgur.com/H2Nmv.png")',
-      'Mantis': 'url("http://i.imgur.com/kQs3e.png")',
-      'Megurine_Luka': 'url("http://i.imgur.com/BxybK.png")',
-      'Mei_Sunohara': 'url("http://i.imgur.com/zZ5pE.png")',
-      'Millefiori': 'url("http://i.imgur.com/Ygq8D.png")',
-      'Millefiori_2': 'url("http://i.imgur.com/00gF5.png")',
-      'Millefiori_3': 'url("http://i.imgur.com/bl7RT.png")',
-      'Misaki_Mei': 'url("http://i.imgur.com/zVKmv.png")',
-      'Mizunashi_Akari': 'url("http://i.imgur.com/LF8wU.png")',
-      'Motoko': 'url("http://i.imgur.com/FZD2l.png")',
-      'Nagato_Yuki': 'url("http://i.imgur.com/ucnzg.png")',
-      'Nagato_Yuki_2': 'url("http://i.imgur.com/J2eZi.png")',
-      'Nagato_Yuki_3': 'url("http://i.imgur.com/sUSvI.png")',
-      'Nagato_Yuki_4': 'url("http://i.imgur.com/atnqf.png")',
-      'Nagato_Yuki_sil_light': 'url("http://i.imgur.com/uR35P.png")',
-      'Nagato_Yuki_sil_dark': 'url("http://i.imgur.com/aGFCl.png")',
-      'Nagato_Yuki_with_Pantsu_light': 'url("http://i.imgur.com/L9ZAT.png")',
-      'Nagato_Yuki_with_Pantsu_dark': 'url("http://i.imgur.com/MwoI9.png")',
-      'Nakano_Azusa': 'url("http://i.imgur.com/6c3p3.png")',
-      'Nichijou': 'url("http://i.imgur.com/w5oaQ.png")',
-      'Noir_VinoCacao': 'url("http://i.imgur.com/VNbnm.png")',
-      'Oshino_Shinobu': 'url("http://i.imgur.com/UMq6v.png")',
-      'Oshino_Shinobu_2': 'url("http://i.imgur.com/ObCSS.png")',
-      'Patchouli_Knowledge': 'url("http://i.imgur.com/QoKJb.png")',
-      'Patchouli_Knowledge_2': 'url("http://i.imgur.com/dK9Pn.png")',
-      'Pink_Doggy': 'url("http://i.imgur.com/zv5BS.png")',
-      'Pink_Hair': 'url("http://i.imgur.com/1r1Vx.png")',
-      'Pixie': 'url("http://i.imgur.com/KPGKl.png")',
-      'Railgun': 'url("http://i.imgur.com/AEjIx.png")',
-      'Railgun_2': 'url("http://i.imgur.com/KD6s7.png")',
-      'Railgun_3': 'url("http://i.imgur.com/7wJEW.png")',
-      'Railbun_4': 'url("http://i.imgur.com/xM4rx.png")',
-      'Revi': 'url("http://i.imgur.com/Cn4nK.png")',
-      'Ruri_Gokou': 'url("http://i.imgur.com/Ht6dr.png")',
-      'Ryuu': 'url("http://i.imgur.com/LFUs2.png")',
-      'Saber': 'url("http://i.imgur.com/6AIbD.png")',
-      'Samus_Aran': 'url("http://i.imgur.com/34viJ.png")',
-      'Seraphim': 'url("http://i.imgur.com/PA7pJ.png")',
-      'Shana': 'url("http://i.imgur.com/JNS1z.png")',
-      'Shana_2': 'url("http://i.imgur.com/K1mLx.png")',
-      'Shiki': 'url("http://i.imgur.com/FKDcd.png")',
-      'Shinji_and_Girls': 'url("http://i.imgur.com/k5Dsb.png")',
-      'Shinonome_Hakase': 'url("http://i.imgur.com/TBHI6.png")',
-      'Shirakiin_Ririchiyo': 'url("http://i.imgur.com/cXsO6.png")',
-      'Shirohibe': 'url("http://i.imgur.com/mfNR3.png")',
-      'Suruga_Kanbaru': 'url("http://i.imgur.com/rgcAA.png")',
-      'Suzumiya_Haruhi': 'url("http://i.imgur.com/iVl5d.png")',
-      'Suzumiya_Haruhi_2': 'url("http://i.imgur.com/rW9Q6.png")',
-      'Tardis': 'url("http://goput.it/vig.png")',
-      'Three_Wet_Girls': 'url("http://i.imgur.com/AbU8b.png")',
-      'Tifa': 'url("http://i.imgur.com/SEKOZ.png")',
-      'Tomozo_Kaoru': 'url("http://i.imgur.com/awpTb.png")',
-      'Udine': 'url("http://i.imgur.com/2QkXW.png")',
-      'Wanwan': 'url("http://i.imgur.com/CcyTm.png")',
-      'White_Curious': 'url("http://i.imgur.com/2FQfj.png")',
-      'Yin': 'url("http://i.imgur.com/haBSN.png")',
-      'Yin_2': 'url("http://i.imgur.com/3zj9M.png")',
-      'Yuzuki_Yukari': 'url("http://i.imgur.com/c8Lal.png")',
-      'Yoko_Littner': 'url("http://i.imgur.com/3goQm.png")',
-      'Yoko_Littner_2': 'url("http://i.imgur.com/Pj9i5.png")',
-      'Yoko_Littner_3': 'url("http://i.imgur.com/0S2WK.png")',
-      'Yukkikaze': 'url("http://i.imgur.com/EkUXJ.png")',
-      'Yukkihaze_2': 'url("http://i.imgur.com/oIKZb.png")'
+    'Akiyama_Mio': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/MdE9K.png',
+      big: true
     },
-    Ponies: {
-      'Applejack': 'url("http://i.imgur.com/1ufSL.png")',
-      'Fluttershy': 'url("http://i.imgur.com/x88ZT.png")',
-      'Fluttershy_2': 'url("http://i.imgur.com/hokhQ.png")',
-      'Fluttershy_Cutiemark': 'url("http://i.imgur.com/vBqiB.png")',
-      'Pinkie_Pie': 'url("http://i.imgur.com/rY3w4.png")',
-      'Pinkie_Pie_2': 'url("http://i.imgur.com/zy6rO.png")',
-      'Rainbow_Dash': 'url("http://i.imgur.com/Zf3eQ.png")',
-      'Rarity': 'url("http://i.imgur.com/Mbhf7.png")',
-      'Twilight_Sparkle': 'url("http://i.imgur.com/r5q9h.png")'
+    'Akiyama_Mio_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/pBuG2.png',
+      big: true
     },
-    NSFW: {
-      'Anime_Girl_in_Bondage': 'url("http://i.imgur.com/B3h3c.png")',
-      'Anime_Girl_in_Bondage_2': 'url("http://i.imgur.com/1TUjP.png"); z-index: 1',
-      'Golden_Darkness': 'url("http://i.imgur.com/lYGo4.png"); bottom: 0',
-      'Horo': 'url("http://i.imgur.com/6f8wd.png")',
-      'Horo_2': 'url("http://i.imgur.com/KJLui.png")',
-      'Ika_Musume_3': 'url("http://i.imgur.com/PeckP.png")',
-      'Kinomoto_Sakura_2': 'url("http://i.imgur.com/Rdk9s.png")',
-      'Sakurazaki_Setsuna': 'url("http://i.imgur.com/QLChr.png"); z-index: 1',
-      'Yuki_Nagato': 'url("http://i.imgur.com/2BUww.png")'
+    'Akiyama_Mio_3': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/s3ffU.png'
+    },
+    'Akiyama_Mio_sitting': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/0x4Rr.png'
+    },
+    'Anime_Girl_in_Bondage': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/B3h3c.png'
+    },
+    'Anime_Girl_in_Bondage_2': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/1TUjP.png',
+      big: true
+    },
+    'Applejack': {
+      category: 'MLP',
+      image: 'http://i.imgur.com/1ufSL.png'
+    },
+    'Asuka_Langley_Soryu': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/Wj7s7.png'
+    },
+    'Asuka_Langley_Soryu_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/FMbEx.png'
+    },
+    'Asuka_Langley_Soryu_3': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/qunYm.png'
+    },
+    'Asuka_Langley_Soryu_4': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/MvYCD.png'
+    },
+    'Asuka_Langley_Soryu_5': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/1rDfl.png'
+    },
+    'Ayanami_Rei': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/Ye6OS.png'
+    },
+    'Ayase_Yue': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/i2MT8.png',
+      big: true
+    },
+    'Ayase': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/4Ehza.png'
+    },
+    'Ayase_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/48nYb.png'
+    },
+    'BLACK_ROCK_SHOOTER': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/VidKo.png'
+    },
+    'Blue_Rose': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/q5RwP.png'
+    },
+    'Brioche_d_Arquien': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/rxTsB.png'
+    },
+    'CC': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/Ir1v3.png'
+    },
+    'CC2': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/AU1H8.png'
+    },
+    'Chie': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/E3ge5.png'
+    },
+    'Cirno': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/q735W.png'
+    },
+    'Cirno_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/dLrCn.png'
+    },
+    'Dawn_Hikari': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/lxLdH.png'
+    },
+    'Doppleganger': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/w3GwS.png',
+      bottom: '0',
+      big: true
+    },
+    'Dragonkid': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/tEoVT.png'
+    },
+    'Dragonkid_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/3tIpW.png'
+    },
+    'Eclair': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/DEh76.png'
+    },
+    'Erio_Touwa': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/zhPlM.png',
+      big: true
+    },
+    'Evangeline_AK_McDowell': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/cRhjg.png'
+    },
+    'Fluttershy': {
+      category: 'MLP',
+      image: 'http://i.imgur.com/x88ZT.png'
+    },
+    'Fluttershy_2': {
+      category: 'MLP',
+      image: 'http://i.imgur.com/hokhQ.png'
+    },
+    'Fluttershy_Cutiemark': {
+      category: 'MLP',
+      image: 'http://i.imgur.com/vBqiB.png'
+    },
+    'Fujiwara_no_Mokou': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/NaKmF.png',
+      big: true
+    },
+    'Furudo_Erika': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/zLsPY.png'
+    },
+    'Gally': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/PJSjp.png',
+      bottom: '0'
+    },
+    'Gasai_Yuno': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/iG1F2.png',
+      big: true
+    },
+    'Gasai_Yuno_2': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/XI0DZ.png'
+    },
+    'George_Costanza': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/Nnsrf.png'
+    },
+    'Golden_Darkness': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/lYGo4.png',
+      bottom: '0',
+      big: true
+    },
+    'Hakase': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/TBHI6.png'
+    },
+    'Hanako': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/G3iN7.png'
+    },
+    'Hasekura_Youko': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/qTQqY.png'
+    },
+    'Hatsune_Miku': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/lKQHW.png'
+    },
+    'Hatsune_Miku_2': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/ULksz.png'
+    },
+    'Hatsune_Miku_3': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/H1pgZ.png',
+      bottom: '0'
+    },
+    'Hatsune_Miku_4': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/vE3FJ.png'
+    },
+    'Hatsune_Miku_5': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/yCB6B.png',
+      big: true
+    },
+    'Hatsune_Miku_6': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/DKGQb.png'
+    },
+    'Hatsune_Miku_7': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/vc7rU.png'
+    },
+    'Hirasawa_Yui': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/sL1Uo.png'
+    },
+    'Homura_Akemi': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/b9KmB.png',
+      big: true
+    },
+    'Horo': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/6f8wd.png',
+      bottom: '0'
+    },
+    'Horo_2': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/KJLui.png'
+    },
+    'Horo_3': {
+      category: 'Silhouette',
+      image: 'http://i.imgur.com/HMpug.png'
+    },
+    'Horo_4': {
+      category: 'Silhouette',
+      image: 'http://i.imgur.com/PKfl4.png'
+    },
+    'Horo_5': {
+      category: 'Silhouette',
+      image: 'http://i.imgur.com/BjV3U.png'
+    },
+    'Horo_6': {
+      category: 'Silhouette',
+      image: 'http://i.imgur.com/8fcrD.png'
+    },
+    'Ika_Musume': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/rKT7L.png'
+    },
+    'Ika_Musume_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/uUhGG.png'
+    },
+    'Ika_Musume_3': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/PeckP.png'
+    },
+    'Inori': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/u4zuy.png',
+      big: true
+    },
+    'Iwakura_Lain': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/AfjG9.png'
+    },
+    'Iwakura_Lain_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/hIBLa.png'
+    },
+    'KOn_Girls': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/Sc1Pa.png'
+    },
+    'Kagamine_Rin': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/fXXd2.png'
+    },
+    'Kagari_Izuriha': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/coMey.png',
+      big: true
+    },
+    'Kaname_Madoka': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/4PHsl.png'
+    },
+    'Karina': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/5oPTS.png'
+    },
+    'Kigurumi_Harokitei': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/4JV1K.png'
+    },
+    'Kinomoto_Sakura': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/Ve0hl.png'
+    },
+    'Kinomoto_Sakura_2': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/Rdk9s.png'
+    },
+    'Kirino_Kosaka_and_Ruri_Goko': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/MGaLr.png'
+    },
+    'Koiwai_Yotsuba': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/1MyDM.png'
+    },
+    'Koko': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/QMDHh.png'
+    },
+    'Kotobuki_Tsumugi': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/fzhbH.png'
+    },
+    'Kurisu_Makise': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/HKnLt.png',
+      big: true
+    },
+    'Kyouko_Sakura': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/78HS9.png'
+    },
+    'Kyubee': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/PW5gt.png',
+      big: true
+    },
+    'Kyubee_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/fuTo9.png'
+    },
+    'Leonmitchelli': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/KkOsZ.png'
+    },
+    'Li_Syaoran': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/GySuy.png',
+      big: true
+    },
+    'Link': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/OyTWU.png'
+    },
+    'Lizardgirl': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/R8zzn.png',
+      bottom: '0',
+      big: true
+    },
+    'Luka': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/WUIMw.png',
+      bottom: '0',
+      big: true
+    },
+    'Madotsuki': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/J1i26.png',
+      bottom: '0',
+      big: true
+    },
+    'Makoto': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/H2Nmv.png'
+    },
+    'Mantis': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/kQs3e.png',
+      big: true
+    },
+    'Megurine_Luka': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/BxybK.png'
+    },
+    'Mei_Sunohara': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/zZ5pE.png'
+    },
+    'Millefiori': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/Ygq8D.png'
+    },
+    'Millefiori_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/00gF5.png'
+    },
+    'Millefiori_3': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/bl7RT.png'
+    },
+    'Misaki_Mei': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/zVKmv.png'
+    },
+    'Mizunashi_Akari': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/LF8wU.png'
+    },
+    'Motoko': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/FZD2l.png'
+    },
+    'Nagato_Yuki': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/ucnzg.png'
+    },
+    'Nagato_Yuki_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/J2eZi.png'
+    },
+    'Nagato_Yuki_3': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/sUSvI.png'
+    },
+    'Nagato_Yuki_4': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/atnqf.png'
+    },
+    'Nagato_Yuki_5': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/2BUww.png',
+      bottom: '0'
+    },
+    'Nagato_Yuki_6': {
+      category: 'Silhouette',
+      image: 'http://i.imgur.com/uR35P.png'
+    },
+    'Nagato_Yuki_7': {
+      category: 'Silhouette',
+      image: 'http://i.imgur.com/aGFCl.png'
+    },
+    'Nagato_Yuki_8': {
+      category: 'Silhouette',
+      image: 'http://i.imgur.com/L9ZAT.png'
+    },
+    'Nagato_Yuki_9': {
+      category: 'Silhouette',
+      image: 'http://i.imgur.com/MwoI9.png'
+    },
+    'Nakano_Azusa': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/6c3p3.png',
+      big: true
+    },
+    'Nichijou': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/w5oaQ.png',
+      big: true
+    },
+    'Noir_VinoCacao': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/VNbnm.png'
+    },
+    'Pinkie_Pie': {
+      category: 'MLP',
+      image: 'http://i.imgur.com/rY3w4.png'
+    },
+    'Pinkie_Pie_2': {
+      category: 'MLP',
+      image: 'http://i.imgur.com/zy6rO.png'
+    },
+    'Oshino_Shinobu': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/UMq6v.png',
+      big: true
+    },
+    'Oshino_Shinobu_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/ObCSS.png',
+      bottom: '0',
+      big: true
+    },
+    'Patchouli_Knowledge': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/QoKJb.png'
+    },
+    'Patchouli_Knowledge_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/dK9Pn.png'
+    },
+    'Pink_Doggy': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/zv5BS.png'
+    },
+    'Pink_Hair': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/1r1Vx.png'
+    },
+    'Pixie': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/KPGKl.png'
+    },
+    'Railgun': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/AEjIx.png'
+    },
+    'Railgun_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/KD6s7.png'
+    },
+    'Railgun_3': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/7wJEW.png',
+      big: true
+    },
+    'Railgun_4': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/xM4rx.png'
+    },
+    'Rainbow_Dash': {
+      category: 'MLP',
+      image: 'http://i.imgur.com/Zf3eQ.png'
+    },
+    'Rarity': {
+      category: 'MLP',
+      image: 'http://i.imgur.com/Mbhf7.png'
+    },
+    'Revi': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/Cn4nK.png',
+      bottom: '0'
+    },
+    'Ruri_Gokou': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/Ht6dr.png',
+      bottom: '0'
+    },
+    'Ryuu': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/LFUs2.png',
+      bottom: '0',
+      big: true
+    },
+    'Saber': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/6AIbD.png',
+      bottom: '0'
+    },
+    'Sakurazaki_Setsuna': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/QLChr.png',
+      big: true
+    },
+    'Samus_Aran': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/34viJ.png'
+    },
+    'Seraphim': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/PA7pJ.png'
+    },
+    'Shana': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/JNS1z.png'
+    },
+    'Shana_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/K1mLx.png'
+    },
+    'Shiki': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/FKDcd.png',
+      big: true
+    },
+    'Shinji_and_Girls': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/k5Dsb.png'
+    },
+    'Shinonome_Hakase': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/TBHI6.png'
+    },
+    'Shirakiin_Ririchiyo': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/cXsO6.png',
+      bottom: '0'
+    },
+    'Shirohibe': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/mfNR3.png',
+      bottom: '0',
+      big: true
+    },
+    'Suruga_Kanbaru': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/rgcAA.png'
+    },
+    'Suzumiya_Haruhi': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/iVl5d.png'
+    },
+    'Suzumiya_Haruhi_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/rW9Q6.png'
+    },
+    'Tardis': {
+      category: 'SFW',
+      image: 'http://goput.it/vig.png'
+    },
+    'Three_Wet_Girls': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/AbU8b.png'
+    },
+    'Tifa': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/SEKOZ.png'
+    },
+    'Tomozo_Kaoru': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/awpTb.png'
+    },
+    'Twilight_Sparkle': {
+      category: 'MLP',
+      image: 'http://i.imgur.com/r5q9h.png'
+    },
+    'Udine': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/2QkXW.png',
+      bottom: '0',
+      big: true
+    },
+    'Wanwan': {
+      category: 'NSFW',
+      image: 'http://i.imgur.com/CcyTm.png',
+      bottom: '0'
+    },
+    'White_Curious': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/2FQfj.png'
+    },
+    'Yin': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/haBSN.png',
+      big: true
+    },
+    'Yin_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/3zj9M.png'
+    },
+    'Yuzuki_Yukari': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/c8Lal.png'
+    },
+    'Yoko_Littner': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/3goQm.png',
+      bottom: '0',
+      big: true
+    },
+    'Yoko_Littner_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/Pj9i5.png',
+      bottom: '0'
+    },
+    'Yoko_Littner_3': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/0S2WK.png',
+      bottom: '0'
+    },
+    'Yukkikaze': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/EkUXJ.png'
+    },
+    'Yukkihaze_2': {
+      category: 'SFW',
+      image: 'http://i.imgur.com/oIKZb.png'
     }
   };
 
@@ -1409,7 +1927,7 @@
       }
     },
     dialog: function() {
-      var arr, back, batchmascots, category, checked, contents, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -1646,37 +2164,32 @@
       parentdiv = $.el('div', {
         className: "suboptions"
       });
-      for (category in Mascots) {
-        contents = Mascots[category];
-        ul = $.el('ul', {
-          innerHTML: "<div style='clear: both;'>" + category + "</div>",
-          id: category,
-          className: 'mascots'
+      ul = $.el('ul', {
+        className: 'mascots'
+      });
+      for (name in Mascots) {
+        mascot = Mascots[name];
+        description = name;
+        li = $.el('li', {
+          innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + mascot.image + ");'></div>",
+          className: 'mascot'
         });
-        for (name in contents) {
-          mascot = contents[name];
-          description = name;
-          li = $.el('li', {
-            innerHTML: "<div id='" + name + "' style='background-image: " + mascot + ";'></div>",
-            className: 'mascot'
-          });
-          div = $('div', li);
-          if (enabledmascots[name] === true) {
-            $.addClass(div, 'enabled');
-          }
-          $.on(div, 'click', function() {
-            if (enabledmascots[this.id] === true) {
-              $.rmClass(this, 'enabled');
-              $.set(this.id, false);
-              return enabledmascots[this.id] = false;
-            } else {
-              $.addClass(this, 'enabled');
-              $.set(this.id, true);
-              return enabledmascots[this.id] = true;
-            }
-          });
-          $.add(ul, li);
+        div = $('div', li);
+        if (enabledmascots[name] === true) {
+          $.addClass(div, 'enabled');
         }
+        $.on(div, 'click', function() {
+          if (enabledmascots[this.id] === true) {
+            $.rmClass(this, 'enabled');
+            $.set(this.id, false);
+            return enabledmascots[this.id] = false;
+          } else {
+            $.addClass(this, 'enabled');
+            $.set(this.id, true);
+            return enabledmascots[this.id] = true;
+          }
+        });
+        $.add(ul, li);
         $.add(parentdiv, ul);
       }
       $.add($('#mascot_tab + div', dialog), parentdiv);
@@ -1685,10 +2198,10 @@
         innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a>"
       });
       $.on($('#clear', batchmascots), 'click', function() {
-        var mascotname, mascots, _results;
+        var mascotname, _results;
         _results = [];
         for (mascotname in enabledmascots) {
-          mascots = enabledmascots[mascotname];
+          mascot = enabledmascots[mascotname];
           if (enabledmascots[mascotname] === true) {
             $.rmClass($('#' + mascotname, this.parentElement.parentElement), 'enabled');
             $.set(mascotname, false);
@@ -1700,10 +2213,10 @@
         return _results;
       });
       $.on($('#selectAll', batchmascots), 'click', function() {
-        var mascotname, mascots, _results;
+        var mascotname, _results;
         _results = [];
         for (mascotname in enabledmascots) {
-          mascots = enabledmascots[mascotname];
+          mascot = enabledmascots[mascotname];
           if (enabledmascots[mascotname] === false) {
             $.addClass($('#' + mascotname, this.parentElement.parentElement), 'enabled');
             $.set(mascotname, true);
@@ -6440,7 +6953,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     css: function(theme) {
-      var agent, category, css, logoOffset, mascot, mascotimages, mascotposition, mascots, name, pagemargin, sidebarOffsetH, sidebarOffsetW;
+      var agent, css, div, logoOffset, mascot, mascotnames, mascotposition, name, oldmascot, pagemargin, sidebarOffsetH, sidebarOffsetW;
       agent = Style.agent();
       css = '\
 /* dialog styling */\
@@ -6850,7 +7363,7 @@ h1, .boardBanner {\
   right: 0;\
   bottom: 0;\
 }\
-#mascots_batch {\
+#mascot imgs_batch {\
   position: absolute;\
   left: 0;\
   bottom: 0;\
@@ -7194,7 +7707,7 @@ body > form #imgControls {\
 .sideArrows {\
   z-index: 4 !important;\
 }\
-body::after {\
+#mascot img {\
   z-index: 3 !important;\
 }\
 #recaptcha_reload_btn,\
@@ -9264,26 +9777,35 @@ input[type=checkbox] {\
 ';
         }
         if (Conf["Mascots"]) {
-          mascotimages = [];
-          for (category in Mascots) {
-            mascots = Mascots[category];
-            for (name in mascots) {
-              mascot = mascots[name];
-              if (enabledmascots[name] === true) {
-                mascotimages.push(mascot);
-              }
+          mascotnames = [];
+          for (name in Mascots) {
+            mascot = Mascots[name];
+            if (enabledmascots[name] === true) {
+              mascotnames.push(name);
             }
           }
+          mascot = Mascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]];
           css += '\
-body::after {\
+#mascot img {\
   position: fixed;\
-  bottom: ' + mascotposition + 'px;\
-  right: 0;\
+  bottom: ' + (mascot.bottom || mascotposition) + 'px;\
+  right: ' + (mascot.big ? 0 : sidebarOffsetW / 2) + 'px;\
   left: auto;\
   ' + agent + 'transform: scaleX(1);\
-  content: ' + mascotimages[Math.floor(Math.random() * mascotimages.length)] + '\
 }\
 ';
+          try {
+            if (oldmascot = $('#mascot img', d.body)) {
+              $.rm(oldmascot);
+            }
+          } catch (_error) {}
+          div = $.el('div', {
+            id: "mascot"
+          });
+          div.innerHTML = "<img src='" + mascot.image + "'>";
+          $.ready(function() {
+            return $.add(d.body, div);
+          });
         }
         if (Conf["Block Ads"]) {
           css += '\
@@ -9308,26 +9830,22 @@ img[src^="//static.4chan.org/support/"] {\
 
   Main = {
     init: function() {
-      var category, key, mascot, mascots, name, now, path, pathname, temp, val;
+      var key, mascot, name, now, path, pathname, temp, val;
       localStorage.setItem('4chan-settings', '{"disableAll":true}');
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
         Conf[key] = $.get(key, val);
       }
-      for (category in Mascots) {
-        mascots = Mascots[category];
-        if (category === 'SFW') {
-          for (name in mascots) {
-            mascot = mascots[name];
-            enabledmascots[name] = $.get(name, true);
+      for (name in Mascots) {
+        mascot = Mascots[name];
+        enabledmascots[name] = $.get(name, function() {
+          if (mascot.category === 'SFW') {
+            return true;
+          } else {
+            return false;
           }
-        } else {
-          for (name in mascots) {
-            mascot = mascots[name];
-            enabledmascots[name] = $.get(name, false);
-          }
-        }
+        });
       }
       path = location.pathname;
       pathname = path.slice(1).split('/');

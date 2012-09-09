@@ -7,13 +7,12 @@ Main =
     for key, val of Conf
       Conf[key] = $.get key, val
 
-    for category, mascots of Mascots
-      if category == 'SFW'
-        for name, mascot of mascots
-          enabledmascots[name] = $.get name, true
-      else
-        for name, mascot of mascots
-          enabledmascots[name] = $.get name, false
+    for name, mascot of Mascots
+      enabledmascots[name] = $.get name, ->
+        if mascot.category == 'SFW'
+          true
+        else
+          false
 
     path = location.pathname
     pathname = path[1..].split '/'

@@ -408,7 +408,7 @@ h1, .boardBanner {
   right: 0;
   bottom: 0;
 }
-#mascots_batch {
+#mascot imgs_batch {
   position: absolute;
   left: 0;
   bottom: 0;
@@ -540,7 +540,7 @@ div.opContainer {
       else
         sidebarOffsetW = 0
         sidebarOffsetH = 0
-      
+
       css += '
 ::' + agent + 'selection {
   background-color: ' + theme["Text"] + ';
@@ -755,7 +755,7 @@ body > form #imgControls {
 .sideArrows {
   z-index: 4 !important;
 }
-body::after {
+#mascot img {
   z-index: 3 !important;
 }
 #recaptcha_reload_btn,
@@ -2792,23 +2792,31 @@ input[type=checkbox] {
   display: none;
 }
 '
-          
+
       if Conf["Mascots"]
-        mascotimages = []
-        for category, mascots of Mascots
-          for name, mascot of mascots
-            if enabledmascots[name] == true
-              mascotimages.push mascot
+        mascotnames = []
+        for name, mascot of Mascots
+          if enabledmascots[name] == true
+            mascotnames.push name
+        mascot = Mascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]]
         css += '
-body::after {
+#mascot img {
   position: fixed;
-  bottom: ' + mascotposition + 'px;
-  right: 0;
+  bottom: ' + (mascot.bottom or mascotposition) + 'px;
+  right: ' + (if mascot.big then 0 else (sidebarOffsetW / 2)) + 'px;
   left: auto;
   ' + agent + 'transform: scaleX(1);
-  content: ' + mascotimages[Math.floor(Math.random() * mascotimages.length)] + '
 }
 '
+        try
+          if oldmascot = $('#mascot img', d.body)
+            $.rm oldmascot
+        div = $.el 'div',
+          id: "mascot"
+        div.innerHTML = "<img src='#{mascot.image}'>"
+        $.ready ->
+          $.add d.body, div
+
       if Conf["Block Ads"]
         css += '
 /* AdBlock Minus */
