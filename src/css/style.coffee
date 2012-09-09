@@ -575,7 +575,7 @@ input,
 select, 
 textarea, 
 .boardTitle {
-  font-family: ' + Conf["Font"] + ';
+  font-family: "' + Conf["Font"] + '";
 }
 #recaptcha_image img,
 #qr img,

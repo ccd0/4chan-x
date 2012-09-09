@@ -243,7 +243,7 @@
         'Captcha Opacity': ['1.00', 'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']],
         'Emoji Position': ['left', 'Position of emoji icons, like sega and neko.', ['left', 'right', 'hide emoji']],
         'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
-        'Font': ["'Ubuntu', 'Droid Sans', 'Terminus', 'Segoe UI', 'Calibri', 'Lucida Grande', 'Arial', 'Helvetica Neue', 'Helvetica'", 'The font used by all elements of 4chan.', 'text'],
+        'Font': ['Calibri', 'The font used by all elements of 4chan.', 'text'],
         'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
         'Mascots': [true, 'Add a pretty picture of your waifu to the sidebar.'],
         'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
@@ -7531,7 +7531,7 @@ input, \
 select, \
 textarea, \
 .boardTitle {\
-  font-family: ' + Conf["Font"] + ';\
+  font-family: "' + Conf["Font"] + '";\
 }\
 #recaptcha_image img,\
 #qr img,\
