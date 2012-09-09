@@ -8645,7 +8645,12 @@ body {\
   background-position: ' + theme["Background Position"] + ';\
 }\
 .boardTitle {\
-  text-shadow: 1px 1px 1px ' + theme["Reply Border"] + ';\
+  text-shadow:\
+    1px 1px 0 ' + theme["Background Color"] + ',\
+    -1px 1px 0 ' + theme["Background Color"] + ',\
+    1px -1px 0 ' + theme["Background Color"] + ',\
+    -1px -1px 0 ' + theme["Background Color"] + ',\
+    0px 0px 10px ' + theme["Text"] + ';\
 }\
 #browse,\
 #ft li,\
@@ -8666,12 +8671,13 @@ input[type="submit"],\
 input[value="Report"],\
 #qr.autohide .move {\
   background-color: ' + theme["Buttons Background"] + ';\
-  border-color: 1px solid' + theme["Buttons Border"] + ';\
+  border: 1px solid ' + theme["Buttons Border"] + ';\
 }\
 #file,\
 .recaptchatable #recaptcha_response_field,\
 .deleteform input[type="password"],\
 #dump,\
+#options input,\
 input,\
 input.field,\
 select,\
@@ -9773,7 +9779,7 @@ input[type=checkbox] {\
 }\
 ';
             break;
-          case "hide checkboxes":
+          case "hide":
             css += '\
 input[type=checkbox] {\
   display: none;\
