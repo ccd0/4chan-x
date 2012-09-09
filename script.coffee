@@ -586,7 +586,12 @@ class Post
           thumb.src
         else
           "#{location.protocol}//thumbs.4chan.org/#{board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
-      @file.name = $('span[title]', @file.info).title
+      # replace %22 with quotes, see:
+      # crbug.com/81193
+      # webk.it/62107
+      # https://www.w3.org/Bugs/Public/show_bug.cgi?id=16909
+      # http://www.whatwg.org/specs/web-apps/current-work/#multipart-form-data
+      @file.name = $('span[title]', @file.info).title.replace /%22/g, '"'
       if @file.isImage = /(jpg|png|gif)$/i.test @file.name
         @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
 

@@ -737,7 +737,7 @@
         }
         this.file.size = size;
         this.file.thumbURL = that.isArchived ? thumb.src : "" + location.protocol + "//thumbs.4chan.org/" + board + "/thumb/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
-        this.file.name = $('span[title]', this.file.info).title;
+        this.file.name = $('span[title]', this.file.info).title.replace(/%22/g, '"');
         if (this.file.isImage = /(jpg|png|gif)$/i.test(this.file.name)) {
           this.file.dimensions = this.file.text.textContent.match(/\d+x\d+/)[0];
         }
