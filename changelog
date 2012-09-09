@@ -1,5 +1,10 @@
 master
 
+0.7.1beta
+- Zixaphir
+  Fixed broken 4chan on fresh install
+    I'm so sorry.
+
 0.7beta
 - Mayhem
   Use 4chan's API to fetch posts for:
