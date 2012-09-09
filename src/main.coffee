@@ -8,11 +8,8 @@ Main =
       Conf[key] = $.get key, val
 
     for name, mascot of Mascots
-      enabledmascots[name] = $.get name, ->
-        if mascot.category == 'SFW'
-          true
-        else
-          false
+      enabled = if mascot.category == 'SFW' then true else false
+      enabledmascots[name] = $.get name, enabled
 
     path = location.pathname
     pathname = path[1..].split '/'

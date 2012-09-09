@@ -713,7 +713,7 @@ html .subMenu {
 .fileThumb {
   z-index: 100 !important;
 }
-div.navLinks a:first-of-type::after,
+div.navLinks > a:first-of-type::after,
 .deleteform {
   z-index: 99 !important;
 }
@@ -794,7 +794,7 @@ body > a[style="cursor: pointer; float: right;"]:hover::after {
 /* Back */
 div.navLinks > a:first-of-type::after {
   position: fixed;
-  right: 230px;
+  right: ' + (230 + sidebarOffsetW) + 'px;
   cursor: pointer;
   ' + agent + 'transform: scale(.8);
   opacity: 0.4;
@@ -808,7 +808,7 @@ div.navLinks > a:first-of-type:hover::after {
 .deleteform::before {
   visibility: visible;
   position: fixed;
-  right: 210px;
+  right: ' + (210 + sidebarOffsetW) + 'px;
   ' + agent + 'transform: scale(.9);
   opacity: 0.4;
   top: auto;
@@ -1300,7 +1300,7 @@ div.navLinks {
   font-size: 0;
   visibility: hidden;
 }
-div.navLinks a {
+div.navLinks > a {
   position: fixed;
   top: auto;
   right: -192px;
@@ -1726,7 +1726,7 @@ textarea.field {
 }
 #browse:hover,
 #file:hover,
-div.navLinks a:first-of-type:hover,
+div.navLinks > a:first-of-type:hover,
 .deleteform input:hover,
 .recaptchatable #recaptcha_response_field:hover,
 input:hover,
@@ -1958,7 +1958,7 @@ span.lit {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAeRJREFUOE9tlM0rRFEYh0dMPiKxkWxsyEpWshCpURbWNPkvlCwYe6VJWU+zkmytZIOttZJsaHZioQkhH8+j++p0M/U0Z8597+/83o8zhUajUcjRwu8OGIAJmIFZmIJh6IHW/Ht5kXYCxmAVzuABvuAbXuAS9mAOesFDfzVSoW42FuEYXrOXFcjzyd41rMFQiIWQThS5AAP/E8jv3RO3Bf3hSHumo5MQeWZ9CjfJ3mO2d8d3pMuysQxFHVlYaxLpKLIP07ACV/AE2zAJ63CbuVbwBAYVsjsWNqzrRJE26ART3jAYdG/8bnJwk3VJIVtsd0LIdHSiiM+LYIdcKzQOR5DWsuJD5yRyVswA09GJItEQRUbgIHETh9cMctjyHbEmphNOjGuF+eyQfGfrBjixDluI2R0La00iHUVcm+4SOJipWNWHjr0P0mLbHVOJdHQSNetjvQNv2TvvfJcV8u7sJSc4J7bY7lhYa2LNdKLIApwn8T4bjdy9O469riy8c2KL7Y7zZRq61okiujDWmduEruiIRfXuOPaRYgjEb8VMJ2rzwfoQ7GRL2lovoHfHTzoO/907nShiLX9HJL39FtYL6N1x7JuJuxAzJWtiOjr5m7P8/1FMsq0vQQVqUIcqlGEUukxHJ8EPyeEKDPe5ibUAAAAASUVORK5CYII=");
 }
 /* Return button */
-div.navLinks a:first-of-type::after {
+div.navLinks > a:first-of-type::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAA5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHkJaAqNQAAAA50Uk5TABAgQFBgcICPn6+/3+9ACPafAAAASElEQVQI15XMyxKAIAxD0eCr1ZT8/+eKDCOw07O700mBT45rrDXEXgul3sn0yCwsAaGBv/cw86xc92fbl0v7z7mBzeeudhJ/3aoUA1Vr0uhDAAAAAElFTkSuQmCC");
 }
 /* Watcher */
@@ -2493,7 +2493,7 @@ a,
 }
 #watcher:hover {
   z-index: 99 !important;
-  top: ' + ( 34 +  + logoOffset) + 'px !important;
+  top: ' + ( 34 + logoOffset) + 'px !important;
 }
 '
       else
@@ -2798,24 +2798,25 @@ input[type=checkbox] {
         for name, mascot of Mascots
           if enabledmascots[name] == true
             mascotnames.push name
-        mascot = Mascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]]
-        css += '
+        if mascot = Mascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]]
+          css += '
 #mascot img {
   position: fixed;
   bottom: ' + (mascot.bottom or mascotposition) + 'px;
-  right: ' + (if mascot.big then 0 else (sidebarOffsetW / 2)) + 'px;
+  right: ' + (if mascot.big then 0 else Math.floor(sidebarOffsetW / 2)) + 'px;
   left: auto;
   ' + agent + 'transform: scaleX(1);
+  pointer-events: none;
 }
 '
-        try
-          if oldmascot = $('#mascot img', d.body)
-            $.rm oldmascot
-        div = $.el 'div',
-          id: "mascot"
-        div.innerHTML = "<img src='#{mascot.image}'>"
-        $.ready ->
-          $.add d.body, div
+          try
+            if oldmascot = $('#mascot img', d.body)
+              $.rm oldmascot
+          div = $.el 'div',
+            id: "mascot"
+          div.innerHTML = "<img src='#{mascot.image}'>"
+          $.ready ->
+            $.add d.body, div
 
       if Conf["Block Ads"]
         css += '
