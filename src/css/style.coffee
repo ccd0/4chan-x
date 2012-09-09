@@ -316,7 +316,7 @@ h1,
 #navlinks {
   font-size: 16px;
   top: 25px;
-  right: 105px;
+  right: 5px;
 }
 #overlay {
   top: 0;
@@ -1339,7 +1339,7 @@ div.navLinks > a {
   cursor: default;
 }
 #navlinks {
-  right: 2px !important;
+  right: 105px !important;
 }
 #updater {
   right: 2px !important;

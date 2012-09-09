@@ -1,4 +1,6 @@
 master
+- Zixaphir
+  Bugfix: Post form now clears properly with "Style" disabled.
 
 0.7.2beta
 - Zixaphir

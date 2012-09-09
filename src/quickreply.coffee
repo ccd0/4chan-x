@@ -186,9 +186,10 @@ QR =
     QR.resetFileInput() # reset input
   resetFileInput: ->
     input = $ '[type=file]', QR.el
-    riceFile = $ '#file', QR.el
     input.value = null
-    riceFile.textContent = null
+    if Conf['Style']
+      riceFile = $ '#file', QR.el
+      riceFile.textContent = null
     return unless $.engine is 'presto'
     # XXX Opera needs extra care to reset its file input's value
     clone = $.el 'input',

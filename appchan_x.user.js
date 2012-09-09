@@ -6211,9 +6211,11 @@
     resetFileInput: function() {
       var clone, input, riceFile;
       input = $('[type=file]', QR.el);
-      riceFile = $('#file', QR.el);
       input.value = null;
-      riceFile.textContent = null;
+      if (Conf['Style']) {
+        riceFile = $('#file', QR.el);
+        riceFile.textContent = null;
+      }
       if ($.engine !== 'presto') {
         return;
       }
@@ -7276,7 +7278,7 @@ h1,\
 #navlinks {\
   font-size: 16px;\
   top: 25px;\
-  right: 105px;\
+  right: 5px;\
 }\
 #overlay {\
   top: 0;\
@@ -8296,7 +8298,7 @@ div.navLinks > a {\
   cursor: default;\
 }\
 #navlinks {\
-  right: 2px !important;\
+  right: 105px !important;\
 }\
 #updater {\
   right: 2px !important;\
