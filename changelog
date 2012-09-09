@@ -1,4 +1,6 @@
 master
+
+0.7beta
 - Mayhem
   Use 4chan's API to fetch posts for:
     - Thread Updater.
@@ -7,6 +9,12 @@ master
     - Thread Expansion.
     - Comment Expansion.
   Fix compatibility with Scriptish's auto-udpater.
+- Zixaphir
+  Fixed auto updating
+    (unrelated to similar 4chan x commit by Mayhem)
+  Fixed posting with autohide enabled and style enabled.
+  AppChan X now removes all 4chan CSS in head with style enabled.
+  
 
 0.6.3beta
 - Zixaphir
@@ -18,6 +26,8 @@ master
   Fix thread updater
 - seaweed
   Fix options button
+- Zixaphir
+  ~70 more mascots
 
 0.6.1beta
 - Mayhem

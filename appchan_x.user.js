@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        0.6.6beta
+// @version        0.7beta
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -13,10 +13,14 @@
 // @include        https://images.4chan.org/*
 // @include        http://sys.4chan.org/*
 // @include        https://sys.4chan.org/*
+// @grant          GM_getValue
+// @grant          GM_setValue
+// @grant          GM_deleteValue
+// @grant          GM_openInTab
 // @run-at         document-start
 // @updateURL      https://github.com/zixaphir/appchan-x/raw/stable/appchan_x.user.js
 // @downloadURL    https://github.com/zixaphir/appchan-x/raw/stable/appchan_x.user.js
-// @icon           http://zixaphir.github.com/appchan-x/favicon.gif
+// @icon           data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
 /* LICENSE
@@ -1901,8 +1905,16 @@
 
   Options = {
     init: function() {
-      var a, settings, _i, _len, _ref;
+      var a, settings, _i, _len, _ref, _results;
+      if (!$.get('firstrun')) {
+        if (!Favicon.el) {
+          Favicon.init();
+        }
+        $.set('firstrun', true);
+        Options.dialog();
+      }
       _ref = ['navtopright', 'navbotright'];
+      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
         a = $.el('a', {
@@ -1916,15 +1928,9 @@
             return Style.allrice();
           }
         });
-        $.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]);
+        _results.push($.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]));
       }
-      if (!$.get('firstrun')) {
-        if (!Favicon.el) {
-          Favicon.init();
-        }
-        $.set('firstrun', true);
-        return Options.dialog();
-      }
+      return _results;
     },
     dialog: function() {
       var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, left, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, theme, themename, time, top, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
@@ -10215,7 +10221,7 @@ img[src^="//static.4chan.org/support/"] {\
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '0.6.6beta',
+    version: '0.7beta',
     callbacks: []
   };
 
