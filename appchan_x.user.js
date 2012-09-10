@@ -98,6 +98,7 @@
   Config = {
     main: {
       Enhancing: {
+        'Disable inline 4chan addon': [true, 'Avoid conflicts between 4chan X and 4chan\'s inline extension. <span class=disabledwarning><code>Style</code> is enabled. This option will be enabled regardless of this setting\'s value.</span>'],
         '404 Redirect': [true, 'Redirect dead threads and images'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
@@ -2704,7 +2705,11 @@
       return false;
     },
     subject: function(post) {
-      return $('.postInfo .subject', post.el).textContent || false;
+      var subject;
+      if (subject = $('.postInfo .subject', post.el)) {
+        return subject.textContent;
+      }
+      return false;
     },
     comment: function(post) {
       var data, i, nodes, text, _i, _ref;
@@ -2871,12 +2876,15 @@
       });
     },
     parse: function(req, a, threadID, replyID) {
-      var bq, href, post, posts, quote, quotes, _i, _j, _len, _len1;
+      var bq, clone, href, post, posts, quote, quotes, spoilerRange, _i, _j, _len, _len1;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
       }
       posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
       replyID = +replyID;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
@@ -2889,8 +2897,9 @@
         return;
       }
       bq = $.id("m" + replyID);
-      bq.innerHTML = post.com;
-      quotes = bq.getElementsByClassName('quotelink');
+      clone = bq.cloneNode(false);
+      clone.innerHTML = post.com;
+      quotes = clone.getElementsByClassName('quotelink');
       for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
         quote = quotes[_j];
         href = quote.getAttribute('href');
@@ -2900,7 +2909,7 @@
         quote.href = "res/" + href;
       }
       post = {
-        blockquote: bq,
+        blockquote: clone,
         threadID: threadID,
         quotes: quotes,
         backlinks: []
@@ -2920,7 +2929,8 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      return Main.prettify(bq);
+      $.replace(bq, clone);
+      return Main.prettify(clone);
     }
   };
 
@@ -2981,14 +2991,18 @@
       }
     },
     parse: function(req, thread, a) {
-      var backlink, id, link, nodes, post, replies, reply, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var backlink, id, link, nodes, post, posts, replies, reply, spoilerRange, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', ExpandThread.cb.toggle);
         return;
       }
       a.textContent = a.textContent.replace('× Loading...', '-');
-      replies = JSON.parse(req.response).posts.slice(1);
+      posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
+      replies = posts.slice(1);
       threadID = thread.id.slice(1);
       nodes = [];
       for (_i = 0, _len = replies.length; _i < _len; _i++) {
@@ -3866,7 +3880,10 @@
         return delete Updater.request;
       },
       update: function(posts) {
-        var count, id, lastPost, nodes, post, scroll, _i, _len, _ref;
+        var count, id, lastPost, nodes, post, scroll, spoilerRange, _i, _len, _ref;
+        if (spoilerRange = posts[0].custom_spoiler) {
+          Build.spoilerRange[g.BOARD] = spoilerRange;
+        }
         lastPost = Updater.thread.lastElementChild;
         id = +lastPost.id.slice(2);
         nodes = [];
@@ -4377,7 +4394,7 @@
       }
     },
     parsePost: function(req, board, threadID, postID, root, cb) {
-      var post, posts, status, url, _i, _len;
+      var post, posts, spoilerRange, status, url, _i, _len;
       status = req.status;
       if (status !== 200) {
         if (url = Redirect.post(board, postID)) {
@@ -4386,11 +4403,14 @@
           });
         } else {
           $.addClass(root, 'warning');
-          root.textContent = status === 404 ? "Thread No." + threadID + " has not been found." : "Error " + req.status + ": " + req.statusText + ".";
+          root.textContent = status === 404 ? "Thread No." + threadID + " 404'd." : "Error " + req.status + ": " + req.statusText + ".";
         }
         return;
       }
       posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
       postID = +postID;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
@@ -4404,7 +4424,7 @@
             });
           } else {
             $.addClass(root, 'warning');
-            root.textContent = "Post No." + postID + " has not been found.";
+            root.textContent = "Post No." + postID + " was not found.";
           }
           return;
         }
@@ -4472,6 +4492,7 @@
         email: encodeURIComponent(data.email),
         subject: data.title_processed,
         flagCode: data.poster_country,
+        flagName: data.poster_country_name_processed,
         date: data.fourchan_date,
         dateUTC: data.timestamp,
         comment: comment
@@ -4548,6 +4569,7 @@
   };
 
   Build = {
+    spoilerRange: {},
     shortFilename: function(filename, isOP) {
       var threshold;
       threshold = isOP ? 40 : 30;
@@ -4601,7 +4623,7 @@
           @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
       postID = o.postID, threadID = o.threadID, board = o.board, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org';
@@ -4612,6 +4634,7 @@
         emailStart = '';
         emailEnd = '';
       }
+      subject = subject ? "<span class=subject>" + subject + "</span>" : '';
       userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
       switch (capcode) {
         case 'admin':
@@ -4650,33 +4673,9 @@
           fileSize = "Spoiler Image, " + fileSize;
           if (!isArchived) {
             fileThumb = '//static.4chan.org/image/spoiler';
-            fileThumb += (function() {
-              switch (board) {
-                case 'a':
-                  return '-a';
-                case 'co':
-                  return '-co';
-                case 'jp':
-                  return '-jp';
-                case 'lit':
-                  return 'lit';
-                case 'm':
-                  return '-m2';
-                case 'mlp':
-                  return '-mlp';
-                case 'tg':
-                  return '-tg2';
-                case 'tv':
-                  return '-tv5';
-                case 'v':
-                case 'vg':
-                  return '-v';
-                case 'vp':
-                  return '-vp';
-                default:
-                  return '';
-              }
-            })();
+            if (spoilerRange = Build.spoilerRange[board]) {
+              fileThumb += ("-" + board) + Math.floor(1 + spoilerRange * Math.random());
+            }
             fileThumb += '.png';
             file.twidth = file.theight = 100;
           }
@@ -4702,7 +4701,7 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + name + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br><span class=subject>" + subject + "</span>") + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("<span class=subject>" + (subject || '') + "</span> ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + name + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + comment + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -9900,7 +9899,6 @@ img[src^="//static.4chan.org/support/"] {\
   Main = {
     init: function() {
       var enabled, key, mascot, name, now, path, pathname, temp, val;
-      localStorage.setItem('4chan-settings', '{"disableAll":true}');
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
@@ -9966,6 +9964,9 @@ img[src^="//static.4chan.org/support/"] {\
             src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
           }));
         });
+      }
+      if (Conf['Disable inline 4chan addon'] || Conf['Style']) {
+        localStorage.setItem('4chan-settings', '{"disableAll":true}');
       }
       if (Conf['Filter']) {
         Filter.init();

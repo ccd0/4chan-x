@@ -1,6 +1,5 @@
 Main =
   init: ->
-    localStorage.setItem '4chan-settings', '{"disableAll":true}'
     Main.flatten null, Config
 
     # Load values from localStorage.
@@ -54,6 +53,9 @@ Main =
         $.add d.head, $.el 'script',
           src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
 
+    if Conf['Disable inline 4chan addon'] or Conf['Style']
+      localStorage.setItem '4chan-settings', '{"disableAll":true}'
+      
     if Conf['Filter']
       Filter.init()
 

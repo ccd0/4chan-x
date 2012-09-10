@@ -219,7 +219,9 @@ Filter =
       return decodeURIComponent mail.href[7..]
     false
   subject: (post) ->
-    $('.postInfo .subject', post.el).textContent or false
+    if subject = $ '.postInfo .subject', post.el
+      return subject.textContent
+    false
   comment: (post) ->
     text = []
     nodes = d.evaluate './/br|.//text()', post.blockquote, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null
@@ -377,6 +379,8 @@ ExpandComment =
       return
 
     posts = JSON.parse(req.response).posts
+    if spoilerRange = posts[0].custom_spoiler
+      Build.spoilerRange[g.BOARD] = spoilerRange
     replyID = +replyID
 
     for post in posts
@@ -386,14 +390,15 @@ ExpandComment =
       return
 
     bq = $.id "m#{replyID}"
-    bq.innerHTML = post.com
-    quotes = bq.getElementsByClassName 'quotelink'
+    clone = bq.cloneNode false
+    clone.innerHTML = post.com
+    quotes = clone.getElementsByClassName 'quotelink'
     for quote in quotes
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote
       quote.href = "res/#{href}" # Fix pathnames
     post =
-      blockquote: bq
+      blockquote: clone
       threadID:   threadID
       quotes:     quotes
       backlinks:  []
@@ -407,7 +412,8 @@ ExpandComment =
       QuoteOP.node      post
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
-    Main.prettify bq
+    $.replace bq, clone
+    Main.prettify clone
 
 ExpandThread =
   init: ->
@@ -453,8 +459,11 @@ ExpandThread =
 
     a.textContent = a.textContent.replace '× Loading...', '-'
 
-    replies = JSON.parse(req.response).posts[1..]
+    posts = JSON.parse(req.response).posts
+    if spoilerRange = posts[0].custom_spoiler
+      Build.spoilerRange[g.BOARD] = spoilerRange
 
+    replies  = posts[1..]
     threadID = thread.id[1..]
     nodes    = []
     for reply in replies
@@ -987,7 +996,6 @@ Nav =
     {top} = Nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
 
-
 Updater =
   init: ->
     html = '<div class=move><span id=count></span> <span id=timer></span></div>'
@@ -1111,6 +1119,9 @@ Updater =
             Updater.count.className = 'warning'
       delete Updater.request
     update: (posts) ->
+      if spoilerRange = posts[0].custom_spoiler
+        Build.spoilerRange[g.BOARD] = spoilerRange
+
       lastPost = Updater.thread.lastElementChild
       id = +lastPost.id[2..]
       nodes = []
@@ -1469,12 +1480,14 @@ Get =
         $.addClass root, 'warning'
         root.textContent =
           if status is 404
-            "Thread No.#{threadID} has not been found."
+            "Thread No.#{threadID} 404'd."
           else
             "Error #{req.status}: #{req.statusText}."
       return
 
     posts  = JSON.parse(req.response).posts
+    if spoilerRange = posts[0].custom_spoiler
+      Build.spoilerRange[g.BOARD] = spoilerRange
     postID = +postID
     for post in posts
       break if post.no is postID # we found it!
@@ -1485,7 +1498,7 @@ Get =
             Get.parseArchivedPost @, board, postID, root, cb
         else
           $.addClass root, 'warning'
-          root.textContent = "Post No.#{postID} has not been found."
+          root.textContent = "Post No.#{postID} was not found."
         return
 
     $.replace root.firstChild, Get.cleanPost Build.postFromObject post, board
@@ -1551,7 +1564,7 @@ Get =
       email:    encodeURIComponent data.email
       subject:  data.title_processed
       flagCode: data.poster_country
-      # XXX flagName: data.???_processed
+      flagName: data.poster_country_name_processed
       date:     data.fourchan_date
       dateUTC:  data.timestamp
       comment:  comment
@@ -1608,6 +1621,7 @@ Get =
     "/#{g.BOARD}/ - #{span.textContent.trim()}"
 
 Build =
+  spoilerRange: {}
   shortFilename: (filename, isOP) ->
     # FILENAME SHORTENING SCIENCE:
     # OPs have a +10 characters threshold.
@@ -1677,6 +1691,12 @@ Build =
       emailStart = ''
       emailEnd   = ''
 
+    subject =
+      if subject
+        "<span class=subject>#{subject}</span>"
+      else
+        ''
+
     userID =
       if !capcode and uniqueID
         " <span class='posteruid id_#{uniqueID}'>(ID: " +
@@ -1741,20 +1761,9 @@ Build =
         fileSize = "Spoiler Image, #{fileSize}"
         unless isArchived
           fileThumb = '//static.4chan.org/image/spoiler'
-          fileThumb += switch board
-            # UGGH, I can't wait to maintain this crap.
-            # Sup desuwa?
-            when 'a'       then '-a'
-            when 'co'      then '-co'
-            when 'jp'      then '-jp'
-            when 'lit'     then 'lit'
-            when 'm'       then '-m2'
-            when 'mlp'     then '-mlp'
-            when 'tg'      then '-tg2'
-            when 'tv'      then '-tv5'
-            when 'v', 'vg' then '-v'
-            when 'vp'      then '-vp'
-            else ''
+          if spoilerRange = Build.spoilerRange[board]
+            # Randomize the spoiler image.
+            fileThumb += "-#{board}" + Math.floor 1 + spoilerRange * Math.random()
           fileThumb += '.png'
           file.twidth = file.theight = 100
 
@@ -1818,9 +1827,9 @@ Build =
 
         "<div class='postInfoM mobile' id=pim#{postID}>" +
           "<span class='nameBlock#{capcodeClass}'>" +
-              "<span class=name>#{name}</span>" + tripcode +
+              "<span class=name>#{name or ''}</span>" + tripcode +
             capcodeStart + capcode + userID + flag + sticky + closed +
-            "<br><span class=subject>#{subject}</span>" +
+            "<br>#{subject}" +
           "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
           '<br><em>' +
             "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"}>No.</a>" +
@@ -1837,10 +1846,10 @@ Build =
 
         "<div class='postInfo desktop' id=pi#{postID}>" +
           "<input type=checkbox name=#{postID} value=delete> " +
-          "<span class=subject>#{subject or ''}</span> " +
+          "#{subject} " +
           "<span class='nameBlock#{capcodeClass}'>" +
             emailStart +
-              "<span class=name>#{name}</span>" + tripcode +
+              "<span class=name>#{name or ''}</span>" + tripcode +
             capcodeStart + emailEnd + capcode + userID + flag + sticky + closed +
           ' </span> ' +
           "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
@@ -1857,7 +1866,7 @@ Build =
 
         (if isOP then '' else fileHTML) +
 
-        "<blockquote class=postMessage id=m#{postID}>#{comment}</blockquote> " +
+        "<blockquote class=postMessage id=m#{postID}>#{comment or ''}</blockquote> " +
 
       '</div>'
 
