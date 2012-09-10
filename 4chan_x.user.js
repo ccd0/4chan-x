@@ -74,7 +74,7 @@
  */
 
 (function() {
-  var $, $$, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, Time, UI, d, g,
+  var $, $$, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -999,6 +999,13 @@
           $.log(err, 'Auto-GIF');
         }
       }
+      if (Conf['Image Hover']) {
+        try {
+          ImageHover.init();
+        } catch (err) {
+          $.log(err, 'Image Hover');
+        }
+      }
       return $.ready(Main.initFeaturesReady);
     },
     initFeaturesReady: function() {
@@ -1064,7 +1071,7 @@
         return $.on(d, 'DOMNodeInserted', Main.addStyle);
       }
     },
-    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quote */\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  position: fixed;\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}"
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quote */\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  position: fixed;\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  position: fixed;\n  padding-bottom: 17px;\n}"
   };
 
   Redirect = {
@@ -2150,6 +2157,86 @@
         return thumb.src = URL;
       });
       return gif.src = URL;
+    }
+  };
+
+  ImageHover = {
+    init: function() {
+      var _ref;
+      if ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg') {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Auto-GIF',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var _ref;
+      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+        return;
+      }
+      return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
+    },
+    mouseover: function() {
+      var el;
+      if (UI.el) {
+        return;
+      }
+      el = UI.el = $.el('img', {
+        id: 'ihover',
+        src: this.parentNode.href
+      });
+      $.add(d.body, el);
+      $.on(el, 'load', ImageHover.load);
+      $.on(el, 'error', ImageHover.error);
+      $.on(this, 'mousemove', UI.hover);
+      return $.on(this, 'mouseout', ImageHover.mouseout);
+    },
+    load: function() {
+      var style;
+      if (!this.parentNode) {
+        return;
+      }
+      style = this.style;
+      return UI.hover({
+        clientX: -45 + parseInt(style.left),
+        clientY: 120 + parseInt(style.top)
+      });
+    },
+    error: function() {
+      var src, timeoutID, url,
+        _this = this;
+      src = this.src.split('/');
+      if (!(src[2] === 'images.4chan.org' && (url = Redirect.image(src[3], src[5])))) {
+        if (g.DEAD) {
+          return;
+        }
+        url = "//images.4chan.org/" + src[3] + "/src/" + src[5];
+      }
+      if ($.engine !== 'webkit' && url.split('/')[2] === 'images.4chan.org') {
+        return;
+      }
+      timeoutID = setTimeout((function() {
+        return _this.src = url;
+      }), 3000);
+      if ($.engine !== 'webkit' || url.split('/')[2] !== 'images.4chan.org') {
+        return;
+      }
+      return $.ajax(url, {
+        onreadystatechange: (function() {
+          if (this.status === 404) {
+            return clearTimeout(timeoutID);
+          }
+        })
+      }, {
+        type: 'head'
+      });
+    },
+    mouseout: function() {
+      UI.hoverend();
+      $.off(this, 'mousemove', UI.hover);
+      return $.off(this, 'mouseout', ImageHover.mouseout);
     }
   };
 

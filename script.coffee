@@ -804,6 +804,13 @@ Main =
         # XXX handle error
         $.log err, 'Auto-GIF'
 
+    if Conf['Image Hover']
+      try
+        ImageHover.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Image Hover'
+
     $.ready Main.initFeaturesReady
   initFeaturesReady: ->
     if d.title is '4chan - 404 Not Found'
@@ -957,6 +964,14 @@ body.fourchan_x {
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull {
   display: none;
+}
+#ihover {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  max-height: 100%;
+  max-width: 75%;
+  position: fixed;
+  padding-bottom: 16px;
 }
 """
 
@@ -1821,6 +1836,50 @@ AutoGIF =
       # Replace the thumbnail once the GIF has finished loading.
       thumb.src = URL
     gif.src = URL
+
+ImageHover =
+  init: ->
+    return if g.BOARD.ID in ['gif', 'wsg']
+    Post::callbacks.push
+      name: 'Auto-GIF'
+      cb:   @node
+  node: ->
+    return unless @file?.isImage
+    $.on @file.thumb, 'mouseover', ImageHover.mouseover
+  mouseover: ->
+    # Don't stop other elements from dragging
+    return if UI.el
+    el = UI.el = $.el 'img'
+      id: 'ihover'
+      src: @parentNode.href
+    $.add d.body, el
+    $.on el, 'load',      ImageHover.load
+    $.on el, 'error',     ImageHover.error
+    $.on @,  'mousemove', UI.hover
+    $.on @,  'mouseout',  ImageHover.mouseout
+  load: ->
+    return unless @parentNode
+    # 'Fake' mousemove event by giving required values.
+    {style} = @
+    UI.hover
+      clientX: - 45 + parseInt style.left
+      clientY:  120 + parseInt style.top
+  error: ->
+    src = @src.split '/'
+    unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
+      return if g.DEAD
+      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}"
+    return if $.engine isnt 'webkit' and url.split('/')[2] is 'images.4chan.org'
+    timeoutID = setTimeout (=> @src = url), 3000
+    # Only Chrome let userscripts do cross domain requests.
+    # Don't check for 404'd status in the archivers.
+    return if $.engine isnt 'webkit' or url.split('/')[2] isnt 'images.4chan.org'
+    $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
+      type: 'head'
+  mouseout: ->
+    UI.hoverend()
+    $.off @, 'mousemove', UI.hover
+    $.off @, 'mouseout',  ImageHover.mouseout
 
 
 
