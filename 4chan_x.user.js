@@ -74,7 +74,7 @@
  */
 
 (function() {
-  var $, $$, Board, Build, Clone, Conf, Config, FileInfo, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, Thread, Time, UI, d, g,
+  var $, $$, Board, Build, Clone, Conf, Config, FileInfo, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, Sauce, Thread, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -159,7 +159,7 @@
       filesize: [''].join('\n'),
       md5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2;text:Upload to imgur', '#http://omploader.org/upload?url1=$2;text:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/search/image/$3/;text:View same on foolz', '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/', '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'].join('\n'),
+    sauces: ['http://iqdb.org/?url=$turl', 'http://www.google.com/searchbyimage?image_url=$turl', '#http://tineye.com/search?url=$turl', '#http://saucenao.com/search.php?db=999&url=$turl', '#http://3d.iqdb.org/?url=$turl', '#http://regex.info/exif.cgi?imgurl=$url', '# uploaders:', '#http://imgur.com/upload?url=$url;text:Upload to imgur', '#http://omploader.org/upload?url1=$url;text:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/search/image/$md5/;text:View same on foolz', '#http://archive.foolz.us/$board/search/image/$md5/;text:View same on foolz /$board/', '#https://archive.installgentoo.net/$board/image/$md5;text:View same on installgentoo /$board/'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
@@ -978,6 +978,13 @@
           $.log(err, 'File Info Formatting');
         }
       }
+      if (Conf['Sauce']) {
+        try {
+          Sauce.init();
+        } catch (err) {
+          $.log(err, 'Sauce');
+        }
+      }
       return $.ready(Main.initFeaturesReady);
     },
     initFeaturesReady: function() {
@@ -1347,11 +1354,9 @@
       };
     },
     postClone: function(board, threadID, postID, root) {
-      var clone, origin, url;
-      if (origin = g.posts["" + board + "." + postID]) {
-        clone = origin.addClone();
-        Main.callbackNodes(Post, [clone]);
-        $.add(root, Get.cleanRoot(clone));
+      var post, url;
+      if (post = g.posts["" + board + "." + postID]) {
+        Get.insert(post, root);
         return;
       }
       root.textContent = "Loading post No." + postID + "...";
@@ -1365,20 +1370,21 @@
         });
       }
     },
-    cleanRoot: function(clone) {
-      var child, post, root, _i, _len, _ref, _ref1;
-      _ref = clone.nodes, root = _ref.root, post = _ref.post;
-      _ref1 = Array.prototype.slice.call(root.childNodes);
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        child = _ref1[_i];
-        if (child !== post) {
-          $.rm(child);
-        }
+    insert: function(post, root) {
+      var clone, nodes;
+      if (!root.parentNode) {
+        return;
       }
-      return root;
+      clone = post.addClone();
+      Main.callbackNodes(Post, [clone]);
+      nodes = clone.nodes;
+      nodes.root.innerHTML = null;
+      $.add(nodes.root, nodes.post);
+      root.innerHTML = null;
+      return $.add(root, nodes.root);
     },
     fetchedPost: function(req, board, threadID, postID, root) {
-      var doc, href, inBoard, inThread, link, pc, post, quote, status, url, _i, _len, _ref;
+      var doc, href, link, pc, post, quote, status, thread, url, _i, _len, _ref;
       if (post = g.posts["" + board + "." + postID]) {
         Get.insert(post, root);
         return;
@@ -1421,9 +1427,9 @@
       link = $('a[title="Highlight this post"]', pc);
       link.href = "/" + board + "/res/" + threadID + "#p" + postID;
       link.nextSibling.href = "/" + board + "/res/" + threadID + "#q" + postID;
-      inBoard = g.boards[board] || new Board(board);
-      inThread = g.threads["" + board + "." + threadID] || new Thread(threadID, inBoard);
-      post = new Post(postContainer, thread, board);
+      board = g.boards[board] || new Board(board);
+      thread = g.threads["" + board + "." + threadID] || new Thread(threadID, inBoard);
+      post = new Post(pc, thread, board);
       Main.callbackNodes(Post, [post]);
       return Get.insert(post, root);
     },
@@ -1505,15 +1511,6 @@
       });
       Main.callbackNodes(Post, [post]);
       return Get.insert(post, root);
-    },
-    insert: function(post, root) {
-      var clone;
-      if (!root.parentNode) {
-        return;
-      }
-      clone = post.addClone();
-      Main.callbackNodes(Post, [clone]);
-      return $.replace(root.firstChild, Get.cleanRoot(clone));
     }
   };
 
@@ -1716,8 +1713,8 @@
         className: 'reply dialog'
       });
       UI.hover(e);
-      Get.postClone(board, threadID, postID, qp);
       $.add(d.body, qp);
+      Get.postClone(board, threadID, postID, qp);
       $.on(this, 'mousemove', UI.hover);
       $.on(this, 'mouseout click', QuotePreview.mouseout);
       if (!(origin = g.posts["" + board + "." + postID])) {
@@ -2023,6 +2020,72 @@
           return 'PDF';
         }
       }
+    }
+  };
+
+  Sauce = {
+    init: function() {
+      var link, links, _i, _len, _ref;
+      links = [];
+      _ref = Conf['sauces'].split('\n');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        if (link[0] === '#') {
+          continue;
+        }
+        links.push(this.createSauceLink(link.trim()));
+      }
+      if (!links.length) {
+        return;
+      }
+      this.links = links;
+      return Post.prototype.callbacks.push({
+        name: 'Sauce',
+        cb: this.node
+      });
+    },
+    createSauceLink: function(link) {
+      var el, href, m, text;
+      link = link.replace(/\$(turl|url|md5|board)/g, function(parameter) {
+        switch (parameter) {
+          case '$turl':
+            return "' + post.file.thumbURL + '";
+          case '$url':
+            return "' + post.file.URL + '";
+          case '$md5':
+            return "' + encodeURIComponent(post.file.MD5) + '";
+          case '$board':
+            return "' + post.board + '";
+          default:
+            return parameter;
+        }
+      });
+      text = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
+      link = link.replace(/;text:.+$/, '');
+      href = Function('post', "return '" + link + "'");
+      el = $.el('a', {
+        target: '_blank',
+        textContent: text
+      });
+      return function(post) {
+        var a;
+        a = el.cloneNode(true);
+        a.href = href(post);
+        return a;
+      };
+    },
+    node: function() {
+      var link, nodes, _i, _len, _ref;
+      if (this.isClone || !this.file) {
+        return;
+      }
+      nodes = [];
+      _ref = Sauce.links;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        nodes.push($.tn('\u00A0'), link(this));
+      }
+      return $.add(this.file.info, nodes);
     }
   };
 

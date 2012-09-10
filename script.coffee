@@ -105,19 +105,19 @@ Config =
       ''
     ].join '\n'
   sauces: [
-    'http://iqdb.org/?url=$1'
-    'http://www.google.com/searchbyimage?image_url=$1'
-    '#http://tineye.com/search?url=$1'
-    '#http://saucenao.com/search.php?db=999&url=$1'
-    '#http://3d.iqdb.org/?url=$1'
-    '#http://regex.info/exif.cgi?imgurl=$2'
+    'http://iqdb.org/?url=$turl'
+    'http://www.google.com/searchbyimage?image_url=$turl'
+    '#http://tineye.com/search?url=$turl'
+    '#http://saucenao.com/search.php?db=999&url=$turl'
+    '#http://3d.iqdb.org/?url=$turl'
+    '#http://regex.info/exif.cgi?imgurl=$url'
     '# uploaders:'
-    '#http://imgur.com/upload?url=$2;text:Upload to imgur'
-    '#http://omploader.org/upload?url1=$2;text:Upload to omploader'
+    '#http://imgur.com/upload?url=$url;text:Upload to imgur'
+    '#http://omploader.org/upload?url1=$url;text:Upload to omploader'
     '# "View Same" in archives:'
-    '#http://archive.foolz.us/search/image/$3/;text:View same on foolz'
-    '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/'
-    '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'
+    '#http://archive.foolz.us/search/image/$md5/;text:View same on foolz'
+    '#http://archive.foolz.us/$board/search/image/$md5/;text:View same on foolz /$board/'
+    '#https://archive.installgentoo.net/$board/image/$md5;text:View same on installgentoo /$board/'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M'
   backlink: '>>%id'
@@ -783,6 +783,13 @@ Main =
         # XXX handle error
         $.log err, 'File Info Formatting'
 
+    if Conf['Sauce']
+      try
+        Sauce.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Sauce'
+
     $.ready Main.initFeaturesReady
   initFeaturesReady: ->
     if d.title is '4chan - 404 Not Found'
@@ -1157,10 +1164,8 @@ Get =
       postID:   postID
     }
   postClone: (board, threadID, postID, root) ->
-    if origin = g.posts["#{board}.#{postID}"]
-      clone = origin.addClone()
-      Main.callbackNodes Post, [clone]
-      $.add root, Get.cleanRoot clone
+    if post = g.posts["#{board}.#{postID}"]
+      Get.insert post, root
       return
 
     root.textContent = "Loading post No.#{postID}..."
@@ -1170,11 +1175,19 @@ Get =
     else if url = Redirect.post board, postID
       $.cache url, ->
         Get.archivedPost @, board, postID, root
-  cleanRoot: (clone) ->
-    {root, post} = clone.nodes
-    for child in Array::slice.call root.childNodes
-      $.rm child unless child is post
-    root
+  insert: (post, root) ->
+    # Stop here if the container has been removed while loading.
+    return unless root.parentNode
+    clone = post.addClone()
+    Main.callbackNodes Post, [clone]
+
+    # Get rid of the side arrows.
+    {nodes} = clone
+    nodes.root.innerHTML = null
+    $.add nodes.root, nodes.post
+
+    root.innerHTML = null
+    $.add root, nodes.root
   fetchedPost: (req, board, threadID, postID, root) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
@@ -1218,11 +1231,11 @@ Get =
     link.href = "/#{board}/res/#{threadID}#p#{postID}"
     link.nextSibling.href = "/#{board}/res/#{threadID}#q#{postID}"
 
-    inBoard = g.boards[board] or
+    board = g.boards[board] or
       new Board board
-    inThread = g.threads["#{board}.#{threadID}"] or
+    thread = g.threads["#{board}.#{threadID}"] or
       new Thread threadID, inBoard
-    post = new Post postContainer, thread, board
+    post = new Post pc, thread, board
     Main.callbackNodes Post, [post]
     Get.insert post, root
   archivedPost: (req, board, postID, root) ->
@@ -1315,12 +1328,6 @@ Get =
       isArchived: true
     Main.callbackNodes Post, [post]
     Get.insert post, root
-  insert: (post, root) ->
-    # Stop here if the container has been removed while loading.
-    return unless root.parentNode
-    clone = post.addClone()
-    Main.callbackNodes Post, [clone]
-    $.replace root.firstChild, Get.cleanRoot clone
 
 Quotify =
   init: ->
@@ -1523,8 +1530,8 @@ QuotePreview =
       id: 'qp'
       className: 'reply dialog'
     UI.hover e
-    Get.postClone board, threadID, postID, qp
     $.add d.body, qp
+    Get.postClone board, threadID, postID, qp
 
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
@@ -1725,6 +1732,49 @@ FileInfo =
     K: -> FileInfo.convertUnit @file.size, 'KB'
     M: -> FileInfo.convertUnit @file.size, 'MB'
     r: -> if @file.isImage then @file.dimensions else 'PDF'
+
+Sauce =
+  init: ->
+    links = []
+    for link in Conf['sauces'].split '\n'
+      continue if link[0] is '#'
+      # XXX .trim() is there to fix Opera reading two different line breaks.
+      links.push @createSauceLink link.trim()
+    return unless links.length
+    @links = links
+    Post::callbacks.push
+      name: 'Sauce'
+      cb:   @node
+  createSauceLink: (link) ->
+    link = link.replace /\$(turl|url|md5|board)/g, (parameter) ->
+      switch parameter
+        when '$turl'
+          "' + post.file.thumbURL + '"
+        when '$url'
+          "' + post.file.URL + '"
+        when '$md5'
+          "' + encodeURIComponent(post.file.MD5) + '"
+        when '$board'
+          "' + post.board + '"
+        else
+          parameter
+    text = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)[1]
+    link = link.replace /;text:.+$/, ''
+    href = Function 'post', "return '#{link}'"
+    el = $.el 'a',
+      target: '_blank'
+      textContent: text
+    (post) ->
+      a = el.cloneNode true
+      a.href = href post
+      a
+  node: ->
+    return if @isClone or !@file
+    nodes = []
+    for link in Sauce.links
+      # \u00A0 is nbsp
+      nodes.push $.tn('\u00A0'), link @
+    $.add @file.info, nodes
 
 
 
