@@ -790,6 +790,13 @@ Main =
         # XXX handle error
         $.log err, 'Sauce'
 
+    if Conf['Reveal Spoilers']
+      try
+        RevealSpoilers.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Reveal Spoilers'
+
     $.ready Main.initFeaturesReady
   initFeaturesReady: ->
     if d.title is '4chan - 404 Not Found'
@@ -1726,7 +1733,7 @@ FileInfo =
       else
         "<span class=fntrunc>#{FileInfo.escape shortname}</span><span class=fnfull>#{FileInfo.escape fullname}</span>"
     N: -> FileInfo.escape @file.name
-    p: -> if @file.isSpoiler then 'Spoiler' else ''
+    p: -> if @file.isSpoiler then 'Spoiler, ' else ''
     s: -> $.bytesToString @file.size
     B: -> FileInfo.convertUnit @file.size, 'B'
     K: -> FileInfo.convertUnit @file.size, 'KB'
@@ -1775,6 +1782,20 @@ Sauce =
       # \u00A0 is nbsp
       nodes.push $.tn('\u00A0'), link @
     $.add @file.info, nodes
+
+RevealSpoilers =
+  init: ->
+    Post::callbacks.push
+      name: 'Reveal Spoilers'
+      cb:   @node
+  node: ->
+    return if @isClone or !@file?.isSpoiler
+    {thumb} = @file
+    # revealed spoilers do not have height/width set, this fixes auto-gifs dimensions.
+    thumb.removeAttribute 'style'
+    {style} = thumb
+    style.maxHeight = style.maxWidth = if @isReply then '125px' else '250px'
+    thumb.src = @file.thumbURL
 
 
 

@@ -74,7 +74,7 @@
  */
 
 (function() {
-  var $, $$, Board, Build, Clone, Conf, Config, FileInfo, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, Sauce, Thread, Time, UI, d, g,
+  var $, $$, Board, Build, Clone, Conf, Config, FileInfo, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -983,6 +983,13 @@
           Sauce.init();
         } catch (err) {
           $.log(err, 'Sauce');
+        }
+      }
+      if (Conf['Reveal Spoilers']) {
+        try {
+          RevealSpoilers.init();
+        } catch (err) {
+          $.log(err, 'Reveal Spoilers');
         }
       }
       return $.ready(Main.initFeaturesReady);
@@ -1996,7 +2003,7 @@
       },
       p: function() {
         if (this.file.isSpoiler) {
-          return 'Spoiler';
+          return 'Spoiler, ';
         } else {
           return '';
         }
@@ -2086,6 +2093,26 @@
         nodes.push($.tn('\u00A0'), link(this));
       }
       return $.add(this.file.info, nodes);
+    }
+  };
+
+  RevealSpoilers = {
+    init: function() {
+      return Post.prototype.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var style, thumb, _ref;
+      if (this.isClone || !((_ref = this.file) != null ? _ref.isSpoiler : void 0)) {
+        return;
+      }
+      thumb = this.file.thumb;
+      thumb.removeAttribute('style');
+      style = thumb.style;
+      style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
+      return thumb.src = this.file.thumbURL;
     }
   };
 
