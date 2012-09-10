@@ -1,6 +1,7 @@
 Config =
   main:
     Enhancing:
+      'Disable 4chan\'s extension':   [true,  'Avoid conflicts between 4chan X and 4chan\'s inline extension.']
       '404 Redirect':                 [true,  'Redirect dead threads and images']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
@@ -1995,13 +1996,6 @@ QR =
 
 Options =
   init: ->
-    unless $.get 'firstrun'
-      $.set 'firstrun', true
-      localStorage.setItem '4chan-settings', '{"disableAll":true}'
-      $.ready ->
-        # Prevent race conditions
-        Favicon.init() unless Favicon.el
-        Options.dialog()
     $.ready Options.initReady
   initReady: ->
     for settings in ['navtopright', 'navbotright']
@@ -2011,7 +2005,11 @@ Options =
         textContent: '4chan X Settings'
       $.on a, 'click', Options.dialog
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
-    return
+    unless $.get 'firstrun'
+      $.set 'firstrun', true
+      # Prevent race conditions
+      Favicon.init() unless Favicon.el
+      Options.dialog()
 
   dialog: ->
     dialog = $.el 'div'
@@ -3875,6 +3873,9 @@ Main =
             url  = Redirect.image path[1], path[3]
             location.href = url if url
         return
+
+    if Conf['Disable 4chan\'s extension']
+      localStorage.setItem '4chan-settings', '{"disableAll":true}'
 
     Options.init()
 
