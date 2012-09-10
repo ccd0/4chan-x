@@ -6,6 +6,7 @@ master
     - Quote Previewing.
     - Thread Expansion.
     - Comment Expansion.
+  Add an option to disable 4chan's inline extension. Enabled by default.
   Fix compatibility with Scriptish's auto-udpater.
 
 2.34.10

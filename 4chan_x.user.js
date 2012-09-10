@@ -86,6 +86,7 @@
   Config = {
     main: {
       Enhancing: {
+        'Disable 4chan\'s extension': [true, 'Avoid conflicts between 4chan X and 4chan\'s inline extension.'],
         '404 Redirect': [true, 'Redirect dead threads and images'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
@@ -2541,16 +2542,6 @@
 
   Options = {
     init: function() {
-      if (!$.get('firstrun')) {
-        $.set('firstrun', true);
-        localStorage.setItem('4chan-settings', '{"disableAll":true}');
-        $.ready(function() {
-          if (!Favicon.el) {
-            Favicon.init();
-          }
-          return Options.dialog();
-        });
-      }
       return $.ready(Options.initReady);
     },
     initReady: function() {
@@ -2565,6 +2556,13 @@
         });
         $.on(a, 'click', Options.dialog);
         $.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]);
+      }
+      if (!$.get('firstrun')) {
+        $.set('firstrun', true);
+        if (!Favicon.el) {
+          Favicon.init();
+        }
+        return Options.dialog();
       }
     },
     dialog: function() {
@@ -5024,6 +5022,9 @@
             }
           });
           return;
+      }
+      if (Conf['Disable 4chan\'s extension']) {
+        localStorage.setItem('4chan-settings', '{"disableAll":true}');
       }
       Options.init();
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form']) {
