@@ -557,7 +557,9 @@ Filter =
       return decodeURIComponent mail.href[7..]
     false
   subject: (post) ->
-    $('.postInfo .subject', post.el).textContent or false
+    if subject = $ '.postInfo .subject', post.el
+      return subject.textContent
+    false
   comment: (post) ->
     text = []
     # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE is 7
@@ -2965,6 +2967,12 @@ Build =
       emailStart = ''
       emailEnd   = ''
 
+    subject =
+      if subject
+        "<span class=subject>#{subject}</span>"
+      else
+        ''
+
     userID =
       if !capcode and uniqueID
         " <span class='posteruid id_#{uniqueID}'>(ID: " +
@@ -3097,7 +3105,7 @@ Build =
           "<span class='nameBlock#{capcodeClass}'>" +
               "<span class=name>#{name}</span>" + tripcode +
             capcodeStart + capcode + userID + flag + sticky + closed +
-            "<br><span class=subject>#{subject}</span>" +
+            "<br>#{subject}" +
           "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
           '<br><em>' +
             "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"}>No.</a>" +
@@ -3114,7 +3122,7 @@ Build =
 
         "<div class='postInfo desktop' id=pi#{postID}>" +
           "<input type=checkbox name=#{postID} value=delete> " +
-          "<span class=subject>#{subject or ''}</span> " +
+          "#{subject} " +
           "<span class='nameBlock#{capcodeClass}'>" +
             emailStart +
               "<span class=name>#{name}</span>" + tripcode +
