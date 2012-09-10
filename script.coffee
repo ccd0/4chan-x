@@ -2920,7 +2920,7 @@ Build =
       capcode:  data.capcode
       tripcode: data.trip
       uniqueID: data.id
-      email:    data.email.replace /\s/g, '%20' # UGH
+      email:    if data.email then encodeURIComponent data.email else ''
       subject:  data.sub
       flagCode: data.country
       flagName: data.country_name
@@ -3011,7 +3011,7 @@ Build =
 
     flag =
       if flagCode
-       " <img src='#{staticPath}/image/country/#{if g.BOARD is 'pol' then 'troll/' else ''}" +
+       " <img src='#{staticPath}/image/country/#{if board is 'pol' then 'troll/' else ''}" +
         flagCode.toLowerCase() + ".gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
       else
         ''
