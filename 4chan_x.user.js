@@ -874,7 +874,7 @@
       });
     },
     parse: function(req, a, threadID, replyID) {
-      var bq, href, post, posts, quote, quotes, spoilerRange, _i, _j, _len, _len1;
+      var bq, clone, href, post, posts, quote, quotes, spoilerRange, _i, _j, _len, _len1;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
@@ -895,8 +895,9 @@
         return;
       }
       bq = $.id("m" + replyID);
-      bq.innerHTML = post.com;
-      quotes = bq.getElementsByClassName('quotelink');
+      clone = bq.cloneNode(false);
+      clone.innerHTML = post.com;
+      quotes = clone.getElementsByClassName('quotelink');
       for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
         quote = quotes[_j];
         href = quote.getAttribute('href');
@@ -906,7 +907,7 @@
         quote.href = "res/" + href;
       }
       post = {
-        blockquote: bq,
+        blockquote: clone,
         threadID: threadID,
         quotes: quotes,
         backlinks: []
@@ -926,7 +927,8 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      return Main.prettify(bq);
+      $.replace(bq, clone);
+      return Main.prettify(clone);
     }
   };
 
