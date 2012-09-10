@@ -167,7 +167,7 @@
       filesize: [''].join('\n'),
       md5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2;text:Upload to imgur', '#http://omploader.org/upload?url1=$2;text:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/search/image/$3/;text:View same on foolz', '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/', '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'].join('\n'),
+    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2;text:Upload to imgur', '#http://omploader.org/upload?url1=$2;text:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/_/search/image/$3/;text:View same on foolz', '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/', '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
@@ -4562,10 +4562,10 @@
         case 'wsg':
         case 'dev':
         case 'foolz':
-          return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+          return "//archive.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
         case 'u':
         case 'kuku':
-          return "//nsfw.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+          return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
     thread: function(board, threadID, postID) {
