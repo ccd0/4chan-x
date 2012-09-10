@@ -3105,7 +3105,7 @@ Build =
 
         "<div class='postInfoM mobile' id=pim#{postID}>" +
           "<span class='nameBlock#{capcodeClass}'>" +
-              "<span class=name>#{name}</span>" + tripcode +
+              "<span class=name>#{name or ''}</span>" + tripcode +
             capcodeStart + capcode + userID + flag + sticky + closed +
             "<br>#{subject}" +
           "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
@@ -3127,7 +3127,7 @@ Build =
           "#{subject} " +
           "<span class='nameBlock#{capcodeClass}'>" +
             emailStart +
-              "<span class=name>#{name}</span>" + tripcode +
+              "<span class=name>#{name or ''}</span>" + tripcode +
             capcodeStart + emailEnd + capcode + userID + flag + sticky + closed +
           ' </span> ' +
           "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
