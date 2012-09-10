@@ -869,12 +869,15 @@
       });
     },
     parse: function(req, a, threadID, replyID) {
-      var bq, href, post, posts, quote, quotes, _i, _j, _len, _len1;
+      var bq, href, post, posts, quote, quotes, spoilerRange, _i, _j, _len, _len1;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
       }
       posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
       replyID = +replyID;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
@@ -979,14 +982,18 @@
       }
     },
     parse: function(req, thread, a) {
-      var backlink, id, link, nodes, post, replies, reply, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var backlink, id, link, nodes, post, posts, replies, reply, spoilerRange, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         $.off(a, 'click', ExpandThread.cb.toggle);
         return;
       }
       a.textContent = a.textContent.replace('× Loading...', '-');
-      replies = JSON.parse(req.response).posts.slice(1);
+      posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
+      replies = posts.slice(1);
       threadID = thread.id.slice(1);
       nodes = [];
       for (_i = 0, _len = replies.length; _i < _len; _i++) {
@@ -2989,7 +2996,10 @@
         return delete Updater.request;
       },
       update: function(posts) {
-        var count, id, lastPost, nodes, post, scroll, _i, _len, _ref;
+        var count, id, lastPost, nodes, post, scroll, spoilerRange, _i, _len, _ref;
+        if (spoilerRange = posts[0].custom_spoiler) {
+          Build.spoilerRange[g.BOARD] = spoilerRange;
+        }
         lastPost = Updater.thread.lastElementChild;
         id = +lastPost.id.slice(2);
         nodes = [];
@@ -3505,7 +3515,7 @@
       }
     },
     parsePost: function(req, board, threadID, postID, root, cb) {
-      var post, posts, status, url, _i, _len;
+      var post, posts, spoilerRange, status, url, _i, _len;
       status = req.status;
       if (status !== 200) {
         if (url = Redirect.post(board, postID)) {
@@ -3514,11 +3524,14 @@
           });
         } else {
           $.addClass(root, 'warning');
-          root.textContent = status === 404 ? "Thread No." + threadID + " has not been found." : "Error " + req.status + ": " + req.statusText + ".";
+          root.textContent = status === 404 ? "Thread No." + threadID + " 404'd." : "Error " + req.status + ": " + req.statusText + ".";
         }
         return;
       }
       posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
       postID = +postID;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
@@ -3532,7 +3545,7 @@
             });
           } else {
             $.addClass(root, 'warning');
-            root.textContent = "Post No." + postID + " has not been found.";
+            root.textContent = "Post No." + postID + " was not found.";
           }
           return;
         }
@@ -3676,6 +3689,7 @@
   };
 
   Build = {
+    spoilerRange: {},
     shortFilename: function(filename, isOP) {
       var threshold;
       threshold = isOP ? 40 : 30;
@@ -3729,7 +3743,7 @@
           @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
       postID = o.postID, threadID = o.threadID, board = o.board, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org';
@@ -3778,33 +3792,9 @@
           fileSize = "Spoiler Image, " + fileSize;
           if (!isArchived) {
             fileThumb = '//static.4chan.org/image/spoiler';
-            fileThumb += (function() {
-              switch (board) {
-                case 'a':
-                  return '-a';
-                case 'co':
-                  return '-co';
-                case 'jp':
-                  return '-jp';
-                case 'lit':
-                  return 'lit';
-                case 'm':
-                  return '-m2';
-                case 'mlp':
-                  return '-mlp';
-                case 'tg':
-                  return '-tg2';
-                case 'tv':
-                  return '-tv5';
-                case 'v':
-                case 'vg':
-                  return '-v';
-                case 'vp':
-                  return '-vp';
-                default:
-                  return '';
-              }
-            })();
+            if (spoilerRange = Build.spoilerRange[board]) {
+              fileThumb += ("-" + board) + Math.floor(1 + spoilerRange * Math.random());
+            }
             fileThumb += '.png';
             file.twidth = file.theight = 100;
           }

@@ -715,6 +715,8 @@ ExpandComment =
       return
 
     posts = JSON.parse(req.response).posts
+    if spoilerRange = posts[0].custom_spoiler
+      Build.spoilerRange[g.BOARD] = spoilerRange
     replyID = +replyID
 
     for post in posts
@@ -791,8 +793,11 @@ ExpandThread =
 
     a.textContent = a.textContent.replace '× Loading...', '-'
 
-    replies = JSON.parse(req.response).posts[1..]
+    posts = JSON.parse(req.response).posts
+    if spoilerRange = posts[0].custom_spoiler
+      Build.spoilerRange[g.BOARD] = spoilerRange
 
+    replies  = posts[1..]
     threadID = thread.id[1..]
     nodes    = []
     for reply in replies
@@ -2384,6 +2389,9 @@ Updater =
             Updater.count.className = 'warning'
       delete Updater.request
     update: (posts) ->
+      if spoilerRange = posts[0].custom_spoiler
+        Build.spoilerRange[g.BOARD] = spoilerRange
+
       lastPost = Updater.thread.lastElementChild
       id = +lastPost.id[2..]
       nodes = []
@@ -2748,12 +2756,14 @@ Get =
         $.addClass root, 'warning'
         root.textContent =
           if status is 404
-            "Thread No.#{threadID} has not been found."
+            "Thread No.#{threadID} 404'd."
           else
             "Error #{req.status}: #{req.statusText}."
       return
 
     posts  = JSON.parse(req.response).posts
+    if spoilerRange = posts[0].custom_spoiler
+      Build.spoilerRange[g.BOARD] = spoilerRange
     postID = +postID
     for post in posts
       break if post.no is postID # we found it!
@@ -2764,7 +2774,7 @@ Get =
             Get.parseArchivedPost @, board, postID, root, cb
         else
           $.addClass root, 'warning'
-          root.textContent = "Post No.#{postID} has not been found."
+          root.textContent = "Post No.#{postID} was not found."
         return
 
     $.replace root.firstChild, Get.cleanPost Build.postFromObject post, board
@@ -2887,6 +2897,7 @@ Get =
     "/#{g.BOARD}/ - #{span.textContent.trim()}"
 
 Build =
+  spoilerRange: {}
   shortFilename: (filename, isOP) ->
     # FILENAME SHORTENING SCIENCE:
     # OPs have a +10 characters threshold.
@@ -3020,20 +3031,9 @@ Build =
         fileSize = "Spoiler Image, #{fileSize}"
         unless isArchived
           fileThumb = '//static.4chan.org/image/spoiler'
-          fileThumb += switch board
-            # UGGH, I can't wait to maintain this crap.
-            # Sup desuwa?
-            when 'a'       then '-a'
-            when 'co'      then '-co'
-            when 'jp'      then '-jp'
-            when 'lit'     then 'lit'
-            when 'm'       then '-m2'
-            when 'mlp'     then '-mlp'
-            when 'tg'      then '-tg2'
-            when 'tv'      then '-tv5'
-            when 'v', 'vg' then '-v'
-            when 'vp'      then '-vp'
-            else ''
+          if spoilerRange = Build.spoilerRange[board]
+            # Randomize the spoiler image.
+            fileThumb += "-#{board}" + Math.floor 1 + spoilerRange * Math.random()
           fileThumb += '.png'
           file.twidth = file.theight = 100
 
