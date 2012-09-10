@@ -119,7 +119,7 @@ Config =
     '#http://archive.foolz.us/$board/search/image/$md5/;text:View same on foolz /$board/'
     '#https://archive.installgentoo.net/$board/image/$md5;text:View same on installgentoo /$board/'
   ].join '\n'
-  time: '%m/%d/%y(%a)%H:%M'
+  time: '%m/%d/%y(%a)%H:%M:%S'
   backlink: '>>%id'
   fileInfo: '%l (%p%s, %r)'
   favicon: 'ferongr'
