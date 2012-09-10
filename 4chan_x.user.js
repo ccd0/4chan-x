@@ -74,7 +74,7 @@
  */
 
 (function() {
-  var $, $$, Board, Build, Clone, Conf, Config, FileInfo, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, Time, UI, d, g,
+  var $, $$, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -100,7 +100,7 @@
         'Stubs': [true, 'Make stubs of hidden threads / replies.']
       },
       Imaging: {
-        'Image Auto-Gif': [false, 'Animate GIF thumbnails.'],
+        'Auto-GIF': [false, 'Animate GIF thumbnails.'],
         'Image Expansion': [true, 'Expand images.'],
         'Expand From Position': [true, 'Expand all images only from current position to thread end.'],
         'Image Hover': [false, 'Show full image on mouseover.'],
@@ -990,6 +990,13 @@
           RevealSpoilers.init();
         } catch (err) {
           $.log(err, 'Reveal Spoilers');
+        }
+      }
+      if (Conf['Auto-GIF']) {
+        try {
+          AutoGIF.init();
+        } catch (err) {
+          $.log(err, 'Auto-GIF');
         }
       }
       return $.ready(Main.initFeaturesReady);
@@ -2104,15 +2111,45 @@
       });
     },
     node: function() {
-      var style, thumb, _ref;
+      var thumb, _ref;
       if (this.isClone || !((_ref = this.file) != null ? _ref.isSpoiler : void 0)) {
         return;
       }
       thumb = this.file.thumb;
       thumb.removeAttribute('style');
-      style = thumb.style;
-      style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
       return thumb.src = this.file.thumbURL;
+    }
+  };
+
+  AutoGIF = {
+    init: function() {
+      var _ref;
+      if ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg') {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Auto-GIF',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var URL, gif, style, thumb, _ref, _ref1;
+      if (this.isClone || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
+        return;
+      }
+      _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
+      if (!(/gif$/.test(URL) && !/spoiler/.test(thumb.src))) {
+        return;
+      }
+      if (this.file.isSpoiler) {
+        style = thumb.style;
+        style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
+      }
+      gif = $.el('img');
+      $.on(gif, 'load', function() {
+        return thumb.src = URL;
+      });
+      return gif.src = URL;
     }
   };
 

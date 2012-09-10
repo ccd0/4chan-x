@@ -18,7 +18,7 @@ Config =
       'Thread Hiding':                [true,  'Hide entire threads.']
       'Stubs':                        [true,  'Make stubs of hidden threads / replies.']
     Imaging:
-      'Image Auto-Gif':               [false, 'Animate GIF thumbnails.']
+      'Auto-GIF':                     [false, 'Animate GIF thumbnails.']
       'Image Expansion':              [true,  'Expand images.']
       'Expand From Position':         [true,  'Expand all images only from current position to thread end.']
       'Image Hover':                  [false, 'Show full image on mouseover.']
@@ -796,6 +796,13 @@ Main =
       catch err
         # XXX handle error
         $.log err, 'Reveal Spoilers'
+
+    if Conf['Auto-GIF']
+      try
+        AutoGIF.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Auto-GIF'
 
     $.ready Main.initFeaturesReady
   initFeaturesReady: ->
@@ -1791,11 +1798,29 @@ RevealSpoilers =
   node: ->
     return if @isClone or !@file?.isSpoiler
     {thumb} = @file
-    # revealed spoilers do not have height/width set, this fixes auto-gifs dimensions.
     thumb.removeAttribute 'style'
-    {style} = thumb
-    style.maxHeight = style.maxWidth = if @isReply then '125px' else '250px'
     thumb.src = @file.thumbURL
+
+AutoGIF =
+  init: ->
+    return if g.BOARD.ID in ['gif', 'wsg']
+    Post::callbacks.push
+      name: 'Auto-GIF'
+      cb:   @node
+  node: ->
+    # XXX return if @hidden?
+    return if @isClone or !@file?.isImage
+    {thumb, URL} = @file
+    return unless /gif$/.test(URL) and !/spoiler/.test thumb.src
+    if @file.isSpoiler
+      # Revealed spoilers do not have height/width set, this fixes auto-gifs dimensions.
+      {style} = thumb
+      style.maxHeight = style.maxWidth = if @isReply then '125px' else '250px'
+    gif = $.el 'img'
+    $.on gif, 'load', ->
+      # Replace the thumbnail once the GIF has finished loading.
+      thumb.src = URL
+    gif.src = URL
 
 
 
