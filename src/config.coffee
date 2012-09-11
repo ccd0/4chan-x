@@ -207,7 +207,7 @@ Config =
       'Font Size':                  [12,               'The font size of posts and various UI. This does not change all font sizes.', [
         10, 11, 12, 13, 14
       ]]
-      'Mascots':                   [true,              'Add a pretty picture of your waifu to the sidebar.']
+      'Mascots':                   [false,              'Add a pretty picture of your waifu to the sidebar.']
       'Mascots Overlap Posts':     [true,              'Mascots overlap threads and posts.']
       'Rounded Edges':             [true,              'Round the edges of various 4chan elements.']
       'Sage Highlighting':         ['image',           'Icons or text to highlight saged posts.', [
