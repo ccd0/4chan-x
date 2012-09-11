@@ -1348,8 +1348,9 @@ div.navLinks > a {
 }
 #updater {
   right: 2px !important;
-  top: 0 !important;
-  bottom: auto !important;
+  top: ' + (if Conf["Updater Position"] == "top" then "0" else "auto") + ' !important;
+  bottom: ' + (if Conf["Updater Position"] == "bottom" then "0" else "auto") + ' !important;
+  left: auto !important;
   width: 58px !important;
   border: 0;
   font-size: 12px;

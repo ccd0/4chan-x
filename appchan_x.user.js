@@ -232,7 +232,8 @@
         'Announcements': ['slideout', 'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']],
         'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']],
         'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
-        'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
+        'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'],
+        'Updater Position': ['top', 'The position of 4chan thread updater', ['top', 'bottom']]
       },
       Navigation: {
         'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
@@ -8472,8 +8473,9 @@ div.navLinks > a {\
 }\
 #updater {\
   right: 2px !important;\
-  top: 0 !important;\
-  bottom: auto !important;\
+  top: ' + (Conf["Updater Position"] === "top" ? "0" : "auto") + ' !important;\
+  bottom: ' + (Conf["Updater Position"] === "bottom" ? "0" : "auto") + ' !important;\
+  left: auto !important;\
   width: 58px !important;\
   border: 0;\
   font-size: 12px;\

@@ -184,7 +184,10 @@ Config =
         'compact', 'list', 'hide'
       ]]
       'Slideout Watcher':          [true,              'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
-     Navigation:
+      'Updater Position':          ['top',             'The position of 4chan thread updater', [
+        'top', 'bottom'
+      ]]
+    Navigation:
       'Boards Navigation':         ['sticky top',      'The position of 4chan board navigation', [
         'sticky top', 'sticky bottom', 'top', 'hide'
       ]]
