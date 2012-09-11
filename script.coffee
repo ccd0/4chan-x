@@ -4189,7 +4189,7 @@ Main =
     Main.node nodes, true
 
     # Execute these scripts on inserted posts, not page init.
-    Main.hasCodeTags = !! $ 'script[src="//static.4chan.org/js/prettify/prettify.js"]'
+    Main.hasCodeTags = !! $ 'script[src^="//static.4chan.org/js/prettify/prettify"]'
 
     if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
       observer = new MutationObserver Main.observer
