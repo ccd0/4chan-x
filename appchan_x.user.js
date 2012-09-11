@@ -592,11 +592,11 @@
       'Background Attachment': 'fixed',
       'Background Position': '',
       'Background Repeat': 'repeat',
-      'Background Color': 'rgba(0,0,0,1)',
+      'Background Color': 'rgba(19,19,19,1)',
       'Dialog Background': 'rgba(16,16,16,1)',
       'Dialog Border': 'rgba(16,16,16,1)',
-      'Thread Wrapper Background': 'rgba(52,56,56,0.75)',
-      'Thread Wrapper Border': 'rgba(52,56,56,0.75)',
+      'Thread Wrapper Background': 'rgba(52,56,56,0.3)',
+      'Thread Wrapper Border': 'rgba(52,56,56,0.3)',
       'Reply Background': 'rgba(52,56,56,1)',
       'Reply Border': 'rgba(0,0,0,0)',
       'Highlighted Reply Background': 'rgba(0,0,0,0)',
@@ -634,7 +634,7 @@
       'Warnings': 'rbg(187,187,187)',
       'Shadow Color': 'rgba(20,20,20,0.9)',
       'Dark Theme': '1',
-      'Custom CSS': '#delform blockquote{color:#bbb;background:#343838;margin-bottom:10px;padding:8px;box-shadow:0px 0px 20px rgba(25,25,25,0.6);border:1px solid #343838;border-bottom:2px solid #444848;border-radius:0px 6px 6px 6px;padding-top:15px;}.name{font-weight:800;}.nameBlock>.useremail>.name:hover,.nameBlock>.useremail>.postertrip:hover{color:#00dffc;}a.forwardlink{color:#608cae;font-weight:800;}#delform blockquote{border-radius:3px;}.reply #delform blockquote{background-color:transparent;}div.reply, .reply.highlight{padding:0px;}#qp div.post{border:1px solid rgba(128,172,206,0.5);background-color:rgba(24,24,24,0.9);}.name,.postertrip{text-shadow:0px 0px 6px rgba(20,20,20,0.9);font-weight:bold;background:#343838;border:1px solid #343838;border-radius:5px 5px 0px 0px;-moz-border-radius:5px 5px 0px 0px;padding:4px 6px;padding-top:2px;}div.reply,form[name="delform"],#delform blockquote{margin:0px!important;padding:0px;}a{-moz-transition:all 0.5s ease;}a.pointer {font-weight:bold;font-weight:normal;color:#777;padding-right:5px;}form[name="delform"] table a img{position:relative;bottom:15px;right:10px;padding:0px;margin-bottom:10px;}.opContainer, replyContainer{-moz-transition:all 0.5s ease;opacity:0.45;-webkit-transition:all 0.5s ease;opacity:0.45;-o-transition:all 0.5s ease;opacity:0.45;}.opContainer:hover,.replyContainer:hover{opacity:1;}.reply,.reply.highlight{background:transparent;border:0px;padding:0px;padding-bottom:0px;border-radius:6px;}form[name="delform"] table blockquote{padding:5px;background:#343838;margin-top:0px;min-height:20px;padding-top:10px;clear:none;}table a[href^="http://images.4chan.org"] + blockquote{margin-top:-14px;padding-left:150px;}a.backlink{border:1px solid #343838;border-radius:5px 5px 0px 0px;background:#343838;padding:2px 4px 2px;text-decoration:none;}a.forwardlink{color:#608CAE;text-shadow:0 0 6px rgba(96,140,174,0.8);}body > .postingMode ~ form[name="delform"] .subject{font-weight: bold;letter-spacing: 3px;background: transparent;}div.reply, div.reply.highlight {background-color: rgba(0,0,0,0) !important; border: none !important;}#qp div.post .name, #qp div.post a.backlink, #qp div.post blockquote {background:none;border:none;box-shadow:none;border-radius:0px;}'
+      'Custom CSS': '#options{background-color: rgba(16,16,16,1) !important;}#delform blockquote {color:#bbb;background:#343838;padding:8px;box-shadow:0px 0px 20px rgba(25,25,25,0.6);border:1px solid #343838;border-bottom:2px solid #444848;border-radius:0px 6px 6px 6px;padding-top:15px;}.name {font-weight:800;}.nameBlock > .useremail > .name:hover,.nameBlock> .useremail> .postertrip:hover {color:#00dffc;}a.forwardlink {color:#608cae;font-weight:800;}#delform blockquote {border-radius:3px;}div.reply,.reply.highlight {padding:0;}#qp div.post {border:1px solid rgba(128,172,206,0.5) !important;background-color:rgba(24,24,24,0.9) !important;}.name,.postertrip {text-shadow:0px 0px 6px rgba(20,20,20,0.9);font-weight:bold;background:#343838;border:1px solid #343838;border-radius:5px 5px 0px 0px;padding:4px 6px;padding-top:2px;}div.reply,#delform,#delform blockquote {margin:0 10px 15px 0 !important;padding:0px;}a{-moz-transition:all 0.5s ease;-webkit-transition:all 0.5s ease;-o-transition:all 0.5s ease;}a.pointer{font-weight:bold;font-weight:normal;color:#777;padding-right:5px;}#delform .opContainer,#delform .replyContainer {opacity:0.45;-moz-transition:all 0.5s ease;-webkit-transition:all 0.5s ease;-o-transition:all 0.5s ease;}#delform .opContainer:hover,#delform .replyContainer:hover{opacity:1;}.reply,.reply.highlight{background:transparent;border:0px;padding:0px;padding-bottom:0px;border-radius:6px;}#delform blockquote{padding:5px;background:#343838;margin-top:0px;min-height:20px;padding-top:10px;clear:none;}#delform .file + blockquote{margin-top:-14px !important;padding-left:150px !important;}a.backlink{border:1px solid #343838;border-radius:5px 5px 0px 0px;background:#343838;padding:2px 4px 2px;text-decoration:none;}a.forwardlink{color:#608CAE;text-shadow:0 0 6px rgba(96,140,174,0.8);}.subject{font-weight: bold;letter-spacing: 3px;background: transparent;}div.reply,div.reply.highlight {background-color: rgba(0,0,0,0) !important;border: none !important;}#qp div.post .name,#qp div.post a.backlink,#qp div.post blockquote {background:none !important;border:none !important;box-shadow:none !important;border-radius:0px; !important}'
     },
     'Photon': {
       'Author': 'seaweed-chan',
@@ -788,6 +788,57 @@
       'Shadow Color': 'rgba(0,0,0,0.4)',
       'Dark Theme': '1',
       'Custom CSS': '#qp div.post{background-color:rgba(7,54,66,0.9);border:1px solid rgba(79,95,143,0.9);}'
+    },
+    'Yotsuba': {
+      'Author': 'moot',
+      'Author Tripcode': '!Ep8pui8Vw2',
+      'Background Image': 'linear-gradient(rgb(254,214,175), rgb(255,255,238) 200px, rgb(255,255,238))',
+      'Background Attachment': '',
+      'Background Position': '',
+      'Background Repeat': '',
+      'Background Color': 'rgba(255,255,238,1)',
+      'Dialog Background': 'rgba(240,224,214,1)',
+      'Dialog Border': 'rgba(217,191,183,1)',
+      'Thread Wrapper Background': 'rgba(0,0,0,0)',
+      'Thread Wrapper Border': 'rgba(0,0,0,0)',
+      'Reply Background': 'rgba(240,224,214,1)',
+      'Reply Border': 'rgba(217,191,183,1)',
+      'Highlighted Reply Background': 'rgba(240,192,176,1)',
+      'Highlighted Reply Border': 'rgba(217,191,183,1)',
+      'Backlinked Reply Outline': 'rgba(98,124,141,1)',
+      'Checkbox Background': 'rgba(255,255,238,1)',
+      'Checkbox Border': 'rgba(217,191,183,1)',
+      'Checkbox Checked Background': 'rgba(255,255,238,1)',
+      'Input Background': 'rgba(240,224,214,1)',
+      'Input Border': 'rgba(217,191,183,1)',
+      'Hovered Input Background': 'rgba(240,224,214,1)',
+      'Hovered Input Border': 'rgba(217,191,183,1)',
+      'Focused Input Background': 'rgba(255,255,255,1)',
+      'Focused Input Border': 'rgba(128,0,0,1)',
+      'Buttons Background': 'rgba(240,192,176,1)',
+      'Buttons Border': 'rgba(217,191,183,1)',
+      'Navigation Background': 'rgba(240,192,176,0.7)',
+      'Navigation Border': 'rgba(217,191,183,1)',
+      'Links': 'rgb(186,0,0)',
+      'Hovered Links': 'rgb(221,0,0)',
+      'Navigation Links': 'rgb(128,0,0)',
+      'Hovered Navigation Links': 'rgb(221,0,0)',
+      'Subjects': 'rgb(204,17,5)',
+      'Names': 'rgb(17,119,67)',
+      'Sage': 'rgb(204,17,17)',
+      'Tripcodes': 'rgb(34,136,84)',
+      'Emails': 'rgb(186,0,0)',
+      'Post Numbers': 'rgb(128,0,0)',
+      'Text': 'rgb(128,0,0)',
+      'Backlinks': 'rgb(220,0,0)',
+      'Greentext': 'rgb(120,153,34)',
+      'Board Title': 'rgb(204,17,5)',
+      'Timestamps': 'rgb(186,0,0)',
+      'Inputs': 'rgb(0,0,0)',
+      'Warnings': 'rbg(128,0,0)',
+      'Shadow Color': 'rgba(119,46,40,1)',
+      'Dark Theme': '0',
+      'Custom CSS': '#qp div.post{background-color:rgba(240,192,176,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
     },
     'Zenburned': {
       'Author': 'lazy',
@@ -7649,6 +7700,7 @@ time + span {\
 #autohide,\
 #ft li.fill,\
 #imgControls label:first-of-type input,\
+#imgControls .rice,\
 #logo,\
 #postPassword + span,\
 #settingsBox[style*="display: none;"],\
@@ -8326,9 +8378,6 @@ div.navLinks > a {\
 #options ul:first-of-type {\
   padding-top: 5px;\
 }\
-#content textarea {\
-  width: 99%;\
-}\
 /* End of Appchan x options */\
 #stats,\
 #navlinks {\
@@ -8679,6 +8728,14 @@ body {\
   background-attachment: ' + theme["Background Attachment"] + ';\
   background-position: ' + theme["Background Position"] + ';\
 }\
+#content {\
+  background-color: ' + theme["Background Color"] + ';\
+  border: 1px solid ' + theme["Reply Border"] + ';\
+  padding: 5px;\
+}\
+.suboptions {\
+  padding: 5px;\
+}\
 .boardTitle {\
   text-shadow:\
     1px 1px 0 ' + theme["Background Color"] + ',\
@@ -8758,7 +8815,7 @@ div.reply {\
 #boardNavDesktop,\
 .pages {\
   background-color: ' + theme["Navigation Background"] + ';\
-  border-color: ' + theme["Navigation Border"] + ';\
+  border: 1px solid' + theme["Navigation Border"] + ';\
 }\
 #delform {\
   background-color: ' + theme["Thread Wrapper Background"] + ';\
@@ -9014,7 +9071,7 @@ span.lit {\
 }\
 /* Delete buttons */\
 .deleteform::before {\
-  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAH9JREFUGNONkFEZgCAMhIlABCIQgQhE8O2vQQMiEMEIi7AIRjACPqGC4ueetu/udrcZ869wBMI7ZFkREpmN+IRXlpOo+HGt3KZA6eFA6mYZ4dzlkNFbcWefW467XonGYMnU3qrFKwjCQqKi2PmD5JOARansw/0PQpkbeMpUfdUBLYs3tDb03tIAAAAASUVORK5CYII=");\
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAftJREFUOE991M0rRFEYx/E7jYkRTWymycZmZCUrWYgUZTFrkub1T1Cy8LJXkrKWlWRrJZsZW+upSTZkJxbSmIzmXt/feK6O8aI+nnPOc+7vnHnB8zp+isVipFQq9SCJcUxjBpMYRj97op3Pfc1peujGKJtXUcEjfAR4RRUH7JlFQod+C7SQPmoG52gg+EOL9WusYehbmN1EIVfQxr9C3PUH9m1jsFAoeB6/Ino5dpMwpM68jBsn+MnW7qi+HXbP80uIKagHq2gggEKOMYUV5jU8M97BBNaZ39pen3qBlIKSqFhDQWVMoQtxZLChzbq97d93Dn5hPKegcTw6QTeMdZO4PhFqDAl4+XxeQWM4Q8t5ZkvNafgITItaQwax8ONVCNI4QcPZr+cOFTTTsajGMzaQcIKizOftEB0WHqx6pKBJvDqNJ8Y7SMHL5XIRtL/JzONYRBVu2J6aw9YITygzn7AAhaQxj/Z7Rh2gv4s3O7xJXVajHwdoIcAd1pHEGE5Qw6JCsIBLZ796IwqKYhbXFuRTb7GPMzTsoSp110KatrdO3URv+71kkMAaHmyDbhYGaCy68Ztzk3fGp9BL//zj1QBD2M5ms/fwEfyjTk8hei+/viLtMBoRDGIJF3j5JajJWg2bSCOGn/+atGjNFHUOWzjEEfawjBH06mA34QPkk++/bAlEMAAAAABJRU5ErkJggg==");\
 }\
 /* Return button */\
 div.navLinks > a:first-of-type::after {\
@@ -9480,6 +9537,7 @@ body {\
 }\
 div.reply,\
 div.reply.highlight,\
+#content,\
 #options,\
 #watcher,\
 #qp,\
@@ -9498,7 +9556,7 @@ a,\
 .new {\
   border-radius: 9px;\
 }\
-#postForm::after {\
+#qr::before {\
   border-radius: 6px 6px 0 0;\
 }\
 .qphl {\
