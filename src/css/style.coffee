@@ -566,7 +566,7 @@ div.opContainer {
 
       css += '
 ::' + agent + 'selection {
-  background-color: ' + theme["Text"] + ';
+  background: ' + theme["Text"] + ';
   color: ' + theme["Background Color"] + ';
 }
 body {
@@ -1666,14 +1666,14 @@ table.reply[style^="clear: both"] {
   font-size: 11px;
 }
 body {
-  background-color: ' + theme["Background Color"] + ';
+  background: ' + theme["Background Color"] + ';
   background-image: ' + theme["Background Image"] + ';
   background-repeat: ' + theme["Background Repeat"] + ';
   background-attachment: ' + theme["Background Attachment"] + ';
   background-position: ' + theme["Background Position"] + ';
 }
 #content {
-  background-color: ' + theme["Background Color"] + ';
+  background: ' + theme["Background Color"] + ';
   border: 1px solid ' + theme["Reply Border"]  + ';
   padding: 5px;
 }
@@ -1706,7 +1706,7 @@ input[type="submit"],
 .deleteform input[value=Delete],
 input[value="Report"],
 #qr.autohide .move {
-  background-color: ' + theme["Buttons Background"] + ';
+  background: ' + theme["Buttons Background"] + ';
   border: 1px solid ' + theme["Buttons Border"]  + ';
 }
 #file,
@@ -1717,7 +1717,7 @@ input.field,
 select,
 textarea,
 textarea.field {
-  background-color: ' + theme["Input Background"] + ';
+  background: ' + theme["Input Background"] + ';
   border: 1px solid ' + theme["Input Border"]  + ';
   color: ' + theme["Inputs"] + ';
   ' + agent + 'transition: all .2s linear;
@@ -1732,7 +1732,7 @@ input[type="submit"]:hover,
 select:hover,
 textarea:hover,
 textarea.field:hover {
-  background-color: ' + theme["Hovered Input Background"] + ';
+  background: ' + theme["Hovered Input Background"] + ';
   border-color: ' + theme["Hovered Input Border"]  + ';
   color: ' + theme["Inputs"] + ';
   ' + agent + 'transition: all .2s linear;
@@ -1743,26 +1743,26 @@ input[type="submit"]:focus,
 select:focus,
 textarea:focus,
 textarea.field:focus {
-  background-color: ' + theme["Focused Input Background"] + ';
+  background: ' + theme["Focused Input Background"] + ';
   border-color: ' + theme["Focused Input Border"]  + ';
   color: ' + theme["Inputs"] + ';
 }
 #qp div.post,
 div.reply {
-  background-color: ' + theme["Reply Background"] + ';
+  background: ' + theme["Reply Background"] + ';
   border: 1px solid ' + theme["Reply Border"]  + ';
 }
 .reply.highlight {
-  background-color: ' + theme["Highlighted Reply Background"] + ';
+  background: ' + theme["Highlighted Reply Background"] + ';
   border: 1px solid ' + theme["Highlighted Reply Border"]  + ';
 }
 #boardNavDesktop,
 .pages {
-  background-color: ' + theme["Navigation Background"] + ';
-  border: 1px solid' + theme["Navigation Border"]  + ';
+  background: ' + theme["Navigation Background"] + ';
+  border: 1px solid ' + theme["Navigation Border"]  + ';
 }
 #delform {
-  background-color: ' + theme["Thread Wrapper Background"] + ';
+  background: ' + theme["Thread Wrapper Background"] + ';
   border: 1px solid ' + theme["Thread Wrapper Border"]  + ';
 }
 #boardNavDesktopFoot,
@@ -1771,7 +1771,7 @@ div.reply {
 .deleteform,
 div.subMenu,
 #menu {
-  background-color: ' + theme["Dialog Background"] + ';
+  background: ' + theme["Dialog Background"] + ';
   border: 1px solid ' + theme["Dialog Border"]  + ';
 }
 .inline div.reply {
@@ -1849,13 +1849,13 @@ div.subMenu,
   height: 10px;
   margin: 3px;
   display: inline-block;
-  background-color: ' + theme["Checkbox Background"] + ';
+  background: ' + theme["Checkbox Background"] + ';
   border: 1px solid ' + theme["Checkbox Border"]  + ';
 }
 #qr label input,
 #updater input,
 .bd {
-  background-color: ' + theme["Buttons Background"] + ';
+  background: ' + theme["Buttons Background"] + ';
   border: 1px solid ' + theme["Buttons Border"]  + ';
 }
 .pages a,
@@ -1863,7 +1863,7 @@ div.subMenu,
   color: ' + theme["Navigation Links"] + ';
 }
 input[type=checkbox]:checked + .rice {
-  background-color: ' + theme["Checkbox Checked Background"] + ';
+  background: ' + theme["Checkbox Checked Background"] + ';
   background-image: url(' + (if theme["Dark Theme"] == "1" then "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABlBMVEX///////9VfPVsAAAAAXRSTlMAQObYZgAAACJJREFUeF4FwLEJACAMBMATh3WN31jLFCEIsWLHicvQFM8HVtkHPQ48rNIAAAAASUVORK5CYII=" else "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJBAMAAAASvxsjAAAAG1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACUUeIgAAAACHRSTlMAMN9AIL8Qn+Bdi9cAAAA4SURBVHheFcSxDQAgCATANzoAcQKNjSWxcgFncQ2gcmzhikOgKLe4CgonIxxZA9g6yX8dvrF/1fuGOAZL4rd0JQAAAABJRU5ErkJggg==") + ');
   background-attachment: scroll;
   background-repeat: no-repeat;
@@ -2681,7 +2681,7 @@ a.useremail[href*="SAGE"]:last-of-type::after {
 }
 .globalMessage {
   width: ' + (236 + sidebarOffsetW) + 'px;
-  background-color: ' + theme["Dialog Background"] + ';
+  background: ' + theme["Dialog Background"] + ';
   border: 1px solid ' + theme["Dialog Border"]  + ';
 }
 '

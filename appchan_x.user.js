@@ -698,12 +698,12 @@
     'RedUX': {
       'Author': 'Zixaphir',
       'Author Tripcode': '!VGsTHECURE',
-      'Background Image': '',
-      'Background Attachment': '',
-      'Background Position': '',
-      'Background Repeat': '',
-      'Background Color': 'rgba(255,255,255,1)',
-      'Thread Wrapper Background': 'rgba(0,0,0,0)',
+      'Background Image': 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), radial-gradient(rgb(190,0,0), rgb(15,0,0))',
+      'Background Attachment': 'scroll, fixed',
+      'Background Position': 'center, center',
+      'Background Repeat': 'repeat, no-repeat',
+      'Background Color': 'rgba(0,0,0,0,1)',
+      'Thread Wrapper Background': 'linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px, rgb(240,240,240))',
       'Thread Wrapper Border': 'rgba(0,0,0,0)',
       'Dialog Background': 'rgba(238,242,255,1)',
       'Dialog Border': 'rgba(238,242,255,1)',
@@ -745,7 +745,7 @@
       'Warnings': 'rbg(87,87,123)',
       'Shadow Color': 'rgba(60,60,60,0.6)',
       'Dark Theme': '1',
-      'Custom CSS': '.replyContainer > .reply {background-color: transparent;} body { background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -moz-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), -webkit-radial-gradient(rgb(190,0,0), rgb(15,0,0)); background-repeat: repeat, no-repeat !important; background-attachment: scroll, fixed !important; background-position: center, center !important;} #boardNavDesktop, .pages { background-color: rgba(0,0,0,0.7); } #boardNavDesktopFoot, #watcher, #watcher:hover, .deleteform { background-color: rgba(238,242,255,1); } div.reply { border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); border-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { background: -moz-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); background: -webkit-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); -o-linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px); padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; } #qr::before {color: #000;}'
+      'Custom CSS': '.replyContainer > .reply {background-color: transparent; border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); border-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
     },
     'Solarized': {
       'Author': 'ubuntufriend',
@@ -7690,7 +7690,7 @@ div.opContainer {\
         }
         css += '\
 ::' + agent + 'selection {\
-  background-color: ' + theme["Text"] + ';\
+  background: ' + theme["Text"] + ';\
   color: ' + theme["Background Color"] + ';\
 }\
 body {\
@@ -8790,14 +8790,14 @@ table.reply[style^="clear: both"] {\
   font-size: 11px;\
 }\
 body {\
-  background-color: ' + theme["Background Color"] + ';\
+  background: ' + theme["Background Color"] + ';\
   background-image: ' + theme["Background Image"] + ';\
   background-repeat: ' + theme["Background Repeat"] + ';\
   background-attachment: ' + theme["Background Attachment"] + ';\
   background-position: ' + theme["Background Position"] + ';\
 }\
 #content {\
-  background-color: ' + theme["Background Color"] + ';\
+  background: ' + theme["Background Color"] + ';\
   border: 1px solid ' + theme["Reply Border"] + ';\
   padding: 5px;\
 }\
@@ -8830,7 +8830,7 @@ input[type="submit"],\
 .deleteform input[value=Delete],\
 input[value="Report"],\
 #qr.autohide .move {\
-  background-color: ' + theme["Buttons Background"] + ';\
+  background: ' + theme["Buttons Background"] + ';\
   border: 1px solid ' + theme["Buttons Border"] + ';\
 }\
 #file,\
@@ -8841,7 +8841,7 @@ input.field,\
 select,\
 textarea,\
 textarea.field {\
-  background-color: ' + theme["Input Background"] + ';\
+  background: ' + theme["Input Background"] + ';\
   border: 1px solid ' + theme["Input Border"] + ';\
   color: ' + theme["Inputs"] + ';\
   ' + agent + 'transition: all .2s linear;\
@@ -8856,7 +8856,7 @@ input[type="submit"]:hover,\
 select:hover,\
 textarea:hover,\
 textarea.field:hover {\
-  background-color: ' + theme["Hovered Input Background"] + ';\
+  background: ' + theme["Hovered Input Background"] + ';\
   border-color: ' + theme["Hovered Input Border"] + ';\
   color: ' + theme["Inputs"] + ';\
   ' + agent + 'transition: all .2s linear;\
@@ -8867,26 +8867,26 @@ input[type="submit"]:focus,\
 select:focus,\
 textarea:focus,\
 textarea.field:focus {\
-  background-color: ' + theme["Focused Input Background"] + ';\
+  background: ' + theme["Focused Input Background"] + ';\
   border-color: ' + theme["Focused Input Border"] + ';\
   color: ' + theme["Inputs"] + ';\
 }\
 #qp div.post,\
 div.reply {\
-  background-color: ' + theme["Reply Background"] + ';\
+  background: ' + theme["Reply Background"] + ';\
   border: 1px solid ' + theme["Reply Border"] + ';\
 }\
 .reply.highlight {\
-  background-color: ' + theme["Highlighted Reply Background"] + ';\
+  background: ' + theme["Highlighted Reply Background"] + ';\
   border: 1px solid ' + theme["Highlighted Reply Border"] + ';\
 }\
 #boardNavDesktop,\
 .pages {\
-  background-color: ' + theme["Navigation Background"] + ';\
-  border: 1px solid' + theme["Navigation Border"] + ';\
+  background: ' + theme["Navigation Background"] + ';\
+  border: 1px solid ' + theme["Navigation Border"] + ';\
 }\
 #delform {\
-  background-color: ' + theme["Thread Wrapper Background"] + ';\
+  background: ' + theme["Thread Wrapper Background"] + ';\
   border: 1px solid ' + theme["Thread Wrapper Border"] + ';\
 }\
 #boardNavDesktopFoot,\
@@ -8895,7 +8895,7 @@ div.reply {\
 .deleteform,\
 div.subMenu,\
 #menu {\
-  background-color: ' + theme["Dialog Background"] + ';\
+  background: ' + theme["Dialog Background"] + ';\
   border: 1px solid ' + theme["Dialog Border"] + ';\
 }\
 .inline div.reply {\
@@ -8973,13 +8973,13 @@ div.subMenu,\
   height: 10px;\
   margin: 3px;\
   display: inline-block;\
-  background-color: ' + theme["Checkbox Background"] + ';\
+  background: ' + theme["Checkbox Background"] + ';\
   border: 1px solid ' + theme["Checkbox Border"] + ';\
 }\
 #qr label input,\
 #updater input,\
 .bd {\
-  background-color: ' + theme["Buttons Background"] + ';\
+  background: ' + theme["Buttons Background"] + ';\
   border: 1px solid ' + theme["Buttons Border"] + ';\
 }\
 .pages a,\
@@ -8987,7 +8987,7 @@ div.subMenu,\
   color: ' + theme["Navigation Links"] + ';\
 }\
 input[type=checkbox]:checked + .rice {\
-  background-color: ' + theme["Checkbox Checked Background"] + ';\
+  background: ' + theme["Checkbox Checked Background"] + ';\
   background-image: url(' + (theme["Dark Theme"] === "1" ? "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABlBMVEX///////9VfPVsAAAAAXRSTlMAQObYZgAAACJJREFUeF4FwLEJACAMBMATh3WN31jLFCEIsWLHicvQFM8HVtkHPQ48rNIAAAAASUVORK5CYII=" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJBAMAAAASvxsjAAAAG1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACUUeIgAAAACHRSTlMAMN9AIL8Qn+Bdi9cAAAA4SURBVHheFcSxDQAgCATANzoAcQKNjSWxcgFncQ2gcmzhikOgKLe4CgonIxxZA9g6yX8dvrF/1fuGOAZL4rd0JQAAAABJRU5ErkJggg==") + ');\
   background-attachment: scroll;\
   background-repeat: no-repeat;\
@@ -9824,7 +9824,7 @@ a.useremail[href*="SAGE"]:last-of-type::after {\
 }\
 .globalMessage {\
   width: ' + (236 + sidebarOffsetW) + 'px;\
-  background-color: ' + theme["Dialog Background"] + ';\
+  background: ' + theme["Dialog Background"] + ';\
   border: 1px solid ' + theme["Dialog Border"] + ';\
 }\
 ';
