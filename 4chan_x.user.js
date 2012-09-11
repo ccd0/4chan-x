@@ -3074,7 +3074,7 @@
       }
       url = "//api.4chan.org/" + g.BOARD + "/res/" + g.THREAD_ID + ".json";
       return Updater.request = $.ajax(url, {
-        onload: Updater.cb.load
+        onloadend: Updater.cb.load
       }, {
         headers: {
           'If-Modified-Since': Updater.lastModified
