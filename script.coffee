@@ -2839,7 +2839,7 @@ Get =
         when 'D' then 'developer'
       tripcode: data.trip
       uniqueID: data.poster_hash
-      email:    encodeURIComponent data.email
+      email:    if data.email then encodeURIComponent data.email else ''
       subject:  data.title_processed
       flagCode: data.poster_country
       flagName: data.poster_country_name_processed

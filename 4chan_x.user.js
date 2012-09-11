@@ -3614,7 +3614,7 @@
         })(),
         tripcode: data.trip,
         uniqueID: data.poster_hash,
-        email: encodeURIComponent(data.email),
+        email: data.email ? encodeURIComponent(data.email) : '',
         subject: data.title_processed,
         flagCode: data.poster_country,
         flagName: data.poster_country_name_processed,
