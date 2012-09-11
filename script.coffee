@@ -1935,6 +1935,7 @@ ImageHover =
       clientX: - 45 + parseInt style.left
       clientY:  120 + parseInt style.top
   error: ->
+    return unless @parentNode
     src = @src.split '/'
     unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
       return if g.DEAD

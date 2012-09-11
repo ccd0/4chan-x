@@ -2297,6 +2297,9 @@
     error: function() {
       var src, timeoutID, url,
         _this = this;
+      if (!this.parentNode) {
+        return;
+      }
       src = this.src.split('/');
       if (!(src[2] === 'images.4chan.org' && (url = Redirect.image(src[3], src[5])))) {
         if (g.DEAD) {
