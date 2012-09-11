@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        0.7.4beta
+// @version        0.7.5beta
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -4589,7 +4589,7 @@
         capcode: data.capcode,
         tripcode: data.trip,
         uniqueID: data.id,
-        email: data.email.replace(/\s/g, '%20'),
+        email: data.email ? encodeURIComponent(data.email) : '',
         subject: data.sub,
         flagCode: data.country,
         flagName: data.country_name,
@@ -4658,7 +4658,7 @@
           capcodeStart = '';
           capcode = '';
       }
-      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (g.BOARD === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
+      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (board === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
       if (file != null ? file.isDeleted : void 0) {
         fileHTML = isOP ? ("<div class=file id=f" + postID + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted.gif' alt='File deleted.'>") + "</span></div>" : ("<div id=f" + postID + " class=file><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted-res.gif' alt='File deleted.'>") + "</span></div>";
       } else if (file) {
@@ -10280,7 +10280,7 @@ img[src^="//static.4chan.org/support/"] {\
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '0.7.4beta',
+    version: '0.7.5beta',
     callbacks: []
   };
 
