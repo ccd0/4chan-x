@@ -1,6 +1,7 @@
 Config =
   main:
     Enhancing:
+      'Disable 4chan\'s extension':   [true,  'Avoid conflicts between 4chan X and 4chan\'s inline extension.']
       '404 Redirect':                 [true,  'Redirect dead threads and images.']
       'Keybinds':                     [true,  'Bind actions to keyboard shortcuts.']
       'Time Formatting':              [true,  'Localize and format timestamps arbitrarily.']
@@ -741,6 +742,9 @@ Main =
     $.id('boardNavDesktopFoot')?.hidden = true
 
   initFeatures: ->
+    if Conf['Disable 4chan\'s extension']
+      localStorage.setItem '4chan-settings', '{"disableAll":true}'
+
     if Conf['Resurrect Quotes']
       try
         Quotify.init()
@@ -935,6 +939,9 @@ body.fourchan_x {
 }
 
 /* quote */
+.quotelink.deadlink {
+  text-decoration: underline !important;
+}
 .inlined {
   opacity: .5;
 }
@@ -1060,6 +1067,7 @@ Redirect =
     url or ''
 
 Build =
+  spoilerRange: {}
   shortFilename: (filename, isReply) ->
     # FILENAME SHORTENING SCIENCE:
     # OPs have a +10 characters threshold.
@@ -1069,117 +1077,249 @@ Build =
       "#{filename[...threshold - 5]}(...).#{filename[-3..]}"
     else
       filename
-  post: (o) ->
+  postFromObject: (data, board) ->
+    o =
+      # id
+      postID:   data.no
+      threadID: data.resto or data.no
+      board:    board
+      # info
+      name:     data.name
+      capcode:  data.capcode
+      tripcode: data.trip
+      uniqueID: data.id
+      email:    if data.email then encodeURIComponent data.email else ''
+      subject:  data.sub
+      flagCode: data.country
+      flagName: data.country_name
+      date:     data.now
+      dateUTC:  data.time
+      comment:  data.com
+      # thread status
+      isSticky: !!data.sticky
+      isClosed: !!data.closed
+      # file
+    if data.ext or data.filedeleted
+      o.file =
+        name:      data.filename + data.ext
+        timestamp: "#{data.tim}#{data.ext}"
+        url:       "//images.4chan.org/#{board}/src/#{data.tim}#{data.ext}"
+        height:    data.h
+        width:     data.w
+        MD5:       data.md5
+        size:      data.fsize
+        turl:      "//thumbs.4chan.org/#{board}/thumb/#{data.tim}s.jpg"
+        theight:   data.tn_h
+        twidth:    data.tn_w
+        isSpoiler: !!data.spoiler
+        isDeleted: !!data.filedeleted
+    Build.post o
+  post: (o, isArchived) ->
+    ###
+    This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
+    @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
+    ###
     {
       postID, threadID, board
-      name, capcode, tripcode, uniqueID, email, subject, flag, flagTitle, date, dateUTC, comment
+      name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
+      isSticky, isClosed
+      comment
       file
     } = o
     isOP = postID is threadID
 
-    # post info
-    html = []
-    # input
-    html.push "<input type=checkbox name=#{postID} value=delete> "
-    # subject
-    html.push "<span class=subject>#{subject}</span> "
-    # name block
-    html.push "<span class='nameBlock"
-    html.push switch capcode
-      when 'M' then ' capcodeMod'
-      when 'A' then ' capcodeAdmin'
-      when 'D' then ' capcodeDeveloper'
-      else ''
-    html.push "'>"
-    # mail start
-    html.push "<a href=mailto:#{email} class=useremail>" if email
-    # name
-    html.push "<span class=name>#{name}</span>"
-    # tripcode
-    html.push " <span class=postertrip>#{tripcode}</span>" if tripcode
-    # user id
-    html.push " <span class='posteruid id_#{uniqueID}'>(ID: <span class=hand title='Highlight posts by this ID'>#{uniqueID}</span>)</span>" if uniqueID
-    # capcode
-    switch capcode
-      when 'M'
-        html.push ' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>'
-        html.push ' <img src=//static.4chan.org/image/modicon.gif alt="This user is a 4chan Moderator." title="This user is a 4chan Moderator." class=identityIcon>'
-      when 'A'
-        html.push ' <strong class="capcode hand id_admin" title="Highlight posts by the Administrator">## Admin</strong>'
-        html.push ' <img src=//static.4chan.org/image/adminicon.gif alt="This user is the 4chan Administrator." title="This user is the 4chan Administrator." class=identityIcon>'
-      when 'D'
-        html.push ' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>'
-        html.push ' <img src=//static.4chan.org/image/developericon.gif alt="This user is a 4chan Developer." title="This user is a 4chan Developer." class=identityIcon>'
-    # mail end
-    html.push '</a>' if email
-    # flag
-    # XXX what about troll flags in /pol/?
-    html.push " <img src=//static.4chan.org/image/country/#{flag.toLowerCase()}.gif alt=#{flag} title='#{flagTitle}' class=countryFlag>" if flag
-    # end name block
-    html.push '</span> '
-    # date
-    html.push "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> "
-    # post num
-    html.push '<span class="postNum desktop">'
-    html.push "<a href=/#{board}/res/#{threadID}#p#{postID} title='Highlight this post'>No.</a>"
-    html.push "<a href=\"#{
-      if g.REPLY
-        "javascript:quote('#{postID}');"
+    staticPath = '//static.4chan.org'
+
+    if email
+      emailStart = '<a href="mailto:' + email + '" class="useremail">'
+      emailEnd   = '</a>'
+    else
+      emailStart = ''
+      emailEnd   = ''
+
+    subject =
+      if subject
+        "<span class=subject>#{subject}</span>"
       else
-        "/#{board}/res/#{threadID}#q#{postID}"
-    }\" title='Quote this post'>#{postID}</a>"
-    # XXX closed/sticky?
-    html.push '</span>'
-    pi = $.el 'div',
-      id: "pi#{postID}"
-      className: 'postInfo desktop'
-      innerHTML: html.join ''
+        ''
 
-    bq = $.el 'blockquote',
-      id: "m#{postID}"
-      className: 'postMessage'
-      innerHTML: comment
+    userID =
+      if !capcode and uniqueID
+        " <span class='posteruid id_#{uniqueID}'>(ID: " +
+          "<span class=hand title='Highlight posts by this ID'>#{uniqueID}</span>)</span> "
+      else
+        ''
 
-    # file
-    if file.name # XXX need to fix support of Flash
-      html = []
-      html.push '<div class=fileInfo>'
-      html.push "<span id=fT#{postID} class=fileText#{if file.isSpoiler then " title='file.name'" else ''}>File: "
-      html.push "<a href=#{file.url} target=_blank>#{file.origin}</a>"
-      html.push '-('
-      html.push 'Spoiler Image, ' if file.isSpoiler
-      html.push "#{$.bytesToString file.size}, "
-      html.push if /\.pdf$/i.test file.name
-          "PDF"
+    switch capcode
+      when 'admin', 'admin_highlight'
+        capcodeClass = " capcodeAdmin"
+        capcodeStart = " <strong class='capcode hand id_admin'" +
+          "title='Highlight posts by the Administrator'>## Admin</strong>"
+        capcode      = " <img src='#{staticPath}/image/adminicon.gif' " +
+          "alt='This user is the 4chan Administrator.' " +
+          "title='This user is the 4chan Administrator.' class=identityIcon>"
+      when 'mod'
+        capcodeClass = " capcodeMod"
+        capcodeStart = " <strong class='capcode hand id_mod' " +
+          "title='Highlight posts by Moderators'>## Moderator</strong>"
+        capcode      = " <img src='#{staticPath}/image/modicon.gif' " +
+          "alt='This user is a 4chan Moderator.' " +
+          "title='This user is a 4chan Moderator.' class=identityIcon>"
+      when 'developer'
+        capcodeClass = " capcodeDeveloper"
+        capcodeStart = " <strong class='capcode hand id_developer' " +
+          "title='Highlight posts by Developers'>## Developer</strong>"
+        capcode      = " <img src='#{staticPath}/image/developericon.gif' " +
+          "alt='This user is a 4chan Developer.' " +
+          "title='This user is a 4chan Developer.' class=identityIcon>"
+      else
+        capcodeClass = ''
+        capcodeStart = ''
+        capcode      = ''
+
+    flag =
+      if flagCode
+       " <img src='#{staticPath}/image/country/#{if board is 'pol' then 'troll/' else ''}" +
+        flagCode.toLowerCase() + ".gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
+      else
+        ''
+
+    if file?.isDeleted
+      fileHTML =
+        if isOP
+          "<div class=file id=f#{postID}><div class=fileInfo></div><span class=fileThumb>" +
+              "<img src='#{staticPath}/image/filedeleted.gif' alt='File deleted.'>" +
+          "</span></div>"
         else
-          "#{file.width}x#{file.height}"
-      html.push ", <span title='#{file.name}'>#{Build.shortFilename file.name}</span>" unless file.isSpoiler
-      html.push ")</span></div>"
-      html.push "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href=#{file.url} target=_blank>"
-      html.push "<img src=#{file.turl} alt='#{if file.isSpoiler then 'Spoiler Image, ' else ''}#{$.bytesToString file.size}' data-md5='#{file.MD5}' style='height:#{file.theight}px;width:#{file.twidth}px'>"
-      html.push '</a>'
-      fl = $.el 'div',
-        id: "f#{postID}"
-        className: 'file'
-        innerHTML: html.join ''
+          "<div id=f#{postID} class=file><span class=fileThumb>" +
+            "<img src='#{staticPath}/image/filedeleted-res.gif' alt='File deleted.'>" +
+          "</span></div>"
+    else if file
+      ext = file.name[-3..]
+      if !file.twidth and !file.theight and ext is 'gif' # wtf ?
+        file.twidth  = file.width
+        file.theight = file.height
 
-    post = $.el 'div',
-      id: "p#{postID}"
-      className: "post #{if isOP then 'op' else 'reply'}"
-    $.add post, fl if fl and isOP
-    $.add post, pi
-    $.add post, fl if fl and !isOP
-    $.add post, bq
+      fileSize = $.bytesToString file.size
+
+      fileThumb = file.turl
+      if file.isSpoiler
+        fileSize = "Spoiler Image, #{fileSize}"
+        unless isArchived
+          fileThumb = '//static.4chan.org/image/spoiler'
+          if spoilerRange = Build.spoilerRange[board]
+            # Randomize the spoiler image.
+            fileThumb += "-#{board}" + Math.floor 1 + spoilerRange * Math.random()
+          fileThumb += '.png'
+          file.twidth = file.theight = 100
+
+      imgSrc = "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{file.url}' target=_blank>" +
+        "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='width:#{file.twidth}px;height:#{file.theight}px'></a>"
+
+      # Ha Ha filenames.
+      # html -> text, translate WebKit's %22s into "s
+      a = $.el 'a', innerHTML: file.name
+      filename = a.textContent.replace /%22/g, '"'
+
+      # shorten filename, get html
+      a.textContent = Build.shortFilename filename
+      shortFilename = a.innerHTML
+
+      # get html
+      a.textContent = filename
+      filename      = a.innerHTML.replace /'/g, '&apos;'
+
+      fileDims = if ext is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
+      fileInfo = "<span class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
+        "-(#{fileSize}, #{fileDims}#{
+          if file.isSpoiler
+            ''
+          else
+            ", <span title='#{filename}'>#{shortFilename}</span>"
+        }" + ")</span>"
+
+      fileHTML = "<div id=f#{postID} class=file><div class=fileInfo>#{fileInfo}</div>#{imgSrc}</div>"
+    else
+      fileHTML = ''
+
+    tripcode =
+      if tripcode
+        " <span class=postertrip>#{tripcode}</span>"
+      else
+        ''
+
+    sticky =
+      if isSticky
+        ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky style="height:16px;width:16px">'
+      else
+        ''
+    closed =
+      if isClosed
+        ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed style="height:16px;width:16px">'
+      else
+        ''
 
     container = $.el 'div',
       id: "pc#{postID}"
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
-    unless isOP
-      $.add container, $.el 'div',
-        id: "sa#{postID}"
-        className: 'sideArrows'
-        textContent: '>>'
-    $.add container, post
+      innerHTML: \
+      (if isOP then '' else "<div class=sideArrows id=sa#{postID}>&gt;&gt;</div>") +
+      "<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}#{
+        if capcode is 'admin_highlight'
+          ' highlightPost'
+        else
+          ''
+        }'>" +
+
+        "<div class='postInfoM mobile' id=pim#{postID}>" +
+          "<span class='nameBlock#{capcodeClass}'>" +
+              "<span class=name>#{name or ''}</span>" + tripcode +
+            capcodeStart + capcode + userID + flag + sticky + closed +
+            "<br>#{subject}" +
+          "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
+          '<br><em>' +
+            "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"}>No.</a>" +
+            "<a href='#{
+              if g.REPLY and g.THREAD_ID is threadID
+                "javascript:quote(#{postID})"
+              else
+                "/#{board}/res/#{threadID}#q#{postID}"
+              }'>#{postID}</a>" +
+          '</em></span>' +
+        '</div>' +
+
+        (if isOP then fileHTML else '') +
+
+        "<div class='postInfo desktop' id=pi#{postID}>" +
+          "<input type=checkbox name=#{postID} value=delete> " +
+          "#{subject} " +
+          "<span class='nameBlock#{capcodeClass}'>" +
+            emailStart +
+              "<span class=name>#{name or ''}</span>" + tripcode +
+            capcodeStart + emailEnd + capcode + userID + flag + sticky + closed +
+          ' </span> ' +
+          "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
+          "<span class='postNum desktop'>" +
+            "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
+            "<a href='#{
+              if g.REPLY and g.THREAD_ID is threadID
+                "javascript:quote(#{postID})"
+              else
+                "/#{board}/res/#{threadID}#q#{postID}"
+              }' title='Quote this post'>#{postID}</a>" +
+          '</span>' +
+        '</div>' +
+
+        (if isOP then '' else fileHTML) +
+
+        "<blockquote class=postMessage id=m#{postID}>#{comment or ''}</blockquote> " +
+
+      '</div>'
+
+    for quote in $$ '.quotelink', container
+      href = quote.getAttribute 'href'
+      continue if href[0] is '/' # Cross-board quote, or board link
+      quote.href = "/#{board}/res/#{href}" # Fix pathnames
 
     container
 
@@ -1213,7 +1353,7 @@ Get =
 
     root.textContent = "Loading post No.#{postID}..."
     if threadID
-      $.cache "/#{board}/res/#{threadID}", ->
+      $.cache "//api.4chan.org/#{board}/res/#{threadID}.json", ->
         Get.fetchedPost @, board, threadID, postID, root, context
     else if url = Redirect.post board, postID
       $.cache url, ->
@@ -1242,43 +1382,37 @@ Get =
       # The thread can die by the time we check a quote.
       if url = Redirect.post board, postID
         $.cache url, ->
-          Get.archivedPost @, board, postID, root
+          Get.archivedPost @, board, postID, root, context
       else
         $.addClass root, 'warning'
         root.textContent =
           if status is 404
-            "Thread No.#{threadID} has not been found."
+            "Thread No.#{threadID} 404'd."
           else
             "Error #{req.status}: #{req.statusText}."
       return
 
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = req.response
-
-    unless pc = doc.getElementById "pc#{postID}"
-      # The post can be deleted by the time we check a quote.
-      if url = Redirect.post board, postID
-        $.cache url, ->
-          Get.archivedPost @, board, postID, root
-      else
-        $.addClass root, 'warning'
-        root.textContent = "Post No.#{postID} has not been found."
-      return
-    pc = d.importNode pc, true
-
-    for quote in $$ '.quotelink', pc
-      href = quote.getAttribute 'href'
-      continue if href[0] is '/' # Cross-board quote, or board link
-      quote.href = "/#{board}/res/#{href}" # Fix pathnames
-    link = $ 'a[title="Highlight this post"]', pc
-    link.href = "/#{board}/res/#{threadID}#p#{postID}"
-    link.nextSibling.href = "/#{board}/res/#{threadID}#q#{postID}"
+    posts = JSON.parse(req.response).posts
+    if spoilerRange = posts[0].custom_spoiler
+      Build.spoilerRange[board] = spoilerRange
+    postID = +postID
+    for post in posts
+      break if post.no is postID # we found it!
+      if post.no > postID
+        # The post can be deleted by the time we check a quote.
+        if url = Redirect.post board, postID
+          $.cache url, ->
+            Get.parseArchivedPost @, board, postID, root, context
+        else
+          $.addClass root, 'warning'
+          root.textContent = "Post No.#{postID} was not found."
+        return
 
     board = g.boards[board] or
       new Board board
     thread = g.threads["#{board}.#{threadID}"] or
       new Thread threadID, board
-    post = new Post pc, thread, board
+    post = new Post Build.postFromObject(post, board), thread, board
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
   archivedPost: (req, board, postID, root, context) ->
@@ -1332,42 +1466,46 @@ Get =
     comment = bq.innerHTML.replace /(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3'
 
     threadID = data.thread_num
-    postContainer = Build.post
+    o =
       # id
-      postID:    postID
-      threadID:  threadID
-      board:     board
+      postID:   postID
+      threadID: threadID
+      board:    board
       # info
-      name:      data.name
-      capcode:   data.capcode
-      tripcode:  data.trip
-      uniqueID:  data.poster_hash
-      email:     data.email
-      subject:   data.title
-      flag:      data.poster_country
-      # XXX flagTitle: data.???
-      date:      data.fourchan_date
-      dateUTC:   data.timestamp
-      comment:   comment
+      name:     data.name_processed
+      capcode:  switch data.capcode
+        when 'M' then 'mod'
+        when 'A' then 'admin'
+        when 'D' then 'developer'
+      tripcode: data.trip
+      uniqueID: data.poster_hash
+      email:    encodeURIComponent data.email
+      subject:  data.title_processed
+      flagCode: data.poster_country
+      flagName: data.poster_country_name_processed
+      date:     data.fourchan_date
+      dateUTC:  data.timestamp
+      comment:  comment
       # file
-      file:
-        name:      data.media_filename
-        origin:    data.media_orig
+    if data.media_filename
+      o.file =
+        name:      data.media_filename_processed
+        timestamp: data.media_orig
         url:       data.media_link or data.remote_media_link
         height:    data.media_h
         width:     data.media_w
-        isSpoiler: data.spoiler is '1'
         MD5:       data.media_hash
         size:      data.media_size
         turl:      data.thumb_link or "//thumbs.4chan.org/#{board}/thumb/#{data.preview_orig}"
         theight:   data.preview_h
         twidth:    data.preview_w
+        isSpoiler: data.spoiler is '1'
 
     board = g.boards[board] or
       new Board board
     thread = g.threads["#{board}.#{threadID}"] or
       new Thread threadID, board
-    post = new Post postContainer, thread, board,
+    post = new Post Build.post(o, true), thread, board,
       isArchived: true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context

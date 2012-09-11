@@ -4,6 +4,22 @@ alpha
   Fix Quote Backlinks not affecting inlined quotes.
   Fix Quote Highlighting not affecting inlined quotes.
 
+master
+- Mayhem
+  Use 4chan's API to fetch posts for:
+    - Thread Updater.
+    - Quote Inlining.
+    - Quote Previewing.
+    - Thread Expansion.
+    - Comment Expansion.
+    This will make fetching faster, and reduce bandwidth usage.
+  Add an option to disable 4chan's inline extension. Enabled by default.
+  Fix compatibility with Scriptish's auto-udpater.
+
+2.34.10
+- Mayhem
+  Fix 4chan X. Blame moot.
+
 2.34.9
 - Mayhem
   Add /g/, /k/, /w/, /an/, /cgl/, /ck/, /lit/, /toy/ and /x/ archived image redirection.
