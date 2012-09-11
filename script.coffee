@@ -600,8 +600,8 @@ class Post
     @clones  = []
     g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
 
-  addClone: ->
-    new Clone @
+  addClone: (context) ->
+    new Clone @, context
   rmClone: (index) ->
     @clones.splice index, 1
     for i in [index...@clones.length]
@@ -609,7 +609,7 @@ class Post
     return
 
 class Clone extends Post
-  constructor: (@origin) ->
+  constructor: (@origin, @context) ->
     for key in ['ID', 'board', 'thread', 'info', 'quotes', 'isReply']
       # Copy or point to the origin's key value.
       @[key] = origin[key]
@@ -1192,22 +1192,22 @@ Get =
       threadID: threadID
       postID:   postID
     }
-  postClone: (board, threadID, postID, root) ->
+  postClone: (board, threadID, postID, root, context) ->
     if post = g.posts["#{board}.#{postID}"]
-      Get.insert post, root
+      Get.insert post, root, context
       return
 
     root.textContent = "Loading post No.#{postID}..."
     if threadID
       $.cache "/#{board}/res/#{threadID}", ->
-        Get.fetchedPost @, board, threadID, postID, root
+        Get.fetchedPost @, board, threadID, postID, root, context
     else if url = Redirect.post board, postID
       $.cache url, ->
-        Get.archivedPost @, board, postID, root
-  insert: (post, root) ->
+        Get.archivedPost @, board, postID, root, context
+  insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
-    clone = post.addClone()
+    clone = post.addClone context
     Main.callbackNodes Post, [clone]
 
     # Get rid of the side arrows.
@@ -1217,11 +1217,11 @@ Get =
 
     root.innerHTML = null
     $.add root, nodes.root
-  fetchedPost: (req, board, threadID, postID, root) ->
+  fetchedPost: (req, board, threadID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
     if post = g.posts["#{board}.#{postID}"]
-      Get.insert post, root
+      Get.insert post, root, context
       return
     {status} = req
     if status isnt 200
@@ -1266,12 +1266,12 @@ Get =
       new Thread threadID, inBoard
     post = new Post pc, thread, board
     Main.callbackNodes Post, [post]
-    Get.insert post, root
-  archivedPost: (req, board, postID, root) ->
+    Get.insert post, root, context
+  archivedPost: (req, board, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
     if post = g.posts["#{board}.#{postID}"]
-      Get.insert post, root
+      Get.insert post, root, context
       return
     data = JSON.parse req.response
     if data.error
@@ -1356,7 +1356,7 @@ Get =
     post = new Post postContainer, thread, board,
       isArchived: true
     Main.callbackNodes Post, [post]
-    Get.insert post, root
+    Get.insert post, root, context
 
 Quotify =
   init: ->
@@ -1467,8 +1467,9 @@ QuoteInline =
         quotelink.parentNode.parentNode
       else
         $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
+    context = Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
     $.after root, inline
-    Get.postClone board, threadID, postID, inline
+    Get.postClone board, threadID, postID, inline, context
 
     return unless board is g.BOARD.ID and $.x "ancestor::div[@id='t#{threadID}']", quotelink
     post = g.posts["#{board}.#{postID}"]
@@ -1559,8 +1560,9 @@ QuotePreview =
       id: 'qp'
       className: 'reply dialog'
     UI.hover e
+    context = Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
     $.add d.body, qp
-    Get.postClone board, threadID, postID, qp
+    Get.postClone board, threadID, postID, qp, context
 
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout

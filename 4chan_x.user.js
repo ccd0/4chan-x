@@ -750,8 +750,8 @@
       g.posts["" + board + "." + this] = thread.posts[this] = board.posts[this] = this;
     }
 
-    Post.prototype.addClone = function() {
-      return new Clone(this);
+    Post.prototype.addClone = function(context) {
+      return new Clone(this, context);
     };
 
     Post.prototype.rmClone = function(index) {
@@ -770,9 +770,10 @@
 
     __extends(Clone, _super);
 
-    function Clone(origin) {
+    function Clone(origin, context) {
       var file, index, info, inline, inlined, key, nodes, post, quotelink, root, val, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
       this.origin = origin;
+      this.context = context;
       _ref = ['ID', 'board', 'thread', 'info', 'quotes', 'isReply'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
@@ -1374,29 +1375,29 @@
         postID: postID
       };
     },
-    postClone: function(board, threadID, postID, root) {
+    postClone: function(board, threadID, postID, root, context) {
       var post, url;
       if (post = g.posts["" + board + "." + postID]) {
-        Get.insert(post, root);
+        Get.insert(post, root, context);
         return;
       }
       root.textContent = "Loading post No." + postID + "...";
       if (threadID) {
         return $.cache("/" + board + "/res/" + threadID, function() {
-          return Get.fetchedPost(this, board, threadID, postID, root);
+          return Get.fetchedPost(this, board, threadID, postID, root, context);
         });
       } else if (url = Redirect.post(board, postID)) {
         return $.cache(url, function() {
-          return Get.archivedPost(this, board, postID, root);
+          return Get.archivedPost(this, board, postID, root, context);
         });
       }
     },
-    insert: function(post, root) {
+    insert: function(post, root, context) {
       var clone, nodes;
       if (!root.parentNode) {
         return;
       }
-      clone = post.addClone();
+      clone = post.addClone(context);
       Main.callbackNodes(Post, [clone]);
       nodes = clone.nodes;
       nodes.root.innerHTML = null;
@@ -1404,10 +1405,10 @@
       root.innerHTML = null;
       return $.add(root, nodes.root);
     },
-    fetchedPost: function(req, board, threadID, postID, root) {
+    fetchedPost: function(req, board, threadID, postID, root, context) {
       var doc, href, link, pc, post, quote, status, thread, url, _i, _len, _ref;
       if (post = g.posts["" + board + "." + postID]) {
-        Get.insert(post, root);
+        Get.insert(post, root, context);
         return;
       }
       status = req.status;
@@ -1452,12 +1453,12 @@
       thread = g.threads["" + board + "." + threadID] || new Thread(threadID, inBoard);
       post = new Post(pc, thread, board);
       Main.callbackNodes(Post, [post]);
-      return Get.insert(post, root);
+      return Get.insert(post, root, context);
     },
-    archivedPost: function(req, board, postID, root) {
+    archivedPost: function(req, board, postID, root, context) {
       var bq, comment, data, post, postContainer, thread, threadID;
       if (post = g.posts["" + board + "." + postID]) {
-        Get.insert(post, root);
+        Get.insert(post, root, context);
         return;
       }
       data = JSON.parse(req.response);
@@ -1531,7 +1532,7 @@
         isArchived: true
       });
       Main.callbackNodes(Post, [post]);
-      return Get.insert(post, root);
+      return Get.insert(post, root, context);
     }
   };
 
@@ -1645,14 +1646,15 @@
       return this.classList.toggle('inlined');
     },
     add: function(quotelink, board, threadID, postID) {
-      var inline, isBacklink, post, root;
+      var context, inline, isBacklink, post, root;
       inline = $.el('div', {
         id: "i" + postID,
         className: 'inline'
       });
       root = (isBacklink = $.hasClass(quotelink, 'backlink')) ? quotelink.parentNode.parentNode : $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
+      context = Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', this));
       $.after(root, inline);
-      Get.postClone(board, threadID, postID, inline);
+      Get.postClone(board, threadID, postID, inline, context);
       if (!(board === g.BOARD.ID && $.x("ancestor::div[@id='t" + threadID + "']", quotelink))) {
         return;
       }
@@ -1721,7 +1723,7 @@
       }
     },
     mouseover: function(e) {
-      var board, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      var board, clone, context, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
       if ($.hasClass(this, 'inlined')) {
         return;
       }
@@ -1734,8 +1736,9 @@
         className: 'reply dialog'
       });
       UI.hover(e);
+      context = Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', this));
       $.add(d.body, qp);
-      Get.postClone(board, threadID, postID, qp);
+      Get.postClone(board, threadID, postID, qp, context);
       $.on(this, 'mousemove', UI.hover);
       $.on(this, 'mouseout click', QuotePreview.mouseout);
       if (!(origin = g.posts["" + board + "." + postID])) {
