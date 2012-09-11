@@ -233,7 +233,7 @@ Config =
       'Sidebar':                   ['normal',          'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', [
         'normal', 'large', 'hide'
       ]]
-  theme:        'Midnight Caek'
+  theme:        'Yotsuba B'
   styleenabled: '0'
   navigation: {}
 

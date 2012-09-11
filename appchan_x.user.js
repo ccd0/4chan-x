@@ -263,7 +263,7 @@
         'Sidebar': ['normal', 'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['normal', 'large', 'hide']]
       }
     },
-    theme: 'Midnight Caek',
+    theme: 'Yotsuba B',
     styleenabled: '0',
     navigation: {}
   };
@@ -879,7 +879,7 @@
       'Focused Input Border': 'rgba(153,136,238,1)',
       'Buttons Background': 'rgba(214,218,240,1)',
       'Buttons Border': 'rgba(183,197,217,1)',
-      'Navigation Background': 'rgba(211,215,238,0.5)',
+      'Navigation Background': 'rgba(211,215,238,0.7)',
       'Navigation Border': 'rgba(183,197,217,1)',
       'Links': 'rgb(52,52,92)',
       'Hovered Links': 'rgb(221,0,0)',
