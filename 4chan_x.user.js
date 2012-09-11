@@ -1666,7 +1666,7 @@
         className: 'inline'
       });
       root = (isBacklink = $.hasClass(quotelink, 'backlink')) ? quotelink.parentNode.parentNode : $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
-      context = Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', quotelink));
+      context = Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', quotelink));
       $.after(root, inline);
       Get.postClone(board, threadID, postID, inline, context);
       if (!(board === g.BOARD.ID && $.x("ancestor::div[@id='t" + threadID + "']", quotelink))) {
@@ -1750,7 +1750,7 @@
         className: 'reply dialog'
       });
       UI.hover(e);
-      context = Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', this));
+      context = Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', this));
       $.add(d.body, qp);
       Get.postClone(board, threadID, postID, qp, context);
       $.on(this, 'mousemove', UI.hover);

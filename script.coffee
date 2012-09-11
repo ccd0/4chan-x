@@ -1481,7 +1481,7 @@ QuoteInline =
         quotelink.parentNode.parentNode
       else
         $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
-    context = Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', quotelink
+    context = Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
     $.after root, inline
     Get.postClone board, threadID, postID, inline, context
 
@@ -1574,7 +1574,7 @@ QuotePreview =
       id: 'qp'
       className: 'reply dialog'
     UI.hover e
-    context = Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+    context = Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', @
     $.add d.body, qp
     Get.postClone board, threadID, postID, qp, context
 
