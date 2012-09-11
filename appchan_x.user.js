@@ -7712,6 +7712,10 @@ body {\
   }\
 }\
 html,\
+body {\
+  min-height: 100%;\
+}\
+html,\
 body,\
 input,\
 select,\
@@ -9028,9 +9032,6 @@ a.forwardlink {\
 .qphl {\
   outline-color: ' + theme["Backlinked Reply Outline"] + ';\
 }\
-#qr::before {\
-  color: ' + (theme["Dark Theme"] === "1" ? "rgb(255,255,255)" : "rgb(0,0,0)") + ';\
-}\
 #qr input:' + agent + 'placeholder,\
 #qr textarea:' + agent + 'placeholder {\
   color: ' + (theme["Dark Theme"] === "1" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)") + ' !important;\
@@ -9296,12 +9297,13 @@ body > a[style="cursor: pointer; float: right;"]::after {\
   width: 210px;\
   display: inline-block;\
   font-size: 12px;\
-  opacity: 0.5;\
+  opacity: 0.8;\
   height: 18px;\
   text-align: center;\
   content: "Post Form";\
   padding-top: 3px;\
   vertical-align: middle;\
+  color: ' + theme["Text"] + ';\
   ' + agent + 'transition: opacity .3s ease-in-out 1s;\
 }\
 #qr:hover::before,\
