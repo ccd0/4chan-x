@@ -74,7 +74,7 @@
  */
 
 (function() {
-  var $, $$, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteInline, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, Time, UI, d, g,
+  var $, $$, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -141,7 +141,7 @@
         'Quote Preview': [true, 'Show quoted post on hover.'],
         'Quote Highlighting': [true, 'Highlight the previewed post.'],
         'Resurrect Quotes': [true, 'Linkify dead quotes to archives.'],
-        'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes.'],
+        'Indicate OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
         'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.']
       }
     },
@@ -965,6 +965,20 @@
           $.log(err, 'Quote Backlinks');
         }
       }
+      if (Conf['Indicate OP Quotes']) {
+        try {
+          QuoteOP.init();
+        } catch (err) {
+          $.log(err, 'Indicate OP Quotes');
+        }
+      }
+      if (Conf['Indicate Cross-thread Quotes']) {
+        try {
+          QuoteCT.init();
+        } catch (err) {
+          $.log(err, 'Indicate Cross-thread Quotes');
+        }
+      }
       if (Conf['Time Formatting']) {
         try {
           Time.init();
@@ -1450,7 +1464,7 @@
       link.href = "/" + board + "/res/" + threadID + "#p" + postID;
       link.nextSibling.href = "/" + board + "/res/" + threadID + "#q" + postID;
       board = g.boards[board] || new Board(board);
-      thread = g.threads["" + board + "." + threadID] || new Thread(threadID, inBoard);
+      thread = g.threads["" + board + "." + threadID] || new Thread(threadID, board);
       post = new Post(pc, thread, board);
       Main.callbackNodes(Post, [post]);
       return Get.insert(post, root, context);
@@ -1652,7 +1666,7 @@
         className: 'inline'
       });
       root = (isBacklink = $.hasClass(quotelink, 'backlink')) ? quotelink.parentNode.parentNode : $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
-      context = Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', this));
+      context = Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', quotelink));
       $.after(root, inline);
       Get.postClone(board, threadID, postID, inline, context);
       if (!(board === g.BOARD.ID && $.x("ancestor::div[@id='t" + threadID + "']", quotelink))) {
@@ -1859,6 +1873,79 @@
       return (_base = this.containers)[id] || (_base[id] = $.el('span', {
         className: 'container'
       }));
+    }
+  };
+
+  QuoteOP = {
+    init: function() {
+      this.text = '\u00A0(OP)';
+      return Post.prototype.callbacks.push({
+        name: 'Indicate OP Quotes',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var board, op, quote, quotelinks, quotes, thread, _i, _j, _len, _len1, _ref;
+      if (this.isClone && this.thread === this.context.thread) {
+        return;
+      }
+      if (!(quotes = this.quotes).length) {
+        return;
+      }
+      quotelinks = this.nodes.quotelinks;
+      if (this.isClone && -1 < quotes.indexOf("" + this.board + "." + this.thread)) {
+        for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
+          quote = quotelinks[_i];
+          quote.textContent = quote.textContent.replace(QuoteOP.text, '');
+        }
+      }
+      _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
+      op = "" + board + "." + thread;
+      if (!(-1 < quotes.indexOf(op))) {
+        return;
+      }
+      for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
+        quote = quotelinks[_j];
+        if (("" + (quote.pathname.split('/')[1]) + "." + quote.hash.slice(2)) === op) {
+          $.add(quote, $.tn(QuoteOP.text));
+        }
+      }
+    }
+  };
+
+  QuoteCT = {
+    init: function() {
+      this.text = '\u00A0(Cross-thread)';
+      return Post.prototype.callbacks.push({
+        name: 'Indicate Cross-thread Quotes',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var board, path, qBoard, qThread, quote, quotelinks, quotes, thread, _i, _len, _ref;
+      if (this.isClone && this.thread === this.context.thread) {
+        return;
+      }
+      if (!(quotes = this.quotes).length) {
+        return;
+      }
+      quotelinks = this.nodes.quotelinks;
+      _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
+      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
+        quote = quotelinks[_i];
+        if ($.hasClass(quote, 'deadlink')) {
+          continue;
+        }
+        path = quote.pathname.split('/');
+        qBoard = path[1];
+        qThread = path[3];
+        if (this.isClone && qBoard === this.board.ID && +qThread !== this.thread.ID) {
+          quote.textContent = quote.textContent.replace(QuoteCT.text, '');
+        }
+        if (qBoard === board.ID && +qThread !== thread.ID) {
+          $.add(quote, $.tn(QuoteCT.text));
+        }
+      }
     }
   };
 

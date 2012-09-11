@@ -55,7 +55,7 @@ Config =
       'Quote Preview':                [true,  'Show quoted post on hover.']
       'Quote Highlighting':           [true,  'Highlight the previewed post.']
       'Resurrect Quotes':             [true,  'Linkify dead quotes to archives.']
-      'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes.']
+      'Indicate OP Quotes':           [true,  'Add \'(OP)\' to OP quotes.']
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes.']
   filter:
     name: [
@@ -769,6 +769,20 @@ Main =
         # XXX handle error
         $.log err, 'Quote Backlinks'
 
+    if Conf['Indicate OP Quotes']
+      try
+        QuoteOP.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Indicate OP Quotes'
+
+    if Conf['Indicate Cross-thread Quotes']
+      try
+        QuoteCT.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Indicate Cross-thread Quotes'
+
     if Conf['Time Formatting']
       try
         Time.init()
@@ -1263,7 +1277,7 @@ Get =
     board = g.boards[board] or
       new Board board
     thread = g.threads["#{board}.#{threadID}"] or
-      new Thread threadID, inBoard
+      new Thread threadID, board
     post = new Post pc, thread, board
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
@@ -1467,7 +1481,7 @@ QuoteInline =
         quotelink.parentNode.parentNode
       else
         $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
-    context = Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+    context = Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', quotelink
     $.after root, inline
     Get.postClone board, threadID, postID, inline, context
 
@@ -1657,6 +1671,60 @@ QuoteBacklink =
   getContainer: (id) ->
     @containers[id] or=
       $.el 'span', className: 'container'
+
+QuoteOP =
+  init: ->
+    # \u00A0 is nbsp
+    @text = '\u00A0(OP)'
+    Post::callbacks.push
+      name: 'Indicate OP Quotes'
+      cb:   @node
+  node: ->
+    # Stop there if it's a clone of a post in the same thread.
+    return if @isClone and @thread is @context.thread
+    # Stop there if there's no quotes in that post.
+    return unless (quotes = @quotes).length
+    quotelinks = @nodes.quotelinks
+
+    # rm (OP) from cross-thread quotes.
+    if @isClone and -1 < quotes.indexOf "#{@board}.#{@thread}"
+      for quote in quotelinks
+        quote.textContent = quote.textContent.replace QuoteOP.text, ''
+
+    {board, thread} = if @isClone then @context else @
+    op = "#{board}.#{thread}"
+    # add (OP) to quotes quoting this context's OP.
+    return unless -1 < quotes.indexOf op
+    for quote in quotelinks
+      if "#{quote.pathname.split('/')[1]}.#{quote.hash[2..]}" is op
+        $.add quote, $.tn QuoteOP.text
+    return
+
+QuoteCT =
+  init: ->
+    # \u00A0 is nbsp
+    @text = '\u00A0(Cross-thread)'
+    Post::callbacks.push
+      name: 'Indicate Cross-thread Quotes'
+      cb:   @node
+  node: ->
+    # Stop there if it's a clone of a post in the same thread.
+    return if @isClone and @thread is @context.thread
+    # Stop there if there's no quotes in that post.
+    return unless (quotes = @quotes).length
+    quotelinks = @nodes.quotelinks
+
+    {board, thread} = if @isClone then @context else @
+    for quote in quotelinks
+      continue if $.hasClass quote, 'deadlink'
+      path    = quote.pathname.split '/'
+      qBoard  = path[1]
+      qThread = path[3]
+      if @isClone and qBoard is @board.ID and +qThread isnt @thread.ID
+        quote.textContent = quote.textContent.replace QuoteCT.text, ''
+      if qBoard is board.ID and +qThread isnt thread.ID
+        $.add quote, $.tn QuoteCT.text
+    return
 
 Time =
   init: ->
