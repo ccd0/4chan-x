@@ -3534,7 +3534,7 @@
       }
       posts = JSON.parse(req.response).posts;
       if (spoilerRange = posts[0].custom_spoiler) {
-        Build.spoilerRange[g.BOARD] = spoilerRange;
+        Build.spoilerRange[board] = spoilerRange;
       }
       postID = +postID;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {

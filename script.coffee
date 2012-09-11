@@ -2763,9 +2763,9 @@ Get =
             "Error #{req.status}: #{req.statusText}."
       return
 
-    posts  = JSON.parse(req.response).posts
+    posts = JSON.parse(req.response).posts
     if spoilerRange = posts[0].custom_spoiler
-      Build.spoilerRange[g.BOARD] = spoilerRange
+      Build.spoilerRange[board] = spoilerRange
     postID = +postID
     for post in posts
       break if post.no is postID # we found it!
