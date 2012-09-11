@@ -174,7 +174,7 @@ Config =
     'Interval': 30
   style:
     Dialogs:
-      'Announcements':             ['hide',            'The style of announcements and the ability to hide them.', [
+      'Announcements':             ['slideout',            'The style of announcements and the ability to hide them.', [
         '4chan default', 'slideout', 'hide'
       ]]
       'Post Form Style':           ['tabbed slideout', 'How the post form will sit on the page.', [

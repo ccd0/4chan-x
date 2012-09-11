@@ -229,7 +229,7 @@
     },
     style: {
       Dialogs: {
-        'Announcements': ['hide', 'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']],
+        'Announcements': ['slideout', 'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']],
         'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']],
         'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
         'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
@@ -309,6 +309,7 @@
       'Hovered Input Border': 'rgba(57,57,57,1)',
       'Navigation Background': 'rgba(44,44,44,0.9)',
       'Navigation Border': 'rgba(44,44,44,0.9)',
+      'Quotelinks': 'rgb(79,95,143)',
       'Backlinks': 'rgb(79,95,143)',
       'Links': 'rgb(102,136,170)',
       'Hovered Links': 'rgb(78,110,142)',
@@ -360,6 +361,7 @@
       'Hovered Input Border': 'rgba(204,204,204,1)',
       'Navigation Background': 'rgba(255,255,255,0.8)',
       'Navigation Border': 'rgba(255,255,255,0.8)',
+      'Quotelinks': 'rgb(146,92,141)',
       'Backlinks': 'rgb(146,92,141)',
       'Links': 'rgb(133,76,158)',
       'Hovered Links': 'rgb(198,23,230)',
@@ -422,6 +424,7 @@
       'Emails': 'rgb(218,105,224)',
       'Post Numbers': 'rgb(218,105,224)',
       'Text': 'rgb(241,241,241)',
+      'Quotelinks': 'rgb(223,153,247)',
       'Backlinks': 'rgb(223,153,247)',
       'Greentext': 'rgb(108,204,102)',
       'Board Title': 'rgb(103,204,232)',
@@ -462,6 +465,7 @@
       'Buttons Border': 'rgba(24,24,24,1)',
       'Navigation Background': 'rgba(16,16,16,0.9)',
       'Navigation Border': 'rgba(16,16,16,0.9)',
+      'Quotelinks': 'rgb(66,66,71)',
       'Backlinks': 'rgb(66,66,71)',
       'Links': 'rgb(87,87,123)',
       'Hovered Links': 'rgb(71,71,91)',
@@ -524,6 +528,7 @@
       'Emails': 'rgb(174,43,41)',
       'Post Numbers': 'rgb(137,115,153)',
       'Text': 'rgb(221,221,221)',
+      'Quotelinks': 'rgb(139,164,70)',
       'Backlinks': 'rgb(139,164,70)',
       'Greentext': 'rgb(139,164,70)',
       'Board Title': 'rgb(187,187,187)',
@@ -575,6 +580,7 @@
       'Emails': 'rgb(0,255,255)',
       'Post Numbers': 'rgb(253,254,255)',
       'Text': 'rgb(253,254,255)',
+      'Quotelinks': 'rgb(212,212,212)',
       'Backlinks': 'rgb(0,255,255)',
       'Greentext': 'rgb(67,204,103)',
       'Board Title': 'rgb(253,254,255)',
@@ -626,6 +632,7 @@
       'Emails': 'rgb(187,187,187)',
       'Post Numbers': 'rgb(153,153,153)',
       'Text': 'rgb(153,153,153)',
+      'Quotelinks': 'rgb(212,212,212)',
       'Backlinks': 'rgb(212,212,212)',
       'Greentext': 'rgb(152,185,98)',
       'Board Title': 'rgb(153,153,153)',
@@ -677,6 +684,7 @@
       'Emails': 'rgb(255,102,0)',
       'Post Numbers': 'rgb(51,51,51)',
       'Text': 'rgb(51,51,51)',
+      'Quotelinks': 'rgb(17,17,17)',
       'Backlinks': 'rgb(17,17,17)',
       'Greentext': 'rgb(120,153,34)',
       'Board Title': 'rgb(0,74,153)',
@@ -717,6 +725,7 @@
       'Buttons Border': 'rgba(255,255,255,1)',
       'Navigation Background': 'rgba(0,0,0,0.7)',
       'Navigation Border': 'rgba(0,0,0,0.7)',
+      'Quotelinks': 'rgb(153,51,51)',
       'Backlinks': 'rgb(153,51,51)',
       'Links': 'rgb(87,87,123)',
       'Hovered Links': 'rgb(221,0,0)',
@@ -779,6 +788,7 @@
       'Emails': 'rgb(108,113,196)',
       'Post Numbers': 'rgb(147,161,161)',
       'Text': 'rgb(147,161,161)',
+      'Quotelinks': 'rgb(79,95,143)',
       'Backlinks': 'rgb(79,95,143)',
       'Greentext': 'rgb(133,153,0)',
       'Board Title': 'rgb(147,161,161)',
@@ -830,6 +840,7 @@
       'Emails': 'rgb(186,0,0)',
       'Post Numbers': 'rgb(128,0,0)',
       'Text': 'rgb(128,0,0)',
+      'Quotelinks': 'rgb(221,0,0)',
       'Backlinks': 'rgb(220,0,0)',
       'Greentext': 'rgb(120,153,34)',
       'Board Title': 'rgb(204,17,5)',
@@ -837,6 +848,58 @@
       'Inputs': 'rgb(0,0,0)',
       'Warnings': 'rbg(128,0,0)',
       'Shadow Color': 'rgba(119,46,40,1)',
+      'Dark Theme': '0',
+      'Custom CSS': '#qp div.post{background-color:rgba(240,192,176,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
+    },
+    'Yotsuba B': {
+      'Author': 'moot',
+      'Author Tripcode': '!Ep8pui8Vw2',
+      'Background Image': 'linear-gradient(rgb(209,213,238), rgb(238,242,255) 200px, rgb(255,255,238))',
+      'Background Attachment': '',
+      'Background Position': '',
+      'Background Repeat': '',
+      'Background Color': 'rgba(238,242,255,1)',
+      'Dialog Background': 'rgba(214,218,240,1)',
+      'Dialog Border': 'rgba(183,197,217,1)',
+      'Thread Wrapper Background': 'rgba(0,0,0,0)',
+      'Thread Wrapper Border': 'rgba(0,0,0,0)',
+      'Reply Background': 'rgba(214,218,240,1)',
+      'Reply Border': 'rgba(183,197,217,1)',
+      'Highlighted Reply Background': 'rgba(214,186,208,1)',
+      'Highlighted Reply Border': 'rgba(183,197,217,1)',
+      'Backlinked Reply Outline': 'rgba(98,124,141)',
+      'Checkbox Background': 'rgba(238,242,255,1)',
+      'Checkbox Border': 'rgba(183,197,217,1)',
+      'Checkbox Checked Background': 'rgba(188,192,212,1)',
+      'Input Background': 'rgba(238,242,255,1)',
+      'Input Border': 'rgba(183,197,217,1)',
+      'Hovered Input Background': 'rgba(214,186,208,1)',
+      'Hovered Input Border': 'rgba(183,197,217,1)',
+      'Focused Input Background': 'rgba(214,218,240,1)',
+      'Focused Input Border': 'rgba(153,136,238,1)',
+      'Buttons Background': 'rgba(214,218,240,1)',
+      'Buttons Border': 'rgba(183,197,217,1)',
+      'Navigation Background': 'rgba(211,215,238,0.5)',
+      'Navigation Border': 'rgba(183,197,217,1)',
+      'Links': 'rgb(52,52,92)',
+      'Hovered Links': 'rgb(221,0,0)',
+      'Navigation Links': 'rgb(0,0,0)',
+      'Hovered Navigation Links': 'rgb(221,0,0)',
+      'Subjects': 'rgb(15,12,93)',
+      'Names': 'rgb(17,119,67)',
+      'Sage': 'rgb(153,0,0)',
+      'Tripcodes': 'rgb(34,136,84)',
+      'Emails': 'rgb(87,87,123)',
+      'Post Numbers': 'rgb(0,0,0)',
+      'Text': 'rgb(0,0,0)',
+      'Quotelinks': 'rgb(221,0,0)',
+      'Backlinks': 'rgb(52,52,92)',
+      'Greentext': 'rgb(120,153,34)',
+      'Board Title': 'rgb(175,10,15)',
+      'Timestamps': 'rgb(0,0,0)',
+      'Inputs': 'rgb(0,0,0)',
+      'Warnings': 'rbg(87,87,123)',
+      'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': '0',
       'Custom CSS': '#qp div.post{background-color:rgba(240,192,176,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
     },
@@ -881,6 +944,7 @@
       'Emails': 'rgb(239,220,188)',
       'Post Numbers': 'rgb(220,220,204)',
       'Text': 'rgb(220,220,204)',
+      'Quotelinks': 'rgb(220,163,163)',
       'Backlinks': 'rgb(220,163,163)',
       'Greentext': 'rgb(127,159,127)',
       'Board Title': 'rgb(220,220,204)',
@@ -8886,11 +8950,13 @@ span.pln {\
 .quote {\
   color: ' + theme["Greentext"] + ';\
 }\
-span.quote > a.quotelink,\
-a.quotelink,\
 a.backlink {\
   color: ' + theme["Backlinks"] + ';\
   font-weight: 800;\
+}\
+span.quote > a.quotelink,\
+a.quotelink {\
+  color: ' + theme["Quotelinks"] + ';\
 }\
 div.subMenu,\
 #menu,\

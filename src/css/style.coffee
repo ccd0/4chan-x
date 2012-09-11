@@ -1826,11 +1826,13 @@ span.pln {
 .quote {
   color: ' + theme["Greentext"] + ';
 }
-span.quote > a.quotelink,
-a.quotelink,
 a.backlink {
   color: ' + theme["Backlinks"] + ';
   font-weight: 800;
+}
+span.quote > a.quotelink,
+a.quotelink {
+  color: ' + theme["Quotelinks"] + ';
 }
 div.subMenu,
 #menu,
