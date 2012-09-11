@@ -248,7 +248,7 @@ Filter =
   filesize: (post) ->
     {img} = post
     if img
-      return img.alt
+      return img.alt.replace 'Spoiler Image, ', ''
     false
   md5: (post) ->
     {img} = post
@@ -1179,7 +1179,7 @@ Updater =
     # XXX is fooling the cache still necessary?
     # url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json?{Date.now()}"
     url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json"
-    Updater.request = $.ajax url, onload: Updater.cb.load,
+    Updater.request = $.ajax url, onloadend: Updater.cb.load,
       headers: 'If-Modified-Since': Updater.lastModified
 
 Watcher =
@@ -1485,9 +1485,9 @@ Get =
             "Error #{req.status}: #{req.statusText}."
       return
 
-    posts  = JSON.parse(req.response).posts
+    posts = JSON.parse(req.response).posts
     if spoilerRange = posts[0].custom_spoiler
-      Build.spoilerRange[g.BOARD] = spoilerRange
+      Build.spoilerRange[board] = spoilerRange
     postID = +postID
     for post in posts
       break if post.no is postID # we found it!
@@ -1561,7 +1561,7 @@ Get =
         when 'D' then 'developer'
       tripcode: data.trip
       uniqueID: data.poster_hash
-      email:    encodeURIComponent data.email
+      email:    if data.email then encodeURIComponent data.email else ''
       subject:  data.title_processed
       flagCode: data.poster_country
       flagName: data.poster_country_name_processed
@@ -1612,7 +1612,7 @@ Get =
     root
   title: (thread) ->
     op = $ '.op', thread
-    el = $ '.subject', op
+    el = $ '.postInfo .subject', op
     unless el.textContent
       el = $ 'blockquote', op
       unless el.textContent
@@ -2555,9 +2555,9 @@ Redirect =
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
-        "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+        "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
-        "//nsfw.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+        "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
   thread: (board, threadID, postID) ->
     # keep the number only if the location.hash was sent f.e.
     postID = postID.match(/\d+/)[0] if postID

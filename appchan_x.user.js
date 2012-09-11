@@ -186,7 +186,7 @@
       filesize: [''].join('\n'),
       md5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2;text:Upload to imgur', '#http://omploader.org/upload?url1=$2;text:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/search/image/$3/;text:View same on foolz', '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/', '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'].join('\n'),
+    sauces: ['http://iqdb.org/?url=$1', 'http://www.google.com/searchbyimage?image_url=$1', '#http://tineye.com/search?url=$1', '#http://saucenao.com/search.php?db=999&url=$1', '#http://3d.iqdb.org/?url=$1', '#http://regex.info/exif.cgi?imgurl=$2', '# uploaders:', '#http://imgur.com/upload?url=$2;text:Upload to imgur', '#http://omploader.org/upload?url1=$2;text:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/_/search/image/$3/;text:View same on foolz', '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/', '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
@@ -2866,7 +2866,7 @@
       var img;
       img = post.img;
       if (img) {
-        return img.alt;
+        return img.alt.replace('Spoiler Image, ', '');
       }
       return false;
     },
@@ -4064,7 +4064,7 @@
       }
       url = "//api.4chan.org/" + g.BOARD + "/res/" + g.THREAD_ID + ".json";
       return Updater.request = $.ajax(url, {
-        onload: Updater.cb.load
+        onloadend: Updater.cb.load
       }, {
         headers: {
           'If-Modified-Since': Updater.lastModified
@@ -4524,7 +4524,7 @@
       }
       posts = JSON.parse(req.response).posts;
       if (spoilerRange = posts[0].custom_spoiler) {
-        Build.spoilerRange[g.BOARD] = spoilerRange;
+        Build.spoilerRange[board] = spoilerRange;
       }
       postID = +postID;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
@@ -4604,7 +4604,7 @@
         })(),
         tripcode: data.trip,
         uniqueID: data.poster_hash,
-        email: encodeURIComponent(data.email),
+        email: data.email ? encodeURIComponent(data.email) : '',
         subject: data.title_processed,
         flagCode: data.poster_country,
         flagName: data.poster_country_name_processed,
@@ -4669,7 +4669,7 @@
     title: function(thread) {
       var el, op, span;
       op = $('.op', thread);
-      el = $('.subject', op);
+      el = $('.postInfo .subject', op);
       if (!el.textContent) {
         el = $('blockquote', op);
         if (!el.textContent) {
@@ -5705,10 +5705,10 @@
         case 'wsg':
         case 'dev':
         case 'foolz':
-          return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+          return "//archive.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
         case 'u':
         case 'kuku':
-          return "//nsfw.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+          return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
     thread: function(board, threadID, postID) {
@@ -7619,6 +7619,9 @@ h1,\
 }\
 .quotelink.deadlink {\
   text-decoration: underline !important;\
+}\
+.deadlink:not(.quotelink) {\
+  text-decoration: none !important;\
 }\
 .image_expanded {\
   clear: both !important;\
@@ -9680,7 +9683,7 @@ a[href*="//dis"],\
 a[href*=res],\
 div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,\
 div.postContainer span.postNum > .replylink {\
-	text-decoration: underline;\
+  text-decoration: underline;\
 }\
 ';
         }

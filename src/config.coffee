@@ -125,7 +125,7 @@ Config =
     '#http://imgur.com/upload?url=$2;text:Upload to imgur'
     '#http://omploader.org/upload?url1=$2;text:Upload to omploader'
     '# "View Same" in archives:'
-    '#http://archive.foolz.us/search/image/$3/;text:View same on foolz'
+    '#http://archive.foolz.us/_/search/image/$3/;text:View same on foolz'
     '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/'
     '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'
   ].join '\n'

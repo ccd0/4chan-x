@@ -493,6 +493,9 @@ h1,
 .quotelink.deadlink {
   text-decoration: underline !important;
 }
+.deadlink:not(.quotelink) {
+  text-decoration: none !important;
+}
 .image_expanded {
   clear: both !important;
 }
@@ -2544,7 +2547,7 @@ a[href*="//dis"],
 a[href*=res],
 div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
 div.postContainer span.postNum > .replylink {
-	text-decoration: underline;
+  text-decoration: underline;
 }
 '
 
