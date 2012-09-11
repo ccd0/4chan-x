@@ -118,7 +118,7 @@ Config =
     '#http://imgur.com/upload?url=$2;text:Upload to imgur'
     '#http://omploader.org/upload?url1=$2;text:Upload to omploader'
     '# "View Same" in archives:'
-    '#http://archive.foolz.us/search/image/$3/;text:View same on foolz'
+    '#http://archive.foolz.us/_/search/image/$3/;text:View same on foolz'
     '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/'
     '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'
   ].join '\n'
@@ -3755,9 +3755,9 @@ Redirect =
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
-        "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+        "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
-        "//nsfw.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+        "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
   thread: (board, threadID, postID) ->
     # keep the number only if the location.hash was sent f.e.
     postID = postID.match(/\d+/)[0] if postID
