@@ -619,7 +619,7 @@ Themes =
     'Focused Input Border'        : 'rgba(153,136,238,1)',
     'Buttons Background'          : 'rgba(214,218,240,1)',
     'Buttons Border'              : 'rgba(183,197,217,1)',
-    'Navigation Background'       : 'rgba(211,215,238,0.5)',
+    'Navigation Background'       : 'rgba(211,215,238,0.7)',
     'Navigation Border'           : 'rgba(183,197,217,1)',
     'Links'                       : 'rgb(52,52,92)',
     'Hovered Links'               : 'rgb(221,0,0)',
@@ -641,7 +641,7 @@ Themes =
     'Warnings'                    : 'rbg(87,87,123)',
     'Shadow Color'                : 'rgba(128,128,128,0.5)',
     'Dark Theme'                  : '0',
-    'Custom CSS'                  : '#qp div.post{background-color:rgba(240,192,176,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
+    'Custom CSS'                  : '#qp div.post{background-color:rgba(214,186,208,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
   'Zenburned':
     'Author'                      : 'lazy',
     'Author Tripcode'             : '!HONKYn7h1.',
