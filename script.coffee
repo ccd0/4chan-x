@@ -2452,9 +2452,6 @@ Updater =
   update: ->
     Updater.set 'timer', 0
     Updater.request?.abort()
-    # Fool the cache.
-    # XXX is fooling the cache still necessary?
-    # url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json?{Date.now()}"
     url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json"
     Updater.request = $.ajax url, onloadend: Updater.cb.load,
       headers: 'If-Modified-Since': Updater.lastModified
