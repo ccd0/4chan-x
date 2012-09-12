@@ -2997,7 +2997,7 @@ Build =
       when 'mod'
         capcodeClass = " capcodeMod"
         capcodeStart = " <strong class='capcode hand id_mod' " +
-          "title='Highlight posts by Moderators'>## Moderator</strong>"
+          "title='Highlight posts by Moderators'>## Mod</strong>"
         capcode      = " <img src='#{staticPath}/image/modicon.gif' " +
           "alt='This user is a 4chan Moderator.' " +
           "title='This user is a 4chan Moderator.' class=identityIcon>"
