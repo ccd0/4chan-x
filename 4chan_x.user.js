@@ -3067,10 +3067,12 @@
       }
     },
     update: function() {
-      var url, _ref;
+      var request, url;
       Updater.set('timer', 0);
-      if ((_ref = Updater.request) != null) {
-        _ref.abort();
+      request = Updater.request;
+      if (request) {
+        request.onloadend = null;
+        request.abort();
       }
       url = "//api.4chan.org/" + g.BOARD + "/res/" + g.THREAD_ID + ".json";
       return Updater.request = $.ajax(url, {

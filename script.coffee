@@ -2451,7 +2451,11 @@ Updater =
 
   update: ->
     Updater.set 'timer', 0
-    Updater.request?.abort()
+    {request} = Updater
+    if request
+      # Don't reset the counter when aborting.
+      request.onloadend = null
+      request.abort()
     url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json"
     Updater.request = $.ajax url, onloadend: Updater.cb.load,
       headers: 'If-Modified-Since': Updater.lastModified
