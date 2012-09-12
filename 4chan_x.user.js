@@ -406,7 +406,7 @@
       style = $.el('style', {
         textContent: css
       });
-      $.add(d.head, style);
+      $.add(d.head || d.documentElement, style);
       return style;
     },
     x: function(path, root) {
@@ -5044,7 +5044,7 @@
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form']) {
         Main.css += '#postForm { display: none; }';
       }
-      Main.addStyle();
+      $.addStyle(Main.css);
       now = Date.now();
       if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 6 * $.HOUR) {
         $.ready(function() {
@@ -5251,14 +5251,6 @@
         }
       } else {
         Conf[parent] = obj;
-      }
-    },
-    addStyle: function() {
-      $.off(d, 'DOMNodeInserted', Main.addStyle);
-      if (d.head) {
-        return $.addStyle(Main.css);
-      } else {
-        return $.on(d, 'DOMNodeInserted', Main.addStyle);
       }
     },
     message: function(e) {

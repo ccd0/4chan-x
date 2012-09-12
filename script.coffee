@@ -315,7 +315,8 @@ $.extend $,
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
-    $.add d.head, style
+    # XXX Only Chrome has no d.head on document-start.
+    $.add d.head or d.documentElement, style
     style
   x: (path, root=d.body) ->
     # XPathResult.ANY_UNORDERED_NODE_TYPE is 8
@@ -4031,7 +4032,7 @@ Main =
     if Conf['Quick Reply'] and Conf['Hide Original Post Form']
       Main.css += '#postForm { display: none; }'
 
-    Main.addStyle()
+    $.addStyle Main.css
 
     now = Date.now()
     if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 6*$.HOUR
@@ -4213,13 +4214,6 @@ Main =
     else # string or number
       Conf[parent] = obj
     return
-
-  addStyle: ->
-    $.off d, 'DOMNodeInserted', Main.addStyle
-    if d.head
-      $.addStyle Main.css
-    else # XXX fox
-      $.on d, 'DOMNodeInserted', Main.addStyle
 
   message: (e) ->
     {version} = e.data
