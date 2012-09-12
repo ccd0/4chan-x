@@ -93,7 +93,7 @@
 * Thank you.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, enabledmascots, g;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, enabledmascots, g, userMascots, userThemes;
 
   Config = {
     main: {
@@ -269,9 +269,13 @@
     navigation: {}
   };
 
-  enabledmascots = {};
-
   Conf = {};
+
+  userThemes = {};
+
+  userMascots = {};
+
+  enabledmascots = {};
 
   d = document;
 
@@ -1735,7 +1739,7 @@
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
     DAY: 1000 * 60 * 60 * 24,
-    log: !console ? console = unsafeWindow.console : void 0,
+    log: !console ? console = unsafeWindow.console : console,
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     ready: function(fc) {
       var cb;
@@ -2327,8 +2331,8 @@
       parentdiv = $.el('div', {
         className: "suboptions"
       });
-      for (themename in Themes) {
-        theme = Themes[themename];
+      for (themename in userThemes) {
+        theme = userThemes[themename];
         div = $.el('div', {
           className: themename === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
           id: themename,
@@ -7079,10 +7083,10 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     },
     agent: function() {
       switch ($.engine) {
-        case 'gecko':
-          return '-moz-';
         case 'webkit':
           return '-webkit-';
+        case 'gecko':
+          return '-moz-';
         case 'presto':
           return '-o-';
       }
@@ -7090,8 +7094,8 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     addStyle: function() {
       var existingStyle, theme;
       $.off(d, 'DOMNodeInserted', Style.addStyle);
-      theme = Themes[Conf['theme']];
       if (d.head) {
+        theme = userThemes[Conf['theme']];
         if (existingStyle = $.id('appchan')) {
           $.rm(existingStyle);
         }
@@ -9974,13 +9978,13 @@ input[type=checkbox] {\
         }
         if (Conf["Mascots"]) {
           mascotnames = [];
-          for (name in Mascots) {
-            mascot = Mascots[name];
+          for (name in userMascots) {
+            mascot = userMascots[name];
             if (enabledmascots[name] === true) {
               mascotnames.push(name);
             }
           }
-          if (mascot = Mascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]]) {
+          if (mascot = userMascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]]) {
             css += '\
 #mascot img {\
   position: fixed;\
@@ -10029,16 +10033,23 @@ img[src^="//static.4chan.org/support/"] {\
 
   Main = {
     init: function() {
-      var enabled, key, mascot, name, now, path, pathname, temp, val;
+      var key, mascot, name, now, path, pathname, temp, val;
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
         Conf[key] = $.get(key, val);
       }
-      for (name in Mascots) {
-        mascot = Mascots[name];
-        enabled = mascot.category === 'SFW' ? true : false;
-        enabledmascots[name] = $.get(name, enabled);
+      userThemes = $.get("userThemes", Themes);
+      userMascots = $.get("userMascots", Mascots);
+      for (name in userMascots) {
+        mascot = userMascots[name];
+        enabledmascots[name] = $.get(name, function() {
+          if (mascot.category === 'SFW') {
+            return true;
+          } else {
+            return false;
+          }
+        });
       }
       path = location.pathname;
       pathname = path.slice(1).split('/');

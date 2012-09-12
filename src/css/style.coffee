@@ -2818,10 +2818,10 @@ input[type=checkbox] {
 
       if Conf["Mascots"]
         mascotnames = []
-        for name, mascot of Mascots
+        for name, mascot of userMascots
           if enabledmascots[name] == true
             mascotnames.push name
-        if mascot = Mascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]]
+        if mascot = userMascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]]
           css += '
 #mascot img {
   position: fixed;

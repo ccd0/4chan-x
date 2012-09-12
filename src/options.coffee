@@ -228,7 +228,7 @@ Options =
     #themes
     parentdiv = $.el 'div',
       className: "suboptions"
-    for themename, theme of Themes
+    for themename, theme of userThemes
       div = $.el 'div',
         className: if themename == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
         id:        themename
