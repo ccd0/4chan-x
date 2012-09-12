@@ -1909,7 +1909,10 @@ QR =
         # Connection error, or
         # CORS disabled error on www.4chan.org/banned
         QR.status()
-        QR.error 'Connection error with sys.4chan.org.'
+        QR.error $.el 'a',
+          href: '//www.4chan.org/banned',
+          target: '_blank',
+          textContent: 'Connection error, or you are banned.'
     opts =
       form: $.formData post
       upCallbacks:

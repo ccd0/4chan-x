@@ -2456,7 +2456,11 @@
         },
         onerror: function() {
           QR.status();
-          return QR.error('Connection error with sys.4chan.org.');
+          return QR.error($.el('a', {
+            href: '//www.4chan.org/banned',
+            target: '_blank',
+            textContent: 'Connection error, or you are banned.'
+          }));
         }
       };
       opts = {
