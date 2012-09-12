@@ -3720,7 +3720,7 @@
         capcode: data.capcode,
         tripcode: data.trip,
         uniqueID: data.id,
-        email: data.email ? encodeURIComponent(data.email) : '',
+        email: data.email ? encodeURIComponent(data.email.replace(/&quot;/g, '"')) : '',
         subject: data.sub,
         flagCode: data.country,
         flagName: data.country_name,
