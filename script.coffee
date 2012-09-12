@@ -116,7 +116,7 @@ Config =
     '#http://imgur.com/upload?url=$url;text:Upload to imgur'
     '#http://omploader.org/upload?url1=$url;text:Upload to omploader'
     '# "View Same" in archives:'
-    '#http://archive.foolz.us/search/image/$md5/;text:View same on foolz'
+    '#http://archive.foolz.us/_/search/image/$md5/;text:View same on foolz'
     '#http://archive.foolz.us/$board/search/image/$md5/;text:View same on foolz /$board/'
     '#https://archive.installgentoo.net/$board/image/$md5;text:View same on installgentoo /$board/'
   ].join '\n'
@@ -324,7 +324,8 @@ $.extend $,
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
-    $.add d.head, style
+    # XXX Only Chrome has no d.head on document-start.
+    $.add d.head or d.documentElement, style
     style
   x: (path, root=d.body) ->
     # XPathResult.ANY_UNORDERED_NODE_TYPE === 8
@@ -700,7 +701,6 @@ Main =
 
     switch location.hostname
       when 'boards.4chan.org'
-        Main.addStyle()
         Main.initHeader()
         Main.initFeatures()
       when 'sys.4chan.org'
@@ -714,6 +714,7 @@ Main =
         return
 
   initHeader: ->
+    $.addStyle Main.css
     Main.header = $.el 'div',
       className: 'reply'
       innerHTML: '<div class=extra></div>'
@@ -872,13 +873,6 @@ Main =
 
   settings: ->
     alert 'Here be settings'
-
-  addStyle: ->
-    $.off d, 'DOMNodeInserted', Main.addStyle
-    if d.head
-      $.addStyle Main.css
-    else
-      $.on d, 'DOMNodeInserted', Main.addStyle
   css: """
 /* general */
 .dialog.reply {
@@ -941,6 +935,9 @@ body.fourchan_x {
 /* quote */
 .quotelink.deadlink {
   text-decoration: underline !important;
+}
+.deadlink:not(.quotelink) {
+  text-decoration: none !important;
 }
 .inlined {
   opacity: .5;
@@ -1019,9 +1016,9 @@ Redirect =
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
-        "//archive.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+        "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
-        "//nsfw.foolz.us/api/chan/post/board/#{board}/num/#{postID}/format/json"
+        "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
     # for fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
   thread: (board, threadID, postID) ->
@@ -1088,7 +1085,7 @@ Build =
       capcode:  data.capcode
       tripcode: data.trip
       uniqueID: data.id
-      email:    if data.email then encodeURIComponent data.email else ''
+      email:    if data.email then encodeURIComponent data.email.replace /&quot;/g, '"' else ''
       subject:  data.sub
       flagCode: data.country
       flagName: data.country_name
@@ -1161,7 +1158,7 @@ Build =
       when 'mod'
         capcodeClass = " capcodeMod"
         capcodeStart = " <strong class='capcode hand id_mod' " +
-          "title='Highlight posts by Moderators'>## Moderator</strong>"
+          "title='Highlight posts by Moderators'>## Mod</strong>"
         capcode      = " <img src='#{staticPath}/image/modicon.gif' " +
           "alt='This user is a 4chan Moderator.' " +
           "title='This user is a 4chan Moderator.' class=identityIcon>"
@@ -1479,7 +1476,7 @@ Get =
         when 'D' then 'developer'
       tripcode: data.trip
       uniqueID: data.poster_hash
-      email:    encodeURIComponent data.email
+      email:    if data.email then encodeURIComponent data.email else ''
       subject:  data.title_processed
       flagCode: data.poster_country
       flagName: data.poster_country_name_processed

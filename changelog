@@ -5,6 +5,8 @@ alpha
   Fix Quote Highlighting not affecting inlined quotes.
 
 master
+
+2.35.0
 - Mayhem
   Use 4chan's API to fetch posts for:
     - Thread Updater.

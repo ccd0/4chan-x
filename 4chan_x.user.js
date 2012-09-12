@@ -165,7 +165,7 @@
       filesize: [''].join('\n'),
       md5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=$turl', 'http://www.google.com/searchbyimage?image_url=$turl', '#http://tineye.com/search?url=$turl', '#http://saucenao.com/search.php?db=999&url=$turl', '#http://3d.iqdb.org/?url=$turl', '#http://regex.info/exif.cgi?imgurl=$url', '# uploaders:', '#http://imgur.com/upload?url=$url;text:Upload to imgur', '#http://omploader.org/upload?url1=$url;text:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/search/image/$md5/;text:View same on foolz', '#http://archive.foolz.us/$board/search/image/$md5/;text:View same on foolz /$board/', '#https://archive.installgentoo.net/$board/image/$md5;text:View same on installgentoo /$board/'].join('\n'),
+    sauces: ['http://iqdb.org/?url=$turl', 'http://www.google.com/searchbyimage?image_url=$turl', '#http://tineye.com/search?url=$turl', '#http://saucenao.com/search.php?db=999&url=$turl', '#http://3d.iqdb.org/?url=$turl', '#http://regex.info/exif.cgi?imgurl=$url', '# uploaders:', '#http://imgur.com/upload?url=$url;text:Upload to imgur', '#http://omploader.org/upload?url1=$url;text:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/_/search/image/$md5/;text:View same on foolz', '#http://archive.foolz.us/$board/search/image/$md5/;text:View same on foolz /$board/', '#https://archive.installgentoo.net/$board/image/$md5;text:View same on installgentoo /$board/'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
@@ -424,7 +424,7 @@
       style = $.el('style', {
         textContent: css
       });
-      $.add(d.head, style);
+      $.add(d.head || d.documentElement, style);
       return style;
     },
     x: function(path, root) {
@@ -891,7 +891,6 @@
       }
       switch (location.hostname) {
         case 'boards.4chan.org':
-          Main.addStyle();
           Main.initHeader();
           return Main.initFeatures();
         case 'sys.4chan.org':
@@ -910,6 +909,7 @@
       }
     },
     initHeader: function() {
+      $.addStyle(Main.css);
       Main.header = $.el('div', {
         className: 'reply',
         innerHTML: '<div class=extra></div>'
@@ -1087,15 +1087,7 @@
     settings: function() {
       return alert('Here be settings');
     },
-    addStyle: function() {
-      $.off(d, 'DOMNodeInserted', Main.addStyle);
-      if (d.head) {
-        return $.addStyle(Main.css);
-      } else {
-        return $.on(d, 'DOMNodeInserted', Main.addStyle);
-      }
-    },
-    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  position: fixed;\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  position: fixed;\n  padding-bottom: 16px;\n}"
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  position: fixed;\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  position: fixed;\n  padding-bottom: 16px;\n}"
   };
 
   Redirect = {
@@ -1149,10 +1141,10 @@
         case 'wsg':
         case 'dev':
         case 'foolz':
-          return "//archive.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+          return "//archive.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
         case 'u':
         case 'kuku':
-          return "//nsfw.foolz.us/api/chan/post/board/" + board + "/num/" + postID + "/format/json";
+          return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
     thread: function(board, threadID, postID) {
@@ -1259,7 +1251,7 @@
         capcode: data.capcode,
         tripcode: data.trip,
         uniqueID: data.id,
-        email: data.email ? encodeURIComponent(data.email) : '',
+        email: data.email ? encodeURIComponent(data.email.replace(/&quot;/g, '"')) : '',
         subject: data.sub,
         flagCode: data.country,
         flagName: data.country_name,
@@ -1315,7 +1307,7 @@
           break;
         case 'mod':
           capcodeClass = " capcodeMod";
-          capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Moderator</strong>";
+          capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Mod</strong>";
           capcode = (" <img src='" + staticPath + "/image/modicon.gif' ") + "alt='This user is a 4chan Moderator.' " + "title='This user is a 4chan Moderator.' class=identityIcon>";
           break;
         case 'developer':
@@ -1554,7 +1546,7 @@
         })(),
         tripcode: data.trip,
         uniqueID: data.poster_hash,
-        email: encodeURIComponent(data.email),
+        email: data.email ? encodeURIComponent(data.email) : '',
         subject: data.title_processed,
         flagCode: data.poster_country,
         flagName: data.poster_country_name_processed,
