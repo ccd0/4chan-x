@@ -41,7 +41,6 @@ master
     - Thread Expansion.
     - Comment Expansion.
     This will make fetching faster, and reduce bandwidth usage.
-  Add an option to disable 4chan's inline extension. Enabled by default.
   Fix compatibility with Scriptish's auto-udpater.
 - Zixaphir
   Fixed auto updating

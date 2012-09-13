@@ -4066,10 +4066,12 @@
       }
     },
     update: function() {
-      var url, _ref;
+      var request, url;
       Updater.set('timer', 0);
-      if ((_ref = Updater.request) != null) {
-        _ref.abort();
+      request = Updater.request;
+      if (request) {
+        request.onloadend = null;
+        request.abort();
       }
       url = "//api.4chan.org/" + g.BOARD + "/res/" + g.THREAD_ID + ".json";
       return Updater.request = $.ajax(url, {
@@ -4613,7 +4615,7 @@
         })(),
         tripcode: data.trip,
         uniqueID: data.poster_hash,
-        email: data.email ? encodeURIComponent(data.email) : '',
+        email: data.email ? encodeURIComponent(data.email.replace(/&quot;/g, '"')) : '',
         subject: data.title_processed,
         flagCode: data.poster_country,
         flagName: data.poster_country_name_processed,
@@ -4621,19 +4623,19 @@
         dateUTC: data.timestamp,
         comment: comment
       };
-      if (data.media_filename) {
+      if (data.media.media_filename) {
         o.file = {
-          name: data.media_filename_processed,
-          timestamp: data.media_orig,
-          url: data.media_link || data.remote_media_link,
-          height: data.media_h,
-          width: data.media_w,
-          MD5: data.media_hash,
-          size: data.media_size,
-          turl: data.thumb_link || ("//thumbs.4chan.org/" + board + "/thumb/" + data.preview_orig),
-          theight: data.preview_h,
-          twidth: data.preview_w,
-          isSpoiler: data.spoiler === '1'
+          name: data.media.media_filename_processed,
+          timestamp: data.media.media_orig,
+          url: data.media.media_link || data.media.remote_media_link,
+          height: data.media.media_h,
+          width: data.media.media_w,
+          MD5: data.media.media_hash,
+          size: data.media.media_size,
+          turl: data.media.thumb_link || ("//thumbs.4chan.org/" + board + "/thumb/" + data.media.preview_orig),
+          theight: data.media.preview_h,
+          twidth: data.media.preview_w,
+          isSpoiler: data.media.spoiler === '1'
         };
       }
       $.replace(root.firstChild, Get.cleanPost(Build.post(o, true)));
@@ -4713,7 +4715,7 @@
         capcode: data.capcode,
         tripcode: data.trip,
         uniqueID: data.id,
-        email: data.email ? encodeURIComponent(data.email) : '',
+        email: data.email ? encodeURIComponent(data.email.replace(/&quot;/g, '"')) : '',
         subject: data.sub,
         flagCode: data.country,
         flagName: data.country_name,
@@ -4769,7 +4771,7 @@
           break;
         case 'mod':
           capcodeClass = " capcodeMod";
-          capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Moderator</strong>";
+          capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Mod</strong>";
           capcode = (" <img src='" + staticPath + "/image/modicon.gif' ") + "alt='This user is a 4chan Moderator.' " + "title='This user is a 4chan Moderator.' class=identityIcon>";
           break;
         case 'developer':
@@ -6302,7 +6304,7 @@
       id = this.previousSibling.hash.slice(2);
       text = ">>" + id + "\n";
       sel = window.getSelection();
-      if ((s = sel.toString()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
+      if ((s = sel.toString().trim()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
         if ($.engine === 'presto') {
           s = d.getSelection();
         }

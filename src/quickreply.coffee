@@ -113,7 +113,7 @@ QR =
     text = ">>#{id}\n"
 
     sel = window.getSelection()
-    if (s = sel.toString()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id.match(/\d+$/)[0]
+    if (s = sel.toString().trim()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id.match(/\d+$/)[0]
       # XXX Opera needs d.getSelection() to retain linebreaks from the selected text
       s = d.getSelection() if $.engine is 'presto'
       s = s.replace /\n/g, '\n>'
@@ -625,7 +625,10 @@ QR =
         # Connection error, or
         # CORS disabled error on www.4chan.org/banned
         QR.status()
-        QR.error 'Connection error with sys.4chan.org.'
+        QR.error $.el 'a',
+          href: '//www.4chan.org/banned',
+          target: '_blank',
+          textContent: 'Connection error, or you are banned.'
     opts =
       form: $.formData post
       upCallbacks:

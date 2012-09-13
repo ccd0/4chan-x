@@ -1174,10 +1174,11 @@ Updater =
 
   update: ->
     Updater.set 'timer', 0
-    Updater.request?.abort()
-    # Fool the cache.
-    # XXX is fooling the cache still necessary?
-    # url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json?{Date.now()}"
+    {request} = Updater
+    if request
+      # Don't reset the counter when aborting.
+      request.onloadend = null
+      request.abort()
     url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json"
     Updater.request = $.ajax url, onloadend: Updater.cb.load,
       headers: 'If-Modified-Since': Updater.lastModified
@@ -1561,7 +1562,7 @@ Get =
         when 'D' then 'developer'
       tripcode: data.trip
       uniqueID: data.poster_hash
-      email:    if data.email then encodeURIComponent data.email else ''
+      email:    if data.email then encodeURIComponent data.email.replace /&quot;/g, '"' else ''
       subject:  data.title_processed
       flagCode: data.poster_country
       flagName: data.poster_country_name_processed
@@ -1569,19 +1570,19 @@ Get =
       dateUTC:  data.timestamp
       comment:  comment
       # file
-    if data.media_filename
+    if data.media.media_filename
       o.file =
-        name:      data.media_filename_processed
-        timestamp: data.media_orig
-        url:       data.media_link or data.remote_media_link
-        height:    data.media_h
-        width:     data.media_w
-        MD5:       data.media_hash
-        size:      data.media_size
-        turl:      data.thumb_link or "//thumbs.4chan.org/#{board}/thumb/#{data.preview_orig}"
-        theight:   data.preview_h
-        twidth:    data.preview_w
-        isSpoiler: data.spoiler is '1'
+        name:      data.media.media_filename_processed
+        timestamp: data.media.media_orig
+        url:       data.media.media_link or data.media.remote_media_link
+        height:    data.media.media_h
+        width:     data.media.media_w
+        MD5:       data.media.media_hash
+        size:      data.media.media_size
+        turl:      data.media.thumb_link or "//thumbs.4chan.org/#{board}/thumb/#{data.media.preview_orig}"
+        theight:   data.media.preview_h
+        twidth:    data.media.preview_w
+        isSpoiler: data.media.spoiler is '1'
 
     $.replace root.firstChild, Get.cleanPost Build.post o, true
     cb() if cb
@@ -1642,7 +1643,7 @@ Build =
       capcode:  data.capcode
       tripcode: data.trip
       uniqueID: data.id
-      email:    if data.email then encodeURIComponent data.email else ''
+      email:    if data.email then encodeURIComponent data.email.replace /&quot;/g, '"' else ''
       subject:  data.sub
       flagCode: data.country
       flagName: data.country_name
@@ -1715,7 +1716,7 @@ Build =
       when 'mod'
         capcodeClass = " capcodeMod"
         capcodeStart = " <strong class='capcode hand id_mod' " +
-          "title='Highlight posts by Moderators'>## Moderator</strong>"
+          "title='Highlight posts by Moderators'>## Mod</strong>"
         capcode      = " <img src='#{staticPath}/image/modicon.gif' " +
           "alt='This user is a 4chan Moderator.' " +
           "title='This user is a 4chan Moderator.' class=identityIcon>"
