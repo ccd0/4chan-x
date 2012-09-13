@@ -845,7 +845,7 @@
         quote = _ref[_i];
         if ((el = $.id(quote.hash.slice(1))) && el.hidden) {
           $.addClass(quote, 'filtered');
-          if (Conf['Recursive Filtering']) {
+          if (Conf['Recursive Filtering'] && post.ID !== post.threadID) {
             show_stub = !!$.x('preceding-sibling::div[contains(@class,"stub")]', el);
             ReplyHiding.hide(post.root, show_stub);
           }
