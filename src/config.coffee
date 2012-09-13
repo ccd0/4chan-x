@@ -227,7 +227,7 @@ Config =
       'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
       'Expand Post Form Textarea': [true,              'Expands the post form text area when in use.']
       'Fit Width Replies':         [true,              'Replies fit the entire width of the page.']
-      'Page Margin':               ['fully centered',  'Additional layout options, allowing you to center the page or use additional page margins.', [
+      'Page Margin':               ['fully centered',  'Additional layout options, allowing you to center the page or use additional page margins. Disabling the sidebar will cause this option to affect both sides of the page, essentially centering the page content with all options.', [
         'none', 'small', 'medium', 'large', 'fully centered'
       ]]
       'Reply Spacing':             ['small',           'The amount of space between replies.', [

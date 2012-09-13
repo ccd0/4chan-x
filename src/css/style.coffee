@@ -2387,19 +2387,19 @@ form .postContainer blockquote {
 }
 '
 
-      if Conf['Sidebar'] != 'hide'
-        switch Conf['Page Margin']
-          when 'none'
-            pagemargin = '2px'
-          when 'small'
-            pagemargin = '25px'
-          when 'medium'
-            pagemargin = '50px'
-          when 'large'
-            pagemargin = '150px'
-          when 'fully centered'
-            pagemargin = (248 + sidebarOffsetW) + 'px'
+      switch Conf['Page Margin']
+        when 'none'
+          pagemargin = '2px'
+        when 'small'
+          pagemargin = '50px'
+        when 'medium'
+          pagemargin = '150px'
+        when 'fully centered'
+          pagemargin = (248 + sidebarOffsetW) + 'px'
+        when 'large'
+          pagemargin = '350px'
 
+      if Conf['Sidebar'] != 'hide'
         css += '
 body {
   margin: 1px ' + (252 + sidebarOffsetW) + 'px 0 ' + pagemargin + ';
@@ -2412,10 +2412,13 @@ body {
 '
       else
         css += '
+body {
+  margin: 1px ' + pagemargin + ' 0 ' + pagemargin + ';
+}
 #boardNavDesktop,
 .pages {
-  left:  2px;
-  right: 2px;
+  left:  ' + pagemargin + ';
+  right: ' + pagemargin + ';
 }
 '
 

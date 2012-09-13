@@ -259,7 +259,7 @@
         'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
         'Expand Post Form Textarea': [true, 'Expands the post form text area when in use.'],
         'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
-        'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'small', 'medium', 'large', 'fully centered']],
+        'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins. Disabling the sidebar will cause this option to affect both sides of the page, essentially centering the page content with all options.', ['none', 'small', 'medium', 'large', 'fully centered']],
         'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'medium', 'large']],
         'Sidebar': ['normal', 'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['normal', 'large', 'hide']]
       }
@@ -9535,23 +9535,23 @@ form .postContainer blockquote {\
 }\
 ';
         }
+        switch (Conf['Page Margin']) {
+          case 'none':
+            pagemargin = '2px';
+            break;
+          case 'small':
+            pagemargin = '50px';
+            break;
+          case 'medium':
+            pagemargin = '150px';
+            break;
+          case 'fully centered':
+            pagemargin = (248 + sidebarOffsetW) + 'px';
+            break;
+          case 'large':
+            pagemargin = '350px';
+        }
         if (Conf['Sidebar'] !== 'hide') {
-          switch (Conf['Page Margin']) {
-            case 'none':
-              pagemargin = '2px';
-              break;
-            case 'small':
-              pagemargin = '25px';
-              break;
-            case 'medium':
-              pagemargin = '50px';
-              break;
-            case 'large':
-              pagemargin = '150px';
-              break;
-            case 'fully centered':
-              pagemargin = (248 + sidebarOffsetW) + 'px';
-          }
           css += '\
 body {\
   margin: 1px ' + (252 + sidebarOffsetW) + 'px 0 ' + pagemargin + ';\
@@ -9564,10 +9564,13 @@ body {\
 ';
         } else {
           css += '\
+body {\
+  margin: 1px ' + pagemargin + ' 0 ' + pagemargin + ';\
+}\
 #boardNavDesktop,\
 .pages {\
-  left:  2px;\
-  right: 2px;\
+  left:  ' + pagemargin + ';\
+  right: ' + pagemargin + ';\
 }\
 ';
         }
