@@ -432,14 +432,16 @@ h1,
 #themecontent {
   top: 1.5em;
 }
+#save,
 .stylesettings {
   position: absolute;
-  right: 0;
+  right: 10px;
   bottom: 0;
 }
+#cancel,
 #mascots_batch {
   position: absolute;
-  left: 0;
+  left: 10px;
   bottom: 0;
 }
 #content textarea {

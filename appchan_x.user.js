@@ -476,7 +476,7 @@
       'Buttons Border': 'rgba(24,24,24,1)',
       'Navigation Background': 'rgba(16,16,16,0.9)',
       'Navigation Border': 'rgba(16,16,16,0.9)',
-      'Quotelinks': 'rgb(66,66,71)',
+      'Quotelinks': 'rgb(71,71,91)',
       'Backlinks': 'rgb(66,66,71)',
       'Links': 'rgb(87,87,123)',
       'Hovered Links': 'rgb(71,71,91)',
@@ -1144,10 +1144,6 @@
       image: 'http://i.imgur.com/lYGo4.png',
       bottom: '0',
       big: true
-    },
-    'Hakase': {
-      category: 'SFW',
-      image: 'http://i.imgur.com/TBHI6.png'
     },
     'Hanako': {
       category: 'SFW',
@@ -2339,26 +2335,42 @@
       });
       for (themename in userThemes) {
         theme = userThemes[themename];
-        div = $.el('div', {
-          className: themename === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
-          id: themename,
-          innerHTML: "<div class='reply' style='position: relative; cursor: pointer; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + themename + "</span>   <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important' href='javascript:;'>No.22772469</a>  <a class=edit name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important' href='javascript:;'> [ edit theme ]</a>  <br>  <blockquote>Post content is right here.</blockquote><h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
-        });
-        $.on(div, 'click', function() {
-          $.rmClass($.id(Conf['theme']), 'selectedtheme');
-          $.set('theme', this.id);
-          Conf['theme'] = this.id;
-          return $.addClass(this, 'selectedtheme');
-        });
-        $.on($('a.edit', div), 'click', function() {
-          try {
-            ThemeOptions.init(this.name);
-          } catch (err) {
-            console.log(err);
-          }
-          return Options.close();
-        });
-        $.add(parentdiv, div);
+        if (!theme["Deleted"]) {
+          div = $.el('div', {
+            className: themename === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
+            id: themename,
+            innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + themename + "</span>   <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.22772469</a>  <a class=edit name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit theme</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete theme</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
+          });
+          $.on($('a.edit', div), 'click', function() {
+            try {
+              ThemeOptions.init(this.name);
+              return Options.close();
+            } catch (err) {
+              return console.log(err);
+            }
+          });
+          $.on($('a.delete', div), 'click', function() {
+            var container, settheme;
+            container = this.parentElement.parentElement;
+            if (!(container.previousSibling || container.nextSibling)) {
+              alert("Cannot delete theme (No other themes available).");
+              return;
+            }
+            if (container.id === Conf['theme']) {
+              if (settheme = container.previousSibling || container.nextSibling) {
+                Conf['theme'] = settheme.id;
+                $.addClass(settheme, 'selectedtheme');
+                $.set('theme', Conf['theme']);
+              }
+            }
+            userThemes[container.id]["Deleted"] = true;
+            $.set('userThemes', userThemes);
+            return $.rm(container);
+          });
+          $.on($('.rice', div), 'click', Options.selectTheme);
+          $.on($('blockquote', div), 'click', Options.selectTheme);
+          $.add(parentdiv, div);
+        }
       }
       $.add($('#theme_tab + div', dialog), parentdiv);
       Options.applyStyle(dialog, 'theme_tab');
@@ -2576,6 +2588,16 @@
         });
         return $.add($('#' + tab + ' + div', dialog), save);
       }
+    },
+    selectTheme: function() {
+      var container, currentTheme;
+      container = this.parentElement.parentElement;
+      if (currentTheme = $.id(Conf['theme'])) {
+        $.rmClass(currentTheme, 'selectedtheme');
+      }
+      $.set('theme', container.id);
+      Conf['theme'] = container.id;
+      return $.addClass(container, 'selectedtheme');
     }
   };
 
@@ -7053,17 +7075,18 @@
   ThemeOptions = {
     init: function(key) {
       editMode = true;
-      Style.addStyle(key);
+      Style.addStyle(userThemes[key]);
       return this.dialog(key);
     },
     dialog: function(key) {
       var dialog, div, header, input, item, layout, _i, _j, _len, _len1, _ref;
       editTheme = userThemes[key];
+      editTheme["Theme"] = key;
       layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Focused Input Background", "Focused Input Border", "Hovered Input Background", "Hovered Input Border", "Navigation Background", "Navigation Border", "Quotelinks", "Backlinks", "Links", "Hovered Links", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color", "Dark Theme", "Custom CSS"];
       dialog = $.el("div", {
         id: "themeConf",
         className: "reply dialog",
-        innerHTML: "<div id=themebar></div><hr><div id=themecontent></div><div id=save>  <a href='javascript:;'>Save Theme</a></div>"
+        innerHTML: "<div id=themebar></div><hr><div id=themecontent></div><div id=save>  <a href='javascript:;'>Save Theme</a></div><div id=cancel>  <a href='javascript:;'>Cancel</a></div>"
       });
       header = $.el("div", {
         innerHTML: "<input class=field name='Theme' placeholder='Theme' value='" + key + "'> by <input class=field name='Author' placeholder='Author' value='" + editTheme['Author'] + "'> <input class=field name='Author Tripcode' placeholder='Author Tripcode' value='" + editTheme['Author Tripcode'] + "'>"
@@ -7071,13 +7094,9 @@
       _ref = $$("input", header);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
-        try {
-          $.on(input, 'blur', function() {
-            return editTheme[this.name] = this.value;
-          });
-        } catch (err) {
-          console.log(err);
-        }
+        $.on(input, 'blur', function() {
+          return editTheme[this.name] = this.value;
+        });
       }
       $.add($("#themebar", dialog), header);
       for (_j = 0, _len1 = layout.length; _j < _len1; _j++) {
@@ -7096,19 +7115,28 @@
         }
         $.add($("#themecontent", dialog), div);
       }
+      $.on($('#save > a', dialog), 'click', function() {
+        return ThemeOptions.save(editTheme);
+      });
+      $.on($('#cancel > a', dialog), 'click', ThemeOptions.close);
       return $.add(d.body, dialog);
     },
     save: function(theme) {
       var name;
       name = theme["Theme"];
       delete theme["Theme"];
-      if (userTheme[name]) {
-        delete userTheme[name];
+      if (userThemes[name]) {
+        if (confirm("A theme with this name already exists. Would you like to over-write?")) {
+          delete userThemes[name];
+        } else {
+          return;
+        }
       }
       userThemes[name] = theme;
       $.set('userThemes', userThemes);
       $.set("Style", name);
       Conf["Style"] = name;
+      alert("Theme \"" + name + "\" saved.");
       return this.close;
     },
     close: function() {
@@ -7654,14 +7682,16 @@ h1,\
 #themecontent {\
   top: 1.5em;\
 }\
+#save,\
 .stylesettings {\
   position: absolute;\
-  right: 0;\
+  right: 10px;\
   bottom: 0;\
 }\
+#cancel,\
 #mascots_batch {\
   position: absolute;\
-  left: 0;\
+  left: 10px;\
   bottom: 0;\
 }\
 #content textarea {\

@@ -229,34 +229,51 @@ Options =
     parentdiv = $.el 'div',
       className: "suboptions"
     for themename, theme of userThemes
-      div = $.el 'div',
-        className: if themename == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
-        id:        themename
-        innerHTML: "
-<div class='reply' style='position: relative; cursor: pointer; width: 100%; box-shadow: none !important; background-color:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
-  <div class='rice' style='width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div>
+      unless theme["Deleted"]
+        div = $.el 'div',
+          className: if themename == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
+          id:        themename
+          innerHTML: "
+<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
+  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div>
   <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{themename}</span> 
   <span style='color:#{theme['Names']}!important; font-weight: 700 !important'> #{theme['Author']}</span>
   <span style='color:#{theme['Sage']}!important'> (SAGE)</span>
   <span style='color:#{theme['Tripcodes']}!important'> #{theme['Author Tripcode']}</span>
   <time style='color:#{theme['Timestamps']}'> 20XX.01.01 12:00 </time>
-  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important' href='javascript:;'>No.22772469</a>
-  <a class=edit name='#{themename}' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important' href='javascript:;'> [ edit theme ]</a>
+  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.22772469</a>
+  <a class=edit name='#{themename}' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit theme</a>
+  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important; font-weight: 800;&quot;)' style='color:#{theme['Backlinks']}!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete theme</a>
   <br>
-  <blockquote>Post content is right here.</blockquote><h1 style='color: #{theme['Text']}'>Selected</h1>
+  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>
+    <a style='color:#{theme['Quotelinks']}!important; font-weight: 800;'>&gt;&gt;27582902</a>
+    <br>
+    Post content is right here.
+  </blockquote>
+  <h1 style='color: #{theme['Text']}'>Selected</h1>
 </div>"
-      $.on div, 'click', ->
-        $.rmClass $.id(Conf['theme']), 'selectedtheme'
-        $.set 'theme', @.id
-        Conf['theme'] = @.id
-        $.addClass @, 'selectedtheme'
-      $.on $('a.edit', div), 'click', ->
-        try 
-          ThemeOptions.init @.name
-        catch err
-          console.log err
-        Options.close()
-      $.add parentdiv, div
+        $.on $('a.edit', div), 'click', ->
+          try
+            ThemeOptions.init @.name
+            Options.close()
+          catch err
+            console.log err
+        $.on $('a.delete', div), 'click', ->
+          container = @.parentElement.parentElement
+          unless container.previousSibling or container.nextSibling
+            alert "Cannot delete theme (No other themes available)."
+            return
+          if container.id == Conf['theme']
+            if settheme = container.previousSibling or container.nextSibling
+              Conf['theme'] = settheme.id
+              $.addClass settheme, 'selectedtheme'
+              $.set 'theme', Conf['theme']
+          userThemes[container.id]["Deleted"] = true
+          $.set 'userThemes', userThemes
+          $.rm container
+        $.on $('.rice', div), 'click', Options.selectTheme
+        $.on $('blockquote', div), 'click', Options.selectTheme
+        $.add parentdiv, div
     $.add $('#theme_tab + div', dialog), parentdiv
     Options.applyStyle(dialog, 'theme_tab')
 
@@ -421,3 +438,11 @@ Options =
       $.on $('a', save), 'click', ->
         Style.addStyle()
       $.add $('#' + tab + ' + div', dialog), save
+  
+  selectTheme: ->  
+    container = @.parentElement.parentElement
+    if currentTheme = $.id(Conf['theme'])
+      $.rmClass currentTheme, 'selectedtheme'
+    $.set 'theme', container.id
+    Conf['theme'] = container.id
+    $.addClass container, 'selectedtheme'

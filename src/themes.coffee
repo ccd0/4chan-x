@@ -213,7 +213,7 @@ Themes =
     'Buttons Border'              : 'rgba(24,24,24,1)',
     'Navigation Background'       : 'rgba(16,16,16,0.9)',
     'Navigation Border'           : 'rgba(16,16,16,0.9)',
-    'Quotelinks'                  : 'rgb(66,66,71)',
+    'Quotelinks'                  : 'rgb(71,71,91)',
     'Backlinks'                   : 'rgb(66,66,71)',
     'Links'                       : 'rgb(87,87,123)',
     'Hovered Links'               : 'rgb(71,71,91)',
@@ -830,9 +830,6 @@ Mascots =
     image:      'http://i.imgur.com/lYGo4.png'
     bottom:     '0'
     big:        true
-  'Hakase':
-    category:   'SFW'
-    image:      'http://i.imgur.com/TBHI6.png'
   'Hanako':
     category:   'SFW'
     image:      'http://i.imgur.com/G3iN7.png'
