@@ -79,7 +79,7 @@
  */
 
 (function() {
-  var $, $$, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, Time, UI, d, g,
+  var $, $$, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, ThreadUpdater, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1030,6 +1030,13 @@
           $.log(err, 'Image Hover');
         }
       }
+      if (Conf['Thread Updater']) {
+        try {
+          ThreadUpdater.init();
+        } catch (err) {
+          $.log(err, 'Thread Updater');
+        }
+      }
       return $.ready(Main.initFeaturesReady);
     },
     initFeaturesReady: function() {
@@ -1087,7 +1094,7 @@
     settings: function() {
       return alert('Here be settings');
     },
-    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  position: fixed;\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  position: fixed;\n  padding-bottom: 16px;\n}"
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  position: fixed;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n  z-index: 1;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  position: fixed;\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  position: fixed;\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  position: fixed;\n  padding-bottom: 16px;\n}"
   };
 
   Redirect = {
@@ -2360,6 +2367,244 @@
       $.off(this, 'mousemove', UI.hover);
       return $.off(this, 'mouseout', ImageHover.mouseout);
     }
+  };
+
+  ThreadUpdater = {
+    init: function() {
+      if (!g.REPLY) {
+        return;
+      }
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Updater',
+        cb: this.node
+      });
+    },
+    node: function() {
+      return new ThreadUpdater.Updater(this);
+    },
+    Updater: (function() {
+
+      function _Class(thread) {
+        var checked, dialog, html, input, name, title, val, _i, _len, _ref, _ref1;
+        this.thread = thread;
+        html = '<div class=move><span id=status></span> <span id=timer></span></div>';
+        _ref = Config.updater.checkbox;
+        for (name in _ref) {
+          val = _ref[name];
+          title = val[1];
+          checked = Conf[name] ? 'checked' : '';
+          html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
+        }
+        checked = Conf['Auto Update'] ? 'checked' : '';
+        html += "<div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>\n<div><label>Interval (s)<input type=number name=Interval class=field min=5 value=" + Conf['Interval'] + "></label></div>\n<div><input value='Update Now' type=button name='Update Now'></div>";
+        dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
+        this.timer = $('#timer', dialog);
+        this.status = $('#status', dialog);
+        this.unsuccessfulFetchCount = 0;
+        this.lastModified = '0';
+        this.threadRoot = thread.posts[thread].nodes.root.parentNode;
+        this.lastPost = +this.threadRoot.lastElementChild.id.slice(2);
+        _ref1 = $$('input', dialog);
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          input = _ref1[_i];
+          switch (input.type) {
+            case 'checkbox':
+              $.on(input, 'click', this.cb.checkbox.bind(this));
+              input.dispatchEvent(new Event('click'));
+              $.on(input, 'click', $.cb.checked);
+              break;
+            case 'number':
+              $.on(input, 'change', this.cb.interval.bind(this));
+              input.dispatchEvent(new Event('change'));
+              break;
+            case 'button':
+              $.on(input, 'click', this.update.bind(this));
+          }
+        }
+        $.on(d, 'QRPostSuccessful', this.cb.post.bind(this));
+        $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility.bind(this));
+        this.set('timer', this.getInterval());
+        $.add(d.body, dialog);
+      }
+
+      _Class.prototype.cb = {
+        post: function(e) {
+          if (!(this['Auto Update This'] && +e.detail.threadID === this.thread.ID)) {
+            return;
+          }
+          this.unsuccessfulFetchCount = 0;
+          if (this.seconds > 2) {
+            return setTimeout(this.update.bind(this), 1000);
+          }
+        },
+        visibility: function() {
+          var state;
+          state = d.visibilityState || d.oVisibilityState || d.mozVisibilityState || d.webkitVisibilityState;
+          if (state !== 'visible') {
+            return;
+          }
+          this.unsuccessfulFetchCount = 0;
+          if (this.seconds > this.interval) {
+            return this.set('timer', this.getInterval());
+          }
+        },
+        checkbox: function(e) {
+          var checked, input, name;
+          input = e.target;
+          checked = input.checked, name = input.name;
+          this[name] = checked;
+          switch (name) {
+            case 'Scroll BG':
+              return this.scrollBG = checked ? function() {
+                return true;
+              } : function() {
+                return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
+              };
+            case 'Auto Update This':
+              if (checked) {
+                return this.timeoutID = setTimeout(this.timeout.bind(this), 1000);
+              } else {
+                return clearTimeout(this.timeoutID);
+              }
+          }
+        },
+        interval: function(e) {
+          var input, val;
+          input = e.target;
+          val = Math.max(5, parseInt(input.value, 10));
+          this.interval = input.value = val;
+          return $.cb.value.call(input);
+        },
+        load: function() {
+          switch (this.req.status) {
+            case 404:
+              this.set('timer', null);
+              this.set('status', '404');
+              this.status.className = 'warning';
+              clearTimeout(this.timeoutID);
+              this.thread.isDead = true;
+              break;
+            case 0:
+            case 304:
+              /*
+                          Status Code 304: Not modified
+                          By sending the `If-Modified-Since` header we get a proper status code, and no response.
+                          This saves bandwidth for both the user and the servers and avoid unnecessary computation.
+              */
+
+              this.unsuccessfulFetchCount++;
+              this.set('timer', this.getInterval());
+              this.set('status', null);
+              this.status.className = null;
+              break;
+            case 200:
+              this.lastModified = this.req.getResponseHeader('Last-Modified');
+              this.parse(JSON.parse(this.req.response).posts);
+              this.set('timer', this.getInterval());
+              break;
+            default:
+              this.unsuccessfulFetchCount++;
+              this.set('timer', this.getInterval());
+              this.set('status', this.req.statusText);
+              this.status.className = 'warning';
+          }
+          return delete this.req;
+        }
+      };
+
+      _Class.prototype.getInterval = function() {
+        var i, j;
+        i = this.interval;
+        j = Math.min(this.unsuccessfulFetchCount, 10);
+        if (!(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden)) {
+          j = Math.min(j, 7);
+        }
+        return this.seconds = Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
+      };
+
+      _Class.prototype.set = function(name, text) {
+        var el, node;
+        el = this[name];
+        if (node = el.firstChild) {
+          return node.data = text;
+        } else {
+          return el.textContent = text;
+        }
+      };
+
+      _Class.prototype.timeout = function() {
+        var n;
+        this.timeoutID = setTimeout(this.timeout.bind(this), 1000);
+        if (!(n = --this.seconds)) {
+          return this.update();
+        } else if (n <= -60) {
+          this.set('status', 'Retrying');
+          this.status.className = null;
+          return this.update();
+        } else if (n > 0) {
+          return this.set('timer', n);
+        }
+      };
+
+      _Class.prototype.update = function() {
+        var url;
+        this.seconds = 0;
+        this.set('timer', '...');
+        if (this.req) {
+          this.req.onloadend = null;
+          this.req.abort();
+        }
+        url = "//api.4chan.org/" + this.thread.board + "/res/" + this.thread + ".json";
+        return this.req = $.ajax(url, {
+          onloadend: this.cb.load.bind(this)
+        }, {
+          headers: {
+            'If-Modified-Since': this.lastModified
+          }
+        });
+      };
+
+      _Class.prototype.parse = function(postObjects) {
+        var count, node, nodes, postObject, posts, scroll, spoilerRange, _i, _len, _ref;
+        if (spoilerRange = postObjects[0].custom_spoiler) {
+          Build.spoilerRange[this.thread.board] = spoilerRange;
+        }
+        nodes = [];
+        posts = [];
+        count = 0;
+        _ref = postObjects.reverse();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          postObject = _ref[_i];
+          if (postObject.no <= this.lastPost) {
+            break;
+          }
+          count++;
+          node = Build.postFromObject(postObject, this.thread.board.ID);
+          nodes.unshift(node);
+          posts.unshift(new Post(node, this.thread, this.thread.board));
+        }
+        if (count) {
+          this.set('status', "+" + count);
+          this.status.className = 'new';
+          this.unsuccessfulFetchCount = 0;
+        } else {
+          this.set('status', null);
+          this.status.className = null;
+          this.unsuccessfulFetchCount++;
+          return;
+        }
+        this.lastPost = posts[count - 1].ID;
+        Main.callbackNodes(Post, posts);
+        scroll = this['Auto Scroll'] && this.scrollBG() && this.threadRoot.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
+        $.add(this.threadRoot, nodes);
+        if (scroll) {
+          return nodes[0].scrollIntoView();
+        }
+      };
+
+      return _Class;
+
+    })()
   };
 
   Main.init();

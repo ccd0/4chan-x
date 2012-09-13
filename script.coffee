@@ -830,6 +830,13 @@ Main =
         # XXX handle error
         $.log err, 'Image Hover'
 
+    if Conf['Thread Updater']
+      try
+        ThreadUpdater.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Thread Updater'
+
     $.ready Main.initFeaturesReady
   initFeaturesReady: ->
     if d.title is '4chan - 404 Not Found'
@@ -930,6 +937,25 @@ body.fourchan_x {
 }
 #settings {
   float: right;
+}
+
+/* thread updater */
+#updater {
+  position: fixed;
+  text-align: right;
+}
+#updater:not(:hover) {
+  background: none;
+  border: none;
+}
+#updater input[type=number] {
+  width: 4em;
+}
+#updater:not(:hover) > div:not(.move) {
+  display: none;
+}
+.new {
+  color: limegreen;
 }
 
 /* quote */
@@ -2086,6 +2112,199 @@ ImageHover =
     UI.hoverend()
     $.off @, 'mousemove', UI.hover
     $.off @, 'mouseout',  ImageHover.mouseout
+
+ThreadUpdater =
+  init: ->
+    return unless g.REPLY
+    Thread::callbacks.push
+      name: 'Thread Updater'
+      cb:   @node
+  node: ->
+    new ThreadUpdater.Updater @
+
+  Updater: class
+    constructor: (@thread) ->
+      html = '<div class=move><span id=status></span> <span id=timer></span></div>'
+      for name, val of Config.updater.checkbox
+        title   = val[1]
+        checked = if Conf[name] then 'checked' else ''
+        html    += "<div><label title='#{title}'>#{name}<input name='#{name}' type=checkbox #{checked}></label></div>"
+
+      checked = if Conf['Auto Update'] then 'checked' else ''
+      html += """
+        <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
+        <div><label>Interval (s)<input type=number name=Interval class=field min=5 value=#{Conf['Interval']}></label></div>
+        <div><input value='Update Now' type=button name='Update Now'></div>
+        """
+
+      dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
+
+      @timer  = $ '#timer',  dialog
+      @status = $ '#status', dialog
+
+      @unsuccessfulFetchCount = 0
+      @lastModified = '0'
+      @threadRoot = thread.posts[thread].nodes.root.parentNode
+      @lastPost = +@threadRoot.lastElementChild.id[2..]
+
+      for input in $$ 'input', dialog
+        switch input.type
+          when 'checkbox'
+            $.on input, 'click', @cb.checkbox.bind @
+            input.dispatchEvent new Event 'click'
+            $.on input, 'click', $.cb.checked
+          when 'number'
+            $.on input, 'change', @cb.interval.bind @
+            input.dispatchEvent new Event 'change'
+          when 'button'
+            $.on input, 'click', @update.bind @
+
+      $.on d, 'QRPostSuccessful', @cb.post.bind @
+      $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility.bind @
+
+      @set 'timer', @getInterval()
+      $.add d.body, dialog
+
+    cb:
+      post: (e) ->
+        return unless @['Auto Update This'] and +e.detail.threadID is @thread.ID
+        @unsuccessfulFetchCount = 0
+        setTimeout @update.bind(@), 1000 if @seconds > 2
+      visibility: ->
+        state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
+        return if state isnt 'visible'
+        # Reset the counter when we focus this tab.
+        @unsuccessfulFetchCount = 0
+        if @seconds > @interval
+          @set 'timer', @getInterval()
+      checkbox: (e) ->
+        input = e.target
+        {checked, name} = input
+        @[name] = checked
+        switch name
+          when 'Scroll BG'
+            @scrollBG =
+              if checked
+                -> true
+              else
+                -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
+          when 'Auto Update This'
+            if checked
+              @timeoutID = setTimeout @timeout.bind(@), 1000
+            else
+              clearTimeout @timeoutID
+      interval: (e) ->
+        input = e.target
+        val = Math.max 5, parseInt input.value, 10
+        @interval = input.value = val
+        $.cb.value.call input
+      load: ->
+        switch @req.status
+          when 404
+            @set 'timer', null
+            @set 'status', '404'
+            @status.className = 'warning'
+            clearTimeout @timeoutID
+            @thread.isDead = true
+            # if Conf['Unread Count']
+            #   Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
+            # else
+            #   d.title = d.title.match(/^.+-/)[0] + ' 404'
+            # Unread.update true
+            # QR.abort()
+          # XXX 304 -> 0 in Opera
+          when 0, 304
+            ###
+            Status Code 304: Not modified
+            By sending the `If-Modified-Since` header we get a proper status code, and no response.
+            This saves bandwidth for both the user and the servers and avoid unnecessary computation.
+            ###
+            @unsuccessfulFetchCount++
+            @set 'timer', @getInterval()
+            @set 'status', null
+            @status.className = null
+          when 200
+            @lastModified = @req.getResponseHeader 'Last-Modified'
+            @parse JSON.parse(@req.response).posts
+            @set 'timer', @getInterval()
+          else
+            @unsuccessfulFetchCount++
+            @set 'timer',  @getInterval()
+            @set 'status', @req.statusText
+            @status.className = 'warning'
+        delete @req
+
+    getInterval: ->
+      i = @interval
+      j = Math.min @unsuccessfulFetchCount, 10
+      unless d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+        # Lower the max refresh rate limit on visible tabs.
+        j = Math.min j, 7
+      @seconds = Math.max i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
+
+    set: (name, text) ->
+      el = @[name]
+      if node = el.firstChild
+        # Prevent the creation of a new DOM Node
+        # by setting the text node's data.
+        node.data = text
+      else
+        el.textContent = text
+
+    timeout: ->
+      @timeoutID = setTimeout @timeout.bind(@), 1000
+      unless n = --@seconds
+        @update()
+      else if n <= -60
+        @set 'status', 'Retrying'
+        @status.className = null
+        @update()
+      else if n > 0
+        @set 'timer', n
+
+    update: ->
+      @seconds = 0
+      @set 'timer', '...'
+      if @req
+        # abort() triggers onloadend, we don't want that.
+        @req.onloadend = null
+        @req.abort()
+      url = "//api.4chan.org/#{@thread.board}/res/#{@thread}.json"
+      @req = $.ajax url, onloadend: @cb.load.bind @,
+        headers: 'If-Modified-Since': @lastModified
+
+    parse: (postObjects) ->
+      if spoilerRange = postObjects[0].custom_spoiler
+        Build.spoilerRange[@thread.board] = spoilerRange
+
+      nodes = []
+      posts = []
+      count = 0
+      for postObject in postObjects.reverse()
+        break if postObject.no <= @lastPost # Make sure to not insert older posts.
+        count++
+        node = Build.postFromObject postObject, @thread.board.ID
+        nodes.unshift node
+        posts.unshift new Post node, @thread, @thread.board
+
+      if count
+        @set 'status', "+#{count}"
+        @status.className = 'new'
+        @unsuccessfulFetchCount = 0
+      else
+        @set 'status', null
+        @status.className = null
+        @unsuccessfulFetchCount++
+        return
+
+      @lastPost = posts[count - 1].ID
+      Main.callbackNodes Post, posts
+
+      scroll = @['Auto Scroll'] and @scrollBG() and
+        @threadRoot.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
+      $.add @threadRoot, nodes
+      if scroll
+        nodes[0].scrollIntoView()
 
 
 
