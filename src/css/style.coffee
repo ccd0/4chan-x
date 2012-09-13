@@ -418,13 +418,19 @@ h1,
   bottom: 5px;
   left: 5px;
 }
-.suboptions {
+.suboptions,
+#themecontent {
   overflow: auto;
   position: absolute;
-  top: 0;
   right: 0;
   bottom: 1.5em;
   left: 0;
+}
+.suboptions {
+  top: 0;
+}
+#themecontent {
+  top: 1.5em;
 }
 .stylesettings {
   position: absolute;
@@ -577,17 +583,17 @@ body {
 }
 @media only screen and (max-width: 1100px) {
   body {
-    padding-top: 31px;
+    padding-top: 32px;
   }
 }
 @media only screen and (max-width:689px) {
   body {
-    padding-top: 46px;
+    padding-top: 47px;
   }
 }
 @media only screen and (max-width:553px) {
   body {
-    padding-top: 61px;
+    padding-top: 62px;
   }
 }
 html,
@@ -723,7 +729,8 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
   font-style: normal;
 }
 /* Z-INDEXES */
-#options.reply.dialog {
+#options.reply.dialog,
+#themeConf {
   z-index: 999 !important;
 }
 #qp {
@@ -1669,6 +1676,14 @@ table.reply[style^="clear: both"] {
   border-radius: 2px;
   font-size: 11px;
 }
+#themeConf {
+  position: fixed;
+  left: 2px;
+  width: 248px;
+  top: 0;
+  bottom: 0;
+  right: auto;
+}
 body {
   background: ' + theme["Background Color"] + ';
   background-image: ' + theme["Background Image"] + ';
@@ -1676,7 +1691,8 @@ body {
   background-attachment: ' + theme["Background Attachment"] + ';
   background-position: ' + theme["Background Position"] + ';
 }
-#content {
+#content,
+#themecontent {
   background: ' + theme["Background Color"] + ';
   border: 1px solid ' + theme["Reply Border"]  + ';
   padding: 5px;
@@ -1770,6 +1786,7 @@ div.reply {
   border: 1px solid ' + theme["Thread Wrapper Border"]  + ';
 }
 #boardNavDesktopFoot,
+#themeConf,
 #watcher,
 #watcher:hover,
 .deleteform,
@@ -2398,6 +2415,9 @@ form .postContainer blockquote {
           pagemargin = (248 + sidebarOffsetW) + 'px'
         when 'large'
           pagemargin = '350px'
+
+      if editMode and pagemargin < 250
+        pagemargin = '300px'
 
       if Conf['Sidebar'] != 'hide'
         css += '

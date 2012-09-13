@@ -114,6 +114,7 @@ APPFILES  = [
   'options'
   'chanx'
   'quickreply'
+  'themeoptions'
   'appchan'
   'css/style'
   'main'

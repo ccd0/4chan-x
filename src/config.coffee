@@ -245,6 +245,7 @@ userThemes     = {}
 editTheme      = {}
 userMascots    = {}
 editMascot     = {}
+editMode       = false
 enabledmascots = {}
 d              = document
 g              = {}

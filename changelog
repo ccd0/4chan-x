@@ -2,6 +2,9 @@ master
 - Zixaphir
   Switched default theme to Yotsuba B.
   New Option: Updater Position.
+  More flexible margin style options
+  -- Disabling the sidebar now centers page content with all margin options.
+  -- The 'fully centered' option essentially force-enables the sidebar.
 
 0.8beta
 - Zixaphir
