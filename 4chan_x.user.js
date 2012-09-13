@@ -3566,7 +3566,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, comment, data, o;
+      var bq, comment, data, o, _ref;
       data = JSON.parse(req.response);
       if (data.error) {
         $.addClass(root, 'warning');
@@ -3628,7 +3628,7 @@
         dateUTC: data.timestamp,
         comment: comment
       };
-      if (data.media.media_filename) {
+      if ((_ref = data.media) != null ? _ref.media_filename : void 0) {
         o.file = {
           name: data.media.media_filename_processed,
           timestamp: data.media.media_orig,
