@@ -1,4 +1,6 @@
 master
+
+2.35.0
 - Mayhem
   Add /g/, /k/, /w/, /an/, /cgl/, /ck/, /lit/, /toy/ and /x/ archived image redirection.
   One-word-captcha now works in the report window.
