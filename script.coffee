@@ -2993,7 +2993,7 @@ Get =
       dateUTC:  data.timestamp
       comment:  comment
       # file
-    if data.media.media_filename
+    if data.media?.media_filename
       o.file =
         name:      data.media.media_filename_processed
         timestamp: data.media.media_orig
