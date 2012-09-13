@@ -1,4 +1,14 @@
 master
+- Mayhem
+  Add /g/, /k/, /w/, /an/, /cgl/, /ck/, /lit/, /toy/ and /x/ archived image redirection.
+  One-word-captcha now works in the report window.
+  Fix duplicate file upload error link.
+  Use 4chan's API to fetch posts for:
+    - Quote Inlining.
+    - Quote Previewing.
+    - Thread Expansion.
+    - Comment Expansion.
+  Fix compatibility with Scriptish's auto-udpater.
 
 2.34.10
 - Mayhem
