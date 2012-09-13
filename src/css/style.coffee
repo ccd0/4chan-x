@@ -2387,7 +2387,7 @@ form .postContainer blockquote {
 }
 '
 
-      unless Conf['Sidebar'] == 'hide'
+      if Conf['Sidebar'] != 'hide'
         switch Conf['Page Margin']
           when 'none'
             pagemargin = '2px'

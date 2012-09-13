@@ -317,8 +317,8 @@ Options =
         Options.indicators dialog
 
   close: ->
-    $.rm @nextSibling
-    $.rm @
+    $.rm $('#options', d.body)
+    $.rm $('#overlay', d.body)
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
