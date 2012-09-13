@@ -242,7 +242,9 @@ Config =
 
 Conf           = {}
 userThemes     = {}
+editTheme      = {}
 userMascots    = {}
+editMascot     = {}
 enabledmascots = {}
 d              = document
 g              = {}

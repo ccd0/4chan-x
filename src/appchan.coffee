@@ -37,17 +37,18 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 
   agent: ->
     switch $.engine
-      when 'webkit'
-        return '-webkit-'
       when 'gecko'
         return '-moz-'
+      when 'webkit'
+        return '-webkit-'
       when 'presto'
         return '-o-'
 
-  addStyle: ->
+  addStyle: (theme) ->
     $.off d, 'DOMNodeInserted', Style.addStyle
     if d.head
-      theme = userThemes[Conf['theme']]
+      if !theme or !theme.Author
+        theme = userThemes[Conf['theme']]
       if existingStyle = $.id 'appchan'
         $.rm existingStyle
       $.addStyle Style.css(theme), 'appchan'

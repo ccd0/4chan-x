@@ -93,7 +93,7 @@
 * Thank you.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, enabledmascots, g, userMascots, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editTheme, enabledmascots, g, userMascots, userThemes;
 
   Config = {
     main: {
@@ -273,7 +273,11 @@
 
   userThemes = {};
 
+  editTheme = {};
+
   userMascots = {};
+
+  editMascot = {};
 
   enabledmascots = {};
 
@@ -542,7 +546,7 @@
       'Warnings': 'rbg(87,87,123)',
       'Shadow Color': 'rgba(16,16,16,0.4)',
       'Dark Theme': '1',
-      'Custom CSS': '.nameBlock>.useremail>postertrip{color: rgb(137,115,153);}a.backlink:hover{color: rgb(198,23,230);}.reply:target,.reply.highlight:target{background:rgb(37,38,42);}[alt="sticky"]+a{color: rgb(242,141,0);}[alt="closed"]+a{color: rgb(178,171,130);}input:checked .rice{border-color:rgb(21,21,21)}}input[type="submit"], input[type="button"], button {background: -moz-linear-gradient(#393939, #292929);background: -webkit-linear-gradient(#393939, #292929);background: -o-linear-gradient(#393939, #292929);border: 1px solid #191919;color: #AAA;text-shadow: 0 1px 1px #191919;}input[type="checkbox"], input[type="radio"] {background-color: #393939;border: 1px solid #191919;}input[type="checkbox"]:checked, input[type="radio"]:checked {background: -moz-linear-gradient(#595959, #393939);background: -webkit-linear-gradient(#595959, #393939);background: -o-linear-gradient(#595959, #393939);border: 1px solid #151515;} #delform { padding: 7px; }.subject:hover,div.post:hover .subject{color: #3F8DBF !important;}.postertrip:hover,div.post:hover .postertrip{color:#CC7212 !important;}.name:hover, div.post:hover .name {  color: #0AAEE7 !important;}.name,.subject,.postertrip {-webkit-transition:color .3s ease-in-out;-moz-transition:color .3s ease-in-out;}'
+      'Custom CSS': '.nameBlock>.useremail>postertrip{color: rgb(137,115,153);}a.backlink:hover{color: rgb(198,23,230);}.reply:target,.reply.highlight:target{background:rgb(37,38,42);}[alt="sticky"]+a{color: rgb(242,141,0);}[alt="closed"]+a{color: rgb(178,171,130);}input:checked .rice{border-color:rgb(21,21,21)}}input[type="submit"], input[type="button"], button {background: linear-gradient(#393939, #292929);border: 1px solid #191919;color: #AAA;text-shadow: 0 1px 1px #191919;}input[type="checkbox"], input[type="radio"] {background-color: #393939;border: 1px solid #191919;}input[type="checkbox"]:checked, input[type="radio"]:checked {background: linear-gradient(#595959, #393939);border: 1px solid #151515;} #delform { padding: 7px; }.subject:hover,div.post:hover .subject{color: #3F8DBF !important;}.postertrip:hover,div.post:hover .postertrip{color:#CC7212 !important;}.name:hover, div.post:hover .name {  color: #0AAEE7 !important;}.name,.subject,.postertrip {-webkit-transition:color .3s ease-in-out;-moz-transition:color .3s ease-in-out;}'
     },
     'ObsidianChan': {
       'Author': 'seaweed-chan',
@@ -2558,7 +2562,7 @@
           className: 'stylesettings'
         });
         $.on($('a', save), 'click', function() {
-          return Style.addStyle(Conf['theme']);
+          return Style.addStyle();
         });
         return $.add($('#' + tab + ' + div', dialog), save);
       }
@@ -7083,19 +7087,21 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     },
     agent: function() {
       switch ($.engine) {
-        case 'webkit':
-          return '-webkit-';
         case 'gecko':
           return '-moz-';
+        case 'webkit':
+          return '-webkit-';
         case 'presto':
           return '-o-';
       }
     },
-    addStyle: function() {
-      var existingStyle, theme;
+    addStyle: function(theme) {
+      var existingStyle;
       $.off(d, 'DOMNodeInserted', Style.addStyle);
       if (d.head) {
-        theme = userThemes[Conf['theme']];
+        if (!theme || !theme.Author) {
+          theme = userThemes[Conf['theme']];
+        }
         if (existingStyle = $.id('appchan')) {
           $.rm(existingStyle);
         }
@@ -7182,7 +7188,7 @@ a[href="javascript:;"] {\
   outline: none;\
 }\
 .entry {\
-  border-bottom: 1px solid rgba(0, 0, 0, .25);\
+  border-bottom: 1px solid rgba(0,0,0,.25);\
   cursor: pointer;\
   display: block;\
   outline: none;\
@@ -7195,7 +7201,7 @@ a[href="javascript:;"] {\
   border: none;\
 }\
 .focused.entry {\
-  background: rgba(255, 255, 255, .33);\
+  background: rgba(255,255,255,.33);\
 }\
 .entry.hasSubMenu {\
   padding-right: 1.5em;\
@@ -7620,7 +7626,7 @@ h1,\
   max-width: 500px;\
 }\
 .qphl {\
-  outline: 2px solid rgba(216, 94, 49, .7);\
+  outline: 2px solid rgba(216,94,49,.7);\
 }\
 .quotelink.deadlink {\
   text-decoration: underline !important;\
@@ -7635,8 +7641,8 @@ h1,\
   opacity: .5;\
 }\
 .inline {\
-  background-color: rgba(255, 255, 255, 0.15);\
-  border: 1px solid rgba(128, 128, 128, 0.5);\
+  background-color: rgba(255,255,255,0.15);\
+  border: 1px solid rgba(128,128,128,0.5);\
   display: table;\
   margin: 2px;\
   padding: 2px;\
@@ -8913,9 +8919,11 @@ div.subMenu,\
   border: 1px solid ' + theme["Reply Border"] + ';\
   box-shadow: 5px 5px 5px ' + theme["Shadow Color"] + ';\
 }\
- [id^="q"] .warning {\
+[id^="q"] .warning {\
   background: ' + theme["Input Background"] + ';\
   border: 1px solid ' + theme["Input Border"] + ';\
+}\
+.warning {\
   color: ' + theme["Warnings"] + ';\
 }\
 a,\

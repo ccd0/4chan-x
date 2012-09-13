@@ -401,5 +401,5 @@ Options =
         innerHTML: '<a href="javascript:;">Save Style Settings</a>'
         className: 'stylesettings'
       $.on $('a', save), 'click', ->
-        Style.addStyle(Conf['theme'])
+        Style.addStyle()
       $.add $('#' + tab + ' + div', dialog), save
