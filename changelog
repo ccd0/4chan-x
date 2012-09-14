@@ -6,6 +6,7 @@ master
   -- Disabling the sidebar now centers page content with all margin options.
   -- The 'fully centered' option essentially force-enables the sidebar.
   Theme Customization
+  -- New
   -- Import
   -- Export
   -- Edit
