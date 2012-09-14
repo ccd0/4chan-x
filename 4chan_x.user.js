@@ -3095,8 +3095,8 @@
 
   Updater = {
     init: function() {
-      var checkbox, checked, dialog, html, input, name, title, type, _i, _len, _ref;
-      html = "<div class=move><span id=count></span> <span id=timer>-" + Conf['Interval'] + "</span></div>";
+      var checkbox, checked, dialog, html, input, name, title, _i, _len, _ref;
+      html = '<div class=move><span id=count></span> <span id=timer></span></div>';
       checkbox = Config.updater.checkbox;
       for (name in checkbox) {
         title = checkbox[name][1];
@@ -3104,20 +3104,19 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      html += "	<div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>	<div><label>Interval (s)<input name=Interval value=" + Conf['Interval'] + " class=field size=4></label></div>	<div><input value='Update Now' type=button name='Update Now'></div>";
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>      <div><input value='Update Now' type=button name='Update Now'></div>";
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
       this.thread = $.id("t" + g.THREAD_ID);
-      this.lastPost = this.thread.lastElementChild;
+      this.lastModified = '0';
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         input = _ref[_i];
-        type = input.type, name = input.name;
-        if (type === 'checkbox') {
+        if (input.type === 'checkbox') {
           $.on(input, 'click', $.cb.checked);
         }
-        switch (name) {
+        switch (input.name) {
           case 'Scroll BG':
             $.on(input, 'click', this.cb.scrollBG);
             this.cb.scrollBG.call(input);
@@ -3129,41 +3128,51 @@
           case 'Auto Update This':
             $.on(input, 'click', this.cb.autoUpdate);
             this.cb.autoUpdate.call(input);
-            Conf[input.name] = input.checked;
             break;
           case 'Interval':
-            $.on(input, 'input', this.cb.interval);
+            input.value = Conf['Interval'];
+            $.on(input, 'change', this.cb.interval);
+            this.cb.interval.call(input);
             break;
           case 'Update Now':
             $.on(input, 'click', this.update);
         }
       }
       $.add(d.body, dialog);
-      this.retryCoef = 10;
-      this.lastModified = 0;
-      return $.on(d, 'QRPostSuccessful', this.cb.post);
+      $.on(d, 'QRPostSuccessful', this.cb.post);
+      return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
     },
     cb: {
       post: function() {
         if (!Conf['Auto Update This']) {
-
+          return;
+        }
+        return setTimeout(Updater.update, 500);
+      },
+      visibility: function() {
+        var state;
+        state = d.visibilityState || d.oVisibilityState || d.mozVisibilityState || d.webkitVisibilityState;
+        if (state !== 'visible') {
+          return;
+        }
+        if (Updater.timer.textContent < -Conf['Interval']) {
+          return Updater.set('timer', -Updater.getInterval());
         }
       },
       interval: function() {
         var val;
         val = parseInt(this.value, 10);
         this.value = val > 0 ? val : 30;
-        return $.cb.value.call(this);
+        $.cb.value.call(this);
+        return Updater.set('timer', -Updater.getInterval());
       },
       verbose: function() {
         if (Conf['Verbose']) {
-          Updater.count.textContent = '+0';
+          Updater.set('count', '+0');
           return Updater.timer.hidden = false;
         } else {
-          $.extend(Updater.count, {
-            className: '',
-            textContent: 'Thread Updater'
-          });
+          Updater.set('count', 'Thread Updater');
+          Updater.count.className = '';
           return Updater.timer.hidden = true;
         }
       },
@@ -3181,116 +3190,121 @@
           return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
         };
       },
-      update: function() {
-        var count, doc, id, lastPost, nodes, reply, scroll, _i, _len, _ref;
-        if (this.status === 404) {
-          Updater.timer.textContent = '';
-          Updater.count.textContent = 404;
-          Updater.count.className = 'warning';
-          clearTimeout(Updater.timeoutID);
-          g.dead = true;
-          if (Conf['Unread Count']) {
-            Unread.title = Unread.title.match(/^.+-/)[0] + ' 404';
-          } else {
-            d.title = d.title.match(/^.+-/)[0] + ' 404';
-          }
-          Unread.update(true);
-          QR.abort();
-          return;
-        }
-        if (this.status !== 200 && this.status !== 304) {
-          Updater.retryCoef += 10 * (Updater.retryCoef < 120);
-          if (Conf['Verbose']) {
-            Updater.count.textContent = this.statusText;
+      load: function() {
+        switch (this.status) {
+          case 404:
+            Updater.set('timer', '');
+            Updater.set('count', 404);
             Updater.count.className = 'warning';
-          }
-          return;
-        }
-        Updater.retryCoef = 10;
-        Updater.timer.textContent = "-" + Conf['Interval'];
-        /*
-              Status Code 304: Not modified
-              By sending the `If-Modified-Since` header we get a proper status code, and no response.
-              This saves bandwidth for both the user and the servers, avoid unnecessary computation,
-              and won't load images and scripts when parsing the response.
-        */
+            clearTimeout(Updater.timeoutID);
+            g.dead = true;
+            if (Conf['Unread Count']) {
+              Unread.title = Unread.title.match(/^.+-/)[0] + ' 404';
+            } else {
+              d.title = d.title.match(/^.+-/)[0] + ' 404';
+            }
+            Unread.update(true);
+            QR.abort();
+            break;
+          case 0:
+          case 304:
+            /*
+                      Status Code 304: Not modified
+                      By sending the `If-Modified-Since` header we get a proper status code, and no response.
+                      This saves bandwidth for both the user and the servers and avoid unnecessary computation.
+            */
 
-        if (this.status === 304) {
-          if (Conf['Verbose']) {
-            Updater.count.textContent = '+0';
-            Updater.count.className = null;
-          }
-          return;
+            Updater.set('timer', -Updater.getInterval());
+            if (Conf['Verbose']) {
+              Updater.set('count', '+0');
+              Updater.count.className = null;
+            }
+            break;
+          case 200:
+            Updater.lastModified = this.getResponseHeader('Last-Modified');
+            Updater.cb.update(JSON.parse(this.response).posts);
+            Updater.set('timer', -Updater.getInterval());
+            break;
+          default:
+            Updater.set('timer', -Updater.getInterval());
+            if (Conf['Verbose']) {
+              Updater.set('count', this.statusText);
+              Updater.count.className = 'warning';
+            }
         }
-        Updater.lastModified = this.getResponseHeader('Last-Modified');
-        doc = d.implementation.createHTMLDocument('');
-        doc.documentElement.innerHTML = this.response;
-        lastPost = Updater.lastPost;
-        id = lastPost.id.slice(2);
+        return delete Updater.request;
+      },
+      update: function(posts) {
+        var count, id, lastPost, nodes, post, scroll, spoilerRange, _i, _len, _ref;
+        if (spoilerRange = posts[0].custom_spoiler) {
+          Build.spoilerRange[g.BOARD] = spoilerRange;
+        }
+        lastPost = Updater.thread.lastElementChild;
+        id = +lastPost.id.slice(2);
         nodes = [];
-        _ref = $$('.replyContainer', doc).reverse();
+        _ref = posts.reverse();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          reply = _ref[_i];
-          if (reply.id.slice(2) <= id) {
+          post = _ref[_i];
+          if (post.no <= id) {
             break;
           }
-          nodes.push(reply);
+          nodes.push(Build.postFromObject(post, g.BOARD));
         }
         count = nodes.length;
         if (Conf['Verbose']) {
-          Updater.count.textContent = "+" + count;
+          Updater.set('count', "+" + count);
           Updater.count.className = count ? 'new' : null;
         }
-        count = nodes.length;
-        scroll = Conf['Scrolling'] && Updater.scrollBG() && count && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
-        if (Conf['Verbose']) {
-          Updater.count.textContent = "+" + count;
-          Updater.count.className = count ? 'new' : null;
-        }
-        if (lastPost = nodes[0]) {
-          Updater.lastPost = lastPost;
-        }
+        scroll = Conf['Scrolling'] && Updater.scrollBG() && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         $.add(Updater.thread, nodes.reverse());
         if (scroll) {
           return lastPost.scrollIntoView();
         }
       }
     },
+    set: function(name, text) {
+      var el, node;
+      el = Updater[name];
+      if (node = el.firstChild) {
+        return node.data = text;
+      } else {
+        return el.textContent = text;
+      }
+    },
+    getInterval: function() {
+      var i;
+      return i = +Conf['Interval'];
+    },
     timeout: function() {
       var n;
       Updater.timeoutID = setTimeout(Updater.timeout, 1000);
-      n = 1 + Number(Updater.timer.textContent);
+      n = 1 + Number(Updater.timer.firstChild.data);
       if (n === 0) {
         return Updater.update();
-      } else if (n === Updater.retryCoef) {
-        Updater.retryCoef += 10 * (Updater.retryCoef < 120);
-        return Updater.retry();
+      } else if (n >= Updater.getInterval()) {
+        Updater.set('count', 'Retry');
+        Updater.count.className = null;
+        return Updater.update();
       } else {
-        return Updater.timer.textContent = n;
+        return Updater.set('timer', n);
       }
-    },
-    retry: function() {
-      this.count.textContent = 'Retry';
-      this.count.className = null;
-      return this.update();
     },
     update: function() {
-      var url, _ref;
-      Updater.timer.textContent = 0;
-      if ((_ref = Updater.request) != null) {
-        _ref.abort();
+      var request, url;
+      Updater.set('timer', 0);
+      request = Updater.request;
+      if (request) {
+        request.onloadend = null;
+        request.abort();
       }
-      url = location.pathname + '?' + Date.now();
+      url = "//api.4chan.org/" + g.BOARD + "/res/" + g.THREAD_ID + ".json";
       return Updater.request = $.ajax(url, {
-        onload: Updater.cb.update
+        onloadend: Updater.cb.load
       }, {
         headers: {
           'If-Modified-Since': Updater.lastModified
         }
       });
-    },
-    updateReset: function() {
-      return Updater.update();
     }
   };
 
@@ -3730,7 +3744,7 @@
       }
     },
     parsePost: function(req, board, threadID, postID, root, cb) {
-      var post, posts, status, url, _i, _len;
+      var post, posts, spoilerRange, status, url, _i, _len;
       status = req.status;
       if (status !== 200) {
         if (url = Redirect.post(board, postID)) {
@@ -3739,11 +3753,14 @@
           });
         } else {
           $.addClass(root, 'warning');
-          root.textContent = status === 404 ? "Thread No." + threadID + " has not been found." : "Error " + req.status + ": " + req.statusText + ".";
+          root.textContent = status === 404 ? "Thread No." + threadID + " 404'd." : "Error " + req.status + ": " + req.statusText + ".";
         }
         return;
       }
       posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[board] = spoilerRange;
+      }
       postID = +postID;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
@@ -3757,7 +3774,7 @@
             });
           } else {
             $.addClass(root, 'warning');
-            root.textContent = "Post No." + postID + " has not been found.";
+            root.textContent = "Post No." + postID + " was not found.";
           }
           return;
         }
@@ -3902,6 +3919,7 @@
   };
 
   Build = {
+    spoilerRange: {},
     shortFilename: function(filename, isOP) {
       var threshold;
       threshold = isOP ? 40 : 30;
@@ -3955,7 +3973,7 @@
           @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
       postID = o.postID, threadID = o.threadID, board = o.board, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org';
@@ -4005,33 +4023,9 @@
           fileSize = "Spoiler Image, " + fileSize;
           if (!isArchived) {
             fileThumb = '//static.4chan.org/image/spoiler';
-            fileThumb += (function() {
-              switch (board) {
-                case 'a':
-                  return '-a';
-                case 'co':
-                  return '-co';
-                case 'jp':
-                  return '-jp';
-                case 'lit':
-                  return 'lit';
-                case 'm':
-                  return '-m2';
-                case 'mlp':
-                  return '-mlp';
-                case 'tg':
-                  return '-tg2';
-                case 'tv':
-                  return '-tv5';
-                case 'v':
-                case 'vg':
-                  return '-v';
-                case 'vp':
-                  return '-vp';
-                default:
-                  return '';
-              }
-            })();
+            if (spoilerRange = Build.spoilerRange[board]) {
+              fileThumb += ("-" + board) + Math.floor(1 + spoilerRange * Math.random());
+            }
             fileThumb += '.png';
             file.twidth = file.theight = 100;
           }

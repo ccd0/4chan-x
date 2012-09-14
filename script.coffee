@@ -2446,7 +2446,7 @@ Options =
 
 Updater =
   init: ->
-    html = "<div class=move><span id=count></span> <span id=timer>-#{Conf['Interval']}</span></div>"
+    html = '<div class=move><span id=count></span> <span id=timer></span></div>'
     {checkbox} = Config.updater
     for name of checkbox
       title = checkbox[name][1]
@@ -2455,22 +2455,21 @@ Updater =
 
     checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
-	<div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-	<div><label>Interval (s)<input name=Interval value=#{Conf['Interval']} class=field size=4></label></div>
-	<div><input value='Update Now' type=button name='Update Now'></div>"
+      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
+      <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>
+      <div><input value='Update Now' type=button name='Update Now'></div>"
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
-    @count = $ '#count', dialog
-    @timer = $ '#timer', dialog
+    @count  = $ '#count', dialog
+    @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
-    @lastPost = @thread.lastElementChild
+    @lastModified = '0'
 
     for input in $$ 'input', dialog
-      {type, name} = input
-      if type is 'checkbox'
+      if input.type is 'checkbox'
         $.on input, 'click', $.cb.checked
-      switch name
+      switch input.name
         when 'Scroll BG'
           $.on input, 'click', @cb.scrollBG
           @cb.scrollBG.call input
@@ -2480,35 +2479,40 @@ Updater =
         when 'Auto Update This'
           $.on input, 'click', @cb.autoUpdate
           @cb.autoUpdate.call input
-          # Required for the QR's update after posting.
-          Conf[input.name] = input.checked
         when 'Interval'
-          $.on input, 'input', @cb.interval
+          input.value = Conf['Interval']
+          $.on input, 'change', @cb.interval
+          @cb.interval.call input
         when 'Update Now'
           $.on input, 'click', @update
 
     $.add d.body, dialog
 
-    @retryCoef = 10
-    @lastModified = 0
-
     $.on d, 'QRPostSuccessful', @cb.post
+    $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
 
   cb:
     post: ->
       return unless Conf['Auto Update This']
+      setTimeout Updater.update, 500
+    visibility: ->
+      state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
+      return if state isnt 'visible'
+      # Reset the counter when we focus this tab.
+      if Updater.timer.textContent < -Conf['Interval']
+        Updater.set 'timer', -Updater.getInterval()
     interval: ->
       val = parseInt @value, 10
       @value = if val > 0 then val else 30
       $.cb.value.call @
+      Updater.set 'timer', -Updater.getInterval()
     verbose: ->
       if Conf['Verbose']
-        Updater.count.textContent = '+0'
+        Updater.set 'count', '+0'
         Updater.timer.hidden = false
       else
-        $.extend Updater.count,
-          className: ''
-          textContent: 'Thread Updater'
+        Updater.set 'count', 'Thread Updater'
+        Updater.count.className = ''
         Updater.timer.hidden = true
     autoUpdate: ->
       if Conf['Auto Update This'] = @checked
@@ -2521,100 +2525,98 @@ Updater =
           -> true
         else
           -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
-    update: ->
-      if @status is 404
-        Updater.timer.textContent = ''
-        Updater.count.textContent = 404
-        Updater.count.className   = 'warning'
-        clearTimeout Updater.timeoutID
-        g.dead = true
-        if Conf['Unread Count']
-          Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
-        else
-          d.title = d.title.match(/^.+-/)[0] + ' 404'
-        Unread.update true
-        QR.abort()
-        return
-      if @status isnt 200 and @status isnt 304
-        Updater.retryCoef += 10 * (Updater.retryCoef < 120)
-        if Conf['Verbose']
-          Updater.count.textContent = @statusText
+    load: ->
+      switch @status
+        when 404
+          Updater.set 'timer', ''
+          Updater.set 'count', 404
           Updater.count.className = 'warning'
-        return
+          clearTimeout Updater.timeoutID
+          g.dead = true
+          if Conf['Unread Count']
+            Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
+          else
+            d.title = d.title.match(/^.+-/)[0] + ' 404'
+          Unread.update true
+          QR.abort()
+        # XXX 304 -> 0 in Opera
+        when 0, 304
+          ###
+          Status Code 304: Not modified
+          By sending the `If-Modified-Since` header we get a proper status code, and no response.
+          This saves bandwidth for both the user and the servers and avoid unnecessary computation.
+          ###
+          Updater.set 'timer', -Updater.getInterval()
+          if Conf['Verbose']
+            Updater.set 'count', '+0'
+            Updater.count.className = null
+        when 200
+          Updater.lastModified = @getResponseHeader 'Last-Modified'
+          Updater.cb.update JSON.parse(@response).posts
+          Updater.set 'timer', -Updater.getInterval()
+        else
+          Updater.set 'timer', -Updater.getInterval()
+          if Conf['Verbose']
+            Updater.set 'count', @statusText
+            Updater.count.className = 'warning'
+      delete Updater.request
+    update: (posts) ->
+      if spoilerRange = posts[0].custom_spoiler
+        Build.spoilerRange[g.BOARD] = spoilerRange
 
-      Updater.retryCoef = 10
-      Updater.timer.textContent = "-#{Conf['Interval']}"
-
-      ###
-      Status Code 304: Not modified
-      By sending the `If-Modified-Since` header we get a proper status code, and no response.
-      This saves bandwidth for both the user and the servers, avoid unnecessary computation,
-      and won't load images and scripts when parsing the response.
-      ###
-      if @status is 304
-        if Conf['Verbose']
-          Updater.count.textContent = '+0'
-          Updater.count.className   = null
-        return
-      Updater.lastModified = @getResponseHeader 'Last-Modified'
-
-      doc = d.implementation.createHTMLDocument ''
-      doc.documentElement.innerHTML = @response
-
-      {lastPost} = Updater
-      id = lastPost.id[2..]
+      lastPost = Updater.thread.lastElementChild
+      id = +lastPost.id[2..]
       nodes = []
-      for reply in $$('.replyContainer', doc).reverse()
-        break if reply.id[2..] <= id #make sure to not insert older posts
-        nodes.push reply
+      for post in posts.reverse()
+        break if post.no <= id # Make sure to not insert older posts.
+        nodes.push Build.postFromObject post, g.BOARD
 
       count = nodes.length
       if Conf['Verbose']
-        Updater.count.textContent = "+#{count}"
-        Updater.count.className   = if count then 'new' else null
+        Updater.set 'count', "+#{count}"
+        Updater.count.className = if count then 'new' else null
 
-      count  = nodes.length
-      scroll = Conf['Scrolling'] && Updater.scrollBG() && count &&
+      scroll = Conf['Scrolling'] and Updater.scrollBG() and
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
-      if Conf['Verbose']
-        Updater.count.textContent = "+#{count}"
-        Updater.count.className   = if count then 'new' else null
-
-      if lastPost = nodes[0]
-        Updater.lastPost = lastPost
-
-
       $.add Updater.thread, nodes.reverse()
       if scroll
         lastPost.scrollIntoView()
 
+  set: (name, text) ->
+    el = Updater[name]
+    if node = el.firstChild
+      # Prevent the creation of a new DOM Node
+      # by setting the text node's data.
+      node.data = text
+    else
+      el.textContent = text
+
+  getInterval: ->
+    i = +Conf['Interval']
+
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000
-    n = 1 + Number Updater.timer.textContent
+    n = 1 + Number Updater.timer.firstChild.data
 
     if n is 0
       Updater.update()
-    else if n is Updater.retryCoef
-      Updater.retryCoef += 10 * (Updater.retryCoef < 120)
-      Updater.retry()
+    else if n >= Updater.getInterval()
+      Updater.set 'count', 'Retry'
+      Updater.count.className = null
+      Updater.update()
     else
-      Updater.timer.textContent = n
-
-  retry: ->
-    @count.textContent = 'Retry'
-    @count.className = null
-    @update()
+      Updater.set 'timer', n
 
   update: ->
-    Updater.timer.textContent = 0
-    Updater.request?.abort()
-    # Fool the cache.
-    url = location.pathname + '?' + Date.now()
-    Updater.request = $.ajax url, onload: Updater.cb.update,
+    Updater.set 'timer', 0
+    {request} = Updater
+    if request
+      # Don't reset the counter when aborting.
+      request.onloadend = null
+      request.abort()
+    url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json"
+    Updater.request = $.ajax url, onloadend: Updater.cb.load,
       headers: 'If-Modified-Since': Updater.lastModified
-
-  updateReset: ->
-    Updater.update()
 
 Watcher =
   init: ->
@@ -2914,12 +2916,14 @@ Get =
         $.addClass root, 'warning'
         root.textContent =
           if status is 404
-            "Thread No.#{threadID} has not been found."
+            "Thread No.#{threadID} 404'd."
           else
             "Error #{req.status}: #{req.statusText}."
       return
 
-    posts  = JSON.parse(req.response).posts
+    posts = JSON.parse(req.response).posts
+    if spoilerRange = posts[0].custom_spoiler
+      Build.spoilerRange[board] = spoilerRange
     postID = +postID
     for post in posts
       break if post.no is postID # we found it!
@@ -2930,7 +2934,7 @@ Get =
             Get.parseArchivedPost @, board, postID, root, cb
         else
           $.addClass root, 'warning'
-          root.textContent = "Post No.#{postID} has not been found."
+          root.textContent = "Post No.#{postID} was not found."
         return
 
     $.replace root.firstChild, Get.cleanPost Build.postFromObject post, board
@@ -3053,6 +3057,7 @@ Get =
     "/#{g.BOARD}/ - #{span.textContent.trim()}"
 
 Build =
+  spoilerRange: {}
   shortFilename: (filename, isOP) ->
     # FILENAME SHORTENING SCIENCE:
     # OPs have a +10 characters threshold.
@@ -3192,20 +3197,9 @@ Build =
         fileSize = "Spoiler Image, #{fileSize}"
         unless isArchived
           fileThumb = '//static.4chan.org/image/spoiler'
-          fileThumb += switch board
-            # UGGH, I can't wait to maintain this crap.
-            # Sup desuwa?
-            when 'a'       then '-a'
-            when 'co'      then '-co'
-            when 'jp'      then '-jp'
-            when 'lit'     then 'lit'
-            when 'm'       then '-m2'
-            when 'mlp'     then '-mlp'
-            when 'tg'      then '-tg2'
-            when 'tv'      then '-tv5'
-            when 'v', 'vg' then '-v'
-            when 'vp'      then '-vp'
-            else ''
+          if spoilerRange = Build.spoilerRange[board]
+            # Randomize the spoiler image.
+            fileThumb += "-#{board}" + Math.floor 1 + spoilerRange * Math.random()
           fileThumb += '.png'
           file.twidth = file.theight = 100
 

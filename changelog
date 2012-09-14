@@ -1,4 +1,6 @@
 master
+- Mayhem
+  Use 4chan's API to fetch posts for Thread Updater.
 
 2.35.2
 
