@@ -438,6 +438,11 @@ h1,
   right: 10px;
   bottom: 0;
 }
+#import {
+  position: absolute;
+  left: 10px;
+  bottom: 0;
+}
 #cancel,
 #mascots_batch {
   position: absolute;
