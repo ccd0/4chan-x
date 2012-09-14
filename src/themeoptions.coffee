@@ -79,14 +79,11 @@ ThemeOptions =
     $.set 'userThemes', userThemes
     $.set "Style", name
     Conf["Style"] = name
-    newTheme = false
-
     ThemeOptions.close()
-
     alert "Theme \"#{name}\" saved."
 
   close: ->
     newTheme = false
-    Conf['Edit Mode'] = false
+    editMode = false
     $.rm $("#themeConf", d.body)
     Style.addStyle Conf["Style"]

@@ -764,8 +764,9 @@ html .subMenu {
   z-index: 101 !important;
 }
 .fileThumb {
-  z-index: 100 !important;
+  z-index: ' + (if Conf["Images Overlap Post Form"] then "100" else "1") + ' !important;
 }
+
 div.navLinks > a:first-of-type::after,
 .deleteform {
   z-index: 99 !important;
@@ -2435,7 +2436,7 @@ form .postContainer blockquote {
         when 'large'
           pagemargin = '350px'
 
-      if editMode and pagemargin < 250
+      if editMode
         pagemargin = '300px'
 
       if Conf['Sidebar'] != 'hide'

@@ -17,6 +17,12 @@ Options =
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: ->
+    if editMode
+      if confirm "Opening the options dialog will close and discard any theme changes made with the theme editor."
+        ThemeOptions.close()
+        editMode = false
+      else
+        return
     dialog = $.el 'div'
       id: 'options'
       className: 'reply dialog'
@@ -235,7 +241,6 @@ Options =
     ul = $.el 'ul',
       className:   'mascots'
     for name, mascot of userMascots
-      console.log mascot
       unless mascot["Deleted"]
         description = name
         li = $.el 'li',

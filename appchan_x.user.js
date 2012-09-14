@@ -258,6 +258,7 @@
         'Board Logo': ['in sidebar', 'The positioning of the board\'s logo and subtitle.', ['in sidebar', 'at top', 'hide']],
         'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
         'Expand Post Form Textarea': [true, 'Expands the post form text area when in use.'],
+        'Images Overlap Post Form': [true, 'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".'],
         'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
         'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins. Disabling the sidebar will cause this option to affect both sides of the page, essentially centering the page content with all options.', ['none', 'small', 'medium', 'large', 'fully centered']],
         'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'medium', 'large']],
@@ -2111,6 +2112,14 @@
     },
     dialog: function() {
       var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, time, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      if (editMode) {
+        if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
+          ThemeOptions.close();
+          editMode = false;
+        } else {
+          return;
+        }
+      }
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2341,7 +2350,6 @@
       });
       for (name in userMascots) {
         mascot = userMascots[name];
-        console.log(mascot);
         if (!mascot["Deleted"]) {
           description = name;
           li = $.el('li', {
@@ -7244,13 +7252,12 @@
       $.set('userThemes', userThemes);
       $.set("Style", name);
       Conf["Style"] = name;
-      newTheme = false;
       ThemeOptions.close();
       return alert("Theme \"" + name + "\" saved.");
     },
     close: function() {
       newTheme = false;
-      Conf['Edit Mode'] = false;
+      editMode = false;
       $.rm($("#themeConf", d.body));
       return Style.addStyle(Conf["Style"]);
     }
@@ -8121,8 +8128,9 @@ html .subMenu {\
   z-index: 101 !important;\
 }\
 .fileThumb {\
-  z-index: 100 !important;\
+  z-index: ' + (Conf["Images Overlap Post Form"] ? "100" : "1") + ' !important;\
 }\
+\
 div.navLinks > a:first-of-type::after,\
 .deleteform {\
   z-index: 99 !important;\
@@ -9803,7 +9811,7 @@ form .postContainer blockquote {\
           case 'large':
             pagemargin = '350px';
         }
-        if (editMode && pagemargin < 250) {
+        if (editMode) {
           pagemargin = '300px';
         }
         if (Conf['Sidebar'] !== 'hide') {
