@@ -2305,7 +2305,7 @@
             $.on(styleSetting, 'change', $.cb.value);
             $.on(styleSetting, 'change', Options.style);
           } else if (arr[2]) {
-            liHTML = "<label><span class=\"optionlabel\">" + optionname + "</span></label><span class=description>: " + description + "</span><select name=\"" + optionname + "\"><br>";
+            liHTML = "          <label><span class=\"optionlabel\">" + optionname + "</span></label><span class=description>: " + description + "</span><select name=\"" + optionname + "\"><br>";
             _ref3 = arr[2];
             for (optionvalue = _i = 0, _len = _ref3.length; _i < _len; optionvalue = ++_i) {
               selectoption = _ref3[optionvalue];
@@ -2339,30 +2339,49 @@
       ul = $.el('ul', {
         className: 'mascots'
       });
-      for (name in Mascots) {
-        mascot = Mascots[name];
-        description = name;
-        li = $.el('li', {
-          innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + mascot.image + ");'></div>",
-          className: 'mascot'
-        });
-        div = $('div', li);
-        if (enabledmascots[name] === true) {
-          $.addClass(div, 'enabled');
-        }
-        $.on(div, 'click', function() {
-          if (enabledmascots[this.id] === true) {
-            $.rmClass(this, 'enabled');
-            $.set(this.id, false);
-            return enabledmascots[this.id] = false;
-          } else {
-            $.addClass(this, 'enabled');
-            $.set(this.id, true);
-            return enabledmascots[this.id] = true;
+      for (name in userMascots) {
+        mascot = userMascots[name];
+        console.log(mascot);
+        if (!mascot["Deleted"]) {
+          description = name;
+          li = $.el('li', {
+            className: 'mascot',
+            innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + mascot.image + ");'></div><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span>"
+          });
+          $.on($('a.edit', li), 'click', function() {
+            return editMascot.init(this.name);
+          });
+          $.on($('a.delete', li), 'click', function() {
+            var container;
+            container = this.parentElement;
+            if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
+              if (enabledmascots[this.name]) {
+                enabledmascots[this.name] = false;
+                $.set(this.name, false);
+              }
+              userMascots[this.name]["Deleted"] = true;
+              $.set("userMascots", userMascots);
+              return $.rm(container);
+            }
+          });
+          div = $('div', li);
+          if (enabledmascots[name] === true) {
+            $.addClass(div, 'enabled');
           }
-        });
-        $.add(ul, li);
-        $.add(parentdiv, ul);
+          $.on(div, 'click', function() {
+            if (enabledmascots[this.id] === true) {
+              $.rmClass(this, 'enabled');
+              $.set(this.id, false);
+              return enabledmascots[this.id] = false;
+            } else {
+              $.addClass(this, 'enabled');
+              $.set(this.id, true);
+              return enabledmascots[this.id] = true;
+            }
+          });
+          $.add(ul, li);
+          $.add(parentdiv, ul);
+        }
       }
       $.add($('#mascot_tab + div', dialog), parentdiv);
       batchmascots = $.el('div', {
@@ -2389,7 +2408,7 @@
         _results = [];
         for (mascotname in enabledmascots) {
           mascot = enabledmascots[mascotname];
-          if (enabledmascots[mascotname] === false) {
+          if ($.get(mascotname, false) === false && !userMascots[mascotname]["Deleted"]) {
             $.addClass($('#' + mascotname, this.parentElement.parentElement), 'enabled');
             $.set(mascotname, true);
             _results.push(enabledmascots[mascotname] = true);
@@ -3068,7 +3087,7 @@
         quote = _ref[_i];
         if ((el = $.id(quote.hash.slice(1))) && el.hidden) {
           $.addClass(quote, 'filtered');
-          if (Conf['Recursive Filtering']) {
+          if (Conf['Recursive Filtering'] && post.ID !== post.threadID) {
             show_stub = !!$.x('preceding-sibling::div[contains(@class,"stub")]', el);
             ReplyHiding.hide(post.root, show_stub);
           }
@@ -4658,7 +4677,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, comment, data, o;
+      var bq, comment, data, o, _ref;
       data = JSON.parse(req.response);
       if (data.error) {
         $.addClass(root, 'warning');
@@ -4720,7 +4739,7 @@
         dateUTC: data.timestamp,
         comment: comment
       };
-      if (data.media.media_filename) {
+      if ((_ref = data.media) != null ? _ref.media_filename : void 0) {
         o.file = {
           name: data.media.media_filename_processed,
           timestamp: data.media.media_orig,
@@ -7735,6 +7754,7 @@ h1,\
 #options .mascot {\
   display: inline;\
   padding: 0;\
+  position: relative;\
 }\
 #options .mascot div {\
   border: 2px solid rgba(0,0,0,0);\
@@ -7783,6 +7803,13 @@ h1,\
   position: absolute;\
   left: 10px;\
   bottom: 0;\
+}\
+.mascotoptions {\
+  position: absolute;\
+  left: 27%;\
+  right: 27%;\
+  bottom: 10px;\
+  border-radius: 10px;\
 }\
 #cancel,\
 #mascots_batch {\
@@ -9138,6 +9165,7 @@ div.reply {\
 #watcher,\
 #watcher:hover,\
 .deleteform,\
+.mascotoptions,\
 div.subMenu,\
 #menu {\
   background: ' + theme["Dialog Background"] + ';\
@@ -10233,7 +10261,8 @@ input[type=checkbox] {\
 #mascot img {\
   position: fixed;\
   bottom: ' + (mascot.bottom || mascotposition) + 'px;\
-  right: ' + (mascot.big ? 0 : Math.floor(sidebarOffsetW / 2)) + 'px;\
+  right: ' + (mascot.right || (mascot.big ? 0 : Math.floor(sidebarOffsetW / 2))) + 'px;\
+  top: ' + mascot.top + 'px;\
   left: auto;\
   ' + agent + 'transform: scaleX(1);\
   pointer-events: none;\
@@ -10287,13 +10316,17 @@ img[src^="//static.4chan.org/support/"] {\
       userMascots = $.get("userMascots", Mascots);
       for (name in userMascots) {
         mascot = userMascots[name];
-        enabledmascots[name] = $.get(name, function() {
-          if (mascot.category === 'SFW') {
-            return true;
-          } else {
-            return false;
-          }
-        });
+        if (!userMascots[name]["Deleted"]) {
+          enabledmascots[name] = $.get(name, function() {
+            if (mascot.category === 'SFW') {
+              return true;
+            } else {
+              return false;
+            }
+          });
+        } else {
+          enabledmascots[name] = $.get(name, false);
+        }
       }
       path = location.pathname;
       pathname = path.slice(1).split('/');

@@ -1,4 +1,6 @@
 master
+- Zixaphir
+  Mascot deleting.
 
 0.9beta
 - Zixaphir
@@ -58,7 +60,6 @@ master
     (unrelated to similar 4chan x commit by Mayhem)
   Fixed posting with autohide enabled and style enabled.
   AppChan X now removes all 4chan CSS in head with style enabled.
-  
 
 0.6.3beta
 - Zixaphir

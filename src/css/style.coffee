@@ -394,6 +394,7 @@ h1,
 #options .mascot {
   display: inline;
   padding: 0;
+  position: relative;
 }
 #options .mascot div {
   border: 2px solid rgba(0,0,0,0);
@@ -442,6 +443,13 @@ h1,
   position: absolute;
   left: 10px;
   bottom: 0;
+}
+.mascotoptions {
+  position: absolute;
+  left: 27%;
+  right: 27%;
+  bottom: 10px;
+  border-radius: 10px;
 }
 #cancel,
 #mascots_batch {
@@ -1800,6 +1808,7 @@ div.reply {
 #watcher,
 #watcher:hover,
 .deleteform,
+.mascotoptions,
 div.subMenu,
 #menu {
   background: ' + theme["Dialog Background"] + ';
@@ -2861,7 +2870,8 @@ input[type=checkbox] {
 #mascot img {
   position: fixed;
   bottom: ' + (mascot.bottom or mascotposition) + 'px;
-  right: ' + (if mascot.big then 0 else Math.floor(sidebarOffsetW / 2)) + 'px;
+  right: ' + (mascot.right or (if mascot.big then 0 else Math.floor(sidebarOffsetW / 2))) + 'px;
+  top: ' + (mascot.top) + 'px;
   left: auto;
   ' + agent + 'transform: scaleX(1);
   pointer-events: none;

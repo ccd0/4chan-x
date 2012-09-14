@@ -10,8 +10,12 @@ Main =
     userMascots = $.get "userMascots", Mascots
 
     for name, mascot of userMascots
-      enabledmascots[name] = $.get name, ->
-        if mascot.category == 'SFW' then true else false
+      unless userMascots[name]["Deleted"]
+        enabledmascots[name] = $.get name, ->
+          if mascot.category == 'SFW' then true else false
+      else
+        enabledmascots[name] = $.get name, false
+      
 
     path = location.pathname
     pathname = path[1..].split '/'
