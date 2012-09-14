@@ -2148,24 +2148,40 @@ ThreadUpdater =
       @lastPost = +@threadRoot.lastElementChild.id[2..]
 
       for input in $$ 'input', dialog
-        switch input.type
-          when 'checkbox'
-            $.on input, 'click', @cb.checkbox.bind @
-            input.dispatchEvent new Event 'click'
-            $.on input, 'click', $.cb.checked
-          when 'number'
+        if input.type is 'checkbox'
+          $.on input, 'click', @cb.checkbox.bind @
+          input.dispatchEvent new Event 'click'
+        switch input.name
+          when 'Scroll BG'
+            $.on input, 'click', @cb.scrollBG.bind @
+            @cb.scrollBG.call @
+          when 'Auto Update This'
+            $.on input, 'click', @cb.autoUpdate.bind @
+          when 'Interval'
             $.on input, 'change', @cb.interval.bind @
             input.dispatchEvent new Event 'change'
-          when 'button'
+          when 'Update Now'
             $.on input, 'click', @update.bind @
 
+      $.on window, 'online offline', @cb.online.bind @
       $.on d, 'QRPostSuccessful', @cb.post.bind @
       $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility.bind @
 
-      @set 'timer', @getInterval()
+      @cb.online.call @
       $.add d.body, dialog
 
     cb:
+      online: ->
+        if @online = navigator.onLine
+          @unsuccessfulFetchCount = 0
+          @set 'timer', @getInterval()
+          @set 'status', null
+          @status.className = null
+        else
+          @status.className = 'warning'
+          @set 'status', 'Offline'
+          @set 'timer',  null
+        @cb.autoUpdate.call @
       post: (e) ->
         return unless @['Auto Update This'] and +e.detail.threadID is @thread.ID
         @unsuccessfulFetchCount = 0
@@ -2181,18 +2197,18 @@ ThreadUpdater =
         input = e.target
         {checked, name} = input
         @[name] = checked
-        switch name
-          when 'Scroll BG'
-            @scrollBG =
-              if checked
-                -> true
-              else
-                -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
-          when 'Auto Update This'
-            if checked
-              @timeoutID = setTimeout @timeout.bind(@), 1000
-            else
-              clearTimeout @timeoutID
+        $.cb.checked.call input
+      scrollBG: ->
+        @scrollBG =
+          if @['Scroll BG']
+            -> true
+          else
+            -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
+      autoUpdate: ->
+        if @['Auto Update This'] and @online
+          @timeoutID = setTimeout @timeout.bind(@), 1000
+        else
+          clearTimeout @timeoutID
       interval: (e) ->
         input = e.target
         val = Math.max 5, parseInt input.value, 10
@@ -2263,6 +2279,7 @@ ThreadUpdater =
         @set 'timer', n
 
     update: ->
+      return unless @online
       @seconds = 0
       @set 'timer', '...'
       if @req

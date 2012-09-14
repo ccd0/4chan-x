@@ -2407,27 +2407,47 @@
         _ref1 = $$('input', dialog);
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           input = _ref1[_i];
-          switch (input.type) {
-            case 'checkbox':
-              $.on(input, 'click', this.cb.checkbox.bind(this));
-              input.dispatchEvent(new Event('click'));
-              $.on(input, 'click', $.cb.checked);
+          if (input.type === 'checkbox') {
+            $.on(input, 'click', this.cb.checkbox.bind(this));
+            input.dispatchEvent(new Event('click'));
+          }
+          switch (input.name) {
+            case 'Scroll BG':
+              $.on(input, 'click', this.cb.scrollBG.bind(this));
+              this.cb.scrollBG.call(this);
               break;
-            case 'number':
+            case 'Auto Update This':
+              $.on(input, 'click', this.cb.autoUpdate.bind(this));
+              break;
+            case 'Interval':
               $.on(input, 'change', this.cb.interval.bind(this));
               input.dispatchEvent(new Event('change'));
               break;
-            case 'button':
+            case 'Update Now':
               $.on(input, 'click', this.update.bind(this));
           }
         }
+        $.on(window, 'online offline', this.cb.online.bind(this));
         $.on(d, 'QRPostSuccessful', this.cb.post.bind(this));
         $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility.bind(this));
-        this.set('timer', this.getInterval());
+        this.cb.online.call(this);
         $.add(d.body, dialog);
       }
 
       _Class.prototype.cb = {
+        online: function() {
+          if (this.online = navigator.onLine) {
+            this.unsuccessfulFetchCount = 0;
+            this.set('timer', this.getInterval());
+            this.set('status', null);
+            this.status.className = null;
+          } else {
+            this.status.className = 'warning';
+            this.set('status', 'Offline');
+            this.set('timer', null);
+          }
+          return this.cb.autoUpdate.call(this);
+        },
         post: function(e) {
           if (!(this['Auto Update This'] && +e.detail.threadID === this.thread.ID)) {
             return;
@@ -2453,19 +2473,20 @@
           input = e.target;
           checked = input.checked, name = input.name;
           this[name] = checked;
-          switch (name) {
-            case 'Scroll BG':
-              return this.scrollBG = checked ? function() {
-                return true;
-              } : function() {
-                return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
-              };
-            case 'Auto Update This':
-              if (checked) {
-                return this.timeoutID = setTimeout(this.timeout.bind(this), 1000);
-              } else {
-                return clearTimeout(this.timeoutID);
-              }
+          return $.cb.checked.call(input);
+        },
+        scrollBG: function() {
+          return this.scrollBG = this['Scroll BG'] ? function() {
+            return true;
+          } : function() {
+            return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
+          };
+        },
+        autoUpdate: function() {
+          if (this['Auto Update This'] && this.online) {
+            return this.timeoutID = setTimeout(this.timeout.bind(this), 1000);
+          } else {
+            return clearTimeout(this.timeoutID);
           }
         },
         interval: function(e) {
@@ -2548,6 +2569,9 @@
 
       _Class.prototype.update = function() {
         var url;
+        if (!this.online) {
+          return;
+        }
         this.seconds = 0;
         this.set('timer', '...');
         if (this.req) {
