@@ -93,7 +93,7 @@
 * Thank you.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeOptions, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, enabledmascots, g, userMascots, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeOptions, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, enabledmascots, g, newTheme, userMascots, userThemes;
 
   Config = {
     main: {
@@ -280,6 +280,8 @@
   editMascot = {};
 
   editMode = false;
+
+  newTheme = false;
 
   enabledmascots = {};
 
@@ -2108,7 +2110,7 @@
       return _results;
     },
     dialog: function() {
-      var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, theme, themename, time, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, time, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2330,99 +2332,7 @@
       }
       $.add($('#style_tab + div', dialog), div);
       Options.applyStyle(dialog, 'style_tab');
-      parentdiv = $.el('div', {
-        className: "suboptions"
-      });
-      for (themename in userThemes) {
-        theme = userThemes[themename];
-        if (!theme["Deleted"]) {
-          div = $.el('div', {
-            className: themename === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
-            id: themename,
-            innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + themename + "</span>   <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <a class=edit name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>  <a class=export name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
-          });
-          $.on($('a.edit', div), 'click', function() {
-            ThemeOptions.init(this.name);
-            return Options.close();
-          });
-          $.on($('a.export', div), 'click', function() {
-            var exportTheme, exportedTheme;
-            exportTheme = userThemes[this.name];
-            exportTheme['Theme'] = this.name;
-            exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme));
-            if (window.open(exportedTheme, "_blank")) {
-
-            } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
-              return window.location(exportedTheme);
-            }
-          });
-          $.on($('a.delete', div), 'click', function() {
-            var container, settheme;
-            container = this.parentElement.parentElement;
-            if (!(container.previousSibling || container.nextSibling)) {
-              alert("Cannot delete theme (No other themes available).");
-              return;
-            }
-            if (confirm("Are you sure you want to delete \"" + container.id + "\"?")) {
-              if (container.id === Conf['theme']) {
-                if (settheme = container.previousSibling || container.nextSibling) {
-                  Conf['theme'] = settheme.id;
-                  $.addClass(settheme, 'selectedtheme');
-                  $.set('theme', Conf['theme']);
-                }
-              }
-              userThemes[container.id]["Deleted"] = true;
-              $.set('userThemes', userThemes);
-              return $.rm(container);
-            }
-          });
-          $.on($('.rice', div), 'click', Options.selectTheme);
-          $.on($('blockquote', div), 'click', Options.selectTheme);
-          $.add(parentdiv, div);
-        }
-      }
-      div = $.el('div', {
-        id: 'import',
-        innerHTML: "<a href='javascript:;'>Import Theme</a><input type=file hidden>"
-      });
-      $.on($("a", div), 'click', function() {
-        return this.nextSibling.click();
-      });
-      $.on($("input", div), 'change', function(evt) {
-        var file, reader;
-        file = evt.target.files[0];
-        reader = new FileReader();
-        reader.onload = function(e) {
-          var name;
-          console.log(reader);
-          try {
-            theme = JSON.parse(e.target.result);
-          } catch (err) {
-            alert(err);
-            return;
-          }
-          if (!theme["Author Tripcode"]) {
-            alert("Theme file is invalid.");
-            return;
-          }
-          name = theme["Theme"];
-          delete theme["Theme"];
-          if (userThemes[name]) {
-            if (confirm("A theme with this name already exists. Would you like to over-write?")) {
-              delete userThemes[name];
-            }
-          } else {
-            return;
-          }
-          userThemes[name] = theme;
-          $.set('userThemes', userThemes);
-          return alert("Theme \"" + name + "\" imported!");
-        };
-        return reader.readAsText(file);
-      });
-      $.add($('#theme_tab + div', dialog), parentdiv);
-      $.add($('#theme_tab + div', dialog), div);
-      Options.applyStyle(dialog, 'theme_tab');
+      this.themeTab(dialog);
       parentdiv = $.el('div', {
         className: "suboptions"
       });
@@ -2531,6 +2441,112 @@
         }));
       }
       return _results;
+    },
+    themeTab: function(dialog) {
+      var div, parentdiv, theme, themename;
+      if (!dialog) {
+        dialog = $("#options", d.body);
+      }
+      parentdiv = $.el('div', {
+        className: "suboptions",
+        id: "themes"
+      });
+      for (themename in userThemes) {
+        theme = userThemes[themename];
+        if (!theme["Deleted"]) {
+          div = $.el('div', {
+            className: themename === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
+            id: themename,
+            innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + themename + "</span>   <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <a class=edit name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>  <a class=export name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
+          });
+          $.on($('a.edit', div), 'click', function() {
+            ThemeOptions.init(this.name);
+            return Options.close();
+          });
+          $.on($('a.export', div), 'click', function() {
+            var exportTheme, exportedTheme;
+            exportTheme = userThemes[this.name];
+            exportTheme['Theme'] = this.name;
+            exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme));
+            if (window.open(exportedTheme, "_blank")) {
+
+            } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
+              return window.location(exportedTheme);
+            }
+          });
+          $.on($('a.delete', div), 'click', function() {
+            var container, settheme;
+            container = this.parentElement.parentElement;
+            if (!(container.previousSibling || container.nextSibling)) {
+              alert("Cannot delete theme (No other themes available).");
+              return;
+            }
+            if (confirm("Are you sure you want to delete \"" + container.id + "\"?")) {
+              if (container.id === Conf['theme']) {
+                if (settheme = container.previousSibling || container.nextSibling) {
+                  Conf['theme'] = settheme.id;
+                  $.addClass(settheme, 'selectedtheme');
+                  $.set('theme', Conf['theme']);
+                }
+              }
+              userThemes[container.id]["Deleted"] = true;
+              $.set('userThemes', userThemes);
+              return $.rm(container);
+            }
+          });
+          $.on($('.rice', div), 'click', Options.selectTheme);
+          $.on($('blockquote', div), 'click', Options.selectTheme);
+          $.add(parentdiv, div);
+        }
+      }
+      div = $.el('div', {
+        id: 'addthemes',
+        innerHTML: "<a id=import href='javascript:;'>Import Theme</a><input type=file hidden> / <a id=newtheme href='javascript:;'>New Theme</a>"
+      });
+      $.on($("#import", div), 'click', function() {
+        return this.nextSibling.click();
+      });
+      $.on($("#newtheme", div), 'click', function() {
+        newTheme = true;
+        ThemeOptions.init("untitled");
+        return Options.close();
+      });
+      $.on($("input", div), 'change', function(evt) {
+        var file, reader;
+        file = evt.target.files[0];
+        reader = new FileReader();
+        reader.onload = function(e) {
+          var name;
+          try {
+            theme = JSON.parse(e.target.result);
+          } catch (err) {
+            alert(err);
+            return;
+          }
+          if (!theme["Author Tripcode"]) {
+            alert("Theme file is invalid.");
+            return;
+          }
+          name = theme["Theme"];
+          delete theme["Theme"];
+          if (userThemes[name] && !userThemes[name]["Deleted"]) {
+            if (confirm("A theme with this name already exists. Would you like to over-write?")) {
+              delete userThemes[name];
+            } else {
+              return;
+            }
+          }
+          userThemes[name] = theme;
+          $.set('userThemes', userThemes);
+          alert("Theme \"" + name + "\" imported!");
+          $.rm($("#themes", d.body));
+          return Options.themeTab();
+        };
+        return reader.readAsText(file);
+      });
+      $.add($('#theme_tab + div', dialog), parentdiv);
+      $.add($('#theme_tab + div', dialog), div);
+      return Options.applyStyle(dialog, 'theme_tab');
     },
     close: function() {
       $.rm($('#options', d.body));
@@ -7124,13 +7140,22 @@
   ThemeOptions = {
     init: function(key) {
       editMode = true;
-      Style.addStyle(userThemes[key]);
+      if (!newTheme) {
+        Style.addStyle(userThemes[key]);
+      }
       return this.dialog(key);
     },
     dialog: function(key) {
-      var dialog, div, header, input, item, layout, _i, _j, _len, _len1, _ref;
-      editTheme = userThemes[key];
-      editTheme["Theme"] = key;
+      var dialog, div, header, input, item, layout, _i, _j, _k, _len, _len1, _len2, _ref;
+      if (newTheme) {
+        editTheme = {};
+        editTheme["Theme"] = "Untitled";
+        editTheme["Author"] = "Author";
+        editTheme["Author Tripcode"] = "Unknown";
+      } else {
+        editTheme = userThemes[key];
+        editTheme["Theme"] = key;
+      }
       layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Focused Input Background", "Focused Input Border", "Hovered Input Background", "Hovered Input Border", "Navigation Background", "Navigation Border", "Quotelinks", "Backlinks", "Links", "Hovered Links", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color", "Dark Theme", "Custom CSS"];
       dialog = $.el("div", {
         id: "themeConf",
@@ -7138,7 +7163,7 @@
         innerHTML: "<div id=themebar></div><hr><div id=themecontent></div><div id=save>  <a href='javascript:;'>Save Theme</a></div><div id=cancel>  <a href='javascript:;'>Cancel</a></div>"
       });
       header = $.el("div", {
-        innerHTML: "<input class=field name='Theme' placeholder='Theme' value='" + key + "'> by <input class=field name='Author' placeholder='Author' value='" + editTheme['Author'] + "'> <input class=field name='Author Tripcode' placeholder='Author Tripcode' value='" + editTheme['Author Tripcode'] + "'>"
+        innerHTML: "<input class='field subject' name='Theme' placeholder='Theme' value='" + key + "'> by<input class='field name' name='Author' placeholder='Author' value='" + editTheme['Author'] + "'><input class='field postertrip' name='Author Tripcode' placeholder='Author Tripcode' value='" + editTheme['Author Tripcode'] + "'>"
       });
       _ref = $$("input", header);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -7148,29 +7173,48 @@
         });
       }
       $.add($("#themebar", dialog), header);
-      for (_j = 0, _len1 = layout.length; _j < _len1; _j++) {
-        item = layout[_j];
-        div = $.el("div", {
-          className: "themevar",
-          innerHTML: "<div class=optionname>" + item + "</div><div class=option><input class=field name='" + item + "' placeholder='" + item + "' value='" + editTheme[item] + "'>"
-        });
-        $.on($('input', div), 'blur', function() {
-          editTheme[this.name] = this.value;
-          return Style.addStyle(editTheme);
-        });
-        $.add($("#themecontent", dialog), div);
+      if (newTheme) {
+        for (_j = 0, _len1 = layout.length; _j < _len1; _j++) {
+          item = layout[_j];
+          editTheme[item] = "";
+          div = $.el("div", {
+            className: "themevar",
+            innerHTML: "<div class=optionname>" + item + "</div><div class=option><input class=field name='" + item + "' placeholder='" + item + "' value='" + editTheme[item] + "'>"
+          });
+          $.on($('input', div), 'blur', function() {
+            editTheme[this.name] = this.value;
+            return Style.addStyle(editTheme);
+          });
+          $.add($("#themecontent", dialog), div);
+        }
+      } else {
+        for (_k = 0, _len2 = layout.length; _k < _len2; _k++) {
+          item = layout[_k];
+          div = $.el("div", {
+            className: "themevar",
+            innerHTML: "<div class=optionname>" + item + "</div><div class=option><input class=field name='" + item + "' placeholder='" + item + "' value='" + editTheme[item] + "'>"
+          });
+          $.on($('input', div), 'blur', function() {
+            editTheme[this.name] = this.value;
+            return Style.addStyle(editTheme);
+          });
+          $.add($("#themecontent", dialog), div);
+        }
       }
       $.on($('#save > a', dialog), 'click', function() {
         return ThemeOptions.save(editTheme);
       });
       $.on($('#cancel > a', dialog), 'click', ThemeOptions.close);
+      if (newTheme) {
+        Style.addStyle(editTheme);
+      }
       return $.add(d.body, dialog);
     },
     save: function(theme) {
       var name;
       name = theme["Theme"];
       delete theme["Theme"];
-      if (userThemes[name]) {
+      if (userThemes[name] && !userThemes[name]["Deleted"]) {
         if (confirm("A theme with this name already exists. Would you like to over-write?")) {
           delete userThemes[name];
         } else {
@@ -7181,10 +7225,12 @@
       $.set('userThemes', userThemes);
       $.set("Style", name);
       Conf["Style"] = name;
-      alert("Theme \"" + name + "\" saved.");
-      return this.close;
+      newTheme = false;
+      ThemeOptions.close();
+      return alert("Theme \"" + name + "\" saved.");
     },
     close: function() {
+      newTheme = false;
       Conf['Edit Mode'] = false;
       $.rm($("#themeConf", d.body));
       return Style.addStyle(Conf["Style"]);
@@ -7733,7 +7779,7 @@ h1,\
   right: 10px;\
   bottom: 0;\
 }\
-#import {\
+#addthemes {\
   position: absolute;\
   left: 10px;\
   bottom: 0;\
@@ -8983,6 +9029,9 @@ table.reply[style^="clear: both"] {\
   bottom: 0;\
   right: auto;\
 }\
+#themebar input {\
+  width: 30%;\
+}\
 body {\
   background: ' + theme["Background Color"] + ';\
   background-image: ' + theme["Background Image"] + ';\
@@ -9119,7 +9168,7 @@ div.postContainer span.postNum > .replylink {\
   color: ' + theme["Post Numbers"] + ';\
 }\
 .subject {\
-  color: ' + theme["Subjects"] + ';\
+  color: ' + theme["Subjects"] + ' !important;\
   font-weight: 600;\
 }\
 #updater:not(:hover),\
@@ -9210,11 +9259,11 @@ div.postContainer span.postNum > .replylink:hover,\
   color: ' + theme["Board Title"] + ';\
 }\
 .name {\
-  color: ' + theme["Names"] + ';\
+  color: ' + theme["Names"] + ' !important;\
 }\
 .postertrip,\
 .trip {\
-  color: ' + theme["Tripcodes"] + ';\
+  color: ' + theme["Tripcodes"] + ' !important;\
 }\
 .nameBlock > .useremail > .postertrip,\
 .nameBlock > .useremail > .name {\

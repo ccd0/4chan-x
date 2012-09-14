@@ -438,7 +438,7 @@ h1,
   right: 10px;
   bottom: 0;
 }
-#import {
+#addthemes {
   position: absolute;
   left: 10px;
   bottom: 0;
@@ -1691,6 +1691,9 @@ table.reply[style^="clear: both"] {
   bottom: 0;
   right: auto;
 }
+#themebar input {
+  width: 30%;
+}
 body {
   background: ' + theme["Background Color"] + ';
   background-image: ' + theme["Background Image"] + ';
@@ -1827,7 +1830,7 @@ div.postContainer span.postNum > .replylink {
   color: ' + theme["Post Numbers"] + ';
 }
 .subject {
-  color: ' + theme["Subjects"] + ';
+  color: ' + theme["Subjects"] + ' !important;
   font-weight: 600;
 }
 #updater:not(:hover),
@@ -1918,11 +1921,11 @@ div.postContainer span.postNum > .replylink:hover,
   color: ' + theme["Board Title"] + ';
 }
 .name {
-  color: ' + theme["Names"] + ';
+  color: ' + theme["Names"] + ' !important;
 }
 .postertrip,
 .trip {
-  color: ' + theme["Tripcodes"] + ';
+  color: ' + theme["Tripcodes"] + ' !important;
 }
 .nameBlock > .useremail > .postertrip,
 .nameBlock > .useremail > .name {

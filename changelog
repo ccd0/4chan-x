@@ -5,6 +5,11 @@ master
   More flexible margin style options
   -- Disabling the sidebar now centers page content with all margin options.
   -- The 'fully centered' option essentially force-enables the sidebar.
+  Theme Customization
+  -- Import
+  -- Export
+  -- Edit
+  -- Delete
 
 0.8beta
 - Zixaphir
