@@ -1,5 +1,9 @@
 master
 
+2.35.1
+- Mayhem
+  Temporary fix Scriptish
+
 2.35.0
 - Mayhem
   Add /g/, /k/, /w/, /an/, /cgl/, /ck/, /lit/, /toy/ and /x/ archived image redirection.

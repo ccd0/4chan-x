@@ -323,8 +323,16 @@ $.extend $,
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
-    # XXX Only Chrome has no d.head on document-start.
-    $.add d.head or d.documentElement, style
+    # That's terrible.
+    # XXX tmp fix for scriptish:
+    # https://github.com/scriptish/scriptish/issues/16
+    f = ->
+      # XXX Only Chrome has no d.head on document-start.
+      if root = d.head or d.documentElement
+        $.add root, style
+      else
+        setTimeout f, 20
+    f()
     style
   x: (path, root=d.body) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
