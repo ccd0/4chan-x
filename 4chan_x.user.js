@@ -402,11 +402,19 @@
       }
     },
     addStyle: function(css) {
-      var style;
+      var f, style;
       style = $.el('style', {
         textContent: css
       });
-      $.add(d.head || d.documentElement, style);
+      f = function() {
+        var root;
+        if (root = d.head || d.documentElement) {
+          return $.add(root, style);
+        } else {
+          return setTimeout(f, 20);
+        }
+      };
+      f();
       return style;
     },
     x: function(path, root) {
