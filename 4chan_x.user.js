@@ -750,11 +750,24 @@
       }
       this.isReply = $.hasClass(post, 'reply');
       if (that.isArchived) {
-        this.isDead = true;
+        this.kill();
       }
       this.clones = [];
       g.posts["" + board + "." + this] = thread.posts[this] = board.posts[this] = this;
     }
+
+    Post.prototype.kill = function(img) {
+      if (this.file && !this.file.isDead) {
+        this.file.isDead = true;
+        $.log('kill image', this.ID);
+      }
+      if (img) {
+        return;
+      }
+      $.log('kill post', this.ID);
+      this.isDead = true;
+      return $.addClass(this.nodes.root, 'dead');
+    };
 
     Post.prototype.addClone = function(context) {
       return new Clone(this, context);
@@ -1623,6 +1636,8 @@
                 textContent: "" + quote + "\u00A0(Dead)",
                 target: '_blank'
               });
+              a.setAttribute('data-board', board);
+              a.setAttribute('data-postid', ID);
             } else {
               a = $.el('a', {
                 href: "/" + board + "/" + post.thread + "/res/#p" + ID,
@@ -2526,7 +2541,7 @@
             default:
               this.unsuccessfulFetchCount++;
               this.set('timer', this.getInterval());
-              this.set('status', this.req.statusText);
+              this.set('status', "" + this.req.statusText + " (" + this.req.status + ")");
               this.status.className = 'warning';
           }
           return delete this.req;
@@ -2589,23 +2604,40 @@
       };
 
       _Class.prototype.parse = function(postObjects) {
-        var count, node, nodes, postObject, posts, scroll, spoilerRange, _i, _len, _ref;
-        if (spoilerRange = postObjects[0].custom_spoiler) {
-          Build.spoilerRange[this.thread.board] = spoilerRange;
-        }
+        var ID, count, i, image, index, node, nodes, num, post, postObject, posts, scroll, _i, _len, _ref;
+        Build.spoilerRange[this.thread.board] = postObjects[0].custom_spoiler;
         nodes = [];
         posts = [];
+        index = [];
+        image = [];
         count = 0;
-        _ref = postObjects.reverse();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          postObject = _ref[_i];
-          if (postObject.no <= this.lastPost) {
-            break;
+        for (_i = 0, _len = postObjects.length; _i < _len; _i++) {
+          postObject = postObjects[_i];
+          num = postObject.no;
+          index.push(num);
+          if (postObject.ext) {
+            image.push(num);
+          }
+          if (num <= this.lastPost) {
+            continue;
           }
           count++;
           node = Build.postFromObject(postObject, this.thread.board.ID);
-          nodes.unshift(node);
-          posts.unshift(new Post(node, this.thread, this.thread.board));
+          nodes.push(node);
+          posts.push(new Post(node, this.thread, this.thread.board));
+        }
+        _ref = this.thread.posts;
+        for (i in _ref) {
+          post = _ref[i];
+          if (post.isDead) {
+            continue;
+          }
+          ID = post.ID;
+          if (-1 === index.indexOf(ID)) {
+            post.kill();
+          } else if (post.file && !post.file.isDead && -1 === image.indexOf(ID)) {
+            post.kill(true);
+          }
         }
         if (count) {
           this.set('status', "+" + count);

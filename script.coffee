@@ -598,10 +598,18 @@ class Post
         @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
 
     @isReply = $.hasClass post, 'reply'
-    @isDead  = true if that.isArchived
+    @kill() if that.isArchived
     @clones  = []
     g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
 
+  kill: (img) ->
+    if @file and !@file.isDead
+      @file.isDead = true
+    return if img
+    @isDead = true
+    $.addClass @nodes.root, 'dead'
+    # XXX style dead posts.
+    # XXX update quotelinks/backlinks to this post.
   addClone: (context) ->
     new Clone @, context
   rmClone: (index) ->
@@ -1577,6 +1585,8 @@ Quotify =
               className:   'quotelink deadlink'
               textContent: "#{quote}\u00A0(Dead)"
               target:      '_blank'
+            a.setAttribute 'data-board',  board
+            a.setAttribute 'data-postid', ID
           else
             # Don't (Dead) when quotifying in an archived post,
             # and we know the post still exists.
@@ -2246,7 +2256,7 @@ ThreadUpdater =
           else
             @unsuccessfulFetchCount++
             @set 'timer',  @getInterval()
-            @set 'status', @req.statusText
+            @set 'status', "#{@req.statusText} (#{@req.status})"
             @status.className = 'warning'
         delete @req
 
@@ -2291,18 +2301,33 @@ ThreadUpdater =
         headers: 'If-Modified-Since': @lastModified
 
     parse: (postObjects) ->
-      if spoilerRange = postObjects[0].custom_spoiler
-        Build.spoilerRange[@thread.board] = spoilerRange
+      Build.spoilerRange[@thread.board] = postObjects[0].custom_spoiler
 
-      nodes = []
-      posts = []
-      count = 0
-      for postObject in postObjects.reverse()
-        break if postObject.no <= @lastPost # Make sure to not insert older posts.
+      nodes = [] # post container elements
+      posts = [] # post objects
+      index = [] # existing posts
+      image = [] # existing images
+      count = 0  # new posts count
+      # Build the index, create posts.
+      for postObject in postObjects
+        num = postObject.no
+        index.push num
+        image.push num if postObject.ext
+        continue if num <= @lastPost
+        # Insert new posts, not older ones.
         count++
         node = Build.postFromObject postObject, @thread.board.ID
-        nodes.unshift node
-        posts.unshift new Post node, @thread, @thread.board
+        nodes.push node
+        posts.push new Post node, @thread, @thread.board
+
+      # Check for deleted posts and deleted images.
+      for i, post of @thread.posts
+        continue if post.isDead
+        {ID} = post
+        if -1 is index.indexOf ID
+          post.kill()
+        else if post.file and !post.file.isDead and -1 is image.indexOf ID
+          post.kill true
 
       if count
         @set 'status', "+#{count}"
