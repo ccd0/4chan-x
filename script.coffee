@@ -3298,7 +3298,7 @@ Build =
           "<span class='postNum desktop'>" +
             "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
             "<a href='#{
-              if g.REPLY and g.THREAD_ID is threadID
+              if g.REPLY and +g.THREAD_ID is threadID
                 "javascript:quote(#{postID})"
               else
                 "/#{board}/res/#{threadID}#q#{postID}"
