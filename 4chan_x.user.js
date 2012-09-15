@@ -793,6 +793,9 @@
       }
       for (_l = 0, _len3 = quotelinks.length; _l < _len3; _l++) {
         quotelink = quotelinks[_l];
+        if ($.hasClass(quotelink, 'deadlink')) {
+          continue;
+        }
         if (Get.postDataFromLink(quotelink).postID === this.ID) {
           $.add(quotelink, $.tn('\u00A0(Dead)'));
         }
@@ -1681,7 +1684,7 @@
               href: Redirect.thread(board, 0, ID),
               className: 'deadlink',
               target: '_blank',
-              textContent: this.isDead ? quote : "" + quote + "\u00A0(Dead)"
+              textContent: "" + quote + "\u00A0(Dead)"
             });
             if (Redirect.post(board, ID)) {
               $.addClass(a, 'quotelink');
@@ -1692,7 +1695,9 @@
           if (this.quotes.indexOf(quoteID) === -1) {
             this.quotes.push(quoteID);
           }
-          this.nodes.quotelinks.push(a);
+          if ($.hasClass(a, 'quotelink')) {
+            this.nodes.quotelinks.push(a);
+          }
           nodes.push(a);
           data = data.slice(index + quote.length);
         }

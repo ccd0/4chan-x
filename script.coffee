@@ -636,6 +636,7 @@ class Post
         for post in [post].concat post.clones
           quotelinks.push.apply quotelinks, Array::slice.call post.nodes.backlinks
     for quotelink in quotelinks
+      continue if $.hasClass quotelink, 'deadlink'
       if Get.postDataFromLink(quotelink).postID is @ID
         $.add quotelink, $.tn '\u00A0(Dead)'
     return
@@ -1629,9 +1630,7 @@ Quotify =
             href:        Redirect.thread board, 0, ID
             className:   'deadlink'
             target:      '_blank'
-            # Don't (Dead) when quotifying in an archived post,
-            # and we don't know anything about the post.
-            textContent: if @isDead then quote else "#{quote}\u00A0(Dead)"
+            textContent: "#{quote}\u00A0(Dead)"
           if Redirect.post board, ID
             $.addClass a, 'quotelink'
             a.setAttribute 'data-board',  board
@@ -1639,7 +1638,8 @@ Quotify =
 
         if @quotes.indexOf(quoteID) is -1
           @quotes.push quoteID
-        @nodes.quotelinks.push a
+        if $.hasClass a, 'quotelink'
+          @nodes.quotelinks.push a
         nodes.push a
         data = data[index + quote.length..]
 
