@@ -55,6 +55,15 @@ ThemeTools =
           className: "themevar"
           innerHTML: "<div class=optionname>#{item}</div><div class=option><input class=field name='#{item}' placeholder='#{item}' value='#{editTheme[item]}'>"
         $.on $('input', div), 'blur', ->
+          depth = 0
+          for i in [0..@value.length - 1]
+            switch @value[i]
+              when '(' then depth++
+              when ')' then depth--
+              when '"' then toggle1 = not toggle1
+              when "'" then toggle2 = not toggle2
+          if depth != 0 or toggle1 or toggle2
+            return alert "Syntax error on #{@name}."
           editTheme[@name] = @value
           Style.addStyle(editTheme)
         $.add $("#themecontent", dialog), div
@@ -81,6 +90,6 @@ ThemeTools =
 
   close: ->
     newTheme = false
-    Conf['Edit Mode'] = false
+    editMode = false
     $.rm $("#themeConf", d.body)
     Style.addStyle Conf["Style"]

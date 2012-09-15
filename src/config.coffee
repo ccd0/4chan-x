@@ -238,6 +238,7 @@ Config =
         'normal', 'large', 'hide'
       ]]
   theme        : 'Yotsuba B'
+  mascot       : ''
   styleenabled : '0'
   navigation   : {}
 

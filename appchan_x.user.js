@@ -266,6 +266,7 @@
       }
     },
     theme: 'Yotsuba B',
+    mascot: '',
     styleenabled: '0',
     navigation: {}
   };
@@ -7293,6 +7294,26 @@
             innerHTML: "<div class=optionname>" + item + "</div><div class=option><input class=field name='" + item + "' placeholder='" + item + "' value='" + editTheme[item] + "'>"
           });
           $.on($('input', div), 'blur', function() {
+            var depth, i, toggle1, toggle2, _l, _ref1;
+            depth = 0;
+            for (i = _l = 0, _ref1 = this.value.length - 1; 0 <= _ref1 ? _l <= _ref1 : _l >= _ref1; i = 0 <= _ref1 ? ++_l : --_l) {
+              switch (this.value[i]) {
+                case '(':
+                  depth++;
+                  break;
+                case ')':
+                  depth--;
+                  break;
+                case '"':
+                  toggle1 = !toggle1;
+                  break;
+                case "'":
+                  toggle2 = !toggle2;
+              }
+            }
+            if (depth !== 0 || toggle1 || toggle2) {
+              return alert("Syntax error on " + this.name + ".");
+            }
             editTheme[this.name] = this.value;
             return Style.addStyle(editTheme);
           });
@@ -7328,32 +7349,37 @@
     },
     close: function() {
       newTheme = false;
-      Conf['Edit Mode'] = false;
+      editMode = false;
       $.rm($("#themeConf", d.body));
       return Style.addStyle(Conf["Style"]);
     }
   };
 
   MascotTools = {
-    init: function(mascot) {
-      var div, mascotnames, mascotposition, name, result;
+    init: function() {
+      var div, mascot, mascotnames, mascotposition, name, result;
       if (Conf['Post Form Style'] === "fixed" || Conf['Post Form Style'] === "transparent fade") {
         mascotposition = '264';
       } else {
         mascotposition = '0';
       }
-      try {
-        $.rm($('#mascot', d.body));
-      } catch (_error) {}
-      if (!mascot) {
+      if (!editMode) {
         mascotnames = [];
+        try {
+          $.rm($('#mascot', d.body));
+        } catch (_error) {}
         for (name in userMascots) {
           mascot = userMascots[name];
           if (enabledmascots[name] === true) {
             mascotnames.push(name);
           }
         }
-        if (!(mascot = userMascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]])) {
+        if (!(Conf["mascot"] = mascotnames[Math.floor(Math.random() * mascotnames.length)])) {
+          return;
+        }
+        mascot = userMascots[Conf["mascot"]];
+      } else {
+        if (!(mascot = userMascots[Conf["mascot"]])) {
           return;
         }
       }
@@ -7364,26 +7390,42 @@
       $.ready(function() {
         return $.add(d.body, div);
       });
-      result = "#mascot img {  position: fixed;  bottom: " + (mascot.position === 'bottom' ? 0 + (mascot.vOffset || 0) + "px" : mascot.position === 'top' ? "auto" : (mascotposition + mascot.vOffset) + "px") + ";  right:  " + (mascot.hoffset || 0 + (!(Conf['Sidebar'] === 'large' && mascot.center) ? 0 : 25)) + "px;  top:    " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";  left:   auto;  pointer-events: none;}#mascot img {  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";}";
+      result = "#mascot img {  position: fixed;  z-index:  " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";  bottom:   " + (mascot.position === 'bottom' ? 0 + (mascot.vOffset || 0) + "px" : mascot.position === 'top' ? "auto" : (mascotposition + (mascot.vOffset || 0)) + "px") + ";  right:    " + (mascot.hoffset || 0 + (!(Conf['Sidebar'] === 'large' && mascot.center) ? 0 : 25)) + "px;  top:      " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";  left:     auto;  pointer-events: none;}";
       return result;
     },
     dialog: function(key) {
-      var dialog, layout;
+      var dialog, div, item, layout, _i, _len;
       editMascot = userThemes[key] || {};
-      editMascot["Name"] = key || '';
+      editMascot.name = key || '';
       layout = {
         name: ["Mascot Name", "", "The name of the Mascot", "text"],
         image: ["Image", "", "Image of Mascot. Accepts Base64 as well as URLs.", "text"],
-        position: ["Position", "default", "Where the mascot is anchored in the Sidebar. The default option places the mascot above the Post Form or on the bottom of the page, depending on the Post Form setting.", ["default", "top", "bottom"]],
+        position: ["Position", "default", "Where the mascot is anchored in the Sidebar. The default option places the mascot above the Post Form or on the bottom of the page, depending on the Post Form setting.", "select", ["default", "top", "bottom"]],
         vOffset: ["Vertical Offset", 0, "This value moves the mascot vertically away from the anchor point, in pixels (the post form is exactly \"264\" pixels tall if you'd like to force the mascot to sit above it).", "number"],
         hOffset: ["Horizontal Offset", 0, "This value moves the mascot further away from the edge of the screen, in pixels.", "number"],
-        center: ["Center Mascot", false, "If this is enabled, Appchan X will attempt to pad the mascot with 25 pixels of Horizontal Offset when the \"Sidebar Setting\" is set to \"large\" in an attempt to \"re-center\" the mascot. If you are having problems placing your mascot properly, ensure this is not enabled."]
+        center: ["Center Mascot", false, "If this is enabled, Appchan X will attempt to pad the mascot with 25 pixels of Horizontal Offset when the \"Sidebar Setting\" is set to \"large\" in an attempt to \"re-center\" the mascot. If you are having problems placing your mascot properly, ensure this is not enabled.", "checkbox"]
       };
-      return dialog = $.el("div", {
+      dialog = $.el("div", {
         id: "mascotConf",
         className: "reply dialog",
         innerHTML: "<div id=mascotbar></div><hr><div id=mascotcontent></div><div id=save>  <a href='javascript:;'>Save Mascot</a></div><div id=cancel>  <a href='javascript:;'>Cancel</a></div>"
       });
+      for (_i = 0, _len = layout.length; _i < _len; _i++) {
+        item = layout[_i];
+        div = $.el("div", {
+          className: "themevar",
+          innerHTML: "<div class=optionname>" + item + "</div><div class=option><input class=field name='" + item + "' placeholder='" + item + "' value='" + editTheme[item] + "'>"
+        });
+        $.on($('input', div), 'blur', function() {
+          editTheme[this.name] = this.value;
+          return Style.addStyle(editTheme);
+        });
+        $.add($("#themecontent", dialog), div);
+      }
+      $.on($('#save > a', dialog), 'click', function() {
+        return ThemeTools.save(editTheme);
+      });
+      return $.on($('#cancel > a', dialog), 'click', ThemeTools.close);
     }
   };
 
