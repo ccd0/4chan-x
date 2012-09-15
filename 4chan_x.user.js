@@ -749,15 +749,15 @@
         }
       }
       this.isReply = $.hasClass(post, 'reply');
+      this.clones = [];
+      g.posts["" + board + "." + this] = thread.posts[this] = board.posts[this] = this;
       if (that.isArchived) {
         this.kill();
       }
-      this.clones = [];
-      g.posts["" + board + "." + this] = thread.posts[this] = board.posts[this] = this;
     }
 
     Post.prototype.kill = function(img) {
-      var ID, num, post, quote, quotelink, quotelinks, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+      var ID, board, num, post, postID, quote, quotelink, quotelinks, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
       if (this.file && !this.file.isDead) {
         this.file.isDead = true;
       }
@@ -796,8 +796,10 @@
         if ($.hasClass(quotelink, 'deadlink')) {
           continue;
         }
-        if (Get.postDataFromLink(quotelink).postID === this.ID) {
+        _ref4 = Get.postDataFromLink(quotelink), board = _ref4.board, postID = _ref4.postID;
+        if (board === this.board.ID(postID === this.ID)) {
           $.add(quotelink, $.tn('\u00A0(Dead)'));
+          $.addClass(quotelinks, 'deadlink');
         }
       }
     };

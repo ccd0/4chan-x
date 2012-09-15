@@ -598,9 +598,9 @@ class Post
         @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
 
     @isReply = $.hasClass post, 'reply'
-    @kill() if that.isArchived
     @clones  = []
     g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
+    @kill() if that.isArchived
 
   kill: (img) ->
     if @file and !@file.isDead
@@ -637,8 +637,10 @@ class Post
           quotelinks.push.apply quotelinks, Array::slice.call post.nodes.backlinks
     for quotelink in quotelinks
       continue if $.hasClass quotelink, 'deadlink'
-      if Get.postDataFromLink(quotelink).postID is @ID
+      {board, postID} = Get.postDataFromLink quotelink
+      if board is @board.ID postID is @ID
         $.add quotelink, $.tn '\u00A0(Dead)'
+        $.addClass quotelinks, 'deadlink'
     return
   addClone: (context) ->
     new Clone @, context
