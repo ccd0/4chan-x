@@ -19,7 +19,7 @@ MascotTools =
     result = "
 #mascot img {
   position: fixed;
-  bottom: " + (if mascot.position == 'bottom' then (0 + (mascot.vOffset or 0) + "px") else unless mascot.position == 'top' then mascotposition + "px" else "auto") + ";
+  bottom: " + (if mascot.position == 'bottom' then (0 + (mascot.vOffset or 0) + "px") else if mascot.position == 'top' then "auto" else (mascotposition + mascot.vOffset) + "px") + ";
   right:  " + (mascot.hoffset or 0 + (unless Conf['Sidebar'] == 'large' and mascot.center then 0 else 25)) + "px;
   top:    " + (if mascot.position == 'top' then (mascot.vOffset or 0) + "px" else 'auto') + ";
   left:   auto;

@@ -7364,7 +7364,7 @@
       $.ready(function() {
         return $.add(d.body, div);
       });
-      result = "#mascot img {  position: fixed;  bottom: " + (mascot.position === 'bottom' ? 0 + (mascot.vOffset || 0) + "px" : mascot.position !== 'top' ? mascotposition + "px" : "auto") + ";  right:  " + (mascot.hoffset || 0 + (!(Conf['Sidebar'] === 'large' && mascot.center) ? 0 : 25)) + "px;  top:    " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";  left:   auto;  pointer-events: none;}#mascot img {  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";}";
+      result = "#mascot img {  position: fixed;  bottom: " + (mascot.position === 'bottom' ? 0 + (mascot.vOffset || 0) + "px" : mascot.position === 'top' ? "auto" : (mascotposition + mascot.vOffset) + "px") + ";  right:  " + (mascot.hoffset || 0 + (!(Conf['Sidebar'] === 'large' && mascot.center) ? 0 : 25)) + "px;  top:    " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";  left:   auto;  pointer-events: none;}#mascot img {  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";}";
       return result;
     },
     dialog: function(key) {
