@@ -400,58 +400,6 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
-  RandomAccessList: class
-    constructor: ->
-      @first = null
-      @last = null
-      @length = 0
-
-    push: (id, el) ->
-      {last} = @
-      @[id] = item =
-        prev: last
-        next: null
-        el: el
-        id: id
-      @last = item
-      if last
-        last.next = item
-      else
-        @first = item
-      @length++
-
-    shift: ->
-      @rm @first.id
-
-    after: (root, item) ->
-      return if item.prev is root
-
-      @rmi item
-
-      {next} = root
-
-      root.next = item
-      item.prev = root
-      item.next = next
-      next.prev = item
-
-    rm: (id) ->
-      item = @[id]
-      return unless item
-      delete @[id]
-      @length--
-      @rmi item
-
-    rmi: (item) ->
-      {prev, next} = item
-      if prev
-        prev.next = next
-      else
-        @first = next
-      if next
-        next.prev = prev
-      else
-        @last = prev
 
 $.cache.requests = {}
 
@@ -1294,8 +1242,6 @@ Keybinds =
       when Conf.unreadCountTo0
         Unread.replies = []
         Unread.update true
-      when Conf.threading
-        QuoteThreading.public.toggle()
       # Images
       when Conf.expandImage
         Keybinds.img thread
@@ -3592,89 +3538,6 @@ Quotify =
       $.replace node, nodes
     return
 
-QuoteThreading =
-  init: ->
-    return unless Conf['Unread Count'] or Conf['Unread Favicon']
-    Main.callbacks.push @node
-
-    @enabled = true
-
-    controls = $.el 'span',
-      innerHTML: '<label>Threading<input id=threadingControl type=checkbox checked></label>'
-    input = $ 'input', controls
-    $.on input, 'change', QuoteThreading.toggle
-    form = $ '#delform'
-    $.prepend form, controls
-
-  node: (post) ->
-    #Random access list
-    #
-    #array implementation is very awkward - mid-array inserts, loop to find
-    #quoted post, loop to find inserted post(!), loop to find distance from
-    #threaded post to thread root
-    #
-    #of course, implementing your own data structure can be awkward...
-
-    return if post.isInlined or not QuoteThreading.enabled
-
-    {quotes, ID} = post
-    {replies} = Unread
-
-    return unless reply = replies[ID] #foresee, filtered
-
-    uniq = {}
-    for quote in quotes
-      qid = quote.hash[2..]
-      continue unless qid < ID
-      if qid of replies
-        uniq[qid] = true
-
-    keys = Object.keys uniq
-    return unless keys.length is 1
-
-    qid = keys[0]
-    qreply = replies[qid]
-
-    qroot = qreply.el.parentNode
-    threadContainer = qroot.nextSibling
-    if threadContainer?.className isnt 'threadContainer'
-      threadContainer = $.el 'div', className: 'threadContainer'
-      $.after qroot, threadContainer
-
-    $.add threadContainer, reply.el.parentNode
-    pEl = $.x 'preceding::div[contains(@class,"post reply")][1]/parent::div', reply.el.parentNode
-    pid = pEl.id[2..]
-    preply = replies[pid]
-
-    replies.after preply, reply
-
-  toggle: ->
-    Main.disconnect()
-    Unread.replies = new $.RandomAccessList
-    thread = $ '.thread'
-    replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
-    QuoteThreading.enabled = @checked
-    if @checked
-      nodes = (Main.preParse reply for reply in replies)
-      Unread.node         node for node in nodes
-      Unread.scroll()
-      QuoteThreading.node node for node in nodes
-    else
-      replies.sort (a, b) ->
-        aID = Number a.id[2..]
-        bID = Number b.id[2..]
-        aID - bID
-      $.add thread, replies
-      containers = $$ '.threadContainer', thread
-      $.rm container for container in containers
-      Unread.update true
-    Main.observe()
-  public:
-    toggle: ->
-      control = $.id 'threadingControl'
-      control.checked = not control.checked
-      QuoteThreading.toggle.call control
-
 DeleteLink =
   init: ->
     div = $.el 'div',
@@ -4449,9 +4312,6 @@ Main =
 
       if Conf['Unread Count'] or Conf['Unread Favicon']
         Unread.init()
-
-      if Conf['Quote Threading']
-        setTimeout -> QuoteThreading.init()
 
     else #not reply
       if Conf['Thread Hiding']

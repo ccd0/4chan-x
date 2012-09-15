@@ -81,7 +81,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g;
 
   Config = {
     main: {
@@ -517,79 +517,7 @@
       }
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
-    },
-    RandomAccessList: (function() {
-
-      function _Class() {
-        this.first = null;
-        this.last = null;
-        this.length = 0;
-      }
-
-      _Class.prototype.push = function(id, el) {
-        var item, last;
-        last = this.last;
-        this[id] = item = {
-          prev: last,
-          next: null,
-          el: el,
-          id: id
-        };
-        this.last = item;
-        if (last) {
-          last.next = item;
-        } else {
-          this.first = item;
-        }
-        return this.length++;
-      };
-
-      _Class.prototype.shift = function() {
-        return this.rm(this.first.id);
-      };
-
-      _Class.prototype.after = function(root, item) {
-        var next;
-        if (item.prev === root) {
-          return;
-        }
-        this.rmi(item);
-        next = root.next;
-        root.next = item;
-        item.prev = root;
-        item.next = next;
-        return next.prev = item;
-      };
-
-      _Class.prototype.rm = function(id) {
-        var item;
-        item = this[id];
-        if (!item) {
-          return;
-        }
-        delete this[id];
-        this.length--;
-        return this.rmi(item);
-      };
-
-      _Class.prototype.rmi = function(item) {
-        var next, prev;
-        prev = item.prev, next = item.next;
-        if (prev) {
-          prev.next = next;
-        } else {
-          this.first = next;
-        }
-        if (next) {
-          return next.prev = prev;
-        } else {
-          return this.last = prev;
-        }
-      };
-
-      return _Class;
-
-    })()
+    }
   });
 
   $.cache.requests = {};
@@ -1641,9 +1569,6 @@
         case Conf.unreadCountTo0:
           Unread.replies = [];
           Unread.update(true);
-          break;
-        case Conf.threading:
-          QuoteThreading["public"].toggle();
           break;
         case Conf.expandImage:
           Keybinds.img(thread);
@@ -4410,116 +4335,6 @@
     }
   };
 
-  QuoteThreading = {
-    init: function() {
-      var controls, form, input;
-      if (!(Conf['Unread Count'] || Conf['Unread Favicon'])) {
-        return;
-      }
-      Main.callbacks.push(this.node);
-      this.enabled = true;
-      controls = $.el('span', {
-        innerHTML: '<label>Threading<input id=threadingControl type=checkbox checked></label>'
-      });
-      input = $('input', controls);
-      $.on(input, 'change', QuoteThreading.toggle);
-      form = $('#delform');
-      return $.prepend(form, controls);
-    },
-    node: function(post) {
-      var ID, keys, pEl, pid, preply, qid, qreply, qroot, quote, quotes, replies, reply, threadContainer, uniq, _i, _len;
-      if (post.isInlined || !QuoteThreading.enabled) {
-        return;
-      }
-      quotes = post.quotes, ID = post.ID;
-      replies = Unread.replies;
-      if (!(reply = replies[ID])) {
-        return;
-      }
-      uniq = {};
-      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-        quote = quotes[_i];
-        qid = quote.hash.slice(2);
-        if (!(qid < ID)) {
-          continue;
-        }
-        if (qid in replies) {
-          uniq[qid] = true;
-        }
-      }
-      keys = Object.keys(uniq);
-      if (keys.length !== 1) {
-        return;
-      }
-      qid = keys[0];
-      qreply = replies[qid];
-      qroot = qreply.el.parentNode;
-      threadContainer = qroot.nextSibling;
-      if ((threadContainer != null ? threadContainer.className : void 0) !== 'threadContainer') {
-        threadContainer = $.el('div', {
-          className: 'threadContainer'
-        });
-        $.after(qroot, threadContainer);
-      }
-      $.add(threadContainer, reply.el.parentNode);
-      pEl = $.x('preceding::div[contains(@class,"post reply")][1]/parent::div', reply.el.parentNode);
-      pid = pEl.id.slice(2);
-      preply = replies[pid];
-      return replies.after(preply, reply);
-    },
-    toggle: function() {
-      var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2;
-      Main.disconnect();
-      Unread.replies = new $.RandomAccessList;
-      thread = $('.thread');
-      replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
-      QuoteThreading.enabled = this.checked;
-      if (this.checked) {
-        nodes = (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = replies.length; _i < _len; _i++) {
-            reply = replies[_i];
-            _results.push(Main.preParse(reply));
-          }
-          return _results;
-        })();
-        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-          node = nodes[_i];
-          Unread.node(node);
-        }
-        Unread.scroll();
-        for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
-          node = nodes[_j];
-          QuoteThreading.node(node);
-        }
-      } else {
-        replies.sort(function(a, b) {
-          var aID, bID;
-          aID = Number(a.id.slice(2));
-          bID = Number(b.id.slice(2));
-          return aID - bID;
-        });
-        $.add(thread, replies);
-        containers = $$('.threadContainer', thread);
-        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
-          container = containers[_k];
-          $.rm(container);
-        }
-        Unread.update(true);
-      }
-      return Main.observe();
-    },
-    "public": {
-      toggle: function() {
-        var control;
-        control = $.id('threadingControl');
-        control.checked = !control.checked;
-        return QuoteThreading.toggle.call(control);
-      }
-    }
-  };
-
   DeleteLink = {
     init: function() {
       var aImage, aPost, children, div;
@@ -5572,11 +5387,6 @@
         }
         if (Conf['Unread Count'] || Conf['Unread Favicon']) {
           Unread.init();
-        }
-        if (Conf['Quote Threading']) {
-          setTimeout(function() {
-            return QuoteThreading.init();
-          });
         }
       } else {
         if (Conf['Thread Hiding']) {
