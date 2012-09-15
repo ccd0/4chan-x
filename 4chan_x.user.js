@@ -793,7 +793,7 @@
       }
       for (_l = 0, _len3 = quotelinks.length; _l < _len3; _l++) {
         quotelink = quotelinks[_l];
-        if (+quotelink.hash.slice(2) === this.ID) {
+        if (Get.postDataFromLink(quotelink).postID === this.ID) {
           $.add(quotelink, $.tn('\u00A0(Dead)'));
         }
       }
@@ -1447,12 +1447,12 @@
       if (link.host === 'boards.4chan.org') {
         path = link.pathname.split('/');
         board = path[1];
-        threadID = path[3];
-        postID = link.hash.slice(2);
+        threadID = +path[3];
+        postID = +link.hash.slice(2);
       } else {
         board = link.dataset.board;
-        threadID = '';
-        postID = link.dataset.postid;
+        threadID = +link.dataset.threadid || '';
+        postID = +link.dataset.postid;
       }
       return {
         board: board,
@@ -1521,7 +1521,7 @@
         if (post.no > postID) {
           if (url = Redirect.post(board, postID)) {
             $.cache(url, function() {
-              return Get.parseArchivedPost(this, board, postID, root, context);
+              return Get.archivedPost(this, board, postID, root, context);
             });
           } else {
             $.addClass(root, 'warning');
@@ -1580,8 +1580,8 @@
       comment = bq.innerHTML.replace(/(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3');
       threadID = data.thread_num;
       o = {
-        postID: postID,
-        threadID: threadID,
+        postID: "" + postID,
+        threadID: "" + threadID,
         board: board,
         name: data.name_processed,
         capcode: (function() {
@@ -1667,6 +1667,7 @@
                 target: '_blank'
               });
               a.setAttribute('data-board', board);
+              a.setAttribute('data-threadid', post.thread.ID);
               a.setAttribute('data-postid', ID);
             } else {
               a = $.el('a', {
@@ -1769,7 +1770,7 @@
       }
       post = g.posts["" + board + "." + postID];
       post.rmClone(el.dataset.clone);
-      inThreadID = $.x('ancestor::div[@class="thread"]', quotelink).id.slice(1);
+      inThreadID = +$.x('ancestor::div[@class="thread"]', quotelink).id.slice(1);
       if (Conf['Forward Hiding'] && board === g.BOARD.ID && threadID === inThreadID && $.hasClass(quotelink, 'backlink')) {
         if (!--post.forwarded) {
           delete post.forwarded;
@@ -1966,7 +1967,7 @@
       });
     },
     node: function() {
-      var board, op, quote, quotelinks, quotes, thread, _i, _j, _len, _len1, _ref;
+      var board, op, postID, quote, quotelinks, quotes, thread, _i, _j, _len, _len1, _ref, _ref1;
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -1987,7 +1988,8 @@
       }
       for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
         quote = quotelinks[_j];
-        if (("" + (quote.pathname.split('/')[1]) + "." + quote.hash.slice(2)) === op) {
+        _ref1 = Get.postDataFromLink(quote), board = _ref1.board, postID = _ref1.postID;
+        if (("" + board + "." + postID) === op) {
           $.add(quote, $.tn(QuoteOP.text));
         }
       }
@@ -2003,7 +2005,7 @@
       });
     },
     node: function() {
-      var board, path, qBoard, qThread, quote, quotelinks, quotes, thread, _i, _len, _ref;
+      var board, data, quote, quotelinks, quotes, thread, _i, _len, _ref;
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -2014,16 +2016,14 @@
       _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
       for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
         quote = quotelinks[_i];
-        if ($.hasClass(quote, 'deadlink')) {
+        data = Get.postDataFromLink(quote);
+        if (data.threadID === '') {
           continue;
         }
-        path = quote.pathname.split('/');
-        qBoard = path[1];
-        qThread = path[3];
-        if (this.isClone && qBoard === this.board.ID && +qThread !== this.thread.ID) {
+        if (this.isClone) {
           quote.textContent = quote.textContent.replace(QuoteCT.text, '');
         }
-        if (qBoard === board.ID && +qThread !== thread.ID) {
+        if (data.board === board.ID && data.threadID !== thread.ID) {
           $.add(quote, $.tn(QuoteCT.text));
         }
       }

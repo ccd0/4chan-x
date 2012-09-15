@@ -636,7 +636,7 @@ class Post
         for post in [post].concat post.clones
           quotelinks.push.apply quotelinks, Array::slice.call post.nodes.backlinks
     for quotelink in quotelinks
-      if +quotelink.hash[2..] is @ID
+      if Get.postDataFromLink(quotelink).postID is @ID
         $.add quotelink, $.tn '\u00A0(Dead)'
     return
   addClone: (context) ->
@@ -1395,12 +1395,12 @@ Get =
     if link.host is 'boards.4chan.org'
       path     = link.pathname.split '/'
       board    = path[1]
-      threadID = path[3]
-      postID   = link.hash[2..]
+      threadID = +path[3]
+      postID   = +link.hash[2..]
     else # resurrected quote
       board    = link.dataset.board
-      threadID = ''
-      postID   = link.dataset.postid
+      threadID = +link.dataset.threadid or ''
+      postID   = +link.dataset.postid
     return {
       board:    board
       threadID: threadID
@@ -1462,7 +1462,7 @@ Get =
         # The post can be deleted by the time we check a quote.
         if url = Redirect.post board, postID
           $.cache url, ->
-            Get.parseArchivedPost @, board, postID, root, context
+            Get.archivedPost @, board, postID, root, context
         else
           $.addClass root, 'warning'
           root.textContent = "Post No.#{postID} was not found."
@@ -1528,8 +1528,8 @@ Get =
     threadID = data.thread_num
     o =
       # id
-      postID:   postID
-      threadID: threadID
+      postID:   "#{postID}"
+      threadID: "#{threadID}"
       board:    board
       # info
       name:     data.name_processed
@@ -1614,8 +1614,9 @@ Quotify =
               className:   'quotelink deadlink'
               textContent: "#{quote}\u00A0(Dead)"
               target:      '_blank'
-            a.setAttribute 'data-board',  board
-            a.setAttribute 'data-postid', ID
+            a.setAttribute 'data-board',    board
+            a.setAttribute 'data-threadid', post.thread.ID
+            a.setAttribute 'data-postid',   ID
           else
             # Don't (Dead) when quotifying in an archived post,
             # and we know the post still exists.
@@ -1717,7 +1718,7 @@ QuoteInline =
     post = g.posts["#{board}.#{postID}"]
     post.rmClone el.dataset.clone
 
-    inThreadID = $.x('ancestor::div[@class="thread"]', quotelink).id[1..]
+    inThreadID = +$.x('ancestor::div[@class="thread"]', quotelink).id[1..]
 
     # Decrease forward count and unhide.
     if Conf['Forward Hiding'] and
@@ -1896,7 +1897,8 @@ QuoteOP =
     # add (OP) to quotes quoting this context's OP.
     return unless -1 < quotes.indexOf op
     for quote in quotelinks
-      if "#{quote.pathname.split('/')[1]}.#{quote.hash[2..]}" is op
+      {board, postID} = Get.postDataFromLink quote
+      if "#{board}.#{postID}" is op
         $.add quote, $.tn QuoteOP.text
     return
 
@@ -1916,13 +1918,11 @@ QuoteCT =
 
     {board, thread} = if @isClone then @context else @
     for quote in quotelinks
-      continue if $.hasClass quote, 'deadlink'
-      path    = quote.pathname.split '/'
-      qBoard  = path[1]
-      qThread = path[3]
-      if @isClone and qBoard is @board.ID and +qThread isnt @thread.ID
+      data = Get.postDataFromLink quote
+      continue if data.threadID is '' # deadlink
+      if @isClone
         quote.textContent = quote.textContent.replace QuoteCT.text, ''
-      if qBoard is board.ID and +qThread isnt thread.ID
+      if data.board is board.ID and data.threadID isnt thread.ID
         $.add quote, $.tn QuoteCT.text
     return
 
