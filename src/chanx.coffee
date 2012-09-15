@@ -357,7 +357,7 @@ StrikethroughQuotes =
     for quote in post.quotes
       if (el = $.id quote.hash[1..]) and el.hidden
         $.addClass quote, 'filtered'
-        if Conf['Recursive Filtering']
+        if Conf['Recursive Filtering'] and post.ID isnt post.threadID
           show_stub = !!$.x 'preceding-sibling::div[contains(@class,"stub")]', el
           ReplyHiding.hide post.root, show_stub
     return
@@ -1570,7 +1570,7 @@ Get =
       dateUTC:  data.timestamp
       comment:  comment
       # file
-    if data.media.media_filename
+    if data.media?.media_filename
       o.file =
         name:      data.media.media_filename_processed
         timestamp: data.media.media_orig
@@ -1857,7 +1857,7 @@ Build =
           "<span class='postNum desktop'>" +
             "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
             "<a href='#{
-              if g.REPLY and g.THREAD_ID is threadID
+              if g.REPLY and +g.THREAD_ID is threadID
                 "javascript:quote(#{postID})"
               else
                 "/#{board}/res/#{threadID}#q#{postID}"

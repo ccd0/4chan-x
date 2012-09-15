@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        0.8beta
+// @version        0.9beta
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -259,6 +259,7 @@
         'Board Logo': ['in sidebar', 'The positioning of the board\'s logo and subtitle.', ['in sidebar', 'at top', 'hide']],
         'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
         'Expand Post Form Textarea': [true, 'Expands the post form text area when in use.'],
+        'Images Overlap Post Form': [true, 'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".'],
         'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
         'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins. Disabling the sidebar will cause this option to affect both sides of the page, essentially centering the page content with all options.', ['none', 'small', 'medium', 'large', 'fully centered']],
         'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'medium', 'large']],
@@ -2407,7 +2408,7 @@
             $.on(styleSetting, 'change', $.cb.value);
             $.on(styleSetting, 'change', Options.style);
           } else if (arr[2]) {
-            liHTML = "<label><span class=\"optionlabel\">" + optionname + "</span></label><span class=description>: " + description + "</span><select name=\"" + optionname + "\"><br>";
+            liHTML = "          <label><span class=\"optionlabel\">" + optionname + "</span></label><span class=description>: " + description + "</span><select name=\"" + optionname + "\"><br>";
             _ref3 = arr[2];
             for (optionvalue = _i = 0, _len = _ref3.length; _i < _len; optionvalue = ++_i) {
               selectoption = _ref3[optionvalue];
@@ -2441,30 +2442,48 @@
       ul = $.el('ul', {
         className: 'mascots'
       });
-      for (name in Mascots) {
-        mascot = Mascots[name];
-        description = name;
-        li = $.el('li', {
-          innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + mascot.image + ");'></div>",
-          className: 'mascot'
-        });
-        div = $('div', li);
-        if (enabledmascots[name] === true) {
-          $.addClass(div, 'enabled');
-        }
-        $.on(div, 'click', function() {
-          if (enabledmascots[this.id] === true) {
-            $.rmClass(this, 'enabled');
-            $.set(this.id, false);
-            return enabledmascots[this.id] = false;
-          } else {
-            $.addClass(this, 'enabled');
-            $.set(this.id, true);
-            return enabledmascots[this.id] = true;
+      for (name in userMascots) {
+        mascot = userMascots[name];
+        if (!mascot["Deleted"]) {
+          description = name;
+          li = $.el('li', {
+            className: 'mascot',
+            innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + mascot.image + ");'></div><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span>"
+          });
+          $.on($('a.edit', li), 'click', function() {
+            return editMascot.init(this.name);
+          });
+          $.on($('a.delete', li), 'click', function() {
+            var container;
+            container = this.parentElement;
+            if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
+              if (enabledmascots[this.name]) {
+                enabledmascots[this.name] = false;
+                $.set(this.name, false);
+              }
+              userMascots[this.name]["Deleted"] = true;
+              $.set("userMascots", userMascots);
+              return $.rm(container);
+            }
+          });
+          div = $('div', li);
+          if (enabledmascots[name] === true) {
+            $.addClass(div, 'enabled');
           }
-        });
-        $.add(ul, li);
-        $.add(parentdiv, ul);
+          $.on(div, 'click', function() {
+            if (enabledmascots[this.id] === true) {
+              $.rmClass(this, 'enabled');
+              $.set(this.id, false);
+              return enabledmascots[this.id] = false;
+            } else {
+              $.addClass(this, 'enabled');
+              $.set(this.id, true);
+              return enabledmascots[this.id] = true;
+            }
+          });
+          $.add(ul, li);
+          $.add(parentdiv, ul);
+        }
       }
       $.add($('#mascot_tab + div', dialog), parentdiv);
       batchmascots = $.el('div', {
@@ -2491,7 +2510,7 @@
         _results = [];
         for (mascotname in enabledmascots) {
           mascot = enabledmascots[mascotname];
-          if (enabledmascots[mascotname] === false) {
+          if ($.get(mascotname, false) === false && !userMascots[mascotname]["Deleted"]) {
             $.addClass($('#' + mascotname, this.parentElement.parentElement), 'enabled');
             $.set(mascotname, true);
             _results.push(enabledmascots[mascotname] = true);
@@ -3170,7 +3189,7 @@
         quote = _ref[_i];
         if ((el = $.id(quote.hash.slice(1))) && el.hidden) {
           $.addClass(quote, 'filtered');
-          if (Conf['Recursive Filtering']) {
+          if (Conf['Recursive Filtering'] && post.ID !== post.threadID) {
             show_stub = !!$.x('preceding-sibling::div[contains(@class,"stub")]', el);
             ReplyHiding.hide(post.root, show_stub);
           }
@@ -4760,7 +4779,7 @@
       }
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, comment, data, o;
+      var bq, comment, data, o, _ref;
       data = JSON.parse(req.response);
       if (data.error) {
         $.addClass(root, 'warning');
@@ -4822,7 +4841,7 @@
         dateUTC: data.timestamp,
         comment: comment
       };
-      if (data.media.media_filename) {
+      if ((_ref = data.media) != null ? _ref.media_filename : void 0) {
         o.file = {
           name: data.media.media_filename_processed,
           timestamp: data.media.media_orig,
@@ -5026,7 +5045,7 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.REPLY && +g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -7928,6 +7947,7 @@ h1,\
 #options .mascot {\
   display: inline;\
   padding: 0;\
+  position: relative;\
 }\
 #options .mascot div {\
   border: 2px solid rgba(0,0,0,0);\
@@ -7976,6 +7996,13 @@ h1,\
   position: absolute;\
   left: 10px;\
   bottom: 0;\
+}\
+.mascotoptions {\
+  position: absolute;\
+  left: 27%;\
+  right: 27%;\
+  bottom: 10px;\
+  border-radius: 10px;\
 }\
 #cancel,\
 #mascots_batch {\
@@ -8287,8 +8314,9 @@ html .subMenu {\
   z-index: 101 !important;\
 }\
 .fileThumb {\
-  z-index: 100 !important;\
+  z-index: ' + (Conf["Images Overlap Post Form"] ? "100" : "1") + ' !important;\
 }\
+\
 div.navLinks > a:first-of-type::after,\
 .deleteform {\
   z-index: 99 !important;\
@@ -9331,6 +9359,7 @@ div.reply {\
 #watcher,\
 #watcher:hover,\
 .deleteform,\
+.mascotoptions,\
 div.subMenu,\
 #menu {\
   background: ' + theme["Dialog Background"] + ';\
@@ -9964,7 +9993,7 @@ form .postContainer blockquote {\
           case 'large':
             pagemargin = '350px';
         }
-        if (editMode && pagemargin < 250) {
+        if (editMode) {
           pagemargin = '300px';
         }
         if (Conf['Sidebar'] !== 'hide') {
@@ -10447,13 +10476,17 @@ img[src^="//static.4chan.org/support/"] {\
       userMascots = $.get("userMascots", Mascots);
       for (name in userMascots) {
         mascot = userMascots[name];
-        enabledmascots[name] = $.get(name, function() {
-          if (mascot.category === 'SFW') {
-            return true;
-          } else {
-            return false;
-          }
-        });
+        if (!userMascots[name]["Deleted"]) {
+          enabledmascots[name] = $.get(name, function() {
+            if (mascot.category === 'SFW') {
+              return true;
+            } else {
+              return false;
+            }
+          });
+        } else {
+          enabledmascots[name] = $.get(name, false);
+        }
       }
       path = location.pathname;
       pathname = path.slice(1).split('/');
@@ -10826,7 +10859,7 @@ img[src^="//static.4chan.org/support/"] {\
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '0.8beta',
+    version: '0.9beta',
     callbacks: []
   };
 

@@ -211,7 +211,8 @@ Options =
           $.on styleSetting, 'change', $.cb.value
           $.on styleSetting, 'change', Options.style
         else if arr[2]
-          liHTML = "<label><span class=\"optionlabel\">#{optionname}</span></label><span class=description>: #{description}</span><select name=\"#{optionname}\"><br>"
+          liHTML = "
+          <label><span class=\"optionlabel\">#{optionname}</span></label><span class=description>: #{description}</span><select name=\"#{optionname}\"><br>"
           for selectoption, optionvalue in arr[2]
             liHTML = liHTML + "<option value=\"#{selectoption}\">#{selectoption}</option>"
           liHTML = liHTML + "</select>"
@@ -239,25 +240,40 @@ Options =
       className: "suboptions"
     ul = $.el 'ul',
       className:   'mascots'
-    for name, mascot of Mascots
-      description = name
-      li = $.el 'li',
-        innerHTML: "<div id='#{name}' class='#{mascot.category}' style='background-image: url(#{mascot.image});'></div>"
-        className: 'mascot'
-      div = $('div', li)
-      if enabledmascots[name] == true
-        $.addClass div, 'enabled'
-      $.on div, 'click', ->
-        if enabledmascots[@.id] == true
-          $.rmClass @, 'enabled'
-          $.set @.id, false
-          enabledmascots[@.id] = false
-        else
-          $.addClass @, 'enabled'
-          $.set @.id, true
-          enabledmascots[@.id] = true
-      $.add ul, li
-      $.add parentdiv, ul
+    for name, mascot of userMascots
+      unless mascot["Deleted"]
+        description = name
+        li = $.el 'li',
+          className: 'mascot'
+          innerHTML: "
+<div id='#{name}' class='#{mascot.category}' style='background-image: url(#{mascot.image});'></div>
+<span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a></span>
+"
+        $.on $('a.edit', li), 'click', ->
+          editMascot.init @name
+        $.on $('a.delete', li), 'click', ->
+          container = @.parentElement
+          if confirm "Are you sure you want to delete \"#{@name}\"?"
+            if enabledmascots[@name]
+              enabledmascots[@name] = false
+              $.set @name, false
+            userMascots[@name]["Deleted"] = true
+            $.set "userMascots", userMascots
+            $.rm container
+        div = $('div', li)
+        if enabledmascots[name] == true
+          $.addClass div, 'enabled'
+        $.on div, 'click', ->
+          if enabledmascots[@.id] == true
+            $.rmClass @, 'enabled'
+            $.set @.id, false
+            enabledmascots[@.id] = false
+          else
+            $.addClass @, 'enabled'
+            $.set @.id, true
+            enabledmascots[@.id] = true
+        $.add ul, li
+        $.add parentdiv, ul
     $.add $('#mascot_tab + div', dialog), parentdiv
     batchmascots = $.el 'div',
       id:        "mascots_batch"
@@ -270,7 +286,7 @@ Options =
           enabledmascots[mascotname] = false
     $.on $('#selectAll', batchmascots), 'click', ->
       for mascotname, mascot of enabledmascots
-        if enabledmascots[mascotname] == false
+        if $.get(mascotname, false) == false and not userMascots[mascotname]["Deleted"]
           $.addClass $('#' + mascotname, @parentElement.parentElement), 'enabled'
           $.set mascotname, true
           enabledmascots[mascotname] = true

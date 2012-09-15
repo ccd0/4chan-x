@@ -394,6 +394,7 @@ h1,
 #options .mascot {
   display: inline;
   padding: 0;
+  position: relative;
 }
 #options .mascot div {
   border: 2px solid rgba(0,0,0,0);
@@ -442,6 +443,13 @@ h1,
   position: absolute;
   left: 10px;
   bottom: 0;
+}
+.mascotoptions {
+  position: absolute;
+  left: 27%;
+  right: 27%;
+  bottom: 10px;
+  border-radius: 10px;
 }
 #cancel,
 #mascots_batch {
@@ -756,8 +764,9 @@ html .subMenu {
   z-index: 101 !important;
 }
 .fileThumb {
-  z-index: 100 !important;
+  z-index: ' + (if Conf["Images Overlap Post Form"] then "100" else "1") + ' !important;
 }
+
 div.navLinks > a:first-of-type::after,
 .deleteform {
   z-index: 99 !important;
@@ -1800,6 +1809,7 @@ div.reply {
 #watcher,
 #watcher:hover,
 .deleteform,
+.mascotoptions,
 div.subMenu,
 #menu {
   background: ' + theme["Dialog Background"] + ';
@@ -2422,7 +2432,7 @@ form .postContainer blockquote {
         when 'large'
           pagemargin = '350px'
 
-      if editMode and pagemargin < 250
+      if editMode
         pagemargin = '300px'
 
       if Conf['Sidebar'] != 'hide'
