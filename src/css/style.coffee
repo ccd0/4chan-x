@@ -2518,12 +2518,6 @@ h2,
 .globalMessage {
   border-radius: 3px;
 }
-.pages b,
-.pages input,
-a,
-.new {
-  border-radius: 9px;
-}
 #qr::before {
   border-radius: 6px 6px 0 0;
 }
