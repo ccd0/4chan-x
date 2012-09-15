@@ -757,16 +757,46 @@
     }
 
     Post.prototype.kill = function(img) {
+      var ID, num, post, quote, quotelink, quotelinks, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
       if (this.file && !this.file.isDead) {
         this.file.isDead = true;
-        $.log('kill image', this.ID);
       }
       if (img) {
         return;
       }
-      $.log('kill post', this.ID);
       this.isDead = true;
-      return $.addClass(this.nodes.root, 'dead');
+      $.addClass(this.nodes.root, 'dead');
+      quotelinks = [];
+      num = "" + this.board + "." + this;
+      _ref = g.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        if (-1 < post.quotes.indexOf(num)) {
+          _ref1 = [post].concat(post.clones);
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            post = _ref1[_i];
+            quotelinks.push.apply(quotelinks, post.nodes.quotelinks);
+          }
+        }
+      }
+      if (Conf['Quote Backlinks']) {
+        _ref2 = this.quotes;
+        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+          quote = _ref2[_j];
+          post = g.posts[quote];
+          _ref3 = [post].concat(post.clones);
+          for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+            post = _ref3[_k];
+            quotelinks.push.apply(quotelinks, Array.prototype.slice.call(post.nodes.backlinks));
+          }
+        }
+      }
+      for (_l = 0, _len3 = quotelinks.length; _l < _len3; _l++) {
+        quotelink = quotelinks[_l];
+        if (+quotelink.hash.slice(2) === this.ID) {
+          $.add(quotelink, $.tn('\u00A0(Dead)'));
+        }
+      }
     };
 
     Post.prototype.addClone = function(context) {
