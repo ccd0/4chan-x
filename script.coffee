@@ -948,6 +948,33 @@ a[href="javascript:;"] {
   overflow: visible !important;
 }
 
+/* fixed, z-index */
+#qp, #ihover
+#updater, #stats,
+#boardNavDesktop.reply,
+#qr, #watcher {
+  position: fixed;
+}
+#qp, #ihover {
+  z-index: 100;
+}
+#updater, #stats {
+  z-index: 90;
+}
+#boardNavDesktop.reply:hover {
+  z-index: 80;
+}
+#qr {
+  z-index: 50;
+}
+#watcher {
+  z-index: 30;
+}
+#boardNavDesktop.reply {
+  z-index: 10;
+}
+
+
 /* header */
 body.fourchan_x {
   margin-top: 2.5em;
@@ -955,7 +982,6 @@ body.fourchan_x {
 #boardNavDesktop.reply {
   border-width: 0 0 1px;
   padding: 4px;
-  position: fixed;
   top: 0;
   right: 0;
   left: 0;
@@ -963,7 +989,6 @@ body.fourchan_x {
   -o-transition: opacity .1s ease-in-out;
   -moz-transition: opacity .1s ease-in-out;
   -webkit-transition: opacity .1s ease-in-out;
-  z-index: 1;
 }
 #boardNavDesktop.reply:not(:hover) {
   opacity: .4;
@@ -981,7 +1006,6 @@ body.fourchan_x {
 
 /* thread updater */
 #updater {
-  position: fixed;
   text-align: right;
 }
 #updater:not(:hover) {
@@ -1028,7 +1052,6 @@ body.fourchan_x {
   padding: 1px 2px !important;
 }
 #qp {
-  position: fixed;
   padding: 2px 2px 5px;
 }
 #qp .post {
@@ -1054,7 +1077,6 @@ body.fourchan_x {
   -moz-box-sizing: border-box;
   max-height: 100%;
   max-width: 75%;
-  position: fixed;
   padding-bottom: 16px;
 }
 """
