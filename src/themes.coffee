@@ -698,522 +698,613 @@ Mascots =
   'Akiyama_Mio':
     category:   'SFW'
     image:      'http://i.imgur.com/MdE9K.png'
-    big:        true
   'Akiyama_Mio_2':
     category:   'SFW'
     image:      'http://i.imgur.com/pBuG2.png'
-    big:        true
   'Akiyama_Mio_3':
     category:   'SFW'
     image:      'http://i.imgur.com/s3ffU.png'
+    center:     true
   'Akiyama_Mio_sitting':
     category:   'SFW'
     image:      'http://i.imgur.com/0x4Rr.png'
+    center:     true
   'Anime_Girl_in_Bondage':
     category:   'NSFW'
     image:      'http://i.imgur.com/B3h3c.png'
+    center:     true
   'Anime_Girl_in_Bondage_2':
     category:   'NSFW'
     image:      'http://i.imgur.com/1TUjP.png'
-    big:        true
   'Applejack':
     category:   'MLP'
     image:      'http://i.imgur.com/1ufSL.png'
+    center:     true
   'Asuka_Langley_Soryu':
     category:   'SFW'
     image:      'http://i.imgur.com/Wj7s7.png'
+    center:     true
   'Asuka_Langley_Soryu_2':
     category:   'SFW'
     image:      'http://i.imgur.com/FMbEx.png'
+    center:     true
   'Asuka_Langley_Soryu_3':
     category:   'SFW'
     image:      'http://i.imgur.com/qunYm.png'
+    center:     true
   'Asuka_Langley_Soryu_4':
     category:   'SFW'
     image:      'http://i.imgur.com/MvYCD.png'
+    center:     true
   'Asuka_Langley_Soryu_5':
     category:   'NSFW'
     image:      'http://i.imgur.com/1rDfl.png'
+    center:     true
   'Ayanami_Rei':
     category:   'SFW'
     image:      'http://i.imgur.com/Ye6OS.png'
+    center:     true
   'Ayase_Yue':
     category:   'NSFW'
     image:      'http://i.imgur.com/i2MT8.png'
-    big:        true
   'Ayase':
     category:   'SFW'
     image:      'http://i.imgur.com/4Ehza.png'
+    center:     true
   'Ayase_2':
     category:   'SFW'
     image:      'http://i.imgur.com/48nYb.png'
+    center:     true
   'BLACK_ROCK_SHOOTER':
     category:   'SFW'
     image:      'http://i.imgur.com/VidKo.png'
+    center:     true
   'Blue_Rose':
     category:   'SFW'
     image:      'http://i.imgur.com/q5RwP.png'
+    center:     true
   'Brioche_d_Arquien':
     category:   'SFW'
     image:      'http://i.imgur.com/rxTsB.png'
+    center:     true
   'CC':
     category:   'SFW'
     image:      'http://i.imgur.com/Ir1v3.png'
+    center:     true
   'CC2':
     category:   'NSFW'
     image:      'http://i.imgur.com/AU1H8.png'
+    center:     true
   'Chie':
     category:   'SFW'
     image:      'http://i.imgur.com/E3ge5.png'
+    center:     true
   'Cirno':
     category:   'NSFW'
     image:      'http://i.imgur.com/q735W.png'
+    center:     true
   'Cirno_2':
     category:   'SFW'
     image:      'http://i.imgur.com/dLrCn.png'
+    center:     true
   'Dawn_Hikari':
     category:   'SFW'
     image:      'http://i.imgur.com/lxLdH.png'
+    center:     true
   'Doppleganger':
     category:   'SFW'
     image:      'http://i.imgur.com/w3GwS.png'
-    bottom:     '0'
-    big:        true
+    position:   'bottom'
   'Dragonkid':
     category:   'SFW'
     image:      'http://i.imgur.com/tEoVT.png'
+    center:     true
   'Dragonkid_2':
     category:   'SFW'
     image:      'http://i.imgur.com/3tIpW.png'
+    center:     true
   'Eclair':
     category:   'SFW'
     image:      'http://i.imgur.com/DEh76.png'
+    center:     true
   'Erio_Touwa':
     category:   'NSFW'
     image:      'http://i.imgur.com/zhPlM.png'
-    big:        true
   'Evangeline_AK_McDowell':
     category:   'SFW'
     image:      'http://i.imgur.com/cRhjg.png'
+    center:     true
   'Fluttershy':
     category:   'MLP'
     image:      'http://i.imgur.com/x88ZT.png'
+    center:     true
   'Fluttershy_2':
     category:   'MLP'
     image:      'http://i.imgur.com/hokhQ.png'
+    center:     true
   'Fluttershy_Cutiemark':
     category:   'MLP'
     image:      'http://i.imgur.com/vBqiB.png'
+    center:     true
   'Fujiwara_no_Mokou':
     category:   'SFW'
     image:      'http://i.imgur.com/NaKmF.png'
-    big:        true
   'Furudo_Erika':
     category:   'SFW'
     image:      'http://i.imgur.com/zLsPY.png'
+    center:     true
   'Gally':
     category:   'SFW'
     image:      'http://i.imgur.com/PJSjp.png'
-    bottom:     '0'
+    center:     true
+    position:   'bottom'
   'Gasai_Yuno':
     category:   'SFW'
     image:      'http://i.imgur.com/iG1F2.png'
-    big:        true
   'Gasai_Yuno_2':
     category:   'NSFW'
     image:      'http://i.imgur.com/XI0DZ.png'
+    center:     true
   'George_Costanza':
     category:   'SFW'
     image:      'http://i.imgur.com/Nnsrf.png'
-    big:        true
   'Golden_Darkness':
     category:   'NSFW'
     image:      'http://i.imgur.com/lYGo4.png'
-    bottom:     '0'
-    big:        true
+    position:   'bottom'
   'Hanako':
     category:   'SFW'
     image:      'http://i.imgur.com/G3iN7.png'
+    center:     true
   'Hasekura_Youko':
     category:   'SFW'
     image:      'http://i.imgur.com/qTQqY.png'
+    center:     true
   'Hatsune_Miku':
     category:   'NSFW'
     image:      'http://i.imgur.com/lKQHW.png'
+    center:     true
   'Hatsune_Miku_2':
     category:   'NSFW'
     image:      'http://i.imgur.com/ULksz.png'
+    center:     true
   'Hatsune_Miku_3':
     category:   'SFW'
     image:      'http://i.imgur.com/H1pgZ.png'
-    bottom:     '0'
+    center:     true
+    position:   'bottom'
   'Hatsune_Miku_4':
     category:   'SFW'
     image:      'http://i.imgur.com/vE3FJ.png'
+    center:     true
   'Hatsune_Miku_5':
     category:   'SFW'
     image:      'http://i.imgur.com/yCB6B.png'
-    big:        true
+    center:     true
   'Hatsune_Miku_6':
     category:   'SFW'
     image:      'http://i.imgur.com/DKGQb.png'
+    center:     true
   'Hatsune_Miku_7':
     category:   'NSFW'
     image:      'http://i.imgur.com/vc7rU.png'
+    center:     true
   'Hirasawa_Yui':
     category:   'SFW'
     image:      'http://i.imgur.com/sL1Uo.png'
+    center:     true
   'Homura_Akemi':
     category:   'SFW'
     image:      'http://i.imgur.com/b9KmB.png'
-    big:        true
   'Horo':
     category:   'NSFW'
     image:      'http://i.imgur.com/6f8wd.png'
-    bottom:     '0'
+    position:   'bottom'
+    center:     true
   'Horo_2':
     category:   'NSFW'
     image:      'http://i.imgur.com/KJLui.png'
+    center:     true
   'Horo_3':
     category:   'Silhouette'
     image:      'http://i.imgur.com/HMpug.png'
+    center:     true
   'Horo_4':
     category:   'Silhouette'
     image:      'http://i.imgur.com/PKfl4.png'
+    center:     true
   'Horo_5':
     category:   'Silhouette'
     image:      'http://i.imgur.com/BjV3U.png'
+    center:     true
   'Horo_6':
     category:   'Silhouette'
     image:      'http://i.imgur.com/8fcrD.png'
+    center:     true
   'Ika_Musume':
     category:   'SFW'
     image:      'http://i.imgur.com/rKT7L.png'
+    center:     true
   'Ika_Musume_2':
     category:   'SFW'
     image:      'http://i.imgur.com/uUhGG.png'
+    center:     true
   'Ika_Musume_3':
     category:   'NSFW'
     image:      'http://i.imgur.com/PeckP.png'
+    center:     true
   'Inori':
     category:   'SFW'
     image:      'http://i.imgur.com/u4zuy.png'
-    big:        true
   'Iwakura_Lain':
     category:   'SFW'
     image:      'http://i.imgur.com/AfjG9.png'
+    center:     true
   'Iwakura_Lain_2':
     category:   'SFW'
     image:      'http://i.imgur.com/hIBLa.png'
+    center:     true
   'KOn_Girls':
     category:   'SFW'
     image:      'http://i.imgur.com/Sc1Pa.png'
+    center:     true
   'Kagamine_Rin':
     category:   'SFW'
     image:      'http://i.imgur.com/fXXd2.png'
+    center:     true
   'Kagari_Izuriha':
     category:   'SFW'
     image:      'http://i.imgur.com/coMey.png'
-    big:        true
   'Kaname_Madoka':
     category:   'SFW'
     image:      'http://i.imgur.com/4PHsl.png'
+    center:     true
   'Karina':
     category:   'SFW'
     image:      'http://i.imgur.com/5oPTS.png'
+    center:     true
   'Kigurumi_Harokitei':
     category:   'SFW'
     image:      'http://i.imgur.com/4JV1K.png'
+    center:     true
   'Kinomoto_Sakura':
     category:   'SFW'
     image:      'http://i.imgur.com/Ve0hl.png'
+    center:     true
   'Kinomoto_Sakura_2':
     category:   'NSFW'
     image:      'http://i.imgur.com/Rdk9s.png'
+    center:     true
   'Kirino_Kosaka_and_Ruri_Goko':
     category:   'NSFW'
     image:      'http://i.imgur.com/MGaLr.png'
+    center:     true
   'Koiwai_Yotsuba':
     category:   'SFW'
     image:      'http://i.imgur.com/1MyDM.png'
+    center:     true
   'Koko':
     category:   'SFW'
     image:      'http://i.imgur.com/QMDHh.png'
+    center:     true
   'Kotobuki_Tsumugi':
     category:   'SFW'
     image:      'http://i.imgur.com/fzhbH.png'
+    center:     true
   'Kurisu_Makise':
     category:   'SFW'
     image:      'http://i.imgur.com/HKnLt.png'
-    big:        true
   'Kyouko_Sakura':
     category:   'SFW'
     image:      'http://i.imgur.com/78HS9.png'
+    center:     true
   'Kyubee':
     category:   'SFW'
     image:      'http://i.imgur.com/PW5gt.png'
-    big:        true
   'Kyubee_2':
     category:   'SFW'
     image:      'http://i.imgur.com/fuTo9.png'
+    center:     true
   'Leonmitchelli':
     category:   'SFW'
     image:      'http://i.imgur.com/KkOsZ.png'
+    center:     true
   'Li_Syaoran':
     category:   'SFW'
     image:      'http://i.imgur.com/GySuy.png'
-    big:        true
   'Link':
     category:   'SFW'
     image:      'http://i.imgur.com/OyTWU.png'
+    center:     true
   'Lizardgirl':
     category:   'SFW'
     image:      'http://i.imgur.com/R8zzn.png'
-    bottom:     '0'
-    big:        true
+    position:   'bottom'
   'Luka':
     category:   'SFW'
     image:      'http://i.imgur.com/WUIMw.png'
-    bottom:     '0'
-    big:        true
+    position:   'bottom'
   'Madotsuki':
     category:   'SFW'
     image:      'http://i.imgur.com/J1i26.png'
-    bottom:     '0'
-    big:        true
+    position:   'bottom'
   'Makoto':
     category:   'SFW'
     image:      'http://i.imgur.com/H2Nmv.png'
+    center:     true
   'Mantis':
     category:   'SFW'
     image:      'http://i.imgur.com/kQs3e.png'
-    big:        true
   'Megurine_Luka':
     category:   'SFW'
     image:      'http://i.imgur.com/BxybK.png'
+    center:     true
   'Mei_Sunohara':
     category:   'SFW'
     image:      'http://i.imgur.com/zZ5pE.png'
+    center:     true
   'Millefiori':
     category:   'SFW'
     image:      'http://i.imgur.com/Ygq8D.png'
+    center:     true
   'Millefiori_2':
     category:   'SFW'
     image:      'http://i.imgur.com/00gF5.png'
+    center:     true
   'Millefiori_3':
     category:   'SFW'
     image:      'http://i.imgur.com/bl7RT.png'
+    center:     true
   'Misaki_Mei':
     category:   'SFW'
     image:      'http://i.imgur.com/zVKmv.png'
+    center:     true
   'Mizunashi_Akari':
     category:   'SFW'
     image:      'http://i.imgur.com/LF8wU.png'
+    center:     true
   'Motoko':
     category:   'SFW'
     image:      'http://i.imgur.com/FZD2l.png'
+    center:     true
   'Nagato_Yuki':
     category:   'SFW'
     image:      'http://i.imgur.com/ucnzg.png'
+    center:     true
   'Nagato_Yuki_2':
     category:   'SFW'
     image:      'http://i.imgur.com/J2eZi.png'
+    center:     true
   'Nagato_Yuki_3':
     category:   'SFW'
     image:      'http://i.imgur.com/sUSvI.png'
+    center:     true
   'Nagato_Yuki_4':
     category:   'SFW'
     image:      'http://i.imgur.com/atnqf.png'
+    center:     true
   'Nagato_Yuki_5':
     category:   'NSFW'
     image:      'http://i.imgur.com/2BUww.png'
-    bottom:     '0'
+    position:   'bottom'
+    center:     true
   'Nagato_Yuki_6':
     category:   'Silhouette'
     image:      'http://i.imgur.com/uR35P.png'
+    center:     true
   'Nagato_Yuki_7':
     category:   'Silhouette'
     image:      'http://i.imgur.com/aGFCl.png'
+    center:     true
   'Nagato_Yuki_8':
     category:   'Silhouette'
     image:      'http://i.imgur.com/L9ZAT.png'
+    center:     true
   'Nagato_Yuki_9':
     category:   'Silhouette'
     image:      'http://i.imgur.com/MwoI9.png'
+    center:     true
   'Nakano_Azusa':
     category:   'SFW'
     image:      'http://i.imgur.com/6c3p3.png'
-    big:        true
   'Nichijou':
     category:   'SFW'
     image:      'http://i.imgur.com/w5oaQ.png'
-    big:        true
   'Noir_VinoCacao':
     category:   'SFW'
     image:      'http://i.imgur.com/VNbnm.png'
+    center:     true
   'Pinkie_Pie':
     category:   'MLP'
     image:      'http://i.imgur.com/rY3w4.png'
+    center:     true
   'Pinkie_Pie_2':
     category:   'MLP'
     image:      'http://i.imgur.com/zy6rO.png'
+    center:     true
   'Oshino_Shinobu':
     category:   'SFW'
     image:      'http://i.imgur.com/UMq6v.png'
-    big:        true
   'Oshino_Shinobu_2':
     category:   'SFW'
     image:      'http://i.imgur.com/ObCSS.png'
-    bottom:     '0'
-    big:        true
+    position:   'bottom'
   'Patchouli_Knowledge':
     category:   'SFW'
     image:      'http://i.imgur.com/QoKJb.png'
+    center:     true
   'Patchouli_Knowledge_2':
     category:   'SFW'
     image:      'http://i.imgur.com/dK9Pn.png'
+    center:     true
   'Pink_Doggy':
     category:   'SFW'
     image:      'http://i.imgur.com/zv5BS.png'
+    center:     true
   'Pink_Hair':
     category:   'SFW'
     image:      'http://i.imgur.com/1r1Vx.png'
+    center:     true
   'Pixie':
     category:   'NSFW'
     image:      'http://i.imgur.com/KPGKl.png'
+    center:     true
   'Railgun':
     category:   'NSFW'
     image:      'http://i.imgur.com/AEjIx.png'
+    center:     true
   'Railgun_2':
     category:   'SFW'
     image:      'http://i.imgur.com/KD6s7.png'
+    center:     true
   'Railgun_3':
     category:   'SFW'
     image:      'http://i.imgur.com/7wJEW.png'
-    big:        true
   'Railgun_4':
     category:   'SFW'
     image:      'http://i.imgur.com/xM4rx.png'
+    center:     true
   'Rainbow_Dash':
     category:   'MLP'
     image:      'http://i.imgur.com/Zf3eQ.png'
+    center:     true
   'Rarity':
     category:   'MLP'
     image:      'http://i.imgur.com/Mbhf7.png'
+    center:     true
   'Revi':
     category:   'SFW'
     image:      'http://i.imgur.com/Cn4nK.png'
-    bottom:     '0'
+    position:   'bottom'
+    center:     true
   'Ruri_Gokou':
     category:   'SFW'
     image:      'http://i.imgur.com/Ht6dr.png'
-    bottom:     '0'
+    position:   'bottom'
+    center:     true
   'Ryuu':
     category:   'SFW'
     image:      'http://i.imgur.com/LFUs2.png'
-    bottom:     '0'
-    big:        true
+    position:   'bottom'
   'Saber':
     category:   'NSFW'
     image:      'http://i.imgur.com/6AIbD.png'
-    bottom:     '0'
+    position:   'bottom'
+    center:     true
   'Sakurazaki_Setsuna':
     category:   'NSFW'
     image:      'http://i.imgur.com/QLChr.png'
-    big:        true
   'Samus_Aran':
     category:   'SFW'
     image:      'http://i.imgur.com/34viJ.png'
+    center:     true
   'Seraphim':
     category:   'SFW'
     image:      'http://i.imgur.com/PA7pJ.png'
+    center:     true
   'Shana':
     category:   'SFW'
     image:      'http://i.imgur.com/JNS1z.png'
+    center:     true
   'Shana_2':
     category:   'SFW'
     image:      'http://i.imgur.com/K1mLx.png'
+    center:     true
   'Shiki':
     category:   'SFW'
     image:      'http://i.imgur.com/FKDcd.png'
-    big:        true
   'Shinji_and_Girls':
     category:   'SFW'
     image:      'http://i.imgur.com/k5Dsb.png'
+    center:     true
   'Shinonome_Hakase':
     category:   'SFW'
     image:      'http://i.imgur.com/TBHI6.png'
+    center:     true
   'Shirakiin_Ririchiyo':
     category:   'SFW'
     image:      'http://i.imgur.com/cXsO6.png'
-    bottom:     '0'
+    position:   'bottom'
+    center:     true
   'Shirohibe':
     category:   'SFW'
     image:      'http://i.imgur.com/mfNR3.png'
-    bottom:     '0'
-    big:        true
+    position:   'bottom'
   'Suruga_Kanbaru':
     category:   'SFW'
     image:      'http://i.imgur.com/rgcAA.png'
+    center:     true
   'Suzumiya_Haruhi':
     category:   'SFW'
     image:      'http://i.imgur.com/iVl5d.png'
+    center:     true
   'Suzumiya_Haruhi_2':
     category:   'SFW'
     image:      'http://i.imgur.com/rW9Q6.png'
+    center:     true
   'Tardis':
     category:   'SFW'
     image:      'http://goput.it/vig.png'
+    center:     true
   'Three_Wet_Girls':
     category:   'NSFW'
     image:      'http://i.imgur.com/AbU8b.png'
+    center:     true
   'Tifa':
     category:   'NSFW'
     image:      'http://i.imgur.com/SEKOZ.png'
+    center:     true
   'Tomozo_Kaoru':
     category:   'SFW'
     image:      'http://i.imgur.com/awpTb.png'
+    center:     true
   'Twilight_Sparkle':
     category:   'MLP'
     image:      'http://i.imgur.com/r5q9h.png'
+    center:     true
   'Udine':
     category:   'SFW'
     image:      'http://i.imgur.com/2QkXW.png'
-    bottom:     '0'
-    big:        true
+    position:   'bottom'
   'Wanwan':
     category:   'NSFW'
     image:      'http://i.imgur.com/CcyTm.png'
-    bottom:     '0'
+    position:   'bottom'
+    center:     true
   'White_Curious':
     category:   'SFW'
     image:      'http://i.imgur.com/2FQfj.png'
+    center:     true
   'Yin':
     category:   'SFW'
     image:      'http://i.imgur.com/haBSN.png'
-    big:        true
   'Yin_2':
     category:   'SFW'
     image:      'http://i.imgur.com/3zj9M.png'
+    center:     true
   'Yuzuki_Yukari':
     category:   'SFW'
     image:      'http://i.imgur.com/c8Lal.png'
+    center:     true
   'Yoko_Littner':
     category:   'SFW'
     image:      'http://i.imgur.com/3goQm.png'
-    bottom:     '0'
-    big:        true
+    position:   'bottom'
   'Yoko_Littner_2':
     category:   'SFW'
     image:      'http://i.imgur.com/Pj9i5.png'
-    bottom:     '0'
+    position:   'bottom'
+    center:     true
   'Yoko_Littner_3':
     category:   'SFW'
     image:      'http://i.imgur.com/0S2WK.png'
-    bottom:     '0'
+    position:   'bottom'
+    center:     true
   'Yukkikaze':
     category:   'SFW'
     image:      'http://i.imgur.com/EkUXJ.png'
+    center:     true
   'Yukkihaze_2':
     category:   'SFW'
     image:      'http://i.imgur.com/oIKZb.png'
+    center:     true
