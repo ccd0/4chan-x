@@ -202,8 +202,11 @@ Config =
       'Captcha Opacity':           ['1.00',            'Transparency of the 4chan Captcha', [
         '1.00', '.75', '.50', '.25'
       ]]
-      'Emoji Position':            ['left',            'Position of emoji icons, like sega and neko.', [
-        'left', 'right', 'hide emoji'
+      'Emoji':                     ['enabled',         'Enable emoji', [
+        'enabled', 'disable ponies', 'disable'
+      ]]
+      'Emoji Position':            ['before',          'Position of emoji icons, like sega and neko.', [
+        'before', 'after'
       ]]
       'Filtered Backlinks':        [true,              'Mark backlinks to filtered posts.']
       'Font':                      ['Calibri',         'The font used by all elements of 4chan.', 'text']

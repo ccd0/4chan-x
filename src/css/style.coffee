@@ -2852,10 +2852,16 @@ img[src^="//static.4chan.org/support/"] {
   display: none;
 }
 '
-      switch Conf['Emoji Position']
-        when 'left'
-          css += Style.emoji('before', 'left')
-        when 'right'
-          css += Style.emoji('after', 'right')
+      unless Conf['Emoji'] == 'disable'
+        if Conf['Emoji Position'] == 'hide'
+          $.set 'Emoji', 'disable'
+          Conf['Emoji'] = 'disable'
+        if Conf['Emoji Position'] == 'left' or Conf['Emoji Position'] == 'hide'
+          Conf['Emoji Position'] == 'before'
+          $.set 'Emoji Position', 'before'
+        if Conf['Emoji Position'] == 'right'
+          Conf['Emoji Position'] == 'after'
+          $.set 'Emoji Position', 'after'
+        css += Style.emoji Conf['Emoji Position']
 
     return css
