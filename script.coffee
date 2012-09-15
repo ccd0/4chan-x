@@ -949,7 +949,7 @@ a[href="javascript:;"] {
 }
 
 /* fixed, z-index */
-#qp, #ihover
+#qp, #ihover,
 #updater, #stats,
 #boardNavDesktop.reply,
 #qr, #watcher {
