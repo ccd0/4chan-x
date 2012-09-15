@@ -17,6 +17,12 @@ Options =
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: ->
+    if editMode
+      if confirm "Opening the options dialog will close and discard any theme changes made with the theme editor."
+        ThemeTools.close()
+        editMode = false
+      else
+        return
     dialog = $.el 'div'
       id: 'options'
       className: 'reply dialog'
@@ -335,7 +341,7 @@ Options =
   <h1 style='color: #{theme['Text']}'>Selected</h1>
 </div>"
         $.on $('a.edit', div), 'click', ->
-          ThemeOptions.init @.name
+          ThemeTools.init @.name
           Options.close()
         $.on $('a.export', div), 'click', ->
           exportTheme = userThemes[@.name]
@@ -369,7 +375,7 @@ Options =
       @nextSibling.click()
     $.on $("#newtheme", div), 'click', ->
       newTheme = true
-      ThemeOptions.init "untitled"
+      ThemeTools.init "untitled"
       Options.close()
     $.on $("input", div), 'change', (evt) ->
       file = evt.target.files[0]

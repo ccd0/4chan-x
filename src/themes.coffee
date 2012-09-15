@@ -825,6 +825,7 @@ Mascots =
   'George_Costanza':
     category:   'SFW'
     image:      'http://i.imgur.com/Nnsrf.png'
+    big:        true
   'Golden_Darkness':
     category:   'NSFW'
     image:      'http://i.imgur.com/lYGo4.png'

@@ -93,7 +93,7 @@
 * Thank you.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeOptions, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, enabledmascots, g, newTheme, userMascots, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, enabledmascots, g, newTheme, userMascots, userThemes;
 
   Config = {
     main: {
@@ -246,7 +246,7 @@
         'Emoji Position': ['left', 'Position of emoji icons, like sega and neko.', ['left', 'right', 'hide emoji']],
         'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
         'Font': ['Calibri', 'The font used by all elements of 4chan.', 'text'],
-        'Font Size': [12, 'The font size of posts and various UI. This does not change all font sizes.', [10, 11, 12, 13, 14]],
+        'Font Size': ['12px', 'The font size of posts and various UI. This does not change all font sizes.', 'text'],
         'Mascots': [false, 'Add a pretty picture of your waifu to the sidebar.'],
         'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
         'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
@@ -1139,7 +1139,8 @@
     },
     'George_Costanza': {
       category: 'SFW',
-      image: 'http://i.imgur.com/Nnsrf.png'
+      image: 'http://i.imgur.com/Nnsrf.png',
+      big: true
     },
     'Golden_Darkness': {
       category: 'NSFW',
@@ -2111,6 +2112,14 @@
     },
     dialog: function() {
       var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, time, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
+      if (editMode) {
+        if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
+          ThemeTools.close();
+          editMode = false;
+        } else {
+          return;
+        }
+      }
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2460,7 +2469,7 @@
             innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + themename + "</span>   <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <a class=edit name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>  <a class=export name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
           });
           $.on($('a.edit', div), 'click', function() {
-            ThemeOptions.init(this.name);
+            ThemeTools.init(this.name);
             return Options.close();
           });
           $.on($('a.export', div), 'click', function() {
@@ -2508,7 +2517,7 @@
       });
       $.on($("#newtheme", div), 'click', function() {
         newTheme = true;
-        ThemeOptions.init("untitled");
+        ThemeTools.init("untitled");
         return Options.close();
       });
       $.on($("input", div), 'change', function(evt) {
@@ -4924,7 +4933,7 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.REPLY && +g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -7137,16 +7146,13 @@
     }
   };
 
-  ThemeOptions = {
+  ThemeTools = {
     init: function(key) {
+      var dialog, div, header, input, item, layout, _i, _j, _k, _len, _len1, _len2, _ref;
       editMode = true;
       if (!newTheme) {
         Style.addStyle(userThemes[key]);
       }
-      return this.dialog(key);
-    },
-    dialog: function(key) {
-      var dialog, div, header, input, item, layout, _i, _j, _k, _len, _len1, _len2, _ref;
       if (newTheme) {
         editTheme = {};
         editTheme["Theme"] = "Untitled";
@@ -7202,9 +7208,9 @@
         }
       }
       $.on($('#save > a', dialog), 'click', function() {
-        return ThemeOptions.save(editTheme);
+        return ThemeTools.save(editTheme);
       });
-      $.on($('#cancel > a', dialog), 'click', ThemeOptions.close);
+      $.on($('#cancel > a', dialog), 'click', ThemeTools.close);
       if (newTheme) {
         Style.addStyle(editTheme);
       }
@@ -7225,8 +7231,7 @@
       $.set('userThemes', userThemes);
       $.set("Style", name);
       Conf["Style"] = name;
-      newTheme = false;
-      ThemeOptions.close();
+      ThemeTools.close();
       return alert("Theme \"" + name + "\" saved.");
     },
     close: function() {
@@ -7234,6 +7239,58 @@
       Conf['Edit Mode'] = false;
       $.rm($("#themeConf", d.body));
       return Style.addStyle(Conf["Style"]);
+    }
+  };
+
+  MascotTools = {
+    init: function(mascot) {
+      var div, mascotnames, mascotposition, name, result;
+      if (Conf['Post Form Style'] === "fixed" || Conf['Post Form Style'] === "transparent fade") {
+        mascotposition = '264';
+      } else {
+        mascotposition = '0';
+      }
+      try {
+        $.rm($('#mascot', d.body));
+      } catch (_error) {}
+      if (!mascot) {
+        mascotnames = [];
+        for (name in userMascots) {
+          mascot = userMascots[name];
+          if (enabledmascots[name] === true) {
+            mascotnames.push(name);
+          }
+        }
+        if (!(mascot = userMascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]])) {
+          return;
+        }
+      }
+      div = $.el('div', {
+        id: "mascot"
+      });
+      div.innerHTML = "<img src='" + mascot.image + "'>";
+      $.ready(function() {
+        return $.add(d.body, div);
+      });
+      result = "#mascot img {  position: fixed;  bottom: " + (mascot.bottom || mascotposition) + "px;  right: " + (mascot.sideoffset || (mascot.big || Conf['Sidebar'] !== 'large' ? 0 : 25)) + "px;  top: " + mascot.top + "px;  left: auto;  pointer-events: none;}#mascot img {  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";}";
+      return result;
+    },
+    dialog: function(key) {
+      var dialog, layout;
+      editMascot = userThemes[key] || {};
+      editMascot["Name"] = key;
+      layout = [
+        {
+          "top": "",
+          "bottom": "",
+          "sideoffset": ""
+        }
+      ];
+      return dialog = $.el("div", {
+        id: "mascotConf",
+        className: "reply dialog",
+        innerHTML: "<div id=mascotbar></div><hr><div id=mascotcontent></div><div id=save>  <a href='javascript:;'>Save Mascot</a></div><div id=cancel>  <a href='javascript:;'>Cancel</a></div>"
+      });
     }
   };
 
@@ -7339,7 +7396,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     css: function(theme) {
-      var agent, css, div, logoOffset, mascot, mascotnames, mascotposition, name, pagemargin, sidebarOffsetH, sidebarOffsetW;
+      var agent, css, logoOffset, pagemargin, sidebarOffsetH, sidebarOffsetW;
       agent = Style.agent();
       css = '\
 /* dialog styling */\
@@ -9495,7 +9552,6 @@ body > a[style="cursor: pointer; float: right;"]::after {\
         }
         switch (Conf['Post Form Style']) {
           case 'fixed':
-            mascotposition = '264';
             css += '\
 #qr {\
   right: 2px !important;\
@@ -9504,7 +9560,6 @@ body > a[style="cursor: pointer; float: right;"]::after {\
 ';
             break;
           case 'slideout':
-            mascotposition = '0';
             css += '\
 #qr {\
   right: -' + (233 + sidebarOffsetW) + 'px !important;\
@@ -9521,7 +9576,6 @@ body > a[style="cursor: pointer; float: right;"]::after {\
 ';
             break;
           case 'tabbed slideout':
-            mascotposition = '0';
             css += '\
 #qr {\
   right: -' + (249 + sidebarOffsetW) + 'px !important;\
@@ -9562,7 +9616,6 @@ body > a[style="cursor: pointer; float: right;"]::after {\
 ';
             break;
           case 'transparent fade':
-            mascotposition = '0';
             css += '\
 #qr {\
   right: 2px !important;\
@@ -10221,37 +10274,10 @@ input[type=checkbox] {\
 ';
         }
         if (Conf["Mascots"]) {
-          mascotnames = [];
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (enabledmascots[name] === true) {
-              mascotnames.push(name);
-            }
-          }
-          if (mascot = userMascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]]) {
-            css += '\
-#mascot img {\
-  position: fixed;\
-  bottom: ' + (mascot.bottom || mascotposition) + 'px;\
-  right: ' + (mascot.big ? 0 : Math.floor(sidebarOffsetW / 2)) + 'px;\
-  left: auto;\
-  ' + agent + 'transform: scaleX(1);\
-  pointer-events: none;\
-}\
-#mascot img {\
-  z-index: ' + (Conf["Mascots Overlap Posts"] ? "3" : "-1") + ';\
-}\
-';
-            try {
-              $.rm($('#mascot', d.body));
-            } catch (_error) {}
-            div = $.el('div', {
-              id: "mascot"
-            });
-            div.innerHTML = "<img src='" + mascot.image + "'>";
-            $.ready(function() {
-              return $.add(d.body, div);
-            });
+          try {
+            css += MascotTools.init();
+          } catch (err) {
+            console.log(err);
           }
         }
         if (Conf["Block Ads"]) {

@@ -2154,7 +2154,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 
       switch Conf['Post Form Style']
         when 'fixed'
-          mascotposition = '264'
           css += '
 #qr {
   right: 2px !important;
@@ -2162,7 +2161,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 '
         when 'slideout'
-          mascotposition = '0'
           css += '
 #qr {
   right: -' + (233 + sidebarOffsetW) + 'px !important;
@@ -2178,7 +2176,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 '
         when 'tabbed slideout'
-          mascotposition = '0'
           css += '
 #qr {
   right: -' + (249 + sidebarOffsetW) + 'px !important;
@@ -2218,7 +2215,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 '
         when 'transparent fade'
-          mascotposition = '0'
           css += '
 #qr {
   right: 2px !important;
@@ -2852,31 +2848,7 @@ input[type=checkbox] {
 '
 
       if Conf["Mascots"]
-        mascotnames = []
-        for name, mascot of userMascots
-          if enabledmascots[name] == true
-            mascotnames.push name
-        if mascot = userMascots[mascotnames[Math.floor(Math.random() * mascotnames.length)]]
-          css += '
-#mascot img {
-  position: fixed;
-  bottom: ' + (mascot.bottom or mascotposition) + 'px;
-  right: ' + (if mascot.big then 0 else Math.floor(sidebarOffsetW / 2)) + 'px;
-  left: auto;
-  ' + agent + 'transform: scaleX(1);
-  pointer-events: none;
-}
-#mascot img {
-  z-index: ' + (if Conf["Mascots Overlap Posts"] then "3" else "-1") + ';
-}
-'
-          try
-            $.rm $('#mascot', d.body)
-          div = $.el 'div',
-            id: "mascot"
-          div.innerHTML = "<img src='#{mascot.image}'>"
-          $.ready ->
-            $.add d.body, div
+        css += MascotTools.init()
 
       if Conf["Block Ads"]
         css += '

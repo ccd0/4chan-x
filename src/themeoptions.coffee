@@ -1,11 +1,8 @@
-ThemeOptions =
+ThemeTools =
   init: (key) ->
     editMode = true
     unless newTheme
       Style.addStyle userThemes[key]
-    @dialog key
-
-  dialog: (key) ->
     if newTheme
       editTheme = {}
       editTheme["Theme"] = "Untitled"
@@ -62,8 +59,8 @@ ThemeOptions =
           Style.addStyle(editTheme)
         $.add $("#themecontent", dialog), div
     $.on $('#save > a', dialog), 'click', ->
-      ThemeOptions.save editTheme
-    $.on  $('#cancel > a', dialog), 'click', ThemeOptions.close
+      ThemeTools.save editTheme
+    $.on  $('#cancel > a', dialog), 'click', ThemeTools.close
     if newTheme then Style.addStyle(editTheme)
     $.add d.body, dialog
 
@@ -79,10 +76,7 @@ ThemeOptions =
     $.set 'userThemes', userThemes
     $.set "Style", name
     Conf["Style"] = name
-    newTheme = false
-
-    ThemeOptions.close()
-
+    ThemeTools.close()
     alert "Theme \"#{name}\" saved."
 
   close: ->
