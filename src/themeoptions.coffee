@@ -1,5 +1,8 @@
 ThemeTools =
   init: (key) ->
+    unless Conf["Style"]
+      alert "Please enable Style Options and reload the page to use Theme Tools."
+      return
     editMode = true
     unless newTheme
       Style.addStyle userThemes[key]

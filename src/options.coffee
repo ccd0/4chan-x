@@ -248,6 +248,9 @@ Options =
 <span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a></span>
 "
         $.on $('a.edit', li), 'click', ->
+          unless Conf["Style"]
+            alert "Please enable Style Options and reload the page to use Mascot Tools."
+            return
           MascotTools.dialog @name
           Options.close()
         $.on $('a.delete', li), 'click', ->
@@ -290,11 +293,11 @@ Options =
           $.set mascotname, true
           enabledmascots[mascotname] = true
     $.on $('#createNew', batchmascots), 'click', ->
-      try 
-        MascotTools.dialog()
-        Options.close()
-      catch err
-        console.log err
+      unless Conf["Style"]
+        alert "Please enable Style Options and reload the page to use Mascot Tools."
+        return
+      MascotTools.dialog()
+      Options.close()
     $.add $('#mascot_tab + div', dialog), batchmascots
         
     Options.applyStyle(dialog, 'mascot_tab')
@@ -368,6 +371,9 @@ Options =
   <h1 style='color: #{theme['Text']}'>Selected</h1>
 </div>"
         $.on $('a.edit', div), 'click', ->
+          unless Conf["Style"]
+            alert "Please enable Style Options and reload the page to use Theme Tools."
+            return
           ThemeTools.init @.name
           Options.close()
         $.on $('a.export', div), 'click', ->
@@ -401,6 +407,9 @@ Options =
     $.on $("#import", div), 'click', ->
       @nextSibling.click()
     $.on $("#newtheme", div), 'click', ->
+      unless Conf["Style"]
+        alert "Please enable Style Options and reload the page to use Theme Tools."
+        return
       newTheme = true
       ThemeTools.init "untitled"
       Options.close()

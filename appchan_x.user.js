@@ -2320,16 +2320,11 @@
     </tbody></table>\
   </div>\
   <input type=radio name=tab hidden id=style_tab>\
-  <div>\
-    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>\
-  </div>\
+  <div></div>\
   <input type=radio name=tab hidden id=theme_tab>\
-  <div>\
-    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div></div>\
+  <div></div>\
   <input type=radio name=tab hidden id=mascot_tab>\
-  <div>\
-    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div>\
-  </div>\
+  <div></div>\
   <input type=radio name=tab hidden onClick="javascript:location.reload(true)" id=apply>\
   <div>Reloading page with new settings.</div>\
 </div>'
@@ -2389,7 +2384,8 @@
         $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
       div = $.el('div', {
-        className: "suboptions"
+        className: "suboptions",
+        innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>"
       });
       _ref2 = Config.style;
       for (category in _ref2) {
@@ -2438,7 +2434,8 @@
       Options.applyStyle(dialog, 'style_tab');
       this.themeTab(dialog);
       parentdiv = $.el('div', {
-        className: "suboptions"
+        className: "suboptions",
+        innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div>"
       });
       ul = $.el('ul', {
         className: 'mascots'
@@ -2452,6 +2449,10 @@
             innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + mascot.image + ");'></div><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span>"
           });
           $.on($('a.edit', li), 'click', function() {
+            if (!Conf["Style"]) {
+              alert("Please enable Style Options and reload the page to use Mascot Tools.");
+              return;
+            }
             MascotTools.dialog(this.name);
             return Options.close();
           });
@@ -2523,12 +2524,12 @@
         return _results;
       });
       $.on($('#createNew', batchmascots), 'click', function() {
-        try {
-          MascotTools.dialog();
-          return Options.close();
-        } catch (err) {
-          return console.log(err);
+        if (!Conf["Style"]) {
+          alert("Please enable Style Options and reload the page to use Mascot Tools.");
+          return;
         }
+        MascotTools.dialog();
+        return Options.close();
       });
       $.add($('#mascot_tab + div', dialog), batchmascots);
       Options.applyStyle(dialog, 'mascot_tab');
@@ -2584,7 +2585,8 @@
       }
       parentdiv = $.el('div', {
         className: "suboptions",
-        id: "themes"
+        id: "themes",
+        innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div>"
       });
       for (themename in userThemes) {
         theme = userThemes[themename];
@@ -2595,6 +2597,10 @@
             innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + themename + "</span>   <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <a class=edit name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>  <a class=export name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
           });
           $.on($('a.edit', div), 'click', function() {
+            if (!Conf["Style"]) {
+              alert("Please enable Style Options and reload the page to use Theme Tools.");
+              return;
+            }
             ThemeTools.init(this.name);
             return Options.close();
           });
@@ -2642,6 +2648,10 @@
         return this.nextSibling.click();
       });
       $.on($("#newtheme", div), 'click', function() {
+        if (!Conf["Style"]) {
+          alert("Please enable Style Options and reload the page to use Theme Tools.");
+          return;
+        }
         newTheme = true;
         ThemeTools.init("untitled");
         return Options.close();
@@ -7048,6 +7058,10 @@
   ThemeTools = {
     init: function(key) {
       var dialog, div, header, input, item, layout, _i, _j, _k, _len, _len1, _len2, _ref;
+      if (!Conf["Style"]) {
+        alert("Please enable Style Options and reload the page to use Theme Tools.");
+        return;
+      }
       editMode = true;
       if (!newTheme) {
         Style.addStyle(userThemes[key]);
