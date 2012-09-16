@@ -2045,79 +2045,7 @@
       }
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
-    },
-    RandomAccessList: (function() {
-
-      function _Class() {
-        this.first = null;
-        this.last = null;
-        this.length = 0;
-      }
-
-      _Class.prototype.push = function(id, el) {
-        var item, last;
-        last = this.last;
-        this[id] = item = {
-          prev: last,
-          next: null,
-          el: el,
-          id: id
-        };
-        this.last = item;
-        if (last) {
-          last.next = item;
-        } else {
-          this.first = item;
-        }
-        return this.length++;
-      };
-
-      _Class.prototype.shift = function() {
-        return this.rm(this.first.id);
-      };
-
-      _Class.prototype.after = function(root, item) {
-        var next;
-        if (item.prev === root) {
-          return;
-        }
-        this.rmi(item);
-        next = root.next;
-        root.next = item;
-        item.prev = root;
-        item.next = next;
-        return next.prev = item;
-      };
-
-      _Class.prototype.rm = function(id) {
-        var item;
-        item = this[id];
-        if (!item) {
-          return;
-        }
-        delete this[id];
-        this.length--;
-        return this.rmi(item);
-      };
-
-      _Class.prototype.rmi = function(item) {
-        var next, prev;
-        prev = item.prev, next = item.next;
-        if (prev) {
-          prev.next = next;
-        } else {
-          this.first = next;
-        }
-        if (next) {
-          return next.prev = prev;
-        } else {
-          return this.last = prev;
-        }
-      };
-
-      return _Class;
-
-    })()
+    }
   });
 
   $.cache.requests = {};
@@ -3691,7 +3619,7 @@
           Updater.updateReset();
           break;
         case Conf.unreadCountTo0:
-          Unread.replies = new $.RandomAccessList;
+          Unread.replies = [];
           Unread.update(true);
           break;
         case Conf.expandImage:
@@ -3998,7 +3926,6 @@
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
       this.thread = $.id("t" + g.THREAD_ID);
-      this.unsuccessfulFetchCount = 0;
       this.lastModified = '0';
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4037,7 +3964,6 @@
         if (!Conf['Auto Update This']) {
           return;
         }
-        Updater.unsuccessfulFetchCount = 0;
         return setTimeout(Updater.update, 500);
       },
       visibility: function() {
@@ -4046,7 +3972,6 @@
         if (state !== 'visible') {
           return;
         }
-        Updater.unsuccessfulFetchCount = 0;
         if (Updater.timer.textContent < -Conf['Interval']) {
           return Updater.set('timer', -Updater.getInterval());
         }
@@ -4106,7 +4031,6 @@
                       This saves bandwidth for both the user and the servers and avoid unnecessary computation.
             */
 
-            Updater.unsuccessfulFetchCount++;
             Updater.set('timer', -Updater.getInterval());
             if (Conf['Verbose']) {
               Updater.set('count', '+0');
@@ -4119,7 +4043,6 @@
             Updater.set('timer', -Updater.getInterval());
             break;
           default:
-            Updater.unsuccessfulFetchCount++;
             Updater.set('timer', -Updater.getInterval());
             if (Conf['Verbose']) {
               Updater.set('count', this.statusText);
@@ -4149,12 +4072,6 @@
           Updater.set('count', "+" + count);
           Updater.count.className = count ? 'new' : null;
         }
-        if (count) {
-          Updater.unsuccessfulFetchCount = 0;
-        } else {
-          Updater.unsuccessfulFetchCount++;
-          return;
-        }
         scroll = Conf['Scrolling'] && Updater.scrollBG() && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         $.add(Updater.thread, nodes.reverse());
         if (scroll) {
@@ -4182,7 +4099,6 @@
       if (n === 0) {
         return Updater.update();
       } else if (n >= Updater.getInterval()) {
-        Updater.unsuccessfulFetchCount++;
         Updater.set('count', 'Retry');
         Updater.count.className = null;
         return Updater.update();
@@ -4403,7 +4319,7 @@
       _ref = Sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
-        nodes.push($.tn($.NBSP), link(img, post.isArchived));
+        nodes.push($.tn('\u00A0'), link(img, post.isArchived));
       }
       return $.add(post.fileInfo, nodes);
     }
@@ -5062,7 +4978,7 @@
       return this.classList.toggle('inlined');
     },
     add: function(q, id) {
-      var board, el, inline, isBacklink, path, postID, root, threadID;
+      var board, el, i, inline, isBacklink, path, postID, root, threadID;
       if (q.host === 'boards.4chan.org') {
         path = q.pathname.split('/');
         board = path[1];
@@ -5088,8 +5004,8 @@
         $.addClass(el.parentNode, 'forwarded');
         ++el.dataset.forwarded || (el.dataset.forwarded = 1);
       }
-      if (Unread.replies && postID in Unread.replies) {
-        Unread.replies.rm(postID);
+      if ((i = Unread.replies.indexOf(el)) !== -1) {
+        Unread.replies.splice(i, 1);
         return Unread.update(true);
       }
     },
@@ -5244,7 +5160,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (quote.hash.slice(2) === post.threadID) {
-          $.add(quote, $.tn($.NBSP + '(OP)'));
+          $.add(quote, $.tn('\u00A0(OP)'));
         }
       }
     }
@@ -5267,7 +5183,7 @@
         }
         path = quote.pathname.split('/');
         if (path[1] === g.BOARD && path[3] !== post.threadID) {
-          $.add(quote, $.tn($.NBSP + '(Cross-thread)'));
+          $.add(quote, $.tn('\u00A0(Cross-thread)'));
         }
       }
     }
@@ -5282,7 +5198,7 @@
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      snapshot = $.X('.//text()[not(parent::a)][not(ancestor::pre)]', post.blockquote);
+      snapshot = d.evaluate('.//text()[not(parent::a)]', post.blockquote, null, 6, null);
       for (i = _i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         node = snapshot.snapshotItem(i);
         data = node.data;
@@ -5299,7 +5215,7 @@
           id = quote.match(/\d+$/)[0];
           board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('a[title="Highlight this post"]', post.el).pathname.split('/')[1];
           nodes.push(a = $.el('a', {
-            textContent: "" + quote + $.NBSP + "(Dead)"
+            textContent: "" + quote + "\u00A0(Dead)"
           }));
           if (board === g.BOARD && $.id("p" + id)) {
             a.href = "#p" + id;
@@ -5571,53 +5487,57 @@
 
   Unread = {
     init: function() {
-      this.replies = new $.RandomAccessList;
       this.title = d.title;
       $.on(d, 'QRPostSuccessful', this.post);
       this.update();
       $.on(window, 'scroll', Unread.scroll);
       return Main.callbacks.push(this.node);
     },
+    replies: [],
     foresee: [],
     post: function(e) {
       return Unread.foresee.push(e.detail.postID);
     },
     node: function(post) {
-      var el, index, replies;
-      el = post.el;
+      var count, el, index;
       if ((index = Unread.foresee.indexOf(post.ID)) !== -1) {
         Unread.foresee.splice(index, 1);
         return;
       }
+      el = post.el;
       if (el.hidden || /\bop\b/.test(post["class"]) || post.isInlined) {
         return;
       }
-      replies = Unread.replies;
-      replies.push(post.ID, el);
-      return Unread.update(replies.length === 1);
+      count = Unread.replies.push(el);
+      return Unread.update(count === 1);
     },
     scroll: function() {
-      var bottom, first, height, replies, update;
+      var bottom, height, i, reply, _i, _len, _ref;
       height = d.documentElement.clientHeight;
-      replies = Unread.replies;
-      first = replies.first;
-      update = false;
-      while (first) {
-        bottom = first.el.getBoundingClientRect().bottom;
+      _ref = Unread.replies;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        reply = _ref[i];
+        bottom = reply.getBoundingClientRect().bottom;
         if (bottom > height) {
           break;
         }
-        update = true;
-        replies.shift();
-        first = replies.first;
       }
-      if (!update) {
+      if (i === 0) {
         return;
       }
-      return Unread.update(replies.length === 0);
+      Unread.replies = Unread.replies.slice(i);
+      return Unread.update(Unread.replies.length === 0);
     },
     setTitle: function(count) {
-      return d.title = "(" + count + ") " + Unread.title;
+      if (this.scheduled) {
+        clearTimeout(this.scheduled);
+        delete Unread.scheduled;
+        this.setTitle(count);
+        return;
+      }
+      return this.scheduled = setTimeout((function() {
+        return d.title = "(" + count + ") " + Unread.title;
+      }), 5);
     },
     update: function(updateFavicon) {
       var count;
@@ -5654,6 +5574,9 @@
   Favicon = {
     init: function() {
       var href;
+      if (this.el) {
+        return;
+      }
       this.el = $('link[rel="shortcut icon"]', d.head);
       this.el.type = 'image/x-icon';
       href = this.el.href;
@@ -5989,14 +5912,13 @@
       return this.dialog();
     },
     node: function(post) {
-      var a, sp;
+      var a;
       if (!post.img) {
         return;
       }
-      sp = FileInfo.data.spoiler;
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
-      if (ImageExpand.on && !post.el.hidden && sp !== true) {
+      if (ImageExpand.on && !post.el.hidden) {
         return ImageExpand.expand(post.img);
       }
     },
@@ -6140,7 +6062,7 @@
     },
     dialog: function() {
       var controls, imageType, select;
-      controls = $.el('span', {
+      controls = $.el('div', {
         id: 'imgControls',
         innerHTML: "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
       });

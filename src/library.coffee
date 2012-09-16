@@ -224,58 +224,6 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
-  RandomAccessList: class
-    constructor: ->
-      @first = null
-      @last = null
-      @length = 0
-
-    push: (id, el) ->
-      {last} = @
-      @[id] = item =
-        prev: last
-        next: null
-        el: el
-        id: id
-      @last = item
-      if last
-        last.next = item
-      else
-        @first = item
-      @length++
-
-    shift: ->
-      @rm @first.id
-
-    after: (root, item) ->
-      return if item.prev is root
-
-      @rmi item
-
-      {next} = root
-
-      root.next = item
-      item.prev = root
-      item.next = next
-      next.prev = item
-
-    rm: (id) ->
-      item = @[id]
-      return unless item
-      delete @[id]
-      @length--
-      @rmi item
-
-    rmi: (item) ->
-      {prev, next} = item
-      if prev
-        prev.next = next
-      else
-        @first = next
-      if next
-        next.prev = prev
-      else
-        @last = prev
 
 $.cache.requests = {}
 

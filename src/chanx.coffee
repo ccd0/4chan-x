@@ -710,7 +710,7 @@ Keybinds =
       when Conf.update
         Updater.updateReset()
       when Conf.unreadCountTo0
-        Unread.replies = new $.RandomAccessList
+        Unread.replies = []
         Unread.update true
       # Images
       when Conf.expandImage
@@ -926,8 +926,6 @@ Updater =
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
-
-    @unsuccessfulFetchCount = 0
     @lastModified = '0'
 
     for input in $$ 'input', dialog
@@ -958,13 +956,11 @@ Updater =
   cb:
     post: ->
       return unless Conf['Auto Update This']
-      Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 500
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
       # Reset the counter when we focus this tab.
-      Updater.unsuccessfulFetchCount = 0
       if Updater.timer.textContent < -Conf['Interval']
         Updater.set 'timer', -Updater.getInterval()
     interval: ->
@@ -1012,7 +1008,6 @@ Updater =
           By sending the `If-Modified-Since` header we get a proper status code, and no response.
           This saves bandwidth for both the user and the servers and avoid unnecessary computation.
           ###
-          Updater.unsuccessfulFetchCount++
           Updater.set 'timer', -Updater.getInterval()
           if Conf['Verbose']
             Updater.set 'count', '+0'
@@ -1022,7 +1017,6 @@ Updater =
           Updater.cb.update JSON.parse(@response).posts
           Updater.set 'timer', -Updater.getInterval()
         else
-          Updater.unsuccessfulFetchCount++
           Updater.set 'timer', -Updater.getInterval()
           if Conf['Verbose']
             Updater.set 'count', @statusText
@@ -1043,12 +1037,6 @@ Updater =
       if Conf['Verbose']
         Updater.set 'count', "+#{count}"
         Updater.count.className = if count then 'new' else null
-
-      if count
-        Updater.unsuccessfulFetchCount = 0
-      else
-        Updater.unsuccessfulFetchCount++
-        return
 
       scroll = Conf['Scrolling'] and Updater.scrollBG() and
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
@@ -1075,7 +1063,6 @@ Updater =
     if n is 0
       Updater.update()
     else if n >= Updater.getInterval()
-      Updater.unsuccessfulFetchCount++
       Updater.set 'count', 'Retry'
       Updater.count.className = null
       Updater.update()
@@ -1235,7 +1222,8 @@ Sauce =
     img   = img.parentNode
     nodes = []
     for link in Sauce.links
-      nodes.push $.tn($.NBSP), link img, post.isArchived
+      # \u00A0 is nbsp
+      nodes.push $.tn('\u00A0'), link img, post.isArchived
     $.add post.fileInfo, nodes
 
 RevealSpoilers =
@@ -1878,9 +1866,9 @@ QuoteInline =
       $.addClass el.parentNode, 'forwarded'
       ++el.dataset.forwarded or el.dataset.forwarded = 1
 
-    # Decrease the unread count if this post is unread
-    if Unread.replies and postID of Unread.replies
-      Unread.replies.rm postID
+    # Decrease the unread count if this post is in the array of unread reply.
+    if (i = Unread.replies.indexOf el) isnt -1
+      Unread.replies.splice i, 1
       Unread.update true
 
   rm: (q, id) ->
@@ -1983,7 +1971,8 @@ QuoteOP =
     return if post.isInlined and not post.isCrosspost
     for quote in post.quotes
       if quote.hash[2..] is post.threadID
-        $.add quote, $.tn $.NBSP + '(OP)'
+        # \u00A0 is nbsp
+        $.add quote, $.tn '\u00A0(OP)'
     return
 
 QuoteCT =
@@ -1998,7 +1987,8 @@ QuoteCT =
       path = quote.pathname.split '/'
       # If quote leads to a different thread id and is located on the same board.
       if path[1] is g.BOARD and path[3] isnt post.threadID
-        $.add quote, $.tn $.NBSP + '(Cross-thread)'
+        # \u00A0 is nbsp
+        $.add quote, $.tn '\u00A0(Cross-thread)'
     return
 
 Quotify =
@@ -2007,8 +1997,9 @@ Quotify =
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
 
-    # Get all the text nodes that are not inside an anchor or pre ([code] tags).
-    snapshot = $.X './/text()[not(parent::a)][not(ancestor::pre)]', post.blockquote
+    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
+    # Get all the text nodes that are not inside an anchor.
+    snapshot = d.evaluate './/text()[not(parent::a)]', post.blockquote, null, 6, null
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
@@ -2035,7 +2026,8 @@ Quotify =
             $('a[title="Highlight this post"]', post.el).pathname.split('/')[1]
 
         nodes.push a = $.el 'a',
-          textContent: "#{quote}#{$.NBSP}(Dead)"
+          # \u00A0 is nbsp
+          textContent: "#{quote}\u00A0(Dead)"
 
         if board is g.BOARD and $.id "p#{id}"
           a.href      = "#p#{id}"
@@ -2249,47 +2241,47 @@ ThreadStats =
 
 Unread =
   init: ->
-    @replies = new $.RandomAccessList
     @title = d.title
     $.on d, 'QRPostSuccessful', @post
     @update()
     $.on window, 'scroll', Unread.scroll
     Main.callbacks.push @node
 
+  replies: []
   foresee: []
 
   post: (e) ->
     Unread.foresee.push e.detail.postID
 
   node: (post) ->
-    {el} = post
     if (index = Unread.foresee.indexOf post.ID) isnt -1
       Unread.foresee.splice index, 1
       return
+    {el} = post
     return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
-    {replies} = Unread
-    replies.push post.ID, el
-    Unread.update replies.length is 1
+    count = Unread.replies.push el
+    Unread.update count is 1
 
   scroll: ->
     height = d.documentElement.clientHeight
-    {replies} = Unread
-    {first} = replies
-    update = false
-    while first
-      {bottom} = first.el.getBoundingClientRect()
+    for reply, i in Unread.replies
+      {bottom} = reply.getBoundingClientRect()
       if bottom > height #post is not completely read
         break
-      update = true
-      replies.shift()
-      {first} = replies
+    return if i is 0
 
-    return unless update
-
-    Unread.update replies.length is 0
+    Unread.replies = Unread.replies[i..]
+    Unread.update Unread.replies.length is 0
 
   setTitle: (count) ->
-    d.title = "(#{count}) #{Unread.title}"
+    if @scheduled
+      clearTimeout @scheduled
+      delete Unread.scheduled
+      @setTitle count
+      return
+    @scheduled = setTimeout (->
+      d.title = "(#{count}) #{Unread.title}"
+    ), 5
 
   update: (updateFavicon) ->
     return unless g.REPLY
@@ -2334,6 +2326,7 @@ Unread =
 
 Favicon =
   init: ->
+    return if @el # Prevent race condition with options first run
     @el = $ 'link[rel="shortcut icon"]', d.head
     @el.type = 'image/x-icon'
     {href} = @el
@@ -2541,10 +2534,9 @@ ImageExpand =
 
   node: (post) ->
     return unless post.img
-    sp = FileInfo.data.spoiler
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
-    if ImageExpand.on and !post.el.hidden and sp isnt true
+    if ImageExpand.on and !post.el.hidden
       ImageExpand.expand post.img
   cb:
     toggle: (e) ->
@@ -2636,7 +2628,7 @@ ImageExpand =
       type: 'head'
 
   dialog: ->
-    controls = $.el 'span',
+    controls = $.el 'div',
       id: 'imgControls'
       innerHTML:
         "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
