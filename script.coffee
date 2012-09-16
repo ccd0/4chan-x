@@ -210,7 +210,7 @@ UI = (->
     if isTouching
       o.identifier = e.identifier
       o.move = touchmove.bind o
-      o.up   = dragend.bind   o
+      o.up   = touchend.bind  o
       d.addEventListener 'touchmove',   o.move, false
       d.addEventListener 'touchend',    o.up,   false
       d.addEventListener 'touchcancel', o.up,   false
@@ -223,7 +223,7 @@ UI = (->
     for touch in e.changedTouches
       if touch.identifier is @identifier
         drag.call @, touch
-        return
+    return
   drag = (e) ->
     left = e.clientX - @dx
     top  = e.clientY - @dy
@@ -243,6 +243,11 @@ UI = (->
     else
       @style.top    = top / @screenHeight * 100 + '%'
       @style.bottom = null
+  touchend = (e) ->
+    for touch in e.changedTouches
+      if touch.identifier is @identifier
+        dragend.call @, touch
+    return
   dragend = (e) ->
     if e.type is 'mouseup'
       d.removeEventListener 'mousemove', @move, false

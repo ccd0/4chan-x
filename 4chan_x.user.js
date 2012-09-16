@@ -223,7 +223,7 @@
   };
 
   UI = (function() {
-    var dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchmove;
+    var dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchend, touchmove;
     dialog = function(id, position, html) {
       var el, move;
       el = d.createElement('div');
@@ -259,7 +259,7 @@
       if (isTouching) {
         o.identifier = e.identifier;
         o.move = touchmove.bind(o);
-        o.up = dragend.bind(o);
+        o.up = touchend.bind(o);
         d.addEventListener('touchmove', o.move, false);
         d.addEventListener('touchend', o.up, false);
         return d.addEventListener('touchcancel', o.up, false);
@@ -277,7 +277,6 @@
         touch = _ref[_i];
         if (touch.identifier === this.identifier) {
           drag.call(this, touch);
-          return;
         }
       }
     };
@@ -308,6 +307,16 @@
       } else {
         this.style.top = top / this.screenHeight * 100 + '%';
         return this.style.bottom = null;
+      }
+    };
+    touchend = function(e) {
+      var touch, _i, _len, _ref;
+      _ref = e.changedTouches;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        touch = _ref[_i];
+        if (touch.identifier === this.identifier) {
+          dragend.call(this, touch);
+        }
       }
     };
     dragend = function(e) {
