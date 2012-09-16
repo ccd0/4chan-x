@@ -1,6 +1,6 @@
   css: (theme) ->
     agent = Style.agent()
-    css='
+    css = """
 /* dialog styling */
 .dialog.reply {
   display: block;
@@ -95,7 +95,7 @@ h1,
   min-width: 300px;
   overflow: hidden;
   box-sizing: border-box;
-  ' + agent + 'box-sizing: border-box;
+  """ + agent + """box-sizing: border-box;
   padding: 0 2px;
 }
 #qr > .move > span {
@@ -115,7 +115,7 @@ h1,
   margin: 0;
 }
 #dump {
-  background: ' + agent + 'linear-gradient(#EEE, #CCC);
+  background: """ + agent + """linear-gradient(#EEE, #CCC);
   width: 10%;
 }
 .gecko #dump {
@@ -123,11 +123,11 @@ h1,
 }
 #dump:hover,
 #dump:focus {
-  background: ' + agent + 'linear-gradient(#FFF, #DDD);
+  background: """ + agent + """linear-gradient(#FFF, #DDD);
 }
 #dump:active,
 .dump #dump:not(:hover):not(:focus) {
-  background: ' + agent + 'linear-gradient(#CCC, #DDD);
+  background: """ + agent + """linear-gradient(#CCC, #DDD);
 }
 #qr:not(.dump) #replies,
 .dump > form > label {
@@ -137,7 +137,7 @@ h1,
   display: block;
   height: 100px;
   position: relative;
-  ' + agent + 'user-select: none;
+  """ + agent + """user-select: none;
   user-select: none;
 }
 #replies > div {
@@ -159,7 +159,7 @@ h1,
   background-size: cover !important;
   border: 1px solid #666;
   box-sizing: border-box;
-  ' + agent + 'box-sizing: border-box;
+  """ + agent + """box-sizing: border-box;
   cursor: move;
   display: inline-block;
   height: 90px; width: 90px;
@@ -169,7 +169,7 @@ h1,
   overflow: hidden;
   position: relative;
   text-shadow: 0 1px 1px #000;
-  ' + agent + 'transition: opacity .25s ease-in-out;
+  """ + agent + """transition: opacity .25s ease-in-out;
   vertical-align: top;
 }
 .thumbnail:hover,
@@ -230,12 +230,12 @@ h1,
 .field {
   border: 1px solid #CCC;
   box-sizing: border-box;
-  ' + agent + 'box-sizing: border-box;
+  """ + agent + """box-sizing: border-box;
   color: #333;
   font: 13px sans-serif;
   margin: 0;
   padding: 2px 4px 3px;
-  ' + agent + 'transition: color .25s, border .25s;
+  """ + agent + """transition: color .25s, border .25s;
 }
 .field:-moz-placeholder,
 .field:hover:-moz-placeholder {
@@ -352,7 +352,7 @@ h1,
   right: 300px;
   bottom: 10px;
   margin: 0;
-  ' + agent + 'transition: all .2s ease-in-out;
+  """ + agent + """transition: all .2s ease-in-out;
 }
 #theme_tab + div > div {
   margin-bottom: 3px;
@@ -421,7 +421,7 @@ h1,
   overflow: auto;
 }
 #mascotConf input,
-#mascotConf input:' + agent + 'placeholder {
+#mascotConf input:""" + agent + """placeholder {
   text-align: center;
 }
 #mascotConf h2 {
@@ -584,36 +584,36 @@ div.opContainer {
 .stub ~ * {
   display: none !important;
 }
-'
-    if (Conf['Quick Reply'] and Conf['Hide Original Post Form']) or Conf['Style']
-      css += '#postForm {
+"""
+    if (Conf["Quick Reply"] and Conf["Hide Original Post Form"]) or Conf["Style"]
+      css += """#postForm {
   display: none;
-}'
+}"""
 
-    if Conf['Recursive Filtering']
-      css += '.hidden + .threadContainer {
+    if Conf["Recursive Filtering"]
+      css += """.hidden + .threadContainer {
   display: none;
-}'
+}"""
 
-    if Conf['Style']
+    if Conf["Style"]
       Main.callbacks.push @noderice
       $.ready @allrice
 
-      Conf['styleenabled'] = '1'
+      Conf["styleenabled"] = "1"
 
       @remStyle()
 
-      if Conf['Sidebar'] == 'large'
+      if Conf["Sidebar"] == "large"
         sidebarOffsetW = 51
         sidebarOffsetH = 17
       else
         sidebarOffsetW = 0
         sidebarOffsetH = 0
 
-      css += '
-::' + agent + 'selection {
-  background: ' + theme["Text"] + ';
-  color: ' + theme["Background Color"] + ';
+      css += """
+::""" + agent + """selection {
+  background: """ + theme["Text"] + """;
+  color: """ + theme["Background Color"] + """;
 }
 body {
   padding: 16px 0 16px;
@@ -643,11 +643,11 @@ input,
 select,
 textarea,
 .boardTitle {
-  font-family: "' + Conf["Font"] + '";
+  font-family: '""" + Conf["Font"] + """';
 }
 #qr img,
 .captcha img {
-  opacity: ' + Conf["Captcha Opacity"] + ';
+  opacity: """ + Conf["Captcha Opacity"] + """;
 }
 #qp div.post .postertrip,
 #qp div.post .subject,
@@ -672,7 +672,7 @@ div.reply,
 fieldset,
 textarea,
 time + span {
-  font-size: ' + Conf["Font Size"] + ';
+  font-size: """ + Conf["Font Size"] + """;
 }
 .globalMessage {
   bottom: auto;
@@ -787,7 +787,7 @@ html .subMenu {
   z-index: 101 !important;
 }
 .fileThumb {
-  z-index: ' + (if Conf["Images Overlap Post Form"] then "100" else "1") + ' !important;
+  z-index: """ + (if Conf["Images Overlap Post Form"] then "100" else "1") + """ !important;
 }
 
 div.navLinks > a:first-of-type::after,
@@ -840,7 +840,7 @@ body > form #imgControls {
 div.reply,
 div.reply.highlight {
   z-index: 0 !important;
-  ' + agent + 'box-sizing: border-box;
+  """ + agent + """box-sizing: border-box;
 }
 /* ICON POSITIONS */
 /* 4chan X Options / 4chan Options */
@@ -867,9 +867,9 @@ body > a[style="cursor: pointer; float: right;"]:hover::after {
 /* Back */
 div.navLinks > a:first-of-type::after {
   position: fixed;
-  right: ' + (230 + sidebarOffsetW) + 'px;
+  right: """ + (230 + sidebarOffsetW) + """px;
   cursor: pointer;
-  ' + agent + 'transform: scale(.8);
+  """ + agent + """transform: scale(.8);
   opacity: 0.4;
   bottom: 1px;
   top: auto;
@@ -881,8 +881,8 @@ div.navLinks > a:first-of-type:hover::after {
 .deleteform::before {
   visibility: visible;
   position: fixed;
-  right: ' + (210 + sidebarOffsetW) + 'px;
-  ' + agent + 'transform: scale(.9);
+  right: """ + (210 + sidebarOffsetW) + """px;
+  """ + agent + """transform: scale(.9);
   opacity: 0.4;
   top: auto;
   bottom: 2px;
@@ -962,7 +962,7 @@ div.navLinks > a:first-of-type:hover::after {
   font-weight: 100;
   background: none;
   border: none;
-  width: ' + (248 + sidebarOffsetW) + 'px;
+  width: """ + (248 + sidebarOffsetW) + """px;
 }
 .boardTitle {
   font-size: 30px;
@@ -1019,7 +1019,7 @@ a.yuimenuitemlabel {
   top: -1000px;
   right: 2px !important;
   bottom: auto;
-  width: ' + (226 + sidebarOffsetW) + 'px;
+  width: """ + (226 + sidebarOffsetW) + """px;
   color: transparent;
   font-size: 0;
   padding: 3px 10px 35px 10px;
@@ -1051,7 +1051,7 @@ a.yuimenuitemlabel {
 .pages strong,
 a,
 .new {
-  ' + agent + 'transition: background-color .1s linear;
+  """ + agent + """transition: background-color .1s linear;
 }
 /* Post Form */
 /* Override OS-specific UI */
@@ -1066,10 +1066,10 @@ h2,
 input:not([type="radio"]),
 input[type="submit"],
 textarea {
-  ' + agent + 'appearance: none;
+  """ + agent + """appearance: none;
 }
 input[type=checkbox] {
-  ' + agent + 'appearance: checkbox !important;
+  """ + agent + """appearance: checkbox !important;
 }
 /* Formatting for all postarea elements */
 #browse,
@@ -1097,7 +1097,7 @@ textarea.field,
 .ys_playerContainer audio,
 #qr input[title="Verification"],
 #qr > form > div {
-  width: ' + (248 + sidebarOffsetW) + 'px;
+  width: """ + (248 + sidebarOffsetW) + """px;
 }
 /* Buttons */
 #browse,
@@ -1118,7 +1118,7 @@ input[value="Report"] {
   z-index: -1;
 }
 #file {
-  width: ' + (177 + sidebarOffsetW) + 'px;
+  width: """ + (177 + sidebarOffsetW) + """px;
 }
 #browse {
   text-align: center;
@@ -1128,7 +1128,7 @@ input[value="Report"] {
 #browse,
 #file {
   cursor: pointer;
-  ' + agent + 'box-sizing: border-box;
+  """ + agent + """box-sizing: border-box;
   box-sizing: border-box;
   display: inline-block;
 }
@@ -1167,13 +1167,13 @@ input[value="Report"] {
 #qr label input,
 .boxcontent input,
 .boxcontent textarea {
-  ' + agent + 'appearance: none;
+  """ + agent + """appearance: none;
   border: 0;
 }
 input[type=checkbox],
 .reply input[type=checkbox],
 #options input[type=checkbox] {
-  ' + agent + 'appearance: none;
+  """ + agent + """appearance: none;
   width: 12px !important;
   height: 12px !important;
   cursor: pointer;
@@ -1262,13 +1262,13 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
 }
 #imgControls label:first-of-type {
   position: fixed;
-  right: ' + (232 + sidebarOffsetW) + 'px;
+  right: """ + (232 + sidebarOffsetW) + """px;
   top: 0px;
   bottom: auto;
 }
 #imageType {
   position: fixed;
-  right: ' + (140 + sidebarOffsetW) + 'px;
+  right: """ + (140 + sidebarOffsetW) + """px;
   top: 1px;
   bottom: auto;
 }
@@ -1307,7 +1307,7 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   top: -1000px;
   right: 2px;
   bottom: auto;
-  width: ' + (248 + sidebarOffsetW) + 'px;
+  width: """ + (248 + sidebarOffsetW) + """px;
   margin: 0px;
   padding: 0px;
   font-size: 0px;
@@ -1322,17 +1322,17 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   float: left;
 }
 .deleteform {
-  width: ' + (246 + sidebarOffsetW) + 'px;
+  width: """ + (246 + sidebarOffsetW) + """px;
 }
 .deleteform:hover input[type="checkbox"],
 .deleteform:hover .rice {
   position: fixed;
-  right: ' + (130 + sidebarOffsetW) + 'px;
+  right: """ + (130 + sidebarOffsetW) + """px;
 }
 .deleteform:hover::after {
   visibility: visible;
   position: fixed;
-  right: ' + (50 + sidebarOffsetW) + 'px;
+  right: """ + (50 + sidebarOffsetW) + """px;
   font-size: 12px;
   content: "File Only";
   width: 50px;
@@ -1394,8 +1394,8 @@ div.navLinks > a {
 }
 #updater {
   right: 2px !important;
-  top: ' + (if Conf["Updater Position"] == "top" then "0" else "auto") + ' !important;
-  bottom: ' + (if Conf["Updater Position"] == "bottom" then "0" else "auto") + ' !important;
+  top: """ + (if Conf["Updater Position"] == "top" then "0" else "auto") + """ !important;
+  bottom: """ + (if Conf["Updater Position"] == "bottom" then "0" else "auto") + """ !important;
   left: auto !important;
   width: 58px !important;
   border: 0;
@@ -1450,7 +1450,7 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] {
   top: 17px;
   bottom: 17px;
   left: 4px;
-  right: ' + (252 + sidebarOffsetW) + 'px;
+  right: """ + (252 + sidebarOffsetW) + """px;
   width: auto;
   margin: 0;
 }
@@ -1505,8 +1505,8 @@ input[type="submit"]:hover {
   padding-left: 0;
   padding-top: 0;
 }
-#qr input:focus:' + agent + 'placeholder,
-#qr textarea:focus:' + agent + 'placeholder {
+#qr input:focus:""" + agent + """placeholder,
+#qr textarea:focus:""" + agent + """placeholder {
   color: transparent;
 }
 img[md5] {
@@ -1563,7 +1563,7 @@ html .subMenu {
   right: 2px;
   top: auto;
   bottom: 110px;
-  color: ' + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)") + ';
+  color: """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)") + """;
   font-size: 10px;
   height: 20px;
   text-align: right;
@@ -1590,7 +1590,7 @@ textarea {
   position: fixed;
   top: auto !important;
   bottom: 20px !important;
-  width: ' + (248 + sidebarOffsetW) + 'px;
+  width: """ + (248 + sidebarOffsetW) + """px;
   margin: 0;
   padding: 0;
   z-index: 5;
@@ -1606,7 +1606,7 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 }
 #qr img {
   height: 47px;
-  width: ' + (248 + sidebarOffsetW) + 'px;
+  width: """ + (248 + sidebarOffsetW) + """px;
 }
 #dump {
   background: none;
@@ -1661,7 +1661,7 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   vertical-align: middle;
   text-align: center;
   box-sizing: border-box;
-  ' + agent + 'box-sizing: border-box;
+  """ + agent + """box-sizing: border-box;
 }
 .deleteform:hover {
   top: auto;
@@ -1728,17 +1728,17 @@ table.reply[style^="clear: both"] {
   width: 30%;
 }
 body {
-  background: ' + theme["Background Color"] + ';
-  background-image: ' + theme["Background Image"] + ';
-  background-repeat: ' + theme["Background Repeat"] + ';
-  background-attachment: ' + theme["Background Attachment"] + ';
-  background-position: ' + theme["Background Position"] + ';
+  background: """ + theme["Background Color"] + """;
+  background-image: """ + theme["Background Image"] + """;
+  background-repeat: """ + theme["Background Repeat"] + """;
+  background-attachment: """ + theme["Background Attachment"] + """;
+  background-position: """ + theme["Background Position"] + """;
 }
 #content,
 #themecontent,
 #mascotcontent {
-  background: ' + theme["Background Color"] + ';
-  border: 1px solid ' + theme["Reply Border"]  + ';
+  background: """ + theme["Background Color"] + """;
+  border: 1px solid """ + theme["Reply Border"]  + """;
   padding: 5px;
 }
 .suboptions {
@@ -1746,11 +1746,11 @@ body {
 }
 .boardTitle {
   text-shadow:
-    1px 1px 0 ' + theme["Background Color"] + ',
-    -1px 1px 0 ' + theme["Background Color"] + ',
-    1px -1px 0 ' + theme["Background Color"] + ',
-    -1px -1px 0 ' + theme["Background Color"] + ',
-    0px 0px 10px ' + theme["Text"] + ';
+    1px 1px 0 """ + theme["Background Color"] + """,
+    -1px 1px 0 """ + theme["Background Color"] + """,
+    1px -1px 0 """ + theme["Background Color"] + """,
+    -1px -1px 0 """ + theme["Background Color"] + """,
+    0px 0px 10px """ + theme["Text"] + """;
 }
 #browse,
 #ft li,
@@ -1770,8 +1770,8 @@ input[type="submit"],
 .deleteform input[value=Delete],
 input[value="Report"],
 #qr.autohide .move {
-  background: ' + theme["Buttons Background"] + ';
-  border: 1px solid ' + theme["Buttons Border"]  + ';
+  background: """ + theme["Buttons Background"] + """;
+  border: 1px solid """ + theme["Buttons Border"]  + """;
 }
 #file,
 #dump,
@@ -1781,10 +1781,10 @@ input.field,
 select,
 textarea,
 textarea.field {
-  background: ' + theme["Input Background"] + ';
-  border: 1px solid ' + theme["Input Border"]  + ';
-  color: ' + theme["Inputs"] + ';
-  ' + agent + 'transition: all .2s linear;
+  background: """ + theme["Input Background"] + """;
+  border: 1px solid """ + theme["Input Border"]  + """;
+  color: """ + theme["Inputs"] + """;
+  """ + agent + """transition: all .2s linear;
 }
 #browse:hover,
 #file:hover,
@@ -1796,10 +1796,10 @@ input[type="submit"]:hover,
 select:hover,
 textarea:hover,
 textarea.field:hover {
-  background: ' + theme["Hovered Input Background"] + ';
-  border-color: ' + theme["Hovered Input Border"]  + ';
-  color: ' + theme["Inputs"] + ';
-  ' + agent + 'transition: all .2s linear;
+  background: """ + theme["Hovered Input Background"] + """;
+  border-color: """ + theme["Hovered Input Border"]  + """;
+  color: """ + theme["Inputs"] + """;
+  """ + agent + """transition: all .2s linear;
 }
 input:focus,
 input.field:focus,
@@ -1807,27 +1807,27 @@ input[type="submit"]:focus,
 select:focus,
 textarea:focus,
 textarea.field:focus {
-  background: ' + theme["Focused Input Background"] + ';
-  border-color: ' + theme["Focused Input Border"]  + ';
-  color: ' + theme["Inputs"] + ';
+  background: """ + theme["Focused Input Background"] + """;
+  border-color: """ + theme["Focused Input Border"]  + """;
+  color: """ + theme["Inputs"] + """;
 }
 #qp div.post,
 div.reply {
-  background: ' + theme["Reply Background"] + ';
-  border: 1px solid ' + theme["Reply Border"]  + ';
+  background: """ + theme["Reply Background"] + """;
+  border: 1px solid """ + theme["Reply Border"]  + """;
 }
 .reply.highlight {
-  background: ' + theme["Highlighted Reply Background"] + ';
-  border: 1px solid ' + theme["Highlighted Reply Border"]  + ';
+  background: """ + theme["Highlighted Reply Background"] + """;
+  border: 1px solid """ + theme["Highlighted Reply Border"]  + """;
 }
 #boardNavDesktop,
 .pages {
-  background: ' + theme["Navigation Background"] + ';
-  border: 1px solid ' + theme["Navigation Border"]  + ';
+  background: """ + theme["Navigation Background"] + """;
+  border: 1px solid """ + theme["Navigation Border"]  + """;
 }
 #delform {
-  background: ' + theme["Thread Wrapper Background"] + ';
-  border: 1px solid ' + theme["Thread Wrapper Border"]  + ';
+  background: """ + theme["Thread Wrapper Background"] + """;
+  border: 1px solid """ + theme["Thread Wrapper Border"]  + """;
 }
 #boardNavDesktopFoot,
 #mascotConf,
@@ -1838,21 +1838,21 @@ div.reply {
 .mascotoptions,
 div.subMenu,
 #menu {
-  background: ' + theme["Dialog Background"] + ';
-  border: 1px solid ' + theme["Dialog Border"]  + ';
+  background: """ + theme["Dialog Background"] + """;
+  border: 1px solid """ + theme["Dialog Border"]  + """;
 }
 .inline div.reply {
   /* Inline Quotes */
-  background-color: ' + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.03)" else "rgba(0,0,0,0.03)") + ';
-  border: 1px solid ' + theme["Reply Border"] + ';
-  box-shadow: 5px 5px 5px '+ theme["Shadow Color"] + ';
+  background-color: """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.03)" else "rgba(0,0,0,0.03)") + """;
+  border: 1px solid """ + theme["Reply Border"] + """;
+  box-shadow: 5px 5px 5px """+ theme["Shadow Color"] + """;
 }
 [id^="q"] .warning {
-  background: ' + theme["Input Background"] + ';
-  border: 1px solid ' + theme["Input Border"]  + ';
+  background: """ + theme["Input Background"] + """;
+  border: 1px solid """ + theme["Input Border"]  + """;
 }
 .warning {
-  color: ' + theme["Warnings"] + ' !important;
+  color: """ + theme["Warnings"] + """ !important;
 }
 a,
 #dump,
@@ -1860,17 +1860,17 @@ a,
 div.post > blockquote a[href^="//"],
 .sideArrows a,
 div.postContainer span.postNum > .replylink {
-  color: ' + theme["Links"] + ';
+  color: """ + theme["Links"] + """;
 }
 .postNum a {
-  color: ' + theme["Post Numbers"] + ';
+  color: """ + theme["Post Numbers"] + """;
 }
 .subject {
-  color: ' + theme["Subjects"] + ' !important;
+  color: """ + theme["Subjects"] + """ !important;
   font-weight: 600;
 }
 .dateTime {
-  color: ' + theme["Timestamps"] + ' !important;
+  color: """ + theme["Timestamps"] + """ !important;
 }
 #updater:not(:hover),
 #updater:not(:hover) #count:not(.new)::after,
@@ -1894,26 +1894,26 @@ textarea,
 #qr > form > label::after,
 #qr.autohide .move,
 span.pln {
-  color: ' + theme["Text"] + ';
+  color: """ + theme["Text"] + """;
 }
 #options ul {
-  border-bottom: 1px solid ' + theme["Reply Border"] + ';
+  border-bottom: 1px solid """ + theme["Reply Border"] + """;
 }
 .quote {
-  color: ' + theme["Greentext"] + ';
+  color: """ + theme["Greentext"] + """;
 }
 a.backlink {
-  color: ' + theme["Backlinks"] + ';
+  color: """ + theme["Backlinks"] + """;
   font-weight: 800;
 }
 span.quote > a.quotelink,
 a.quotelink {
-  color: ' + theme["Quotelinks"] + ';
+  color: """ + theme["Quotelinks"] + """;
 }
 div.subMenu,
 #menu,
 #qp div.post {
-  box-shadow: 5px 5px 5px '+ theme["Shadow Color"] + ';
+  box-shadow: 5px 5px 5px """+ theme["Shadow Color"] + """;
 }
 .rice {
   cursor: pointer;
@@ -1921,22 +1921,22 @@ div.subMenu,
   height: 10px;
   margin: 3px;
   display: inline-block;
-  background: ' + theme["Checkbox Background"] + ';
-  border: 1px solid ' + theme["Checkbox Border"]  + ';
+  background: """ + theme["Checkbox Background"] + """;
+  border: 1px solid """ + theme["Checkbox Border"]  + """;
 }
 #qr label input,
 #updater input,
 .bd {
-  background: ' + theme["Buttons Background"] + ';
-  border: 1px solid ' + theme["Buttons Border"]  + ';
+  background: """ + theme["Buttons Background"] + """;
+  border: 1px solid """ + theme["Buttons Border"]  + """;
 }
 .pages a,
 #boardNavDesktop a {
-  color: ' + theme["Navigation Links"] + ';
+  color: """ + theme["Navigation Links"] + """;
 }
 input[type=checkbox]:checked + .rice {
-  background: ' + theme["Checkbox Checked Background"] + ';
-  background-image: url(' + (if theme["Dark Theme"] == "1" then "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABlBMVEX///////9VfPVsAAAAAXRSTlMAQObYZgAAACJJREFUeF4FwLEJACAMBMATh3WN31jLFCEIsWLHicvQFM8HVtkHPQ48rNIAAAAASUVORK5CYII=" else "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJBAMAAAASvxsjAAAAG1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACUUeIgAAAACHRSTlMAMN9AIL8Qn+Bdi9cAAAA4SURBVHheFcSxDQAgCATANzoAcQKNjSWxcgFncQ2gcmzhikOgKLe4CgonIxxZA9g6yX8dvrF/1fuGOAZL4rd0JQAAAABJRU5ErkJggg==") + ');
+  background: """ + theme["Checkbox Checked Background"] + """;
+  background-image: url(""" + (if theme["Dark Theme"] == "1" then "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJAQMAAADaX5RTAAAABlBMVEX///////9VfPVsAAAAAXRSTlMAQObYZgAAACJJREFUeF4FwLEJACAMBMATh3WN31jLFCEIsWLHicvQFM8HVtkHPQ48rNIAAAAASUVORK5CYII=" else "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJBAMAAAASvxsjAAAAG1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACUUeIgAAAACHRSTlMAMN9AIL8Qn+Bdi9cAAAA4SURBVHheFcSxDQAgCATANzoAcQKNjSWxcgFncQ2gcmzhikOgKLe4CgonIxxZA9g6yX8dvrF/1fuGOAZL4rd0JQAAAABJRU5ErkJggg==") + """);
   background-attachment: scroll;
   background-repeat: no-repeat;
   background-position: bottom right;
@@ -1950,25 +1950,25 @@ div.post div.postInfo span.postNum a:hover,
 div.postContainer span.postNum > .replylink:hover,
 .nameBlock > .useremail > .name:hover,
 .nameBlock > .useremail > .postertrip:hover {
-  color: ' + theme["Hovered Links"] + ';
+  color: """ + theme["Hovered Links"] + """;
 }
 .boardBanner a:hover,
 #boardNavDesktop a:hover {
-  color: ' + theme["Hovered Navigation Links"] + ';
+  color: """ + theme["Hovered Navigation Links"] + """;
 }
 .boardBanner {
-  color: ' + theme["Board Title"] + ';
+  color: """ + theme["Board Title"] + """;
 }
 .name {
-  color: ' + theme["Names"] + ' !important;
+  color: """ + theme["Names"] + """ !important;
 }
 .postertrip,
 .trip {
-  color: ' + theme["Tripcodes"] + ' !important;
+  color: """ + theme["Tripcodes"] + """ !important;
 }
 .nameBlock > .useremail > .postertrip,
 .nameBlock > .useremail > .name {
-  color: ' + theme["Emails"] + ';
+  color: """ + theme["Emails"] + """;
 }
 .nameBlock > .useremail > .name,
 .name {
@@ -1978,19 +1978,19 @@ a.forwardlink {
   border-bottom: 1px dashed;
 }
 .qphl {
-  outline-color: ' + theme["Backlinked Reply Outline"] + ';
+  outline-color: """ + theme["Backlinked Reply Outline"] + """;
 }
-#qr input:' + agent + 'placeholder,
-#qr textarea:' + agent + 'placeholder {
-  color: ' + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)") + ' !important;
+#qr input:""" + agent + """placeholder,
+#qr textarea:""" + agent + """placeholder {
+  color: """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)") + """ !important;
 }
 .boxcontent dd,
 #options ul {
-  border-color: ' + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + ';
+  border-color: """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + """;
 }
-' + theme['Custom CSS']
-      if theme['Dark Theme'] == '1'
-        css += '
+""" + theme["Custom CSS"]
+      if theme["Dark Theme"] == "1"
+        css += """
 .prettyprint {
   background-color: rgba(255,255,255,.1);
   border: 1px solid rgba(0,0,0,0.5);
@@ -2050,9 +2050,9 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #imgControls label:first-of-type::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAALlJREFUKFOFkT0KwlAQhANWaUSb+AciVmLlSZLcVhttBH9QjyIIHiDOF2ZhOxeGebM7b3dfUnRdVwmN0Aq1UAqFGU2eekWSQ8RTh6HNMDqiwczNiJsnkR8Jx1RrSTKKDlE467wR9jY+XK9jN0bSKQwfGy/iqVcrMWespd82fsW7XP/XmZUmuXPsfHLHq3grHKzveef8NXjozKPH4mjAvf5rZPNLGtPAjI7ozUtfiD+1kp4LPLZxDV78APzYoty/jZXwAAAAAElFTkSuQmCC");
 }
-'
+"""
       else
-        css += '
+        css += """
 .prettyprint {
   background-color: #e7e7e7;
   border: 1px solid #dcdcdc;
@@ -2112,125 +2112,125 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #imgControls label:first-of-type::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAMRJREFUKFNtks0OAUEQhOdM4iBx8XMSwb6En0dw89CciQMXvIIb9XW6pXfYpDKlu6rV9G4ppfSElbB2THTGA486GrQmfjteOnfJAKcWfbQ2IQp38WkyDMWvqY/WDEyJxkl8JoyFg4sfrjEDOflrpoUAU/CLD0CT72dB8lRiIp6niD+0NkS8lvBfJCYfPf9ZJ4v4RqovjXjh8cLUujSGWOuzyjzS71vq25a2qcB690JH6DrPL26DYSDkT2PpNeqNwFSApv8BTpBEE3rYF6oAAAAASUVORK5CYII=");
 }
-'
-      switch Conf['4chan Banner']
-        when 'in sidebar'
+"""
+      switch Conf["4chan Banner"]
+        when "in sidebar"
           logoOffset = 83 + sidebarOffsetH
-          css += '
+          css += """
 .boardBanner img {
   position: fixed;
-  width: ' + (248 + sidebarOffsetW) + 'px;
+  width: """ + (248 + sidebarOffsetW) + """px;
   top: 19px;
   right: 2px;
 }
-'
-        when 'at top'
+"""
+        when "at top"
           logoOffset = 0
-        when 'hide'
+        when "hide"
           logoOffset = 0
-          css += '
+          css += """
 .boardBanner img {
   display: none;
 }
-'
+"""
 
-      css += '
+      css += """
 #watcher::before {
-	top: ' + (20 + logoOffset) + 'px;
+	top: """ + (20 + logoOffset) + """px;
 }
 #watcher:hover {
-	top: ' + (34 + logoOffset) + 'px;
+	top: """ + (34 + logoOffset) + """px;
 }
 #watcher {
 	position: fixed;
-	top: ' + (34 + logoOffset) + 'px;
+	top: """ + (34 + logoOffset) + """px;
 }
 #boardNavDesktopFoot::after {
-	top: ' + (19 + logoOffset) + 'px;
+	top: """ + (19 + logoOffset) + """px;
 }
 #boardNavDesktopFoot:hover {
-	top: ' + (34 + logoOffset) + 'px;
+	top: """ + (34 + logoOffset) + """px;
 }
 #navtopright .settingsWindowLink::after {
-	top: ' + (19 + logoOffset) + 'px;
+	top: """ + (19 + logoOffset) + """px;
 }
 #settingsBox {
-	top: ' + (25 + logoOffset) + 'px;
+	top: """ + (25 + logoOffset) + """px;
 }
 body > a[style="cursor: pointer; float: right;"]::after {
-	top: ' + (19 + logoOffset) + 'px;
+	top: """ + (19 + logoOffset) + """px;
 }
 .globalMessage::before {
-	top: ' + (19 + logoOffset) + 'px;
+	top: """ + (19 + logoOffset) + """px;
 }
 .globalMessage:hover {
-	top: ' + (34 + logoOffset) + 'px;
+	top: """ + (34 + logoOffset) + """px;
 }
-'
+"""
 
-      switch Conf['Board Logo']
-        when 'in sidebar'
-          css += '
+      switch Conf["Board Logo"]
+        when "in sidebar"
+          css += """
 .boardTitle {
   position: fixed;
   left: auto;
   right: 2px;
-  top: ' + (45 + logoOffset) + 'px;
+  top: """ + (45 + logoOffset) + """px;
   z-index: 1;
-  width: ' + (248 + sidebarOffsetW) + 'px;
+  width: """ + (248 + sidebarOffsetW) + """px;
 }
 .boardSubtitle {
   display: none;
 }
-'
-        when 'hide'
-          css += '
+"""
+        when "hide"
+          css += """
 .boardTitle,
 .boardSubtitle {
   display: none;
 }
-'
+"""
 
-      switch Conf['Post Form Style']
-        when 'fixed'
-          css += '
+      switch Conf["Post Form Style"]
+        when "fixed"
+          css += """
 #qr {
   right: 2px !important;
   left: auto !important;
 }
-'
-        when 'slideout'
-          css += '
+"""
+        when "slideout"
+          css += """
 #qr {
-  right: -' + (233 + sidebarOffsetW) + 'px !important;
+  right: -""" + (233 + sidebarOffsetW) + """px !important;
   left: auto !important;
-  ' + agent + 'transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
+  """ + agent + """transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
   right: 2px !important;
   left: auto !important;
-  ' + agent + 'transition: right .3s linear, left .3s linear;
+  """ + agent + """transition: right .3s linear, left .3s linear;
 }
-'
-        when 'tabbed slideout'
-          css += '
+"""
+        when "tabbed slideout"
+          css += """
 #qr {
-  right: -' + (249 + sidebarOffsetW) + 'px !important;
+  right: -""" + (249 + sidebarOffsetW) + """px !important;
   left: auto !important;
-  ' + agent + 'transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
+  """ + agent + """transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
   right: 2px !important;
   left: auto !important;
-  ' + agent + 'transition: right .3s linear, left .3s linear;
+  """ + agent + """transition: right .3s linear, left .3s linear;
 }
 #qr::before {
-  ' + agent + 'transform: rotate(-90deg);
-  ' + agent + 'transform-origin: bottom right;
+  """ + agent + """transform: rotate(-90deg);
+  """ + agent + """transform-origin: bottom right;
   margin-left: -210px;
   margin-right: 264px;
   margin-bottom: -20px;
@@ -2243,33 +2243,33 @@ body > a[style="cursor: pointer; float: right;"]::after {
   content: "Post Form";
   padding-top: 3px;
   vertical-align: middle;
-  color: ' + theme["Text"] + ';
-  ' + agent + 'transition: opacity .3s ease-in-out 1s;
+  color: """ + theme["Text"] + """;
+  """ + agent + """transition: opacity .3s ease-in-out 1s;
 }
 #qr:hover::before,
 #qr.focus::before,
 #qr.dump::before {
   opacity: 0;
-  ' + agent + 'transition: opacity .3s linear;
+  """ + agent + """transition: opacity .3s linear;
 }
-'
-        when 'transparent fade'
-          css += '
+"""
+        when "transparent fade"
+          css += """
 #qr {
   right: 2px !important;
   left: auto !important;
   opacity: 0.2;
-  ' + agent + 'transition: opacity .3s ease-in-out 1s;
+  """ + agent + """transition: opacity .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
   opacity: 1;
-  ' + agent + 'transition: opacity .3s linear;
+  """ + agent + """transition: opacity .3s linear;
 }
-'
-      if Conf['Fit Width Replies']
-        css += '
+"""
+      if Conf["Fit Width Replies"]
+        css += """
 .summary {
   clear: both;
   padding-left: 20px;
@@ -2309,7 +2309,7 @@ form .replyContainer:not(:hover) div.reply .menu_button,
 form .replyContainer:not(:hover) .sideArrows,
 form .replyContainer:not(:hover) .postInfo input,
 .postInfo .rice {
-  ' + agent + 'transition: opacity .3s ease-out 0s;
+  """ + agent + """transition: opacity .3s ease-out 0s;
 }
 form .replyContainer:hover div.reply .report_button,
 form .replyContainer:hover div.reply .menu_button,
@@ -2317,7 +2317,7 @@ form .replyContainer:hover .sideArrows,
 .replyContainer:hover .postInfo input,
 .replyContainer:hover .postInfo .rice {
   opacity: 1;
-  ' + agent + 'transition: opacity .3s ease-in 0s;
+  """ + agent + """transition: opacity .3s ease-in 0s;
 }
  div.reply input:checked {
   opacity: 1;
@@ -2378,9 +2378,9 @@ div.sideArrows {
 #options.reply {
   display: inline-block;
 }
-'
+"""
       else
-        css += '
+        css += """
 .sideArrows a {
   font-size: 9px;
 }
@@ -2438,48 +2438,48 @@ div.reply {
 form .postContainer blockquote {
   margin-left: 30px;
 }
-'
+"""
 
-      switch Conf['Page Margin']
-        when 'none'
-          pagemargin = '2px'
-        when 'small'
-          pagemargin = '50px'
-        when 'medium'
-          pagemargin = '150px'
-        when 'fully centered'
-          pagemargin = (248 + sidebarOffsetW) + 'px'
-        when 'large'
-          pagemargin = '350px'
+      switch Conf["Page Margin"]
+        when "none"
+          pagemargin = "2px"
+        when "small"
+          pagemargin = "50px"
+        when "medium"
+          pagemargin = "150px"
+        when "fully centered"
+          pagemargin = (248 + sidebarOffsetW) + "px"
+        when "large"
+          pagemargin = "350px"
 
       if editMode
-        pagemargin = '300px'
+        pagemargin = "300px"
 
-      if Conf['Sidebar'] != 'hide'
-        css += '
+      if Conf["Sidebar"] != "hide"
+        css += """
 body {
-  margin: 1px ' + (252 + sidebarOffsetW) + 'px 0 ' + pagemargin + ';
+  margin: 1px """ + (252 + sidebarOffsetW) + """px 0 """ + pagemargin + """;
 }
 #boardNavDesktop,
 .pages {
-  left:  ' + pagemargin + ';
-  right: ' + (252 + sidebarOffsetW) + 'px;
+  left:  """ + pagemargin + """;
+  right: """ + (252 + sidebarOffsetW) + """px;
 }
-'
+"""
       else
-        css += '
+        css += """
 body {
-  margin: 1px ' + pagemargin + ' 0 ' + pagemargin + ';
+  margin: 1px """ + pagemargin + """ 0 """ + pagemargin + """;
 }
 #boardNavDesktop,
 .pages {
-  left:  ' + pagemargin + ';
-  right: ' + pagemargin + ';
+  left:  """ + pagemargin + """;
+  right: """ + pagemargin + """;
 }
-'
+"""
 
-      if Conf['Compact Post Form Inputs']
-        css += '
+      if Conf["Compact Post Form Inputs"]
+        css += """
 #qr textarea.field {
   height: 114px !important;
 }
@@ -2489,47 +2489,47 @@ body {
 #qr .field[name="name"],
 #qr .field[name="email"],
 #qr .field[name="sub"] {
-  width: ' + (75 + (sidebarOffsetW / 3)) + 'px !important;
+  width: """ + (75 + (sidebarOffsetW / 3)) + """px !important;
   margin-left: 1px !important;
 }
-'
+"""
       else
-        css += '
+        css += """
 #qr .field[name="email"],
 #qr .field[name="sub"] {
-  width: ' + (248 + sidebarOffsetW) + 'px !important;
+  width: """ + (248 + sidebarOffsetW) + """px !important;
 }
 #qr .field[name="name"] {
-  width: ' + (227 + sidebarOffsetW) + 'px !important;
+  width: """ + (227 + sidebarOffsetW) + """px !important;
   margin-left: 1px !important;
 }
 #qr .field[name="email"],
 #qr .field[name="sub"] {
   margin-top: 1px;
 }
-'
+"""
 
-      if Conf['Expand Post Form Textarea']
-        css += '
+      if Conf["Expand Post Form Textarea"]
+        css += """
 #qr textarea {
   display: block;
-  ' + agent + 'transition: all 0.25s ease 0s, width .3s ease-in-out .3s;
+  """ + agent + """transition: all 0.25s ease 0s, width .3s ease-in-out .3s;
   float: right;
 }
 #qr textarea:focus {
   width: 400px;
 }
-'
+"""
 
-      if Conf['Filtered Backlinks']
-        css += '
+      if Conf["Filtered Backlinks"]
+        css += """
 .filtered.backlink {
   display: none;
 }
-'
+"""
 
-      if Conf['Rounded Edges']
-        css += '
+      if Conf["Rounded Edges"]
+        css += """
 .rice {
   border-radius: 2px;
 }
@@ -2552,41 +2552,41 @@ h2,
   border-radius: 6px 6px 0 0;
 }
 .qphl {
-  ' + agent + 'outline-radius: 3px;
+  """ + agent + """outline-radius: 3px;
 }
-'
+"""
 
-      if Conf['Slideout Watcher']
-        css += '
+      if Conf["Slideout Watcher"]
+        css += """
 #watcher {
   position: fixed;
   top: -1000px !important;
   right: 2px !important;
   left: auto !important;
   bottom: auto !important;
-  width: ' + (246 + sidebarOffsetW) + 'px !important;
+  width: """ + (246 + sidebarOffsetW) + """px !important;
   padding-bottom: 4px;
 }
 #watcher:hover {
   z-index: 99 !important;
-  top: ' + ( 34 + logoOffset) + 'px !important;
+  top: """ + ( 34 + logoOffset) + """px !important;
 }
-'
+"""
       else
-        css += '
+        css += """
 #watcher::before {
   display: none;
 }
 #watcher {
   right: 2px !important;
   left: auto !important;
-  width: ' + (246 + sidebarOffsetW) + 'px;
+  width: """ + (246 + sidebarOffsetW) + """px;
   padding-bottom: 4px;
   z-index: 96;
 }
-'
-      if Conf['Underline Links']
-        css += '
+"""
+      if Conf["Underline Links"]
+        css += """
 #credits a,
 .abbr a,
 .backlink:not(.filtered),
@@ -2605,11 +2605,11 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
 div.postContainer span.postNum > .replylink {
   text-decoration: underline;
 }
-'
+"""
 
-      switch Conf['Slideout Navigation']
-        when 'compact'
-          css += '
+      switch Conf["Slideout Navigation"]
+        when "compact"
+          css += """
 #boardNavDesktopFoot {
   height: 84px;
   padding-bottom: 0px;
@@ -2619,9 +2619,9 @@ div.postContainer span.postNum > .replylink {
 #navbotright {
   display: none;
 }
-'
-        when 'list'
-          css += '
+"""
+        when "list"
+          css += """
 #boardNavDesktopFoot a {
   z-index: 1;
   display: block;
@@ -2650,75 +2650,75 @@ div.postContainer span.postNum > .replylink {
 #navbotright {
   display: none;
 }
-'
-        when 'hide'
-          css += '
+"""
+        when "hide"
+          css += """
 #boardNavDesktopFoot::after,
 #boardNavDesktopFoot {
   display: none;
 }
-'
+"""
 
-      switch Conf['Reply Spacing']
-        when 'none'
-          css += '
+      switch Conf["Reply Spacing"]
+        when "none"
+          css += """
 .replyContainer {
   margin-bottom: 0px;
 }
 #delform {
   margin-bottom: 12px;
 }
-'
-        when 'small'
-          css += '
+"""
+        when "small"
+          css += """
 .replyContainer {
   margin-bottom: 2px;
 }
 #delform {
   margin-bottom: 10px;
 }
-'
-        when 'medium'
-          css += '
+"""
+        when "medium"
+          css += """
 .replyContainer {
   margin-bottom: 4px;
 }
 #delform {
   margin-bottom: 8px;
 }
-'
-        when 'large'
-          css += '
+"""
+        when "large"
+          css += """
 .replyContainer {
   margin-bottom: 6px;
 }
 #delform {
   margin-bottom: 6px;
 }
-'
+"""
 
-      switch Conf['Sage Highlighting']
-        when 'text'
-          css += '
+      switch Conf["Sage Highlighting"]
+        when "text"
+          css += """
 a.useremail[href*="sage"]:last-of-type::after,
 a.useremail[href*="Sage"]:last-of-type::after,
 a.useremail[href*="SAGE"]:last-of-type::after {
   content: " (sage) ";
-  color: ' + theme["Sage"] + ';
+  color: """ + theme["Sage"] + """;
 }
-'
-        when 'image'
-          css += '
+"""
+        when "image"
+          css += """
 a.useremail[href*="sage"]:last-of-type::after,
 a.useremail[href*="Sage"]:last-of-type::after,
 a.useremail[href*="SAGE"]:last-of-type::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=") "  ";
 }
-'
+"""
 
-      switch Conf['Announcements']
-        when '4chan default'
-          css += '
+      switch Conf["Announcements"]
+        when "4chan default"
+          css += """
 .globalMessage {
   position: static;
   background: none;
@@ -2731,85 +2731,85 @@ a.useremail[href*="SAGE"]:last-of-type::after {
 .globalMessage:hover {
   top: 0px;
 }
-'
-        when 'slideout'
-          css += '
+"""
+        when "slideout"
+          css += """
 .globalMessage:hover {
   position: fixed;
   z-index: 99;
 }
 .globalMessage {
-  width: ' + (236 + sidebarOffsetW) + 'px;
-  background: ' + theme["Dialog Background"] + ';
-  border: 1px solid ' + theme["Dialog Border"]  + ';
+  width: """ + (236 + sidebarOffsetW) + """px;
+  background: """ + theme["Dialog Background"] + """;
+  border: 1px solid """ + theme["Dialog Border"]  + """;
 }
-'
-        when 'hide'
-          css += '
+"""
+        when "hide"
+          css += """
 .globalMessage {
   display: none;
 }
 .globalMessage::before {
   display: none;
 }
-'
+"""
 
-      switch Conf['Boards Navigation']
-        when 'sticky top'
-          css += '
+      switch Conf["Boards Navigation"]
+        when "sticky top"
+          css += """
 #boardNavDesktop {
   position: fixed;
   top: 0;
 }
-'
-        when 'sticky bottom'
-          css += '
+"""
+        when "sticky bottom"
+          css += """
 #boardNavDesktop {
   position: fixed;
   bottom: 0;
 }
-'
-        when 'top'
-          css += '
+"""
+        when "top"
+          css += """
 #boardNavDesktop {
   position: absolute;
   top: 0;
 }
-'
-        when 'hide'
-          css += '
+"""
+        when "hide"
+          css += """
 #boardNavDesktop {
   position: absolute;
   top: -100px;
 }
-'
+"""
 
-      switch Conf['Pagination']
-        when 'sticky top'
-          css += '
+      switch Conf["Pagination"]
+        when "sticky top"
+          css += """
 .pages {
   position: fixed;
   top: 0;
   z-index: 101;
 }
-'
-        when 'sticky bottom'
-          css += '
+"""
+        when "sticky bottom"
+          css += """
 .pages {
   position: fixed;
   bottom: 0;
   z-index: 101;
 }
-'
-        when 'top'
-          css += '
+"""
+        when "top"
+          css += """
 .pages {
   position: absolute;
   top: 0;
 }
-'
-        when 'on side'
-         css += '
+"""
+        when "on side"
+         css += """
 .pages {
   padding: 0;
   visibility: hidden;
@@ -2817,10 +2817,10 @@ a.useremail[href*="SAGE"]:last-of-type::after {
   bottom: 175px;
   width: 290px;
   left: auto;
-  right: ' + (251 + sidebarOffsetW) + 'px;
+  right: """ + (251 + sidebarOffsetW) + """px;
   position: fixed;
-  ' + agent + 'transform: rotate(90deg);
-  ' + agent + 'transform-origin: bottom right;
+  """ + agent + """transform: rotate(90deg);
+  """ + agent + """transform-origin: bottom right;
   letter-spacing: -1px;
   word-spacing: -6px;
   z-index: 6;
@@ -2832,66 +2832,57 @@ a.useremail[href*="SAGE"]:last-of-type::after {
   visibility: visible;
   min-width: 0;
 }
-'
-        when 'hide'
-          css += '
+"""
+        when "hide"
+          css += """
 .pages {
   display: none;
 }
-'
+"""
       switch Conf["Checkboxes"]
         when "show"
-          css += '
+          css += """
 input[type=checkbox] {
   display: none;
 }
-'
+"""
         when "make checkboxes circular"
-          css += '
+          css += """
 input[type=checkbox] {
   display: none;
 }
 .rice {
   border-radius: 6px;
 }
-'
+"""
         when "do not style checkboxes"
-          css += '
+          css += """
 .rice {
   display: none;
 }
-'
+"""
         when "hide"
-          css += '
+          css += """
 input[type=checkbox] {
   display: none;
 }
 .rice {
   display: none;
 }
-'
+"""
 
       if Conf["Mascots"]
         css += MascotTools.init()
 
       if Conf["Block Ads"]
-        css += '
+        css += """
 /* AdBlock Minus */
 a[href*="jlist"],
 img[src^="//static.4chan.org/support/"] {
   display: none;
 }
-'
-      unless Conf['Emoji'] == 'disable'
-        if Conf['Emoji Position'] == 'hide'
-          $.set 'Emoji', 'disable'
-          Conf['Emoji'] = 'disable'
-        if Conf['Emoji Position'] == 'left' or Conf['Emoji Position'] == 'hide'
-          Conf['Emoji Position'] == 'before'
-          $.set 'Emoji Position', 'before'
-        if Conf['Emoji Position'] == 'right'
-          Conf['Emoji Position'] == 'after'
-          $.set 'Emoji Position', 'after'
-        css += Style.emoji Conf['Emoji Position']
+"""
+      unless Conf["Emoji"] == "disable"
+        css += Style.emoji Conf["Emoji Position"]
 
     return css
