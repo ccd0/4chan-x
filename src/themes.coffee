@@ -708,7 +708,6 @@ Mascots =
   'Akiyama_Mio_sitting':
     category:   'SFW'
     image:      'http://i.imgur.com/0x4Rr.png'
-    center:     true
   'Anime_Girl_in_Bondage':
     category:   'NSFW'
     image:      'http://i.imgur.com/B3h3c.png'

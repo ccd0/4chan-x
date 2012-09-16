@@ -989,8 +989,7 @@
     },
     'Akiyama_Mio_sitting': {
       category: 'SFW',
-      image: 'http://i.imgur.com/0x4Rr.png',
-      center: true
+      image: 'http://i.imgur.com/0x4Rr.png'
     },
     'Anime_Girl_in_Bondage': {
       category: 'NSFW',
@@ -2204,11 +2203,16 @@
       }
       return _results;
     },
-    dialog: function() {
+    dialog: function(tab) {
       var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, time, tr, ul, _i, _len, _ref, _ref1, _ref2, _ref3;
       if (editMode) {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
-          ThemeTools.close();
+          try {
+            ThemeTools.close();
+          } catch (_error) {}
+          try {
+            MascotTools.close();
+          } catch (_error) {}
           editMode = false;
         } else {
           return;
@@ -2451,7 +2455,8 @@
             innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + mascot.image + ");'></div><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span>"
           });
           $.on($('a.edit', li), 'click', function() {
-            return editMascot.init(this.name);
+            MascotTools.dialog(this.name);
+            return Options.close();
           });
           $.on($('a.delete', li), 'click', function() {
             var container;
@@ -2488,7 +2493,7 @@
       $.add($('#mascot_tab + div', dialog), parentdiv);
       batchmascots = $.el('div', {
         id: "mascots_batch",
-        innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a>"
+        innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a> / <a href=\"javascript:;\" id=\"createNew\">New Mascot</a>"
       });
       $.on($('#clear', batchmascots), 'click', function() {
         var mascotname, _results;
@@ -2520,9 +2525,21 @@
         }
         return _results;
       });
+      $.on($('#createNew', batchmascots), 'click', function() {
+        try {
+          MascotTools.dialog();
+          return Options.close();
+        } catch (err) {
+          return console.log(err);
+        }
+      });
       $.add($('#mascot_tab + div', dialog), batchmascots);
       Options.applyStyle(dialog, 'mascot_tab');
       Options.indicators(dialog);
+      if (tab) {
+        $("#main_tab", dialog).checked = false;
+        $("#" + tab + "_tab", dialog).checked = true;
+      }
       overlay = $.el('div', {
         id: 'overlay'
       });
@@ -7310,7 +7327,7 @@
           item = layout[_k];
           div = $.el("div", {
             className: "themevar",
-            innerHTML: "<div class=optionname>" + item + "</div><div class=option><input class=field name='" + item + "' placeholder='" + item + "' value='" + editTheme[item] + "'>"
+            innerHTML: "<div class=optionname>" + item + "</div><div class=option><input type=text class=field name='" + item + "' placeholder='" + item + "' value='" + editTheme[item] + "'>"
           });
           $.on($('input', div), 'blur', function() {
             var depth, i, toggle1, toggle2, _l, _ref1;
@@ -7370,13 +7387,14 @@
       newTheme = false;
       editMode = false;
       $.rm($("#themeConf", d.body));
-      return Style.addStyle(Conf["Style"]);
+      Style.addStyle(Conf["Style"]);
+      return Options.dialog("theme");
     }
   };
 
   MascotTools = {
     init: function() {
-      var div, mascot, mascotnames, mascotposition, name, result;
+      var mascot, mascotnames, mascotposition, name, result;
       if (Conf['Post Form Style'] === "fixed" || Conf['Post Form Style'] === "transparent fade") {
         mascotposition = '264';
       } else {
@@ -7384,9 +7402,6 @@
       }
       if (!editMode) {
         mascotnames = [];
-        try {
-          $.rm($('#mascot', d.body));
-        } catch (_error) {}
         for (name in userMascots) {
           mascot = userMascots[name];
           if (enabledmascots[name] === true) {
@@ -7397,31 +7412,28 @@
           return;
         }
         mascot = userMascots[Conf["mascot"]];
+        this.addMascot(mascot);
       } else {
-        if (!(mascot = userMascots[Conf["mascot"]])) {
+        if (!(mascot = editMascot || (mascot = userMascots[Conf["mascot"]]))) {
           return;
         }
       }
-      div = $.el('div', {
-        id: "mascot"
-      });
-      div.innerHTML = "<img src='" + mascot.image + "'>";
-      $.ready(function() {
-        return $.add(d.body, div);
-      });
-      result = "#mascot img {  position: fixed;  z-index:  " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";  bottom:   " + (mascot.position === 'bottom' ? 0 + (mascot.vOffset || 0) + "px" : mascot.position === 'top' ? "auto" : (mascotposition + (mascot.vOffset || 0)) + "px") + ";  right:    " + (mascot.hoffset || 0 + (!(Conf['Sidebar'] === 'large' && mascot.center) ? 0 : 25)) + "px;  top:      " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";  left:     auto;  pointer-events: none;}";
+      result = "#mascot img {  position: fixed;  z-index:  " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";  bottom:   " + (mascot.position === 'bottom' ? 0 + (mascot.vOffset || 0) + "px" : mascot.position === 'top' ? "auto" : (mascotposition + (mascot.vOffset || 0)) + "px") + ";  right:    " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;  top:      " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";  left:     auto;  pointer-events: none;}";
       return result;
     },
     dialog: function(key) {
-      var dialog, div, item, layout, _i, _len;
-      editMascot = userThemes[key] || {};
+      var dialog, div, item, layout, name, option, optionHTML, value, _i, _len, _ref;
+      editMode = true;
+      editMascot = userMascots[key] || {};
       editMascot.name = key || '';
+      MascotTools.addMascot(editMascot);
+      Style.addStyle(Conf["theme"]);
       layout = {
         name: ["Mascot Name", "", "The name of the Mascot", "text"],
         image: ["Image", "", "Image of Mascot. Accepts Base64 as well as URLs.", "text"],
         position: ["Position", "default", "Where the mascot is anchored in the Sidebar. The default option places the mascot above the Post Form or on the bottom of the page, depending on the Post Form setting.", "select", ["default", "top", "bottom"]],
-        vOffset: ["Vertical Offset", 0, "This value moves the mascot vertically away from the anchor point, in pixels (the post form is exactly \"264\" pixels tall if you'd like to force the mascot to sit above it).", "number"],
-        hOffset: ["Horizontal Offset", 0, "This value moves the mascot further away from the edge of the screen, in pixels.", "number"],
+        vOffset: ["Vertical Offset", "", "This value moves the mascot vertically away from the anchor point, in pixels (the post form is exactly \"266\" pixels tall if you'd like to force the mascot to sit above it).", "number"],
+        hOffset: ["Horizontal Offset", "", "This value moves the mascot further away from the edge of the screen, in pixels.", "number"],
         center: ["Center Mascot", false, "If this is enabled, Appchan X will attempt to pad the mascot with 25 pixels of Horizontal Offset when the \"Sidebar Setting\" is set to \"large\" in an attempt to \"re-center\" the mascot. If you are having problems placing your mascot properly, ensure this is not enabled.", "checkbox"]
       };
       dialog = $.el("div", {
@@ -7429,22 +7441,120 @@
         className: "reply dialog",
         innerHTML: "<div id=mascotbar></div><hr><div id=mascotcontent></div><div id=save>  <a href='javascript:;'>Save Mascot</a></div><div id=cancel>  <a href='javascript:;'>Cancel</a></div>"
       });
-      for (_i = 0, _len = layout.length; _i < _len; _i++) {
-        item = layout[_i];
-        div = $.el("div", {
-          className: "themevar",
-          innerHTML: "<div class=optionname>" + item + "</div><div class=option><input class=field name='" + item + "' placeholder='" + item + "' value='" + editTheme[item] + "'>"
-        });
-        $.on($('input', div), 'blur', function() {
-          editTheme[this.name] = this.value;
-          return Style.addStyle(editTheme);
-        });
-        $.add($("#themecontent", dialog), div);
+      for (name in layout) {
+        item = layout[name];
+        switch (item[3]) {
+          case "text":
+            div = this.input(item, name);
+            if (name === 'image') {
+              $.on($('input', div), 'blur', function() {
+                editMascot[this.name] = this.value;
+                MascotTools.addMascot(editMascot);
+                return Style.addStyle(Conf["theme"]);
+              });
+            } else {
+              $.on($('input', div), 'blur', function() {
+                editMascot[this.name] = this.value;
+                return Style.addStyle(Conf["theme"]);
+              });
+            }
+            break;
+          case "number":
+            div = this.input(item, name);
+            $.on($('input', div), 'blur', function() {
+              editMascot[this.name] = parseInt(this.value, 10);
+              return Style.addStyle(Conf["theme"]);
+            });
+            break;
+          case "select":
+            optionHTML = "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><select name='" + name + "'><br>";
+            _ref = item[4];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              option = _ref[_i];
+              optionHTML = optionHTML + ("<option value=\"" + option + "\">" + option + "</option>");
+            }
+            optionHTML = optionHTML + "</select>";
+            div = $.el('div', {
+              className: "mascotvar",
+              innerHTML: optionHTML
+            });
+            $.on($('select', div), 'change', function() {
+              editMascot[this.name] = this.value;
+              return Style.addStyle(Conf["theme"]);
+            });
+            break;
+          case "checkbox":
+            value = editMascot[name] || item[1];
+            console.log(value);
+            div = $.el("div", {
+              className: "mascotvar",
+              innerHTML: "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><input type=" + item[3] + " class=field name='" + name + "' " + (value ? 'checked' : void 0) + "></div>"
+            });
+            $.on($('input', div), 'click', function() {
+              editMascot[this.name] = this.checked ? true : false;
+              return Style.addStyle(Conf["theme"]);
+            });
+        }
+        $.add($("#mascotcontent", dialog), div);
       }
       $.on($('#save > a', dialog), 'click', function() {
-        return ThemeTools.save(editTheme);
+        return MascotTools.save(editMascot);
       });
-      return $.on($('#cancel > a', dialog), 'click', ThemeTools.close);
+      $.on($('#cancel > a', dialog), 'click', MascotTools.close);
+      $.add(d.body, dialog);
+      return Style.allrice();
+    },
+    input: function(item, name) {
+      var div, value;
+      value = editMascot[name] || item[1];
+      div = $.el("div", {
+        className: "mascotvar",
+        innerHTML: "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><input type=" + item[3] + " class=field name='" + name + "' placeholder='" + item[0] + "' value='" + value + "'></div>"
+      });
+      return div;
+    },
+    addMascot: function(mascot) {
+      var div;
+      try {
+        $.rm($('#mascot', d.body));
+      } catch (_error) {}
+      div = $.el('div', {
+        id: "mascot"
+      });
+      div.innerHTML = "<img src='" + mascot.image + "'>";
+      return $.ready(function() {
+        return $.add(d.body, div);
+      });
+    },
+    save: function(mascot) {
+      var aname;
+      aname = mascot.name;
+      if (typeof aname === "undefined" || aname === "") {
+        alert("Please name your mascot.");
+        return;
+      }
+      mascot["Deleted"] = false;
+      delete mascot.name;
+      if (userMascots[aname] && !userMascots[aname]["Deleted"]) {
+        if (confirm("A mascot named " + aname + " already exists. Would you like to over-write?")) {
+          delete userMascots[aname];
+        } else {
+          alert("" + aname + " aborted.");
+          return;
+        }
+      }
+      userMascots[aname] = mascot;
+      $.set('userMascots', userMascots);
+      Conf["mascot"] = aname;
+      alert("Mascot \"" + aname + "\" saved.");
+      return MascotTools.close();
+    },
+    close: function() {
+      editMode = false;
+      editMascot = {};
+      $.rm($("#mascotConf", d.body));
+      Style.addStyle(Conf["Style"]);
+      return Options.dialog("mascot");
     }
   };
 
@@ -7964,6 +8074,23 @@ h1,\
   border: 2px solid rgba(0,0,0,0.5);\
   background-color: rgba(255,255,255,0.1);\
 }\
+#mascotConf {\
+  position: fixed;\
+  height: 400px;\
+  bottom: 0;\
+  left: 50%;\
+  width: 500px;\
+  margin-left: -250px;\
+  overflow: auto;\
+}\
+#mascotConf input,\
+#mascotConf input:' + agent + 'placeholder {\
+  text-align: center;\
+}\
+#mascotConf h2 {\
+  margin: 10px 0 0;\
+  font-size: 14px;\
+}\
 #content {\
   overflow: auto;\
   position: absolute;\
@@ -7973,6 +8100,7 @@ h1,\
   left: 5px;\
 }\
 .suboptions,\
+#mascotcontent,\
 #themecontent {\
   overflow: auto;\
   position: absolute;\
@@ -7980,11 +8108,15 @@ h1,\
   bottom: 1.5em;\
   left: 0;\
 }\
+#mascotcontent,\
 .suboptions {\
   top: 0;\
 }\
 #themecontent {\
   top: 1.5em;\
+}\
+#mascotcontent {\
+  text-align: center;\
 }\
 #save,\
 .stylesettings {\
@@ -8294,6 +8426,7 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {\
   font-style: normal;\
 }\
 /* Z-INDEXES */\
+#mascotConf,\
 #options.reply.dialog,\
 #themeConf {\
   z-index: 999 !important;\
@@ -9261,7 +9394,8 @@ body {\
   background-position: ' + theme["Background Position"] + ';\
 }\
 #content,\
-#themecontent {\
+#themecontent,\
+#mascotcontent {\
   background: ' + theme["Background Color"] + ';\
   border: 1px solid ' + theme["Reply Border"] + ';\
   padding: 5px;\
@@ -9355,6 +9489,7 @@ div.reply {\
   border: 1px solid ' + theme["Thread Wrapper Border"] + ';\
 }\
 #boardNavDesktopFoot,\
+#mascotConf,\
 #themeConf,\
 #watcher,\
 #watcher:hover,\

@@ -16,10 +16,11 @@ Options =
           Style.allrice()
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
-  dialog: ->
+  dialog: (tab) ->
     if editMode
       if confirm "Opening the options dialog will close and discard any theme changes made with the theme editor."
-        ThemeTools.close()
+        try ThemeTools.close()
+        try MascotTools.close()
         editMode = false
       else
         return
@@ -250,7 +251,8 @@ Options =
 <span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a></span>
 "
         $.on $('a.edit', li), 'click', ->
-          editMascot.init @name
+          MascotTools.dialog @name
+          Options.close()
         $.on $('a.delete', li), 'click', ->
           container = @.parentElement
           if confirm "Are you sure you want to delete \"#{@name}\"?"
@@ -277,7 +279,7 @@ Options =
     $.add $('#mascot_tab + div', dialog), parentdiv
     batchmascots = $.el 'div',
       id:        "mascots_batch"
-      innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a>"
+      innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a> / <a href=\"javascript:;\" id=\"createNew\">New Mascot</a>"
     $.on $('#clear', batchmascots), 'click', ->
       for mascotname, mascot of enabledmascots
         if enabledmascots[mascotname] == true
@@ -290,11 +292,21 @@ Options =
           $.addClass $('#' + mascotname, @parentElement.parentElement), 'enabled'
           $.set mascotname, true
           enabledmascots[mascotname] = true
+    $.on $('#createNew', batchmascots), 'click', ->
+      try 
+        MascotTools.dialog()
+        Options.close()
+      catch err
+        console.log err
     $.add $('#mascot_tab + div', dialog), batchmascots
         
     Options.applyStyle(dialog, 'mascot_tab')
 
     Options.indicators dialog
+    
+    if tab
+      $("#main_tab", dialog).checked = false
+      $("#" + tab + "_tab", dialog).checked = true
 
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', Options.close
@@ -308,6 +320,7 @@ Options =
     Options.time.call     time
     Options.fileInfo.call fileInfo
     Options.favicon.call  favicon
+    
 
   indicators: (dialog) ->
     indicators = {}

@@ -411,6 +411,23 @@ h1,
   border: 2px solid rgba(0,0,0,0.5);
   background-color: rgba(255,255,255,0.1);
 }
+#mascotConf {
+  position: fixed;
+  height: 400px;
+  bottom: 0;
+  left: 50%;
+  width: 500px;
+  margin-left: -250px;
+  overflow: auto;
+}
+#mascotConf input,
+#mascotConf input:' + agent + 'placeholder {
+  text-align: center;
+}
+#mascotConf h2 {
+  margin: 10px 0 0;
+  font-size: 14px;
+}
 #content {
   overflow: auto;
   position: absolute;
@@ -420,6 +437,7 @@ h1,
   left: 5px;
 }
 .suboptions,
+#mascotcontent,
 #themecontent {
   overflow: auto;
   position: absolute;
@@ -427,11 +445,15 @@ h1,
   bottom: 1.5em;
   left: 0;
 }
+#mascotcontent,
 .suboptions {
   top: 0;
 }
 #themecontent {
   top: 1.5em;
+}
+#mascotcontent {
+  text-align: center;
 }
 #save,
 .stylesettings {
@@ -744,6 +766,7 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
   font-style: normal;
 }
 /* Z-INDEXES */
+#mascotConf,
 #options.reply.dialog,
 #themeConf {
   z-index: 999 !important;
@@ -1711,7 +1734,8 @@ body {
   background-position: ' + theme["Background Position"] + ';
 }
 #content,
-#themecontent {
+#themecontent,
+#mascotcontent {
   background: ' + theme["Background Color"] + ';
   border: 1px solid ' + theme["Reply Border"]  + ';
   padding: 5px;
@@ -1805,6 +1829,7 @@ div.reply {
   border: 1px solid ' + theme["Thread Wrapper Border"]  + ';
 }
 #boardNavDesktopFoot,
+#mascotConf,
 #themeConf,
 #watcher,
 #watcher:hover,
