@@ -185,9 +185,6 @@ Main =
       if Conf['Unread Count'] or Conf['Unread Favicon']
         Unread.init()
 
-      if Conf['Quote Threading']
-        QuoteThreading.init()
-
     else #not reply
       if Conf['Thread Hiding']
         ThreadHiding.init()

@@ -55,7 +55,6 @@ Config =
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>']
       'Sage on /jp/':                 [true,  'Uses sage by default on /jp/']
-      'Markdown':                     [false, 'Code, italic, bold, italic bold, double struck - `, *, **, ***, ||, respectively. _ can be used instead of *. <span class=warning><code>Markdown</code> is currently blocked server-side, and using it will simply remove markdowned elements from your post.</style>']
     Quoting:
       'Quote Backlinks':              [true,  'Add quote backlinks']
       'OP Backlinks':                 [false, 'Add backlinks to the OP']
@@ -66,7 +65,6 @@ Config =
       'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes']
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
-      'Quote Threading':              [false, 'Thread conversations']
   filter:
     name: [
       '# Filter any namefags:'
@@ -147,7 +145,6 @@ Config =
     watch:           ['w',      'Watch thread']
     update:          ['u',      'Update now']
     unreadCountTo0:  ['z',      'Mark thread as read']
-    threading:       ['t',      'Toggle threading']
     # Images
     expandImage:     ['m',      'Expand selected image']
     expandAllImages: ['M',      'Expand all images']

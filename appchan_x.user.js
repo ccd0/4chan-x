@@ -93,7 +93,7 @@
 * Thank you.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteThreading, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, enabledmascots, g, newTheme, userMascots, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, MascotTools, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, enabledmascots, g, newTheme, userMascots, userThemes;
 
   Config = {
     main: {
@@ -156,8 +156,7 @@
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>'],
-        'Sage on /jp/': [true, 'Uses sage by default on /jp/'],
-        'Markdown': [false, 'Code, italic, bold, italic bold, double struck - `, *, **, ***, ||, respectively. _ can be used instead of *. <span class=warning><code>Markdown</code> is currently blocked server-side, and using it will simply remove markdowned elements from your post.</style>']
+        'Sage on /jp/': [true, 'Uses sage by default on /jp/']
       },
       Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
@@ -168,8 +167,7 @@
         'Resurrect Quotes': [true, 'Linkify dead quotes to archives'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
         'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes'],
-        'Forward Hiding': [true, 'Hide original posts of inlined backlinks'],
-        'Quote Threading': [false, 'Thread conversations']
+        'Forward Hiding': [true, 'Hide original posts of inlined backlinks']
       }
     },
     filter: {
@@ -203,7 +201,6 @@
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
       unreadCountTo0: ['z', 'Mark thread as read'],
-      threading: ['t', 'Toggle threading'],
       expandImage: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
       zero: ['0', 'Jump to page 0'],
@@ -2804,120 +2801,6 @@
     }
   };
 
-  Markdown = {
-    format: function(text) {
-      var pattern, tag, tag_patterns;
-      tag_patterns = {
-        bi: /(\*\*\*|___)(?=\S)([^\r\n]*?\S)\1/g,
-        b: /(\*\*|__)(?=\S)([^\r\n]*?\S)\1/g,
-        i: /(\*|_)(?=\S)([^\r\n]*?\S)\1/g,
-        code: /(`)(?=\S)([^\r\n]*?\S)\1/g,
-        ds: /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
-      };
-      if (text !== null) {
-        for (tag in tag_patterns) {
-          pattern = tag_patterns[tag];
-          text = text.replace(pattern, Markdown.unicode_convert);
-        }
-        return text;
-      }
-    },
-    unicode_convert: function(str, tag, inner) {
-      var c, charcode, charcodes, codepoints, codes, fmt, i, unicode_text;
-      if (tag === "_" || tag === "*") {
-        fmt = "i";
-      } else if (tag === "__" || tag === "**") {
-        fmt = "b";
-      } else if (tag === "***" || tag === "___") {
-        fmt = "bi";
-      } else if (tag === "||") {
-        fmt = "ds";
-      } else {
-        if (tag === "`" || tag === "```") {
-          fmt = "code";
-        }
-      }
-      codepoints = {
-        b: [0x1D7CE, 0x1D400, 0x1D41A],
-        i: [0x1D7F6, 0x1D434, 0x1D44E],
-        bi: [0x1D7CE, 0x1D468, 0x1D482],
-        code: [0x1D7F6, 0x1D670, 0x1D68A],
-        ds: [0x1D7D8, 0x1D538, 0x1D552]
-      };
-      charcodes = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (i = _i = 0, _len = inner.length; _i < _len; i = ++_i) {
-          c = inner[i];
-          _results.push(inner.charCodeAt(i));
-        }
-        return _results;
-      })();
-      codes = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = charcodes.length; _i < _len; _i++) {
-          charcode = charcodes[_i];
-          if (charcode >= 48 && charcode <= 57) {
-            _results.push(charcode - 48 + codepoints[fmt][0]);
-          } else if (charcode >= 65 && charcode <= 90) {
-            _results.push(charcode - 65 + codepoints[fmt][1]);
-          } else if (charcode >= 97 && charcode <= 122) {
-            if (charcode === 104 && tag === "i") {
-              _results.push(0x210E);
-            } else {
-              _results.push(charcode - 97 + codepoints[fmt][2]);
-            }
-          } else {
-            _results.push(charcode);
-          }
-        }
-        return _results;
-      })();
-      unicode_text = codes.map(Markdown.ucs2_encode).join("");
-      if (tag === "code") {
-        unicode_text = unicode_text.replace(/\x20/g, "\xA0");
-      }
-      return unicode_text;
-    },
-    ucs2_encode: function(value) {
-      /*
-          From Punycode.js: https://github.com/bestiejs/punycode.js
-      
-          Copyright Mathias Bynens <http://mathiasbynens.be/>
-      
-          Permission is hereby granted, free of charge, to any person obtaining
-          a copy of this software and associated documentation files (the
-          "Software"), to deal in the Software without restriction, including
-          without limitation the rights to use, copy, modify, merge, publish,
-          distribute, sublicense, and/or sell copies of the Software, and to
-          permit persons to whom the Software is furnished to do so, subject to
-          the following conditions:
-      
-          The above copyright notice and this permission notice shall be
-          included in all copies or substantial portions of the Software.
-      
-          THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-          EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF`
-          MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-          NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-          LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-          OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-          WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-      */
-
-      var output;
-      output = "";
-      if (value > 0xFFFF) {
-        value -= 0x10000;
-        output += String.fromCharCode(value >>> 10 & 0x3FF | 0xD800);
-        value = 0xDC00 | value & 0x3FF;
-      }
-      output += String.fromCharCode(value);
-      return output;
-    }
-  };
-
   Filter = {
     filters: {},
     init: function() {
@@ -3800,9 +3683,6 @@
         case Conf.unreadCountTo0:
           Unread.replies = new $.RandomAccessList;
           Unread.update(true);
-          break;
-        case Conf.threading:
-          QuoteThreading["public"].toggle();
           break;
         case Conf.expandImage:
           Keybinds.img(thread);
@@ -5434,116 +5314,6 @@
     }
   };
 
-  QuoteThreading = {
-    init: function() {
-      var controls, form, input;
-      if (!(Conf['Unread Count'] || Conf['Unread Favicon'])) {
-        return;
-      }
-      Main.callbacks.push(this.node);
-      this.enabled = true;
-      controls = $.el('span', {
-        innerHTML: '<label>Threading<input id=threadingControl type=checkbox checked></label>'
-      });
-      input = $('input', controls);
-      $.on(input, 'change', QuoteThreading.toggle);
-      form = $('#delform');
-      return $.prepend(form, controls);
-    },
-    node: function(post) {
-      var ID, keys, pEl, pid, preply, qid, qreply, qroot, quote, quotes, replies, reply, threadContainer, uniq, _i, _len;
-      if (post.isInlined || !QuoteThreading.enabled) {
-        return;
-      }
-      quotes = post.quotes, ID = post.ID;
-      replies = Unread.replies;
-      if (!(reply = replies[ID])) {
-        return;
-      }
-      uniq = {};
-      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-        quote = quotes[_i];
-        qid = quote.hash.slice(2);
-        if (!(qid < ID)) {
-          continue;
-        }
-        if (qid in replies) {
-          uniq[qid] = true;
-        }
-      }
-      keys = Object.keys(uniq);
-      if (keys.length !== 1) {
-        return;
-      }
-      qid = keys[0];
-      qreply = replies[qid];
-      qroot = qreply.el.parentNode;
-      threadContainer = qroot.nextSibling;
-      if ((threadContainer != null ? threadContainer.className : void 0) !== 'threadContainer') {
-        threadContainer = $.el('div', {
-          className: 'threadContainer'
-        });
-        $.after(qroot, threadContainer);
-      }
-      $.add(threadContainer, reply.el.parentNode);
-      pEl = $.x('preceding::div[contains(@class,"post reply")][1]/parent::div', reply.el.parentNode);
-      pid = pEl.id.slice(2);
-      preply = replies[pid];
-      return replies.after(preply, reply);
-    },
-    toggle: function() {
-      var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2;
-      Main.disconnect();
-      Unread.replies = new $.RandomAccessList;
-      thread = $('.thread');
-      replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
-      QuoteThreading.enabled = this.checked;
-      if (this.checked) {
-        nodes = (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = replies.length; _i < _len; _i++) {
-            reply = replies[_i];
-            _results.push(Main.preParse(reply));
-          }
-          return _results;
-        })();
-        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-          node = nodes[_i];
-          Unread.node(node);
-        }
-        Unread.scroll();
-        for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
-          node = nodes[_j];
-          QuoteThreading.node(node);
-        }
-      } else {
-        replies.sort(function(a, b) {
-          var aID, bID;
-          aID = Number(a.id.slice(2));
-          bID = Number(b.id.slice(2));
-          return aID - bID;
-        });
-        $.add(thread, replies);
-        containers = $$('.threadContainer', thread);
-        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
-          container = containers[_k];
-          $.rm(container);
-        }
-        Unread.update(true);
-      }
-      return Main.observe();
-    },
-    "public": {
-      toggle: function() {
-        var control;
-        control = $.id('threadingControl');
-        control.checked = !control.checked;
-        return QuoteThreading.toggle.call(control);
-      }
-    }
-  };
-
   DeleteLink = {
     init: function() {
       var aImage, aPost, children, div;
@@ -7166,7 +6936,7 @@
         name: reply.name,
         email: reply.email,
         sub: reply.sub,
-        com: Conf['Markdown'] ? Markdown.format(reply.com) : reply.com,
+        com: reply.com,
         upfile: reply.file,
         spoiler: reply.spoiler,
         textonly: textOnly,
@@ -10800,9 +10570,6 @@ img[src^="//static.4chan.org/support/"] {\
         }
         if (Conf['Unread Count'] || Conf['Unread Favicon']) {
           Unread.init();
-        }
-        if (Conf['Quote Threading']) {
-          QuoteThreading.init();
         }
       } else {
         if (Conf['Thread Hiding']) {

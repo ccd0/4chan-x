@@ -129,16 +129,11 @@ Options =
     </tbody></table>
   </div>
   <input type=radio name=tab hidden id=style_tab>
-  <div>
-    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>
-  </div>
+  <div></div>
   <input type=radio name=tab hidden id=theme_tab>
-  <div>
-    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div></div>
+  <div></div>
   <input type=radio name=tab hidden id=mascot_tab>
-  <div>
-    <div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div>
-  </div>
+  <div></div>
   <input type=radio name=tab hidden onClick="javascript:location.reload(true)" id=apply>
   <div>Reloading page with new settings.</div>
 </div>'
@@ -199,6 +194,7 @@ Options =
     #style
     div = $.el 'div',
       className: "suboptions"
+      innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>"
     for category, obj of Config.style
       ul = $.el 'ul',
         textContent: category
@@ -239,6 +235,7 @@ Options =
     #mascots
     parentdiv = $.el 'div',
       className: "suboptions"
+      innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div>"
     ul = $.el 'ul',
       className:   'mascots'
     for name, mascot of userMascots
@@ -343,7 +340,8 @@ Options =
       dialog = $("#options", d.body)
     parentdiv = $.el 'div',
       className: "suboptions"
-      id: "themes"
+      id:        "themes"
+      innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div>"
     for themename, theme of userThemes
       unless theme["Deleted"]
         div = $.el 'div',

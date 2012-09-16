@@ -609,7 +609,7 @@ QR =
       name:     reply.name
       email:    reply.email
       sub:      reply.sub
-      com:      if Conf['Markdown'] then Markdown.format reply.com else reply.com
+      com:      reply.com
       upfile:   reply.file
       spoiler:  reply.spoiler
       textonly: textOnly
