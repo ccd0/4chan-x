@@ -1654,13 +1654,14 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 }
 #qr .warning {
   position: absolute;
-  bottom: -18px;
-  right: 1px;
-  height: 20px;
+  bottom: -20px;
+  right: 0;
+  height: 19px;
   text-align: right;
   vertical-align: middle;
-  padding-top: 2px;
-  max-height: 16px;
+  text-align: center;
+  box-sizing: border-box;
+  ' + agent + 'box-sizing: border-box;
 }
 .deleteform:hover {
   top: auto;

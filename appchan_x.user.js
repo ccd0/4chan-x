@@ -339,7 +339,7 @@
       'Sage': 'rgb(150,150,150)',
       'Board Title': 'rgb(170,170,170)',
       'Timestamps': 'rgb(170,170,170)',
-      'Warnings': 'rbg(102,136,170)',
+      'Warnings': 'rgb(102,136,170)',
       'Shadow Color': 'rgba(44,44,44,0.4)',
       'Dark Theme': '1',
       'Custom CSS': ''
@@ -391,7 +391,7 @@
       'Sage': 'rgb(146,92,141)',
       'Board Title': 'rgb(133,76,158)',
       'Timestamps': 'rgb(0,0,0)',
-      'Warnings': 'rbg(133,76,158)',
+      'Warnings': 'rgb(133,76,158)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': '0',
       'Custom CSS': '#delform{ box-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5); border-radius: 3px;padding:10px;}#options.reply.dialog,#options .dialog{background-color:#FFF;color:#000;border:2px solid #CCC;border-radius:6px;}#options ul{border-bottom:1px solid #DBD8D2;border-radius: 0px;}#options ul:last-of-type{border:none;}#qp div.post{background-color:rgba(255,255,255,0.9);border:1px solid #D1A2FF;color:#000;}'
@@ -443,7 +443,7 @@
       'Board Title': 'rgb(103,204,232)',
       'Timestamps': 'rgb(218,105,224)',
       'Inputs': 'rgb(218,105,224)',
-      'Warnings': 'rbg(103,204,232)',
+      'Warnings': 'rgb(103,204,232)',
       'Shadow Color': 'rgba(29,31,33,1)',
       'Dark Theme': '1',
       'Custom CSS': 'div.reply {box-shadow: inset 0px 1px 2px 1px #111;}#qr {box-shadow: none;}#qr textarea, #qr input[name="name"], #qr input[name="email"], #qr input[name="sub"], #qr input[title="Verification"] {box-shadow: inset 0px 1px 2px 0px #111;}#qp div.post {background-color: rgba(29,29,33,1); border: 1px solid rgba(95,137,172,0.4);}input:checked .rice { background: url("http://i.imgur.com/CAewG.png"); }'
@@ -495,7 +495,7 @@
       'Sage': 'rgb(68,68,68)',
       'Board Title': 'rgb(144,144,144)',
       'Timestamps': 'rgb(144,144,144)',
-      'Warnings': 'rbg(87,87,123)',
+      'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(16,16,16,0.4)',
       'Dark Theme': '1',
       'Custom CSS': ''
@@ -547,7 +547,7 @@
       'Board Title': 'rgb(187,187,187)',
       'Timestamps': 'rgb(221,221,221)',
       'Inputs': 'rgb(187,187,187)',
-      'Warnings': 'rbg(87,87,123)',
+      'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(16,16,16,0.4)',
       'Dark Theme': '1',
       'Custom CSS': '.nameBlock>.useremail>postertrip{color: rgb(137,115,153);}a.backlink:hover{color: rgb(198,23,230);}.reply:target,.reply.highlight:target{background:rgb(37,38,42);}[alt="sticky"]+a{color: rgb(242,141,0);}[alt="closed"]+a{color: rgb(178,171,130);}input:checked .rice{border-color:rgb(21,21,21)}}input[type="submit"], input[type="button"], button {background: linear-gradient(#393939, #292929);border: 1px solid #191919;color: #AAA;text-shadow: 0 1px 1px #191919;}input[type="checkbox"], input[type="radio"] {background-color: #393939;border: 1px solid #191919;}input[type="checkbox"]:checked, input[type="radio"]:checked {background: linear-gradient(#595959, #393939);border: 1px solid #151515;} #delform { padding: 7px; }.subject:hover,div.post:hover .subject{color: #3F8DBF !important;}.postertrip:hover,div.post:hover .postertrip{color:#CC7212 !important;}.name:hover, div.post:hover .name {  color: #0AAEE7 !important;}.name,.subject,.postertrip {-webkit-transition:color .3s ease-in-out;-moz-transition:color .3s ease-in-out;}'
@@ -599,7 +599,7 @@
       'Board Title': 'rgb(253,254,255)',
       'Timestamps': 'rgb(253,254,255)',
       'Inputs': 'rgb(253,254,255)',
-      'Warnings': 'rbg(0,255,255)',
+      'Warnings': 'rgb(0,255,255)',
       'Shadow Color': 'rgba(44,44,44,0.4)',
       'Dark Theme': '1',
       'Custom CSS': '#qp div.post{background-color:rgba(0,0,0,0.8);border-radius:4px;border: 1px solid #333;}#qr {background-color: rgba(0,0,0,0.7);border: 1px solid #333;}'
@@ -651,7 +651,7 @@
       'Board Title': 'rgb(153,153,153)',
       'Timestamps': 'rgb(153,153,153)',
       'Inputs': 'rgb(153,153,153)',
-      'Warnings': 'rbg(187,187,187)',
+      'Warnings': 'rgb(187,187,187)',
       'Shadow Color': 'rgba(20,20,20,0.9)',
       'Dark Theme': '1',
       'Custom CSS': '#options{background-color: rgba(16,16,16,1) !important;}#delform blockquote {border-radius:3px;color:#bbb;background:#343838;padding:8px;box-shadow:0px 0px 20px rgba(25,25,25,0.6);border:1px solid #343838;border-bottom:2px solid #444848;border-radius:0px 6px 6px 6px;padding-top:15px;}.name {font-weight:800;}.nameBlock > .useremail > .name:hover,.nameBlock> .useremail> .postertrip:hover {color:#00dffc;}a.forwardlink {color:#608cae;font-weight:800;}div.reply,.reply.highlight{padding:0;}#qp div.post{border:1px solid rgba(128,172,206,0.5) !important;background-color:rgba(24,24,24,0.9) !important;}.name,.postertrip {text-shadow:0px 0px 6px rgba(20,20,20,0.9);font-weight:bold;background:#343838;border:1px solid #343838;border-radius:5px 5px 0px 0px;padding:4px 6px;padding-top:2px;}#delform,#delform blockquote {margin:0 10px 15px 0 !important;padding:0px;}a{-moz-transition:all 0.5s ease;-webkit-transition:all 0.5s ease;-o-transition:all 0.5s ease;}a.pointer{font-weight:bold;font-weight:normal;color:#777;padding-right:5px;}#delform .opContainer,#delform .replyContainer {opacity:0.45;-moz-transition:all 0.5s ease;-webkit-transition:all 0.5s ease;-o-transition:all 0.5s ease;}#delform .opContainer:hover,#delform .replyContainer:hover{opacity:1;}.reply,.reply.highlight{background:transparent;border:0px;padding:0px;padding-bottom:0px;border-radius:6px;}#delform blockquote{padding:5px;background:#343838;margin-top:0px;min-height:20px;padding-top:10px;clear:none;}#delform .file + blockquote{margin-top:-16px !important;padding-left:150px !important;}.file{margin-top: 2px;}a.backlink{border:1px solid #343838;border-radius:5px 5px 0px 0px;background:#343838;padding:2px 4px 2px;text-decoration:none;}a.forwardlink{color:#608CAE;text-shadow:0 0 6px rgba(96,140,174,0.8);}.subject{font-weight: bold;letter-spacing: 3px;background: transparent;}div.reply,div.reply.highlight {background-color: rgba(0,0,0,0) !important;border: none !important;}#qp div.post .name,#qp div.post a.backlink,#qp div.post blockquote {background:none !important;border:none !important;box-shadow:none !important;border-radius:0px; !important}'
@@ -703,7 +703,7 @@
       'Board Title': 'rgb(0,74,153)',
       'Timestamps': 'rgb(51,51,51)',
       'Inputs': 'rgb(0,0,0)',
-      'Warnings': 'rbg(51,51,51)',
+      'Warnings': 'rgb(51,51,51)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': '0',
       'Custom CSS': '.fileText{color: rgb(102,102,102);}#qp div.post{background-color:rgba(21,21,21,0.8);color:#FFF;border:1px solid rgba(0,0,0,1);}#qp div.post .subject,#qp div.post .name,#qp div.post .container a,#qp div.post .postNum a{color:#FFF;}#qp div.post .postertrip{color:#999;}#qp div.post .fileText{color:#999;}span.quote > a.quotelink{color: #ff6600;}'
@@ -755,7 +755,7 @@
       'Sage': 'rgb(87,87,123)',
       'Board Title': 'rgb(238,187,204)',
       'Timestamps': 'rgb(0,0,0)',
-      'Warnings': 'rbg(87,87,123)',
+      'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(60,60,60,0.6)',
       'Dark Theme': '1',
       'Custom CSS': '.replyContainer > .reply {background-color: transparent; border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); border-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0 !important; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
@@ -807,7 +807,7 @@
       'Board Title': 'rgb(147,161,161)',
       'Timestamps': 'rgb(147,161,161)',
       'Inputs': 'rgb(147,161,161)',
-      'Warnings': 'rbg(108,113,196)',
+      'Warnings': 'rgb(108,113,196)',
       'Shadow Color': 'rgba(0,0,0,0.4)',
       'Dark Theme': '1',
       'Custom CSS': '#qp div.post{background-color:rgba(7,54,66,0.9);border:1px solid rgba(79,95,143,0.9);}'
@@ -859,7 +859,7 @@
       'Board Title': 'rgb(204,17,5)',
       'Timestamps': 'rgb(186,0,0)',
       'Inputs': 'rgb(0,0,0)',
-      'Warnings': 'rbg(128,0,0)',
+      'Warnings': 'rgb(128,0,0)',
       'Shadow Color': 'rgba(119,46,40,1)',
       'Dark Theme': '0',
       'Custom CSS': '#qp div.post{background-color:rgba(240,192,176,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
@@ -911,7 +911,7 @@
       'Board Title': 'rgb(175,10,15)',
       'Timestamps': 'rgb(0,0,0)',
       'Inputs': 'rgb(0,0,0)',
-      'Warnings': 'rbg(87,87,123)',
+      'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': '0',
       'Custom CSS': '#qp div.post{background-color:rgba(214,186,208,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
@@ -963,7 +963,7 @@
       'Board Title': 'rgb(220,220,204)',
       'Timestamps': 'rgb(220,220,204)',
       'Inputs': 'rgb(220,220,204)',
-      'Warnings': 'rbg(239,220,188)',
+      'Warnings': 'rgb(239,220,188)',
       'Shadow Color': 'rgba(63,63,63,0.4)',
       'Dark Theme': '1',
       'Custom CSS': ''
@@ -9020,13 +9020,14 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {\
 }\
 #qr .warning {\
   position: absolute;\
-  bottom: -18px;\
-  right: 1px;\
-  height: 20px;\
+  bottom: -20px;\
+  right: 0;\
+  height: 19px;\
   text-align: right;\
   vertical-align: middle;\
-  padding-top: 2px;\
-  max-height: 16px;\
+  text-align: center;\
+  box-sizing: border-box;\
+  ' + agent + 'box-sizing: border-box;\
 }\
 .deleteform:hover {\
   top: auto;\
