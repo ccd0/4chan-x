@@ -8332,7 +8332,7 @@ div.reply,\
 fieldset,\
 textarea,\
 time + span {\
-  font-size: ' + Conf["Font Size"] + 'px;\
+  font-size: ' + Conf["Font Size"] + ';\
 }\
 .globalMessage {\
   bottom: auto;\
