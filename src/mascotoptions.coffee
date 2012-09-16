@@ -123,7 +123,7 @@ MascotTools =
           console.log value
           div = $.el "div",
             className: "mascotvar"
-            innerHTML: "<h2>#{item[0]}</h2><span class=description>#{item[2]}</span><div class=option><input type=#{item[3]} class=field name='#{name}' #{if value then 'checked'}></div>"
+            innerHTML: "<h2><label><input type=#{item[3]} class=field name='#{name}' #{if value then 'checked'}>#{item[0]}</label></h2><span class=description>#{item[2]}</span>"
           $.on $('input', div), 'click', ->
             editMascot[@name] = if @checked then true else false
             Style.addStyle Conf["theme"]

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        0.9beta
+// @version        0.9.1beta
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -761,7 +761,7 @@
       'Warnings': 'rbg(87,87,123)',
       'Shadow Color': 'rgba(60,60,60,0.6)',
       'Dark Theme': '1',
-      'Custom CSS': '.replyContainer > .reply {background-color: transparent; border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); border-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
+      'Custom CSS': '.replyContainer > .reply {background-color: transparent; border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); border-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0 !important; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
     },
     'Solarized': {
       'Author': 'ubuntufriend',
@@ -7488,7 +7488,7 @@
             console.log(value);
             div = $.el("div", {
               className: "mascotvar",
-              innerHTML: "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><input type=" + item[3] + " class=field name='" + name + "' " + (value ? 'checked' : void 0) + "></div>"
+              innerHTML: "<h2><label><input type=" + item[3] + " class=field name='" + name + "' " + (value ? 'checked' : void 0) + ">" + item[0] + "</label></h2><span class=description>" + item[2] + "</span>"
             });
             $.on($('input', div), 'click', function() {
               editMascot[this.name] = this.checked ? true : false;
@@ -10994,7 +10994,7 @@ img[src^="//static.4chan.org/support/"] {\
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '0.9beta',
+    version: '0.9.1beta',
     callbacks: []
   };
 
