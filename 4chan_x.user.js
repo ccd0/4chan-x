@@ -165,7 +165,7 @@
       filesize: [''].join('\n'),
       md5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=$turl', 'http://www.google.com/searchbyimage?image_url=$turl', '#http://tineye.com/search?url=$turl', '#http://saucenao.com/search.php?db=999&url=$turl', '#http://3d.iqdb.org/?url=$turl', '#http://regex.info/exif.cgi?imgurl=$url', '# uploaders:', '#http://imgur.com/upload?url=$url;text:Upload to imgur', '#http://omploader.org/upload?url1=$url;text:Upload to omploader', '# "View Same" in archives:', '#http://archive.foolz.us/_/search/image/$md5/;text:View same on foolz', '#http://archive.foolz.us/$board/search/image/$md5/;text:View same on foolz /$board/', '#https://archive.installgentoo.net/$board/image/$md5;text:View same on installgentoo /$board/'].join('\n'),
+    sauces: ['http://iqdb.org/?url=%turl', 'http://www.google.com/searchbyimage?image_url=%turl', '#http://tineye.com/search?url=%turl', '#http://saucenao.com/search.php?db=999&url=%turl', '#http://3d.iqdb.org/?url=%turl', '#http://regex.info/exif.cgi?imgurl=%url', '# uploaders:', '#http://imgur.com/upload?url=%url;text:Upload to imgur', '#http://omploader.org/upload?url1=%url;text:Upload to omploader', '# "View Same" in archives:', '#//archive.foolz.us/_/search/image/%md5/;text:View same on foolz', '#//archive.foolz.us/%board/search/image/%md5/;text:View same on foolz /%board/', '#//archive.installgentoo.net/%board/image/%md5;text:View same on installgentoo /%board/'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
@@ -2328,22 +2328,25 @@
         return;
       }
       this.links = links;
+      this.link = $.el('a', {
+        target: '_blank'
+      });
       return Post.prototype.callbacks.push({
         name: 'Sauce',
         cb: this.node
       });
     },
     createSauceLink: function(link) {
-      var el, href, m, text;
-      link = link.replace(/\$(turl|url|md5|board)/g, function(parameter) {
+      var m, text;
+      link = link.replace(/%(t?url|md5|board)/g, function(parameter) {
         switch (parameter) {
-          case '$turl':
+          case '%turl':
             return "' + post.file.thumbURL + '";
-          case '$url':
+          case '%url':
             return "' + post.file.URL + '";
-          case '$md5':
+          case '%md5':
             return "' + encodeURIComponent(post.file.MD5) + '";
-          case '$board':
+          case '%board':
             return "' + post.board + '";
           default:
             return parameter;
@@ -2351,17 +2354,7 @@
       });
       text = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
       link = link.replace(/;text:.+$/, '');
-      href = Function('post', "return '" + link + "'");
-      el = $.el('a', {
-        target: '_blank',
-        textContent: text
-      });
-      return function(post) {
-        var a;
-        a = el.cloneNode(true);
-        a.href = href(post);
-        return a;
-      };
+      return Function('post', 'a', "a.href = '" + link + "';\na.textContent = '" + text + "';\nreturn a;");
     },
     node: function() {
       var link, nodes, _i, _len, _ref;
@@ -2372,7 +2365,7 @@
       _ref = Sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
-        nodes.push($.tn('\u00A0'), link(this));
+        nodes.push($.tn('\u00A0'), link(this, Sauce.link.cloneNode(true)));
       }
       return $.add(this.file.info, nodes);
     }

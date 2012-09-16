@@ -106,19 +106,19 @@ Config =
       ''
     ].join '\n'
   sauces: [
-    'http://iqdb.org/?url=$turl'
-    'http://www.google.com/searchbyimage?image_url=$turl'
-    '#http://tineye.com/search?url=$turl'
-    '#http://saucenao.com/search.php?db=999&url=$turl'
-    '#http://3d.iqdb.org/?url=$turl'
-    '#http://regex.info/exif.cgi?imgurl=$url'
+    'http://iqdb.org/?url=%turl'
+    'http://www.google.com/searchbyimage?image_url=%turl'
+    '#http://tineye.com/search?url=%turl'
+    '#http://saucenao.com/search.php?db=999&url=%turl'
+    '#http://3d.iqdb.org/?url=%turl'
+    '#http://regex.info/exif.cgi?imgurl=%url'
     '# uploaders:'
-    '#http://imgur.com/upload?url=$url;text:Upload to imgur'
-    '#http://omploader.org/upload?url1=$url;text:Upload to omploader'
+    '#http://imgur.com/upload?url=%url;text:Upload to imgur'
+    '#http://omploader.org/upload?url1=%url;text:Upload to omploader'
     '# "View Same" in archives:'
-    '#http://archive.foolz.us/_/search/image/$md5/;text:View same on foolz'
-    '#http://archive.foolz.us/$board/search/image/$md5/;text:View same on foolz /$board/'
-    '#https://archive.installgentoo.net/$board/image/$md5;text:View same on installgentoo /$board/'
+    '#//archive.foolz.us/_/search/image/%md5/;text:View same on foolz'
+    '#//archive.foolz.us/%board/search/image/%md5/;text:View same on foolz /%board/'
+    '#//archive.installgentoo.net/%board/image/%md5;text:View same on installgentoo /%board/'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M:%S'
   backlink: '>>%id'
@@ -2119,38 +2119,36 @@ Sauce =
       links.push @createSauceLink link.trim()
     return unless links.length
     @links = links
+    @link  = $.el 'a', target: '_blank'
     Post::callbacks.push
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link) ->
-    link = link.replace /\$(turl|url|md5|board)/g, (parameter) ->
+    link = link.replace /%(t?url|md5|board)/g, (parameter) ->
       switch parameter
-        when '$turl'
+        when '%turl'
           "' + post.file.thumbURL + '"
-        when '$url'
+        when '%url'
           "' + post.file.URL + '"
-        when '$md5'
+        when '%md5'
           "' + encodeURIComponent(post.file.MD5) + '"
-        when '$board'
+        when '%board'
           "' + post.board + '"
         else
           parameter
     text = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)[1]
     link = link.replace /;text:.+$/, ''
-    href = Function 'post', "return '#{link}'"
-    el = $.el 'a',
-      target: '_blank'
-      textContent: text
-    (post) ->
-      a = el.cloneNode true
-      a.href = href post
-      a
+    Function 'post', 'a', """
+      a.href = '#{link}';
+      a.textContent = '#{text}';
+      return a;
+    """
   node: ->
     return if @isClone or !@file
     nodes = []
     for link in Sauce.links
       # \u00A0 is nbsp
-      nodes.push $.tn('\u00A0'), link @
+      nodes.push $.tn('\u00A0'), link @, Sauce.link.cloneNode true
     $.add @file.info, nodes
 
 RevealSpoilers =
