@@ -718,7 +718,7 @@
       'Background Attachment': 'scroll, fixed',
       'Background Position': 'center, center',
       'Background Repeat': 'repeat, no-repeat',
-      'Background Color': 'rgba(0,0,0,0,1)',
+      'Background Color': 'rgba(238,242,255,1)',
       'Thread Wrapper Background': 'linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px, rgb(240,240,240))',
       'Thread Wrapper Border': 'rgba(0,0,0,0)',
       'Dialog Background': 'rgba(238,242,255,1)',
